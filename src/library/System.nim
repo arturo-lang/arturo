@@ -48,28 +48,81 @@ when not defined(WEB):
 
 proc defineSymbols*() =
 
-    # TODO(System) Convert constants to methods
-    #  None of the supposed constants here is actually a constant.
-    #  All of them return something that doesn't change on one hand,
-    #  but that doesn't mean they should be considered as such.
-    #  labels: library, enhancement
+    builtin "arg",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "get command-line arguments as a list",
+        args        = NoArgs,
+        attrs       = NoAttrs,
+        returns     = {Block},
+        example     = """
+            ; called with no parameters
+            arg         ; => []
 
-    constant "arg",
-        alias       = unaliased,
-        description = "access command-line arguments as a list":
-            getCmdlineArgumentArray()
+            ; called with: 1 two 3
+            arg         ; => ["1" "two" "3"]
+        """:
+            push(getCmdlineArgumentArray())
 
-    constant "args",
-        alias       = unaliased,
-        description = "a dictionary with all command-line arguments parsed":
-            newDictionary(parseCmdlineArguments())
+    builtin "args",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "get all command-line arguments parsed as a dictionary",
+        args        = NoArgs,
+        attrs       = NoAttrs,
+        returns     = {Dictionary},
+        example     = """
+            ; called with: 1 two 3
+            args         
+            ; => #[
+            ;     1 
+            ;     "two"
+            ;     3
+            ; ]
+            ..........
+            ; called with switches: -c -b
+            args 
+            ; => #[
+            ;     c : true
+            ;     b : true
+            ;     values: []
+            ; ]
+
+            ; called with switches: -c -b and values: 1 two 3
+            args
+            ; => #[
+            ;     c : true
+            ;     b : true
+            ;     values: [1 "two" 3]
+            ; ]
+            ..........
+            ; called with named parameters: -c:2 --name:newname myfile.txt
+            args
+            ; => #[
+            ;     c : 2
+            ;     name : "newname"
+            ;     values: ["myfile.txt"]
+            ; ]
+        """:
+            push(newDictionary(parseCmdlineArguments()))
 
     when not defined(WEB):
-        
-        constant "config",
-            alias       = unaliased,
-            description = "access global configuration":
-                Config
+
+        # TODO(System\config) add documentation example
+        #  labels: library, documentation, easy
+        builtin "config",
+            alias       = unaliased, 
+            op          = opNop,
+            rule        = PrefixPrecedence,
+            description = "get global configuration",
+            args        = NoArgs,
+            attrs       = NoAttrs,
+            returns     = {Store},
+            example     = """
+            """:
+                push(Config)
 
         # TODO(System\env) could it be used for Web/JS builds too?
         #  and what type of environment variables could be served or would be useful serve?
@@ -308,10 +361,21 @@ proc defineSymbols*() =
     # TODO(System/script) also add information about the current script being executed
     #  another location could also be Paths/path
     #  labels: library,enhancement
-    constant "script",
-        alias       = unaliased,
-        description = "embedded information about the current script":
-            getScriptInfo()
+
+    # TODO(System\script) add documentation example
+    #  labels: library, documentation, easy
+
+    builtin "script",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "get embedded information about the current script",
+        args        = NoArgs,
+        attrs       = NoAttrs,
+        returns     = {Dictionary},
+        example     = """
+        """:
+            push(getScriptInfo())
 
     when not defined(WEB):
         builtin "superuser?",
