@@ -7,6 +7,7 @@ Fixes # (issue/s)
 ## Type of change
 
 - [ ] Code cleanup
+- [ ] Unit tests (added or updated unit-tests)
 - [ ] Bug fix (non-breaking change which fixes an issue)
 - [ ] Enhancement (implementation update, or general performance enhancements)
 - [ ] New feature (non-breaking change which adds functionality)
