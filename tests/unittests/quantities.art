@@ -6,7 +6,6 @@ passed: $[] -> print "[+] passed!"
 topic « currencies
 do [
     
-    
     topic « currencies - currency? (hidden)
     
     ; This test is hidden since it takes a lot of time to execute
@@ -25,6 +24,7 @@ do [
     ; ] => currency?
     ; passed
     
+    
     topic « currencies - basic math
     
     data: [ 
@@ -42,6 +42,7 @@ do [
         passed
     ]
     
+    
     topic « currencies - conforms?
     
     ensure -> conforms? 100`EUR 200`USD
@@ -56,6 +57,7 @@ do [
     ensure -> not? conforms? 100`EUR 100`m/s
     passed
     
+    
     topic « currencies - property
     
     ensure -> 'currency = property 100`EUR
@@ -67,12 +69,14 @@ do [
     ensure -> 'currency <> property 100`m/s
     passed
     
+    
     topic « currencies - scalar
     
     ensure -> 200 = scalar 200`USD
     ensure -> 100 = scalar 100`USD
     ensure -> 100 = scalar 100`EUR
     passed
+    
     
     topic « currencies - specify
     
@@ -83,6 +87,7 @@ do [
     ensure -> "31:2`ÁRT" = as.code 15.5`artc
     ensure -> 10`EUR = 1`artc --> `EUR
     passed
+    
     
     topic « currencies - units
     
@@ -119,6 +124,7 @@ do [
         1`kpc 1`Mpc 1`Gpc 1`Tpc 1`Ppc 1`Epc
     ] => length?
     passed
+    
     
     topic « length - basic math
     
@@ -220,6 +226,7 @@ do [
     ; ensure -> 1`fpc  = 1`pc * (10 ^ (neg 15))
     ; ensure -> 1`apc  = 1`pc * (10 ^ (neg 18))
     passed
+    
     
     topic « length - math // convertions
     
@@ -420,6 +427,7 @@ do [
     ensure -> 4`Ppx2  = 2`Ppx  ^ 2
     ensure -> 4`Epx2  = 2`Epx  ^ 2
     
+    
     topic « length - math // volume
     
     ensure -> 8`in3  = 2`in  * 2`in  * 2`in
@@ -598,6 +606,7 @@ do [
     ensure -> 8`Ppx3  = 2`Ppx  ^ 3
     ensure -> 8`Epx3  = 2`Epx  ^ 3
     
+    
     topic « length - conforms?
 
     ensure -> every? [
@@ -634,6 +643,7 @@ do [
     ] -> x -> not? conforms? x `m2
     passed
         
+        
     topic « length - convert
     
     ; DRY - already tested in math // scales
@@ -642,12 +652,14 @@ do [
     ensure -> same? 100`cm 1`m --> `cm
     passed
 
+
     topic « length - in
     
     ; DRY - already tested in math // scales & convert
     
     ensure -> same? 100`cm in `cm 1`m
     passed
+    
     
     topic « length - property
     
@@ -668,6 +680,7 @@ do [
     ] -> x -> 'length = property x
     passed
     
+    
     topic « length - scalar
     
     ensure -> every? [
@@ -686,6 +699,7 @@ do [
         1`kpc 1`Mpc 1`Gpc 1`Tpc 1`Ppc 1`Epc
     ] -> x -> one? scalar x
     passed
+    
     
     topic « length - specify
     
@@ -706,9 +720,7 @@ do [
     passed
     
     ensure -> `cm <> units 100`km
-    passed 
-    
-    
+    passed     
     
 ]
 
