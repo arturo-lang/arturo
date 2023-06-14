@@ -7,8 +7,8 @@ sayHello: $[name][
 ]
 
 printAll: $[args][
-	loop args [arg][
-		print arg
+	loop args [argv][
+		print argv
 	]
 ]
 
