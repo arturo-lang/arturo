@@ -25,30 +25,6 @@ import helpers/sets
 
 import vm/lib
 
-# proc intersection*[A](s1, s2: OrderedSet[A]): OrderedSet[A] =
-#   ## Returns the intersection of the sets `s1` and `s2`.
-#   ##
-#   ## The same as `s1 * s2 <#*,HashSet[A],HashSet[A]>`_.
-#   ##
-#   ## The intersection of two sets is represented mathematically as *A ∩ B* and
-#   ## is the set of all objects that are members of `s1` and `s2` at the same
-#   ## time.
-#   ##
-#   ## See also:
-#   ## * `union proc <#union,HashSet[A],HashSet[A]>`_
-#   ## * `difference proc <#difference,HashSet[A],HashSet[A]>`_
-#   ## * `symmetricDifference proc <#symmetricDifference,HashSet[A],HashSet[A]>`_
-
-#   result = initOrderedSet[A](max(min(s1.len, s2.len), 2))
-  
-#   # iterate over the elements of the smaller set
-#   if s1.len < s2.len:
-#     for item in s1:
-#       if item in s2: incl(result, item)
-#   else:
-#     for item in s2:
-#       if item in s1: incl(result, item)
-
 #=======================================
 # Methods
 #=======================================
