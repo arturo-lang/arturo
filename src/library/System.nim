@@ -65,11 +65,6 @@ proc defineSymbols*() =
         """:
             push(getCmdlineArgumentArray())
 
-    # constant "arg",
-    #     alias       = unaliased,
-    #     description = "access command-line arguments as a list":
-    #         getCmdlineArgumentArray()
-
     builtin "args",
         alias       = unaliased, 
         op          = opNop,
@@ -115,11 +110,6 @@ proc defineSymbols*() =
             ; ]
         """:
             push(newDictionary(parseCmdlineArguments()))
-
-    # constant "args",
-    #     alias       = unaliased,
-    #     description = "a dictionary with all command-line arguments parsed":
-    #         newDictionary(parseCmdlineArguments())
 
     when not defined(WEB):
 
