@@ -54,10 +54,27 @@ proc defineSymbols*() =
     #  but that doesn't mean they should be considered as such.
     #  labels: library, enhancement
 
-    constant "arg",
-        alias       = unaliased,
-        description = "access command-line arguments as a list":
-            getCmdlineArgumentArray()
+    builtin "arg",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "access command-line arguments as a list",
+        args        = NoArgs,
+        attrs       = NoAttrs,
+        returns     = {Block},
+        example     = """
+            ; called with no parameters
+            arg         ; => []
+
+            ; called with: 1 two 3
+            arg         ; => ["1" "two" "3"]
+        """:
+            push(getCmdlineArgumentArray())
+
+    # constant "arg",
+    #     alias       = unaliased,
+    #     description = "access command-line arguments as a list":
+    #         getCmdlineArgumentArray()
 
     constant "args",
         alias       = unaliased,
