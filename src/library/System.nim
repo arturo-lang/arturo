@@ -76,10 +76,56 @@ proc defineSymbols*() =
     #     description = "access command-line arguments as a list":
     #         getCmdlineArgumentArray()
 
-    constant "args",
-        alias       = unaliased,
-        description = "a dictionary with all command-line arguments parsed":
-            newDictionary(parseCmdlineArguments())
+    builtin "args",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "access all command-line arguments parsed as a dictionary",
+        args        = NoArgs,
+        attrs       = NoAttrs,
+        returns     = {Dictionary},
+        example     = """
+            ; called with no parameters
+            args         ; => #[ values: [] ]
+
+            ; called with: 1 two 3
+            args         
+            ; => #[
+            ;     1 
+            ;     "two"
+            ;     3
+            ; ]
+            ..........
+            ; called with switches: -c -b
+            args 
+            ; => #[
+            ;     c : true
+            ;     b : true
+            ;     values: []
+            ; ]
+
+            ; called with switches: -c -b and values: 1 two 3
+            args
+            ; => #[
+            ;     c : true
+            ;     b : true
+            ;     values: [1 "two" 3]
+            ; ]
+            ..........
+            ; called with named parameters: -c:2 --name:newname myfile.txt
+            args
+            ; => #[
+            ;     c : 2
+            ;     name : "newname"
+            ;     values: ["myfile.txt"]
+            ; ]
+        """:
+            push(newDictionary(parseCmdlineArguments()))
+
+    # constant "args",
+    #     alias       = unaliased,
+    #     description = "a dictionary with all command-line arguments parsed":
+    #         newDictionary(parseCmdlineArguments())
 
     when not defined(WEB):
         
