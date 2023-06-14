@@ -58,7 +58,7 @@ proc defineSymbols*() =
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "access command-line arguments as a list",
+        description = "get command-line arguments as a list",
         args        = NoArgs,
         attrs       = NoAttrs,
         returns     = {Block},
@@ -80,7 +80,7 @@ proc defineSymbols*() =
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "access all command-line arguments parsed as a dictionary",
+        description = "get all command-line arguments parsed as a dictionary",
         args        = NoArgs,
         attrs       = NoAttrs,
         returns     = {Dictionary},
@@ -128,11 +128,18 @@ proc defineSymbols*() =
     #         newDictionary(parseCmdlineArguments())
 
     when not defined(WEB):
-        
-        constant "config",
-            alias       = unaliased,
-            description = "access global configuration":
-                Config
+
+        builtin "config",
+            alias       = unaliased, 
+            op          = opNop,
+            rule        = PrefixPrecedence,
+            description = "get global configuration",
+            args        = NoArgs,
+            attrs       = NoAttrs,
+            returns     = {Store},
+            example     = """
+            """:
+                push(Config)
 
         # TODO(System\env) could it be used for Web/JS builds too?
         #  and what type of environment variables could be served or would be useful serve?
