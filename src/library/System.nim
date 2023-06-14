@@ -113,6 +113,8 @@ proc defineSymbols*() =
 
     when not defined(WEB):
 
+        # TODO(System\config) add documentation example
+        #  labels: library, documentation, easy
         builtin "config",
             alias       = unaliased, 
             op          = opNop,
