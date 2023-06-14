@@ -734,6 +734,12 @@ do [
     
 ]
 
+topic « area
+do [
+    
+    
+]
+
 ; Length
 print 3`m + 2`m
 print 1`m + 2`yd
