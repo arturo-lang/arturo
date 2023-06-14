@@ -244,6 +244,182 @@ do [
     
     topic « length - math // area
     
+    ensure -> 4`in2  = 2`in  * 2`in
+    ensure -> 4`ft2  = 2`ft  * 2`ft
+    ensure -> 4`yd2  = 2`yd  * 2`yd
+    ensure -> 4`ftm2 = 2`ftm * 2`ftm
+    ensure -> 4`rod2 = 2`rod * 2`rod
+    ; ensure -> 4`mi2  = 2`m i * 2`mi 
+    ensure -> 4`fur2 = 2`fur * 2`fur
+    ensure -> 4`nmi2 = 2`nmi * 2`nmi
+    ensure -> 4`ang2 = 2`ang * 2`ang
+    ensure -> 4`au2  = 2`au  * 2`au
+    ensure -> 4`ly2  = 2`ly  * 2`ly
+    ensure -> 4`px2  = 2`px  * 2`px
+    ensure -> 4`pt2  = 2`pt  * 2`pt
+    ensure -> 4`pc2  = 2`pc  * 2`pc
+    
+    ensure -> 4`am2  = 2`am  * 2`am
+    ensure -> 4`fm2  = 2`fm  * 2`fm
+    ensure -> 4`pm2  = 2`pm  * 2`pm
+    ensure -> 4`nm2  = 2`nm  * 2`nm
+    ensure -> 4`um2  = 2`um  * 2`um
+    ensure -> 4`mm2  = 2`mm  * 2`mm
+    ensure -> 4`cm2  = 2`cm  * 2`cm
+    ensure -> 4`dm2  = 2`dm  * 2`dm
+    ensure -> 4`Nom2 = 2`Nom * 2`Nom
+    ensure -> 4`dam2 = 2`dam * 2`dam
+    ensure -> 4`hm2  = 2`hm  * 2`hm
+    ensure -> 4`km2  = 2`km  * 2`km
+    ensure -> 4`Mm2  = 2`Mm  * 2`Mm
+    ensure -> 4`Gm2  = 2`Gm  * 2`Gm
+    ensure -> 4`Tm2  = 2`Tm  * 2`Tm
+    ensure -> 4`Pm2  = 2`Pm  * 2`Pm
+    ensure -> 4`Em2  = 2`Em  * 2`Em
+
+    ensure -> 4`apc2  = 2`apc  * 2`apc
+    ensure -> 4`fpc2  = 2`fpc  * 2`fpc
+    ensure -> 4`ppc2  = 2`ppc  * 2`ppc
+    ensure -> 4`npc2  = 2`npc  * 2`npc
+    ensure -> 4`upc2  = 2`upc  * 2`upc
+    ensure -> 4`mpc2  = 2`mpc  * 2`mpc
+    ensure -> 4`cpc2  = 2`cpc  * 2`cpc
+    ensure -> 4`dpc2  = 2`dpc  * 2`dpc
+    ensure -> 4`Nopc2 = 2`Nopc * 2`Nopc
+    ensure -> 4`dapc2 = 2`dapc * 2`dapc
+    ensure -> 4`hpc2  = 2`hpc  * 2`hpc
+    ensure -> 4`kpc2  = 2`kpc  * 2`kpc
+    ensure -> 4`Mpc2  = 2`Mpc  * 2`Mpc
+    ensure -> 4`Gpc2  = 2`Gpc  * 2`Gpc
+    ensure -> 4`Tpc2  = 2`Tpc  * 2`Tpc
+    ensure -> 4`Ppc2  = 2`Ppc  * 2`Ppc
+    ensure -> 4`Epc2  = 2`Epc  * 2`Epc
+    
+    ensure -> 4`apt2  = 2`apt  * 2`apt
+    ensure -> 4`fpt2  = 2`fpt  * 2`fpt
+    ensure -> 4`ppt2  = 2`ppt  * 2`ppt
+    ensure -> 4`npt2  = 2`npt  * 2`npt
+    ensure -> 4`upt2  = 2`upt  * 2`upt
+    ensure -> 4`mpt2  = 2`mpt  * 2`mpt
+    ensure -> 4`cpt2  = 2`cpt  * 2`cpt
+    ensure -> 4`dpt2  = 2`dpt  * 2`dpt
+    ensure -> 4`Nopt2 = 2`Nopt * 2`Nopt
+    ensure -> 4`dapt2 = 2`dapt * 2`dapt
+    ensure -> 4`hpt2  = 2`hpt  * 2`hpt
+    ensure -> 4`kpt2  = 2`kpt  * 2`kpt
+    ensure -> 4`Mpt2  = 2`Mpt  * 2`Mpt
+    ensure -> 4`Gpt2  = 2`Gpt  * 2`Gpt
+    ensure -> 4`Tpt2  = 2`Tpt  * 2`Tpt
+    ensure -> 4`Ppt2  = 2`Ppt  * 2`Ppt
+    ensure -> 4`Ept2  = 2`Ept  * 2`Ept
+    
+    ensure -> 4`apx2  = 2`apx  * 2`apx
+    ensure -> 4`fpx2  = 2`fpx  * 2`fpx
+    ensure -> 4`ppx2  = 2`ppx  * 2`ppx
+    ensure -> 4`npx2  = 2`npx  * 2`npx
+    ensure -> 4`upx2  = 2`upx  * 2`upx
+    ensure -> 4`mpx2  = 2`mpx  * 2`mpx
+    ensure -> 4`cpx2  = 2`cpx  * 2`cpx
+    ensure -> 4`dpx2  = 2`dpx  * 2`dpx
+    ensure -> 4`Nopx2 = 2`Nopx * 2`Nopx
+    ensure -> 4`dapx2 = 2`dapx * 2`dapx
+    ensure -> 4`hpx2  = 2`hpx  * 2`hpx
+    ensure -> 4`kpx2  = 2`kpx  * 2`kpx
+    ensure -> 4`Mpx2  = 2`Mpx  * 2`Mpx
+    ensure -> 4`Gpx2  = 2`Gpx  * 2`Gpx
+    ensure -> 4`Tpx2  = 2`Tpx  * 2`Tpx
+    ensure -> 4`Ppx2  = 2`Ppx  * 2`Ppx
+    ensure -> 4`Epx2  = 2`Epx  * 2`Epx
+    
+    ; ---------------------------------
+    
+    ensure -> 4`in2  = 2`in  ^ 2
+    ensure -> 4`ft2  = 2`ft  ^ 2
+    ensure -> 4`yd2  = 2`yd  ^ 2
+    ensure -> 4`ftm2 = 2`ftm ^ 2
+    ensure -> 4`rod2 = 2`rod ^ 2
+    ; ensure -> 4`mi2  = 2`m i ^ 2 
+    ensure -> 4`fur2 = 2`fur ^ 2
+    ensure -> 4`nmi2 = 2`nmi ^ 2
+    ensure -> 4`ang2 = 2`ang ^ 2
+    ensure -> 4`au2  = 2`au  ^ 2
+    ensure -> 4`ly2  = 2`ly  ^ 2
+    ensure -> 4`px2  = 2`px  ^ 2
+    ensure -> 4`pt2  = 2`pt  ^ 2
+    ensure -> 4`pc2  = 2`pc  ^ 2
+    
+    ensure -> 4`am2  = 2`am  ^ 2
+    ensure -> 4`fm2  = 2`fm  ^ 2
+    ensure -> 4`pm2  = 2`pm  ^ 2
+    ensure -> 4`nm2  = 2`nm  ^ 2
+    ensure -> 4`um2  = 2`um  ^ 2
+    ensure -> 4`mm2  = 2`mm  ^ 2
+    ensure -> 4`cm2  = 2`cm  ^ 2
+    ensure -> 4`dm2  = 2`dm  ^ 2
+    ensure -> 4`Nom2 = 2`Nom ^ 2
+    ensure -> 4`dam2 = 2`dam ^ 2
+    ensure -> 4`hm2  = 2`hm  ^ 2
+    ensure -> 4`km2  = 2`km  ^ 2
+    ensure -> 4`Mm2  = 2`Mm  ^ 2
+    ensure -> 4`Gm2  = 2`Gm  ^ 2
+    ensure -> 4`Tm2  = 2`Tm  ^ 2
+    ensure -> 4`Pm2  = 2`Pm  ^ 2
+    ensure -> 4`Em2  = 2`Em  ^ 2
+
+    ensure -> 4`apc2  = 2`apc  ^ 2
+    ensure -> 4`fpc2  = 2`fpc  ^ 2
+    ensure -> 4`ppc2  = 2`ppc  ^ 2
+    ensure -> 4`npc2  = 2`npc  ^ 2
+    ensure -> 4`upc2  = 2`upc  ^ 2
+    ensure -> 4`mpc2  = 2`mpc  ^ 2
+    ensure -> 4`cpc2  = 2`cpc  ^ 2
+    ensure -> 4`dpc2  = 2`dpc  ^ 2
+    ensure -> 4`Nopc2 = 2`Nopc ^ 2
+    ensure -> 4`dapc2 = 2`dapc ^ 2
+    ensure -> 4`hpc2  = 2`hpc  ^ 2
+    ensure -> 4`kpc2  = 2`kpc  ^ 2
+    ensure -> 4`Mpc2  = 2`Mpc  ^ 2
+    ensure -> 4`Gpc2  = 2`Gpc  ^ 2
+    ensure -> 4`Tpc2  = 2`Tpc  ^ 2
+    ensure -> 4`Ppc2  = 2`Ppc  ^ 2
+    ensure -> 4`Epc2  = 2`Epc  ^ 2
+    
+    ensure -> 4`apt2  = 2`apt  ^ 2
+    ensure -> 4`fpt2  = 2`fpt  ^ 2
+    ensure -> 4`ppt2  = 2`ppt  ^ 2
+    ensure -> 4`npt2  = 2`npt  ^ 2
+    ensure -> 4`upt2  = 2`upt  ^ 2
+    ensure -> 4`mpt2  = 2`mpt  ^ 2
+    ensure -> 4`cpt2  = 2`cpt  ^ 2
+    ensure -> 4`dpt2  = 2`dpt  ^ 2
+    ensure -> 4`Nopt2 = 2`Nopt ^ 2
+    ensure -> 4`dapt2 = 2`dapt ^ 2
+    ensure -> 4`hpt2  = 2`hpt  ^ 2
+    ensure -> 4`kpt2  = 2`kpt  ^ 2
+    ensure -> 4`Mpt2  = 2`Mpt  ^ 2
+    ensure -> 4`Gpt2  = 2`Gpt  ^ 2
+    ensure -> 4`Tpt2  = 2`Tpt  ^ 2
+    ensure -> 4`Ppt2  = 2`Ppt  ^ 2
+    ensure -> 4`Ept2  = 2`Ept  ^ 2
+    
+    ensure -> 4`apx2  = 2`apx  ^ 2
+    ensure -> 4`fpx2  = 2`fpx  ^ 2
+    ensure -> 4`ppx2  = 2`ppx  ^ 2
+    ensure -> 4`npx2  = 2`npx  ^ 2
+    ensure -> 4`upx2  = 2`upx  ^ 2
+    ensure -> 4`mpx2  = 2`mpx  ^ 2
+    ensure -> 4`cpx2  = 2`cpx  ^ 2
+    ensure -> 4`dpx2  = 2`dpx  ^ 2
+    ensure -> 4`Nopx2 = 2`Nopx ^ 2
+    ensure -> 4`dapx2 = 2`dapx ^ 2
+    ensure -> 4`hpx2  = 2`hpx  ^ 2
+    ensure -> 4`kpx2  = 2`kpx  ^ 2
+    ensure -> 4`Mpx2  = 2`Mpx  ^ 2
+    ensure -> 4`Gpx2  = 2`Gpx  ^ 2
+    ensure -> 4`Tpx2  = 2`Tpx  ^ 2
+    ensure -> 4`Ppx2  = 2`Ppx  ^ 2
+    ensure -> 4`Epx2  = 2`Epx  ^ 2
+    
     topic « length - math // volume
     
     topic « length - conforms?
