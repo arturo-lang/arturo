@@ -51,10 +51,14 @@
 >> length - math // volume
 
 >> length - conforms?
+[+] passed!
+[+] passed!
 
 >> length - convert
+[+] passed!
 
 >> length - in
+[+] passed!
 
 >> length - property
 
