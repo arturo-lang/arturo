@@ -155,6 +155,20 @@ template callInternal*(fname: string, getValue: bool, args: varargs[Value]): unt
     when getValue:
         pop()
 
+# TODO(VM/exec) Leakless blocks not working properly with pre-defined functions
+#  Let's say we have a pre-defined function (e.g. `arg`) and this symbol is used
+#  as an iterator variable - which is precisely where leakless blocks come into play -
+#  this creates a total mess, since their arities are not properly handled.
+#  e.g.
+#  ```
+#  for arr 'arg [ 
+#      ; do sth
+#  ]
+#  ```
+#  Also see: https://github.com/arturo-lang/arturo/blob/master/examples/rosetta/call%20a%20function.art
+#  and https://github.com/arturo-lang/arturo/blob/master/examples/rosetta/variadic%20function.art
+#  labels: bugs, critical, library, vm, execution
+
 template prepareLeakless*(protected: seq[string] | ValueArray): untyped =
     ## Prepare for leak-less block execution
 
