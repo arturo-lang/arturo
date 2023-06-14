@@ -422,6 +422,182 @@ do [
     
     topic « length - math // volume
     
+    ensure -> 8`in3  = 2`in  * 2`in  * 2`in
+    ensure -> 8`ft3  = 2`ft  * 2`ft  * 2`ft
+    ensure -> 8`yd3  = 2`yd  * 2`yd  * 2`yd
+    ensure -> 8`ftm3 = 2`ftm * 2`ftm * 2`ftm
+    ensure -> 8`rod3 = 2`rod * 2`rod * 2`rod
+    ; ensure -> 8`mi3  = 2`m i * 2`mi * 2`mi 
+    ensure -> 8`fur3 = 2`fur * 2`fur * 2`fur
+    ensure -> 8`nmi3 = 2`nmi * 2`nmi * 2`nmi
+    ensure -> 8`ang3 = 2`ang * 2`ang * 2`ang
+    ensure -> 8`au3  = 2`au  * 2`au  * 2`au
+    ensure -> 8`ly3  = 2`ly  * 2`ly  * 2`ly
+    ensure -> 8`px3  = 2`px  * 2`px  * 2`px
+    ensure -> 8`pt3  = 2`pt  * 2`pt  * 2`pt
+    ensure -> 8`pc3  = 2`pc  * 2`pc  * 2`pc
+    
+    ensure -> 8`am3  = 2`am  * 2`am  * 2`am
+    ensure -> 8`fm3  = 2`fm  * 2`fm  * 2`fm
+    ensure -> 8`pm3  = 2`pm  * 2`pm  * 2`pm
+    ensure -> 8`nm3  = 2`nm  * 2`nm  * 2`nm
+    ensure -> 8`um3  = 2`um  * 2`um  * 2`um
+    ensure -> 8`mm3  = 2`mm  * 2`mm  * 2`mm
+    ensure -> 8`cm3  = 2`cm  * 2`cm  * 2`cm
+    ensure -> 8`dm3  = 2`dm  * 2`dm  * 2`dm
+    ensure -> 8`Nom3 = 2`Nom * 2`Nom * 2`Nom
+    ensure -> 8`dam3 = 2`dam * 2`dam * 2`dam
+    ensure -> 8`hm3  = 2`hm  * 2`hm  * 2`hm
+    ensure -> 8`km3  = 2`km  * 2`km  * 2`km
+    ensure -> 8`Mm3  = 2`Mm  * 2`Mm  * 2`Mm
+    ensure -> 8`Gm3  = 2`Gm  * 2`Gm  * 2`Gm
+    ensure -> 8`Tm3  = 2`Tm  * 2`Tm  * 2`Tm
+    ensure -> 8`Pm3  = 2`Pm  * 2`Pm  * 2`Pm
+    ensure -> 8`Em3  = 2`Em  * 2`Em  * 2`Em
+
+    ensure -> 8`apc3  = 2`apc  * 2`apc  * 2`apc
+    ensure -> 8`fpc3  = 2`fpc  * 2`fpc  * 2`fpc
+    ensure -> 8`ppc3  = 2`ppc  * 2`ppc  * 2`ppc
+    ensure -> 8`npc3  = 2`npc  * 2`npc  * 2`npc
+    ensure -> 8`upc3  = 2`upc  * 2`upc  * 2`upc
+    ensure -> 8`mpc3  = 2`mpc  * 2`mpc  * 2`mpc
+    ensure -> 8`cpc3  = 2`cpc  * 2`cpc  * 2`cpc
+    ensure -> 8`dpc3  = 2`dpc  * 2`dpc  * 2`dpc
+    ensure -> 8`Nopc3 = 2`Nopc * 2`Nopc * 2`Nopc
+    ensure -> 8`dapc3 = 2`dapc * 2`dapc * 2`dapc
+    ensure -> 8`hpc3  = 2`hpc  * 2`hpc  * 2`hpc
+    ensure -> 8`kpc3  = 2`kpc  * 2`kpc  * 2`kpc
+    ensure -> 8`Mpc3  = 2`Mpc  * 2`Mpc  * 2`Mpc
+    ensure -> 8`Gpc3  = 2`Gpc  * 2`Gpc  * 2`Gpc
+    ensure -> 8`Tpc3  = 2`Tpc  * 2`Tpc  * 2`Tpc
+    ensure -> 8`Ppc3  = 2`Ppc  * 2`Ppc  * 2`Ppc
+    ensure -> 8`Epc3  = 2`Epc  * 2`Epc  * 2`Epc
+    
+    ensure -> 8`apt3  = 2`apt  * 2`apt  * 2`apt 
+    ensure -> 8`fpt3  = 2`fpt  * 2`fpt  * 2`fpt 
+    ensure -> 8`ppt3  = 2`ppt  * 2`ppt  * 2`ppt 
+    ensure -> 8`npt3  = 2`npt  * 2`npt  * 2`npt 
+    ensure -> 8`upt3  = 2`upt  * 2`upt  * 2`upt 
+    ensure -> 8`mpt3  = 2`mpt  * 2`mpt  * 2`mpt 
+    ensure -> 8`cpt3  = 2`cpt  * 2`cpt  * 2`cpt 
+    ensure -> 8`dpt3  = 2`dpt  * 2`dpt  * 2`dpt 
+    ensure -> 8`Nopt3 = 2`Nopt * 2`Nopt * 2`Nopt
+    ensure -> 8`dapt3 = 2`dapt * 2`dapt * 2`dapt
+    ensure -> 8`hpt3  = 2`hpt  * 2`hpt  * 2`hpt 
+    ensure -> 8`kpt3  = 2`kpt  * 2`kpt  * 2`kpt 
+    ensure -> 8`Mpt3  = 2`Mpt  * 2`Mpt  * 2`Mpt 
+    ensure -> 8`Gpt3  = 2`Gpt  * 2`Gpt  * 2`Gpt 
+    ensure -> 8`Tpt3  = 2`Tpt  * 2`Tpt  * 2`Tpt 
+    ensure -> 8`Ppt3  = 2`Ppt  * 2`Ppt  * 2`Ppt 
+    ensure -> 8`Ept3  = 2`Ept  * 2`Ept  * 2`Ept 
+    
+    ensure -> 8`apx3  = 2`apx  * 2`apx  * 2`apx
+    ensure -> 8`fpx3  = 2`fpx  * 2`fpx  * 2`fpx
+    ensure -> 8`ppx3  = 2`ppx  * 2`ppx  * 2`ppx
+    ensure -> 8`npx3  = 2`npx  * 2`npx  * 2`npx
+    ensure -> 8`upx3  = 2`upx  * 2`upx  * 2`upx
+    ensure -> 8`mpx3  = 2`mpx  * 2`mpx  * 2`mpx
+    ensure -> 8`cpx3  = 2`cpx  * 2`cpx  * 2`cpx
+    ensure -> 8`dpx3  = 2`dpx  * 2`dpx  * 2`dpx
+    ensure -> 8`Nopx3 = 2`Nopx * 2`Nopx * 2`Nopx
+    ensure -> 8`dapx3 = 2`dapx * 2`dapx * 2`dapx
+    ensure -> 8`hpx3  = 2`hpx  * 2`hpx  * 2`hpx
+    ensure -> 8`kpx3  = 2`kpx  * 2`kpx  * 2`kpx
+    ensure -> 8`Mpx3  = 2`Mpx  * 2`Mpx  * 2`Mpx
+    ensure -> 8`Gpx3  = 2`Gpx  * 2`Gpx  * 2`Gpx
+    ensure -> 8`Tpx3  = 2`Tpx  * 2`Tpx  * 2`Tpx
+    ensure -> 8`Ppx3  = 2`Ppx  * 2`Ppx  * 2`Ppx
+    ensure -> 8`Epx3  = 2`Epx  * 2`Epx  * 2`Epx
+    
+    ; ---------------------------------
+    
+    ensure -> 8`in3  = 2`in  ^ 3
+    ensure -> 8`ft3  = 2`ft  ^ 3
+    ensure -> 8`yd3  = 2`yd  ^ 3
+    ensure -> 8`ftm3 = 2`ftm ^ 3
+    ensure -> 8`rod3 = 2`rod ^ 3
+    ; ensure -> 8`mi3  = 2`m i ^ 3 
+    ensure -> 8`fur3 = 2`fur ^ 3
+    ensure -> 8`nmi3 = 2`nmi ^ 3
+    ensure -> 8`ang3 = 2`ang ^ 3
+    ensure -> 8`au3  = 2`au  ^ 3
+    ensure -> 8`ly3  = 2`ly  ^ 3
+    ensure -> 8`px3  = 2`px  ^ 3
+    ensure -> 8`pt3  = 2`pt  ^ 3
+    ensure -> 8`pc3  = 2`pc  ^ 3
+    
+    ensure -> 8`am3  = 2`am  ^ 3
+    ensure -> 8`fm3  = 2`fm  ^ 3
+    ensure -> 8`pm3  = 2`pm  ^ 3
+    ensure -> 8`nm3  = 2`nm  ^ 3
+    ensure -> 8`um3  = 2`um  ^ 3
+    ensure -> 8`mm3  = 2`mm  ^ 3
+    ensure -> 8`cm3  = 2`cm  ^ 3
+    ensure -> 8`dm3  = 2`dm  ^ 3
+    ensure -> 8`Nom3 = 2`Nom ^ 3
+    ensure -> 8`dam3 = 2`dam ^ 3
+    ensure -> 8`hm3  = 2`hm  ^ 3
+    ensure -> 8`km3  = 2`km  ^ 3
+    ensure -> 8`Mm3  = 2`Mm  ^ 3
+    ensure -> 8`Gm3  = 2`Gm  ^ 3
+    ensure -> 8`Tm3  = 2`Tm  ^ 3
+    ensure -> 8`Pm3  = 2`Pm  ^ 3
+    ensure -> 8`Em3  = 2`Em  ^ 3
+
+    ensure -> 8`apc3  = 2`apc  ^ 3
+    ensure -> 8`fpc3  = 2`fpc  ^ 3
+    ensure -> 8`ppc3  = 2`ppc  ^ 3
+    ensure -> 8`npc3  = 2`npc  ^ 3
+    ensure -> 8`upc3  = 2`upc  ^ 3
+    ensure -> 8`mpc3  = 2`mpc  ^ 3
+    ensure -> 8`cpc3  = 2`cpc  ^ 3
+    ensure -> 8`dpc3  = 2`dpc  ^ 3
+    ensure -> 8`Nopc3 = 2`Nopc ^ 3
+    ensure -> 8`dapc3 = 2`dapc ^ 3
+    ensure -> 8`hpc3  = 2`hpc  ^ 3
+    ensure -> 8`kpc3  = 2`kpc  ^ 3
+    ensure -> 8`Mpc3  = 2`Mpc  ^ 3
+    ensure -> 8`Gpc3  = 2`Gpc  ^ 3
+    ensure -> 8`Tpc3  = 2`Tpc  ^ 3
+    ensure -> 8`Ppc3  = 2`Ppc  ^ 3
+    ensure -> 8`Epc3  = 2`Epc  ^ 3
+    
+    ensure -> 8`apt3  = 2`apt  ^ 3
+    ensure -> 8`fpt3  = 2`fpt  ^ 3
+    ensure -> 8`ppt3  = 2`ppt  ^ 3
+    ensure -> 8`npt3  = 2`npt  ^ 3
+    ensure -> 8`upt3  = 2`upt  ^ 3
+    ensure -> 8`mpt3  = 2`mpt  ^ 3
+    ensure -> 8`cpt3  = 2`cpt  ^ 3
+    ensure -> 8`dpt3  = 2`dpt  ^ 3
+    ensure -> 8`Nopt3 = 2`Nopt ^ 3
+    ensure -> 8`dapt3 = 2`dapt ^ 3
+    ensure -> 8`hpt3  = 2`hpt  ^ 3
+    ensure -> 8`kpt3  = 2`kpt  ^ 3
+    ensure -> 8`Mpt3  = 2`Mpt  ^ 3
+    ensure -> 8`Gpt3  = 2`Gpt  ^ 3
+    ensure -> 8`Tpt3  = 2`Tpt  ^ 3
+    ensure -> 8`Ppt3  = 2`Ppt  ^ 3
+    ensure -> 8`Ept3  = 2`Ept  ^ 3
+    
+    ensure -> 8`apx3  = 2`apx  ^ 3
+    ensure -> 8`fpx3  = 2`fpx  ^ 3
+    ensure -> 8`ppx3  = 2`ppx  ^ 3
+    ensure -> 8`npx3  = 2`npx  ^ 3
+    ensure -> 8`upx3  = 2`upx  ^ 3
+    ensure -> 8`mpx3  = 2`mpx  ^ 3
+    ensure -> 8`cpx3  = 2`cpx  ^ 3
+    ensure -> 8`dpx3  = 2`dpx  ^ 3
+    ensure -> 8`Nopx3 = 2`Nopx ^ 3
+    ensure -> 8`dapx3 = 2`dapx ^ 3
+    ensure -> 8`hpx3  = 2`hpx  ^ 3
+    ensure -> 8`kpx3  = 2`kpx  ^ 3
+    ensure -> 8`Mpx3  = 2`Mpx  ^ 3
+    ensure -> 8`Gpx3  = 2`Gpx  ^ 3
+    ensure -> 8`Tpx3  = 2`Tpx  ^ 3
+    ensure -> 8`Ppx3  = 2`Ppx  ^ 3
+    ensure -> 8`Epx3  = 2`Epx  ^ 3
+    
     topic « length - conforms?
         
     topic « length - convert
