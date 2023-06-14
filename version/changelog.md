@@ -47,6 +47,10 @@ v0.9.84
 - Numbers\clamp: made to work with Range values instead of lower/upper limits + better type support
 - Statistics\median: fixed bug + better and more efficient implementation
 - Strings\match: added support for Char values as needle
+- System\arg: converted to built-in method
+- System\args: converted to built-in method
+- System\config: converted to built-in method
+- System\script: converted to built-in method
 - System\sys: added info about CPU endianess, current hostname and re-organized returned information
 
 ### Misc
