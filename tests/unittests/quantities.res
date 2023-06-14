@@ -50,6 +50,9 @@
 
 >> length - math // volume
 
+>> length - math // check auto-convertion
+[+] passed!
+
 >> length - conforms?
 [+] passed!
 [+] passed!
