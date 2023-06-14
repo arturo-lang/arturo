@@ -760,6 +760,35 @@ do [
     ensure -> every? areaSet => area?
     passed
     
+    
+    topic « area - basic math
+    
+    ; :unit :scale
+    
+    ensure -> 3`m2   = 2`m2 + 1
+    ensure -> 3.5`m2 = 2`m2 + 1.5
+    ensure -> 7.5`m2 = 5`m2 + 5:2
+    passed
+    
+    ensure -> 1`m2   = 2`m2 - 1
+    ensure -> 0.5`m2 = 2`m2 - 1.5
+    ensure -> 4.5`m2 = 5`m2 - 1:2
+    passed
+    
+    ensure -> 30`m2  = 15`m2 * 2
+    ; ensure -> 7`m2 = 15`m2 / 2
+    ensure -> 7.5`m2 = 15`m2 // 2
+    passed
+    
+    ensure -> 2`m2    = 1`m2 + 1`m2
+    ensure -> 0`m2    = 1`m2 - 1`m2
+    passed
+    
+    ensure -> 1.0001`m2 = 1`m2 + 1`cm2
+    ensure -> 0.9999`m2 = 1`m2 - 1`cm2
+    passed
+    
+    
 ]
 
 ; Length
