@@ -84,15 +84,15 @@ do [
     ensure -> 10`EUR = 1`artc --> `EUR
     passed
     
-    topic « currencies - units (disabled)
+    topic « currencies - units
     
-    ; ensure -> `EUR = units 100`EUR
-    ; ensure -> `USD = units 100`USD
-    ; ensure -> `AUD = units 100`AUD
-    ; passed
+    ensure -> `EUR = units 100`EUR
+    ensure -> `USD = units 100`USD
+    ensure -> `AUD = units 100`AUD
+    passed
     
-    ; ensure -> `AUD <> units 100`BRL
-    ; passed 
+    ensure -> `AUD <> units 100`BRL
+    passed 
     
     
 ]
