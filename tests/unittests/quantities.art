@@ -737,6 +737,28 @@ do [
 topic « area
 do [
     
+    areaSet: [
+        1`sqin 1`sqft 1`ac 1`are 1`ha 1`barn
+        
+        1`m2 1`am2 1`fm2 1`pm2 1`nm2 1`um2 1`mm2 1`cm2 1`dm2 1`dam2 1`hm2 1`km2 1`Mm2 
+        1`Gm2 1`Tm2 1`Pm2 1`Em2
+        
+        1`in2 1`ft2 1`yd2 1`ftm2 1`rod2 1`mi2 1`fur2 1`nmi2 1`ang2 1`au2 1`ly2
+
+        1`px2 1`apx2 1`fpx2 1`ppx2 1`npx2 1`upx2 1`mpx2 1`cpx2 1`dpx2 1`dapx2 1`hpx2
+        1`kpx2 1`Mpx2 1`Gpx2 1`Tpx2 1`Ppx2 1`Epx2
+
+        1`pt2 1`apt2 1`fpt2 1`ppt2 1`npt2 1`upt2 1`mpt2 1`cpt2 1`dpt2 1`dapt2 1`hpt2
+        1`kpt2 1`Mpt2 1`Gpt2 1`Tpt2 1`Ppt2 1`Ept2
+
+        1`pc2 1`apc2 1`fpc2 1`ppc2 1`npc2 1`upc2 1`mpc2 1`cpc2 1`dpc2 1`dapc2 1`hpc2
+        1`kpc2 1`Mpc2 1`Gpc2 1`Tpc2 1`Ppc2 1`Epc2
+    ]
+    
+    topic « area - area?
+    
+    ensure -> every? areaSet => area?
+    passed
     
 ]
 
