@@ -689,6 +689,15 @@ do [
     
     topic « length - specify
     
+    specify.symbol: "🛣" .describes: "high distance" 'lejos 1.5`km
+    
+    ensure -> (to :literal "high distance") = property 1`lejos
+    ensure -> "1 🛣" = ~"|1`lejos|"
+    ensure -> "31:2`🛣" = as.code 15.5`lejos
+    ensure -> 1500`m = 1`lejos --> `m
+    passed
+    
+    
     topic « length - units (disabled)
     
     
