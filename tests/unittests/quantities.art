@@ -698,7 +698,16 @@ do [
     passed
     
     
-    topic « length - units (disabled)
+    topic « length - units
+    
+    ensure -> `m = units 100`m
+    ensure -> `cm = units 100`cm
+    ensure -> `km = units 100`km
+    passed
+    
+    ensure -> `cm <> units 100`km
+    passed 
+    
     
     
 ]
