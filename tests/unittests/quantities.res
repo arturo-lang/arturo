@@ -61,12 +61,17 @@
 [+] passed!
 
 >> length - property
+[+] passed!
 
 >> length - scalar
+[+] passed!
 
 >> length - specify
+[+] passed!
 
->> length - units (disabled)
+>> length - units
+[+] passed!
+[+] passed!
 5 m
 2.8288 m
 2.54 cm
