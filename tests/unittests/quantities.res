@@ -22,7 +22,9 @@
 >> currencies - specify
 [+] passed!
 
->> currencies - units (disabled)
+>> currencies - units
+[+] passed!
+[+] passed!
 
 >> length
 
