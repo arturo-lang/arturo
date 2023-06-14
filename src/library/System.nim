@@ -365,6 +365,9 @@ proc defineSymbols*() =
     #  another location could also be Paths/path
     #  labels: library,enhancement
 
+    # TODO(System\script) add documentation example
+    #  labels: library, documentation, easy
+
     builtin "script",
         alias       = unaliased, 
         op          = opNop,
