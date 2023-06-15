@@ -132,6 +132,10 @@ proc openChromeWindow*(port: int, flags: seq[string] = @[]) =
             chromePath = bin
             break
 
+    # TODO(Helpers/webviews) should produce valid error messages
+    #  currently, we are just outputing a string. Preferrable, it should be done
+    #  with a proper error being thrown and declared in VM/errors
+    #  labels: enhancement, error handling
     if chromePath == "":
         echo "could not find any Chrome-compatible browser installed"
     else:
