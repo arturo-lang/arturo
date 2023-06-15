@@ -94,16 +94,6 @@ type
 
 const
     AtomExponents = ["⁻⁵", "⁻⁴", "⁻³", "⁻²", "⁻¹", "", "", "²", "³", "⁴", "⁵"]
-    Prefixes = [
-        int64(1), int64(10), int64(100), 
-        int64(1000), int64(0), int64(0), 
-        int64(1000000), int64(0), int64(0), 
-        int64(1000000000), int64(0), int64(0), 
-        int64(1000000000000), int64(0), int64(0), 
-        int64(1000000000000000), int64(0), int64(0), 
-        int64(1000000000000000000)
-    ]
-
     NoUnitFound = getNoUnitFound()
 
 #=======================================
@@ -175,14 +165,7 @@ proc getPrimitive(unit: PrefixedUnit): Quantity =
         Quantities[unit.u].value = toRational(xrate)
         result.value = toRational(xrate)
     elif unit.p != No_Prefix:
-        echo "getPrimitive with prefix"
-        let op = ord(unit.p)
-        echo "prefix ord: " & $(op)
-        result.value *= int(Prefixes[abs(op)])
-        echo "result.value: " & $(result.value)
-        if op < 0:
-            echo "result.value (reciprocal): " & $(result.value)
-            result.value = reciprocal(result.value)
+        result.value *= pow(float(10), float(ord(unit.p)))
 
 proc getSignature*(atoms: Atoms): QuantitySignature =
     for atom in atoms:
