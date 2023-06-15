@@ -94,6 +94,15 @@ type
 
 const
     AtomExponents = ["⁻⁵", "⁻⁴", "⁻³", "⁻²", "⁻¹", "", "", "²", "³", "⁴", "⁵"]
+    Prefixes = [
+        int64(1), int64(10), int64(100), 
+        int64(1000), int64(0), int64(0), 
+        int64(1000000), int64(0), int64(0), 
+        int64(1000000000), int64(0), int64(0), 
+        int64(1000000000000), int64(0), int64(0), 
+        int64(1000000000000000), int64(0), int64(0), 
+        int64(1000000000000000000)
+    ]
 
     NoUnitFound = getNoUnitFound()
 
