@@ -87,14 +87,15 @@ proc parseCmdlineArguments*(): ValueDict =
 
     when not defined(windows) and not defined(WEB):
         echo "here"
-        var p = initOptParser(Arguments.a.map((x)=>x.s))
-        for kind, key, val in p.getopt():
-            case kind
-                of cmdArgument:
-                    values.add(parseCmdlineValue(key))
-                of cmdLongOption, cmdShortOption:
-                    result[key] = parseCmdlineValue(val)
-                of cmdEnd: assert(false) # cannot happen
+        if Arguments.len > 0:
+            var p = initOptParser(Arguments.a.map((x)=>x.s))
+            for kind, key, val in p.getopt():
+                case kind
+                    of cmdArgument:
+                        values.add(parseCmdlineValue(key))
+                    of cmdLongOption, cmdShortOption:
+                        result[key] = parseCmdlineValue(val)
+                    of cmdEnd: assert(false) # cannot happen
     else:
         values = Arguments.a
 
