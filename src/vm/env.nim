@@ -30,7 +30,7 @@ import os, strutils, tables, times, system
 
 import helpers/terminal
 
-import vm/[parse,values/value, values/printable]
+import vm/[parse,values/value]
 import vm/values/custom/[vlogical]
 
 #=======================================
