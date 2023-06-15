@@ -30,7 +30,7 @@ import os, strutils, tables, times, system
 
 import helpers/terminal
 
-import vm/[parse,values/value]
+import vm/[parse,values/value, values/printable]
 import vm/values/custom/[vlogical]
 
 #=======================================
@@ -80,6 +80,7 @@ proc parseCmdlineValue(v: string): Value =
 proc parseCmdlineArguments*(): ValueDict =
     ## parse command-line arguments and return 
     ## result as a Dictionary value
+    echo $(ScriptInfo)
     result = initOrderedTable[string,Value]()
     var values: ValueArray
 
