@@ -518,10 +518,6 @@ proc `+`*(a, b: Quantity): Quantity =
 
     let convB = b.convertTo(a.atoms)
 
-    # echo "quantity A: " & $(a)
-    # echo "quantity B: " & $(b)
-    # echo "\tconverted: " & $(convB)
-
     result = toQuantity(a.original + convB.original, a.atoms)
 
 proc `+`*(a: Quantity, b: int | float | QuantityValue): Quantity =
@@ -536,10 +532,6 @@ proc `+=`*(a: var Quantity, b: Quantity) =
         raise newException(ValueError, "Cannot add quantities with different dimensions.")
 
     let convB = b.convertTo(a.atoms)
-
-    # echo "quantity A: " & $(a)
-    # echo "quantity B: " & $(b)
-    # echo "\tconverted: " & $(convB)
 
     a.original += convB.original
 
@@ -556,10 +548,6 @@ proc `-`*(a, b: Quantity): Quantity =
 
     let convB = b.convertTo(a.atoms)
 
-    # echo "quantity A: " & $(a)
-    # echo "quantity B: " & $(b)
-    # echo "\tconverted: " & $(convB)
-
     result = toQuantity(a.original - convB.original, a.atoms)
 
 proc `-`*(a: Quantity, b: int | float | QuantityValue): Quantity =
@@ -574,10 +562,6 @@ proc `-=`*(a: var Quantity, b: Quantity) =
         raise newException(ValueError, "Cannot subtract quantities with different dimensions.")
 
     let convB = b.convertTo(a.atoms)
-
-    # echo "quantity A: " & $(a)
-    # echo "quantity B: " & $(b)
-    # echo "\tconverted: " & $(convB)
 
     a.original -= convB.original
 
