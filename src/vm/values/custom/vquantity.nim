@@ -319,6 +319,13 @@ proc convertTemperature*(v: QuantityValue, fromU: CoreUnit, toU: CoreUnit): Quan
     if fromU == toU:
         return v
 
+    # TODO(VQuantity) clean up `convertTemperature`
+    #  right now, `convertTemperature` is called when given quantity *is* a temperature AND
+    #  the target units are compatible - hence a temperature again. So, the `else` statements
+    #  below should be considered redundant. Thus, we don't have to output anything! (in case we did,
+    #  even then, the errors should be properly thrown errors, coming from VM/errors)
+    # labels: cleanup, enhancement, values
+
     if fromU == K_CoreUnit:
         if toU == degC_CoreUnit:
             result = v - 273.15
@@ -511,10 +518,6 @@ proc `+`*(a, b: Quantity): Quantity =
 
     let convB = b.convertTo(a.atoms)
 
-    # echo "quantity A: " & $(a)
-    # echo "quantity B: " & $(b)
-    # echo "\tconverted: " & $(convB)
-
     result = toQuantity(a.original + convB.original, a.atoms)
 
 proc `+`*(a: Quantity, b: int | float | QuantityValue): Quantity =
@@ -529,10 +532,6 @@ proc `+=`*(a: var Quantity, b: Quantity) =
         raise newException(ValueError, "Cannot add quantities with different dimensions.")
 
     let convB = b.convertTo(a.atoms)
-
-    # echo "quantity A: " & $(a)
-    # echo "quantity B: " & $(b)
-    # echo "\tconverted: " & $(convB)
 
     a.original += convB.original
 
@@ -549,10 +548,6 @@ proc `-`*(a, b: Quantity): Quantity =
 
     let convB = b.convertTo(a.atoms)
 
-    # echo "quantity A: " & $(a)
-    # echo "quantity B: " & $(b)
-    # echo "\tconverted: " & $(convB)
-
     result = toQuantity(a.original - convB.original, a.atoms)
 
 proc `-`*(a: Quantity, b: int | float | QuantityValue): Quantity =
@@ -567,10 +562,6 @@ proc `-=`*(a: var Quantity, b: Quantity) =
         raise newException(ValueError, "Cannot subtract quantities with different dimensions.")
 
     let convB = b.convertTo(a.atoms)
-
-    # echo "quantity A: " & $(a)
-    # echo "quantity B: " & $(b)
-    # echo "\tconverted: " & $(convB)
 
     a.original -= convB.original
 
@@ -782,11 +773,6 @@ proc initQuantities*() =
 #=======================================
 
 initQuantities()
-
-# for (n,q) in pairs(Quantities):
-#     echo $(n)
-#     inspect(q)
-#     echo "--"
 
 when isMainModule:
     import helpers/benchmark
