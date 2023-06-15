@@ -73,10 +73,6 @@ proc parseCmdlineValue(v: string): Value =
 # TODO(Env\parseCmdlineArguments) verify it's working right
 #  labels: vm,library,language,unit-test
 
-# TODO(Env\parseCmdlineArguments) should return empty values array when no arguments are given
-#  currently, calling `args` from a script with no arguments returns a values block with the
-#  script name as the first and only "argument" (which it's not)
-#  labels: vm,library,language,enhancement
 proc parseCmdlineArguments*(): ValueDict =
     ## parse command-line arguments and return 
     ## result as a Dictionary value
@@ -84,14 +80,15 @@ proc parseCmdlineArguments*(): ValueDict =
     var values: ValueArray
 
     when not defined(windows) and not defined(WEB):
-        var p = initOptParser(Arguments.a.map((x)=>x.s))
-        for kind, key, val in p.getopt():
-            case kind
-                of cmdArgument:
-                    values.add(parseCmdlineValue(key))
-                of cmdLongOption, cmdShortOption:
-                    result[key] = parseCmdlineValue(val)
-                of cmdEnd: assert(false) # cannot happen
+        if Arguments.a.len > 0:
+            var p = initOptParser(Arguments.a.map((x)=>x.s))
+            for kind, key, val in p.getopt():
+                case kind
+                    of cmdArgument:
+                        values.add(parseCmdlineValue(key))
+                    of cmdLongOption, cmdShortOption:
+                        result[key] = parseCmdlineValue(val)
+                    of cmdEnd: assert(false) # cannot happen
     else:
         values = Arguments.a
 
