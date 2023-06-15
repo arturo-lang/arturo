@@ -86,6 +86,7 @@ proc parseCmdlineArguments*(): ValueDict =
     var values: ValueArray
 
     when not defined(windows) and not defined(WEB):
+        echo "here"
         var p = initOptParser(Arguments.a.map((x)=>x.s))
         for kind, key, val in p.getopt():
             case kind
