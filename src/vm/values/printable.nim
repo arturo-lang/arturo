@@ -175,14 +175,6 @@ proc `$`*(v: Value): string {.inline.} =
 
 
 proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepend="") {.exportc.} = 
-    # TODO(VM/values/printable) Quantity values should be properly `inspect`able
-    #  right now, `inspect x` where x is a Quantity, invokes *inspect* on the VQuantity value
-    #  which was pretty much used in order to test the VQuantity implementation, but not meant
-    #  to be publicly visible!
-    # labels: values, cleanup, bug
-    if v.kind==Quantity:
-        v.q.inspect()
-        return
     
     proc dumpPrimitive(str: string, v: Value) =
         if not muted:   stdout.write fmt("{bold(greenColor)}{str}{fg(grayColor)} :{($(v.kind)).toLowerAscii()}{resetColor}")
