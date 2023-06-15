@@ -98,6 +98,7 @@
 
 >> between? - :unit
 [+] passed!
+[+] passed!
 
 >> between? - test with reversed index
 [+] passed!
