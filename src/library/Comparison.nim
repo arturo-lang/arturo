@@ -58,10 +58,10 @@ proc defineSymbols*() =
         """:
             #=======================================================
             template isBetween(target, lower, upper: untyped) =
-                if target < lower or target > upper:
-                    push VFALSE
-                else:
+                if (target == lower or target == upper) or (target > lower and target < upper):
                     push VTRUE
+                else:
+                    push VFALSE
         
             if y < z: x.isBetween(y, z)
             else: x.isBetween(z, y)
