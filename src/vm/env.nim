@@ -80,13 +80,10 @@ proc parseCmdlineValue(v: string): Value =
 proc parseCmdlineArguments*(): ValueDict =
     ## parse command-line arguments and return 
     ## result as a Dictionary value
-    echo $(ScriptInfo)
-    echo $(Arguments)
     result = initOrderedTable[string,Value]()
     var values: ValueArray
 
     when not defined(windows) and not defined(WEB):
-        echo "here"
         if Arguments.a.len > 0:
             var p = initOptParser(Arguments.a.map((x)=>x.s))
             for kind, key, val in p.getopt():
