@@ -175,9 +175,13 @@ proc getPrimitive(unit: PrefixedUnit): Quantity =
         Quantities[unit.u].value = toRational(xrate)
         result.value = toRational(xrate)
     elif unit.p != No_Prefix:
+        echo "getPrimitive with prefix"
         let op = ord(unit.p)
+        echo "prefix ord: " & $(op)
         result.value *= int(Prefixes[abs(op)])
+        echo "result.value: " & $(result.value)
         if op < 0:
+            echo "result.value (reciprocal): " & $(result.value)
             result.value = reciprocal(result.value)
 
 proc getSignature*(atoms: Atoms): QuantitySignature =
