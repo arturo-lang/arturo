@@ -175,7 +175,10 @@ proc getPrimitive(unit: PrefixedUnit): Quantity =
         Quantities[unit.u].value = toRational(xrate)
         result.value = toRational(xrate)
     elif unit.p != No_Prefix:
-        result.value *= pow(float(10), float(ord(unit.p)))
+        let op = ord(unit.p)
+        result.value *= int(Prefixes[abs(op)])
+        if op < 0:
+            result.value = reciprocal(result.value)
 
 proc getSignature*(atoms: Atoms): QuantitySignature =
     for atom in atoms:
