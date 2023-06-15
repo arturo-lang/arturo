@@ -81,6 +81,7 @@ proc parseCmdlineArguments*(): ValueDict =
     ## parse command-line arguments and return 
     ## result as a Dictionary value
     echo $(ScriptInfo)
+    echo $(Arguments)
     result = initOrderedTable[string,Value]()
     var values: ValueArray
 
