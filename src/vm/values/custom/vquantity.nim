@@ -333,8 +333,6 @@ proc convertTemperature*(v: QuantityValue, fromU: CoreUnit, toU: CoreUnit): Quan
             result = v * (9//5) - 459.67
         elif toU == degR_CoreUnit:
             result = v * (9//5)
-        else:
-            echo "ERROR!"
     elif fromU == degC_CoreUnit:
         if toU == K_CoreUnit:
             result = v + 273.15
@@ -342,8 +340,6 @@ proc convertTemperature*(v: QuantityValue, fromU: CoreUnit, toU: CoreUnit): Quan
             result = v * (9//5) + 32
         elif toU == degR_CoreUnit:
             result = (v + 273.15) * (9//5)
-        else:
-            echo "ERROR!"
     elif fromU == degF_CoreUnit:
         if toU == K_CoreUnit:
             result = (v + 459.67) * (5//9)
@@ -351,8 +347,6 @@ proc convertTemperature*(v: QuantityValue, fromU: CoreUnit, toU: CoreUnit): Quan
             result = (v - 32) * (5//9)
         elif toU == degR_CoreUnit:
             result = v + 459.67
-        else:
-            echo "ERROR!"
     elif fromU == degR_CoreUnit:
         if toU == K_CoreUnit:
             result = v * (5//9)
@@ -360,8 +354,6 @@ proc convertTemperature*(v: QuantityValue, fromU: CoreUnit, toU: CoreUnit): Quan
             result = (v - 491.67) * (5//9)
         elif toU == degF_CoreUnit:
             result = v - 459.67
-    else:
-        echo "ERROR!"
 
 proc convertTo*(q: Quantity, atoms: Atoms): Quantity =
     if q.signature != getSignature(atoms):
