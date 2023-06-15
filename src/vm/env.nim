@@ -73,10 +73,6 @@ proc parseCmdlineValue(v: string): Value =
 # TODO(Env\parseCmdlineArguments) verify it's working right
 #  labels: vm,library,language,unit-test
 
-# TODO(Env\parseCmdlineArguments) should return empty values array when no arguments are given
-#  currently, calling `args` from a script with no arguments returns a values block with the
-#  script name as the first and only "argument" (which it's not)
-#  labels: vm,library,language,enhancement
 proc parseCmdlineArguments*(): ValueDict =
     ## parse command-line arguments and return 
     ## result as a Dictionary value
