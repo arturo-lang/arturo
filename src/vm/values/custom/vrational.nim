@@ -1109,7 +1109,10 @@ func stringify*(x: VRational, mode: static RationalMode = RegularRational): stri
                     result = $x.num & "/" & $x.den
         else:
             when not defined(NOGMP):
-                if x.canBeCoerced:
-                    result = $(toFloat(x))
+                if x.denominator == 1:
+                    result = $x.numerator
                 else:
-                    result = $x.br
+                    if x.canBeCoerced:
+                        result = $(toFloat(x))
+                    else:
+                        result = $x.br
