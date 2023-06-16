@@ -393,6 +393,10 @@ proc RuntimeError_ConfigNotFound*(gkey: string, akey: string) =
 proc RuntimeError_RangeWithZeroStep*() =
     panic RuntimeError,
           "attribute step can't be 0"
+          
+proc RuntimeError_CompatibleBrowserNotFound*() =
+    panic RuntimeError,
+          "could not find any Chrome-compatible browser installed"
 
 
 # Program errors
