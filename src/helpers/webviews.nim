@@ -137,7 +137,7 @@ proc openChromeWindow*(port: int, flags: seq[string] = @[]) =
     #  with a proper error being thrown and declared in VM/errors
     #  labels: enhancement, error handling
     if chromePath == "":
-        echo "could not find any Chrome-compatible browser installed"
+        RuntimeError_CompatibleBrowserNotFound()
     else:
         let command = chromePath.replace(" ", r"\ ") & " " & args.join(" ")
         if execCmd(command) != 0:
