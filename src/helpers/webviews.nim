@@ -11,6 +11,7 @@
 #=======================================
 
 import os, osproc, strutils
+import vm/errors
 
 when not defined(NOWEBVIEW):
     import std/json
@@ -21,7 +22,6 @@ when not defined(NOWEBVIEW):
     import helpers/jsonobject
     import helpers/windows
     import vm/values/value
-    import vm/errors
 
     export webview
 
