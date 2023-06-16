@@ -82,6 +82,8 @@ unit-test:
 
 values:
   - src/vm/values/*
+  - src/vm/values/custom/*
+  - src/vm/values/custom/quantities/*
 
 vm:
   - src/vm/*
