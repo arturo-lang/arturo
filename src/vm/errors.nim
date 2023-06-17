@@ -284,6 +284,10 @@ proc RuntimeError_CannotConvertQuantity*(val, argA, kindA, argB, kindB: string) 
           "cannot convert quantity: " & val & ";" &
           "from: " & argA & " (" & kindA & ") " & ";" &
           "to: " & argB & " (" & kindB & ")"
+          
+proc RuntimeError_CannotConvertDifferentDimensions*() =
+    panic RuntimeError,
+          "cannot convert quantities with different dimensions."
 
 proc RuntimeError_DivisionByZero*() =
     panic RuntimeError,
