@@ -138,7 +138,7 @@ proc openChromeWindow*(port: int, flags: seq[string] = @[]) =
     else:
         let command = chromePath.replace(" ", r"\ ") & " " & args.join(" ")
         if execCmd(command) != 0:
-            echo "could not open a Chrome window"
+            RuntimeError_CompatibleBrowserCouldNotOpenWindow()
 
 when not defined(NOWEBVIEW):
 
