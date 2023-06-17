@@ -665,11 +665,7 @@ proc defineSymbols*() =
                         if tp!=TextData:
                             execUnscoped(doParse(x.s, isFile=false))
                         else:
-                            # TODO(Converters/array) should produce valid error messages
-                            #  currently, we are just outputing a string. Preferrable, it should be done
-                            #  with a proper error being thrown and declared in VM/errors
-                            #  labels: enhancement, error handling
-                            echo "file does not exist"
+                            RuntimeError_FileNotFound(x.s)
                         let arr: ValueArray = sTopsFrom(stop)
                         SP = stop
 
