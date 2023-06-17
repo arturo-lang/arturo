@@ -397,6 +397,10 @@ proc RuntimeError_RangeWithZeroStep*() =
 proc RuntimeError_CompatibleBrowserNotFound*() =
     panic RuntimeError,
           "could not find any Chrome-compatible browser installed"
+          
+proc RuntimeError_CompatibleBrowserCouldNotOpenWindow*() =
+    panic RuntimeError,
+          "could not open a Chrome-compatible browser's window"
 
 
 # Program errors
