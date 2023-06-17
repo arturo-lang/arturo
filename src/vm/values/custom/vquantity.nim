@@ -350,12 +350,6 @@ proc convertTemperature*(v: QuantityValue, fromU: CoreUnit, toU: CoreUnit): Quan
 
 proc convertTo*(q: Quantity, atoms: Atoms): Quantity =
     if q.signature != getSignature(atoms):
-        # TODO(VQuantity) should produce valid error messages
-        #  currently, we are just throwing an exception. Preferrably, it should be done
-        #  with a proper error being thrown and declared in VM/errors.
-        #
-        #  The exact same thing should be done for all exceptions in this file.
-        # labels: values, enhancement, error handling
         RuntimeError_CannotConvertDifferentDimensions()
 
     if q.atoms == atoms:
