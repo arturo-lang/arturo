@@ -400,7 +400,7 @@ proc RuntimeError_CompatibleBrowserNotFound*() =
           
 proc RuntimeError_CompatibleBrowserCouldNotOpenWindow*() =
     panic RuntimeError,
-          "could not open a Chrome-compatible browser's window"
+          "could not open a Chrome-compatible browser window"
 
 
 # Program errors
