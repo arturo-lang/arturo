@@ -21,6 +21,7 @@ when not defined(NOGMP):
     import helpers/bignums as BignumsHelper
 
 import vm/values/custom/vrational
+import vm/errors
 
 #=======================================
 # Includes
@@ -349,13 +350,7 @@ proc convertTemperature*(v: QuantityValue, fromU: CoreUnit, toU: CoreUnit): Quan
 
 proc convertTo*(q: Quantity, atoms: Atoms): Quantity =
     if q.signature != getSignature(atoms):
-        # TODO(VQuantity) should produce valid error messages
-        #  currently, we are just throwing an exception. Preferrably, it should be done
-        #  with a proper error being thrown and declared in VM/errors.
-        #
-        #  The exact same thing should be done for all exceptions in this file.
-        # labels: values, enhancement, error handling
-        raise newException(ValueError, "Cannot convert quantities with different dimensions.")
+        RuntimeError_CannotConvertDifferentDimensions()
 
     if q.atoms == atoms:
         return q
@@ -366,7 +361,7 @@ proc convertTo*(q: Quantity, atoms: Atoms): Quantity =
 proc convertQuantity*(q: Quantity, atoms: Atoms): Quantity =
     if unlikely(isTemperature(q)):
         if q.signature != getSignature(atoms):
-            raise newException(ValueError, "Cannot convert quantities with different dimensions.")
+            RuntimeError_CannotConvertDifferentDimensions()
         
         result = toQuantity(convertTemperature(q.original, q.atoms[0].unit.u.core, atoms[0].unit.u.core), atoms)
     else:
@@ -516,7 +511,7 @@ when not defined(NOGMP):
 
 proc `+`*(a, b: Quantity): Quantity =
     if not (a =~ b):
-        raise newException(ValueError, "Cannot add quantities with different dimensions.")
+        RuntimeError_CannotConvertDifferentDimensions()
 
     let convB = b.convertTo(a.atoms)
 
@@ -531,7 +526,7 @@ when not defined(NOGMP):
 
 proc `+=`*(a: var Quantity, b: Quantity) =
     if not (a =~ b):
-        raise newException(ValueError, "Cannot add quantities with different dimensions.")
+        RuntimeError_CannotConvertDifferentDimensions()
 
     let convB = b.convertTo(a.atoms)
 
@@ -546,7 +541,7 @@ when not defined(NOGMP):
 
 proc `-`*(a, b: Quantity): Quantity =
     if not (a =~ b):
-        raise newException(ValueError, "Cannot subtract quantities with different dimensions.")
+        RuntimeError_CannotConvertDifferentDimensions()
 
     let convB = b.convertTo(a.atoms)
 
@@ -561,7 +556,7 @@ when not defined(NOGMP):
 
 proc `-=`*(a: var Quantity, b: Quantity) =
     if not (a =~ b):
-        raise newException(ValueError, "Cannot subtract quantities with different dimensions.")
+        RuntimeError_CannotConvertDifferentDimensions()
 
     let convB = b.convertTo(a.atoms)
 
