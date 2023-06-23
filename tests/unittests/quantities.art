@@ -1360,6 +1360,17 @@ do [
     passed
     
     
+    topic « area - specify
+    
+    specify.symbol: "🏟️" .describes: "high area" 'colossal 14`ac
+    
+    ensure -> (to :literal "high area") = property 1`colossal
+    ensure -> "1 🏟️" = ~"|1`colossal|"
+    ensure -> "31:2`🏟️" = as.code 15.5`colossal
+    ensure -> 609840`sqft = 1`colossal --> `sqft
+    passed
+    
+    
     
 ]
 
