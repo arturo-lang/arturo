@@ -1581,6 +1581,96 @@ do [
     ensure -> 1`Epx2    =   2`Epx3  /   2`Epx
 
     
+    topic « volume - math // length
+    
+    ensure -> 1`in =   2`in3     /   2`in2
+    ensure -> 1`ft  =   2`ft3    /   2`ft2
+    ensure -> 1`yd  =   2`yd3    /   2`yd2
+    ensure -> 1`ftm =   2`ftm3   /   2`ftm2
+    ensure -> 1`rod =   2`rod3   /   2`rod2
+    ensure -> 1`mi  =   2`mi3    /   2`mi2 
+    ensure -> 1`fur =   2`fur3   /   2`fur2
+    ensure -> 1`nmi =   2`nmi3   /   2`nmi2
+    ensure -> 1`ang =   2`ang3   /   2`ang2
+    ensure -> 1`au  =   2`au3    /   2`au2
+    ensure -> 1`ly  =   2`ly3    /   2`ly2
+    ensure -> 1`px  =   2`px3    /   2`px2
+    ensure -> 1`pt  =   2`pt3    /   2`pt2
+    ensure -> 1`pc  =   2`pc3    /   2`pc2
+    
+    ensure -> 1`am  =   2`am3   /   2`am2
+    ensure -> 1`fm  =   2`fm3   /   2`fm2
+    ensure -> 1`pm  =   2`pm3   /   2`pm2
+    ensure -> 1`nm  =   2`nm3   /   2`nm2
+    ensure -> 1`um  =   2`um3   /   2`um2
+    ensure -> 1`mm  =   2`mm3   /   2`mm2
+    ensure -> 1`cm  =   2`cm3   /   2`cm2
+    ensure -> 1`dm  =   2`dm3   /   2`dm2
+    ensure -> 1`Nom =   2`Nom3  /   2`Nom2
+    ensure -> 1`dam =   2`dam3  /   2`dam2
+    ensure -> 1`hm  =   2`hm3   /   2`hm2
+    ensure -> 1`km  =   2`km3   /   2`km2
+    ensure -> 1`Mm  =   2`Mm3   /   2`Mm2
+    ensure -> 1`Gm  =   2`Gm3   /   2`Gm2
+    ensure -> 1`Tm  =   2`Tm3   /   2`Tm2
+    ensure -> 1`Pm  =   2`Pm3   /   2`Pm2
+    ensure -> 1`Em =   2`Em3    /   2`Em2
+
+    ensure -> 1`apc     =   2`apc3  /   2`apc2
+    ensure -> 1`fpc     =   2`fpc3  /   2`fpc2
+    ensure -> 1`ppc     =   2`ppc3  /   2`ppc2
+    ensure -> 1`npc     =   2`npc3  /   2`npc2
+    ensure -> 1`upc     =   2`upc3  /   2`upc2
+    ensure -> 1`mpc     =   2`mpc3  /   2`mpc2
+    ensure -> 1`cpc     =   2`cpc3  /   2`cpc2
+    ensure -> 1`dpc     =   2`dpc3  /   2`dpc2
+    ensure -> 1`Nopc    =   2`Nopc3 /   2`Nopc2
+    ensure -> 1`dapc    =   2`dapc3 /   2`dapc2
+    ensure -> 1`hpc     =   2`hpc3  /   2`hpc2
+    ensure -> 1`kpc     =   2`kpc3  /   2`kpc2
+    ensure -> 1`Mpc     =   2`Mpc3  /   2`Mpc2
+    ensure -> 1`Gpc     =   2`Gpc3  /   2`Gpc2
+    ensure -> 1`Tpc     =   2`Tpc3  /   2`Tpc2
+    ensure -> 1`Ppc     =   2`Ppc3  /   2`Ppc2
+    ensure -> 1`Epc     =   2`Epc3  /   2`Epc2
+    
+    ensure -> 1`apt     =   2`apt3  /   2`apt2
+    ensure -> 1`fpt     =   2`fpt3  /   2`fpt2
+    ensure -> 1`ppt     =   2`ppt3  /   2`ppt2
+    ensure -> 1`npt     =   2`npt3  /   2`npt2
+    ensure -> 1`upt     =   2`upt3  /   2`upt2
+    ensure -> 1`mpt     =   2`mpt3  /   2`mpt2
+    ensure -> 1`cpt     =   2`cpt3  /   2`cpt2
+    ensure -> 1`dpt     =   2`dpt3  /   2`dpt2
+    ensure -> 1`Nopt    =   2`Nopt3 /   2`Nopt2
+    ensure -> 1`dapt    =   2`dapt3 /   2`dapt2
+    ensure -> 1`hpt     =   2`hpt3  /   2`hpt2
+    ensure -> 1`kpt     =   2`kpt3  /   2`kpt2
+    ensure -> 1`Mpt     =   2`Mpt3  /   2`Mpt2
+    ensure -> 1`Gpt     =   2`Gpt3  /   2`Gpt2
+    ensure -> 1`Tpt     =   2`Tpt3  /   2`Tpt2
+    ensure -> 1`Ppt     =   2`Ppt3  /   2`Ppt2
+    ensure -> 1`Ept    =   2`Ept3   /   2`Ept2
+    
+    ensure -> 1`apx     =   2`apx3  /   2`apx2
+    ensure -> 1`fpx     =   2`fpx3  /   2`fpx2
+    ensure -> 1`ppx     =   2`ppx3  /   2`ppx2
+    ensure -> 1`npx     =   2`npx3  /   2`npx2
+    ensure -> 1`upx     =   2`upx3  /   2`upx2
+    ensure -> 1`mpx     =   2`mpx3  /   2`mpx2
+    ensure -> 1`cpx     =   2`cpx3  /   2`cpx2
+    ensure -> 1`dpx     =   2`dpx3  /   2`dpx2
+    ensure -> 1`Nopx    =   2`Nopx3 /   2`Nopx2
+    ensure -> 1`dapx    =   2`dapx3 /   2`dapx2
+    ensure -> 1`hpx     =   2`hpx3  /   2`hpx2
+    ensure -> 1`kpx     =   2`kpx3  /   2`kpx2
+    ensure -> 1`Mpx     =   2`Mpx3  /   2`Mpx2
+    ensure -> 1`Gpx     =   2`Gpx3  /   2`Gpx2
+    ensure -> 1`Tpx     =   2`Tpx3  /   2`Tpx2
+    ensure -> 1`Ppx     =   2`Ppx3  /   2`Ppx2
+    ensure -> 1`Epx    =   2`Epx3   /   2`Epx2
+    
+    
     topic « volume - math // L2?
     
     ensure -> 1`EL2  =   1`EL    *   1`EL 
