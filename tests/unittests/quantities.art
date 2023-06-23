@@ -442,7 +442,7 @@ do [
     ensure -> 8`yd3  = 2`yd  * 2`yd  * 2`yd
     ensure -> 8`ftm3 = 2`ftm * 2`ftm * 2`ftm
     ensure -> 8`rod3 = 2`rod * 2`rod * 2`rod
-    ; ensure -> 8`mi3  = 2`m i * 2`mi * 2`mi 
+    ensure -> 8`mi3  = 2`mi  * 2`mi * 2`mi 
     ensure -> 8`fur3 = 2`fur * 2`fur * 2`fur
     ensure -> 8`nmi3 = 2`nmi * 2`nmi * 2`nmi
     ensure -> 8`ang3 = 2`ang * 2`ang * 2`ang
@@ -531,7 +531,7 @@ do [
     ensure -> 8`yd3  = 2`yd  ^ 3
     ensure -> 8`ftm3 = 2`ftm ^ 3
     ensure -> 8`rod3 = 2`rod ^ 3
-    ; ensure -> 8`mi3  = 2`m i ^ 3 
+    ensure -> 8`mi3  = 2`mi  ^ 3 
     ensure -> 8`fur3 = 2`fur ^ 3
     ensure -> 8`nmi3 = 2`nmi ^ 3
     ensure -> 8`ang3 = 2`ang ^ 3
