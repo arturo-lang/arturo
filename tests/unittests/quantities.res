@@ -93,6 +93,15 @@
 [+] passed!
 [+] passed!
 [+] passed!
+
+>> area - math // convertions
+[+] passed!
+
+>> length - math // volume
+
+>> length - math // length
+
+>> length - math // 4th spacial-dimension
 5 m
 2.8288 m
 2.54 cm
