@@ -1428,6 +1428,16 @@ do [
     passed
     
     
+    topic « volume - specify
+    
+    specify.symbol: "=~" .describes: "huge volume" 'oceanic 1.3`km3
+    
+    ensure -> (to :literal "huge volume") = property 1`oceanic
+    ensure -> "1 =~" = ~"|1`oceanic|"
+    ensure -> "31:2`=~" = as.code 15.5`oceanic
+    ensure -> 1.3`km3 = 1`oceanic --> `km3
+    passed
+    
     
     topic « volume - units
     
