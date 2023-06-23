@@ -235,7 +235,7 @@ do [
     passed
     
     
-    topic « length - math // convertions
+    topic « length - math // conversions
     
     ang: (10 ^ (neg 10)) --> `m
     
@@ -614,10 +614,10 @@ do [
     ensure -> 8`Epx3  = 2`Epx  ^ 3
     
     
-    topic « length - math // check auto-convertion
+    topic « length - math // check auto-conversion
 
     ; We don't need to do much testing here, 
-    ; just check that convertions happen automatically
+    ; just check that conversions happen automatically
     ; when used in mathematical operations
 
     ensure ->  6`m2.yd =   3`m2 * 2`yd
@@ -877,7 +877,7 @@ do [
     ; ensure -> 1`apc2  = 1`fpc2  / (10 ^ 6)
     passed
     
-    topic « area - math // convertions
+    topic « area - math // conversions
     
     ensure -> 1`sqin  = 1`in2
     ensure -> 1`sqft  = 1`ft2
@@ -1244,10 +1244,10 @@ do [
     ensure -> 4`Ppx4  = 2`Ppx2  ^ 2
     ensure -> 4`Epx4  = 2`Epx2  ^ 2
     
-    topic « area - math // check auto-convertion
+    topic « area - math // check auto-conversion
 
     ; We don't need to do much testing here, 
-    ; just check that convertions happen automatically
+    ; just check that conversions happen automatically
     ; when used in mathematical operations
 
     ensure ->  6`m2.yd =   3`m2 * 2`yd
