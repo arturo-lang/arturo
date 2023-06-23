@@ -1375,7 +1375,7 @@ do [
     passed
     
     
-    topic « volume - math // convertions
+    topic « volume - math // conversions
     
     ; Yes, almost everyting went wrong here...
     ; ensure -> 1`gal   = 231`in3
