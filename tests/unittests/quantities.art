@@ -1428,6 +1428,18 @@ do [
     passed
     
     
+    
+    topic « volume - units
+    
+    ensure -> `m3  = units 100`m3
+    ensure -> `cm3 = units 100`cm3
+    ensure -> `L   = units 100`L
+    passed
+    
+    ensure -> `L <> units 100`km3
+    passed     
+    
+    
 ]
 
 ; Length
