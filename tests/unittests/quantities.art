@@ -1399,6 +1399,15 @@ do [
     ensure -> every? volumeSet -> x -> not? conforms? x `m2
     passed
     
+    topic « volume - convert
+    
+    ; DRY - already tested in math // scales
+    
+    ensure -> same? 1000`L convert 1`m3 `L
+    ensure -> same? 1000`L 1`m3 --> `L
+    passed
+
+
     
 ]
 
