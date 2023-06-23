@@ -1375,6 +1375,107 @@ do [
     passed
     
     
+    topic « volume - math // scales
+    
+    ; precision loss
+    ; ensure -> 1`Em3  = 1`Pm3  * (10 ^ 9)
+    ; ensure -> 1`Pm3  = 1`Tm3  * (10 ^ 9)
+    ; ensure -> 1`Tm3  = 1`Gm3  * (10 ^ 9)
+    ; ensure -> 1`Gm3  = 1`Mm3  * (10 ^ 9)
+    ensure -> 1`Mm3  = 1`km3  * (10 ^ 9)
+    ensure -> 1`km3  = 1`hm3  * (10 ^ 3)
+    ensure -> 1`hm3  = 1`dam3 * (10 ^ 3)
+    ensure -> 1`dam3 = 1`m3   * (10 ^ 3) 
+    ensure -> 1`dm3  = 1`m3   / (10 ^ 3)
+    ensure -> 1`cm3  = 1`dm3  / (10 ^ 3)
+    ensure -> 1`mm3  = 1`cm3  / (10 ^ 3)
+    ensure -> 1`um3  = 1`mm3  / (10 ^ 9)
+    ; precision loss
+    ; ensure -> 1`nm3  = 1`um3  / (10 ^ 9)
+    ; ensure -> 1`pm3  = 1`nm3  / (10 ^ 9)
+    ; ensure -> 1`fm3  = 1`pm3  / (10 ^ 9)
+    ; ensure -> 1`am3  = 1`fm3  / (10 ^ 9)
+    passed
+    
+    ensure -> 1`EL  = 1`PL  * (10 ^ 3)
+    ensure -> 1`PL  = 1`TL  * (10 ^ 3)
+    ensure -> 1`TL  = 1`GL  * (10 ^ 3)
+    ensure -> 1`GL  = 1`ML  * (10 ^ 3)
+    ensure -> 1`ML  = 1`kL  * (10 ^ 3)
+    ensure -> 1`kL  = 1`hL  * (10 ^ 1)
+    ensure -> 1`hL  = 1`daL * (10 ^ 1)
+    ensure -> 1`daL = 1`L   * (10 ^ 1) 
+    ensure -> 1`dL  = 1`L   / (10 ^ 1)
+    ensure -> 1`cL  = 1`dL  / (10 ^ 1)
+    ensure -> 1`mL  = 1`cL  / (10 ^ 1)
+    ensure -> 1`uL  = 1`mL  / (10 ^ 3)
+    ensure -> 1`nL  = 1`uL  / (10 ^ 3)
+    ; precision loss
+    ; ensure -> 1`pL  = 1`nL  / (10 ^ 3)
+    ; ensure -> 1`fL  = 1`pL  / (10 ^ 3)
+    ; ensure -> 1`aL  = 1`fL  / (10 ^ 3)
+    passed
+    
+    ; precision loss
+    ; ensure -> 1`Epx3  = 1`Ppx3  * (10 ^ 9)
+    ; ensure -> 1`Ppx3  = 1`Tpx3  * (10 ^ 9)
+    ; ensure -> 1`Tpx3  = 1`Gpx3  * (10 ^ 9)
+    ; ensure -> 1`Gpx3  = 1`Mpx3  * (10 ^ 9)
+    ensure -> 1`Mpx3  = 1`kpx3  * (10 ^ 9)
+    ensure -> 1`kpx3  = 1`hpx3  * (10 ^ 3)
+    ensure -> 1`hpx3  = 1`dapx3 * (10 ^ 3)
+    ; precision loss
+    ; ensure -> 1`dapx3 = 1`px3   * (10 ^ 3)
+    ; ensure -> 1`dpx3  = 1`px3   / (10 ^ 3)
+    ; ensure -> 1`cpx3  = 1`dpx3  / (10 ^ 3)
+    ; ensure -> 1`mpx3  = 1`cpx3  / (10 ^ 3)
+    ; ensure -> 1`upx3  = 1`mpx3  / (10 ^ 9)
+    ; ensure -> 1`npx3  = 1`upx3  / (10 ^ 9)
+    ; ensure -> 1`ppx3  = 1`npx3  / (10 ^ 9)
+    ; ensure -> 1`fpx3  = 1`ppx3  / (10 ^ 9)
+    ; ensure -> 1`apx3  = 1`fpx3  / (10 ^ 9)
+    passed
+    
+    ; precision loss
+    ; ensure -> 1`Ept3  = 1`Ppt3  * (10 ^ 9)
+    ; ensure -> 1`Ppt3  = 1`Tpt3  * (10 ^ 9)
+    ; ensure -> 1`Tpt3  = 1`Gpt3  * (10 ^ 9)
+    ; ensure -> 1`Gpt3  = 1`Mpt3  * (10 ^ 9)
+    ensure -> 1`Mpt3  = 1`kpt3  * (10 ^ 9)
+    ensure -> 1`kpt3  = 1`hpt3  * (10 ^ 3)
+    ensure -> 1`hpt3  = 1`dapt3 * (10 ^ 3)
+    ; precision loss
+    ; ensure -> 1`dapt3 = 1`pt3   * (10 ^ 3)
+    ; ensure -> 1`dpt3  = 1`pt3   / (10 ^ 3)
+    ; ensure -> 1`cpt3  = 1`dpt3  / (10 ^ 3)
+    ; ensure -> 1`mpt3  = 1`cpt3  / (10 ^ 3)
+    ; ensure -> 1`upt3  = 1`mpt3  / (10 ^ 9)
+    ; ensure -> 1`npt3  = 1`upt3  / (10 ^ 9)
+    ; ensure -> 1`ppt3  = 1`npt3  / (10 ^ 9)
+    ; ensure -> 1`fpt3  = 1`ppt3  / (10 ^ 9)
+    ; ensure -> 1`apt3  = 1`fpt3  / (10 ^ 9)
+    passed
+    
+    ; precision loss
+    ; ensure -> 1`Epc3  = 1`Ppc3  * (10 ^ 9)
+    ; ensure -> 1`Ppc3  = 1`Tpc3  * (10 ^ 9)
+    ; ensure -> 1`Tpc3  = 1`Gpc3  * (10 ^ 9)
+    ; ensure -> 1`Gpc3  = 1`Mpc3  * (10 ^ 9)
+    ensure -> 1`Mpc3  = 1`kpc3  * (10 ^ 9)
+    ensure -> 1`kpc3  = 1`hpc3  * (10 ^ 3)
+    ensure -> 1`hpc3  = 1`dapc3 * (10 ^ 3)
+    ensure -> 1`dapc3 = 1`pc3   * (10 ^ 3)
+    ; precision loss
+    ; ensure -> 1`dpc3  = 1`pc3   / (10 ^ 3)
+    ; ensure -> 1`cpc3  = 1`dpc3  / (10 ^ 3)
+    ; ensure -> 1`mpc3  = 1`cpc3  / (10 ^ 3)
+    ; ensure -> 1`upc3  = 1`mpc3  / (10 ^ 9)
+    ; ensure -> 1`npc3  = 1`upc3  / (10 ^ 9)
+    ; ensure -> 1`ppc3  = 1`npc3  / (10 ^ 9)
+    ; ensure -> 1`fpc3  = 1`ppc3  / (10 ^ 9)
+    ; ensure -> 1`apc3  = 1`fpc3  / (10 ^ 9)
+    passed
+    
     topic « volume - math // conversions
     
     ; Yes, almost everyting went wrong here...
