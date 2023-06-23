@@ -1066,6 +1066,185 @@ do [
     ensure -> 1`Ppx  = 2`Ppx2  / 2`Ppx
     ensure -> 1`Epx  = 2`Epx2  / 2`Epx
     
+    topic « length - math // 4th spacial-dimension
+    
+    ensure -> 4`in4  = 2`in2  * 2`in2
+    ensure -> 4`ft4  = 2`ft2  * 2`ft2
+    ensure -> 4`yd4  = 2`yd2  * 2`yd2
+    ensure -> 4`ftm4 = 2`ftm2 * 2`ftm2
+    ensure -> 4`rod4 = 2`rod2 * 2`rod2
+    ensure -> 4`mi4  = 2`mi2  * 2`mi2 
+    ensure -> 4`fur4 = 2`fur2 * 2`fur2
+    ensure -> 4`nmi4 = 2`nmi2 * 2`nmi2
+    ensure -> 4`ang4 = 2`ang2 * 2`ang2
+    ensure -> 4`au4  = 2`au2  * 2`au2
+    ensure -> 4`ly4  = 2`ly2  * 2`ly2
+    ensure -> 4`px4  = 2`px2  * 2`px2
+    ensure -> 4`pt4  = 2`pt2  * 2`pt2
+    ensure -> 4`pc4  = 2`pc2  * 2`pc2
+    
+    ensure -> 4`am4  = 2`am2  * 2`am2
+    ensure -> 4`fm4  = 2`fm2  * 2`fm2
+    ensure -> 4`pm4  = 2`pm2  * 2`pm2
+    ensure -> 4`nm4  = 2`nm2  * 2`nm2
+    ensure -> 4`um4  = 2`um2  * 2`um2
+    ensure -> 4`mm4  = 2`mm2  * 2`mm2
+    ensure -> 4`cm4  = 2`cm2  * 2`cm2
+    ensure -> 4`dm4  = 2`dm2  * 2`dm2
+    ensure -> 4`Nom4 = 2`Nom2 * 2`Nom2
+    ensure -> 4`dam4 = 2`dam2 * 2`dam2
+    ensure -> 4`hm4  = 2`hm2  * 2`hm2
+    ensure -> 4`km4  = 2`km2  * 2`km2
+    ensure -> 4`Mm4  = 2`Mm2  * 2`Mm2
+    ensure -> 4`Gm4  = 2`Gm2  * 2`Gm2
+    ensure -> 4`Tm4  = 2`Tm2  * 2`Tm2
+    ensure -> 4`Pm4  = 2`Pm2  * 2`Pm2
+    ensure -> 4`Em4  = 2`Em2  * 2`Em2
+
+    ensure -> 4`apc4  = 2`apc2  * 2`apc2
+    ensure -> 4`fpc4  = 2`fpc2  * 2`fpc2
+    ensure -> 4`ppc4  = 2`ppc2  * 2`ppc2
+    ensure -> 4`npc4  = 2`npc2  * 2`npc2
+    ensure -> 4`upc4  = 2`upc2  * 2`upc2
+    ensure -> 4`mpc4  = 2`mpc2  * 2`mpc2
+    ensure -> 4`cpc4  = 2`cpc2  * 2`cpc2
+    ensure -> 4`dpc4  = 2`dpc2  * 2`dpc2
+    ensure -> 4`Nopc4 = 2`Nopc2 * 2`Nopc2
+    ensure -> 4`dapc4 = 2`dapc2 * 2`dapc2
+    ensure -> 4`hpc4  = 2`hpc2  * 2`hpc2
+    ensure -> 4`kpc4  = 2`kpc2  * 2`kpc2
+    ensure -> 4`Mpc4  = 2`Mpc2  * 2`Mpc2
+    ensure -> 4`Gpc4  = 2`Gpc2  * 2`Gpc2
+    ensure -> 4`Tpc4  = 2`Tpc2  * 2`Tpc2
+    ensure -> 4`Ppc4  = 2`Ppc2  * 2`Ppc2
+    ensure -> 4`Epc4  = 2`Epc2  * 2`Epc2
+    
+    ensure -> 4`apt4  = 2`apt2  * 2`apt2
+    ensure -> 4`fpt4  = 2`fpt2  * 2`fpt2
+    ensure -> 4`ppt4  = 2`ppt2  * 2`ppt2
+    ensure -> 4`npt4  = 2`npt2  * 2`npt2
+    ensure -> 4`upt4  = 2`upt2  * 2`upt2
+    ensure -> 4`mpt4  = 2`mpt2  * 2`mpt2
+    ensure -> 4`cpt4  = 2`cpt2  * 2`cpt2
+    ensure -> 4`dpt4  = 2`dpt2  * 2`dpt2
+    ensure -> 4`Nopt4 = 2`Nopt2 * 2`Nopt2
+    ensure -> 4`dapt4 = 2`dapt2 * 2`dapt2
+    ensure -> 4`hpt4  = 2`hpt2  * 2`hpt2
+    ensure -> 4`kpt4  = 2`kpt2  * 2`kpt2
+    ensure -> 4`Mpt4  = 2`Mpt2  * 2`Mpt2
+    ensure -> 4`Gpt4  = 2`Gpt2  * 2`Gpt2
+    ensure -> 4`Tpt4  = 2`Tpt2  * 2`Tpt2
+    ensure -> 4`Ppt4  = 2`Ppt2  * 2`Ppt2
+    ensure -> 4`Ept4  = 2`Ept2  * 2`Ept2
+    
+    ensure -> 4`apx4  = 2`apx2  * 2`apx2
+    ensure -> 4`fpx4  = 2`fpx2  * 2`fpx2
+    ensure -> 4`ppx4  = 2`ppx2  * 2`ppx2
+    ensure -> 4`npx4  = 2`npx2  * 2`npx2
+    ensure -> 4`upx4  = 2`upx2  * 2`upx2
+    ensure -> 4`mpx4  = 2`mpx2  * 2`mpx2
+    ensure -> 4`cpx4  = 2`cpx2  * 2`cpx2
+    ensure -> 4`dpx4  = 2`dpx2  * 2`dpx2
+    ensure -> 4`Nopx4 = 2`Nopx2 * 2`Nopx2
+    ensure -> 4`dapx4 = 2`dapx2 * 2`dapx2
+    ensure -> 4`hpx4  = 2`hpx2  * 2`hpx2
+    ensure -> 4`kpx4  = 2`kpx2  * 2`kpx2
+    ensure -> 4`Mpx4  = 2`Mpx2  * 2`Mpx2
+    ensure -> 4`Gpx4  = 2`Gpx2  * 2`Gpx2
+    ensure -> 4`Tpx4  = 2`Tpx2  * 2`Tpx2
+    ensure -> 4`Ppx4  = 2`Ppx2  * 2`Ppx2
+    ensure -> 4`Epx4  = 2`Epx2  * 2`Epx2
+    
+    ; ---------------------------------
+    
+    ensure -> 4`in4  = 2`in2  ^ 2
+    ensure -> 4`ft4  = 2`ft2  ^ 2
+    ensure -> 4`yd4  = 2`yd2  ^ 2
+    ensure -> 4`ftm4 = 2`ftm2 ^ 2
+    ensure -> 4`rod4 = 2`rod2 ^ 2
+    ensure -> 4`mi4  = 2`mi2  ^ 2 
+    ensure -> 4`fur4 = 2`fur2 ^ 2
+    ensure -> 4`nmi4 = 2`nmi2 ^ 2
+    ensure -> 4`ang4 = 2`ang2 ^ 2
+    ensure -> 4`au4  = 2`au2  ^ 2
+    ensure -> 4`ly4  = 2`ly2  ^ 2
+    ensure -> 4`px4  = 2`px2  ^ 2
+    ensure -> 4`pt4  = 2`pt2  ^ 2
+    ensure -> 4`pc4  = 2`pc2  ^ 2
+    
+    ensure -> 4`am4  = 2`am2  ^ 2
+    ensure -> 4`fm4  = 2`fm2  ^ 2
+    ensure -> 4`pm4  = 2`pm2  ^ 2
+    ensure -> 4`nm4  = 2`nm2  ^ 2
+    ensure -> 4`um4  = 2`um2  ^ 2
+    ensure -> 4`mm4  = 2`mm2  ^ 2
+    ensure -> 4`cm4  = 2`cm2  ^ 2
+    ensure -> 4`dm4  = 2`dm2  ^ 2
+    ensure -> 4`Nom4 = 2`Nom2 ^ 2
+    ensure -> 4`dam4 = 2`dam2 ^ 2
+    ensure -> 4`hm4  = 2`hm2  ^ 2
+    ensure -> 4`km4  = 2`km2  ^ 2
+    ensure -> 4`Mm4  = 2`Mm2  ^ 2
+    ensure -> 4`Gm4  = 2`Gm2  ^ 2
+    ensure -> 4`Tm4  = 2`Tm2  ^ 2
+    ensure -> 4`Pm4  = 2`Pm2  ^ 2
+    ensure -> 4`Em4  = 2`Em2  ^ 2
+
+    ensure -> 4`apc4  = 2`apc2  ^ 2
+    ensure -> 4`fpc4  = 2`fpc2  ^ 2
+    ensure -> 4`ppc4  = 2`ppc2  ^ 2
+    ensure -> 4`npc4  = 2`npc2  ^ 2
+    ensure -> 4`upc4  = 2`upc2  ^ 2
+    ensure -> 4`mpc4  = 2`mpc2  ^ 2
+    ensure -> 4`cpc4  = 2`cpc2  ^ 2
+    ensure -> 4`dpc4  = 2`dpc2  ^ 2
+    ensure -> 4`Nopc4 = 2`Nopc2 ^ 2
+    ensure -> 4`dapc4 = 2`dapc2 ^ 2
+    ensure -> 4`hpc4  = 2`hpc2  ^ 2
+    ensure -> 4`kpc4  = 2`kpc2  ^ 2
+    ensure -> 4`Mpc4  = 2`Mpc2  ^ 2
+    ensure -> 4`Gpc4  = 2`Gpc2  ^ 2
+    ensure -> 4`Tpc4  = 2`Tpc2  ^ 2
+    ensure -> 4`Ppc4  = 2`Ppc2  ^ 2
+    ensure -> 4`Epc4  = 2`Epc2  ^ 2
+    
+    ensure -> 4`apt4  = 2`apt2  ^ 2
+    ensure -> 4`fpt4  = 2`fpt2  ^ 2
+    ensure -> 4`ppt4  = 2`ppt2  ^ 2
+    ensure -> 4`npt4  = 2`npt2  ^ 2
+    ensure -> 4`upt4  = 2`upt2  ^ 2
+    ensure -> 4`mpt4  = 2`mpt2  ^ 2
+    ensure -> 4`cpt4  = 2`cpt2  ^ 2
+    ensure -> 4`dpt4  = 2`dpt2  ^ 2
+    ensure -> 4`Nopt4 = 2`Nopt2 ^ 2
+    ensure -> 4`dapt4 = 2`dapt2 ^ 2
+    ensure -> 4`hpt4  = 2`hpt2  ^ 2
+    ensure -> 4`kpt4  = 2`kpt2  ^ 2
+    ensure -> 4`Mpt4  = 2`Mpt2  ^ 2
+    ensure -> 4`Gpt4  = 2`Gpt2  ^ 2
+    ensure -> 4`Tpt4  = 2`Tpt2  ^ 2
+    ensure -> 4`Ppt4  = 2`Ppt2  ^ 2
+    ensure -> 4`Ept4  = 2`Ept2  ^ 2
+    
+    ensure -> 4`apx4  = 2`apx2  ^ 2
+    ensure -> 4`fpx4  = 2`fpx2  ^ 2
+    ensure -> 4`ppx4  = 2`ppx2  ^ 2
+    ensure -> 4`npx4  = 2`npx2  ^ 2
+    ensure -> 4`upx4  = 2`upx2  ^ 2
+    ensure -> 4`mpx4  = 2`mpx2  ^ 2
+    ensure -> 4`cpx4  = 2`cpx2  ^ 2
+    ensure -> 4`dpx4  = 2`dpx2  ^ 2
+    ensure -> 4`Nopx4 = 2`Nopx2 ^ 2
+    ensure -> 4`dapx4 = 2`dapx2 ^ 2
+    ensure -> 4`hpx4  = 2`hpx2  ^ 2
+    ensure -> 4`kpx4  = 2`kpx2  ^ 2
+    ensure -> 4`Mpx4  = 2`Mpx2  ^ 2
+    ensure -> 4`Gpx4  = 2`Gpx2  ^ 2
+    ensure -> 4`Tpx4  = 2`Tpx2  ^ 2
+    ensure -> 4`Ppx4  = 2`Ppx2  ^ 2
+    ensure -> 4`Epx4  = 2`Epx2  ^ 2
+    
+    
     
 ]
 
