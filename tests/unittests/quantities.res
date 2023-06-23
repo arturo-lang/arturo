@@ -97,11 +97,37 @@
 >> area - math // convertions
 [+] passed!
 
->> length - math // volume
+>> area - math // volume
 
->> length - math // length
+>> area - math // length
 
->> length - math // 4th spacial-dimension
+>> area - math // 4th spacial-dimension
+
+>> area - math // check auto-convertion
+[+] passed!
+
+>> area - conforms?
+[+] passed!
+[+] passed!
+
+>> area - convert
+[+] passed!
+
+>> area - in
+[+] passed!
+
+>> area - property
+[+] passed!
+
+>> area - scalar
+[+] passed!
+
+>> area - specify
+[+] passed!
+
+>> area - units
+[+] passed!
+[+] passed!
 5 m
 2.8288 m
 2.54 cm
