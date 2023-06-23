@@ -141,7 +141,21 @@
 [+] passed!
 [+] passed!
 
+>> volume - math // scales
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+
 >> volume - math // conversions
+
+>> volume - math // area
+
+>> volume - math // length
+
+>> volume - math // L2?
+[+] passed!
 
 >> volume - math // check auto-conversion
 [+] passed!
