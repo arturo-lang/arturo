@@ -1296,7 +1296,15 @@ do [
         1`dapc2 1`hpc2 1`kpc2 1`Mpc2 1`Gpc2 1`Tpc2 1`Ppc2 1`Epc2
     ] -> x -> not? conforms? x `m3
     passed
-     
+    
+    topic « area - convert
+    
+    ; DRY - already tested in math // scales
+    
+    ensure -> same? 10000`cm2 convert 1`m2 `cm2
+    ensure -> same? 10000`cm2 1`m2 --> `cm2
+    passed
+
     
     
 ]
