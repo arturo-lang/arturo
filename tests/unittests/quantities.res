@@ -75,6 +75,18 @@
 >> length - units
 [+] passed!
 [+] passed!
+
+>> area
+
+>> area - area?
+[+] passed!
+
+>> area - basic math
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 5 m
 2.8288 m
 2.54 cm
