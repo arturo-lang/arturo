@@ -1347,6 +1347,34 @@ do [
     passed
     
     
+    topic « area - basic math
+    
+    ; :unit :scale
+    
+    ensure -> 3`m3   = 2`m3 + 1
+    ensure -> 3.5`m3 = 2`m3 + 1.5
+    ensure -> 7.5`m3 = 5`m3 + 5:2
+    passed
+    
+    ensure -> 1`m3   = 2`m3 - 1
+    ensure -> 0.5`m3 = 2`m3 - 1.5
+    ensure -> 4.5`m3 = 5`m3 - 1:2
+    passed
+    
+    ensure -> 30`m3  = 15`m3 * 2
+    ; ensure -> 7`m3 = 15`m3 / 2
+    ensure -> 7.5`m3 = 15`m3 // 2
+    passed
+    
+    ensure -> 2`m3   = 1`m3 + 1`m3
+    ensure -> 0`m3   = 1`m3 - 1`m3
+    passed
+    
+    ensure -> 1.1`m3 = 1`m3 + 100`dm3
+    ensure -> 0.9`m3 = 1`m3 - 100`dm3
+    passed
+    
+    
     
 ]
 
