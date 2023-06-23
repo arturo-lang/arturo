@@ -1581,6 +1581,28 @@ do [
     ensure -> 1`Epx2    =   2`Epx3  /   2`Epx
 
     
+    topic « volume - math // L2?
+    
+    ensure -> 1`EL2  =   1`EL    *   1`EL 
+    ensure -> 1`TL2  =   1`TL    *   1`TL 
+    ensure -> 1`PL2  =   1`PL    *   1`PL 
+    ensure -> 1`GL2  =   1`GL    *   1`GL 
+    ensure -> 1`ML2  =   1`ML    *   1`ML 
+    ensure -> 1`kL2  =   1`kL    *   1`kL 
+    ensure -> 1`hL2  =   1`hL    *   1`hL 
+    ensure -> 1`daL2 =   1`daL   *   1`daL 
+    ensure -> 1`L2   =   1`L     *   1`L 
+    ensure -> 1`dL2  =   1`dL    *   1`dL  
+    ensure -> 1`cL2  =   1`cL    *   1`cL  
+    ensure -> 1`mL2  =   1`mL    *   1`mL  
+    ensure -> 1`uL2  =   1`uL    *   1`uL  
+    ensure -> 1`nL2  =   1`nL    *   1`nL  
+    ensure -> 1`pL2  =   1`pL    *   1`pL  
+    ensure -> 1`fL2  =   1`fL    *   1`fL  
+    ensure -> 1`aL2  =   1`aL    *   1`aL  
+    passed
+    
+
     
     topic « volume - math // check auto-conversion
 
