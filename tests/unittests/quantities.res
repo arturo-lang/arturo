@@ -44,13 +44,13 @@
 [+] passed!
 [+] passed!
 
->> length - math // convertions
+>> length - math // conversions
 
 >> length - math // area
 
 >> length - math // volume
 
->> length - math // check auto-convertion
+>> length - math // check auto-conversion
 [+] passed!
 
 >> length - conforms?
@@ -94,7 +94,7 @@
 [+] passed!
 [+] passed!
 
->> area - math // convertions
+>> area - math // conversions
 [+] passed!
 
 >> area - math // volume
@@ -103,7 +103,7 @@
 
 >> area - math // 4th spacial-dimension
 
->> area - math // check auto-convertion
+>> area - math // check auto-conversion
 [+] passed!
 
 >> area - conforms?
@@ -126,6 +126,46 @@
 [+] passed!
 
 >> area - units
+[+] passed!
+[+] passed!
+
+>> volume
+
+>> volume - volume?
+[+] passed!
+
+>> volume - basic math
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+
+>> volume - math // conversions
+
+>> volume - math // check auto-conversion
+[+] passed!
+
+>> volume - conforms?
+[+] passed!
+[+] passed!
+
+>> volume - convert
+[+] passed!
+
+>> volume - in
+[+] passed!
+
+>> volume - property
+[+] passed!
+
+>> volume - scalar
+[+] passed!
+
+>> volume - specify
+[+] passed!
+
+>> volume - units
 [+] passed!
 [+] passed!
 5 m
