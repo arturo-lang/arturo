@@ -1408,6 +1408,13 @@ do [
     passed
 
 
+    topic « volume - in
+    
+    ; DRY - already tested in math // scales & convert
+    
+    ensure -> same? 1000`L in `L 1`m3
+    passed
+    
     
 ]
 
