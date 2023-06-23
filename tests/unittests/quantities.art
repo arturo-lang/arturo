@@ -1416,6 +1416,10 @@ do [
     passed
     
     
+    topic « volume - property
+    
+    ensure -> every? volumeSet -> x -> 'volume = property x
+    passed
 ]
 
 ; Length
