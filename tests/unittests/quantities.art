@@ -1319,6 +1319,27 @@ do [
 topic « volume
 do [
     
+    volumeSet: [
+        1`gal 1`bbl 1`qt 1`p 1`cup 1`floz 1`tbsp 1`tsp 1`bu 1`cord
+        
+        1`L   1`aL  1`fL 1`pL 1`nL 1`uL 1`mL 1`cL 1`dL 
+        1`daL 1`hL  1`kL 1`ML 1`GL 1`TL 1`PL 1`EL
+        
+        1`m3   1`am3 1`fm3 1`pm3 1`nm3 1`um3 1`mm3 1`cm3 1`dm3
+        1`dam3 1`hm3 1`km3 1`Mm3 1`Gm3 1`Tm3 1`Pm3 1`Em3
+
+        1`in3  1`ft3  1`yd3  1`ftm3 1`rod3 1`mi3
+        1`fur3 1`nmi3 1`ang3 1`au3  1`ly3
+
+        1`px3   1`apx3 1`fpx3 1`ppx3 1`npx3 1`upx3 1`mpx3 1`cpx3 1`dpx3
+        1`dapx3 1`hpx3 1`kpx3 1`Mpx3 1`Gpx3 1`Tpx3 1`Ppx3 1`Epx3
+
+        1`pt3   1`apt3 1`fpt3 1`ppt3 1`npt3 1`upt3 1`mpt3 1`cpt3 1`dpt3
+        1`dapt3 1`hpt3 1`kpt3 1`Mpt3 1`Gpt3 1`Tpt3 1`Ppt3 1`Ept3
+
+        1`pc3   1`apc3 1`fpc3 1`ppc3 1`npc3 1`upc3 1`mpc3 1`cpc3 1`dpc3
+        1`dapc3 1`hpc3 1`kpc3 1`Mpc3 1`Gpc3 1`Tpc3 1`Ppc3 1`Epc3
+    ]
     
     
 ]
