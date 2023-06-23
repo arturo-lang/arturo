@@ -1305,6 +1305,14 @@ do [
     ensure -> same? 10000`cm2 1`m2 --> `cm2
     passed
 
+
+    topic « length - in
+    
+    ; DRY - already tested in math // scales & convert
+    
+    ensure -> same? 10000`cm2 in `cm2 1`m2
+    passed
+    
     
     
 ]
