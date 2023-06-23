@@ -1420,6 +1420,14 @@ do [
     
     ensure -> every? volumeSet -> x -> 'volume = property x
     passed
+    
+    
+    topic « volume - scalar
+    
+    ensure -> every? volumeSet -> x -> one? scalar x
+    passed
+    
+    
 ]
 
 ; Length
