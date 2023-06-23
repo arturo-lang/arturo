@@ -888,7 +888,7 @@ do [
     passed
     
     
-    topic « length - math // volume
+    topic « area - math // volume
     
     ensure -> 4`in3  = 2`in  * 2`in2
     ensure -> 4`ft3  = 2`ft  * 2`ft2
@@ -977,7 +977,7 @@ do [
     ensure -> 4`Ppx3  = 2`Ppx  * 2`Ppx2
     ensure -> 4`Epx3  = 2`Epx  * 2`Epx2
     
-    topic « length - math // length
+    topic « area - math // length
     
     ensure -> 1`in  = 2`in2  / 2`in  
     ensure -> 1`ft  = 2`ft2  / 2`ft  
@@ -1066,7 +1066,7 @@ do [
     ensure -> 1`Ppx  = 2`Ppx2  / 2`Ppx
     ensure -> 1`Epx  = 2`Epx2  / 2`Epx
     
-    topic « length - math // 4th spacial-dimension
+    topic « area - math // 4th spacial-dimension
     
     ensure -> 4`in4  = 2`in2  * 2`in2
     ensure -> 4`ft4  = 2`ft2  * 2`ft2
