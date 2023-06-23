@@ -1371,6 +1371,16 @@ do [
     passed
     
     
+    topic « area - units
+    
+    ensure -> `m2 = units 100`m2
+    ensure -> `cm2 = units 100`cm2
+    ensure -> `km2 = units 100`km2
+    passed
+    
+    ensure -> `cm2 <> units 100`km2
+    passed     
+    
     
 ]
 
