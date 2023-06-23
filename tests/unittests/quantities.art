@@ -1391,6 +1391,17 @@ do [
     
     
     
+    topic « volume - math // check auto-conversion
+
+    ; We don't need to do much testing here, 
+    ; just check that conversions happen automatically
+    ; when used in mathematical operations
+
+    ensure ->  6`L.yd =   3`L * 2`yd
+    ensure ->  1003`L =   3`L + 1`m3
+    ensure -> 15`m3/m = 45`m3 / 3`m
+    passed    
+    
     topic « volume - conforms?
 
     ensure -> every? volumeSet => conforms? `m3
