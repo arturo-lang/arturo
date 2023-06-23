@@ -1341,6 +1341,12 @@ do [
         1`dapc3 1`hpc3 1`kpc3 1`Mpc3 1`Gpc3 1`Tpc3 1`Ppc3 1`Epc3
     ]
     
+    topic « volume - volume?
+    
+    ensure -> every? volumeSet => volume?
+    passed
+    
+    
     
 ]
 
