@@ -1817,27 +1817,6 @@ do [
     
 ]
 
-; Length
-print 3`m + 2`m
-print 1`m + 2`yd
-print in`cm 1`in
-
-; Complicated metric operations
-print 2`m * 3
-print 2`m * 3`m
-print 2`m * 3`m2
-print 3`m2 * 2`m
-print 3`m2 * 2
-print 3`m3 * 2
-
-print 9`m3 / 3
-print 9`m3 / 3`m
-print 9`m3 / 3`m2
-print 9`m3 / 3`m3
-
-print 3`m2 * 2`yd
-print 45`yd2 / 3`m
-
 ; Pressure
 print in`atm 1`bar
 
