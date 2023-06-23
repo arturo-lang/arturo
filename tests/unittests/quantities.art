@@ -254,6 +254,7 @@ do [
     ensure -> 1`lightYear   = 9460730472580800`m
     ensure -> 1`nauticalMile        = 1852`meters
     ensure -> 1`astronomicalUnit    = 149597870700`m
+    passed
     
     
     topic « length - math // area
@@ -272,6 +273,7 @@ do [
     ensure -> 4`px2  = 2`px  * 2`px
     ensure -> 4`pt2  = 2`pt  * 2`pt
     ensure -> 4`pc2  = 2`pc  * 2`pc
+    passed
     
     ensure -> 4`am2  = 2`am  * 2`am
     ensure -> 4`fm2  = 2`fm  * 2`fm
@@ -290,6 +292,7 @@ do [
     ensure -> 4`Tm2  = 2`Tm  * 2`Tm
     ensure -> 4`Pm2  = 2`Pm  * 2`Pm
     ensure -> 4`Em2  = 2`Em  * 2`Em
+    passed
 
     ensure -> 4`apc2  = 2`apc  * 2`apc
     ensure -> 4`fpc2  = 2`fpc  * 2`fpc
@@ -308,6 +311,7 @@ do [
     ensure -> 4`Tpc2  = 2`Tpc  * 2`Tpc
     ensure -> 4`Ppc2  = 2`Ppc  * 2`Ppc
     ensure -> 4`Epc2  = 2`Epc  * 2`Epc
+    passed
     
     ensure -> 4`apt2  = 2`apt  * 2`apt
     ensure -> 4`fpt2  = 2`fpt  * 2`fpt
@@ -326,6 +330,7 @@ do [
     ensure -> 4`Tpt2  = 2`Tpt  * 2`Tpt
     ensure -> 4`Ppt2  = 2`Ppt  * 2`Ppt
     ensure -> 4`Ept2  = 2`Ept  * 2`Ept
+    passed
     
     ensure -> 4`apx2  = 2`apx  * 2`apx
     ensure -> 4`fpx2  = 2`fpx  * 2`fpx
@@ -344,6 +349,7 @@ do [
     ensure -> 4`Tpx2  = 2`Tpx  * 2`Tpx
     ensure -> 4`Ppx2  = 2`Ppx  * 2`Ppx
     ensure -> 4`Epx2  = 2`Epx  * 2`Epx
+    passed
     
     ; ---------------------------------
     
@@ -361,6 +367,7 @@ do [
     ensure -> 4`px2  = 2`px  ^ 2
     ensure -> 4`pt2  = 2`pt  ^ 2
     ensure -> 4`pc2  = 2`pc  ^ 2
+    passed
     
     ensure -> 4`am2  = 2`am  ^ 2
     ensure -> 4`fm2  = 2`fm  ^ 2
@@ -379,6 +386,7 @@ do [
     ensure -> 4`Tm2  = 2`Tm  ^ 2
     ensure -> 4`Pm2  = 2`Pm  ^ 2
     ensure -> 4`Em2  = 2`Em  ^ 2
+    passed
 
     ensure -> 4`apc2  = 2`apc  ^ 2
     ensure -> 4`fpc2  = 2`fpc  ^ 2
@@ -397,6 +405,7 @@ do [
     ensure -> 4`Tpc2  = 2`Tpc  ^ 2
     ensure -> 4`Ppc2  = 2`Ppc  ^ 2
     ensure -> 4`Epc2  = 2`Epc  ^ 2
+    passed
     
     ensure -> 4`apt2  = 2`apt  ^ 2
     ensure -> 4`fpt2  = 2`fpt  ^ 2
@@ -415,6 +424,7 @@ do [
     ensure -> 4`Tpt2  = 2`Tpt  ^ 2
     ensure -> 4`Ppt2  = 2`Ppt  ^ 2
     ensure -> 4`Ept2  = 2`Ept  ^ 2
+    passed
     
     ensure -> 4`apx2  = 2`apx  ^ 2
     ensure -> 4`fpx2  = 2`fpx  ^ 2
@@ -433,6 +443,7 @@ do [
     ensure -> 4`Tpx2  = 2`Tpx  ^ 2
     ensure -> 4`Ppx2  = 2`Ppx  ^ 2
     ensure -> 4`Epx2  = 2`Epx  ^ 2
+    passed
     
     
     topic « length - math // volume
@@ -451,6 +462,7 @@ do [
     ensure -> 8`px3  = 2`px  * 2`px  * 2`px
     ensure -> 8`pt3  = 2`pt  * 2`pt  * 2`pt
     ensure -> 8`pc3  = 2`pc  * 2`pc  * 2`pc
+    passed
     
     ensure -> 8`am3  = 2`am  * 2`am  * 2`am
     ensure -> 8`fm3  = 2`fm  * 2`fm  * 2`fm
@@ -469,6 +481,7 @@ do [
     ensure -> 8`Tm3  = 2`Tm  * 2`Tm  * 2`Tm
     ensure -> 8`Pm3  = 2`Pm  * 2`Pm  * 2`Pm
     ensure -> 8`Em3  = 2`Em  * 2`Em  * 2`Em
+    passed
 
     ensure -> 8`apc3  = 2`apc  * 2`apc  * 2`apc
     ensure -> 8`fpc3  = 2`fpc  * 2`fpc  * 2`fpc
@@ -487,6 +500,7 @@ do [
     ensure -> 8`Tpc3  = 2`Tpc  * 2`Tpc  * 2`Tpc
     ensure -> 8`Ppc3  = 2`Ppc  * 2`Ppc  * 2`Ppc
     ensure -> 8`Epc3  = 2`Epc  * 2`Epc  * 2`Epc
+    passed
     
     ensure -> 8`apt3  = 2`apt  * 2`apt  * 2`apt 
     ensure -> 8`fpt3  = 2`fpt  * 2`fpt  * 2`fpt 
@@ -505,6 +519,7 @@ do [
     ensure -> 8`Tpt3  = 2`Tpt  * 2`Tpt  * 2`Tpt 
     ensure -> 8`Ppt3  = 2`Ppt  * 2`Ppt  * 2`Ppt 
     ensure -> 8`Ept3  = 2`Ept  * 2`Ept  * 2`Ept 
+    passed
     
     ensure -> 8`apx3  = 2`apx  * 2`apx  * 2`apx
     ensure -> 8`fpx3  = 2`fpx  * 2`fpx  * 2`fpx
@@ -523,6 +538,7 @@ do [
     ensure -> 8`Tpx3  = 2`Tpx  * 2`Tpx  * 2`Tpx
     ensure -> 8`Ppx3  = 2`Ppx  * 2`Ppx  * 2`Ppx
     ensure -> 8`Epx3  = 2`Epx  * 2`Epx  * 2`Epx
+    passed
     
     ; ---------------------------------
     
@@ -540,6 +556,7 @@ do [
     ensure -> 8`px3  = 2`px  ^ 3
     ensure -> 8`pt3  = 2`pt  ^ 3
     ensure -> 8`pc3  = 2`pc  ^ 3
+    passed
     
     ensure -> 8`am3  = 2`am  ^ 3
     ensure -> 8`fm3  = 2`fm  ^ 3
@@ -558,6 +575,7 @@ do [
     ensure -> 8`Tm3  = 2`Tm  ^ 3
     ensure -> 8`Pm3  = 2`Pm  ^ 3
     ensure -> 8`Em3  = 2`Em  ^ 3
+    passed
 
     ensure -> 8`apc3  = 2`apc  ^ 3
     ensure -> 8`fpc3  = 2`fpc  ^ 3
@@ -576,6 +594,7 @@ do [
     ensure -> 8`Tpc3  = 2`Tpc  ^ 3
     ensure -> 8`Ppc3  = 2`Ppc  ^ 3
     ensure -> 8`Epc3  = 2`Epc  ^ 3
+    passed
     
     ensure -> 8`apt3  = 2`apt  ^ 3
     ensure -> 8`fpt3  = 2`fpt  ^ 3
@@ -594,6 +613,7 @@ do [
     ensure -> 8`Tpt3  = 2`Tpt  ^ 3
     ensure -> 8`Ppt3  = 2`Ppt  ^ 3
     ensure -> 8`Ept3  = 2`Ept  ^ 3
+    passed
     
     ensure -> 8`apx3  = 2`apx  ^ 3
     ensure -> 8`fpx3  = 2`fpx  ^ 3
@@ -612,6 +632,7 @@ do [
     ensure -> 8`Tpx3  = 2`Tpx  ^ 3
     ensure -> 8`Ppx3  = 2`Ppx  ^ 3
     ensure -> 8`Epx3  = 2`Epx  ^ 3
+    passed
     
     
     topic « length - math // check auto-conversion
@@ -904,6 +925,7 @@ do [
     ensure -> 4`px3  = 2`px  * 2`px2
     ensure -> 4`pt3  = 2`pt  * 2`pt2
     ensure -> 4`pc3  = 2`pc  * 2`pc2
+    passed
     
     ensure -> 4`am3  = 2`am  * 2`am2
     ensure -> 4`fm3  = 2`fm  * 2`fm2
@@ -922,6 +944,7 @@ do [
     ensure -> 4`Tm3  = 2`Tm  * 2`Tm2
     ensure -> 4`Pm3  = 2`Pm  * 2`Pm2
     ensure -> 4`Em3  = 2`Em  * 2`Em2
+    passed
 
     ensure -> 4`apc3  = 2`apc  * 2`apc2
     ensure -> 4`fpc3  = 2`fpc  * 2`fpc2
@@ -940,6 +963,7 @@ do [
     ensure -> 4`Tpc3  = 2`Tpc  * 2`Tpc2
     ensure -> 4`Ppc3  = 2`Ppc  * 2`Ppc2
     ensure -> 4`Epc3  = 2`Epc  * 2`Epc2
+    passed
     
     ensure -> 4`apt3  = 2`apt  * 2`apt2
     ensure -> 4`fpt3  = 2`fpt  * 2`fpt2
@@ -958,6 +982,7 @@ do [
     ensure -> 4`Tpt3  = 2`Tpt  * 2`Tpt2
     ensure -> 4`Ppt3  = 2`Ppt  * 2`Ppt2
     ensure -> 4`Ept3  = 2`Ept  * 2`Ept2
+    passed
     
     ensure -> 4`apx3  = 2`apx  * 2`apx2
     ensure -> 4`fpx3  = 2`fpx  * 2`fpx2
@@ -976,6 +1001,7 @@ do [
     ensure -> 4`Tpx3  = 2`Tpx  * 2`Tpx2
     ensure -> 4`Ppx3  = 2`Ppx  * 2`Ppx2
     ensure -> 4`Epx3  = 2`Epx  * 2`Epx2
+    passed
     
     topic « area - math // length
     
@@ -993,6 +1019,7 @@ do [
     ensure -> 1`px  = 2`px2  / 2`px  
     ensure -> 1`pt  = 2`pt2  / 2`pt  
     ensure -> 1`pc  = 2`pc2  / 2`pc  
+    passed
     
     ensure -> 1`am  = 2`am2  / 2`am
     ensure -> 1`fm  = 2`fm2  / 2`fm
@@ -1011,6 +1038,7 @@ do [
     ensure -> 1`Tm  = 2`Tm2  / 2`Tm
     ensure -> 1`Pm  = 2`Pm2  / 2`Pm
     ensure -> 1`Em  = 2`Em2  / 2`Em
+    passed
 
     ensure -> 1`apc  = 2`apc2  / 2`apc
     ensure -> 1`fpc  = 2`fpc2  / 2`fpc
@@ -1029,6 +1057,7 @@ do [
     ensure -> 1`Tpc  = 2`Tpc2  / 2`Tpc
     ensure -> 1`Ppc  = 2`Ppc2  / 2`Ppc
     ensure -> 1`Epc  = 2`Epc2  / 2`Epc
+    passed
     
     ensure -> 1`apt  = 2`apt2  / 2`apt
     ensure -> 1`fpt  = 2`fpt2  / 2`fpt
@@ -1047,6 +1076,7 @@ do [
     ensure -> 1`Tpt  = 2`Tpt2  / 2`Tpt
     ensure -> 1`Ppt  = 2`Ppt2  / 2`Ppt
     ensure -> 1`Ept  = 2`Ept2  / 2`Ept
+    passed
     
     ensure -> 1`apx  = 2`apx2  / 2`apx
     ensure -> 1`fpx  = 2`fpx2  / 2`fpx
@@ -1065,6 +1095,7 @@ do [
     ensure -> 1`Tpx  = 2`Tpx2  / 2`Tpx
     ensure -> 1`Ppx  = 2`Ppx2  / 2`Ppx
     ensure -> 1`Epx  = 2`Epx2  / 2`Epx
+    passed
     
     topic « area - math // 4th spacial-dimension
     
@@ -1082,6 +1113,7 @@ do [
     ensure -> 4`px4  = 2`px2  * 2`px2
     ensure -> 4`pt4  = 2`pt2  * 2`pt2
     ensure -> 4`pc4  = 2`pc2  * 2`pc2
+    passed
     
     ensure -> 4`am4  = 2`am2  * 2`am2
     ensure -> 4`fm4  = 2`fm2  * 2`fm2
@@ -1100,6 +1132,7 @@ do [
     ensure -> 4`Tm4  = 2`Tm2  * 2`Tm2
     ensure -> 4`Pm4  = 2`Pm2  * 2`Pm2
     ensure -> 4`Em4  = 2`Em2  * 2`Em2
+    passed
 
     ensure -> 4`apc4  = 2`apc2  * 2`apc2
     ensure -> 4`fpc4  = 2`fpc2  * 2`fpc2
@@ -1118,6 +1151,7 @@ do [
     ensure -> 4`Tpc4  = 2`Tpc2  * 2`Tpc2
     ensure -> 4`Ppc4  = 2`Ppc2  * 2`Ppc2
     ensure -> 4`Epc4  = 2`Epc2  * 2`Epc2
+    passed
     
     ensure -> 4`apt4  = 2`apt2  * 2`apt2
     ensure -> 4`fpt4  = 2`fpt2  * 2`fpt2
@@ -1136,6 +1170,7 @@ do [
     ensure -> 4`Tpt4  = 2`Tpt2  * 2`Tpt2
     ensure -> 4`Ppt4  = 2`Ppt2  * 2`Ppt2
     ensure -> 4`Ept4  = 2`Ept2  * 2`Ept2
+    passed
     
     ensure -> 4`apx4  = 2`apx2  * 2`apx2
     ensure -> 4`fpx4  = 2`fpx2  * 2`fpx2
@@ -1154,6 +1189,7 @@ do [
     ensure -> 4`Tpx4  = 2`Tpx2  * 2`Tpx2
     ensure -> 4`Ppx4  = 2`Ppx2  * 2`Ppx2
     ensure -> 4`Epx4  = 2`Epx2  * 2`Epx2
+    passed
     
     ; ---------------------------------
     
@@ -1171,6 +1207,7 @@ do [
     ensure -> 4`px4  = 2`px2  ^ 2
     ensure -> 4`pt4  = 2`pt2  ^ 2
     ensure -> 4`pc4  = 2`pc2  ^ 2
+    passed
     
     ensure -> 4`am4  = 2`am2  ^ 2
     ensure -> 4`fm4  = 2`fm2  ^ 2
@@ -1189,6 +1226,7 @@ do [
     ensure -> 4`Tm4  = 2`Tm2  ^ 2
     ensure -> 4`Pm4  = 2`Pm2  ^ 2
     ensure -> 4`Em4  = 2`Em2  ^ 2
+    passed
 
     ensure -> 4`apc4  = 2`apc2  ^ 2
     ensure -> 4`fpc4  = 2`fpc2  ^ 2
@@ -1207,6 +1245,7 @@ do [
     ensure -> 4`Tpc4  = 2`Tpc2  ^ 2
     ensure -> 4`Ppc4  = 2`Ppc2  ^ 2
     ensure -> 4`Epc4  = 2`Epc2  ^ 2
+    passed
     
     ensure -> 4`apt4  = 2`apt2  ^ 2
     ensure -> 4`fpt4  = 2`fpt2  ^ 2
@@ -1225,6 +1264,7 @@ do [
     ensure -> 4`Tpt4  = 2`Tpt2  ^ 2
     ensure -> 4`Ppt4  = 2`Ppt2  ^ 2
     ensure -> 4`Ept4  = 2`Ept2  ^ 2
+    passed
     
     ensure -> 4`apx4  = 2`apx2  ^ 2
     ensure -> 4`fpx4  = 2`fpx2  ^ 2
@@ -1243,6 +1283,7 @@ do [
     ensure -> 4`Tpx4  = 2`Tpx2  ^ 2
     ensure -> 4`Ppx4  = 2`Ppx2  ^ 2
     ensure -> 4`Epx4  = 2`Epx2  ^ 2
+    passed
     
     topic « area - math // check auto-conversion
 
@@ -1507,6 +1548,7 @@ do [
     ensure -> 1`px2     =  2`px3    /   2`px
     ensure -> 1`pt2     =  2`pt3    /   2`pt
     ensure -> 1`pc2     =  2`pc3    /   2`pc
+    passed
     
     ensure -> 1`am2     =   2`am3   /   2`am
     ensure -> 1`fm2     =   2`fm3   /   2`fm
@@ -1525,6 +1567,7 @@ do [
     ensure -> 1`Tm2     =   2`Tm3   /   2`Tm
     ensure -> 1`Pm2     =   2`Pm3   /   2`Pm
     ensure -> 1`Em2     =   2`Em3   /   2`Em
+    passed
 
     ensure -> 1`apc2    =   2`apc3    /   2`apc
     ensure -> 1`fpc2    =   2`fpc3    /   2`fpc
@@ -1543,6 +1586,7 @@ do [
     ensure -> 1`Tpc2    =   2`Tpc3    /   2`Tpc
     ensure -> 1`Ppc2    =   2`Ppc3    /   2`Ppc
     ensure -> 1`Epc2    =   2`Epc3    /   2`Epc
+    passed
     
     ensure -> 1`apt2    =   2`apt3  /   2`apt
     ensure -> 1`fpt2    =   2`fpt3  /   2`fpt
@@ -1561,6 +1605,7 @@ do [
     ensure -> 1`Tpt2    =   2`Tpt3  /   2`Tpt
     ensure -> 1`Ppt2    =   2`Ppt3  /   2`Ppt
     ensure -> 1`Ept2    =   2`Ept3  /   2`Ept
+    passed
     
     ensure -> 1`apx2    =   2`apx3  /   2`apx
     ensure -> 1`fpx2    =   2`fpx3  /   2`fpx
@@ -1579,6 +1624,7 @@ do [
     ensure -> 1`Tpx2    =   2`Tpx3  /   2`Tpx
     ensure -> 1`Ppx2    =   2`Ppx3  /   2`Ppx
     ensure -> 1`Epx2    =   2`Epx3  /   2`Epx
+    passed
 
     
     topic « volume - math // length
@@ -1597,6 +1643,7 @@ do [
     ensure -> 1`px  =   2`px3    /   2`px2
     ensure -> 1`pt  =   2`pt3    /   2`pt2
     ensure -> 1`pc  =   2`pc3    /   2`pc2
+    passed
     
     ensure -> 1`am  =   2`am3   /   2`am2
     ensure -> 1`fm  =   2`fm3   /   2`fm2
@@ -1615,6 +1662,7 @@ do [
     ensure -> 1`Tm  =   2`Tm3   /   2`Tm2
     ensure -> 1`Pm  =   2`Pm3   /   2`Pm2
     ensure -> 1`Em =   2`Em3    /   2`Em2
+    passed
 
     ensure -> 1`apc     =   2`apc3  /   2`apc2
     ensure -> 1`fpc     =   2`fpc3  /   2`fpc2
@@ -1633,6 +1681,7 @@ do [
     ensure -> 1`Tpc     =   2`Tpc3  /   2`Tpc2
     ensure -> 1`Ppc     =   2`Ppc3  /   2`Ppc2
     ensure -> 1`Epc     =   2`Epc3  /   2`Epc2
+    passed
     
     ensure -> 1`apt     =   2`apt3  /   2`apt2
     ensure -> 1`fpt     =   2`fpt3  /   2`fpt2
@@ -1651,6 +1700,7 @@ do [
     ensure -> 1`Tpt     =   2`Tpt3  /   2`Tpt2
     ensure -> 1`Ppt     =   2`Ppt3  /   2`Ppt2
     ensure -> 1`Ept    =   2`Ept3   /   2`Ept2
+    passed
     
     ensure -> 1`apx     =   2`apx3  /   2`apx2
     ensure -> 1`fpx     =   2`fpx3  /   2`fpx2
@@ -1669,6 +1719,7 @@ do [
     ensure -> 1`Tpx     =   2`Tpx3  /   2`Tpx2
     ensure -> 1`Ppx     =   2`Ppx3  /   2`Ppx2
     ensure -> 1`Epx    =   2`Epx3   /   2`Epx2
+    passed
     
     
     topic « volume - math // L2?
