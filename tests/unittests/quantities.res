@@ -87,6 +87,12 @@
 [+] passed!
 [+] passed!
 [+] passed!
+
+>> area - math // scales
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 5 m
 2.8288 m
 2.54 cm
