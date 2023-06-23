@@ -1391,6 +1391,15 @@ do [
     
     
     
+    topic « volume - conforms?
+
+    ensure -> every? volumeSet => conforms? `m3
+    passed
+    
+    ensure -> every? volumeSet -> x -> not? conforms? x `m2
+    passed
+    
+    
 ]
 
 ; Length
