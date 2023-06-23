@@ -877,6 +877,16 @@ do [
     ; ensure -> 1`apc2  = 1`fpc2  / (10 ^ 6)
     passed
     
+    topic « area - math // convertions
+    
+    ensure -> 1`sqin  = 1`in2
+    ensure -> 1`sqft  = 1`ft2
+    ensure -> 1`ac    = 4840`yd2
+    ensure -> 1`are   = 100`m2
+    ensure -> 1`ha    = 100`are
+    ensure -> 1`barn  = 100`ftm2
+    passed
+    
     
 ]
 
