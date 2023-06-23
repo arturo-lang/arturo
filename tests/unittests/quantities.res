@@ -45,10 +45,31 @@
 [+] passed!
 
 >> length - math // conversions
+[+] passed!
 
 >> length - math // area
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 
 >> length - math // volume
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 
 >> length - math // check auto-conversion
 [+] passed!
@@ -98,10 +119,30 @@
 [+] passed!
 
 >> area - math // volume
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 
 >> area - math // length
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 
 >> area - math // 4th spacial-dimension
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 
 >> area - math // check auto-conversion
 [+] passed!
@@ -151,8 +192,18 @@
 >> volume - math // conversions
 
 >> volume - math // area
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 
 >> volume - math // length
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 
 >> volume - math // L2?
 [+] passed!
@@ -182,21 +233,6 @@
 >> volume - units
 [+] passed!
 [+] passed!
-5 m
-2.8288 m
-2.54 cm
-6 m
-6 m²
-6 m³
-6 m³
-6 m²
-6 m³
-3 m³
-3 m²
-3 m
-3 
-6 m²·yd
-15 yd²/m
 4000/4053 atm
 1000 J
 0.001 kJ
