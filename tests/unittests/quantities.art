@@ -1971,6 +1971,37 @@ do [
 
     ensure -> `month <> units 100`years
     passed
+    
+    topic « test - alternative names
+    
+    ensure -> `s = `second
+    ensure -> `s = `seconds
+    passed
+    
+    ensure -> `min = `minute
+    ensure -> `min = `minutes
+    passed
+    
+    ensure -> `h   = `hour
+    ensure -> `h   = `hours
+    ensure -> `h   = `hr
+    ensure -> `h   = `hrs
+    passed
+    
+    ensure -> `day = `days
+    passed
+    
+    ensure -> `wk = `week
+    ensure -> `wk = `weeks
+    passed
+    
+    ensure -> `mo = `month
+    ensure -> `mo = `months
+    passed
+    
+    ensure -> `yr = `year
+    ensure -> `yr = `years
+    passed
 
 
 ]
