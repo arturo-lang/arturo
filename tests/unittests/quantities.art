@@ -2037,11 +2037,6 @@ print in`g 1`oz
 print in`bit 10`kB
 print in`bit 10`KiB
 
-; Time
-print in`min 1`h
-print in`min 1`day
-print in`h 1`day
-
 ; Temperature
 print in`oC 32`oF
 print in`oC 95`oF
