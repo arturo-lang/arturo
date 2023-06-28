@@ -1822,10 +1822,16 @@ topic « time
 do [
 
     timeSet: [ 
-        1`s 1`min 
-        1`h 1`day 
-        1`wk 1`mo 
-        1`yr
+        
+        1`as  1`fs  1`ps 1`ns
+        1`us  1`ms  1`cs 1`ds
+        1`s   1`das 1`hs 1`ks
+        1`Ms  1`Gs  1`Ts 1`Ps
+        1`Es
+        
+        1`min 1`h 
+        1`day 1`wk 
+        1`mo 1`yr
     ]
 
     topic « time - time?
