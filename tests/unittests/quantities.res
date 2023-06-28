@@ -233,6 +233,60 @@
 >> volume - units
 [+] passed!
 [+] passed!
+
+>> time
+
+>> time - time?
+[+] passed!
+
+>> time - basic math
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+
+>> time - math // scales
+[+] passed!
+
+>> time - conversion
+[+] passed!
+
+>> time - math // check auto-conversion
+[+] passed!
+
+>> time - conforms?
+[+] passed!
+[+] passed!
+
+>> time - convert
+[+] passed!
+
+>> time - in
+[+] passed!
+
+>> time - property
+[+] passed!
+
+>> time - scalar
+[+] passed!
+
+>> time - specify
+[+] passed!
+
+>> time - units
+[+] passed!
+[+] passed!
+
+>> test - alternative names
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 4000/4053 atm
 1000 J
 0.001 kJ
@@ -246,9 +300,6 @@
 28.349523125 g
 80000 b
 81920 b
-60 min
-1440 min
-24 h
 0°C
 35°C
 313.1 K
