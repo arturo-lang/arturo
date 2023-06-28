@@ -1828,6 +1828,12 @@ do [
         1`yr
     ]
 
+    topic « time - time?
+
+    ensure -> every? timeSet => time?
+    passed
+
+
 
 
 ]
