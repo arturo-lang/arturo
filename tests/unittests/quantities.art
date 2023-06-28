@@ -1821,6 +1821,13 @@ do [
 topic « time
 do [
 
+    timeSet: [ 
+        1`s 1`min 
+        1`h 1`day 
+        1`wk 1`mo 
+        1`yr
+    ]
+
 
 
 ]
