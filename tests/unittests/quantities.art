@@ -1883,6 +1883,14 @@ do [
     passed
 
 
+    topic « time - in
+
+    ; DRY - already tested in math // scales & convert
+
+    ensure -> same? 60`seconds in `seconds 1`minute
+    passed
+
+
 
 ]
 
