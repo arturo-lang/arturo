@@ -1904,6 +1904,16 @@ do [
     passed
     
 
+    topic « time - math // check auto-conversion
+
+    ; We don't need to do much testing here,
+    ; just check that conversions happen automatically
+    ; when used in mathematical operations
+
+    ensure ->  6`min.h = 3`min * 2`hour
+    ensure ->  1`min/h = 3`min / 3`hour
+    passed
+
     topic « time - conforms?
 
     ensure -> every? timeSet => conforms? `weeks
