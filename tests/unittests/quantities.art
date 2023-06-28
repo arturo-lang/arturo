@@ -1834,6 +1834,37 @@ do [
     passed
 
 
+    topic « time - basic math
+
+    ; :unit :scale
+    
+    ensure -> 10`seconds  =    8`seconds + 2
+    ensure -> 10`seconds  =  7.5`seconds + 2.5
+    ensure -> 10`seconds  = 15:2`seconds + 5:2
+    passed
+    
+    ensure -> 5`seconds   =    8`seconds - 3
+    ensure -> 5`seconds   =  7.5`seconds - 2.5
+    ensure -> 5`seconds   = 15:2`seconds - 5:2
+    passed
+
+    ensure -> 30`seconds  = 15`seconds * 2 
+    ensure -> 30`seconds  = 60`seconds * 1:2
+    passed 
+    
+    ensure -> 30`seconds  = 60`seconds /  2 
+    ensure -> 30`seconds  = 60`seconds // 2
+    passed
+    
+    ensure -> 10`seconds  =  8`seconds + 2`seconds
+    ensure ->  8`seconds  = 10`seconds - 2`seconds
+    passed
+
+    ensure -> 100`seconds = 40`seconds + 1`minute
+    ensure ->  20`seconds = 80`seconds - 1`minute
+    passed
+
+
 
 
 ]
