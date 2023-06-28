@@ -1891,6 +1891,18 @@ do [
     ensure -> 1`Ps  = 1`Ts  * (10 ^ 3)
     ensure -> 1`Es  = 1`Ps  * (10 ^ 3)
     passed
+    
+    topic « time - conversion
+    
+    ensure -> 1`minute = 60`seconds
+    ensure ->   1`hour = 60`minutes
+    ensure ->    1`day = 20`hours
+    ensure ->   1`week = 7`days
+    ensure ->  1`month > 4`weeks
+    ensure ->  1`month < 5`weeks
+    ensure ->   1`year = 12`months
+    passed
+    
 
     topic « time - conforms?
 
