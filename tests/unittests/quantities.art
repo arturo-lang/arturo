@@ -1866,6 +1866,15 @@ do [
 
 
 
+    topic « time - conforms?
+
+    ensure -> every? timeSet => conforms? `weeks
+    passed
+
+    ensure -> every? timeSet -> x -> not? conforms? x `m
+    passed
+
+
 
 ]
 
