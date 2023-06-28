@@ -1914,6 +1914,16 @@ do [
     passed
 
 
+    topic « time - units
+
+    ensure -> `minute = units 100`minutes
+    ensure -> `week   = units 100`weeks
+    ensure -> `year   = units 100`years
+    passed
+
+    ensure -> `month <> units 100`years
+    passed
+
 
 ]
 
