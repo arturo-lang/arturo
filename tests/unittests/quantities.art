@@ -1874,6 +1874,14 @@ do [
     ensure -> every? timeSet -> x -> not? conforms? x `m
     passed
 
+    topic « time - convert
+
+    ; DRY - already tested in math // scales
+
+    ensure -> same? 60`seconds convert 1`minute `seconds
+    ensure -> same? 60`seconds 1`minute --> `seconds
+    passed
+
 
 
 ]
