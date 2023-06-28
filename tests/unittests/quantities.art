@@ -1896,7 +1896,7 @@ do [
     
     ensure -> 1`minute = 60`seconds
     ensure ->   1`hour = 60`minutes
-    ensure ->    1`day = 20`hours
+    ensure ->    1`day = 24`hours
     ensure ->   1`week = 7`days
     ensure ->  1`month > 4`weeks
     ensure ->  1`month < 5`weeks
