@@ -1871,6 +1871,26 @@ do [
     passed
 
 
+    topic « time - math // scales
+    
+    ; precision loss
+    ; ensure -> 1`as  = 1`fs  / (10 ^ 3)
+    ; ensure -> 1`fs  = 1`ps  / (10 ^ 3)
+    ; ensure -> 1`ps  = 1`ns  / (10 ^ 3)
+    ensure -> 1`ns  = 1`us  / (10 ^ 3)
+    ensure -> 1`us  = 1`ms  / (10 ^ 3)
+    ensure -> 1`ms  = 1`cs  / 10
+    ensure -> 1`cs  = 1`ds  / 10
+    ensure -> 1`ds  = 1`s   / 10
+    ensure -> 1`das = 1`s   * 10
+    ensure -> 1`hs  = 1`das * 10
+    ensure -> 1`ks  = 1`hs  * 10
+    ensure -> 1`Ms  = 1`ks  * (10 ^ 3)
+    ensure -> 1`Gs  = 1`Ms  * (10 ^ 3)
+    ensure -> 1`Ts  = 1`Gs  * (10 ^ 3)
+    ensure -> 1`Ps  = 1`Ts  * (10 ^ 3)
+    ensure -> 1`Es  = 1`Ps  * (10 ^ 3)
+    passed
 
     topic « time - conforms?
 
