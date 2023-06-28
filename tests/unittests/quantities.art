@@ -1897,6 +1897,12 @@ do [
     passed
 
 
+    topic « time - scalar
+
+    ensure -> every? timeSet -> x -> one? scalar x
+    passed
+
+
 
 ]
 
