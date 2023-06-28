@@ -1891,6 +1891,12 @@ do [
     passed
 
 
+    topic « volume - property
+
+    ensure -> every? timeSet -> x -> 'time = property x
+    passed
+
+
 
 ]
 
