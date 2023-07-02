@@ -99,7 +99,7 @@ do [
     ensure -> `AUD <> units 100`BRL
     passed
     
-    topic « test - alternative names
+    topic « currencies - alternative names
     
     ensure -> every? [`dollar `dollars] => equal? & `USD
     passed
