@@ -1977,7 +1977,7 @@ do [
     ensure -> `month <> units 100`years
     passed
     
-    topic « test - alternative names
+    topic « time - alternative names
     
     ensure -> every? [`second `seconds] => equal? & `s 
     passed
