@@ -764,6 +764,50 @@ do [
 
     ensure -> `cm <> units 100`km
     passed
+    
+    topic « length - alternative names
+    
+    ensure -> every? [ `inch `inches ] => equal? & `in
+    passed
+    
+    ensure -> every? [ `foot `feet ] => equal? & `ft
+    passed
+    
+    ensure -> every? [ `yard `yards ] => equal? & `yd
+    passed
+    
+    ensure -> every? [ `fathom `fathoms ] => equal? & `ftm
+    passed
+    
+    ensure -> equal? `rod `rods
+    passed
+    
+    ensure -> every? [ `mile `miles ] => equal? & `mi
+    passed
+    
+    ensure -> every? [ `furlong `furlongs ] => equal? & `fur
+    passed
+    
+    ensure -> every? [ `nauticalMile `nauticalMiles ] => equal? & `nmi
+    passed
+    
+    ensure -> every? [ `angstrom `angstroms ] => equal? & `ang
+    passed
+    
+    ensure -> every? [ `astronomicalUnit `astronomicalUnits ] => equal? & `au
+    passed
+    
+    ensure -> every? [ `lightYear `lightYears ] => equal? & `ly
+    passed
+    
+    ensure -> every? [ `pixel `pixels ] => equal? & `px
+    passed
+    
+    ensure -> every? [ `point `points ] => equal? & `pt
+    passed
+    
+    ensure -> every? [ `pica `picas ] => equal? & `pc
+    passed
 
 ]
 
