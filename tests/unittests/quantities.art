@@ -1405,6 +1405,9 @@ do [
     
     topic « area - alternative names
     
+    ensure -> equal? `metre2 `m2
+    passed 
+    
     ensure -> every? [ `squareInch `squareInches `in2 ] => equal? & `sqin
     passed
     
