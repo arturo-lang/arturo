@@ -1974,33 +1974,25 @@ do [
     
     topic « test - alternative names
     
-    ensure -> `s = `second
-    ensure -> `s = `seconds
+    ensure -> every? [`second `seconds] => equal? & `s 
     passed
     
-    ensure -> `min = `minute
-    ensure -> `min = `minutes
+    ensure -> every? [`minute `minutes] => equal? & `min
     passed
     
-    ensure -> `h   = `hour
-    ensure -> `h   = `hours
-    ensure -> `h   = `hr
-    ensure -> `h   = `hrs
+    ensure -> every? [`hour `hours `hr `hrs] => equal? & `h
     passed
     
-    ensure -> `day = `days
+    ensure -> equal? `day `days
     passed
     
-    ensure -> `wk = `week
-    ensure -> `wk = `weeks
+    ensure -> every? [`week `weeks] => equal? & `wk
     passed
     
-    ensure -> `mo = `month
-    ensure -> `mo = `months
+    ensure -> every? [`month `months] => equal? & `mo 
     passed
     
-    ensure -> `yr = `year
-    ensure -> `yr = `years
+    ensure -> every? [`year `years] => equal? & `yr
     passed
 
 
