@@ -1402,6 +1402,27 @@ do [
 
     ensure -> `cm2 <> units 100`km2
     passed
+    
+    topic « area - alternative names
+    
+    ensure -> every? [ `squareInch `squareInches `in2 ] => equal? & `sqin
+    passed
+    
+    ensure -> every? [ `squareFoot `squareFeet `ft2 ] => equal? & `sqft
+    passed
+    
+    ensure -> every? [ `acre `acres ] => equal? & `ac
+    passed
+    
+    ensure -> equal? `ares `are
+    passed
+    
+    ensure -> every? [ `hectare `hectares ] => equal? & `ha
+    passed
+    
+    ensure -> equal? `barns `barn
+    passed
+    
 
 
 ]
