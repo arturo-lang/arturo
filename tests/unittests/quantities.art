@@ -767,6 +767,9 @@ do [
     
     topic « length - alternative names
     
+    ensure -> every? [ `meter `meters `metre `metres ] => equal? & `m
+    passed
+    
     ensure -> every? [ `inch `inches ] => equal? & `in
     passed
     
