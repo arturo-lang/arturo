@@ -26,6 +26,9 @@
 [+] passed!
 [+] passed!
 
+>> currencies - alternative names
+[+] passed!
+
 >> length
 
 >> length - length?
@@ -94,6 +97,23 @@
 [+] passed!
 
 >> length - units
+[+] passed!
+[+] passed!
+
+>> length - alternative names
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 [+] passed!
 [+] passed!
 
@@ -170,6 +190,15 @@
 [+] passed!
 [+] passed!
 
+>> area - alternative names
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+
 >> volume
 
 >> volume - volume?
@@ -234,6 +263,19 @@
 [+] passed!
 [+] passed!
 
+>> volume - alternative names
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+
 >> time
 
 >> time - time?
@@ -279,7 +321,7 @@
 [+] passed!
 [+] passed!
 
->> test - alternative names
+>> time - alternative names
 [+] passed!
 [+] passed!
 [+] passed!
