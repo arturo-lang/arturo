@@ -1889,6 +1889,42 @@ do [
 
     ensure -> `L <> units 100`km3
     passed
+    
+    
+    topic « volume - alternative names
+    
+    ensure -> every? [ `l `liter `liters ] => equal? & `L 
+    passed
+    
+    ensure -> every? [ `gals `gallon `gallons ] => equal? & `gal
+    passed
+    
+    ensure -> every? [ `barrel `barrels ] => equal? & `bbl
+    passed
+    
+    ensure -> every? [ `quart `quarts ] => equal? & `qt
+    passed
+    
+    ensure -> every? [ `pint `pints ] => equal? & `p
+    passed
+    
+    ensure -> equal? `cups `cup
+    passed
+    
+    ensure -> every? [ `fluidOunce `fluidOunces ] => equal? & `floz
+    passed
+    
+    ensure -> every? [ `tablespoon `tablespoons ] => equal? & `tbsp
+    passed
+    
+    ensure -> every? [ `teaspoon `teaspoons ] => equal? & `tsp
+    passed
+    
+    ensure -> every? [ `bushel `bushels ] => equal? & `bu
+    passed
+    
+    ensure -> equal? `cords `cord
+    passed
 
 
 ]
