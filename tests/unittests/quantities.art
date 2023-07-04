@@ -2113,6 +2113,18 @@ do [
 topic « mass
 do [
 
+    massSet: [
+        
+        1`g
+        1`ag    1`fg    1`pg    1`ng    1`ug    1`mg    1`cg    1`dg    
+        1`dag   1`hg    1`kg    1`Mg    1`Gg    1`Tg    1`Pg    1`Eg
+        
+        1`lb    1`slug  1`oz    1`ct    1`t   
+        1`ton   1`lt    1`st    1`Da    1`gr 
+        1`dwt   1`ozt   1`lbt
+
+    ]
+
 
 
 ]
