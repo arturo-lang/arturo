@@ -2238,6 +2238,16 @@ do [
     passed
 
 
+    topic « mass - specify
+
+    ; In 2021, Ronnie Coleman released a video of 2,300-pound leg press
+    specify.symbol: "🏋️" .describes: "average Coleman's leg press" 'ronnies 1043`kg
+
+    ensure -> "average coleman's leg press" = to :string property 1`ronnies
+    ensure -> "1 🏋️" = ~"|1`ronnies|"
+    ensure -> "31:2`🏋️" = as.code 15.5`ronnies
+    ensure -> 1043`kg   = 1`ronnies --> `kg
+    passed
 
 
     topic « mass - units
