@@ -329,6 +329,66 @@
 [+] passed!
 [+] passed!
 [+] passed!
+
+>> mass
+
+>> mass - mass?
+[+] passed!
+
+>> mass - basic math
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+
+>> mass - math // scales
+[+] passed!
+
+>> mass - math // conversions
+[+] passed!
+[+] passed!
+
+>> mass - math // check auto-conversion
+[+] passed!
+
+>> mass - conforms?
+[+] passed!
+[+] passed!
+
+>> mass - convert
+[+] passed!
+
+>> mass - in
+[+] passed!
+
+>> mass - property
+[+] passed!
+
+>> mass - scalar
+[+] passed!
+
+>> mass - specify
+[+] passed!
+
+>> mass - units
+[+] passed!
+[+] passed!
+
+>> mass - alternative names
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 4000/4053 atm
 1000 J
 0.001 kJ
@@ -338,8 +398,6 @@
 37000000000 Bq
 857374503/14964008 °
 108 km/h
-1000 g
-28.349523125 g
 80000 b
 81920 b
 0°C
