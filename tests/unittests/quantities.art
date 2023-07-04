@@ -2159,6 +2159,26 @@ do [
     passed
 
 
+    topic « mass - math // scales
+
+    ensure -> 1`Eg  = 1`Pg  * (10 ^ 3)
+    ensure -> 1`Pg  = 1`Tg  * (10 ^ 3)
+    ensure -> 1`Tg  = 1`Gg  * (10 ^ 3)
+    ensure -> 1`Gg  = 1`Mg  * (10 ^ 3)
+    ensure -> 1`Mg  = 1`kg  * (10 ^ 3)
+    ensure -> 1`kg  = 1`hg  * 10
+    ensure -> 1`hg  = 1`dag * 10
+    ensure -> 1`dag = 1`g   * 10
+    ensure -> 1`dg  = 1`g   / 10
+    ensure -> 1`cg  = 1`dg  / 10
+    ensure -> 1`mg  = 1`cg  / 10
+    ensure -> 1`ug  = 1`mg  / (10 ^ 3)
+    ensure -> 1`ng  = 1`ug  / (10 ^ 3)
+    ; precision loss
+    ; ensure -> 1`pg  = 1`ng  / (10 ^ 3)
+    ; ensure -> 1`fg  = 1`pg  / (10 ^ 3)
+    ; ensure -> 1`ag  = 1`fg  / (10 ^ 3)
+    passed
 
     topic « mass - math // conversions
 
