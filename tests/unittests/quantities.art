@@ -2201,6 +2201,14 @@ do [
     ensure -> 15`kg/m3 = 45`kg / 3`m3
     passed
 
+    topic « mass - conforms?
+
+    ensure -> every? massSet => conforms? `g
+    passed
+
+    ensure -> every? massSet -> x -> not? conforms? x `m2
+    passed
+
 
 ]
 
