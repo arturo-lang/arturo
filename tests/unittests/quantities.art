@@ -98,9 +98,9 @@ do [
 
     ensure -> `AUD <> units 100`BRL
     passed
-    
+
     topic « currencies - alternative names
-    
+
     ensure -> every? [`dollar `dollars] => equal? & `USD
     passed
 
@@ -764,51 +764,51 @@ do [
 
     ensure -> `cm <> units 100`km
     passed
-    
+
     topic « length - alternative names
-    
+
     ensure -> every? [ `meter `meters `metre `metres ] => equal? & `m
     passed
-    
+
     ensure -> every? [ `inch `inches ] => equal? & `in
     passed
-    
+
     ensure -> every? [ `foot `feet ] => equal? & `ft
     passed
-    
+
     ensure -> every? [ `yard `yards ] => equal? & `yd
     passed
-    
+
     ensure -> every? [ `fathom `fathoms ] => equal? & `ftm
     passed
-    
+
     ensure -> equal? `rod `rods
     passed
-    
+
     ensure -> every? [ `mile `miles ] => equal? & `mi
     passed
-    
+
     ensure -> every? [ `furlong `furlongs ] => equal? & `fur
     passed
-    
+
     ensure -> every? [ `nauticalMile `nauticalMiles ] => equal? & `nmi
     passed
-    
+
     ensure -> every? [ `angstrom `angstroms ] => equal? & `ang
     passed
-    
+
     ensure -> every? [ `astronomicalUnit `astronomicalUnits ] => equal? & `au
     passed
-    
+
     ensure -> every? [ `lightYear `lightYears ] => equal? & `ly
     passed
-    
+
     ensure -> every? [ `pixel `pixels ] => equal? & `px
     passed
-    
+
     ensure -> every? [ `point `points ] => equal? & `pt
     passed
-    
+
     ensure -> every? [ `pica `picas ] => equal? & `pc
     passed
 
@@ -1405,30 +1405,30 @@ do [
 
     ensure -> `cm2 <> units 100`km2
     passed
-    
+
     topic « area - alternative names
-    
+
     ensure -> equal? `metre2 `m2
-    passed 
-    
+    passed
+
     ensure -> every? [ `squareInch `squareInches `in2 ] => equal? & `sqin
     passed
-    
+
     ensure -> every? [ `squareFoot `squareFeet `ft2 ] => equal? & `sqft
     passed
-    
+
     ensure -> every? [ `acre `acres ] => equal? & `ac
     passed
-    
+
     ensure -> equal? `ares `are
     passed
-    
+
     ensure -> every? [ `hectare `hectares ] => equal? & `ha
     passed
-    
+
     ensure -> equal? `barns `barn
     passed
-    
+
 
 
 ]
@@ -1889,40 +1889,40 @@ do [
 
     ensure -> `L <> units 100`km3
     passed
-    
-    
+
+
     topic « volume - alternative names
-    
-    ensure -> every? [ `l `liter `liters ] => equal? & `L 
+
+    ensure -> every? [ `l `liter `liters ] => equal? & `L
     passed
-    
+
     ensure -> every? [ `gals `gallon `gallons ] => equal? & `gal
     passed
-    
+
     ensure -> every? [ `barrel `barrels ] => equal? & `bbl
     passed
-    
+
     ensure -> every? [ `quart `quarts ] => equal? & `qt
     passed
-    
+
     ensure -> every? [ `pint `pints ] => equal? & `p
     passed
-    
+
     ensure -> equal? `cups `cup
     passed
-    
+
     ensure -> every? [ `fluidOunce `fluidOunces ] => equal? & `floz
     passed
-    
+
     ensure -> every? [ `tablespoon `tablespoons ] => equal? & `tbsp
     passed
-    
+
     ensure -> every? [ `teaspoon `teaspoons ] => equal? & `tsp
     passed
-    
+
     ensure -> every? [ `bushel `bushels ] => equal? & `bu
     passed
-    
+
     ensure -> equal? `cords `cord
     passed
 
@@ -1933,16 +1933,16 @@ do [
 topic « time
 do [
 
-    timeSet: [ 
-        
+    timeSet: [
+
         1`as  1`fs  1`ps 1`ns
         1`us  1`ms  1`cs 1`ds
         1`s   1`das 1`hs 1`ks
         1`Ms  1`Gs  1`Ts 1`Ps
         1`Es
-        
-        1`min 1`h 
-        1`day 1`wk 
+
+        1`min 1`h
+        1`day 1`wk
         1`mo 1`yr
     ]
 
@@ -1955,25 +1955,25 @@ do [
     topic « time - basic math
 
     ; :unit :scale
-    
+
     ensure -> 10`seconds  =    8`seconds + 2
     ensure -> 10`seconds  =  7.5`seconds + 2.5
     ensure -> 10`seconds  = 15:2`seconds + 5:2
     passed
-    
+
     ensure -> 5`seconds   =    8`seconds - 3
     ensure -> 5`seconds   =  7.5`seconds - 2.5
     ensure -> 5`seconds   = 15:2`seconds - 5:2
     passed
 
-    ensure -> 30`seconds  = 15`seconds * 2 
+    ensure -> 30`seconds  = 15`seconds * 2
     ensure -> 30`seconds  = 60`seconds * 1:2
-    passed 
-    
-    ensure -> 30`seconds  = 60`seconds /  2 
+    passed
+
+    ensure -> 30`seconds  = 60`seconds /  2
     ensure -> 30`seconds  = 60`seconds // 2
     passed
-    
+
     ensure -> 10`seconds  =  8`seconds + 2`seconds
     ensure ->  8`seconds  = 10`seconds - 2`seconds
     passed
@@ -1984,7 +1984,7 @@ do [
 
 
     topic « time - math // scales
-    
+
     ; precision loss
     ; ensure -> 1`as  = 1`fs  / (10 ^ 3)
     ; ensure -> 1`fs  = 1`ps  / (10 ^ 3)
@@ -2003,9 +2003,9 @@ do [
     ensure -> 1`Ps  = 1`Ts  * (10 ^ 3)
     ensure -> 1`Es  = 1`Ps  * (10 ^ 3)
     passed
-    
+
     topic « time - conversion
-    
+
     ensure -> 1`minute = 60`seconds
     ensure ->   1`hour = 60`minutes
     ensure ->    1`day = 24`hours
@@ -2014,7 +2014,7 @@ do [
     ensure ->  1`month < 5`weeks
     ensure ->   1`year = 12`months
     passed
-    
+
 
     topic « time - math // check auto-conversion
 
@@ -2083,27 +2083,27 @@ do [
 
     ensure -> `month <> units 100`years
     passed
-    
+
     topic « time - alternative names
-    
-    ensure -> every? [`second `seconds] => equal? & `s 
+
+    ensure -> every? [`second `seconds] => equal? & `s
     passed
-    
+
     ensure -> every? [`minute `minutes] => equal? & `min
     passed
-    
+
     ensure -> every? [`hour `hours `hr `hrs] => equal? & `h
     passed
-    
+
     ensure -> equal? `day `days
     passed
-    
+
     ensure -> every? [`week `weeks] => equal? & `wk
     passed
-    
-    ensure -> every? [`month `months] => equal? & `mo 
+
+    ensure -> every? [`month `months] => equal? & `mo
     passed
-    
+
     ensure -> every? [`year `years] => equal? & `yr
     passed
 
@@ -2114,13 +2114,13 @@ topic « mass
 do [
 
     massSet: [
-        
+
         1`g
-        1`ag    1`fg    1`pg    1`ng    1`ug    1`mg    1`cg    1`dg    
+        1`ag    1`fg    1`pg    1`ng    1`ug    1`mg    1`cg    1`dg
         1`dag   1`hg    1`kg    1`Mg    1`Gg    1`Tg    1`Pg    1`Eg
-        
-        1`lb    1`slug  1`oz    1`ct    1`t   
-        1`ton   1`lt    1`st    1`Da    1`gr 
+
+        1`lb    1`slug  1`oz    1`ct    1`t
+        1`ton   1`lt    1`st    1`Da    1`gr
         1`dwt   1`ozt   1`lbt
 
     ]
@@ -2184,29 +2184,29 @@ do [
 
     ; A lot of conversions are actually broken, mainly when envolving lbs
 
-    ensure -> equal? ~"|1`lb   --> `g |" ~"|45359237:100000`g|"   
-    ensure -> equal? ~"|1`slug --> `kg|" ~"|14.59390`kg|"   
+    ensure -> equal? ~"|1`lb   --> `g |" ~"|45359237:100000`g|"
+    ensure -> equal? ~"|1`slug --> `kg|" ~"|14.59390`kg|"
     ; Da is being considered as 0 when compared with kg, g or mg...
-    ; ensure -> equal? ~"|1`Da   --> `kg|" ~"|1.66053906660e-27`kg|"   
-    ensure -> equal? ~"|1`gr   --> `mg|" ~"|64.79891`mg|" 
+    ; ensure -> equal? ~"|1`Da   --> `kg|" ~"|1.66053906660e-27`kg|"
+    ensure -> equal? ~"|1`gr   --> `mg|" ~"|64.79891`mg|"
     passed
-      
+
     ; 1`oz is being considered as 135624986579`lb
-    ; ensure -> 1`oz  =   1:16`lb  
-    ensure -> 1`ct  =   1:5`g   
-    ensure -> 1`t   =   1000`kg  
+    ; ensure -> 1`oz  =   1:16`lb
+    ensure -> 1`ct  =   1:5`g
+    ensure -> 1`t   =   1000`kg
     ; 1`ton is being considered as 542499946316000`lb
-    ; ensure -> 1`ton =   2000`lb  
+    ; ensure -> 1`ton =   2000`lb
     ; 1`lt is being considered as 607599939873920`lb
-    ; ensure -> 1`lt  =   2240`lb  
-    ; 1`st is being considered as 3797499624212`lb 
+    ; ensure -> 1`lt  =   2240`lb
+    ; 1`st is being considered as 3797499624212`lb
     ; ensure -> 1`st  =   14`lb
     ; 1`dwt is being considered as 300814707696`gr
-    ; ensure -> 1`dwt =   24`gr 
-    ; 1`ozt is being considered as 1203258830784`dwt  
-    ; ensure -> 1`ozt =   20`dwt  
+    ; ensure -> 1`dwt =   24`gr
+    ; 1`ozt is being considered as 1203258830784`dwt
+    ; ensure -> 1`ozt =   20`dwt
     ; 1`lbt is being considered as 14439105969408`ozt
-    ; ensure -> 1`lbt =   12`ozt  
+    ; ensure -> 1`lbt =   12`ozt
     passed
 
 
@@ -2279,10 +2279,10 @@ do [
 
     ensure -> `ton <> units 100`t
     passed
-    
-    
+
+
     topic « mass - alternative names
-    
+
     ensure -> every? [ `pound `pounds ] => equal? & `lb
     passed
     ensure -> equal? `slugs `slug
