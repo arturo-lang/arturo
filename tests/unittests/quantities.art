@@ -2260,6 +2260,36 @@ do [
     ensure -> `ton <> units 100`t
     passed
     
+    
+    topic « mass - alternative names
+    
+    ensure -> every? [ `pound `pounds ] => equal? & `lb
+    passed
+    ensure -> equal? `slugs `slug
+    passed
+    ensure -> every? [ `ounce `ounces ] => equal? & `oz
+    passed
+    ensure -> every? [ `carat `carats ] => equal? & `ct
+    passed
+    ensure -> every? [ `tonne `tonnes `metricTon `metricTons ] => equal? & `t
+    passed
+    ensure -> every? [ `tons `shortTon `shortTons ] => equal? & `ton
+    passed
+    ensure -> every? [ `longTon `longTons ] => equal? & `lt
+    passed
+    ensure -> every? [ `stone `stones ] => equal? & `st
+    passed
+    ensure -> every? [ `dalton `daltons `AMU ] => equal? & `Da
+    passed
+    ensure -> every? [ `grain `grains ] => equal? & `gr
+    passed
+    ensure -> every? [ `pennyweight `pennyweights ] => equal? & `dwt
+    passed
+    ensure -> every? [ `troyOunce `troyOunces ] => equal? & `ozt
+    passed
+    ensure -> every? [ `troyPound `troyPounds ] => equal? & `lbt
+    passed
+
 
 ]
 
