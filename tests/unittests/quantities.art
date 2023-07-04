@@ -2336,10 +2336,6 @@ print in`deg 1`rad
 ; Speed
 print in`kph 30`mps
 
-; Weight
-print in`g 1`kg
-print in`g 1`oz
-
 ; Information
 print in`bit 10`kB
 print in`bit 10`KiB
