@@ -2226,6 +2226,12 @@ do [
     passed
 
 
+    topic « mass - property
+
+    ensure -> every? massSet -> x -> 'mass = property x
+    passed
+
+
 
 ]
 
