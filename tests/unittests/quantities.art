@@ -2232,6 +2232,12 @@ do [
     passed
 
 
+    topic « mass - scalar
+
+    ensure -> every? massSet -> x -> one? scalar x
+    passed
+
+
 
 ]
 
