@@ -2131,6 +2131,33 @@ do [
     passed
 
 
+    topic « mass - basic math
+
+    ; :unit :scale
+
+    ensure -> 3`g   = 2`g + 1
+    ensure -> 3.5`g = 2`g + 1.5
+    ensure -> 7.5`g = 5`g + 5:2
+    passed
+
+    ensure -> 1`g   = 2`g - 1
+    ensure -> 0.5`g = 2`g - 1.5
+    ensure -> 4.5`g = 5`g - 1:2
+    passed
+
+    ensure -> 30`g  = 15`g * 2
+    ; ensure -> 7`g = 15`g / 2
+    ensure -> 7.5`g = 15`g // 2
+    passed
+
+    ensure -> 2`g   = 1`g + 1`g
+    ensure -> 0`g   = 1`g - 1`g
+    passed
+
+    ensure -> 1.1`g = 1`g + 1`dg
+    ensure -> 0.9`g = 1`g - 1`dg
+    passed
+
 
 
 ]
