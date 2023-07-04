@@ -2209,6 +2209,15 @@ do [
     ensure -> every? massSet -> x -> not? conforms? x `m2
     passed
 
+    topic « mass - convert
+
+    ; DRY - already tested in math // scales
+
+    ensure -> same? 1000`g convert 1`kg `g
+    ensure -> same? 1000`g 1`kg --> `g
+    passed
+
+
 
 ]
 
