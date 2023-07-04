@@ -2239,6 +2239,18 @@ do [
 
 
 
+
+    topic « mass - units
+
+    ensure -> `g    = units 100`g
+    ensure -> `lb   = units 100`lb
+    ensure -> `kg   = units 100`kg
+    passed
+
+    ensure -> `ton <> units 100`t
+    passed
+    
+
 ]
 
 ; Pressure
