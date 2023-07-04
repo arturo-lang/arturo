@@ -2125,6 +2125,12 @@ do [
 
     ]
 
+    topic « mass - mass?
+
+    ensure -> every? massSet => mass?
+    passed
+
+
 
 
 ]
