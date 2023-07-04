@@ -2218,6 +2218,14 @@ do [
     passed
 
 
+    topic « mass - in
+
+    ; DRY - already tested in math // scales & convert
+
+    ensure -> same? 1000`g in `g 1`kg
+    passed
+
+
 
 ]
 
