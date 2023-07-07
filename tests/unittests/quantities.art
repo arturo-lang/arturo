@@ -2443,6 +2443,12 @@ do [
     passed
 
 
+    topic « speed - property
+
+    ensure -> every? speedSet -> x -> 'speed = property x
+    passed
+
+
 ]
 
 ; Pressure
