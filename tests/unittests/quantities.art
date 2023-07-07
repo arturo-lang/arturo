@@ -2426,6 +2426,15 @@ do [
     ensure -> every? speedSet -> x -> not? conforms? x `m2
     passed
 
+    topic « speed - convert
+
+    ; DRY - already tested in math // scales
+
+    ensure -> same? 3.6`kph convert 1`mps `kph
+    ensure -> same? 3.6`kph 1`mps --> `kph
+    passed
+
+
 ]
 
 ; Pressure
