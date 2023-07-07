@@ -2516,9 +2516,6 @@ print in`Bq 1`Ci
 ; Angle
 print in`deg 1`rad
 
-; Speed
-print in`kph 30`mps
-
 ; Information
 print in`bit 10`kB
 print in`bit 10`KiB
