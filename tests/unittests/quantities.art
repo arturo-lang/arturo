@@ -2455,6 +2455,18 @@ do [
     passed
 
 
+    topic « speed - specify
+
+    ; The F1 Speed Record: 372.5 Km/h by Valtteri Bottas 
+    ; source: https://www.redbull.com/ca-en/f1-records
+    specify.symbol: "🏎️" .describes: "F1's highest speed" 'bottas 372.5`kph
+
+    ensure -> "f1's highest speed" = to :string property 1`bottas
+    ensure -> "1 🏎️" = ~"|1`bottas|"
+    ensure -> "31:2`🏎️" = as.code 15.5`bottas
+    ensure -> 372.5`kph = 1`bottas --> `kph
+    passed
+
 
     topic « speed - units
 
