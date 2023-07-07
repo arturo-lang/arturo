@@ -2330,6 +2330,40 @@ do [
 
     ]
 
+    topic « speed - speed?
+
+    ensure -> every? speedSet => speed?
+    passed
+
+
+    topic « speed - basic math
+
+    ; :unit :scale
+
+    ensure -> 3`kph   = 2`kph + 1
+    ensure -> 3.5`kph = 2`kph + 1.5
+    ensure -> 7.5`kph = 5`kph + 5:2
+    passed
+
+    ensure -> 1`kph   = 2`kph - 1
+    ensure -> 0.5`kph = 2`kph - 1.5
+    ensure -> 4.5`kph = 5`kph - 1:2
+    passed
+
+    ensure -> 30`kph  = 15`kph * 2
+    ; ensure -> 7`kph = 15`kph / 2
+    ensure -> 7.5`kph = 15`kph // 2
+    passed
+
+    ensure -> 2`kph   = 1`kph + 1`kph
+    ensure -> 0`kph   = 1`kph - 1`kph
+    passed
+
+    ensure -> 181`kph       = 1`kph + 50`mps
+    ensure -> (neg 179`kph) = 1`kph - 50`mps
+    passed
+
+
 
 ]
 
