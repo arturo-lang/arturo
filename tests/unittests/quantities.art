@@ -2449,6 +2449,12 @@ do [
     passed
 
 
+    topic « speed - scalar
+
+    ensure -> every? speedSet -> x -> one? scalar x
+    passed
+
+
 ]
 
 ; Pressure
