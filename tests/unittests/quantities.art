@@ -2390,6 +2390,23 @@ do [
     ; ensure -> 1`am/s  = 1`fm/s  / (10 ^ 3)
     passed
 
+    topic « speed - math // conversions
+
+    ; fix it soon, fps is defined as 1:3600`ft/s instead o 1`ft/s
+    
+    ; ensure -> 1`fps     =   1`ft/s
+    ensure -> 1`mps     =   1`m/s
+    ensure -> 1`kph     =   1`km/h
+    ensure -> 1`mph     =   1`mi/h
+    passed
+    
+    ensure -> 1`mach    = 340.29`mps
+    ; ensure -> 1`fps     = 0.3048`mps
+    ensure -> 1`kn      = 1852:3600`mps
+    ; ensure -> 1`mph     = 5280:3600`fps
+    ensure -> 1`kph     = 1000:3600`m/s
+
+
 
 ]
 
