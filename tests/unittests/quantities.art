@@ -2455,6 +2455,18 @@ do [
     passed
 
 
+
+    topic « speed - units
+
+    ensure -> `kph  = units 100`kph
+    ensure -> `mph  = units 100`mph
+    ensure -> `mps  = units 100`mps
+    passed
+
+    ensure -> `mps <> units 100`mph
+    passed
+
+
 ]
 
 ; Pressure
