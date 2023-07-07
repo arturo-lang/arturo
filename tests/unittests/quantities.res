@@ -389,6 +389,58 @@
 [+] passed!
 [+] passed!
 [+] passed!
+
+>> speed
+
+>> speed - speed?
+[+] passed!
+
+>> speed - basic math
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+
+>> speed - math // scales
+[+] passed!
+
+>> speed - math // conversions
+[+] passed!
+
+>> speed - math // check auto-conversion
+[+] passed!
+
+>> speed - conforms?
+[+] passed!
+[+] passed!
+
+>> speed - convert
+[+] passed!
+
+>> speed - in
+[+] passed!
+
+>> speed - property
+[+] passed!
+
+>> speed - scalar
+[+] passed!
+
+>> speed - specify
+[+] passed!
+
+>> speed - units
+[+] passed!
+[+] passed!
+
+>> speed - alternative names
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 4000/4053 atm
 1000 J
 0.001 kJ
@@ -397,7 +449,6 @@
 1e-05 N
 37000000000 Bq
 857374503/14964008 °
-108 km/h
 80000 b
 81920 b
 0°C
