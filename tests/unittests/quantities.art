@@ -2418,6 +2418,13 @@ do [
     ensure -> 15`mps/m3 = 45`mps / 3`m3
     passed
 
+    topic « speed - conforms?
+
+    ensure -> every? speedSet => conforms? `kph
+    passed
+
+    ensure -> every? speedSet -> x -> not? conforms? x `m2
+    passed
 
 ]
 
