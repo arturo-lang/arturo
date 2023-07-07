@@ -2317,6 +2317,18 @@ do [
 topic « speed
 do [
 
+    speedSet: [
+
+        1`mps       1`kph       1`mph
+        1`kn        1`fps       1`mach
+
+        ; Other custom speed units
+        ; length/time
+
+        1`mm/h      1`mm/s      1`hm/mo
+        1`px/day    1`in/s      1`yd/s
+
+    ]
 
 
 ]
