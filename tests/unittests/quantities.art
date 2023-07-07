@@ -2364,6 +2364,32 @@ do [
     passed
 
 
+    topic « speed - math // scales
+
+    ; Note: DRYing. I'm not testing for every single unit's scale because 
+    ; I already tested both length's and time's units, 
+    ; so if it works for meters-ish by second, it'll work for the others too. 
+    ; Unless it suffers with precision loss...
+
+    ensure -> 1`Em/s  = 1`Pm/s  * (10 ^ 3)
+    ensure -> 1`Pm/s  = 1`Tm/s  * (10 ^ 3)
+    ensure -> 1`Tm/s  = 1`Gm/s  * (10 ^ 3)
+    ensure -> 1`Gm/s  = 1`Mm/s  * (10 ^ 3)
+    ensure -> 1`Mm/s  = 1`km/s  * (10 ^ 3)
+    ensure -> 1`km/s  = 1`hm/s  *  10
+    ensure -> 1`hm/s  = 1`dam/s *  10
+    ensure -> 1`dam/s = 1`m/s   *  10
+    ensure -> 1`dm/s  = 1`m/s   /  10
+    ensure -> 1`cm/s  = 1`dm/s  /  10
+    ensure -> 1`mm/s  = 1`cm/s  /  10
+    ensure -> 1`um/s  = 1`mm/s  / (10 ^ 3)
+    ensure -> 1`nm/s  = 1`um/s  / (10 ^ 3)
+    ; precision loss
+    ; ensure -> 1`pm/s  = 1`nm/s  / (10 ^ 3)
+    ; ensure -> 1`fm/s  = 1`pm/s  / (10 ^ 3)
+    ; ensure -> 1`am/s  = 1`fm/s  / (10 ^ 3)
+    passed
+
 
 ]
 
