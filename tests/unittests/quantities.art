@@ -2366,9 +2366,9 @@ do [
 
     topic « speed - math // scales
 
-    ; Note: DRYing. I'm not testing for every single unit's scale because 
-    ; I already tested both length's and time's units, 
-    ; so if it works for meters-ish by second, it'll work for the others too. 
+    ; Note: DRYing. I'm not testing for every single unit's scale because
+    ; I already tested both length's and time's units,
+    ; so if it works for meters-ish by second, it'll work for the others too.
     ; Unless it suffers with precision loss...
 
     ensure -> 1`Em/s  = 1`Pm/s  * (10 ^ 3)
@@ -2393,13 +2393,13 @@ do [
     topic « speed - math // conversions
 
     ; fix it soon, fps is defined as 1:3600`ft/s instead o 1`ft/s
-    
+
     ; ensure -> 1`fps     =   1`ft/s
     ensure -> 1`mps     =   1`m/s
     ensure -> 1`kph     =   1`km/h
     ensure -> 1`mph     =   1`mi/h
     passed
-    
+
     ensure -> 1`mach    = 340.29`mps
     ; ensure -> 1`fps     = 0.3048`mps
     ensure -> 1`kn      = 1852:3600`mps
@@ -2457,7 +2457,7 @@ do [
 
     topic « speed - specify
 
-    ; The F1 Speed Record: 372.5 Km/h by Valtteri Bottas 
+    ; The F1 Speed Record: 372.5 Km/h by Valtteri Bottas
     ; source: https://www.redbull.com/ca-en/f1-records
     specify.symbol: "🏎️" .describes: "F1's highest speed" 'bottas 372.5`kph
 
@@ -2480,7 +2480,7 @@ do [
 
 
     topic « speed - alternative names
-    
+
     ensure -> every? [ `meterPerSecond `metersPerSecond ] => equal? & `mps
     passed
     ensure -> every? [ `kilometerPerHour `kilometersPerHour ] => equal? & `kph
@@ -2493,7 +2493,7 @@ do [
     passed
     ensure -> equal? `machs `mach
     passed
-    
+
 ]
 
 ; Pressure
