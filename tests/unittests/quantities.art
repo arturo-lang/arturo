@@ -2479,6 +2479,21 @@ do [
     passed
 
 
+    topic « speed - alternative names
+    
+    ensure -> every? [ `meterPerSecond `metersPerSecond ] => equal? & `mps
+    passed
+    ensure -> every? [ `kilometerPerHour `kilometersPerHour ] => equal? & `kph
+    passed
+    ensure -> every? [ `milePerHour `milesPerHour ] => equal? & `mph
+    passed
+    ensure -> every? [ `knot `knots ] => equal? & `kn
+    passed
+    ensure -> every? [ `footPerSecond `feetPerSecond ] => equal? & `fps
+    passed
+    ensure -> equal? `machs `mach
+    passed
+    
 ]
 
 ; Pressure
