@@ -2673,6 +2673,34 @@ do [
     passed
 
 
+    topic « force - basic math
+
+    ; :unit :scale
+
+    ensure -> 3`N   = 2`N + 1
+    ensure -> 3.5`N = 2`N + 1.5
+    ensure -> 7.5`N = 5`N + 5:2
+    passed
+
+    ensure -> 1`N   = 2`N - 1
+    ensure -> 0.5`N = 2`N - 1.5
+    ensure -> 4.5`N = 5`N - 1:2
+    passed
+
+    ensure -> 30`N  = 15`N * 2
+    ; ensure -> 7`N = 15`N / 2
+    ensure -> 7.5`N = 15`N // 2
+    passed
+
+    ensure -> 2`N   = 1`N + 1`N
+    ensure -> 0`N   = 1`N - 1`N
+    passed
+
+    ensure -> 216133:196133`kgf = 1`kgf + 1`N
+    ensure -> 176133:196133`kgf = 1`kgf - 1`N
+    passed
+
+
 
 ]
 
