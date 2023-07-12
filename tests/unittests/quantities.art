@@ -2499,6 +2499,18 @@ do [
 topic « acceleration
 do [
 
+    accelerationSet: [
+
+        1`Gal
+
+        ; Other custom acceleration units
+        ; length * (time ^ -2)
+
+        1`mm/s2      1`mach/h      1`mph/s
+        1`px/day2    1`in/s2      1`yd/s2
+
+    ]
+
     
 ]
 
