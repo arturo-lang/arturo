@@ -3071,6 +3071,26 @@ do [
     ensure -> every? energySet -> x -> 'energy = property x
     passed
 
+    topic « energy - alternative names
+
+    ensure -> every? [ `britishThermalUnit `britishThermalUnits ]   => equal? & `BTU
+    passed
+    ensure -> every? [ `electronVolt `electronVolts ]               => equal? & `eV
+    passed
+    ensure -> every? [ `wattHour `wattHours ]   => equal? & `Wh
+    passed
+    ensure -> every? [ `calorie `calories ]     => equal? & `cal
+    passed
+    ensure -> every? [ `thermie `thermies ]     => equal? & `th
+    passed
+    ensure -> every? [ `joule `joules ]         => equal? & `J
+    passed
+    ensure -> every? [ `therm `therms ]         => equal? & `thm
+    passed
+
+    ensure -> equal? `ergs  `erg
+    passed
+
 ]
 
 ; Energy
