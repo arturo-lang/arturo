@@ -3052,6 +3052,11 @@ do [
 
     ]
 
+    topic « energy - energy?
+
+    ensure -> every? energySet => energy?
+    passed
+
 ]
 
 ; Energy
