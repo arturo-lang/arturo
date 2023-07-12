@@ -2783,6 +2783,18 @@ do [
     ensure -> every? forceSet -> x -> one? scalar x
     passed
 
+
+    topic « force - units
+
+    ensure -> `kg.m/s2  = units 100`kg.m/s2
+    ensure -> `g.m/s2   = units 100`g.m/s2
+    ensure -> `g.km/h2  = units 100`g.km/h2
+    passed
+
+    ensure -> `g.km/h2 <> units 100`kg.km/h2
+    passed
+
+
 ]
 
 ; Pressure
