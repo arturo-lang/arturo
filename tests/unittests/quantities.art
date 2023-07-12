@@ -2605,6 +2605,14 @@ do [
     passed
 
 
+    topic « acceleration - in
+
+    ; DRY - already tested in math // scales & convert
+
+    ensure -> same? 12960`kph/h in `kph/h 1`mps/s
+    passed
+
+
 ]
 
 ; Pressure
