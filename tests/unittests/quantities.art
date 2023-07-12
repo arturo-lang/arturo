@@ -2822,6 +2822,24 @@ do [
 
 ]
 
+topic « pressure
+do [
+
+    pressureSet: [
+        1`Pa        1`atm       1`bar
+        1`pz        1`Ba        1`mmHg
+        1`psi       1`Torr
+
+        ; Other custom force units
+        ; (mass * length)/(time ^ 2)
+
+        1`N/m2      1`kgf/cm2   1`kg.km/km2.h2
+
+    ]
+
+
+]
+
 ; Pressure
 print in`atm 1`bar
 
