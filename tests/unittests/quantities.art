@@ -3057,6 +3057,23 @@ do [
     ensure -> every? energySet => energy?
     passed
 
+    topic « energy - math // conversions
+
+    ; poundal is broken due to the use of pounds
+
+    ensure -> 1`J   =   1`N.m
+    ensure -> 1`Wh  =   3600`J
+    ensure -> 1`cal =   4.184`J
+    ensure -> 1`erg =   1`J / (10 ^ 7)
+    passed
+
+    ensure -> (~"|1`BTU --> `J |") =   "1055.05585262 J"
+    ; this conversion returns 0J
+    ; ensure -> (~"|1`eV  --> `J |") =   "1.602176565e-19 J"
+    ensure -> (~"|1`th  --> `MJ|") =   "4.1868 MJ"
+    ensure -> (~"|1`thm --> `MJ|") =   "105.506 MJ"
+    passed
+
 
     topic « energy - conforms?
 
