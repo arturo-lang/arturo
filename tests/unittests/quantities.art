@@ -3057,6 +3057,14 @@ do [
     ensure -> every? energySet => energy?
     passed
 
+
+    topic « energy - conforms?
+
+    ensure -> every? energySet => conforms? `J
+    passed
+
+    ensure -> every? energySet -> x -> not? conforms? x `Pa
+    passed
 ]
 
 ; Energy
