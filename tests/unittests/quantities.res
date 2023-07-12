@@ -595,8 +595,43 @@
 [+] passed!
 [+] passed!
 [+] passed!
-1000 J
-0.001 kJ
+
+>> energy
+
+>> energy - energy?
+[+] passed!
+
+>> energy - math // scales
+[+] passed!
+[+] passed!
+[+] passed!
+
+>> energy - math // conversions
+[+] passed!
+[+] passed!
+
+>> energy - conforms?
+[+] passed!
+[+] passed!
+
+>> energy - convert
+[+] passed!
+
+>> energy - in
+[+] passed!
+
+>> energy - property
+[+] passed!
+
+>> energy - alternative names
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 1000 W
 2111326061/1574415572556 hp
 37000000000 Bq
