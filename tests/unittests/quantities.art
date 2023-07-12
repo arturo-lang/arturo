@@ -2954,8 +2954,8 @@ do [
 
     ; DRY - already tested in math // scales
 
-    ensure -> same? 1000`g.m/s2 convert 1`kg.m/s2 `g.m/s2
-    ensure -> same? 1000`g.m/s2 1`kg.m/s2 --> `g.m/s2
+    ensure -> same? 100000`Pa convert 1`bar `Pa
+    ensure -> same? 100000`Pa 1`bar --> `Pa
     passed
 
 
