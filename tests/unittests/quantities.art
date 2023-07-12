@@ -2588,6 +2588,14 @@ do [
     ensure ->  8`mps/s    =  3`mps/s + 18`kph/s
     passed
 
+    topic « acceleration - conforms?
+
+    ensure -> every? accelerationSet => conforms? `km/h2
+    passed
+
+    ensure -> every? accelerationSet -> x -> not? conforms? x `m2
+    passed
+
 ]
 
 ; Pressure
