@@ -2570,7 +2570,14 @@ do [
     ; ensure -> 1`fm/s2  = 1`pm/s2  / (10 ^ 3)
     ; ensure -> 1`am/s2  = 1`fm/s2  / (10 ^ 3)
     passed
-    
+
+    topic « acceleration - math // conversions
+
+    ensure -> 1`Gal     =   1`cm/s2
+    ensure -> 1`m/s2    =   12960`km/h2
+    passed
+
+
 ]
 
 ; Pressure
