@@ -2625,6 +2625,16 @@ do [
     passed
 
 
+    topic « acceleration - specify
+
+    specify.symbol: "🌎" .describes: "Earth's gravity acceleration" 'earth 9.81`m/s2
+
+    ensure -> "earth's gravity acceleration" = to :string property 1`earth
+    ensure -> "1 🌎" = ~"|1`earth|"
+    ensure -> "31:2`🌎" = as.code 15.5`earth
+    ensure -> 9.81`m/s2 = 1`earth --> `m/s2
+    passed
+
 
     topic « acceleration - units
 
