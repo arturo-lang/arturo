@@ -3166,6 +3166,15 @@ do [
     ensure -> every? energySet -> x -> not? conforms? x `Pa
     passed
 
+    topic « energy - convert
+
+    ; DRY - already tested in math // scales
+
+    ensure -> same? 3600`J convert 1`Wh `J
+    ensure -> same? 3600`J 1`Wh --> `J
+    passed
+
+
     topic « energy - property
 
     ensure -> every? energySet -> x -> 'energy = property x
