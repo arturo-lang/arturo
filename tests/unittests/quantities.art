@@ -3048,7 +3048,7 @@ do [
         ; Other custom energy units
         ; force * length
 
-        1`N/kg      1`kg.m2/s2
+        1`N.m      1`kg.m2/s2
 
     ]
 
