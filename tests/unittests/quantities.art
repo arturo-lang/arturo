@@ -2596,6 +2596,15 @@ do [
     ensure -> every? accelerationSet -> x -> not? conforms? x `m2
     passed
 
+    topic « acceleration - convert
+
+    ; DRY - already tested in math // scales
+
+    ensure -> same? 12960`kph/h convert 1`mps/s `kph/h
+    ensure -> same? 12960`kph/h 1`mps/s --> `kph/h
+    passed
+
+
 ]
 
 ; Pressure
