@@ -2938,8 +2938,8 @@ do [
     ; just check that conversions happen automatically
     ; when used in mathematical operations
 
-    ensure ->  3`kg.m/s2  =  3`kg/s2 * 1`m
-    ensure ->  4`kg.m/s2    =  3`kg.m/s2 + 1000`g.m/s2
+    ensure ->  6`Pa     =   12`N    /   2`m2
+    ensure ->  1.1`bar  =   1`bar   +   10000`Pa
     passed
 
     topic « pressure - conforms?
