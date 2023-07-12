@@ -2795,6 +2795,20 @@ do [
     passed
 
 
+    topic « force - alternative names
+
+    ensure -> every? [ `newton `newtons ]   => equal? & `N
+    passed
+    ensure -> every? [ `dyne `dynes ]       => equal? & `dyn
+    passed
+    ensure -> every? [ `poundal `poundals ] => equal? & `pdl
+    passed
+
+    ensure -> equal? `poundsForce   `lbf
+    passed
+    ensure -> equal? `kilogramsForce `kgf
+    passed
+
 ]
 
 ; Pressure
