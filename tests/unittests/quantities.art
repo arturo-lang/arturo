@@ -2613,6 +2613,12 @@ do [
     passed
 
 
+    topic « acceleration - property
+
+    ensure -> every? accelerationSet -> x -> 'acceleration = property x
+    passed
+
+
 ]
 
 ; Pressure
