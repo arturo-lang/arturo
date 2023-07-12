@@ -3121,7 +3121,7 @@ do [
     passed
 
     ; division by zero?
-    
+
     ; ensure -> 1`EeV  = 1`PeV  * (10 ^ 3)
     ; ensure -> 1`PeV  = 1`TeV  * (10 ^ 3)
     ; ensure -> 1`TeV  = 1`GeV  * (10 ^ 3)
@@ -3172,6 +3172,14 @@ do [
 
     ensure -> same? 3600`J convert 1`Wh `J
     ensure -> same? 3600`J 1`Wh --> `J
+    passed
+
+
+    topic « energy - in
+
+    ; DRY - already tested in math // scales & convert
+
+    ensure -> same? 3600`J in `J 1`Wh
     passed
 
 
