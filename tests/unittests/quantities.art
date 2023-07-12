@@ -3057,6 +3057,89 @@ do [
     ensure -> every? energySet => energy?
     passed
 
+    topic « energy - math // scales
+
+    ; Note: DRYing. I'm not testing for every single unit's scale because
+    ; I already tested length's, area's, time's and mass' units
+
+
+    ; precision loss
+    ; ensure -> 1`EJ  = 1`PJ  * (10 ^ 3)
+    ensure -> 1`PJ  = 1`TJ  * (10 ^ 3)
+    ensure -> 1`TJ  = 1`GJ  * (10 ^ 3)
+    ensure -> 1`GJ  = 1`MJ  * (10 ^ 3)
+    ensure -> 1`MJ  = 1`kJ  * (10 ^ 3)
+    ensure -> 1`kJ  = 1`hJ  *  10
+    ensure -> 1`hJ  = 1`daJ *  10
+    ensure -> 1`daJ = 1`J   *  10
+    ensure -> 1`dJ  = 1`J   /  10
+    ensure -> 1`cJ  = 1`dJ  /  10
+    ensure -> 1`mJ  = 1`cJ  /  10
+    ensure -> 1`uJ  = 1`mJ  / (10 ^ 3)
+    ensure -> 1`nJ  = 1`uJ  / (10 ^ 3)
+    ; ensure -> 1`pJ  = 1`nJ  / (10 ^ 3)
+    ; ensure -> 1`fJ  = 1`pJ  / (10 ^ 3)
+    ; ensure -> 1`aJ  = 1`fJ  / (10 ^ 3)
+    passed
+
+    ; precision loss
+    ; ensure -> 1`EWh  = 1`PWh  * (10 ^ 3)
+    ; ensure -> 1`PWh  = 1`TWh  * (10 ^ 3)
+    ensure -> 1`TWh  = 1`GWh  * (10 ^ 3)
+    ensure -> 1`GWh  = 1`MWh  * (10 ^ 3)
+    ensure -> 1`MWh  = 1`kWh  * (10 ^ 3)
+    ensure -> 1`kWh  = 1`hWh  *  10
+    ensure -> 1`hWh  = 1`daWh *  10
+    ensure -> 1`daWh = 1`Wh   *  10
+    ensure -> 1`dWh  = 1`Wh   /  10
+    ensure -> 1`cWh  = 1`dWh  /  10
+    ensure -> 1`mWh  = 1`cWh  /  10
+    ensure -> 1`uWh  = 1`mWh  / (10 ^ 3)
+    ensure -> 1`nWh  = 1`uWh  / (10 ^ 3)
+    ; ensure -> 1`pWh  = 1`nWh  / (10 ^ 3)
+    ; ensure -> 1`fWh  = 1`pWh  / (10 ^ 3)
+    ; ensure -> 1`aWh  = 1`fWh  / (10 ^ 3)
+    passed
+
+    ; precision loss
+    ; ensure -> 1`Ecal  = 1`Pcal  * (10 ^ 3)
+    ensure -> 1`Pcal  = 1`Tcal  * (10 ^ 3)
+    ensure -> 1`Tcal  = 1`Gcal  * (10 ^ 3)
+    ensure -> 1`Gcal  = 1`Mcal  * (10 ^ 3)
+    ensure -> 1`Mcal  = 1`kcal  * (10 ^ 3)
+    ensure -> 1`kcal  = 1`hcal  *  10
+    ensure -> 1`hcal  = 1`dacal *  10
+    ensure -> 1`dacal = 1`cal   *  10
+    ensure -> 1`dcal  = 1`cal   /  10
+    ensure -> 1`ccal  = 1`dcal  /  10
+    ensure -> 1`mcal  = 1`ccal  /  10
+    ensure -> 1`ucal  = 1`mcal  / (10 ^ 3)
+    ensure -> 1`ncal  = 1`ucal  / (10 ^ 3)
+    ; ensure -> 1`pcal  = 1`ncal  / (10 ^ 3)
+    ; ensure -> 1`fcal  = 1`pcal  / (10 ^ 3)
+    ; ensure -> 1`acal  = 1`fcal  / (10 ^ 3)
+    passed
+
+    ; division by zero?
+    
+    ; ensure -> 1`EeV  = 1`PeV  * (10 ^ 3)
+    ; ensure -> 1`PeV  = 1`TeV  * (10 ^ 3)
+    ; ensure -> 1`TeV  = 1`GeV  * (10 ^ 3)
+    ; ensure -> 1`GeV  = 1`MeV  * (10 ^ 3)
+    ; ensure -> 1`MeV  = 1`keV  * (10 ^ 3)
+    ; ensure -> 1`keV  = 1`heV  *  10
+    ; ensure -> 1`heV  = 1`daeV *  10
+    ; ensure -> 1`daeV = 1`eV   *  10
+    ; ensure -> 1`deV  = 1`eV   /  10
+    ; ensure -> 1`ceV  = 1`deV  /  10
+    ; ensure -> 1`meV  = 1`ceV  /  10
+    ; ensure -> 1`ueV  = 1`meV  / (10 ^ 3)
+    ; ensure -> 1`neV  = 1`ueV  / (10 ^ 3)
+    ; ensure -> 1`peV  = 1`neV  / (10 ^ 3)
+    ; ensure -> 1`feV  = 1`peV  / (10 ^ 3)
+    ; ensure -> 1`aeV  = 1`feV  / (10 ^ 3)
+    ; passed
+
     topic « energy - math // conversions
 
     ; poundal is broken due to the use of pounds
