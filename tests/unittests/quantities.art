@@ -2725,6 +2725,18 @@ do [
     ; ensure -> 1`aN  = 1`fN  / (10 ^ 3)
     passed
 
+    topic « force - math // conversions
+
+    ; poundal is broken due to the use of pounds
+
+    ensure -> 1`N       = 1`kg.m/s2
+    ensure -> 1`dyn     = 1:100000`N
+    ensure -> 1`lbf     = 4.44822`N
+    ensure -> 1`kgf     = 9.80665`N
+    ; ensure -> 1`pdl     = 1`lb.ft/s2
+    passed
+
+
 ]
 
 ; Pressure
