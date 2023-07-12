@@ -2517,6 +2517,34 @@ do [
     passed
 
 
+    topic « acceleration - basic math
+
+    ; :unit :scale
+
+    ensure -> 3`kph/h   = 2`kph/h + 1
+    ensure -> 3.5`kph/h = 2`kph/h + 1.5
+    ensure -> 7.5`kph/h = 5`kph/h + 5:2
+    passed
+
+    ensure -> 1`kph/h   = 2`kph/h - 1
+    ensure -> 0.5`kph/h = 2`kph/h - 1.5
+    ensure -> 4.5`kph/h = 5`kph/h - 1:2
+    passed
+
+    ensure -> 30`kph/h  = 15`kph/h * 2
+    ; ensure -> 7`kph/h = 15`kph/h / 2
+    ensure -> 7.5`kph/h = 15`kph/h // 2
+    passed
+
+    ensure -> 2`kph/h   = 1`kph/h + 1`kph/h
+    ensure -> 0`kph/h   = 1`kph/h - 1`kph/h
+    passed
+
+    ensure -> 4.6`kph/h       = 1`kph/h + 1`mps/h
+    ensure -> (neg 2.6`kph/h) = 1`kph/h - 1`mps/h
+    passed
+
+
     
 ]
 
