@@ -2844,6 +2844,14 @@ do [
 
 
 
+
+    topic « pressure - property
+
+    ensure -> every? pressureSet -> x -> 'pressure = property x
+    passed
+
+
+
 ]
 
 ; Pressure
