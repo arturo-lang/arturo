@@ -539,6 +539,62 @@
 [+] passed!
 [+] passed!
 [+] passed!
+
+>> pressure
+
+>> pressure - pressure?
+[+] passed!
+
+>> pressure - basic math
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+
+>> pressure - math // scales
+[+] passed!
+[+] passed!
+
+>> pressure - math // conversions
+[+] passed!
+[+] passed!
+
+>> pressure - math // check auto-conversion
+[+] passed!
+
+>> pressure - conforms?
+[+] passed!
+[+] passed!
+
+>> pressure - convert
+[+] passed!
+
+>> pressure - in
+[+] passed!
+
+>> pressure - property
+[+] passed!
+
+>> pressure - scalar
+[+] passed!
+
+>> pressure - specify
+[+] passed!
+
+>> pressure - units
+[+] passed!
+[+] passed!
+
+>> pressure - alternative names
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 4000/4053 atm
 1000 J
 0.001 kJ
