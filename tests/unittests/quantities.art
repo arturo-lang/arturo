@@ -2857,6 +2857,17 @@ do [
     passed
 
 
+    topic « pressure - units
+
+    ensure -> `Pa  = units 100`Pa
+    ensure -> `Ba   = units 100`Ba
+    ensure -> `mmHg  = units 100`mmHg
+    passed
+
+    ensure -> `Pa <> units 100`N/m2
+    passed
+
+
 
 ]
 
