@@ -488,6 +488,57 @@
 
 >> acceleration - alternative names
 [+] passed!
+
+>> force
+
+>> force - force?
+[+] passed!
+
+>> force - basic math
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+
+>> force - math // scales
+[+] passed!
+
+>> force - math // conversions
+[+] passed!
+
+>> force - math // check auto-conversion
+[+] passed!
+
+>> force - conforms?
+[+] passed!
+[+] passed!
+
+>> force - convert
+[+] passed!
+
+>> force - in
+[+] passed!
+
+>> force - property
+[+] passed!
+
+>> force - scalar
+[+] passed!
+
+>> force - specify
+[+] passed!
+
+>> force - units
+[+] passed!
+[+] passed!
+
+>> force - alternative names
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 4000/4053 atm
 1000 J
 0.001 kJ
