@@ -2843,6 +2843,33 @@ do [
     passed
 
 
+    topic « pressure - basic math
+
+    ; :unit :scale
+
+    ensure -> 3`Pa   = 2`Pa + 1
+    ensure -> 3.5`Pa = 2`Pa + 1.5
+    ensure -> 7.5`Pa = 5`Pa + 5:2
+    passed
+
+    ensure -> 1`Pa   = 2`Pa - 1
+    ensure -> 0.5`Pa = 2`Pa - 1.5
+    ensure -> 4.5`Pa = 5`Pa - 1:2
+    passed
+
+    ensure -> 30`Pa  = 15`Pa * 2
+    ; ensure -> 7`Pa = 15`Pa / 2
+    ensure -> 7.5`Pa = 15`Pa // 2
+    passed
+
+    ensure -> 2`Pa   = 1`Pa + 1`Pa
+    ensure -> 0`Pa   = 1`Pa - 1`Pa
+    passed
+
+    ensure -> 100001`Pa         = 1`Pa + 1`bar
+    ensure -> (neg 99999`Pa)    = 1`Pa - 1`bar
+    passed
+
 
     topic « pressure - math // scales
 
@@ -2889,6 +2916,51 @@ do [
     ; ensure -> 1`abar  = 1`fbar  / (10 ^ 3)
     passed
 
+    topic « pressure - math // conversions
+
+    ; poundal is broken due to the use of pounds
+
+    ensure -> 1`N       = 1`kg.m/s2
+    ensure -> 1`dyn     = 1:100000`N
+    ensure -> 1`lbf     = 4.44822`N
+    ensure -> 1`kgf     = 9.80665`N
+    ; ensure -> 1`pdl     = 1`lb.ft/s2
+    passed
+
+
+    topic « pressure - math // check auto-conversion
+
+    ; We don't need to do much testing here,
+    ; just check that conversions happen automatically
+    ; when used in mathematical operations
+
+    ensure ->  3`kg.m/s2  =  3`kg/s2 * 1`m
+    ensure ->  4`kg.m/s2    =  3`kg.m/s2 + 1000`g.m/s2
+    passed
+
+    topic « pressure - conforms?
+
+    ensure -> every? pressureSet => conforms? `km.m/h2
+    passed
+
+    ensure -> every? pressureSet -> x -> not? conforms? x `m2
+    passed
+
+    topic « pressure - convert
+
+    ; DRY - already tested in math // scales
+
+    ensure -> same? 1000`g.m/s2 convert 1`kg.m/s2 `g.m/s2
+    ensure -> same? 1000`g.m/s2 1`kg.m/s2 --> `g.m/s2
+    passed
+
+
+    topic « pressure - in
+
+    ; DRY - already tested in math // scales & convert
+
+    ensure -> same? 1000`g.m/s2 in `g.m/s2 1`kg.m/s2
+    passed
 
 
     topic « pressure - property
@@ -2900,6 +2972,17 @@ do [
     topic « pressure - scalar
 
     ensure -> every? pressureSet -> x -> one? scalar x
+    passed
+
+
+    topic « pressure - specify
+
+    specify.symbol: "🚀" .describes: "G-Force" 'gforce 9.81`m/s2 * 1`g
+
+    ensure -> "g-force" = to :string property 1`gforce
+    ensure -> "1 🚀" = ~"|1`gforce|"
+    ensure -> "31:2`🚀" = as.code 15.5`gforce
+    ensure -> 9.81`m.g/s2 = 1`gforce --> `m.g/s2
     passed
 
 
