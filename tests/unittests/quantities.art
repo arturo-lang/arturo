@@ -2844,6 +2844,52 @@ do [
 
 
 
+    topic « pressure - math // scales
+
+    ; Note: DRYing. I'm not testing for every single unit's scale because
+    ; I already tested length's, area's, time's and mass' units
+
+    ; precision loss
+    ; ensure -> 1`EPa  = 1`PPa  * (10 ^ 3)
+    ensure -> 1`PPa  = 1`TPa  * (10 ^ 3)
+    ensure -> 1`TPa  = 1`GPa  * (10 ^ 3)
+    ensure -> 1`GPa  = 1`MPa  * (10 ^ 3)
+    ensure -> 1`MPa  = 1`kPa  * (10 ^ 3)
+    ensure -> 1`kPa  = 1`hPa  *  10
+    ensure -> 1`hPa  = 1`daPa *  10
+    ensure -> 1`daPa = 1`Pa   *  10
+    ensure -> 1`dPa  = 1`Pa   /  10
+    ensure -> 1`cPa  = 1`dPa  /  10
+    ensure -> 1`mPa  = 1`cPa  /  10
+    ensure -> 1`uPa  = 1`mPa  / (10 ^ 3)
+    ensure -> 1`nPa  = 1`uPa  / (10 ^ 3)
+    ; precision loss
+    ; ensure -> 1`pPa  = 1`nPa  / (10 ^ 3)
+    ; ensure -> 1`fPa  = 1`pPa  / (10 ^ 3)
+    ; ensure -> 1`aPa  = 1`fPa  / (10 ^ 3)
+    passed
+
+    ; precision loss
+    ; ensure -> 1`Ebar  = 1`Pbar  * (10 ^ 3)
+    ; ensure -> 1`Pbar  = 1`Tbar  * (10 ^ 3)
+    ; ensure -> 1`Tbar  = 1`Gbar  * (10 ^ 3)
+    ensure -> 1`Gbar  = 1`Mbar  * (10 ^ 3)
+    ensure -> 1`Mbar  = 1`kbar  * (10 ^ 3)
+    ensure -> 1`kbar  = 1`hbar  *  10
+    ensure -> 1`hbar  = 1`dabar *  10
+    ensure -> 1`dabar = 1`bar   *  10
+    ensure -> 1`dbar  = 1`bar   /  10
+    ensure -> 1`cbar  = 1`dbar  /  10
+    ensure -> 1`mbar  = 1`cbar  /  10
+    ensure -> 1`ubar  = 1`mbar  / (10 ^ 3)
+    ensure -> 1`nbar  = 1`ubar  / (10 ^ 3)
+    ; precision loss
+    ; ensure -> 1`pbar  = 1`nbar  / (10 ^ 3)
+    ; ensure -> 1`fbar  = 1`pbar  / (10 ^ 3)
+    ; ensure -> 1`abar  = 1`fbar  / (10 ^ 3)
+    passed
+
+
 
     topic « pressure - property
 
