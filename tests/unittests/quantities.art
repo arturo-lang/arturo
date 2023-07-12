@@ -3023,6 +3023,18 @@ do [
 
 ]
 
+; Some tests are being removed under this comment
+; because I think some things already were extensively tested enough,
+; since all units follow the same rules.
+
+; Now, I'm focusing more in tests that are specific for that unit
+
+; Removed tests:
+;   * basic math,
+;   * auto-conversions,
+;   * `units`,
+;   * `scalar`,
+;   * `specify`
 ; Energy
 print in`J 1`kJ
 print in`kJ 1`J
