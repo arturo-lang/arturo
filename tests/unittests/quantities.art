@@ -2625,6 +2625,18 @@ do [
     passed
 
 
+
+    topic « acceleration - units
+
+    ensure -> `kph/h    = units 100`kph/h
+    ensure -> `mph/h     = units 100`mph/h
+    ensure -> `mps/s     = units 100`mps/s
+    passed
+
+    ensure -> `m/s2 <> units 100`m/h2
+    passed
+
+
 ]
 
 ; Pressure
