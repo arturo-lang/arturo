@@ -2746,6 +2746,15 @@ do [
     ensure ->  3`kg.m/s2  =  3`kg/s2 * 1`m
     ensure ->  4`kg.m/s2    =  3`kg.m/s2 + 1000`g.m/s2
     passed
+
+    topic « force - conforms?
+
+    ensure -> every? forceSet => conforms? `km.m/h2
+    passed
+
+    ensure -> every? forceSet -> x -> not? conforms? x `m2
+    passed
+
 ]
 
 ; Pressure
