@@ -3023,9 +3023,6 @@ do [
 
 ]
 
-; Pressure
-print in`atm 1`bar
-
 ; Energy
 print in`J 1`kJ
 print in`kJ 1`J
@@ -3033,9 +3030,6 @@ print in`kJ 1`J
 ; Power
 print in`W 1`kW
 print in`hp 1`W
-
-; Force
-print in`N 1`dyn
 
 ; Radioactivity
 print in`Bq 1`Ci
