@@ -2981,12 +2981,12 @@ do [
 
     topic « pressure - specify
 
-    specify.symbol: "🚀" .describes: "G-Force" 'gforce 9.81`m/s2 * 1`g
+    specify.symbol: "🌊" .describes: "Sea level's pressure" 'seaLevel 1`atm
 
-    ensure -> "g-force" = to :string property 1`gforce
-    ensure -> "1 🚀" = ~"|1`gforce|"
-    ensure -> "31:2`🚀" = as.code 15.5`gforce
-    ensure -> 9.81`m.g/s2 = 1`gforce --> `m.g/s2
+    ensure -> "sea level's pressure" = to :string property 1`seaLevel
+    ensure -> "1 🌊" = ~"|1`seaLevel|"
+    ensure -> "31:2`🌊" = as.code 15.5`seaLevel
+    ensure -> 1`atm     = 1`seaLevel --> `atm
     passed
 
 
