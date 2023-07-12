@@ -3065,6 +3065,12 @@ do [
 
     ensure -> every? energySet -> x -> not? conforms? x `Pa
     passed
+
+    topic « energy - property
+
+    ensure -> every? energySet -> x -> 'energy = property x
+    passed
+
 ]
 
 ; Energy
