@@ -2944,7 +2944,7 @@ do [
 
     topic « pressure - conforms?
 
-    ensure -> every? pressureSet => conforms? `km.m/h2
+    ensure -> every? pressureSet => conforms? `Pa
     passed
 
     ensure -> every? pressureSet -> x -> not? conforms? x `m2
