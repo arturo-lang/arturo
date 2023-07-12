@@ -2619,6 +2619,12 @@ do [
     passed
 
 
+    topic « acceleration - scalar
+
+    ensure -> every? accelerationSet -> x -> one? scalar x
+    passed
+
+
 ]
 
 ; Pressure
