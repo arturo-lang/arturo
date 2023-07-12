@@ -2652,6 +2652,12 @@ do [
 
 ]
 
+topic « force
+do [
+
+
+]
+
 ; Pressure
 print in`atm 1`bar
 
