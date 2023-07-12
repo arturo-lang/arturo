@@ -2545,6 +2545,31 @@ do [
     passed
 
 
+    topic « acceleration - math // scales
+
+    ; Note: DRYing. I'm not testing for every single unit's scale because
+    ; I already tested both length's and time's units,
+    ; so if it works for meters-ish by second, it'll work for the others too.
+    ; Unless it suffers with precision loss...
+
+    ensure -> 1`Em/s2  = 1`Pm/s2  * (10 ^ 3)
+    ensure -> 1`Pm/s2  = 1`Tm/s2  * (10 ^ 3)
+    ensure -> 1`Tm/s2  = 1`Gm/s2  * (10 ^ 3)
+    ensure -> 1`Gm/s2  = 1`Mm/s2  * (10 ^ 3)
+    ensure -> 1`Mm/s2  = 1`km/s2  * (10 ^ 3)
+    ensure -> 1`km/s2  = 1`hm/s2  *  10
+    ensure -> 1`hm/s2  = 1`dam/s2 *  10
+    ensure -> 1`dam/s2 = 1`m/s2   *  10
+    ensure -> 1`dm/s2  = 1`m/s2   /  10
+    ensure -> 1`cm/s2  = 1`dm/s2  /  10
+    ensure -> 1`mm/s2  = 1`cm/s2  /  10
+    ensure -> 1`um/s2  = 1`mm/s2  / (10 ^ 3)
+    ensure -> 1`nm/s2  = 1`um/s2  / (10 ^ 3)
+    ; precision loss
+    ; ensure -> 1`pm/s2  = 1`nm/s2  / (10 ^ 3)
+    ; ensure -> 1`fm/s2  = 1`pm/s2  / (10 ^ 3)
+    ; ensure -> 1`am/s2  = 1`fm/s2  / (10 ^ 3)
+    passed
     
 ]
 
