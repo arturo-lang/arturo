@@ -2637,6 +2637,11 @@ do [
     passed
 
 
+    topic « acceleration - alternative names
+
+    ensure -> every? [ `galileo `galileos ] => equal? & `Gal
+    passed
+
 ]
 
 ; Pressure
