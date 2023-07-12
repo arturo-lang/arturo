@@ -2851,6 +2851,12 @@ do [
     passed
 
 
+    topic « pressure - scalar
+
+    ensure -> every? pressureSet -> x -> one? scalar x
+    passed
+
+
 
 ]
 
