@@ -2701,6 +2701,29 @@ do [
     passed
 
 
+    topic « force - math // scales
+
+    ; Note: DRYing. I'm not testing for every single unit's scale because
+    ; I already tested length's, time's and mass' units
+
+    ; ensure -> 1`EN  = 1`PN  * (10 ^ 3)
+    ensure -> 1`PN  = 1`TN  * (10 ^ 3)
+    ensure -> 1`TN  = 1`GN  * (10 ^ 3)
+    ensure -> 1`GN  = 1`MN  * (10 ^ 3)
+    ensure -> 1`MN  = 1`kN  * (10 ^ 3)
+    ensure -> 1`kN  = 1`hN  *  10
+    ensure -> 1`hN  = 1`daN *  10
+    ensure -> 1`daN = 1`N   *  10
+    ensure -> 1`dN  = 1`N   /  10
+    ensure -> 1`cN  = 1`dN  /  10
+    ensure -> 1`mN  = 1`cN  /  10
+    ensure -> 1`uN  = 1`mN  / (10 ^ 3)
+    ensure -> 1`nN  = 1`uN  / (10 ^ 3)
+    ; precision loss
+    ; ensure -> 1`pN  = 1`nN  / (10 ^ 3)
+    ; ensure -> 1`fN  = 1`pN  / (10 ^ 3)
+    ; ensure -> 1`aN  = 1`fN  / (10 ^ 3)
+    passed
 
 ]
 
