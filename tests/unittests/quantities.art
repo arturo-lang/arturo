@@ -2392,8 +2392,6 @@ do [
 
     topic « speed - math // conversions
 
-    ; fix it soon, fps is defined as 1:3600`ft/s instead o 1`ft/s
-
     ensure -> 1`fps     =   1`ft/s
     ensure -> 1`mps     =   1`m/s
     ensure -> 1`kph     =   1`km/h
