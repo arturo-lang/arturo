@@ -2772,6 +2772,11 @@ do [
     passed
 
 
+    topic « force - property
+
+    ensure -> every? forceSet -> x -> 'force = property x
+    passed
+
 ]
 
 ; Pressure
