@@ -3039,6 +3039,18 @@ do [
 topic « energy
 do [
 
+    energySet: [
+
+        1`J         1`Wh        1`cal
+        1`BTU       1`eV        1`erg
+        1`th        1`thm
+
+        ; Other custom energy units
+        ; force * length
+
+        1`N/kg      1`kg.m2/s2
+
+    ]
 
 ]
 
