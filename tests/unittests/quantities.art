@@ -2868,6 +2868,25 @@ do [
     passed
 
 
+    topic « pressure - alternative names
+
+    ensure -> every? [ `millimeterOfMercury `millimetersOfMercury ] => equal? & `mmHg
+    passed
+    ensure -> every? [ `poundPerSquareInch `poundsPerSquareInch ]   => equal? & `psi
+    passed
+    ensure -> every? [ `atmosphere `atmospheres ]   => equal? & `atm
+    passed
+    ensure -> every? [ `pascal `pascals ]   => equal? & `Pa
+    passed
+    ensure -> every? [ `barye `baryes ]     => equal? & `Ba
+    passed
+    ensure -> every? [ `torr `torrs ]       => equal? & `Torr
+    passed
+
+    ensure -> equal? `bars  `bar
+    passed
+    ensure -> equal? `pieze `pz
+    passed
 
 ]
 
