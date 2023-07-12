@@ -2496,6 +2496,12 @@ do [
 
 ]
 
+topic « acceleration
+do [
+
+    
+]
+
 ; Pressure
 print in`atm 1`bar
 
