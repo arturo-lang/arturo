@@ -2511,6 +2511,12 @@ do [
 
     ]
 
+    topic « acceleration - acceleration?
+
+    ensure -> every? accelerationSet => acceleration?
+    passed
+
+
     
 ]
 
