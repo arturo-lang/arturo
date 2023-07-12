@@ -441,6 +441,53 @@
 [+] passed!
 [+] passed!
 [+] passed!
+
+>> acceleration
+
+>> acceleration - acceleration?
+[+] passed!
+
+>> acceleration - basic math
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+
+>> acceleration - math // scales
+[+] passed!
+
+>> acceleration - math // conversions
+[+] passed!
+
+>> acceleration - math // check auto-conversion
+[+] passed!
+
+>> acceleration - conforms?
+[+] passed!
+[+] passed!
+
+>> acceleration - convert
+[+] passed!
+
+>> acceleration - in
+[+] passed!
+
+>> acceleration - property
+[+] passed!
+
+>> acceleration - scalar
+[+] passed!
+
+>> acceleration - specify
+[+] passed!
+
+>> acceleration - units
+[+] passed!
+[+] passed!
+
+>> acceleration - alternative names
+[+] passed!
 4000/4053 atm
 1000 J
 0.001 kJ
