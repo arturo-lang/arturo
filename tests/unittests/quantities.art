@@ -2655,6 +2655,18 @@ do [
 topic « force
 do [
 
+    forceSet: [
+
+        1`N         1`dyn       1`lbf
+        1`kgf       1`pdl
+
+        ; Other custom force units
+        ; (mass * length)/(time ^ 2)
+
+        1`m.kg/s2   1`km.ton/h2
+
+    ]
+
 
 ]
 
