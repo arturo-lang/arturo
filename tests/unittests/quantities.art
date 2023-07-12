@@ -2837,6 +2837,12 @@ do [
 
     ]
 
+    topic « pressure - pressure?
+
+    ensure -> every? pressureSet => pressure?
+    passed
+
+
 
 ]
 
