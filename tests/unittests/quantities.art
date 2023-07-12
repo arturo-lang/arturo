@@ -2784,6 +2784,17 @@ do [
     passed
 
 
+    topic « force - specify
+
+    specify.symbol: "🚀" .describes: "G-Force" 'gforce 9.81`m/s2 * 1`g
+
+    ensure -> "g-force" = to :string property 1`gforce
+    ensure -> "1 🚀" = ~"|1`gforce|"
+    ensure -> "31:2`🚀" = as.code 15.5`gforce
+    ensure -> 9.81`m.g/s2 = 1`gforce --> `m.g/s2
+    passed
+
+
     topic « force - units
 
     ensure -> `kg.m/s2  = units 100`kg.m/s2
