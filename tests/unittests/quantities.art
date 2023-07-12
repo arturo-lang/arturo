@@ -2755,6 +2755,15 @@ do [
     ensure -> every? forceSet -> x -> not? conforms? x `m2
     passed
 
+    topic « force - convert
+
+    ; DRY - already tested in math // scales
+
+    ensure -> same? 1000`g.m/s2 convert 1`kg.m/s2 `g.m/s2
+    ensure -> same? 1000`g.m/s2 1`kg.m/s2 --> `g.m/s2
+    passed
+
+
 ]
 
 ; Pressure
