@@ -3298,6 +3298,14 @@ do [
     ensure -> every? powerSet -> x -> 'power = property x
     passed
 
+    topic « power - alternative names
+
+    ensure -> every? [ `watt `watts ] => equal? & `W
+    passed
+
+    ensure -> equal? `horsepower  `hp
+    passed
+
 ]
 
 ; Power
