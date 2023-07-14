@@ -3387,6 +3387,15 @@ do [
     passed
 
 
+    topic « current - alternative names
+
+    ensure -> every? [ `amp `amps `ampere `amperes ] => equal? & `A
+    passed
+    ensure -> every? [ `abampere `abamperes ] => equal? & `abA
+    passed
+    ensure -> every? [ `biot `biots ] => equal? & `Bi
+    passed
+
 ]
 
 ; Radioactivity
