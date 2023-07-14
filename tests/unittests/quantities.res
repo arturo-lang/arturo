@@ -661,6 +661,36 @@
 >> power - alternative names
 [+] passed!
 [+] passed!
+
+>> current
+
+>> current - current?
+[+] passed!
+
+>> current - math // scales
+[+] passed!
+
+>> current - math // conversions
+[+] passed!
+[+] passed!
+
+>> current - conforms?
+[+] passed!
+[+] passed!
+
+>> current - convert
+[+] passed!
+
+>> current - in
+[+] passed!
+
+>> current - property
+[+] passed!
+
+>> current - alternative names
+[+] passed!
+[+] passed!
+[+] passed!
 37000000000 Bq
 857374503/14964008 °
 80000 b
