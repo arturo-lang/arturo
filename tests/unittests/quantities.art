@@ -3329,6 +3329,13 @@ do [
 
 ]
 
+
+topic « potential
+do [
+
+
+]
+
 ; Radioactivity
 print in`Bq 1`Ci
 
