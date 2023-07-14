@@ -3381,6 +3381,12 @@ do [
     passed
 
 
+    topic « current - property
+
+    ensure -> every? currentSet -> x -> 'current = property x
+    passed
+
+
 ]
 
 ; Radioactivity
