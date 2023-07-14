@@ -3293,6 +3293,11 @@ do [
     passed
 
 
+    topic « power - property
+
+    ensure -> every? powerSet -> x -> 'power = property x
+    passed
+
 ]
 
 ; Power
