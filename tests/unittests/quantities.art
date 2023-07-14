@@ -3320,6 +3320,11 @@ do [
     ]
 
 
+    topic « current - current?
+
+    ensure -> every? currentSet => current?
+    passed
+
 ]
 
 ; Radioactivity
