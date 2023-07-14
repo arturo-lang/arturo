@@ -3334,6 +3334,18 @@ topic « potential
 do [
 
 
+    potentialSet: [
+
+        1`V         1`statV         1`abV
+
+        ; Other custom potential units
+        ; energy / time
+
+        1`W/A
+
+    ]
+
+
 ]
 
 ; Radioactivity
