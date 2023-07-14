@@ -632,8 +632,35 @@
 [+] passed!
 [+] passed!
 [+] passed!
-1000 W
-2111326061/1574415572556 hp
+
+>> power
+
+>> power - power?
+[+] passed!
+
+>> power - math // scales
+[+] passed!
+
+>> power - math // conversions
+[+] passed!
+[+] passed!
+
+>> power - conforms?
+[+] passed!
+[+] passed!
+
+>> power - convert
+[+] passed!
+
+>> power - in
+[+] passed!
+
+>> power - property
+[+] passed!
+
+>> power - alternative names
+[+] passed!
+[+] passed!
 37000000000 Bq
 857374503/14964008 °
 80000 b
