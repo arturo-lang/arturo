@@ -3346,6 +3346,19 @@ do [
     ; ensure -> 1`fA  = 1`pA  / (10 ^ 3)
     ; ensure -> 1`aA  = 1`fA  / (10 ^ 3)
     passed
+
+
+    topic « current - math // conversions
+
+    ensure -> 1`abA =   10`A
+    ensure -> 1`Bi  =   10`A
+    passed
+
+    ; precision loss, it prints 0 A
+    ; ensure -> (~"|1`statA --> `A |") =   "3.335641e-10 A"
+    passed
+
+
 ]
 
 ; Radioactivity
