@@ -3210,6 +3210,13 @@ do [
 
 ]
 
+
+topic « power
+do [
+
+
+]
+
 ; Power
 print in`W 1`kW
 print in`hp 1`W
