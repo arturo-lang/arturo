@@ -3214,6 +3214,16 @@ do [
 topic « power
 do [
 
+    powerSet: [
+
+        1`hp         1`W
+
+        ; Other custom power units
+        ; energy / time
+
+        1`N.m/s      1`J/s
+
+    ]
 
 ]
 
