@@ -3312,6 +3312,13 @@ topic « current
 do [
 
 
+    currentSet: [
+
+        1`A         1`statA
+        1`abA       1`Bi
+
+    ]
+
 
 ]
 
