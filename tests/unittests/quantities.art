@@ -3225,6 +3225,11 @@ do [
 
     ]
 
+    topic « power - power?
+
+    ensure -> every? powerSet => power?
+    passed
+
 ]
 
 ; Power
