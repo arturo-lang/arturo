@@ -3268,6 +3268,14 @@ do [
     passed
 
 
+    topic « power - conforms?
+
+    ensure -> every? powerSet => conforms? `J/s
+    passed
+
+    ensure -> every? powerSet -> x -> not? conforms? x `J
+    passed
+
 ]
 
 ; Power
