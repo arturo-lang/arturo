@@ -3359,6 +3359,15 @@ do [
     passed
 
 
+    topic « current - conforms?
+
+    ensure -> every? currentSet => conforms? `A
+    passed
+
+    ensure -> every? currentSet -> x -> not? conforms? x `J
+    passed
+
+
 ]
 
 ; Radioactivity
