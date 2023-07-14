@@ -3308,10 +3308,6 @@ do [
 
 ]
 
-; Power
-print in`W 1`kW
-print in`hp 1`W
-
 ; Radioactivity
 print in`Bq 1`Ci
 
