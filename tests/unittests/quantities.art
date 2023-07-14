@@ -3230,6 +3230,33 @@ do [
     ensure -> every? powerSet => power?
     passed
 
+    topic « power - math // scales
+
+    ; Note: DRYing. I'm not testing for every single unit's scale because
+    ; I already tested length's, area's, time's and mass' units
+
+
+    ; precision loss
+    ; ensure -> 1`EW  = 1`PW  * (10 ^ 3)
+    ensure -> 1`PW  = 1`TW  * (10 ^ 3)
+    ensure -> 1`TW  = 1`GW  * (10 ^ 3)
+    ensure -> 1`GW  = 1`MW  * (10 ^ 3)
+    ensure -> 1`MW  = 1`kW  * (10 ^ 3)
+    ensure -> 1`kW  = 1`hW  *  10
+    ensure -> 1`hW  = 1`daW *  10
+    ensure -> 1`daW = 1`W   *  10
+    ensure -> 1`dW  = 1`W   /  10
+    ensure -> 1`cW  = 1`dW  /  10
+    ensure -> 1`mW  = 1`cW  /  10
+    ensure -> 1`uW  = 1`mW  / (10 ^ 3)
+    ensure -> 1`nW  = 1`uW  / (10 ^ 3)
+    ; precision loss
+    ; ensure -> 1`pW  = 1`nW  / (10 ^ 3)
+    ; ensure -> 1`fW  = 1`pW  / (10 ^ 3)
+    ; ensure -> 1`aW  = 1`fW  / (10 ^ 3)
+    passed
+
+
 ]
 
 ; Power
