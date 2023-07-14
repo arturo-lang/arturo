@@ -99,6 +99,7 @@ do [
     ensure -> `AUD <> units 100`BRL
     passed
 
+
     topic « currencies - alternative names
 
     ensure -> every? [`dollar `dollars] => equal? & `USD
@@ -132,8 +133,6 @@ do [
 
 
     topic « length - basic math
-
-    ; :unit :scale
 
     ensure -> 3`m   = 2`m + 1
     ensure -> 3.5`m = 2`m + 1.5
@@ -256,7 +255,7 @@ do [
     ensure -> 1`furlong = 1:8`miles
     ; ensure -> 1`angstrom    = ang
     ; SIGFPE: Arithmetic error.
-    ensure -> 1`lightYear   = 9460730472580800`m
+    ensure -> 1`lightYear           = 9460730472580800`m
     ensure -> 1`nauticalMile        = 1852`meters
     ensure -> 1`astronomicalUnit    = 149597870700`m
     passed
@@ -642,13 +641,10 @@ do [
 
     topic « length - math // check auto-conversion
 
-    ; We don't need to do much testing here,
-    ; just check that conversions happen automatically
-    ; when used in mathematical operations
-
     ensure ->  6`m2.yd =   3`m2 * 2`yd
     ensure -> 15`yd2/m = 45`yd2 / 3`m
     passed
+
 
     topic « length - conforms?
 
@@ -689,16 +685,12 @@ do [
 
     topic « length - convert
 
-    ; DRY - already tested in math // scales
-
     ensure -> same? 100`cm convert 1`m `cm
     ensure -> same? 100`cm 1`m --> `cm
     passed
 
 
     topic « length - in
-
-    ; DRY - already tested in math // scales & convert
 
     ensure -> same? 100`cm in `cm 1`m
     passed
@@ -765,6 +757,7 @@ do [
     ensure -> `cm <> units 100`km
     passed
 
+
     topic « length - alternative names
 
     ensure -> every? [ `meter `meters `metre `metres ] => equal? & `m
@@ -817,6 +810,7 @@ do [
 topic « area
 do [
 
+
     areaSet: [
         1`sqin 1`sqft 1`ac 1`are 1`ha 1`barn
 
@@ -835,6 +829,7 @@ do [
         1`kpc2 1`Mpc2 1`Gpc2 1`Tpc2 1`Ppc2 1`Epc2
     ]
 
+
     topic « area - area?
 
     ensure -> every? areaSet => area?
@@ -842,8 +837,6 @@ do [
 
 
     topic « area - basic math
-
-    ; :unit :scale
 
     ensure -> 3`m2   = 2`m2 + 1
     ensure -> 3.5`m2 = 2`m2 + 1.5
@@ -867,6 +860,7 @@ do [
     ensure -> 1.0001`m2 = 1`m2 + 1`cm2
     ensure -> 0.9999`m2 = 1`m2 - 1`cm2
     passed
+
 
     topic « area - math // scales
 
@@ -949,6 +943,7 @@ do [
     ; ensure -> 1`fpc2  = 1`ppc2  / (10 ^ 6)
     ; ensure -> 1`apc2  = 1`fpc2  / (10 ^ 6)
     passed
+
 
     topic « area - math // conversions
 
@@ -1055,6 +1050,7 @@ do [
     ensure -> 4`Epx3  = 2`Epx  * 2`Epx2
     passed
 
+
     topic « area - math // length
 
     ensure -> 1`in  = 2`in2  / 2`in
@@ -1148,6 +1144,7 @@ do [
     ensure -> 1`Ppx  = 2`Ppx2  / 2`Ppx
     ensure -> 1`Epx  = 2`Epx2  / 2`Epx
     passed
+
 
     topic « area - math // 4th spacial-dimension
 
@@ -1337,16 +1334,14 @@ do [
     ensure -> 4`Epx4  = 2`Epx2  ^ 2
     passed
 
-    topic « area - math // check auto-conversion
 
-    ; We don't need to do much testing here,
-    ; just check that conversions happen automatically
-    ; when used in mathematical operations
+    topic « area - math // check auto-conversion
 
     ensure ->  6`m2.yd =   3`m2 * 2`yd
     ensure ->  3.02`m2 =   3`m2 + 200`cm2
     ensure -> 15`yd2/m = 45`yd2 / 3`m
     passed
+
 
     topic « area - conforms?
 
@@ -1356,9 +1351,8 @@ do [
     ensure -> every? areaSet -> x -> not? conforms? x `m3
     passed
 
-    topic « area - convert
 
-    ; DRY - already tested in math // scales
+    topic « area - convert
 
     ensure -> same? 10000`cm2 convert 1`m2 `cm2
     ensure -> same? 10000`cm2 1`m2 --> `cm2
@@ -1366,8 +1360,6 @@ do [
 
 
     topic « area - in
-
-    ; DRY - already tested in math // scales & convert
 
     ensure -> same? 10000`cm2 in `cm2 1`m2
     passed
@@ -1406,6 +1398,7 @@ do [
     ensure -> `cm2 <> units 100`km2
     passed
 
+
     topic « area - alternative names
 
     ensure -> equal? `metre2 `m2
@@ -1429,12 +1422,11 @@ do [
     ensure -> equal? `barns `barn
     passed
 
-
-
 ]
 
 topic « volume
 do [
+
 
     volumeSet: [
         1`gal 1`bbl 1`qt 1`p 1`cup 1`floz 1`tbsp 1`tsp 1`bu 1`cord
@@ -1458,6 +1450,7 @@ do [
         1`dapc3 1`hpc3 1`kpc3 1`Mpc3 1`Gpc3 1`Tpc3 1`Ppc3 1`Epc3
     ]
 
+
     topic « volume - volume?
 
     ensure -> every? volumeSet => volume?
@@ -1465,8 +1458,6 @@ do [
 
 
     topic « volume - basic math
-
-    ; :unit :scale
 
     ensure -> 3`m3   = 2`m3 + 1
     ensure -> 3.5`m3 = 2`m3 + 1.5
@@ -1592,6 +1583,7 @@ do [
     ; ensure -> 1`fpc3  = 1`ppc3  / (10 ^ 9)
     ; ensure -> 1`apc3  = 1`fpc3  / (10 ^ 9)
     passed
+
 
     topic « volume - math // conversions
 
@@ -1820,17 +1812,13 @@ do [
     passed
 
 
-
     topic « volume - math // check auto-conversion
-
-    ; We don't need to do much testing here,
-    ; just check that conversions happen automatically
-    ; when used in mathematical operations
 
     ensure ->  6`L.yd =   3`L * 2`yd
     ensure ->  1003`L =   3`L + 1`m3
     ensure -> 15`m3/m = 45`m3 / 3`m
     passed
+
 
     topic « volume - conforms?
 
@@ -1840,9 +1828,8 @@ do [
     ensure -> every? volumeSet -> x -> not? conforms? x `m2
     passed
 
-    topic « volume - convert
 
-    ; DRY - already tested in math // scales
+    topic « volume - convert
 
     ensure -> same? 1000`L convert 1`m3 `L
     ensure -> same? 1000`L 1`m3 --> `L
@@ -1850,8 +1837,6 @@ do [
 
 
     topic « volume - in
-
-    ; DRY - already tested in math // scales & convert
 
     ensure -> same? 1000`L in `L 1`m3
     passed
@@ -1933,6 +1918,7 @@ do [
 topic « time
 do [
 
+
     timeSet: [
 
         1`as  1`fs  1`ps 1`ns
@@ -1946,6 +1932,7 @@ do [
         1`mo 1`yr
     ]
 
+
     topic « time - time?
 
     ensure -> every? timeSet => time?
@@ -1953,8 +1940,6 @@ do [
 
 
     topic « time - basic math
-
-    ; :unit :scale
 
     ensure -> 10`seconds  =    8`seconds + 2
     ensure -> 10`seconds  =  7.5`seconds + 2.5
@@ -2004,6 +1989,7 @@ do [
     ensure -> 1`Es  = 1`Ps  * (10 ^ 3)
     passed
 
+
     topic « time - conversion
 
     ensure -> 1`minute = 60`seconds
@@ -2018,13 +2004,10 @@ do [
 
     topic « time - math // check auto-conversion
 
-    ; We don't need to do much testing here,
-    ; just check that conversions happen automatically
-    ; when used in mathematical operations
-
     ensure ->  6`min.h = 3`min * 2`hour
     ensure ->  1`min/h = 3`min / 3`hour
     passed
+
 
     topic « time - conforms?
 
@@ -2034,9 +2017,8 @@ do [
     ensure -> every? timeSet -> x -> not? conforms? x `m
     passed
 
-    topic « time - convert
 
-    ; DRY - already tested in math // scales
+    topic « time - convert
 
     ensure -> same? 60`seconds convert 1`minute `seconds
     ensure -> same? 60`seconds 1`minute --> `seconds
@@ -2044,8 +2026,6 @@ do [
 
 
     topic « time - in
-
-    ; DRY - already tested in math // scales & convert
 
     ensure -> same? 60`seconds in `seconds 1`minute
     passed
@@ -2084,6 +2064,7 @@ do [
     ensure -> `month <> units 100`years
     passed
 
+
     topic « time - alternative names
 
     ensure -> every? [`second `seconds] => equal? & `s
@@ -2113,6 +2094,7 @@ do [
 topic « mass
 do [
 
+
     massSet: [
 
         1`g
@@ -2125,6 +2107,7 @@ do [
 
     ]
 
+
     topic « mass - mass?
 
     ensure -> every? massSet => mass?
@@ -2132,8 +2115,6 @@ do [
 
 
     topic « mass - basic math
-
-    ; :unit :scale
 
     ensure -> 3`g   = 2`g + 1
     ensure -> 3.5`g = 2`g + 1.5
@@ -2180,6 +2161,7 @@ do [
     ; ensure -> 1`ag  = 1`fg  / (10 ^ 3)
     passed
 
+
     topic « mass - math // conversions
 
     ; A lot of conversions are actually broken, mainly when envolving lbs
@@ -2212,14 +2194,11 @@ do [
 
     topic « mass - math // check auto-conversion
 
-    ; We don't need to do much testing here,
-    ; just check that conversions happen automatically
-    ; when used in mathematical operations
-
     ensure ->  6`g.yd2 =   3`g * 2`yd2
     ensure ->  1003`g  =   3`g + 1`kg
     ensure -> 15`kg/m3 = 45`kg / 3`m3
     passed
+
 
     topic « mass - conforms?
 
@@ -2229,9 +2208,8 @@ do [
     ensure -> every? massSet -> x -> not? conforms? x `m2
     passed
 
-    topic « mass - convert
 
-    ; DRY - already tested in math // scales
+    topic « mass - convert
 
     ensure -> same? 1000`g convert 1`kg `g
     ensure -> same? 1000`g 1`kg --> `g
@@ -2239,8 +2217,6 @@ do [
 
 
     topic « mass - in
-
-    ; DRY - already tested in math // scales & convert
 
     ensure -> same? 1000`g in `g 1`kg
     passed
@@ -2317,6 +2293,7 @@ do [
 topic « speed
 do [
 
+
     speedSet: [
 
         1`mps       1`kph       1`mph
@@ -2330,6 +2307,7 @@ do [
 
     ]
 
+
     topic « speed - speed?
 
     ensure -> every? speedSet => speed?
@@ -2337,8 +2315,6 @@ do [
 
 
     topic « speed - basic math
-
-    ; :unit :scale
 
     ensure -> 3`kph   = 2`kph + 1
     ensure -> 3.5`kph = 2`kph + 1.5
@@ -2365,11 +2341,6 @@ do [
 
 
     topic « speed - math // scales
-
-    ; Note: DRYing. I'm not testing for every single unit's scale because
-    ; I already tested both length's and time's units,
-    ; so if it works for meters-ish by second, it'll work for the others too.
-    ; Unless it suffers with precision loss...
 
     ensure -> 1`Em/s  = 1`Pm/s  * (10 ^ 3)
     ensure -> 1`Pm/s  = 1`Tm/s  * (10 ^ 3)
@@ -2407,10 +2378,6 @@ do [
 
     topic « speed - math // check auto-conversion
 
-    ; We don't need to do much testing here,
-    ; just check that conversions happen automatically
-    ; when used in mathematical operations
-
     ensure ->  6`mps.yd2  =  3`mps * 2`yd2
     ensure ->  8`mps    =  3`mps + 18`kph
     ensure -> 15`mps/m3 = 45`mps / 3`m3
@@ -2426,16 +2393,12 @@ do [
 
     topic « speed - convert
 
-    ; DRY - already tested in math // scales
-
     ensure -> same? 3.6`kph convert 1`mps `kph
     ensure -> same? 3.6`kph 1`mps --> `kph
     passed
 
 
     topic « speed - in
-
-    ; DRY - already tested in math // scales & convert
 
     ensure -> same? 3.6`kph in `kph 1`mps
     passed
@@ -2497,6 +2460,7 @@ do [
 topic « acceleration
 do [
 
+
     accelerationSet: [
 
         1`Gal
@@ -2509,6 +2473,7 @@ do [
 
     ]
 
+
     topic « acceleration - acceleration?
 
     ensure -> every? accelerationSet => acceleration?
@@ -2516,8 +2481,6 @@ do [
 
 
     topic « acceleration - basic math
-
-    ; :unit :scale
 
     ensure -> 3`kph/h   = 2`kph/h + 1
     ensure -> 3.5`kph/h = 2`kph/h + 1.5
@@ -2545,11 +2508,6 @@ do [
 
     topic « acceleration - math // scales
 
-    ; Note: DRYing. I'm not testing for every single unit's scale because
-    ; I already tested both length's and time's units,
-    ; so if it works for meters-ish by second, it'll work for the others too.
-    ; Unless it suffers with precision loss...
-
     ensure -> 1`Em/s2  = 1`Pm/s2  * (10 ^ 3)
     ensure -> 1`Pm/s2  = 1`Tm/s2  * (10 ^ 3)
     ensure -> 1`Tm/s2  = 1`Gm/s2  * (10 ^ 3)
@@ -2569,6 +2527,7 @@ do [
     ; ensure -> 1`am/s2  = 1`fm/s2  / (10 ^ 3)
     passed
 
+
     topic « acceleration - math // conversions
 
     ensure -> 1`Gal     =   1`cm/s2
@@ -2578,13 +2537,10 @@ do [
 
     topic « acceleration - math // check auto-conversion
 
-    ; We don't need to do much testing here,
-    ; just check that conversions happen automatically
-    ; when used in mathematical operations
-
     ensure ->  6`mps.yd2/s  =  3`mps/s * 2`yd2
     ensure ->  8`mps/s    =  3`mps/s + 18`kph/s
     passed
+
 
     topic « acceleration - conforms?
 
@@ -2596,16 +2552,12 @@ do [
 
     topic « acceleration - convert
 
-    ; DRY - already tested in math // scales
-
     ensure -> same? 12960`kph/h convert 1`mps/s `kph/h
     ensure -> same? 12960`kph/h 1`mps/s --> `kph/h
     passed
 
 
     topic « acceleration - in
-
-    ; DRY - already tested in math // scales & convert
 
     ensure -> same? 12960`kph/h in `kph/h 1`mps/s
     passed
@@ -2655,6 +2607,7 @@ do [
 topic « force
 do [
 
+
     forceSet: [
 
         1`N         1`dyn       1`lbf
@@ -2667,6 +2620,7 @@ do [
 
     ]
 
+
     topic « force - force?
 
     ensure -> every? forceSet => force?
@@ -2674,8 +2628,6 @@ do [
 
 
     topic « force - basic math
-
-    ; :unit :scale
 
     ensure -> 3`N   = 2`N + 1
     ensure -> 3.5`N = 2`N + 1.5
@@ -2725,6 +2677,7 @@ do [
     ; ensure -> 1`aN  = 1`fN  / (10 ^ 3)
     passed
 
+
     topic « force - math // conversions
 
     ; poundal is broken due to the use of pounds
@@ -2739,13 +2692,10 @@ do [
 
     topic « force - math // check auto-conversion
 
-    ; We don't need to do much testing here,
-    ; just check that conversions happen automatically
-    ; when used in mathematical operations
-
     ensure ->  3`kg.m/s2  =  3`kg/s2 * 1`m
     ensure ->  4`kg.m/s2    =  3`kg.m/s2 + 1000`g.m/s2
     passed
+
 
     topic « force - conforms?
 
@@ -2755,9 +2705,8 @@ do [
     ensure -> every? forceSet -> x -> not? conforms? x `m2
     passed
 
-    topic « force - convert
 
-    ; DRY - already tested in math // scales
+    topic « force - convert
 
     ensure -> same? 1000`g.m/s2 convert 1`kg.m/s2 `g.m/s2
     ensure -> same? 1000`g.m/s2 1`kg.m/s2 --> `g.m/s2
@@ -2765,8 +2714,6 @@ do [
 
 
     topic « force - in
-
-    ; DRY - already tested in math // scales & convert
 
     ensure -> same? 1000`g.m/s2 in `g.m/s2 1`kg.m/s2
     passed
@@ -2825,6 +2772,7 @@ do [
 topic « pressure
 do [
 
+
     pressureSet: [
         1`Pa        1`atm       1`bar
         1`pz        1`Ba        1`mmHg
@@ -2837,6 +2785,7 @@ do [
 
     ]
 
+
     topic « pressure - pressure?
 
     ensure -> every? pressureSet => pressure?
@@ -2844,8 +2793,6 @@ do [
 
 
     topic « pressure - basic math
-
-    ; :unit :scale
 
     ensure -> 3`Pa   = 2`Pa + 1
     ensure -> 3.5`Pa = 2`Pa + 1.5
@@ -2872,9 +2819,6 @@ do [
 
 
     topic « pressure - math // scales
-
-    ; Note: DRYing. I'm not testing for every single unit's scale because
-    ; I already tested length's, area's, time's and mass' units
 
     ; precision loss
     ; ensure -> 1`EPa  = 1`PPa  * (10 ^ 3)
@@ -2916,9 +2860,8 @@ do [
     ; ensure -> 1`abar  = 1`fbar  / (10 ^ 3)
     passed
 
-    topic « pressure - math // conversions
 
-    ; poundal is broken due to the use of pounds
+    topic « pressure - math // conversions
 
     ensure -> 1`Pa  =   1`N/m2
     ensure -> 1`atm =   101325`Pa
@@ -2932,15 +2875,13 @@ do [
     ensure -> (~"|1`Torr --> `Pa|") =   "133.3223684 Pa"
     passed
 
-    topic « pressure - math // check auto-conversion
 
-    ; We don't need to do much testing here,
-    ; just check that conversions happen automatically
-    ; when used in mathematical operations
+    topic « pressure - math // check auto-conversion
 
     ensure ->  6`Pa     =   12`N    /   2`m2
     ensure ->  1.1`bar  =   1`bar   +   10000`Pa
     passed
+
 
     topic « pressure - conforms?
 
@@ -2950,9 +2891,8 @@ do [
     ensure -> every? pressureSet -> x -> not? conforms? x `m2
     passed
 
-    topic « pressure - convert
 
-    ; DRY - already tested in math // scales
+    topic « pressure - convert
 
     ensure -> same? 100000`Pa convert 1`bar `Pa
     ensure -> same? 100000`Pa 1`bar --> `Pa
@@ -2960,8 +2900,6 @@ do [
 
 
     topic « pressure - in
-
-    ; DRY - already tested in math // scales & convert
 
     ensure -> same? 100000`Pa in `Pa 1`bar
     passed
@@ -3023,6 +2961,7 @@ do [
 
 ]
 
+
 ; Some tests are being removed under this comment
 ; because I think some things already were extensively tested enough,
 ; since all units follow the same rules.
@@ -3036,8 +2975,10 @@ do [
 ;   * `scalar`,
 ;   * `specify`
 
+
 topic « energy
 do [
+
 
     energySet: [
 
@@ -3052,16 +2993,14 @@ do [
 
     ]
 
+
     topic « energy - energy?
 
     ensure -> every? energySet => energy?
     passed
 
+
     topic « energy - math // scales
-
-    ; Note: DRYing. I'm not testing for every single unit's scale because
-    ; I already tested length's, area's, time's and mass' units
-
 
     ; precision loss
     ; ensure -> 1`EJ  = 1`PJ  * (10 ^ 3)
@@ -3140,9 +3079,8 @@ do [
     ; ensure -> 1`aeV  = 1`feV  / (10 ^ 3)
     ; passed
 
-    topic « energy - math // conversions
 
-    ; poundal is broken due to the use of pounds
+    topic « energy - math // conversions
 
     ensure -> 1`J   =   1`N.m
     ensure -> 1`Wh  =   3600`J
@@ -3166,9 +3104,8 @@ do [
     ensure -> every? energySet -> x -> not? conforms? x `Pa
     passed
 
-    topic « energy - convert
 
-    ; DRY - already tested in math // scales
+    topic « energy - convert
 
     ensure -> same? 3600`J convert 1`Wh `J
     ensure -> same? 3600`J 1`Wh --> `J
@@ -3176,8 +3113,6 @@ do [
 
 
     topic « energy - in
-
-    ; DRY - already tested in math // scales & convert
 
     ensure -> same? 3600`J in `J 1`Wh
     passed
@@ -3187,6 +3122,7 @@ do [
 
     ensure -> every? energySet -> x -> 'energy = property x
     passed
+
 
     topic « energy - alternative names
 
@@ -3214,6 +3150,7 @@ do [
 topic « power
 do [
 
+
     powerSet: [
 
         1`hp         1`W
@@ -3225,16 +3162,14 @@ do [
 
     ]
 
+
     topic « power - power?
 
     ensure -> every? powerSet => power?
     passed
 
+
     topic « power - math // scales
-
-    ; Note: DRYing. I'm not testing for every single unit's scale because
-    ; I already tested length's, area's, time's and mass' units
-
 
     ; precision loss
     ; ensure -> 1`EW  = 1`PW  * (10 ^ 3)
@@ -3259,8 +3194,6 @@ do [
 
     topic « power - math // conversions
 
-    ; poundal is broken due to the use of pounds
-
     ensure -> 1`W   =   1`J/s
     passed
 
@@ -3276,9 +3209,8 @@ do [
     ensure -> every? powerSet -> x -> not? conforms? x `J
     passed
 
-    topic « power - convert
 
-    ; DRY - already tested in math // scales
+    topic « power - convert
 
     ensure -> same? 1000`W convert 1`kW `W
     ensure -> same? 1000`W 1`kW --> `W
@@ -3286,8 +3218,6 @@ do [
 
 
     topic « power - in
-
-    ; DRY - already tested in math // scales & convert
 
     ensure -> same? 1000`W in `W 1`kW
     passed
@@ -3297,6 +3227,7 @@ do [
 
     ensure -> every? powerSet -> x -> 'power = property x
     passed
+
 
     topic « power - alternative names
 
