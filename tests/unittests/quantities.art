@@ -3276,6 +3276,15 @@ do [
     ensure -> every? powerSet -> x -> not? conforms? x `J
     passed
 
+    topic « power - convert
+
+    ; DRY - already tested in math // scales
+
+    ensure -> same? 1000`W convert 1`kW `W
+    ensure -> same? 1000`W 1`kW --> `W
+    passed
+
+
 ]
 
 ; Power
