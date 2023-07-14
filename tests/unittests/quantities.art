@@ -3325,6 +3325,27 @@ do [
     ensure -> every? currentSet => current?
     passed
 
+
+    topic « current - math // scales
+
+    ensure -> 1`EA  = 1`PA  * (10 ^ 3)
+    ensure -> 1`PA  = 1`TA  * (10 ^ 3)
+    ensure -> 1`TA  = 1`GA  * (10 ^ 3)
+    ensure -> 1`GA  = 1`MA  * (10 ^ 3)
+    ensure -> 1`MA  = 1`kA  * (10 ^ 3)
+    ensure -> 1`kA  = 1`hA  *  10
+    ensure -> 1`hA  = 1`daA *  10
+    ensure -> 1`daA = 1`A   *  10
+    ensure -> 1`dA  = 1`A   /  10
+    ensure -> 1`cA  = 1`dA  /  10
+    ensure -> 1`mA  = 1`cA  /  10
+    ensure -> 1`uA  = 1`mA  / (10 ^ 3)
+    ensure -> 1`nA  = 1`uA  / (10 ^ 3)
+    ; precision loss
+    ; ensure -> 1`pA  = 1`nA  / (10 ^ 3)
+    ; ensure -> 1`fA  = 1`pA  / (10 ^ 3)
+    ; ensure -> 1`aA  = 1`fA  / (10 ^ 3)
+    passed
 ]
 
 ; Radioactivity
