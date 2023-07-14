@@ -3257,6 +3257,17 @@ do [
     passed
 
 
+    topic « power - math // conversions
+
+    ; poundal is broken due to the use of pounds
+
+    ensure -> 1`W   =   1`J/s
+    passed
+
+    ensure -> (~"|1`hp --> `W |") =   "1574415572556/2111326061 W"
+    passed
+
+
 ]
 
 ; Power
