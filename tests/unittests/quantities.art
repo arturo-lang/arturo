@@ -3285,6 +3285,14 @@ do [
     passed
 
 
+    topic « power - in
+
+    ; DRY - already tested in math // scales & convert
+
+    ensure -> same? 1000`W in `W 1`kW
+    passed
+
+
 ]
 
 ; Power
