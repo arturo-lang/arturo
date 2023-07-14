@@ -3368,6 +3368,19 @@ do [
     passed
 
 
+    topic « current - convert
+
+    ensure -> same? 10`A convert 1`Bi `A
+    ensure -> same? 10`A 1`Bi --> `A
+    passed
+
+
+    topic « current - in
+
+    ensure -> same? 10`A in `A 1`Bi
+    passed
+
+
 ]
 
 ; Radioactivity
