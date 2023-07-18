@@ -3691,6 +3691,18 @@ do [
     ensure -> every? chargeSet -> x -> 'charge = property x
     passed
 
+
+    topic « charge - alternative names
+
+    ensure -> every? [ `coulomb `coulombs ] => equal? & `C
+    passed
+    ensure -> every? [ `statcoulomb `statcoulombs ] => equal? & `statC
+    passed
+    ensure -> every? [ `abcoulomb `abcoulombs ] => equal? & `abC
+    passed
+    ensure -> every? [ `franklin `franklins ] => equal? & `Fr
+    passed
+
 ]
 
 
