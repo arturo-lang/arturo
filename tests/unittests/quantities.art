@@ -3571,6 +3571,15 @@ do [
     passed
 
 
+    topic « conductance - conforms?
+
+    ensure -> every? conductanceSet => conforms? `S
+    passed
+
+    ensure -> every? conductanceSet -> x -> not? conforms? x `A
+    passed
+
+
 
 ]
 
