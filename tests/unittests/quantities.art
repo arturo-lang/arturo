@@ -3444,6 +3444,10 @@ do [
 
     topic « resistance - resistance?
 
+    ensure -> every? resistanceSet => resistance?
+    passed
+
+
     topic « resistance - math // scales
 
     ; precision loss
