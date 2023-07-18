@@ -3392,7 +3392,7 @@ do [
     ensure -> every? potentialSet => conforms? `V
     passed
 
-    ensure -> every? potentialSet -> x -> not? conforms? x `V
+    ensure -> every? potentialSet -> x -> not? conforms? x `A
     passed
 
     topic « potential - convert
