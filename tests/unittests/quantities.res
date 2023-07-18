@@ -778,6 +778,37 @@
 
 >> conductance - alternative names
 [+] passed!
+
+>> charge
+
+>> charge - charge?
+[+] passed!
+
+>> charge - math // scales
+[+] passed!
+
+>> charge - math // conversions
+[+] passed!
+[+] passed!
+
+>> charge - conforms?
+[+] passed!
+[+] passed!
+
+>> charge - convert
+[+] passed!
+
+>> charge - in
+[+] passed!
+
+>> charge - property
+[+] passed!
+
+>> charge - alternative names
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 37000000000 Bq
 857374503/14964008 °
 80000 b
