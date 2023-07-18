@@ -3355,6 +3355,28 @@ do [
     passed
 
 
+    topic « potential - math // scales
+
+    ; precision loss
+    ; ensure -> 1`EV  = 1`PV  * (10 ^ 3)
+    ensure -> 1`PV  = 1`TV  * (10 ^ 3)
+    ensure -> 1`TV  = 1`GV  * (10 ^ 3)
+    ensure -> 1`GV  = 1`MV  * (10 ^ 3)
+    ensure -> 1`MV  = 1`kV  * (10 ^ 3)
+    ensure -> 1`kV  = 1`hV  *  10
+    ensure -> 1`hV  = 1`daV *  10
+    ensure -> 1`daV = 1`V   *  10
+    ensure -> 1`dV  = 1`V   /  10
+    ensure -> 1`cV  = 1`dV  /  10
+    ensure -> 1`mV  = 1`cV  /  10
+    ensure -> 1`uV  = 1`mV  / (10 ^ 3)
+    ensure -> 1`nV  = 1`uV  / (10 ^ 3)
+    ; ensure -> 1`pV  = 1`nV  / (10 ^ 3)
+    ; ensure -> 1`fV  = 1`pV  / (10 ^ 3)
+    ; ensure -> 1`aV  = 1`fV  / (10 ^ 3)
+    passed
+
+
     topic « potential - math // conversions
 
     ensure -> 1`V   =   1`W/A
