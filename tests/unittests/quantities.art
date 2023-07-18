@@ -3706,6 +3706,90 @@ do [
 ]
 
 
+topic « capacitance
+do [
+
+
+    capacitanceSet: [
+
+        1`F
+
+        ; Other custom capacitance units
+        ; charge / potential
+
+        1`C/V
+
+    ]
+
+
+    topic « capacitance - capacitance?
+
+    ensure -> every? capacitanceSet => capacitance?
+    passed
+
+
+    topic « capacitance - math // scales
+
+    ensure -> 1`EF  = 1`PF  * (10 ^ 3)
+    ensure -> 1`PF  = 1`TF  * (10 ^ 3)
+    ensure -> 1`TF  = 1`GF  * (10 ^ 3)
+    ensure -> 1`GF  = 1`MF  * (10 ^ 3)
+    ensure -> 1`MF  = 1`kF  * (10 ^ 3)
+    ensure -> 1`kF  = 1`hF  *  10
+    ensure -> 1`hF  = 1`daF *  10
+    ensure -> 1`daF = 1`F   *  10
+    ensure -> 1`dF  = 1`F   /  10
+    ensure -> 1`cF  = 1`dF  /  10
+    ensure -> 1`mF  = 1`cF  /  10
+    ensure -> 1`uF  = 1`mF  / (10 ^ 3)
+    ensure -> 1`nF  = 1`uF  / (10 ^ 3)
+    ; precision loss
+    ; ensure -> 1`pF  = 1`nF  / (10 ^ 3)
+    ; ensure -> 1`fF  = 1`pF  / (10 ^ 3)
+    ; ensure -> 1`aF  = 1`fF  / (10 ^ 3)
+    passed
+
+
+    topic « capacitance - math // conversions
+
+    ensure -> 1`F   =   1`C/V
+
+
+    topic « capacitance - conforms?
+
+    ensure -> every? capacitanceSet => conforms? `F
+    passed
+
+    ensure -> every? capacitanceSet -> x -> not? conforms? x `A
+    passed
+
+
+    topic « capacitance - convert
+
+    ensure -> same? 1`F convert 1`C/V `F
+    ensure -> same? 1`F 1`C/V --> `F
+    passed
+
+
+    topic « capacitance - in
+
+    ensure -> same? 1`F in `F 1`C/V
+    passed
+
+
+    topic « capacitance - property
+
+    ensure -> every? capacitanceSet -> x -> 'capacitance = property x
+    passed
+
+
+    topic « capacitance - alternative names
+
+    ensure -> every? [ `farad `farads ] => equal? & `F
+    passed
+
+]
+
 ; Radioactivity
 print in`Bq 1`Ci
 
