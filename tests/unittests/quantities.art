@@ -3623,6 +3623,12 @@ do [
     ]
 
 
+    topic « charge - charge?
+
+    ensure -> every? chargeSet => charge?
+    passed
+
+
 ]
 
 
