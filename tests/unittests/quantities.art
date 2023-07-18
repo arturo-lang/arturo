@@ -3629,6 +3629,27 @@ do [
     passed
 
 
+    topic « charge - math // scales
+
+    ; precision loss
+    ensure -> 1`EC  = 1`PC  * (10 ^ 3)
+    ensure -> 1`PC  = 1`TC  * (10 ^ 3)
+    ensure -> 1`TC  = 1`GC  * (10 ^ 3)
+    ensure -> 1`GC  = 1`MC  * (10 ^ 3)
+    ensure -> 1`MC  = 1`kC  * (10 ^ 3)
+    ensure -> 1`kC  = 1`hC  *  10
+    ensure -> 1`hC  = 1`daC *  10
+    ensure -> 1`daC = 1`C   *  10
+    ensure -> 1`dC  = 1`C   /  10
+    ensure -> 1`cC  = 1`dC  /  10
+    ensure -> 1`mC  = 1`cC  /  10
+    ensure -> 1`uC  = 1`mC  / (10 ^ 3)
+    ensure -> 1`nC  = 1`uC  / (10 ^ 3)
+    ; ensure -> 1`pC  = 1`nC  / (10 ^ 3)
+    ; ensure -> 1`fC  = 1`pC  / (10 ^ 3)
+    ; ensure -> 1`aC  = 1`fC  / (10 ^ 3)
+    passed
+
 ]
 
 
