@@ -3499,6 +3499,9 @@ do [
     passed
 
 
+    topic « resistance - property
+
+    ensure -> every? resistanceSet -> x -> 'resistance = property x
     passed
 
 
