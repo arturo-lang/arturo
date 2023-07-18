@@ -3543,6 +3543,28 @@ do [
     passed
 
 
+    topic « conductance - math // scales
+
+    ensure -> 1`ES  = 1`PS  * (10 ^ 3)
+    ensure -> 1`PS  = 1`TS  * (10 ^ 3)
+    ensure -> 1`TS  = 1`GS  * (10 ^ 3)
+    ensure -> 1`GS  = 1`MS  * (10 ^ 3)
+    ensure -> 1`MS  = 1`kS  * (10 ^ 3)
+    ensure -> 1`kS  = 1`hS  *  10
+    ensure -> 1`hS  = 1`daS *  10
+    ensure -> 1`daS = 1`S   *  10
+    ensure -> 1`dS  = 1`S   /  10
+    ensure -> 1`cS  = 1`dS  /  10
+    ensure -> 1`mS  = 1`cS  /  10
+    ensure -> 1`uS  = 1`mS  / (10 ^ 3)
+    ensure -> 1`nS  = 1`uS  / (10 ^ 3)
+    ; precision loss
+    ; ensure -> 1`pS  = 1`nS  / (10 ^ 3)
+    ; ensure -> 1`fS  = 1`pS  / (10 ^ 3)
+    ; ensure -> 1`aS  = 1`fS  / (10 ^ 3)
+    passed
+
+
 
 ]
 
