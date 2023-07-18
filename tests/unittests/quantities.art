@@ -3673,6 +3673,18 @@ do [
     passed
 
 
+    topic « charge - convert
+
+    ensure -> same? 1`C convert 1`A.s `C
+    ensure -> same? 1`C 1`A.s --> `C
+    passed
+
+
+    topic « charge - in
+
+    ensure -> same? 1`C in `C 1`A.s
+    passed
+
 ]
 
 
