@@ -3426,6 +3426,25 @@ do [
 ]
 
 
+topic « resistance
+do [
+
+
+    resistanceSet: [
+
+        1`Ohm         1`statOhm         1`abOhm
+
+        ; Other custom resistance units
+        ; potential / current
+
+        1`V/A
+
+    ]
+
+
+
+]
+
 ; Radioactivity
 print in`Bq 1`Ci
 
