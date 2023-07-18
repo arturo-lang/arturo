@@ -835,6 +835,29 @@
 
 >> capacitance - alternative names
 [+] passed!
+
+>> elastance
+
+>> elastance - elastance?
+[+] passed!
+
+>> elastance - math // scales
+[+] passed!
+
+>> elastance - math // conversions
+
+>> elastance - conforms?
+[+] passed!
+[+] passed!
+
+>> elastance - convert
+[+] passed!
+
+>> elastance - in
+[+] passed!
+
+>> elastance - property
+[+] passed!
 37000000000 Bq
 857374503/14964008 °
 80000 b
