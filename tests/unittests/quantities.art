@@ -3349,6 +3349,12 @@ do [
     ]
 
 
+    topic « potential - potential?
+
+    ensure -> every? potentialSet => potential?
+    passed
+
+
 
 ]
 
