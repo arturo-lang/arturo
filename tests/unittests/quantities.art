@@ -3505,6 +3505,14 @@ do [
     passed
 
 
+    topic « resistance - alternative names
+
+    ensure -> every? [ `ohm `ohms ] => equal? & `Ohm
+    passed
+    ensure -> every? [ `statohm `statohms ] => equal? & `statOhm
+    passed
+    ensure -> every? [ `abohm `abohms ] => equal? & `abOhm
+    passed
 
 ]
 
