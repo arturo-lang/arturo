@@ -3593,6 +3593,12 @@ do [
     passed
 
 
+    topic « conductance - property
+
+    ensure -> every? conductanceSet -> x -> 'conductance = property x
+    passed
+
+
 
 ]
 
