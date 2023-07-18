@@ -3386,6 +3386,12 @@ do [
     passed
 
 
+    topic « potential - property
+
+    ensure -> every? potentialSet -> x -> 'potential = property x
+    passed
+
+
 
 ]
 
