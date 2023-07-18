@@ -3790,6 +3790,85 @@ do [
 
 ]
 
+
+topic « elastance
+do [
+
+
+    elastanceSet: [
+
+        1`Daraf
+
+        ; Other custom elastance units
+        ; 1 / capacitance
+
+        1`1/F
+
+    ]
+
+
+    topic « elastance - elastance?
+
+    ensure -> every? elastanceSet => elastance?
+    passed
+
+
+    topic « elastance - math // scales
+
+    ; precision loss
+    ; ensure -> 1`EDaraf  = 1`PDaraf  * (10 ^ 3)
+    ensure -> 1`PDaraf  = 1`TDaraf  * (10 ^ 3)
+    ensure -> 1`TDaraf  = 1`GDaraf  * (10 ^ 3)
+    ensure -> 1`GDaraf  = 1`MDaraf  * (10 ^ 3)
+    ensure -> 1`MDaraf  = 1`kDaraf  * (10 ^ 3)
+    ensure -> 1`kDaraf  = 1`hDaraf  *  10
+    ensure -> 1`hDaraf  = 1`daDaraf *  10
+    ensure -> 1`daDaraf = 1`Daraf   *  10
+    ensure -> 1`dDaraf  = 1`Daraf   /  10
+    ensure -> 1`cDaraf  = 1`dDaraf  /  10
+    ensure -> 1`mDaraf  = 1`cDaraf  /  10
+    ensure -> 1`uDaraf  = 1`mDaraf  / (10 ^ 3)
+    ensure -> 1`nDaraf  = 1`uDaraf  / (10 ^ 3)
+    ; ensure -> 1`pDaraf  = 1`nDaraf  / (10 ^ 3)
+    ; ensure -> 1`fDaraf  = 1`pDaraf  / (10 ^ 3)
+    ; ensure -> 1`aDaraf  = 1`fDaraf  / (10 ^ 3)
+    passed
+
+
+    topic « elastance - math // conversions
+
+    ensure -> 1`Daraf   =   1`1/F
+
+
+    topic « elastance - conforms?
+
+    ensure -> every? elastanceSet => conforms? `Daraf
+    passed
+
+    ensure -> every? elastanceSet -> x -> not? conforms? x `F
+    passed
+
+
+    topic « elastance - convert
+
+    ensure -> same? 1`Daraf convert 1`1/F `Daraf
+    ensure -> same? 1`Daraf 1`1/F --> `Daraf
+    passed
+
+
+    topic « elastance - in
+
+    ensure -> same? 1`Daraf in `Daraf 1`1/F
+    passed
+
+
+    topic « elastance - property
+
+    ensure -> every? elastanceSet -> x -> 'elastance = property x
+    passed
+
+]
+
 ; Radioactivity
 print in`Bq 1`Ci
 
