@@ -3333,6 +3333,25 @@ do [
 
 ]
 
+topic « potential
+do [
+
+
+    potentialSet: [
+
+        1`V         1`statV         1`abV
+
+        ; Other custom potential units
+        ; power / current
+
+        1`W/A
+
+    ]
+
+
+
+]
+
 
 ; Radioactivity
 print in`Bq 1`Ci
