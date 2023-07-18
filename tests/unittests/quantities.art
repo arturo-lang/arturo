@@ -99,6 +99,7 @@ do [
     ensure -> `AUD <> units 100`BRL
     passed
 
+
     topic « currencies - alternative names
 
     ensure -> every? [`dollar `dollars] => equal? & `USD
@@ -110,6 +111,7 @@ do [
 
 topic « length
 do [
+
 
     topic « length - length?
 
@@ -644,6 +646,7 @@ do [
     ensure -> 15`yd2/m = 45`yd2 / 3`m
     passed
 
+
     topic « length - conforms?
 
     ensure -> every? [
@@ -755,6 +758,7 @@ do [
     ensure -> `cm <> units 100`km
     passed
 
+
     topic « length - alternative names
 
     ensure -> every? [ `meter `meters `metre `metres ] => equal? & `m
@@ -804,6 +808,7 @@ do [
 
 ]
 
+
 topic « area
 do [
 
@@ -824,6 +829,7 @@ do [
         1`pc2 1`apc2 1`fpc2 1`ppc2 1`npc2 1`upc2 1`mpc2 1`cpc2 1`dpc2 1`dapc2 1`hpc2
         1`kpc2 1`Mpc2 1`Gpc2 1`Tpc2 1`Ppc2 1`Epc2
     ]
+
 
     topic « area - area?
 
@@ -855,6 +861,7 @@ do [
     ensure -> 1.0001`m2 = 1`m2 + 1`cm2
     ensure -> 0.9999`m2 = 1`m2 - 1`cm2
     passed
+
 
     topic « area - math // scales
 
@@ -937,6 +944,7 @@ do [
     ; ensure -> 1`fpc2  = 1`ppc2  / (10 ^ 6)
     ; ensure -> 1`apc2  = 1`fpc2  / (10 ^ 6)
     passed
+
 
     topic « area - math // conversions
 
@@ -1043,6 +1051,7 @@ do [
     ensure -> 4`Epx3  = 2`Epx  * 2`Epx2
     passed
 
+
     topic « area - math // length
 
     ensure -> 1`in  = 2`in2  / 2`in
@@ -1136,6 +1145,7 @@ do [
     ensure -> 1`Ppx  = 2`Ppx2  / 2`Ppx
     ensure -> 1`Epx  = 2`Epx2  / 2`Epx
     passed
+
 
     topic « area - math // 4th spacial-dimension
 
@@ -1325,12 +1335,14 @@ do [
     ensure -> 4`Epx4  = 2`Epx2  ^ 2
     passed
 
+
     topic « area - math // check auto-conversion
 
     ensure ->  6`m2.yd =   3`m2 * 2`yd
     ensure ->  3.02`m2 =   3`m2 + 200`cm2
     ensure -> 15`yd2/m = 45`yd2 / 3`m
     passed
+
 
     topic « area - conforms?
 
@@ -1339,6 +1351,7 @@ do [
 
     ensure -> every? areaSet -> x -> not? conforms? x `m3
     passed
+
 
     topic « area - convert
 
@@ -1386,6 +1399,7 @@ do [
     ensure -> `cm2 <> units 100`km2
     passed
 
+
     topic « area - alternative names
 
     ensure -> equal? `metre2 `m2
@@ -1413,6 +1427,7 @@ do [
 
 ]
 
+
 topic « volume
 do [
 
@@ -1437,6 +1452,7 @@ do [
         1`pc3   1`apc3 1`fpc3 1`ppc3 1`npc3 1`upc3 1`mpc3 1`cpc3 1`dpc3
         1`dapc3 1`hpc3 1`kpc3 1`Mpc3 1`Gpc3 1`Tpc3 1`Ppc3 1`Epc3
     ]
+
 
     topic « volume - volume?
 
@@ -1570,6 +1586,7 @@ do [
     ; ensure -> 1`fpc3  = 1`ppc3  / (10 ^ 9)
     ; ensure -> 1`apc3  = 1`fpc3  / (10 ^ 9)
     passed
+
 
     topic « volume - math // conversions
 
@@ -1806,6 +1823,7 @@ do [
     ensure -> 15`m3/m = 45`m3 / 3`m
     passed
 
+
     topic « volume - conforms?
 
     ensure -> every? volumeSet => conforms? `m3
@@ -1813,6 +1831,7 @@ do [
 
     ensure -> every? volumeSet -> x -> not? conforms? x `m2
     passed
+
 
     topic « volume - convert
 
@@ -1916,6 +1935,7 @@ do [
         1`mo 1`yr
     ]
 
+
     topic « time - time?
 
     ensure -> every? timeSet => time?
@@ -1972,6 +1992,7 @@ do [
     ensure -> 1`Es  = 1`Ps  * (10 ^ 3)
     passed
 
+
     topic « time - conversion
 
     ensure -> 1`minute = 60`seconds
@@ -1990,6 +2011,7 @@ do [
     ensure ->  1`min/h = 3`min / 3`hour
     passed
 
+
     topic « time - conforms?
 
     ensure -> every? timeSet => conforms? `weeks
@@ -1997,6 +2019,7 @@ do [
 
     ensure -> every? timeSet -> x -> not? conforms? x `m
     passed
+
 
     topic « time - convert
 
@@ -2044,6 +2067,7 @@ do [
     ensure -> `month <> units 100`years
     passed
 
+
     topic « time - alternative names
 
     ensure -> every? [`second `seconds] => equal? & `s
@@ -2084,6 +2108,7 @@ do [
         1`dwt   1`ozt   1`lbt
 
     ]
+
 
     topic « mass - mass?
 
@@ -2138,6 +2163,7 @@ do [
     ; ensure -> 1`ag  = 1`fg  / (10 ^ 3)
     passed
 
+
     topic « mass - math // conversions
 
     ; A lot of conversions are actually broken, mainly when envolving lbs
@@ -2175,6 +2201,7 @@ do [
     ensure -> 15`kg/m3 = 45`kg / 3`m3
     passed
 
+
     topic « mass - conforms?
 
     ensure -> every? massSet => conforms? `g
@@ -2182,6 +2209,7 @@ do [
 
     ensure -> every? massSet -> x -> not? conforms? x `m2
     passed
+
 
     topic « mass - convert
 
@@ -2280,6 +2308,7 @@ do [
 
     ]
 
+
     topic « speed - speed?
 
     ensure -> every? speedSet => speed?
@@ -2333,6 +2362,7 @@ do [
     ; ensure -> 1`am/s  = 1`fm/s  / (10 ^ 3)
     passed
 
+
     topic « speed - math // conversions
 
     ensure -> 1`fps     =   1`ft/s
@@ -2355,6 +2385,7 @@ do [
     ensure -> 15`mps/m3 = 45`mps / 3`m3
     passed
 
+
     topic « speed - conforms?
 
     ensure -> every? speedSet => conforms? `kph
@@ -2362,6 +2393,7 @@ do [
 
     ensure -> every? speedSet -> x -> not? conforms? x `m2
     passed
+
 
     topic « speed - convert
 
@@ -2429,6 +2461,7 @@ do [
 
 ]
 
+
 topic « acceleration
 do [
 
@@ -2443,6 +2476,7 @@ do [
         1`px/day2    1`in/s2      1`yd/s2
 
     ]
+
 
     topic « acceleration - acceleration?
 
@@ -2497,6 +2531,7 @@ do [
     ; ensure -> 1`am/s2  = 1`fm/s2  / (10 ^ 3)
     passed
 
+
     topic « acceleration - math // conversions
 
     ensure -> 1`Gal     =   1`cm/s2
@@ -2510,6 +2545,7 @@ do [
     ensure ->  8`mps/s    =  3`mps/s + 18`kph/s
     passed
 
+
     topic « acceleration - conforms?
 
     ensure -> every? accelerationSet => conforms? `km/h2
@@ -2517,6 +2553,7 @@ do [
 
     ensure -> every? accelerationSet -> x -> not? conforms? x `m2
     passed
+
 
     topic « acceleration - convert
 
@@ -2572,6 +2609,7 @@ do [
 
 ]
 
+
 topic « force
 do [
 
@@ -2586,6 +2624,7 @@ do [
         1`m.kg/s2   1`km.ton/h2
 
     ]
+
 
     topic « force - force?
 
@@ -2640,6 +2679,7 @@ do [
     ; ensure -> 1`aN  = 1`fN  / (10 ^ 3)
     passed
 
+
     topic « force - math // conversions
 
     ; poundal is broken due to the use of pounds
@@ -2658,6 +2698,7 @@ do [
     ensure ->  4`kg.m/s2    =  3`kg.m/s2 + 1000`g.m/s2
     passed
 
+
     topic « force - conforms?
 
     ensure -> every? forceSet => conforms? `km.m/h2
@@ -2665,6 +2706,7 @@ do [
 
     ensure -> every? forceSet -> x -> not? conforms? x `m2
     passed
+
 
     topic « force - convert
 
@@ -2729,6 +2771,7 @@ do [
 
 ]
 
+
 topic « pressure
 do [
 
@@ -2743,6 +2786,7 @@ do [
         1`N/m2      1`kgf/cm2   1`kg.km/km2.h2
 
     ]
+
 
     topic « pressure - pressure?
 
@@ -2818,6 +2862,7 @@ do [
     ; ensure -> 1`abar  = 1`fbar  / (10 ^ 3)
     passed
 
+
     topic « pressure - math // conversions
 
     ensure -> 1`Pa  =   1`N/m2
@@ -2832,11 +2877,13 @@ do [
     ensure -> (~"|1`Torr --> `Pa|") =   "133.3223684 Pa"
     passed
 
+
     topic « pressure - math // check auto-conversion
 
     ensure ->  6`Pa     =   12`N    /   2`m2
     ensure ->  1.1`bar  =   1`bar   +   10000`Pa
     passed
+
 
     topic « pressure - conforms?
 
@@ -2845,6 +2892,7 @@ do [
 
     ensure -> every? pressureSet -> x -> not? conforms? x `m2
     passed
+
 
     topic « pressure - convert
 
@@ -2944,10 +2992,12 @@ do [
 
     ]
 
+
     topic « energy - energy?
 
     ensure -> every? energySet => energy?
     passed
+
 
     topic « energy - math // scales
 
@@ -3028,6 +3078,7 @@ do [
     ; ensure -> 1`aeV  = 1`feV  / (10 ^ 3)
     ; passed
 
+
     topic « energy - math // conversions
 
     ensure -> 1`J   =   1`N.m
@@ -3052,6 +3103,7 @@ do [
     ensure -> every? energySet -> x -> not? conforms? x `Pa
     passed
 
+
     topic « energy - convert
 
     ensure -> same? 3600`J convert 1`Wh `J
@@ -3069,6 +3121,7 @@ do [
 
     ensure -> every? energySet -> x -> 'energy = property x
     passed
+
 
     topic « energy - alternative names
 
@@ -3107,10 +3160,12 @@ do [
 
     ]
 
+
     topic « power - power?
 
     ensure -> every? powerSet => power?
     passed
+
 
     topic « power - math // scales
 
@@ -3175,6 +3230,7 @@ do [
 
     ensure -> every? powerSet -> x -> 'power = property x
     passed
+
 
     topic « power - alternative names
 
