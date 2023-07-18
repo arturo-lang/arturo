@@ -3537,6 +3537,12 @@ do [
     ]
 
 
+    topic « conductance - conductance?
+
+    ensure -> every? conductanceSet => conductance?
+    passed
+
+
 
 ]
 
