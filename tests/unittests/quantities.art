@@ -3392,6 +3392,14 @@ do [
     passed
 
 
+    topic « potential - alternative names
+
+    ensure -> every? [ `volt `volts ] => equal? & `V
+    passed
+    ensure -> every? [ `statvolt `statvolts ] => equal? & `statV
+    passed
+    ensure -> every? [ `abvolt `abvolts ] => equal? & `abV
+    passed
 
 ]
 
