@@ -3475,6 +3475,17 @@ do [
     ; ensure -> (~"|1`statOhm --> `Ohm |") =   "8.987551787e11 Ω"
     ensure -> (~"|1`abOhm   --> `Ohm |") =   "1e-09 Ω"
     passed
+
+
+    topic « resistance - conforms?
+
+    ensure -> every? resistanceSet => conforms? `Ohm
+    passed
+
+    ensure -> every? resistanceSet -> x -> not? conforms? x `A
+    passed
+
+
     passed
 
 
