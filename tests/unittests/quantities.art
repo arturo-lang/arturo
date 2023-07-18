@@ -3486,6 +3486,19 @@ do [
     passed
 
 
+    topic « resistance - convert
+
+    ensure -> same? 1`Ohm convert 1`V/A `Ohm
+    ensure -> same? 1`Ohm 1`V/A --> `Ohm
+    passed
+
+
+    topic « resistance - in
+
+    ensure -> same? 1`Ohm in `Ohm 1`V/A
+    passed
+
+
     passed
 
 
