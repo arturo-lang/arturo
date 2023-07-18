@@ -3365,6 +3365,14 @@ do [
     passed
 
 
+    topic « potential - conforms?
+
+    ensure -> every? potentialSet => conforms? `V
+    passed
+
+    ensure -> every? potentialSet -> x -> not? conforms? x `V
+    passed
+
 
 ]
 
