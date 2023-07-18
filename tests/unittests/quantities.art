@@ -3650,6 +3650,20 @@ do [
     ; ensure -> 1`aC  = 1`fC  / (10 ^ 3)
     passed
 
+
+    topic « charge - math // conversions
+
+    ensure -> 1`C   =   1`A.s
+    ensure -> 1`abC =   10`C
+    ; division by 0?
+    ; ensure -> 1`Fr  =   1`C
+    passed
+
+    ; it should print 3.335641e-10 Ω, instead of 0 C
+    ; ensure -> (~"|1`statC --> `C |") =   "3.335641e-10 C"
+    passed
+
+
 ]
 
 
