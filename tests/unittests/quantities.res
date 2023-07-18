@@ -691,6 +691,36 @@
 [+] passed!
 [+] passed!
 [+] passed!
+
+>> potential
+
+>> potential - potential?
+[+] passed!
+
+>> potential - math // scales
+[+] passed!
+
+>> potential - math // conversions
+[+] passed!
+[+] passed!
+
+>> potential - conforms?
+[+] passed!
+[+] passed!
+
+>> potential - convert
+[+] passed!
+
+>> potential - in
+[+] passed!
+
+>> potential - property
+[+] passed!
+
+>> potential - alternative names
+[+] passed!
+[+] passed!
+[+] passed!
 37000000000 Bq
 857374503/14964008 °
 80000 b
