@@ -3373,6 +3373,19 @@ do [
     ensure -> every? potentialSet -> x -> not? conforms? x `V
     passed
 
+    topic « potential - convert
+
+    ensure -> same? 1`V convert 1`W/A `V
+    ensure -> same? 1`V 1`W/A --> `V
+    passed
+
+
+    topic « potential - in
+
+    ensure -> same? 1`V in `V 1`W/A
+    passed
+
+
 
 ]
 
