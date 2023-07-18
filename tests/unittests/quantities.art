@@ -3444,7 +3444,28 @@ do [
 
     topic « resistance - resistance?
 
-    ensure -> every? resistance => resistance?
+    topic « resistance - math // scales
+
+    ; precision loss
+    ; ensure -> 1`EOhm  = 1`POhm  * (10 ^ 3)
+    ensure -> 1`POhm  = 1`TOhm  * (10 ^ 3)
+    ensure -> 1`TOhm  = 1`GOhm  * (10 ^ 3)
+    ensure -> 1`GOhm  = 1`MOhm  * (10 ^ 3)
+    ensure -> 1`MOhm  = 1`kOhm  * (10 ^ 3)
+    ensure -> 1`kOhm  = 1`hOhm  *  10
+    ensure -> 1`hOhm  = 1`daOhm *  10
+    ensure -> 1`daOhm = 1`Ohm   *  10
+    ensure -> 1`dOhm  = 1`Ohm   /  10
+    ensure -> 1`cOhm  = 1`dOhm  /  10
+    ensure -> 1`mOhm  = 1`cOhm  /  10
+    ensure -> 1`uOhm  = 1`mOhm  / (10 ^ 3)
+    ensure -> 1`nOhm  = 1`uOhm  / (10 ^ 3)
+    ; ensure -> 1`pOhm  = 1`nOhm  / (10 ^ 3)
+    ; ensure -> 1`fOhm  = 1`pOhm  / (10 ^ 3)
+    ; ensure -> 1`aOhm  = 1`fOhm  / (10 ^ 3)
+    passed
+
+
     passed
 
 
