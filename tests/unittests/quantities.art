@@ -3580,6 +3580,19 @@ do [
     passed
 
 
+    topic « conductance - convert
+
+    ensure -> same? 1`S convert 1`A/V `S
+    ensure -> same? 1`S 1`A/V --> `S
+    passed
+
+
+    topic « conductance - in
+
+    ensure -> same? 1`S in `S 1`A/V
+    passed
+
+
 
 ]
 
