@@ -3599,6 +3599,10 @@ do [
     passed
 
 
+    topic « conductance - alternative names
+
+    ensure -> `siemens = `S
+    passed
 
 ]
 
