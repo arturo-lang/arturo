@@ -809,6 +809,32 @@
 [+] passed!
 [+] passed!
 [+] passed!
+
+>> capacitance
+
+>> capacitance - capacitance?
+[+] passed!
+
+>> capacitance - math // scales
+[+] passed!
+
+>> capacitance - math // conversions
+
+>> capacitance - conforms?
+[+] passed!
+[+] passed!
+
+>> capacitance - convert
+[+] passed!
+
+>> capacitance - in
+[+] passed!
+
+>> capacitance - property
+[+] passed!
+
+>> capacitance - alternative names
+[+] passed!
 37000000000 Bq
 857374503/14964008 °
 80000 b
