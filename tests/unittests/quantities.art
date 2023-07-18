@@ -3611,6 +3611,17 @@ topic « charge
 do [
 
 
+    chargeSet: [
+
+        1`C         1`statC         1`abC
+
+        ; Other custom charge units
+        ; current * time
+
+        1`A.s
+
+    ]
+
 
 ]
 
