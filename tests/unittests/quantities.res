@@ -721,6 +721,36 @@
 [+] passed!
 [+] passed!
 [+] passed!
+
+>> resistance
+
+>> resistance - resistance?
+[+] passed!
+
+>> resistance - math // scales
+[+] passed!
+
+>> resistance - math // conversions
+[+] passed!
+[+] passed!
+
+>> resistance - conforms?
+[+] passed!
+[+] passed!
+
+>> resistance - convert
+[+] passed!
+
+>> resistance - in
+[+] passed!
+
+>> resistance - property
+[+] passed!
+
+>> resistance - alternative names
+[+] passed!
+[+] passed!
+[+] passed!
 37000000000 Bq
 857374503/14964008 °
 80000 b
