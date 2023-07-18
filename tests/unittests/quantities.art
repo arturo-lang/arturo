@@ -3664,6 +3664,15 @@ do [
     passed
 
 
+    topic « charge - conforms?
+
+    ensure -> every? chargeSet => conforms? `C
+    passed
+
+    ensure -> every? chargeSet -> x -> not? conforms? x `A
+    passed
+
+
 ]
 
 
