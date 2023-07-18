@@ -3685,6 +3685,12 @@ do [
     ensure -> same? 1`C in `C 1`A.s
     passed
 
+
+    topic « charge - property
+
+    ensure -> every? chargeSet -> x -> 'charge = property x
+    passed
+
 ]
 
 
