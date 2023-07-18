@@ -3355,6 +3355,16 @@ do [
     passed
 
 
+    topic « potential - math // conversions
+
+    ensure -> 1`V   =   1`W/A
+    passed
+
+    ensure -> (~"|1`statV --> `V |") =   "299.792458 V"
+    ensure -> (~"|1`abV   --> `V |") =   "1e-08 V"
+    passed
+
+
 
 ]
 
