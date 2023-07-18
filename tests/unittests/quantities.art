@@ -3442,6 +3442,12 @@ do [
     ]
 
 
+    topic « resistance - resistance?
+
+    ensure -> every? resistance => resistance?
+    passed
+
+
 
 ]
 
