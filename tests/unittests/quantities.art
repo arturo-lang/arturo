@@ -3565,6 +3565,12 @@ do [
     passed
 
 
+    topic « conductance - math // conversions
+
+    ensure -> 1`S   =   1`A/V
+    passed
+
+
 
 ]
 
