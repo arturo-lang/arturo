@@ -751,6 +751,33 @@
 [+] passed!
 [+] passed!
 [+] passed!
+
+>> conductance
+
+>> conductance - conductance?
+[+] passed!
+
+>> conductance - math // scales
+[+] passed!
+
+>> conductance - math // conversions
+[+] passed!
+
+>> conductance - conforms?
+[+] passed!
+[+] passed!
+
+>> conductance - convert
+[+] passed!
+
+>> conductance - in
+[+] passed!
+
+>> conductance - property
+[+] passed!
+
+>> conductance - alternative names
+[+] passed!
 37000000000 Bq
 857374503/14964008 °
 80000 b
