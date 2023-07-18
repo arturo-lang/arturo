@@ -3466,6 +3466,15 @@ do [
     passed
 
 
+    topic « resistance - math // conversions
+
+    ensure -> 1`Ohm   =   1`V/A
+    passed
+
+    ; it should print 8.987551787e11 Ω, instead of 898755178700
+    ; ensure -> (~"|1`statOhm --> `Ohm |") =   "8.987551787e11 Ω"
+    ensure -> (~"|1`abOhm   --> `Ohm |") =   "1e-09 Ω"
+    passed
     passed
 
 
