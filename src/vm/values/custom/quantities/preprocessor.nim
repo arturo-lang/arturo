@@ -92,9 +92,6 @@ template prefixId(str: string): string =
 
 template unitId(str: string): string =
     str & "_CoreUnit"
- 
-template getProperty(q: Quantity): string =
-    properties.getOrDefault(q.signature, "NOT FOUND!")
 
 #=======================================
 # Helpers
@@ -710,6 +707,11 @@ macro addPropertyPredicates*(): untyped =
 #=======================================
 # Debugging
 #=======================================
+
+# # Templates
+
+# template getProperty(q: Quantity): string =
+#     properties.getOrDefault(q.signature, "NOT FOUND!")
 
 # Overloads
 
