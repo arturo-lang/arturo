@@ -757,25 +757,25 @@ proc `$`*(q: Quantity): string =
 
 # Main debugging routines
 
-# proc debugAdd(a,b:string) =
-#     let pA = parseQuantity(a)
-#     let pB = parseQuantity(b)
-#     echo a & " + " & b & " = " & $(pA + pB)
+proc debugAdd(a,b:string) =
+    let pA = parseQuantity(a)
+    let pB = parseQuantity(b)
+    echo a & " + " & b & " = " & $(pA + pB)
 
-# proc debugMul(a,b:string) =
-#     let pA = parseQuantity(a)
-#     let pB = parseQuantity(b)
-#     echo a & " * " & b & " = " & $(pA * pB)
+proc debugMul(a,b:string) =
+    let pA = parseQuantity(a)
+    let pB = parseQuantity(b)
+    echo a & " * " & b & " = " & $(pA * pB)
 
-# proc printUnits*() =
-#     for unit, quantity in defs:
-#         echo unit & " = "
-#         echo "\t.original = " & $(quantity.original)
-#         echo "\t.value = " & $(quantity.value)
-#         echo "\t\t.signature = " & $(quantity.signature)
-#         echo "\t\t===> " & $quantity.getProperty()
-#         echo "\t.atoms = " & $(quantity.atoms)
-#         echo "\t.base = " & $(quantity.base)
-#         echo ""
+proc printUnits*() =
+    for unit, quantity in defs:
+        echo unit & " = "
+        echo "\t.original = " & $(quantity.original)
+        echo "\t.value = " & $(quantity.value)
+        echo "\t\t.signature = " & $(quantity.signature)
+        echo "\t\t===> " & $quantity.getProperty()
+        echo "\t.atoms = " & $(quantity.atoms)
+        echo "\t.base = " & $(quantity.base)
+        echo ""
 
-#     echo $(constants)
+    echo $(constants)
