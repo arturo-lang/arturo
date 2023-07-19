@@ -58,13 +58,12 @@ serveInternal: function [Request, verbose][
     callActionFunction: function [actionFunc, ptrn][
         actionParams: keys get info.get 'actionFunc 'args
         passedParams: new []
-
         if positive? size actionParams [
-            matchedGroups: match.capture Request\path ptrn
+            matchedGroups: first match.named.capture Request\path ptrn
             loop actionParams 'actionParam [
                 if and? [dictionary? Request\body][key? Request\body actionParam] ->
                     'passedParams ++ Request\body\[actionParam]
-                
+
                 if key? Request\query actionParam ->
                     'passedParams ++ Request\query\[actionParam]
 
