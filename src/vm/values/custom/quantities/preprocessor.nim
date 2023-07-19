@@ -578,7 +578,7 @@ macro generateQuantities*(): untyped =
 macro generateConstants*(): untyped =
     let res = nnkStmtList.newTree()
     for (name, content) in pairs(constants):
-        let (definition, quantity, precalculated, description) = content
+        let (definition, quantity, precalculated, _) = content
 
         if precalculated:
             res.add nnkAsgn.newTree(
