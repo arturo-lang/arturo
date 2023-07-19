@@ -757,6 +757,9 @@ proc `$`*(q: Quantity): string =
 
 # Main debugging routines
 
+{.push hints:off.}                  # we add this so that we don't get warnings about the following
+                                    # methods "not being used" (we don't really care, since they are
+                                    # here merely for debugging purposes...)
 proc debugAdd(a,b:string) =
     let pA = parseQuantity(a)
     let pB = parseQuantity(b)
@@ -779,3 +782,4 @@ proc printUnits*() =
         echo ""
 
     echo $(constants)
+{.pop.}
