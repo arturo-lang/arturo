@@ -4250,6 +4250,107 @@ do [
 
 ]
 
+
+topic « information
+do [
+
+
+    informationSet: [
+
+        1`B         1`b             1`KiB       1`MiB
+        1`GiB       1`TiB           1`PiB       1`EiB
+
+    ]
+
+
+    topic « information - information?
+
+    ensure -> every? informationSet => information?
+    passed
+
+
+    topic « information - math // scales
+
+    ; precision loss
+    ensure -> 1`Eb  = 1`Pb  * (10 ^ 3)
+    ensure -> 1`Pb  = 1`Tb  * (10 ^ 3)
+    ensure -> 1`Tb  = 1`Gb  * (10 ^ 3)
+    ensure -> 1`Gb  = 1`Mb  * (10 ^ 3)
+    ensure -> 1`Mb  = 1`kb  * (10 ^ 3)
+    ensure -> 1`kb  = 1`hb  *  10
+    ensure -> 1`hb  = 1`dab *  10
+    ensure -> 1`dab = 1`b   *  10
+    ensure -> 1`db  = 1`b   /  10
+    ensure -> 1`cb  = 1`db  /  10
+    ensure -> 1`mb  = 1`cb  /  10
+    ensure -> 1`ub  = 1`mb  / (10 ^ 3)
+    ensure -> 1`nb  = 1`ub  / (10 ^ 3)
+    ; ensure -> 1`pb  = 1`nb  / (10 ^ 3)
+    ; ensure -> 1`fb  = 1`pb  / (10 ^ 3)
+    ; ensure -> 1`ab  = 1`fb  / (10 ^ 3)
+    passed
+
+
+    topic « information - math // conversions
+
+    ensure -> 1`b       =   1:8`B
+    ensure -> 1`KiB     =   1024`B
+    ensure -> 1`MiB     =   1024`KiB
+    ensure -> 1`GiB     =   1024`MiB
+    ensure -> 1`TiB     =   1024`GiB
+    ensure -> 1`PiB     =   1024`TiB
+    ensure -> 1`EiB     =   1024`PiB
+    passed
+
+
+    topic « information - conforms?
+
+    ensure -> every? informationSet => conforms? `B
+    passed
+
+    ensure -> every? informationSet -> x -> not? conforms? x `t
+    passed
+
+    topic « information - convert
+
+    ensure -> same? 1024`B convert 1`KiB `B
+    ensure -> same? 1024`B 1`KiB --> `B
+    passed
+
+
+    topic « information - in
+
+    ensure -> same? 1024`B in `B 1`KiB
+    passed
+
+
+    topic « information - property
+
+    ensure -> every? informationSet -> x -> 'information = property x
+    passed
+
+
+    topic « information - alternative names
+
+    ensure -> every? [ `byte `bytes ] => equal? & `B
+    passed
+    ensure -> every? [ `bit `bits ] => equal? & `b
+    passed
+    ensure -> every? [ `kibibyte `kibibyte ] => equal? & `KiB
+    passed
+    ensure -> every? [ `mebibyte `mebibytes ] => equal? & `MiB
+    passed
+    ensure -> every? [ `gibibyte `gibibytes ] => equal? & `GiB
+    passed
+    ensure -> every? [ `tebibyte `tebibytes ] => equal? & `TiB
+    passed
+    ensure -> every? [ `pebibyte `pebibytes ] => equal? & `PiB
+    passed
+    ensure -> every? [ `exbibyte `exbibytes ] => equal? & `EiB
+    passed
+
+]
+
 ; Radioactivity
 print in`Bq 1`Ci
 
