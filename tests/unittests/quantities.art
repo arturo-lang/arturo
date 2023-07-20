@@ -3869,6 +3869,96 @@ do [
 
 ]
 
+
+topic « inductance
+do [
+
+
+    inductanceSet: [
+
+        1`H       1`abH
+
+        ; Other custom inductance units
+        ; potential * time / current
+
+        1`V.s/A
+
+    ]
+
+
+    topic « inductance - inductance?
+
+    ensure -> every? inductanceSet => inductance?
+    passed
+
+
+    topic « inductance - math // scales
+
+    ; precision loss
+    ; ensure -> 1`EH  = 1`PH  * (10 ^ 3)
+    ensure -> 1`PH  = 1`TH  * (10 ^ 3)
+    ensure -> 1`TH  = 1`GH  * (10 ^ 3)
+    ensure -> 1`GH  = 1`MH  * (10 ^ 3)
+    ensure -> 1`MH  = 1`kH  * (10 ^ 3)
+    ensure -> 1`kH  = 1`hH  *  10
+    ensure -> 1`hH  = 1`daH *  10
+    ensure -> 1`daH = 1`H   *  10
+    ensure -> 1`dH  = 1`H   /  10
+    ensure -> 1`cH  = 1`dH  /  10
+    ensure -> 1`mH  = 1`cH  /  10
+    ensure -> 1`uH  = 1`mH  / (10 ^ 3)
+    ensure -> 1`nH  = 1`uH  / (10 ^ 3)
+    ; ensure -> 1`pH  = 1`nH  / (10 ^ 3)
+    ; ensure -> 1`fH  = 1`pH  / (10 ^ 3)
+    ; ensure -> 1`aH  = 1`fH  / (10 ^ 3)
+    passed
+
+
+    topic « inductance - math // conversions
+
+    ensure -> 1`H   =   1`V.s/A
+    passed
+
+    ensure -> (~"|1`abH   --> `H |") =   "1e-09 H"
+    passed
+
+
+    topic « inductance - conforms?
+
+    ensure -> every? inductanceSet => conforms? `H
+    passed
+
+    ensure -> every? inductanceSet -> x -> not? conforms? x `h
+    passed
+
+    topic « inductance - convert
+
+    ensure -> same? 1`H convert 1`V.s/A `H
+    ensure -> same? 1`H 1`V.s/A --> `H
+    passed
+
+
+    topic « inductance - in
+
+    ensure -> same? 1`H in `H 1`V.s/A
+    passed
+
+
+    topic « inductance - property
+
+    ensure -> every? inductanceSet -> x -> 'inductance = property x
+    passed
+
+
+    topic « inductance - alternative names
+
+    ensure -> every? [ `henry `henrys ] => equal? & `H
+    passed
+    ensure -> every? [ `abhenry `abhenrys ] => equal? & `abH
+    passed
+
+]
+
 ; Radioactivity
 print in`Bq 1`Ci
 
