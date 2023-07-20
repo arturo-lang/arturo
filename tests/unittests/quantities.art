@@ -4356,12 +4356,3 @@ print in`Bq 1`Ci
 
 ; Angle
 print in`deg 1`rad
-
-; Information
-print in`bit 10`kB
-print in`bit 10`KiB
-
-; Temperature
-print in`oC 32`oF
-print in`oC 95`oF
-print in`K 40`oC
