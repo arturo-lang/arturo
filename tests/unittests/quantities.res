@@ -947,6 +947,32 @@
 >> magneticFluxDensity - alternative names
 [+] passed!
 [+] passed!
+
+>> temperature
+
+>> temperature - temperature?
+[+] passed!
+
+>> temperature - math // conversions
+broken
+
+>> temperature - conforms?
+[+] passed!
+[+] passed!
+
+>> temperature - convert
+broken
+
+>> temperature - in
+broken
+
+>> temperature - property
+[+] passed!
+
+>> temperature - alternative names
+[+] passed!
+[+] passed!
+[+] passed!
 37000000000 Bq
 857374503/14964008 °
 80000 b
