@@ -973,6 +973,40 @@ broken
 [+] passed!
 [+] passed!
 [+] passed!
+
+>> information
+
+>> information - information?
+[+] passed!
+
+>> information - math // scales
+[+] passed!
+
+>> information - math // conversions
+[+] passed!
+
+>> information - conforms?
+[+] passed!
+[+] passed!
+
+>> information - convert
+[+] passed!
+
+>> information - in
+[+] passed!
+
+>> information - property
+[+] passed!
+
+>> information - alternative names
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 37000000000 Bq
 857374503/14964008 °
 80000 b
