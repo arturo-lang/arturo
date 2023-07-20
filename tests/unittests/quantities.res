@@ -917,6 +917,36 @@
 >> magneticFlux - alternative names
 [+] passed!
 [+] passed!
+
+>> magneticFluxDensity
+
+>> magneticFluxDensity - magneticFluxDensity?
+[+] passed!
+
+>> magneticFluxDensity - math // scales
+[+] passed!
+[+] passed!
+
+>> magneticFluxDensity - math // conversions
+[+] passed!
+[+] passed!
+
+>> magneticFluxDensity - conforms?
+[+] passed!
+[+] passed!
+
+>> magneticFluxDensity - convert
+[+] passed!
+
+>> magneticFluxDensity - in
+[+] passed!
+
+>> magneticFluxDensity - property
+[+] passed!
+
+>> magneticFluxDensity - alternative names
+[+] passed!
+[+] passed!
 37000000000 Bq
 857374503/14964008 °
 80000 b
