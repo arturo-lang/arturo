@@ -4067,6 +4067,115 @@ do [
 
 ]
 
+
+topic « magneticFluxDensity
+do [
+
+
+    magneticFluxDensitySet: [
+
+        1`T        1`G
+
+        ; Other custom magneticFluxDensity units
+        ; magnetic flux / area
+
+        1`Wb/m2
+
+    ]
+
+
+    topic « magneticFluxDensity - magneticFluxDensity?
+
+    ensure -> every? magneticFluxDensitySet => magneticFluxDensity?
+    passed
+
+
+    topic « magneticFluxDensity - math // scales
+
+    ; precision loss
+    ; ensure -> 1`ET  = 1`PT  * (10 ^ 3)
+    ensure -> 1`PT  = 1`TT  * (10 ^ 3)
+    ensure -> 1`TT  = 1`GT  * (10 ^ 3)
+    ensure -> 1`GT  = 1`MT  * (10 ^ 3)
+    ensure -> 1`MT  = 1`kT  * (10 ^ 3)
+    ensure -> 1`kT  = 1`hT  *  10
+    ensure -> 1`hT  = 1`daT *  10
+    ensure -> 1`daT = 1`T   *  10
+    ensure -> 1`dT  = 1`T   /  10
+    ensure -> 1`cT  = 1`dT  /  10
+    ensure -> 1`mT  = 1`cT  /  10
+    ensure -> 1`uT  = 1`mT  / (10 ^ 3)
+    ensure -> 1`nT  = 1`uT  / (10 ^ 3)
+    ; ensure -> 1`pT  = 1`nT  / (10 ^ 3)
+    ; ensure -> 1`fT  = 1`pT  / (10 ^ 3)
+    ; ensure -> 1`aT  = 1`fT  / (10 ^ 3)
+    passed
+
+    ; precision loss
+    ensure -> 1`EG  = 1`PG  * (10 ^ 3)
+    ensure -> 1`PG  = 1`TG  * (10 ^ 3)
+    ensure -> 1`TG  = 1`GG  * (10 ^ 3)
+    ensure -> 1`GG  = 1`MG  * (10 ^ 3)
+    ensure -> 1`MG  = 1`kG  * (10 ^ 3)
+    ensure -> 1`kG  = 1`hG  *  10
+    ensure -> 1`hG  = 1`daG *  10
+    ensure -> 1`daG = 1`G   *  10
+    ensure -> 1`dG  = 1`G   /  10
+    ensure -> 1`cG  = 1`dG  /  10
+    ensure -> 1`mG  = 1`cG  /  10
+    ensure -> 1`uG  = 1`mG  / (10 ^ 3)
+    ensure -> 1`nG  = 1`uG  / (10 ^ 3)
+    ; ensure -> 1`pG  = 1`nG  / (10 ^ 3)
+    ; ensure -> 1`fG  = 1`pG  / (10 ^ 3)
+    ; ensure -> 1`aG  = 1`fG  / (10 ^ 3)
+    passed
+
+
+    topic « magneticFluxDensity - math // conversions
+
+    ensure -> 1`T   =   1`Wb/m2
+    passed
+
+    ensure -> (~"|1`G   --> `T |") =   "0.0001 T"
+    passed
+
+
+    topic « magneticFluxDensity - conforms?
+
+    ensure -> every? magneticFluxDensitySet => conforms? `T
+    passed
+
+    ensure -> every? magneticFluxDensitySet -> x -> not? conforms? x `t
+    passed
+
+    topic « magneticFluxDensity - convert
+
+    ensure -> same? 1`T convert 1`Wb/m2 `T
+    ensure -> same? 1`T 1`Wb/m2 --> `T
+    passed
+
+
+    topic « magneticFluxDensity - in
+
+    ensure -> same? 1`T in `T 1`Wb/m2
+    passed
+
+
+    topic « magneticFluxDensity - property
+
+    ensure -> every? magneticFluxDensitySet -> x -> "magnetic flux density" = to :string property x
+    passed
+
+
+    topic « magneticFluxDensity - alternative names
+
+    ensure -> every? [ `tesla `teslas ] => equal? & `T
+    passed
+    ensure -> every? [ `gauss ] => equal? & `G
+    passed
+
+]
+
 ; Radioactivity
 print in`Bq 1`Ci
 
