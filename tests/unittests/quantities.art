@@ -3959,6 +3959,114 @@ do [
 
 ]
 
+topic « magneticFlux
+do [
+
+
+    magneticFluxSet: [
+
+        1`Wb        1`Mx
+
+        ; Other custom magneticFlux units
+        ; potential * time
+
+        1`V.s
+
+    ]
+
+
+    topic « magneticFlux - magneticFlux?
+
+    ensure -> every? magneticFluxSet => magneticFlux?
+    passed
+
+
+    topic « magneticFlux - math // scales
+
+    ; precision loss
+    ; ensure -> 1`EWb  = 1`PWb  * (10 ^ 3)
+    ensure -> 1`PWb  = 1`TWb  * (10 ^ 3)
+    ensure -> 1`TWb  = 1`GWb  * (10 ^ 3)
+    ensure -> 1`GWb  = 1`MWb  * (10 ^ 3)
+    ensure -> 1`MWb  = 1`kWb  * (10 ^ 3)
+    ensure -> 1`kWb  = 1`hWb  *  10
+    ensure -> 1`hWb  = 1`daWb *  10
+    ensure -> 1`daWb = 1`Wb   *  10
+    ensure -> 1`dWb  = 1`Wb   /  10
+    ensure -> 1`cWb  = 1`dWb  /  10
+    ensure -> 1`mWb  = 1`cWb  /  10
+    ensure -> 1`uWb  = 1`mWb  / (10 ^ 3)
+    ensure -> 1`nWb  = 1`uWb  / (10 ^ 3)
+    ; ensure -> 1`pWb  = 1`nWb  / (10 ^ 3)
+    ; ensure -> 1`fWb  = 1`pWb  / (10 ^ 3)
+    ; ensure -> 1`aWb  = 1`fWb  / (10 ^ 3)
+    passed
+
+    ; precision loss
+    ensure -> 1`EMx  = 1`PMx  * (10 ^ 3)
+    ensure -> 1`PMx  = 1`TMx  * (10 ^ 3)
+    ensure -> 1`TMx  = 1`GMx  * (10 ^ 3)
+    ensure -> 1`GMx  = 1`MMx  * (10 ^ 3)
+    ensure -> 1`MMx  = 1`kMx  * (10 ^ 3)
+    ensure -> 1`kMx  = 1`hMx  *  10
+    ensure -> 1`hMx  = 1`daMx *  10
+    ensure -> 1`daMx = 1`Mx   *  10
+    ensure -> 1`dMx  = 1`Mx   /  10
+    ensure -> 1`cMx  = 1`dMx  /  10
+    ensure -> 1`mMx  = 1`cMx  /  10
+    ensure -> 1`uMx  = 1`mMx  / (10 ^ 3)
+    ensure -> 1`nMx  = 1`uMx  / (10 ^ 3)
+    ; ensure -> 1`pMx  = 1`nMx  / (10 ^ 3)
+    ; ensure -> 1`fMx  = 1`pMx  / (10 ^ 3)
+    ; ensure -> 1`aMx  = 1`fMx  / (10 ^ 3)
+    passed
+
+
+    topic « magneticFlux - math // conversions
+
+    ensure -> 1`Wb   =   1`V.s
+    passed
+
+    ensure -> (~"|1`Mx   --> `Wb |") =   "1e-08 Wb"
+    passed
+
+
+    topic « magneticFlux - conforms?
+
+    ensure -> every? magneticFluxSet => conforms? `Wb
+    passed
+
+    ensure -> every? magneticFluxSet -> x -> not? conforms? x `h
+    passed
+
+    topic « magneticFlux - convert
+
+    ensure -> same? 1`Wb convert 1`V.s `Wb
+    ensure -> same? 1`Wb 1`V.s --> `Wb
+    passed
+
+
+    topic « magneticFlux - in
+
+    ensure -> same? 1`Wb in `Wb 1`V.s
+    passed
+
+
+    topic « magneticFlux - property
+
+    ensure -> every? magneticFluxSet -> x -> "magnetic flux" = to :string property x
+    passed
+
+
+    topic « magneticFlux - alternative names
+
+    ensure -> every? [ `weber `webers ] => equal? & `Wb
+    passed
+    ensure -> every? [ `maxwell `maxwells ] => equal? & `Mx
+    passed
+
+]
+
 ; Radioactivity
 print in`Bq 1`Ci
 
