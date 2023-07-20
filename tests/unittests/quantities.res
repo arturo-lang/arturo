@@ -858,6 +858,35 @@
 
 >> elastance - property
 [+] passed!
+
+>> inductance
+
+>> inductance - inductance?
+[+] passed!
+
+>> inductance - math // scales
+[+] passed!
+
+>> inductance - math // conversions
+[+] passed!
+[+] passed!
+
+>> inductance - conforms?
+[+] passed!
+[+] passed!
+
+>> inductance - convert
+[+] passed!
+
+>> inductance - in
+[+] passed!
+
+>> inductance - property
+[+] passed!
+
+>> inductance - alternative names
+[+] passed!
+[+] passed!
 37000000000 Bq
 857374503/14964008 °
 80000 b
