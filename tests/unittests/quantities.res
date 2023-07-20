@@ -887,6 +887,36 @@
 >> inductance - alternative names
 [+] passed!
 [+] passed!
+
+>> magneticFlux
+
+>> magneticFlux - magneticFlux?
+[+] passed!
+
+>> magneticFlux - math // scales
+[+] passed!
+[+] passed!
+
+>> magneticFlux - math // conversions
+[+] passed!
+[+] passed!
+
+>> magneticFlux - conforms?
+[+] passed!
+[+] passed!
+
+>> magneticFlux - convert
+[+] passed!
+
+>> magneticFlux - in
+[+] passed!
+
+>> magneticFlux - property
+[+] passed!
+
+>> magneticFlux - alternative names
+[+] passed!
+[+] passed!
 37000000000 Bq
 857374503/14964008 °
 80000 b
