@@ -4351,6 +4351,86 @@ do [
 
 ]
 
+
+topic « angle
+do [
+
+
+    angleSet: [
+
+        1`rad       1`deg       1`grad
+        1`arcmin    1`arcsec
+
+    ]
+
+
+    topic « angle - angle?
+
+    ensure -> every? angleSet => angle?
+    passed
+
+
+    topic « angle - math // conversions
+
+    ; Try it:
+    ;   $> 1`deg --> `rad
+    ;   => 14964008/857374503 rad
+    ;
+    ;   $> 14964008/857374503
+    ;   => 0
+
+    ; ensure -> 1`deg     =   pi:180`rad
+    ; ensure -> 1`grad    =   pi:200`rad
+    ; ensure -> 1`arcmin  =   pi:10800`rad
+    ; ensure -> 1`arcsec  =   pi:648000`rad
+    print "broken"
+
+
+    topic « angle - conforms?
+
+    ensure -> every? angleSet => conforms? `deg
+    passed
+
+    ensure -> every? angleSet -> x -> not? conforms? x `degC
+    passed
+
+    topic « angle - convert
+
+    ; ensure -> same? pi:200`rad convert 1`grad `rad
+    ; ensure -> same? pi:200`rad 1`grad --> `rad
+    ; passed
+    print "broken"
+
+
+    topic « angle - in
+
+    ; ensure -> same? pi:200`rad in `rad 1`grad
+    ; passed
+    print "broken"
+
+
+    topic « angle - property
+
+    ensure -> every? angleSet -> x -> 'angle = property x
+    passed
+
+
+    topic « angle - alternative names
+
+    ensure -> every? [ `radian `radians ] => equal? & `rad
+    passed
+    ensure -> every? [ `degree `degrees ] => equal? & `deg
+    passed
+    ensure -> every? [ `gradian `gradians ] => equal? & `grad
+    passed
+    ensure -> every? [ `arcminute `arcminutes ] => equal? & `arcmin
+    passed
+    ensure -> every? [ `arcsecond `arcseconds ] => equal? & `arcsec
+    passed
+
+]
+
+
 ; Radioactivity
 print in`Bq 1`Ci
 
