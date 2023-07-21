@@ -4433,6 +4433,3 @@ do [
 
 ; Radioactivity
 print in`Bq 1`Ci
-
-; Angle
-print in`deg 1`rad
