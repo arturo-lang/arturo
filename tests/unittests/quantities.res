@@ -1035,4 +1035,31 @@ broken
 [+] passed!
 [+] passed!
 [+] passed!
+
+>> catalyticActivity
+
+>> catalyticActivity - catalyticActivity?
+[+] passed!
+
+>> catalyticActivity - math // scales
+[+] passed!
+
+>> catalyticActivity - math // conversions
+[+] passed!
+
+>> catalyticActivity - conforms?
+[+] passed!
+[+] passed!
+
+>> catalyticActivity - convert
+[+] passed!
+
+>> catalyticActivity - in
+[+] passed!
+
+>> catalyticActivity - property
+[+] passed!
+
+>> catalyticActivity - alternative names
+[+] passed!
 37000000000 Bq
