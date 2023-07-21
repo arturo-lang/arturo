@@ -4705,3 +4705,132 @@ do [
     passed
 
 ]
+
+
+topic « radiationExposure
+do [
+
+
+    radiationExposureSet: [
+
+        1`Gy        1`Sv        1`R
+
+        ; Other custom radiationExposure units
+        ; magnetic energy / mass
+
+        1`J/kg
+
+    ]
+
+
+    topic « radiationExposure - radiationExposure?
+
+    ensure -> every? radiationExposureSet => radiation?
+    passed
+
+
+    topic « radiationExposure - math // scales
+
+    ; precision loss
+    ensure -> 1`EGy  = 1`PGy  * (10 ^ 3)
+    ensure -> 1`PGy  = 1`TGy  * (10 ^ 3)
+    ensure -> 1`TGy  = 1`GGy  * (10 ^ 3)
+    ensure -> 1`GGy  = 1`MGy  * (10 ^ 3)
+    ensure -> 1`MGy  = 1`kGy  * (10 ^ 3)
+    ensure -> 1`kGy  = 1`hGy  *  10
+    ensure -> 1`hGy  = 1`daGy *  10
+    ensure -> 1`daGy = 1`Gy   *  10
+    ensure -> 1`dGy  = 1`Gy   /  10
+    ensure -> 1`cGy  = 1`dGy  /  10
+    ensure -> 1`mGy  = 1`cGy  /  10
+    ensure -> 1`uGy  = 1`mGy  / (10 ^ 3)
+    ensure -> 1`nGy  = 1`uGy  / (10 ^ 3)
+    ; ensure -> 1`pGy  = 1`nGy  / (10 ^ 3)
+    ; ensure -> 1`fGy  = 1`pGy  / (10 ^ 3)
+    ; ensure -> 1`aGy  = 1`fGy  / (10 ^ 3)
+    passed
+
+    ; precision loss
+    ensure -> 1`ESv  = 1`PSv  * (10 ^ 3)
+    ensure -> 1`PSv  = 1`TSv  * (10 ^ 3)
+    ensure -> 1`TSv  = 1`GSv  * (10 ^ 3)
+    ensure -> 1`GSv  = 1`MSv  * (10 ^ 3)
+    ensure -> 1`MSv  = 1`kSv  * (10 ^ 3)
+    ensure -> 1`kSv  = 1`hSv  *  10
+    ensure -> 1`hSv  = 1`daSv *  10
+    ensure -> 1`daSv = 1`Sv   *  10
+    ensure -> 1`dSv  = 1`Sv   /  10
+    ensure -> 1`cSv  = 1`dSv  /  10
+    ensure -> 1`mSv  = 1`cSv  /  10
+    ensure -> 1`uSv  = 1`mSv  / (10 ^ 3)
+    ensure -> 1`nSv  = 1`uSv  / (10 ^ 3)
+    ; ensure -> 1`pSv  = 1`nSv  / (10 ^ 3)
+    ; ensure -> 1`fSv  = 1`pSv  / (10 ^ 3)
+    ; ensure -> 1`aSv  = 1`fSv  / (10 ^ 3)
+    passed
+
+    ; precision loss
+    ensure -> 1`ER  = 1`PR  * (10 ^ 3)
+    ensure -> 1`PR  = 1`TR  * (10 ^ 3)
+    ensure -> 1`TR  = 1`GR  * (10 ^ 3)
+    ensure -> 1`GR  = 1`MR  * (10 ^ 3)
+    ensure -> 1`MR  = 1`kR  * (10 ^ 3)
+    ensure -> 1`kR  = 1`hR  *  10
+    ensure -> 1`hR  = 1`daR *  10
+    ensure -> 1`daR = 1`R   *  10
+    ensure -> 1`dR  = 1`R   /  10
+    ensure -> 1`cR  = 1`dR  /  10
+    ensure -> 1`mR  = 1`cR  /  10
+    ensure -> 1`uR  = 1`mR  / (10 ^ 3)
+    ensure -> 1`nR  = 1`uR  / (10 ^ 3)
+    ; ensure -> 1`pR  = 1`nR  / (10 ^ 3)
+    ; ensure -> 1`fR  = 1`pR  / (10 ^ 3)
+    ; ensure -> 1`aR  = 1`fR  / (10 ^ 3)
+    passed
+
+
+    topic « radiationExposure - math // conversions
+
+    ensure -> 1`Gy   =   1`J/kg
+    ensure -> 1`Sv   =   1`J/kg
+    ensure -> 1`R    =   0.01`J/kg
+    passed
+
+
+    topic « radiationExposure - conforms?
+
+    ensure -> every? radiationExposureSet => conforms? `Gy
+    passed
+
+    ensure -> every? radiationExposureSet -> x -> not? conforms? x `t
+    passed
+
+    topic « radiationExposure - convert
+
+    ensure -> same? 1`Gy convert 1`J/kg `Gy
+    ensure -> same? 1`Gy 1`J/kg --> `Gy
+    passed
+
+
+    topic « radiationExposure - in
+
+    ensure -> same? 1`Gy in `Gy 1`J/kg
+    passed
+
+
+    topic « radiationExposure - property
+
+    ensure -> every? radiationExposureSet -> x -> 'radiation = property x
+    passed
+
+
+    topic « radiationExposure - alternative names
+
+    ensure -> every? [ `gray `grays ] => equal? & `Gy
+    passed
+    ensure -> every? [ `sievert `sievert ] => equal? & `Sv
+    passed
+    ensure -> every? [ `roentgen `roentgen ] => equal? & `R
+    passed
+
+]
