@@ -1062,4 +1062,31 @@ broken
 
 >> catalyticActivity - alternative names
 [+] passed!
+
+>> frequency
+
+>> frequency - frequency?
+[+] passed!
+
+>> frequency - math // scales
+[+] passed!
+
+>> frequency - math // conversions
+[+] passed!
+
+>> frequency - conforms?
+[+] passed!
+[+] passed!
+
+>> frequency - convert
+[+] passed!
+
+>> frequency - in
+[+] passed!
+
+>> frequency - property
+[+] passed!
+
+>> frequency - alternative names
+[+] passed!
 37000000000 Bq
