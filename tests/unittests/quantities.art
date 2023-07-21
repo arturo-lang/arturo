@@ -4705,7 +4705,3 @@ do [
     passed
 
 ]
-
-
-; Radioactivity
-print in`Bq 1`Ci
