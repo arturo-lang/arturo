@@ -4431,5 +4431,91 @@ do [
 ]
 
 
+topic « catalyticActivity
+do [
+
+
+    catalyticActivitySet: [
+
+        1`kat
+
+        ; Other custom catalyticActivity units
+        ; substance / time
+
+        1`mol/s
+
+    ]
+
+
+    topic « catalyticActivity - catalyticActivity?
+
+    ensure -> every? catalyticActivitySet => moleFlowRate?
+    passed
+
+
+    topic « catalyticActivity - math // scales
+
+
+    ; precision loss
+    ensure -> 1`Ekat  = 1`Pkat  * (10 ^ 3)
+    ensure -> 1`Pkat  = 1`Tkat  * (10 ^ 3)
+    ensure -> 1`Tkat  = 1`Gkat  * (10 ^ 3)
+    ensure -> 1`Gkat  = 1`Mkat  * (10 ^ 3)
+    ensure -> 1`Mkat  = 1`kkat  * (10 ^ 3)
+    ensure -> 1`kkat  = 1`hkat  *  10
+    ensure -> 1`hkat  = 1`dakat *  10
+    ensure -> 1`dakat = 1`kat   *  10
+    ensure -> 1`dkat  = 1`kat   /  10
+    ensure -> 1`ckat  = 1`dkat  /  10
+    ensure -> 1`mkat  = 1`ckat  /  10
+    ensure -> 1`ukat  = 1`mkat  / (10 ^ 3)
+    ensure -> 1`nkat  = 1`ukat  / (10 ^ 3)
+    ; ensure -> 1`pkat  = 1`nkat  / (10 ^ 3)
+    ; ensure -> 1`fkat  = 1`pkat  / (10 ^ 3)
+    ; ensure -> 1`akat  = 1`fkat  / (10 ^ 3)
+    passed
+
+
+    topic « catalyticActivity - math // conversions
+
+    ensure -> 1`kat   =   1`mol/s
+    passed
+
+
+    topic « catalyticActivity - conforms?
+
+    ensure -> every? catalyticActivitySet => conforms? `mol/s
+    passed
+
+    ensure -> every? catalyticActivitySet -> x -> not? conforms? x `m/s
+    passed
+
+    topic « catalyticActivity - convert
+
+    ensure -> same? 1`kat convert 1`mol/s `kat
+    ensure -> same? 1`kat 1`mol/s --> `kat
+    passed
+
+
+    topic « catalyticActivity - in
+
+    ensure -> same? 1`kat in `kat 1`mol/s
+    passed
+
+
+    topic « catalyticActivity - property
+
+    ensure -> every? catalyticActivitySet -> x -> "mole flow rate" = to :string property x
+    passed
+
+
+    topic « catalyticActivity - alternative names
+
+    ensure -> every? [ `katal `katals ] => equal? & `kat
+    passed
+
+]
+
+
 ; Radioactivity
 print in`Bq 1`Ci
