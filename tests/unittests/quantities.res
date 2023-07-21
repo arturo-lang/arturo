@@ -1007,5 +1007,32 @@ broken
 [+] passed!
 [+] passed!
 [+] passed!
+
+>> angle
+
+>> angle - angle?
+[+] passed!
+
+>> angle - math // conversions
+broken
+
+>> angle - conforms?
+[+] passed!
+[+] passed!
+
+>> angle - convert
+broken
+
+>> angle - in
+broken
+
+>> angle - property
+[+] passed!
+
+>> angle - alternative names
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 37000000000 Bq
-857374503/14964008 °
