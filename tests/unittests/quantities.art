@@ -4602,5 +4602,110 @@ do [
 ]
 
 
+topic « radiation
+do [
+
+    ; Bug found: there is no radiation? you must use frequency?
+    ; because it uses the same formula
+
+
+    radiationSet: [
+
+        1`Bq    1`Ci
+
+    ]
+
+
+    topic « radiation - radiation?
+
+    ensure -> every? radiationSet => frequency?
+    passed
+
+
+    topic « radiation - math // scales
+
+    ; precision loss
+    ensure -> 1`EBq  = 1`PBq  * (10 ^ 3)
+    ensure -> 1`PBq  = 1`TBq  * (10 ^ 3)
+    ensure -> 1`TBq  = 1`GBq  * (10 ^ 3)
+    ensure -> 1`GBq  = 1`MBq  * (10 ^ 3)
+    ensure -> 1`MBq  = 1`kBq  * (10 ^ 3)
+    ensure -> 1`kBq  = 1`hBq  *  10
+    ensure -> 1`hBq  = 1`daBq *  10
+    ensure -> 1`daBq = 1`Bq   *  10
+    ensure -> 1`dBq  = 1`Bq   /  10
+    ensure -> 1`cBq  = 1`dBq  /  10
+    ensure -> 1`mBq  = 1`cBq  /  10
+    ensure -> 1`uBq  = 1`mBq  / (10 ^ 3)
+    ensure -> 1`nBq  = 1`uBq  / (10 ^ 3)
+    ; ensure -> 1`pBq  = 1`nBq  / (10 ^ 3)
+    ; ensure -> 1`fBq  = 1`pBq  / (10 ^ 3)
+    ; ensure -> 1`aBq  = 1`fBq  / (10 ^ 3)
+    passed
+
+    ; precision loss
+    ; ensure -> 1`ECi  = 1`PCi  * (10 ^ 3)
+    ; ensure -> 1`PCi  = 1`TCi  * (10 ^ 3)
+    ; ensure -> 1`TCi  = 1`GCi  * (10 ^ 3)
+    ; ensure -> 1`GCi  = 1`MCi  * (10 ^ 3)
+    ensure -> 1`MCi  = 1`kCi  * (10 ^ 3)
+    ensure -> 1`kCi  = 1`hCi  *  10
+    ensure -> 1`hCi  = 1`daCi *  10
+    ensure -> 1`daCi = 1`Ci   *  10
+    ensure -> 1`dCi  = 1`Ci   /  10
+    ensure -> 1`cCi  = 1`dCi  /  10
+    ensure -> 1`mCi  = 1`cCi  /  10
+    ensure -> 1`uCi  = 1`mCi  / (10 ^ 3)
+    ensure -> 1`nCi  = 1`uCi  / (10 ^ 3)
+    ; ensure -> 1`pCi  = 1`nCi  / (10 ^ 3)
+    ; ensure -> 1`fCi  = 1`pCi  / (10 ^ 3)
+    ; ensure -> 1`aCi  = 1`fCi  / (10 ^ 3)
+    passed
+
+
+    topic « radiation - math // conversions
+
+    ensure -> 1`Bq   =   1`1/s
+    ensure -> 1`Ci   =   37000000000`Bq
+    passed
+
+
+    topic « radiation - conforms?
+
+    ensure -> every? radiationSet => conforms? `Bq
+    passed
+
+    ensure -> every? radiationSet -> x -> not? conforms? x `t
+    passed
+
+    topic « radiation - convert
+
+    ensure -> same? 1`Bq convert 1`1/s `Bq
+    ensure -> same? 1`Bq 1`1/s --> `Bq
+    passed
+
+
+    topic « radiation - in
+
+    ensure -> same? 1`Bq in `Bq 1`1/s
+    passed
+
+
+    topic « radiation - property
+
+    ensure -> every? radiationSet -> x -> 'frequency = property x
+    passed
+
+
+    topic « radiation - alternative names
+
+    ensure -> every? [ `becquerel `becquerels ] => equal? & `Bq
+    passed
+    ensure -> every? [ `curie `curies ] => equal? & `Ci
+    passed
+
+]
+
+
 ; Radioactivity
 print in`Bq 1`Ci
