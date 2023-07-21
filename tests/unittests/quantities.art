@@ -4517,5 +4517,90 @@ do [
 ]
 
 
+topic « frequency
+do [
+
+
+    frequencySet: [
+
+        1`Hz
+
+        ; Other custom frequency units
+        ; time ^ -1
+
+        1`1/s
+
+    ]
+
+
+    topic « frequency - frequency?
+
+    ensure -> every? frequencySet => frequency?
+    passed
+
+
+    topic « frequency - math // scales
+
+    ; precision loss
+    ensure -> 1`EHz  = 1`PHz  * (10 ^ 3)
+    ensure -> 1`PHz  = 1`THz  * (10 ^ 3)
+    ensure -> 1`THz  = 1`GHz  * (10 ^ 3)
+    ensure -> 1`GHz  = 1`MHz  * (10 ^ 3)
+    ensure -> 1`MHz  = 1`kHz  * (10 ^ 3)
+    ensure -> 1`kHz  = 1`hHz  *  10
+    ensure -> 1`hHz  = 1`daHz *  10
+    ensure -> 1`daHz = 1`Hz   *  10
+    ensure -> 1`dHz  = 1`Hz   /  10
+    ensure -> 1`cHz  = 1`dHz  /  10
+    ensure -> 1`mHz  = 1`cHz  /  10
+    ensure -> 1`uHz  = 1`mHz  / (10 ^ 3)
+    ensure -> 1`nHz  = 1`uHz  / (10 ^ 3)
+    ; ensure -> 1`pHz  = 1`nHz  / (10 ^ 3)
+    ; ensure -> 1`fHz  = 1`pHz  / (10 ^ 3)
+    ; ensure -> 1`aHz  = 1`fHz  / (10 ^ 3)
+    passed
+
+
+    topic « frequency - math // conversions
+
+    ensure -> 1`Hz   =   1`1/s
+    passed
+
+
+    topic « frequency - conforms?
+
+    ensure -> every? frequencySet => conforms? `Hz
+    passed
+
+    ensure -> every? frequencySet -> x -> not? conforms? x `t
+    passed
+
+    topic « frequency - convert
+
+    ensure -> same? 1`Hz convert 1`1/s `Hz
+    ensure -> same? 1`Hz 1`1/s --> `Hz
+    passed
+
+
+    topic « frequency - in
+
+    ensure -> same? 1`Hz in `Hz 1`1/s
+    passed
+
+
+    topic « frequency - property
+
+    ensure -> every? frequencySet -> x -> 'frequency = property x
+    passed
+
+
+    topic « frequency - alternative names
+
+    ensure -> every? [ `hertz ] => equal? & `Hz
+    passed
+
+]
+
+
 ; Radioactivity
 print in`Bq 1`Ci
