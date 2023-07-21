@@ -1118,3 +1118,34 @@ broken
 >> radiation - alternative names
 [+] passed!
 [+] passed!
+
+>> radiationExposure
+
+>> radiationExposure - radiationExposure?
+[+] passed!
+
+>> radiationExposure - math // scales
+[+] passed!
+[+] passed!
+[+] passed!
+
+>> radiationExposure - math // conversions
+[+] passed!
+
+>> radiationExposure - conforms?
+[+] passed!
+[+] passed!
+
+>> radiationExposure - convert
+[+] passed!
+
+>> radiationExposure - in
+[+] passed!
+
+>> radiationExposure - property
+[+] passed!
+
+>> radiationExposure - alternative names
+[+] passed!
+[+] passed!
+[+] passed!
