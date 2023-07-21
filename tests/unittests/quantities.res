@@ -1089,4 +1089,32 @@ broken
 
 >> frequency - alternative names
 [+] passed!
-37000000000 Bq
+
+>> radiation
+
+>> radiation - radiation?
+[+] passed!
+
+>> radiation - math // scales
+[+] passed!
+[+] passed!
+
+>> radiation - math // conversions
+[+] passed!
+
+>> radiation - conforms?
+[+] passed!
+[+] passed!
+
+>> radiation - convert
+[+] passed!
+
+>> radiation - in
+[+] passed!
+
+>> radiation - property
+[+] passed!
+
+>> radiation - alternative names
+[+] passed!
+[+] passed!
