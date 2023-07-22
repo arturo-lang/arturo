@@ -1176,3 +1176,30 @@ broken
 
 >> viscosity - alternative names
 [+] passed!
+
+>> magneticFlux
+
+>> kinematicViscosity - kinematicViscosity?
+[+] passed!
+
+>> kinematicViscosity - math // scales
+[+] passed!
+
+>> kinematicViscosity - math // conversions
+[+] passed!
+
+>> kinematicViscosity - conforms?
+[+] passed!
+[+] passed!
+
+>> kinematicViscosity - convert
+[+] passed!
+
+>> kinematicViscosity - in
+[+] passed!
+
+>> kinematicViscosity - property
+[+] passed!
+
+>> kinematicViscosity - alternative names
+[+] passed!
