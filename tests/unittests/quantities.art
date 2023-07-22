@@ -4210,7 +4210,7 @@ do [
 
     ensure -> every? temperatureSet -> x -> not? conforms? x `t
     passed
-    
+
 
     topic « temperature - property
 
@@ -4583,10 +4583,6 @@ do [
 
 topic « radiation
 do [
-
-    ; Bug found: there is no radiation? you must use frequency?
-    ; because it uses the same formula
-
 
     radiationSet: [
 
