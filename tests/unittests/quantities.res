@@ -1203,3 +1203,30 @@ broken
 
 >> kinematicViscosity - alternative names
 [+] passed!
+
+>> angularVelocity
+
+>> angularVelocity - angularVelocity?
+[+] passed!
+
+>> angularVelocity - math // scales
+[+] passed!
+
+>> angularVelocity - math // conversions
+[+] passed!
+
+>> angularVelocity - conforms?
+[+] passed!
+[+] passed!
+
+>> angularVelocity - convert
+[+] passed!
+
+>> angularVelocity - in
+[+] passed!
+
+>> angularVelocity - property
+[+] passed!
+
+>> angularVelocity - alternative names
+[+] passed!
