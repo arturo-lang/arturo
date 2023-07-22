@@ -5230,3 +5230,97 @@ do [
     passed
 
 ]
+
+
+topic « illuminance
+do [
+
+
+    illuminanceSet: [
+
+        1`lx        1`Lb
+
+        ; Other custom illuminance units
+        ; luminosity / area
+
+        1`cd/m2
+
+    ]
+
+
+    topic « illuminance - illuminance?
+
+    ensure -> every? illuminanceSet => illuminance?
+    passed
+
+
+    topic « illuminance - math // scales
+
+    ; precision loss
+    ensure -> 1`Elx  = 1`Plx  * (10 ^ 3)
+    ensure -> 1`Plx  = 1`Tlx  * (10 ^ 3)
+    ensure -> 1`Tlx  = 1`Glx  * (10 ^ 3)
+    ensure -> 1`Glx  = 1`Mlx  * (10 ^ 3)
+    ensure -> 1`Mlx  = 1`klx  * (10 ^ 3)
+    ensure -> 1`klx  = 1`hlx  *  10
+    ensure -> 1`hlx  = 1`dalx *  10
+    ensure -> 1`dalx = 1`lx   *  10
+    ensure -> 1`dlx  = 1`lx   /  10
+    ensure -> 1`clx  = 1`dlx  /  10
+    ensure -> 1`mlx  = 1`clx  /  10
+    ensure -> 1`ulx  = 1`mlx  / (10 ^ 3)
+    ensure -> 1`nlx  = 1`ulx  / (10 ^ 3)
+    ; ensure -> 1`plx  = 1`nlx  / (10 ^ 3)
+    ; ensure -> 1`flx  = 1`plx  / (10 ^ 3)
+    ; ensure -> 1`alx  = 1`flx  / (10 ^ 3)
+    passed
+
+
+    topic « illuminance - math // conversions
+
+    ; Lb is broken, try:
+    ; $> 1`Lb --> `cd/cm2
+    ; => 260280919/817696623 cd/cm��
+    ; $> 260280919/817696623
+    ; => 0
+
+    ensure -> 1`lx   =   1`cd/m2
+    ; ensure -> 1`Lb   =   1:pi`cd/cm2
+    passed
+
+
+    topic « illuminance - conforms?
+
+    ensure -> every? illuminanceSet => conforms? `lx
+    passed
+
+    ensure -> every? illuminanceSet -> x -> not? conforms? x `kph
+    passed
+
+    topic « illuminance - convert
+
+    ensure -> same? 1`lx convert 1`cd/m2 `lx
+    ensure -> same? 1`lx 1`cd/m2 --> `lx
+    passed
+
+
+    topic « illuminance - in
+
+    ensure -> same? 1`lx in `lx 1`cd/m2
+    passed
+
+
+    topic « illuminance - property
+
+    ensure -> every? illuminanceSet -> x -> 'illuminance = property x
+    passed
+
+
+    topic « illuminance - alternative names
+
+    ensure -> every? [ `lux `luxes ] => equal? & `lx
+    passed
+    ensure -> every? [ `lambert `lamberts ] => equal? & `Lb
+    passed
+
+]
