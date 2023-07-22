@@ -1324,3 +1324,30 @@ broken
 >> illuminance - alternative names
 [+] passed!
 [+] passed!
+
+>> luminousFlux
+
+>> luminousFlux - luminousFlux?
+[+] passed!
+
+>> luminousFlux - math // scales
+[+] passed!
+
+>> luminousFlux - math // conversions
+[+] passed!
+
+>> luminousFlux - conforms?
+[+] passed!
+[+] passed!
+
+>> luminousFlux - convert
+[+] passed!
+
+>> luminousFlux - in
+[+] passed!
+
+>> luminousFlux - property
+[+] passed!
+
+>> luminousFlux - alternative names
+[+] passed!
