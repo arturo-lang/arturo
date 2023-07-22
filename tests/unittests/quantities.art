@@ -5004,3 +5004,88 @@ do [
     passed
 
 ]
+
+
+topic « angularVelocity
+do [
+
+
+    angularVelocitySet: [
+
+        1`rpm
+
+        ; Other custom angularVelocity units
+        ; angle / time
+
+        1`rad/s
+
+    ]
+
+
+    topic « angularVelocity - angularVelocity?
+
+    ensure -> every? angularVelocitySet => angularVelocity?
+    passed
+
+
+    topic « angularVelocity - math // scales
+
+    ; precision loss
+    ; ensure -> 1`Erpm  = 1`Prpm  * (10 ^ 3)
+    ensure -> 1`Prpm  = 1`Trpm  * (10 ^ 3)
+    ensure -> 1`Trpm  = 1`Grpm  * (10 ^ 3)
+    ensure -> 1`Grpm  = 1`Mrpm  * (10 ^ 3)
+    ensure -> 1`Mrpm  = 1`krpm  * (10 ^ 3)
+    ensure -> 1`krpm  = 1`hrpm  *  10
+    ensure -> 1`hrpm  = 1`darpm *  10
+    ensure -> 1`darpm = 1`rpm   *  10
+    ensure -> 1`drpm  = 1`rpm   /  10
+    ensure -> 1`crpm  = 1`drpm  /  10
+    ensure -> 1`mrpm  = 1`crpm  /  10
+    ensure -> 1`urpm  = 1`mrpm  / (10 ^ 3)
+    ensure -> 1`nrpm  = 1`urpm  / (10 ^ 3)
+    ; ensure -> 1`prpm  = 1`nrpm  / (10 ^ 3)
+    ; ensure -> 1`frpm  = 1`prpm  / (10 ^ 3)
+    ; ensure -> 1`arpm  = 1`frpm  / (10 ^ 3)
+    passed
+
+
+    topic « angularVelocity - math // conversions
+
+    ensure -> 1`rpm   =   0.1047`rad/s
+    passed
+
+
+    topic « angularVelocity - conforms?
+
+    ensure -> every? angularVelocitySet => conforms? `rpm
+    passed
+
+    ensure -> every? angularVelocitySet -> x -> not? conforms? x `kph
+    passed
+
+    topic « angularVelocity - convert
+
+    ensure -> same? 1`rpm convert 0.1047`rad/s `rpm
+    ensure -> same? 1`rpm 0.1047`rad/s --> `rpm
+    passed
+
+
+    topic « angularVelocity - in
+
+    ensure -> same? 1`rpm in `rpm 0.1047`rad/s
+    passed
+
+
+    topic « angularVelocity - property
+
+    ensure -> every? angularVelocitySet -> x -> "angular velocity" = to :string property x
+    passed
+
+
+    topic « angularVelocity - alternative names
+
+    ensure -> every? [ `rpms ] => equal? & `rpm
+    passed
+
+]
