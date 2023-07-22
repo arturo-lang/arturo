@@ -5089,3 +5089,65 @@ do [
     passed
 
 ]
+
+
+topic « thermalInsulance
+do [
+
+
+    thermalInsulanceSet: [
+
+        1`clo
+
+        ; Other custom thermalInsulance units
+        ; area * temperature / power
+
+        1`m2.K/W
+
+    ]
+
+
+    topic « thermalInsulance - thermalInsulance?
+
+    ensure -> every? thermalInsulanceSet => thermalInsulance?
+    passed
+
+    topic « thermalInsulance - math // conversions
+
+    ensure -> 1`clo   =   0.155`m2.K/W
+    passed
+
+
+    topic « thermalInsulance - conforms?
+
+    ensure -> every? thermalInsulanceSet => conforms? `clo
+    passed
+
+    ensure -> every? thermalInsulanceSet -> x -> not? conforms? x `kph
+    passed
+
+    topic « thermalInsulance - convert
+
+    ensure -> same? 1`clo convert 0.155`m2.K/W `clo
+    ensure -> same? 1`clo 0.155`m2.K/W --> `clo
+    passed
+
+
+    topic « thermalInsulance - in
+
+    ensure -> same? 1`clo in `clo 0.155`m2.K/W
+    passed
+
+
+    topic « thermalInsulance - property
+
+    ensure -> every? thermalInsulanceSet -> x -> "thermal insulance" = to :string property x
+    passed
+
+
+    topic « thermalInsulance - alternative names
+
+    ensure -> every? [ `clos ] => equal? & `clo
+    passed
+
+]
