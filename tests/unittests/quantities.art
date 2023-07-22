@@ -5232,6 +5232,67 @@ do [
 ]
 
 
+topic « luminosity
+do [
+
+
+    luminositySet: [
+
+        1`cd
+
+    ]
+
+
+    topic « luminosity - luminosity?
+
+    ensure -> every? luminositySet => luminosity?
+    passed
+
+
+    topic « luminosity - math // scales
+
+    ; precision loss
+    ensure -> 1`Ecd  = 1`Pcd  * (10 ^ 3)
+    ensure -> 1`Pcd  = 1`Tcd  * (10 ^ 3)
+    ensure -> 1`Tcd  = 1`Gcd  * (10 ^ 3)
+    ensure -> 1`Gcd  = 1`Mcd  * (10 ^ 3)
+    ensure -> 1`Mcd  = 1`kcd  * (10 ^ 3)
+    ensure -> 1`kcd  = 1`hcd  *  10
+    ensure -> 1`hcd  = 1`dacd *  10
+    ensure -> 1`dacd = 1`cd   *  10
+    ensure -> 1`dcd  = 1`cd   /  10
+    ensure -> 1`ccd  = 1`dcd  /  10
+    ensure -> 1`mcd  = 1`ccd  /  10
+    ensure -> 1`ucd  = 1`mcd  / (10 ^ 3)
+    ensure -> 1`ncd  = 1`ucd  / (10 ^ 3)
+    ; ensure -> 1`pcd  = 1`ncd  / (10 ^ 3)
+    ; ensure -> 1`fcd  = 1`pcd  / (10 ^ 3)
+    ; ensure -> 1`acd  = 1`fcd  / (10 ^ 3)
+    passed
+
+
+    topic « luminosity - conforms?
+
+    ensure -> every? luminositySet => conforms? `cd
+    passed
+
+    ensure -> every? luminositySet -> x -> not? conforms? x `kph
+    passed
+
+    topic « luminosity - property
+
+    ensure -> every? luminositySet -> x -> 'luminosity = property x
+    passed
+
+
+    topic « luminosity - alternative names
+
+    ensure -> every? [ `candela `candelas ] => equal? & `lx
+    passed
+
+]
+
+
 topic « illuminance
 do [
 
