@@ -1230,3 +1230,27 @@ broken
 
 >> angularVelocity - alternative names
 [+] passed!
+
+>> thermalInsulance
+
+>> thermalInsulance - thermalInsulance?
+[+] passed!
+
+>> thermalInsulance - math // conversions
+[+] passed!
+
+>> thermalInsulance - conforms?
+[+] passed!
+[+] passed!
+
+>> thermalInsulance - convert
+[+] passed!
+
+>> thermalInsulance - in
+[+] passed!
+
+>> thermalInsulance - property
+[+] passed!
+
+>> thermalInsulance - alternative names
+[+] passed!
