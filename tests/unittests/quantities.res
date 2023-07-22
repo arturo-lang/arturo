@@ -1278,3 +1278,31 @@ broken
 
 >> dataTransferRate - property
 [+] passed!
+
+>> illuminance
+
+>> illuminance - illuminance?
+[+] passed!
+
+>> illuminance - math // scales
+[+] passed!
+
+>> illuminance - math // conversions
+[+] passed!
+
+>> illuminance - conforms?
+[+] passed!
+[+] passed!
+
+>> illuminance - convert
+[+] passed!
+
+>> illuminance - in
+[+] passed!
+
+>> illuminance - property
+[+] passed!
+
+>> illuminance - alternative names
+[+] passed!
+[+] passed!
