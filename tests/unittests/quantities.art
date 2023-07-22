@@ -4834,3 +4834,88 @@ do [
     passed
 
 ]
+
+
+topic « viscosity
+do [
+
+
+    viscositySet: [
+
+        1`P
+
+        ; Other custom viscosity units
+        ; pressure * time
+
+        1`Pa.s
+
+    ]
+
+
+    topic « viscosity - viscosity?
+
+    ensure -> every? viscositySet => viscosity?
+    passed
+
+
+    topic « viscosity - math // scales
+
+    ; precision loss
+    ; ensure -> 1`EP  = 1`PP  * (10 ^ 3)
+    ensure -> 1`PP  = 1`TP  * (10 ^ 3)
+    ensure -> 1`TP  = 1`GP  * (10 ^ 3)
+    ensure -> 1`GP  = 1`MP  * (10 ^ 3)
+    ensure -> 1`MP  = 1`kP  * (10 ^ 3)
+    ensure -> 1`kP  = 1`hP  *  10
+    ensure -> 1`hP  = 1`daP *  10
+    ensure -> 1`daP = 1`P   *  10
+    ensure -> 1`dP  = 1`P   /  10
+    ensure -> 1`cP  = 1`dP  /  10
+    ensure -> 1`mP  = 1`cP  /  10
+    ensure -> 1`uP  = 1`mP  / (10 ^ 3)
+    ensure -> 1`nP  = 1`uP  / (10 ^ 3)
+    ; ensure -> 1`pP  = 1`nP  / (10 ^ 3)
+    ; ensure -> 1`fP  = 1`pP  / (10 ^ 3)
+    ; ensure -> 1`aP  = 1`fP  / (10 ^ 3)
+    passed
+
+
+    topic « viscosity - math // conversions
+
+    ensure -> 1`P   =   1`dPa.s
+    passed
+
+
+    topic « viscosity - conforms?
+
+    ensure -> every? viscositySet => conforms? `P
+    passed
+
+    ensure -> every? viscositySet -> x -> not? conforms? x `h
+    passed
+
+    topic « viscosity - convert
+
+    ensure -> same? 1`P convert 1`dPa.s `P
+    ensure -> same? 1`P 1`dPa.s --> `P
+    passed
+
+
+    topic « viscosity - in
+
+    ensure -> same? 1`P in `P 1`dPa.s
+    passed
+
+
+    topic « viscosity - property
+
+    ensure -> every? viscositySet -> x -> 'viscosity = property x
+    passed
+
+
+    topic « viscosity - alternative names
+
+    ensure -> every? [ `poise `poises ] => equal? & `P
+    passed
+
+]
