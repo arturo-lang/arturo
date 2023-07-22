@@ -954,17 +954,11 @@
 [+] passed!
 
 >> temperature - math // conversions
-broken
+[+] passed!
 
 >> temperature - conforms?
 [+] passed!
 [+] passed!
-
->> temperature - convert
-broken
-
->> temperature - in
-broken
 
 >> temperature - property
 [+] passed!
