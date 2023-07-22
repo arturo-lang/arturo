@@ -1279,6 +1279,24 @@ broken
 >> dataTransferRate - property
 [+] passed!
 
+>> luminosity
+
+>> luminosity - luminosity?
+[+] passed!
+
+>> luminosity - math // scales
+[+] passed!
+
+>> luminosity - conforms?
+[+] passed!
+[+] passed!
+
+>> luminosity - property
+[+] passed!
+
+>> luminosity - alternative names
+[+] passed!
+
 >> illuminance
 
 >> illuminance - illuminance?
