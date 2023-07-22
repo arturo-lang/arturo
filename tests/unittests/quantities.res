@@ -1254,3 +1254,27 @@ broken
 
 >> thermalInsulance - alternative names
 [+] passed!
+
+>> dataTransferRate
+
+>> dataTransferRate - dataTransferRate?
+[+] passed!
+
+>> dataTransferRate - math // scales
+[+] passed!
+
+>> dataTransferRate - math // conversions
+[+] passed!
+
+>> dataTransferRate - conforms?
+[+] passed!
+[+] passed!
+
+>> dataTransferRate - convert
+[+] passed!
+
+>> dataTransferRate - in
+[+] passed!
+
+>> dataTransferRate - property
+[+] passed!
