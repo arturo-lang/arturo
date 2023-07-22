@@ -5151,3 +5151,82 @@ do [
     passed
 
 ]
+
+
+topic « dataTransferRate
+do [
+
+
+    angularVelocitySet: [
+
+        1`bps
+
+        ; Other custom dataTransferRate units
+        ; information / time
+
+        1`bits/s
+
+    ]
+
+
+    topic « dataTransferRate - dataTransferRate?
+
+    ensure -> every? angularVelocitySet => dataTransferRate?
+    passed
+
+
+    topic « dataTransferRate - math // scales
+
+    ; precision loss
+    ensure -> 1`Ebps  = 1`Pbps  * (10 ^ 3)
+    ensure -> 1`Pbps  = 1`Tbps  * (10 ^ 3)
+    ensure -> 1`Tbps  = 1`Gbps  * (10 ^ 3)
+    ensure -> 1`Gbps  = 1`Mbps  * (10 ^ 3)
+    ensure -> 1`Mbps  = 1`kbps  * (10 ^ 3)
+    ensure -> 1`kbps  = 1`hbps  *  10
+    ensure -> 1`hbps  = 1`dabps *  10
+    ensure -> 1`dabps = 1`bps   *  10
+    ensure -> 1`dbps  = 1`bps   /  10
+    ensure -> 1`cbps  = 1`dbps  /  10
+    ensure -> 1`mbps  = 1`cbps  /  10
+    ensure -> 1`ubps  = 1`mbps  / (10 ^ 3)
+    ensure -> 1`nbps  = 1`ubps  / (10 ^ 3)
+    ; ensure -> 1`pbps  = 1`nbps  / (10 ^ 3)
+    ; ensure -> 1`fbps  = 1`pbps  / (10 ^ 3)
+    ; ensure -> 1`abps  = 1`fbps  / (10 ^ 3)
+    passed
+
+
+    topic « dataTransferRate - math // conversions
+
+    ensure -> 1`bps   =   1`bit/s
+    passed
+
+
+    topic « dataTransferRate - conforms?
+
+    ensure -> every? angularVelocitySet => conforms? `bps
+    passed
+
+    ensure -> every? angularVelocitySet -> x -> not? conforms? x `kph
+    passed
+
+    topic « dataTransferRate - convert
+
+    ensure -> same? 1`bps convert 1`bit/s `bps
+    ensure -> same? 1`bps 1`bit/s --> `bps
+    passed
+
+
+    topic « dataTransferRate - in
+
+    ensure -> same? 1`bps in `bps 1`bit/s
+    passed
+
+
+    topic « dataTransferRate - property
+
+    ensure -> every? angularVelocitySet -> x -> "data-transfer rate" = to :string property x
+    passed
+
+]
