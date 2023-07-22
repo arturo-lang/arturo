@@ -4181,12 +4181,6 @@ do [
 topic « temperature
 do [
 
-    ; todo: temperature's conversions are not working,
-    ; if you try '1`oC --> `K' in REPL, you'll get a value
-    ; but if you try '~"1`oC --> `K"' in the REPL you'll get nothing
-    ; while running a source-file the result are broken `ensure`s.
-
-
     temperatureSet: [
 
         1`K         1`degC
@@ -4203,11 +4197,10 @@ do [
 
     topic « temperature - math // conversions
 
-    ; ensure -> 1`oC  =   274.1`K
-    ; ensure -> 1`oF  =   255.9`K
-    ; ensure -> 1`oR  =   0.6`K
-    ; passed
-    print "broken"
+    ensure -> "274.1 K"     = ~"|1`oC --> `K|"
+    ensure -> "255.9 K"     = ~"|1`oF --> `K|"
+    ensure -> "0.6 K"       = ~"|1`oR --> `K|"
+    passed
 
 
     topic « temperature - conforms?
@@ -4217,21 +4210,7 @@ do [
 
     ensure -> every? temperatureSet -> x -> not? conforms? x `t
     passed
-
-    topic « temperature - convert
-
-    ; ensure -> same? 0.6`K convert 1`oR `K
-    ; ensure -> same? 0.6`K 1`oR --> `K
-    ; passed
-    print "broken"
-
-
-    topic « temperature - in
-
-    ; ensure -> same? 0.6`K in `K 1`oR
-    ; passed
-    print "broken"
-
+    
 
     topic « temperature - property
 
