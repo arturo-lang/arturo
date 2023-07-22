@@ -5385,3 +5385,88 @@ do [
     passed
 
 ]
+
+
+topic « luminousFlux
+do [
+
+
+    luminousFluxSet: [
+
+        1`lm
+
+        ; Other custom luminousFlux units
+        ; luminosity * solid angle
+
+        1`cd.sr
+
+    ]
+
+
+    topic « luminousFlux - luminousFlux?
+
+    ensure -> every? luminousFluxSet => luminousFlux?
+    passed
+
+
+    topic « luminousFlux - math // scales
+
+    ; precision loss
+    ensure -> 1`Elm  = 1`Plm  * (10 ^ 3)
+    ensure -> 1`Plm  = 1`Tlm  * (10 ^ 3)
+    ensure -> 1`Tlm  = 1`Glm  * (10 ^ 3)
+    ensure -> 1`Glm  = 1`Mlm  * (10 ^ 3)
+    ensure -> 1`Mlm  = 1`klm  * (10 ^ 3)
+    ensure -> 1`klm  = 1`hlm  *  10
+    ensure -> 1`hlm  = 1`dalm *  10
+    ensure -> 1`dalm = 1`lm   *  10
+    ensure -> 1`dlm  = 1`lm   /  10
+    ensure -> 1`clm  = 1`dlm  /  10
+    ensure -> 1`mlm  = 1`clm  /  10
+    ensure -> 1`ulm  = 1`mlm  / (10 ^ 3)
+    ensure -> 1`nlm  = 1`ulm  / (10 ^ 3)
+    ; ensure -> 1`plm  = 1`nlm  / (10 ^ 3)
+    ; ensure -> 1`flm  = 1`plm  / (10 ^ 3)
+    ; ensure -> 1`alm  = 1`flm  / (10 ^ 3)
+    passed
+
+
+    topic « luminousFlux - math // conversions
+
+    ensure -> 1`lm   =   1`cd.sr
+    passed
+
+
+    topic « luminousFlux - conforms?
+
+    ensure -> every? luminousFluxSet => conforms? `lm
+    passed
+
+    ensure -> every? luminousFluxSet -> x -> not? conforms? x `kph
+    passed
+
+    topic « luminousFlux - convert
+
+    ensure -> same? 1`lm convert 1`cd.sr `lm
+    ensure -> same? 1`lm 1`cd.sr --> `lm
+    passed
+
+
+    topic « luminousFlux - in
+
+    ensure -> same? 1`lm in `lm 1`cd.sr
+    passed
+
+
+    topic « luminousFlux - property
+
+    ensure -> every? luminousFluxSet -> x -> "luminous flux" = to :string property x
+    passed
+
+
+    topic « luminousFlux - alternative names
+
+    ensure -> every? [ `lumen `lumens ] => equal? & `lm
+    passed
+
+]
