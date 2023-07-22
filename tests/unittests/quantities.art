@@ -4919,3 +4919,88 @@ do [
     passed
 
 ]
+
+
+topic « magneticFlux
+do [
+
+
+    kinematicViscositySet: [
+
+        1`St
+
+        ; Other custom kinematicViscosity units
+        ; area / time
+
+        1`m2/s
+
+    ]
+
+
+    topic « kinematicViscosity - kinematicViscosity?
+
+    ensure -> every? kinematicViscositySet => kinematicViscosity?
+    passed
+
+
+    topic « kinematicViscosity - math // scales
+
+    ; precision loss
+    ensure -> 1`ESt  = 1`PSt  * (10 ^ 3)
+    ensure -> 1`PSt  = 1`TSt  * (10 ^ 3)
+    ensure -> 1`TSt  = 1`GSt  * (10 ^ 3)
+    ensure -> 1`GSt  = 1`MSt  * (10 ^ 3)
+    ensure -> 1`MSt  = 1`kSt  * (10 ^ 3)
+    ensure -> 1`kSt  = 1`hSt  *  10
+    ensure -> 1`hSt  = 1`daSt *  10
+    ensure -> 1`daSt = 1`St   *  10
+    ensure -> 1`dSt  = 1`St   /  10
+    ensure -> 1`cSt  = 1`dSt  /  10
+    ensure -> 1`mSt  = 1`cSt  /  10
+    ensure -> 1`uSt  = 1`mSt  / (10 ^ 3)
+    ensure -> 1`nSt  = 1`uSt  / (10 ^ 3)
+    ; ensure -> 1`pSt  = 1`nSt  / (10 ^ 3)
+    ; ensure -> 1`fSt  = 1`pSt  / (10 ^ 3)
+    ; ensure -> 1`aSt  = 1`fSt  / (10 ^ 3)
+    passed
+
+
+    topic « kinematicViscosity - math // conversions
+
+    ensure -> 1`St   =   1`m2/s
+    passed
+
+
+    topic « kinematicViscosity - conforms?
+
+    ensure -> every? kinematicViscositySet => conforms? `St
+    passed
+
+    ensure -> every? kinematicViscositySet -> x -> not? conforms? x `h
+    passed
+
+    topic « kinematicViscosity - convert
+
+    ensure -> same? 1`St convert 1`m2/s `St
+    ensure -> same? 1`St 1`m2/s --> `St
+    passed
+
+
+    topic « kinematicViscosity - in
+
+    ensure -> same? 1`St in `St 1`m2/s
+    passed
+
+
+    topic « kinematicViscosity - property
+
+    ensure -> every? kinematicViscositySet -> x -> "kinematic viscosity" = to :string property x
+    passed
+
+
+    topic « kinematicViscosity - alternative names
+
+    ensure -> every? [ `stokes ] => equal? & `St
+    passed
+
+]
