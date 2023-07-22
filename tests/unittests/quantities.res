@@ -1177,7 +1177,7 @@ broken
 >> viscosity - alternative names
 [+] passed!
 
->> magneticFlux
+>> kinematicViscosity
 
 >> kinematicViscosity - kinematicViscosity?
 [+] passed!
