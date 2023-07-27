@@ -409,7 +409,11 @@ proc processBlock*(
         var child = target.children[0]
 
         if child.op == opFunc:
-            let params {.cursor.} = child.children[0]
+            var startIndex = 0
+            while child.children[startIndex].kind == NewlineNode:
+                startIndex += 1
+
+            let params {.cursor.} = child.children[startIndex]
 
             if params.value.kind == Literal:
                 TmpArities[target.value.s] = 1
