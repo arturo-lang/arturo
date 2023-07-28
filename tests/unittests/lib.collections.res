@@ -280,6 +280,18 @@
 [+] passed!
 [+] passed!
 
+>> get - :complex
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+
 >> in? - :string
 [+] passed!
 [+] passed!
