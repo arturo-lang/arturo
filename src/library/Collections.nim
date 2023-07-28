@@ -619,6 +619,18 @@ proc defineSymbols*() =
             z: 0
             print str\[z+1]               ; e
             print str\[0..4]              ; Hello
+            ..........
+            a: to :complex [1 2]
+            print a\real                  ; 1.0
+            print a\image                 ; 2.0
+            print a\1                     ; 2.0
+
+            ; available keys are:
+            ;   * 're and 'real
+            ;   * 'im, 'img and 'image
+            ; 
+            ; available indexes:
+            ;   * 0..1
         """:
             #=======================================================
             case xKind:
