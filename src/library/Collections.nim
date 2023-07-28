@@ -43,6 +43,8 @@ import vm/lib
 
 import vm/values/custom/[vbinary, vrange]
 
+import vm/errors as err
+
 #=======================================
 # Methods
 #=======================================
@@ -585,7 +587,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "get collection's item by given index",
         args        = {
-            "collection": {String, Block, Range, Dictionary, Object, Store, Date, Binary, Bytecode},
+            "collection": {String, Block, Range, Dictionary, Object, Store, Date, Binary, Bytecode, Complex},
             "index"     : {Any}
         },
         attrs       = NoAttrs,
@@ -684,6 +686,26 @@ proc defineSymbols*() =
                         push(newString($(res)))
                 of Date:
                     push(GetKey(x.e, y.s))
+                of Complex:
+                    case yKind
+                    of String, Word, Literal, Label:
+                        if ("real" == y.s or "re" == y.s):
+                            push(newFloating(x.z.re))
+                        elif ("image" == y.s or "im" == y.s or "img" == y.s):
+                            push(newFloating(x.z.im))
+                        else:
+                            const keys: seq[string] = @["real", "re", "image", "img", "im"]
+                            err.RuntimeError_KeyNotFound(y.s, keys)
+                    of Integer:
+                        case y.i
+                        of 0:
+                            push(newFloating(x.z.re))
+                        of 1:
+                            push(newFloating(x.z.im))
+                        else:
+                            err.RuntimeError_OutOfBounds(y.i, 1)
+                    else:
+                        discard
                 else: discard
 
 
