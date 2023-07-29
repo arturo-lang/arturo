@@ -120,9 +120,9 @@ proc defineSymbols*() =
                 push(VFALSE)
 
     builtin "intersection",
-        alias       = unaliased, 
+        alias       = intersection, 
         op          = opNop,
-        rule        = PrefixPrecedence,
+        rule        = InfixPrecedence,
         description = "return the intersection of given sets",
         args        = {
             "setA"  : {Block,Literal},
