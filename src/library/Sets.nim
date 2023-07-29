@@ -225,9 +225,9 @@ proc defineSymbols*() =
                     push(newLogical(contains))
 
     builtin "superset?",
-        alias       = unaliased, 
+        alias       = superset, 
         op          = opNop,
-        rule        = PrefixPrecedence,
+        rule        = InfixPrecedence,
         description = "check if given set is a superset of second set",
         args        = {
             "setA"  : {Block},
