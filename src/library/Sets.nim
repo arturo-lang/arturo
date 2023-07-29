@@ -120,9 +120,9 @@ proc defineSymbols*() =
                 push(VFALSE)
 
     builtin "intersection",
-        alias       = unaliased, 
+        alias       = VSymbol.intersection, 
         op          = opNop,
-        rule        = PrefixPrecedence,
+        rule        = InfixPrecedence,
         description = "return the intersection of given sets",
         args        = {
             "setA"  : {Block,Literal},
@@ -168,9 +168,9 @@ proc defineSymbols*() =
                 push(newBlock(toSeq(powerset(toOrderedSet(x.a)).map((hs) => newBlock(toSeq(hs))))))
 
     builtin "subset?",
-        alias       = unaliased, 
+        alias       = subsetorequal, 
         op          = opNop,
-        rule        = PrefixPrecedence,
+        rule        = InfixPrecedence,
         description = "check if given set is a subset of second set",
         args        = {
             "setA"  : {Block},
@@ -225,9 +225,9 @@ proc defineSymbols*() =
                     push(newLogical(contains))
 
     builtin "superset?",
-        alias       = unaliased, 
+        alias       = superset, 
         op          = opNop,
-        rule        = PrefixPrecedence,
+        rule        = InfixPrecedence,
         description = "check if given set is a superset of second set",
         args        = {
             "setA"  : {Block},
@@ -282,9 +282,9 @@ proc defineSymbols*() =
                     push(newLogical(contains))
 
     builtin "union",
-        alias       = unaliased, 
+        alias       = VSymbol.union, 
         op          = opNop,
-        rule        = PrefixPrecedence,
+        rule        = InfixPrecedence,
         description = "return the union of given sets",
         args        = {
             "setA"  : {Block,Literal},
