@@ -120,7 +120,7 @@ proc defineSymbols*() =
                 push(VFALSE)
 
     builtin "intersection",
-        alias       = intersection, 
+        alias       = VSymbol.intersection, 
         op          = opNop,
         rule        = InfixPrecedence,
         description = "return the intersection of given sets",
