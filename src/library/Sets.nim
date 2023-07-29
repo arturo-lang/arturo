@@ -168,9 +168,9 @@ proc defineSymbols*() =
                 push(newBlock(toSeq(powerset(toOrderedSet(x.a)).map((hs) => newBlock(toSeq(hs))))))
 
     builtin "subset?",
-        alias       = unaliased, 
+        alias       = subsetorequal, 
         op          = opNop,
-        rule        = PrefixPrecedence,
+        rule        = InfixPrecedence,
         description = "check if given set is a subset of second set",
         args        = {
             "setA"  : {Block},
