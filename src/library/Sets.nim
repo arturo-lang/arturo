@@ -282,9 +282,9 @@ proc defineSymbols*() =
                     push(newLogical(contains))
 
     builtin "union",
-        alias       = unaliased, 
+        alias       = VSymbol.union, 
         op          = opNop,
-        rule        = PrefixPrecedence,
+        rule        = InfixPrecedence,
         description = "return the union of given sets",
         args        = {
             "setA"  : {Block,Literal},
