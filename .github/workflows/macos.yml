@@ -64,7 +64,7 @@ jobs:
         with:
           nim-version: '1.6.14'
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-
+ 
       - name: Verify dependecies
         run: |
           nim --version
