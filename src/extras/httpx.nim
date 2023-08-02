@@ -15,6 +15,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# TODO(extras/httpx) Update HTTPX implementation
+#  there is a new version + we could get rid of the related warnings
+#  labels: enhancement, 3rd-party
+
 
 import net, nativesockets, os, httpcore, asyncdispatch, strutils
 import options, logging, times, heapqueue, std/monotimes
