@@ -86,6 +86,12 @@ func canonicalize*(x: Rat) =
 #=======================================
 
 func newInt*(x: culong): Int =
+    # TODO(Helpers/bignums) Fix warning
+    #  this one (and a couple of others) gives:
+    #  ```
+    #   Warning: A custom '=destroy' hook which takes a 'var T' parameter is deprecated; it should take a 'T' parameter [Deprecated]
+    #  ```
+    #  labels: bug
     new(result, finalizeInt)
     mpz_init_set_ui(result[], x)
 
