@@ -22,7 +22,6 @@ when not defined(NOGMP):
 
 import vm/values/custom/[vcolor, vcomplex, vlogical, vquantity, vrange, vrational, vregex, vversion]
 import vm/values/value
-import vm/values/operators
 
 #=======================================
 # Forward declarations
