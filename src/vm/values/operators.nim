@@ -21,7 +21,6 @@ when not defined(NOGMP):
     import helpers/bignums as BignumsHelper
 
 import helpers/intrinsics
-import helpers/maths
 
 import vm/errors
 
