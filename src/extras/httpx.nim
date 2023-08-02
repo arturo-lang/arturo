@@ -17,6 +17,7 @@
 
 # TODO(extras/httpx) Update HTTPX implementation
 #  there is a new version + we could get rid of the related warnings
+#  see also: https://github.com/ringabout/httpx
 #  labels: enhancement, 3rd-party
 
 
