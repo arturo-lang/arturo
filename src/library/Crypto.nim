@@ -26,7 +26,7 @@
 #=======================================
 
 when not defined(WEB):
-    import md5, std/sha1
+    import extras/checksums/md5, extras/checksums/sha1
 
 import base64, uri
 when not defined(freebsd) and not defined(WEB):
