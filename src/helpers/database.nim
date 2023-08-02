@@ -64,8 +64,6 @@ func openSqliteDb*(name: string): sqlite.DbConn =
 proc execSqliteDb*(db: sqlite.DbConn, command: string, with: seq[string] = @[]): QueryResult =
     var ret: ValueArray
 
-    #echo "executing SQL:" & $(command)
-
     for row in db.rows(sql(command), with):
         ret.add(newStringBlock(row))
 
@@ -76,8 +74,6 @@ proc execSqliteDb*(db: sqlite.DbConn, command: string, with: seq[string] = @[]):
 
 proc execManySqliteDb*(db: sqlite.DbConn, commands: seq[string], with: seq[string] = @[]): QueryResult =
     var ret: ValueArray
-
-    #echo "executing SQL:" & $(commands)
 
     db.exec(sql"BEGIN")
 

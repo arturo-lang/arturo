@@ -21,6 +21,7 @@ when not defined(NOGMP):
     import helpers/bignums as BignumsHelper
 
 import vm/values/custom/vrational
+import vm/errors
 
 #=======================================
 # Includes
@@ -94,7 +95,6 @@ type
 
 const
     AtomExponents = ["⁻⁵", "⁻⁴", "⁻³", "⁻²", "⁻¹", "", "", "²", "³", "⁴", "⁵"]
-
     NoUnitFound = getNoUnitFound()
 
 #=======================================
@@ -326,8 +326,6 @@ proc convertTemperature*(v: QuantityValue, fromU: CoreUnit, toU: CoreUnit): Quan
             result = v * (9//5) - 459.67
         elif toU == degR_CoreUnit:
             result = v * (9//5)
-        else:
-            echo "ERROR!"
     elif fromU == degC_CoreUnit:
         if toU == K_CoreUnit:
             result = v + 273.15
@@ -335,8 +333,6 @@ proc convertTemperature*(v: QuantityValue, fromU: CoreUnit, toU: CoreUnit): Quan
             result = v * (9//5) + 32
         elif toU == degR_CoreUnit:
             result = (v + 273.15) * (9//5)
-        else:
-            echo "ERROR!"
     elif fromU == degF_CoreUnit:
         if toU == K_CoreUnit:
             result = (v + 459.67) * (5//9)
@@ -344,8 +340,6 @@ proc convertTemperature*(v: QuantityValue, fromU: CoreUnit, toU: CoreUnit): Quan
             result = (v - 32) * (5//9)
         elif toU == degR_CoreUnit:
             result = v + 459.67
-        else:
-            echo "ERROR!"
     elif fromU == degR_CoreUnit:
         if toU == K_CoreUnit:
             result = v * (5//9)
@@ -353,12 +347,10 @@ proc convertTemperature*(v: QuantityValue, fromU: CoreUnit, toU: CoreUnit): Quan
             result = (v - 491.67) * (5//9)
         elif toU == degF_CoreUnit:
             result = v - 459.67
-    else:
-        echo "ERROR!"
 
 proc convertTo*(q: Quantity, atoms: Atoms): Quantity =
     if q.signature != getSignature(atoms):
-        raise newException(ValueError, "Cannot convert quantities with different dimensions.")
+        RuntimeError_CannotConvertDifferentDimensions()
 
     if q.atoms == atoms:
         return q
@@ -369,7 +361,7 @@ proc convertTo*(q: Quantity, atoms: Atoms): Quantity =
 proc convertQuantity*(q: Quantity, atoms: Atoms): Quantity =
     if unlikely(isTemperature(q)):
         if q.signature != getSignature(atoms):
-            raise newException(ValueError, "Cannot convert quantities with different dimensions.")
+            RuntimeError_CannotConvertDifferentDimensions()
         
         result = toQuantity(convertTemperature(q.original, q.atoms[0].unit.u.core, atoms[0].unit.u.core), atoms)
     else:
@@ -505,15 +497,23 @@ when not defined(NOGMP):
 # Operators
 #=======================================
 
+# TODO(VQuantity) additions not working consistently with different exponents
+#  the problem arises when we are adding together two quantities with different exponents.
+#  the order of the 2 quantities appears to matter too, as well the "size" of the inner values:
+#  ```red
+#   2`km2 + 3`m2      ; => 2.000003 km² (correct)
+#   2`m2 + 3`km2      ; => 3000002 m² (correct)
+#
+#   54`m2 + 3`Em2     ; => 3000000000000000000000000000000000054 m² (correct)
+#   54`Em2 + 3`m2     ; => 57000000000000000000000000000000000000 Em² (total nonsense!!)
+#  ```
+#  labels: values, bug, critical
+
 proc `+`*(a, b: Quantity): Quantity =
     if not (a =~ b):
-        raise newException(ValueError, "Cannot add quantities with different dimensions.")
+        RuntimeError_CannotConvertDifferentDimensions()
 
     let convB = b.convertTo(a.atoms)
-
-    # echo "quantity A: " & $(a)
-    # echo "quantity B: " & $(b)
-    # echo "\tconverted: " & $(convB)
 
     result = toQuantity(a.original + convB.original, a.atoms)
 
@@ -526,13 +526,9 @@ when not defined(NOGMP):
 
 proc `+=`*(a: var Quantity, b: Quantity) =
     if not (a =~ b):
-        raise newException(ValueError, "Cannot add quantities with different dimensions.")
+        RuntimeError_CannotConvertDifferentDimensions()
 
     let convB = b.convertTo(a.atoms)
-
-    # echo "quantity A: " & $(a)
-    # echo "quantity B: " & $(b)
-    # echo "\tconverted: " & $(convB)
 
     a.original += convB.original
 
@@ -545,13 +541,9 @@ when not defined(NOGMP):
 
 proc `-`*(a, b: Quantity): Quantity =
     if not (a =~ b):
-        raise newException(ValueError, "Cannot subtract quantities with different dimensions.")
+        RuntimeError_CannotConvertDifferentDimensions()
 
     let convB = b.convertTo(a.atoms)
-
-    # echo "quantity A: " & $(a)
-    # echo "quantity B: " & $(b)
-    # echo "\tconverted: " & $(convB)
 
     result = toQuantity(a.original - convB.original, a.atoms)
 
@@ -564,13 +556,9 @@ when not defined(NOGMP):
 
 proc `-=`*(a: var Quantity, b: Quantity) =
     if not (a =~ b):
-        raise newException(ValueError, "Cannot subtract quantities with different dimensions.")
+        RuntimeError_CannotConvertDifferentDimensions()
 
     let convB = b.convertTo(a.atoms)
-
-    # echo "quantity A: " & $(a)
-    # echo "quantity B: " & $(b)
-    # echo "\tconverted: " & $(convB)
 
     a.original -= convB.original
 
@@ -782,11 +770,6 @@ proc initQuantities*() =
 #=======================================
 
 initQuantities()
-
-# for (n,q) in pairs(Quantities):
-#     echo $(n)
-#     inspect(q)
-#     echo "--"
 
 when isMainModule:
     import helpers/benchmark

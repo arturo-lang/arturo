@@ -100,9 +100,9 @@ var
     IS_DEV              = false 
     MODE                = ""       
 
-    FLAGS*              = "--verbosity:1 --hints:on --hint:ProcessingStmt:off --hint:XCannotRaiseY:off --warning:CastSizes:off --warning:GcUnsafe:off --warning:ProveField:off --warning:ProveInit:off --warning:Uninit:off --warning:BareExcept:off " & 
+    FLAGS*              = "--verbosity:1 --hints:on --hint:ProcessingStmt:off --hint:XCannotRaiseY:off --warning:GcUnsafe:off --warning:CastSizes:off --warning:ProveInit:off --warning:ProveField:off --warning:Uninit:off --warning:BareExcept:off " & 
                           "--skipUserCfg:on --colors:off -d:danger " &
-                          "--panics:off --threads:off --mm:orc -d:useMalloc --checks:off " &
+                          "--panics:off --mm:orc -d:useMalloc --checks:off " &
                           "--cincludes:extras --opt:speed --nimcache:.cache " & (when hostOS != "windows": "--passL:'-pthread' " else: " ") &
                           "--path:src "
     CONFIG              ="@full"

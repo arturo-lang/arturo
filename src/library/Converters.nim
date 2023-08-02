@@ -665,7 +665,7 @@ proc defineSymbols*() =
                         if tp!=TextData:
                             execUnscoped(doParse(x.s, isFile=false))
                         else:
-                            echo "file does not exist"
+                            RuntimeError_FileNotFound(x.s)
                         let arr: ValueArray = sTopsFrom(stop)
                         SP = stop
 
@@ -920,7 +920,7 @@ proc defineSymbols*() =
                 if tp!=TextData:
                     dict = execDictionary(doParse(src, isFile=false))#, isIsolated=true)
                 else:
-                    echo "file does not exist"
+                    RuntimeError_FileNotFound(x.s)
 
             if checkAttr("with"):
                 for x in aWith.a:

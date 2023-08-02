@@ -196,6 +196,9 @@ type
             else:
                 discard
 
+    # TODO(VM/values/types) Re-optimize Valuo object size
+    #  Quantity + Rational values specifically
+    #  labels: vm, values, enhancement
     Value* {.final,acyclic.} = ref object
         when not defined(PORTABLE):
             info*   : ValueInfo

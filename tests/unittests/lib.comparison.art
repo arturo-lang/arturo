@@ -581,11 +581,11 @@ do [
     ensure -> between? a a #[name: "Jesse" surname: "Pinkman"]
     ensure -> between? a a #[name: "Walter" surname: "Pinkman" age: 35]
     ensure -> between? a a #[name: "Zalter" surname: "Rinkman"]
-    ensure -> between? #[name: "Walter"] 
+    ensure -> not? between? #[name: "Walter"] 
         a #[name: "Walter" surname: "Pinkman" age: 35]
-    ensure -> between? a #[name: "Jesse" surname: "Pinkman"] #[name: "Zalter" surname: "Rinkman"]
-    ; ensure -> between? #[name: "Zalter" surname: "Rinkman"] 
-    ;     #[name: "Jesse" surname: "Pinkman"] #[name: "Walter" surname: "Pinkman"]
+    ensure -> not? between? a #[name: "Jesse" surname: "Pinkman"] #[name: "Zalter" surname: "Rinkman"]
+    ensure -> not? between? #[name: "Zalter" surname: "Rinkman"] 
+        #[name: "Jesse" surname: "Pinkman"] #[name: "Walter" surname: "Pinkman"]
     passed
     
     
@@ -621,8 +621,8 @@ do [
     ensure -> between? to :person ["John" 16] b a
     ensure -> between? to :person ["John" 15] c d
     ensure -> between? to :person ["John" 15] d c
-    ; ensure -> not? between? to :person ["John" 14] c a
-    ; ensure -> not? between? to :person ["John" 17] c a
+    ensure -> not? between? to :person ["John" 14] c a
+    ensure -> not? between? to :person ["John" 17] c a
     passed
     
     
@@ -652,9 +652,8 @@ do [
     ensure -> between? `EUR `USD `EUR
     passed
     
-    ; TODO: fix me soon
-    ; ensure -> not? between? `BRL `USD `EUR
-    ; passed    
+    ensure -> not? between? `BRL `USD `EUR
+    passed    
     
 ]
 

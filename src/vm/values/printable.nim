@@ -175,9 +175,6 @@ proc `$`*(v: Value): string {.inline.} =
 
 
 proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepend="") {.exportc.} = 
-    if v.kind==Quantity:
-        v.q.inspect()
-        return
     
     proc dumpPrimitive(str: string, v: Value) =
         if not muted:   stdout.write fmt("{bold(greenColor)}{str}{fg(grayColor)} :{($(v.kind)).toLowerAscii()}{resetColor}")
