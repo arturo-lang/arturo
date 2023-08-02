@@ -144,7 +144,8 @@ proc createMessage*(mSubject, mBody: string, mTo, mCc: seq[string],
   for n, v in items(otherHeaders):
     result.msgOtherHeaders[n] = v
 
-proc createMessage*(mSubject, mBody: string, mTo,
+proc createMessage*(mSubject, mBody: string, 
+                    mTo: seq[string] = @[],
                     mCc: seq[string] = @[]): Message =
   ## Alternate version of the above.
   ##
