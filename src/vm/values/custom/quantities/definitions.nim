@@ -216,7 +216,7 @@ static:
     defUnit "kph",      "km/h",     false,      "1000:3600 m/s",            "kilometerPerHour", "kilometersPerHour"
     defUnit "mph",      "mph",      false,      "5280:3600 ft/s",           "milePerHour", "milesPerHour"
     defUnit "kn",       "kn",       false,      "1852:3600 m/s",            "knot", "knots"
-    defUnit "fps",      "ft/s",     false,      "1:3600 ft/s",              "footPerSecond", "feetPerSecond"
+    defUnit "fps",      "ft/s",     false,      "1 ft/s",                   "footPerSecond", "feetPerSecond"
     defUnit "mach",     "mach",     false,      "340.29 m/s",               "machs"
 
     #---------------------------------------------------------------------------------------------------------------------------
