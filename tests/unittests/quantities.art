@@ -1,71 +1,5447 @@
-; currencies
-print 100`EUR
-print 100`USD
 
-; adding/subtracting/multiplying/dividing currencies
-print 100`EUR + 20`EUR
-print 100.5`USD - 30`USD
-print 33`CHF * 3
-print 99`JPY / 3
+topic:  $[topic :string] -> print ~"\n>> |topic|"
+passed: $[] -> print "[+] passed!"
 
-; Length
-print 3`m + 2`m
-print 1`m + 2`yd
-print in`cm 1`in
 
-; Complicated metric operations
-print 2`m * 3
-print 2`m * 3`m
-print 2`m * 3`m2
-print 3`m2 * 2`m
-print 3`m2 * 2
-print 3`m3 * 2
+topic « currencies
+do [
 
-print 9`m3 / 3
-print 9`m3 / 3`m
-print 9`m3 / 3`m2
-print 9`m3 / 3`m3
+    topic « currencies - currency? (hidden)
 
-print 3`m2 * 2`yd
-print 45`yd2 / 3`m
+    ; This test is hidden since it takes a lot of time to execute
+    ; You can test it manually if you want to
 
-; Pressure
-print in`atm 1`bar
+    ; ensure -> every? [
+    ;     1`AED 1`ALL 1`ARS 1`AUD 1`BGN 1`BHD 1`BNB 1`BND 1`BOB 1`BRL 1`BTC 1`BWP
+    ;     1`CAD 1`CHF 1`CLP 1`CNY 1`COP 1`CRC 1`CZK 1`DKK 1`DOP 1`DZD 1`EGP 1`ETB
+    ;     1`ETH 1`EUR 1`FJD 1`GBP 1`HKD 1`HNL 1`HRK 1`HUF 1`IDR 1`ILS 1`INR 1`IRR
+    ;     1`ISK 1`JMD 1`JOD 1`JPY 1`KES 1`KRW 1`KWD 1`KYD 1`KZT 1`LBP 1`LKR 1`MAD
+    ;     1`MDL 1`MKD 1`MXN 1`MUR 1`MYR 1`NAD 1`NGN 1`NIO 1`NOK 1`NPR 1`NZD 1`OMR
+    ;     1`PAB 1`PEN 1`PGK 1`PHP 1`PKR 1`PLN 1`PYG 1`QAR 1`RON 1`RSD 1`RUB 1`SAR
+    ;     1`SCR 1`SEK 1`SGD 1`SLL 1`SOS 1`SVC 1`THB 1`TND 1`TRY 1`TTD 1`TWD 1`TZS
+    ;     1`UAH 1`UGX 1`UYU 1`UZS 1`VES 1`VND 1`XAF 1`XAG 1`XAU 1`XOF 1`YER 1`ZAR
+    ;     1`ZMW
+    ; ] => currency?
+    ; passed
 
-; Energy
-print in`J 1`kJ
-print in`kJ 1`J
 
-; Power
-print in`W 1`kW
-print in`hp 1`W
+    topic « currencies - basic math
 
-; Force
-print in`N 1`dyn
+    data: [
+        200`EUR 300`EUR 100`EUR 400`EUR
+        200`USD 300`USD 100`USD 400`USD
+        200`BRL 300`BRL 100`BRL 400`BRL
+    ]
 
-; Radioactivity
-print in`Bq 1`Ci
+    loop data [ res res2 a b ][
+        ensure -> res  = a + a
+        ensure -> res2 = b - a
+        ensure -> res  = a * 2
+        ensure -> res  = b / 2
+        ensure -> res  = b // 2
+        passed
+    ]
 
-; Angle
-print in`deg 1`rad
 
-; Speed
-print in`kph 30`mps
+    topic « currencies - conforms?
 
-; Weight
-print in`g 1`kg
-print in`g 1`oz
+    ensure -> conforms? 100`EUR 200`USD
+    ensure -> conforms? 100`EUR 100`USD
+    ensure -> conforms? 100`EUR 100`EUR
+    ensure -> 100`EUR := 200`USD
+    ensure -> 100`EUR := 100`USD
+    ensure -> 100`EUR := 100`EUR
+    passed
 
-; Information
-print in`bit 10`kB
-print in`bit 10`KiB
+    ensure -> not? conforms? 100`EUR 100`m
+    ensure -> not? conforms? 100`EUR 100`m/s
+    passed
 
-; Time
-print in`min 1`h
-print in`min 1`day
-print in`h 1`day
 
-; Temperature
-print in`oC 32`oF
-print in`oC 95`oF
-print in`K 40`oC
+    topic « currencies - property
+
+    ensure -> 'currency = property 100`EUR
+    ensure -> 'currency = property 100`USD
+    ensure -> 'currency = property 100`BRL
+    passed
+
+    ensure -> 'currency <> property 100`m
+    ensure -> 'currency <> property 100`m/s
+    passed
+
+
+    topic « currencies - scalar
+
+    ensure -> 200 = scalar 200`USD
+    ensure -> 100 = scalar 100`USD
+    ensure -> 100 = scalar 100`EUR
+    passed
+
+
+    topic « currencies - specify
+
+    specify.symbol: "ÁRT" .describes: "arturoCrypto" 'artc 10`EUR
+
+    ensure -> 'arturocrypto = property 1`artc
+    ensure -> "1.00 ÁRT" = ~"|1`artc|"
+    ensure -> "31:2`ÁRT" = as.code 15.5`artc
+    ensure -> 10`EUR = 1`artc --> `EUR
+    passed
+
+
+    topic « currencies - units
+
+    ensure -> `EUR = units 100`EUR
+    ensure -> `USD = units 100`USD
+    ensure -> `AUD = units 100`AUD
+    passed
+
+    ensure -> `AUD <> units 100`BRL
+    passed
+
+
+    topic « currencies - alternative names
+
+    ensure -> every? [`dollar `dollars] => equal? & `USD
+    passed
+
+
+]
+
+
+topic « length
+do [
+
+
+    topic « length - length?
+
+    ensure -> every? [
+        1`m 1`am 1`fm 1`pm 1`nm 1`um 1`mm 1`cm 1`dm 1`dam 1`hm 1`km 1`Mm
+        1`Gm 1`Tm 1`Pm 1`Em
+
+        1`in 1`ft 1`yd 1`ftm 1`rod 1`mi 1`fur 1`nmi 1`ang 1`au 1`ly
+
+        1`px 1`apx 1`fpx 1`ppx 1`npx 1`upx 1`mpx 1`cpx 1`dpx 1`dapx 1`hpx
+        1`kpx 1`Mpx 1`Gpx 1`Tpx 1`Ppx 1`Epx
+
+        1`pt 1`apt 1`fpt 1`ppt 1`npt 1`upt 1`mpt 1`cpt 1`dpt 1`dapt 1`hpt
+        1`kpt 1`Mpt 1`Gpt 1`Tpt 1`Ppt 1`Ept
+
+        1`pc 1`apc 1`fpc 1`ppc 1`npc 1`upc 1`mpc 1`cpc 1`dpc 1`dapc 1`hpc
+        1`kpc 1`Mpc 1`Gpc 1`Tpc 1`Ppc 1`Epc
+    ] => length?
+    passed
+
+
+    topic « length - basic math
+
+    ensure -> 3`m   = 2`m + 1
+    ensure -> 3.5`m = 2`m + 1.5
+    ensure -> 7.5`m = 5`m + 5:2
+    passed
+
+    ensure -> 1`m   = 2`m - 1
+    ensure -> 0.5`m = 2`m - 1.5
+    ensure -> 4.5`m = 5`m - 1:2
+    passed
+
+    ; ensure -> 7`m = 15`m / 2
+    ensure -> 7.5`m = 15`m // 2
+    passed
+
+    ensure -> 2`m    = 1`m + 1`m
+    ensure -> 0`m    = 1`m - 1`m
+    passed
+
+    ensure -> 1.01`m = 1`m + 1`cm
+    ensure -> 0.99`m = 1`m - 1`cm
+    passed
+
+
+    topic « length - math // scales
+
+    ensure -> 1`Em  = 1`Pm  * (10 ^ 3)
+    ensure -> 1`Pm  = 1`Tm  * (10 ^ 3)
+    ensure -> 1`Tm  = 1`Gm  * (10 ^ 3)
+    ensure -> 1`Gm  = 1`Mm  * (10 ^ 3)
+    ensure -> 1`Mm  = 1`km  * (10 ^ 3)
+    ensure -> 1`km  = 1`hm  *  10
+    ensure -> 1`hm  = 1`dam *  10
+    ensure -> 1`dam = 1`m   *  10
+    ensure -> 1`dm  = 1`m   /  10
+    ensure -> 1`cm  = 1`dm  /  10
+    ensure -> 1`mm  = 1`cm  /  10
+    ensure -> 1`um  = 1`mm  / (10 ^ 3)
+    ensure -> 1`nm  = 1`um  / (10 ^ 3)
+    ; precision loss
+    ; ensure -> 1`pm  = 1`nm  / (10 ^ 3)
+    ; ensure -> 1`fm  = 1`pm  / (10 ^ 3)
+    ; ensure -> 1`am  = 1`fm  / (10 ^ 3)
+    passed
+
+    ; precision loss
+    ; ensure -> 1`Epx  = 1`Ppx  * (10 ^ 3)
+    ensure -> 1`Ppx  = 1`Tpx  * (10 ^ 3)
+    ensure -> 1`Tpx  = 1`Gpx  * (10 ^ 3)
+    ensure -> 1`Gpx  = 1`Mpx  * (10 ^ 3)
+    ensure -> 1`Mpx  = 1`kpx  * (10 ^ 3)
+    ensure -> 1`kpx  = 1`hpx  *  10
+    ensure -> 1`hpx  = 1`dapx *  10
+    ensure -> 1`dapx = 1`px   *  10
+    ensure -> 1`dpx  = 1`px   /  10
+    ensure -> 1`cpx  = 1`dpx  /  10
+    ensure -> 1`mpx  = 1`cpx  /  10
+    ensure -> 1`upx  = 1`mpx  / (10 ^ 3)
+    ensure -> 1`npx  = 1`upx  / (10 ^ 3)
+    ; precision loss
+    ; ensure -> 1`ppx  = 1`npx  / (10 ^ 3)
+    ; ensure -> 1`fpx  = 1`ppx  / (10 ^ 3)
+    ; ensure -> 1`apx  = 1`fpx  / (10 ^ 3)
+    passed
+
+    ; precision loss
+    ; ensure -> 1`Ept  = 1`Ppt  * (10 ^ 3)
+    ensure -> 1`Ppt  = 1`Tpt  * (10 ^ 3)
+    ensure -> 1`Tpt  = 1`Gpt  * (10 ^ 3)
+    ensure -> 1`Gpt  = 1`Mpt  * (10 ^ 3)
+    ensure -> 1`Mpt  = 1`kpt  * (10 ^ 3)
+    ensure -> 1`kpt  = 1`hpt  *  10
+    ensure -> 1`hpt  = 1`dapt *  10
+    ensure -> 1`dapt = 1`pt   *  10
+    ensure -> 1`dpt  = 1`pt   /  10
+    ensure -> 1`cpt  = 1`dpt  /  10
+    ensure -> 1`mpt  = 1`cpt  /  10
+    ensure -> 1`upt  = 1`mpt  / (10 ^ 3)
+    ensure -> 1`npt  = 1`upt  / (10 ^ 3)
+    ; precision loss
+    ; ensure -> 1`ppt  = 1`npt  / (10 ^ 3)
+    ; ensure -> 1`fpt  = 1`ppt  / (10 ^ 3)
+    ; ensure -> 1`apt  = 1`fpt  / (10 ^ 3)
+    passed
+
+    ; precision loss
+    ; ensure -> 1`Epc  = 1`Ppc  * (10 ^ 3)
+    ensure -> 1`Ppc  = 1`Tpc  * (10 ^ 3)
+    ensure -> 1`Tpc  = 1`Gpc  * (10 ^ 3)
+    ensure -> 1`Gpc  = 1`Mpc  * (10 ^ 3)
+    ensure -> 1`Mpc  = 1`kpc  * (10 ^ 3)
+    ensure -> 1`kpc  = 1`hpc  *  10
+    ensure -> 1`hpc  = 1`dapc *  10
+    ensure -> 1`dapc = 1`pc   *  10
+    ensure -> 1`dpc  = 1`pc   /  10
+    ensure -> 1`cpc  = 1`dpc  /  10
+    ensure -> 1`mpc  = 1`cpc  /  10
+    ensure -> 1`upc  = 1`mpc  / (10 ^ 3)
+    ensure -> 1`npc  = 1`upc  / (10 ^ 3)
+    ; precision loss
+    ; ensure -> 1`ppc  = 1`npc  / (10 ^ 3)
+    ; ensure -> 1`fpc  = 1`ppc  / (10 ^ 3)
+    ; ensure -> 1`apc  = 1`fpc  / (10 ^ 3)
+    passed
+
+
+    topic « length - math // conversions
+
+    ang: (10 ^ (neg 10)) --> `m
+
+    ensure -> 1`inch    = 127:5000`meters
+    ensure -> 1`foot    = 12`inches
+    ensure -> 1`yard    = 3`feet
+    ensure -> 1`rods    = 5.5`yards
+    ensure -> 1`mile    = 5280`feet
+    ensure -> 1`pica    = 12`points
+    ensure -> 1`point   = 1:72`inch
+    ensure -> 1`pixel   = 1:96`inch
+    ensure -> 1`fathom  = 1`yard
+    ensure -> 1`furlong = 1:8`miles
+    ; ensure -> 1`angstrom    = ang
+    ; SIGFPE: Arithmetic error.
+    ensure -> 1`lightYear   = 9460730472580800`m
+    ensure -> 1`nauticalMile        = 1852`meters
+    ensure -> 1`astronomicalUnit    = 149597870700`m
+    passed
+
+
+    topic « length - math // area
+
+    ensure -> 4`in2  = 2`in  * 2`in
+    ensure -> 4`ft2  = 2`ft  * 2`ft
+    ensure -> 4`yd2  = 2`yd  * 2`yd
+    ensure -> 4`ftm2 = 2`ftm * 2`ftm
+    ensure -> 4`rod2 = 2`rod * 2`rod
+    ; ensure -> 4`mi2  = 2`m i * 2`mi
+    ensure -> 4`fur2 = 2`fur * 2`fur
+    ensure -> 4`nmi2 = 2`nmi * 2`nmi
+    ensure -> 4`ang2 = 2`ang * 2`ang
+    ensure -> 4`au2  = 2`au  * 2`au
+    ensure -> 4`ly2  = 2`ly  * 2`ly
+    ensure -> 4`px2  = 2`px  * 2`px
+    ensure -> 4`pt2  = 2`pt  * 2`pt
+    ensure -> 4`pc2  = 2`pc  * 2`pc
+    passed
+
+    ensure -> 4`am2  = 2`am  * 2`am
+    ensure -> 4`fm2  = 2`fm  * 2`fm
+    ensure -> 4`pm2  = 2`pm  * 2`pm
+    ensure -> 4`nm2  = 2`nm  * 2`nm
+    ensure -> 4`um2  = 2`um  * 2`um
+    ensure -> 4`mm2  = 2`mm  * 2`mm
+    ensure -> 4`cm2  = 2`cm  * 2`cm
+    ensure -> 4`dm2  = 2`dm  * 2`dm
+    ensure -> 4`Nom2 = 2`Nom * 2`Nom
+    ensure -> 4`dam2 = 2`dam * 2`dam
+    ensure -> 4`hm2  = 2`hm  * 2`hm
+    ensure -> 4`km2  = 2`km  * 2`km
+    ensure -> 4`Mm2  = 2`Mm  * 2`Mm
+    ensure -> 4`Gm2  = 2`Gm  * 2`Gm
+    ensure -> 4`Tm2  = 2`Tm  * 2`Tm
+    ensure -> 4`Pm2  = 2`Pm  * 2`Pm
+    ensure -> 4`Em2  = 2`Em  * 2`Em
+    passed
+
+    ensure -> 4`apc2  = 2`apc  * 2`apc
+    ensure -> 4`fpc2  = 2`fpc  * 2`fpc
+    ensure -> 4`ppc2  = 2`ppc  * 2`ppc
+    ensure -> 4`npc2  = 2`npc  * 2`npc
+    ensure -> 4`upc2  = 2`upc  * 2`upc
+    ensure -> 4`mpc2  = 2`mpc  * 2`mpc
+    ensure -> 4`cpc2  = 2`cpc  * 2`cpc
+    ensure -> 4`dpc2  = 2`dpc  * 2`dpc
+    ensure -> 4`Nopc2 = 2`Nopc * 2`Nopc
+    ensure -> 4`dapc2 = 2`dapc * 2`dapc
+    ensure -> 4`hpc2  = 2`hpc  * 2`hpc
+    ensure -> 4`kpc2  = 2`kpc  * 2`kpc
+    ensure -> 4`Mpc2  = 2`Mpc  * 2`Mpc
+    ensure -> 4`Gpc2  = 2`Gpc  * 2`Gpc
+    ensure -> 4`Tpc2  = 2`Tpc  * 2`Tpc
+    ensure -> 4`Ppc2  = 2`Ppc  * 2`Ppc
+    ensure -> 4`Epc2  = 2`Epc  * 2`Epc
+    passed
+
+    ensure -> 4`apt2  = 2`apt  * 2`apt
+    ensure -> 4`fpt2  = 2`fpt  * 2`fpt
+    ensure -> 4`ppt2  = 2`ppt  * 2`ppt
+    ensure -> 4`npt2  = 2`npt  * 2`npt
+    ensure -> 4`upt2  = 2`upt  * 2`upt
+    ensure -> 4`mpt2  = 2`mpt  * 2`mpt
+    ensure -> 4`cpt2  = 2`cpt  * 2`cpt
+    ensure -> 4`dpt2  = 2`dpt  * 2`dpt
+    ensure -> 4`Nopt2 = 2`Nopt * 2`Nopt
+    ensure -> 4`dapt2 = 2`dapt * 2`dapt
+    ensure -> 4`hpt2  = 2`hpt  * 2`hpt
+    ensure -> 4`kpt2  = 2`kpt  * 2`kpt
+    ensure -> 4`Mpt2  = 2`Mpt  * 2`Mpt
+    ensure -> 4`Gpt2  = 2`Gpt  * 2`Gpt
+    ensure -> 4`Tpt2  = 2`Tpt  * 2`Tpt
+    ensure -> 4`Ppt2  = 2`Ppt  * 2`Ppt
+    ensure -> 4`Ept2  = 2`Ept  * 2`Ept
+    passed
+
+    ensure -> 4`apx2  = 2`apx  * 2`apx
+    ensure -> 4`fpx2  = 2`fpx  * 2`fpx
+    ensure -> 4`ppx2  = 2`ppx  * 2`ppx
+    ensure -> 4`npx2  = 2`npx  * 2`npx
+    ensure -> 4`upx2  = 2`upx  * 2`upx
+    ensure -> 4`mpx2  = 2`mpx  * 2`mpx
+    ensure -> 4`cpx2  = 2`cpx  * 2`cpx
+    ensure -> 4`dpx2  = 2`dpx  * 2`dpx
+    ensure -> 4`Nopx2 = 2`Nopx * 2`Nopx
+    ensure -> 4`dapx2 = 2`dapx * 2`dapx
+    ensure -> 4`hpx2  = 2`hpx  * 2`hpx
+    ensure -> 4`kpx2  = 2`kpx  * 2`kpx
+    ensure -> 4`Mpx2  = 2`Mpx  * 2`Mpx
+    ensure -> 4`Gpx2  = 2`Gpx  * 2`Gpx
+    ensure -> 4`Tpx2  = 2`Tpx  * 2`Tpx
+    ensure -> 4`Ppx2  = 2`Ppx  * 2`Ppx
+    ensure -> 4`Epx2  = 2`Epx  * 2`Epx
+    passed
+
+    ; ---------------------------------
+
+    ensure -> 4`in2  = 2`in  ^ 2
+    ensure -> 4`ft2  = 2`ft  ^ 2
+    ensure -> 4`yd2  = 2`yd  ^ 2
+    ensure -> 4`ftm2 = 2`ftm ^ 2
+    ensure -> 4`rod2 = 2`rod ^ 2
+    ; ensure -> 4`mi2  = 2`m i ^ 2
+    ensure -> 4`fur2 = 2`fur ^ 2
+    ensure -> 4`nmi2 = 2`nmi ^ 2
+    ensure -> 4`ang2 = 2`ang ^ 2
+    ensure -> 4`au2  = 2`au  ^ 2
+    ensure -> 4`ly2  = 2`ly  ^ 2
+    ensure -> 4`px2  = 2`px  ^ 2
+    ensure -> 4`pt2  = 2`pt  ^ 2
+    ensure -> 4`pc2  = 2`pc  ^ 2
+    passed
+
+    ensure -> 4`am2  = 2`am  ^ 2
+    ensure -> 4`fm2  = 2`fm  ^ 2
+    ensure -> 4`pm2  = 2`pm  ^ 2
+    ensure -> 4`nm2  = 2`nm  ^ 2
+    ensure -> 4`um2  = 2`um  ^ 2
+    ensure -> 4`mm2  = 2`mm  ^ 2
+    ensure -> 4`cm2  = 2`cm  ^ 2
+    ensure -> 4`dm2  = 2`dm  ^ 2
+    ensure -> 4`Nom2 = 2`Nom ^ 2
+    ensure -> 4`dam2 = 2`dam ^ 2
+    ensure -> 4`hm2  = 2`hm  ^ 2
+    ensure -> 4`km2  = 2`km  ^ 2
+    ensure -> 4`Mm2  = 2`Mm  ^ 2
+    ensure -> 4`Gm2  = 2`Gm  ^ 2
+    ensure -> 4`Tm2  = 2`Tm  ^ 2
+    ensure -> 4`Pm2  = 2`Pm  ^ 2
+    ensure -> 4`Em2  = 2`Em  ^ 2
+    passed
+
+    ensure -> 4`apc2  = 2`apc  ^ 2
+    ensure -> 4`fpc2  = 2`fpc  ^ 2
+    ensure -> 4`ppc2  = 2`ppc  ^ 2
+    ensure -> 4`npc2  = 2`npc  ^ 2
+    ensure -> 4`upc2  = 2`upc  ^ 2
+    ensure -> 4`mpc2  = 2`mpc  ^ 2
+    ensure -> 4`cpc2  = 2`cpc  ^ 2
+    ensure -> 4`dpc2  = 2`dpc  ^ 2
+    ensure -> 4`Nopc2 = 2`Nopc ^ 2
+    ensure -> 4`dapc2 = 2`dapc ^ 2
+    ensure -> 4`hpc2  = 2`hpc  ^ 2
+    ensure -> 4`kpc2  = 2`kpc  ^ 2
+    ensure -> 4`Mpc2  = 2`Mpc  ^ 2
+    ensure -> 4`Gpc2  = 2`Gpc  ^ 2
+    ensure -> 4`Tpc2  = 2`Tpc  ^ 2
+    ensure -> 4`Ppc2  = 2`Ppc  ^ 2
+    ensure -> 4`Epc2  = 2`Epc  ^ 2
+    passed
+
+    ensure -> 4`apt2  = 2`apt  ^ 2
+    ensure -> 4`fpt2  = 2`fpt  ^ 2
+    ensure -> 4`ppt2  = 2`ppt  ^ 2
+    ensure -> 4`npt2  = 2`npt  ^ 2
+    ensure -> 4`upt2  = 2`upt  ^ 2
+    ensure -> 4`mpt2  = 2`mpt  ^ 2
+    ensure -> 4`cpt2  = 2`cpt  ^ 2
+    ensure -> 4`dpt2  = 2`dpt  ^ 2
+    ensure -> 4`Nopt2 = 2`Nopt ^ 2
+    ensure -> 4`dapt2 = 2`dapt ^ 2
+    ensure -> 4`hpt2  = 2`hpt  ^ 2
+    ensure -> 4`kpt2  = 2`kpt  ^ 2
+    ensure -> 4`Mpt2  = 2`Mpt  ^ 2
+    ensure -> 4`Gpt2  = 2`Gpt  ^ 2
+    ensure -> 4`Tpt2  = 2`Tpt  ^ 2
+    ensure -> 4`Ppt2  = 2`Ppt  ^ 2
+    ensure -> 4`Ept2  = 2`Ept  ^ 2
+    passed
+
+    ensure -> 4`apx2  = 2`apx  ^ 2
+    ensure -> 4`fpx2  = 2`fpx  ^ 2
+    ensure -> 4`ppx2  = 2`ppx  ^ 2
+    ensure -> 4`npx2  = 2`npx  ^ 2
+    ensure -> 4`upx2  = 2`upx  ^ 2
+    ensure -> 4`mpx2  = 2`mpx  ^ 2
+    ensure -> 4`cpx2  = 2`cpx  ^ 2
+    ensure -> 4`dpx2  = 2`dpx  ^ 2
+    ensure -> 4`Nopx2 = 2`Nopx ^ 2
+    ensure -> 4`dapx2 = 2`dapx ^ 2
+    ensure -> 4`hpx2  = 2`hpx  ^ 2
+    ensure -> 4`kpx2  = 2`kpx  ^ 2
+    ensure -> 4`Mpx2  = 2`Mpx  ^ 2
+    ensure -> 4`Gpx2  = 2`Gpx  ^ 2
+    ensure -> 4`Tpx2  = 2`Tpx  ^ 2
+    ensure -> 4`Ppx2  = 2`Ppx  ^ 2
+    ensure -> 4`Epx2  = 2`Epx  ^ 2
+    passed
+
+
+    topic « length - math // volume
+
+    ensure -> 8`in3  = 2`in  * 2`in  * 2`in
+    ensure -> 8`ft3  = 2`ft  * 2`ft  * 2`ft
+    ensure -> 8`yd3  = 2`yd  * 2`yd  * 2`yd
+    ensure -> 8`ftm3 = 2`ftm * 2`ftm * 2`ftm
+    ensure -> 8`rod3 = 2`rod * 2`rod * 2`rod
+    ensure -> 8`mi3  = 2`mi  * 2`mi * 2`mi
+    ensure -> 8`fur3 = 2`fur * 2`fur * 2`fur
+    ensure -> 8`nmi3 = 2`nmi * 2`nmi * 2`nmi
+    ensure -> 8`ang3 = 2`ang * 2`ang * 2`ang
+    ensure -> 8`au3  = 2`au  * 2`au  * 2`au
+    ensure -> 8`ly3  = 2`ly  * 2`ly  * 2`ly
+    ensure -> 8`px3  = 2`px  * 2`px  * 2`px
+    ensure -> 8`pt3  = 2`pt  * 2`pt  * 2`pt
+    ensure -> 8`pc3  = 2`pc  * 2`pc  * 2`pc
+    passed
+
+    ensure -> 8`am3  = 2`am  * 2`am  * 2`am
+    ensure -> 8`fm3  = 2`fm  * 2`fm  * 2`fm
+    ensure -> 8`pm3  = 2`pm  * 2`pm  * 2`pm
+    ensure -> 8`nm3  = 2`nm  * 2`nm  * 2`nm
+    ensure -> 8`um3  = 2`um  * 2`um  * 2`um
+    ensure -> 8`mm3  = 2`mm  * 2`mm  * 2`mm
+    ensure -> 8`cm3  = 2`cm  * 2`cm  * 2`cm
+    ensure -> 8`dm3  = 2`dm  * 2`dm  * 2`dm
+    ensure -> 8`Nom3 = 2`Nom * 2`Nom * 2`Nom
+    ensure -> 8`dam3 = 2`dam * 2`dam * 2`dam
+    ensure -> 8`hm3  = 2`hm  * 2`hm  * 2`hm
+    ensure -> 8`km3  = 2`km  * 2`km  * 2`km
+    ensure -> 8`Mm3  = 2`Mm  * 2`Mm  * 2`Mm
+    ensure -> 8`Gm3  = 2`Gm  * 2`Gm  * 2`Gm
+    ensure -> 8`Tm3  = 2`Tm  * 2`Tm  * 2`Tm
+    ensure -> 8`Pm3  = 2`Pm  * 2`Pm  * 2`Pm
+    ensure -> 8`Em3  = 2`Em  * 2`Em  * 2`Em
+    passed
+
+    ensure -> 8`apc3  = 2`apc  * 2`apc  * 2`apc
+    ensure -> 8`fpc3  = 2`fpc  * 2`fpc  * 2`fpc
+    ensure -> 8`ppc3  = 2`ppc  * 2`ppc  * 2`ppc
+    ensure -> 8`npc3  = 2`npc  * 2`npc  * 2`npc
+    ensure -> 8`upc3  = 2`upc  * 2`upc  * 2`upc
+    ensure -> 8`mpc3  = 2`mpc  * 2`mpc  * 2`mpc
+    ensure -> 8`cpc3  = 2`cpc  * 2`cpc  * 2`cpc
+    ensure -> 8`dpc3  = 2`dpc  * 2`dpc  * 2`dpc
+    ensure -> 8`Nopc3 = 2`Nopc * 2`Nopc * 2`Nopc
+    ensure -> 8`dapc3 = 2`dapc * 2`dapc * 2`dapc
+    ensure -> 8`hpc3  = 2`hpc  * 2`hpc  * 2`hpc
+    ensure -> 8`kpc3  = 2`kpc  * 2`kpc  * 2`kpc
+    ensure -> 8`Mpc3  = 2`Mpc  * 2`Mpc  * 2`Mpc
+    ensure -> 8`Gpc3  = 2`Gpc  * 2`Gpc  * 2`Gpc
+    ensure -> 8`Tpc3  = 2`Tpc  * 2`Tpc  * 2`Tpc
+    ensure -> 8`Ppc3  = 2`Ppc  * 2`Ppc  * 2`Ppc
+    ensure -> 8`Epc3  = 2`Epc  * 2`Epc  * 2`Epc
+    passed
+
+    ensure -> 8`apt3  = 2`apt  * 2`apt  * 2`apt
+    ensure -> 8`fpt3  = 2`fpt  * 2`fpt  * 2`fpt
+    ensure -> 8`ppt3  = 2`ppt  * 2`ppt  * 2`ppt
+    ensure -> 8`npt3  = 2`npt  * 2`npt  * 2`npt
+    ensure -> 8`upt3  = 2`upt  * 2`upt  * 2`upt
+    ensure -> 8`mpt3  = 2`mpt  * 2`mpt  * 2`mpt
+    ensure -> 8`cpt3  = 2`cpt  * 2`cpt  * 2`cpt
+    ensure -> 8`dpt3  = 2`dpt  * 2`dpt  * 2`dpt
+    ensure -> 8`Nopt3 = 2`Nopt * 2`Nopt * 2`Nopt
+    ensure -> 8`dapt3 = 2`dapt * 2`dapt * 2`dapt
+    ensure -> 8`hpt3  = 2`hpt  * 2`hpt  * 2`hpt
+    ensure -> 8`kpt3  = 2`kpt  * 2`kpt  * 2`kpt
+    ensure -> 8`Mpt3  = 2`Mpt  * 2`Mpt  * 2`Mpt
+    ensure -> 8`Gpt3  = 2`Gpt  * 2`Gpt  * 2`Gpt
+    ensure -> 8`Tpt3  = 2`Tpt  * 2`Tpt  * 2`Tpt
+    ensure -> 8`Ppt3  = 2`Ppt  * 2`Ppt  * 2`Ppt
+    ensure -> 8`Ept3  = 2`Ept  * 2`Ept  * 2`Ept
+    passed
+
+    ensure -> 8`apx3  = 2`apx  * 2`apx  * 2`apx
+    ensure -> 8`fpx3  = 2`fpx  * 2`fpx  * 2`fpx
+    ensure -> 8`ppx3  = 2`ppx  * 2`ppx  * 2`ppx
+    ensure -> 8`npx3  = 2`npx  * 2`npx  * 2`npx
+    ensure -> 8`upx3  = 2`upx  * 2`upx  * 2`upx
+    ensure -> 8`mpx3  = 2`mpx  * 2`mpx  * 2`mpx
+    ensure -> 8`cpx3  = 2`cpx  * 2`cpx  * 2`cpx
+    ensure -> 8`dpx3  = 2`dpx  * 2`dpx  * 2`dpx
+    ensure -> 8`Nopx3 = 2`Nopx * 2`Nopx * 2`Nopx
+    ensure -> 8`dapx3 = 2`dapx * 2`dapx * 2`dapx
+    ensure -> 8`hpx3  = 2`hpx  * 2`hpx  * 2`hpx
+    ensure -> 8`kpx3  = 2`kpx  * 2`kpx  * 2`kpx
+    ensure -> 8`Mpx3  = 2`Mpx  * 2`Mpx  * 2`Mpx
+    ensure -> 8`Gpx3  = 2`Gpx  * 2`Gpx  * 2`Gpx
+    ensure -> 8`Tpx3  = 2`Tpx  * 2`Tpx  * 2`Tpx
+    ensure -> 8`Ppx3  = 2`Ppx  * 2`Ppx  * 2`Ppx
+    ensure -> 8`Epx3  = 2`Epx  * 2`Epx  * 2`Epx
+    passed
+
+    ; ---------------------------------
+
+    ensure -> 8`in3  = 2`in  ^ 3
+    ensure -> 8`ft3  = 2`ft  ^ 3
+    ensure -> 8`yd3  = 2`yd  ^ 3
+    ensure -> 8`ftm3 = 2`ftm ^ 3
+    ensure -> 8`rod3 = 2`rod ^ 3
+    ensure -> 8`mi3  = 2`mi  ^ 3
+    ensure -> 8`fur3 = 2`fur ^ 3
+    ensure -> 8`nmi3 = 2`nmi ^ 3
+    ensure -> 8`ang3 = 2`ang ^ 3
+    ensure -> 8`au3  = 2`au  ^ 3
+    ensure -> 8`ly3  = 2`ly  ^ 3
+    ensure -> 8`px3  = 2`px  ^ 3
+    ensure -> 8`pt3  = 2`pt  ^ 3
+    ensure -> 8`pc3  = 2`pc  ^ 3
+    passed
+
+    ensure -> 8`am3  = 2`am  ^ 3
+    ensure -> 8`fm3  = 2`fm  ^ 3
+    ensure -> 8`pm3  = 2`pm  ^ 3
+    ensure -> 8`nm3  = 2`nm  ^ 3
+    ensure -> 8`um3  = 2`um  ^ 3
+    ensure -> 8`mm3  = 2`mm  ^ 3
+    ensure -> 8`cm3  = 2`cm  ^ 3
+    ensure -> 8`dm3  = 2`dm  ^ 3
+    ensure -> 8`Nom3 = 2`Nom ^ 3
+    ensure -> 8`dam3 = 2`dam ^ 3
+    ensure -> 8`hm3  = 2`hm  ^ 3
+    ensure -> 8`km3  = 2`km  ^ 3
+    ensure -> 8`Mm3  = 2`Mm  ^ 3
+    ensure -> 8`Gm3  = 2`Gm  ^ 3
+    ensure -> 8`Tm3  = 2`Tm  ^ 3
+    ensure -> 8`Pm3  = 2`Pm  ^ 3
+    ensure -> 8`Em3  = 2`Em  ^ 3
+    passed
+
+    ensure -> 8`apc3  = 2`apc  ^ 3
+    ensure -> 8`fpc3  = 2`fpc  ^ 3
+    ensure -> 8`ppc3  = 2`ppc  ^ 3
+    ensure -> 8`npc3  = 2`npc  ^ 3
+    ensure -> 8`upc3  = 2`upc  ^ 3
+    ensure -> 8`mpc3  = 2`mpc  ^ 3
+    ensure -> 8`cpc3  = 2`cpc  ^ 3
+    ensure -> 8`dpc3  = 2`dpc  ^ 3
+    ensure -> 8`Nopc3 = 2`Nopc ^ 3
+    ensure -> 8`dapc3 = 2`dapc ^ 3
+    ensure -> 8`hpc3  = 2`hpc  ^ 3
+    ensure -> 8`kpc3  = 2`kpc  ^ 3
+    ensure -> 8`Mpc3  = 2`Mpc  ^ 3
+    ensure -> 8`Gpc3  = 2`Gpc  ^ 3
+    ensure -> 8`Tpc3  = 2`Tpc  ^ 3
+    ensure -> 8`Ppc3  = 2`Ppc  ^ 3
+    ensure -> 8`Epc3  = 2`Epc  ^ 3
+    passed
+
+    ensure -> 8`apt3  = 2`apt  ^ 3
+    ensure -> 8`fpt3  = 2`fpt  ^ 3
+    ensure -> 8`ppt3  = 2`ppt  ^ 3
+    ensure -> 8`npt3  = 2`npt  ^ 3
+    ensure -> 8`upt3  = 2`upt  ^ 3
+    ensure -> 8`mpt3  = 2`mpt  ^ 3
+    ensure -> 8`cpt3  = 2`cpt  ^ 3
+    ensure -> 8`dpt3  = 2`dpt  ^ 3
+    ensure -> 8`Nopt3 = 2`Nopt ^ 3
+    ensure -> 8`dapt3 = 2`dapt ^ 3
+    ensure -> 8`hpt3  = 2`hpt  ^ 3
+    ensure -> 8`kpt3  = 2`kpt  ^ 3
+    ensure -> 8`Mpt3  = 2`Mpt  ^ 3
+    ensure -> 8`Gpt3  = 2`Gpt  ^ 3
+    ensure -> 8`Tpt3  = 2`Tpt  ^ 3
+    ensure -> 8`Ppt3  = 2`Ppt  ^ 3
+    ensure -> 8`Ept3  = 2`Ept  ^ 3
+    passed
+
+    ensure -> 8`apx3  = 2`apx  ^ 3
+    ensure -> 8`fpx3  = 2`fpx  ^ 3
+    ensure -> 8`ppx3  = 2`ppx  ^ 3
+    ensure -> 8`npx3  = 2`npx  ^ 3
+    ensure -> 8`upx3  = 2`upx  ^ 3
+    ensure -> 8`mpx3  = 2`mpx  ^ 3
+    ensure -> 8`cpx3  = 2`cpx  ^ 3
+    ensure -> 8`dpx3  = 2`dpx  ^ 3
+    ensure -> 8`Nopx3 = 2`Nopx ^ 3
+    ensure -> 8`dapx3 = 2`dapx ^ 3
+    ensure -> 8`hpx3  = 2`hpx  ^ 3
+    ensure -> 8`kpx3  = 2`kpx  ^ 3
+    ensure -> 8`Mpx3  = 2`Mpx  ^ 3
+    ensure -> 8`Gpx3  = 2`Gpx  ^ 3
+    ensure -> 8`Tpx3  = 2`Tpx  ^ 3
+    ensure -> 8`Ppx3  = 2`Ppx  ^ 3
+    ensure -> 8`Epx3  = 2`Epx  ^ 3
+    passed
+
+
+    topic « length - math // check auto-conversion
+
+    ensure ->  6`m2.yd =   3`m2 * 2`yd
+    ensure -> 15`yd2/m = 45`yd2 / 3`m
+    passed
+
+
+    topic « length - conforms?
+
+    ensure -> every? [
+        1`m 1`am 1`fm 1`pm 1`nm 1`um 1`mm 1`cm 1`dm 1`dam 1`hm 1`km 1`Mm
+        1`Gm 1`Tm 1`Pm 1`Em
+
+        1`in 1`ft 1`yd 1`ftm 1`rod 1`mi 1`fur 1`nmi 1`ang 1`au 1`ly
+
+        1`px 1`apx 1`fpx 1`ppx 1`npx 1`upx 1`mpx 1`cpx 1`dpx 1`dapx 1`hpx
+        1`kpx 1`Mpx 1`Gpx 1`Tpx 1`Ppx 1`Epx
+
+        1`pt 1`apt 1`fpt 1`ppt 1`npt 1`upt 1`mpt 1`cpt 1`dpt 1`dapt 1`hpt
+        1`kpt 1`Mpt 1`Gpt 1`Tpt 1`Ppt 1`Ept
+
+        1`pc 1`apc 1`fpc 1`ppc 1`npc 1`upc 1`mpc 1`cpc 1`dpc 1`dapc 1`hpc
+        1`kpc 1`Mpc 1`Gpc 1`Tpc 1`Ppc 1`Epc
+    ] => conforms? `m
+    passed
+
+    ensure -> every? [
+        1`m 1`am 1`fm 1`pm 1`nm 1`um 1`mm 1`cm 1`dm 1`dam 1`hm 1`km 1`Mm
+        1`Gm 1`Tm 1`Pm 1`Em
+
+        1`in 1`ft 1`yd 1`ftm 1`rod 1`mi 1`fur 1`nmi 1`ang 1`au 1`ly
+
+        1`px 1`apx 1`fpx 1`ppx 1`npx 1`upx 1`mpx 1`cpx 1`dpx 1`dapx 1`hpx
+        1`kpx 1`Mpx 1`Gpx 1`Tpx 1`Ppx 1`Epx
+
+        1`pt 1`apt 1`fpt 1`ppt 1`npt 1`upt 1`mpt 1`cpt 1`dpt 1`dapt 1`hpt
+        1`kpt 1`Mpt 1`Gpt 1`Tpt 1`Ppt 1`Ept
+
+        1`pc 1`apc 1`fpc 1`ppc 1`npc 1`upc 1`mpc 1`cpc 1`dpc 1`dapc 1`hpc
+        1`kpc 1`Mpc 1`Gpc 1`Tpc 1`Ppc 1`Epc
+    ] -> x -> not? conforms? x `m2
+    passed
+
+
+    topic « length - convert
+
+    ensure -> same? 100`cm convert 1`m `cm
+    ensure -> same? 100`cm 1`m --> `cm
+    passed
+
+
+    topic « length - in
+
+    ensure -> same? 100`cm in `cm 1`m
+    passed
+
+
+    topic « length - property
+
+    ensure -> every? [
+        1`m 1`am 1`fm 1`pm 1`nm 1`um 1`mm 1`cm 1`dm 1`dam 1`hm 1`km 1`Mm
+        1`Gm 1`Tm 1`Pm 1`Em
+
+        1`in 1`ft 1`yd 1`ftm 1`rod 1`mi 1`fur 1`nmi 1`ang 1`au 1`ly
+
+        1`px 1`apx 1`fpx 1`ppx 1`npx 1`upx 1`mpx 1`cpx 1`dpx 1`dapx 1`hpx
+        1`kpx 1`Mpx 1`Gpx 1`Tpx 1`Ppx 1`Epx
+
+        1`pt 1`apt 1`fpt 1`ppt 1`npt 1`upt 1`mpt 1`cpt 1`dpt 1`dapt 1`hpt
+        1`kpt 1`Mpt 1`Gpt 1`Tpt 1`Ppt 1`Ept
+
+        1`pc 1`apc 1`fpc 1`ppc 1`npc 1`upc 1`mpc 1`cpc 1`dpc 1`dapc 1`hpc
+        1`kpc 1`Mpc 1`Gpc 1`Tpc 1`Ppc 1`Epc
+    ] -> x -> 'length = property x
+    passed
+
+
+    topic « length - scalar
+
+    ensure -> every? [
+        1`m 1`am 1`fm 1`pm 1`nm 1`um 1`mm 1`cm 1`dm 1`dam 1`hm 1`km 1`Mm
+        1`Gm 1`Tm 1`Pm 1`Em
+
+        1`in 1`ft 1`yd 1`ftm 1`rod 1`mi 1`fur 1`nmi 1`ang 1`au 1`ly
+
+        1`px 1`apx 1`fpx 1`ppx 1`npx 1`upx 1`mpx 1`cpx 1`dpx 1`dapx 1`hpx
+        1`kpx 1`Mpx 1`Gpx 1`Tpx 1`Ppx 1`Epx
+
+        1`pt 1`apt 1`fpt 1`ppt 1`npt 1`upt 1`mpt 1`cpt 1`dpt 1`dapt 1`hpt
+        1`kpt 1`Mpt 1`Gpt 1`Tpt 1`Ppt 1`Ept
+
+        1`pc 1`apc 1`fpc 1`ppc 1`npc 1`upc 1`mpc 1`cpc 1`dpc 1`dapc 1`hpc
+        1`kpc 1`Mpc 1`Gpc 1`Tpc 1`Ppc 1`Epc
+    ] -> x -> one? scalar x
+    passed
+
+
+    topic « length - specify
+
+    specify.symbol: "🛣" .describes: "high distance" 'lejos 1.5`km
+
+    ensure -> (to :literal "high distance") = property 1`lejos
+    ensure -> "1 🛣" = ~"|1`lejos|"
+    ensure -> "31:2`🛣" = as.code 15.5`lejos
+    ensure -> 1500`m = 1`lejos --> `m
+    passed
+
+
+    topic « length - units
+
+    ensure -> `m = units 100`m
+    ensure -> `cm = units 100`cm
+    ensure -> `km = units 100`km
+    passed
+
+    ensure -> `cm <> units 100`km
+    passed
+
+
+    topic « length - alternative names
+
+    ensure -> every? [ `meter `meters `metre `metres ] => equal? & `m
+    passed
+
+    ensure -> every? [ `inch `inches ] => equal? & `in
+    passed
+
+    ensure -> every? [ `foot `feet ] => equal? & `ft
+    passed
+
+    ensure -> every? [ `yard `yards ] => equal? & `yd
+    passed
+
+    ensure -> every? [ `fathom `fathoms ] => equal? & `ftm
+    passed
+
+    ensure -> equal? `rod `rods
+    passed
+
+    ensure -> every? [ `mile `miles ] => equal? & `mi
+    passed
+
+    ensure -> every? [ `furlong `furlongs ] => equal? & `fur
+    passed
+
+    ensure -> every? [ `nauticalMile `nauticalMiles ] => equal? & `nmi
+    passed
+
+    ensure -> every? [ `angstrom `angstroms ] => equal? & `ang
+    passed
+
+    ensure -> every? [ `astronomicalUnit `astronomicalUnits ] => equal? & `au
+    passed
+
+    ensure -> every? [ `lightYear `lightYears ] => equal? & `ly
+    passed
+
+    ensure -> every? [ `pixel `pixels ] => equal? & `px
+    passed
+
+    ensure -> every? [ `point `points ] => equal? & `pt
+    passed
+
+    ensure -> every? [ `pica `picas ] => equal? & `pc
+    passed
+
+]
+
+
+topic « area
+do [
+
+    areaSet: [
+        1`sqin 1`sqft 1`ac 1`are 1`ha 1`barn
+
+        1`m2 1`am2 1`fm2 1`pm2 1`nm2 1`um2 1`mm2 1`cm2 1`dm2 1`dam2 1`hm2 1`km2 1`Mm2
+        1`Gm2 1`Tm2 1`Pm2 1`Em2
+
+        1`in2 1`ft2 1`yd2 1`ftm2 1`rod2 1`mi2 1`fur2 1`nmi2 1`ang2 1`au2 1`ly2
+
+        1`px2 1`apx2 1`fpx2 1`ppx2 1`npx2 1`upx2 1`mpx2 1`cpx2 1`dpx2 1`dapx2 1`hpx2
+        1`kpx2 1`Mpx2 1`Gpx2 1`Tpx2 1`Ppx2 1`Epx2
+
+        1`pt2 1`apt2 1`fpt2 1`ppt2 1`npt2 1`upt2 1`mpt2 1`cpt2 1`dpt2 1`dapt2 1`hpt2
+        1`kpt2 1`Mpt2 1`Gpt2 1`Tpt2 1`Ppt2 1`Ept2
+
+        1`pc2 1`apc2 1`fpc2 1`ppc2 1`npc2 1`upc2 1`mpc2 1`cpc2 1`dpc2 1`dapc2 1`hpc2
+        1`kpc2 1`Mpc2 1`Gpc2 1`Tpc2 1`Ppc2 1`Epc2
+    ]
+
+
+    topic « area - area?
+
+    ensure -> every? areaSet => area?
+    passed
+
+
+    topic « area - basic math
+
+    ensure -> 3`m2   = 2`m2 + 1
+    ensure -> 3.5`m2 = 2`m2 + 1.5
+    ensure -> 7.5`m2 = 5`m2 + 5:2
+    passed
+
+    ensure -> 1`m2   = 2`m2 - 1
+    ensure -> 0.5`m2 = 2`m2 - 1.5
+    ensure -> 4.5`m2 = 5`m2 - 1:2
+    passed
+
+    ensure -> 30`m2  = 15`m2 * 2
+    ; ensure -> 7`m2 = 15`m2 / 2
+    ensure -> 7.5`m2 = 15`m2 // 2
+    passed
+
+    ensure -> 2`m2    = 1`m2 + 1`m2
+    ensure -> 0`m2    = 1`m2 - 1`m2
+    passed
+
+    ensure -> 1.0001`m2 = 1`m2 + 1`cm2
+    ensure -> 0.9999`m2 = 1`m2 - 1`cm2
+    passed
+
+
+    topic « area - math // scales
+
+    ; precision loss
+    ; ensure -> 1`Em2  = 1`Pm2  * (10 ^ 6)
+    ; ensure -> 1`Pm2  = 1`Tm2  * (10 ^ 6)
+    ; ensure -> 1`Tm2  = 1`Gm2  * (10 ^ 6)
+    ensure -> 1`Gm2  = 1`Mm2  * (10 ^ 6)
+    ensure -> 1`Mm2  = 1`km2  * (10 ^ 6)
+    ensure -> 1`km2  = 1`hm2  * (10 ^ 2)
+    ensure -> 1`hm2  = 1`dam2 * (10 ^ 2)
+    ensure -> 1`dam2 = 1`m2   * (10 ^ 2)
+    ensure -> 1`dm2  = 1`m2   / (10 ^ 2)
+    ensure -> 1`cm2  = 1`dm2  / (10 ^ 2)
+    ensure -> 1`mm2  = 1`cm2  / (10 ^ 2)
+    ensure -> 1`um2  = 1`mm2  / (10 ^ 6)
+    ensure -> 1`nm2  = 1`um2  / (10 ^ 6)
+    ; precision loss
+    ; ensure -> 1`pm2  = 1`nm2  / (10 ^ 6)
+    ; ensure -> 1`fm2  = 1`pm2  / (10 ^ 6)
+    ; ensure -> 1`am2  = 1`fm2  / (10 ^ 6)
+    passed
+
+    ; precision loss
+    ; ensure -> 1`Epx2  = 1`Ppx2  * (10 ^ 6)
+    ; ensure -> 1`Ppx2  = 1`Tpx2  * (10 ^ 6)
+    ensure -> 1`Tpx2  = 1`Gpx2  * (10 ^ 6)
+    ensure -> 1`Gpx2  = 1`Mpx2  * (10 ^ 6)
+    ensure -> 1`Mpx2  = 1`kpx2  * (10 ^ 6)
+    ensure -> 1`kpx2  = 1`hpx2  * (10 ^ 2)
+    ensure -> 1`hpx2  = 1`dapx2 * (10 ^ 2)
+    ensure -> 1`dapx2 = 1`px2   * (10 ^ 2)
+    ensure -> 1`dpx2  = 1`px2   / (10 ^ 2)
+    ; precision loss
+    ; ensure -> 1`cpx2  = 1`dpx2  / (10 ^ 2)
+    ; ensure -> 1`mpx2  = 1`cpx2  / (10 ^ 2)
+    ; ensure -> 1`upx2  = 1`mpx2  / (10 ^ 6)
+    ; ensure -> 1`npx2  = 1`upx2  / (10 ^ 6)
+    ; ensure -> 1`ppx2  = 1`npx2  / (10 ^ 6)
+    ; ensure -> 1`fpx2  = 1`ppx2  / (10 ^ 6)
+    ; ensure -> 1`apx2  = 1`fpx2  / (10 ^ 6)
+    passed
+
+    ; precision loss
+    ; ensure -> 1`Ept2  = 1`Ppt2  * (10 ^ 6)
+    ; ensure -> 1`Ppt2  = 1`Tpt2  * (10 ^ 6)
+    ; ensure -> 1`Tpt2  = 1`Gpt2  * (10 ^ 6)
+    ensure -> 1`Gpt2  = 1`Mpt2  * (10 ^ 6)
+    ensure -> 1`Mpt2  = 1`kpt2  * (10 ^ 6)
+    ensure -> 1`kpt2  = 1`hpt2  * (10 ^ 2)
+    ensure -> 1`hpt2  = 1`dapt2 * (10 ^ 2)
+    ensure -> 1`dapt2 = 1`pt2   * (10 ^ 2)
+    ensure -> 1`dpt2  = 1`pt2   / (10 ^ 2)
+    ; precision loss
+    ; ensure -> 1`cpt2  = 1`dpt2  / (10 ^ 2)
+    ; ensure -> 1`mpt2  = 1`cpt2  / (10 ^ 2)
+    ; ensure -> 1`upt2  = 1`mpt2  / (10 ^ 6)
+    ; ensure -> 1`npt2  = 1`upt2  / (10 ^ 6)
+    ; ensure -> 1`ppt2  = 1`npt2  / (10 ^ 6)
+    ; ensure -> 1`fpt2  = 1`ppt2  / (10 ^ 6)
+    ; ensure -> 1`apt2  = 1`fpt2  / (10 ^ 6)
+    passed
+
+    ; precision loss
+    ; ensure -> 1`Epc2  = 1`Ppc2  * (10 ^ 6)
+    ; ensure -> 1`Ppc2  = 1`Tpc2  * (10 ^ 6)
+    ; ensure -> 1`Tpc2  = 1`Gpc2  * (10 ^ 6)
+    ensure -> 1`Gpc2  = 1`Mpc2  * (10 ^ 6)
+    ensure -> 1`Mpc2  = 1`kpc2  * (10 ^ 6)
+    ensure -> 1`kpc2  = 1`hpc2  * (10 ^ 2)
+    ensure -> 1`hpc2  = 1`dapc2 * (10 ^ 2)
+    ensure -> 1`dapc2 = 1`pc2   * (10 ^ 2)
+    ensure -> 1`dpc2  = 1`pc2   / (10 ^ 2)
+    ensure -> 1`cpc2  = 1`dpc2  / (10 ^ 2)
+    ; precision loss
+    ; ensure -> 1`mpc2  = 1`cpc2  / (10 ^ 2)
+    ; ensure -> 1`upc2  = 1`mpc2  / (10 ^ 6)
+    ; ensure -> 1`npc2  = 1`upc2  / (10 ^ 6)
+    ; ensure -> 1`ppc2  = 1`npc2  / (10 ^ 6)
+    ; ensure -> 1`fpc2  = 1`ppc2  / (10 ^ 6)
+    ; ensure -> 1`apc2  = 1`fpc2  / (10 ^ 6)
+    passed
+
+
+    topic « area - math // conversions
+
+    ensure -> 1`sqin  = 1`in2
+    ensure -> 1`sqft  = 1`ft2
+    ensure -> 1`ac    = 4840`yd2
+    ensure -> 1`are   = 100`m2
+    ensure -> 1`ha    = 100`are
+    ensure -> 1`barn  = 100`ftm2
+    passed
+
+
+    topic « area - math // volume
+
+    ensure -> 4`in3  = 2`in  * 2`in2
+    ensure -> 4`ft3  = 2`ft  * 2`ft2
+    ensure -> 4`yd3  = 2`yd  * 2`yd2
+    ensure -> 4`ftm3 = 2`ftm * 2`ftm2
+    ensure -> 4`rod3 = 2`rod * 2`rod2
+    ensure -> 4`mi3  = 2`mi  * 2`mi2
+    ensure -> 4`fur3 = 2`fur * 2`fur2
+    ensure -> 4`nmi3 = 2`nmi * 2`nmi2
+    ensure -> 4`ang3 = 2`ang * 2`ang2
+    ensure -> 4`au3  = 2`au  * 2`au2
+    ensure -> 4`ly3  = 2`ly  * 2`ly2
+    ensure -> 4`px3  = 2`px  * 2`px2
+    ensure -> 4`pt3  = 2`pt  * 2`pt2
+    ensure -> 4`pc3  = 2`pc  * 2`pc2
+    passed
+
+    ensure -> 4`am3  = 2`am  * 2`am2
+    ensure -> 4`fm3  = 2`fm  * 2`fm2
+    ensure -> 4`pm3  = 2`pm  * 2`pm2
+    ensure -> 4`nm3  = 2`nm  * 2`nm2
+    ensure -> 4`um3  = 2`um  * 2`um2
+    ensure -> 4`mm3  = 2`mm  * 2`mm2
+    ensure -> 4`cm3  = 2`cm  * 2`cm2
+    ensure -> 4`dm3  = 2`dm  * 2`dm2
+    ensure -> 4`Nom3 = 2`Nom * 2`Nom2
+    ensure -> 4`dam3 = 2`dam * 2`dam2
+    ensure -> 4`hm3  = 2`hm  * 2`hm2
+    ensure -> 4`km3  = 2`km  * 2`km2
+    ensure -> 4`Mm3  = 2`Mm  * 2`Mm2
+    ensure -> 4`Gm3  = 2`Gm  * 2`Gm2
+    ensure -> 4`Tm3  = 2`Tm  * 2`Tm2
+    ensure -> 4`Pm3  = 2`Pm  * 2`Pm2
+    ensure -> 4`Em3  = 2`Em  * 2`Em2
+    passed
+
+    ensure -> 4`apc3  = 2`apc  * 2`apc2
+    ensure -> 4`fpc3  = 2`fpc  * 2`fpc2
+    ensure -> 4`ppc3  = 2`ppc  * 2`ppc2
+    ensure -> 4`npc3  = 2`npc  * 2`npc2
+    ensure -> 4`upc3  = 2`upc  * 2`upc2
+    ensure -> 4`mpc3  = 2`mpc  * 2`mpc2
+    ensure -> 4`cpc3  = 2`cpc  * 2`cpc2
+    ensure -> 4`dpc3  = 2`dpc  * 2`dpc2
+    ensure -> 4`Nopc3 = 2`Nopc * 2`Nopc2
+    ensure -> 4`dapc3 = 2`dapc * 2`dapc2
+    ensure -> 4`hpc3  = 2`hpc  * 2`hpc2
+    ensure -> 4`kpc3  = 2`kpc  * 2`kpc2
+    ensure -> 4`Mpc3  = 2`Mpc  * 2`Mpc2
+    ensure -> 4`Gpc3  = 2`Gpc  * 2`Gpc2
+    ensure -> 4`Tpc3  = 2`Tpc  * 2`Tpc2
+    ensure -> 4`Ppc3  = 2`Ppc  * 2`Ppc2
+    ensure -> 4`Epc3  = 2`Epc  * 2`Epc2
+    passed
+
+    ensure -> 4`apt3  = 2`apt  * 2`apt2
+    ensure -> 4`fpt3  = 2`fpt  * 2`fpt2
+    ensure -> 4`ppt3  = 2`ppt  * 2`ppt2
+    ensure -> 4`npt3  = 2`npt  * 2`npt2
+    ensure -> 4`upt3  = 2`upt  * 2`upt2
+    ensure -> 4`mpt3  = 2`mpt  * 2`mpt2
+    ensure -> 4`cpt3  = 2`cpt  * 2`cpt2
+    ensure -> 4`dpt3  = 2`dpt  * 2`dpt2
+    ensure -> 4`Nopt3 = 2`Nopt * 2`Nopt2
+    ensure -> 4`dapt3 = 2`dapt * 2`dapt2
+    ensure -> 4`hpt3  = 2`hpt  * 2`hpt2
+    ensure -> 4`kpt3  = 2`kpt  * 2`kpt2
+    ensure -> 4`Mpt3  = 2`Mpt  * 2`Mpt2
+    ensure -> 4`Gpt3  = 2`Gpt  * 2`Gpt2
+    ensure -> 4`Tpt3  = 2`Tpt  * 2`Tpt2
+    ensure -> 4`Ppt3  = 2`Ppt  * 2`Ppt2
+    ensure -> 4`Ept3  = 2`Ept  * 2`Ept2
+    passed
+
+    ensure -> 4`apx3  = 2`apx  * 2`apx2
+    ensure -> 4`fpx3  = 2`fpx  * 2`fpx2
+    ensure -> 4`ppx3  = 2`ppx  * 2`ppx2
+    ensure -> 4`npx3  = 2`npx  * 2`npx2
+    ensure -> 4`upx3  = 2`upx  * 2`upx2
+    ensure -> 4`mpx3  = 2`mpx  * 2`mpx2
+    ensure -> 4`cpx3  = 2`cpx  * 2`cpx2
+    ensure -> 4`dpx3  = 2`dpx  * 2`dpx2
+    ensure -> 4`Nopx3 = 2`Nopx * 2`Nopx2
+    ensure -> 4`dapx3 = 2`dapx * 2`dapx2
+    ensure -> 4`hpx3  = 2`hpx  * 2`hpx2
+    ensure -> 4`kpx3  = 2`kpx  * 2`kpx2
+    ensure -> 4`Mpx3  = 2`Mpx  * 2`Mpx2
+    ensure -> 4`Gpx3  = 2`Gpx  * 2`Gpx2
+    ensure -> 4`Tpx3  = 2`Tpx  * 2`Tpx2
+    ensure -> 4`Ppx3  = 2`Ppx  * 2`Ppx2
+    ensure -> 4`Epx3  = 2`Epx  * 2`Epx2
+    passed
+
+
+    topic « area - math // length
+
+    ensure -> 1`in  = 2`in2  / 2`in
+    ensure -> 1`ft  = 2`ft2  / 2`ft
+    ensure -> 1`yd  = 2`yd2  / 2`yd
+    ensure -> 1`ftm = 2`ftm2 / 2`ftm
+    ensure -> 1`rod = 2`rod2 / 2`rod
+    ensure -> 1`mi  = 2`mi2  / 2`mi
+    ensure -> 1`fur = 2`fur2 / 2`fur
+    ensure -> 1`nmi = 2`nmi2 / 2`nmi
+    ensure -> 1`ang = 2`ang2 / 2`ang
+    ensure -> 1`au  = 2`au2  / 2`au
+    ensure -> 1`ly  = 2`ly2  / 2`ly
+    ensure -> 1`px  = 2`px2  / 2`px
+    ensure -> 1`pt  = 2`pt2  / 2`pt
+    ensure -> 1`pc  = 2`pc2  / 2`pc
+    passed
+
+    ensure -> 1`am  = 2`am2  / 2`am
+    ensure -> 1`fm  = 2`fm2  / 2`fm
+    ensure -> 1`pm  = 2`pm2  / 2`pm
+    ensure -> 1`nm  = 2`nm2  / 2`nm
+    ensure -> 1`um  = 2`um2  / 2`um
+    ensure -> 1`mm  = 2`mm2  / 2`mm
+    ensure -> 1`cm  = 2`cm2  / 2`cm
+    ensure -> 1`dm  = 2`dm2  / 2`dm
+    ensure -> 1`Nom = 2`Nom2 / 2`Nom
+    ensure -> 1`dam = 2`dam2 / 2`dam
+    ensure -> 1`hm  = 2`hm2  / 2`hm
+    ensure -> 1`km  = 2`km2  / 2`km
+    ensure -> 1`Mm  = 2`Mm2  / 2`Mm
+    ensure -> 1`Gm  = 2`Gm2  / 2`Gm
+    ensure -> 1`Tm  = 2`Tm2  / 2`Tm
+    ensure -> 1`Pm  = 2`Pm2  / 2`Pm
+    ensure -> 1`Em  = 2`Em2  / 2`Em
+    passed
+
+    ensure -> 1`apc  = 2`apc2  / 2`apc
+    ensure -> 1`fpc  = 2`fpc2  / 2`fpc
+    ensure -> 1`ppc  = 2`ppc2  / 2`ppc
+    ensure -> 1`npc  = 2`npc2  / 2`npc
+    ensure -> 1`upc  = 2`upc2  / 2`upc
+    ensure -> 1`mpc  = 2`mpc2  / 2`mpc
+    ensure -> 1`cpc  = 2`cpc2  / 2`cpc
+    ensure -> 1`dpc  = 2`dpc2  / 2`dpc
+    ensure -> 1`Nopc = 2`Nopc2 / 2`Nopc
+    ensure -> 1`dapc = 2`dapc2 / 2`dapc
+    ensure -> 1`hpc  = 2`hpc2  / 2`hpc
+    ensure -> 1`kpc  = 2`kpc2  / 2`kpc
+    ensure -> 1`Mpc  = 2`Mpc2  / 2`Mpc
+    ensure -> 1`Gpc  = 2`Gpc2  / 2`Gpc
+    ensure -> 1`Tpc  = 2`Tpc2  / 2`Tpc
+    ensure -> 1`Ppc  = 2`Ppc2  / 2`Ppc
+    ensure -> 1`Epc  = 2`Epc2  / 2`Epc
+    passed
+
+    ensure -> 1`apt  = 2`apt2  / 2`apt
+    ensure -> 1`fpt  = 2`fpt2  / 2`fpt
+    ensure -> 1`ppt  = 2`ppt2  / 2`ppt
+    ensure -> 1`npt  = 2`npt2  / 2`npt
+    ensure -> 1`upt  = 2`upt2  / 2`upt
+    ensure -> 1`mpt  = 2`mpt2  / 2`mpt
+    ensure -> 1`cpt  = 2`cpt2  / 2`cpt
+    ensure -> 1`dpt  = 2`dpt2  / 2`dpt
+    ensure -> 1`Nopt = 2`Nopt2 / 2`Nopt
+    ensure -> 1`dapt = 2`dapt2 / 2`dapt
+    ensure -> 1`hpt  = 2`hpt2  / 2`hpt
+    ensure -> 1`kpt  = 2`kpt2  / 2`kpt
+    ensure -> 1`Mpt  = 2`Mpt2  / 2`Mpt
+    ensure -> 1`Gpt  = 2`Gpt2  / 2`Gpt
+    ensure -> 1`Tpt  = 2`Tpt2  / 2`Tpt
+    ensure -> 1`Ppt  = 2`Ppt2  / 2`Ppt
+    ensure -> 1`Ept  = 2`Ept2  / 2`Ept
+    passed
+
+    ensure -> 1`apx  = 2`apx2  / 2`apx
+    ensure -> 1`fpx  = 2`fpx2  / 2`fpx
+    ensure -> 1`ppx  = 2`ppx2  / 2`ppx
+    ensure -> 1`npx  = 2`npx2  / 2`npx
+    ensure -> 1`upx  = 2`upx2  / 2`upx
+    ensure -> 1`mpx  = 2`mpx2  / 2`mpx
+    ensure -> 1`cpx  = 2`cpx2  / 2`cpx
+    ensure -> 1`dpx  = 2`dpx2  / 2`dpx
+    ensure -> 1`Nopx = 2`Nopx2 / 2`Nopx
+    ensure -> 1`dapx = 2`dapx2 / 2`dapx
+    ensure -> 1`hpx  = 2`hpx2  / 2`hpx
+    ensure -> 1`kpx  = 2`kpx2  / 2`kpx
+    ensure -> 1`Mpx  = 2`Mpx2  / 2`Mpx
+    ensure -> 1`Gpx  = 2`Gpx2  / 2`Gpx
+    ensure -> 1`Tpx  = 2`Tpx2  / 2`Tpx
+    ensure -> 1`Ppx  = 2`Ppx2  / 2`Ppx
+    ensure -> 1`Epx  = 2`Epx2  / 2`Epx
+    passed
+
+
+    topic « area - math // 4th spacial-dimension
+
+    ensure -> 4`in4  = 2`in2  * 2`in2
+    ensure -> 4`ft4  = 2`ft2  * 2`ft2
+    ensure -> 4`yd4  = 2`yd2  * 2`yd2
+    ensure -> 4`ftm4 = 2`ftm2 * 2`ftm2
+    ensure -> 4`rod4 = 2`rod2 * 2`rod2
+    ensure -> 4`mi4  = 2`mi2  * 2`mi2
+    ensure -> 4`fur4 = 2`fur2 * 2`fur2
+    ensure -> 4`nmi4 = 2`nmi2 * 2`nmi2
+    ensure -> 4`ang4 = 2`ang2 * 2`ang2
+    ensure -> 4`au4  = 2`au2  * 2`au2
+    ensure -> 4`ly4  = 2`ly2  * 2`ly2
+    ensure -> 4`px4  = 2`px2  * 2`px2
+    ensure -> 4`pt4  = 2`pt2  * 2`pt2
+    ensure -> 4`pc4  = 2`pc2  * 2`pc2
+    passed
+
+    ensure -> 4`am4  = 2`am2  * 2`am2
+    ensure -> 4`fm4  = 2`fm2  * 2`fm2
+    ensure -> 4`pm4  = 2`pm2  * 2`pm2
+    ensure -> 4`nm4  = 2`nm2  * 2`nm2
+    ensure -> 4`um4  = 2`um2  * 2`um2
+    ensure -> 4`mm4  = 2`mm2  * 2`mm2
+    ensure -> 4`cm4  = 2`cm2  * 2`cm2
+    ensure -> 4`dm4  = 2`dm2  * 2`dm2
+    ensure -> 4`Nom4 = 2`Nom2 * 2`Nom2
+    ensure -> 4`dam4 = 2`dam2 * 2`dam2
+    ensure -> 4`hm4  = 2`hm2  * 2`hm2
+    ensure -> 4`km4  = 2`km2  * 2`km2
+    ensure -> 4`Mm4  = 2`Mm2  * 2`Mm2
+    ensure -> 4`Gm4  = 2`Gm2  * 2`Gm2
+    ensure -> 4`Tm4  = 2`Tm2  * 2`Tm2
+    ensure -> 4`Pm4  = 2`Pm2  * 2`Pm2
+    ensure -> 4`Em4  = 2`Em2  * 2`Em2
+    passed
+
+    ensure -> 4`apc4  = 2`apc2  * 2`apc2
+    ensure -> 4`fpc4  = 2`fpc2  * 2`fpc2
+    ensure -> 4`ppc4  = 2`ppc2  * 2`ppc2
+    ensure -> 4`npc4  = 2`npc2  * 2`npc2
+    ensure -> 4`upc4  = 2`upc2  * 2`upc2
+    ensure -> 4`mpc4  = 2`mpc2  * 2`mpc2
+    ensure -> 4`cpc4  = 2`cpc2  * 2`cpc2
+    ensure -> 4`dpc4  = 2`dpc2  * 2`dpc2
+    ensure -> 4`Nopc4 = 2`Nopc2 * 2`Nopc2
+    ensure -> 4`dapc4 = 2`dapc2 * 2`dapc2
+    ensure -> 4`hpc4  = 2`hpc2  * 2`hpc2
+    ensure -> 4`kpc4  = 2`kpc2  * 2`kpc2
+    ensure -> 4`Mpc4  = 2`Mpc2  * 2`Mpc2
+    ensure -> 4`Gpc4  = 2`Gpc2  * 2`Gpc2
+    ensure -> 4`Tpc4  = 2`Tpc2  * 2`Tpc2
+    ensure -> 4`Ppc4  = 2`Ppc2  * 2`Ppc2
+    ensure -> 4`Epc4  = 2`Epc2  * 2`Epc2
+    passed
+
+    ensure -> 4`apt4  = 2`apt2  * 2`apt2
+    ensure -> 4`fpt4  = 2`fpt2  * 2`fpt2
+    ensure -> 4`ppt4  = 2`ppt2  * 2`ppt2
+    ensure -> 4`npt4  = 2`npt2  * 2`npt2
+    ensure -> 4`upt4  = 2`upt2  * 2`upt2
+    ensure -> 4`mpt4  = 2`mpt2  * 2`mpt2
+    ensure -> 4`cpt4  = 2`cpt2  * 2`cpt2
+    ensure -> 4`dpt4  = 2`dpt2  * 2`dpt2
+    ensure -> 4`Nopt4 = 2`Nopt2 * 2`Nopt2
+    ensure -> 4`dapt4 = 2`dapt2 * 2`dapt2
+    ensure -> 4`hpt4  = 2`hpt2  * 2`hpt2
+    ensure -> 4`kpt4  = 2`kpt2  * 2`kpt2
+    ensure -> 4`Mpt4  = 2`Mpt2  * 2`Mpt2
+    ensure -> 4`Gpt4  = 2`Gpt2  * 2`Gpt2
+    ensure -> 4`Tpt4  = 2`Tpt2  * 2`Tpt2
+    ensure -> 4`Ppt4  = 2`Ppt2  * 2`Ppt2
+    ensure -> 4`Ept4  = 2`Ept2  * 2`Ept2
+    passed
+
+    ensure -> 4`apx4  = 2`apx2  * 2`apx2
+    ensure -> 4`fpx4  = 2`fpx2  * 2`fpx2
+    ensure -> 4`ppx4  = 2`ppx2  * 2`ppx2
+    ensure -> 4`npx4  = 2`npx2  * 2`npx2
+    ensure -> 4`upx4  = 2`upx2  * 2`upx2
+    ensure -> 4`mpx4  = 2`mpx2  * 2`mpx2
+    ensure -> 4`cpx4  = 2`cpx2  * 2`cpx2
+    ensure -> 4`dpx4  = 2`dpx2  * 2`dpx2
+    ensure -> 4`Nopx4 = 2`Nopx2 * 2`Nopx2
+    ensure -> 4`dapx4 = 2`dapx2 * 2`dapx2
+    ensure -> 4`hpx4  = 2`hpx2  * 2`hpx2
+    ensure -> 4`kpx4  = 2`kpx2  * 2`kpx2
+    ensure -> 4`Mpx4  = 2`Mpx2  * 2`Mpx2
+    ensure -> 4`Gpx4  = 2`Gpx2  * 2`Gpx2
+    ensure -> 4`Tpx4  = 2`Tpx2  * 2`Tpx2
+    ensure -> 4`Ppx4  = 2`Ppx2  * 2`Ppx2
+    ensure -> 4`Epx4  = 2`Epx2  * 2`Epx2
+    passed
+
+    ; ---------------------------------
+
+    ensure -> 4`in4  = 2`in2  ^ 2
+    ensure -> 4`ft4  = 2`ft2  ^ 2
+    ensure -> 4`yd4  = 2`yd2  ^ 2
+    ensure -> 4`ftm4 = 2`ftm2 ^ 2
+    ensure -> 4`rod4 = 2`rod2 ^ 2
+    ensure -> 4`mi4  = 2`mi2  ^ 2
+    ensure -> 4`fur4 = 2`fur2 ^ 2
+    ensure -> 4`nmi4 = 2`nmi2 ^ 2
+    ensure -> 4`ang4 = 2`ang2 ^ 2
+    ensure -> 4`au4  = 2`au2  ^ 2
+    ensure -> 4`ly4  = 2`ly2  ^ 2
+    ensure -> 4`px4  = 2`px2  ^ 2
+    ensure -> 4`pt4  = 2`pt2  ^ 2
+    ensure -> 4`pc4  = 2`pc2  ^ 2
+    passed
+
+    ensure -> 4`am4  = 2`am2  ^ 2
+    ensure -> 4`fm4  = 2`fm2  ^ 2
+    ensure -> 4`pm4  = 2`pm2  ^ 2
+    ensure -> 4`nm4  = 2`nm2  ^ 2
+    ensure -> 4`um4  = 2`um2  ^ 2
+    ensure -> 4`mm4  = 2`mm2  ^ 2
+    ensure -> 4`cm4  = 2`cm2  ^ 2
+    ensure -> 4`dm4  = 2`dm2  ^ 2
+    ensure -> 4`Nom4 = 2`Nom2 ^ 2
+    ensure -> 4`dam4 = 2`dam2 ^ 2
+    ensure -> 4`hm4  = 2`hm2  ^ 2
+    ensure -> 4`km4  = 2`km2  ^ 2
+    ensure -> 4`Mm4  = 2`Mm2  ^ 2
+    ensure -> 4`Gm4  = 2`Gm2  ^ 2
+    ensure -> 4`Tm4  = 2`Tm2  ^ 2
+    ensure -> 4`Pm4  = 2`Pm2  ^ 2
+    ensure -> 4`Em4  = 2`Em2  ^ 2
+    passed
+
+    ensure -> 4`apc4  = 2`apc2  ^ 2
+    ensure -> 4`fpc4  = 2`fpc2  ^ 2
+    ensure -> 4`ppc4  = 2`ppc2  ^ 2
+    ensure -> 4`npc4  = 2`npc2  ^ 2
+    ensure -> 4`upc4  = 2`upc2  ^ 2
+    ensure -> 4`mpc4  = 2`mpc2  ^ 2
+    ensure -> 4`cpc4  = 2`cpc2  ^ 2
+    ensure -> 4`dpc4  = 2`dpc2  ^ 2
+    ensure -> 4`Nopc4 = 2`Nopc2 ^ 2
+    ensure -> 4`dapc4 = 2`dapc2 ^ 2
+    ensure -> 4`hpc4  = 2`hpc2  ^ 2
+    ensure -> 4`kpc4  = 2`kpc2  ^ 2
+    ensure -> 4`Mpc4  = 2`Mpc2  ^ 2
+    ensure -> 4`Gpc4  = 2`Gpc2  ^ 2
+    ensure -> 4`Tpc4  = 2`Tpc2  ^ 2
+    ensure -> 4`Ppc4  = 2`Ppc2  ^ 2
+    ensure -> 4`Epc4  = 2`Epc2  ^ 2
+    passed
+
+    ensure -> 4`apt4  = 2`apt2  ^ 2
+    ensure -> 4`fpt4  = 2`fpt2  ^ 2
+    ensure -> 4`ppt4  = 2`ppt2  ^ 2
+    ensure -> 4`npt4  = 2`npt2  ^ 2
+    ensure -> 4`upt4  = 2`upt2  ^ 2
+    ensure -> 4`mpt4  = 2`mpt2  ^ 2
+    ensure -> 4`cpt4  = 2`cpt2  ^ 2
+    ensure -> 4`dpt4  = 2`dpt2  ^ 2
+    ensure -> 4`Nopt4 = 2`Nopt2 ^ 2
+    ensure -> 4`dapt4 = 2`dapt2 ^ 2
+    ensure -> 4`hpt4  = 2`hpt2  ^ 2
+    ensure -> 4`kpt4  = 2`kpt2  ^ 2
+    ensure -> 4`Mpt4  = 2`Mpt2  ^ 2
+    ensure -> 4`Gpt4  = 2`Gpt2  ^ 2
+    ensure -> 4`Tpt4  = 2`Tpt2  ^ 2
+    ensure -> 4`Ppt4  = 2`Ppt2  ^ 2
+    ensure -> 4`Ept4  = 2`Ept2  ^ 2
+    passed
+
+    ensure -> 4`apx4  = 2`apx2  ^ 2
+    ensure -> 4`fpx4  = 2`fpx2  ^ 2
+    ensure -> 4`ppx4  = 2`ppx2  ^ 2
+    ensure -> 4`npx4  = 2`npx2  ^ 2
+    ensure -> 4`upx4  = 2`upx2  ^ 2
+    ensure -> 4`mpx4  = 2`mpx2  ^ 2
+    ensure -> 4`cpx4  = 2`cpx2  ^ 2
+    ensure -> 4`dpx4  = 2`dpx2  ^ 2
+    ensure -> 4`Nopx4 = 2`Nopx2 ^ 2
+    ensure -> 4`dapx4 = 2`dapx2 ^ 2
+    ensure -> 4`hpx4  = 2`hpx2  ^ 2
+    ensure -> 4`kpx4  = 2`kpx2  ^ 2
+    ensure -> 4`Mpx4  = 2`Mpx2  ^ 2
+    ensure -> 4`Gpx4  = 2`Gpx2  ^ 2
+    ensure -> 4`Tpx4  = 2`Tpx2  ^ 2
+    ensure -> 4`Ppx4  = 2`Ppx2  ^ 2
+    ensure -> 4`Epx4  = 2`Epx2  ^ 2
+    passed
+
+
+    topic « area - math // check auto-conversion
+
+    ensure ->  6`m2.yd =   3`m2 * 2`yd
+    ensure ->  3.02`m2 =   3`m2 + 200`cm2
+    ensure -> 15`yd2/m = 45`yd2 / 3`m
+    passed
+
+
+    topic « area - conforms?
+
+    ensure -> every? areaSet => conforms? `m2
+    passed
+
+    ensure -> every? areaSet -> x -> not? conforms? x `m3
+    passed
+
+
+    topic « area - convert
+
+    ensure -> same? 10000`cm2 convert 1`m2 `cm2
+    ensure -> same? 10000`cm2 1`m2 --> `cm2
+    passed
+
+
+    topic « area - in
+
+    ensure -> same? 10000`cm2 in `cm2 1`m2
+    passed
+
+
+    topic « area - property
+
+    ensure -> every? areaSet -> x -> 'area = property x
+    passed
+
+
+    topic « area - scalar
+
+    ensure -> every? areaSet -> x -> one? scalar x
+    passed
+
+
+    topic « area - specify
+
+    specify.symbol: "🏟️" .describes: "high area" 'colossal 14`ac
+
+    ensure -> (to :literal "high area") = property 1`colossal
+    ensure -> "1 🏟️" = ~"|1`colossal|"
+    ensure -> "31:2`🏟️" = as.code 15.5`colossal
+    ensure -> 609840`sqft = 1`colossal --> `sqft
+    passed
+
+
+    topic « area - units
+
+    ensure -> `m2 = units 100`m2
+    ensure -> `cm2 = units 100`cm2
+    ensure -> `km2 = units 100`km2
+    passed
+
+    ensure -> `cm2 <> units 100`km2
+    passed
+
+
+    topic « area - alternative names
+
+    ensure -> equal? `metre2 `m2
+    passed
+
+    ensure -> every? [ `squareInch `squareInches `in2 ] => equal? & `sqin
+    passed
+
+    ensure -> every? [ `squareFoot `squareFeet `ft2 ] => equal? & `sqft
+    passed
+
+    ensure -> every? [ `acre `acres ] => equal? & `ac
+    passed
+
+    ensure -> equal? `ares `are
+    passed
+
+    ensure -> every? [ `hectare `hectares ] => equal? & `ha
+    passed
+
+    ensure -> equal? `barns `barn
+    passed
+
+
+
+]
+
+
+topic « volume
+do [
+
+    volumeSet: [
+        1`gal 1`bbl 1`qt 1`p 1`cup 1`floz 1`tbsp 1`tsp 1`bu 1`cord
+
+        1`L   1`aL  1`fL 1`pL 1`nL 1`uL 1`mL 1`cL 1`dL
+        1`daL 1`hL  1`kL 1`ML 1`GL 1`TL 1`PL 1`EL
+
+        1`m3   1`am3 1`fm3 1`pm3 1`nm3 1`um3 1`mm3 1`cm3 1`dm3
+        1`dam3 1`hm3 1`km3 1`Mm3 1`Gm3 1`Tm3 1`Pm3 1`Em3
+
+        1`in3  1`ft3  1`yd3  1`ftm3 1`rod3 1`mi3
+        1`fur3 1`nmi3 1`ang3 1`au3  1`ly3
+
+        1`px3   1`apx3 1`fpx3 1`ppx3 1`npx3 1`upx3 1`mpx3 1`cpx3 1`dpx3
+        1`dapx3 1`hpx3 1`kpx3 1`Mpx3 1`Gpx3 1`Tpx3 1`Ppx3 1`Epx3
+
+        1`pt3   1`apt3 1`fpt3 1`ppt3 1`npt3 1`upt3 1`mpt3 1`cpt3 1`dpt3
+        1`dapt3 1`hpt3 1`kpt3 1`Mpt3 1`Gpt3 1`Tpt3 1`Ppt3 1`Ept3
+
+        1`pc3   1`apc3 1`fpc3 1`ppc3 1`npc3 1`upc3 1`mpc3 1`cpc3 1`dpc3
+        1`dapc3 1`hpc3 1`kpc3 1`Mpc3 1`Gpc3 1`Tpc3 1`Ppc3 1`Epc3
+    ]
+
+
+    topic « volume - volume?
+
+    ensure -> every? volumeSet => volume?
+    passed
+
+
+    topic « volume - basic math
+
+    ensure -> 3`m3   = 2`m3 + 1
+    ensure -> 3.5`m3 = 2`m3 + 1.5
+    ensure -> 7.5`m3 = 5`m3 + 5:2
+    passed
+
+    ensure -> 1`m3   = 2`m3 - 1
+    ensure -> 0.5`m3 = 2`m3 - 1.5
+    ensure -> 4.5`m3 = 5`m3 - 1:2
+    passed
+
+    ensure -> 30`m3  = 15`m3 * 2
+    ; ensure -> 7`m3 = 15`m3 / 2
+    ensure -> 7.5`m3 = 15`m3 // 2
+    passed
+
+    ensure -> 2`m3   = 1`m3 + 1`m3
+    ensure -> 0`m3   = 1`m3 - 1`m3
+    passed
+
+    ensure -> 1.1`m3 = 1`m3 + 100`dm3
+    ensure -> 0.9`m3 = 1`m3 - 100`dm3
+    passed
+
+
+    topic « volume - math // scales
+
+    ; precision loss
+    ; ensure -> 1`Em3  = 1`Pm3  * (10 ^ 9)
+    ; ensure -> 1`Pm3  = 1`Tm3  * (10 ^ 9)
+    ; ensure -> 1`Tm3  = 1`Gm3  * (10 ^ 9)
+    ; ensure -> 1`Gm3  = 1`Mm3  * (10 ^ 9)
+    ensure -> 1`Mm3  = 1`km3  * (10 ^ 9)
+    ensure -> 1`km3  = 1`hm3  * (10 ^ 3)
+    ensure -> 1`hm3  = 1`dam3 * (10 ^ 3)
+    ensure -> 1`dam3 = 1`m3   * (10 ^ 3)
+    ensure -> 1`dm3  = 1`m3   / (10 ^ 3)
+    ensure -> 1`cm3  = 1`dm3  / (10 ^ 3)
+    ensure -> 1`mm3  = 1`cm3  / (10 ^ 3)
+    ensure -> 1`um3  = 1`mm3  / (10 ^ 9)
+    ; precision loss
+    ; ensure -> 1`nm3  = 1`um3  / (10 ^ 9)
+    ; ensure -> 1`pm3  = 1`nm3  / (10 ^ 9)
+    ; ensure -> 1`fm3  = 1`pm3  / (10 ^ 9)
+    ; ensure -> 1`am3  = 1`fm3  / (10 ^ 9)
+    passed
+
+    ensure -> 1`EL  = 1`PL  * (10 ^ 3)
+    ensure -> 1`PL  = 1`TL  * (10 ^ 3)
+    ensure -> 1`TL  = 1`GL  * (10 ^ 3)
+    ensure -> 1`GL  = 1`ML  * (10 ^ 3)
+    ensure -> 1`ML  = 1`kL  * (10 ^ 3)
+    ensure -> 1`kL  = 1`hL  * (10 ^ 1)
+    ensure -> 1`hL  = 1`daL * (10 ^ 1)
+    ensure -> 1`daL = 1`L   * (10 ^ 1)
+    ensure -> 1`dL  = 1`L   / (10 ^ 1)
+    ensure -> 1`cL  = 1`dL  / (10 ^ 1)
+    ensure -> 1`mL  = 1`cL  / (10 ^ 1)
+    ensure -> 1`uL  = 1`mL  / (10 ^ 3)
+    ensure -> 1`nL  = 1`uL  / (10 ^ 3)
+    ; precision loss
+    ; ensure -> 1`pL  = 1`nL  / (10 ^ 3)
+    ; ensure -> 1`fL  = 1`pL  / (10 ^ 3)
+    ; ensure -> 1`aL  = 1`fL  / (10 ^ 3)
+    passed
+
+    ; precision loss
+    ; ensure -> 1`Epx3  = 1`Ppx3  * (10 ^ 9)
+    ; ensure -> 1`Ppx3  = 1`Tpx3  * (10 ^ 9)
+    ; ensure -> 1`Tpx3  = 1`Gpx3  * (10 ^ 9)
+    ; ensure -> 1`Gpx3  = 1`Mpx3  * (10 ^ 9)
+    ensure -> 1`Mpx3  = 1`kpx3  * (10 ^ 9)
+    ensure -> 1`kpx3  = 1`hpx3  * (10 ^ 3)
+    ensure -> 1`hpx3  = 1`dapx3 * (10 ^ 3)
+    ; precision loss
+    ; ensure -> 1`dapx3 = 1`px3   * (10 ^ 3)
+    ; ensure -> 1`dpx3  = 1`px3   / (10 ^ 3)
+    ; ensure -> 1`cpx3  = 1`dpx3  / (10 ^ 3)
+    ; ensure -> 1`mpx3  = 1`cpx3  / (10 ^ 3)
+    ; ensure -> 1`upx3  = 1`mpx3  / (10 ^ 9)
+    ; ensure -> 1`npx3  = 1`upx3  / (10 ^ 9)
+    ; ensure -> 1`ppx3  = 1`npx3  / (10 ^ 9)
+    ; ensure -> 1`fpx3  = 1`ppx3  / (10 ^ 9)
+    ; ensure -> 1`apx3  = 1`fpx3  / (10 ^ 9)
+    passed
+
+    ; precision loss
+    ; ensure -> 1`Ept3  = 1`Ppt3  * (10 ^ 9)
+    ; ensure -> 1`Ppt3  = 1`Tpt3  * (10 ^ 9)
+    ; ensure -> 1`Tpt3  = 1`Gpt3  * (10 ^ 9)
+    ; ensure -> 1`Gpt3  = 1`Mpt3  * (10 ^ 9)
+    ensure -> 1`Mpt3  = 1`kpt3  * (10 ^ 9)
+    ensure -> 1`kpt3  = 1`hpt3  * (10 ^ 3)
+    ensure -> 1`hpt3  = 1`dapt3 * (10 ^ 3)
+    ; precision loss
+    ; ensure -> 1`dapt3 = 1`pt3   * (10 ^ 3)
+    ; ensure -> 1`dpt3  = 1`pt3   / (10 ^ 3)
+    ; ensure -> 1`cpt3  = 1`dpt3  / (10 ^ 3)
+    ; ensure -> 1`mpt3  = 1`cpt3  / (10 ^ 3)
+    ; ensure -> 1`upt3  = 1`mpt3  / (10 ^ 9)
+    ; ensure -> 1`npt3  = 1`upt3  / (10 ^ 9)
+    ; ensure -> 1`ppt3  = 1`npt3  / (10 ^ 9)
+    ; ensure -> 1`fpt3  = 1`ppt3  / (10 ^ 9)
+    ; ensure -> 1`apt3  = 1`fpt3  / (10 ^ 9)
+    passed
+
+    ; precision loss
+    ; ensure -> 1`Epc3  = 1`Ppc3  * (10 ^ 9)
+    ; ensure -> 1`Ppc3  = 1`Tpc3  * (10 ^ 9)
+    ; ensure -> 1`Tpc3  = 1`Gpc3  * (10 ^ 9)
+    ; ensure -> 1`Gpc3  = 1`Mpc3  * (10 ^ 9)
+    ensure -> 1`Mpc3  = 1`kpc3  * (10 ^ 9)
+    ensure -> 1`kpc3  = 1`hpc3  * (10 ^ 3)
+    ensure -> 1`hpc3  = 1`dapc3 * (10 ^ 3)
+    ensure -> 1`dapc3 = 1`pc3   * (10 ^ 3)
+    ; precision loss
+    ; ensure -> 1`dpc3  = 1`pc3   / (10 ^ 3)
+    ; ensure -> 1`cpc3  = 1`dpc3  / (10 ^ 3)
+    ; ensure -> 1`mpc3  = 1`cpc3  / (10 ^ 3)
+    ; ensure -> 1`upc3  = 1`mpc3  / (10 ^ 9)
+    ; ensure -> 1`npc3  = 1`upc3  / (10 ^ 9)
+    ; ensure -> 1`ppc3  = 1`npc3  / (10 ^ 9)
+    ; ensure -> 1`fpc3  = 1`ppc3  / (10 ^ 9)
+    ; ensure -> 1`apc3  = 1`fpc3  / (10 ^ 9)
+    passed
+
+
+    topic « volume - math // conversions
+
+    ; Yes, almost everyting went wrong here...
+    ; ensure -> 1`gal   = 231`in3
+    ; ensure -> 1`bbl   = 42`gal
+    ; ensure -> 1`qt    = 1:4`gal
+    ; ensure -> 1`p     = 1:2`qt
+    ; ensure -> 1`cup   = 1:2`p
+    ; ensure -> 1`floz  = 1:8`cup
+    ; ensure -> 1`tbsp  = 1:2`floz
+    ; ensure -> 1`tsp   = 1:3`tbsp
+    ; ensure -> 1`bu    = 2150.42`in3
+    ensure -> 1`cord  = 128`ft3
+
+
+    topic « volume - math // area
+
+    ensure -> 1`in2     =  2`in3    /   2`in
+    ensure -> 1`ft2     =  2`ft3    /   2`ft
+    ensure -> 1`yd2     =  2`yd3    /   2`yd
+    ensure -> 1`ftm2    =  2`ftm3   /   2`ftm
+    ensure -> 1`rod2    =  2`rod3   /   2`rod
+    ensure -> 1`mi2     =  2`mi3    /   2`mi
+    ensure -> 1`fur2    =  2`fur3   /   2`fur
+    ensure -> 1`nmi2    =  2`nmi3   /   2`nmi
+    ensure -> 1`ang2    =  2`ang3   /   2`ang
+    ensure -> 1`au2     =  2`au3    /   2`au
+    ensure -> 1`ly2     =  2`ly3    /   2`ly
+    ensure -> 1`px2     =  2`px3    /   2`px
+    ensure -> 1`pt2     =  2`pt3    /   2`pt
+    ensure -> 1`pc2     =  2`pc3    /   2`pc
+    passed
+
+    ensure -> 1`am2     =   2`am3   /   2`am
+    ensure -> 1`fm2     =   2`fm3   /   2`fm
+    ensure -> 1`pm2     =   2`pm3   /   2`pm
+    ensure -> 1`nm2     =   2`nm3   /   2`nm
+    ensure -> 1`um2     =   2`um3   /   2`um
+    ensure -> 1`mm2     =   2`mm3   /   2`mm
+    ensure -> 1`cm2     =   2`cm3   /   2`cm
+    ensure -> 1`dm2     =   2`dm3   /   2`dm
+    ensure -> 1`Nom2    =   2`Nom3  /   2`Nom
+    ensure -> 1`dam2    =   2`dam3  /   2`dam
+    ensure -> 1`hm2     =   2`hm3   /   2`hm
+    ensure -> 1`km2     =   2`km3   /   2`km
+    ensure -> 1`Mm2     =   2`Mm3   /   2`Mm
+    ensure -> 1`Gm2     =   2`Gm3   /   2`Gm
+    ensure -> 1`Tm2     =   2`Tm3   /   2`Tm
+    ensure -> 1`Pm2     =   2`Pm3   /   2`Pm
+    ensure -> 1`Em2     =   2`Em3   /   2`Em
+    passed
+
+    ensure -> 1`apc2    =   2`apc3    /   2`apc
+    ensure -> 1`fpc2    =   2`fpc3    /   2`fpc
+    ensure -> 1`ppc2    =   2`ppc3    /   2`ppc
+    ensure -> 1`npc2    =   2`npc3    /   2`npc
+    ensure -> 1`upc2    =   2`upc3    /   2`upc
+    ensure -> 1`mpc2    =   2`mpc3    /   2`mpc
+    ensure -> 1`cpc2    =   2`cpc3    /   2`cpc
+    ensure -> 1`dpc2    =   2`dpc3    /   2`dpc
+    ensure -> 1`Nopc2   =   2`Nopc3   /   2`Nopc
+    ensure -> 1`dapc2   =   2`dapc3   /   2`dapc
+    ensure -> 1`hpc2    =   2`hpc3    /   2`hpc
+    ensure -> 1`kpc2    =   2`kpc3    /   2`kpc
+    ensure -> 1`Mpc2    =   2`Mpc3    /   2`Mpc
+    ensure -> 1`Gpc2    =   2`Gpc3    /   2`Gpc
+    ensure -> 1`Tpc2    =   2`Tpc3    /   2`Tpc
+    ensure -> 1`Ppc2    =   2`Ppc3    /   2`Ppc
+    ensure -> 1`Epc2    =   2`Epc3    /   2`Epc
+    passed
+
+    ensure -> 1`apt2    =   2`apt3  /   2`apt
+    ensure -> 1`fpt2    =   2`fpt3  /   2`fpt
+    ensure -> 1`ppt2    =   2`ppt3  /   2`ppt
+    ensure -> 1`npt2    =   2`npt3  /   2`npt
+    ensure -> 1`upt2    =   2`upt3  /   2`upt
+    ensure -> 1`mpt2    =   2`mpt3  /   2`mpt
+    ensure -> 1`cpt2    =   2`cpt3  /   2`cpt
+    ensure -> 1`dpt2    =   2`dpt3  /   2`dpt
+    ensure -> 1`Nopt2   =   2`Nopt3 /   2`Nopt
+    ensure -> 1`dapt2   =   2`dapt3 /   2`dapt
+    ensure -> 1`hpt2    =   2`hpt3  /   2`hpt
+    ensure -> 1`kpt2    =   2`kpt3  /   2`kpt
+    ensure -> 1`Mpt2    =   2`Mpt3  /   2`Mpt
+    ensure -> 1`Gpt2    =   2`Gpt3  /   2`Gpt
+    ensure -> 1`Tpt2    =   2`Tpt3  /   2`Tpt
+    ensure -> 1`Ppt2    =   2`Ppt3  /   2`Ppt
+    ensure -> 1`Ept2    =   2`Ept3  /   2`Ept
+    passed
+
+    ensure -> 1`apx2    =   2`apx3  /   2`apx
+    ensure -> 1`fpx2    =   2`fpx3  /   2`fpx
+    ensure -> 1`ppx2    =   2`ppx3  /   2`ppx
+    ensure -> 1`npx2    =   2`npx3  /   2`npx
+    ensure -> 1`upx2    =   2`upx3  /   2`upx
+    ensure -> 1`mpx2    =   2`mpx3  /   2`mpx
+    ensure -> 1`cpx2    =   2`cpx3  /   2`cpx
+    ensure -> 1`dpx2    =   2`dpx3  /   2`dpx
+    ensure -> 1`Nopx2   =   2`Nopx3 /   2`Nopx
+    ensure -> 1`dapx2   =   2`dapx3 /   2`dapx
+    ensure -> 1`hpx2    =   2`hpx3  /   2`hpx
+    ensure -> 1`kpx2    =   2`kpx3  /   2`kpx
+    ensure -> 1`Mpx2    =   2`Mpx3  /   2`Mpx
+    ensure -> 1`Gpx2    =   2`Gpx3  /   2`Gpx
+    ensure -> 1`Tpx2    =   2`Tpx3  /   2`Tpx
+    ensure -> 1`Ppx2    =   2`Ppx3  /   2`Ppx
+    ensure -> 1`Epx2    =   2`Epx3  /   2`Epx
+    passed
+
+
+    topic « volume - math // length
+
+    ensure -> 1`in =   2`in3     /   2`in2
+    ensure -> 1`ft  =   2`ft3    /   2`ft2
+    ensure -> 1`yd  =   2`yd3    /   2`yd2
+    ensure -> 1`ftm =   2`ftm3   /   2`ftm2
+    ensure -> 1`rod =   2`rod3   /   2`rod2
+    ensure -> 1`mi  =   2`mi3    /   2`mi2
+    ensure -> 1`fur =   2`fur3   /   2`fur2
+    ensure -> 1`nmi =   2`nmi3   /   2`nmi2
+    ensure -> 1`ang =   2`ang3   /   2`ang2
+    ensure -> 1`au  =   2`au3    /   2`au2
+    ensure -> 1`ly  =   2`ly3    /   2`ly2
+    ensure -> 1`px  =   2`px3    /   2`px2
+    ensure -> 1`pt  =   2`pt3    /   2`pt2
+    ensure -> 1`pc  =   2`pc3    /   2`pc2
+    passed
+
+    ensure -> 1`am  =   2`am3   /   2`am2
+    ensure -> 1`fm  =   2`fm3   /   2`fm2
+    ensure -> 1`pm  =   2`pm3   /   2`pm2
+    ensure -> 1`nm  =   2`nm3   /   2`nm2
+    ensure -> 1`um  =   2`um3   /   2`um2
+    ensure -> 1`mm  =   2`mm3   /   2`mm2
+    ensure -> 1`cm  =   2`cm3   /   2`cm2
+    ensure -> 1`dm  =   2`dm3   /   2`dm2
+    ensure -> 1`Nom =   2`Nom3  /   2`Nom2
+    ensure -> 1`dam =   2`dam3  /   2`dam2
+    ensure -> 1`hm  =   2`hm3   /   2`hm2
+    ensure -> 1`km  =   2`km3   /   2`km2
+    ensure -> 1`Mm  =   2`Mm3   /   2`Mm2
+    ensure -> 1`Gm  =   2`Gm3   /   2`Gm2
+    ensure -> 1`Tm  =   2`Tm3   /   2`Tm2
+    ensure -> 1`Pm  =   2`Pm3   /   2`Pm2
+    ensure -> 1`Em =   2`Em3    /   2`Em2
+    passed
+
+    ensure -> 1`apc     =   2`apc3  /   2`apc2
+    ensure -> 1`fpc     =   2`fpc3  /   2`fpc2
+    ensure -> 1`ppc     =   2`ppc3  /   2`ppc2
+    ensure -> 1`npc     =   2`npc3  /   2`npc2
+    ensure -> 1`upc     =   2`upc3  /   2`upc2
+    ensure -> 1`mpc     =   2`mpc3  /   2`mpc2
+    ensure -> 1`cpc     =   2`cpc3  /   2`cpc2
+    ensure -> 1`dpc     =   2`dpc3  /   2`dpc2
+    ensure -> 1`Nopc    =   2`Nopc3 /   2`Nopc2
+    ensure -> 1`dapc    =   2`dapc3 /   2`dapc2
+    ensure -> 1`hpc     =   2`hpc3  /   2`hpc2
+    ensure -> 1`kpc     =   2`kpc3  /   2`kpc2
+    ensure -> 1`Mpc     =   2`Mpc3  /   2`Mpc2
+    ensure -> 1`Gpc     =   2`Gpc3  /   2`Gpc2
+    ensure -> 1`Tpc     =   2`Tpc3  /   2`Tpc2
+    ensure -> 1`Ppc     =   2`Ppc3  /   2`Ppc2
+    ensure -> 1`Epc     =   2`Epc3  /   2`Epc2
+    passed
+
+    ensure -> 1`apt     =   2`apt3  /   2`apt2
+    ensure -> 1`fpt     =   2`fpt3  /   2`fpt2
+    ensure -> 1`ppt     =   2`ppt3  /   2`ppt2
+    ensure -> 1`npt     =   2`npt3  /   2`npt2
+    ensure -> 1`upt     =   2`upt3  /   2`upt2
+    ensure -> 1`mpt     =   2`mpt3  /   2`mpt2
+    ensure -> 1`cpt     =   2`cpt3  /   2`cpt2
+    ensure -> 1`dpt     =   2`dpt3  /   2`dpt2
+    ensure -> 1`Nopt    =   2`Nopt3 /   2`Nopt2
+    ensure -> 1`dapt    =   2`dapt3 /   2`dapt2
+    ensure -> 1`hpt     =   2`hpt3  /   2`hpt2
+    ensure -> 1`kpt     =   2`kpt3  /   2`kpt2
+    ensure -> 1`Mpt     =   2`Mpt3  /   2`Mpt2
+    ensure -> 1`Gpt     =   2`Gpt3  /   2`Gpt2
+    ensure -> 1`Tpt     =   2`Tpt3  /   2`Tpt2
+    ensure -> 1`Ppt     =   2`Ppt3  /   2`Ppt2
+    ensure -> 1`Ept    =   2`Ept3   /   2`Ept2
+    passed
+
+    ensure -> 1`apx     =   2`apx3  /   2`apx2
+    ensure -> 1`fpx     =   2`fpx3  /   2`fpx2
+    ensure -> 1`ppx     =   2`ppx3  /   2`ppx2
+    ensure -> 1`npx     =   2`npx3  /   2`npx2
+    ensure -> 1`upx     =   2`upx3  /   2`upx2
+    ensure -> 1`mpx     =   2`mpx3  /   2`mpx2
+    ensure -> 1`cpx     =   2`cpx3  /   2`cpx2
+    ensure -> 1`dpx     =   2`dpx3  /   2`dpx2
+    ensure -> 1`Nopx    =   2`Nopx3 /   2`Nopx2
+    ensure -> 1`dapx    =   2`dapx3 /   2`dapx2
+    ensure -> 1`hpx     =   2`hpx3  /   2`hpx2
+    ensure -> 1`kpx     =   2`kpx3  /   2`kpx2
+    ensure -> 1`Mpx     =   2`Mpx3  /   2`Mpx2
+    ensure -> 1`Gpx     =   2`Gpx3  /   2`Gpx2
+    ensure -> 1`Tpx     =   2`Tpx3  /   2`Tpx2
+    ensure -> 1`Ppx     =   2`Ppx3  /   2`Ppx2
+    ensure -> 1`Epx    =   2`Epx3   /   2`Epx2
+    passed
+
+
+    topic « volume - math // L2?
+
+    ensure -> 1`EL2  =   1`EL    *   1`EL
+    ensure -> 1`TL2  =   1`TL    *   1`TL
+    ensure -> 1`PL2  =   1`PL    *   1`PL
+    ensure -> 1`GL2  =   1`GL    *   1`GL
+    ensure -> 1`ML2  =   1`ML    *   1`ML
+    ensure -> 1`kL2  =   1`kL    *   1`kL
+    ensure -> 1`hL2  =   1`hL    *   1`hL
+    ensure -> 1`daL2 =   1`daL   *   1`daL
+    ensure -> 1`L2   =   1`L     *   1`L
+    ensure -> 1`dL2  =   1`dL    *   1`dL
+    ensure -> 1`cL2  =   1`cL    *   1`cL
+    ensure -> 1`mL2  =   1`mL    *   1`mL
+    ensure -> 1`uL2  =   1`uL    *   1`uL
+    ensure -> 1`nL2  =   1`nL    *   1`nL
+    ensure -> 1`pL2  =   1`pL    *   1`pL
+    ensure -> 1`fL2  =   1`fL    *   1`fL
+    ensure -> 1`aL2  =   1`aL    *   1`aL
+    passed
+
+
+
+    topic « volume - math // check auto-conversion
+
+    ensure ->  6`L.yd =   3`L * 2`yd
+    ensure ->  1003`L =   3`L + 1`m3
+    ensure -> 15`m3/m = 45`m3 / 3`m
+    passed
+
+
+    topic « volume - conforms?
+
+    ensure -> every? volumeSet => conforms? `m3
+    passed
+
+    ensure -> every? volumeSet -> x -> not? conforms? x `m2
+    passed
+
+
+    topic « volume - convert
+
+    ensure -> same? 1000`L convert 1`m3 `L
+    ensure -> same? 1000`L 1`m3 --> `L
+    passed
+
+
+    topic « volume - in
+
+    ensure -> same? 1000`L in `L 1`m3
+    passed
+
+
+    topic « volume - property
+
+    ensure -> every? volumeSet -> x -> 'volume = property x
+    passed
+
+
+    topic « volume - scalar
+
+    ensure -> every? volumeSet -> x -> one? scalar x
+    passed
+
+
+    topic « volume - specify
+
+    specify.symbol: "=~" .describes: "huge volume" 'oceanic 1.3`km3
+
+    ensure -> (to :literal "huge volume") = property 1`oceanic
+    ensure -> "1 =~" = ~"|1`oceanic|"
+    ensure -> "31:2`=~" = as.code 15.5`oceanic
+    ensure -> 1.3`km3 = 1`oceanic --> `km3
+    passed
+
+
+    topic « volume - units
+
+    ensure -> `m3  = units 100`m3
+    ensure -> `cm3 = units 100`cm3
+    ensure -> `L   = units 100`L
+    passed
+
+    ensure -> `L <> units 100`km3
+    passed
+
+
+    topic « volume - alternative names
+
+    ensure -> every? [ `l `liter `liters ] => equal? & `L
+    passed
+
+    ensure -> every? [ `gals `gallon `gallons ] => equal? & `gal
+    passed
+
+    ensure -> every? [ `barrel `barrels ] => equal? & `bbl
+    passed
+
+    ensure -> every? [ `quart `quarts ] => equal? & `qt
+    passed
+
+    ensure -> every? [ `pint `pints ] => equal? & `p
+    passed
+
+    ensure -> equal? `cups `cup
+    passed
+
+    ensure -> every? [ `fluidOunce `fluidOunces ] => equal? & `floz
+    passed
+
+    ensure -> every? [ `tablespoon `tablespoons ] => equal? & `tbsp
+    passed
+
+    ensure -> every? [ `teaspoon `teaspoons ] => equal? & `tsp
+    passed
+
+    ensure -> every? [ `bushel `bushels ] => equal? & `bu
+    passed
+
+    ensure -> equal? `cords `cord
+    passed
+
+
+]
+
+
+topic « time
+do [
+
+    timeSet: [
+
+        1`as  1`fs  1`ps 1`ns
+        1`us  1`ms  1`cs 1`ds
+        1`s   1`das 1`hs 1`ks
+        1`Ms  1`Gs  1`Ts 1`Ps
+        1`Es
+
+        1`min 1`h
+        1`day 1`wk
+        1`mo 1`yr
+    ]
+
+
+    topic « time - time?
+
+    ensure -> every? timeSet => time?
+    passed
+
+
+    topic « time - basic math
+
+    ensure -> 10`seconds  =    8`seconds + 2
+    ensure -> 10`seconds  =  7.5`seconds + 2.5
+    ensure -> 10`seconds  = 15:2`seconds + 5:2
+    passed
+
+    ensure -> 5`seconds   =    8`seconds - 3
+    ensure -> 5`seconds   =  7.5`seconds - 2.5
+    ensure -> 5`seconds   = 15:2`seconds - 5:2
+    passed
+
+    ensure -> 30`seconds  = 15`seconds * 2
+    ensure -> 30`seconds  = 60`seconds * 1:2
+    passed
+
+    ensure -> 30`seconds  = 60`seconds /  2
+    ensure -> 30`seconds  = 60`seconds // 2
+    passed
+
+    ensure -> 10`seconds  =  8`seconds + 2`seconds
+    ensure ->  8`seconds  = 10`seconds - 2`seconds
+    passed
+
+    ensure -> 100`seconds = 40`seconds + 1`minute
+    ensure ->  20`seconds = 80`seconds - 1`minute
+    passed
+
+
+    topic « time - math // scales
+
+    ; precision loss
+    ; ensure -> 1`as  = 1`fs  / (10 ^ 3)
+    ; ensure -> 1`fs  = 1`ps  / (10 ^ 3)
+    ; ensure -> 1`ps  = 1`ns  / (10 ^ 3)
+    ensure -> 1`ns  = 1`us  / (10 ^ 3)
+    ensure -> 1`us  = 1`ms  / (10 ^ 3)
+    ensure -> 1`ms  = 1`cs  / 10
+    ensure -> 1`cs  = 1`ds  / 10
+    ensure -> 1`ds  = 1`s   / 10
+    ensure -> 1`das = 1`s   * 10
+    ensure -> 1`hs  = 1`das * 10
+    ensure -> 1`ks  = 1`hs  * 10
+    ensure -> 1`Ms  = 1`ks  * (10 ^ 3)
+    ensure -> 1`Gs  = 1`Ms  * (10 ^ 3)
+    ensure -> 1`Ts  = 1`Gs  * (10 ^ 3)
+    ensure -> 1`Ps  = 1`Ts  * (10 ^ 3)
+    ensure -> 1`Es  = 1`Ps  * (10 ^ 3)
+    passed
+
+
+    topic « time - conversion
+
+    ensure -> 1`minute = 60`seconds
+    ensure ->   1`hour = 60`minutes
+    ensure ->    1`day = 24`hours
+    ensure ->   1`week = 7`days
+    ensure ->  1`month > 4`weeks
+    ensure ->  1`month < 5`weeks
+    ensure ->   1`year = 12`months
+    passed
+
+
+    topic « time - math // check auto-conversion
+
+    ensure ->  6`min.h = 3`min * 2`hour
+    ensure ->  1`min/h = 3`min / 3`hour
+    passed
+
+
+    topic « time - conforms?
+
+    ensure -> every? timeSet => conforms? `weeks
+    passed
+
+    ensure -> every? timeSet -> x -> not? conforms? x `m
+    passed
+
+
+    topic « time - convert
+
+    ensure -> same? 60`seconds convert 1`minute `seconds
+    ensure -> same? 60`seconds 1`minute --> `seconds
+    passed
+
+
+    topic « time - in
+
+    ensure -> same? 60`seconds in `seconds 1`minute
+    passed
+
+
+    topic « time - property
+
+    ensure -> every? timeSet -> x -> 'time = property x
+    passed
+
+
+    topic « time - scalar
+
+    ensure -> every? timeSet -> x -> one? scalar x
+    passed
+
+
+    topic « time - specify
+
+    specify.symbol: "💀" .describes: "eternity" 'eternity 3.5`months
+
+    ensure -> (to :literal "eternity") = property 1`eternity
+    ensure -> "1 💀" = ~"|1`eternity|"
+    ensure -> "31:2`💀" = as.code 15.5`eternity
+    ensure -> 3.5`months = 1`eternity --> `months
+    passed
+
+
+    topic « time - units
+
+    ensure -> `minute = units 100`minutes
+    ensure -> `week   = units 100`weeks
+    ensure -> `year   = units 100`years
+    passed
+
+    ensure -> `month <> units 100`years
+    passed
+
+
+    topic « time - alternative names
+
+    ensure -> every? [`second `seconds] => equal? & `s
+    passed
+
+    ensure -> every? [`minute `minutes] => equal? & `min
+    passed
+
+    ensure -> every? [`hour `hours `hr `hrs] => equal? & `h
+    passed
+
+    ensure -> equal? `day `days
+    passed
+
+    ensure -> every? [`week `weeks] => equal? & `wk
+    passed
+
+    ensure -> every? [`month `months] => equal? & `mo
+    passed
+
+    ensure -> every? [`year `years] => equal? & `yr
+    passed
+
+]
+
+
+topic « mass
+do [
+
+    massSet: [
+
+        1`g
+        1`ag    1`fg    1`pg    1`ng    1`ug    1`mg    1`cg    1`dg
+        1`dag   1`hg    1`kg    1`Mg    1`Gg    1`Tg    1`Pg    1`Eg
+
+        1`lb    1`slug  1`oz    1`ct    1`t
+        1`ton   1`lt    1`st    1`Da    1`gr
+        1`dwt   1`ozt   1`lbt
+
+    ]
+
+
+    topic « mass - mass?
+
+    ensure -> every? massSet => mass?
+    passed
+
+
+    topic « mass - basic math
+
+    ensure -> 3`g   = 2`g + 1
+    ensure -> 3.5`g = 2`g + 1.5
+    ensure -> 7.5`g = 5`g + 5:2
+    passed
+
+    ensure -> 1`g   = 2`g - 1
+    ensure -> 0.5`g = 2`g - 1.5
+    ensure -> 4.5`g = 5`g - 1:2
+    passed
+
+    ensure -> 30`g  = 15`g * 2
+    ; ensure -> 7`g = 15`g / 2
+    ensure -> 7.5`g = 15`g // 2
+    passed
+
+    ensure -> 2`g   = 1`g + 1`g
+    ensure -> 0`g   = 1`g - 1`g
+    passed
+
+    ensure -> 1.1`g = 1`g + 1`dg
+    ensure -> 0.9`g = 1`g - 1`dg
+    passed
+
+
+    topic « mass - math // scales
+
+    ensure -> 1`Eg  = 1`Pg  * (10 ^ 3)
+    ensure -> 1`Pg  = 1`Tg  * (10 ^ 3)
+    ensure -> 1`Tg  = 1`Gg  * (10 ^ 3)
+    ensure -> 1`Gg  = 1`Mg  * (10 ^ 3)
+    ensure -> 1`Mg  = 1`kg  * (10 ^ 3)
+    ensure -> 1`kg  = 1`hg  * 10
+    ensure -> 1`hg  = 1`dag * 10
+    ensure -> 1`dag = 1`g   * 10
+    ensure -> 1`dg  = 1`g   / 10
+    ensure -> 1`cg  = 1`dg  / 10
+    ensure -> 1`mg  = 1`cg  / 10
+    ensure -> 1`ug  = 1`mg  / (10 ^ 3)
+    ensure -> 1`ng  = 1`ug  / (10 ^ 3)
+    ; precision loss
+    ; ensure -> 1`pg  = 1`ng  / (10 ^ 3)
+    ; ensure -> 1`fg  = 1`pg  / (10 ^ 3)
+    ; ensure -> 1`ag  = 1`fg  / (10 ^ 3)
+    passed
+
+
+    topic « mass - math // conversions
+
+    ; A lot of conversions are actually broken, mainly when envolving lbs
+
+    ensure -> equal? ~"|1`lb   --> `g |" ~"|45359237:100000`g|"
+    ensure -> equal? ~"|1`slug --> `kg|" ~"|14.59390`kg|"
+    ; Da is being considered as 0 when compared with kg, g or mg...
+    ; ensure -> equal? ~"|1`Da   --> `kg|" ~"|1.66053906660e-27`kg|"
+    ensure -> equal? ~"|1`gr   --> `mg|" ~"|64.79891`mg|"
+    passed
+
+    ; 1`oz is being considered as 135624986579`lb
+    ; ensure -> 1`oz  =   1:16`lb
+    ensure -> 1`ct  =   1:5`g
+    ensure -> 1`t   =   1000`kg
+    ; 1`ton is being considered as 542499946316000`lb
+    ; ensure -> 1`ton =   2000`lb
+    ; 1`lt is being considered as 607599939873920`lb
+    ; ensure -> 1`lt  =   2240`lb
+    ; 1`st is being considered as 3797499624212`lb
+    ; ensure -> 1`st  =   14`lb
+    ; 1`dwt is being considered as 300814707696`gr
+    ; ensure -> 1`dwt =   24`gr
+    ; 1`ozt is being considered as 1203258830784`dwt
+    ; ensure -> 1`ozt =   20`dwt
+    ; 1`lbt is being considered as 14439105969408`ozt
+    ; ensure -> 1`lbt =   12`ozt
+    passed
+
+
+    topic « mass - math // check auto-conversion
+
+    ensure ->  6`g.yd2 =   3`g * 2`yd2
+    ensure ->  1003`g  =   3`g + 1`kg
+    ensure -> 15`kg/m3 = 45`kg / 3`m3
+    passed
+
+
+    topic « mass - conforms?
+
+    ensure -> every? massSet => conforms? `g
+    passed
+
+    ensure -> every? massSet -> x -> not? conforms? x `m2
+    passed
+
+
+    topic « mass - convert
+
+    ensure -> same? 1000`g convert 1`kg `g
+    ensure -> same? 1000`g 1`kg --> `g
+    passed
+
+
+    topic « mass - in
+
+    ensure -> same? 1000`g in `g 1`kg
+    passed
+
+
+    topic « mass - property
+
+    ensure -> every? massSet -> x -> 'mass = property x
+    passed
+
+
+    topic « mass - scalar
+
+    ensure -> every? massSet -> x -> one? scalar x
+    passed
+
+
+    topic « mass - specify
+
+    ; In 2021, Ronnie Coleman released a video of 2,300-pound leg press
+    specify.symbol: "🏋️" .describes: "average Coleman's leg press" 'ronnies 1043`kg
+
+    ensure -> "average coleman's leg press" = to :string property 1`ronnies
+    ensure -> "1 🏋️" = ~"|1`ronnies|"
+    ensure -> "31:2`🏋️" = as.code 15.5`ronnies
+    ensure -> 1043`kg   = 1`ronnies --> `kg
+    passed
+
+
+    topic « mass - units
+
+    ensure -> `g    = units 100`g
+    ensure -> `lb   = units 100`lb
+    ensure -> `kg   = units 100`kg
+    passed
+
+    ensure -> `ton <> units 100`t
+    passed
+
+
+    topic « mass - alternative names
+
+    ensure -> every? [ `pound `pounds ] => equal? & `lb
+    passed
+    ensure -> equal? `slugs `slug
+    passed
+    ensure -> every? [ `ounce `ounces ] => equal? & `oz
+    passed
+    ensure -> every? [ `carat `carats ] => equal? & `ct
+    passed
+    ensure -> every? [ `tonne `tonnes `metricTon `metricTons ] => equal? & `t
+    passed
+    ensure -> every? [ `tons `shortTon `shortTons ] => equal? & `ton
+    passed
+    ensure -> every? [ `longTon `longTons ] => equal? & `lt
+    passed
+    ensure -> every? [ `stone `stones ] => equal? & `st
+    passed
+    ensure -> every? [ `dalton `daltons `AMU ] => equal? & `Da
+    passed
+    ensure -> every? [ `grain `grains ] => equal? & `gr
+    passed
+    ensure -> every? [ `pennyweight `pennyweights ] => equal? & `dwt
+    passed
+    ensure -> every? [ `troyOunce `troyOunces ] => equal? & `ozt
+    passed
+    ensure -> every? [ `troyPound `troyPounds ] => equal? & `lbt
+    passed
+
+
+]
+
+
+topic « speed
+do [
+
+    speedSet: [
+
+        1`mps       1`kph       1`mph
+        1`kn        1`fps       1`mach
+
+        ; Other custom speed units
+        ; length/time
+
+        1`mm/h      1`mm/s      1`hm/mo
+        1`px/day    1`in/s      1`yd/s
+
+    ]
+
+
+    topic « speed - speed?
+
+    ensure -> every? speedSet => speed?
+    passed
+
+
+    topic « speed - basic math
+
+    ensure -> 3`kph   = 2`kph + 1
+    ensure -> 3.5`kph = 2`kph + 1.5
+    ensure -> 7.5`kph = 5`kph + 5:2
+    passed
+
+    ensure -> 1`kph   = 2`kph - 1
+    ensure -> 0.5`kph = 2`kph - 1.5
+    ensure -> 4.5`kph = 5`kph - 1:2
+    passed
+
+    ensure -> 30`kph  = 15`kph * 2
+    ; ensure -> 7`kph = 15`kph / 2
+    ensure -> 7.5`kph = 15`kph // 2
+    passed
+
+    ensure -> 2`kph   = 1`kph + 1`kph
+    ensure -> 0`kph   = 1`kph - 1`kph
+    passed
+
+    ensure -> 181`kph       = 1`kph + 50`mps
+    ensure -> (neg 179`kph) = 1`kph - 50`mps
+    passed
+
+
+    topic « speed - math // scales
+
+    ensure -> 1`Em/s  = 1`Pm/s  * (10 ^ 3)
+    ensure -> 1`Pm/s  = 1`Tm/s  * (10 ^ 3)
+    ensure -> 1`Tm/s  = 1`Gm/s  * (10 ^ 3)
+    ensure -> 1`Gm/s  = 1`Mm/s  * (10 ^ 3)
+    ensure -> 1`Mm/s  = 1`km/s  * (10 ^ 3)
+    ensure -> 1`km/s  = 1`hm/s  *  10
+    ensure -> 1`hm/s  = 1`dam/s *  10
+    ensure -> 1`dam/s = 1`m/s   *  10
+    ensure -> 1`dm/s  = 1`m/s   /  10
+    ensure -> 1`cm/s  = 1`dm/s  /  10
+    ensure -> 1`mm/s  = 1`cm/s  /  10
+    ensure -> 1`um/s  = 1`mm/s  / (10 ^ 3)
+    ensure -> 1`nm/s  = 1`um/s  / (10 ^ 3)
+    ; precision loss
+    ; ensure -> 1`pm/s  = 1`nm/s  / (10 ^ 3)
+    ; ensure -> 1`fm/s  = 1`pm/s  / (10 ^ 3)
+    ; ensure -> 1`am/s  = 1`fm/s  / (10 ^ 3)
+    passed
+
+
+    topic « speed - math // conversions
+
+    ensure -> 1`fps     =   1`ft/s
+    ensure -> 1`mps     =   1`m/s
+    ensure -> 1`kph     =   1`km/h
+    ensure -> 1`mph     =   1`mi/h
+    passed
+
+    ensure -> 1`mach    = 340.29`mps
+    ensure -> 1`fps     = 0.3048`mps
+    ensure -> 1`kn      = 1852:3600`mps
+    ensure -> 1`mph     = 5280:3600`fps
+    ensure -> 1`kph     = 1000:3600`m/s
+
+
+    topic « speed - math // check auto-conversion
+
+    ensure ->  6`mps.yd2  =  3`mps * 2`yd2
+    ensure ->  8`mps    =  3`mps + 18`kph
+    ensure -> 15`mps/m3 = 45`mps / 3`m3
+    passed
+
+
+    topic « speed - conforms?
+
+    ensure -> every? speedSet => conforms? `kph
+    passed
+
+    ensure -> every? speedSet -> x -> not? conforms? x `m2
+    passed
+
+
+    topic « speed - convert
+
+    ensure -> same? 3.6`kph convert 1`mps `kph
+    ensure -> same? 3.6`kph 1`mps --> `kph
+    passed
+
+
+    topic « speed - in
+
+    ensure -> same? 3.6`kph in `kph 1`mps
+    passed
+
+
+    topic « speed - property
+
+    ensure -> every? speedSet -> x -> 'speed = property x
+    passed
+
+
+    topic « speed - scalar
+
+    ensure -> every? speedSet -> x -> one? scalar x
+    passed
+
+
+    topic « speed - specify
+
+    ; The F1 Speed Record: 372.5 Km/h by Valtteri Bottas
+    ; source: https://www.redbull.com/ca-en/f1-records
+    specify.symbol: "🏎️" .describes: "F1's highest speed" 'bottas 372.5`kph
+
+    ensure -> "f1's highest speed" = to :string property 1`bottas
+    ensure -> "1 🏎️" = ~"|1`bottas|"
+    ensure -> "31:2`🏎️" = as.code 15.5`bottas
+    ensure -> 372.5`kph = 1`bottas --> `kph
+    passed
+
+
+    topic « speed - units
+
+    ensure -> `kph  = units 100`kph
+    ensure -> `mph  = units 100`mph
+    ensure -> `mps  = units 100`mps
+    passed
+
+    ensure -> `mps <> units 100`mph
+    passed
+
+
+    topic « speed - alternative names
+
+    ensure -> every? [ `meterPerSecond `metersPerSecond ] => equal? & `mps
+    passed
+    ensure -> every? [ `kilometerPerHour `kilometersPerHour ] => equal? & `kph
+    passed
+    ensure -> every? [ `milePerHour `milesPerHour ] => equal? & `mph
+    passed
+    ensure -> every? [ `knot `knots ] => equal? & `kn
+    passed
+    ensure -> every? [ `footPerSecond `feetPerSecond ] => equal? & `fps
+    passed
+    ensure -> equal? `machs `mach
+    passed
+
+]
+
+
+topic « acceleration
+do [
+
+    accelerationSet: [
+
+        1`Gal
+
+        ; Other custom acceleration units
+        ; length * (time ^ -2)
+
+        1`mm/s2      1`mach/h      1`mph/s
+        1`px/day2    1`in/s2      1`yd/s2
+
+    ]
+
+
+    topic « acceleration - acceleration?
+
+    ensure -> every? accelerationSet => acceleration?
+    passed
+
+
+    topic « acceleration - basic math
+
+    ensure -> 3`kph/h   = 2`kph/h + 1
+    ensure -> 3.5`kph/h = 2`kph/h + 1.5
+    ensure -> 7.5`kph/h = 5`kph/h + 5:2
+    passed
+
+    ensure -> 1`kph/h   = 2`kph/h - 1
+    ensure -> 0.5`kph/h = 2`kph/h - 1.5
+    ensure -> 4.5`kph/h = 5`kph/h - 1:2
+    passed
+
+    ensure -> 30`kph/h  = 15`kph/h * 2
+    ; ensure -> 7`kph/h = 15`kph/h / 2
+    ensure -> 7.5`kph/h = 15`kph/h // 2
+    passed
+
+    ensure -> 2`kph/h   = 1`kph/h + 1`kph/h
+    ensure -> 0`kph/h   = 1`kph/h - 1`kph/h
+    passed
+
+    ensure -> 4.6`kph/h       = 1`kph/h + 1`mps/h
+    ensure -> (neg 2.6`kph/h) = 1`kph/h - 1`mps/h
+    passed
+
+
+    topic « acceleration - math // scales
+
+    ensure -> 1`Em/s2  = 1`Pm/s2  * (10 ^ 3)
+    ensure -> 1`Pm/s2  = 1`Tm/s2  * (10 ^ 3)
+    ensure -> 1`Tm/s2  = 1`Gm/s2  * (10 ^ 3)
+    ensure -> 1`Gm/s2  = 1`Mm/s2  * (10 ^ 3)
+    ensure -> 1`Mm/s2  = 1`km/s2  * (10 ^ 3)
+    ensure -> 1`km/s2  = 1`hm/s2  *  10
+    ensure -> 1`hm/s2  = 1`dam/s2 *  10
+    ensure -> 1`dam/s2 = 1`m/s2   *  10
+    ensure -> 1`dm/s2  = 1`m/s2   /  10
+    ensure -> 1`cm/s2  = 1`dm/s2  /  10
+    ensure -> 1`mm/s2  = 1`cm/s2  /  10
+    ensure -> 1`um/s2  = 1`mm/s2  / (10 ^ 3)
+    ensure -> 1`nm/s2  = 1`um/s2  / (10 ^ 3)
+    ; precision loss
+    ; ensure -> 1`pm/s2  = 1`nm/s2  / (10 ^ 3)
+    ; ensure -> 1`fm/s2  = 1`pm/s2  / (10 ^ 3)
+    ; ensure -> 1`am/s2  = 1`fm/s2  / (10 ^ 3)
+    passed
+
+
+    topic « acceleration - math // conversions
+
+    ensure -> 1`Gal     =   1`cm/s2
+    ensure -> 1`m/s2    =   12960`km/h2
+    passed
+
+
+    topic « acceleration - math // check auto-conversion
+
+    ensure ->  6`mps.yd2/s  =  3`mps/s * 2`yd2
+    ensure ->  8`mps/s    =  3`mps/s + 18`kph/s
+    passed
+
+
+    topic « acceleration - conforms?
+
+    ensure -> every? accelerationSet => conforms? `km/h2
+    passed
+
+    ensure -> every? accelerationSet -> x -> not? conforms? x `m2
+    passed
+
+
+    topic « acceleration - convert
+
+    ensure -> same? 12960`kph/h convert 1`mps/s `kph/h
+    ensure -> same? 12960`kph/h 1`mps/s --> `kph/h
+    passed
+
+
+    topic « acceleration - in
+
+    ensure -> same? 12960`kph/h in `kph/h 1`mps/s
+    passed
+
+
+    topic « acceleration - property
+
+    ensure -> every? accelerationSet -> x -> 'acceleration = property x
+    passed
+
+
+    topic « acceleration - scalar
+
+    ensure -> every? accelerationSet -> x -> one? scalar x
+    passed
+
+
+    topic « acceleration - specify
+
+    specify.symbol: "🌎" .describes: "Earth's gravity acceleration" 'earth 9.81`m/s2
+
+    ensure -> "earth's gravity acceleration" = to :string property 1`earth
+    ensure -> "1 🌎" = ~"|1`earth|"
+    ensure -> "31:2`🌎" = as.code 15.5`earth
+    ensure -> 9.81`m/s2 = 1`earth --> `m/s2
+    passed
+
+
+    topic « acceleration - units
+
+    ensure -> `kph/h    = units 100`kph/h
+    ensure -> `mph/h     = units 100`mph/h
+    ensure -> `mps/s     = units 100`mps/s
+    passed
+
+    ensure -> `m/s2 <> units 100`m/h2
+    passed
+
+
+    topic « acceleration - alternative names
+
+    ensure -> every? [ `galileo `galileos ] => equal? & `Gal
+    passed
+
+]
+
+
+topic « force
+do [
+
+    forceSet: [
+
+        1`N         1`dyn       1`lbf
+        1`kgf       1`pdl
+
+        ; Other custom force units
+        ; (mass * length)/(time ^ 2)
+
+        1`m.kg/s2   1`km.ton/h2
+
+    ]
+
+
+    topic « force - force?
+
+    ensure -> every? forceSet => force?
+    passed
+
+
+    topic « force - basic math
+
+    ensure -> 3`N   = 2`N + 1
+    ensure -> 3.5`N = 2`N + 1.5
+    ensure -> 7.5`N = 5`N + 5:2
+    passed
+
+    ensure -> 1`N   = 2`N - 1
+    ensure -> 0.5`N = 2`N - 1.5
+    ensure -> 4.5`N = 5`N - 1:2
+    passed
+
+    ensure -> 30`N  = 15`N * 2
+    ; ensure -> 7`N = 15`N / 2
+    ensure -> 7.5`N = 15`N // 2
+    passed
+
+    ensure -> 2`N   = 1`N + 1`N
+    ensure -> 0`N   = 1`N - 1`N
+    passed
+
+    ensure -> 216133:196133`kgf = 1`kgf + 1`N
+    ensure -> 176133:196133`kgf = 1`kgf - 1`N
+    passed
+
+
+    topic « force - math // scales
+
+    ; ensure -> 1`EN  = 1`PN  * (10 ^ 3)
+    ensure -> 1`PN  = 1`TN  * (10 ^ 3)
+    ensure -> 1`TN  = 1`GN  * (10 ^ 3)
+    ensure -> 1`GN  = 1`MN  * (10 ^ 3)
+    ensure -> 1`MN  = 1`kN  * (10 ^ 3)
+    ensure -> 1`kN  = 1`hN  *  10
+    ensure -> 1`hN  = 1`daN *  10
+    ensure -> 1`daN = 1`N   *  10
+    ensure -> 1`dN  = 1`N   /  10
+    ensure -> 1`cN  = 1`dN  /  10
+    ensure -> 1`mN  = 1`cN  /  10
+    ensure -> 1`uN  = 1`mN  / (10 ^ 3)
+    ensure -> 1`nN  = 1`uN  / (10 ^ 3)
+    ; precision loss
+    ; ensure -> 1`pN  = 1`nN  / (10 ^ 3)
+    ; ensure -> 1`fN  = 1`pN  / (10 ^ 3)
+    ; ensure -> 1`aN  = 1`fN  / (10 ^ 3)
+    passed
+
+
+    topic « force - math // conversions
+
+    ; poundal is broken due to the use of pounds
+
+    ensure -> 1`N       = 1`kg.m/s2
+    ensure -> 1`dyn     = 1:100000`N
+    ensure -> 1`lbf     = 4.44822`N
+    ensure -> 1`kgf     = 9.80665`N
+    ; ensure -> 1`pdl     = 1`lb.ft/s2
+    passed
+
+
+    topic « force - math // check auto-conversion
+
+    ensure ->  3`kg.m/s2  =  3`kg/s2 * 1`m
+    ensure ->  4`kg.m/s2    =  3`kg.m/s2 + 1000`g.m/s2
+    passed
+
+
+    topic « force - conforms?
+
+    ensure -> every? forceSet => conforms? `km.m/h2
+    passed
+
+    ensure -> every? forceSet -> x -> not? conforms? x `m2
+    passed
+
+
+    topic « force - convert
+
+    ensure -> same? 1000`g.m/s2 convert 1`kg.m/s2 `g.m/s2
+    ensure -> same? 1000`g.m/s2 1`kg.m/s2 --> `g.m/s2
+    passed
+
+
+    topic « force - in
+
+    ensure -> same? 1000`g.m/s2 in `g.m/s2 1`kg.m/s2
+    passed
+
+
+    topic « force - property
+
+    ensure -> every? forceSet -> x -> 'force = property x
+    passed
+
+
+    topic « force - scalar
+
+    ensure -> every? forceSet -> x -> one? scalar x
+    passed
+
+
+    topic « force - specify
+
+    specify.symbol: "🚀" .describes: "G-Force" 'gforce 9.81`m/s2 * 1`g
+
+    ensure -> "g-force" = to :string property 1`gforce
+    ensure -> "1 🚀" = ~"|1`gforce|"
+    ensure -> "31:2`🚀" = as.code 15.5`gforce
+    ensure -> 9.81`m.g/s2 = 1`gforce --> `m.g/s2
+    passed
+
+
+    topic « force - units
+
+    ensure -> `kg.m/s2  = units 100`kg.m/s2
+    ensure -> `g.m/s2   = units 100`g.m/s2
+    ensure -> `g.km/h2  = units 100`g.km/h2
+    passed
+
+    ensure -> `g.km/h2 <> units 100`kg.km/h2
+    passed
+
+
+    topic « force - alternative names
+
+    ensure -> every? [ `newton `newtons ]   => equal? & `N
+    passed
+    ensure -> every? [ `dyne `dynes ]       => equal? & `dyn
+    passed
+    ensure -> every? [ `poundal `poundals ] => equal? & `pdl
+    passed
+
+    ensure -> equal? `poundsForce   `lbf
+    passed
+    ensure -> equal? `kilogramsForce `kgf
+    passed
+
+]
+
+
+topic « pressure
+do [
+
+    pressureSet: [
+        1`Pa        1`atm       1`bar
+        1`pz        1`Ba        1`mmHg
+        1`psi       1`Torr
+
+        ; Other custom force units
+        ; (mass * length)/(time ^ 2)
+
+        1`N/m2      1`kgf/cm2   1`kg.km/km2.h2
+
+    ]
+
+
+    topic « pressure - pressure?
+
+    ensure -> every? pressureSet => pressure?
+    passed
+
+
+    topic « pressure - basic math
+
+    ensure -> 3`Pa   = 2`Pa + 1
+    ensure -> 3.5`Pa = 2`Pa + 1.5
+    ensure -> 7.5`Pa = 5`Pa + 5:2
+    passed
+
+    ensure -> 1`Pa   = 2`Pa - 1
+    ensure -> 0.5`Pa = 2`Pa - 1.5
+    ensure -> 4.5`Pa = 5`Pa - 1:2
+    passed
+
+    ensure -> 30`Pa  = 15`Pa * 2
+    ; ensure -> 7`Pa = 15`Pa / 2
+    ensure -> 7.5`Pa = 15`Pa // 2
+    passed
+
+    ensure -> 2`Pa   = 1`Pa + 1`Pa
+    ensure -> 0`Pa   = 1`Pa - 1`Pa
+    passed
+
+    ensure -> 100001`Pa         = 1`Pa + 1`bar
+    ensure -> (neg 99999`Pa)    = 1`Pa - 1`bar
+    passed
+
+
+    topic « pressure - math // scales
+
+    ; precision loss
+    ; ensure -> 1`EPa  = 1`PPa  * (10 ^ 3)
+    ensure -> 1`PPa  = 1`TPa  * (10 ^ 3)
+    ensure -> 1`TPa  = 1`GPa  * (10 ^ 3)
+    ensure -> 1`GPa  = 1`MPa  * (10 ^ 3)
+    ensure -> 1`MPa  = 1`kPa  * (10 ^ 3)
+    ensure -> 1`kPa  = 1`hPa  *  10
+    ensure -> 1`hPa  = 1`daPa *  10
+    ensure -> 1`daPa = 1`Pa   *  10
+    ensure -> 1`dPa  = 1`Pa   /  10
+    ensure -> 1`cPa  = 1`dPa  /  10
+    ensure -> 1`mPa  = 1`cPa  /  10
+    ensure -> 1`uPa  = 1`mPa  / (10 ^ 3)
+    ensure -> 1`nPa  = 1`uPa  / (10 ^ 3)
+    ; precision loss
+    ; ensure -> 1`pPa  = 1`nPa  / (10 ^ 3)
+    ; ensure -> 1`fPa  = 1`pPa  / (10 ^ 3)
+    ; ensure -> 1`aPa  = 1`fPa  / (10 ^ 3)
+    passed
+
+    ; precision loss
+    ; ensure -> 1`Ebar  = 1`Pbar  * (10 ^ 3)
+    ; ensure -> 1`Pbar  = 1`Tbar  * (10 ^ 3)
+    ; ensure -> 1`Tbar  = 1`Gbar  * (10 ^ 3)
+    ensure -> 1`Gbar  = 1`Mbar  * (10 ^ 3)
+    ensure -> 1`Mbar  = 1`kbar  * (10 ^ 3)
+    ensure -> 1`kbar  = 1`hbar  *  10
+    ensure -> 1`hbar  = 1`dabar *  10
+    ensure -> 1`dabar = 1`bar   *  10
+    ensure -> 1`dbar  = 1`bar   /  10
+    ensure -> 1`cbar  = 1`dbar  /  10
+    ensure -> 1`mbar  = 1`cbar  /  10
+    ensure -> 1`ubar  = 1`mbar  / (10 ^ 3)
+    ensure -> 1`nbar  = 1`ubar  / (10 ^ 3)
+    ; precision loss
+    ; ensure -> 1`pbar  = 1`nbar  / (10 ^ 3)
+    ; ensure -> 1`fbar  = 1`pbar  / (10 ^ 3)
+    ; ensure -> 1`abar  = 1`fbar  / (10 ^ 3)
+    passed
+
+
+    topic « pressure - math // conversions
+
+    ensure -> 1`Pa  =   1`N/m2
+    ensure -> 1`atm =   101325`Pa
+    ensure -> 1`bar =   100000`Pa
+    ensure -> 1`pz  =   10`kPa
+    ensure -> 1`Ba  =   1`dyn/cm2
+    passed
+
+    ensure -> (~"|1`mmHg --> `Pa|") =   "133.3223684 Pa"
+    ensure -> (~"|1`psi  --> `Pa|") =   "6894.757293 Pa"
+    ensure -> (~"|1`Torr --> `Pa|") =   "133.3223684 Pa"
+    passed
+
+
+    topic « pressure - math // check auto-conversion
+
+    ensure ->  6`Pa     =   12`N    /   2`m2
+    ensure ->  1.1`bar  =   1`bar   +   10000`Pa
+    passed
+
+
+    topic « pressure - conforms?
+
+    ensure -> every? pressureSet => conforms? `Pa
+    passed
+
+    ensure -> every? pressureSet -> x -> not? conforms? x `m2
+    passed
+
+
+    topic « pressure - convert
+
+    ensure -> same? 100000`Pa convert 1`bar `Pa
+    ensure -> same? 100000`Pa 1`bar --> `Pa
+    passed
+
+
+    topic « pressure - in
+
+    ensure -> same? 100000`Pa in `Pa 1`bar
+    passed
+
+
+    topic « pressure - property
+
+    ensure -> every? pressureSet -> x -> 'pressure = property x
+    passed
+
+
+    topic « pressure - scalar
+
+    ensure -> every? pressureSet -> x -> one? scalar x
+    passed
+
+
+    topic « pressure - specify
+
+    specify.symbol: "🌊" .describes: "Sea level's pressure" 'seaLevel 1`atm
+
+    ensure -> "sea level's pressure" = to :string property 1`seaLevel
+    ensure -> "1 🌊" = ~"|1`seaLevel|"
+    ensure -> "31:2`🌊" = as.code 15.5`seaLevel
+    ensure -> 1`atm     = 1`seaLevel --> `atm
+    passed
+
+
+    topic « pressure - units
+
+    ensure -> `Pa  = units 100`Pa
+    ensure -> `Ba   = units 100`Ba
+    ensure -> `mmHg  = units 100`mmHg
+    passed
+
+    ensure -> `Pa <> units 100`N/m2
+    passed
+
+
+    topic « pressure - alternative names
+
+    ensure -> every? [ `millimeterOfMercury `millimetersOfMercury ] => equal? & `mmHg
+    passed
+    ensure -> every? [ `poundPerSquareInch `poundsPerSquareInch ]   => equal? & `psi
+    passed
+    ensure -> every? [ `atmosphere `atmospheres ]   => equal? & `atm
+    passed
+    ensure -> every? [ `pascal `pascals ]   => equal? & `Pa
+    passed
+    ensure -> every? [ `barye `baryes ]     => equal? & `Ba
+    passed
+    ensure -> every? [ `torr `torrs ]       => equal? & `Torr
+    passed
+
+    ensure -> equal? `bars  `bar
+    passed
+    ensure -> equal? `pieze `pz
+    passed
+
+]
+
+; Some tests are being removed under this comment
+; because I think some things already were extensively tested enough,
+; since all units follow the same rules.
+
+; Now, I'm focusing more in tests that are specific for that unit
+
+; Removed tests:
+;   * basic math,
+;   * auto-conversions,
+;   * `units`,
+;   * `scalar`,
+;   * `specify`
+
+topic « energy
+do [
+
+    energySet: [
+
+        1`J         1`Wh        1`cal
+        1`BTU       1`eV        1`erg
+        1`th        1`thm
+
+        ; Other custom energy units
+        ; force * length
+
+        1`N.m      1`kg.m2/s2
+
+    ]
+
+
+    topic « energy - energy?
+
+    ensure -> every? energySet => energy?
+    passed
+
+
+    topic « energy - math // scales
+
+    ; precision loss
+    ; ensure -> 1`EJ  = 1`PJ  * (10 ^ 3)
+    ensure -> 1`PJ  = 1`TJ  * (10 ^ 3)
+    ensure -> 1`TJ  = 1`GJ  * (10 ^ 3)
+    ensure -> 1`GJ  = 1`MJ  * (10 ^ 3)
+    ensure -> 1`MJ  = 1`kJ  * (10 ^ 3)
+    ensure -> 1`kJ  = 1`hJ  *  10
+    ensure -> 1`hJ  = 1`daJ *  10
+    ensure -> 1`daJ = 1`J   *  10
+    ensure -> 1`dJ  = 1`J   /  10
+    ensure -> 1`cJ  = 1`dJ  /  10
+    ensure -> 1`mJ  = 1`cJ  /  10
+    ensure -> 1`uJ  = 1`mJ  / (10 ^ 3)
+    ensure -> 1`nJ  = 1`uJ  / (10 ^ 3)
+    ; ensure -> 1`pJ  = 1`nJ  / (10 ^ 3)
+    ; ensure -> 1`fJ  = 1`pJ  / (10 ^ 3)
+    ; ensure -> 1`aJ  = 1`fJ  / (10 ^ 3)
+    passed
+
+    ; precision loss
+    ; ensure -> 1`EWh  = 1`PWh  * (10 ^ 3)
+    ; ensure -> 1`PWh  = 1`TWh  * (10 ^ 3)
+    ensure -> 1`TWh  = 1`GWh  * (10 ^ 3)
+    ensure -> 1`GWh  = 1`MWh  * (10 ^ 3)
+    ensure -> 1`MWh  = 1`kWh  * (10 ^ 3)
+    ensure -> 1`kWh  = 1`hWh  *  10
+    ensure -> 1`hWh  = 1`daWh *  10
+    ensure -> 1`daWh = 1`Wh   *  10
+    ensure -> 1`dWh  = 1`Wh   /  10
+    ensure -> 1`cWh  = 1`dWh  /  10
+    ensure -> 1`mWh  = 1`cWh  /  10
+    ensure -> 1`uWh  = 1`mWh  / (10 ^ 3)
+    ensure -> 1`nWh  = 1`uWh  / (10 ^ 3)
+    ; ensure -> 1`pWh  = 1`nWh  / (10 ^ 3)
+    ; ensure -> 1`fWh  = 1`pWh  / (10 ^ 3)
+    ; ensure -> 1`aWh  = 1`fWh  / (10 ^ 3)
+    passed
+
+    ; precision loss
+    ; ensure -> 1`Ecal  = 1`Pcal  * (10 ^ 3)
+    ensure -> 1`Pcal  = 1`Tcal  * (10 ^ 3)
+    ensure -> 1`Tcal  = 1`Gcal  * (10 ^ 3)
+    ensure -> 1`Gcal  = 1`Mcal  * (10 ^ 3)
+    ensure -> 1`Mcal  = 1`kcal  * (10 ^ 3)
+    ensure -> 1`kcal  = 1`hcal  *  10
+    ensure -> 1`hcal  = 1`dacal *  10
+    ensure -> 1`dacal = 1`cal   *  10
+    ensure -> 1`dcal  = 1`cal   /  10
+    ensure -> 1`ccal  = 1`dcal  /  10
+    ensure -> 1`mcal  = 1`ccal  /  10
+    ensure -> 1`ucal  = 1`mcal  / (10 ^ 3)
+    ensure -> 1`ncal  = 1`ucal  / (10 ^ 3)
+    ; ensure -> 1`pcal  = 1`ncal  / (10 ^ 3)
+    ; ensure -> 1`fcal  = 1`pcal  / (10 ^ 3)
+    ; ensure -> 1`acal  = 1`fcal  / (10 ^ 3)
+    passed
+
+    ; division by zero?
+
+    ; ensure -> 1`EeV  = 1`PeV  * (10 ^ 3)
+    ; ensure -> 1`PeV  = 1`TeV  * (10 ^ 3)
+    ; ensure -> 1`TeV  = 1`GeV  * (10 ^ 3)
+    ; ensure -> 1`GeV  = 1`MeV  * (10 ^ 3)
+    ; ensure -> 1`MeV  = 1`keV  * (10 ^ 3)
+    ; ensure -> 1`keV  = 1`heV  *  10
+    ; ensure -> 1`heV  = 1`daeV *  10
+    ; ensure -> 1`daeV = 1`eV   *  10
+    ; ensure -> 1`deV  = 1`eV   /  10
+    ; ensure -> 1`ceV  = 1`deV  /  10
+    ; ensure -> 1`meV  = 1`ceV  /  10
+    ; ensure -> 1`ueV  = 1`meV  / (10 ^ 3)
+    ; ensure -> 1`neV  = 1`ueV  / (10 ^ 3)
+    ; ensure -> 1`peV  = 1`neV  / (10 ^ 3)
+    ; ensure -> 1`feV  = 1`peV  / (10 ^ 3)
+    ; ensure -> 1`aeV  = 1`feV  / (10 ^ 3)
+    ; passed
+
+
+    topic « energy - math // conversions
+
+    ensure -> 1`J   =   1`N.m
+    ensure -> 1`Wh  =   3600`J
+    ensure -> 1`cal =   4.184`J
+    ensure -> 1`erg =   1`J / (10 ^ 7)
+    passed
+
+    ensure -> (~"|1`BTU --> `J |") =   "1055.05585262 J"
+    ; this conversion returns 0J
+    ; ensure -> (~"|1`eV  --> `J |") =   "1.602176565e-19 J"
+    ensure -> (~"|1`th  --> `MJ|") =   "4.1868 MJ"
+    ensure -> (~"|1`thm --> `MJ|") =   "105.506 MJ"
+    passed
+
+
+    topic « energy - conforms?
+
+    ensure -> every? energySet => conforms? `J
+    passed
+
+    ensure -> every? energySet -> x -> not? conforms? x `Pa
+    passed
+
+
+    topic « energy - convert
+
+    ensure -> same? 3600`J convert 1`Wh `J
+    ensure -> same? 3600`J 1`Wh --> `J
+    passed
+
+
+    topic « energy - in
+
+    ensure -> same? 3600`J in `J 1`Wh
+    passed
+
+
+    topic « energy - property
+
+    ensure -> every? energySet -> x -> 'energy = property x
+    passed
+
+
+    topic « energy - alternative names
+
+    ensure -> every? [ `britishThermalUnit `britishThermalUnits ]   => equal? & `BTU
+    passed
+    ensure -> every? [ `electronVolt `electronVolts ]               => equal? & `eV
+    passed
+    ensure -> every? [ `wattHour `wattHours ]   => equal? & `Wh
+    passed
+    ensure -> every? [ `calorie `calories ]     => equal? & `cal
+    passed
+    ensure -> every? [ `thermie `thermies ]     => equal? & `th
+    passed
+    ensure -> every? [ `joule `joules ]         => equal? & `J
+    passed
+    ensure -> every? [ `therm `therms ]         => equal? & `thm
+    passed
+
+    ensure -> equal? `ergs  `erg
+    passed
+
+]
+
+
+topic « power
+do [
+
+    powerSet: [
+
+        1`hp         1`W
+
+        ; Other custom power units
+        ; energy / time
+
+        1`N.m/s      1`J/s
+
+    ]
+
+
+    topic « power - power?
+
+    ensure -> every? powerSet => power?
+    passed
+
+
+    topic « power - math // scales
+
+    ; Note: DRYing. I'm not testing for every single unit's scale because
+    ; I already tested length's, area's, time's and mass' units
+
+
+    ; precision loss
+    ; ensure -> 1`EW  = 1`PW  * (10 ^ 3)
+    ensure -> 1`PW  = 1`TW  * (10 ^ 3)
+    ensure -> 1`TW  = 1`GW  * (10 ^ 3)
+    ensure -> 1`GW  = 1`MW  * (10 ^ 3)
+    ensure -> 1`MW  = 1`kW  * (10 ^ 3)
+    ensure -> 1`kW  = 1`hW  *  10
+    ensure -> 1`hW  = 1`daW *  10
+    ensure -> 1`daW = 1`W   *  10
+    ensure -> 1`dW  = 1`W   /  10
+    ensure -> 1`cW  = 1`dW  /  10
+    ensure -> 1`mW  = 1`cW  /  10
+    ensure -> 1`uW  = 1`mW  / (10 ^ 3)
+    ensure -> 1`nW  = 1`uW  / (10 ^ 3)
+    ; precision loss
+    ; ensure -> 1`pW  = 1`nW  / (10 ^ 3)
+    ; ensure -> 1`fW  = 1`pW  / (10 ^ 3)
+    ; ensure -> 1`aW  = 1`fW  / (10 ^ 3)
+    passed
+
+
+    topic « power - math // conversions
+
+    ; poundal is broken due to the use of pounds
+
+    ensure -> 1`W   =   1`J/s
+    passed
+
+    ensure -> (~"|1`hp --> `W |") =   "1574415572556/2111326061 W"
+    passed
+
+
+    topic « power - conforms?
+
+    ensure -> every? powerSet => conforms? `J/s
+    passed
+
+    ensure -> every? powerSet -> x -> not? conforms? x `J
+    passed
+
+    topic « power - convert
+
+    ensure -> same? 1000`W convert 1`kW `W
+    ensure -> same? 1000`W 1`kW --> `W
+    passed
+
+
+    topic « power - in
+
+    ensure -> same? 1000`W in `W 1`kW
+    passed
+
+
+    topic « power - property
+
+    ensure -> every? powerSet -> x -> 'power = property x
+    passed
+
+
+    topic « power - alternative names
+
+    ensure -> every? [ `watt `watts ] => equal? & `W
+    passed
+
+    ensure -> equal? `horsepower  `hp
+    passed
+
+]
+
+
+topic « current
+do [
+
+
+    currentSet: [
+
+        1`A         1`statA
+        1`abA       1`Bi
+
+    ]
+
+
+    topic « current - current?
+
+    ensure -> every? currentSet => current?
+    passed
+
+
+    topic « current - math // scales
+
+    ensure -> 1`EA  = 1`PA  * (10 ^ 3)
+    ensure -> 1`PA  = 1`TA  * (10 ^ 3)
+    ensure -> 1`TA  = 1`GA  * (10 ^ 3)
+    ensure -> 1`GA  = 1`MA  * (10 ^ 3)
+    ensure -> 1`MA  = 1`kA  * (10 ^ 3)
+    ensure -> 1`kA  = 1`hA  *  10
+    ensure -> 1`hA  = 1`daA *  10
+    ensure -> 1`daA = 1`A   *  10
+    ensure -> 1`dA  = 1`A   /  10
+    ensure -> 1`cA  = 1`dA  /  10
+    ensure -> 1`mA  = 1`cA  /  10
+    ensure -> 1`uA  = 1`mA  / (10 ^ 3)
+    ensure -> 1`nA  = 1`uA  / (10 ^ 3)
+    ; precision loss
+    ; ensure -> 1`pA  = 1`nA  / (10 ^ 3)
+    ; ensure -> 1`fA  = 1`pA  / (10 ^ 3)
+    ; ensure -> 1`aA  = 1`fA  / (10 ^ 3)
+    passed
+
+
+    topic « current - math // conversions
+
+    ensure -> 1`abA =   10`A
+    ensure -> 1`Bi  =   10`A
+    passed
+
+    ; precision loss, it prints 0 A
+    ; ensure -> (~"|1`statA --> `A |") =   "3.335641e-10 A"
+    passed
+
+
+    topic « current - conforms?
+
+    ensure -> every? currentSet => conforms? `A
+    passed
+
+    ensure -> every? currentSet -> x -> not? conforms? x `J
+    passed
+
+
+    topic « current - convert
+
+    ensure -> same? 10`A convert 1`Bi `A
+    ensure -> same? 10`A 1`Bi --> `A
+    passed
+
+
+    topic « current - in
+
+    ensure -> same? 10`A in `A 1`Bi
+    passed
+
+
+    topic « current - property
+
+    ensure -> every? currentSet -> x -> 'current = property x
+    passed
+
+
+    topic « current - alternative names
+
+    ensure -> every? [ `amp `amps `ampere `amperes ] => equal? & `A
+    passed
+    ensure -> every? [ `abampere `abamperes ] => equal? & `abA
+    passed
+    ensure -> every? [ `biot `biots ] => equal? & `Bi
+    passed
+
+]
+
+topic « potential
+do [
+
+
+    potentialSet: [
+
+        1`V         1`statV         1`abV
+
+        ; Other custom potential units
+        ; power / current
+
+        1`W/A
+
+    ]
+
+
+    topic « potential - potential?
+
+    ensure -> every? potentialSet => potential?
+    passed
+
+
+    topic « potential - math // scales
+
+    ; precision loss
+    ; ensure -> 1`EV  = 1`PV  * (10 ^ 3)
+    ensure -> 1`PV  = 1`TV  * (10 ^ 3)
+    ensure -> 1`TV  = 1`GV  * (10 ^ 3)
+    ensure -> 1`GV  = 1`MV  * (10 ^ 3)
+    ensure -> 1`MV  = 1`kV  * (10 ^ 3)
+    ensure -> 1`kV  = 1`hV  *  10
+    ensure -> 1`hV  = 1`daV *  10
+    ensure -> 1`daV = 1`V   *  10
+    ensure -> 1`dV  = 1`V   /  10
+    ensure -> 1`cV  = 1`dV  /  10
+    ensure -> 1`mV  = 1`cV  /  10
+    ensure -> 1`uV  = 1`mV  / (10 ^ 3)
+    ensure -> 1`nV  = 1`uV  / (10 ^ 3)
+    ; ensure -> 1`pV  = 1`nV  / (10 ^ 3)
+    ; ensure -> 1`fV  = 1`pV  / (10 ^ 3)
+    ; ensure -> 1`aV  = 1`fV  / (10 ^ 3)
+    passed
+
+
+    topic « potential - math // conversions
+
+    ensure -> 1`V   =   1`W/A
+    passed
+
+    ensure -> (~"|1`statV --> `V |") =   "299.792458 V"
+    ensure -> (~"|1`abV   --> `V |") =   "1e-08 V"
+    passed
+
+
+    topic « potential - conforms?
+
+    ensure -> every? potentialSet => conforms? `V
+    passed
+
+    ensure -> every? potentialSet -> x -> not? conforms? x `A
+    passed
+
+    topic « potential - convert
+
+    ensure -> same? 1`V convert 1`W/A `V
+    ensure -> same? 1`V 1`W/A --> `V
+    passed
+
+
+    topic « potential - in
+
+    ensure -> same? 1`V in `V 1`W/A
+    passed
+
+
+    topic « potential - property
+
+    ensure -> every? potentialSet -> x -> 'potential = property x
+    passed
+
+
+    topic « potential - alternative names
+
+    ensure -> every? [ `volt `volts ] => equal? & `V
+    passed
+    ensure -> every? [ `statvolt `statvolts ] => equal? & `statV
+    passed
+    ensure -> every? [ `abvolt `abvolts ] => equal? & `abV
+    passed
+
+]
+
+
+topic « resistance
+do [
+
+
+    resistanceSet: [
+
+        1`Ohm         1`statOhm         1`abOhm
+
+        ; Other custom resistance units
+        ; potential / current
+
+        1`V/A
+
+    ]
+
+
+    topic « resistance - resistance?
+
+    ensure -> every? resistanceSet => resistance?
+    passed
+
+
+    topic « resistance - math // scales
+
+    ; precision loss
+    ; ensure -> 1`EOhm  = 1`POhm  * (10 ^ 3)
+    ensure -> 1`POhm  = 1`TOhm  * (10 ^ 3)
+    ensure -> 1`TOhm  = 1`GOhm  * (10 ^ 3)
+    ensure -> 1`GOhm  = 1`MOhm  * (10 ^ 3)
+    ensure -> 1`MOhm  = 1`kOhm  * (10 ^ 3)
+    ensure -> 1`kOhm  = 1`hOhm  *  10
+    ensure -> 1`hOhm  = 1`daOhm *  10
+    ensure -> 1`daOhm = 1`Ohm   *  10
+    ensure -> 1`dOhm  = 1`Ohm   /  10
+    ensure -> 1`cOhm  = 1`dOhm  /  10
+    ensure -> 1`mOhm  = 1`cOhm  /  10
+    ensure -> 1`uOhm  = 1`mOhm  / (10 ^ 3)
+    ensure -> 1`nOhm  = 1`uOhm  / (10 ^ 3)
+    ; ensure -> 1`pOhm  = 1`nOhm  / (10 ^ 3)
+    ; ensure -> 1`fOhm  = 1`pOhm  / (10 ^ 3)
+    ; ensure -> 1`aOhm  = 1`fOhm  / (10 ^ 3)
+    passed
+
+
+    topic « resistance - math // conversions
+
+    ensure -> 1`Ohm   =   1`V/A
+    passed
+
+    ; it should print 8.987551787e11 Ω, instead of 898755178700
+    ; ensure -> (~"|1`statOhm --> `Ohm |") =   "8.987551787e11 Ω"
+    ensure -> (~"|1`abOhm   --> `Ohm |") =   "1e-09 Ω"
+    passed
+
+
+    topic « resistance - conforms?
+
+    ensure -> every? resistanceSet => conforms? `Ohm
+    passed
+
+    ensure -> every? resistanceSet -> x -> not? conforms? x `A
+    passed
+
+
+    topic « resistance - convert
+
+    ensure -> same? 1`Ohm convert 1`V/A `Ohm
+    ensure -> same? 1`Ohm 1`V/A --> `Ohm
+    passed
+
+
+    topic « resistance - in
+
+    ensure -> same? 1`Ohm in `Ohm 1`V/A
+    passed
+
+
+    topic « resistance - property
+
+    ensure -> every? resistanceSet -> x -> 'resistance = property x
+    passed
+
+
+    topic « resistance - alternative names
+
+    ensure -> every? [ `ohm `ohms ] => equal? & `Ohm
+    passed
+    ensure -> every? [ `statohm `statohms ] => equal? & `statOhm
+    passed
+    ensure -> every? [ `abohm `abohms ] => equal? & `abOhm
+    passed
+
+]
+
+
+topic « conductance
+do [
+
+
+    conductanceSet: [
+
+        1`S
+
+        ; Other custom conductance units
+        ; current / potential
+
+        1`A/V
+
+    ]
+
+
+    topic « conductance - conductance?
+
+    ensure -> every? conductanceSet => conductance?
+    passed
+
+
+    topic « conductance - math // scales
+
+    ensure -> 1`ES  = 1`PS  * (10 ^ 3)
+    ensure -> 1`PS  = 1`TS  * (10 ^ 3)
+    ensure -> 1`TS  = 1`GS  * (10 ^ 3)
+    ensure -> 1`GS  = 1`MS  * (10 ^ 3)
+    ensure -> 1`MS  = 1`kS  * (10 ^ 3)
+    ensure -> 1`kS  = 1`hS  *  10
+    ensure -> 1`hS  = 1`daS *  10
+    ensure -> 1`daS = 1`S   *  10
+    ensure -> 1`dS  = 1`S   /  10
+    ensure -> 1`cS  = 1`dS  /  10
+    ensure -> 1`mS  = 1`cS  /  10
+    ensure -> 1`uS  = 1`mS  / (10 ^ 3)
+    ensure -> 1`nS  = 1`uS  / (10 ^ 3)
+    ; precision loss
+    ; ensure -> 1`pS  = 1`nS  / (10 ^ 3)
+    ; ensure -> 1`fS  = 1`pS  / (10 ^ 3)
+    ; ensure -> 1`aS  = 1`fS  / (10 ^ 3)
+    passed
+
+
+    topic « conductance - math // conversions
+
+    ensure -> 1`S   =   1`A/V
+    passed
+
+
+    topic « conductance - conforms?
+
+    ensure -> every? conductanceSet => conforms? `S
+    passed
+
+    ensure -> every? conductanceSet -> x -> not? conforms? x `A
+    passed
+
+
+    topic « conductance - convert
+
+    ensure -> same? 1`S convert 1`A/V `S
+    ensure -> same? 1`S 1`A/V --> `S
+    passed
+
+
+    topic « conductance - in
+
+    ensure -> same? 1`S in `S 1`A/V
+    passed
+
+
+    topic « conductance - property
+
+    ensure -> every? conductanceSet -> x -> 'conductance = property x
+    passed
+
+
+    topic « conductance - alternative names
+
+    ensure -> `siemens = `S
+    passed
+
+]
+
+
+topic « charge
+do [
+
+
+    chargeSet: [
+
+        1`C         1`statC         1`abC
+
+        ; Other custom charge units
+        ; current * time
+
+        1`A.s
+
+    ]
+
+
+    topic « charge - charge?
+
+    ensure -> every? chargeSet => charge?
+    passed
+
+
+    topic « charge - math // scales
+
+    ; precision loss
+    ensure -> 1`EC  = 1`PC  * (10 ^ 3)
+    ensure -> 1`PC  = 1`TC  * (10 ^ 3)
+    ensure -> 1`TC  = 1`GC  * (10 ^ 3)
+    ensure -> 1`GC  = 1`MC  * (10 ^ 3)
+    ensure -> 1`MC  = 1`kC  * (10 ^ 3)
+    ensure -> 1`kC  = 1`hC  *  10
+    ensure -> 1`hC  = 1`daC *  10
+    ensure -> 1`daC = 1`C   *  10
+    ensure -> 1`dC  = 1`C   /  10
+    ensure -> 1`cC  = 1`dC  /  10
+    ensure -> 1`mC  = 1`cC  /  10
+    ensure -> 1`uC  = 1`mC  / (10 ^ 3)
+    ensure -> 1`nC  = 1`uC  / (10 ^ 3)
+    ; ensure -> 1`pC  = 1`nC  / (10 ^ 3)
+    ; ensure -> 1`fC  = 1`pC  / (10 ^ 3)
+    ; ensure -> 1`aC  = 1`fC  / (10 ^ 3)
+    passed
+
+
+    topic « charge - math // conversions
+
+    ensure -> 1`C   =   1`A.s
+    ensure -> 1`abC =   10`C
+    ; division by 0?
+    ; ensure -> 1`Fr  =   1`C
+    passed
+
+    ; it should print 3.335641e-10 Ω, instead of 0 C
+    ; ensure -> (~"|1`statC --> `C |") =   "3.335641e-10 C"
+    passed
+
+
+    topic « charge - conforms?
+
+    ensure -> every? chargeSet => conforms? `C
+    passed
+
+    ensure -> every? chargeSet -> x -> not? conforms? x `A
+    passed
+
+
+    topic « charge - convert
+
+    ensure -> same? 1`C convert 1`A.s `C
+    ensure -> same? 1`C 1`A.s --> `C
+    passed
+
+
+    topic « charge - in
+
+    ensure -> same? 1`C in `C 1`A.s
+    passed
+
+
+    topic « charge - property
+
+    ensure -> every? chargeSet -> x -> 'charge = property x
+    passed
+
+
+    topic « charge - alternative names
+
+    ensure -> every? [ `coulomb `coulombs ] => equal? & `C
+    passed
+    ensure -> every? [ `statcoulomb `statcoulombs ] => equal? & `statC
+    passed
+    ensure -> every? [ `abcoulomb `abcoulombs ] => equal? & `abC
+    passed
+    ensure -> every? [ `franklin `franklins ] => equal? & `Fr
+    passed
+
+]
+
+
+topic « capacitance
+do [
+
+
+    capacitanceSet: [
+
+        1`F
+
+        ; Other custom capacitance units
+        ; charge / potential
+
+        1`C/V
+
+    ]
+
+
+    topic « capacitance - capacitance?
+
+    ensure -> every? capacitanceSet => capacitance?
+    passed
+
+
+    topic « capacitance - math // scales
+
+    ensure -> 1`EF  = 1`PF  * (10 ^ 3)
+    ensure -> 1`PF  = 1`TF  * (10 ^ 3)
+    ensure -> 1`TF  = 1`GF  * (10 ^ 3)
+    ensure -> 1`GF  = 1`MF  * (10 ^ 3)
+    ensure -> 1`MF  = 1`kF  * (10 ^ 3)
+    ensure -> 1`kF  = 1`hF  *  10
+    ensure -> 1`hF  = 1`daF *  10
+    ensure -> 1`daF = 1`F   *  10
+    ensure -> 1`dF  = 1`F   /  10
+    ensure -> 1`cF  = 1`dF  /  10
+    ensure -> 1`mF  = 1`cF  /  10
+    ensure -> 1`uF  = 1`mF  / (10 ^ 3)
+    ensure -> 1`nF  = 1`uF  / (10 ^ 3)
+    ; precision loss
+    ; ensure -> 1`pF  = 1`nF  / (10 ^ 3)
+    ; ensure -> 1`fF  = 1`pF  / (10 ^ 3)
+    ; ensure -> 1`aF  = 1`fF  / (10 ^ 3)
+    passed
+
+
+    topic « capacitance - math // conversions
+
+    ensure -> 1`F   =   1`C/V
+
+
+    topic « capacitance - conforms?
+
+    ensure -> every? capacitanceSet => conforms? `F
+    passed
+
+    ensure -> every? capacitanceSet -> x -> not? conforms? x `A
+    passed
+
+
+    topic « capacitance - convert
+
+    ensure -> same? 1`F convert 1`C/V `F
+    ensure -> same? 1`F 1`C/V --> `F
+    passed
+
+
+    topic « capacitance - in
+
+    ensure -> same? 1`F in `F 1`C/V
+    passed
+
+
+    topic « capacitance - property
+
+    ensure -> every? capacitanceSet -> x -> 'capacitance = property x
+    passed
+
+
+    topic « capacitance - alternative names
+
+    ensure -> every? [ `farad `farads ] => equal? & `F
+    passed
+
+]
+
+
+topic « elastance
+do [
+
+
+    elastanceSet: [
+
+        1`Daraf
+
+        ; Other custom elastance units
+        ; 1 / capacitance
+
+        1`1/F
+
+    ]
+
+
+    topic « elastance - elastance?
+
+    ensure -> every? elastanceSet => elastance?
+    passed
+
+
+    topic « elastance - math // scales
+
+    ; precision loss
+    ; ensure -> 1`EDaraf  = 1`PDaraf  * (10 ^ 3)
+    ensure -> 1`PDaraf  = 1`TDaraf  * (10 ^ 3)
+    ensure -> 1`TDaraf  = 1`GDaraf  * (10 ^ 3)
+    ensure -> 1`GDaraf  = 1`MDaraf  * (10 ^ 3)
+    ensure -> 1`MDaraf  = 1`kDaraf  * (10 ^ 3)
+    ensure -> 1`kDaraf  = 1`hDaraf  *  10
+    ensure -> 1`hDaraf  = 1`daDaraf *  10
+    ensure -> 1`daDaraf = 1`Daraf   *  10
+    ensure -> 1`dDaraf  = 1`Daraf   /  10
+    ensure -> 1`cDaraf  = 1`dDaraf  /  10
+    ensure -> 1`mDaraf  = 1`cDaraf  /  10
+    ensure -> 1`uDaraf  = 1`mDaraf  / (10 ^ 3)
+    ensure -> 1`nDaraf  = 1`uDaraf  / (10 ^ 3)
+    ; ensure -> 1`pDaraf  = 1`nDaraf  / (10 ^ 3)
+    ; ensure -> 1`fDaraf  = 1`pDaraf  / (10 ^ 3)
+    ; ensure -> 1`aDaraf  = 1`fDaraf  / (10 ^ 3)
+    passed
+
+
+    topic « elastance - math // conversions
+
+    ensure -> 1`Daraf   =   1`1/F
+
+
+    topic « elastance - conforms?
+
+    ensure -> every? elastanceSet => conforms? `Daraf
+    passed
+
+    ensure -> every? elastanceSet -> x -> not? conforms? x `F
+    passed
+
+
+    topic « elastance - convert
+
+    ensure -> same? 1`Daraf convert 1`1/F `Daraf
+    ensure -> same? 1`Daraf 1`1/F --> `Daraf
+    passed
+
+
+    topic « elastance - in
+
+    ensure -> same? 1`Daraf in `Daraf 1`1/F
+    passed
+
+
+    topic « elastance - property
+
+    ensure -> every? elastanceSet -> x -> 'elastance = property x
+    passed
+
+]
+
+
+topic « inductance
+do [
+
+
+    inductanceSet: [
+
+        1`H       1`abH
+
+        ; Other custom inductance units
+        ; potential * time / current
+
+        1`V.s/A
+
+    ]
+
+
+    topic « inductance - inductance?
+
+    ensure -> every? inductanceSet => inductance?
+    passed
+
+
+    topic « inductance - math // scales
+
+    ; precision loss
+    ; ensure -> 1`EH  = 1`PH  * (10 ^ 3)
+    ensure -> 1`PH  = 1`TH  * (10 ^ 3)
+    ensure -> 1`TH  = 1`GH  * (10 ^ 3)
+    ensure -> 1`GH  = 1`MH  * (10 ^ 3)
+    ensure -> 1`MH  = 1`kH  * (10 ^ 3)
+    ensure -> 1`kH  = 1`hH  *  10
+    ensure -> 1`hH  = 1`daH *  10
+    ensure -> 1`daH = 1`H   *  10
+    ensure -> 1`dH  = 1`H   /  10
+    ensure -> 1`cH  = 1`dH  /  10
+    ensure -> 1`mH  = 1`cH  /  10
+    ensure -> 1`uH  = 1`mH  / (10 ^ 3)
+    ensure -> 1`nH  = 1`uH  / (10 ^ 3)
+    ; ensure -> 1`pH  = 1`nH  / (10 ^ 3)
+    ; ensure -> 1`fH  = 1`pH  / (10 ^ 3)
+    ; ensure -> 1`aH  = 1`fH  / (10 ^ 3)
+    passed
+
+
+    topic « inductance - math // conversions
+
+    ensure -> 1`H   =   1`V.s/A
+    passed
+
+    ensure -> (~"|1`abH   --> `H |") =   "1e-09 H"
+    passed
+
+
+    topic « inductance - conforms?
+
+    ensure -> every? inductanceSet => conforms? `H
+    passed
+
+    ensure -> every? inductanceSet -> x -> not? conforms? x `h
+    passed
+
+    topic « inductance - convert
+
+    ensure -> same? 1`H convert 1`V.s/A `H
+    ensure -> same? 1`H 1`V.s/A --> `H
+    passed
+
+
+    topic « inductance - in
+
+    ensure -> same? 1`H in `H 1`V.s/A
+    passed
+
+
+    topic « inductance - property
+
+    ensure -> every? inductanceSet -> x -> 'inductance = property x
+    passed
+
+
+    topic « inductance - alternative names
+
+    ensure -> every? [ `henry `henrys ] => equal? & `H
+    passed
+    ensure -> every? [ `abhenry `abhenrys ] => equal? & `abH
+    passed
+
+]
+
+topic « magneticFlux
+do [
+
+
+    magneticFluxSet: [
+
+        1`Wb        1`Mx
+
+        ; Other custom magneticFlux units
+        ; potential * time
+
+        1`V.s
+
+    ]
+
+
+    topic « magneticFlux - magneticFlux?
+
+    ensure -> every? magneticFluxSet => magneticFlux?
+    passed
+
+
+    topic « magneticFlux - math // scales
+
+    ; precision loss
+    ; ensure -> 1`EWb  = 1`PWb  * (10 ^ 3)
+    ensure -> 1`PWb  = 1`TWb  * (10 ^ 3)
+    ensure -> 1`TWb  = 1`GWb  * (10 ^ 3)
+    ensure -> 1`GWb  = 1`MWb  * (10 ^ 3)
+    ensure -> 1`MWb  = 1`kWb  * (10 ^ 3)
+    ensure -> 1`kWb  = 1`hWb  *  10
+    ensure -> 1`hWb  = 1`daWb *  10
+    ensure -> 1`daWb = 1`Wb   *  10
+    ensure -> 1`dWb  = 1`Wb   /  10
+    ensure -> 1`cWb  = 1`dWb  /  10
+    ensure -> 1`mWb  = 1`cWb  /  10
+    ensure -> 1`uWb  = 1`mWb  / (10 ^ 3)
+    ensure -> 1`nWb  = 1`uWb  / (10 ^ 3)
+    ; ensure -> 1`pWb  = 1`nWb  / (10 ^ 3)
+    ; ensure -> 1`fWb  = 1`pWb  / (10 ^ 3)
+    ; ensure -> 1`aWb  = 1`fWb  / (10 ^ 3)
+    passed
+
+    ; precision loss
+    ensure -> 1`EMx  = 1`PMx  * (10 ^ 3)
+    ensure -> 1`PMx  = 1`TMx  * (10 ^ 3)
+    ensure -> 1`TMx  = 1`GMx  * (10 ^ 3)
+    ensure -> 1`GMx  = 1`MMx  * (10 ^ 3)
+    ensure -> 1`MMx  = 1`kMx  * (10 ^ 3)
+    ensure -> 1`kMx  = 1`hMx  *  10
+    ensure -> 1`hMx  = 1`daMx *  10
+    ensure -> 1`daMx = 1`Mx   *  10
+    ensure -> 1`dMx  = 1`Mx   /  10
+    ensure -> 1`cMx  = 1`dMx  /  10
+    ensure -> 1`mMx  = 1`cMx  /  10
+    ensure -> 1`uMx  = 1`mMx  / (10 ^ 3)
+    ensure -> 1`nMx  = 1`uMx  / (10 ^ 3)
+    ; ensure -> 1`pMx  = 1`nMx  / (10 ^ 3)
+    ; ensure -> 1`fMx  = 1`pMx  / (10 ^ 3)
+    ; ensure -> 1`aMx  = 1`fMx  / (10 ^ 3)
+    passed
+
+
+    topic « magneticFlux - math // conversions
+
+    ensure -> 1`Wb   =   1`V.s
+    passed
+
+    ensure -> (~"|1`Mx   --> `Wb |") =   "1e-08 Wb"
+    passed
+
+
+    topic « magneticFlux - conforms?
+
+    ensure -> every? magneticFluxSet => conforms? `Wb
+    passed
+
+    ensure -> every? magneticFluxSet -> x -> not? conforms? x `h
+    passed
+
+    topic « magneticFlux - convert
+
+    ensure -> same? 1`Wb convert 1`V.s `Wb
+    ensure -> same? 1`Wb 1`V.s --> `Wb
+    passed
+
+
+    topic « magneticFlux - in
+
+    ensure -> same? 1`Wb in `Wb 1`V.s
+    passed
+
+
+    topic « magneticFlux - property
+
+    ensure -> every? magneticFluxSet -> x -> "magnetic flux" = to :string property x
+    passed
+
+
+    topic « magneticFlux - alternative names
+
+    ensure -> every? [ `weber `webers ] => equal? & `Wb
+    passed
+    ensure -> every? [ `maxwell `maxwells ] => equal? & `Mx
+    passed
+
+]
+
+
+topic « magneticFluxDensity
+do [
+
+
+    magneticFluxDensitySet: [
+
+        1`T        1`G
+
+        ; Other custom magneticFluxDensity units
+        ; magnetic flux / area
+
+        1`Wb/m2
+
+    ]
+
+
+    topic « magneticFluxDensity - magneticFluxDensity?
+
+    ensure -> every? magneticFluxDensitySet => magneticFluxDensity?
+    passed
+
+
+    topic « magneticFluxDensity - math // scales
+
+    ; precision loss
+    ; ensure -> 1`ET  = 1`PT  * (10 ^ 3)
+    ensure -> 1`PT  = 1`TT  * (10 ^ 3)
+    ensure -> 1`TT  = 1`GT  * (10 ^ 3)
+    ensure -> 1`GT  = 1`MT  * (10 ^ 3)
+    ensure -> 1`MT  = 1`kT  * (10 ^ 3)
+    ensure -> 1`kT  = 1`hT  *  10
+    ensure -> 1`hT  = 1`daT *  10
+    ensure -> 1`daT = 1`T   *  10
+    ensure -> 1`dT  = 1`T   /  10
+    ensure -> 1`cT  = 1`dT  /  10
+    ensure -> 1`mT  = 1`cT  /  10
+    ensure -> 1`uT  = 1`mT  / (10 ^ 3)
+    ensure -> 1`nT  = 1`uT  / (10 ^ 3)
+    ; ensure -> 1`pT  = 1`nT  / (10 ^ 3)
+    ; ensure -> 1`fT  = 1`pT  / (10 ^ 3)
+    ; ensure -> 1`aT  = 1`fT  / (10 ^ 3)
+    passed
+
+    ; precision loss
+    ensure -> 1`EG  = 1`PG  * (10 ^ 3)
+    ensure -> 1`PG  = 1`TG  * (10 ^ 3)
+    ensure -> 1`TG  = 1`GG  * (10 ^ 3)
+    ensure -> 1`GG  = 1`MG  * (10 ^ 3)
+    ensure -> 1`MG  = 1`kG  * (10 ^ 3)
+    ensure -> 1`kG  = 1`hG  *  10
+    ensure -> 1`hG  = 1`daG *  10
+    ensure -> 1`daG = 1`G   *  10
+    ensure -> 1`dG  = 1`G   /  10
+    ensure -> 1`cG  = 1`dG  /  10
+    ensure -> 1`mG  = 1`cG  /  10
+    ensure -> 1`uG  = 1`mG  / (10 ^ 3)
+    ensure -> 1`nG  = 1`uG  / (10 ^ 3)
+    ; ensure -> 1`pG  = 1`nG  / (10 ^ 3)
+    ; ensure -> 1`fG  = 1`pG  / (10 ^ 3)
+    ; ensure -> 1`aG  = 1`fG  / (10 ^ 3)
+    passed
+
+
+    topic « magneticFluxDensity - math // conversions
+
+    ensure -> 1`T   =   1`Wb/m2
+    passed
+
+    ensure -> (~"|1`G   --> `T |") =   "0.0001 T"
+    passed
+
+
+    topic « magneticFluxDensity - conforms?
+
+    ensure -> every? magneticFluxDensitySet => conforms? `T
+    passed
+
+    ensure -> every? magneticFluxDensitySet -> x -> not? conforms? x `t
+    passed
+
+    topic « magneticFluxDensity - convert
+
+    ensure -> same? 1`T convert 1`Wb/m2 `T
+    ensure -> same? 1`T 1`Wb/m2 --> `T
+    passed
+
+
+    topic « magneticFluxDensity - in
+
+    ensure -> same? 1`T in `T 1`Wb/m2
+    passed
+
+
+    topic « magneticFluxDensity - property
+
+    ensure -> every? magneticFluxDensitySet -> x -> "magnetic flux density" = to :string property x
+    passed
+
+
+    topic « magneticFluxDensity - alternative names
+
+    ensure -> every? [ `tesla `teslas ] => equal? & `T
+    passed
+    ensure -> every? [ `gauss ] => equal? & `G
+    passed
+
+]
+
+
+
+topic « temperature
+do [
+
+    temperatureSet: [
+
+        1`K         1`degC
+        1`degF      1`degR
+
+    ]
+
+
+    topic « temperature - temperature?
+
+    ensure -> every? temperatureSet => temperature?
+    passed
+
+
+    topic « temperature - math // conversions
+
+    ensure -> "274.1 K"     = ~"|1`oC --> `K|"
+    ensure -> "255.9 K"     = ~"|1`oF --> `K|"
+    ensure -> "0.6 K"       = ~"|1`oR --> `K|"
+    passed
+
+
+    topic « temperature - conforms?
+
+    ensure -> every? temperatureSet => conforms? `K
+    passed
+
+    ensure -> every? temperatureSet -> x -> not? conforms? x `t
+    passed
+
+
+    topic « temperature - property
+
+    ensure -> every? temperatureSet -> x -> 'temperature = property x
+    passed
+
+
+    topic « temperature - alternative names
+
+    ensure -> every? [ `oC `celsius ] => equal? & `degC
+    passed
+    ensure -> every? [ `oF `fahrenheit ] => equal? & `degF
+    passed
+    ensure -> every? [ `oR `rankine ] => equal? & `degR
+    passed
+
+]
+
+
+topic « information
+do [
+
+
+    informationSet: [
+
+        1`B         1`b             1`KiB       1`MiB
+        1`GiB       1`TiB           1`PiB       1`EiB
+
+    ]
+
+
+    topic « information - information?
+
+    ensure -> every? informationSet => information?
+    passed
+
+
+    topic « information - math // scales
+
+    ; precision loss
+    ensure -> 1`Eb  = 1`Pb  * (10 ^ 3)
+    ensure -> 1`Pb  = 1`Tb  * (10 ^ 3)
+    ensure -> 1`Tb  = 1`Gb  * (10 ^ 3)
+    ensure -> 1`Gb  = 1`Mb  * (10 ^ 3)
+    ensure -> 1`Mb  = 1`kb  * (10 ^ 3)
+    ensure -> 1`kb  = 1`hb  *  10
+    ensure -> 1`hb  = 1`dab *  10
+    ensure -> 1`dab = 1`b   *  10
+    ensure -> 1`db  = 1`b   /  10
+    ensure -> 1`cb  = 1`db  /  10
+    ensure -> 1`mb  = 1`cb  /  10
+    ensure -> 1`ub  = 1`mb  / (10 ^ 3)
+    ensure -> 1`nb  = 1`ub  / (10 ^ 3)
+    ; ensure -> 1`pb  = 1`nb  / (10 ^ 3)
+    ; ensure -> 1`fb  = 1`pb  / (10 ^ 3)
+    ; ensure -> 1`ab  = 1`fb  / (10 ^ 3)
+    passed
+
+
+    topic « information - math // conversions
+
+    ensure -> 1`b       =   1:8`B
+    ensure -> 1`KiB     =   1024`B
+    ensure -> 1`MiB     =   1024`KiB
+    ensure -> 1`GiB     =   1024`MiB
+    ensure -> 1`TiB     =   1024`GiB
+    ensure -> 1`PiB     =   1024`TiB
+    ensure -> 1`EiB     =   1024`PiB
+    passed
+
+
+    topic « information - conforms?
+
+    ensure -> every? informationSet => conforms? `B
+    passed
+
+    ensure -> every? informationSet -> x -> not? conforms? x `t
+    passed
+
+    topic « information - convert
+
+    ensure -> same? 1024`B convert 1`KiB `B
+    ensure -> same? 1024`B 1`KiB --> `B
+    passed
+
+
+    topic « information - in
+
+    ensure -> same? 1024`B in `B 1`KiB
+    passed
+
+
+    topic « information - property
+
+    ensure -> every? informationSet -> x -> 'information = property x
+    passed
+
+
+    topic « information - alternative names
+
+    ensure -> every? [ `byte `bytes ] => equal? & `B
+    passed
+    ensure -> every? [ `bit `bits ] => equal? & `b
+    passed
+    ensure -> every? [ `kibibyte `kibibyte ] => equal? & `KiB
+    passed
+    ensure -> every? [ `mebibyte `mebibytes ] => equal? & `MiB
+    passed
+    ensure -> every? [ `gibibyte `gibibytes ] => equal? & `GiB
+    passed
+    ensure -> every? [ `tebibyte `tebibytes ] => equal? & `TiB
+    passed
+    ensure -> every? [ `pebibyte `pebibytes ] => equal? & `PiB
+    passed
+    ensure -> every? [ `exbibyte `exbibytes ] => equal? & `EiB
+    passed
+
+]
+
+
+topic « angle
+do [
+
+
+    angleSet: [
+
+        1`rad       1`deg       1`grad
+        1`arcmin    1`arcsec
+
+    ]
+
+
+    topic « angle - angle?
+
+    ensure -> every? angleSet => angle?
+    passed
+
+
+    topic « angle - math // conversions
+
+    ; Try it:
+    ;   $> 1`deg --> `rad
+    ;   => 14964008/857374503 rad
+    ;
+    ;   $> 14964008/857374503
+    ;   => 0
+
+    ; ensure -> 1`deg     =   pi:180`rad
+    ; ensure -> 1`grad    =   pi:200`rad
+    ; ensure -> 1`arcmin  =   pi:10800`rad
+    ; ensure -> 1`arcsec  =   pi:648000`rad
+    print "broken"
+
+
+    topic « angle - conforms?
+
+    ensure -> every? angleSet => conforms? `deg
+    passed
+
+    ensure -> every? angleSet -> x -> not? conforms? x `degC
+    passed
+
+    topic « angle - convert
+
+    ; ensure -> same? pi:200`rad convert 1`grad `rad
+    ; ensure -> same? pi:200`rad 1`grad --> `rad
+    ; passed
+    print "broken"
+
+
+    topic « angle - in
+
+    ; ensure -> same? pi:200`rad in `rad 1`grad
+    ; passed
+    print "broken"
+
+
+    topic « angle - property
+
+    ensure -> every? angleSet -> x -> 'angle = property x
+    passed
+
+
+    topic « angle - alternative names
+
+    ensure -> every? [ `radian `radians ] => equal? & `rad
+    passed
+    ensure -> every? [ `degree `degrees ] => equal? & `deg
+    passed
+    ensure -> every? [ `gradian `gradians ] => equal? & `grad
+    passed
+    ensure -> every? [ `arcminute `arcminutes ] => equal? & `arcmin
+    passed
+    ensure -> every? [ `arcsecond `arcseconds ] => equal? & `arcsec
+    passed
+
+]
+
+
+topic « catalyticActivity
+do [
+
+
+    catalyticActivitySet: [
+
+        1`kat
+
+        ; Other custom catalyticActivity units
+        ; substance / time
+
+        1`mol/s
+
+    ]
+
+
+    topic « catalyticActivity - catalyticActivity?
+
+    ensure -> every? catalyticActivitySet => moleFlowRate?
+    passed
+
+
+    topic « catalyticActivity - math // scales
+
+
+    ; precision loss
+    ensure -> 1`Ekat  = 1`Pkat  * (10 ^ 3)
+    ensure -> 1`Pkat  = 1`Tkat  * (10 ^ 3)
+    ensure -> 1`Tkat  = 1`Gkat  * (10 ^ 3)
+    ensure -> 1`Gkat  = 1`Mkat  * (10 ^ 3)
+    ensure -> 1`Mkat  = 1`kkat  * (10 ^ 3)
+    ensure -> 1`kkat  = 1`hkat  *  10
+    ensure -> 1`hkat  = 1`dakat *  10
+    ensure -> 1`dakat = 1`kat   *  10
+    ensure -> 1`dkat  = 1`kat   /  10
+    ensure -> 1`ckat  = 1`dkat  /  10
+    ensure -> 1`mkat  = 1`ckat  /  10
+    ensure -> 1`ukat  = 1`mkat  / (10 ^ 3)
+    ensure -> 1`nkat  = 1`ukat  / (10 ^ 3)
+    ; ensure -> 1`pkat  = 1`nkat  / (10 ^ 3)
+    ; ensure -> 1`fkat  = 1`pkat  / (10 ^ 3)
+    ; ensure -> 1`akat  = 1`fkat  / (10 ^ 3)
+    passed
+
+
+    topic « catalyticActivity - math // conversions
+
+    ensure -> 1`kat   =   1`mol/s
+    passed
+
+
+    topic « catalyticActivity - conforms?
+
+    ensure -> every? catalyticActivitySet => conforms? `mol/s
+    passed
+
+    ensure -> every? catalyticActivitySet -> x -> not? conforms? x `m/s
+    passed
+
+    topic « catalyticActivity - convert
+
+    ensure -> same? 1`kat convert 1`mol/s `kat
+    ensure -> same? 1`kat 1`mol/s --> `kat
+    passed
+
+
+    topic « catalyticActivity - in
+
+    ensure -> same? 1`kat in `kat 1`mol/s
+    passed
+
+
+    topic « catalyticActivity - property
+
+    ensure -> every? catalyticActivitySet -> x -> "mole flow rate" = to :string property x
+    passed
+
+
+    topic « catalyticActivity - alternative names
+
+    ensure -> every? [ `katal `katals ] => equal? & `kat
+    passed
+
+]
+
+
+topic « frequency
+do [
+
+
+    frequencySet: [
+
+        1`Hz
+
+        ; Other custom frequency units
+        ; time ^ -1
+
+        1`1/s
+
+    ]
+
+
+    topic « frequency - frequency?
+
+    ensure -> every? frequencySet => frequency?
+    passed
+
+
+    topic « frequency - math // scales
+
+    ; precision loss
+    ensure -> 1`EHz  = 1`PHz  * (10 ^ 3)
+    ensure -> 1`PHz  = 1`THz  * (10 ^ 3)
+    ensure -> 1`THz  = 1`GHz  * (10 ^ 3)
+    ensure -> 1`GHz  = 1`MHz  * (10 ^ 3)
+    ensure -> 1`MHz  = 1`kHz  * (10 ^ 3)
+    ensure -> 1`kHz  = 1`hHz  *  10
+    ensure -> 1`hHz  = 1`daHz *  10
+    ensure -> 1`daHz = 1`Hz   *  10
+    ensure -> 1`dHz  = 1`Hz   /  10
+    ensure -> 1`cHz  = 1`dHz  /  10
+    ensure -> 1`mHz  = 1`cHz  /  10
+    ensure -> 1`uHz  = 1`mHz  / (10 ^ 3)
+    ensure -> 1`nHz  = 1`uHz  / (10 ^ 3)
+    ; ensure -> 1`pHz  = 1`nHz  / (10 ^ 3)
+    ; ensure -> 1`fHz  = 1`pHz  / (10 ^ 3)
+    ; ensure -> 1`aHz  = 1`fHz  / (10 ^ 3)
+    passed
+
+
+    topic « frequency - math // conversions
+
+    ensure -> 1`Hz   =   1`1/s
+    passed
+
+
+    topic « frequency - conforms?
+
+    ensure -> every? frequencySet => conforms? `Hz
+    passed
+
+    ensure -> every? frequencySet -> x -> not? conforms? x `t
+    passed
+
+    topic « frequency - convert
+
+    ensure -> same? 1`Hz convert 1`1/s `Hz
+    ensure -> same? 1`Hz 1`1/s --> `Hz
+    passed
+
+
+    topic « frequency - in
+
+    ensure -> same? 1`Hz in `Hz 1`1/s
+    passed
+
+
+    topic « frequency - property
+
+    ensure -> every? frequencySet -> x -> 'frequency = property x
+    passed
+
+
+    topic « frequency - alternative names
+
+    ensure -> every? [ `hertz ] => equal? & `Hz
+    passed
+
+]
+
+
+topic « radiation
+do [
+
+    radiationSet: [
+
+        1`Bq    1`Ci
+
+    ]
+
+
+    topic « radiation - radiation?
+
+    ensure -> every? radiationSet => frequency?
+    passed
+
+
+    topic « radiation - math // scales
+
+    ; precision loss
+    ensure -> 1`EBq  = 1`PBq  * (10 ^ 3)
+    ensure -> 1`PBq  = 1`TBq  * (10 ^ 3)
+    ensure -> 1`TBq  = 1`GBq  * (10 ^ 3)
+    ensure -> 1`GBq  = 1`MBq  * (10 ^ 3)
+    ensure -> 1`MBq  = 1`kBq  * (10 ^ 3)
+    ensure -> 1`kBq  = 1`hBq  *  10
+    ensure -> 1`hBq  = 1`daBq *  10
+    ensure -> 1`daBq = 1`Bq   *  10
+    ensure -> 1`dBq  = 1`Bq   /  10
+    ensure -> 1`cBq  = 1`dBq  /  10
+    ensure -> 1`mBq  = 1`cBq  /  10
+    ensure -> 1`uBq  = 1`mBq  / (10 ^ 3)
+    ensure -> 1`nBq  = 1`uBq  / (10 ^ 3)
+    ; ensure -> 1`pBq  = 1`nBq  / (10 ^ 3)
+    ; ensure -> 1`fBq  = 1`pBq  / (10 ^ 3)
+    ; ensure -> 1`aBq  = 1`fBq  / (10 ^ 3)
+    passed
+
+    ; precision loss
+    ; ensure -> 1`ECi  = 1`PCi  * (10 ^ 3)
+    ; ensure -> 1`PCi  = 1`TCi  * (10 ^ 3)
+    ; ensure -> 1`TCi  = 1`GCi  * (10 ^ 3)
+    ; ensure -> 1`GCi  = 1`MCi  * (10 ^ 3)
+    ensure -> 1`MCi  = 1`kCi  * (10 ^ 3)
+    ensure -> 1`kCi  = 1`hCi  *  10
+    ensure -> 1`hCi  = 1`daCi *  10
+    ensure -> 1`daCi = 1`Ci   *  10
+    ensure -> 1`dCi  = 1`Ci   /  10
+    ensure -> 1`cCi  = 1`dCi  /  10
+    ensure -> 1`mCi  = 1`cCi  /  10
+    ensure -> 1`uCi  = 1`mCi  / (10 ^ 3)
+    ensure -> 1`nCi  = 1`uCi  / (10 ^ 3)
+    ; ensure -> 1`pCi  = 1`nCi  / (10 ^ 3)
+    ; ensure -> 1`fCi  = 1`pCi  / (10 ^ 3)
+    ; ensure -> 1`aCi  = 1`fCi  / (10 ^ 3)
+    passed
+
+
+    topic « radiation - math // conversions
+
+    ensure -> 1`Bq   =   1`1/s
+    ensure -> 1`Ci   =   37000000000`Bq
+    passed
+
+
+    topic « radiation - conforms?
+
+    ensure -> every? radiationSet => conforms? `Bq
+    passed
+
+    ensure -> every? radiationSet -> x -> not? conforms? x `t
+    passed
+
+    topic « radiation - convert
+
+    ensure -> same? 1`Bq convert 1`1/s `Bq
+    ensure -> same? 1`Bq 1`1/s --> `Bq
+    passed
+
+
+    topic « radiation - in
+
+    ensure -> same? 1`Bq in `Bq 1`1/s
+    passed
+
+
+    topic « radiation - property
+
+    ensure -> every? radiationSet -> x -> 'frequency = property x
+    passed
+
+
+    topic « radiation - alternative names
+
+    ensure -> every? [ `becquerel `becquerels ] => equal? & `Bq
+    passed
+    ensure -> every? [ `curie `curies ] => equal? & `Ci
+    passed
+
+]
+
+
+topic « radiationExposure
+do [
+
+
+    radiationExposureSet: [
+
+        1`Gy        1`Sv        1`R
+
+        ; Other custom radiationExposure units
+        ; magnetic energy / mass
+
+        1`J/kg
+
+    ]
+
+
+    topic « radiationExposure - radiationExposure?
+
+    ensure -> every? radiationExposureSet => radiation?
+    passed
+
+
+    topic « radiationExposure - math // scales
+
+    ; precision loss
+    ensure -> 1`EGy  = 1`PGy  * (10 ^ 3)
+    ensure -> 1`PGy  = 1`TGy  * (10 ^ 3)
+    ensure -> 1`TGy  = 1`GGy  * (10 ^ 3)
+    ensure -> 1`GGy  = 1`MGy  * (10 ^ 3)
+    ensure -> 1`MGy  = 1`kGy  * (10 ^ 3)
+    ensure -> 1`kGy  = 1`hGy  *  10
+    ensure -> 1`hGy  = 1`daGy *  10
+    ensure -> 1`daGy = 1`Gy   *  10
+    ensure -> 1`dGy  = 1`Gy   /  10
+    ensure -> 1`cGy  = 1`dGy  /  10
+    ensure -> 1`mGy  = 1`cGy  /  10
+    ensure -> 1`uGy  = 1`mGy  / (10 ^ 3)
+    ensure -> 1`nGy  = 1`uGy  / (10 ^ 3)
+    ; ensure -> 1`pGy  = 1`nGy  / (10 ^ 3)
+    ; ensure -> 1`fGy  = 1`pGy  / (10 ^ 3)
+    ; ensure -> 1`aGy  = 1`fGy  / (10 ^ 3)
+    passed
+
+    ; precision loss
+    ensure -> 1`ESv  = 1`PSv  * (10 ^ 3)
+    ensure -> 1`PSv  = 1`TSv  * (10 ^ 3)
+    ensure -> 1`TSv  = 1`GSv  * (10 ^ 3)
+    ensure -> 1`GSv  = 1`MSv  * (10 ^ 3)
+    ensure -> 1`MSv  = 1`kSv  * (10 ^ 3)
+    ensure -> 1`kSv  = 1`hSv  *  10
+    ensure -> 1`hSv  = 1`daSv *  10
+    ensure -> 1`daSv = 1`Sv   *  10
+    ensure -> 1`dSv  = 1`Sv   /  10
+    ensure -> 1`cSv  = 1`dSv  /  10
+    ensure -> 1`mSv  = 1`cSv  /  10
+    ensure -> 1`uSv  = 1`mSv  / (10 ^ 3)
+    ensure -> 1`nSv  = 1`uSv  / (10 ^ 3)
+    ; ensure -> 1`pSv  = 1`nSv  / (10 ^ 3)
+    ; ensure -> 1`fSv  = 1`pSv  / (10 ^ 3)
+    ; ensure -> 1`aSv  = 1`fSv  / (10 ^ 3)
+    passed
+
+    ; precision loss
+    ensure -> 1`ER  = 1`PR  * (10 ^ 3)
+    ensure -> 1`PR  = 1`TR  * (10 ^ 3)
+    ensure -> 1`TR  = 1`GR  * (10 ^ 3)
+    ensure -> 1`GR  = 1`MR  * (10 ^ 3)
+    ensure -> 1`MR  = 1`kR  * (10 ^ 3)
+    ensure -> 1`kR  = 1`hR  *  10
+    ensure -> 1`hR  = 1`daR *  10
+    ensure -> 1`daR = 1`R   *  10
+    ensure -> 1`dR  = 1`R   /  10
+    ensure -> 1`cR  = 1`dR  /  10
+    ensure -> 1`mR  = 1`cR  /  10
+    ensure -> 1`uR  = 1`mR  / (10 ^ 3)
+    ensure -> 1`nR  = 1`uR  / (10 ^ 3)
+    ; ensure -> 1`pR  = 1`nR  / (10 ^ 3)
+    ; ensure -> 1`fR  = 1`pR  / (10 ^ 3)
+    ; ensure -> 1`aR  = 1`fR  / (10 ^ 3)
+    passed
+
+
+    topic « radiationExposure - math // conversions
+
+    ensure -> 1`Gy   =   1`J/kg
+    ensure -> 1`Sv   =   1`J/kg
+    ensure -> 1`R    =   0.01`J/kg
+    passed
+
+
+    topic « radiationExposure - conforms?
+
+    ensure -> every? radiationExposureSet => conforms? `Gy
+    passed
+
+    ensure -> every? radiationExposureSet -> x -> not? conforms? x `t
+    passed
+
+    topic « radiationExposure - convert
+
+    ensure -> same? 1`Gy convert 1`J/kg `Gy
+    ensure -> same? 1`Gy 1`J/kg --> `Gy
+    passed
+
+
+    topic « radiationExposure - in
+
+    ensure -> same? 1`Gy in `Gy 1`J/kg
+    passed
+
+
+    topic « radiationExposure - property
+
+    ensure -> every? radiationExposureSet -> x -> 'radiation = property x
+    passed
+
+
+    topic « radiationExposure - alternative names
+
+    ensure -> every? [ `gray `grays ] => equal? & `Gy
+    passed
+    ensure -> every? [ `sievert `sievert ] => equal? & `Sv
+    passed
+    ensure -> every? [ `roentgen `roentgen ] => equal? & `R
+    passed
+
+]
+
+
+topic « viscosity
+do [
+
+
+    viscositySet: [
+
+        1`P
+
+        ; Other custom viscosity units
+        ; pressure * time
+
+        1`Pa.s
+
+    ]
+
+
+    topic « viscosity - viscosity?
+
+    ensure -> every? viscositySet => viscosity?
+    passed
+
+
+    topic « viscosity - math // scales
+
+    ; precision loss
+    ; ensure -> 1`EP  = 1`PP  * (10 ^ 3)
+    ensure -> 1`PP  = 1`TP  * (10 ^ 3)
+    ensure -> 1`TP  = 1`GP  * (10 ^ 3)
+    ensure -> 1`GP  = 1`MP  * (10 ^ 3)
+    ensure -> 1`MP  = 1`kP  * (10 ^ 3)
+    ensure -> 1`kP  = 1`hP  *  10
+    ensure -> 1`hP  = 1`daP *  10
+    ensure -> 1`daP = 1`P   *  10
+    ensure -> 1`dP  = 1`P   /  10
+    ensure -> 1`cP  = 1`dP  /  10
+    ensure -> 1`mP  = 1`cP  /  10
+    ensure -> 1`uP  = 1`mP  / (10 ^ 3)
+    ensure -> 1`nP  = 1`uP  / (10 ^ 3)
+    ; ensure -> 1`pP  = 1`nP  / (10 ^ 3)
+    ; ensure -> 1`fP  = 1`pP  / (10 ^ 3)
+    ; ensure -> 1`aP  = 1`fP  / (10 ^ 3)
+    passed
+
+
+    topic « viscosity - math // conversions
+
+    ensure -> 1`P   =   1`dPa.s
+    passed
+
+
+    topic « viscosity - conforms?
+
+    ensure -> every? viscositySet => conforms? `P
+    passed
+
+    ensure -> every? viscositySet -> x -> not? conforms? x `h
+    passed
+
+    topic « viscosity - convert
+
+    ensure -> same? 1`P convert 1`dPa.s `P
+    ensure -> same? 1`P 1`dPa.s --> `P
+    passed
+
+
+    topic « viscosity - in
+
+    ensure -> same? 1`P in `P 1`dPa.s
+    passed
+
+
+    topic « viscosity - property
+
+    ensure -> every? viscositySet -> x -> 'viscosity = property x
+    passed
+
+
+    topic « viscosity - alternative names
+
+    ensure -> every? [ `poise `poises ] => equal? & `P
+    passed
+
+]
+
+
+topic « kinematicViscosity
+do [
+
+
+    kinematicViscositySet: [
+
+        1`St
+
+        ; Other custom kinematicViscosity units
+        ; area / time
+
+        1`m2/s
+
+    ]
+
+
+    topic « kinematicViscosity - kinematicViscosity?
+
+    ensure -> every? kinematicViscositySet => kinematicViscosity?
+    passed
+
+
+    topic « kinematicViscosity - math // scales
+
+    ; precision loss
+    ensure -> 1`ESt  = 1`PSt  * (10 ^ 3)
+    ensure -> 1`PSt  = 1`TSt  * (10 ^ 3)
+    ensure -> 1`TSt  = 1`GSt  * (10 ^ 3)
+    ensure -> 1`GSt  = 1`MSt  * (10 ^ 3)
+    ensure -> 1`MSt  = 1`kSt  * (10 ^ 3)
+    ensure -> 1`kSt  = 1`hSt  *  10
+    ensure -> 1`hSt  = 1`daSt *  10
+    ensure -> 1`daSt = 1`St   *  10
+    ensure -> 1`dSt  = 1`St   /  10
+    ensure -> 1`cSt  = 1`dSt  /  10
+    ensure -> 1`mSt  = 1`cSt  /  10
+    ensure -> 1`uSt  = 1`mSt  / (10 ^ 3)
+    ensure -> 1`nSt  = 1`uSt  / (10 ^ 3)
+    ; ensure -> 1`pSt  = 1`nSt  / (10 ^ 3)
+    ; ensure -> 1`fSt  = 1`pSt  / (10 ^ 3)
+    ; ensure -> 1`aSt  = 1`fSt  / (10 ^ 3)
+    passed
+
+
+    topic « kinematicViscosity - math // conversions
+
+    ensure -> 1`St   =   1`m2/s
+    passed
+
+
+    topic « kinematicViscosity - conforms?
+
+    ensure -> every? kinematicViscositySet => conforms? `St
+    passed
+
+    ensure -> every? kinematicViscositySet -> x -> not? conforms? x `h
+    passed
+
+    topic « kinematicViscosity - convert
+
+    ensure -> same? 1`St convert 1`m2/s `St
+    ensure -> same? 1`St 1`m2/s --> `St
+    passed
+
+
+    topic « kinematicViscosity - in
+
+    ensure -> same? 1`St in `St 1`m2/s
+    passed
+
+
+    topic « kinematicViscosity - property
+
+    ensure -> every? kinematicViscositySet -> x -> "kinematic viscosity" = to :string property x
+    passed
+
+
+    topic « kinematicViscosity - alternative names
+
+    ensure -> every? [ `stokes ] => equal? & `St
+    passed
+
+]
+
+
+topic « angularVelocity
+do [
+
+
+    angularVelocitySet: [
+
+        1`rpm
+
+        ; Other custom angularVelocity units
+        ; angle / time
+
+        1`rad/s
+
+    ]
+
+
+    topic « angularVelocity - angularVelocity?
+
+    ensure -> every? angularVelocitySet => angularVelocity?
+    passed
+
+
+    topic « angularVelocity - math // scales
+
+    ; precision loss
+    ; ensure -> 1`Erpm  = 1`Prpm  * (10 ^ 3)
+    ensure -> 1`Prpm  = 1`Trpm  * (10 ^ 3)
+    ensure -> 1`Trpm  = 1`Grpm  * (10 ^ 3)
+    ensure -> 1`Grpm  = 1`Mrpm  * (10 ^ 3)
+    ensure -> 1`Mrpm  = 1`krpm  * (10 ^ 3)
+    ensure -> 1`krpm  = 1`hrpm  *  10
+    ensure -> 1`hrpm  = 1`darpm *  10
+    ensure -> 1`darpm = 1`rpm   *  10
+    ensure -> 1`drpm  = 1`rpm   /  10
+    ensure -> 1`crpm  = 1`drpm  /  10
+    ensure -> 1`mrpm  = 1`crpm  /  10
+    ensure -> 1`urpm  = 1`mrpm  / (10 ^ 3)
+    ensure -> 1`nrpm  = 1`urpm  / (10 ^ 3)
+    ; ensure -> 1`prpm  = 1`nrpm  / (10 ^ 3)
+    ; ensure -> 1`frpm  = 1`prpm  / (10 ^ 3)
+    ; ensure -> 1`arpm  = 1`frpm  / (10 ^ 3)
+    passed
+
+
+    topic « angularVelocity - math // conversions
+
+    ensure -> 1`rpm   =   0.1047`rad/s
+    passed
+
+
+    topic « angularVelocity - conforms?
+
+    ensure -> every? angularVelocitySet => conforms? `rpm
+    passed
+
+    ensure -> every? angularVelocitySet -> x -> not? conforms? x `kph
+    passed
+
+    topic « angularVelocity - convert
+
+    ensure -> same? 1`rpm convert 0.1047`rad/s `rpm
+    ensure -> same? 1`rpm 0.1047`rad/s --> `rpm
+    passed
+
+
+    topic « angularVelocity - in
+
+    ensure -> same? 1`rpm in `rpm 0.1047`rad/s
+    passed
+
+
+    topic « angularVelocity - property
+
+    ensure -> every? angularVelocitySet -> x -> "angular velocity" = to :string property x
+    passed
+
+
+    topic « angularVelocity - alternative names
+
+    ensure -> every? [ `rpms ] => equal? & `rpm
+    passed
+
+]
+
+
+topic « thermalInsulance
+do [
+
+
+    thermalInsulanceSet: [
+
+        1`clo
+
+        ; Other custom thermalInsulance units
+        ; area * temperature / power
+
+        1`m2.K/W
+
+    ]
+
+
+    topic « thermalInsulance - thermalInsulance?
+
+    ensure -> every? thermalInsulanceSet => thermalInsulance?
+    passed
+
+    topic « thermalInsulance - math // conversions
+
+    ensure -> 1`clo   =   0.155`m2.K/W
+    passed
+
+
+    topic « thermalInsulance - conforms?
+
+    ensure -> every? thermalInsulanceSet => conforms? `clo
+    passed
+
+    ensure -> every? thermalInsulanceSet -> x -> not? conforms? x `kph
+    passed
+
+    topic « thermalInsulance - convert
+
+    ensure -> same? 1`clo convert 0.155`m2.K/W `clo
+    ensure -> same? 1`clo 0.155`m2.K/W --> `clo
+    passed
+
+
+    topic « thermalInsulance - in
+
+    ensure -> same? 1`clo in `clo 0.155`m2.K/W
+    passed
+
+
+    topic « thermalInsulance - property
+
+    ensure -> every? thermalInsulanceSet -> x -> "thermal insulance" = to :string property x
+    passed
+
+
+    topic « thermalInsulance - alternative names
+
+    ensure -> every? [ `clos ] => equal? & `clo
+    passed
+
+]
+
+
+topic « dataTransferRate
+do [
+
+
+    angularVelocitySet: [
+
+        1`bps
+
+        ; Other custom dataTransferRate units
+        ; information / time
+
+        1`bits/s
+
+    ]
+
+
+    topic « dataTransferRate - dataTransferRate?
+
+    ensure -> every? angularVelocitySet => dataTransferRate?
+    passed
+
+
+    topic « dataTransferRate - math // scales
+
+    ; precision loss
+    ensure -> 1`Ebps  = 1`Pbps  * (10 ^ 3)
+    ensure -> 1`Pbps  = 1`Tbps  * (10 ^ 3)
+    ensure -> 1`Tbps  = 1`Gbps  * (10 ^ 3)
+    ensure -> 1`Gbps  = 1`Mbps  * (10 ^ 3)
+    ensure -> 1`Mbps  = 1`kbps  * (10 ^ 3)
+    ensure -> 1`kbps  = 1`hbps  *  10
+    ensure -> 1`hbps  = 1`dabps *  10
+    ensure -> 1`dabps = 1`bps   *  10
+    ensure -> 1`dbps  = 1`bps   /  10
+    ensure -> 1`cbps  = 1`dbps  /  10
+    ensure -> 1`mbps  = 1`cbps  /  10
+    ensure -> 1`ubps  = 1`mbps  / (10 ^ 3)
+    ensure -> 1`nbps  = 1`ubps  / (10 ^ 3)
+    ; ensure -> 1`pbps  = 1`nbps  / (10 ^ 3)
+    ; ensure -> 1`fbps  = 1`pbps  / (10 ^ 3)
+    ; ensure -> 1`abps  = 1`fbps  / (10 ^ 3)
+    passed
+
+
+    topic « dataTransferRate - math // conversions
+
+    ensure -> 1`bps   =   1`bit/s
+    passed
+
+
+    topic « dataTransferRate - conforms?
+
+    ensure -> every? angularVelocitySet => conforms? `bps
+    passed
+
+    ensure -> every? angularVelocitySet -> x -> not? conforms? x `kph
+    passed
+
+    topic « dataTransferRate - convert
+
+    ensure -> same? 1`bps convert 1`bit/s `bps
+    ensure -> same? 1`bps 1`bit/s --> `bps
+    passed
+
+
+    topic « dataTransferRate - in
+
+    ensure -> same? 1`bps in `bps 1`bit/s
+    passed
+
+
+    topic « dataTransferRate - property
+
+    ensure -> every? angularVelocitySet -> x -> "data-transfer rate" = to :string property x
+    passed
+
+]
+
+
+topic « luminosity
+do [
+
+
+    luminositySet: [
+
+        1`cd
+
+    ]
+
+
+    topic « luminosity - luminosity?
+
+    ensure -> every? luminositySet => luminosity?
+    passed
+
+
+    topic « luminosity - math // scales
+
+    ; precision loss
+    ensure -> 1`Ecd  = 1`Pcd  * (10 ^ 3)
+    ensure -> 1`Pcd  = 1`Tcd  * (10 ^ 3)
+    ensure -> 1`Tcd  = 1`Gcd  * (10 ^ 3)
+    ensure -> 1`Gcd  = 1`Mcd  * (10 ^ 3)
+    ensure -> 1`Mcd  = 1`kcd  * (10 ^ 3)
+    ensure -> 1`kcd  = 1`hcd  *  10
+    ensure -> 1`hcd  = 1`dacd *  10
+    ensure -> 1`dacd = 1`cd   *  10
+    ensure -> 1`dcd  = 1`cd   /  10
+    ensure -> 1`ccd  = 1`dcd  /  10
+    ensure -> 1`mcd  = 1`ccd  /  10
+    ensure -> 1`ucd  = 1`mcd  / (10 ^ 3)
+    ensure -> 1`ncd  = 1`ucd  / (10 ^ 3)
+    ; ensure -> 1`pcd  = 1`ncd  / (10 ^ 3)
+    ; ensure -> 1`fcd  = 1`pcd  / (10 ^ 3)
+    ; ensure -> 1`acd  = 1`fcd  / (10 ^ 3)
+    passed
+
+
+    topic « luminosity - conforms?
+
+    ensure -> every? luminositySet => conforms? `cd
+    passed
+
+    ensure -> every? luminositySet -> x -> not? conforms? x `kph
+    passed
+
+    topic « luminosity - property
+
+    ensure -> every? luminositySet -> x -> 'luminosity = property x
+    passed
+
+
+    topic « luminosity - alternative names
+
+    ensure -> every? [ `candela `candelas ] => equal? & `lx
+    passed
+
+]
+
+
+topic « illuminance
+do [
+
+
+    illuminanceSet: [
+
+        1`lx        1`Lb
+
+        ; Other custom illuminance units
+        ; luminosity / area
+
+        1`cd/m2
+
+    ]
+
+
+    topic « illuminance - illuminance?
+
+    ensure -> every? illuminanceSet => illuminance?
+    passed
+
+
+    topic « illuminance - math // scales
+
+    ; precision loss
+    ensure -> 1`Elx  = 1`Plx  * (10 ^ 3)
+    ensure -> 1`Plx  = 1`Tlx  * (10 ^ 3)
+    ensure -> 1`Tlx  = 1`Glx  * (10 ^ 3)
+    ensure -> 1`Glx  = 1`Mlx  * (10 ^ 3)
+    ensure -> 1`Mlx  = 1`klx  * (10 ^ 3)
+    ensure -> 1`klx  = 1`hlx  *  10
+    ensure -> 1`hlx  = 1`dalx *  10
+    ensure -> 1`dalx = 1`lx   *  10
+    ensure -> 1`dlx  = 1`lx   /  10
+    ensure -> 1`clx  = 1`dlx  /  10
+    ensure -> 1`mlx  = 1`clx  /  10
+    ensure -> 1`ulx  = 1`mlx  / (10 ^ 3)
+    ensure -> 1`nlx  = 1`ulx  / (10 ^ 3)
+    ; ensure -> 1`plx  = 1`nlx  / (10 ^ 3)
+    ; ensure -> 1`flx  = 1`plx  / (10 ^ 3)
+    ; ensure -> 1`alx  = 1`flx  / (10 ^ 3)
+    passed
+
+
+    topic « illuminance - math // conversions
+
+    ; Lb is broken, try:
+    ; $> 1`Lb --> `cd/cm2
+    ; => 260280919/817696623 cd/cm��
+    ; $> 260280919/817696623
+    ; => 0
+
+    ensure -> 1`lx   =   1`cd/m2
+    ; ensure -> 1`Lb   =   1:pi`cd/cm2
+    passed
+
+
+    topic « illuminance - conforms?
+
+    ensure -> every? illuminanceSet => conforms? `lx
+    passed
+
+    ensure -> every? illuminanceSet -> x -> not? conforms? x `kph
+    passed
+
+    topic « illuminance - convert
+
+    ensure -> same? 1`lx convert 1`cd/m2 `lx
+    ensure -> same? 1`lx 1`cd/m2 --> `lx
+    passed
+
+
+    topic « illuminance - in
+
+    ensure -> same? 1`lx in `lx 1`cd/m2
+    passed
+
+
+    topic « illuminance - property
+
+    ensure -> every? illuminanceSet -> x -> 'illuminance = property x
+    passed
+
+
+    topic « illuminance - alternative names
+
+    ensure -> every? [ `lux `luxes ] => equal? & `lx
+    passed
+    ensure -> every? [ `lambert `lamberts ] => equal? & `Lb
+    passed
+
+]
+
+
+topic « luminousFlux
+do [
+
+
+    luminousFluxSet: [
+
+        1`lm
+
+        ; Other custom luminousFlux units
+        ; luminosity * solid angle
+
+        1`cd.sr
+
+    ]
+
+
+    topic « luminousFlux - luminousFlux?
+
+    ensure -> every? luminousFluxSet => luminousFlux?
+    passed
+
+
+    topic « luminousFlux - math // scales
+
+    ; precision loss
+    ensure -> 1`Elm  = 1`Plm  * (10 ^ 3)
+    ensure -> 1`Plm  = 1`Tlm  * (10 ^ 3)
+    ensure -> 1`Tlm  = 1`Glm  * (10 ^ 3)
+    ensure -> 1`Glm  = 1`Mlm  * (10 ^ 3)
+    ensure -> 1`Mlm  = 1`klm  * (10 ^ 3)
+    ensure -> 1`klm  = 1`hlm  *  10
+    ensure -> 1`hlm  = 1`dalm *  10
+    ensure -> 1`dalm = 1`lm   *  10
+    ensure -> 1`dlm  = 1`lm   /  10
+    ensure -> 1`clm  = 1`dlm  /  10
+    ensure -> 1`mlm  = 1`clm  /  10
+    ensure -> 1`ulm  = 1`mlm  / (10 ^ 3)
+    ensure -> 1`nlm  = 1`ulm  / (10 ^ 3)
+    ; ensure -> 1`plm  = 1`nlm  / (10 ^ 3)
+    ; ensure -> 1`flm  = 1`plm  / (10 ^ 3)
+    ; ensure -> 1`alm  = 1`flm  / (10 ^ 3)
+    passed
+
+
+    topic « luminousFlux - math // conversions
+
+    ensure -> 1`lm   =   1`cd.sr
+    passed
+
+
+    topic « luminousFlux - conforms?
+
+    ensure -> every? luminousFluxSet => conforms? `lm
+    passed
+
+    ensure -> every? luminousFluxSet -> x -> not? conforms? x `kph
+    passed
+
+    topic « luminousFlux - convert
+
+    ensure -> same? 1`lm convert 1`cd.sr `lm
+    ensure -> same? 1`lm 1`cd.sr --> `lm
+    passed
+
+
+    topic « luminousFlux - in
+
+    ensure -> same? 1`lm in `lm 1`cd.sr
+    passed
+
+
+    topic « luminousFlux - property
+
+    ensure -> every? luminousFluxSet -> x -> "luminous flux" = to :string property x
+    passed
+
+
+    topic « luminousFlux - alternative names
+
+    ensure -> every? [ `lumen `lumens ] => equal? & `lm
+    passed
+
+]

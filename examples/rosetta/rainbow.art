@@ -1,0 +1,11 @@
+; by @Krenium
+
+loop [
+    #red "R"
+    #orange "A"
+    #yellow "I"
+    #green "N"
+    #blue "B"
+    #indigo "O"
+    #violet "W"
+] [c l] -> prints color c l
