@@ -70,7 +70,7 @@ const
     MagicPower = 6.0
 
     dimList = ["L", "T", "K", "M", "I", "N", "J", "C", "B", "A", "S"]
-    expos = ["⁻³", "⁻²", "⁻¹", "", "", "²", "³", "⁴", "⁵"]
+    expos {.used.} = ["⁻³", "⁻²", "⁻¹", "", "", "²", "³", "⁴", "⁵"]
     expot = {
         "⁻⁵": -5,
         "⁻⁴": -4,
@@ -92,9 +92,6 @@ template prefixId(str: string): string =
 
 template unitId(str: string): string =
     str & "_CoreUnit"
- 
-template getProperty(q: Quantity): string =
-    properties.getOrDefault(q.signature, "NOT FOUND!")
 
 #=======================================
 # Helpers
@@ -578,7 +575,7 @@ macro generateQuantities*(): untyped =
 macro generateConstants*(): untyped =
     let res = nnkStmtList.newTree()
     for (name, content) in pairs(constants):
-        let (definition, quantity, precalculated, description) = content
+        let (definition, quantity, precalculated, _) = content
 
         if precalculated:
             res.add nnkAsgn.newTree(
@@ -711,71 +708,76 @@ macro addPropertyPredicates*(): untyped =
 # Debugging
 #=======================================
 
+# # Templates
+
+# template getProperty(q: Quantity): string =
+#     properties.getOrDefault(q.signature, "NOT FOUND!")
+
 # Overloads
 
 # * we don't really need them, but they are
 #   useful for debugging, at the compiler level only!
 
-proc `+`(a, b: Quantity): Quantity =
-    newQuantity(
-        a.value + b.value,
-        a.atoms
-    )
+# proc `+`(a, b: Quantity): Quantity =
+#     newQuantity(
+#         a.value + b.value,
+#         a.atoms
+#     )
 
-proc `*`(a, b: Quantity): Quantity =
-    newQuantity(
-        a.original * b.original,
-        a.atoms & b.atoms
-    )
+# proc `*`(a, b: Quantity): Quantity =
+#     newQuantity(
+#         a.original * b.original,
+#         a.atoms & b.atoms
+#     )
 
-proc `$`*(q: Quantity): string =
-    result &= $(q.original)
+# proc `$`*(q: Quantity): string =
+#     result &= $(q.original)
 
-    var tbl: OrderedTable[string,int]
+#     var tbl: OrderedTable[string,int]
     
-    for atom in q.atoms:
-        if tbl.hasKeyOrPut(atom.kind, atom.expo):
-            tbl[atom.kind] += atom.expo
-        else:
-            tbl[atom.kind] = atom.expo
+#     for atom in q.atoms:
+#         if tbl.hasKeyOrPut(atom.kind, atom.expo):
+#             tbl[atom.kind] += atom.expo
+#         else:
+#             tbl[atom.kind] = atom.expo
     
-    var num, den: seq[string]
+#     var num, den: seq[string]
 
-    for (unit,expo) in tbl.pairs:
-        if expo > 0:
-            num.add(unit & expos[expo + 3])
-        else:
-            den.add(unit & expos[expo + 3])
+#     for (unit,expo) in tbl.pairs:
+#         if expo > 0:
+#             num.add(unit & expos[expo + 3])
+#         else:
+#             den.add(unit & expos[expo + 3])
 
-    if num.len > 0:
-        result &= " " & num.join("·")
-    else:
-        result &= " 1"
+#     if num.len > 0:
+#         result &= " " & num.join("·")
+#     else:
+#         result &= " 1"
 
-    if den.len > 0:
-        result &= "/" & den.join("·")
+#     if den.len > 0:
+#         result &= "/" & den.join("·")
 
 # Main debugging routines
 
-proc debugAdd(a,b:string) =
-    let pA = parseQuantity(a)
-    let pB = parseQuantity(b)
-    echo a & " + " & b & " = " & $(pA + pB)
+# proc debugAdd(a,b:string) =
+#     let pA = parseQuantity(a)
+#     let pB = parseQuantity(b)
+#     echo a & " + " & b & " = " & $(pA + pB)
 
-proc debugMul(a,b:string) =
-    let pA = parseQuantity(a)
-    let pB = parseQuantity(b)
-    echo a & " * " & b & " = " & $(pA * pB)
+# proc debugMul(a,b:string) =
+#     let pA = parseQuantity(a)
+#     let pB = parseQuantity(b)
+#     echo a & " * " & b & " = " & $(pA * pB)
 
-proc printUnits*() =
-    for unit, quantity in defs:
-        echo unit & " = "
-        echo "\t.original = " & $(quantity.original)
-        echo "\t.value = " & $(quantity.value)
-        echo "\t\t.signature = " & $(quantity.signature)
-        echo "\t\t===> " & $quantity.getProperty()
-        echo "\t.atoms = " & $(quantity.atoms)
-        echo "\t.base = " & $(quantity.base)
-        echo ""
+# proc printUnits*() =
+#     for unit, quantity in defs:
+#         echo unit & " = "
+#         echo "\t.original = " & $(quantity.original)
+#         echo "\t.value = " & $(quantity.value)
+#         echo "\t\t.signature = " & $(quantity.signature)
+#         echo "\t\t===> " & $quantity.getProperty()
+#         echo "\t.atoms = " & $(quantity.atoms)
+#         echo "\t.base = " & $(quantity.base)
+#         echo ""
 
-    echo $(constants)
+#     echo $(constants)
