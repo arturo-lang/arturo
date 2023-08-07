@@ -24,15 +24,15 @@ let
 switch("define", mimallocStatic)
 switch("define", mimallocIncludePath)
 
-case get("cc"):
-    of "gcc", "clang", "icc", "icl":
-        switch("passC", "-ftls-model=initial-exec -fno-builtin-malloc")
-    else:
-        echo "what CC?"
-        echo "CC = " & $(get("cc"))
-        discard
+# case get("cc"):
+#     of "gcc", "clang", "icc", "icl":
+switch("passC", "-ftls-model=initial-exec -fno-builtin-malloc")
+    # else:
+    #     echo "what CC?"
+    #     echo "CC = " & $(get("cc"))
+    #     discard
  
-patchFile("stdlib", "malloc", "src" / "extras" / "mimalloc")
+#patchFile("stdlib", "malloc", "src" / "extras" / "mimalloc")
 
 when defined(windows): 
     switch("dynlibOverride", "pcre64")

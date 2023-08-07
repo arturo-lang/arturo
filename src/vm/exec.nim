@@ -757,4 +757,5 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 of opEnd                :
                     break
 
+        echo "\tExecuted: " & (stringify(op)) & " at " & $(i)
         i += 1
