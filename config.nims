@@ -24,13 +24,11 @@ let
 switch("define", mimallocStatic)
 switch("define", mimallocIncludePath)
 
-# case get("cc"):
-#     of "gcc", "clang", "icc", "icl":
-switch("passC", "-ftls-model=initial-exec -fno-builtin-malloc")
-    # else:
-    #     echo "what CC?"
-    #     echo "CC = " & $(get("cc"))
-    #     discard
+case get("cc"):
+    of "gcc", "clang", "icc", "icl":
+        switch("passC", "-ftls-model=initial-exec -fno-builtin-malloc")
+    else:
+        discard
  
 #patchFile("stdlib", "malloc", "src" / "extras" / "mimalloc")
 
