@@ -192,6 +192,9 @@ template handleVMErrors(blk: untyped): untyped =
             quit(code)
         else:
             quit(1)
+    except:
+        echo "OTHER ERROR"
+        echo getCurrentException().getStackTrace()
 
 #=======================================
 # Methods

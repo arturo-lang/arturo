@@ -124,117 +124,112 @@ when isMainModule and not defined(WEB):
     var code: string
     var arguments: seq[string]
 
-    try:
+    when not defined(PORTABLE):
+        var token = initOptParser()
 
-        when not defined(PORTABLE):
-            var token = initOptParser()
+        var action: CmdAction = evalCode
+        var runConsole  = static readFile("src/scripts/console.art")
+        var runUpdate   = static readFile("src/scripts/update.art")
+        var runModule   = static readFile("src/scripts/module.art")
+        var muted: bool = not isColorFriendlyTerminal()
 
-            var action: CmdAction = evalCode
-            var runConsole  = static readFile("src/scripts/console.art")
-            var runUpdate   = static readFile("src/scripts/update.art")
-            var runModule   = static readFile("src/scripts/module.art")
-            var muted: bool = not isColorFriendlyTerminal()
+        var unrecognizedOption = ""
 
-            var unrecognizedOption = ""
-
-            while true:
-                token.next()
-                case token.kind:
-                    of cmdArgument: 
-                        if code=="":
-                            if action==evalCode:
-                                action = execFile
-                            
-                            code = token.key
-                            break
-                    of cmdShortOption, cmdLongOption:
-                        case token.key:
-                            of "r","repl":
-                                action = evalCode
-                                code = runConsole
-                            of "e","evaluate":
-                                action = evalCode
-                                code = token.val
-                            of "c","compile":
-                                action = writeBcode
-                                code = token.val
-                            of "package-info":
-                                action = showPInfo
-                                code = token.val
-                            of "x","execute":
-                                action = readBcode
-                                code = token.val
-                            of "u","update":
-                                action = evalCode
-                                code = runUpdate
-                            of "m", "module":
-                                action = evalCode
-                                code = runModule
-                                break
-                            of "no-color":
-                                muted = true
-                            of "h","help":
-                                action = showHelp
-                            of "v","version":
-                                action = showVersion
-                            else:
-                                unrecognizedOption = token.key
-                    of cmdEnd: break
-
-            arguments = token.remainingArgs()
-
-            setColors(muted = muted)
-
-            if unrecognizedOption!="" and ((action==evalCode and code=="") or (action notin {execFile, evalCode})):
-                CompilerError_UnrecognizedOption(unrecognizedOption)
-                echo ""
-                printHelp(withHeader=false)
-                quit(1)
-
-            echo "DEBUG: in arturo/main"
-
-            case action:
-                of execFile, evalCode:
+        while true:
+            token.next()
+            case token.kind:
+                of cmdArgument: 
                     if code=="":
-                        code = runConsole
-
-                    when defined(BENCHMARK):
-                        benchmark "doParse / doEval":
-                            discard run(code, arguments, action==execFile)
-                    else:
-                        discard run(code, arguments, action==execFile)
+                        if action==evalCode:
+                            action = execFile
                         
-                of writeBcode:
-                    var target = code & ".bcode"
+                        code = token.key
+                        break
+                of cmdShortOption, cmdLongOption:
+                    case token.key:
+                        of "r","repl":
+                            action = evalCode
+                            code = runConsole
+                        of "e","evaluate":
+                            action = evalCode
+                            code = token.val
+                        of "c","compile":
+                            action = writeBcode
+                            code = token.val
+                        of "package-info":
+                            action = showPInfo
+                            code = token.val
+                        of "x","execute":
+                            action = readBcode
+                            code = token.val
+                        of "u","update":
+                            action = evalCode
+                            code = runUpdate
+                        of "m", "module":
+                            action = evalCode
+                            code = runModule
+                            break
+                        of "no-color":
+                            muted = true
+                        of "h","help":
+                            action = showHelp
+                        of "v","version":
+                            action = showVersion
+                        else:
+                            unrecognizedOption = token.key
+                of cmdEnd: break
 
-                    let evaled = newBytecode(run(code, arguments, isFile=true, doExecute=false))
-                    let dataS = codify(newBlock(evaled.trans.constants), unwrapped=true, safeStrings=true)
-                    let codeS = evaled.trans.instructions
+        arguments = token.remainingArgs()
 
-                    discard writeBytecode(dataS, codeS, target, compressed=true)
+        setColors(muted = muted)
 
-                of readBcode:
-                    let filename = code
-                    let bcode = readBytecode(code)
-                    let parsed = doParse(bcode[0], isFile=false).a[0]
-                    runBytecode(Translation(constants: parsed.a, instructions: bcode[1]), filename, arguments)
+        if unrecognizedOption!="" and ((action==evalCode and code=="") or (action notin {execFile, evalCode})):
+            CompilerError_UnrecognizedOption(unrecognizedOption)
+            echo ""
+            printHelp(withHeader=false)
+            quit(1)
 
-                of showPInfo:
-                    showPackageInfo(code)
+        echo "DEBUG: in arturo/main"
 
-                of showHelp:
-                    printHelp()
-                of showVersion:
-                    echo ArturoVersionTxt
-        else:
-            arguments = commandLineParams()
-            code = static readFile(getEnv("PORTABLE_INPUT"))
-            let portable = static readFile(getEnv("PORTABLE_DATA"))
+        case action:
+            of execFile, evalCode:
+                if code=="":
+                    code = runConsole
 
-            discard run(code, arguments, isFile=false, withData=portable)
-    except:
-        echo "segfault caught!"
-        echo getCurrentException().getStackTrace()
+                when defined(BENCHMARK):
+                    benchmark "doParse / doEval":
+                        discard run(code, arguments, action==execFile)
+                else:
+                    discard run(code, arguments, action==execFile)
+                    
+            of writeBcode:
+                var target = code & ".bcode"
+
+                let evaled = newBytecode(run(code, arguments, isFile=true, doExecute=false))
+                let dataS = codify(newBlock(evaled.trans.constants), unwrapped=true, safeStrings=true)
+                let codeS = evaled.trans.instructions
+
+                discard writeBytecode(dataS, codeS, target, compressed=true)
+
+            of readBcode:
+                let filename = code
+                let bcode = readBytecode(code)
+                let parsed = doParse(bcode[0], isFile=false).a[0]
+                runBytecode(Translation(constants: parsed.a, instructions: bcode[1]), filename, arguments)
+
+            of showPInfo:
+                showPackageInfo(code)
+
+            of showHelp:
+                printHelp()
+            of showVersion:
+                echo ArturoVersionTxt
+    else:
+        arguments = commandLineParams()
+        code = static readFile(getEnv("PORTABLE_INPUT"))
+        let portable = static readFile(getEnv("PORTABLE_DATA"))
+
+        discard run(code, arguments, isFile=false, withData=portable)
 else:
     proc main*(txt: cstring, params: JsObject = jsUndefined): JsObject {.exportc:"A$", varargs.}=
         var str = $(txt)
