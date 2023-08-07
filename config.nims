@@ -32,7 +32,7 @@ case get("cc"):
         echo "CC = " & $(get("cc"))
         discard
  
-#patchFile("stdlib", "malloc", "src" / "extras" / "mimalloc")
+patchFile("stdlib", "malloc", "src" / "extras" / "mimalloc")
 
 when defined(windows): 
     switch("dynlibOverride", "pcre64")
