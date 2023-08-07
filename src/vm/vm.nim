@@ -139,19 +139,19 @@ template initialize(args: seq[string], filename: string, isFile:bool, scriptData
 
     echo "DEBUG: In VM/initialize: pre Config"
 
-    when not defined(WEB):
-        # configuration
-        Config = newStore(
-            initStore(
-                "config",
-                doLoad=false,
-                forceExtension=true,
-                createIfNotExists=true,
-                global=true,
-                autosave=true,
-                kind=NativeStore
-            )
-        )
+    # when not defined(WEB):
+    #     # configuration
+    #     Config = newStore(
+    #         initStore(
+    #             "config",
+    #             doLoad=false,
+    #             forceExtension=true,
+    #             createIfNotExists=true,
+    #             global=true,
+    #             autosave=true,
+    #             kind=NativeStore
+    #         )
+    #     )
 
     echo "DEBUG: In VM/initialize: post Config"
 
