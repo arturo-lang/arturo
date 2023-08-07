@@ -189,8 +189,6 @@ when isMainModule and not defined(WEB):
             printHelp(withHeader=false)
             quit(1)
 
-        echo "DEBUG: in arturo/main"
-
         case action:
             of execFile, evalCode:
                 if code=="":
