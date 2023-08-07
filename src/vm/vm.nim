@@ -155,18 +155,24 @@ template initialize(args: seq[string], filename: string, isFile:bool, scriptData
 
     echo "DEBUG: In VM/initialize: post Config"
 
+    echo "DEBUG: In VM/initialize: pre path-setup"
     when not defined(WEB):
         # paths
         if isFile: env.addPath(filename)
         else: env.addPath(getCurrentDir())
+    echo "DEBUG: In VM/initialize: post path-setup"
 
     Syms = initTable[string,Value]()
 
+    echo "DEBUG: In VM/initialize: pre portableData"
     if portableData != "":
         SetSym("_portable", valueFromJson(portableData))
+    echo "DEBUG: In VM/initialize: post portableData"
 
+    echo "DEBUG: In VM/initialize: pre setupLibrary"
     # library
     setupLibrary()
+    echo "DEBUG: In VM/initialize: post setupLibrary"
 
     # set VM as initialized
     initialized = true
