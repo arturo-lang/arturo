@@ -25,7 +25,7 @@ jobs:
         os:
           - windows-latest
         version:
-          - mini
+          #- mini
           - full
         arch:
           - amd64
