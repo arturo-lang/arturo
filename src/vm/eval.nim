@@ -21,9 +21,8 @@
 
 import hashes, sugar, tables
 
-import vm/[ast, bytecode, values/value, values/printable]
+import vm/[ast, bytecode, values/value]
 import vm/values/custom/[vbinary, vlogical]
- 
 import vm/profiler
 
 #=======================================
@@ -569,7 +568,7 @@ proc doEval*(root: Value, isDictionary=false, isFunctionBlock=false, omitNewline
 
     result = Translation(constants: consts, instructions: it)
 
-    dump(newBytecode(result))
+    #dump(newBytecode(result))
 
     when useStored:
         if vhash != -1:

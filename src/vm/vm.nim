@@ -137,8 +137,6 @@ template initialize(args: seq[string], filename: string, isFile:bool, scriptData
         script = scriptData
     )
 
-    echo "DEBUG: In VM/initialize: pre Config"
-
     when not defined(WEB):
         # configuration
         Config = newStore(
@@ -153,26 +151,18 @@ template initialize(args: seq[string], filename: string, isFile:bool, scriptData
             )
         )
 
-    echo "DEBUG: In VM/initialize: post Config"
-
-    echo "DEBUG: In VM/initialize: pre path-setup"
     when not defined(WEB):
         # paths
         if isFile: env.addPath(filename)
         else: env.addPath(getCurrentDir())
-    echo "DEBUG: In VM/initialize: post path-setup"
 
     Syms = initTable[string,Value]()
 
-    echo "DEBUG: In VM/initialize: pre portableData"
     if portableData != "":
         SetSym("_portable", valueFromJson(portableData))
-    echo "DEBUG: In VM/initialize: post portableData"
 
-    echo "DEBUG: In VM/initialize: pre setupLibrary"
     # library
     setupLibrary()
-    echo "DEBUG: In VM/initialize: post setupLibrary"
 
     # set VM as initialized
     initialized = true
@@ -192,9 +182,6 @@ template handleVMErrors(blk: untyped): untyped =
             quit(code)
         else:
             quit(1)
-    except:
-        echo "OTHER ERROR"
-        echo getCurrentException().getStackTrace()
 
 #=======================================
 # Methods
@@ -211,7 +198,7 @@ when not defined(WEB):
 
     proc run*(code: var string, args: seq[string], isFile: bool, doExecute: bool = true, withData=""): Translation {.exportc:"run".} =
         ## Takes a string of Arturo code and executes it.
-        echo "DEBUG: In VM/run"
+
         handleVMErrors:
 
             # TODO(VM/vm) Would it make sense to `GC_disableMarkAndSweep`?
@@ -226,11 +213,8 @@ when not defined(WEB):
                     CurrentPath = code
 
             initProfiler()
-            echo "DEBUG: In VM/run: pre doParse"
             let mainCode = doParse(code, isFile=isFile)
-            echo "DEBUG: In VM/run: post doParse"
 
-            echo "DEBUG: In VM/run: pre initialize"
             if not initialized:
                 initialize(
                     args, 
@@ -239,16 +223,11 @@ when not defined(WEB):
                     mainCode.data,
                     portableData=withData
                 )
-            echo "DEBUG: In VM/run: post initialize"
 
-            echo "DEBUG: In VM/run: pre doEval"
             let evaled = doEval(mainCode, useStored=false)
-            echo "DEBUG: In VM/run: post doEval"
 
-            echo "DEBUG: In VM/run: pre exec"
             if doExecute:
                 execUnscoped(evaled)
-            echo "DEBUG: In VM/run: post exec"
 
             showProfilerData()
 

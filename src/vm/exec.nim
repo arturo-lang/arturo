@@ -402,8 +402,6 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
 
         op = OpCode(it[i])
 
-        echo "Executing: " & (stringify(op)) & " at " & $(i)# & " with next: " & $(it[i+1])
-
         hookOpProfiler($(op)):
 
             case op:
@@ -757,5 +755,4 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 of opEnd                :
                     break
 
-        echo "\tExecuted: " & (stringify(op)) & " at " & $(i)
         i += 1
