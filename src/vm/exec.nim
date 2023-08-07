@@ -402,7 +402,7 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
 
         op = OpCode(it[i])
 
-        #echo "Executing: " & (stringify(op)) & " at " & $(i)# & " with next: " & $(it[i+1])
+        echo "Executing: " & (stringify(op)) & " at " & $(i)# & " with next: " & $(it[i+1])
 
         hookOpProfiler($(op)):
 
