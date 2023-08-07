@@ -83,6 +83,7 @@ jobs:
         shell: msys2 {0}
         run: |
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
+          ./bin/arturo -v
           ./bin/arturo tools/tester.art
 
       - name: Run unit tests (mini)
@@ -90,6 +91,7 @@ jobs:
         shell: msys2 {0}
         run: |
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
+          ./bin/arturo -v
           ./bin/arturo tools/tester.art
 
       # curl -L https://arturo-lang.s3.amazonaws.com/libcrypto-1_1-x64.dll -o libcrypto-1_1-x64.dll
