@@ -20,7 +20,7 @@ when not defined(WEB):
     import net except Socket
 
 when not defined(NOSQLITE):
-    import db_sqlite as sqlite
+    import extras/db_connector/db_sqlite as sqlite
     #import db_mysql as mysql
 
 when defined(WEB):
