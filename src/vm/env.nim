@@ -22,7 +22,7 @@ when not defined(NOGMP):
     import extras/mpfr
 
 when not defined(NOSQLITE):
-    import sqlite3
+    import extras/db_connector/sqlite3
 
 import pcre
 
