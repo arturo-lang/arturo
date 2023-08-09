@@ -210,7 +210,7 @@ proc `==`*(x: Value, y: Value): bool =
                 if x.dbKind != y.dbKind: return false
                 when not defined(NOSQLITE):
                     if x.dbKind==SqliteDatabase: return cast[uint](x.sqlitedb) == cast[uint](y.sqlitedb)
-                    #elif x.dbKind==MysqlDatabase: return cast[ByteAddress](x.mysqldb) == cast[ByteAddress](y.mysqldb)
+                    #elif x.dbKind==MysqlDatabase: return cast[uint](x.mysqldb) == cast[uint](y.mysqldb)
             of Date:
                 return x.eobj[] == y.eobj[]
             else:
