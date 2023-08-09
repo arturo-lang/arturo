@@ -58,7 +58,7 @@ proc defineSymbols*() =
                 var val {.cursor.}: Value
                 if item.kind == Block: 
                     execUnscoped(item)
-                    val = pop()
+                    val = stack.pop()
                 else:
                     val = item
 
@@ -104,11 +104,11 @@ proc defineSymbols*() =
                             return
 
                         execUnscoped(y)
-                        push(newLogical(pop().b))
+                        push(newLogical(stack.pop().b))
                     else:
                         # block logical
                         execUnscoped(x)
-                        push(newLogical(And(pop().b,y.b)))
+                        push(newLogical(And(stack.pop().b,y.b)))
                 else:
                     # logical block
                     if isFalse(x):
@@ -116,7 +116,7 @@ proc defineSymbols*() =
                         return
 
                     execUnscoped(y)
-                    push(newLogical(pop().b))
+                    push(newLogical(stack.pop().b))
 
     builtin "any?",
         alias       = unaliased, 
@@ -227,11 +227,11 @@ proc defineSymbols*() =
                             return
 
                         execUnscoped(y)
-                        push(newLogical(Not(pop().b)))
+                        push(newLogical(Not(stack.pop().b)))
                     else:
                         # block logical
                         execUnscoped(x)
-                        push(newLogical(Nand(pop().b, y.b)))
+                        push(newLogical(Nand(stack.pop().b, y.b)))
                 else:
                     # logical block
                     if isFalse(x):
@@ -239,7 +239,7 @@ proc defineSymbols*() =
                         return
 
                     execUnscoped(y)
-                    push(newLogical(Not(pop().b)))
+                    push(newLogical(Not(stack.pop().b)))
 
     builtin "nor?",
         alias       = unaliased, 
@@ -278,11 +278,11 @@ proc defineSymbols*() =
                             return
 
                         execUnscoped(y)
-                        push(newLogical(Not(pop().b)))
+                        push(newLogical(Not(stack.pop().b)))
                     else:
                         # block logical
                         execUnscoped(x)
-                        push(newLogical(Nor(pop().b, y.b)))
+                        push(newLogical(Nor(stack.pop().b, y.b)))
                 else:
                     # logical block
                     if isTrue(x):
@@ -290,7 +290,7 @@ proc defineSymbols*() =
                         return
 
                     execUnscoped(y)
-                    push(newLogical(Not(pop().b)))
+                    push(newLogical(Not(stack.pop().b)))
 
     builtin "not?",
         alias       = logicalnot, 
@@ -315,7 +315,7 @@ proc defineSymbols*() =
                 push(newLogical(Not(x.b)))
             else:
                 execUnscoped(x)
-                push(newLogical(Not(pop().b)))
+                push(newLogical(Not(stack.pop().b)))
 
     builtin "or?",
         alias       = logicalor, 
@@ -351,11 +351,11 @@ proc defineSymbols*() =
                             return
 
                         execUnscoped(y)
-                        push(newLogical(pop().b))
+                        push(newLogical(stack.pop().b))
                     else:
                         # block logical
                         execUnscoped(x)
-                        push(newLogical(Or(pop().b, y.b)))
+                        push(newLogical(Or(stack.pop().b, y.b)))
                 else:
                     # logical block
                     if isTrue(x):
@@ -363,7 +363,7 @@ proc defineSymbols*() =
                         return
 
                     execUnscoped(y)
-                    push(newLogical(pop().b))
+                    push(newLogical(stack.pop().b))
 
     constant "true",
         alias       = unaliased,
@@ -422,13 +422,13 @@ proc defineSymbols*() =
                 a = x.b
             else:
                 execUnscoped(x)
-                a = pop().b
+                a = stack.pop().b
 
             if yKind == Logical: 
                 b = y.b
             else:
                 execUnscoped(y)
-                b = pop().b
+                b = stack.pop().b
 
             push(newLogical(Xnor(a, b)))
 
@@ -463,13 +463,13 @@ proc defineSymbols*() =
                 a = x.b
             else:
                 execUnscoped(x)
-                a = pop().b
+                a = stack.pop().b
 
             if yKind == Logical: 
                 b = y.b
             else:
                 execUnscoped(y)
-                b = pop().b
+                b = stack.pop().b
 
             push(newLogical(Xor(a, b)))
             

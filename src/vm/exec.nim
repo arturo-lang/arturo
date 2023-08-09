@@ -153,7 +153,7 @@ template callInternal*(fname: string, getValue: bool, args: varargs[Value]): unt
     callFunction(fun)
 
     when getValue:
-        pop()
+        stack.pop()
 
 # TODO(VM/exec) Leakless blocks not working properly with pre-defined functions
 #  Let's say we have a pre-defined function (e.g. `arg`) and this symbol is used

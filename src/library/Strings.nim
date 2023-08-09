@@ -847,7 +847,7 @@ proc defineSymbols*() =
                     while keepGoing:
                         res = res.replace(Interpolated, proc (match: RegexMatch): string =
                                     execUnscoped(doParse(match.captures[0], isFile=false))
-                                    $(pop())
+                                    $(stack.pop())
                                 )
 
                         # if recursive, check if there's still more embedded tags
