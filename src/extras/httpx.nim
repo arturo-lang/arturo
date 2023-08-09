@@ -15,6 +15,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# TODO(Extras/httpx) update `httpx`
+#  it has been updated + the current version is triggering some
+#  warning with Nim 2.0
+#  labels: 3rd-party, enhancement
 
 import net, nativesockets, os, httpcore, asyncdispatch, strutils
 import options, logging, times, heapqueue, std/monotimes
