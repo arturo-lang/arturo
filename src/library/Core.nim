@@ -421,7 +421,7 @@ proc defineSymbols*() =
             ]
         """:
             #=======================================================
-            let y = pop() # pop the value of the previous operation (hopefully an 'if?' or 'when?')
+            let y = stack.pop() # pop the value of the previous operation (hopefully an 'if?' or 'when?')
             if isFalse(y): 
                 execUnscoped(x)
             
@@ -453,11 +453,11 @@ proc defineSymbols*() =
             
             if checkAttr("that"):
                 execUnscoped(x)
-                if isFalse(pop()):
+                if isFalse(stack.pop()):
                     AssertionError_AssertionFailed(x.codify(), aThat.s)
             else:
                 execUnscoped(x)
-                if isFalse(pop()):
+                if isFalse(stack.pop()):
                     AssertionError_AssertionFailed(x.codify())
 
     builtin "if",
@@ -853,19 +853,19 @@ proc defineSymbols*() =
             let doDiscard = (hadAttr("discard"))
             
             if x.i==1:
-                if doDiscard: discard pop()
+                if doDiscard: discard stack.pop()
                 else: discard
             else:
                 if doDiscard: 
                     var i = 0
                     while i<x.i:
-                        discard pop()
+                        discard stack.pop()
                         i+=1
                 else:
                     var res: ValueArray
                     var i = 0
                     while i<x.i:
-                        res.add pop()
+                        res.add stack.pop()
                         i+=1
                     push(newBlock(res))
 
@@ -908,7 +908,7 @@ proc defineSymbols*() =
                     execUnscoped(preevaledX)
                     execUnscoped(preevaledY)
 
-                    let popped = pop()
+                    let popped = stack.pop()
                     let condition = not (popped.kind==Null or isFalse(popped))
                     if condition:
                         break
@@ -957,7 +957,7 @@ proc defineSymbols*() =
                 else       -> print "a is greater than 2"
         """:
             #=======================================================
-            let z = pop()
+            let z = stack.pop()
             if isFalse(z):
 
                 let top = sTop()
@@ -972,8 +972,8 @@ proc defineSymbols*() =
 
                 if isTrue(sTop()):
                     execUnscoped(y)
-                    discard pop()
-                    discard pop()
+                    discard stack.pop()
+                    discard stack.pop()
                     push(newLogical(true))
             else:
                 push(z)
@@ -1024,13 +1024,13 @@ proc defineSymbols*() =
                 let preevaledY = evalOrGet(y)
 
                 execUnscoped(preevaledX)
-                var popped = pop()
+                var popped = stack.pop()
 
                 while not (popped.kind==Null or isFalse(popped)):
                     handleBranching:
                         execUnscoped(preevaledY)
                         execUnscoped(preevaledX)
-                        popped = pop()
+                        popped = stack.pop()
                     do:
                         discard
 
