@@ -119,18 +119,18 @@ template callByIndex(idx: int):untyped =
             callByName(cnst[idx].s)
 
 template fetchAttributeByIndex(idx: int):untyped =
-    stack.pushAttr(cnst[idx].s, move stack.pop())
+    stack.pushAttr(cnst[idx].s, stack.pop())
 
 template performConditionalJump(symb: untyped, short: static bool=false): untyped =
     when short:
-        let x = move stack.pop()
-        let y = move stack.pop()
+        let x = stack.pop()
+        let y = stack.pop()
         i += 1
         if `symb`(x,y):
             i += int(it[i])
     else:
-        let x = move stack.pop()
-        let y = move stack.pop()
+        let x = stack.pop()
+        let y = stack.pop()
         i += 2
         if `symb`(x,y):
             i += int(uint16(it[i-1]) shl 8 + byte(it[i]))
@@ -153,7 +153,7 @@ template callInternal*(fname: string, getValue: bool, args: varargs[Value]): unt
     callFunction(fun)
 
     when getValue:
-        pop()
+        stack.pop()
 
 # TODO(VM/exec) Leakless blocks not working properly with pre-defined functions
 #  Let's say we have a pre-defined function (e.g. `arg`) and this symbol is used
@@ -311,7 +311,7 @@ proc execFunction*(fun: Value, fid: Hash) =
 
     for arg in fun.params:
         # pop argument and set it
-        SetSym(arg, move stack.pop())
+        SetSym(arg, stack.pop())
 
     if fun.bcode.isNil:
         fun.bcode = newBytecode(doEval(fun.main, isFunctionBlock=true))
@@ -366,7 +366,7 @@ proc execFunctionInline*(fun: Value, fid: Hash) =
 
     for arg in fun.params:
         # pop argument and set it
-        SetSym(arg, move stack.pop())
+        SetSym(arg, stack.pop())
 
     if fun.bcode.isNil:
         fun.bcode = newBytecode(doEval(fun.main, isFunctionBlock=true))
@@ -698,25 +698,25 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
 
                 # conditional jumps
                 of opJmpIf              :
-                    let x = move stack.pop()
+                    let x = stack.pop()
                     i += 1
                     if not (x.kind==Null or isFalse(x)):
                         i += int(it[i])
 
                 of opJmpIfX:
-                    let x = move stack.pop()
+                    let x = stack.pop()
                     i += 2
                     if not (x.kind==Null or isFalse(x)):
                         i += int(uint16(it[i-1]) shl 8 + byte(it[i]))
                 
                 of opJmpIfNot           :
-                    let x = move stack.pop()
+                    let x = stack.pop()
                     i += 1
                     if x.kind==Null or isFalse(x):
                         i += int(it[i])
                 
                 of opJmpIfNotX:
-                    let x = move stack.pop()
+                    let x = stack.pop()
                     i += 2
                     if x.kind==Null or isFalse(x):
                         i += int(uint16(it[i-1]) shl 8 + byte(it[i]))

@@ -188,7 +188,7 @@ proc getInfo*(n: string, v: Value, aliases: SymbolDict):ValueDict =
     result = initOrderedTable[string,Value]()
 
     result["name"] = newString(n)
-    result["address"] = newString(fmt("{cast[ByteAddress](v):#X}"))
+    result["address"] = newString(fmt("{cast[uint](v):#X}"))
     result["type"] = newType(v.kind)
 
     if not v.info.isNil:
@@ -262,7 +262,7 @@ proc printInfo*(n: string, v: Value, aliases: SymbolDict) =
     typeStr = alignLeft(typeStr,30)
 
     # Get address
-    var address = align(fmt("{cast[ByteAddress](v):#X}"), 32)
+    var address = align(fmt("{cast[uint](v):#X}"), 32)
     # if v.kind==Function and v.fnKind==BuiltinFunction:
     #     address = align(fmt("builtin\\{v.module.toLowerAscii()}"), 32)
 

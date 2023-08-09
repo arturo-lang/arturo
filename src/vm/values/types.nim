@@ -15,7 +15,7 @@
 import std/[tables, times, unicode, setutils]
 
 when not defined(NOSQLITE):
-    import db_sqlite as sqlite
+    import extras/db_connector/db_sqlite as sqlite
 
 when defined(WEB):
     import std/jsbigints

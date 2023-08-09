@@ -325,16 +325,20 @@ template normalIntegerModI*(x: var Value, y: int): untyped =
     ## and set result in-place
     x = newInteger(x.i mod notZero(y))
 
+# TODO(VM/values/operators) Could we simply use Nim's stdlib `divmod`
+#  in 2.0.0, `divmod` is apparently a built-in function. If this makes our own `divmod` obsolete,
+#  then we could use that one
+#  labels: values, enhancement, open discussion
 template normalIntegerDivMod*(x, y: int): untyped =
     ## divide+modulo (integer division) two normal Integer values, checking for DivisionByZero
     ## and return result
-    let dm = divmod(x, notZero(y))
+    let dm = maths.divmod(x, notZero(y))
     newBlock(@[newInteger(dm[0]), newInteger(dm[1])])
 
 template normalIntegerDivModI*(x: var Value, y: int): untyped =
     ## divide+modulo (integer division) two normal Integer values, checking for DivisionByZero
     ## and set result in-place
-    let dm = divmod(x.i, notZero(y))
+    let dm = maths.divmod(x.i, notZero(y))
     x = newBlock(@[newInteger(dm[0]), newInteger(dm[1])])
 
 template normalIntegerPow*(x, y: int): untyped =
