@@ -44,6 +44,7 @@ var
 
 template push*(v: Value) = 
     ## push given value onto the stack
+    debugEcho "pushing..."
     hookProcProfiler("stack/push"):
         Stack[SP] = v
         SP += 1
@@ -63,6 +64,7 @@ template push*(v: ValueArray, a: int, b: int, reversed=false, doMove=false) =
             j += 1
 
 template pop*(): Value = 
+    debugEcho "popping..."
     ## pop last value from the stack
     when defined(PROFILER):
         hookProcProfiler("stack/pop"):

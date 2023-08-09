@@ -263,6 +263,7 @@ template require*(name: string, spec: untyped): untyped =
             RuntimeError_NotEnoughArguments(currentBuiltinName, spec.len)
 
     when (static spec.len)>=1 and spec!=NoArgs:
+        debugEcho "requires >= 1 param"
         let x {.inject.} = move stack.pop()
         let xKind {.inject, used.} = x.kind
         when not (ANY in static spec[0][1]):
@@ -270,6 +271,7 @@ template require*(name: string, spec: untyped): untyped =
                 showWrongArgumentTypeError(currentBuiltinName, 0, [x], spec)
                 
         when (static spec.len)>=2:
+            debugEcho "requires >= 2 params"
             let y {.inject.} = move stack.pop()
             let yKind {.inject, used.} = y.kind
             when not (ANY in static spec[1][1]):
@@ -277,11 +279,14 @@ template require*(name: string, spec: untyped): untyped =
                     showWrongArgumentTypeError(currentBuiltinName, 1, [x,y], spec)
                     
             when (static spec.len)>=3:
+                debugEcho "requires 3 params"
                 let z {.inject.} = move stack.pop()
                 let zKind {.inject, used.} = z.kind
                 when not (ANY in static spec[2][1]):
                     if unlikely(not (zKind in (static spec[2][1]))):
                         showWrongArgumentTypeError(currentBuiltinName, 2, [x,y,z], spec)
+
+    debugEcho "FINISHED REQUIRES"
 
 template requireBlockSize*(v: Value, expected: int, maxExpected: int = 0) =
     when not defined(PORTABLE):
