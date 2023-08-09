@@ -451,7 +451,7 @@ proc defineSymbols*() =
             doIterate(itLit=true, itCap=true, itInf=false, itCounter=false, itRolling=false, newBlock()):
                 var unsorted: seq[(ValueArray,Value)]
             do:
-                let popped = move stack.pop()
+                let popped = stack.pop()
 
                 when captured is ValueArray:
                     unsorted.add((captured, popped))
@@ -515,7 +515,7 @@ proc defineSymbols*() =
                 var state: Value = VNULL # important
                 var currentSet: ValueArray
             do:
-                let popped = move stack.pop()
+                let popped = stack.pop()
                 if popped != state:
                     if len(currentSet)>0:
                         if showValue: res.add(newBlock(@[state, newBlock(currentSet)]))
@@ -576,7 +576,7 @@ proc defineSymbols*() =
                 var res: ValueArray
                 var sets = initOrderedTable[Value,ValueArray]()
             do:
-                let popped = move stack.pop()
+                let popped = stack.pop()
 
                 discard sets.hasKeyOrPut(popped, @[])
                 sets[popped].add(captured)
@@ -631,7 +631,7 @@ proc defineSymbols*() =
                 
                     iterateRange(withCap=false, withInf=false, withCounter=false, rolling=false):
                         stoppedAt = indx
-                        if isTrue(move stack.pop()):
+                        if isTrue(stack.pop()):
                             keepGoing = false
                             break
 
@@ -646,7 +646,7 @@ proc defineSymbols*() =
                     
                     iterateBlock(withCap=false, withInf=false, withCounter=false, rolling=false):
                         stoppedAt = indx
-                        if isTrue(move stack.pop()):
+                        if isTrue(stack.pop()):
                             keepGoing = false
                             break
 
@@ -660,7 +660,7 @@ proc defineSymbols*() =
                 doIterate(itLit=true, itCap=true, itInf=false, itCounter=false, itRolling=false, newBlock()):
                     var res: ValueArray
                 do:
-                    if isTrue(move stack.pop()):
+                    if isTrue(stack.pop()):
                         res.add(captured)
                     else:
                         keepGoing = false
@@ -694,7 +694,7 @@ proc defineSymbols*() =
             doIterate(itLit=false, itCap=false, itInf=false, itCounter=false, itRolling=false, VFALSE):
                 var cntr = 0
             do:
-                if isTrue(move stack.pop()):
+                if isTrue(stack.pop()):
                     cntr += 1
             do:
                 push(newInteger(cntr))
@@ -734,7 +734,7 @@ proc defineSymbols*() =
             doIterate(itLit=false, itCap=false, itInf=false, itCounter=false, itRolling=false, VFALSE):
                 discard
             do:
-                if isFalse(move stack.pop()):
+                if isFalse(stack.pop()):
                     push(VFALSE)
                     return
             do:
@@ -816,7 +816,7 @@ proc defineSymbols*() =
                     rang = rang.reversed(safe=true)
                 
                 iterateRange(withCap=true, withInf=false, withCounter=false, rolling=false):
-                    let popped = move stack.pop()
+                    let popped = stack.pop()
                     if isFalse(popped):
                         res.add(captured)
                     else:
@@ -849,7 +849,7 @@ proc defineSymbols*() =
                 var res: ValueArray
 
                 iterateBlock(withCap=true, withInf=false, withCounter=false, rolling=false):
-                    let popped = move stack.pop()
+                    let popped = stack.pop()
                     if isFalse(popped):
                         res.add(captured)
                     else:
@@ -958,7 +958,7 @@ proc defineSymbols*() =
                 res = seed
                 
                 iterateRange(withCap=false, withInf=false, withCounter=false, rolling=true):
-                    res = move stack.pop()
+                    res = stack.pop()
 
                 if unlikely(inPlace): RawInPlaced = res
                 else: push(res)
@@ -984,7 +984,7 @@ proc defineSymbols*() =
                 res = seed
 
                 iterateBlock(withCap=false, withInf=false, withCounter=false, rolling=true):
-                    res = move stack.pop()
+                    res = stack.pop()
 
                 if unlikely(inPlace): RawInPlaced = res
                 else: push(res)
@@ -1021,7 +1021,7 @@ proc defineSymbols*() =
             doIterate(itLit=true, itCap=true, itInf=false, itCounter=false, itRolling=false, newDictionary()):
                 var res = initOrderedTable[string,Value]()
             do:
-                let popped = $(move stack.pop())
+                let popped = $(stack.pop())
                 discard res.hasKeyOrPut(popped, newBlock())
                 res[popped].a.add(captured)
             do:
@@ -1143,7 +1143,7 @@ proc defineSymbols*() =
                 var res: ValueArray = newSeq[Value](rang.len)
                 
                 iterateRange(withCap=false, withInf=false, withCounter=true, rolling=false):
-                    res[cntr] = move stack.pop()
+                    res[cntr] = stack.pop()
 
                 if unlikely(inPlace): RawInPlaced = newBlock(res)
                 else: push(newBlock(res))
@@ -1154,7 +1154,7 @@ proc defineSymbols*() =
                 var res: ValueArray = newSeq[Value](blo.len)
 
                 iterateBlock(withCap=false, withInf=false, withCounter=true, rolling=false):
-                    res[cntr] = move stack.pop()
+                    res[cntr] = stack.pop()
 
                 if unlikely(inPlace): RawInPlaced = newBlock(res)
                 else: push(newBlock(res))
@@ -1190,7 +1190,7 @@ proc defineSymbols*() =
                 var selected: ValueArray
                 var maxVal: Value = VNULL
             do:
-                let popped = move stack.pop()
+                let popped = stack.pop()
                 if selected.len == 0 or popped > maxVal:
                     maxVal = popped
                     when captured is Value:
@@ -1244,7 +1244,7 @@ proc defineSymbols*() =
                 var selected: ValueArray
                 var minVal: Value = VNULL
             do:
-                let popped = move stack.pop()
+                let popped = stack.pop()
                 if selected.len == 0 or popped < minVal:
                     minVal = popped
                     when captured is Value:
@@ -1362,7 +1362,7 @@ proc defineSymbols*() =
                     rang = rang.reversed(safe=true)
                 
                 iterateRange(withCap=true, withInf=false, withCounter=false, rolling=false):
-                    if isTrue(move stack.pop()):
+                    if isTrue(stack.pop()):
                         if likely(not onlyN):
                             res.add(captured)
 
@@ -1399,7 +1399,7 @@ proc defineSymbols*() =
                 var res: ValueArray
 
                 iterateBlock(withCap=true, withInf=false, withCounter=false, rolling=false):
-                    if isTrue(move stack.pop()):
+                    if isTrue(stack.pop()):
                         if likely(not onlyN):
                             res.add(captured)
 
@@ -1465,7 +1465,7 @@ proc defineSymbols*() =
             doIterate(itLit=false, itCap=false, itInf=false, itCounter=false, itRolling=false, VFALSE):
                 discard
             do:
-                if isTrue(move stack.pop()):
+                if isTrue(stack.pop()):
                     push(VTRUE)
                     return
             do:

@@ -263,21 +263,21 @@ template require*(name: string, spec: untyped): untyped =
             RuntimeError_NotEnoughArguments(currentBuiltinName, spec.len)
 
     when (static spec.len)>=1 and spec!=NoArgs:
-        let x {.inject.} = move stack.pop()
+        let x {.inject.} = stack.pop()
         let xKind {.inject, used.} = x.kind
         when not (ANY in static spec[0][1]):
             if unlikely(not (xKind in (static spec[0][1]))):
                 showWrongArgumentTypeError(currentBuiltinName, 0, [x], spec)
                 
         when (static spec.len)>=2:
-            let y {.inject.} = move stack.pop()
+            let y {.inject.} = stack.pop()
             let yKind {.inject, used.} = y.kind
             when not (ANY in static spec[1][1]):
                 if unlikely(not (yKind in (static spec[1][1]))):
                     showWrongArgumentTypeError(currentBuiltinName, 1, [x,y], spec)
                     
             when (static spec.len)>=3:
-                let z {.inject.} = move stack.pop()
+                let z {.inject.} = stack.pop()
                 let zKind {.inject, used.} = z.kind
                 when not (ANY in static spec[2][1]):
                     if unlikely(not (zKind in (static spec[2][1]))):
@@ -292,10 +292,13 @@ template requireBlockSize*(v: Value, expected: int, maxExpected: int = 0) =
             if unlikely(v.a.len < expected or v.a.len > maxExpected):
                 RuntimeError_IncompatibleBlockSize(currentBuiltinName, v.a.len, $(expected) & ".." & $(maxExpected))
 
-
+# TODO(VM/lib) verify implementation of `requireValue`
+#  particularly, the implementation of `pre` as a template and
+#  how it affects C-code generation
+#  labels: vm, enhancement, open discussion
 template requireValue*(v: Value, expected: set[ValueKind], position: int = 1, message: set[ValueKind] | string = {}) = 
     when not defined(PORTABLE):
-        template pre(): untyped = 
+        template pre(): untyped {.redefine.} = 
             when position == 2:
                 valueKind(x) & " "
             elif position == 3:
