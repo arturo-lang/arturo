@@ -292,10 +292,9 @@ template requireBlockSize*(v: Value, expected: int, maxExpected: int = 0) =
             if unlikely(v.a.len < expected or v.a.len > maxExpected):
                 RuntimeError_IncompatibleBlockSize(currentBuiltinName, v.a.len, $(expected) & ".." & $(maxExpected))
 
-
 template requireValue*(v: Value, expected: set[ValueKind], position: int = 1, message: set[ValueKind] | string = {}) = 
     when not defined(PORTABLE):
-        template pre(): untyped = 
+        template pre(): untyped {.redefine.} = 
             when position == 2:
                 valueKind(x) & " "
             elif position == 3:
