@@ -276,7 +276,7 @@ proc defineSymbols*() =
 
                 var res: ValueArray
                 while SP>stop:
-                    res.add(pop())
+                    res.add(stack.pop())
 
                 for r in res.reversed:
                     stdout.write($(r))
@@ -316,7 +316,7 @@ proc defineSymbols*() =
 
                 var res: ValueArray
                 while SP>stop:
-                    res.add(pop())
+                    res.add(stack.pop())
 
                 for r in res.reversed:
                     stdout.write($(r))
