@@ -99,7 +99,7 @@ proc defineSymbols*() =
                     if yKind==Block:
                         # block block
                         execUnscoped(x)
-                        if isFalse(move stack.pop()):
+                        if isFalse(stack.pop()):
                             push(newLogical(false))
                             return
 
@@ -222,7 +222,7 @@ proc defineSymbols*() =
                     if yKind==Block:
                         # block block
                         execUnscoped(x)
-                        if isFalse(move stack.pop()):
+                        if isFalse(stack.pop()):
                             push(newLogical(true))
                             return
 
@@ -273,7 +273,7 @@ proc defineSymbols*() =
                     if yKind==Block:
                         # block block
                         execUnscoped(x)
-                        if isTrue(move stack.pop()):
+                        if isTrue(stack.pop()):
                             push(newLogical(false))
                             return
 
@@ -346,7 +346,7 @@ proc defineSymbols*() =
                     if yKind==Block:
                         # block block
                         execUnscoped(x)
-                        if isTrue(move stack.pop()):
+                        if isTrue(stack.pop()):
                             push(newLogical(true))
                             return
 
