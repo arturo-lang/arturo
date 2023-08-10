@@ -137,35 +137,65 @@ proc defineSymbols*() =
         },
         returns     = {String, Block, Nothing},
         example     = """
-            print chop "books"          ; book
-            print chop chop "books"     ; boo
+            chop "hellox"               ; => "hello"
+            chop chop "hellox"          ; => "hell"
             ..........
-            str: "books"
-            chop 'str                   ; str: "book"
+            str: "some text"
+            chop.times:5 str            ; => some
+            chop.times: neg 5 str       ; => text
             ..........
-            chop [1 2 3 4]              ; => [1 2 3]
+            arr: @1..10
+            chop.times:3 'arr
+            arr                         ; => [1 2 3 4 5 6 7]
             ..........
-            chop.times: 3 "Arturo"      ; Art
+            chop [1 2 3]                ; => [1 2]
+            ..........
+            chop.times:1 [1 2 3]        ; => [1 2]
+            chop.times:2 [1 2 3]        ; => [1]
+            chop.times:3 [1 2 3]        ; => []
+            chop.times:4 [1 2 3]        ; => []
+            ..........
+            chop.times: neg 1 [1 2 3]   ; => [2 3]
+            chop.times: neg 2 [1 2 3]   ; => [3]
         """:
             #=======================================================
-            var times = 1
+            var times = -1
 
             if checkAttr("times"):
-                times = aTimes.i
-
-            if xKind == Literal:
+                times = -aTimes.i
+            
+            template numberInRange(container: untyped): untyped = 
+                container.len >= abs(times)
+                
+            template drop(container: untyped): untyped =
+                if 0 < times:
+                    container[times..^1]
+                else:
+                    container[0.. container.high - abs(times)]
+                
+            if x.kind == Literal:
                 ensureInPlace()
-                if InPlaced.kind == String:
-                    InPlaced.s = InPlaced.s[0..^(times + 1)]
-                elif InPlaced.kind == Block:
-                    if InPlaced.a.len > 0:
-                        InPlaced.a = InPlaced.a[0..^(times + 1)]
+                case InPlaced.kind
+                of String:
+                    if numberInRange(InPlaced.s):
+                        InPlaced.s = InPlaced.s.drop()
+                    else: 
+                        InPlaced.s = ""
+                of Block:
+                    if numberInRange(InPlaced.a):
+                        InPlaced.a = InPlaced.a.drop()
+                    else:
+                        InPlaced.a = newSeq[Value](0)
+                else: discard
             else:
-                if xKind == String:
-                    push(newString(x.s[0..^(times + 1)]))
-                elif xKind == Block:
-                    if x.a.len == 0: push(newBlock())
-                    else: push(newBlock(x.a[0..^(times + 1)]))
+                case x.kind
+                of String:
+                    if numberInRange(x.s): push(newString(x.s.drop()))
+                    else: push(newString(""))
+                of Block:
+                    if numberInRange(x.a): push(newBlock(x.a.drop()))
+                    else: push(newBlock())
+                else: discard
 
 
     # TODO(Collections/combine) should also work with in-place Literals?
@@ -372,35 +402,50 @@ proc defineSymbols*() =
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "drop first *number* of elements from given collection and return the remaining ones",
+        description = "remove first item from given collection",
         args        = {
-            "collection": {String, Block, Literal},
-            "number"    : {Integer}
+            "collection": {String, Block, Literal}
         },
-        attrs       = NoAttrs,
+        attrs       = {
+            "times"     : ({Integer}, "remove multiple items")
+        },
         returns     = {String, Block, Nothing},
         example     = """
+            drop "xhello"               ; => "hello"
+            drop drop "xhello"          ; => "ello"
+            ..........
             str: "some text"
-            drop str 5                  ; => text
-            drop str neg 5              ; => some
+            drop.times:5 str            ; => text
+            drop.times: neg 5 str       ; => some
             ..........
             arr: @1..10
-            drop 'arr 3                   
+            drop.times:3 'arr
             arr                         ; => [4 5 6 7 8 9 10]
             ..........
-            drop [1 2 3] 3              ; => []
-            drop [1 2 3] 4              ; => []
+            drop [1 2 3]                ; => [2 3]
+            ..........
+            drop.times:1 [1 2 3]        ; => [2 3]
+            drop.times:2 [1 2 3]        ; => [3]
+            drop.times:3 [1 2 3]        ; => []
+            drop.times:4 [1 2 3]        ; => []
+            ..........
+            drop.times: neg 1 [1 2 3]   ; => [1 2]
+            drop.times: neg 2 [1 2 3]   ; => [1]
         """:
             #=======================================================
+            var times = 1
+
+            if checkAttr("times"):
+                times = aTimes.i
             
             template numberInRange(container: untyped): untyped = 
-                container.len >= abs(y.i)
+                container.len >= abs(times)
                 
             template drop(container: untyped): untyped =
-                if 0 < y.i:
-                    container[y.i..^1]
+                if 0 < times:
+                    container[times..^1]
                 else:
-                    container[0.. container.high - abs(y.i)]
+                    container[0.. container.high - abs(times)]
                 
             if x.kind == Literal:
                 ensureInPlace()
