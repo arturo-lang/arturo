@@ -374,8 +374,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "remove first item from given collection",
         args        = {
-            "collection": {String, Block, Literal},
-            "number"    : {Integer}
+            "collection": {String, Block, Literal}
         },
         attrs       = NoAttrs,
         returns     = {String, Block, Nothing},
