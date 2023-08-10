@@ -152,20 +152,39 @@ proc defineSymbols*() =
 
             if checkAttr("times"):
                 times = aTimes.i
-
-            if xKind == Literal:
+            
+            template numberInRange(container: untyped): untyped = 
+                container.len >= abs(times)
+                
+            template drop(container: untyped): untyped =
+                if 0 < times:
+                    container[times..^1]
+                else:
+                    container[0.. container.high - abs(times)]
+                
+            if x.kind == Literal:
                 ensureInPlace()
-                if InPlaced.kind == String:
-                    InPlaced.s = InPlaced.s[0..^(times + 1)]
-                elif InPlaced.kind == Block:
-                    if InPlaced.a.len > 0:
-                        InPlaced.a = InPlaced.a[0..^(times + 1)]
+                case InPlaced.kind
+                of String:
+                    if numberInRange(InPlaced.s):
+                        InPlaced.s = InPlaced.s.drop()
+                    else: 
+                        InPlaced.s = ""
+                of Block:
+                    if numberInRange(InPlaced.a):
+                        InPlaced.a = InPlaced.a.drop()
+                    else:
+                        InPlaced.a = newSeq[Value](0)
+                else: discard
             else:
-                if xKind == String:
-                    push(newString(x.s[0..^(times + 1)]))
-                elif xKind == Block:
-                    if x.a.len == 0: push(newBlock())
-                    else: push(newBlock(x.a[0..^(times + 1)]))
+                case x.kind
+                of String:
+                    if numberInRange(x.s): push(newString(x.s.drop()))
+                    else: push(newString(""))
+                of Block:
+                    if numberInRange(x.a): push(newBlock(x.a.drop()))
+                    else: push(newBlock())
+                else: discard
 
 
     # TODO(Collections/combine) should also work with in-place Literals?
