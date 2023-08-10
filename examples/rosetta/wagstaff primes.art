@@ -7,7 +7,7 @@ wagstaff?: function [e][
 summarize: function [n][
     n: ~"|n|"
     s: size n
-    if s > 20 -> n: ((take n 10)++"...")++drop n s-10
+    if s > 20 -> n: ((take n 10)++"...")++drop.times:s-10 n
     n ++ ~" (|s| digits)"
 ]
 
