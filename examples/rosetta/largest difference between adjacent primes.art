@@ -2,7 +2,7 @@
 
 primes: select range.step:2 3 1e6 => prime?
 
-pair: couple primes drop primes 1
+pair: couple primes drop primes
     | maximum'p -> p\1 - p\0
     | <=
 

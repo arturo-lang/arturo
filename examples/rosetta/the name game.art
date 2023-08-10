@@ -3,7 +3,7 @@
 nameGame: function [Name][
     L: take Name 1
     name: lower Name
-    unless in? L "AEIOU" -> drop 'name 1
+    unless in? L "AEIOU" -> drop 'name
     [B F M]: ["b" "f" "m"]
 
     if L="B" -> B: ""
