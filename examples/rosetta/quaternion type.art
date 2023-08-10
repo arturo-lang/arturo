@@ -4,7 +4,7 @@ qnorm: $ => [sqrt fold & [x y] -> x + y*y]
 
 qneg: $ => [map & => neg]
 
-qconj: $[q] [@[q\0] ++ qneg drop q 1]
+qconj: $[q] [@[q\0] ++ qneg drop q]
 
 qaddr: function [q r][
     [a b c d]: q
