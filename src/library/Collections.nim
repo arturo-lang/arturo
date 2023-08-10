@@ -148,10 +148,10 @@ proc defineSymbols*() =
             chop.times: 3 "Arturo"      ; Art
         """:
             #=======================================================
-            var times = 1
+            var times = -1
 
             if checkAttr("times"):
-                times = aTimes.i
+                times = -aTimes.i
             
             template numberInRange(container: untyped): untyped = 
                 container.len >= abs(times)
