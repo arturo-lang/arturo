@@ -33,7 +33,8 @@ when useWinVersion:
   import helpers/sets
 else:
   import posix
-  from osproc import countProcessors
+  when compileOption("threads"):
+    from osproc import countProcessors
 
 
 export httpcore
