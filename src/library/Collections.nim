@@ -372,7 +372,7 @@ proc defineSymbols*() =
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "drop first *number* of elements from given collection and return the remaining ones",
+        description = "remove first item from given collection",
         args        = {
             "collection": {String, Block, Literal},
             "number"    : {Integer}
