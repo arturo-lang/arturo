@@ -393,15 +393,20 @@ proc defineSymbols*() =
             drop [1 2 3] 4              ; => []
         """:
             #=======================================================
+
+            var times = 1
+
+            if checkAttr("times"):
+                times = aTimes.i
             
             template numberInRange(container: untyped): untyped = 
-                container.len >= abs(y.i)
+                container.len >= abs(times)
                 
             template drop(container: untyped): untyped =
-                if 0 < y.i:
-                    container[y.i..^1]
+                if 0 < times:
+                    container[times..^1]
                 else:
-                    container[0.. container.high - abs(y.i)]
+                    container[0.. container.high - abs(times)]
                 
             if x.kind == Literal:
                 ensureInPlace()
