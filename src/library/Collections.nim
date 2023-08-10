@@ -381,16 +381,22 @@ proc defineSymbols*() =
         },
         returns     = {String, Block, Nothing},
         example     = """
+            drop "xhello"               ; => "hello"
+            ..........
             str: "some text"
-            drop str 5                  ; => text
-            drop str neg 5              ; => some
+            drop.times:5 str            ; => text
+            drop.times: neg 5 str       ; => some
             ..........
             arr: @1..10
-            drop 'arr 3                   
+            drop.times:3 'arr
             arr                         ; => [4 5 6 7 8 9 10]
             ..........
-            drop [1 2 3] 3              ; => []
-            drop [1 2 3] 4              ; => []
+            drop [1 2 3]                ; => [2 3]
+            ..........
+            drop.times:1 [1 2 3]        ; => [2 3]
+            drop.times:2 [1 2 3]        ; => [3]
+            drop.times:3 [1 2 3]        ; => []
+            drop.times:4 [1 2 3]        ; => []
         """:
             #=======================================================
             var times = 1
