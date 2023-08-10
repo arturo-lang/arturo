@@ -376,7 +376,9 @@ proc defineSymbols*() =
         args        = {
             "collection": {String, Block, Literal}
         },
-        attrs       = NoAttrs,
+        attrs       = {
+            "times"     : ({Integer}, "remove multiple items")
+        },
         returns     = {String, Block, Nothing},
         example     = """
             str: "some text"
