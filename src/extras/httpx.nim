@@ -691,11 +691,12 @@ proc run*(onRequest: OnRequest) {.inline.} =
   ## See the other ``run`` proc for more info.
   run(onRequest, Settings(port: Port(8080), bindAddr: "", startup: doNothing()))
 
-proc waitEvent(ev: AsyncEvent): Future[void] =
-   var fut = newFuture[void]("waitEvent")
-   proc cb(fd: AsyncFD): bool = fut.complete(); return true
-   addEvent(ev, cb)
-   return fut
+when compileOption("threads"):
+    proc waitEvent(ev: AsyncEvent): Future[void] =
+        var fut = newFuture[void]("waitEvent")
+        proc cb(fd: AsyncFD): bool = fut.complete(); return true
+        addEvent(ev, cb)
+        return fut
 
 proc runAsync*(onRequest: OnRequest, settings: Settings) {.async.} =
   ## Starts the HTTP server and calls `onRequest` for each request.
