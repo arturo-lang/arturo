@@ -137,15 +137,26 @@ proc defineSymbols*() =
         },
         returns     = {String, Block, Nothing},
         example     = """
-            print chop "books"          ; book
-            print chop chop "books"     ; boo
+            chop "hellox"               ; => "hello"
+            chop chop "hellox"          ; => "hell"
             ..........
-            str: "books"
-            chop 'str                   ; str: "book"
+            str: "some text"
+            chop.times:5 str            ; => some
+            chop.times: neg 5 str       ; => text
             ..........
-            chop [1 2 3 4]              ; => [1 2 3]
+            arr: @1..10
+            chop.times:3 'arr
+            arr                         ; => [1 2 3 4 5 6 7]
             ..........
-            chop.times: 3 "Arturo"      ; Art
+            chop [1 2 3]                ; => [1 2]
+            ..........
+            chop.times:1 [1 2 3]        ; => [1 2]
+            chop.times:2 [1 2 3]        ; => [1]
+            chop.times:3 [1 2 3]        ; => []
+            chop.times:4 [1 2 3]        ; => []
+            ..........
+            chop.times: neg 1 [1 2 3]   ; => [2 3]
+            chop.times: neg 2 [1 2 3]   ; => [3]
         """:
             #=======================================================
             var times = -1
