@@ -30,7 +30,7 @@ const useWinVersion   = defined(windows) or defined(nimdoc)
 const usePosixVersion = defined(posix) and not defined(nimdoc)
 
 when useWinVersion:
-  import sets
+  import helpers/sets
 else:
   import posix
   from osproc import countProcessors
