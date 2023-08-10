@@ -417,6 +417,9 @@ proc defineSymbols*() =
             drop.times:2 [1 2 3]        ; => [3]
             drop.times:3 [1 2 3]        ; => []
             drop.times:4 [1 2 3]        ; => []
+            ..........
+            drop.times: neg 1 [1 2 3]   ; => [1 2]
+            drop.times: neg 2 [1 2 3]   ; => [1]
         """:
             #=======================================================
             var times = 1
