@@ -382,6 +382,7 @@ proc defineSymbols*() =
         returns     = {String, Block, Nothing},
         example     = """
             drop "xhello"               ; => "hello"
+            drop drop "xhello"          ; => "ello"
             ..........
             str: "some text"
             drop.times:5 str            ; => text
