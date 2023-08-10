@@ -9,7 +9,7 @@ vsub: function [u v][
 differences: function [block][
     order: attr "order"
     if order = null -> order: 1
-    loop 1..order 'n -> block: vsub block drop block 1
+    loop 1..order 'n -> block: vsub block drop block
     return block
 ]
 
