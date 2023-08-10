@@ -481,26 +481,26 @@ do [
 topic "drop - :string < :string :string"
 do [
 
-    ensure -> "art" = drop "art" 0
+    ensure -> "art" = drop.times:0 "art"
     passed
 
-    ensure -> "rt" = drop "art" 1
-    ensure -> "t" = drop "art" 2
+    ensure -> "rt" = drop "art"
+    ensure -> "t" = drop.times:2 "art"
     passed
 
-    ensure -> "" = drop "art" 3
-    ensure -> "" = drop "art" 4
+    ensure -> "" = drop.times:3 "art"
+    ensure -> "" = drop.times:4 "art"
     passed
 
-    ensure -> "art" = drop "art" neg 0
+    ensure -> "art" = drop.times: neg 0 "art"
     passed
 
-    ensure -> "ar" = drop "art" neg 1
-    ensure -> "a" = drop "art" neg 2
+    ensure -> "ar" = drop.times: neg 1 "art"
+    ensure -> "a" = drop.times: neg 2 "art"
     passed
 
-    ensure -> "" = drop "art" neg 3
-    ensure -> "" = drop "art" neg 4
+    ensure -> "" = drop.times: neg 3 "art"
+    ensure -> "" = drop.times: neg 4 "art"
     passed
 
 ]
@@ -508,35 +508,35 @@ do [
 topic "drop - :string < :string (literal) :string"
 do [
 
-    a: "art", drop 'a 0
+    a: "art", drop.times:0 'a
     ensure -> "art" = a
     passed
 
-    a: "art", drop 'a 1
+    a: "art", drop 'a
     ensure -> "rt" = a
-    a: "art", drop 'a 2
+    a: "art", drop.times:2 'a
     ensure -> "t" = a
     passed
 
-    a: "art", drop 'a 3
+    a: "art", drop.times:3 'a
     ensure -> "" = a
-    a: "art", drop 'a 4
+    a: "art", drop.times:4 'a
     ensure -> "" = a
     passed
 
-    a: "art", drop 'a neg 0
+    a: "art", drop.times: neg 0 'a
     ensure -> "art" = a
     passed
 
-    a: "art", drop 'a neg 1
+    a: "art", drop.times: neg 1 'a
     ensure -> "ar" = a
-    a: "art", drop 'a neg 2
+    a: "art", drop.times: neg 2 'a
     ensure -> "a" = a
     passed
 
-    a: "art", drop 'a neg 3
+    a: "art", drop.times: neg 3 'a
     ensure -> "" = a
-    a: "art", drop 'a neg 4
+    a: "art", drop.times: neg 4 'a
     ensure -> "" = a
     passed
 
@@ -545,26 +545,26 @@ do [
 topic "drop - :block < :block :block"
 do [
 
-    ensure -> [a b c] = drop [a b c] 0
+    ensure -> [a b c] = drop.times:0 [a b c]
     passed
 
-    ensure -> [b c] = drop [a b c] 1
-    ensure -> [c] = drop [a b c] 2
+    ensure -> [b c] = drop [a b c]
+    ensure -> [c] = drop.times:2 [a b c]
     passed
 
-    ensure -> [] = drop [a b c] 3
-    ensure -> [] = drop [a b c] 4
+    ensure -> [] = drop.times:3 [a b c]
+    ensure -> [] = drop.times:4 [a b c]
     passed
 
-    ensure -> [a b c] = drop [a b c] neg 0
+    ensure -> [a b c] = drop.times: neg 0 [a b c]
     passed
 
-    ensure -> [a b] = drop [a b c] neg 1
-    ensure -> [a] = drop [a b c] neg 2
+    ensure -> [a b] = drop.times: neg 1 [a b c]
+    ensure -> [a] = drop.times: neg 2 [a b c]
     passed
 
-    ensure -> [] = drop [a b c] neg 3
-    ensure -> [] = drop [a b c] neg 4
+    ensure -> [] = drop.times: neg 3 [a b c]
+    ensure -> [] = drop.times: neg 4 [a b c]
     passed
 
 ]
@@ -572,35 +572,35 @@ do [
 topic "drop - :block < :block (literal) :block"
 do [
 
-    a: [a b c], drop 'a 0
+    a: [a b c], drop.times:0 'a
     ensure -> [a b c] = a
     passed
 
-    a: [a b c], drop 'a 1
+    a: [a b c], drop 'a
     ensure -> [b c] = a
-    a: [a b c], drop 'a 2
+    a: [a b c], drop.times:2 'a
     ensure -> [c] = a
     passed
 
-    a: [a b c], drop 'a 3
+    a: [a b c], drop.times:3 'a
     ensure -> [] = a
-    a: [a b c], drop 'a 4
+    a: [a b c], drop.times:4 'a
     ensure -> [] = a
     passed
 
-    a: [a b c], drop 'a neg 0
+    a: [a b c], drop.times: neg 0 'a
     ensure -> [a b c] = a
     passed
 
-    a: [a b c], drop 'a neg 1
+    a: [a b c], drop.times: neg 1 'a
     ensure -> [a b] = a
-    a: [a b c], drop 'a neg 2
+    a: [a b c], drop.times: neg 2 'a
     ensure -> [a] = a
     passed
 
-    a: [a b c], drop 'a neg 3
+    a: [a b c], drop.times: neg 3 'a
     ensure -> [] = a
-    a: [a b c], drop 'a neg 4
+    a: [a b c], drop.times: neg 4 'a
     ensure -> [] = a
     passed
 
