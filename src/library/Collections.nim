@@ -393,7 +393,6 @@ proc defineSymbols*() =
             drop [1 2 3] 4              ; => []
         """:
             #=======================================================
-
             var times = 1
 
             if checkAttr("times"):
