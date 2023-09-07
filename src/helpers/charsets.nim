@@ -76,7 +76,8 @@ const
         "sw": "abcdefghijklmnoprstuvwyz",
         "tl": "abcdefghijklmnñ%opqrstuvwxyz",
         "tr": "abcçdefgğhıijklmnoöprsştuüvyz",
-        "uk": "абвгґдеєжзиіїйклмнопрстуфхцчшщьюя"
+        "uk": "абвгґдеєжзиіїйклмнопрстуфхцчшщьюя",
+        "vi": "aăâbcdđeêghiklmnoôơprtuưvxy",
     }.toTable
 
     # extra characters that can be found in a given language, by ISO 639-1 code,
@@ -96,7 +97,8 @@ const
         "it": "àéèíìîóòúù",
         "pt": "áàâãäçéêëíïóõöúü",
         "ru": "а́е́и́о́у́э́",
-        "sl": "áȃȁćđéèȇẹ́ẹ̑ȅíȋȉóȏọ́ọ̑ȍqŕȓúȗȕwxy"
+        "sl": "áȃȁćđéèȇẹ́ẹ̑ȅíȋȉóȏọ́ọ̑ȍqŕȓúȗȕwxy",
+        "vi": "áắấàằầảẳẩãẵẫạặậéếèềẻểẽễẹệíìỉĩịóốớòồờỏổởõỗỡọộợúứùừủửũữụựýỳỷỹỵ",
     }.toTable
 
     # di- or tri-graphs that can be found in a given language, by ISO 639-1 code,
@@ -110,7 +112,8 @@ const
         "mt": "għ,ie",
         "sk": "dz,dž,ch",
         "sq": "dh,gj,ll,nj,rr,sh,th,xh,zh",
-        "tl": "ng"
+        "tl": "ng",
+        "vi": "gi,kh,ng,nh,ph,qu,th,tr,"
     }.toTable
 
 #=======================================
