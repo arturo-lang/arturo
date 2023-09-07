@@ -18,9 +18,6 @@ import vm/values/value
 # Constants
 #=======================================
 
-# TODO(Strings\alphabet) add support for Vietnamese alphabet -> vi
-#  label: library, enhancement, easy
-
 const
     NgraphReplacement = "%".runeAt(0)
 
