@@ -110,7 +110,7 @@ const
         "sk": "dz,dž,ch",
         "sq": "dh,gj,ll,nj,rr,sh,th,xh,zh",
         "tl": "ng",
-        "vi": "gi,kh,ng,nh,ph,qu,th,tr,"
+        "vi": "gi,kh,ng,nh,ph,qu,th,tr"
     }.toTable
 
 #=======================================
