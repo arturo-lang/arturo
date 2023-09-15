@@ -190,64 +190,68 @@ proc getInfo*(n: string, v: Value, aliases: SymbolDict):ValueDict =
     result["name"] = newString(n)
     result["address"] = newString(fmt("{cast[uint](v):#X}"))
     result["type"] = newType(v.kind)
+    
+    if v.info.isNil:
+        return
+    
+    # ====> In case of 'info attribute be present: 
+    
+    if v.info.descr != "":
+        result["description"] = newString(v.info.descr)
 
-    if not v.info.isNil:
-        if v.info.descr != "":
-            result["description"] = newString(v.info.descr)
+    if v.info.module != "":
+        result["module"] = newString(v.info.module)
 
-        if v.info.module != "":
-            result["module"] = newString(v.info.module)
+    when defined(DOCGEN):
+        if v.info.line != 0:
+            result["line"] = newInteger(v.info.line)
+            result["source"] = newString("https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/" & result["module"].s & ".nim#L" & $(result["line"].i))
+
+    if v.info.kind==Function:
+        var args = initOrderedTable[string,Value]()
+        if v.info.args.len > 0 and (toSeq(v.info.args.keys))[0]!="":
+            for k,spec in v.args:
+                var specs:ValueArray
+                for s in spec:
+                    specs.add(newType(s))
+
+                args[k] = newBlock(specs)
+        result["args"] = newDictionary(args)
+
+        var attrs = initOrderedTable[string,Value]()
+        if v.info.attrs.len > 0 and (toSeq(v.info.attrs.keys))[0]!="":
+            for k,dd in v.info.attrs:
+                let spec = dd[0]
+                let descr = dd[1]
+
+                var ss = initOrderedTable[string,Value]()
+
+                var specs:ValueArray
+                for s in spec:
+                    specs.add(newType(s))
+
+                ss["types"] = newBlock(specs)
+                ss["description"] = newString(descr)
+
+                attrs[k] = newDictionary(ss)
+        result["attrs"] = newDictionary(attrs)
+
+        var returns:ValueArray
+        if v.info.returns.len > 0:
+            for ret in v.info.returns:
+                returns.add(newType(ret))
+        else:
+            returns = @[newType(Nothing)]
+
+        result["returns"] = newBlock(returns)
+
+        let alias = getAlias(n, aliases)
+        if alias[0]!="":
+            result["alias"] = newString(alias[0])
+            result["infix?"] = newLogical(alias[1]==InfixPrecedence)
 
         when defined(DOCGEN):
-            if v.info.line != 0:
-                result["line"] = newInteger(v.info.line)
-                result["source"] = newString("https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/" & result["module"].s & ".nim#L" & $(result["line"].i))
-
-        if v.info.kind==Function:
-            var args = initOrderedTable[string,Value]()
-            if v.info.args.len > 0 and (toSeq(v.info.args.keys))[0]!="":
-                for k,spec in v.args:
-                    var specs:ValueArray
-                    for s in spec:
-                        specs.add(newType(s))
-
-                    args[k] = newBlock(specs)
-            result["args"] = newDictionary(args)
-
-            var attrs = initOrderedTable[string,Value]()
-            if v.info.attrs.len > 0 and (toSeq(v.info.attrs.keys))[0]!="":
-                for k,dd in v.info.attrs:
-                    let spec = dd[0]
-                    let descr = dd[1]
-
-                    var ss = initOrderedTable[string,Value]()
-
-                    var specs:ValueArray
-                    for s in spec:
-                        specs.add(newType(s))
-
-                    ss["types"] = newBlock(specs)
-                    ss["description"] = newString(descr)
-
-                    attrs[k] = newDictionary(ss)
-            result["attrs"] = newDictionary(attrs)
-
-            var returns:ValueArray
-            if v.info.returns.len > 0:
-                for ret in v.info.returns:
-                    returns.add(newType(ret))
-            else:
-                returns = @[newType(Nothing)]
-
-            result["returns"] = newBlock(returns)
-
-            let alias = getAlias(n, aliases)
-            if alias[0]!="":
-                result["alias"] = newString(alias[0])
-                result["infix?"] = newLogical(alias[1]==InfixPrecedence)
-
-            when defined(DOCGEN):
-                result["example"] = newStringBlock(splitExamples(v.info.example))
+            result["example"] = newStringBlock(splitExamples(v.info.example))
 
 # TODO(Helpers/helper) embed "see also" functions in info screens
 #  related: https://github.com/arturo-lang/arturo/issues/466#issuecomment-1065274429
