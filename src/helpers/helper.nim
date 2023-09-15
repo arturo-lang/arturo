@@ -206,48 +206,53 @@ proc getInfo*(n: string, v: Value, aliases: SymbolDict):ValueDict =
             result["line"] = newInteger(v.info.line)
             result["source"] = newString("https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/" & result["module"].s & ".nim#L" & $(result["line"].i))
 
-    if v.info.kind==Function:
-        var args = initOrderedTable[string,Value]()
-        if v.info.args.len > 0 and (toSeq(v.info.args.keys))[0]!="":
-            for k,spec in v.args:
-                var specs:ValueArray
-                for s in spec:
-                    specs.add(newType(s))
 
-                args[k] = newBlock(specs)
-        result["args"] = newDictionary(args)
+    if v.info.kind != Function:
+        return
+    
+    # ====> In case of 'v being a function: 
 
-        var attrs = initOrderedTable[string,Value]()
-        if v.info.attrs.len > 0 and (toSeq(v.info.attrs.keys))[0]!="":
-            for k,dd in v.info.attrs:
-                let spec = dd[0]
-                let descr = dd[1]
+    var args = initOrderedTable[string,Value]()
+    if v.info.args.len > 0 and (toSeq(v.info.args.keys))[0]!="":
+        for k,spec in v.args:
+            var specs:ValueArray
+            for s in spec:
+                specs.add(newType(s))
 
-                var ss = initOrderedTable[string,Value]()
+            args[k] = newBlock(specs)
+    result["args"] = newDictionary(args)
 
-                var specs:ValueArray
-                for s in spec:
-                    specs.add(newType(s))
+    var attrs = initOrderedTable[string,Value]()
+    if v.info.attrs.len > 0 and (toSeq(v.info.attrs.keys))[0]!="":
+        for k,dd in v.info.attrs:
+            let spec = dd[0]
+            let descr = dd[1]
 
-                ss["types"] = newBlock(specs)
-                ss["description"] = newString(descr)
+            var ss = initOrderedTable[string,Value]()
 
-                attrs[k] = newDictionary(ss)
-        result["attrs"] = newDictionary(attrs)
+            var specs:ValueArray
+            for s in spec:
+                specs.add(newType(s))
 
-        var returns:ValueArray
-        if v.info.returns.len > 0:
-            for ret in v.info.returns:
-                returns.add(newType(ret))
-        else:
-            returns = @[newType(Nothing)]
+            ss["types"] = newBlock(specs)
+            ss["description"] = newString(descr)
 
-        result["returns"] = newBlock(returns)
+            attrs[k] = newDictionary(ss)
+    result["attrs"] = newDictionary(attrs)
 
-        let alias = getAlias(n, aliases)
-        if alias[0]!="":
-            result["alias"] = newString(alias[0])
-            result["infix?"] = newLogical(alias[1]==InfixPrecedence)
+    var returns:ValueArray
+    if v.info.returns.len > 0:
+        for ret in v.info.returns:
+            returns.add(newType(ret))
+    else:
+        returns = @[newType(Nothing)]
+
+    result["returns"] = newBlock(returns)
+
+    let alias = getAlias(n, aliases)
+    if alias[0]!="":
+        result["alias"] = newString(alias[0])
+        result["infix?"] = newLogical(alias[1]==InfixPrecedence)
 
 # TODO(Helpers/helper) embed "see also" functions in info screens
 #  related: https://github.com/arturo-lang/arturo/issues/466#issuecomment-1065274429
