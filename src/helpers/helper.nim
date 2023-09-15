@@ -198,8 +198,10 @@ proc getInfo*(n: string, v: Value, aliases: SymbolDict):ValueDict =
     
     if v.info.descr != "":  result["description"] = newString(v.info.descr) 
     if v.info.module != "": result["module"]      = newString(v.info.module)
-
+    
     when defined(DOCGEN):
+        
+        result["example"] = newStringBlock(splitExamples(v.info.example))
         if v.info.line != 0:
             result["line"] = newInteger(v.info.line)
             result["source"] = newString("https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/" & result["module"].s & ".nim#L" & $(result["line"].i))
@@ -246,9 +248,6 @@ proc getInfo*(n: string, v: Value, aliases: SymbolDict):ValueDict =
         if alias[0]!="":
             result["alias"] = newString(alias[0])
             result["infix?"] = newLogical(alias[1]==InfixPrecedence)
-
-        when defined(DOCGEN):
-            result["example"] = newStringBlock(splitExamples(v.info.example))
 
 # TODO(Helpers/helper) embed "see also" functions in info screens
 #  related: https://github.com/arturo-lang/arturo/issues/466#issuecomment-1065274429
