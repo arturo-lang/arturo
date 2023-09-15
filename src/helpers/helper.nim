@@ -212,9 +212,14 @@ proc getInfo*(n: string, v: Value, aliases: SymbolDict):ValueDict =
     
     # ====> In case of 'v being a function: 
 
+    ## Checks if the function value has arguments or attributes
+    ## * spec: can be 'args or 'attrs
+    template validSpec(value: Value, spec: untyped): bool =
+        value.info.spec.len > 0 and (toSeq(value.info.spec.keys))[0] != ""
+    
     var args = initOrderedTable[string,Value]()
-    if v.info.args.len > 0 and (toSeq(v.info.args.keys))[0]!="":
-        for k,spec in v.args:
+    if v.validSpec(args):        
+        for k, spec in v.args:
             var specs:ValueArray
             for s in spec:
                 specs.add(newType(s))
@@ -223,7 +228,7 @@ proc getInfo*(n: string, v: Value, aliases: SymbolDict):ValueDict =
     result["args"] = newDictionary(args)
 
     var attrs = initOrderedTable[string,Value]()
-    if v.info.attrs.len > 0 and (toSeq(v.info.attrs.keys))[0]!="":
+    if v.validSpec(attrs):
         for k,dd in v.info.attrs:
             let spec = dd[0]
             let descr = dd[1]
