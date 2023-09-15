@@ -216,18 +216,19 @@ proc getInfo*(n: string, v: Value, aliases: SymbolDict):ValueDict =
     ## * spec: can be 'args or 'attrs
     template validSpec(value: Value, spec: untyped): bool =
         value.info.spec.len > 0 and (toSeq(value.info.spec.keys))[0] != ""
+        
+    var funArgs  = initOrderedTable[string,Value]()
+    var funAttrs = initOrderedTable[string,Value]()
     
-    var args = initOrderedTable[string,Value]()
     if v.validSpec(args):        
         for k, spec in v.args:
             var specs:ValueArray
             for s in spec:
                 specs.add(newType(s))
 
-            args[k] = newBlock(specs)
-    result["args"] = newDictionary(args)
+            funArgs[k] = newBlock(specs)
+    result["args"] = newDictionary(funArgs)
 
-    var attrs = initOrderedTable[string,Value]()
     if v.validSpec(attrs):
         for k,dd in v.info.attrs:
             let spec = dd[0]
@@ -242,8 +243,8 @@ proc getInfo*(n: string, v: Value, aliases: SymbolDict):ValueDict =
             ss["types"] = newBlock(specs)
             ss["description"] = newString(descr)
 
-            attrs[k] = newDictionary(ss)
-    result["attrs"] = newDictionary(attrs)
+            funAttrs[k] = newDictionary(ss)
+    result["attrs"] = newDictionary(funAttrs)
 
     var returns:ValueArray
     if v.info.returns.len > 0:
