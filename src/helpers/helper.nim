@@ -196,11 +196,8 @@ proc getInfo*(n: string, v: Value, aliases: SymbolDict):ValueDict =
     
     # ====> In case of 'info attribute be present: 
     
-    if v.info.descr != "":
-        result["description"] = newString(v.info.descr)
-
-    if v.info.module != "":
-        result["module"] = newString(v.info.module)
+    if v.info.descr != "":  result["description"] = newString(v.info.descr) 
+    if v.info.module != "": result["module"]      = newString(v.info.module)
 
     when defined(DOCGEN):
         if v.info.line != 0:
