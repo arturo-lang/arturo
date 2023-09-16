@@ -221,13 +221,15 @@ proc getInfo*(n: string, v: Value, aliases: SymbolDict):ValueDict =
     template validSpec(value: Value, spec: untyped): bool =
         value.info.spec.len > 0 and (toSeq(value.info.spec.keys))[0] != ""
         
+    template listTypes(values: untyped): Value = 
+        newBlock collect(for val in values: newType val)
+        
     var funArgs  = initOrderedTable[string,Value]()
     var funAttrs = initOrderedTable[string,Value]()
     
     if v.validSpec(args):        
-        for key, spec in v.args:
-            funArgs[key] = newBlock collect do:
-                for s in spec: newType(s)
+        for key, spec in v.args: 
+            funArgs[key] = spec.listTypes()
 
     if v.validSpec(attrs):
         for k,dd in v.info.attrs:
@@ -235,8 +237,7 @@ proc getInfo*(n: string, v: Value, aliases: SymbolDict):ValueDict =
             let descr = dd[1]
             var ss    = initOrderedTable[string,Value]()
 
-            ss["types"] = newBlock collect do:
-                for s in spec: newType(s)
+            ss["types"] = spec.listTypes()
                 
             ss["description"] = newString(descr)
             funAttrs[k] = newDictionary(ss)
@@ -244,8 +245,7 @@ proc getInfo*(n: string, v: Value, aliases: SymbolDict):ValueDict =
     result["args"]    = newDictionary(funArgs)
     result["attrs"]   = newDictionary(funAttrs)
     result["returns"] = if v.info.returns.len == 0: 
-        newBlock(@[newType(Nothing)]) else: newBlock collect do:
-            for ret in v.info.returns: newType(ret)
+        newBlock(@[newType(Nothing)]) else: v.info.returns.listTypes()
 
     let alias = getAlias(n, aliases)
     if alias[0]!="":
