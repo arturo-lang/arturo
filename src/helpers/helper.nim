@@ -6,10 +6,6 @@
 # @file: helpers/datasource.nim
 #=======================================================
 
-# TODO(Helpers/helper) General cleanup needed
-#  Too much commented-out code, that's - probably - not needed whatsoever...
-#  labels: helpers, cleanup
-
 #=======================================
 # Libraries
 #=======================================
@@ -28,7 +24,7 @@ import vm/values/[printable, value]
 
 
 #=======================================
-# Type
+# Types
 #=======================================
 
 type
@@ -150,7 +146,7 @@ proc getUsageForFunction(obj: ValueObj): seq[string] =
 
     for arg in args[1..^1]:
         let
-            templateArg = fmt"{arg[0]}"
+            templateArg  = fmt"{arg[0]}"
             templateType = fmt"{fg(grayColor)}{getTypeString(arg[1])}"
         result.add fmt"{spaceBefore} {templateArg} {templateType}"
 
@@ -163,9 +159,9 @@ proc getOptionsForFunction(value: Value): seq[string] =
 
     var maxLen = 0
     for attr in attrs:
-        let ts = getTypeString(attr[1][0])
-        if ts != ":logical":
-            let len = fmt".{attr[0]} {ts}".len
+        let typeStr = getTypeString(attr[1][0])
+        if typeStr != ":logical":
+            let len = fmt".{attr[0]} {typeStr}".len
             if len > maxLen: 
                 maxLen = len
         else:
@@ -174,17 +170,19 @@ proc getOptionsForFunction(value: Value): seq[string] =
                 maxLen = len
 
     for attr in attrs:
-        let ts = getTypeString(attr[1][0])
-        var leftSide: string
-        var myLen = maxLen
-        if ts != ":logical":
-            leftSide = fmt"{fg(cyanColor)}.{attr[0]} {fg(grayColor)}{ts}"
+        let typeStr = getTypeString(attr[1][0])
+        var 
+            leftSide: string
+            myLen = maxLen
+        
+        if typeStr != ":logical":
+            leftSide = fmt"{fg(cyanColor)}.{attr[0]} {fg(grayColor)}{typeStr}"
             myLen += len(fmt"{fg(cyanColor)}{fg(grayColor)}")
         else:
             leftSide = fmt"{fg(cyanColor)}.{attr[0]}"
             myLen += len(fmt"{fg(cyanColor)}")
         
-        result.add fmt"{alignLeft(leftSide,myLen)} {resetColor}-> {attr[1][1]}"
+        result.add fmt"{alignLeft(leftSide, myLen)} {resetColor}-> {attr[1][1]}"
 
 
 when defined(DOCGEN):
@@ -223,20 +221,20 @@ when defined(DOCGEN):
 
         let highlighted = code.splitLines().map((line)=>
             line.multiReplace(@[
-                colorizeToken(commentColor, """(;.+)$"""),
-                colorizeToken(stringColor, """(\"[^\"]+\")"""),
-                colorizeToken(stringColor, """(`[^\`]+`)"""),
-                colorizeToken(literalColor, """('[\w]+\b\??:?)"""),
-                colorizeToken(labelColor, """([\w]+\b\??:)"""),
-                colorizeToken(sugarColor, """(->|=>|\||\:\:|[\-]{3,})"""),
+                colorizeToken(commentColor,  """(;.+)$"""),
+                colorizeToken(stringColor,   """(\"[^\"]+\")"""),
+                colorizeToken(stringColor,   """(`[^\`]+`)"""),
+                colorizeToken(literalColor,  """('[\w]+\b\??:?)"""),
+                colorizeToken(labelColor,    """([\w]+\b\??:)"""),
+                colorizeToken(sugarColor,    """(->|=>|\||\:\:|[\-]{3,})"""),
                 colorizeToken(functionColor, """((?<!')\b(all|and|any|ascii|attr|attribute|attributeLabel|binary|block|char|contains|database|date|dictionary|empty|equal|even|every|exists|false|floating|function|greater|greaterOrEqual|if|in|inline|integer|is|key|label|leap|less|lessOrEqual|literal|logical|lower|nand|negative|nor|not|notEqual|null|numeric|odd|or|path|pathLabel|positive|prefix|prime|set|some|sorted|standalone|string|subset|suffix|superset|symbol|true|try|type|unless|upper|when|whitespace|word|xnor|xor|zero)\?(?!:))"""),
-                colorizeToken(symbolColor, """(<\:|\-\:|ø|∞|@|#|\+|<=>|=>>|<->|-->|<-->|==>|<==>|<\||\|\-|\|=|\||\*|\$|\-|\%|\/|[\.]{2,}|&|_|!|!!|<:|>:|\./|\^|~|=|<|>|\\|(?<!\\w)\?)"""),
+                colorizeToken(symbolColor,   """(<\:|\-\:|ø|∞|@|#|\+|<=>|=>>|<->|-->|<-->|==>|<==>|<\||\|\-|\|=|\||\*|\$|\-|\%|\/|[\.]{2,}|&|_|!|!!|<:|>:|\./|\^|~|=|<|>|\\|(?<!\\w)\?)"""),
                 colorizeToken(functionColor, """((?<!')\b(abs|acos|acosh|acsec|acsech|actan|actanh|add|after|and|angle|append|arg|args|arity|array|as|asec|asech|asin|asinh|atan|atan2|atanh|attr|attrs|average|before|benchmark|blend|break|builtins1|builtins2|call|capitalize|case|ceil|chop|clear|close|color|combine|conj|continue|copy|cos|cosh|csec|csech|ctan|ctanh|cursor|darken|dec|decode|define|delete|desaturate|deviation|dictionary|difference|digest|digits|div|do|download|drop|dup|e|else|empty|encode|ensure|env|escape|execute|exit|exp|extend|extract|factors|false|fdiv|filter|first|flatten|floor|fold|from|function|gamma|gcd|get|goto|hash|help|hypot|if|inc|indent|index|infinity|info|input|insert|inspect|intersection|invert|join|keys|kurtosis|last|let|levenshtein|lighten|list|ln|log|loop|lower|mail|map|match|max|maybe|median|min|mod|module|mul|nand|neg|new|nor|normalize|not|now|null|open|or|outdent|pad|panic|path|pause|permissions|permutate|pi|pop|pow|powerset|powmod|prefix|print|prints|process|product|query|random|range|read|relative|remove|rename|render|repeat|replace|request|return|reverse|round|sample|saturate|script|sec|sech|select|serve|set|shl|shr|shuffle|sin|sinh|size|skewness|slice|sort|split|sqrt|squeeze|stack|strip|sub|suffix|sum|switch|symbols|symlink|sys|take|tan|tanh|terminal|to|true|truncate|try|type|union|unique|unless|until|unzip|upper|values|var|variance|volume|webview|while|with|wordwrap|write|xnor|xor|zip)\b(?!:))""")
             ])
         )
 
         for line in highlighted:
-            echo "{initialSep}{initialPadding}{line}".fmt
+            echo fmt"{initialSep}{initialPadding}{line}"
             
             
 proc insertFunctionInfo(
@@ -318,7 +316,7 @@ proc printHeader(obj: ValueObj) {. inline .} =
         address = fmt"{cast[uint](obj.val):#X}".align(32)
     
     let data = if (not obj.val.info.isNil) and obj.val.info.module != "":
-        fmt"{typeStr}{fg(grayColor)}{align(obj.val.info.module,32)}"
+        fmt"{typeStr}{fg(grayColor)}{align(obj.val.info.module, 32)}"
     else:
         fmt"{typeStr}{fg(grayColor)}{address}"
        
@@ -379,8 +377,8 @@ proc getInfo*(objName: string, objValue: Value, aliases: SymbolDict): ValueDict 
     
     # ====> In case of 'info attribute be present: 
     
-    if obj.val.info.descr != "":  result["description"] = newString(obj.val.info.descr) 
-    if obj.val.info.module != "": result["module"]      = newString(obj.val.info.module)
+    if obj.val.info.descr  != "":  result["description"] = newString(obj.val.info.descr) 
+    if obj.val.info.module != "": result["module"]       = newString(obj.val.info.module)
 
     if obj.val.info.kind == Function:
         result.insertFunctionInfo(obj, aliases)
