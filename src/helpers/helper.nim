@@ -204,11 +204,14 @@ proc getInfo*(objName: string, objValue: Value, aliases: SymbolDict): ValueDict 
     if objValue.info.module != "": result["module"]      = newString(objValue.info.module)
     
     when defined(DOCGEN):
+        
+        const repo = "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/"
+        
         result["example"] = newStringBlock(splitExamples(objValue.info.example))
         if objValue.info.line != 0:
             result["line"] = newInteger(objValue.info.line)
             result["source"] = newString(
-                "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/" & 
+                    repo & 
                     result["module"].s & 
                     ".nim#L" & 
                     $(result["line"].i))
