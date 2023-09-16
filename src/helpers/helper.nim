@@ -207,8 +207,10 @@ when defined(DOCGEN):
             symbolColor   = fg   rgb("124")
             stringColor   = fg   rgb("221")
 
-        proc colorizeToken(color, pattern: string): tuple[pattern: Regex, repl: string] = 
-            result = (re(pattern), "{color}$1{resetColor}".fmt)
+        proc colorizeToken(color, pattern: string): 
+            tuple[pattern: Regex, repl: string] =
+             
+            (re(pattern), "{color}$1{resetColor}".fmt)
 
         let highlighted = code.splitLines().map((line)=>
             line.multiReplace(@[
@@ -228,7 +230,12 @@ when defined(DOCGEN):
             echo "{initialSep}{initialPadding}{line}".fmt
             
             
-proc insertFunctionInfo(objInfo: var ValueDict, objName: string, objValue: Value, aliases: SymbolDict) =
+proc insertFunctionInfo(
+        objInfo: var ValueDict, 
+        objName: string, 
+        objValue: Value, 
+        aliases: SymbolDict
+    ) {. inline .} =
     
     var funArgs  = initOrderedTable[string,Value]()
     var funAttrs = initOrderedTable[string,Value]()
@@ -271,8 +278,15 @@ proc insertFunctionInfo(objInfo: var ValueDict, objName: string, objValue: Value
         objInfo["alias"]  = newString(alias[0])
         objInfo["infix?"] = newLogical(alias[1] == InfixPrecedence)
         
-when defined(DOCGEN):  
-    proc insertDocumentationInfo(objInfo: var ValueDict, objValue: Value) = 
+
+when defined(DOCGEN):
+    
+    proc insertDocumentationInfo(
+            objInfo: var ValueDict, 
+            objValue: Value
+    ) {. inline .} =
+    
+        ## Inserts documentation's information into the ValueDict 
         const 
             repo = "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/"
         
