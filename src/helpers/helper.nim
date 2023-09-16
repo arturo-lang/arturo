@@ -282,7 +282,7 @@ proc insertFunctionInfo(
     info["returns"] = if obj.val.info.returns.len == 0: 
         newBlock(@[newType(Nothing)]) else: obj.val.info.returns.listTypes()
 
-    let alias = getAlias(objName, aliases)
+    let alias = getAlias(obj.name, aliases)
     if alias[0] != "":
         info["alias"]  = newString(alias[0])
         info["infix?"] = newLogical(alias[1] == InfixPrecedence)
