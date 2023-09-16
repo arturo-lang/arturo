@@ -393,23 +393,23 @@ proc getInfo*(objName: string, objValue: Value, aliases: SymbolDict): ValueDict 
 #  related: https://github.com/arturo-lang/arturo/issues/466#issuecomment-1065274429
 #  labels: helpers, library, repl, enhancement
 
-proc printInfo*(n: string, v: Value, aliases: SymbolDict) =
+proc printInfo*(objName: string, objValue: Value, aliases: SymbolDict) =
 
-    # Print header
+    let obj: ValueObj = (name: objName, val: objValue)
 
-    printHeader(n, v)
-    printAlias(n, aliases)
+    printHeader(obj.name, obj.val)
+    printAlias(obj.name, aliases)
     printLine()
 
     # If it's a function or builtin constant,
     # print its description/info
-    if v.info.isNil:
+    if obj.val.info.isNil:
         return
     
-    printDescription(v)
+    printDescription(obj.val)
     printLine()
 
     # If it's a function,
     # print more details
-    if v.info.kind == Function:
-        printFunction(n, v)
+    if obj.val.info.kind == Function:
+        printFunction(obj.name, obj.val)
