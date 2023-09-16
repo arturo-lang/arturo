@@ -19,7 +19,7 @@ import strutils, tables
 import sugar
 
 when defined(DOCGEN):
-    import re, sugar
+    import re
 
 import helpers/sets
 import helpers/terminal
