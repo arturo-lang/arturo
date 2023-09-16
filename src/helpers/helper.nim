@@ -131,11 +131,9 @@ proc getUsageForFunction(objName: string, value: Value): seq[string] =
         
     var 
         spaceBefore: string
-        j = 0
-    
-    while j < lenBefore:
+
+    for _ in 0..objName.len:
         spaceBefore &= " "
-        j += 1
 
     if args[0][0] != "":
         let templateArg = fmt"{args[0][0]}" 
