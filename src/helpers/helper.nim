@@ -59,10 +59,19 @@ proc printEmptyLine() =
     echo "|"
 
 
-proc getAlias(n: string, aliases: SymbolDict): (string,PrecedenceKind) = 
-    for k, v in pairs(aliases):
-        if v.name.s == n:
-            return ($(newSymbol(k)), v.precedence)
+proc getAlias(objName: string, aliases: SymbolDict): (string, PrecedenceKind) = 
+    ## Return the alias of an object into a tuple 
+    ## with it's symbol as a string and its kind of precedence
+    
+    runnableExamples:
+        import vm/globals   # Aliases
+        import vm/values    # PrecedenceKind
+        
+        assert ("~", PrefixPrecedence) == "render".getAlias(Aliases)
+    
+    for key, val in pairs(aliases):
+        if val.name.s == objName:
+            return ($(newSymbol(key)), val.precedence)
     return ("", PrefixPrecedence)
 
 
