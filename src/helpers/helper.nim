@@ -129,18 +129,18 @@ func getTypeString(valueSpec: ValueSpec): string =
     return collect(for spec in valueSpec: spec.stringify()).join(" ")
 
 
-proc getUsageForFunction(objName: string, value: Value): seq[string] =
+proc getUsageForFunction(obj: ValueObj): seq[string] =
     
     let 
-        args = toSeq(value.info.args.pairs)
-        lenBefore = objName.len
-        templateName = fmt"{bold()}{objName}{resetColor}"
+        args = toSeq(obj.val.info.args.pairs)
+        lenBefore = obj.name.len
+        templateName = fmt"{bold()}{obj.name}{resetColor}"
         templateType = fmt"{fg(grayColor)}{getTypeString(args[0][1])}"
         
     var 
         spaceBefore: string
 
-    for _ in 0..objName.len:
+    for _ in 0..obj.name.len:
         spaceBefore &= " "
 
     if args[0][0] != "":
@@ -346,7 +346,7 @@ proc printDescription(obj: ValueObj) {. inline .} =
 proc printFunction(obj: ValueObj) {. inline .} =
     let opts = getOptionsForFunction(obj.val)
     
-    printMultiData("usage", getUsageForFunction(obj.name, obj.val), 
+    printMultiData("usage", obj.getUsageForFunction(), 
                    bold(greenColor))
     
     if opts.len>0:
