@@ -115,13 +115,22 @@ proc getUsageForFunction(n: string, v: Value): seq[string] =
         spaceBefore &= " "
         j+=1
 
-    if args[0][0]!="":
-        result.add fmt("{bold()}{n}{resetColor} {args[0][0]} {fg(grayColor)}{getTypeString(args[0][1])}")
-    else:
-        result.add fmt("{bold()}{n}{resetColor} {fg(grayColor)}{getTypeString(args[0][1])}")
+    let
+        templateName = fmt"{bold()}{n}{resetColor}"
+        templateType = fmt"{fg(grayColor)}{getTypeString(args[0][1])}"
+
+    if args[0][0] != "":
+        let templateArg = fmt"{args[0][0]}" 
+        result.add fmt("{templateName} {templateArg} {templateType}")
+    else:   
+        result.add fmt("{templateName} {templateType}")
 
     for arg in args[1..^1]:
-        result.add fmt("{spaceBefore} {arg[0]} {fg(grayColor)}{getTypeString(arg[1])}")
+        let
+            templateArg = fmt"{arg[0]}"
+            templateType = fmt"{fg(grayColor)}{getTypeString(arg[1])}"
+        result.add fmt("{spaceBefore} {templateArg} {templateType}")
+
 
 proc getOptionsForFunction(v: Value): seq[string] =
     var attrs = toSeq(v.info.attrs.pairs)
