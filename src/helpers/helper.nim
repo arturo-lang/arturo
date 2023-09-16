@@ -45,8 +45,8 @@ template printLine(charWith = lineChar) =
     stdout.write initialSep
     if charWith != lineChar:
         stdout.write fg(grayColor)
-    var i=0
-    while i<lineLength:
+    var i = 0
+    while i < lineLength:
         stdout.write charWith
         i += 1
     stdout.write "\n"
@@ -54,20 +54,22 @@ template printLine(charWith = lineChar) =
         stdout.write resetColor()
     stdout.flushFile()
 
+
 proc printEmptyLine() = 
     echo "|"
 
+
 proc getAlias(n: string, aliases: SymbolDict): (string,PrecedenceKind) = 
-    for k,v in pairs(aliases):
-        if v.name.s==n:
+    for k, v in pairs(aliases):
+        if v.name.s == n:
             return ($(newSymbol(k)), v.precedence)
     return ("", PrefixPrecedence)
 
 
 proc printOneData(
-        label: string, 
-        data: string, 
-        color: string = resetColor, 
+        label:  string, 
+        data:   string, 
+        color:  string = resetColor, 
         colorb: string = resetColor
     ) =
     let 
@@ -78,9 +80,9 @@ proc printOneData(
 
 
 proc printMultiData(
-        label: string, 
-        data: seq[string], 
-        color: string = resetColor, 
+        label:  string, 
+        data:   seq[string], 
+        color:  string = resetColor, 
         colorb: string = resetColor
     ) =
     
@@ -91,13 +93,14 @@ proc printMultiData(
 
 func getShortData(initial: string): seq[string] =
     result = @[initial]
-    if result[0].len>50:
-        let parts = result[0].splitWhitespace()
+    if result[0].len > 50:
+        let parts  = result[0].splitWhitespace()
         let middle = (parts.len div 2)
         result = @[
             parts[0..middle].join(" "),
-            parts[middle+1..^1].join(" ")
+            parts[(middle + 1)..^1].join(" ")
         ]
+
 
 func getTypeString(vs: ValueSpec): string =
     if vs == {}: 
@@ -105,16 +108,17 @@ func getTypeString(vs: ValueSpec): string =
     
     return collect(for s in vs: stringify s).join(" ")
 
+
 proc getUsageForFunction(n: string, v: Value): seq[string] =
     let args = toSeq(v.info.args.pairs)
 
     let lenBefore = n.len
     var spaceBefore: string
-    var j=0
-    while j<lenBefore:
+    var j = 0
+    while j < lenBefore:
         spaceBefore &= " "
-        j+=1
-
+        j += 1
+        
     let
         templateName = fmt"{bold()}{n}{resetColor}"
         templateType = fmt"{fg(grayColor)}{getTypeString(args[0][1])}"
@@ -134,23 +138,27 @@ proc getUsageForFunction(n: string, v: Value): seq[string] =
 
 proc getOptionsForFunction(v: Value): seq[string] =
     var attrs = toSeq(v.info.attrs.pairs)
-    if attrs.len==1 and attrs[0][0]=="": return @[]
+    
+    if attrs.len == 1 and attrs[0][0] == "": 
+        return @[]
 
     var maxLen = 0
     for attr in attrs:
         let ts = getTypeString(attr[1][0])
-        if ts!=":logical":
+        if ts != ":logical":
             let len = fmt(".{attr[0]} {ts}").len
-            if len>maxLen: maxLen = len
+            if len > maxLen: 
+                maxLen = len
         else:
             let len = fmt(".{attr[0]}").len
-            if len>maxLen: maxLen = len
+            if len > maxLen: 
+                maxLen = len
 
     for attr in attrs:
         let ts = getTypeString(attr[1][0])
         var leftSide: string
         var myLen = maxLen
-        if ts!=":logical":
+        if ts != ":logical":
             leftSide = fmt("{fg(cyanColor)}.{attr[0]} {fg(grayColor)}{ts}")
             myLen += len(fmt("{fg(cyanColor)}{fg(grayColor)}"))
         else:
@@ -159,7 +167,9 @@ proc getOptionsForFunction(v: Value): seq[string] =
         
         result.add fmt("{alignLeft(leftSide,myLen)} {resetColor}-> {attr[1][1]}")
 
+
 when defined(DOCGEN):
+    
     proc splitExamples*(ex: string): seq[string] =
         var currentEx: string
         for line in splitLines(ex):
@@ -173,15 +183,16 @@ when defined(DOCGEN):
 
         result.add(currentEx)
 
+
     proc syntaxHighlight(code: string) =
         # token colors
-        let commentColor = fg(grayColor)
-        let literalColor = fg(rgb("129"))
+        let commentColor  = fg(grayColor)
+        let literalColor  = fg(rgb("129"))
         let functionColor = fg(rgb("87"))
-        let labelColor = fg(rgb("148"))
-        let sugarColor = bold(rgb("208"))
-        let symbolColor = fg(rgb("124"))
-        let stringColor = fg(rgb("221"))
+        let labelColor    = fg(rgb("148"))
+        let sugarColor    = bold(rgb("208"))
+        let symbolColor   = fg(rgb("124"))
+        let stringColor   = fg(rgb("221"))
 
         proc colorizeToken(color, pattern: string): tuple[pattern: Regex, repl: string] = 
             result = (re(pattern), "{color}$1{resetColor}".fmt)
@@ -281,6 +292,7 @@ proc getInfo*(objName: string, objValue: Value, aliases: SymbolDict): ValueDict 
     if alias[0] != "":
         result["alias"]  = newString(alias[0])
         result["infix?"] = newLogical(alias[1] == InfixPrecedence)
+
 
 # TODO(Helpers/helper) embed "see also" functions in info screens
 #  related: https://github.com/arturo-lang/arturo/issues/466#issuecomment-1065274429
