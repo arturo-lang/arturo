@@ -122,18 +122,20 @@ func getTypeString(valueSpec: ValueSpec): string =
 
 
 proc getUsageForFunction(objName: string, value: Value): seq[string] =
-    let args = toSeq(value.info.args.pairs)
-
-    let lenBefore = objName.len
-    var spaceBefore: string
-    var j = 0
+    
+    let 
+        args = toSeq(value.info.args.pairs)
+        lenBefore = objName.len
+        templateName = fmt"{bold()}{objName}{resetColor}"
+        templateType = fmt"{fg(grayColor)}{getTypeString(args[0][1])}"
+        
+    var 
+        spaceBefore: string
+        j = 0
+    
     while j < lenBefore:
         spaceBefore &= " "
         j += 1
-        
-    let
-        templateName = fmt"{bold()}{objName}{resetColor}"
-        templateType = fmt"{fg(grayColor)}{getTypeString(args[0][1])}"
 
     if args[0][0] != "":
         let templateArg = fmt"{args[0][0]}" 
