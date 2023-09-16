@@ -331,6 +331,11 @@ proc printAlias(objName: string, aliases: SymbolDict) {. inline .} =
         printOneData("alias", alias)
 
 
+proc printDescription(value: Value) {. inline .} =
+    for decription in getShortData(value.info.descr):
+        printOneData("", decription)
+        
+        
 #=======================================
 # Methods
 #=======================================
@@ -377,11 +382,7 @@ proc printInfo*(n: string, v: Value, aliases: SymbolDict) =
     if v.info.isNil:
         return
     
-    
-    var desc: string = v.info.descr
-    
-    for d in getShortData(desc):
-        printOneData("",d)
+    printDescription(v)
     printLine()
 
     # If it's a function,
