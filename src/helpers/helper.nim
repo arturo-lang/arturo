@@ -313,41 +313,41 @@ when defined(DOCGEN):
                 $(objInfo["line"].i))
                 
                 
-proc printHeader(objName: string, value: Value) {. inline .} =
+proc printHeader(obj: ValueObj) {. inline .} =
     
     let 
-        typeStr = valueKind(value).alignLeft(30)
-        address = fmt"{cast[uint](value):#X}".align(32)
+        typeStr = valueKind(obj.val).alignLeft(30)
+        address = fmt"{cast[uint](obj.val):#X}".align(32)
     
-    let data = if (not value.info.isNil) and value.info.module != "":
-        fmt("{typeStr}{fg(grayColor)}{align(value.info.module,32)}")
+    let data = if (not obj.val.info.isNil) and obj.val.info.module != "":
+        fmt("{typeStr}{fg(grayColor)}{align(obj.val.info.module,32)}")
     else:
         fmt("{typeStr}{fg(grayColor)}{address}") 
        
     printLine() 
     printOneData(
-        objName,
+        obj.name,
         data,
         bold(magentaColor),
         resetColor
     )
 
 
-proc printAlias(objName: string, aliases: SymbolDict) {. inline .} =
-    let alias = getAlias(objName, aliases)[0]
+proc printAlias(obj: ValueObj, aliases: SymbolDict) {. inline .} =
+    let alias = getAlias(obj.name, aliases)[0]
     if alias != "":
         printOneData("alias", alias)
 
 
-proc printDescription(value: Value) {. inline .} =
-    for decription in getShortData(value.info.descr):
+proc printDescription(obj: ValueObj) {. inline .} =
+    for decription in getShortData(obj.val.info.descr):
         printOneData("", decription)
         
         
-proc printFunction(objName: string, value: Value) {. inline .} =
-    let opts = getOptionsForFunction(value)
+proc printFunction(obj: ValueObj) {. inline .} =
+    let opts = getOptionsForFunction(obj.val)
     
-    printMultiData("usage", getUsageForFunction(objName, value), 
+    printMultiData("usage", getUsageForFunction(obj.name, obj.val), 
                    bold(greenColor))
     
     if opts.len>0:
@@ -355,7 +355,7 @@ proc printFunction(objName: string, value: Value) {. inline .} =
         printMultiData("options", opts, bold(greenColor))
         
     printEmptyLine()
-    printOneData("returns", getTypeString(value.info.returns), 
+    printOneData("returns", getTypeString(obj.val.info.returns), 
                  bold(greenColor), fg(grayColor))
     printLine()
 
@@ -397,8 +397,9 @@ proc printInfo*(objName: string, objValue: Value, aliases: SymbolDict) =
 
     let obj: ValueObj = (name: objName, val: objValue)
 
-    printHeader(obj.name, obj.val)
-    printAlias(obj.name, aliases)
+    obj.printHeader()
+    obj.printAlias(aliases)
+    
     printLine()
 
     # If it's a function or builtin constant,
@@ -406,10 +407,11 @@ proc printInfo*(objName: string, objValue: Value, aliases: SymbolDict) =
     if obj.val.info.isNil:
         return
     
-    printDescription(obj.val)
+    obj.printDescription()
+    
     printLine()
 
     # If it's a function,
     # print more details
     if obj.val.info.kind == Function:
-        printFunction(obj.name, obj.val)
+        obj.printFunction()
