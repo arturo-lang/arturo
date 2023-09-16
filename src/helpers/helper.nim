@@ -314,15 +314,11 @@ proc getInfo*(objName: string, objValue: Value, aliases: SymbolDict): ValueDict 
 proc printInfo*(n: string, v: Value, aliases: SymbolDict) =
     # Get type + possible module (if it's a builtin)
     var typeStr = valueKind(v)
-    # if v.kind==Function and v.fnKind==BuiltinFunction:
-    #     typeStr &= " /" & v.module.toLowerAscii()
 
     typeStr = alignLeft(typeStr,30)
 
     # Get address
     var address = align(fmt("{cast[uint](v):#X}"), 32)
-    # if v.kind==Function and v.fnKind==BuiltinFunction:
-    #     address = align(fmt("builtin\\{v.module.toLowerAscii()}"), 32)
 
     # Print header
     printLine()
@@ -362,17 +358,3 @@ proc printInfo*(n: string, v: Value, aliases: SymbolDict) =
 
             printOneData("returns",getTypeString(v.info.returns),bold(greenColor),fg(grayColor))
             printLine()
-
-            # if v.info.example.strip()!="" and withExamples:
-            #     echo initialSep & repeat(' ', 36) & "EXAMPLES" & repeat(' ', 36) 
-            #     printLine()
-            #     printEmptyLine()
-            #     let examples = splitExamples(v.info.example)
-            #     for i, example in examples:
-            #         syntaxHighlight(example)
-            #         if i!=examples.len - 1:
-            #             printEmptyLine()
-            #             printLine('.')
-            #             printEmptyLine()
-            #     printEmptyLine()
-            #     printLine()
