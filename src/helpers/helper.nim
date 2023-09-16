@@ -270,6 +270,23 @@ proc insertFunctionInfo(objInfo: var ValueDict, objName: string, objValue: Value
     if alias[0] != "":
         objInfo["alias"]  = newString(alias[0])
         objInfo["infix?"] = newLogical(alias[1] == InfixPrecedence)
+        
+when defined(DOCGEN):  
+    proc insertDocumentationInfo(objInfo: var ValueDict, objValue: Value) = 
+        const 
+            repo = "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/"
+        
+        objInfo["example"] = newStringBlock(splitExamples(objValue.info.example))
+        
+        if objValue.info.line == 0:
+            return
+        
+        objInfo["line"] = newInteger(objValue.info.line)
+        objInfo["source"] = newString(
+                repo & 
+                objInfo["module"].s & 
+                ".nim#L" & 
+                $(objInfo["line"].i))
 
 #=======================================
 # Methods
@@ -292,22 +309,12 @@ proc getInfo*(objName: string, objValue: Value, aliases: SymbolDict): ValueDict 
     
     if objValue.info.descr != "":  result["description"] = newString(objValue.info.descr) 
     if objValue.info.module != "": result["module"]      = newString(objValue.info.module)
-    
-    when defined(DOCGEN):
-        
-        const repo = "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/"
-        
-        result["example"] = newStringBlock(splitExamples(objValue.info.example))
-        if objValue.info.line != 0:
-            result["line"] = newInteger(objValue.info.line)
-            result["source"] = newString(
-                    repo & 
-                    result["module"].s & 
-                    ".nim#L" & 
-                    $(result["line"].i))
 
     if objValue.info.kind == Function:
         result.insertFunctionInfo(objName, objValue, aliases)
+        
+    when defined(DOCGEN):
+       result.insertDocumentationInfo(objValue) 
 
 
 # TODO(Helpers/helper) embed "see also" functions in info screens
