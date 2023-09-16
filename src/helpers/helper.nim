@@ -198,13 +198,14 @@ when defined(DOCGEN):
 
     proc syntaxHighlight(code: string) =
         # token colors
-        let commentColor  = fg(grayColor)
-        let literalColor  = fg(rgb("129"))
-        let functionColor = fg(rgb("87"))
-        let labelColor    = fg(rgb("148"))
-        let sugarColor    = bold(rgb("208"))
-        let symbolColor   = fg(rgb("124"))
-        let stringColor   = fg(rgb("221"))
+        let
+            commentColor  = fg   grayColor
+            literalColor  = fg   rgb("129")
+            functionColor = fg   rgb("87" )
+            labelColor    = fg   rgb("148")
+            sugarColor    = bold rgb("208")
+            symbolColor   = fg   rgb("124")
+            stringColor   = fg   rgb("221")
 
         proc colorizeToken(color, pattern: string): tuple[pattern: Regex, repl: string] = 
             result = (re(pattern), "{color}$1{resetColor}".fmt)
