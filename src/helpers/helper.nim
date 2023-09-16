@@ -201,11 +201,14 @@ proc getInfo*(n: string, v: Value, aliases: SymbolDict):ValueDict =
     if v.info.module != "": result["module"]      = newString(v.info.module)
     
     when defined(DOCGEN):
-        
         result["example"] = newStringBlock(splitExamples(v.info.example))
         if v.info.line != 0:
             result["line"] = newInteger(v.info.line)
-            result["source"] = newString("https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/" & result["module"].s & ".nim#L" & $(result["line"].i))
+            result["source"] = newString(
+                "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/" & 
+                    result["module"].s & 
+                    ".nim#L" & 
+                    $(result["line"].i))
 
 
     if v.info.kind != Function:
@@ -226,31 +229,28 @@ proc getInfo*(n: string, v: Value, aliases: SymbolDict):ValueDict =
             funArgs[key] = newBlock collect do:
                 for s in spec: newType(s)
 
-    result["args"] = newDictionary(funArgs)
-
     if v.validSpec(attrs):
         for k,dd in v.info.attrs:
-            let spec = dd[0]
+            let spec  = dd[0]
             let descr = dd[1]
-
-            var ss = initOrderedTable[string,Value]()
+            var ss    = initOrderedTable[string,Value]()
 
             ss["types"] = newBlock collect do:
                 for s in spec: newType(s)
                 
             ss["description"] = newString(descr)
-
             funAttrs[k] = newDictionary(ss)
             
-    result["attrs"] = newDictionary(funAttrs)
-    result["returns"] = if v.info.returns.len == 0: newBlock(@[newType(Nothing)]) else:
-        newBlock collect do:
+    result["args"]    = newDictionary(funArgs)
+    result["attrs"]   = newDictionary(funAttrs)
+    result["returns"] = if v.info.returns.len == 0: 
+        newBlock(@[newType(Nothing)]) else: newBlock collect do:
             for ret in v.info.returns: newType(ret)
 
     let alias = getAlias(n, aliases)
     if alias[0]!="":
-        result["alias"] = newString(alias[0])
-        result["infix?"] = newLogical(alias[1]==InfixPrecedence)
+        result["alias"]  = newString(alias[0])
+        result["infix?"] = newLogical(alias[1] == InfixPrecedence)
 
 # TODO(Helpers/helper) embed "see also" functions in info screens
 #  related: https://github.com/arturo-lang/arturo/issues/466#issuecomment-1065274429
