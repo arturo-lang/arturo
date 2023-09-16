@@ -119,10 +119,10 @@ func getTypeString(valueSpec: ValueSpec): string =
     return collect(for spec in valueSpec: spec.stringify()).join(" ")
 
 
-proc getUsageForFunction(n: string, v: Value): seq[string] =
-    let args = toSeq(v.info.args.pairs)
+proc getUsageForFunction(objName: string, value: Value): seq[string] =
+    let args = toSeq(value.info.args.pairs)
 
-    let lenBefore = n.len
+    let lenBefore = objName.len
     var spaceBefore: string
     var j = 0
     while j < lenBefore:
@@ -130,7 +130,7 @@ proc getUsageForFunction(n: string, v: Value): seq[string] =
         j += 1
         
     let
-        templateName = fmt"{bold()}{n}{resetColor}"
+        templateName = fmt"{bold()}{objName}{resetColor}"
         templateType = fmt"{fg(grayColor)}{getTypeString(args[0][1])}"
 
     if args[0][0] != "":
