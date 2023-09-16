@@ -50,16 +50,15 @@ const
 #=======================================
 
 template printLine(charWith = lineChar) =
+    
     stdout.write initialSep
-    if charWith != lineChar:
-        stdout.write fg(grayColor)
-    var i = 0
-    while i < lineLength:
+    
+    if charWith != lineChar: stdout.write fg(grayColor)
+    for _ in 0..<lineLength: 
         stdout.write charWith
-        i += 1
     stdout.write "\n"
-    if charWith != lineChar:
-        stdout.write resetColor()
+    if charWith != lineChar: stdout.write resetColor()
+    
     stdout.flushFile()
 
 
