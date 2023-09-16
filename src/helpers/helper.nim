@@ -81,16 +81,11 @@ func getShortData(initial: string): seq[string] =
             parts[middle+1..^1].join(" ")
         ]
 
-func getTypeString(vs: ValueSpec):string =
-    var specs: seq[string]
-
-    if vs == {}:
+func getTypeString(vs: ValueSpec): string =
+    if vs == {}: 
         return ":nothing"
-
-    for s in vs:
-        specs.add(stringify(s))
-
-    return specs.join(" ")
+    
+    return collect(for s in vs: stringify s).join(" ")
 
 proc getUsageForFunction(n: string, v: Value): seq[string] =
     let args = toSeq(v.info.args.pairs)
