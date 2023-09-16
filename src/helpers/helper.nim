@@ -111,11 +111,12 @@ func getShortData(initial: string): seq[string] =
         ]
 
 
-func getTypeString(vs: ValueSpec): string =
-    if vs == {}: 
+func getTypeString(valueSpec: ValueSpec): string =
+    ## Returns the representation of a type into a string
+    if valueSpec == {}: 
         return ":nothing"
     
-    return collect(for s in vs: stringify s).join(" ")
+    return collect(for spec in valueSpec: spec.stringify()).join(" ")
 
 
 proc getUsageForFunction(n: string, v: Value): seq[string] =
