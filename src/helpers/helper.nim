@@ -303,6 +303,26 @@ when defined(DOCGEN):
                 objInfo["module"].s & 
                 ".nim#L" & 
                 $(objInfo["line"].i))
+                
+                
+proc printHeader(objName: string, value: Value) {. inline .} =
+    
+    let 
+        typeStr = valueKind(value).alignLeft(30)
+        address = fmt"{cast[uint](value):#X}".align(32)
+    
+    let data = if (not value.info.isNil) and value.info.module != "":
+        fmt("{typeStr}{fg(grayColor)}{align(value.info.module,32)}")
+    else:
+        fmt("{typeStr}{fg(grayColor)}{address}") 
+       
+    printLine() 
+    printOneData(
+        objName,
+        data,
+        bold(magentaColor),
+        resetColor
+    )
 
 #=======================================
 # Methods
@@ -338,21 +358,9 @@ proc getInfo*(objName: string, objValue: Value, aliases: SymbolDict): ValueDict 
 #  labels: helpers, library, repl, enhancement
 
 proc printInfo*(n: string, v: Value, aliases: SymbolDict) =
-    # Get type + possible module (if it's a builtin)
-    var typeStr = valueKind(v)
-
-    typeStr = alignLeft(typeStr,30)
-
-    # Get address
-    var address = align(fmt("{cast[uint](v):#X}"), 32)
 
     # Print header
-    printLine()
-    if (not v.info.isNil) and v.info.module != "":
-        let mdl = v.info.module
-        printOneData(n,fmt("{typeStr}{fg(grayColor)}{align(mdl,32)}"),bold(magentaColor),resetColor)
-    else:
-        printOneData(n,fmt("{typeStr}{fg(grayColor)}{address}"),bold(magentaColor),resetColor)
+    printHeader(n, v)
 
     # Print alias if it exists
     let alias = getAlias(n, aliases)
