@@ -146,8 +146,8 @@ proc getUsageForFunction(objName: string, value: Value): seq[string] =
         result.add fmt("{spaceBefore} {templateArg} {templateType}")
 
 
-proc getOptionsForFunction(v: Value): seq[string] =
-    var attrs = toSeq(v.info.attrs.pairs)
+proc getOptionsForFunction(value: Value): seq[string] =
+    var attrs = toSeq(value.info.attrs.pairs)
     
     if attrs.len == 1 and attrs[0][0] == "": 
         return @[]
