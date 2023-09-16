@@ -16,6 +16,7 @@
 
 import sequtils, strformat
 import strutils, tables
+import sugar
 
 when defined(DOCGEN):
     import re, sugar
@@ -221,12 +222,10 @@ proc getInfo*(n: string, v: Value, aliases: SymbolDict):ValueDict =
     var funAttrs = initOrderedTable[string,Value]()
     
     if v.validSpec(args):        
-        for k, spec in v.args:
-            var specs:ValueArray
-            for s in spec:
-                specs.add(newType(s))
+        for key, spec in v.args:
+            funArgs[key] = newBlock collect do:
+                for s in spec: newType(s)
 
-            funArgs[k] = newBlock(specs)
     result["args"] = newDictionary(funArgs)
 
     if v.validSpec(attrs):
@@ -236,24 +235,17 @@ proc getInfo*(n: string, v: Value, aliases: SymbolDict):ValueDict =
 
             var ss = initOrderedTable[string,Value]()
 
-            var specs:ValueArray
-            for s in spec:
-                specs.add(newType(s))
-
-            ss["types"] = newBlock(specs)
+            ss["types"] = newBlock collect do:
+                for s in spec: newType(s)
+                
             ss["description"] = newString(descr)
 
             funAttrs[k] = newDictionary(ss)
+            
     result["attrs"] = newDictionary(funAttrs)
-
-    var returns:ValueArray
-    if v.info.returns.len > 0:
-        for ret in v.info.returns:
-            returns.add(newType(ret))
-    else:
-        returns = @[newType(Nothing)]
-
-    result["returns"] = newBlock(returns)
+    result["returns"] = if v.info.returns.len == 0: newBlock(@[newType(Nothing)]) else:
+        newBlock collect do:
+            for ret in v.info.returns: newType(ret)
 
     let alias = getAlias(n, aliases)
     if alias[0]!="":
