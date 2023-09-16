@@ -366,8 +366,9 @@ proc printFunction(obj: ValueObj) {. inline .} =
 proc getInfo*(objName: string, objValue: Value, aliases: SymbolDict): ValueDict =
     ## Returns a Dictionary containing information about a object
 
-    result: ValueDict = initOrderedTable[string,Value]()
-    obj:    ValueObj  = (name: objName, val: objValue)
+    result = initOrderedTable[string,Value]()
+    
+    let obj:    ValueObj  = (name: objName, val: objValue)
 
     result["name"]    = newString(obj.name)
     result["address"] = newString(fmt"{cast[uint](obj.val):#X}")
