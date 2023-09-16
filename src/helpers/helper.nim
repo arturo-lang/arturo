@@ -63,10 +63,20 @@ proc getAlias(n: string, aliases: SymbolDict): (string,PrecedenceKind) =
             return ($(newSymbol(k)), v.precedence)
     return ("", PrefixPrecedence)
 
-proc printOneData(label: string, data: string, color: string = resetColor, colorb: string = resetColor) =
-    echo fmt("{initialSep}{initialPadding}{color}{align(label,labelAlignment)}{resetColor}  {colorb}{data}{resetColor}")
 
-proc printMultiData(label: string, data: seq[string], color: string = resetColor, colorb: string = resetColor) =
+proc printOneData(
+        label: string, 
+        data: string, 
+        color: string = resetColor, 
+        colorb: string = resetColor
+    ) =
+    let 
+        init  = fmt"{initialSep}{initialPadding}"
+        label = fmt"{color}{align(label, labelAlignment)}{resetColor}"
+        data  = fmt"{colorb}{data}{resetColor}"
+    echo fmt("{init}{label}  {data}")
+
+
     printOneData(label, data[0], color, colorb)
     for item in data[1..^1]:
         printOneData("",item,resetColor,colorb)
