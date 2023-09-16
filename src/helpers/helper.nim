@@ -338,23 +338,27 @@ proc printInfo*(n: string, v: Value, aliases: SymbolDict) =
 
     # If it's a function or builtin constant,
     # print its description/info
-    if not v.info.isNil:
-        var desc: string = v.info.descr
-        
-        for d in getShortData(desc):
-            printOneData("",d)
-        printLine()
+    
+    if v.info.isNil:
+        return
+    
+    
+    var desc: string = v.info.descr
+    
+    for d in getShortData(desc):
+        printOneData("",d)
+    printLine()
 
-        # If it's a function,
-        # print more details
-        if v.info.kind==Function:
-            printMultiData("usage", getUsageForFunction(n,v), bold(greenColor))
-            let opts = getOptionsForFunction(v)
-            if opts.len>0:
-                printEmptyLine()
-                printMultiData("options",opts,bold(greenColor))
-                
+    # If it's a function,
+    # print more details
+    if v.info.kind==Function:
+        printMultiData("usage", getUsageForFunction(n,v), bold(greenColor))
+        let opts = getOptionsForFunction(v)
+        if opts.len>0:
             printEmptyLine()
+            printMultiData("options",opts,bold(greenColor))
+            
+        printEmptyLine()
 
-            printOneData("returns",getTypeString(v.info.returns),bold(greenColor),fg(grayColor))
-            printLine()
+        printOneData("returns",getTypeString(v.info.returns),bold(greenColor),fg(grayColor))
+        printLine()
