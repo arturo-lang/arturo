@@ -228,7 +228,7 @@ when defined(DOCGEN):
             echo "{initialSep}{initialPadding}{line}".fmt
             
             
-proc insertFunctionInfo(objInfo: ValueDict, objName: string, objValue: Value, aliases: SymbolDict) =
+proc insertFunctionInfo(objInfo: var ValueDict, objName: string, objValue: Value, aliases: SymbolDict) =
     
     var funArgs  = initOrderedTable[string,Value]()
     var funAttrs = initOrderedTable[string,Value]()
