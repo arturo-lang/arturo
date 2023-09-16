@@ -226,6 +226,50 @@ when defined(DOCGEN):
 
         for line in highlighted:
             echo "{initialSep}{initialPadding}{line}".fmt
+            
+            
+proc insertFunctionInfo(objInfo: ValueDict, objName: string, objValue: Value, aliases: SymbolDict) =
+    
+    var funArgs  = initOrderedTable[string,Value]()
+    var funAttrs = initOrderedTable[string,Value]()
+    
+    # Internal helpers
+    
+    template validSpec(value: Value, spec: untyped): bool =
+        ## Checks if the function value has arguments or attributes
+        ## * spec: can be 'args or 'attrs
+        value.info.spec.len > 0 and (toSeq(value.info.spec.keys))[0] != ""
+        
+    template listTypes(values: untyped): Value =
+        ## Converts each value of values to Type 
+        ## and returns it into a new Block
+        newBlock collect(for val in values: newType val)
+        
+    
+    if objValue.validSpec(args):        
+        for key, spec in objValue.args: 
+            funArgs[key] = spec.listTypes()
+
+    if objValue.validSpec(attrs):            
+        for key, objAttr in objValue.info.attrs:
+            var attribute = initOrderedTable[string,Value]()
+            
+            let spec      = objAttr[0]
+            let descr     = objAttr[1]
+
+            attribute["types"]       = spec.listTypes()
+            attribute["description"] = newString(descr)
+            funAttrs[key]            = newDictionary(attribute)
+            
+    objInfo["args"]    = newDictionary(funArgs)
+    objInfo["attrs"]   = newDictionary(funAttrs)
+    objInfo["returns"] = if objValue.info.returns.len == 0: 
+        newBlock(@[newType(Nothing)]) else: objValue.info.returns.listTypes()
+
+    let alias = getAlias(objName, aliases)
+    if alias[0] != "":
+        objInfo["alias"]  = newString(alias[0])
+        objInfo["infix?"] = newLogical(alias[1] == InfixPrecedence)
 
 #=======================================
 # Methods
@@ -262,49 +306,8 @@ proc getInfo*(objName: string, objValue: Value, aliases: SymbolDict): ValueDict 
                     ".nim#L" & 
                     $(result["line"].i))
 
-
-    if objValue.info.kind != Function:
-        return
-    
-    # ====> In case of 'objValue being a function: 
-
-    template validSpec(value: Value, spec: untyped): bool =
-        ## Checks if the function value has arguments or attributes
-        ## * spec: can be 'args or 'attrs
-        value.info.spec.len > 0 and (toSeq(value.info.spec.keys))[0] != ""
-        
-    template listTypes(values: untyped): Value =
-        ## Converts each value of values to Type 
-        ## and returns it into a new Block
-        newBlock collect(for val in values: newType val)
-        
-    var funArgs  = initOrderedTable[string,Value]()
-    var funAttrs = initOrderedTable[string,Value]()
-    
-    if objValue.validSpec(args):        
-        for key, spec in objValue.args: 
-            funArgs[key] = spec.listTypes()
-
-    if objValue.validSpec(attrs):            
-        for key, objAttr in objValue.info.attrs:
-            var attribute = initOrderedTable[string,Value]()
-            
-            let spec      = objAttr[0]
-            let descr     = objAttr[1]
-
-            attribute["types"]       = spec.listTypes()
-            attribute["description"] = newString(descr)
-            funAttrs[key]            = newDictionary(attribute)
-            
-    result["args"]    = newDictionary(funArgs)
-    result["attrs"]   = newDictionary(funAttrs)
-    result["returns"] = if objValue.info.returns.len == 0: 
-        newBlock(@[newType(Nothing)]) else: objValue.info.returns.listTypes()
-
-    let alias = getAlias(objName, aliases)
-    if alias[0] != "":
-        result["alias"]  = newString(alias[0])
-        result["infix?"] = newLogical(alias[1] == InfixPrecedence)
+    if objValue.info.kind == Function:
+        result.insertFunctionInfo(objName, objValue, aliases)
 
 
 # TODO(Helpers/helper) embed "see also" functions in info screens
