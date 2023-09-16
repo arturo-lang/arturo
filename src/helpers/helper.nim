@@ -68,11 +68,13 @@ proc getAlias(objName: string, aliases: SymbolDict): (string, PrecedenceKind) =
         import vm/values    # PrecedenceKind
         
         assert ("~", PrefixPrecedence) == "render".getAlias(Aliases)
+        
+    result = ("", PrefixPrecedence)
     
+    # Updates only if the objName is into the aliases
     for key, val in pairs(aliases):
         if val.name.s == objName:
             return ($(newSymbol(key)), val.precedence)
-    return ("", PrefixPrecedence)
 
 
 proc printOneData(
