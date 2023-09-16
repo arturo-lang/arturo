@@ -28,7 +28,7 @@ import vm/values/[printable, value]
 
 
 #=======================================
-# Constants
+# Type
 #=======================================
 
 type
