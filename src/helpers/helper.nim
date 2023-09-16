@@ -324,6 +324,13 @@ proc printHeader(objName: string, value: Value) {. inline .} =
         resetColor
     )
 
+
+proc printAlias(objName: string, aliases: SymbolDict) {. inline .} =
+    let alias = getAlias(objName, aliases)[0]
+    if alias != "":
+        printOneData("alias", alias)
+
+
 #=======================================
 # Methods
 #=======================================
@@ -361,13 +368,7 @@ proc printInfo*(n: string, v: Value, aliases: SymbolDict) =
 
     # Print header
     printHeader(n, v)
-
-    # Print alias if it exists
-    let alias = getAlias(n, aliases)
-    if alias[0]!="":
-        printOneData("alias",alias[0])
-
-    # Print separator
+    printAlias(n, aliases)
     printLine()
 
     # If it's a function or builtin constant,
