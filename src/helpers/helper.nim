@@ -180,18 +180,20 @@ proc getOptionsForFunction(value: Value): seq[string] =
 
 when defined(DOCGEN):
     
-    proc splitExamples*(ex: string): seq[string] =
-        var currentEx: string
-        for line in splitLines(ex):
+    proc splitExamples*(example: string): seq[string] =
+        var currentExample: string
+        
+        for line in splitLines(example):
+            
             if line.strip().findAll(re"\.{4,}").len > 0:
-                result.add(currentEx)
-                currentEx = ""
+                result.add(currentExample)
+                currentExample = ""
             else:
-                if currentEx != "":
-                    currentEx &= "\n"
-                currentEx &= line
+                if currentExample != "":
+                    currentExample &= "\n"
+                currentExample &= line
 
-        result.add(currentEx)
+        result.add(currentExample)
 
 
     proc syntaxHighlight(code: string) =
