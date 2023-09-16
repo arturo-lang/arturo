@@ -186,27 +186,27 @@ when defined(DOCGEN):
 #=======================================
 
 
-proc getInfo*(n: string, v: Value, aliases: SymbolDict): ValueDict =
+proc getInfo*(objName: string, objValue: Value, aliases: SymbolDict): ValueDict =
     ## Returns a Dictionary containing information about a object
 
     result = initOrderedTable[string,Value]()
 
-    result["name"] = newString(n)
-    result["address"] = newString(fmt("{cast[uint](v):#X}"))
-    result["type"] = newType(v.kind)
+    result["name"]    = newString(objName)
+    result["address"] = newString(fmt("{cast[uint](objValue):#X}"))
+    result["type"]    = newType(objValue.kind)
     
-    if v.info.isNil:
+    if objValue.info.isNil:
         return
     
     # ====> In case of 'info attribute be present: 
     
-    if v.info.descr != "":  result["description"] = newString(v.info.descr) 
-    if v.info.module != "": result["module"]      = newString(v.info.module)
+    if objValue.info.descr != "":  result["description"] = newString(objValue.info.descr) 
+    if objValue.info.module != "": result["module"]      = newString(objValue.info.module)
     
     when defined(DOCGEN):
-        result["example"] = newStringBlock(splitExamples(v.info.example))
-        if v.info.line != 0:
-            result["line"] = newInteger(v.info.line)
+        result["example"] = newStringBlock(splitExamples(objValue.info.example))
+        if objValue.info.line != 0:
+            result["line"] = newInteger(objValue.info.line)
             result["source"] = newString(
                 "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/" & 
                     result["module"].s & 
@@ -214,10 +214,10 @@ proc getInfo*(n: string, v: Value, aliases: SymbolDict): ValueDict =
                     $(result["line"].i))
 
 
-    if v.info.kind != Function:
+    if objValue.info.kind != Function:
         return
     
-    # ====> In case of 'v being a function: 
+    # ====> In case of 'objValue being a function: 
 
     template validSpec(value: Value, spec: untyped): bool =
         ## Checks if the function value has arguments or attributes
@@ -232,28 +232,28 @@ proc getInfo*(n: string, v: Value, aliases: SymbolDict): ValueDict =
     var funArgs  = initOrderedTable[string,Value]()
     var funAttrs = initOrderedTable[string,Value]()
     
-    if v.validSpec(args):        
-        for key, spec in v.args: 
+    if objValue.validSpec(args):        
+        for key, spec in objValue.args: 
             funArgs[key] = spec.listTypes()
 
-    if v.validSpec(attrs):
-        for k,dd in v.info.attrs:
-            let spec  = dd[0]
-            let descr = dd[1]
-            var ss    = initOrderedTable[string,Value]()
+    if objValue.validSpec(attrs):            
+        for key, objAttr in objValue.info.attrs:
+            var attribute = initOrderedTable[string,Value]()
+            
+            let spec      = objAttr[0]
+            let descr     = objAttr[1]
 
-            ss["types"] = spec.listTypes()
-                
-            ss["description"] = newString(descr)
-            funAttrs[k] = newDictionary(ss)
+            attribute["types"]       = spec.listTypes()
+            attribute["description"] = newString(descr)
+            funAttrs[key]            = newDictionary(attribute)
             
     result["args"]    = newDictionary(funArgs)
     result["attrs"]   = newDictionary(funAttrs)
-    result["returns"] = if v.info.returns.len == 0: 
-        newBlock(@[newType(Nothing)]) else: v.info.returns.listTypes()
+    result["returns"] = if objValue.info.returns.len == 0: 
+        newBlock(@[newType(Nothing)]) else: objValue.info.returns.listTypes()
 
-    let alias = getAlias(n, aliases)
-    if alias[0]!="":
+    let alias = getAlias(objName, aliases)
+    if alias[0] != "":
         result["alias"]  = newString(alias[0])
         result["infix?"] = newLogical(alias[1] == InfixPrecedence)
 
