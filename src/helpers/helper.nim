@@ -241,7 +241,7 @@ when defined(DOCGEN):
             
             
 proc insertFunctionInfo(
-        objInfo: var ValueDict, 
+        info: var ValueDict, 
         obj: ValueObj, 
         aliases: SymbolDict
     ) {. inline .} =
@@ -277,21 +277,21 @@ proc insertFunctionInfo(
             attribute["description"] = newString(descr)
             funAttrs[key]            = newDictionary(attribute)
             
-    objInfo["args"]    = newDictionary(funArgs)
-    objInfo["attrs"]   = newDictionary(funAttrs)
-    objInfo["returns"] = if obj.val.info.returns.len == 0: 
+    info["args"]    = newDictionary(funArgs)
+    info["attrs"]   = newDictionary(funAttrs)
+    info["returns"] = if obj.val.info.returns.len == 0: 
         newBlock(@[newType(Nothing)]) else: obj.val.info.returns.listTypes()
 
     let alias = getAlias(objName, aliases)
     if alias[0] != "":
-        objInfo["alias"]  = newString(alias[0])
-        objInfo["infix?"] = newLogical(alias[1] == InfixPrecedence)
+        info["alias"]  = newString(alias[0])
+        info["infix?"] = newLogical(alias[1] == InfixPrecedence)
         
 
 when defined(DOCGEN):
     
     proc insertDocumentationInfo(
-            objInfo: var ValueDict, 
+            info: var ValueDict, 
             obj: ValueObj
     ) {. inline .} =
     
@@ -299,17 +299,17 @@ when defined(DOCGEN):
         const 
             repo = "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/"
         
-        objInfo["example"] = newStringBlock(splitExamples(obj.val.info.example))
+        info["example"] = newStringBlock(splitExamples(obj.val.info.example))
         
         if obj.val.info.line == 0:
             return
         
-        objInfo["line"] = newInteger(obj.val.info.line)
-        objInfo["source"] = newString(
+        info["line"] = newInteger(obj.val.info.line)
+        info["source"] = newString(
                 repo & 
-                objInfo["module"].s & 
+                info["module"].s & 
                 ".nim#L" & 
-                $(objInfo["line"].i))
+                $(info["line"].i))
                 
                 
 proc printHeader(obj: ValueObj) {. inline .} =
