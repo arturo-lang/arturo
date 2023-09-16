@@ -94,7 +94,7 @@ proc printOneData(
         init  = fmt"{initialSep}{initialPadding}"
         label = fmt"{color}{align(label, labelAlignment)}{resetColor}"
         data  = fmt"{colorb}{data}{resetColor}"
-    echo fmt("{init}{label}  {data}")
+    echo fmt"{init}{label}  {data}"
 
 
 proc printMultiData(
@@ -144,15 +144,15 @@ proc getUsageForFunction(obj: ValueObj): seq[string] =
 
     if args[0][0] != "":
         let templateArg = fmt"{args[0][0]}" 
-        result.add fmt("{templateName} {templateArg} {templateType}")
+        result.add fmt"{templateName} {templateArg} {templateType}"
     else:   
-        result.add fmt("{templateName} {templateType}")
+        result.add fmt"{templateName} {templateType}"
 
     for arg in args[1..^1]:
         let
             templateArg = fmt"{arg[0]}"
             templateType = fmt"{fg(grayColor)}{getTypeString(arg[1])}"
-        result.add fmt("{spaceBefore} {templateArg} {templateType}")
+        result.add fmt"{spaceBefore} {templateArg} {templateType}"
 
 
 proc getOptionsForFunction(value: Value): seq[string] =
@@ -165,11 +165,11 @@ proc getOptionsForFunction(value: Value): seq[string] =
     for attr in attrs:
         let ts = getTypeString(attr[1][0])
         if ts != ":logical":
-            let len = fmt(".{attr[0]} {ts}").len
+            let len = fmt".{attr[0]} {ts}".len
             if len > maxLen: 
                 maxLen = len
         else:
-            let len = fmt(".{attr[0]}").len
+            let len = fmt".{attr[0]}".len
             if len > maxLen: 
                 maxLen = len
 
@@ -178,13 +178,13 @@ proc getOptionsForFunction(value: Value): seq[string] =
         var leftSide: string
         var myLen = maxLen
         if ts != ":logical":
-            leftSide = fmt("{fg(cyanColor)}.{attr[0]} {fg(grayColor)}{ts}")
-            myLen += len(fmt("{fg(cyanColor)}{fg(grayColor)}"))
+            leftSide = fmt"{fg(cyanColor)}.{attr[0]} {fg(grayColor)}{ts}"
+            myLen += len(fmt"{fg(cyanColor)}{fg(grayColor)}")
         else:
-            leftSide = fmt("{fg(cyanColor)}.{attr[0]}")
-            myLen += len(fmt("{fg(cyanColor)}"))
+            leftSide = fmt"{fg(cyanColor)}.{attr[0]}"
+            myLen += len(fmt"{fg(cyanColor)}")
         
-        result.add fmt("{alignLeft(leftSide,myLen)} {resetColor}-> {attr[1][1]}")
+        result.add fmt"{alignLeft(leftSide,myLen)} {resetColor}-> {attr[1][1]}"
 
 
 when defined(DOCGEN):
@@ -298,7 +298,7 @@ when defined(DOCGEN):
         const 
             repo = "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/"
         
-        info["example"] = newStringBlock(splitExamples(obj.val.info.example))
+        info["example"] = newStringBlock(splitExamples(obj.vgetAliasfmtal.info.example))
         
         if obj.val.info.line == 0:
             return
@@ -318,9 +318,9 @@ proc printHeader(obj: ValueObj) {. inline .} =
         address = fmt"{cast[uint](obj.val):#X}".align(32)
     
     let data = if (not obj.val.info.isNil) and obj.val.info.module != "":
-        fmt("{typeStr}{fg(grayColor)}{align(obj.val.info.module,32)}")
+        fmt"{typeStr}{fg(grayColor)}{align(obj.val.info.module,32)}"
     else:
-        fmt("{typeStr}{fg(grayColor)}{address}") 
+        fmt"{typeStr}{fg(grayColor)}{address}"
        
     printLine() 
     printOneData(
@@ -370,7 +370,7 @@ proc getInfo*(objName: string, objValue: Value, aliases: SymbolDict): ValueDict 
     obj:    ValueObj  = (name: objName, val: objValue)
 
     result["name"]    = newString(obj.name)
-    result["address"] = newString(fmt("{cast[uint](obj.val):#X}"))
+    result["address"] = newString(fmt"{cast[uint](obj.val):#X}")
     result["type"]    = newType(obj.val.kind)
     
     if obj.val.info.isNil:
