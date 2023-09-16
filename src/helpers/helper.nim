@@ -185,7 +185,10 @@ when defined(DOCGEN):
 # Methods
 #=======================================
 
-proc getInfo*(n: string, v: Value, aliases: SymbolDict):ValueDict =
+
+proc getInfo*(n: string, v: Value, aliases: SymbolDict): ValueDict =
+    ## Returns a Dictionary containing information about a object
+
     result = initOrderedTable[string,Value]()
 
     result["name"] = newString(n)
@@ -216,12 +219,14 @@ proc getInfo*(n: string, v: Value, aliases: SymbolDict):ValueDict =
     
     # ====> In case of 'v being a function: 
 
-    ## Checks if the function value has arguments or attributes
-    ## * spec: can be 'args or 'attrs
     template validSpec(value: Value, spec: untyped): bool =
+        ## Checks if the function value has arguments or attributes
+        ## * spec: can be 'args or 'attrs
         value.info.spec.len > 0 and (toSeq(value.info.spec.keys))[0] != ""
         
-    template listTypes(values: untyped): Value = 
+    template listTypes(values: untyped): Value =
+        ## Converts each value of values to Type 
+        ## and returns it into a new Block
         newBlock collect(for val in values: newType val)
         
     var funArgs  = initOrderedTable[string,Value]()
