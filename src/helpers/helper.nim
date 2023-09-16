@@ -26,6 +26,14 @@ import helpers/terminal
 
 import vm/values/[printable, value]
 
+
+#=======================================
+# Constants
+#=======================================
+
+type
+    ValueObj = tuple[name: string, val: Value]
+
 #=======================================
 # Constants
 #=======================================
