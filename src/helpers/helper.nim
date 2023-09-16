@@ -242,8 +242,7 @@ when defined(DOCGEN):
             
 proc insertFunctionInfo(
         objInfo: var ValueDict, 
-        objName: string, 
-        objValue: Value, 
+        obj: ValueObj, 
         aliases: SymbolDict
     ) {. inline .} =
     
@@ -263,12 +262,12 @@ proc insertFunctionInfo(
         newBlock collect(for val in values: newType val)
         
     
-    if objValue.validSpec(args):        
-        for key, spec in objValue.args: 
+    if obj.val.validSpec(args):        
+        for key, spec in obj.val.args: 
             funArgs[key] = spec.listTypes()
 
-    if objValue.validSpec(attrs):            
-        for key, objAttr in objValue.info.attrs:
+    if obj.val.validSpec(attrs):            
+        for key, objAttr in obj.val.info.attrs:
             var attribute = initOrderedTable[string,Value]()
             
             let spec      = objAttr[0]
@@ -280,8 +279,8 @@ proc insertFunctionInfo(
             
     objInfo["args"]    = newDictionary(funArgs)
     objInfo["attrs"]   = newDictionary(funAttrs)
-    objInfo["returns"] = if objValue.info.returns.len == 0: 
-        newBlock(@[newType(Nothing)]) else: objValue.info.returns.listTypes()
+    objInfo["returns"] = if obj.val.info.returns.len == 0: 
+        newBlock(@[newType(Nothing)]) else: obj.val.info.returns.listTypes()
 
     let alias = getAlias(objName, aliases)
     if alias[0] != "":
@@ -293,19 +292,19 @@ when defined(DOCGEN):
     
     proc insertDocumentationInfo(
             objInfo: var ValueDict, 
-            objValue: Value
+            obj: ValueObj
     ) {. inline .} =
     
         ## Inserts documentation's information into the ValueDict 
         const 
             repo = "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/"
         
-        objInfo["example"] = newStringBlock(splitExamples(objValue.info.example))
+        objInfo["example"] = newStringBlock(splitExamples(obj.val.info.example))
         
-        if objValue.info.line == 0:
+        if obj.val.info.line == 0:
             return
         
-        objInfo["line"] = newInteger(objValue.info.line)
+        objInfo["line"] = newInteger(obj.val.info.line)
         objInfo["source"] = newString(
                 repo & 
                 objInfo["module"].s & 
@@ -384,10 +383,10 @@ proc getInfo*(objName: string, objValue: Value, aliases: SymbolDict): ValueDict 
     if obj.val.info.module != "": result["module"]      = newString(obj.val.info.module)
 
     if obj.val.info.kind == Function:
-        result.insertFunctionInfo(obj.name, obj.val, aliases)
+        result.insertFunctionInfo(obj, aliases)
         
     when defined(DOCGEN):
-       result.insertDocumentationInfo(obj.val) 
+       result.insertDocumentationInfo(obj) 
 
 
 # TODO(Helpers/helper) embed "see also" functions in info screens
