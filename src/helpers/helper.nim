@@ -79,9 +79,9 @@ proc getAlias(objName: string, aliases: SymbolDict): (string, PrecedenceKind) =
     result = ("", PrefixPrecedence)
     
     # Updates only if the objName is into the aliases
-    for key, val in pairs(aliases):
-        if val.name.s == objName:
-            return ($(newSymbol(key)), val.precedence)
+    for key, alias in pairs(aliases):
+        if alias.name.s == objName:
+            return ($(newSymbol(key)), alias.precedence)
 
 
 proc printOneData(
