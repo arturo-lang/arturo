@@ -77,9 +77,17 @@ proc printOneData(
     echo fmt("{init}{label}  {data}")
 
 
+proc printMultiData(
+        label: string, 
+        data: seq[string], 
+        color: string = resetColor, 
+        colorb: string = resetColor
+    ) =
+    
     printOneData(label, data[0], color, colorb)
     for item in data[1..^1]:
-        printOneData("",item,resetColor,colorb)
+        printOneData("", item, resetColor, colorb)
+
 
 func getShortData(initial: string): seq[string] =
     result = @[initial]
