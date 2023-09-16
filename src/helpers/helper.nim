@@ -368,25 +368,26 @@ proc printFunction(obj: ValueObj) {. inline .} =
 proc getInfo*(objName: string, objValue: Value, aliases: SymbolDict): ValueDict =
     ## Returns a Dictionary containing information about a object
 
-    result = initOrderedTable[string,Value]()
+    result: ValueDict = initOrderedTable[string,Value]()
+    obj:    ValueObj  = (name: objName, val: objValue)
 
-    result["name"]    = newString(objName)
-    result["address"] = newString(fmt("{cast[uint](objValue):#X}"))
-    result["type"]    = newType(objValue.kind)
+    result["name"]    = newString(obj.name)
+    result["address"] = newString(fmt("{cast[uint](obj.val):#X}"))
+    result["type"]    = newType(obj.val.kind)
     
-    if objValue.info.isNil:
+    if obj.val.info.isNil:
         return
     
     # ====> In case of 'info attribute be present: 
     
-    if objValue.info.descr != "":  result["description"] = newString(objValue.info.descr) 
-    if objValue.info.module != "": result["module"]      = newString(objValue.info.module)
+    if obj.val.info.descr != "":  result["description"] = newString(obj.val.info.descr) 
+    if obj.val.info.module != "": result["module"]      = newString(obj.val.info.module)
 
-    if objValue.info.kind == Function:
-        result.insertFunctionInfo(objName, objValue, aliases)
+    if obj.val.info.kind == Function:
+        result.insertFunctionInfo(obj.name, obj.val, aliases)
         
     when defined(DOCGEN):
-       result.insertDocumentationInfo(objValue) 
+       result.insertDocumentationInfo(obj.val) 
 
 
 # TODO(Helpers/helper) embed "see also" functions in info screens
