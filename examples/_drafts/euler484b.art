@@ -1,0 +1,13 @@
+deriv: function [x]-> sum map combine.by: 2 factors.prime x => product
+
+lim: 1000000
+
+; nonPrimes: select 1..lim 'x -> not? prime? x
+; print "here"
+
+benchmark ::
+1..lim | map 'x -> 
+            (prime? x)? -> 1 -> gcd @[x, sum map combine.by: 2 factors.prime x => product]
+       | sum
+          ;| add (lim - size nonPrimes)
+       | print

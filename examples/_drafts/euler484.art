@@ -1,0 +1,7 @@
+deriv: function [x]-> sum map combine.by: 2 factors.prime x => product
+
+lim: 10000000
+
+1..lim | map 'x -> gcd @[x, deriv x]
+       | sum
+       | print
