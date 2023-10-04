@@ -408,6 +408,7 @@ proc defineSymbols*() =
                         let reqHeaders = req.headers().table
                         var reqQuery = initOrderedTable[string,Value]()
                         var reqPath = req.path()
+                        let initialReqPath = reqPath
 
                         # get query components, if any
                         if reqPath.contains("?"):
@@ -434,12 +435,27 @@ proc defineSymbols*() =
                             newDictionary({
                                 "method": newString($(reqAction)),
                                 "path": newString(reqPath),
+                                "fullPath": newString(initialReqPath),
                                 "body": reqBodyV,
                                 "query": newDictionary(reqQuery),
                                 "headers": newStringDictionary(reqHeaders, collapseBlocks=true)
                             }.toOrderedTable),
                             newLogical(verbose)
                         )
+
+                        let requestNow = now()
+
+                        # show request info
+                        # if we're on .verbose mode
+                        if verbose:
+                            var serverPattern = " "
+                            if got.d["serverPattern"].s != initialReqPath and got.d["serverPattern"].s != "":
+                                serverPattern = " -> " & got.d["serverPattern"].s & " "
+
+                            echo bold(whiteColor) & "<<" & resetColor & " " & 
+                                 fg(whiteColor) & "[" & $(now()) & "] " &
+                                 bold(whiteColor) & ($(reqAction)).toUpperAscii() & " " & initialReqPath & 
+                                 resetColor & serverPattern & resetColor
 
                         # send response
                         req.respond(newServerResponse(
@@ -448,7 +464,7 @@ proc defineSymbols*() =
                             got.d["serverHeaders"].s
                         ))
 
-                        # show request info
+                        # show request response info
                         # if we're on .verbose mode
                         if verbose:
                             var colorCode = greenColor
@@ -456,16 +472,18 @@ proc defineSymbols*() =
                                 colorCode = redColor
 
                             var serverPattern = " "
-                            if got.d["serverPattern"].s != reqPath and got.d["serverPattern"].s != "":
+                            if got.d["serverPattern"].s != initialReqPath and got.d["serverPattern"].s != "":
                                 serverPattern = " -> " & got.d["serverPattern"].s & " "
 
-                            let serverBenchmark = got.d["serverBenchmark"].f
+                            let serverBenchmark = $(got.d["serverBenchmark"])
 
-                            echo bold(colorCode) & ">> " & $(got.d["serverStatus"].i) & resetColor & " " & 
+                            echo bold(colorCode) & ">>" & resetColor & " " & 
                                  fg(whiteColor) & "[" & $(now()) & "] " &
-                                 bold(whiteColor) & ($(reqAction)).toUpperAscii() & " " & reqPath & 
-                                 resetColor & serverPattern & 
-                                 fg(grayColor) & "(" & fmt"{serverBenchmark:.2f}" & " ms)" & resetColor
+                                 bold(colorCode) & $(got.d["serverStatus"].i) & " " & resetColor &
+                                 fg(whiteColor) & got.d["serverContentType"].s & " " &
+                                #  bold(whiteColor) & ($(reqAction)).toUpperAscii() & " " & initialReqPath & 
+                                #  resetColor & serverPattern & 
+                                 fg(grayColor) & "(" & serverBenchmark & ")" & resetColor
 
                 # show server startup info
                 # if we're on .verbose mode
