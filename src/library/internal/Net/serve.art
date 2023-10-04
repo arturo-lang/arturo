@@ -21,13 +21,12 @@ initServerInternal: function [serverRoutes][
 
 ; main request handler
 serveInternal: function [Request, verbose][
-    print ["in serveInternal::"]
-    inspect Request
     serverResponse: #[
         serverBody: ""
         serverPattern: ""
         serverStatus: null
         serverHeaders: ""
+        serverContentType: ""
         serverBenchmark: 0.0
     ]
 
@@ -41,6 +40,8 @@ serveInternal: function [Request, verbose][
         if not? null? attr 'js      -> servedContent: "application/javascript"
         if not? null? attr 'json    -> servedContent: "application/json"
         if not? null? attr 'xml     -> servedContent: "application/xml"
+
+        serverResponse\serverContentType: servedContent
 
         servedContent: "Content-Type: " ++ servedContent
 
@@ -58,7 +59,6 @@ serveInternal: function [Request, verbose][
     ]
 
     callActionFunction: function [actionFunc, ptrn][
-        print ["in callActionFunction:" ptrn]
         actionParams: keys get info.get 'actionFunc 'args
         passedParams: new []
         if positive? size actionParams [
@@ -75,11 +75,10 @@ serveInternal: function [Request, verbose][
             ]
         ]
 
-        call var'actionFunc passedParams
+        send.html call var'actionFunc passedParams
     ]
 
     getServerResponse: [
-        print "in getServerResponse:"
         loop keys ROUTES\[Request\method] 'pattern [
             if not? empty? match Request\path "^"++pattern++"$" [
                 action: ROUTES\[Request\method]\[pattern]
@@ -105,6 +104,9 @@ serveInternal: function [Request, verbose][
 
     if null? serverResponse\serverStatus ->
         serverResponse\serverStatus: 404 ; Not Found
+
+    if serverResponse\serverStatus <> 200 ->
+        serverResponse\serverContentType: "-"
 
     return serverResponse
 ]
