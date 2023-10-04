@@ -1,0 +1,29 @@
+deriv: function [num][
+    if prime? num -> return 1
+    fold.seed:1 factors.prime num [x,y]->
+        (one? x)? -> y
+                  -> (x * deriv y) + (y * deriv x)
+]
+derivM: function [num].memoize [
+    if prime? num -> return 1
+    fold.seed:1 factors.prime num [x,y]->
+        (one? x)? -> y
+                  -> (x * derivM y) + (y * derivM x)
+]
+lims: [100, 1000, 10000, 100000]
+
+loop lims 'lim [
+    print repeat "-" 20
+    print color.bold #cyan ~"Running up to |lim|"
+    print repeat "-" 20
+
+    print color #red "un-memoized:"
+    benchmark ->
+        z: map lim => deriv
+
+    print color #green "memoized:"
+    benchmark ->
+        z: map lim => derivM
+
+    print ""
+]
