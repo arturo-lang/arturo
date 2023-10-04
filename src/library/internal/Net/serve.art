@@ -21,6 +21,8 @@ initServerInternal: function [serverRoutes][
 
 ; main request handler
 serveInternal: function [Request, verbose][
+    print ["in serveInternal::"]
+    inspect Request
     serverResponse: #[
         serverBody: ""
         serverPattern: ""
@@ -56,6 +58,7 @@ serveInternal: function [Request, verbose][
     ]
 
     callActionFunction: function [actionFunc, ptrn][
+        print ["in callActionFunction:" ptrn]
         actionParams: keys get info.get 'actionFunc 'args
         passedParams: new []
         if positive? size actionParams [
@@ -76,6 +79,7 @@ serveInternal: function [Request, verbose][
     ]
 
     getServerResponse: [
+        print "in getServerResponse:"
         loop keys ROUTES\[Request\method] 'pattern [
             if not? empty? match Request\path "^"++pattern++"$" [
                 action: ROUTES\[Request\method]\[pattern]
