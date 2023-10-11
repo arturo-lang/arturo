@@ -21,7 +21,6 @@ when not defined(NOGMP):
     import helpers/bignums as BignumsHelper
 
 import helpers/intrinsics
-import helpers/maths
 
 import vm/errors
 
@@ -332,13 +331,13 @@ template normalIntegerModI*(x: var Value, y: int): untyped =
 template normalIntegerDivMod*(x, y: int): untyped =
     ## divide+modulo (integer division) two normal Integer values, checking for DivisionByZero
     ## and return result
-    let dm = maths.divmod(x, notZero(y))
+    let dm = math.divmod(x, notZero(y))
     newBlock(@[newInteger(dm[0]), newInteger(dm[1])])
 
 template normalIntegerDivModI*(x: var Value, y: int): untyped =
     ## divide+modulo (integer division) two normal Integer values, checking for DivisionByZero
     ## and set result in-place
-    let dm = maths.divmod(x.i, notZero(y))
+    let dm = math.divmod(x.i, notZero(y))
     x = newBlock(@[newInteger(dm[0]), newInteger(dm[1])])
 
 template normalIntegerPow*(x, y: int): untyped =
