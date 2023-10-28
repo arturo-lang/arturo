@@ -26,6 +26,7 @@ serveInternal: function [Request, verbose][
         serverPattern: ""
         serverStatus: null
         serverHeaders: ""
+        serverContentType: ""
         serverBenchmark: 0.0
     ]
 
@@ -39,6 +40,8 @@ serveInternal: function [Request, verbose][
         if not? null? attr 'js      -> servedContent: "application/javascript"
         if not? null? attr 'json    -> servedContent: "application/json"
         if not? null? attr 'xml     -> servedContent: "application/xml"
+
+        serverResponse\serverContentType: servedContent
 
         servedContent: "Content-Type: " ++ servedContent
 
@@ -72,7 +75,7 @@ serveInternal: function [Request, verbose][
             ]
         ]
 
-        call var'actionFunc passedParams
+        send.html call var'actionFunc passedParams
     ]
 
     getServerResponse: [
@@ -101,6 +104,9 @@ serveInternal: function [Request, verbose][
 
     if null? serverResponse\serverStatus ->
         serverResponse\serverStatus: 404 ; Not Found
+
+    if serverResponse\serverStatus <> 200 ->
+        serverResponse\serverContentType: "-"
 
     return serverResponse
 ]
