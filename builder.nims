@@ -13,27 +13,21 @@
 import "./tools/builderUtils.nims"
 
 cmd build, "Builds Arturo":
-    
-    ## This is an example of how we should write the tasks when it's finished
-    
-    ## Example:
-    ## 
-    ## $ ./builder.nims build --help
-    ## 
-    ## builder.nims build [OPTIONS]
+    ## build:
     ##     Provides a cross-compilation for the Arturo's binary.
     ## 
-    ##     --os   <string>
-    ##          ["freebsd", "linux", "openbsd", "macosx", "netbsd", "windows"]
-    ##     --mode <string> 
-    ##          ["full", "mini", "web"]
-    ##     --arch <string> 
-    ##          ["amd64", "arm", "arm64", "i386", "x86"]
+    ##     --os: string = $hostOS
+    ##          [freebsd, linux, openbsd, macosx, netbsd, windows]
+    ##     --mode: string = full
+    ##          [full, mini, web]
+    ##     --arch: string = $hostCPU
+    ##          [amd64, arm, arm64, i386, x86]
     ##     --dev
     ##     --compress
     ##     --install
     ##     --log
     ##     --help
+
     const
         availableOSes  = @["freebsd", "linux", "openbsd", "macosx", "netbsd", "windows"]
         availableCPUs  = @["amd64", "arm", "arm64", "i386", "x86"]
@@ -54,19 +48,38 @@ cmd build, "Builds Arturo":
         
         
     
-cmd package, "":
+cmd package, "Packages an Arturo app":
+    ## package: 
+    ##     Packages an Arturo app and build an executable
+    ## 
+    ##     --help
     discard
 
 
 cmd docs, "Generates documentation":
+    ## docs:
+    ##     Generates the documentation
+    ## 
+    ##     --which: string = both
+    ##          [both, internal, user]
+    ##     --help
     discard
 
 
 cmd tests, "Tests the source code":
+    ## tests:
+    ##     Tests code from tests/ folder
+    ## 
+    ##     --tolerance: int = 0
+    ##     --help
     discard
 
 
 cmd bench, "Benchmarks the source code":
+    ## bench:
+    ##     Benchmarks the source code
+    ## 
+    ##     --help
     discard
 
 
