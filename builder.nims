@@ -16,16 +16,17 @@ cmd build, "Builds Arturo":
     ## build:
     ##     Provides a cross-compilation for the Arturo's binary.
     ## 
-    ##     --os: string = $hostOS
-    ##          [freebsd, linux, openbsd, macosx, netbsd, windows]
-    ##     --mode: string = full
-    ##          [full, mini, web]
     ##     --arch: string = $hostCPU
     ##          [amd64, arm, arm64, i386, x86]
-    ##     --dev
-    ##     --compress
-    ##     --install
-    ##     --log
+    ##     --build -b: string = full
+    ##          [full, mini, web]
+    ##     --os: string = $hostOS
+    ##          [freebsd, linux, openbsd, macosx, netbsd, windows]
+    ##     --who: string = user
+    ##          [bench, ci, dev, user]
+    ##     --compress -c
+    ##     --install -i
+    ##     --log -l
     ##     --help
 
     const
