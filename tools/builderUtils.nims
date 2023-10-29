@@ -94,13 +94,12 @@ template cmd*(name: untyped; description: string; body: untyped): untyped =
     proc `name Task`*() =
         body
 
-    let task = command
-    if args.hasFlag("help", short="h"):
-        help `name Task`
-        quit QuitSuccess
-
-    if task ==? astToStr(name):
-        `name Task`()
+    if command ==? astToStr(name):
+        if args.hasFlag("help", short="h"):
+            help `name Task`
+            quit QuitSuccess
+        else:
+            `name Task`()
     
 
 ## Build related
