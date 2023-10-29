@@ -79,16 +79,14 @@ func hasFlag*(args: seq[string], cmd: string,
             return true
     
 
-section "build", "Build related functions":
+## Build related
+## -------------
     
-    type BuildOptions* = tuple
-        targetOS: OptionArg[string]
-        targetCPU: OptionArg[string] 
-        binaryMode: OptionArg[string]
-        isDev: OptionArg[bool]
-        shouldCompress: OptionArg[bool] 
-        shouldInstall: OptionArg[bool] 
-        shouldLog: OptionArg[bool]
+type BuildOptions* = tuple
+    targetOS, targetCPU, buildConfig, who: string
+    shouldCompress, shouldInstall, shouldLog: bool
 
-    proc buildArturo(dist: string, options: BuildOptions) =
-        discard
+proc buildArturo*(dist: string, build: BuildOptions) =
+    echo build
+    
+    
