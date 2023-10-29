@@ -80,7 +80,7 @@ proc getDocs(impl: string): seq[string] =
             return
         
 template help(ident: typed) =
-  for line in implToStr(ident).getDocs():
+  for line in ident.implementationToStr.getDocs():
     echo line
         
 template `==?`(a, b: string): bool = cmpIgnoreStyle(a, b) == 0
