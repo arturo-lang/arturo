@@ -95,7 +95,7 @@ template cmd*(name: untyped; description: string; body: untyped): untyped =
         body
 
     let task = command
-    if task ==? "help" or args.hasFlag("help", short="h"):
+    if args.hasFlag("help", short="h"):
         help `name Task`
         quit QuitSuccess
 
