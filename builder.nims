@@ -1,4 +1,4 @@
-#!nim
+#!/usr/bin/env nim
 
 ## This file is a prototype of what should be our new API for the CLI builder
 ## The purpose is to have a better, readable and extensible script for the 
