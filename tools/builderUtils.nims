@@ -2,6 +2,7 @@
 import std/strutils
 import std/strformat
 import std/cmdline
+import std/macros
 
 ## Helper functions for ``builder.nims``
 ## This file will prove the API and also 
@@ -13,22 +14,6 @@ import std/cmdline
 let 
     args* = commandLineParams()
     command = paramStr(2)
-
-template `==?`(a, b: string): bool = cmpIgnoreStyle(a, b) == 0
-template cmd*(name: untyped; description: string; body: untyped): untyped =
-    ## This is a modification of the original ``task`` by (c) Copyright 2015 Andreas Rumpf
-    ## original source: https://github.com/nim-lang/Nim/blob/805b4e2dc2afddf7be27e32fe0543e4227b31f74/lib/system/nimscript.nim#L390
-    ##
-    ## Reason: ``task``s were not working with optional arguments, 
-    ## so I removed the ``getCommand``, and replaced it by paramStr(2) 
-    ## defined by ``command``
-    
-    proc `name Task`*() =
-        body
-
-    let task = command
-    if task ==? astToStr(name):
-        `name Task`()
 
 proc getOptionValue*(args: seq[string], cmd: string, default: string,
                      short: string = "", into: seq[string] = @[]): string =
@@ -78,6 +63,44 @@ func hasFlag*(args: seq[string], cmd: string,
             continue
         if arg in [fmt"-{short}", fmt"--{cmd}"]:
             return true
+
+
+macro implementationToStr(id: typed): string =
+    id.getImpl.toStrLit
+  
+proc getDocs(impl: string): seq[string] =
+    result = @[]
+    for line in impl.splitLines():
+        let cleanline = line.strip()
+        if cleanline.startsWith("##"):
+            result.add cleanline[2 .. cleanline.high]
+        # Don't iterate until the end of the implementation,
+        # Just until the end of the impl's documentation
+        elif result.len > 0:
+            return
+        
+template help(ident: typed) =
+  for line in implToStr(ident).getDocs():
+    echo line
+        
+template `==?`(a, b: string): bool = cmpIgnoreStyle(a, b) == 0
+template cmd*(name: untyped; description: string; body: untyped): untyped =
+    ## This is a modification of the original ``task`` by (c) Copyright 2015 Andreas Rumpf
+    ## original source: https://github.com/nim-lang/Nim/blob/805b4e2dc2afddf7be27e32fe0543e4227b31f74/lib/system/nimscript.nim#L390
+    ##
+    ## Reason: ``task``s were not working with optional arguments, 
+    ## so I removed the ``getCommand``, and replaced it by paramStr(2) 
+    ## defined by ``command``
+    proc `name Task`*() =
+        body
+
+    let task = command
+    if task ==? "help" or args.hasFlag("help", short="h"):
+        help `name Task`
+        quit QuitSuccess
+
+    if task ==? astToStr(name):
+        `name Task`()
     
 
 ## Build related
