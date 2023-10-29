@@ -12,83 +12,63 @@
 
 import "./tools/builderUtils.nims"
 
-
-task build, "Builds Arturo":
+cmd build, "Builds Arturo":
     
     ## This is an example of how we should write the tasks when it's finished
+    
+    ## Example:
+    ## 
+    ## $ ./builder.nims build --help
+    ## 
+    ## builder.nims build [OPTIONS]
+    ##     Provides a cross-compilation for the Arturo's binary.
+    ## 
+    ##     --os   <string>
+    ##          ["freebsd", "linux", "openbsd", "macosx", "netbsd", "windows"]
+    ##     --mode <string> 
+    ##          ["full", "mini", "web"]
+    ##     --arch <string> 
+    ##          ["amd64", "arm", "arm64", "i386", "x86"]
+    ##     --dev
+    ##     --compress
+    ##     --install
+    ##     --log
+    ##     --help
+    const
+        availableOSes  = @["freebsd", "linux", "openbsd", "macosx", "netbsd", "windows"]
+        availableCPUs  = @["amd64", "arm", "arm64", "i386", "x86"]
+        availableModes = @["full", "mini", "web"]
+        availableUsers = @["user", "dev", "ci", "bench"]
+    var build: BuildOptions = (
+        targetOS:    args.getOptionValue("os", default=hostOS, into=availableOSes),
+        targetCPU:   args.getOptionValue("arch", default=hostCPU, into=availableCPUs),
+        buildConfig: args.getOptionValue("build", short="b", default="full", into=availableModes),
+        who:         args.getOptionValue("who", default="user", into=availableUsers),
         
-    var
-        
-        targetModes = some @["full", "mini", "web"]
-        targetCPUs  = some @["amd64", "arm", "arm64", "i386", "x86"]
-        targetOSes  = some @["freebsd", "linux", "openbsd", "macosx", "netbsd", "windows"]
-        
-        os:       OptionArg[string] = newOptionArg("os",       hostOS,              check=targetOSes)
-        mode:     OptionArg[string] = newOptionArg("mode",     "full",  "m".some(), check=targetModes)
-        arch:     OptionArg[string] = newOptionArg("arch",     hostCPU, "a".some(), check=targetCPUs)
-        devMode:  OptionArg[bool]   = newOptionArg("dev",      false)
-        compress: OptionArg[bool]   = newOptionArg("compress", false,   "c".some())
-        install:  OptionArg[bool]   = newOptionArg("install",  false,   "i".some())
-        log:      OptionArg[bool]   = newOptionArg("log",      false)
-        help:     OptionArg[bool]   = newOptionArg("help",     false,   "h".some())
-        
-    if help.value:
-        showHelp(
-            command      = "build",
-            description = "Provides a cross-compilation for the Arturo's binary",
-            options     = @[os, mode, arch, devMode, compress, install, log, help]
-        )
-        
-        ## Example:
-        ## 
-        ## $ ./builder.nims build --help
-        ## 
-        ## builder.nims build [OPTIONS]
-        ##     Provides a cross-compilation for the Arturo's binary.
-        ## 
-        ##     --os   <string>
-        ##          ["freebsd", "linux", "openbsd", "macosx", "netbsd", "windows"]
-        ##     --mode <string> 
-        ##          ["full", "mini", "web"]
-        ##     --arch <string> 
-        ##          ["amd64", "arm", "arm64", "i386", "x86"]
-        ##     --dev
-        ##     --compress
-        ##     --install
-        ##     --log
-        ##     --help
-        
-        quit QuitSuccess
-        
-    parseOptions(@[os, mode, arch, devMode, compress, install, log])
-    "bin/".buildArturo( 
-        BuildOptions(targetOS: os, 
-              targetCPU: arch, 
-              binaryMode: mode,
-              isDev: devMode, 
-              shouldCompress: compress, 
-              shouldInstall: install, 
-              shouldLog: log
-        )
+        shouldCompress: args.hasFlag("compress", short="c", default=false),
+        shouldInstall:  args.hasFlag("install", short="i", default=false),
+        shouldLog:      args.hasFlag("log", short="l", default=false)
     )
+    
+    "bin/".buildArturo(build)
         
         
     
-task package, "":
+cmd package, "":
     discard
 
 
-task docs, "Generates documentation":
+cmd docs, "Generates documentation":
     discard
 
 
-task test, "Tests the source code":
+cmd tests, "Tests the source code":
     discard
 
 
-task benchmark, "Benchmarks the source code":
+cmd bench, "Benchmarks the source code":
     discard
 
 
-task help, "Prints the help":
+cmd help, "Prints the help":
     discard
