@@ -67,17 +67,18 @@ func hasFlag*(args: seq[string], cmd: string,
 
 macro implementationToStr(id: typed): string =
     id.getImpl.toStrLit
-  
-proc getDocs(impl: string): seq[string] =
-    result = @[]
+          
+iterator getDocs(impl: string): string =
+    var found = false
     for line in impl.splitLines():
         let cleanline = line.strip()
         if cleanline.startsWith("##"):
-            result.add cleanline[2 .. cleanline.high]
+            yield cleanline[2 .. cleanline.high]
+            found = true
         # Don't iterate until the end of the implementation,
         # Just until the end of the impl's documentation
-        elif result.len > 0:
-            return
+        elif found:
+            break
         
 template help(ident: typed) =
   for line in ident.implementationToStr.getDocs():
