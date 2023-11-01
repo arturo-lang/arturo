@@ -20,6 +20,10 @@ proc miniBuildConfig*() =
     --define:MINI
     undefineDependencies()
     
+proc safeBuildConfig*() =
+    --define:SAFE
+    undefineDependencies()
+    
 proc webBuildConfig*() =
     --define:WEB
     undefineDependencies()
