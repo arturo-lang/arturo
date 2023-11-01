@@ -81,6 +81,9 @@ macro implementationToStr(id: typed): string =
     id.getImpl.toStrLit
           
 iterator getDocs(impl: string): string =
+    ## Return the documentation of any implementation
+    ## 
+    ## This iterates until the end of the documentation block.
     var found = false
     for line in impl.splitLines():
         let cleanline = line.strip()
@@ -93,8 +96,19 @@ iterator getDocs(impl: string): string =
             break
         
 template help(ident: typed) =
-  for line in ident.implementationToStr.getDocs():
-    echo line
+    ## Prints the documentation from a identifier.
+    ## 
+    ## Params
+    ## ------
+    ## ident: typed
+    ##      the identifier, can be any declared implementation.
+    ##
+    ## Usage
+    ## -----
+    ## ..code-block:: nim
+    ##      help getOptionValue
+    for line in ident.implementationToStr.getDocs():
+        echo line
         
 template `==?`(a, b: string): bool = cmpIgnoreStyle(a, b) == 0
 template cmd*(name: untyped; description: string; body: untyped): untyped =
