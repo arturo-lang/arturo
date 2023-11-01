@@ -55,3 +55,6 @@ proc webBuildConfig*() =
     --define:WEB
     --verbosity: 3
     undefineDependencies()
+    
+proc fullBuildConfig*() =
+    --define:ssl
