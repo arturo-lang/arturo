@@ -72,9 +72,11 @@ proc undefineDependencies() =
     --define:NOSQLITE           # tags: nosqlite
     --define:NOWEBVIEW          # tags: nowebview
 
-proc miniBuildConfig*() =
+proc miniBuildConfig*(bsd: bool) =
     --define:MINI
     undefineDependencies()
+    if bsd:
+        --verbosity:3
     
 proc safeBuildConfig*() =
     --define:SAFE
