@@ -73,7 +73,7 @@ iterator getDocs(impl: string): string =
     for line in impl.splitLines():
         let cleanline = line.strip()
         if cleanline.startsWith("##"):
-            yield cleanline[2 .. cleanline.high]
+            yield cleanline[3 .. cleanline.high]
             found = true
         # Don't iterate until the end of the implementation,
         # Just until the end of the impl's documentation
