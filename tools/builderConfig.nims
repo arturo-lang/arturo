@@ -1,8 +1,53 @@
 
+import std/os
+import std/strformat
+import std/strutils
+
+
 template `---`(key: untyped, val: string): untyped =
     ## A simple modification of `--` for string values.
     switch(strip(astToStr(key)), val)
+
+proc defineMimalloc() =
+    let
+        path = projectDir().joinPath("extras"/"mimalloc")
+        sourcePath = path.joinPath("src" / "static.c")
+        includePath = path.joinPath("include")
+        
+    --define:useMalloc
+    ---define:"mimallocStatic={sourcePath}".fmt
+    ---define:"mimallocIncludePath={includePath}".fmt
     
+    # tags: default, (gcc | clang | icc | icl)
+    if get("cc") in ["clang", "gcc", "icc", "icl"]:
+        --passC:"-fno-builtin-malloc"
+
+proc buildConfig*() =
+    --path:src              # tags: default
+    --cincludes:extras      # tags: default
+    --nimcache:".cache"     # tags: default
+    --skipUserCfg:on        # tags: default
+    --colors:off            # tags: default
+    
+    --define:strip
+    --threads:off           # tags: default
+    --mm:orc                # tags: default
+    defineMimalloc()
+    
+    # tags: default, windows-host
+    if "windows" == hostOS:
+        --passL:"-pthread"
+        ---gcc.path:staticExec("pkg-config --libs-only-L gmp")
+            .strip()
+            .replace("-L","")
+            .replace("/lib","/bin")
+            .normalizedPath()
+            
+    # tags: default, (gcc | clang | icc | icl)
+    if get("cc") in ["clang", "gcc", "icc", "icl"]:
+        --passC:"-ftls-model=initial-exec"           
+        
+
     
 ## OS Related
 ## ----------
@@ -30,13 +75,15 @@ proc windowsConfig*(full: bool) =
         --dynlibOverride:"ssl-"         # tags: default, windows, ssl
         --dynlibOverride:"crypto-"      # tags: default, windows, ssl
     
-proc unixConfig*(macosx: bool) =
+proc unixConfig*(macosx: bool, ssl: bool) =
     ## Configuration for the Unix enviroment
-    --dynlibOverride:ssl        # tags: default, unix, ssl
-    --dynlibOverride:crypto     # tags: default, unix, ssl
+    --passL:"-lm"                   # tags: default, unix
     
     if macosx:
         --dynlibOverride:pcre       # tags: default, macosx
+    if ssl:
+        --dynlibOverride:ssl        # tags: default, unix, ssl
+        --dynlibOverride:crypto     # tags: default, unix, ssl
     
 ## CPU/Arch Related
 ## ----------------
