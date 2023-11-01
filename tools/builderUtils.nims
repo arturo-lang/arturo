@@ -13,7 +13,19 @@ import std/macros
 
 let 
     args* = commandLineParams()
-    command = paramStr(2)
+    command = if paramStr(1).contains "config.nims":
+            paramStr(2)                               
+        else:                                         
+            paramStr(1)
+        ## In case of ``nim build``, the command ``build`` is at the position 1,
+        ## but if used ``./config.nims build`` or ``nim ./config.nims build``, 
+        ## the position will be actually 2.
+        ## 
+        ## Note: the comparison uses contains to add support for
+        ## Windows's and Unix's path format. So, the user will be able to type
+        ## ``nim .\config.nims`` or ``nim ./config.nims``.   
+ 
+echo command                  
 
 proc getOptionValue*(args: seq[string], cmd: string, default: string,
                      short: string = "", into: seq[string] = @[]): string =
@@ -94,7 +106,7 @@ template cmd*(name: untyped; description: string; body: untyped): untyped =
     ## defined by ``command``
     proc `name Task`*() =
         body
-
+    
     if command ==? astToStr(name):
         if args.hasFlag("help", short="h"):
             help `name Task`
