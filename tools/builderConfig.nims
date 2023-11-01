@@ -4,6 +4,35 @@ template `---`(key: untyped, val: string): untyped =
     switch(strip(astToStr(key)), val)
     
     
+## OS Related
+## ----------
+
+
+proc staticallyLinkStd() =
+    --passL:"-static-libstdc++"
+    --passL:"-static-libgcc"
+    --passL:"-Wl, -Bstatic -lstdc++"
+    --passL:"-Wl, -Bdynamic"
+
+proc windowsConfig*(full: bool) =
+    --gcc.linkerexe:g++
+    --dynlibOverride:pcre64             # tags: default, windows
+    staticallyLinkStd()
+    
+    # SSL is only available for @full builds
+    if full:
+        --define:noOpenSSLHacks         # tags: default, windows, ssl
+        --define:"sslVersion:("         # tags: default, windows, ssl
+        --dynlibOverride:"ssl-"         # tags: default, windows, ssl
+        --dynlibOverride:"crypto-"      # tags: default, windows, ssl
+    
+proc unixConfig*(macosx: bool) =
+    --dynlibOverride:ssl        # tags: default, unix, ssl
+    --dynlibOverride:crypto     # tags: default, unix, ssl
+    
+    if macosx:
+        --dynlibOverride:pcre       # tags: default, macosx
+    
 ## CPU/Arch Related
 ## ----------------
 
