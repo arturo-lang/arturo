@@ -1,5 +1,8 @@
- 
 
+template `---`(key: untyped, val: string): untyped =
+    ## A simple modification of `--` for string values.
+    switch(strip(astToStr(key)), val)
+    
 ## Builds Related
 ## --------------
 
