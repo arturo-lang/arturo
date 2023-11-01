@@ -18,7 +18,7 @@ let
 proc getOptionValue*(args: seq[string], cmd: string, default: string,
                      short: string = "", into: seq[string] = @[]): string =
     ## Gets an optional argument's value
-    ## example, for ```--who rick``, the returned value will be ``rick``,
+    ## example, for ``--who rick``, the returned value will be ``rick``,
     ## otherwhise, if the flag is not found, it'll return the ``default``
     ## 
     ## This procedure has side effects and ends the application if the user
