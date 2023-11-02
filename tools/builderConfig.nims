@@ -158,3 +158,74 @@ proc webBuildConfig*() =
 proc fullBuildConfig*() =
     ## Config for @full build
     --define:ssl
+    
+
+## Profile Related
+## ---------------
+
+proc disableHints() =
+    --hint:ProcessingStmt:off       # tags: default
+    --hint:XCannotRaiseY:off        # tags: default
+    
+proc disableWarnings() =
+    --warning:GcUnsafe:off          # tags: default
+    --warning:CastSizes:off         # tags: default
+    --warning:ProveInit:off         # tags: default
+    --warning:ProveField:off        # tags: default
+    --warning:Uninit:off            # tags: default
+    --warning:BareExcept:off        # tags: default
+    
+proc optimizeforSpeed(unix: bool) =
+    --define:OPTIMIZED      # tags: optimized
+    --opt:speed             # tags: default
+    --define:danger         # tags: default
+    --panics:off            # tags: default
+    --checks:off            # tags: default
+    --define:strip          # tags: release
+    
+    if unix:
+        --passC:"-flto"     # tags: release, unix
+        --passL:"-flto"     # tags: release, unix
+        
+proc debugConfig() =
+    --define:DEBUG      # tags: debug
+    --debugger:on       # tags: debug
+    --debuginfo         # tags: debug
+    --linedir:on        # tags: debug
+    
+proc profilerConfig(profiler: string) =
+    ## TODO: Discuss what should be used and when.
+    if profiler == "none":
+        --profiler:off
+        return
+    
+    --define:PROFILE
+    --stackTrace:on               
+    
+    case profiler
+    of "mem":
+        --profiler:off                       
+        --define:memProfiler
+    of "native":
+        --debugger:native
+    else:
+        discard
+        
+proc userConfig*(unix: bool) =
+    --hints:off
+    --warnings:off
+    optimizeforSpeed(unix)
+
+proc devConfig*() =
+    disableHints()
+    disableWarnings()
+    --embedsrc:on                         # tags: dev
+    --define:DEV                          # tags: dev
+    --listCmd                             # tags: dev
+    debugConfig()
+
+proc ciConfig*(unix: bool) =
+    optimizeforSpeed(unix)
+
+# proc benchConfig*(unix: bool) =
+#     optimizeforSpeed(unix)
