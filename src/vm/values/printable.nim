@@ -506,6 +506,10 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
                     var splitl = join(toSeq(splitLines(v.s)),"\n" & repeat("        ",level+1))
                     result &= "{\n" & repeat("        ",level+1) & splitl & "\n" & repeat("        ",level) & "}"
                 else:
+                    # TODO(Values/printable) `codify` could work better for String values
+                    #  right now, it also escape Unicode values and that may not be what we need
+                    #  on the other hand, perhaps it shouldn't even be used for that type of things(?)
+                    #  labels: vm,values,open discussion
                     result &= escape(v.s)
         of Word         : result &= v.s
         of Literal      : result &= "'" & v.s
