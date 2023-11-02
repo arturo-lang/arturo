@@ -217,6 +217,10 @@ proc userConfig*(unix: bool) =
     optimizeforSpeed(unix)
 
 proc devConfig*() =
+    --hints:on
+    --warnings:on
+    --verbosity:3
+    
     disableHints()
     disableWarnings()
     --embedsrc:on                         # tags: dev
