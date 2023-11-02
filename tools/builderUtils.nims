@@ -144,6 +144,12 @@ proc buildArturo*(dist: string, build: BuildOptions) =
         bsd: bool = build.targetOS == "bsd"
         macosx: bool = build.targetOS == "unix"
         full: bool = build.buildConfig == "full"
+        web: bool = build.buildConfig == "web"
+        
+    if web:
+        setCommand("js")
+    else:    
+        setCommand("c")
     
     buildConfig()
     
@@ -184,5 +190,5 @@ proc buildArturo*(dist: string, build: BuildOptions) =
     of "full":
         fullBuildConfig()
     else:
-        discard    
+        discard
     
