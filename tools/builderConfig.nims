@@ -91,10 +91,10 @@ proc buildConfig*() =
 
 proc staticallyLinkStd() =
     ## Statically link the STD lib for C and C++
-    --passL:"-static-libstdc++"
-    --passL:"-static-libgcc"
-    --passL:"-Wl, -Bstatic -lstdc++"
-    --passL:"-Wl, -Bdynamic"
+    let linking = "\"-static-libstdc++ -static-libgcc " &
+                  "-Wl,-Bstatic -lstdc++ " &
+                  "-Wl,-Bdynamic\""
+    ---passL:linking
 
 proc windowsConfig*(full: bool) =
     ## Configuration for build Windows binaries
