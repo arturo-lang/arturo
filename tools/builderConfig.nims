@@ -57,7 +57,9 @@ proc buildConfig*() =
     --cincludes:extras      # tags: default
     --nimcache:".cache"     # tags: default
     --skipUserCfg:on        # tags: default
+    --skipParentCfg:on      # tags: default
     --colors:off            # tags: default
+    --parallelBuild:0
 
     --define:strip
     --threads:off           # tags: default
