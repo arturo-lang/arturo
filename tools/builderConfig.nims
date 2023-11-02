@@ -100,7 +100,7 @@ proc windowsConfig*(full: bool) =
     ## Configuration for build Windows binaries
     ## The default linker must be g++.
 
-    --gcc.linkerexe:g++
+    --gcc.linkerexe:"g++"
     --dynlibOverride:pcre64             # tags: default, windows
     staticallyLinkStd()
 
