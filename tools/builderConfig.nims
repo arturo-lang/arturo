@@ -3,32 +3,32 @@ import std/os
 import std/strformat
 import std/strutils
 
-var 
+var
     flags*: seq[string] = newSeqOfCap[string](64)
         ## flags represent the flags that will be passed to the compiler.
-        ## 
+        ##
         ## Initialize a sequence of initial 64 slots,
         ## what help us to append elements without lose performance.
 
 proc strip(s: string): string =
     ## (c) Copyright 2015 Andreas Rumpf
-    ## This is the copy of the private strip function 
+    ## This is the copy of the private strip function
     ## from https://github.com/nim-lang/Nim/blob/version-2-0/lib/system/nimscript.nim
     var i = 0
     while s[i] in {' ', '\c', '\n'}: inc i
     result = s.substr(i)
     if result[0] == '"' and result[^1] == '"':
         result = result[1..^2]
-        
+
 template `--`*(key: untyped) {.dirty.} =
     ## Overrides the original ``--`` to append values into ``flags``,
-    ## instead of pass direclty to the compiler. 
+    ## instead of pass direclty to the compiler.
     ## Since this isn't the config.nims file.
     flags.add("--" & strip(astToStr(key)))
 
 template `--`*(key, val: untyped) {.dirty.} =
     ## Overrides the original ``--`` to append values into ``flags``,
-    ## instead of pass direclty to the compiler. 
+    ## instead of pass direclty to the compiler.
     ## Since this isn't the config.nims file.
     flags.add("--" & strip(astToStr(key)) & ":" & strip(astToStr(val)))
 
@@ -45,34 +45,32 @@ proc defineMimalloc() =
     --define:useMalloc
     ---define:"mimallocStatic={sourcePath}".fmt
     ---define:"mimallocIncludePath={includePath}".fmt
-    
+
     patchFile("stdlib", "malloc", projectDir()/"src"/"extras"/"mimalloc")
 
-    # tags: default, (gcc | clang | icc | icl)
     if get("cc") in ["clang", "gcc", "icc", "icl"]:
         --passC:"-fno-builtin-malloc"
 
 proc buildConfig*() =
-    --path:src              # tags: default
-    --cincludes:extras      # tags: default
-    --nimcache:".cache"     # tags: default
-    --skipUserCfg:on        # tags: default
-    --skipParentCfg:on      # tags: default
-    --colors:off            # tags: default
+    --path:src
+    --cincludes:extras
+    --nimcache:".cache"
+    --skipUserCfg:on
+    --skipParentCfg:on
+    --colors:off
     --parallelBuild:0
 
     --define:strip
-    --threads:off           # tags: default
-    --mm:orc                # tags: default
+    --threads:off
+    --mm:orc
     defineMimalloc()
-    
+
     --verbosity:1
     --hints:on
     --define:danger
     --panics:off
     --checks:off
 
-    # tags: default, windows-host
     if "windows" == hostOS:
         --passL:"-pthread"
         ---gcc.path:staticExec("pkg-config --libs-only-L gmp")
@@ -81,7 +79,6 @@ proc buildConfig*() =
             .replace("/lib","/bin")
             .normalizedPath()[0..^2]
 
-    # tags: default, (gcc | clang | icc | icl)
     if get("cc") in ["clang", "gcc", "icc", "icl"]:
         --passC:"-ftls-model=initial-exec"
 
@@ -101,26 +98,26 @@ proc windowsConfig*(full: bool) =
     ## The default linker must be g++.
 
     --gcc.linkerexe:"g++"
-    --dynlibOverride:pcre64             # tags: default, windows
+    --dynlibOverride:pcre64
     staticallyLinkStd()
 
     # SSL is only available for @full builds
     if full:
-        --define:noOpenSSLHacks         # tags: default, windows, ssl
-        --define:"sslVersion:("         # tags: default, windows, ssl
-        --dynlibOverride:"ssl-"         # tags: default, windows, ssl
-        --dynlibOverride:"crypto-"      # tags: default, windows, ssl
+        --define:noOpenSSLHacks
+        --define:"sslVersion:("
+        --dynlibOverride:"ssl-"
+        --dynlibOverride:"crypto-"
 
 proc unixConfig*(macosx: bool, full: bool) =
     ## Configuration for the Unix enviroment
-    --passL:"-lm"                   # tags: default, unix
+    --passL:"-lm"
 
     if macosx:
-        --dynlibOverride:pcre       # tags: default, macosx
+        --dynlibOverride:pcre
     # SSL is only available for @full builds
     if full:
-        --dynlibOverride:ssl        # tags: default, unix, ssl
-        --dynlibOverride:crypto     # tags: default, unix, ssl
+        --dynlibOverride:ssl
+        --dynlibOverride:crypto
 
 
 ## CPU/Arch Related
@@ -128,25 +125,25 @@ proc unixConfig*(macosx: bool, full: bool) =
 
 proc arm32Config*() =
     ## Configuration for the 32-bit ARM
-    --cpu:arm           # tags: arm32
-    --define:bit32      # tags: arm32
+    --cpu:arm
+    --define:bit32
 
 proc arm64Config*() =
     ## Configuration for the 64-bit ARM
-    --cpu:arm64                                 # tags: arm64
-    --gcc.path:"/usr/bin"                       # tags: arm64
-    --gcc.exe:aarch64-linux-gnu-gcc             # tags: arm64
-    --gcc.linkerexe:aarch64-linux-gnu-gcc       # tags: arm64
+    --cpu:arm64
+    --gcc.path:"/usr/bin"
+    --gcc.exe:aarch64-linux-gnu-gcc
+    --gcc.linkerexe:aarch64-linux-gnu-gcc
 
 proc x86Config*() =
     ## Configuration for the 32-bit x86 family
-    --cpu:i386              # tags: x86
-    --define:bit32          # tags: x86
+    --cpu:i386
+    --define:bit32
 
     # -m32 is a GCC flag for compiling it in 32-bits mode.
     if get("cc") == "gcc":
-        --passC:"-m32"      # tags: x86, gcc
-        --passL:"-m32"      # tags: x86, gcc
+        --passC:"-m32"
+        --passL:"-m32"
 
 proc x64Config*() =
     ## Configuration for the 64-bit x86 family
@@ -160,14 +157,14 @@ proc x64Config*() =
 proc undefineDependencies() =
     ## Undefine  all dependencies
     ## Should be used on MINI and WEB config.
-    --define:NOASCIIDECODE      # tags: noasciidecode
-    --define:NOCLIPBOARD        # tags: noclipboard
-    --define:NODIALOGS          # tags: nodialogs
-    --define:NOERRORLINES       # tags: noerrorlines
-    --define:NOGMP              # tags: nogmp
-    --define:NOPARSERS          # tags: noparsers
-    --define:NOSQLITE           # tags: nosqlite
-    --define:NOWEBVIEW          # tags: nowebview
+    --define:NOASCIIDECODE  e
+    --define:NOCLIPBOARD
+    --define:NODIALOGS
+    --define:NOERRORLINES
+    --define:NOGMP
+    --define:NOPARSERS
+    --define:NOSQLITE
+    --define:NOWEBVIEW
 
 proc miniBuildConfig*(bsd: bool) =
     ## Config for @mini build
@@ -203,34 +200,34 @@ proc fullBuildConfig*() =
 ## ---------------
 
 proc disableHints() =
-    --hint:"ProcessingStmt:off"       # tags: default
-    --hint:"XCannotRaiseY:off"        # tags: default
+    --hint:"ProcessingStmt:off"
+    --hint:"XCannotRaiseY:off"
 
 proc disableWarnings() =
-    --warning:"GcUnsafe:off"          # tags: default
-    --warning:"CastSizes:off"         # tags: default
-    --warning:"ProveInit:off"         # tags: default
-    --warning:"ProveField:off"        # tags: default
-    --warning:"Uninit:off"            # tags: default
-    --warning:"BareExcept:off"        # tags: default
+    --warning:"GcUnsafe:off"
+    --warning:"CastSizes:off"
+    --warning:"ProveInit:off"
+    --warning:"ProveField:off"
+    --warning:"Uninit:off"
+    --warning:"BareExcept:off"
 
 proc optimizeforSpeed(unix: bool) =
-    --define:OPTIMIZED      # tags: optimized
-    --opt:speed             # tags: default
-    --define:danger         # tags: default
-    --panics:off            # tags: default
-    --checks:off            # tags: default
-    --define:strip          # tags: release
+    --define:OPTIMIZED
+    --opt:speed
+    --define:danger
+    --panics:off
+    --checks:off
+    --define:strip
 
     if unix:
-        --passC:"-flto"     # tags: release, unix
-        --passL:"-flto"     # tags: release, unix
+        --passC:"-flto"
+        --passL:"-flto"
 
 proc debugConfig() =
-    --define:DEBUG      # tags: debug
-    --debugger:on       # tags: debug
-    --debuginfo         # tags: debug
-    --linedir:on        # tags: debug
+    --define:DEBUG
+    --debugger:on
+    --debuginfo
+    --linedir:on
 
 proc profilerConfig(profiler: string) =
     ## TODO: Discuss what should be used and when.
@@ -262,9 +259,9 @@ proc devConfig*() =
 
     disableHints()
     disableWarnings()
-    --embedsrc:on           # tags: dev
-    --define:DEV            # tags: dev
-    --listCmd               # tags: dev
+    --embedsrc:on
+    --define:DEV
+    --listCmd
     debugConfig()
 
 proc ciConfig*(unix: bool) =
