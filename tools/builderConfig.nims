@@ -203,16 +203,16 @@ proc fullBuildConfig*() =
 ## ---------------
 
 proc disableHints() =
-    --hint:ProcessingStmt:off       # tags: default
-    --hint:XCannotRaiseY:off        # tags: default
+    --hint:"ProcessingStmt:off"       # tags: default
+    --hint:"XCannotRaiseY:off"        # tags: default
 
 proc disableWarnings() =
-    --warning:GcUnsafe:off          # tags: default
-    --warning:CastSizes:off         # tags: default
-    --warning:ProveInit:off         # tags: default
-    --warning:ProveField:off        # tags: default
-    --warning:Uninit:off            # tags: default
-    --warning:BareExcept:off        # tags: default
+    --warning:"GcUnsafe:off"          # tags: default
+    --warning:"CastSizes:off"         # tags: default
+    --warning:"ProveInit:off"         # tags: default
+    --warning:"ProveField:off"        # tags: default
+    --warning:"Uninit:off"            # tags: default
+    --warning:"BareExcept:off"        # tags: default
 
 proc optimizeforSpeed(unix: bool) =
     --define:OPTIMIZED      # tags: optimized
