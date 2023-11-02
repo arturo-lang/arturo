@@ -138,8 +138,14 @@ proc compile(
 
 proc buildWebViewOnWindows(full: bool, dev: bool) =
     echo "\nBuilding webview...\n"
-    const batPath = "src/extras/webview/deps/build.bat".normalizedPath()
-    if "windows" == hostOS and dev and not full:
+    const batPath = projectDir()
+                    .joinPath("src"/"extras"/"webview"/"deps"/"build.bat")
+                    .normalizedPath()
+    let 
+        vcc = "vcc" == get("cc")
+        win = "windows" == hostOS
+
+    if [win, dev, full, vcc].allIt(it):
         exec batPath
 
 proc buildArturo*(dist: string, build: BuildOptions) =
