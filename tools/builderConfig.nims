@@ -79,7 +79,7 @@ proc buildConfig*() =
             .strip()
             .replace("-L","")
             .replace("/lib","/bin")
-            .normalizedPath()
+            .normalizedPath()[0..^2]
 
     # tags: default, (gcc | clang | icc | icl)
     if get("cc") in ["clang", "gcc", "icc", "icl"]:
