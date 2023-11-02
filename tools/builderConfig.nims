@@ -10,6 +10,15 @@ var
         ## Initialize a sequence of initial 64 slots,
         ## what help us to append elements without lose performance.
 
+proc strip(s: string): string =
+    ## (c) Copyright 2015 Andreas Rumpf
+    ## This is the copy of the private strip function 
+    ## from https://github.com/nim-lang/Nim/blob/version-2-0/lib/system/nimscript.nim
+    var i = 0
+    while s[i] in {' ', '\c', '\n'}: inc i
+    result = s.substr(i)
+    if result[0] == '"' and result[^1] == '"':
+        result = result[1..^2]
 template `--`*(key, val: untyped) {.dirty.} =
     ## Overrides the original ``--`` to append values into ``flags``,
     ## instead of pass direclty to the compiler. 
