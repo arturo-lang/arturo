@@ -65,6 +65,12 @@ proc buildConfig*() =
     --threads:off           # tags: default
     --mm:orc                # tags: default
     defineMimalloc()
+    
+    --verbosity:1
+    --hints:on
+    --define:danger
+    --panics:off
+    --checks:off
 
     # tags: default, windows-host
     if "windows" == hostOS:
