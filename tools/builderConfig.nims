@@ -73,13 +73,14 @@ proc windowsConfig*(full: bool) =
         --dynlibOverride:"ssl-"         # tags: default, windows, ssl
         --dynlibOverride:"crypto-"      # tags: default, windows, ssl
 
-proc unixConfig*(macosx: bool, ssl: bool) =
+proc unixConfig*(macosx: bool, full: bool) =
     ## Configuration for the Unix enviroment
     --passL:"-lm"                   # tags: default, unix
 
     if macosx:
         --dynlibOverride:pcre       # tags: default, macosx
-    if ssl:
+    # SSL is only available for @full builds
+    if full:
         --dynlibOverride:ssl        # tags: default, unix, ssl
         --dynlibOverride:crypto     # tags: default, unix, ssl
 
