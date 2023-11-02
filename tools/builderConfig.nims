@@ -223,9 +223,9 @@ proc devConfig*() =
 
     disableHints()
     disableWarnings()
-    --embedsrc:on                         # tags: dev
-    --define:DEV                          # tags: dev
-    --listCmd                             # tags: dev
+    --embedsrc:on           # tags: dev
+    --define:DEV            # tags: dev
+    --listCmd               # tags: dev
     debugConfig()
 
 proc ciConfig*(unix: bool) =
