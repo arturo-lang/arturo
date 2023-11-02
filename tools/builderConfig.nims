@@ -17,6 +17,8 @@ proc defineMimalloc() =
     --define:useMalloc
     ---define:"mimallocStatic={sourcePath}".fmt
     ---define:"mimallocIncludePath={includePath}".fmt
+    
+    patchFile("stdlib", "malloc", "src" / "extras" / "mimalloc")
 
     # tags: default, (gcc | clang | icc | icl)
     if get("cc") in ["clang", "gcc", "icc", "icl"]:
