@@ -100,13 +100,13 @@ proc arm64Config*() =
     --gcc.exe:aarch64-linux-gnu-gcc             # tags: arm64
     --gcc.linkerexe:aarch64-linux-gnu-gcc       # tags: arm64
 
-proc x86Config*(gcc: bool) =
+proc x86Config*() =
     ## Configuration for the 32-bit x86 family
     --cpu:i386              # tags: x86
     --define:bit32          # tags: x86
 
     # -m32 is a GCC flag for compiling it in 32-bits mode.
-    if gcc:
+    if get("cc") == "gcc":
         --passC:"-m32"      # tags: x86, gcc
         --passL:"-m32"      # tags: x86, gcc
 
