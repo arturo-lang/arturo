@@ -138,6 +138,12 @@ type BuildOptions* = tuple
     targetOS, targetCPU, buildConfig, who: string
     shouldCompress, shouldInstall, shouldLog: bool
 
+proc buildWebViewOnWindows(full: bool, dev: bool) =
+    echo "\nBuilding webview...\n"
+    const batPath = "src/extras/webview/deps/build.bat".normalizedPath()
+    if "windows" == hostOS and dev and not full:
+        exec batPath
+
 proc buildArturo*(dist: string, build: BuildOptions) =
     let
         unix: bool = build.targetOS != "windows"
@@ -146,10 +152,13 @@ proc buildArturo*(dist: string, build: BuildOptions) =
         full: bool = build.buildConfig == "full"
         web: bool = build.buildConfig == "web"
         
+        dev: bool = build.who in ["dev", "ci"]
+    
     if web:
         setCommand("js")
     else:    
         setCommand("c")
+        buildWebViewOnWindows(full, dev)
     
     buildConfig()
     
