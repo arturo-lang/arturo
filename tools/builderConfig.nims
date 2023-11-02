@@ -54,7 +54,9 @@ proc defineMimalloc() =
 proc buildConfig*() =
     --path:src
     --cincludes:extras
-    --nimcache:".cache"
+    ---nimcache:projectDir()
+                .joinPath(".cache")
+                .normalizedPath()
     --skipUserCfg:on
     --skipParentCfg:on
     --colors:off
