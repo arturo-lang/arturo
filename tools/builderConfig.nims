@@ -38,7 +38,7 @@ template `---`*(key: untyped, val: string): untyped =
 
 proc defineMimalloc() =
     let
-        path = projectDir().joinPath("extras"/"mimalloc")
+        path = projectDir().joinPath("src"/"extras"/"mimalloc")
         sourcePath = path.joinPath("src" / "static.c")
         includePath = path.joinPath("include")
 
@@ -46,7 +46,7 @@ proc defineMimalloc() =
     ---define:"mimallocStatic={sourcePath}".fmt
     ---define:"mimallocIncludePath={includePath}".fmt
     
-    patchFile("stdlib", "malloc", "src" / "extras" / "mimalloc")
+    patchFile("stdlib", "malloc", projectDir()/"src"/"extras"/"mimalloc")
 
     # tags: default, (gcc | clang | icc | icl)
     if get("cc") in ["clang", "gcc", "icc", "icl"]:
