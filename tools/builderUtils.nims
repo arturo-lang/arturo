@@ -16,17 +16,7 @@ import "./builderConfig.nims"
 
 let 
     args* = commandLineParams()
-    command = if paramStr(1).contains "config.nims":
-            paramStr(2)                               
-        else:                                         
-            paramStr(1)
-        ## In case of ``nim build``, the command ``build`` is at the position 1,
-        ## but if used ``./config.nims build`` or ``nim ./config.nims build``, 
-        ## the position will be actually 2.
-        ## 
-        ## Note: the comparison uses contains to add support for
-        ## Windows's and Unix's path format. So, the user will be able to type
-        ## ``nim .\config.nims`` or ``nim ./config.nims``.   
+    command = paramStr(2)
  
 echo command                  
 
@@ -139,6 +129,13 @@ type BuildOptions* = tuple
     targetOS, targetCPU, buildConfig, who: string
     shouldCompress, shouldInstall, shouldLog: bool
 
+proc compile(
+        source: string, dest: string, flags: seq[string],
+        backend: string = "c"
+    ) =
+    let params = flags.join(" ")
+    exec fmt"nim {backend} {source} --out:{dest} {params}"
+
 proc buildWebViewOnWindows(full: bool, dev: bool) =
     echo "\nBuilding webview...\n"
     const batPath = "src/extras/webview/deps/build.bat".normalizedPath()
@@ -154,14 +151,9 @@ proc buildArturo*(dist: string, build: BuildOptions) =
         web: bool = build.buildConfig == "web"
         
         dev: bool = build.who in ["dev", "ci"]
-    
-    if web:
-        setCommand("js")
-    else:    
-        setCommand("c")
-        buildWebViewOnWindows(full, dev)
-    
+    echo "called"
     buildConfig()
+    echo "web:", web
     
     case build.who
     of "user":
@@ -202,3 +194,11 @@ proc buildArturo*(dist: string, build: BuildOptions) =
     else:
         discard
     
+    if web:
+        ---out: dist/"arturo.js"
+        selfExec fmt"js src/arturo.nim"
+    else:
+        ---out: dist/"arturo".toExe()
+        buildWebViewOnWindows(full, dev)
+        selfExec fmt"c src/arturo.nim"
+        
