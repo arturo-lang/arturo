@@ -1,4 +1,5 @@
 
+import std/sequtils
 import std/strutils
 import std/strformat
 import std/cmdline
@@ -130,11 +131,19 @@ type BuildOptions* = tuple
     shouldCompress, shouldInstall, shouldLog: bool
 
 proc compile(
-        source: string, dest: string, flags: seq[string],
+        source: string, dest: string, flags: seq[string], log: bool,
         backend: string = "c"
     ) =
-    let params = flags.join(" ")
-    exec fmt"nim {backend} {source} --out:{dest} {params}"
+    let 
+        params = flags.join(" ")
+        cmd = fmt"nim {backend} {params} --out:{dest} {source.normalizedPath}"
+    if log:
+        echo cmd, "\n\n"
+        exec cmd
+    else:
+        (msg, code) = gorgeEx cmd
+        if code != QuitSuccess:
+            quit msg, QuitFailure
 
 proc buildWebViewOnWindows(full: bool, dev: bool) =
     echo "\nBuilding webview...\n"
@@ -157,9 +166,8 @@ proc buildArturo*(dist: string, build: BuildOptions) =
         web: bool = build.buildConfig == "web"
         
         dev: bool = build.who in ["dev", "ci"]
-    echo "called"
+
     buildConfig()
-    echo "web:", web
     
     case build.who
     of "user":
@@ -205,13 +213,15 @@ proc buildArturo*(dist: string, build: BuildOptions) =
     if web:
         "src/arturo.nim".compile(
             dest=dist/"arturo.js",
-            flags=flags,
+            flags=flags, 
+            log=build.shouldLog
             backend="js"
         )
     else:
         buildWebViewOnWindows(full, dev)
         "src/arturo.nim".compile(
             dest=dist/"arturo".toExe(),
-            flags=flags,
+            flags=flags, 
+            log=build.shouldLog
         )
         
