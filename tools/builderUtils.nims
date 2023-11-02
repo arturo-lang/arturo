@@ -194,11 +194,19 @@ proc buildArturo*(dist: string, build: BuildOptions) =
     else:
         discard
     
+    # TODO(RickBarretto): implement the flags
+    # Override `switch` procedure to append flags into flags.
     if web:
-        ---out: dist/"arturo.js"
-        selfExec fmt"js src/arturo.nim"
+        "src/arturo.nim".compile(
+            dest=dist/"arturo.js",
+            flags=flags,
+            backend="js"
+        )
     else:
-        ---out: dist/"arturo".toExe()
         buildWebViewOnWindows(full, dev)
-        selfExec fmt"c src/arturo.nim"
+        "src/arturo.nim".compile(
+            dest=dist/"arturo".toExe(),
+            flags=flags,
+            backend="js"
+        )
         
