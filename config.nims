@@ -21,7 +21,7 @@ cmd build, "Builds Arturo":
     ##     --build -b: string = full
     ##          [full, mini, web]
     ##     --os: string = $hostOS
-    ##          [freebsd, linux, openbsd, macosx, netbsd, windows]
+    ##          [freebsd, linux, openbsd, mac, macos, macosx, netbsd, win, windows]
     ##     --who: string = user
     ##          [bench, ci, dev, user]
     ##     --compress -c
@@ -30,7 +30,7 @@ cmd build, "Builds Arturo":
     ##     --help
 
     const
-        availableOSes  = @["freebsd", "linux", "openbsd", "macosx", "netbsd", "windows"]
+        availableOSes  = @["freebsd", "linux", "openbsd", "mac", "macos", "macosx", "netbsd", "win", "windows"]
         availableCPUs  = @["amd64", "arm", "arm64", "i386", "x86"]
         availableModes = @["full", "mini", "web"]
         availableUsers = @["bench", "ci", "dev", "user"]

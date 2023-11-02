@@ -3,6 +3,7 @@ import std/strutils
 import std/strformat
 import std/cmdline
 import std/macros
+import std/os
 
 import "./builderConfig.nims"
 
@@ -146,9 +147,9 @@ proc buildWebViewOnWindows(full: bool, dev: bool) =
 
 proc buildArturo*(dist: string, build: BuildOptions) =
     let
-        unix: bool = build.targetOS != "windows"
-        bsd: bool = build.targetOS == "bsd"
-        macosx: bool = build.targetOS == "unix"
+        unix: bool = not build.targetOS.contains("win")
+        bsd: bool = build.targetOS.contains("bsd")
+        macosx: bool = build.targetOS.contains("mac")
         full: bool = build.buildConfig == "full"
         web: bool = build.buildConfig == "web"
         
