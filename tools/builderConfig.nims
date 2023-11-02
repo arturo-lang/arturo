@@ -3,10 +3,22 @@ import std/os
 import std/strformat
 import std/strutils
 
+var 
+    flags*: seq[string] = newSeqOfCap[string](64)
+        ## flags represent the flags that will be passed to the compiler.
+        ## 
+        ## Initialize a sequence of initial 64 slots,
+        ## what help us to append elements without lose performance.
+
+template `--`*(key, val: untyped) {.dirty.} =
+    ## Overrides the original ``--`` to append values into ``flags``,
+    ## instead of pass direclty to the compiler. 
+    ## Since this isn't the config.nims file.
+    flags.add("--" & strip(astToStr(key)) & ":" & strip(astToStr(val)))
 
 template `---`*(key: untyped, val: string): untyped =
     ## A simple modification of `--` for string values.
-    switch(strip(astToStr(key)), val)
+    flags.add("--" & strip(astToStr(key)) & ":" & val)
 
 proc defineMimalloc() =
     let
