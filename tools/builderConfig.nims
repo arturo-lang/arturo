@@ -158,7 +158,7 @@ proc webBuildConfig*() =
 proc fullBuildConfig*() =
     ## Config for @full build
     --define:ssl
-    
+
 
 ## Profile Related
 ## ---------------
@@ -166,7 +166,7 @@ proc fullBuildConfig*() =
 proc disableHints() =
     --hint:ProcessingStmt:off       # tags: default
     --hint:XCannotRaiseY:off        # tags: default
-    
+
 proc disableWarnings() =
     --warning:GcUnsafe:off          # tags: default
     --warning:CastSizes:off         # tags: default
@@ -174,7 +174,7 @@ proc disableWarnings() =
     --warning:ProveField:off        # tags: default
     --warning:Uninit:off            # tags: default
     --warning:BareExcept:off        # tags: default
-    
+
 proc optimizeforSpeed(unix: bool) =
     --define:OPTIMIZED      # tags: optimized
     --opt:speed             # tags: default
@@ -182,35 +182,35 @@ proc optimizeforSpeed(unix: bool) =
     --panics:off            # tags: default
     --checks:off            # tags: default
     --define:strip          # tags: release
-    
+
     if unix:
         --passC:"-flto"     # tags: release, unix
         --passL:"-flto"     # tags: release, unix
-        
+
 proc debugConfig() =
     --define:DEBUG      # tags: debug
     --debugger:on       # tags: debug
     --debuginfo         # tags: debug
     --linedir:on        # tags: debug
-    
+
 proc profilerConfig(profiler: string) =
     ## TODO: Discuss what should be used and when.
     if profiler == "none":
         --profiler:off
         return
-    
+
     --define:PROFILE
-    --stackTrace:on               
-    
+    --stackTrace:on
+
     case profiler
     of "mem":
-        --profiler:off                       
+        --profiler:off
         --define:memProfiler
     of "native":
         --debugger:native
     else:
         discard
-        
+
 proc userConfig*(unix: bool) =
     --hints:off
     --warnings:off
@@ -220,7 +220,7 @@ proc devConfig*() =
     --hints:on
     --warnings:on
     --verbosity:3
-    
+
     disableHints()
     disableWarnings()
     --embedsrc:on                         # tags: dev
