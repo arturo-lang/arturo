@@ -207,6 +207,5 @@ proc buildArturo*(dist: string, build: BuildOptions) =
         "src/arturo.nim".compile(
             dest=dist/"arturo".toExe(),
             flags=flags,
-            backend="js"
         )
         
