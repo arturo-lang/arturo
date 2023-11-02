@@ -4,6 +4,8 @@ import std/strformat
 import std/cmdline
 import std/macros
 
+import "./builderConfig.nims"
+
 ## Helper functions for ``builder.nims``
 ## This file will prove the API and also 
 ## the functions that manages all complexity of the build system
@@ -137,6 +139,50 @@ type BuildOptions* = tuple
     shouldCompress, shouldInstall, shouldLog: bool
 
 proc buildArturo*(dist: string, build: BuildOptions) =
-    echo build
+    let
+        unix: bool = build.targetOS != "windows"
+        bsd: bool = build.targetOS == "bsd"
+        macosx: bool = build.targetOS == "unix"
+        full: bool = build.buildConfig == "full"
     
+    buildConfig()
+    
+    case build.who
+    of "user":
+        userConfig(unix)
+    of "dev":
+        devConfig()
+    of "ci":
+        ciConfig(unix)
+    else:
+        discard
+    
+    if unix:
+        unixConfig(macosx, full)
+    else:
+        windowsConfig(full)
+        
+    case build.targetCPU
+    of "amd64", "x64", "x86-64":
+        x64Config()
+    of "x86", "x86-32":
+        x86Config()
+    of "arm", "arm32":
+        arm32Config()
+    of "arm64":
+        arm64Config()
+    else:
+        discard
+    
+    case build.buildConfig
+    of "mini":
+        miniBuildConfig(bsd)
+    of "web":
+        webBuildConfig()
+    of "safe":
+        safeBuildConfig()
+    of "full":
+        fullBuildConfig()
+    else:
+        discard    
     
