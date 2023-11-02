@@ -19,6 +19,13 @@ proc strip(s: string): string =
     result = s.substr(i)
     if result[0] == '"' and result[^1] == '"':
         result = result[1..^2]
+        
+template `--`*(key: untyped) {.dirty.} =
+    ## Overrides the original ``--`` to append values into ``flags``,
+    ## instead of pass direclty to the compiler. 
+    ## Since this isn't the config.nims file.
+    flags.add("--" & strip(astToStr(key)))
+
 template `--`*(key, val: untyped) {.dirty.} =
     ## Overrides the original ``--`` to append values into ``flags``,
     ## instead of pass direclty to the compiler. 
