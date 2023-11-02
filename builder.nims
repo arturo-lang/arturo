@@ -44,7 +44,6 @@ cmd build, "Builds Arturo":
         shouldInstall:  args.hasFlag("install", short="i", default=false),
         shouldLog:      args.hasFlag("log", short="l", default=false)
     )
-    echo "hi"
     "bin/".buildArturo(build)
         
         
