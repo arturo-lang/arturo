@@ -208,8 +208,6 @@ proc buildArturo*(dist: string, build: BuildOptions) =
     else:
         discard
     
-    # TODO(RickBarretto): implement the flags
-    # Override `switch` procedure to append flags into flags.
     if web:
         "src/arturo.nim".compile(
             dest=dist/"arturo.js",
