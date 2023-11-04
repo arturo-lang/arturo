@@ -170,8 +170,10 @@ proc copyWebView(root: string, to: string, is32Bits: bool) =
     for dll in ["webview.dll", "WebView2Loader.dll"]:
         cpFile webviewPath/dll, binPath/dll
             
-proc installBinary(binary: string, is32Bits: bool) =
-    
+proc installBinary(binary: string, is32Bits: bool, web: bool) =
+    if web:
+        quit "Can't install @web builds.", QuitSuccess
+
     let 
         rootDir      = projectDir()
         targetDir    = getHomeDir().joinPath(".arturo")
@@ -315,4 +317,4 @@ proc buildArturo*(dist: string, build: BuildOptions) =
         )
         
         if build.shouldInstall:
-            binPath.installBinary(is32Bits)
+            binPath.installBinary(is32Bits, web)
