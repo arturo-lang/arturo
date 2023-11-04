@@ -141,7 +141,7 @@ proc compile(
         echo cmd, "\n\n"
         exec cmd
     else:
-        (msg, code) = gorgeEx cmd
+        let (msg, code) = gorgeEx cmd
         if code != QuitSuccess:
             quit msg, QuitFailure
             
