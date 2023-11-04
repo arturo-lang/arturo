@@ -125,13 +125,13 @@ template cmd*(name: untyped; description: string; body: untyped): untyped =
 ## UX related
 ## ----------
 
-proc section(title: string, ux: bool) =
+proc section(title: string) =
     echo fmt">>> {title}"
 
-proc message(message: string, ux: bool) =
+proc message(message: string) =
     echo fmt"{message}"
 
-proc log(message: string, log: bool) =
+proc log(message: string) =
     echo fmt"{message}"
     
 proc panic(message: string) =
