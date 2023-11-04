@@ -155,6 +155,10 @@ proc compile(
         params = flags.join(" ")
         cmd = fmt"nim {backend} {params} --out:{dest} {source.normalizedPath}"
     if log:
+        echo "Flags:"
+        for flag in flags:
+            echo "\t", flag
+        echo "\n"
         echo cmd, "\n\n"
         exec cmd
     else:
