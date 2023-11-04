@@ -159,7 +159,7 @@ proc x64Config*() =
 proc undefineDependencies() =
     ## Undefine  all dependencies
     ## Should be used on MINI and WEB config.
-    --define:NOASCIIDECODE  e
+    --define:NOASCIIDECODE
     --define:NOCLIPBOARD
     --define:NODIALOGS
     --define:NOERRORLINES
