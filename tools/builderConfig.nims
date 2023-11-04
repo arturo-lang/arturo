@@ -11,6 +11,9 @@ var
         ## Initialize a sequence of initial 64 slots,
         ## what help us to append elements without lose performance.
 
+## `filter`_, `stripStr`_, `--`_ and `---`_ are inspired by the
+## original ones from Nim's STD lib, by 2015 Andreas Rumpf.
+
 proc filter(content: string, condition: (char) -> bool): string =
     result = newStringOfCap content.len
     for c in content:
