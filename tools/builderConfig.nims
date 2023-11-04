@@ -2,6 +2,7 @@
 import std/os
 import std/strformat
 import std/strutils
+import std/sugar
 
 var
     flags*: seq[string] = newSeqOfCap[string](64)
@@ -10,13 +11,16 @@ var
         ## Initialize a sequence of initial 64 slots,
         ## what help us to append elements without lose performance.
 
-proc strip(s: string): string {. redefine .} =
-    ## (c) Copyright 2015 Andreas Rumpf
-    ## This is the copy of the private strip function
-    ## from https://github.com/nim-lang/Nim/blob/version-2-0/lib/system/nimscript.nim
-    var i = 0
-    while s[i] in {' ', '\c', '\n'}: inc i
-    result = s.substr(i)
+proc filter(content: string, condition: (char) -> bool): string =
+    result = newStringOfCap content.len
+    for c in content:
+        if c.condition:
+            result.add c
+
+proc stripStr(content: string): string =
+    result = content.filter: (x: char) => 
+        x notin {' ', '\c', '\n'}
+    
     if result[0] == '"' and result[^1] == '"':
         result = result[1..^2]
 
@@ -24,17 +28,17 @@ template `--`*(key: untyped) {.dirty.} =
     ## Overrides the original ``--`` to append values into ``flags``,
     ## instead of pass direclty to the compiler.
     ## Since this isn't the config.nims file.
-    flags.add("--" & strip(astToStr(key)))
+    flags.add("--" & stripStr(astToStr(key)))
 
 template `--`*(key, val: untyped) {.dirty.} =
     ## Overrides the original ``--`` to append values into ``flags``,
     ## instead of pass direclty to the compiler.
     ## Since this isn't the config.nims file.
-    flags.add("--" & strip(astToStr(key)) & ":" & strip(astToStr(val)))
+    flags.add("--" & stripStr(astToStr(key)) & ":" & stripStr(astToStr(val)))
 
 template `---`*(key: untyped, val: string): untyped =
     ## A simple modification of `--` for string values.
-    flags.add("--" & strip(astToStr(key)) & ":" & val)
+    flags.add("--" & stripStr(astToStr(key)) & ":" & val)
 
 proc defineMimalloc() =
     let
