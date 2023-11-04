@@ -32,7 +32,7 @@ cmd build, "Builds Arturo":
     const
         availableOSes  = @["freebsd", "linux", "openbsd", "mac", "macos", "macosx", "netbsd", "win", "windows"]
         availableCPUs  = @["amd64", "arm", "arm64", "i386", "x86"]
-        availableModes = @["full", "mini", "web"]
+        availableModes = @["full", "mini", "web", "safe"]
         availableUsers = @["bench", "ci", "dev", "user"]
     var build: BuildOptions = (
         targetOS:    args.getOptionValue("os", default=hostOS, into=availableOSes),
