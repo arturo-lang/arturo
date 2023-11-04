@@ -10,7 +10,7 @@ var
         ## Initialize a sequence of initial 64 slots,
         ## what help us to append elements without lose performance.
 
-proc strip(s: string): string =
+proc strip(s: string): string {. redefine .} =
     ## (c) Copyright 2015 Andreas Rumpf
     ## This is the copy of the private strip function
     ## from https://github.com/nim-lang/Nim/blob/version-2-0/lib/system/nimscript.nim
