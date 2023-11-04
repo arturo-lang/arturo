@@ -121,7 +121,18 @@ template cmd*(name: untyped; description: string; body: untyped): untyped =
             quit QuitSuccess
         else:
             `name Task`()
-    
+
+## UX related
+## ----------
+
+proc section(title: string, ux: bool) =
+    echo fmt">>> {title}"
+
+proc message(message: string, ux: bool) =
+    echo fmt"{message}"
+
+proc log(message: string, log: bool) =
+    echo fmt"{message}"
     
 proc panic(message: string) =
     quit fmt"{message}", QuitFailure
