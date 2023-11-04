@@ -144,6 +144,49 @@ proc compile(
         (msg, code) = gorgeEx cmd
         if code != QuitSuccess:
             quit msg, QuitFailure
+            
+            
+proc copyWebView(root: string, to: string, is32Bits: bool) =
+    let 
+        bitsMode = if is32Bits: "x86" else: "x64"
+        binPath = root/to
+        webviewPath = root/"src"/"extras"/"webview"/"deps"/bitsMode
+        
+    for dll in ["webview.dll", "WebView2Loader.dll"]:
+        cpFile webviewPath/dll, binPath/dll
+            
+proc installBinary(binary: string, is32Bits: bool) =
+    
+    let 
+        rootDir      = projectDir()
+        targetDir    = getHomeDir().joinPath(".arturo")
+        
+        win = hostOS != "windows"
+        unix = not win
+    
+    proc createDirs(dir: string) =
+        mkdir dir
+        for path in ["bin", "lib", "store"]:
+            mkdir dir/path
+    
+    proc enableExecutablePermissions(binary: string) =
+        let bin = targetDir.joinPath(binary.toExe)
+        exec fmt"chmod +x {bin}"
+        
+    # Creates the directories into "~/.arturo/"
+    targetDir.createDirs()
+    
+    # Copies webview dll to /bin
+    if win:
+        rootDir.copyWebView(to="bin", is32Bits=is32Bits)
+
+    # Copies from /bin/ to ~/.arturo/bin/
+    cpDir rootDir/"bin", targetDir/"bin"
+    
+    # For unix systems, the binary needs executable permissions
+    if unix:
+        binary.enableExecutablePermissions()
+        
 
 proc buildWebViewOnWindows(full: bool, dev: bool) =
     echo "\nBuilding webview...\n"
@@ -166,6 +209,8 @@ proc buildArturo*(dist: string, build: BuildOptions) =
         web: bool = build.buildConfig == "web"
         
         dev: bool = build.who in ["dev", "ci"]
+        
+        is32Bits: bool = not build.targetCPU.contains("64")
 
     buildConfig()
     
@@ -216,10 +261,13 @@ proc buildArturo*(dist: string, build: BuildOptions) =
             backend="js"
         )
     else:
+        let binPath = dist/"arturo".toExe()
         buildWebViewOnWindows(full, dev)
         "src/arturo.nim".compile(
-            dest=dist/"arturo".toExe(),
+            dest=binPath,
             flags=flags, 
             log=build.shouldLog
         )
         
+        if build.shouldInstall:
+            binPath.installBinary(is32Bits)
