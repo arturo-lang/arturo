@@ -316,7 +316,7 @@ proc buildArturo*(dist: string, build: BuildOptions) =
     else:
         discard
     
-    section "Compiling Arturo: @{build.buildConfig}"
+    section fmt"Compiling Arturo: @{build.buildConfig}"
     
     if web:
         let binPath = dist/"arturo.js"
