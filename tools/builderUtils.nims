@@ -309,7 +309,8 @@ proc buildArturo*(dist: string, build: BuildOptions) =
             log=build.shouldLog,
             backend="js"
         )
-        binPath.compressJS(web)
+        if build.shouldCompress:
+            binPath.compressJS(web)
     
     else:
         let binPath = dist/"arturo".toExe()
