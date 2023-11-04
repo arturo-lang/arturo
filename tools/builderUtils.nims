@@ -315,6 +315,8 @@ proc buildArturo*(dist: string, build: BuildOptions) =
     else:
         discard
     
+    section "Compiling Arturo: @{build.buildConfig}"
+    
     if web:
         let binPath = dist/"arturo.js"
         "src/arturo.nim".compile(
@@ -323,7 +325,9 @@ proc buildArturo*(dist: string, build: BuildOptions) =
             log=build.shouldLog,
             backend="js"
         )
+        
         if build.shouldCompress:
+            section "Compressing Arturo"
             binPath.compressJS(web)
     
     else:
@@ -336,4 +340,5 @@ proc buildArturo*(dist: string, build: BuildOptions) =
         )
         
         if build.shouldInstall:
+            section "Installing Arturo"
             binPath.installBinary(is32Bits, web)
