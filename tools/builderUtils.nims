@@ -201,6 +201,46 @@ proc installBinary(binary: string, is32Bits: bool) =
     # For unix systems, the binary needs executable permissions
     if unix:
         binary.enableExecutablePermissions()
+        
+## Compression Related
+proc compressJS(binary: string, web: bool) =
+    ## Compress the produced JavaScript
+    
+    if not web:
+        quit "Can't compress for no @web builds." 
+    
+    let 
+        minBin = binary.replace(".js", ".min.js")
+            
+    try:
+        let options = "\"toplevel,reserved=['A$']\""
+        exec fmt"uglifyjs {binary} --compress --mangle {options} " &
+            fmt"--compress --output {minBin}"
+    except:
+        let errorMessage =
+            "Not able to compress the binary.\n" & 
+            "Missing: uglifys, try: `$ npm install uglify-js -g`."
+        quit errorMessage, QuitFailure
+
+    # Fixing the final arturo.min.js
+    let js = minBin.readFile()
+        # replace Field0, Field1, etc with F0, F1, etc
+        .replaceWord("Field0", "F0")
+        .replaceWord("Field1", "F1")
+        .replaceWord("Field2", "F2")
+        .replaceWord("Field3", "F3")
+        # replace redundant error messages
+        .multiReplace(
+            ("field '", ""),
+            ("' is not accessible for type '", ""),
+            ("' using ", ""),
+            ("'kind = ", ""),
+            ("'iKind = ", ""),
+            ("'tpKind = ", ""),
+            ("'fnKind = ", "")
+        )
+
+    minBin.writeFile(js)
 
 proc buildArturo*(dist: string, build: BuildOptions) =
     let
@@ -256,12 +296,15 @@ proc buildArturo*(dist: string, build: BuildOptions) =
         discard
     
     if web:
+        let binPath = dist/"arturo.js"
         "src/arturo.nim".compile(
-            dest=dist/"arturo.js",
+            dest=binPath,
             flags=flags, 
-            log=build.shouldLog
+            log=build.shouldLog,
             backend="js"
         )
+        binPath.compressJS(web)
+    
     else:
         let binPath = dist/"arturo".toExe()
         buildWebViewOnWindows(full, dev)
