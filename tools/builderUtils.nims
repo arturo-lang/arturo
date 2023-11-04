@@ -130,6 +130,8 @@ type BuildOptions* = tuple
     targetOS, targetCPU, buildConfig, who: string
     shouldCompress, shouldInstall, shouldLog: bool
 
+## Compilation related
+
 proc compile(
         source: string, dest: string, flags: seq[string], log: bool,
         backend: string = "c"
@@ -144,8 +146,21 @@ proc compile(
         let (msg, code) = gorgeEx cmd
         if code != QuitSuccess:
             quit msg, QuitFailure
-            
-            
+
+proc buildWebViewOnWindows(full: bool, dev: bool) =
+    echo "\nBuilding webview...\n"
+    const batPath = projectDir()
+                    .joinPath("src"/"extras"/"webview"/"deps"/"build.bat")
+                    .normalizedPath()
+    let 
+        vcc = "vcc" == get("cc")
+        win = "windows" == hostOS
+
+    if [win, dev, full, vcc].allIt(it):
+        exec batPath
+
+## Installation related
+
 proc copyWebView(root: string, to: string, is32Bits: bool) =
     let 
         bitsMode = if is32Bits: "x86" else: "x64"
@@ -186,19 +201,6 @@ proc installBinary(binary: string, is32Bits: bool) =
     # For unix systems, the binary needs executable permissions
     if unix:
         binary.enableExecutablePermissions()
-        
-
-proc buildWebViewOnWindows(full: bool, dev: bool) =
-    echo "\nBuilding webview...\n"
-    const batPath = projectDir()
-                    .joinPath("src"/"extras"/"webview"/"deps"/"build.bat")
-                    .normalizedPath()
-    let 
-        vcc = "vcc" == get("cc")
-        win = "windows" == hostOS
-
-    if [win, dev, full, vcc].allIt(it):
-        exec batPath
 
 proc buildArturo*(dist: string, build: BuildOptions) =
     let
