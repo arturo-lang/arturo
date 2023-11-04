@@ -131,8 +131,9 @@ proc section(title: string) =
 proc message(message: string) =
     echo fmt"{message}"
 
-proc log(message: string) =
-    echo fmt"{message}"
+proc log(shouldLog: bool, message: string) =
+    if shouldLog:
+        echo fmt"{message}"
     
 proc panic(message: string) =
     quit fmt"{message}", QuitFailure
