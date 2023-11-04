@@ -122,6 +122,9 @@ template cmd*(name: untyped; description: string; body: untyped): untyped =
         else:
             `name Task`()
     
+    
+proc panic(message: string) =
+    quit fmt"{message}", QuitFailure
 
 ## Build related
 ## -------------
@@ -145,7 +148,7 @@ proc compile(
     else:
         let (msg, code) = gorgeEx cmd
         if code != QuitSuccess:
-            quit msg, QuitFailure
+            panic msg
 
 proc buildWebViewOnWindows(full: bool, dev: bool) =
     echo "\nBuilding webview...\n"
@@ -172,7 +175,7 @@ proc copyWebView(root: string, to: string, is32Bits: bool) =
             
 proc installBinary(binary: string, is32Bits: bool, web: bool) =
     if web:
-        quit "Can't install @web builds.", QuitSuccess
+        panic "Can't install @web builds."
 
     let 
         rootDir      = projectDir()
@@ -213,7 +216,7 @@ proc compressJS(binary: string, web: bool) =
     ## Compress the produced JavaScript
     
     if not web:
-        quit "Can't compress for no @web builds." 
+        panic "Can't compress for no @web builds." 
     
     let 
         minBin = binary.replace(".js", ".min.js")
@@ -226,7 +229,7 @@ proc compressJS(binary: string, web: bool) =
         let errorMessage =
             "Not able to compress the binary.\n" & 
             "Missing: uglifys, try: `$ npm install uglify-js -g`."
-        quit errorMessage, QuitFailure
+        panic errorMessage
 
     # Fixing the final arturo.min.js
     let js = minBin.readFile()
