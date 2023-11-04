@@ -205,6 +205,10 @@ proc installBinary(binary: string, is32Bits: bool, web: bool) =
         binary.enableExecutablePermissions()
         
 ## Compression Related
+ 
+# TODO(RickBarretto): replace our current compression method.
+#   The current one is based on our old method that seems to be broken.
+#   References: issue#498, issue#658
 proc compressJS(binary: string, web: bool) =
     ## Compress the produced JavaScript
     
