@@ -241,31 +241,31 @@ proc defineSymbols*() =
 
                 push(newStringBlock(contents))
 
-        # TODO(Paths\module) Re-implement & change behavior of built-in function
-        #  This should actually check if the aforementioned module/package is installed first.
-        #  If not, it should look it up - and if available online - download it and install it.
-        #  This obviously goes hand-in-hand with the development & implementation of Arturo's new package manager.
-        #  labels: library, package manager, enhancement
-        builtin "module",
-            alias       = unaliased, 
-            op          = opNop,
-            rule        = PrefixPrecedence,
-            description = "get path for given module name",
-            args        = {
-                "name"  : {String,Literal}
-            },
-            attrs       = NoAttrs,
-            returns     = {String,Null},
-            example     = """
-            print module 'html        ; /usr/local/lib/arturo/html.art
-            ..........
-            do module 'html    ; (imports given module)
-            """:
-                #=======================================================
-                when defined(windows):
-                    push(newString(HomeDir & ".arturo\\lib\\" & x.s & ".art"))
-                else:
-                    push(newString(HomeDir & ".arturo/lib/" & x.s & ".art"))
+        # # TODO(Paths\module) Re-implement & change behavior of built-in function
+        # #  This should actually check if the aforementioned module/package is installed first.
+        # #  If not, it should look it up - and if available online - download it and install it.
+        # #  This obviously goes hand-in-hand with the development & implementation of Arturo's new package manager.
+        # #  labels: library, package manager, enhancement
+        # builtin "module",
+        #     alias       = unaliased, 
+        #     op          = opNop,
+        #     rule        = PrefixPrecedence,
+        #     description = "get path for given module name",
+        #     args        = {
+        #         "name"  : {String,Literal}
+        #     },
+        #     attrs       = NoAttrs,
+        #     returns     = {String,Null},
+        #     example     = """
+        #     print module 'html        ; /usr/local/lib/arturo/html.art
+        #     ..........
+        #     do module 'html    ; (imports given module)
+        #     """:
+        #         #=======================================================
+        #         when defined(windows):
+        #             push(newString(HomeDir & ".arturo\\lib\\" & x.s & ".art"))
+        #         else:
+        #             push(newString(HomeDir & ".arturo/lib/" & x.s & ".art"))
         
         builtin "normalize",
             alias       = unaliased, 
