@@ -471,6 +471,10 @@ proc showHelp*(error=false, errorMsg="") =
 # Main
 #=======================================
 
+proc panic(msg: string) =
+    showLogo()
+    showHelp(error=true, errorMsg=msg)
+
 # check environment
 let userName = if hostOS == "windows": getEnv("USERNAME") else: staticExec("whoami")
 IS_DEV = userName == "drkameleon"
@@ -478,7 +482,7 @@ IS_DEV = userName == "drkameleon"
 # parse command line
 var p = initOptParser("")
 const
-    commands = ["install", "package", "docs", "test", "benchmark", "help"]
+    availableCommands = ["install", "package", "docs", "test", "benchmark", "help"]
     scriptCall = ["e", "./build.nims", "build.nims", "build"]
 
 while true:
@@ -488,12 +492,10 @@ while true:
     of cmdEnd: 
         break
     of cmdArgument:
-        if p.key in commands:
-            if MODE == "":
-                MODE = p.key
-            else:
-                showLogo()
-                showHelp(error=true, errorMsg="Multiple operations specified!")
+        if p.key in availableCommands:
+            if not MODE.isEmptyOrWhitespace:
+                panic("Multiple operations specified!")
+            MODE = p.key
         elif p.key notin scriptCall and OPTIONS.hasKey(p.key):
             FLAGS = "{FLAGS} {OPTIONS[p.key]}".fmt
             case p.key
@@ -527,8 +529,7 @@ while true:
             BINARY = "bin/" & p.val
             TARGET_FILE = toExe(r"{TARGET_DIR}/{p.val}".fmt)
         elif p.key != "hints":
-            showLogo()
-            showHelp(error=true, errorMsg="Erroneous argument supplied!")
+            panic("Erroneous argument supplied!")
 
 if CONFIG == "@full":
     FLAGS = FLAGS & " " & OPTIONS["full"]
