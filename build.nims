@@ -526,10 +526,9 @@ while true:
         if p.key=="as":
             BINARY = "bin/" & p.val
             TARGET_FILE = toExe(r"{TARGET_DIR}/{p.val}".fmt)
-        else:
-            if p.key != "hints":
-                showLogo()
-                showHelp(error=true, errorMsg="Erroneous argument supplied!")
+        elif p.key != "hints":
+            showLogo()
+            showHelp(error=true, errorMsg="Erroneous argument supplied!")
 
 if CONFIG == "@full":
     FLAGS = FLAGS & " " & OPTIONS["full"]
