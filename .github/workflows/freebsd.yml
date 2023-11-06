@@ -47,10 +47,7 @@ jobs:
             pkg-update
             pkg install -y wget nim gmp mpfr bash databases/sqlite3
           run: |
-            nim ./builder.nims build              \
-                    --who ci                      \
-                    --build ${{ matrix.version }} \
-                    --log
+            ./build.nims install ${{ matrix.version }} log
             export PATH="$HOME/.arturo/bin:$PATH"
             arturo tools/tester.art
        

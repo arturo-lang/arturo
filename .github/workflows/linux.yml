@@ -106,11 +106,7 @@ jobs:
       - name: Build Arturo
         run: |
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
-          nim ./builder.nims build              \
-                  --who ci                      \
-                  --build ${{ matrix.version }} \
-                  --arch ${{ matrix.arch }}     \
-                  --log
+          ./build.nims install ${{ matrix.version }} ${{ matrix.arch }} log
 
       - name: Upload Artifacts
         uses: 'actions/upload-artifact@v2'
