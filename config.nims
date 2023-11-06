@@ -4,9 +4,9 @@ import os, strutils
 #  Hopefully, it doesn't mess things up too much; but if it's used - and when - we should know.
 #  labels: installer
     
-switch("cincludes","extras")
-switch("path","src")
-switch("hints","off")
+--cincludes:extras
+--path:src
+--hints:off
 
 if hostOS=="windows":
     switch("gcc.path", normalizedPath(
@@ -21,29 +21,29 @@ let
     mimallocStatic = "mimallocStatic=\"" & (mimallocPath / "src" / "static.c") & '"'
     mimallocIncludePath = "mimallocIncludePath=\"" & (mimallocPath / "include") & '"'
 
-switch("define", mimallocStatic)
-switch("define", mimallocIncludePath)
+switch "define", mimallocStatic
+switch "define", mimallocIncludePath
 
 case get("cc"):
     of "gcc", "clang", "icc", "icl":
-        switch("passC", "-ftls-model=initial-exec -fno-builtin-malloc")
+        --passC:"-ftls-model=initial-exec -fno-builtin-malloc"
     else:
         discard
  
 patchFile("stdlib", "malloc", "src" / "extras" / "mimalloc")
 
 when defined(windows): 
-    switch("dynlibOverride", "pcre64")
+    --dynlibOverride:"pcre64"
 
     when defined(ssl):
-        switch("define", "noOpenSSLHacks")
-        switch("define", "sslVersion:(")
-        switch("dynlibOverride", "ssl-")
-        switch("dynlibOverride", "crypto-")
+        --define:"noOpenSSLHacks"
+        --define:"sslVersion:("
+        --dynlibOverride:"ssl-"
+        --dynlibOverride:"crypto-"
 else:
     when defined(macosx):
-        switch("dynlibOverride", "pcre")
+        --dynlibOverride:pcre
 
     when defined(ssl):
-        switch("dynlibOverride", "ssl")
-        switch("dynlibOverride", "crypto")
+        --dynlibOverride:ssl
+        --dynlibOverride:crypto
