@@ -25,11 +25,10 @@ let
 switch "define", mimallocStatic
 switch "define", mimallocIncludePath
 
-case get("cc"):
-    of "gcc", "clang", "icc", "icl":
-        --passC:"-ftls-model=initial-exec -fno-builtin-malloc"
-    else:
-        discard
+
+if get("cc") in @["gcc", "clang", "icc", "icl"]:
+    --passC:"-ftls-model=initial-exec -fno-builtin-malloc"
+ 
  
 patchFile("stdlib", "malloc", "src" / "extras" / "mimalloc")
 
