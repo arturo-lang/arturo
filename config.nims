@@ -10,7 +10,7 @@ proc defaultConfig() =
     --hints:off
 
 
-proc configGMPForWindows() =
+proc configGMPOnWindows() =
     if "windows" == hostOS:
         let gccPath = staticExec("pkg-config --libs-only-L gmp")
                         .strip()
@@ -56,7 +56,7 @@ proc configUnixSSL() =
 
 proc main() =
     defaultConfig()
-    configGMPForWindows()
+    configGMPOnWindows()
     configMimalloc()
 
     if defined(windows):
