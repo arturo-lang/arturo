@@ -78,6 +78,7 @@ type
         caret                    = "^"
         ampersand                = "&"
         asterisk                 = "*"
+        doubleasterisk           = "**"
         minus                    = "-"
         doubleminus              = "--"
         equal                    = "="
