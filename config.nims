@@ -8,14 +8,15 @@ import os, strutils
 --path:src
 --hints:off
 
-if hostOS=="windows":
-    switch("gcc.path", normalizedPath(
-        staticExec("pkg-config --libs-only-L gmp").strip()
-                                                  .replace("-L","")
-                                                  .replace("/lib","/bin")
-        )
-    )
-
+if "windows" == hostOS:
+    let gccPath = staticExec("pkg-config --libs-only-L gmp")
+                    .strip()
+                    .replace("-L","")
+                    .replace("/lib","/bin")
+                    .normalizedPath()
+    switch "gcc.path", gccPath    
+                       
+                       
 let
     mimallocPath = projectDir() / "extras" / "mimalloc" 
     mimallocStatic = "mimallocStatic=\"" & (mimallocPath / "src" / "static.c") & '"'
