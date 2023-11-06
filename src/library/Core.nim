@@ -519,6 +519,23 @@ proc defineSymbols*() =
 
             push(newLogical(condition))
 
+    builtin "import",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "import given module",
+        args        = {
+            "module"    : {String,Literal,Block}
+        },
+        attrs       = NoAttrs,
+        returns     = {Nothing},
+        # TODO(Core/import) add documentation example
+        #  labels: library, documentation, easy
+        example     = """
+        """:
+            #=======================================================
+            discard
+
     # TODO(Core/let) block assignments should properly handle readonly Values
     #  In a few words: we should make sure that `[a b]: [1 2]` is the same as 
     #  assigning each value one by one, which means that there should be an *implicit* 
