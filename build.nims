@@ -476,20 +476,24 @@ let userName = if hostOS == "windows": getEnv("USERNAME") else: staticExec("whoa
 IS_DEV = userName == "drkameleon"
 
 # parse command line
-var p = initOptParser("") 
+var p = initOptParser("")
+const
+    commands = ["install", "package", "docs", "test", "benchmark", "help"]
+    scriptCall = ["e", "./build.nims", "build.nims", "build"]
+
 while true:
     p.next()
 
     case p.kind:
         of cmdArgument:
-            if p.key in ["install", "package", "docs", "test", "benchmark", "help"]:
+            if p.key in commands:
                 if MODE == "":
                     MODE = p.key
                 else:
                     showLogo()
                     showHelp(error=true, errorMsg="Multiple operations specified!")
             else:
-                if p.key notin ["e", "./build.nims", "build.nims", "build"]:
+                if p.key notin scriptCall:
                     if OPTIONS.hasKey(p.key):
                         FLAGS = "{FLAGS} {OPTIONS[p.key]}".fmt
                         case p.key:
