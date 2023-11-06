@@ -27,6 +27,7 @@ import algorithm, hashes
 import helpers/datasource
 when not defined(WEB):
     import helpers/ffi
+    import helpers/packager
 
 import vm/lib
 import vm/[env, errors, eval, exec, parse]
