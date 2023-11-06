@@ -32,18 +32,25 @@ if get("cc") in @["gcc", "clang", "icc", "icl"]:
  
 patchFile("stdlib", "malloc", "src" / "extras" / "mimalloc")
 
-when defined(windows): 
-    --dynlibOverride:"pcre64"
 
-    when defined(ssl):
+let 
+    win = defined(windows)
+    unix = not win
+    macos = defined(macosx)
+    ssl = defined(ssl)
+
+if win:
+    --dynlibOverride:"pcre64"
+    
+    if ssl:
         --define:"noOpenSSLHacks"
         --define:"sslVersion:("
         --dynlibOverride:"ssl-"
         --dynlibOverride:"crypto-"
-else:
-    when defined(macosx):
-        --dynlibOverride:pcre
+        
+if macos:
+    --dynlibOverride:pcre
 
-    when defined(ssl):
-        --dynlibOverride:ssl
-        --dynlibOverride:crypto
+if unix and ssl:
+    --dynlibOverride:ssl
+    --dynlibOverride:crypto
