@@ -485,6 +485,8 @@ while true:
     p.next()
 
     case p.kind
+    of cmdEnd: 
+        break
     of cmdArgument:
         if p.key in commands:
             if MODE == "":
@@ -530,8 +532,6 @@ while true:
             if p.key != "hints":
                 showLogo()
                 showHelp(error=true, errorMsg="Erroneous argument supplied!")
-    of cmdEnd: 
-        break
 
 if CONFIG == "@full":
     FLAGS = FLAGS & " " & OPTIONS["full"]
