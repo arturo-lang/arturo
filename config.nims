@@ -30,7 +30,8 @@ if get("cc") in @["gcc", "clang", "icc", "icl"]:
     --passC:"-ftls-model=initial-exec -fno-builtin-malloc"
  
  
-patchFile("stdlib", "malloc", "src" / "extras" / "mimalloc")
+"stdlib".patchFile("malloc"):
+    "src"/"extras"/"mimalloc"
 
 
 let 
