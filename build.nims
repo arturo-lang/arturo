@@ -494,35 +494,34 @@ while true:
             else:
                 showLogo()
                 showHelp(error=true, errorMsg="Multiple operations specified!")
-        elif p.key notin scriptCall:
-            if OPTIONS.hasKey(p.key):
-                FLAGS = "{FLAGS} {OPTIONS[p.key]}".fmt
-                case p.key
-                of "debug":
-                    COMPRESS = false
-                of "dev":
-                    IS_DEV = true
-                of "dontcompress":
-                    COMPRESS = false
-                of "dontinstall":
-                    INSTALL = false
-                of "log":
-                    PRINT_LOG = true
-                of "mini":
-                    miniBuild()
-                    CONFIG = "@mini"
-                of "nodev":
-                    IS_DEV = false
-                of "web":
-                    miniBuild()
-                    FOR_WEB = true
-                    COMPILER = "js"
-                    BINARY = r"{BINARY}.js".fmt
-                    CONFIG = "@web"
-                else:
-                    discard
+        elif p.key notin scriptCall and OPTIONS.hasKey(p.key):
+            FLAGS = "{FLAGS} {OPTIONS[p.key]}".fmt
+            case p.key
+            of "debug":
+                COMPRESS = false
+            of "dev":
+                IS_DEV = true
+            of "dontcompress":
+                COMPRESS = false
+            of "dontinstall":
+                INSTALL = false
+            of "log":
+                PRINT_LOG = true
+            of "mini":
+                miniBuild()
+                CONFIG = "@mini"
+            of "nodev":
+                IS_DEV = false
+            of "web":
+                miniBuild()
+                FOR_WEB = true
+                COMPILER = "js"
+                BINARY = r"{BINARY}.js".fmt
+                CONFIG = "@web"
             else:
-                ARGS.add(p.key)
+                discard
+        else:
+            ARGS.add(p.key)
     of cmdShortOption, cmdLongOption:   
         if p.key=="as":
             BINARY = "bin/" & p.val
