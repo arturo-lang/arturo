@@ -524,12 +524,12 @@ while true:
                 discard
         else:
             ARGS.add(p.key)
-    of cmdShortOption, cmdLongOption:   
-        if p.key=="as":
-            BINARY = "bin/" & p.val
-            TARGET_FILE = toExe(r"{TARGET_DIR}/{p.val}".fmt)
-        elif p.key != "hints":
-            panic("Erroneous argument supplied!")
+    of cmdShortOption, cmdLongOption: 
+        if p.key notin ["hints", "as"]:
+            panic("Erroneous argument supplied!")  
+        
+        BINARY = "bin/" & p.val
+        TARGET_FILE = toExe(r"{TARGET_DIR}/{p.val}".fmt)
 
 if CONFIG == "@full":
     FLAGS = FLAGS & " " & OPTIONS["full"]
