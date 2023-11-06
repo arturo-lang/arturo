@@ -523,7 +523,7 @@ proc `>=`*(x: Value, y: Value): bool {.inline.}=
 
 # TODO(VM/values/comparison) Should we convert `!=` into a template?
 #  Does it make sense performance/binarysize-wise?
-#  labels: enhancement, performance, benchmark, open-discussion
+#  labels: enhancement, performance, benchmark, open discussion
 
 proc `!=`*(x: Value, y: Value): bool {.inline.}=
     not (x == y)
