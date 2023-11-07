@@ -7,7 +7,31 @@ import os, strutils
 proc defaultConfig() =
     --cincludes:extras
     --path:src
-    --hints:off
+    --hints:on
+    
+    --verbosity:1
+    hint "ProcessingStmt":off 
+    hint "XCannotRaiseY":off
+    warning "GcUnsafe":off 
+    warning "CastSizes":off 
+    warning "ProveInit":off 
+    warning "ProveField":off 
+    warning "Uninit":off 
+    warning "BareExcept":off 
+    --threads:off 
+    --skipUserCfg:on 
+    --colors:off 
+    --define:danger
+    --panics:off 
+    --mm:orc 
+    --define:useMalloc 
+    --checks:off
+    --cincludes:extras 
+    --opt:speed 
+    --nimcache:".cache" 
+    if hostOS != "windows": 
+        --passL:"-pthread"
+    --path:src
 
 
 proc configGMPOnWindows() =
