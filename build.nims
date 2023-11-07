@@ -53,36 +53,36 @@ let
 
     # configuration options
     OPTIONS = {
-        "arm"               : "--cpu:arm -d:bit32",
-        "arm64"             : "--cpu:arm64 --gcc.path:/usr/bin --gcc.exe:aarch64-linux-gnu-gcc --gcc.linkerexe:aarch64-linux-gnu-gcc",
-        "debug"             : "-d:DEBUG --debugger:on --debuginfo --linedir:on",
-        "dev"               : "--embedsrc:on -d:DEV --listCmd",
-        "docgen"            : "-d:DOCGEN",
-        "dontcompress"      : "",
-        "dontinstall"       : "",
-        "full"              : "-d:ssl",
-        "log"               : "",
-        "memprofile"        : "-d:PROFILE --profiler:off --stackTrace:on --d:memProfiler",
-        "mini"              : "",
-        "noasciidecode"     : "-d:NOASCIIDECODE",
-        "noclipboard"       : "-d:NOCLIPBOARD",
-        "nodev"             : "",
-        "nodialogs"         : "-d:NODIALOGS",
-        "noerrorlines"      : "-d:NOERRORLINES",
-        "nogmp"             : "-d:NOGMP",
-        "noparsers"         : "-d:NOPARSERS",
-        "nosqlite"          : "-d:NOSQLITE",
-        "nowebview"         : "-d:NOWEBVIEW",
-        "optimized"         : "-d:OPTIMIZED",
-        "profile"           : "-d:PROFILE --profiler:on --stackTrace:on",
-        "profilenative"     : "--debugger:native",
-        "profiler"          : "-d:PROFILER --profiler:on --stackTrace:on",
-        "release"           : (when hostOS=="windows": "-d:strip" else: "-d:strip --passC:'-flto' --passL:'-flto'"),
-        "safe"              : "-d:SAFE",
-        "vcc"               : "",
-        "web"               : "--verbosity:3 -d:WEB",
-        "x86"               : "--cpu:i386 -d:bit32 " & (when defined(gcc): "--passC:'-m32' --passL:'-m32'" else: ""),  
-        "amd64"             : ""
+        "arm"               : " --cpu:arm -d:bit32",
+        "arm64"             : " --cpu:arm64 --gcc.path:/usr/bin --gcc.exe:aarch64-linux-gnu-gcc --gcc.linkerexe:aarch64-linux-gnu-gcc",
+        "debug"             : " -d:DEBUG --debugger:on --debuginfo --linedir:on",
+        "dev"               : " --embedsrc:on -d:DEV --listCmd",
+        "docgen"            : " -d:DOCGEN",
+        "dontcompress"      : " ",
+        "dontinstall"       : " ",
+        "full"              : " -d:ssl",
+        "log"               : " ",
+        "memprofile"        : " -d:PROFILE --profiler:off --stackTrace:on --d:memProfiler",
+        "mini"              : " ",
+        "noasciidecode"     : " -d:NOASCIIDECODE",
+        "noclipboard"       : " -d:NOCLIPBOARD",
+        "nodev"             : " ",
+        "nodialogs"         : " -d:NODIALOGS",
+        "noerrorlines"      : " -d:NOERRORLINES",
+        "nogmp"             : " -d:NOGMP",
+        "noparsers"         : " -d:NOPARSERS",
+        "nosqlite"          : " -d:NOSQLITE",
+        "nowebview"         : " -d:NOWEBVIEW",
+        "optimized"         : " -d:OPTIMIZED",
+        "profile"           : " -d:PROFILE --profiler:on --stackTrace:on",
+        "profilenative"     : " --debugger:native",
+        "profiler"          : " -d:PROFILER --profiler:on --stackTrace:on",
+        "release"           : (when hostOS=="windows": " -d:strip" else: " -d:strip --passC:'-flto' --passL:'-flto'"),
+        "safe"              : " -d:SAFE",
+        "vcc"               : " ",
+        "web"               : " --verbosity:3 -d:WEB",
+        "x86"               : " --cpu:i386 -d:bit32 " & (when defined(gcc): "--passC:'-m32' --passL:'-m32'" else: ""),  
+        "amd64"             : " "
     }.toTable
 
 #=======================================
@@ -245,12 +245,12 @@ proc miniBuild*() =
         "nosqlite", 
         "nowebview"
     ]:
-        FLAGS = "{FLAGS} {OPTIONS[k]}".fmt
+        FLAGS.add OPTIONS[k]
 
     # plus, shrinking + the MINI flag
-    FLAGS = FLAGS & " -d:MINI"
+    FLAGS.add " -d:MINI"
     if hostOS=="freebsd" or hostOS=="openbsd" or hostOS=="netbsd":
-        FLAGS = FLAGS & " --verbosity:3 "
+        FLAGS.add" --verbosity:3 "
 
 proc compressBinary() =
     if COMPRESS:
@@ -303,9 +303,10 @@ proc compile*(footer=false): int =
     #     FLAGS = """{FLAGS} --passL:"-static """.fmt & staticExec("pkg-config --libs-only-L libcrypto").strip() & """ -lcrypto -Bdynamic" """.fmt
     #     echo FLAGS
     when defined(windows):
-        FLAGS = """{FLAGS}  --passL:"-static-libstdc++ -static-libgcc -Wl,-Bstatic -lstdc++ -Wl,-Bdynamic" --gcc.linkerexe="g++"""".fmt
+        FLAGS.add """ --passL:"-static-libstdc++ -static-libgcc -Wl,-Bstatic -lstdc++ -Wl,-Bdynamic"""" &
+                  """ --gcc.linkerexe="g++""""
     else:
-        FLAGS = """{FLAGS} --passL:"-lm"""".fmt
+        FLAGS.add """ --passL:"-lm""""
     # let's go for it
     if IS_DEV or PRINT_LOG:
         # if we're in dev mode we don't really care about the success/failure of the process -
@@ -349,7 +350,7 @@ proc buildArturo*() =
     if IS_DEV:
         section "Updating build..."
         updateBuild()
-        FLAGS = FLAGS & " " & OPTIONS["dev"]
+        FLAGS.add OPTIONS["dev"]
 
     # show environment & build info
     showEnvironment()
