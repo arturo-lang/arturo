@@ -167,7 +167,7 @@ template callInternal*(fname: string, getValue: bool, args: varargs[Value]): unt
 #  ```
 #  Also see: https://github.com/arturo-lang/arturo/blob/master/examples/rosetta/call%20a%20function.art
 #  and https://github.com/arturo-lang/arturo/blob/master/examples/rosetta/variadic%20function.art
-#  labels: bugs, critical, library, vm, execution
+#  labels: bug, critical, library, vm, execution
 
 template prepareLeakless*(protected: seq[string] | ValueArray): untyped =
     ## Prepare for leak-less block execution
