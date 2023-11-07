@@ -18,6 +18,7 @@
 
 import os, parseopt, sequtils
 import strformat, strutils, tables
+import macros
 
 import src/helpers/terminal
 
@@ -49,40 +50,6 @@ let
     TARGET_LIB      = r"{ROOT_DIR}/lib".fmt
     TARGET_STORES   = r"{ROOT_DIR}/stores".fmt
     MAIN            = r"src/arturo.nim"
-
-    # configuration options
-    OPTIONS = {
-        "arm"               : "--cpu:arm -d:bit32",
-        "arm64"             : "--cpu:arm64 --gcc.path:/usr/bin --gcc.exe:aarch64-linux-gnu-gcc --gcc.linkerexe:aarch64-linux-gnu-gcc",
-        "debug"             : "-d:DEBUG --debugger:on --debuginfo --linedir:on",
-        "dev"               : "--embedsrc:on -d:DEV --listCmd",
-        "docgen"            : "-d:DOCGEN",
-        "dontcompress"      : "",
-        "dontinstall"       : "",
-        "full"              : "-d:ssl",
-        "log"               : "",
-        "memprofile"        : "-d:PROFILE --profiler:off --stackTrace:on --d:memProfiler",
-        "mini"              : "",
-        "noasciidecode"     : "-d:NOASCIIDECODE",
-        "noclipboard"       : "-d:NOCLIPBOARD",
-        "nodev"             : "",
-        "nodialogs"         : "-d:NODIALOGS",
-        "noerrorlines"      : "-d:NOERRORLINES",
-        "nogmp"             : "-d:NOGMP",
-        "noparsers"         : "-d:NOPARSERS",
-        "nosqlite"          : "-d:NOSQLITE",
-        "nowebview"         : "-d:NOWEBVIEW",
-        "optimized"         : "-d:OPTIMIZED",
-        "profile"           : "-d:PROFILE --profiler:on --stackTrace:on",
-        "profilenative"     : "--debugger:native",
-        "profiler"          : "-d:PROFILER --profiler:on --stackTrace:on",
-        "release"           : (when hostOS=="windows": "-d:strip" else: "-d:strip --passC:'-flto' --passL:'-flto'"),
-        "safe"              : "-d:SAFE",
-        "vcc"               : "",
-        "web"               : "--verbosity:3 -d:WEB",
-        "x86"               : "--cpu:i386 -d:bit32 " & (when defined(gcc): "--passC:'-m32' --passL:'-m32'" else: ""),  
-        "amd64"             : ""
-    }.toTable
 
 #=======================================
 # Variables
@@ -239,21 +206,18 @@ proc getShellRc*(): string =
 
 proc miniBuild*() =
     # all the necessary "modes" for mini builds
-    for k in [
-        "noasciidecode", 
-        "noclipboard",
-        "nodialogs",
-        "nogmp", 
-        "noparsers", 
-        "nosqlite", 
-        "nowebview"
-    ]:
-        FLAGS = "{FLAGS} {OPTIONS[k]}".fmt
-
-    # plus, shrinking + the MINI flag
-    FLAGS = FLAGS & " -d:MINI"
+    FLAGS.add " -d:NOASCIIDECODE" &
+              " -d:NOCLIPBOARD" & 
+              " -d:NODIALOGS" &
+              " -d:NOERRORLINES" &
+              " -d:NOGMP" &
+              " -d:NOPARSERS" &
+              " -d:NOSQLITE" &
+              " -d:NOWEBVIEW" &
+              " -d:MINI"
+              
     if hostOS=="freebsd" or hostOS=="openbsd" or hostOS=="netbsd":
-        FLAGS = FLAGS & " --verbosity:3 "
+        FLAGS.add " --verbosity:3 "
 
 proc compressBinary() =
     if COMPRESS:
@@ -305,10 +269,12 @@ proc compile*(footer=false): int =
     # if hostOS=="windows":
     #     FLAGS = """{FLAGS} --passL:"-static """.fmt & staticExec("pkg-config --libs-only-L libcrypto").strip() & """ -lcrypto -Bdynamic" """.fmt
     #     echo FLAGS
-    when defined(windows):
-        FLAGS = """{FLAGS}  --passL:"-static-libstdc++ -static-libgcc -Wl,-Bstatic -lstdc++ -Wl,-Bdynamic" --gcc.linkerexe="g++"""".fmt
+    if defined(windows):
+        FLAGS.add " --passL:\"-static-libstdc++ -static-libgcc -Wl,-Bstatic -lstdc++ -Wl,-Bdynamic\"" &
+                  " --gcc.linkerexe=\"g++\""
     else:
-        FLAGS = """{FLAGS} --passL:"-lm"""".fmt
+        FLAGS.add " --passL:\"-lm\""
+        
     # let's go for it
     if IS_DEV or PRINT_LOG:
         # if we're in dev mode we don't really care about the success/failure of the process -
@@ -352,7 +318,6 @@ proc buildArturo*() =
     if IS_DEV:
         section "Updating build..."
         updateBuild()
-        FLAGS = FLAGS & " " & OPTIONS["dev"]
 
     # show environment & build info
     showEnvironment()
@@ -393,7 +358,10 @@ proc buildPackage*() =
     echo "{GRAY}".fmt
         
     BINARY="{package}".fmt
-    FLAGS="{FLAGS} --forceBuild:on --opt:size -d:NOERRORLINES -d:PORTABLE".fmt
+    FLAGS.add " --forceBuild:on" &
+              " --opt:size" &
+              " -d:NOERRORLINES" &
+              " -d:PORTABLE"
     echo r"{GRAY}FLAGS: {FLAGS}".fmt
     echo r""
 
@@ -471,85 +439,299 @@ proc showHelp*(error=false, errorMsg="") =
 # Main
 #=======================================
 
+let 
+    args = commandLineParams()
+    command = if "build.nims" in paramStr(1):
+            paramStr(2)
+        else:
+            paramStr(1)
+            
+
 proc panic(msg: string) =
     showLogo()
     showHelp(error=true, errorMsg=msg)
+    
+proc getOptionValue*(args: seq[string], cmd: string, default: string,
+                     short: string = "", into: seq[string] = @[]): string =
+    ## Gets an optional argument's value
+    ## example, for ``--who rick``, the returned value will be ``rick``,
+    ## otherwhise, if the flag is not found, it'll return the ``default``
+    ## 
+    ## This procedure has side effects and ends the application if the user
+    ## write something wrong.
+    result = default
+    
+    template isFlag(arg: string): bool =
+        arg.startsWith("-")
+        
+    template flagFound(arg: string): bool =
+        arg in [fmt"-{short}", fmt"--{cmd}"]
+        
+    func hasMissingValue(args: seq[string], currIdx: int): bool =    
+        result = false
+        if currIdx >= args.high:
+            return true
+        if args[currIdx.succ].isFlag():
+            return true
+        
+    let allowGenericArgument: bool = into.len == 0
+
+    for idx, arg in args:
+        if not arg.isFlag() or not arg.flagFound():
+            continue
+        
+        if args.hasMissingValue(idx):
+            quit fmt"Missing value for --{cmd}.", QuitFailure
+        
+        let next = args[idx.succ]
+        if allowGenericArgument or next in into:
+            return next
+        quit fmt"{next} isn't into {into} for --{cmd}.", QuitFailure
+                 
+
+func hasFlag*(args: seq[string], cmd: string, 
+              short: string = "", 
+              default: bool = false): bool =
+    ## Returns true if some flag was found
+    result = default
+    for arg in args:
+        if not arg.startsWith("-"):
+            continue
+        if arg in [fmt"-{short}", fmt"--{cmd}"]:
+            return true
+        
+proc hasCommand*(args: seq[string], cmd: string, 
+              default: bool = false): bool =
+    ## Returns true if some flag was found
+    result = default
+    for arg in args:
+        if arg.startsWith("-"):
+            continue
+        if arg.cmpIgnoreStyle(cmd) == 0:
+            return true
+        
+macro implementationToStr(id: typed): string =
+    id.getImpl.toStrLit
+          
+iterator getDocs(impl: string): string =
+    ## Return the documentation of any implementation
+    ## 
+    ## This iterates until the end of the documentation block.
+    var found = false
+    for line in impl.splitLines():
+        let cleanline = line.strip()
+        if cleanline.startsWith("##"):
+            yield cleanline[3 .. cleanline.high]
+            found = true
+        # Don't iterate until the end of the implementation,
+        # Just until the end of the impl's documentation
+        elif found:
+            break
+        
+template help(ident: typed) =
+    ## Prints the documentation from a identifier.
+    ## 
+    ## Params
+    ## ------
+    ## ident: typed
+    ##      the identifier, can be any declared implementation.
+    ##
+    ## Usage
+    ## -----
+    ## ..code-block:: nim
+    ##      help getOptionValue
+    for line in ident.implementationToStr.getDocs():
+        echo line
+        
+template `==?`(a, b: string): bool = cmpIgnoreStyle(a, b) == 0
+template cmd*(name: untyped; description: string; body: untyped): untyped =
+    ## This is a modification of the original ``task`` by (c) Copyright 2015 Andreas Rumpf
+    ## original source: https://github.com/nim-lang/Nim/blob/805b4e2dc2afddf7be27e32fe0543e4227b31f74/lib/system/nimscript.nim#L390
+    ##
+    ## Reason: ``task``s were not working with optional arguments, 
+    ## so I removed the ``getCommand``, and replaced it by paramStr(2) 
+    ## defined by ``command``
+    proc `name Task`*() =
+        body
+    
+    if command ==? astToStr(name):
+        if args.hasFlag("help", short="h"):
+            help `name Task`
+            quit QuitSuccess
+        else:
+            `name Task`()
 
 # check environment
 let userName = if hostOS == "windows": getEnv("USERNAME") else: staticExec("whoami")
 IS_DEV = userName == "drkameleon"
 
-# parse command line
-var p = initOptParser("")
-const
-    availableCommands = ["install", "package", "docs", "test", "benchmark", "help"]
-    scriptCall = ["e", "./build.nims", "build.nims", "build"]
-
-while true:
-    p.next()
-
-    case p.kind
-    of cmdEnd: 
-        break
-    of cmdArgument:
-        if p.key in availableCommands:
-            if not MODE.isEmptyOrWhitespace:
-                panic("Multiple operations specified!")
-            MODE = p.key
-        elif p.key notin scriptCall and OPTIONS.hasKey(p.key):
-            FLAGS = "{FLAGS} {OPTIONS[p.key]}".fmt
-            case p.key
-            of "debug":
-                COMPRESS = false
-            of "dev":
-                IS_DEV = true
-            of "dontcompress":
-                COMPRESS = false
-            of "dontinstall":
-                INSTALL = false
-            of "log":
-                PRINT_LOG = true
-            of "mini":
-                miniBuild()
-                CONFIG = "@mini"
-            of "nodev":
-                IS_DEV = false
-            of "web":
-                miniBuild()
-                FOR_WEB = true
-                COMPILER = "js"
-                BINARY = r"{BINARY}.js".fmt
-                CONFIG = "@web"
-            else:
-                discard
-        else:
-            ARGS.add(p.key)
-    of cmdShortOption, cmdLongOption: 
-        if p.key notin ["hints", "as"]:
-            panic("Erroneous argument supplied!")  
-        
-        BINARY = "bin/" & p.val
-        TARGET_FILE = toExe(r"{TARGET_DIR}/{p.val}".fmt)
-
-if CONFIG == "@full":
-    FLAGS = FLAGS & " " & OPTIONS["full"]
-
-# show our log anyway
 showLogo()
 
-# process accordingly
-try:
-    case MODE:
-        of "install"    :   buildArturo()
-        of "package"    :   buildPackage()
-        of "docs"       :   buildDocs()
-        of "test"       :   performTests()
-        of "benchmark"  :   performBenchmarks()
-        of "help"       :   showHelp()
-        of ""           :   showHelp(error=true, errorMsg=r"No operation specified.")
-        else            :   showHelp(error=true, errorMsg=r"Not a valid operation: {MODE}".fmt)
-except:
-    quit(QuitFailure)
+cmd install, "Build arturo and install executable":
+    
+    if args.hasCommand("debug"):
+        COMPRESS = false
+        
+    if args.hasCommand("dev"):
+        IS_DEV = true
+        
+    if args.hasCommand("dontcompress"):
+        COMPRESS = false
+        
+    if args.hasCommand("dontinstall"):
+        INSTALL = false
+        
+    if args.hasCommand("log"):
+        PRINT_LOG = true
+        
+    if args.hasCommand("mini"):
+        miniBuild()
+        CONFIG = "@mini"
+        
+    if args.hasCommand("nodev"):
+        IS_DEV = false
+        
+    if args.hasCommand("web"):
+        miniBuild()
+        FOR_WEB = true
+        COMPILER = "js"
+        BINARY = r"{BINARY}.js".fmt
+        CONFIG = "@web"
+        
+        
+    if args.hasCommand("arm"):
+        FLAGS.add " --cpu:arm -d:bit32"
+        
+    if args.hasCommand("arm64"):
+        FLAGS.add " --cpu:arm64" &
+                  " --gcc.path:/usr/bin" &
+                  " --gcc.exe:aarch64-linux-gnu-gcc" &
+                  " --gcc.linkerexe:aarch64-linux-gnu-gcc"
+                  
+    if args.hasCommand("debug"):
+        FLAGS.add " -d:DEBUG" &
+                  " --debugger:on" &
+                  " --debuginfo" &
+                  " --linedir:on"
+                  
+    if args.hasCommand("dev"):
+        FLAGS.add " --embedsrc:on" &
+                  " -d:DEV" & 
+                  " --listCmd"
+                  
+    if args.hasCommand("docgen"):
+        FLAGS.add " -d:DOCGEN"
+        
+    if args.hasCommand("dontcompress"):
+        discard
+    
+    if args.hasCommand("dontinstall"):
+        discard
+    
+    if args.hasCommand("full"):
+        FLAGS.add " -d:ssl"
+        
+    if args.hasCommand("log"):
+        discard
+    
+    if args.hasCommand("memprofile"):
+        FLAGS.add " -d:PROFILE" & 
+                  " --profiler:off" &
+                  " --stackTrace:on" &
+                  " --d:memProfiler"
+                  
+    if args.hasCommand("mini"):
+        discard
+    
+    if args.hasCommand("noasciidecode"):
+        FLAGS.add " -d:NOASCIIDECODE"
+        
+    if args.hasCommand("noclipboard"):
+        FLAGS.add " -d:NOCLIPBOARD"
+        
+    if args.hasCommand("nodev"):
+        discard
+    
+    if args.hasCommand("nodialogs"):
+        FLAGS.add " -d:NODIALOGS"
+        
+    if args.hasCommand("noerrorlines"):
+        FLAGS.add " -d:NOERRORLINES"
+        
+    if args.hasCommand("nogmp"):
+        FLAGS.add " -d:NOGMP"
+        
+    if args.hasCommand("noparsers"):
+        FLAGS.add " -d:NOPARSERS"
+        
+    if args.hasCommand("nosqlite"):
+        FLAGS.add " -d:NOSQLITE"
+        
+    if args.hasCommand("nowebview"):
+        FLAGS.add " -d:NOWEBVIEW"
+        
+    if args.hasCommand("optimized"):
+        FLAGS.add " -d:OPTIMIZED"
+        
+    if args.hasCommand("profile"):
+        FLAGS.add " -d:PROFILE" &
+                  " --profiler:on" &
+                  " --stackTrace:on"
+                  
+    if args.hasCommand("profilenative"):
+        FLAGS.add " --debugger:native"
+        
+    if args.hasCommand("profiler"):
+        FLAGS.add " -d:PROFILER" &
+                  " --profiler:on" &
+                  " --stackTrace:on"
+                  
+    if args.hasCommand("release"):
+        if hostOS=="windows": 
+            FLAGS.add " -d:strip" 
+        else: 
+            FLAGS.add " -d:strip" &
+                      " --passC:'-flto'" &
+                      " --passL:'-flto'"
+                      
+    if args.hasCommand("safe"):
+        FLAGS.add " -d:SAFE"
+        
+    if args.hasCommand("vcc"):
+        discard
+    
+    if args.hasCommand("web"):
+        FLAGS.add " --verbosity:3" &
+                  " -d:WEB"
+                  
+    if args.hasCommand("x86"):
+        FLAGS.add " --cpu:i386" &
+                  " -d:bit32 "
+                  
+        if defined(gcc): 
+            FLAGS.add " --passC:'-m32'" & 
+                      " --passL:'-m32'"
+                      
+    if args.hasCommand("amd64"):
+        discard
+    
+    if CONFIG == "@full":
+        FLAGS.add " -d:ssl"
+        
+    buildArturo()
+
+cmd package, "Package arturo app and build executable":
+    buildPackage()
+
+cmd docs, "Build the documentation":
+    buildDocs()
+
+cmd test, "Run test suite":
+    performTests()
+
+cmd benchmark, "Run benchmark suite":
+    performBenchmarks()
+
 
 #=======================================
 # This is the end,
