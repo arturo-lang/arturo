@@ -526,6 +526,7 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
         of Quantity     : result &= codify(v.q)
         of Regex        : result &= "{/" & $(v.rx) & "/}"
         of Color        : result &= $(v.l)
+        of Date         : result &= fmt("to :date \"{v.eobj}\"")
 
         of Inline, Block:
             if not (pretty and unwrapped and level==0):
