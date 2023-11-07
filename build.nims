@@ -18,7 +18,7 @@
 
 import os, parseopt, sequtils
 import strformat, strutils, tables
-import macros
+import macros, sugar
 
 import src/helpers/terminal
 
@@ -105,6 +105,12 @@ var
     CONFIG              ="@full"
 
     ARGS: seq[string]   = @[] 
+    
+    flags*: seq[string] = newSeqOfCap[string](64)
+        ## flags represent the flags that will be passed to the compiler.
+        ##
+        ## Initialize a sequence of initial 64 slots,
+        ## what help us to append elements without lose performance.
 
 #=======================================
 # Forward declarations
@@ -167,13 +173,13 @@ proc showEnvironment*() =
     echo "   compiler: Nim v{NimVersion}{CLEAR}".fmt
 
 proc showBuildInfo*() =
+    let params = flags.join(" ")
     section "Building..."
-
     echo "{GRAY}   version: ".fmt & staticRead("version/version") & " b/" & staticRead("version/build")
     echo "   config: {CONFIG}{CLEAR}".fmt
 
     if IS_DEV or PRINT_LOG:
-        echo "{GRAY}   flags: {FLAGS}{CLEAR}".fmt
+        echo "{GRAY}   flags: {params} {FLAGS}{CLEAR}".fmt
 
 #=======================================
 # Helpers
@@ -294,6 +300,7 @@ proc updateBuild*() =
 proc compile*(footer=false): int =
     var outp = ""
     var res = 0
+    let params = flags.join(" ")
 
     # use VCC for non-MINI Windows builds
     if (hostOS=="windows" and not FLAGS.contains("NOWEBVIEW") and IS_DEV):
@@ -313,14 +320,14 @@ proc compile*(footer=false): int =
         # I guess we'll see it in front of us
         echo "{GRAY}".fmt
         try:
-            exec "nim {COMPILER} {FLAGS} -o:{toExe(BINARY)} {MAIN}".fmt
+            exec "nim {COMPILER} {params} {FLAGS} -o:{toExe(BINARY)} {MAIN}".fmt
         except:
             echo r"{RED}  CRASHED!!!{CLEAR}".fmt
             res = QuitFailure
     else:
         # but when it's running e.g. as a CI build,
         # we most definitely want it a) to be silent, b) to capture the exit code
-        (outp, res) = gorgeEx "nim {COMPILER} {FLAGS} -o:{toExe(BINARY)} {MAIN}".fmt
+        (outp, res) = gorgeEx "nim {COMPILER} {params} {FLAGS} -o:{toExe(BINARY)} {MAIN}".fmt
 
     return res
 
@@ -406,10 +413,11 @@ proc buildPackage*() =
     echo "{CLEAR}".fmt
 
 proc buildDocs*() =
+    let params = flags.join(" ")
     showHeader "docs"
 
     section "Generating documentation..."
-    exec(r"nim doc --project --index:on --outdir:dev-docs {FLAGS} src/arturo.nim".fmt)
+    exec(r"nim doc --project --index:on --outdir:dev-docs {params} {FLAGS} src/arturo.nim".fmt)
     exec(r"nim buildIndex -o:dev-docs/theindex.html dev-docs")
 
 proc performTests*() =
@@ -475,6 +483,38 @@ let
             paramStr(2)
         else:
             paramStr(1)
+            
+## `filter`_, `stripStr`_, `--`_ and `---`_ are inspired by the
+## original ones from Nim's STD lib, by 2015 Andreas Rumpf.
+
+proc filter(content: string, condition: (char) -> bool): string =
+    result = newStringOfCap content.len
+    for c in content:
+        if c.condition:
+            result.add c
+
+proc stripStr(content: string): string =
+    result = content.filter: (x: char) => 
+        x notin {' ', '\c', '\n'}
+    
+    if result[0] == '"' and result[^1] == '"':
+        result = result[1..^2]
+
+template `--`*(key: untyped) {.dirty.} =
+    ## Overrides the original ``--`` to append values into ``flags``,
+    ## instead of pass direclty to the compiler.
+    ## Since this isn't the config.nims file.
+    flags.add("--" & stripStr(astToStr(key)))
+
+template `--`*(key, val: untyped) {.dirty.} =
+    ## Overrides the original ``--`` to append values into ``flags``,
+    ## instead of pass direclty to the compiler.
+    ## Since this isn't the config.nims file.
+    flags.add("--" & stripStr(astToStr(key)) & ":" & stripStr(astToStr(val)))
+
+template `---`*(key: untyped, val: string): untyped =
+    ## A simple modification of `--` for string values.
+    flags.add("--" & stripStr(astToStr(key)) & ":" & val)
 
 
 proc panic(msg: string) =
@@ -630,27 +670,28 @@ cmd install, "Build arturo and install executable":
 
 
     if args.hasCommand("arm"):
-        FLAGS.add " --cpu:arm -d:bit32"
+        --cpu:arm
+        --define:bit32
 
     if args.hasCommand("arm64"):
-        FLAGS.add " --cpu:arm64" &
-                  " --gcc.path:/usr/bin" &
-                  " --gcc.exe:aarch64-linux-gnu-gcc" &
-                  " --gcc.linkerexe:aarch64-linux-gnu-gcc"
+        --cpu:arm64
+        --gcc.path:"/usr/bin"
+        --gcc.exe:"aarch64-linux-gnu-gcc"
+        --gcc.linkerexe:"aarch64-linux-gnu-gcc"
 
     if args.hasCommand("debug"):
-        FLAGS.add " -d:DEBUG" &
-                  " --debugger:on" &
-                  " --debuginfo" &
-                  " --linedir:on"
+        --define:DEBUG
+        --debugger:on
+        --debuginfo
+        --linedir:on
 
     if args.hasCommand("dev"):
-        FLAGS.add " --embedsrc:on" &
-                  " -d:DEV" & 
-                  " --listCmd"
+        --embedsrc:on
+        --define:DEV
+        --listCmd
 
     if args.hasCommand("docgen"):
-        FLAGS.add " -d:DOCGEN"
+        --define:DOCGEN
 
     if args.hasCommand("dontcompress"):
         discard
@@ -659,94 +700,94 @@ cmd install, "Build arturo and install executable":
         discard
 
     if args.hasCommand("full"):
-        FLAGS.add " -d:ssl"
+        --define:ssl
 
     if args.hasCommand("log"):
         discard
 
     if args.hasCommand("memprofile"):
-        FLAGS.add " -d:PROFILE" & 
-                  " --profiler:off" &
-                  " --stackTrace:on" &
-                  " --d:memProfiler"
+        --define:PROFILE 
+        --profiler:off
+        --stackTrace:on
+        --d:memProfiler
 
     if args.hasCommand("mini"):
         discard
 
     if args.hasCommand("noasciidecode"):
-        FLAGS.add " -d:NOASCIIDECODE"
+        --define:NOASCIIDECODE
 
     if args.hasCommand("noclipboard"):
-        FLAGS.add " -d:NOCLIPBOARD"
+        --define:NOCLIPBOARD
 
     if args.hasCommand("nodev"):
         discard
 
     if args.hasCommand("nodialogs"):
-        FLAGS.add " -d:NODIALOGS"
+        --define:NODIALOGS
 
     if args.hasCommand("noerrorlines"):
-        FLAGS.add " -d:NOERRORLINES"
+        --define:NOERRORLINES
 
     if args.hasCommand("nogmp"):
-        FLAGS.add " -d:NOGMP"
+        --define:NOGMP
 
     if args.hasCommand("noparsers"):
-        FLAGS.add " -d:NOPARSERS"
+        --define:NOPARSERS
 
     if args.hasCommand("nosqlite"):
-        FLAGS.add " -d:NOSQLITE"
+        --define:NOSQLITE
 
     if args.hasCommand("nowebview"):
-        FLAGS.add " -d:NOWEBVIEW"
+        --define:NOWEBVIEW
 
     if args.hasCommand("optimized"):
-        FLAGS.add " -d:OPTIMIZED"
+        --define:OPTIMIZED
 
     if args.hasCommand("profile"):
-        FLAGS.add " -d:PROFILE" &
-                  " --profiler:on" &
-                  " --stackTrace:on"
+        --define:PROFILE
+        --profiler:on
+        --stackTrace:on
 
     if args.hasCommand("profilenative"):
-        FLAGS.add " --debugger:native"
+        --debugger:native
 
     if args.hasCommand("profiler"):
-        FLAGS.add " -d:PROFILER" &
-                  " --profiler:on" &
-                  " --stackTrace:on"
+        --define:PROFILER
+        --profiler:on
+        --stackTrace:on
 
     if args.hasCommand("release"):
         if hostOS=="windows": 
-            FLAGS.add " -d:strip" 
+            --define:strip 
         else: 
-            FLAGS.add " -d:strip" &
-                      " --passC:'-flto'" &
-                      " --passL:'-flto'"
+            --define:strip
+            --passC:"'-flto'"
+            --passL:"'-flto'"
 
     if args.hasCommand("safe"):
-        FLAGS.add " -d:SAFE"
+        --define:SAFE
 
     if args.hasCommand("vcc"):
         discard
 
     if args.hasCommand("web"):
-        FLAGS.add " --verbosity:3" &
-                  " -d:WEB"
+        --verbosity:3
+        --define:WEB
 
     if args.hasCommand("x86"):
-        FLAGS.add " --cpu:i386" &
-                  " -d:bit32 "
+        --cpu:i386
+        --define:bit32
 
         if defined(gcc): 
-            FLAGS.add " --passC:'-m32'" & 
-                      " --passL:'-m32'"
+            --passC:"'-m32'"
+            --passL:"'-m32'"
 
     if args.hasCommand("amd64"):
         discard
 
     if CONFIG == "@full":
-        FLAGS.add " -d:ssl"
+        --define:ssl
 
     buildArturo()
 
