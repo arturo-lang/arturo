@@ -115,7 +115,6 @@ var
     IS_DEV              = false
     MODE                = ""
 
-    FLAGS*              = ""
     CONFIG              ="@full"
 
     ARGS: seq[string]   = @[]
@@ -187,7 +186,7 @@ proc showBuildInfo*() =
     echo "   config: {CONFIG}{CLEAR}".fmt
 
     if IS_DEV or PRINT_LOG:
-        echo "{GRAY}   flags: {params} {FLAGS}{CLEAR}".fmt
+        echo "{GRAY}   flags: {params}{CLEAR}".fmt
 
 #=======================================
 # Helpers
@@ -308,24 +307,25 @@ proc compile*(footer=false): int =
     #     FLAGS = """{FLAGS} --passL:"-static """.fmt & staticExec("pkg-config --libs-only-L libcrypto").strip() & """ -lcrypto -Bdynamic" """.fmt
     #     echo FLAGS
     when defined(windows):
-        FLAGS.add """ --passL:"-static-libstdc++ -static-libgcc -Wl,-Bstatic -lstdc++ -Wl,-Bdynamic"""" &
-                  """ --gcc.linkerexe="g++""""
+        --passL:""""-static-libstdc++ -static-libgcc -Wl,-Bstatic -lstdc++ -Wl,-Bdynamic""""
+        --gcc.linkerexe:"g++"
     else:
-        FLAGS.add """ --passL:"-lm""""
+        --passL:"\"-lm\""
+
     # let's go for it
     if IS_DEV or PRINT_LOG:
         # if we're in dev mode we don't really care about the success/failure of the process -
         # I guess we'll see it in front of us
         echo "{GRAY}".fmt
         try:
-            exec "nim {COMPILER} {params} {FLAGS} -o:{toExe(BINARY)} {MAIN}".fmt
+            exec "nim {COMPILER} {params} -o:{toExe(BINARY)} {MAIN}".fmt
         except:
             echo r"{RED}  CRASHED!!!{CLEAR}".fmt
             res = QuitFailure
     else:
         # but when it's running e.g. as a CI build,
         # we most definitely want it a) to be silent, b) to capture the exit code
-        (outp, res) = gorgeEx "nim {COMPILER} {params} {FLAGS} -o:{toExe(BINARY)} {MAIN}".fmt
+        (outp, res) = gorgeEx "nim {COMPILER} {params} -o:{toExe(BINARY)} {MAIN}".fmt
 
     return res
 
@@ -396,8 +396,12 @@ proc buildPackage*() =
     echo "{GRAY}".fmt
 
     BINARY="{package}".fmt
-    FLAGS="{FLAGS} --forceBuild:on --opt:size -d:NOERRORLINES -d:PORTABLE".fmt
-    echo r"{GRAY}FLAGS: {FLAGS}".fmt
+    --forceBuild:on
+    --opt:size
+    --define:NOERRORLINES
+    --define:PORTABLE
+    let params = flags.join(" ")
+    echo r"{GRAY}FLAGS: {params}".fmt
     echo r""
 
     echo "{GRAY}".fmt
@@ -415,7 +419,7 @@ proc buildDocs*() =
     showHeader "docs"
 
     section "Generating documentation..."
-    exec(r"nim doc --project --index:on --outdir:dev-docs {params} {FLAGS} src/arturo.nim".fmt)
+    exec(r"nim doc --project --index:on --outdir:dev-docs {params} src/arturo.nim".fmt)
     exec(r"nim buildIndex -o:dev-docs/theindex.html dev-docs")
 
 proc performTests*() =
