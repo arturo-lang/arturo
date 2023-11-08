@@ -677,7 +677,7 @@ cmd install, "Build arturo and install executable":
         discard
 
     if args.hasCommand("full"):
-        --define:ssl
+        fullBuildConfig()
 
     if args.hasCommand("log"):
         discard
