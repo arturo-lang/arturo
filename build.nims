@@ -70,6 +70,8 @@ template `--`*(key, val: untyped) {.dirty.} =
 template `---`*(key: untyped, val: string): untyped =
     ## A simple modification of `--` for string values.
     flags.add("--" & stripStr(astToStr(key)) & ":" & val)
+    
+include ".config/arch.nims"
 
 #=======================================
 # Constants
@@ -95,16 +97,6 @@ let
 
     # configuration options
     OPTIONS: Table[string, proc()] = {
-        "arm": proc () {.closure.} =
-            --cpu:arm 
-            --define:bit32
-        ,
-        "arm64": proc () {.closure.} = 
-            --cpu:arm64 
-            --gcc.path:"/usr/bin" 
-            --gcc.exe:"aarch64-linux-gnu-gcc" 
-            --gcc.linkerexe:"aarch64-linux-gnu-gcc"
-        ,
         "debug": proc () {.closure.} = 
             --define:DEBUG 
             --debugger:on 
@@ -200,16 +192,6 @@ let
         "web": proc () {.closure.} = 
             --verbosity:3 
             --define:WEB
-        ,
-        "x86": proc () {.closure.} = 
-            --cpu:i386 
-            --define:bit32
-            if defined(gcc): 
-                --passC:"'-m32'" 
-                --passL:"'-m32'"
-        ,  
-        "amd64": proc () {.closure.} = 
-            discard
     }.toTable
 
 #=======================================
@@ -758,14 +740,10 @@ cmd install, "Build arturo and install executable":
 
 
     if args.hasCommand("arm"):
-        --cpu:arm
-        --define:bit32
+        arm32Config()
 
     if args.hasCommand("arm64"):
-        --cpu:arm64
-        --gcc.path:"/usr/bin"
-        --gcc.exe:"aarch64-linux-gnu-gcc"
-        --gcc.linkerexe:"aarch64-linux-gnu-gcc"
+        arm64Config()
 
     if args.hasCommand("debug"):
         --define:DEBUG
@@ -864,15 +842,14 @@ cmd install, "Build arturo and install executable":
         --define:WEB
 
     if args.hasCommand("x86"):
-        --cpu:i386
-        --define:bit32
+        x86Config()
 
         if defined(gcc): 
             --passC:"'-m32'"
             --passL:"'-m32'"
 
     if args.hasCommand("amd64"):
-        discard
+        amd64Config()
 
     if CONFIG == "@full":
         --define:ssl
