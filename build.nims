@@ -672,6 +672,9 @@ cmd install, "Build arturo and install executable":
     const 
         availableCPUs = @["amd-64", "x64", "x86-64", "arm-64", "i386", "x86", 
                           "x86-32", "arm", "arm-32"]
+        availableOSes = @["freebsd", "openbsd", "netbsd", "linux", "mac", 
+                          "macos", "macosx", "win", "windows",]
+        
 
     match args.getOptionValue("arch", short="a",
                               default=hostCPU,
@@ -686,11 +689,18 @@ cmd install, "Build arturo and install executable":
         >> arm64: arm64Config()
         >> x86: arm64Config()
         >> arm32: arm32Config()
-    match args.getOptionValue("arch", default=hostCPU, short="a", into=availableCPUs):
-        >> availableCPUs[0..2]: amd64Config()
-        >> [availableCPUs[3]] : arm64Config()
-        >> availableCPUs[4..6]: arm64Config()
-        >> availableCPUs[7..8]: arm32Config()
+        
+    match args.getOptionValue("os", default=hostOS, into=availableOSes):
+        let 
+            bsd = availableOSes[0..2]
+            linux = [availableOSes[3]]
+            macos = availableOSes[4..6]
+            windows = availableOSes[7..8]
+            
+        >> bsd: discard
+        >> linux: discard
+        >> macos: discard
+        >> windows: discard
 
     if args.hasCommand("debug"):
         COMPRESS = false
