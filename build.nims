@@ -710,19 +710,19 @@ cmd install, "Build arturo and install executable":
         >> ["dev"]:
             IS_DEV = true
             devConfig()
-        
-    if args.hasFlag("local"):
-        INSTALL = false
-        
-    if args.hasFlag("log", "l"):
-        PRINT_LOG = true
-        
-    if args.hasFlag("raw"):
-        COMPRESS = false
 
     if args.hasCommand("debug"):
         COMPRESS = false
         debugConfig()
+
+    if args.hasCommand("dontcompress"):
+        COMPRESS = false
+
+    if args.hasCommand("dontinstall"):
+        INSTALL = false
+
+    if args.hasCommand("log"):
+        PRINT_LOG = true
 
     if args.hasCommand("mini"):
         miniBuild()
