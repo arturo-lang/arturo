@@ -670,17 +670,8 @@ cmd install, "Build arturo and install executable":
     if args.hasCommand("docgen"):
         --define:DOCGEN
 
-    if args.hasCommand("dontcompress"):
-        discard
-
-    if args.hasCommand("dontinstall"):
-        discard
-
     if args.hasCommand("full"):
         fullBuildConfig()
-
-    if args.hasCommand("log"):
-        discard
 
     if args.hasCommand("memprofile"):
         memProfileConfig()
@@ -702,9 +693,6 @@ cmd install, "Build arturo and install executable":
 
     if args.hasCommand("safe"):
         safeBuildConfig()
-
-    if args.hasCommand("vcc"):
-        discard
 
     if args.hasCommand("web"):
         webBuildConfig()
