@@ -721,6 +721,14 @@ cmd install, "Build arturo and install executable":
         >> macos: discard
         >> windows: discard
         
+    match args.getOptionValue("who", default="user", into= @["user", "dev"]):
+        >> ["user"]:
+            IS_DEV = false
+            userConfig()
+        >> ["dev"]:
+            IS_DEV = true
+            devConfig()
+        
     if args.hasFlag("debug", "d"):
         COMPRESS = false
         debugConfig()
@@ -736,14 +744,6 @@ cmd install, "Build arturo and install executable":
         
     if args.hasFlag("release"):
         releaseConfig()
-
-    if args.hasCommand("dev"):
-        IS_DEV = true
-        devConfig()
-
-    if args.hasCommand("nodev"):
-        IS_DEV = false
-        userConfig()
 
     if args.hasCommand("docgen"):
         --define:DOCGEN
