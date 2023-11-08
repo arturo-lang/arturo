@@ -663,7 +663,7 @@ cmd install, "Build arturo and install executable":
     ##     --os: string = $hostOS
     ##          [freebsd, linux, openbsd, mac, macos, macosx, netbsd, win, windows]
     ##     --who: string = user
-    ##          [bench, ci, dev, user]
+    ##          [dev, user]
     ##     --compress -c
     ##     --install -i
     ##     --log -l
@@ -673,7 +673,8 @@ cmd install, "Build arturo and install executable":
         availableCPUs = @["amd-64", "x64", "x86-64", "arm-64", "i386", "x86", 
                           "x86-32", "arm", "arm-32"]
         availableOSes = @["freebsd", "openbsd", "netbsd", "linux", "mac", 
-                          "macos", "macosx", "win", "windows",]
+                          "macos", "macosx", "win", "windows"]
+        availablePeople = @["user", "dev"]
         
 
     match args.getOptionValue("arch", short="a",
@@ -701,14 +702,18 @@ cmd install, "Build arturo and install executable":
         >> linux: discard
         >> macos: discard
         >> windows: discard
+        
+    match args.getOptionValue("who", default="user", into=availablePeople):
+        >> ["user"]:
+            IS_DEV = false
+            userConfig()
+        >> ["dev"]:
+            IS_DEV = true
+            devConfig()
 
     if args.hasCommand("debug"):
         COMPRESS = false
         debugConfig()
-
-    if args.hasCommand("dev"):
-        IS_DEV = true
-        devConfig()
 
     if args.hasCommand("dontcompress"):
         COMPRESS = false
@@ -722,10 +727,6 @@ cmd install, "Build arturo and install executable":
     if args.hasCommand("mini"):
         miniBuild()
         CONFIG = "@mini"
-
-    if args.hasCommand("nodev"):
-        IS_DEV = false
-        userConfig()
 
     if args.hasCommand("web"):
         miniBuild()
