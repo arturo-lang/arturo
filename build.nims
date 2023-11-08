@@ -707,6 +707,9 @@ cmd install, "Build arturo and install executable":
         
     if args.hasFlag("log", "l"):
         PRINT_LOG = true
+        
+    if args.hasFlag("raw"):
+        COMPRESS = false
 
     if args.hasCommand("debug"):
         COMPRESS = false
@@ -715,9 +718,6 @@ cmd install, "Build arturo and install executable":
     if args.hasCommand("dev"):
         IS_DEV = true
         devConfig()
-
-    if args.hasCommand("dontcompress"):
-        COMPRESS = false
 
     if args.hasCommand("mini"):
         miniBuild()
