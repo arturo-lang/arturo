@@ -656,17 +656,17 @@ cmd install, "Build arturo and install executable":
     ## build:
     ##     Provides a cross-compilation for the Arturo's binary.
     ##
-    ##     --arch: string = $hostCPU
+    ##     --arch: string = $hostCPU    chooses the target CPU
     ##          [amd64, arm, arm64, i386, x86]
-    ##     --build -b: string = full
+    ##     --build -b: string = full    chooses the target Build Version
     ##          [full, mini, web]
-    ##     --os: string = $hostOS
+    ##     --os: string = $hostOS       chooses the target OS
     ##          [freebsd, linux, openbsd, mac, macos, macosx, netbsd, win, windows]
-    ##     --who: string = user
+    ##     --who: string = user         defines who is compiling the code
     ##          [dev, user]
-    ##     --compress -c
-    ##     --install -i
-    ##     --log -l
+    ##     --local                      disables installation
+    ##     --log -l                     shows compilation logs
+    ##     --raw                        disables compression
     ##     --help
 
     const 
