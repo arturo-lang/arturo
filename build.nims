@@ -49,9 +49,9 @@ proc filter(content: string, condition: (char) -> bool): string =
             result.add c
 
 proc stripStr(content: string): string =
-    result = content.filter: (x: char) => 
+    result = content.filter: (x: char) =>
         x notin {' ', '\c', '\n'}
-    
+
     if result[0] == '"' and result[^1] == '"':
         result = result[1..^2]
 
@@ -70,7 +70,7 @@ template `--`*(key, val: untyped) {.dirty.} =
 template `---`*(key: untyped, val: string): untyped =
     ## A simple modification of `--` for string values.
     flags.add("--" & stripStr(astToStr(key)) & ":" & val)
-    
+
 include ".config/arch.nims"
 include ".config/buildmode.nims"
 include ".config/devtools.nims"
@@ -100,25 +100,25 @@ let
 
     # configuration options
     OPTIONS: Table[string, proc()] = {
-        "docgen": proc () {.closure.} = 
+        "docgen": proc () {.closure.} =
             --define:DOCGEN
         ,
-        "dontcompress": proc () {.closure.} = 
+        "dontcompress": proc () {.closure.} =
             discard
         ,
-        "dontinstall": proc () {.closure.} = 
-            discard 
-        ,
-        "log": proc () {.closure.} = 
+        "dontinstall": proc () {.closure.} =
             discard
         ,
-        "noerrorlines": proc () {.closure.} = 
+        "log": proc () {.closure.} =
+            discard
+        ,
+        "noerrorlines": proc () {.closure.} =
             --define:NOERRORLINES
         ,
-        "optimized": proc () {.closure.} = 
+        "optimized": proc () {.closure.} =
              --define:OPTIMIZED
         ,
-        "vcc": proc () {.closure.} = 
+        "vcc": proc () {.closure.} =
             discard
         ,
     }.toTable
@@ -136,13 +136,13 @@ var
     PRINT_LOG           = false
     RUN_UNIT_TESTS      = false
     FOR_WEB             = false
-    IS_DEV              = false 
-    MODE                = ""       
+    IS_DEV              = false
+    MODE                = ""
 
     FLAGS*              = ""
     CONFIG              ="@full"
 
-    ARGS: seq[string]   = @[] 
+    ARGS: seq[string]   = @[]
 
 #=======================================
 # Forward declarations
@@ -167,7 +167,7 @@ proc showLogo*() =
     echo r"                      (c)2023 Yanis Zafirópulos                      "
     echo r"                                                                     "
 
-proc showHeader*(title: string) = 
+proc showHeader*(title: string) =
     echo r"====================================================================="
     echo r" ► {title.toUpperAscii()}                                            ".fmt
     echo r"====================================================================="
@@ -297,7 +297,7 @@ proc compressBinary() =
         # TODO(build.nims) Check & fix upx-based compression on Linux
         #  right now, especially on Linux, `upx` seems to be destroying the final binary
         #  labels: bug, enhancement, linux, installer
-        
+
         #     let upx = "upx"
 
         #     let (_, code) = gorgeEx r"{upx} -q {toExe(BINARY)}".fmt
@@ -373,7 +373,7 @@ proc installAll*() =
 
 proc buildArturo*() =
     showHeader "install"
-    
+
     # if the one who's building is some guy going back the nick "drkameleon" -
     # who might that be ?! - then it's a DEV build
     if IS_DEV:
@@ -418,7 +418,7 @@ proc buildPackage*() =
     showBuildInfo()
 
     echo "{GRAY}".fmt
-        
+
     BINARY="{package}".fmt
     FLAGS="{FLAGS} --forceBuild:on --opt:size -d:NOERRORLINES -d:PORTABLE".fmt
     echo r"{GRAY}FLAGS: {FLAGS}".fmt
@@ -428,7 +428,7 @@ proc buildPackage*() =
 
     if (let cd = compile(footer=false); cd != 0):
         quit(cd)
-        
+
     # clean up
     rmFile(r"{package}.data.json".fmt)
 
@@ -447,17 +447,17 @@ proc performTests*() =
     try:
         exec r"{TARGET_FILE} ./tools/tester.art".fmt
     except:
-        try: 
+        try:
             exec r"{toExe(BINARY)} ./tools/tester.art".fmt
         except:
             quit(QuitFailure)
 
-proc performBenchmarks*() = 
+proc performBenchmarks*() =
     showHeader "benchmark"
     try:
         exec r"{TARGET_FILE} ./tools/benchmarker.art".fmt
     except:
-        try: 
+        try:
             exec r"{toExe(BINARY)} ./tools/benchmarker.art".fmt
         except:
             quit(QuitFailure)
@@ -499,7 +499,7 @@ proc showHelp*(error=false, errorMsg="") =
 # Main
 #=======================================
 
-let 
+let
     args = commandLineParams()
     command = if "build.nims" in paramStr(1):
             paramStr(2)
@@ -509,9 +509,9 @@ let
 proc panic(msg: string) =
     showLogo()
     showHelp(error=true, errorMsg=msg)
-    
+
 template `==?`(a, b: string): bool = cmpIgnoreStyle(a, b) == 0
-proc `>>?`(element: string, container: openarray[string]): bool = 
+proc `>>?`(element: string, container: openarray[string]): bool =
     result = false
     for el in container:
         if element ==? el:
@@ -522,7 +522,7 @@ proc getOptionValue*(args: seq[string], cmd: string, default: string,
     ## Gets an optional argument's value
     ## example, for ``--who rick``, the returned value will be ``rick``,
     ## otherwhise, if the flag is not found, it'll return the ``default``
-    ## 
+    ##
     ## This procedure has side effects and ends the application if the user
     ## write something wrong.
     result = default
@@ -533,7 +533,7 @@ proc getOptionValue*(args: seq[string], cmd: string, default: string,
     template flagFound(arg: string): bool =
         arg in [fmt"-{short}", fmt"--{cmd}"]
 
-    func hasMissingValue(args: seq[string], currIdx: int): bool =    
+    func hasMissingValue(args: seq[string], currIdx: int): bool =
         result = false
         if currIdx >= args.high:
             return true
@@ -555,8 +555,8 @@ proc getOptionValue*(args: seq[string], cmd: string, default: string,
         quit fmt"{next} isn't into {into} for --{cmd}.", QuitFailure
 
 
-func hasFlag*(args: seq[string], cmd: string, 
-              short: string = "", 
+func hasFlag*(args: seq[string], cmd: string,
+              short: string = "",
               default: bool = false): bool =
     ## Returns true if some flag was found
     result = default
@@ -566,7 +566,7 @@ func hasFlag*(args: seq[string], cmd: string,
         if arg >>? [fmt"-{short}", fmt"--{cmd}"]:
             return true
 
-proc hasCommand*(args: seq[string], cmd: string, 
+proc hasCommand*(args: seq[string], cmd: string,
               default: bool = false): bool =
     ## Returns true if some flag was found
     result = default
@@ -581,7 +581,7 @@ macro implementationToStr(id: typed): string =
 
 iterator getDocs(impl: string): string =
     ## Return the documentation of any implementation
-    ## 
+    ##
     ## This iterates until the end of the documentation block.
     var found = false
     for line in impl.splitLines():
@@ -596,7 +596,7 @@ iterator getDocs(impl: string): string =
 
 template help(ident: typed, status: int) =
     ## Prints the documentation from a identifier.
-    ## 
+    ##
     ## Params
     ## ------
     ## ident: typed
@@ -614,8 +614,8 @@ template cmd*(name: untyped; description: string; body: untyped): untyped =
     ## This is a modification of the original ``task`` by (c) Copyright 2015 Andreas Rumpf
     ## original source: https://github.com/nim-lang/Nim/blob/805b4e2dc2afddf7be27e32fe0543e4227b31f74/lib/system/nimscript.nim#L390
     ##
-    ## Reason: ``task``s were not working with optional arguments, 
-    ## so I removed the ``getCommand``, and replaced it by paramStr(2) 
+    ## Reason: ``task``s were not working with optional arguments,
+    ## so I removed the ``getCommand``, and replaced it by paramStr(2)
     ## defined by ``command``
     proc `name Task`*() =
         body
@@ -631,7 +631,7 @@ let userName = if hostOS == "windows": getEnv("USERNAME") else: staticExec("whoa
 IS_DEV = userName == "drkameleon"
 
 showLogo()
-        
+
 template match(sample: string, body: untyped) =
     ## Usage
     ## -----
@@ -643,19 +643,19 @@ template match(sample: string, body: untyped) =
     ##          --cpu:arm32
     ##          --define:bit32
     block matchBlock:
-        
+
         template `>>`(elements: openarray[string], ibody: untyped) =
             if sample >>? elements:
                 ibody
                 break matchBlock
-        
+
         body
 
 
 cmd install, "Build arturo and install executable":
     ## build:
     ##     Provides a cross-compilation for the Arturo's binary.
-    ## 
+    ##
     ##     --arch: string = $hostCPU
     ##          [amd64, arm, arm64, i386, x86]
     ##     --build -b: string = full
@@ -670,12 +670,12 @@ cmd install, "Build arturo and install executable":
     ##     --help
 
     const availableCPUs = @[
-        "amd-64", "x64", "x86-64", 
-        "arm-64", 
+        "amd-64", "x64", "x86-64",
+        "arm-64",
         "i386", "x86", "x86-32",
         "arm", "arm-32",
     ]
-    
+
     match args.getOptionValue("arch", default=hostCPU, short="a", into=availableCPUs):
         >> availableCPUs[0..2]: amd64Config()
         >> [availableCPUs[3]] : arm64Config()
@@ -725,7 +725,7 @@ cmd install, "Build arturo and install executable":
         memProfileConfig()
 
     if args.hasCommand("mini"):
-        miniBuildConfig() 
+        miniBuildConfig()
 
     if args.hasCommand("profile"):
         profileConfig()
