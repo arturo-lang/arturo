@@ -626,6 +626,12 @@ IS_DEV = userName == "drkameleon"
 
 showLogo()
 
+proc `>>?`(el: string, container: seq[string]): bool = 
+    result = false
+    for sample in container:
+        if el ==? sample:
+            return true
+
 cmd install, "Build arturo and install executable":
     ## build:
     ##     Provides a cross-compilation for the Arturo's binary.
