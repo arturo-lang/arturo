@@ -2,6 +2,9 @@
 {. push used .}
 
 proc releaseConfig() =
+    --define:OPTIMIZED
+    --define:NOERRORLINES
+    
     if hostOS=="windows": 
         --define:strip 
     else: 
