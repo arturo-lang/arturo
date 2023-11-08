@@ -627,6 +627,21 @@ IS_DEV = userName == "drkameleon"
 showLogo()
 
 cmd install, "Build arturo and install executable":
+    ## build:
+    ##     Provides a cross-compilation for the Arturo's binary.
+    ## 
+    ##     --arch: string = $hostCPU
+    ##          [amd64, arm, arm64, i386, x86]
+    ##     --build -b: string = full
+    ##          [full, mini, web]
+    ##     --os: string = $hostOS
+    ##          [freebsd, linux, openbsd, mac, macos, macosx, netbsd, win, windows]
+    ##     --who: string = user
+    ##          [bench, ci, dev, user]
+    ##     --compress -c
+    ##     --install -i
+    ##     --log -l
+    ##     --help
 
     if args.hasCommand("debug"):
         COMPRESS = false
