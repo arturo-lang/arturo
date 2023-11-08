@@ -72,6 +72,7 @@ template `---`*(key: untyped, val: string): untyped =
     flags.add("--" & stripStr(astToStr(key)) & ":" & val)
     
 include ".config/arch.nims"
+include ".config/buildmode.nims"
 include ".config/devtools.nims"
 include ".config/who.nims"
 
@@ -108,51 +109,18 @@ let
         "dontinstall": proc () {.closure.} = 
             discard 
         ,
-        "full": proc () {.closure.} = 
-            --define:ssl
-        ,
         "log": proc () {.closure.} = 
             discard
-        ,
-        "mini": proc () {.closure.} = 
-            discard
-        ,
-        "noasciidecode": proc () {.closure.} = 
-            --define:NOASCIIDECODE
-        ,
-        "noclipboard": proc () {.closure.} = 
-            --define:NOCLIPBOARD
-        ,
-        "nodialogs": proc () {.closure.} = 
-            --define:NODIALOGS
         ,
         "noerrorlines": proc () {.closure.} = 
             --define:NOERRORLINES
         ,
-        "nogmp": proc () {.closure.} = 
-            --define:NOGMP
-        ,
-        "noparsers": proc () {.closure.} = 
-            --define:NOPARSERS
-        ,
-        "nosqlite": proc () {.closure.} = 
-             --define:NOSQLITE
-        ,
-        "nowebview": proc () {.closure.} = 
-             --define:NOWEBVIEW
-        ,
         "optimized": proc () {.closure.} = 
              --define:OPTIMIZED
-        ,
-        "safe": proc () {.closure.} = 
-            --define:SAFE
         ,
         "vcc": proc () {.closure.} = 
             discard
         ,
-        "web": proc () {.closure.} = 
-            --verbosity:3 
-            --define:WEB
     }.toTable
 
 #=======================================
@@ -306,19 +274,9 @@ proc getShellRc*(): string =
 
 proc miniBuild*() =
     # all the necessary "modes" for mini builds
-    for k in [
-        "noasciidecode", 
-        "noclipboard",
-        "nodialogs",
-        "nogmp", 
-        "noparsers", 
-        "nosqlite", 
-        "nowebview"
-    ]:
-        OPTIONS[k]()
+    miniBuildConfig()
 
     # plus, shrinking + the MINI flag
-    --define:MINI
     if hostOS=="freebsd" or hostOS=="openbsd" or hostOS=="netbsd":
         --verbosity:3
 
@@ -367,7 +325,7 @@ proc compile*(footer=false): int =
     let params = flags.join(" ")
 
     # use VCC for non-MINI Windows builds
-    if (hostOS=="windows" and not FLAGS.contains("NOWEBVIEW") and IS_DEV):
+    if (hostOS=="windows" and not flags.contains("NOWEBVIEW") and IS_DEV):
         let (_,_) = gorgeEx "src\\extras\\webview\\deps\\build.bat"
 
     # if hostOS=="windows":
@@ -421,7 +379,7 @@ proc buildArturo*() =
     if IS_DEV:
         section "Updating build..."
         updateBuild()
-        OPTIONS["dev"]()
+        devConfig()
 
     # show environment & build info
     showEnvironment()
@@ -728,31 +686,10 @@ cmd install, "Build arturo and install executable":
         memProfileConfig()
 
     if args.hasCommand("mini"):
-        discard
-
-    if args.hasCommand("noasciidecode"):
-        --define:NOASCIIDECODE
-
-    if args.hasCommand("noclipboard"):
-        --define:NOCLIPBOARD
-
-    if args.hasCommand("nodialogs"):
-        --define:NODIALOGS
+        miniBuildConfig() 
 
     if args.hasCommand("noerrorlines"):
         --define:NOERRORLINES
-
-    if args.hasCommand("nogmp"):
-        --define:NOGMP
-
-    if args.hasCommand("noparsers"):
-        --define:NOPARSERS
-
-    if args.hasCommand("nosqlite"):
-        --define:NOSQLITE
-
-    if args.hasCommand("nowebview"):
-        --define:NOWEBVIEW
 
     if args.hasCommand("optimized"):
         --define:OPTIMIZED
@@ -770,14 +707,13 @@ cmd install, "Build arturo and install executable":
         releaseConfig()
 
     if args.hasCommand("safe"):
-        --define:SAFE
+        safeBuildConfig()
 
     if args.hasCommand("vcc"):
         discard
 
     if args.hasCommand("web"):
-        --verbosity:3
-        --define:WEB
+        webBuildConfig()
 
     if args.hasCommand("x86"):
         x86Config()
@@ -790,7 +726,7 @@ cmd install, "Build arturo and install executable":
         amd64Config()
 
     if CONFIG == "@full":
-        --define:ssl
+        fullBuildConfig()
 
     buildArturo()
 
