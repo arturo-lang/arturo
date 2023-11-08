@@ -72,6 +72,7 @@ template `---`*(key: untyped, val: string): untyped =
     flags.add("--" & stripStr(astToStr(key)) & ":" & val)
     
 include ".config/arch.nims"
+include ".config/who.nims"
 
 #=======================================
 # Constants
@@ -103,11 +104,6 @@ let
             --debuginfo 
             --linedir:on
         ,
-        "dev": proc () {.closure.} = 
-            --embedsrc:on 
-            --define:DEV 
-            --listCmd
-        ,
         "docgen": proc () {.closure.} = 
             --define:DOCGEN
         ,
@@ -137,9 +133,6 @@ let
         ,
         "noclipboard": proc () {.closure.} = 
             --define:NOCLIPBOARD
-        ,
-        "nodev": proc () {.closure.} = 
-            discard
         ,
         "nodialogs": proc () {.closure.} = 
             --define:NODIALOGS
@@ -174,14 +167,6 @@ let
              --define:PROFILER 
              --profiler:on 
              --stackTrace:on
-        ,
-        "release": proc () {.closure.} = 
-            if hostOS=="windows": 
-                --define:strip 
-            else: 
-                --define:strip 
-                --passC:"'-flto'" 
-                --passL:"'-flto'"
         ,
         "safe": proc () {.closure.} = 
             --define:SAFE
@@ -714,6 +699,7 @@ cmd install, "Build arturo and install executable":
 
     if args.hasCommand("dev"):
         IS_DEV = true
+        devConfig()
 
     if args.hasCommand("dontcompress"):
         COMPRESS = false
@@ -730,6 +716,7 @@ cmd install, "Build arturo and install executable":
 
     if args.hasCommand("nodev"):
         IS_DEV = false
+        userConfig()
 
     if args.hasCommand("web"):
         miniBuild()
@@ -750,11 +737,6 @@ cmd install, "Build arturo and install executable":
         --debugger:on
         --debuginfo
         --linedir:on
-
-    if args.hasCommand("dev"):
-        --embedsrc:on
-        --define:DEV
-        --listCmd
 
     if args.hasCommand("docgen"):
         --define:DOCGEN
@@ -785,9 +767,6 @@ cmd install, "Build arturo and install executable":
 
     if args.hasCommand("noclipboard"):
         --define:NOCLIPBOARD
-
-    if args.hasCommand("nodev"):
-        discard
 
     if args.hasCommand("nodialogs"):
         --define:NODIALOGS
@@ -824,12 +803,7 @@ cmd install, "Build arturo and install executable":
         --stackTrace:on
 
     if args.hasCommand("release"):
-        if hostOS=="windows": 
-            --define:strip 
-        else: 
-            --define:strip
-            --passC:"'-flto'"
-            --passL:"'-flto'"
+        releaseConfig()
 
     if args.hasCommand("safe"):
         --define:SAFE
