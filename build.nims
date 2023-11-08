@@ -20,7 +20,7 @@ import os, parseopt, sequtils
 import strformat, strutils, tables
 import macros, sugar
 
-import src/helpers/terminal
+import src/helpers/terminal#
 
 #=======================================
 # Initialize globals
@@ -28,6 +28,48 @@ import src/helpers/terminal
 
 mode = ScriptMode.Silent
 NoColors = hostOS == "windows"
+
+#=======================================
+# Flag system
+#=======================================
+
+var flags*: seq[string] = newSeqOfCap[string](64)
+    ## flags represent the flags that will be passed to the compiler.
+    ##
+    ## Initialize a sequence of initial 64 slots,
+    ## what help us to append elements without lose performance.
+
+## `filter`_, `stripStr`_, `--`_ and `---`_ are inspired by the
+## original ones from Nim's STD lib, by 2015 Andreas Rumpf.
+
+proc filter(content: string, condition: (char) -> bool): string =
+    result = newStringOfCap content.len
+    for c in content:
+        if c.condition:
+            result.add c
+
+proc stripStr(content: string): string =
+    result = content.filter: (x: char) => 
+        x notin {' ', '\c', '\n'}
+    
+    if result[0] == '"' and result[^1] == '"':
+        result = result[1..^2]
+
+template `--`*(key: untyped) {.dirty.} =
+    ## Overrides the original ``--`` to append values into ``flags``,
+    ## instead of pass direclty to the compiler.
+    ## Since this isn't the config.nims file.
+    flags.add("--" & stripStr(astToStr(key)))
+
+template `--`*(key, val: untyped) {.dirty.} =
+    ## Overrides the original ``--`` to append values into ``flags``,
+    ## instead of pass direclty to the compiler.
+    ## Since this isn't the config.nims file.
+    flags.add("--" & stripStr(astToStr(key)) & ":" & stripStr(astToStr(val)))
+
+template `---`*(key: untyped, val: string): untyped =
+    ## A simple modification of `--` for string values.
+    flags.add("--" & stripStr(astToStr(key)) & ":" & val)
 
 #=======================================
 # Constants
@@ -52,37 +94,122 @@ let
     MAIN            = r"src/arturo.nim"
 
     # configuration options
-    OPTIONS = {
-        "arm"               : " --cpu:arm -d:bit32",
-        "arm64"             : " --cpu:arm64 --gcc.path:/usr/bin --gcc.exe:aarch64-linux-gnu-gcc --gcc.linkerexe:aarch64-linux-gnu-gcc",
-        "debug"             : " -d:DEBUG --debugger:on --debuginfo --linedir:on",
-        "dev"               : " --embedsrc:on -d:DEV --listCmd",
-        "docgen"            : " -d:DOCGEN",
-        "dontcompress"      : " ",
-        "dontinstall"       : " ",
-        "full"              : " -d:ssl",
-        "log"               : " ",
-        "memprofile"        : " -d:PROFILE --profiler:off --stackTrace:on --d:memProfiler",
-        "mini"              : " ",
-        "noasciidecode"     : " -d:NOASCIIDECODE",
-        "noclipboard"       : " -d:NOCLIPBOARD",
-        "nodev"             : " ",
-        "nodialogs"         : " -d:NODIALOGS",
-        "noerrorlines"      : " -d:NOERRORLINES",
-        "nogmp"             : " -d:NOGMP",
-        "noparsers"         : " -d:NOPARSERS",
-        "nosqlite"          : " -d:NOSQLITE",
-        "nowebview"         : " -d:NOWEBVIEW",
-        "optimized"         : " -d:OPTIMIZED",
-        "profile"           : " -d:PROFILE --profiler:on --stackTrace:on",
-        "profilenative"     : " --debugger:native",
-        "profiler"          : " -d:PROFILER --profiler:on --stackTrace:on",
-        "release"           : (when hostOS=="windows": " -d:strip" else: " -d:strip --passC:'-flto' --passL:'-flto'"),
-        "safe"              : " -d:SAFE",
-        "vcc"               : " ",
-        "web"               : " --verbosity:3 -d:WEB",
-        "x86"               : " --cpu:i386 -d:bit32 " & (when defined(gcc): "--passC:'-m32' --passL:'-m32'" else: ""),  
-        "amd64"             : " "
+    OPTIONS: Table[string, proc()] = {
+        "arm": proc () {.closure.} =
+            --cpu:arm 
+            --define:bit32
+        ,
+        "arm64": proc () {.closure.} = 
+            --cpu:arm64 
+            --gcc.path:"/usr/bin" 
+            --gcc.exe:"aarch64-linux-gnu-gcc" 
+            --gcc.linkerexe:"aarch64-linux-gnu-gcc"
+        ,
+        "debug": proc () {.closure.} = 
+            --define:DEBUG 
+            --debugger:on 
+            --debuginfo 
+            --linedir:on
+        ,
+        "dev": proc () {.closure.} = 
+            --embedsrc:on 
+            --define:DEV 
+            --listCmd
+        ,
+        "docgen": proc () {.closure.} = 
+            --define:DOCGEN
+        ,
+        "dontcompress": proc () {.closure.} = 
+            discard
+        ,
+        "dontinstall": proc () {.closure.} = 
+            discard 
+        ,
+        "full": proc () {.closure.} = 
+            --define:ssl
+        ,
+        "log": proc () {.closure.} = 
+            discard
+        ,
+        "memprofile": proc () {.closure.} = 
+            --define:PROFILE 
+            --profiler:off 
+            --stackTrace:on 
+            --define:memProfiler
+        ,
+        "mini": proc () {.closure.} = 
+            discard
+        ,
+        "noasciidecode": proc () {.closure.} = 
+            --define:NOASCIIDECODE
+        ,
+        "noclipboard": proc () {.closure.} = 
+            --define:NOCLIPBOARD
+        ,
+        "nodev": proc () {.closure.} = 
+            discard
+        ,
+        "nodialogs": proc () {.closure.} = 
+            --define:NODIALOGS
+        ,
+        "noerrorlines": proc () {.closure.} = 
+            --define:NOERRORLINES
+        ,
+        "nogmp": proc () {.closure.} = 
+            --define:NOGMP
+        ,
+        "noparsers": proc () {.closure.} = 
+            --define:NOPARSERS
+        ,
+        "nosqlite": proc () {.closure.} = 
+             --define:NOSQLITE
+        ,
+        "nowebview": proc () {.closure.} = 
+             --define:NOWEBVIEW
+        ,
+        "optimized": proc () {.closure.} = 
+             --define:OPTIMIZED
+        ,
+        "profile": proc () {.closure.} = 
+             --define:PROFILE 
+             --profiler:on 
+             --stackTrace:on
+        ,
+        "profilenative": proc () {.closure.} = 
+             --debugger:native
+        ,
+        "profiler": proc () {.closure.} = 
+             --define:PROFILER 
+             --profiler:on 
+             --stackTrace:on
+        ,
+        "release": proc () {.closure.} = 
+            if hostOS=="windows": 
+                --define:strip 
+            else: 
+                --define:strip 
+                --passC:"'-flto'" 
+                --passL:"'-flto'"
+        ,
+        "safe": proc () {.closure.} = 
+            --define:SAFE
+        ,
+        "vcc": proc () {.closure.} = 
+            discard
+        ,
+        "web": proc () {.closure.} = 
+            --verbosity:3 
+            --define:WEB
+        ,
+        "x86": proc () {.closure.} = 
+            --cpu:i386 
+            --define:bit32
+            if defined(gcc): 
+                --passC:"'-m32'" 
+                --passL:"'-m32'"
+        ,  
+        "amd64": proc () {.closure.} = 
+            discard
     }.toTable
 
 #=======================================
@@ -105,12 +232,6 @@ var
     CONFIG              ="@full"
 
     ARGS: seq[string]   = @[] 
-    
-    flags*: seq[string] = newSeqOfCap[string](64)
-        ## flags represent the flags that will be passed to the compiler.
-        ##
-        ## Initialize a sequence of initial 64 slots,
-        ## what help us to append elements without lose performance.
 
 #=======================================
 # Forward declarations
@@ -251,12 +372,12 @@ proc miniBuild*() =
         "nosqlite", 
         "nowebview"
     ]:
-        FLAGS.add OPTIONS[k]
+        OPTIONS[k]()
 
     # plus, shrinking + the MINI flag
-    FLAGS.add " -d:MINI"
+    --define:MINI
     if hostOS=="freebsd" or hostOS=="openbsd" or hostOS=="netbsd":
-        FLAGS.add" --verbosity:3 "
+        --verbosity:3
 
 proc compressBinary() =
     if COMPRESS:
@@ -357,7 +478,7 @@ proc buildArturo*() =
     if IS_DEV:
         section "Updating build..."
         updateBuild()
-        FLAGS.add OPTIONS["dev"]
+        OPTIONS["dev"]()
 
     # show environment & build info
     showEnvironment()
@@ -483,39 +604,6 @@ let
             paramStr(2)
         else:
             paramStr(1)
-            
-## `filter`_, `stripStr`_, `--`_ and `---`_ are inspired by the
-## original ones from Nim's STD lib, by 2015 Andreas Rumpf.
-
-proc filter(content: string, condition: (char) -> bool): string =
-    result = newStringOfCap content.len
-    for c in content:
-        if c.condition:
-            result.add c
-
-proc stripStr(content: string): string =
-    result = content.filter: (x: char) => 
-        x notin {' ', '\c', '\n'}
-    
-    if result[0] == '"' and result[^1] == '"':
-        result = result[1..^2]
-
-template `--`*(key: untyped) {.dirty.} =
-    ## Overrides the original ``--`` to append values into ``flags``,
-    ## instead of pass direclty to the compiler.
-    ## Since this isn't the config.nims file.
-    flags.add("--" & stripStr(astToStr(key)))
-
-template `--`*(key, val: untyped) {.dirty.} =
-    ## Overrides the original ``--`` to append values into ``flags``,
-    ## instead of pass direclty to the compiler.
-    ## Since this isn't the config.nims file.
-    flags.add("--" & stripStr(astToStr(key)) & ":" & stripStr(astToStr(val)))
-
-template `---`*(key: untyped, val: string): untyped =
-    ## A simple modification of `--` for string values.
-    flags.add("--" & stripStr(astToStr(key)) & ":" & val)
-
 
 proc panic(msg: string) =
     showLogo()
