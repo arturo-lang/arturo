@@ -60,7 +60,7 @@ jobs:
 
           nim --version
 
-          ./build.nims install ${{ matrix.version }} log
+          ./build.nims install ${{ matrix.version }} --log
 
       - name: Install dependencies + Build Arturo (mini)
         if: matrix.version == 'mini'
@@ -76,7 +76,7 @@ jobs:
           
           export PATH="${{ github.workspace }}/nim/nim-2.0.0/bin":$PATH
 
-          ./build.nims install ${{ matrix.version }} log
+          ./build.nims install ${{ matrix.version }} --log
 
       - name: Run unit tests (full)
         if: matrix.version == 'full'
