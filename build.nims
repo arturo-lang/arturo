@@ -691,7 +691,7 @@ cmd install, "Build arturo and install executable":
             
         >> amd64: amd64Config()
         >> arm64: arm64Config()
-        >> x86: arm64Config()
+        >> x86:   arm64Config()
         >> arm32: arm32Config()
         
     match args.getOptionValue("build", default="full", into=availableBuilds):
@@ -711,7 +711,6 @@ cmd install, "Build arturo and install executable":
             CONFIG = "@web"
             miniBuild()
             
-        
     match args.getOptionValue("os", default=hostOS, into=availableOSes):
         let 
             bsd = availableOSes[0..2]
@@ -719,21 +718,17 @@ cmd install, "Build arturo and install executable":
             macos = availableOSes[4..6]
             windows = availableOSes[7..8]
             
-        >> bsd: discard
-        >> linux: discard
-        >> macos: discard
+        >> bsd:     discard
+        >> linux:   discard
+        >> macos:   discard
         >> windows: discard
         
     match args.getOptionValue("profiler", default="none", short="p", 
                               into=availableProfilers):
-        >> ["default"]:
-            profilerConfig()
-        >> ["mem"]:
-            memProfileConfig()
-        >> ["native"]:
-            nativeProfileConfig()
-        >> ["profile"]:
-            profileConfig()
+        >> ["default"]: profilerConfig()
+        >> ["mem"]:     memProfileConfig()
+        >> ["native"]:  nativeProfileConfig()
+        >> ["profile"]: profileConfig()
         
     match args.getOptionValue("who", default="", into= @["user", "dev"]):
         >> ["user"]:
