@@ -733,6 +733,9 @@ cmd install, "Build arturo and install executable":
         
     if args.hasFlag("raw"):
         COMPRESS = false
+        
+    if args.hasFlag("release"):
+        releaseConfig()
 
     if args.hasCommand("dev"):
         IS_DEV = true
@@ -756,9 +759,6 @@ cmd install, "Build arturo and install executable":
 
     if args.hasCommand("profiler"):
         profilerConfig()
-
-    if args.hasCommand("release"):
-        releaseConfig()
 
     buildArturo()
 
