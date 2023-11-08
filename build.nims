@@ -754,15 +754,13 @@ cmd install, "Build arturo and install executable":
     if args.hasFlag("release"):
         releaseConfig()
 
-    if args.hasCommand("docgen"):
-        --define:DOCGEN
-
     buildArturo()
 
 cmd package, "Package arturo app and build executable":
     buildPackage()
 
 cmd docs, "Build the documentation":
+    --define:DOCGEN
     buildDocs()
 
 cmd test, "Run test suite":
