@@ -721,7 +721,7 @@ cmd install, "Build arturo and install executable":
         >> macos: discard
         >> windows: discard
         
-    match args.getOptionValue("who", default="user", into= @["user", "dev"]):
+    match args.getOptionValue("who", default="", into= @["user", "dev"]):
         >> ["user"]:
             IS_DEV = false
             userConfig()
