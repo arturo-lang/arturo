@@ -701,6 +701,9 @@ cmd install, "Build arturo and install executable":
         >> linux: discard
         >> macos: discard
         >> windows: discard
+        
+    if args.hasFlag("log", "l"):
+        PRINT_LOG = true
 
     if args.hasCommand("debug"):
         COMPRESS = false
@@ -715,9 +718,6 @@ cmd install, "Build arturo and install executable":
 
     if args.hasCommand("dontinstall"):
         INSTALL = false
-
-    if args.hasCommand("log"):
-        PRINT_LOG = true
 
     if args.hasCommand("mini"):
         miniBuild()
