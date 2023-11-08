@@ -563,7 +563,7 @@ func hasFlag*(args: seq[string], cmd: string,
     for arg in args:
         if not arg.startsWith("-"):
             continue
-        if arg in [fmt"-{short}", fmt"--{cmd}"]:
+        if arg >>? [fmt"-{short}", fmt"--{cmd}"]:
             return true
 
 proc hasCommand*(args: seq[string], cmd: string, 
