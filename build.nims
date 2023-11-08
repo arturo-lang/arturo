@@ -626,11 +626,31 @@ IS_DEV = userName == "drkameleon"
 
 showLogo()
 
-proc `>>?`(el: string, container: seq[string]): bool = 
+proc `>>?`(element: string, container: openarray[string]): bool = 
     result = false
-    for sample in container:
-        if el ==? sample:
+    for el in container:
+        if element ==? el:
             return true
+        
+template match(sample: string, body: untyped) =
+    ## Usage
+    ## -----
+    ## ..code::
+    ##      match input:
+    ##        >> "amd-64", "amd", "x64", "x86-64":
+    ##          --cpu:amd64
+    ##        >> "arm", "arm-32":
+    ##          --cpu:arm32
+    ##          --define:bit32
+    block matchBlock:
+        
+        template `>>`(elements: openarray[string], ibody: untyped) =
+            if sample >>? elements:
+                ibody
+                break matchBlock
+        
+        body
+
 
 cmd install, "Build arturo and install executable":
     ## build:
@@ -655,15 +675,12 @@ cmd install, "Build arturo and install executable":
         "i386", "x86", "x86-32",
         "arm", "arm-32",
     ]
-    let arch = args.getOptionValue("arch", default=hostCPU, short="a", into=availableCPUs)
-    if arch >>? availableCPUs[0..2]:
-        amd64Config()
-    elif arch >>? @[availableCPUs[3]]:
-        arm64Config()
-    elif arch >>? availableCPUs[4..6]:
-        arm64Config()
-    elif arch >>? availableCPUs[7..8]:
-        arm32Config()
+    
+    match args.getOptionValue("arch", default=hostCPU, short="a", into=availableCPUs):
+        >> availableCPUs[0..2]: amd64Config()
+        >> [availableCPUs[3]] : arm64Config()
+        >> availableCPUs[4..6]: arm64Config()
+        >> availableCPUs[7..8]: arm32Config()
 
     if args.hasCommand("debug"):
         COMPRESS = false
