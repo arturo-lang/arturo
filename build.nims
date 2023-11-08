@@ -688,12 +688,6 @@ cmd install, "Build arturo and install executable":
     if args.hasCommand("mini"):
         miniBuildConfig() 
 
-    if args.hasCommand("noerrorlines"):
-        --define:NOERRORLINES
-
-    if args.hasCommand("optimized"):
-        --define:OPTIMIZED
-
     if args.hasCommand("profile"):
         profileConfig()
 
