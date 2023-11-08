@@ -1,5 +1,5 @@
 
-
+{. push used .}
 
 proc amd64Config() =
     discard
@@ -20,3 +20,5 @@ proc x86Config() =
 proc arm32Config() = 
     --cpu:arm 
     --define:bit32
+    
+{. pop .}
