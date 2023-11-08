@@ -573,7 +573,7 @@ proc hasCommand*(args: seq[string], cmd: string,
     for arg in args:
         if arg.startsWith("-"):
             continue
-        if arg.cmpIgnoreStyle(cmd) == 0:
+        if arg ==? cmd:
             return true
 
 macro implementationToStr(id: typed): string =
