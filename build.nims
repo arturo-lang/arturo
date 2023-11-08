@@ -675,7 +675,7 @@ cmd install, "Build arturo and install executable":
                           "x86-32", "arm", "arm-32"]
         availableOSes = @["freebsd", "openbsd", "netbsd", "linux", "mac", 
                           "macos", "macosx", "win", "windows",]
-        
+        availableBuilds = @["full", "mini", "safe", "web"]
 
     match args.getOptionValue("arch", short="a",
                               default=hostCPU,
@@ -690,6 +690,24 @@ cmd install, "Build arturo and install executable":
         >> arm64: arm64Config()
         >> x86: arm64Config()
         >> arm32: arm32Config()
+        
+    match args.getOptionValue("build", default="full", into=availableBuilds):
+        >> ["full"]: 
+            fullBuildConfig()
+        >> ["mini"]:
+            miniBuildConfig()
+            CONFIG = "@mini"
+            miniBuild()
+        >> ["safe"]:
+            safeBuildConfig()
+            miniBuild()
+        >> ["web"]:
+            FOR_WEB = true
+            COMPILER = "js"
+            BINARY = r"{BINARY}.js".fmt
+            CONFIG = "@web"
+            miniBuild()
+            
         
     match args.getOptionValue("os", default=hostOS, into=availableOSes):
         let 
@@ -720,33 +738,15 @@ cmd install, "Build arturo and install executable":
         IS_DEV = true
         devConfig()
 
-    if args.hasCommand("mini"):
-        miniBuild()
-        CONFIG = "@mini"
-
     if args.hasCommand("nodev"):
         IS_DEV = false
         userConfig()
 
-    if args.hasCommand("web"):
-        miniBuild()
-        FOR_WEB = true
-        COMPILER = "js"
-        BINARY = r"{BINARY}.js".fmt
-        CONFIG = "@web"
-
-
     if args.hasCommand("docgen"):
         --define:DOCGEN
 
-    if args.hasCommand("full"):
-        fullBuildConfig()
-
     if args.hasCommand("memprofile"):
-        memProfileConfig()
-
-    if args.hasCommand("mini"):
-        miniBuildConfig()
+        memProfileConfig()        
 
     if args.hasCommand("profile"):
         profileConfig()
@@ -759,15 +759,6 @@ cmd install, "Build arturo and install executable":
 
     if args.hasCommand("release"):
         releaseConfig()
-
-    if args.hasCommand("safe"):
-        safeBuildConfig()
-
-    if args.hasCommand("web"):
-        webBuildConfig()
-
-    if CONFIG == "@full":
-        fullBuildConfig()
 
     buildArturo()
 
