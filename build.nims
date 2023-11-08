@@ -669,13 +669,23 @@ cmd install, "Build arturo and install executable":
     ##     --log -l
     ##     --help
 
-    const availableCPUs = @[
-        "amd-64", "x64", "x86-64",
-        "arm-64",
-        "i386", "x86", "x86-32",
-        "arm", "arm-32",
-    ]
+    const 
+        availableCPUs = @["amd-64", "x64", "x86-64", "arm-64", "i386", "x86", 
+                          "x86-32", "arm", "arm-32"]
 
+    match args.getOptionValue("arch", short="a",
+                              default=hostCPU,
+                              into=availableCPUs):
+        let
+            amd64 = availableCPUs[0..2]
+            arm64 = [availableCPUs[3]]
+            x86 = availableCPUs[4..6]
+            arm32 = availableCPUs[7..8]
+            
+        >> amd64: amd64Config()
+        >> arm64: arm64Config()
+        >> x86: arm64Config()
+        >> arm32: arm32Config()
     match args.getOptionValue("arch", default=hostCPU, short="a", into=availableCPUs):
         >> availableCPUs[0..2]: amd64Config()
         >> [availableCPUs[3]] : arm64Config()
