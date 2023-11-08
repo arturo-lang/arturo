@@ -616,8 +616,7 @@ template cmd*(name: untyped; description: string; body: untyped): untyped =
 
     if command ==? astToStr(name):
         if args.hasFlag("help", short="h"):
-            help `name Task`
-            quit QuitSuccess
+            help `name Task`, QuitSuccess
         else:
             `name Task`()
 
