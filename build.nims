@@ -509,6 +509,13 @@ let
 proc panic(msg: string) =
     showLogo()
     showHelp(error=true, errorMsg=msg)
+    
+template `==?`(a, b: string): bool = cmpIgnoreStyle(a, b) == 0
+proc `>>?`(element: string, container: openarray[string]): bool = 
+    result = false
+    for el in container:
+        if element ==? el:
+            return true
 
 proc getOptionValue*(args: seq[string], cmd: string, default: string,
                      short: string = "", into: seq[string] = @[]): string =
@@ -543,7 +550,7 @@ proc getOptionValue*(args: seq[string], cmd: string, default: string,
             quit fmt"Missing value for --{cmd}.", QuitFailure
 
         let next = args[idx.succ]
-        if allowGenericArgument or next in into:
+        if not allowGenericArgument or next >>? into:
             return next
         quit fmt"{next} isn't into {into} for --{cmd}.", QuitFailure
 
@@ -603,7 +610,6 @@ template help(ident: typed, status: int) =
         echo line
     quit status
 
-template `==?`(a, b: string): bool = cmpIgnoreStyle(a, b) == 0
 template cmd*(name: untyped; description: string; body: untyped): untyped =
     ## This is a modification of the original ``task`` by (c) Copyright 2015 Andreas Rumpf
     ## original source: https://github.com/nim-lang/Nim/blob/805b4e2dc2afddf7be27e32fe0543e4227b31f74/lib/system/nimscript.nim#L390
@@ -625,12 +631,6 @@ let userName = if hostOS == "windows": getEnv("USERNAME") else: staticExec("whoa
 IS_DEV = userName == "drkameleon"
 
 showLogo()
-
-proc `>>?`(element: string, container: openarray[string]): bool = 
-    result = false
-    for el in container:
-        if element ==? el:
-            return true
         
 template match(sample: string, body: untyped) =
     ## Usage
