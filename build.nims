@@ -99,31 +99,6 @@ let
     TARGET_STORES   = r"{ROOT_DIR}/stores".fmt
     MAIN            = r"src/arturo.nim"
 
-    # configuration options
-    OPTIONS: Table[string, proc()] = {
-        "docgen": proc () {.closure.} =
-            --define:DOCGEN
-        ,
-        "dontcompress": proc () {.closure.} =
-            discard
-        ,
-        "dontinstall": proc () {.closure.} =
-            discard
-        ,
-        "log": proc () {.closure.} =
-            discard
-        ,
-        "noerrorlines": proc () {.closure.} =
-            --define:NOERRORLINES
-        ,
-        "optimized": proc () {.closure.} =
-             --define:OPTIMIZED
-        ,
-        "vcc": proc () {.closure.} =
-            discard
-        ,
-    }.toTable
-
 #=======================================
 # Variables
 #=======================================
