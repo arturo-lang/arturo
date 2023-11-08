@@ -649,6 +649,22 @@ cmd install, "Build arturo and install executable":
     ##     --log -l
     ##     --help
 
+    const availableCPUs = @[
+        "amd-64", "x64", "x86-64", 
+        "arm-64", 
+        "i386", "x86", "x86-32",
+        "arm", "arm-32",
+    ]
+    let arch = args.getOptionValue("arch", default=hostCPU, short="a", into=availableCPUs)
+    if arch >>? availableCPUs[0..2]:
+        amd64Config()
+    elif arch >>? @[availableCPUs[3]]:
+        arm64Config()
+    elif arch >>? availableCPUs[4..6]:
+        arm64Config()
+    elif arch >>? availableCPUs[7..8]:
+        arm32Config()
+
     if args.hasCommand("debug"):
         COMPRESS = false
         debugConfig()
@@ -682,12 +698,6 @@ cmd install, "Build arturo and install executable":
         CONFIG = "@web"
 
 
-    if args.hasCommand("arm"):
-        arm32Config()
-
-    if args.hasCommand("arm64"):
-        arm64Config()
-
     if args.hasCommand("docgen"):
         --define:DOCGEN
 
@@ -717,16 +727,6 @@ cmd install, "Build arturo and install executable":
 
     if args.hasCommand("web"):
         webBuildConfig()
-
-    if args.hasCommand("x86"):
-        x86Config()
-
-        if defined(gcc): 
-            --passC:"'-m32'"
-            --passL:"'-m32'"
-
-    if args.hasCommand("amd64"):
-        amd64Config()
 
     if CONFIG == "@full":
         fullBuildConfig()
