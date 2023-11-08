@@ -663,7 +663,7 @@ cmd install, "Build arturo and install executable":
     ##     --os: string = $hostOS       chooses the target OS
     ##          [freebsd, linux, openbsd, mac, macos, macosx, netbsd, win, windows]
     ##     --who: string = user         defines who is compiling the code
-    ##          [dev, user]
+    ##          [ci, dev, user, release]
     ##     --debug -d                   enables debugging
     ##     --local                      disables installation
     ##     --log -l                     shows compilation logs
@@ -676,6 +676,7 @@ cmd install, "Build arturo and install executable":
         availableOSes = @["freebsd", "openbsd", "netbsd", "linux", "mac", 
                           "macos", "macosx", "win", "windows",]
         availableBuilds = @["full", "mini", "safe", "web"]
+        availablePeople = @["ci", "dev", "developer", "release", "user"]
 
     match args.getOptionValue("arch", short="a",
                               default=hostCPU,
@@ -721,6 +722,18 @@ cmd install, "Build arturo and install executable":
         >> macos: discard
         >> windows: discard
         
+    match args.getOptionValue("who", default="user", into=availablePeople):
+        >> ["user", "release"]:
+            IS_DEV = false
+            userConfig()
+            releaseConfig()
+        >> ["ci"]:
+            IS_DEV = false
+            userConfig()
+        >> ["dev", "developer"]:
+            IS_DEV = true
+            devConfig()
+        
     if args.hasFlag("debug", "d"):
         COMPRESS = false
         debugConfig()
@@ -733,14 +746,6 @@ cmd install, "Build arturo and install executable":
         
     if args.hasFlag("raw"):
         COMPRESS = false
-
-    if args.hasCommand("dev"):
-        IS_DEV = true
-        devConfig()
-
-    if args.hasCommand("nodev"):
-        IS_DEV = false
-        userConfig()
 
     if args.hasCommand("docgen"):
         --define:DOCGEN
@@ -756,9 +761,6 @@ cmd install, "Build arturo and install executable":
 
     if args.hasCommand("profiler"):
         profilerConfig()
-
-    if args.hasCommand("release"):
-        releaseConfig()
 
     buildArturo()
 
