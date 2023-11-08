@@ -587,7 +587,7 @@ iterator getDocs(impl: string): string =
         elif found:
             break
 
-template help(ident: typed) =
+template help(ident: typed, status: int) =
     ## Prints the documentation from a identifier.
     ## 
     ## Params
@@ -601,6 +601,7 @@ template help(ident: typed) =
     ##      help getOptionValue
     for line in ident.implementationToStr.getDocs():
         echo line
+    quit status
 
 template `==?`(a, b: string): bool = cmpIgnoreStyle(a, b) == 0
 template cmd*(name: untyped; description: string; body: untyped): untyped =
