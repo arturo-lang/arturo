@@ -656,12 +656,14 @@ cmd install, "Build arturo and install executable":
     ## build:
     ##     Provides a cross-compilation for the Arturo's binary.
     ##
-    ##     --arch: string = $hostCPU    chooses the target CPU
+    ##     --arch: $hostCPU             chooses the target CPU
     ##          [amd64, arm, arm64, i386, x86]
     ##     --build -b: string = full    chooses the target Build Version
     ##          [full, mini, web]
-    ##     --os: string = $hostOS       chooses the target OS
+    ##     --os: $hostOS                chooses the target OS
     ##          [freebsd, linux, openbsd, mac, macos, macosx, netbsd, win, windows]
+    ##     --profiler -p: none          defines which profiler use
+    ##          [default, mem, native, none, profile]
     ##     --who: string = user         defines who is compiling the code
     ##          [dev, user]
     ##     --debug -d                   enables debugging
@@ -676,6 +678,7 @@ cmd install, "Build arturo and install executable":
         availableOSes = @["freebsd", "openbsd", "netbsd", "linux", "mac", 
                           "macos", "macosx", "win", "windows",]
         availableBuilds = @["full", "mini", "safe", "web"]
+        availableProfilers = @["default", "mem", "native", "profile"]
 
     match args.getOptionValue("arch", short="a",
                               default=hostCPU,
@@ -721,6 +724,17 @@ cmd install, "Build arturo and install executable":
         >> macos: discard
         >> windows: discard
         
+    match args.getOptionValue("profiler", default="none", short="p", 
+                              into=availableProfilers):
+        >> ["default"]:
+            profilerConfig()
+        >> ["mem"]:
+            memProfileConfig()
+        >> ["native"]:
+            nativeProfileConfig()
+        >> ["profile"]:
+            profileConfig()
+        
     match args.getOptionValue("who", default="", into= @["user", "dev"]):
         >> ["user"]:
             IS_DEV = false
@@ -747,18 +761,6 @@ cmd install, "Build arturo and install executable":
 
     if args.hasCommand("docgen"):
         --define:DOCGEN
-
-    if args.hasCommand("memprofile"):
-        memProfileConfig()        
-
-    if args.hasCommand("profile"):
-        profileConfig()
-
-    if args.hasCommand("profilenative"):
-        nativeProfileConfig()
-
-    if args.hasCommand("profiler"):
-        profilerConfig()
 
     buildArturo()
 
