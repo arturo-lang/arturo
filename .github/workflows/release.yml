@@ -92,7 +92,7 @@ jobs:
       - name: Build Arturo
         run: |
           export MACOSX_DEPLOYMENT_TARGET=10.10
-          ./build.nims install --build ${{ matrix.version }} --arch ${{ matrix.arch }} --who release --log
+          ./build.nims install --build ${{ matrix.version }} --arch ${{ matrix.arch }} --log release
           echo "$HOME/.arturo/bin" >> $GITHUB_PATH
 
       - name: Create artifact (Linux)
@@ -170,7 +170,7 @@ jobs:
   #     - name: Build Arturo
   #       run: |
   #         export MACOSX_DEPLOYMENT_TARGET=10.10
-  #         ./build.nims install --build ${{ matrix.version }} --arch ${{ matrix.arch }} --who release --log
+  #         ./build.nims install --build ${{ matrix.version }} --arch ${{ matrix.arch }} --log release
   #         echo "$HOME/.arturo/bin" >> $GITHUB_PATH
   #         file bin/arturo
 
@@ -222,7 +222,7 @@ jobs:
           usesh: true
           prepare: pkg install -y nim gmp mpfr bash databases/sqlite3
           run: |
-            ./build.nims install --build ${{ matrix.version }} --arch ${{ matrix.arch }} --who release --log
+            ./build.nims install --build ${{ matrix.version }} --arch ${{ matrix.arch }} --log release
             export PATH="$HOME/.arturo/bin:$PATH"
 
       - name: Create artifact
@@ -273,7 +273,7 @@ jobs:
           usesh: true
           prepare: /usr/sbin/pkg_add nim gmp mpfr bash pcre sqlite3
           run: |
-            ./build.nims install --build ${{ matrix.version }} --arch ${{ matrix.arch }} --who release --log
+            ./build.nims install --build ${{ matrix.version }} --arch ${{ matrix.arch }} --log release
             export PATH="$HOME/.arturo/bin:$PATH"
 
       - name: Create artifact
@@ -324,7 +324,7 @@ jobs:
           usesh: true
           prepare: /usr/sbin/pkg_add nim gmp mpfr bash pcre databases/sqlite3
           run: |
-            ./build.nims install --build ${{ matrix.version }} --arch ${{ matrix.arch }} --who release --log
+            ./build.nims install --build ${{ matrix.version }} --arch ${{ matrix.arch }} --log release
             export PATH="$HOME/.arturo/bin:$PATH"
 
       - name: Create artifact
@@ -394,7 +394,7 @@ jobs:
 
           nim --version
 
-          ./build.nims install --build ${{ matrix.version }} --who release --log
+          ./build.nims install --build ${{ matrix.version }} --log release
 
       - name: Install dependencies + Build Arturo (mini)
         if: matrix.version == 'mini'
@@ -410,7 +410,7 @@ jobs:
 
           export PATH="${{ github.workspace }}/nim/nim-2.0.0/bin":$PATH
 
-          ./build.nims install --build ${{ matrix.version }} --who release --log
+          ./build.nims install --build ${{ matrix.version }} --log release
 
       - name: Create artifact (full)
         if: matrix.version == 'full'
@@ -506,7 +506,7 @@ jobs:
 
       - name: Build Arturo
         run: |
-          ./build.nims install --build web --who ci
+          ./build.nims install --build web
           echo "$HOME/.arturo/bin" >> $GITHUB_PATH
 
       - name: Create artifact

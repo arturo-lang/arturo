@@ -46,7 +46,7 @@ jobs:
           prepare: |
             /usr/sbin/pkg_add wget nim gmp mpfr bash pcre databases/sqlite3
           run: |
-            ./build.nims install --build ${{ matrix.version }} --who ci --log
+            ./build.nims install --build ${{ matrix.version }} --log
             export PATH="$HOME/.arturo/bin:$PATH"
             arturo tools/tester.art
        
