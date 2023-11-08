@@ -72,6 +72,7 @@ template `---`*(key: untyped, val: string): untyped =
     flags.add("--" & stripStr(astToStr(key)) & ":" & val)
     
 include ".config/arch.nims"
+include ".config/devtools.nims"
 include ".config/who.nims"
 
 #=======================================
@@ -98,12 +99,6 @@ let
 
     # configuration options
     OPTIONS: Table[string, proc()] = {
-        "debug": proc () {.closure.} = 
-            --define:DEBUG 
-            --debugger:on 
-            --debuginfo 
-            --linedir:on
-        ,
         "docgen": proc () {.closure.} = 
             --define:DOCGEN
         ,
@@ -118,12 +113,6 @@ let
         ,
         "log": proc () {.closure.} = 
             discard
-        ,
-        "memprofile": proc () {.closure.} = 
-            --define:PROFILE 
-            --profiler:off 
-            --stackTrace:on 
-            --define:memProfiler
         ,
         "mini": proc () {.closure.} = 
             discard
@@ -154,19 +143,6 @@ let
         ,
         "optimized": proc () {.closure.} = 
              --define:OPTIMIZED
-        ,
-        "profile": proc () {.closure.} = 
-             --define:PROFILE 
-             --profiler:on 
-             --stackTrace:on
-        ,
-        "profilenative": proc () {.closure.} = 
-             --debugger:native
-        ,
-        "profiler": proc () {.closure.} = 
-             --define:PROFILER 
-             --profiler:on 
-             --stackTrace:on
         ,
         "safe": proc () {.closure.} = 
             --define:SAFE
@@ -696,6 +672,7 @@ cmd install, "Build arturo and install executable":
 
     if args.hasCommand("debug"):
         COMPRESS = false
+        debugConfig()
 
     if args.hasCommand("dev"):
         IS_DEV = true
@@ -732,12 +709,6 @@ cmd install, "Build arturo and install executable":
     if args.hasCommand("arm64"):
         arm64Config()
 
-    if args.hasCommand("debug"):
-        --define:DEBUG
-        --debugger:on
-        --debuginfo
-        --linedir:on
-
     if args.hasCommand("docgen"):
         --define:DOCGEN
 
@@ -754,10 +725,7 @@ cmd install, "Build arturo and install executable":
         discard
 
     if args.hasCommand("memprofile"):
-        --define:PROFILE 
-        --profiler:off
-        --stackTrace:on
-        --d:memProfiler
+        memProfileConfig()
 
     if args.hasCommand("mini"):
         discard
@@ -790,17 +758,13 @@ cmd install, "Build arturo and install executable":
         --define:OPTIMIZED
 
     if args.hasCommand("profile"):
-        --define:PROFILE
-        --profiler:on
-        --stackTrace:on
+        profileConfig()
 
     if args.hasCommand("profilenative"):
-        --debugger:native
+        nativeProfileConfig()
 
     if args.hasCommand("profiler"):
-        --define:PROFILER
-        --profiler:on
-        --stackTrace:on
+        profilerConfig()
 
     if args.hasCommand("release"):
         releaseConfig()
