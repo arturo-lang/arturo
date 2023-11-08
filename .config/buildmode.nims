@@ -1,9 +1,7 @@
 
 {. push used .}
 
-proc miniBuildConfig() =
-    --define:MINI
-    
+proc noDepencenciesConfig() =
     --define:NOASCIIDECODE
     --define:NOCLIPBOARD
     --define:NODIALOGS
@@ -12,12 +10,18 @@ proc miniBuildConfig() =
     --define:NOSQLITE
     --define:NOWEBVIEW
 
+proc miniBuildConfig() =
+    --define:MINI
+    noDepencenciesConfig()
+
 proc safeBuildConfig() =
     --define:SAFE
+    noDepencenciesConfig()
 
 proc webBuildConfig() =
-    --verbosity:3
     --define:WEB
+    --verbosity:3
+    noDepencenciesConfig()
 
 proc fullBuildConfig() =
     --define:ssl
