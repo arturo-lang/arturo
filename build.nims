@@ -664,6 +664,7 @@ cmd install, "Build arturo and install executable":
     ##          [freebsd, linux, openbsd, mac, macos, macosx, netbsd, win, windows]
     ##     --who: string = user         defines who is compiling the code
     ##          [dev, user]
+    ##     --debug -d                   enables debugging
     ##     --local                      disables installation
     ##     --log -l                     shows compilation logs
     ##     --raw                        disables compression
@@ -702,6 +703,10 @@ cmd install, "Build arturo and install executable":
         >> macos: discard
         >> windows: discard
         
+    if args.hasFlag("debug", "d"):
+        COMPRESS = false
+        debugConfig()
+        
     if args.hasFlag("local"):
         INSTALL = false
         
@@ -710,10 +715,6 @@ cmd install, "Build arturo and install executable":
         
     if args.hasFlag("raw"):
         COMPRESS = false
-
-    if args.hasCommand("debug"):
-        COMPRESS = false
-        debugConfig()
 
     if args.hasCommand("dev"):
         IS_DEV = true
