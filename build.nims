@@ -260,7 +260,7 @@ proc updateBuild*() =
 proc compile*(compilerCommand: string, 
               isDev: bool, 
               shouldLog: bool, 
-              showFooter: bool = false): int =
+              showFooter: bool = false): int {. raises: [OSError, ValueError, Exception] .}=
     result = QuitSuccess
     let 
         params = flags.join(" ")
@@ -288,11 +288,7 @@ proc compile*(compilerCommand: string,
         result = res.exitCode
     else:
         echo "{GRAY}".fmt
-        try:
-            exec "nim {compilerCommand} {params} -o:{toExe(BINARY)} {MAIN}".fmt
-        except:
-            echo r"{RED}  CRASHED!!!{CLEAR}".fmt
-            result = QuitFailure
+        exec "nim {compilerCommand} {params} -o:{toExe(BINARY)} {MAIN}".fmt
         
 
 proc installAll*() =
