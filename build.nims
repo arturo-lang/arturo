@@ -267,20 +267,21 @@ proc compile*(compilerCommand: string,
         silentCompilation: bool = not (isDev or shouldLog)
             ## CI and User builds should actually be silent, 
             ## the most important here is the exit code.
-            ## But for developers, it's useful to have a detailed log.
-
-    # use VCC for non-MINI Windows builds
-    if (hostOS=="windows" and not flags.contains("NOWEBVIEW") and isDev):
-        let (_,_) = gorgeEx "src\\extras\\webview\\deps\\build.bat"
-
-    # if hostOS=="windows":
-    #     FLAGS = """{FLAGS} --passL:"-static """.fmt & staticExec("pkg-config --libs-only-L libcrypto").strip() & """ -lcrypto -Bdynamic" """.fmt
-    #     echo FLAGS
-    when defined(windows):
+            ## But for developers, it's useful to have a detailed log. 
+              
+    proc windowsHostSpecific() =
+        if isDev and not flags.contains("NOWEBVIEW"):
+            discard gorgeEx "src\\extras\\webview\\deps\\build.bat"
         --passL:"\"-static-libstdc++ -static-libgcc -Wl,-Bstatic -lstdc++ -Wl,-Bdynamic\""
         --gcc.linkerexe:"g++"
-    else:
+
+    proc unixHostSpecific() =
         --passL:"\"-lm\""
+            
+    if "windows" == hostOS:
+         windowsHostSpecific()
+    else:
+        unixHostSpecific()
     
     if silentCompilation:
         let res = gorgeEx "nim {compilerCommand} {params} -o:{toExe(BINARY)} {MAIN}".fmt
