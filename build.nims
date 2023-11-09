@@ -257,7 +257,10 @@ proc updateBuild*() =
     for ln in output.split("\n"):
         echo "{GRAY}   ".fmt & ln.strip() & "{CLEAR}".fmt
 
-proc compile*(isDev: bool, shouldLog: bool, showFooter: bool = false): int =
+proc compile*(compilerCommand: string, 
+              isDev: bool, 
+              shouldLog: bool, 
+              showFooter: bool = false): int =
     var outp = ""
     var res = 0
     let params = flags.join(" ")
@@ -281,14 +284,14 @@ proc compile*(isDev: bool, shouldLog: bool, showFooter: bool = false): int =
         # I guess we'll see it in front of us
         echo "{GRAY}".fmt
         try:
-            exec "nim {COMPILER} {params} -o:{toExe(BINARY)} {MAIN}".fmt
+            exec "nim {compilerCommand} {params} -o:{toExe(BINARY)} {MAIN}".fmt
         except:
             echo r"{RED}  CRASHED!!!{CLEAR}".fmt
             res = QuitFailure
     else:
         # but when it's running e.g. as a CI build,
         # we most definitely want it a) to be silent, b) to capture the exit code
-        (outp, res) = gorgeEx "nim {COMPILER} {params} -o:{toExe(BINARY)} {MAIN}".fmt
+        (outp, res) = gorgeEx "nim {compilerCommand} {params} -o:{toExe(BINARY)} {MAIN}".fmt
 
     return res
 
@@ -324,7 +327,11 @@ proc buildArturo*() =
     showEnvironment()
     showBuildInfo()
 
-    if (let cd = compile(isDev=IS_DEV, shouldLog=PRINT_LOG, showFooter=true); cd != 0):
+    if (let cd = compile(compilerCommand=COMPILER, 
+                         isDev=IS_DEV, 
+                         shouldLog=PRINT_LOG, 
+                         showFooter=true); 
+        cd != 0):
         quit(cd)
 
     compressBinary()
@@ -369,7 +376,11 @@ proc buildPackage*() =
 
     echo "{GRAY}".fmt
 
-    if (let cd = compile(isDev=IS_DEV, shouldLog=PRINT_LOG, showFooter=false); cd != 0):
+    if (let cd = compile(compilerCommand=COMPILER,
+                         isDev=IS_DEV, 
+                         shouldLog=PRINT_LOG, 
+                         showFooter=false); 
+        cd != 0):
         quit(cd)
 
     # clean up
