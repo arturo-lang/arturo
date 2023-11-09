@@ -261,8 +261,8 @@ proc compile*(compilerCommand: string,
               isDev: bool, 
               shouldLog: bool, 
               showFooter: bool = false): int =
+    result = QuitSuccess
     var outp = ""
-    var res = 0
     let params = flags.join(" ")
 
     # use VCC for non-MINI Windows builds
@@ -287,13 +287,11 @@ proc compile*(compilerCommand: string,
             exec "nim {compilerCommand} {params} -o:{toExe(BINARY)} {MAIN}".fmt
         except:
             echo r"{RED}  CRASHED!!!{CLEAR}".fmt
-            res = QuitFailure
+            result = QuitFailure
     else:
         # but when it's running e.g. as a CI build,
         # we most definitely want it a) to be silent, b) to capture the exit code
-        (outp, res) = gorgeEx "nim {compilerCommand} {params} -o:{toExe(BINARY)} {MAIN}".fmt
-
-    return res
+        (outp, result) = gorgeEx "nim {compilerCommand} {params} -o:{toExe(BINARY)} {MAIN}".fmt
 
 proc installAll*() =
     if INSTALL and not FOR_WEB:
