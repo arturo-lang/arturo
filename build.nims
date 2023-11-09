@@ -87,6 +87,15 @@ var
 proc getShellRc*(): string
 
 #=======================================
+# Types
+#=======================================
+
+type BuildConfig = tuple
+    binary, version, backend: string
+    shouldCompress, shouldInstall, shouldLog: bool 
+    webVersion, isDeveloper: bool
+
+#=======================================
 # Output
 #=======================================
 
@@ -306,11 +315,6 @@ proc installAll*() =
 #=======================================
 # Methods
 #=======================================
-
-type BuildConfig = tuple
-    binary, version, backend: string
-    shouldCompress, shouldInstall, shouldLog: bool 
-    webVersion, isDeveloper: bool
 
 proc buildArturo*(config: BuildConfig) =
     showHeader "install"
