@@ -296,6 +296,39 @@ proc compile*(config: BuildConfig, showFooter: bool = false): int
         echo "{GRAY}".fmt
         exec fmt"nim {config.backend} {params} -o:{config.binary} {MAIN}"
         
+proc compile*(compilerCommand: string, 
+              isDev: bool, 
+              shouldLog: bool, 
+              showFooter: bool = false): int {. raises: [OSError, ValueError, Exception] .}=
+    result = QuitSuccess
+    let 
+        params = flags.join(" ")
+        silentCompilation: bool = not (isDev or shouldLog)
+            ## CI and User builds should actually be silent, 
+            ## the most important here is the exit code.
+            ## But for developers, it's useful to have a detailed log. 
+              
+    proc windowsHostSpecific() =
+        if isDev and not flags.contains("NOWEBVIEW"):
+            discard gorgeEx "src\\extras\\webview\\deps\\build.bat"
+        --passL:"\"-static-libstdc++ -static-libgcc -Wl,-Bstatic -lstdc++ -Wl,-Bdynamic\""
+        --gcc.linkerexe:"g++"
+
+    proc unixHostSpecific() =
+        --passL:"\"-lm\""
+            
+    if "windows" == hostOS:
+         windowsHostSpecific()
+    else:
+        unixHostSpecific()
+    
+    if silentCompilation:
+        let res = gorgeEx "nim {compilerCommand} {params} -o:{toExe(BINARY)} {MAIN}".fmt
+        result = res.exitCode
+    else:
+        echo "{GRAY}".fmt
+        exec "nim {compilerCommand} {params} -o:{toExe(BINARY)} {MAIN}".fmt
+        
 
 proc installAll*() =
     if INSTALL and not FOR_WEB:
