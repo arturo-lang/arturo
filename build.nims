@@ -73,10 +73,8 @@ var
     COMPRESS            = true
     INSTALL             = true
     PRINT_LOG           = false
-    RUN_UNIT_TESTS      = false
     FOR_WEB             = false
     IS_DEV              = false
-    MODE                = ""
 
     CONFIG              ="@full"
 
