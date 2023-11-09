@@ -329,11 +329,7 @@ proc buildArturo*(config: BuildConfig) =
     showEnvironment()
     showBuildInfo()
 
-    if (let cd = compile(compilerCommand=COMPILER, 
-                         isDev=IS_DEV, 
-                         shouldLog=PRINT_LOG, 
-                         showFooter=true); 
-        cd != 0):
+    if (let cd = compile(config, showFooter=true); cd != 0):
         quit(cd)
 
     compressBinary()
