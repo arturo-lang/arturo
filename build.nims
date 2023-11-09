@@ -264,20 +264,19 @@ proc updateBuild*() =
     for ln in output.split("\n"):
         echo "{GRAY}   ".fmt & ln.strip() & "{CLEAR}".fmt
 
-proc compile*(compilerCommand: string, 
-              isDev: bool, 
-              shouldLog: bool, 
-              showFooter: bool = false): int {. raises: [OSError, ValueError, Exception] .}=
+proc compile*(config: BuildConfig, showFooter: bool = false): int 
+    {. raises: [OSError, ValueError, Exception] .} =
+    
     result = QuitSuccess
     let 
         params = flags.join(" ")
-        silentCompilation: bool = not (isDev or shouldLog)
+        silentCompilation: bool = not (config.isDeveloper or config.shouldLog)
             ## CI and User builds should actually be silent, 
             ## the most important here is the exit code.
             ## But for developers, it's useful to have a detailed log. 
               
     proc windowsHostSpecific() =
-        if isDev and not flags.contains("NOWEBVIEW"):
+        if config.isDeveloper and not flags.contains("NOWEBVIEW"):
             discard gorgeEx "src\\extras\\webview\\deps\\build.bat"
         --passL:"\"-static-libstdc++ -static-libgcc -Wl,-Bstatic -lstdc++ -Wl,-Bdynamic\""
         --gcc.linkerexe:"g++"
@@ -291,11 +290,11 @@ proc compile*(compilerCommand: string,
         unixHostSpecific()
     
     if silentCompilation:
-        let res = gorgeEx "nim {compilerCommand} {params} -o:{toExe(BINARY)} {MAIN}".fmt
+        let res = gorgeEx fmt"nim {config.backend} {params} -o:{config.binary} {MAIN}"
         result = res.exitCode
     else:
         echo "{GRAY}".fmt
-        exec "nim {compilerCommand} {params} -o:{toExe(BINARY)} {MAIN}".fmt
+        exec fmt"nim {config.backend} {params} -o:{config.binary} {MAIN}"
         
 
 proc installAll*() =
