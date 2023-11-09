@@ -273,7 +273,7 @@ proc compile*(compilerCommand: string,
     #     FLAGS = """{FLAGS} --passL:"-static """.fmt & staticExec("pkg-config --libs-only-L libcrypto").strip() & """ -lcrypto -Bdynamic" """.fmt
     #     echo FLAGS
     when defined(windows):
-        --passL:""""-static-libstdc++ -static-libgcc -Wl,-Bstatic -lstdc++ -Wl,-Bdynamic""""
+        --passL:"\"-static-libstdc++ -static-libgcc -Wl,-Bstatic -lstdc++ -Wl,-Bdynamic\""
         --gcc.linkerexe:"g++"
     else:
         --passL:"\"-lm\""
