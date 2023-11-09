@@ -262,7 +262,12 @@ proc compile*(compilerCommand: string,
               shouldLog: bool, 
               showFooter: bool = false): int =
     result = QuitSuccess
-    let params = flags.join(" ")
+    let 
+        params = flags.join(" ")
+        silentCompilation: bool = not (isDev or shouldLog)
+            ## CI and User builds should actually be silent, 
+            ## the most important here is the exit code.
+            ## But for developers, it's useful to have a detailed log.
 
     # use VCC for non-MINI Windows builds
     if (hostOS=="windows" and not flags.contains("NOWEBVIEW") and isDev):
@@ -276,22 +281,18 @@ proc compile*(compilerCommand: string,
         --gcc.linkerexe:"g++"
     else:
         --passL:"\"-lm\""
-
-    # let's go for it
-    if isDev or shouldLog:
-        # if we're in dev mode we don't really care about the success/failure of the process -
-        # I guess we'll see it in front of us
+    
+    if silentCompilation:
+        let res = gorgeEx "nim {compilerCommand} {params} -o:{toExe(BINARY)} {MAIN}".fmt
+        result = res.exitCode
+    else:
         echo "{GRAY}".fmt
         try:
             exec "nim {compilerCommand} {params} -o:{toExe(BINARY)} {MAIN}".fmt
         except:
             echo r"{RED}  CRASHED!!!{CLEAR}".fmt
             result = QuitFailure
-    else:
-        # but when it's running e.g. as a CI build,
-        # we most definitely want it a) to be silent, b) to capture the exit code
-        let res = gorgeEx "nim {compilerCommand} {params} -o:{toExe(BINARY)} {MAIN}".fmt
-        result = res.exitCode
+        
 
 proc installAll*() =
     if INSTALL and not FOR_WEB:
