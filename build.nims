@@ -257,13 +257,13 @@ proc updateBuild*() =
     for ln in output.split("\n"):
         echo "{GRAY}   ".fmt & ln.strip() & "{CLEAR}".fmt
 
-proc compile*(footer=false): int =
+proc compile*(isDev: bool, shouldLog: bool, showFooter: bool = false): int =
     var outp = ""
     var res = 0
     let params = flags.join(" ")
 
     # use VCC for non-MINI Windows builds
-    if (hostOS=="windows" and not flags.contains("NOWEBVIEW") and IS_DEV):
+    if (hostOS=="windows" and not flags.contains("NOWEBVIEW") and isDev):
         let (_,_) = gorgeEx "src\\extras\\webview\\deps\\build.bat"
 
     # if hostOS=="windows":
@@ -276,7 +276,7 @@ proc compile*(footer=false): int =
         --passL:"\"-lm\""
 
     # let's go for it
-    if IS_DEV or PRINT_LOG:
+    if isDev or shouldLog:
         # if we're in dev mode we don't really care about the success/failure of the process -
         # I guess we'll see it in front of us
         echo "{GRAY}".fmt
@@ -324,7 +324,7 @@ proc buildArturo*() =
     showEnvironment()
     showBuildInfo()
 
-    if (let cd = compile(footer=true); cd != 0):
+    if (let cd = compile(isDev=IS_DEV, shouldLog=PRINT_LOG, showFooter=true); cd != 0):
         quit(cd)
 
     compressBinary()
@@ -369,7 +369,7 @@ proc buildPackage*() =
 
     echo "{GRAY}".fmt
 
-    if (let cd = compile(footer=false); cd != 0):
+    if (let cd = compile(isDev=IS_DEV, shouldLog=PRINT_LOG, showFooter=false); cd != 0):
         quit(cd)
 
     # clean up
