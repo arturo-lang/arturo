@@ -307,12 +307,17 @@ proc installAll*() =
 # Methods
 #=======================================
 
-proc buildArturo*() =
+type BuildConfig = tuple
+    binary, version, backend: string
+    shouldCompress, shouldInstall, shouldLog: bool 
+    webVersion, isDeveloper: bool
+
+proc buildArturo*(config: BuildConfig) =
     showHeader "install"
 
     # if the one who's building is some guy going back the nick "drkameleon" -
     # who might that be ?! - then it's a DEV build
-    if IS_DEV:
+    if config.isDeveloper:
         section "Updating build..."
         updateBuild()
         devConfig()
@@ -481,6 +486,17 @@ cmd install, "Build arturo and install executable":
         availableBuilds = @["full", "mini", "safe", "web"]
         availableProfilers = @["default", "mem", "native", "profile"]
 
+    var buildConfig: BuildConfig = (
+        binary:             "bin/arturo".toExe,
+        version:            "@full",
+        backend:            "c",
+        shouldCompress:     true,
+        shouldInstall:      true,
+        shouldLog:          false,
+        webVersion:         false,
+        isDeveloper:        false,
+    )
+
     match args.getOptionValue("arch", short="a",
                               default=hostCPU,
                               into=availableCPUs):
@@ -501,6 +517,7 @@ cmd install, "Build arturo and install executable":
         >> ["mini"]:
             miniBuildConfig()
             CONFIG = "@mini"
+            buildConfig.version = "@mini"
             miniBuild()
         >> ["safe"]:
             safeBuildConfig()
@@ -508,8 +525,13 @@ cmd install, "Build arturo and install executable":
         >> ["web"]:
             FOR_WEB = true
             COMPILER = "js"
-            BINARY = r"{BINARY}.js".fmt
+            BINARY = fmt"{BINARY}.js"
             CONFIG = "@web"
+            buildConfig.webVersion = true
+            buildConfig.backend    = "js"
+            buildConfig.binary     = buildConfig.binary
+                                        .replace(".exe", ".js")
+            buildConfig.version    = "@web"
             miniBuild()
             
     match args.getOptionValue("os", default=hostOS, into=availableOSes):
@@ -534,28 +556,34 @@ cmd install, "Build arturo and install executable":
     match args.getOptionValue("who", default="", into= @["user", "dev"]):
         >> ["user"]:
             IS_DEV = false
+            buildConfig.isDeveloper = false
             userConfig()
         >> ["dev"]:
             IS_DEV = true
+            buildConfig.isDeveloper = true
             devConfig()
         
     if args.hasFlag("debug", "d"):
         COMPRESS = false
+        buildConfig.shouldCompress = false
         debugConfig()
         
     if args.hasFlag("local"):
         INSTALL = false
+        buildConfig.shouldInstall = false
         
     if args.hasFlag("log", "l"):
         PRINT_LOG = true
+        buildConfig.shouldLog = true
         
     if args.hasFlag("raw"):
         COMPRESS = false
+        buildConfig.shouldCompress = false
         
     if args.hasFlag("release"):
         releaseConfig()
 
-    buildArturo()
+    buildConfig.buildArturo()
 
 cmd package, "Package arturo app and build executable":
     buildPackage()
