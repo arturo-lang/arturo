@@ -2,8 +2,6 @@
 import std/sugar
 import std/macros
 
-{. push used .}
-
 var flags*: seq[string] = newSeqOfCap[string](64)
     ## flags represent the flags that will be passed to the compiler.
     ##
@@ -41,5 +39,3 @@ template `--`*(key, val: untyped) {.dirty.} =
 template `---`*(key: untyped, val: string): untyped =
     ## A simple modification of `--` for string values.
     flags.add("--" & stripStr(astToStr(key)) & ":" & val)
-
-{. pop .}
