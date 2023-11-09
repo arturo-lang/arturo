@@ -21,7 +21,6 @@ import strformat, strutils, tables
 import macros, sugar
 
 import src/helpers/terminal
-import "./.config/utils/cli.nims"
 
 #=======================================
 # Initialize globals
@@ -34,6 +33,7 @@ NoColors = hostOS == "windows"
 # Flag system
 #=======================================
 
+include ".config/utils/cli.nims"
 include ".config/utils/flags.nims"
 
 include ".config/arch.nims"
