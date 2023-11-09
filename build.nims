@@ -16,9 +16,8 @@
 # Libraries
 #=======================================
 
-import os, parseopt, sequtils
-import strformat, strutils, tables
-import macros, sugar
+import os
+import strformat, strutils
 
 import src/helpers/terminal
 
