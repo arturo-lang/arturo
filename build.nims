@@ -97,6 +97,12 @@ func backend(config: BuildConfig): string =
     result = "c"
     if config.webVersion:
         return "js"
+
+func silentCompilation(config: BuildConfig): bool =
+    ## CI and User builds should actually be silent, 
+    ## the most important is the exit code.
+    ## But for developers, it's useful to have a detailed log.
+    not (config.isDeveloper or config.shouldLog)
     
 func buildConfig(): BuildConfig = 
     (
@@ -168,9 +174,7 @@ proc showBuildInfo*(config: BuildConfig) =
     echo "{GRAY}   version: ".fmt & staticRead("version/version") & " b/" & staticRead("version/build")
     echo "   config: {CONFIG}{CLEAR}".fmt
 
-    let silentCompilation = not (config.isDeveloper or config.shouldLog)
-
-    if not silentCompilation:
+    if not config.silentCompilation:
         echo "{GRAY}   flags: {params}{CLEAR}".fmt
 
 #=======================================
@@ -278,10 +282,6 @@ proc compile*(config: BuildConfig, showFooter: bool = false): int
     result = QuitSuccess
     let 
         params = flags.join(" ")
-        silentCompilation: bool = not (config.isDeveloper or config.shouldLog)
-            ## CI and User builds should actually be silent, 
-            ## the most important here is the exit code.
-            ## But for developers, it's useful to have a detailed log. 
               
     proc windowsHostSpecific() =
         if config.isDeveloper and not flags.contains("NOWEBVIEW"):
@@ -297,7 +297,7 @@ proc compile*(config: BuildConfig, showFooter: bool = false): int
     else:
         unixHostSpecific()
     
-    if silentCompilation:
+    if config.silentCompilation:
         let res = gorgeEx fmt"nim {config.backend} {params} -o:{config.binary} {MAIN}"
         result = res.exitCode
     else:
