@@ -248,8 +248,10 @@ proc compressBinary(config: BuildConfig) =
 
     echo r"{GRAY}   compressing binary...{CLEAR}".fmt
     let minBin = BINARY.replace(".js",".min.js")
-    let (_, code) = gorgeEx r"uglifyjs {BINARY} -c -m ""toplevel,reserved=['A$']"" -c -o {minBin}".fmt
-    if code!=0:
+    let CompressionRessult = 
+        gorgeEx r"uglifyjs {BINARY} -c -m ""toplevel,reserved=['A$']"" -c -o {minBin}".fmt
+    
+    if CompressionRessult.exitCode != QuitSuccess:
         echo "{RED}   uglifyjs: 3rd-party tool not available{CLEAR}".fmt
     else:
         recompressJS(minBin)
