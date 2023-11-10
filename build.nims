@@ -71,8 +71,6 @@ var
     TARGET_FILE         = toExe(r"{TARGET_DIR}/arturo".fmt)
     PRINT_LOG           = false
 
-    CONFIG              ="@full"
-
     ARGS: seq[string]   = @[]
 
 #=======================================
@@ -171,7 +169,7 @@ proc showBuildInfo*(config: BuildConfig) =
     let params = flags.join(" ")
     section "Building..."
     echo "{GRAY}   version: ".fmt & staticRead("version/version") & " b/" & staticRead("version/build")
-    echo "   config: {CONFIG}{CLEAR}".fmt
+    echo "   config: {config.version}{CLEAR}".fmt
 
     if not config.silentCompilation:
         echo "{GRAY}   flags: {params}{CLEAR}".fmt
@@ -541,7 +539,6 @@ cmd install, "Build arturo and install executable":
             fullBuildConfig()
         >> ["mini"]:
             miniBuildConfig()
-            CONFIG = "@mini"
             config.version = "@mini"
             miniBuild()
         >> ["safe"]:
@@ -549,7 +546,6 @@ cmd install, "Build arturo and install executable":
             miniBuild()
         >> ["web"]:
             BINARY = fmt"{BINARY}.js"
-            CONFIG = "@web"
             config.binary     = config.binary
                                       .replace(".exe", ".js")
             config.version    = "@web"
