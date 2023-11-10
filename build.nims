@@ -69,7 +69,6 @@ let
 var
     BINARY              = "bin/arturo"
     TARGET_FILE         = toExe(r"{TARGET_DIR}/arturo".fmt)
-    COMPILER            = "c"
     COMPRESS            = true
     INSTALL             = true
     PRINT_LOG           = false
@@ -555,7 +554,6 @@ cmd install, "Build arturo and install executable":
             miniBuild()
         >> ["web"]:
             FOR_WEB = true
-            COMPILER = "js"
             BINARY = fmt"{BINARY}.js"
             CONFIG = "@web"
             config.webVersion = true
