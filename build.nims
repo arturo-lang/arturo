@@ -70,7 +70,6 @@ var
     BINARY              = "bin/arturo"
     TARGET_FILE         = toExe(r"{TARGET_DIR}/arturo".fmt)
     PRINT_LOG           = false
-    IS_DEV              = false
 
     CONFIG              ="@full"
 
@@ -491,10 +490,6 @@ proc showHelp*(error=false, errorMsg="") =
 # Main
 #=======================================
 
-# check environment
-let userName = if hostOS == "windows": getEnv("USERNAME") else: staticExec("whoami")
-IS_DEV = userName == "drkameleon"
-
 showLogo()
 
 cmd install, "Build arturo and install executable":
@@ -581,11 +576,9 @@ cmd install, "Build arturo and install executable":
         
     match args.getOptionValue("who", default="", into= @["user", "dev"]):
         >> ["user"]:
-            IS_DEV = false
             config.isDeveloper = false
             userConfig()
         >> ["dev"]:
-            IS_DEV = true
             config.isDeveloper = true
             devConfig()
         
