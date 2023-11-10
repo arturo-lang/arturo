@@ -87,9 +87,8 @@ type BuildConfig = tuple
     binary, version: string
     shouldCompress, shouldInstall, shouldLog, isDeveloper: bool
 
-func webVersion(config: BuildConfig): bool =
-    config.version == "@web"
-    
+func webVersion(config: BuildConfig): bool
+
 func backend(config: BuildConfig): string =
     result = "c"
     if config.webVersion:
@@ -100,6 +99,9 @@ func silentCompilation(config: BuildConfig): bool =
     ## the most important is the exit code.
     ## But for developers, it's useful to have a detailed log.
     not (config.isDeveloper or config.shouldLog)
+
+func webVersion(config: BuildConfig): bool =
+    config.version == "@web"
     
 func buildConfig(): BuildConfig = 
     (
