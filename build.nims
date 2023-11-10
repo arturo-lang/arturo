@@ -94,6 +94,18 @@ type BuildConfig = tuple
     binary, version, backend: string
     shouldCompress, shouldInstall, shouldLog: bool 
     webVersion, isDeveloper: bool
+    
+func buildConfig(): BuildConfig = 
+    (
+        binary:             "bin/arturo".toExe,
+        version:            "@full",
+        backend:            "c",
+        shouldCompress:     true,
+        shouldInstall:      true,
+        shouldLog:          false,
+        webVersion:         false,
+        isDeveloper:        false,
+    )
 
 #=======================================
 # Output
@@ -514,16 +526,7 @@ cmd install, "Build arturo and install executable":
         availableBuilds = @["full", "mini", "safe", "web"]
         availableProfilers = @["default", "mem", "native", "profile"]
 
-    var buildConfig: BuildConfig = (
-        binary:             "bin/arturo".toExe,
-        version:            "@full",
-        backend:            "c",
-        shouldCompress:     true,
-        shouldInstall:      true,
-        shouldLog:          false,
-        webVersion:         false,
-        isDeveloper:        false,
-    )
+    var config = buildConfig()
 
     match args.getOptionValue("arch", short="a",
                               default=hostCPU,
@@ -545,7 +548,7 @@ cmd install, "Build arturo and install executable":
         >> ["mini"]:
             miniBuildConfig()
             CONFIG = "@mini"
-            buildConfig.version = "@mini"
+            config.version = "@mini"
             miniBuild()
         >> ["safe"]:
             safeBuildConfig()
@@ -555,11 +558,11 @@ cmd install, "Build arturo and install executable":
             COMPILER = "js"
             BINARY = fmt"{BINARY}.js"
             CONFIG = "@web"
-            buildConfig.webVersion = true
-            buildConfig.backend    = "js"
-            buildConfig.binary     = buildConfig.binary
-                                        .replace(".exe", ".js")
-            buildConfig.version    = "@web"
+            config.webVersion = true
+            config.backend    = "js"
+            config.binary     = config.binary
+                                      .replace(".exe", ".js")
+            config.version    = "@web"
             miniBuild()
             
     match args.getOptionValue("os", default=hostOS, into=availableOSes):
@@ -584,34 +587,34 @@ cmd install, "Build arturo and install executable":
     match args.getOptionValue("who", default="", into= @["user", "dev"]):
         >> ["user"]:
             IS_DEV = false
-            buildConfig.isDeveloper = false
+            config.isDeveloper = false
             userConfig()
         >> ["dev"]:
             IS_DEV = true
-            buildConfig.isDeveloper = true
+            config.isDeveloper = true
             devConfig()
         
     if args.hasFlag("debug", "d"):
         COMPRESS = false
-        buildConfig.shouldCompress = false
+        config.shouldCompress = false
         debugConfig()
         
     if args.hasFlag("local"):
         INSTALL = false
-        buildConfig.shouldInstall = false
+        config.shouldInstall = false
         
     if args.hasFlag("log", "l"):
         PRINT_LOG = true
-        buildConfig.shouldLog = true
+        config.shouldLog = true
         
     if args.hasFlag("raw"):
         COMPRESS = false
-        buildConfig.shouldCompress = false
+        config.shouldCompress = false
         
     if args.hasFlag("release"):
         releaseConfig()
 
-    buildConfig.buildArturo()
+    config.buildArturo()
 
 cmd package, "Package arturo app and build executable":
     ## package <pkg-name>:
@@ -621,19 +624,12 @@ cmd package, "Package arturo app and build executable":
     ##          [amd64, arm, arm64, i386, x86]
     ##     --debug -d                   enables debugging
     ##     --help
-    var buildConfig: BuildConfig = (
-        binary:             args.getPositionalArg(),
-        version:            "@full",
-        backend:            "c",
-        shouldCompress:     true,
-        shouldInstall:      true,
-        shouldLog:          false,
-        webVersion:         false,
-        isDeveloper:        false,
-    )
     
     const availableCPUs = @["amd-64", "x64", "x86-64", "arm-64", "i386", "x86", 
                           "x86-32", "arm", "arm-32"]
+    
+    var config = buildConfig()
+    config.binary = args.getPositionalArg()
     
     match args.getOptionValue("arch", short="a",
                               default=hostCPU,
@@ -651,10 +647,10 @@ cmd package, "Package arturo app and build executable":
         
     if args.hasFlag("debug", "d"):
         COMPRESS = false
-        buildConfig.shouldCompress = false
+        config.shouldCompress = false
         debugConfig()
 
-    buildConfig.buildPackage()
+    config.buildPackage()
 
 cmd docs, "Build the documentation":
     --define:DOCGEN
