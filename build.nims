@@ -342,7 +342,7 @@ proc compile*(compilerCommand: string,
         
 
 proc installAll*() =
-    if INSTALL and not FOR_WEB:
+    if not FOR_WEB:
         section "Installing..."
 
         verifyDirectories()
@@ -378,7 +378,8 @@ proc buildArturo*(config: BuildConfig) =
 
     compressBinary()
 
-    installAll()
+    if config.shouldInstall:
+        installAll()
 
     showFooter()
 
