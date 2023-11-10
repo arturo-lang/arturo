@@ -71,7 +71,6 @@ let
 var
     BINARY              = "bin/arturo"
     TARGET_FILE         = paths.target/"arturo".toExe
-    PRINT_LOG           = false
 
     ARGS: seq[string]   = @[]
 
@@ -555,7 +554,6 @@ cmd install, "Build arturo and install executable":
         config.shouldInstall = false
         
     if args.hasFlag("log", "l"):
-        PRINT_LOG = true
         config.shouldLog = true
         
     if args.hasFlag("raw"):
