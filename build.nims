@@ -89,8 +89,10 @@ proc getShellRc*(): string
 
 type BuildConfig = tuple
     binary, version, backend: string
-    shouldCompress, shouldInstall, shouldLog: bool 
-    webVersion, isDeveloper: bool
+    shouldCompress, shouldInstall, shouldLog, isDeveloper: bool
+    
+func webVersion(config: BuildConfig): bool =
+    config.version == "@web"
     
 func buildConfig(): BuildConfig = 
     (
@@ -100,7 +102,6 @@ func buildConfig(): BuildConfig =
         shouldCompress:     true,
         shouldInstall:      true,
         shouldLog:          false,
-        webVersion:         false,
         isDeveloper:        false,
     )
 
@@ -556,7 +557,6 @@ cmd install, "Build arturo and install executable":
         >> ["web"]:
             BINARY = fmt"{BINARY}.js"
             CONFIG = "@web"
-            config.webVersion = true
             config.backend    = "js"
             config.binary     = config.binary
                                       .replace(".exe", ".js")
