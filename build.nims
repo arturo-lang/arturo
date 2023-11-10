@@ -119,7 +119,7 @@ func buildConfig(): BuildConfig =
 
 
 proc panic(msg: string = "", exitCode: int = QuitFailure) =
-    echo redColor.fg, msg, resetColor()
+    echo redColor.fg, msg.dedent, resetColor()
     quit exitCode
 
 proc showLogo*() =
