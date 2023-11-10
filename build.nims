@@ -251,9 +251,9 @@ proc compressBinary(config: BuildConfig) =
     section "Post-processing..."
 
     echo r"{GRAY}   compressing binary...{CLEAR}".fmt
-    let minBin = BINARY.replace(".js",".min.js")
+    let minBin = config.binary.replace(".js",".min.js")
     let CompressionRessult = 
-        gorgeEx r"uglifyjs {BINARY} -c -m ""toplevel,reserved=['A$']"" -c -o {minBin}".fmt
+        gorgeEx r"uglifyjs {config.binary} -c -m ""toplevel,reserved=['A$']"" -c -o {minBin}".fmt
     
     if CompressionRessult.exitCode != QuitSuccess:
         echo "{RED}   uglifyjs: 3rd-party tool not available{CLEAR}".fmt
@@ -311,7 +311,7 @@ proc installAll*(config: BuildConfig) =
 
     verifyDirectories()
     echo "   copying files..."
-    cpFile(toExe(BINARY), TARGET_FILE)
+    cpFile(config.binary, TARGET_FILE)
     if hostOS != "windows":
         exec(r"chmod +x {TARGET_FILE}".fmt)
     else:
@@ -513,7 +513,6 @@ cmd install, "Build arturo and install executable":
             safeBuildConfig()
             miniBuild()
         >> ["web"]:
-            BINARY = fmt"{BINARY}.js"
             config.binary     = config.binary
                                       .replace(".exe", ".js")
             config.version    = "@web"
