@@ -371,10 +371,10 @@ proc buildArturo*(config: BuildConfig) =
 
     showFooter()
 
-proc buildPackage*() =
+proc buildPackage*(config: BuildConfig) =
     showHeader "package"
 
-    let package = ARGS[0]
+    let package = config.binary
 
     # generate portable data
     section "Processing data..."
@@ -395,8 +395,7 @@ proc buildPackage*() =
     showBuildInfo()
 
     echo "{GRAY}".fmt
-
-    BINARY="{package}".fmt
+    
     --forceBuild:on
     --opt:size
     --define:NOERRORLINES
@@ -407,10 +406,7 @@ proc buildPackage*() =
 
     echo "{GRAY}".fmt
 
-    if (let cd = compile(compilerCommand=COMPILER,
-                         isDev=IS_DEV, 
-                         shouldLog=PRINT_LOG, 
-                         showFooter=false); 
+    if (let cd = compile(config, showFooter=false); 
         cd != 0):
         quit(cd)
 
@@ -618,7 +614,47 @@ cmd install, "Build arturo and install executable":
     buildConfig.buildArturo()
 
 cmd package, "Package arturo app and build executable":
-    buildPackage()
+    ## package <pkg-name>:
+    ##     Compiles packages into executables.
+    ##
+    ##     --arch: $hostCPU             chooses the target CPU
+    ##          [amd64, arm, arm64, i386, x86]
+    ##     --debug -d                   enables debugging
+    ##     --help
+    var buildConfig: BuildConfig = (
+        binary:             args.getPositionalArg(),
+        version:            "@full",
+        backend:            "c",
+        shouldCompress:     true,
+        shouldInstall:      true,
+        shouldLog:          false,
+        webVersion:         false,
+        isDeveloper:        false,
+    )
+    
+    const availableCPUs = @["amd-64", "x64", "x86-64", "arm-64", "i386", "x86", 
+                          "x86-32", "arm", "arm-32"]
+    
+    match args.getOptionValue("arch", short="a",
+                              default=hostCPU,
+                              into=availableCPUs):
+        let
+            amd64 = availableCPUs[0..2]
+            arm64 = [availableCPUs[3]]
+            x86 = availableCPUs[4..6]
+            arm32 = availableCPUs[7..8]
+            
+        >> amd64: amd64Config()
+        >> arm64: arm64Config()
+        >> x86:   arm64Config()
+        >> arm32: arm32Config()
+        
+    if args.hasFlag("debug", "d"):
+        COMPRESS = false
+        buildConfig.shouldCompress = false
+        debugConfig()
+
+    buildConfig.buildPackage()
 
 cmd docs, "Build the documentation":
     --define:DOCGEN
