@@ -55,12 +55,14 @@ let
     CLEAR*      = resetColor()
     BOLD*       = bold()
 
-    # paths
-    ROOT_DIR        = r"{getHomeDir()}.arturo".fmt
-    TARGET_DIR      = r"{ROOT_DIR}/bin".fmt
-    TARGET_LIB      = r"{ROOT_DIR}/lib".fmt
-    TARGET_STORES   = r"{ROOT_DIR}/stores".fmt
-    MAIN            = r"src/arturo.nim"
+    root = getHomeDir()/".arturo"
+
+    paths: tuple = (
+        target:         root/"bin",
+        targetLib:      root/"lib",
+        targetStores:   root/"stores",
+        mainFile:       "src"/"arturo.nim",
+    )
 
 #=======================================
 # Variables
@@ -68,7 +70,7 @@ let
 
 var
     BINARY              = "bin/arturo"
-    TARGET_FILE         = toExe(r"{TARGET_DIR}/arturo".fmt)
+    TARGET_FILE         = paths.target/"arturo".toExe
     PRINT_LOG           = false
 
     ARGS: seq[string]   = @[]
@@ -263,9 +265,9 @@ proc compressBinary(config: BuildConfig) =
 proc verifyDirectories*() =
     echo "{GRAY}   setting up directories...".fmt
     # create target dirs recursively, if they don't exist
-    mkdir TARGET_DIR
-    mkdir TARGET_LIB
-    mkdir TARGET_STORES
+    mkdir paths.target
+    mkdir paths.targetLib
+    mkdir paths.targetStores
 
 proc updateBuild*() =
     # will only be called in DEV mode -
@@ -297,11 +299,11 @@ proc compile*(config: BuildConfig, showFooter: bool = false): int
         unixHostSpecific()
     
     if config.silentCompilation:
-        let res = gorgeEx fmt"nim {config.backend} {params} -o:{config.binary} {MAIN}"
+        let res = gorgeEx fmt"nim {config.backend} {params} -o:{config.binary} {paths.mainFile}"
         result = res.exitCode
     else:
         echo "{GRAY}".fmt
-        exec fmt"nim {config.backend} {params} -o:{config.binary} {MAIN}"
+        exec fmt"nim {config.backend} {params} -o:{config.binary} {paths.mainFile}"
 
 proc installAll*(config: BuildConfig) =
     assert not config.webVersion:
@@ -317,7 +319,7 @@ proc installAll*(config: BuildConfig) =
     else:
         cpFile("src\\extras\\webview\\deps\\dlls\\x64\\webview.dll","bin\\webview.dll")
         cpFile("src\\extras\\webview\\deps\\dlls\\x64\\WebView2Loader.dll","bin\\WebView2Loader.dll")
-    echo "   deployed to: {ROOT_DIR}{CLEAR}".fmt
+    echo "   deployed to: {root}{CLEAR}".fmt
 
 #=======================================
 # Methods
