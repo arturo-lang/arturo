@@ -162,13 +162,15 @@ proc showEnvironment*() =
     echo "{GRAY}   os: {hostOS}".fmt
     echo "   compiler: Nim v{NimVersion}{CLEAR}".fmt
 
-proc showBuildInfo*() =
+proc showBuildInfo*(config: BuildConfig) =
     let params = flags.join(" ")
     section "Building..."
     echo "{GRAY}   version: ".fmt & staticRead("version/version") & " b/" & staticRead("version/build")
     echo "   config: {CONFIG}{CLEAR}".fmt
 
-    if IS_DEV or PRINT_LOG:
+    let silentCompilation = not (config.isDeveloper or config.shouldLog)
+
+    if not silentCompilation:
         echo "{GRAY}   flags: {params}{CLEAR}".fmt
 
 #=======================================
@@ -368,7 +370,7 @@ proc buildArturo*(config: BuildConfig) =
 
     # show environment & build info
     showEnvironment()
-    showBuildInfo()
+    config.showBuildInfo()
 
     if (let cd = compile(config, showFooter=true); cd != 0):
         quit(cd)
@@ -401,7 +403,7 @@ proc buildPackage*(config: BuildConfig) =
 
     # show environment & build info
     showEnvironment()
-    showBuildInfo()
+    config.showBuildInfo()
 
     echo "{GRAY}".fmt
     
