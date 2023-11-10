@@ -1,6 +1,7 @@
 
 import std/macros
 import std/os
+import std/sugar
 import std/strformat
 import std/strutils
 
@@ -17,6 +18,33 @@ proc `>>?`(element: string, container: openarray[string]): bool =
     for el in container:
         if element ==? el:
             return true
+
+proc alwaysValid(x: string): bool =
+    true
+
+proc getPositionalArg*(args: seq[string], 
+                       isValid: (string) -> bool = alwaysValid
+    ): string =
+    
+    func isFLag(arg: string): bool =
+        arg.startsWith("-")
+    func isOptionalParam(args: seq[string], pos: int): bool =
+        result = false
+        let previous = args[pos.pred]
+        if previous.isFlag:
+            return true
+        
+    for pos in 0..args.high:
+        if args[pos].isFLag:
+            continue
+        if isOptionalParam(args, pos):
+            continue
+        if args[pos].isValid:
+            return args[pos]
+        break
+    
+    quit fmt"Missing possitional argument.", QuitFailure
+    
 
 proc getOptionValue*(args: seq[string], cmd: string, default: string,
                      short: string = "", into: seq[string] = @[]): string =
