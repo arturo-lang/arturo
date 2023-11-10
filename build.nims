@@ -71,7 +71,6 @@ var
     TARGET_FILE         = toExe(r"{TARGET_DIR}/arturo".fmt)
     COMPRESS            = true
     PRINT_LOG           = false
-    FOR_WEB             = false
     IS_DEV              = false
 
     CONFIG              ="@full"
@@ -235,12 +234,12 @@ proc miniBuild*() =
     if hostOS=="freebsd" or hostOS=="openbsd" or hostOS=="netbsd":
         --verbosity:3
 
-proc compressBinary() =
+proc compressBinary(config: BuildConfig) =
     if COMPRESS:
         section "Post-processing..."
 
         echo r"{GRAY}   compressing binary...{CLEAR}".fmt
-        if FOR_WEB:
+        if config.webVersion:
             let minBin = BINARY.replace(".js",".min.js")
             let (_, code) = gorgeEx r"uglifyjs {BINARY} -c -m ""toplevel,reserved=['A$']"" -c -o {minBin}".fmt
             if code!=0:
@@ -340,19 +339,21 @@ proc compile*(compilerCommand: string,
         exec "nim {compilerCommand} {params} -o:{toExe(BINARY)} {MAIN}".fmt
         
 
-proc installAll*() =
-    if not FOR_WEB:
-        section "Installing..."
+proc installAll*(config: BuildConfig) =
+    assert not config.webVersion:
+        "Web builds can't be installed"
+    
+    section "Installing..."
 
-        verifyDirectories()
-        echo "   copying files..."
-        cpFile(toExe(BINARY), TARGET_FILE)
-        if hostOS != "windows":
-            exec(r"chmod +x {TARGET_FILE}".fmt)
-        else:
-            cpFile("src\\extras\\webview\\deps\\dlls\\x64\\webview.dll","bin\\webview.dll")
-            cpFile("src\\extras\\webview\\deps\\dlls\\x64\\WebView2Loader.dll","bin\\WebView2Loader.dll")
-        echo "   deployed to: {ROOT_DIR}{CLEAR}".fmt
+    verifyDirectories()
+    echo "   copying files..."
+    cpFile(toExe(BINARY), TARGET_FILE)
+    if hostOS != "windows":
+        exec(r"chmod +x {TARGET_FILE}".fmt)
+    else:
+        cpFile("src\\extras\\webview\\deps\\dlls\\x64\\webview.dll","bin\\webview.dll")
+        cpFile("src\\extras\\webview\\deps\\dlls\\x64\\WebView2Loader.dll","bin\\WebView2Loader.dll")
+    echo "   deployed to: {ROOT_DIR}{CLEAR}".fmt
 
 #=======================================
 # Methods
@@ -375,10 +376,10 @@ proc buildArturo*(config: BuildConfig) =
     if (let cd = compile(config, showFooter=true); cd != 0):
         quit(cd)
 
-    compressBinary()
+    config.compressBinary()
 
     if config.shouldInstall:
-        installAll()
+        config.installAll()
 
     showFooter()
 
@@ -553,7 +554,6 @@ cmd install, "Build arturo and install executable":
             safeBuildConfig()
             miniBuild()
         >> ["web"]:
-            FOR_WEB = true
             BINARY = fmt"{BINARY}.js"
             CONFIG = "@web"
             config.webVersion = true
