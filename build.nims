@@ -69,7 +69,6 @@ let
 var
     BINARY              = "bin/arturo"
     TARGET_FILE         = toExe(r"{TARGET_DIR}/arturo".fmt)
-    COMPRESS            = true
     PRINT_LOG           = false
     IS_DEV              = false
 
@@ -589,7 +588,6 @@ cmd install, "Build arturo and install executable":
             devConfig()
         
     if args.hasFlag("debug", "d"):
-        COMPRESS = false
         config.shouldCompress = false
         debugConfig()
         
@@ -601,7 +599,6 @@ cmd install, "Build arturo and install executable":
         config.shouldLog = true
         
     if args.hasFlag("raw"):
-        COMPRESS = false
         config.shouldCompress = false
         
     if args.hasFlag("release"):
@@ -639,7 +636,6 @@ cmd package, "Package arturo app and build executable":
         >> arm32: arm32Config()
         
     if args.hasFlag("debug", "d"):
-        COMPRESS = false
         config.shouldCompress = false
         debugConfig()
 
