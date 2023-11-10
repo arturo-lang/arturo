@@ -240,28 +240,19 @@ proc miniBuild*() =
         --verbosity:3
 
 proc compressBinary(config: BuildConfig) =
-    if COMPRESS:
-        section "Post-processing..."
+    assert config.shouldCompress
+    assert config.webVersion:
+        "Compress should work only for @web versions."
+        
+    section "Post-processing..."
 
-        echo r"{GRAY}   compressing binary...{CLEAR}".fmt
-        if config.webVersion:
-            let minBin = BINARY.replace(".js",".min.js")
-            let (_, code) = gorgeEx r"uglifyjs {BINARY} -c -m ""toplevel,reserved=['A$']"" -c -o {minBin}".fmt
-            if code!=0:
-                echo "{RED}   uglifyjs: 3rd-party tool not available{CLEAR}".fmt
-            else:
-                recompressJS(minBin)
-        else:
-            discard
-        # TODO(build.nims) Check & fix upx-based compression on Linux
-        #  right now, especially on Linux, `upx` seems to be destroying the final binary
-        #  labels: bug, enhancement, linux, installer
-
-        #     let upx = "upx"
-
-        #     let (_, code) = gorgeEx r"{upx} -q {toExe(BINARY)}".fmt
-        #     if code!=0:
-        #         echo "{RED}   upx: 3rd-party tool not available{CLEAR}".fmt
+    echo r"{GRAY}   compressing binary...{CLEAR}".fmt
+    let minBin = BINARY.replace(".js",".min.js")
+    let (_, code) = gorgeEx r"uglifyjs {BINARY} -c -m ""toplevel,reserved=['A$']"" -c -o {minBin}".fmt
+    if code!=0:
+        echo "{RED}   uglifyjs: 3rd-party tool not available{CLEAR}".fmt
+    else:
+        recompressJS(minBin)
 
 proc verifyDirectories*() =
     echo "{GRAY}   setting up directories...".fmt
