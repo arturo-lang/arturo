@@ -122,9 +122,13 @@ func buildConfig(): BuildConfig =
 proc panic(msg: string = "", exitCode: int = QuitFailure) =
     echo redColor.fg, msg.dedent, resetColor()
     quit exitCode
+    
+func sep(ch: char = '='): string =
+    return "".align(terminalWidth(), ch)
 
 proc showLogo*() =
-    echo r"====================================================================={GREEN}".fmt
+    echo sep()
+    # Sets GREEN
     echo r"                               _                                     "
     echo r"                              | |                                    "
     echo r"                     __ _ _ __| |_ _   _ _ __ ___                    "
@@ -137,21 +141,21 @@ proc showLogo*() =
     echo r"                                                                     "
 
 proc showHeader*(title: string) =
-    echo r"====================================================================="
+    echo sep()
     echo r" ► {title.toUpperAscii()}                                            ".fmt
-    echo r"====================================================================="
+    echo sep()
 
 proc section*(title: string) =
     echo r"{CLEAR}".fmt
-    echo r"--------------------------------------------"
+    echo sep('-')
     echo r" {MAGENTA}●{CLEAR} {title}".fmt
-    echo r"--------------------------------------------"
+    echo sep('-')
 
 proc showFooter*() =
     echo r"{CLEAR}".fmt
-    echo r"====================================================================="
+    echo sep()
     echo r" {MAGENTA}●{CLEAR}{GREEN} Awesome!{CLEAR}".fmt
-    echo r"====================================================================="
+    echo sep()
     echo r"   Arturo has been successfully built & installed!"
     if hostOS != "windows":
         echo r""
@@ -164,7 +168,7 @@ proc showFooter*() =
         echo r"   so that it's set automatically every time."
     echo r""
     echo r"   Rock on! :)"
-    echo r"====================================================================="
+    echo sep()
     echo r"{CLEAR}".fmt
 
 proc showEnvironment*() =
