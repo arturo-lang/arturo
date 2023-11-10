@@ -70,7 +70,6 @@ var
     BINARY              = "bin/arturo"
     TARGET_FILE         = toExe(r"{TARGET_DIR}/arturo".fmt)
     COMPRESS            = true
-    INSTALL             = true
     PRINT_LOG           = false
     FOR_WEB             = false
     IS_DEV              = false
@@ -599,7 +598,6 @@ cmd install, "Build arturo and install executable":
         debugConfig()
         
     if args.hasFlag("local"):
-        INSTALL = false
         config.shouldInstall = false
         
     if args.hasFlag("log", "l"):
