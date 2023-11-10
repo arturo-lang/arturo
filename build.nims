@@ -120,6 +120,9 @@ func buildConfig(): BuildConfig =
 proc panic(msg: string = "", exitCode: int = QuitFailure) =
     echo redColor.fg, msg.dedent, resetColor()
     quit exitCode
+
+proc warn(msg: string) =
+    echo redColor.fg, msg.dedent, resetColor()
     
 func sep(ch: char = '='): string =
     return "".align(80, ch)
