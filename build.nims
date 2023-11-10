@@ -90,14 +90,14 @@ proc getShellRc*(): string
 type BuildConfig = tuple
     binary, version: string
     shouldCompress, shouldInstall, shouldLog, isDeveloper: bool
-    
-func backend(config: BuildConfig): string =
-    result = "c"
-    if config.version == "@web":
-        return "js"
 
 func webVersion(config: BuildConfig): bool =
     config.version == "@web"
+    
+func backend(config: BuildConfig): string =
+    result = "c"
+    if config.webVersion:
+        return "js"
     
 func buildConfig(): BuildConfig = 
     (
