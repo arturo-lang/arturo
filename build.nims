@@ -19,8 +19,6 @@
 import os
 import strformat, strutils
 
-from std/terminal import terminalWidth
-
 import src/helpers/terminal
 
 #=======================================
@@ -124,7 +122,7 @@ proc panic(msg: string = "", exitCode: int = QuitFailure) =
     quit exitCode
     
 func sep(ch: char = '='): string =
-    return "".align(terminalWidth(), ch)
+    return "".align(80, ch)
 
 proc showLogo*() =
     echo sep()
