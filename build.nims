@@ -18,6 +18,7 @@
 
 import os
 import strformat, strutils
+import std/terminal as term
 
 import src/helpers/terminal
 
@@ -45,8 +46,7 @@ include ".config/who.nims"
 #=======================================
 
 let
-    # terminal color aliases
-    RED*        = fg(redColor)
+    
     GREEN*      = bold(greenColor)
     BLUE*       = fg(blueColor)
     MAGENTA*    = fg(magentaColor)
@@ -54,7 +54,7 @@ let
     GRAY*       = fg(grayColor)
     CLEAR*      = resetColor()
     BOLD*       = bold()
-
+    
     root = getHomeDir()/".arturo"
 
     paths: tuple = (
@@ -63,6 +63,7 @@ let
         targetStores:   root/"stores",
         mainFile:       "src"/"arturo.nim",
     )
+    
 
 #=======================================
 # Variables
@@ -117,6 +118,11 @@ func buildConfig(): BuildConfig =
 #=======================================
 # Output
 #=======================================
+
+
+proc panic(msg: string = "", exitCode: int = QuitFailure) =
+    echo redColor.fg, msg, resetColor()
+    quit exitCode
 
 proc showLogo*() =
     echo r"====================================================================={GREEN}".fmt
@@ -257,7 +263,7 @@ proc compressBinary(config: BuildConfig) =
         gorgeEx r"uglifyjs {config.binary} -c -m ""toplevel,reserved=['A$']"" -c -o {minBin}".fmt
     
     if CompressionRessult.exitCode != QuitSuccess:
-        echo "{RED}   uglifyjs: 3rd-party tool not available{CLEAR}".fmt
+        panic "uglifyjs: 3rd-party tool not available", CompressionRessult.exitCode
     else:
         recompressJS(minBin)
 
@@ -421,13 +427,8 @@ proc performBenchmarks*() =
             quit(QuitFailure)
 
 proc showHelp*(error=false, errorMsg="") =
-    if error:
-        showHeader("Error")
-        echo r"{RED}".fmt
-        echo r" " & errorMsg
-        echo r" Please choose one of the ones below:"
-        echo r"{CLEAR}".fmt
-    else:
+
+    if not error:
         showHeader("Help")
 
     echo r" install              : Build arturo and install executable"
