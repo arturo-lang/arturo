@@ -18,7 +18,8 @@
 
 import os
 import strformat, strutils
-import std/terminal as term
+
+from std/terminal import terminalWidth
 
 import src/helpers/terminal
 
