@@ -48,9 +48,7 @@ include ".config/who.nims"
 let
     
     GREEN*      = bold(greenColor)
-    BLUE*       = fg(blueColor)
     MAGENTA*    = fg(magentaColor)
-    CYAN*       = fg(cyanColor)
     GRAY*       = fg(grayColor)
     CLEAR*      = resetColor()
     BOLD*       = bold()
