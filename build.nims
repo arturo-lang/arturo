@@ -267,7 +267,7 @@ proc compressBinary(config: BuildConfig) =
         gorgeEx r"uglifyjs {config.binary} -c -m ""toplevel,reserved=['A$']"" -c -o {minBin}".fmt
     
     if CompressionRessult.exitCode != QuitSuccess:
-        panic "uglifyjs: 3rd-party tool not available", CompressionRessult.exitCode
+        warn "uglifyjs: 3rd-party tool not available"
     else:
         recompressJS(minBin)
 
