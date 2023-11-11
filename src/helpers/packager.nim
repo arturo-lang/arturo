@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import os, strformat, strutils
+import std/dirs, os, strformat, strutils
 
 when not defined(WEB):
     import helpers/url
@@ -54,6 +54,13 @@ type
         LocalFile,
         InvalidPackage
 
+#=======================================
+# Constants
+#=======================================
+
+let
+    LatestPackageVersion* = (VersionGreater, VVersion(major: 0, minor: 0, patch: 0, extra: ""))
+
     # DataSourceKind* = enum
     #     WebData,
     #     FileData,
@@ -81,14 +88,24 @@ proc parseVersionCondition*(vsym: Value): VersionConditionKind =
             # shouldn't reach here
             return VersionEqual
 
-proc isLocalFile*(src: string): bool =
+proc checkLocalFile*(src: string): (bool, string) =
     if src.fileExists():
-        return true
+        return (true, src)
     else:
-        if (src & ".art").fileExists():
-            return true
+        let srcWithExtension = src & ".art"
+        if srcWithExtension.fileExists():
+            return (true, srcWithExtension)
         else:
-            return false
+            return (false, src)
+
+proc checkLocalPackage*(src: string, version: VersionSpec): (bool, string) =
+    let expectedPath = "{HomeDir}/.arturo/packages/cache/{src}".fmt
+    if expectedPath.dirExists():
+        for vers in walkDir(expectedPath):
+            echo $(vers)
+        return (true, src)
+    else:
+        return (false, src)
 
 proc isLocalPackage*(src: string, version: VersionSpec): bool =
     let expectedPath = "{HomeDir}/.arturo/packages/cache/{src}".fmt
@@ -97,23 +114,53 @@ proc isLocalPackage*(src: string, version: VersionSpec): bool =
     else:
         return false
 
+# proc getPackageKind*(src: string): PackageKind {.inline.} =
+#     if src.isUrl():
+#         return UserRepo
+#     elif isLocalFile(src):
+#         return LocalFile
+#     else:
+#         if isLocalPackage(src,version)
+
 #=======================================
 # Methods
 #=======================================
 
-proc getPackage*(src: string, version: VersionSpec): PackageKind {.inline.} =
+proc getSourceFromRepo*(repo: string): string =
+    return "getSourceFromRepo: " & repo
+
+proc getSourceFromLocalFile*(path: string): string =
+    return "getSourceFromLocalFile: " & path
+
+proc getPackageSource*(src: string, version: VersionSpec, latest: bool): string {.inline.} =
+    var source = src
+
+    # let pkgKind = getPackageKind(source)
+
     if src.isUrl():
-        if ".pkgr.art" in src:
-            return OfficialPackage
-        else:
-            return UserRepo
-    elif isLocalFile(src):
-        return LocalFile
+        # user repo
+        return getSourceFromRepo(src)
+    elif (let (isLocalFile, fileSrc)=checkLocalFile(src); isLocalFile):
+        return getSourceFromLocalFile(fileSrc)
     else:
-        if isLocalPackage(src, version):
-            return OfficialPackage
+        if latest:
+            return "latest"
         else:
-            return InvalidPackage
+            if (let (isLocalPackage, fileSrc)=checkLocalPackage(src, version); isLocalPackage):
+                return getSourceFromLocalFile("package / " & fileSrc)
+            else:
+                return "should check for remote repo"
+
+
+    # if src.isUrl():
+    #     return UserRepo
+    # elif isLocalFile(src):
+    #     return LocalFile
+    # else:
+    #     if isLocalPackage(src, version):
+    #         return OfficialPackage
+    #     else:
+    #         return InvalidPackage
 
 # proc getType*(src: string): DataSource {.inline.} =
 #     when not defined(WEB):
