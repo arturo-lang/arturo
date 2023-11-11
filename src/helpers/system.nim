@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import os, strutils
+import strutils
 
 #=======================================
 # Constants
