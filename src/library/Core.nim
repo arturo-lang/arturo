@@ -530,7 +530,8 @@ proc defineSymbols*() =
         },
         attrs       = {
             "latest"    : ({Logical},"always check for the latest version available"),
-            "version"   : ({Version,Block},"specify package version")
+            "min"       : ({Logical},"get any version >= the specified one"),
+            "version"   : ({Version},"specify package version")
         },
         returns     = {Nothing},
         # TODO(Core/import) add documentation example
@@ -538,17 +539,11 @@ proc defineSymbols*() =
         example     = """
         """:
             #=======================================================
-            var versionSpec = LatestPackageVersion
+            var versionSpec = (true, NoPackageVersion)
             let latest = hadAttr("latest")
             
             if checkAttr("version"):
-                if aVersion.kind == Version:
-                    versionSpec = (VersionEqual, aVersion.version)
-                else:
-                    versionSpec = (
-                        parseVersionCondition(aVersion.a[0]),
-                        aVersion.a[1].version
-                    )
+                versionSpec = (hadAttr("min"), aVersion.version)
 
             echo $(getPackageSource(x.s, versionSpec, latest))
 
