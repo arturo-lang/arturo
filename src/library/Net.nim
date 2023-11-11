@@ -443,8 +443,6 @@ proc defineSymbols*() =
                             newLogical(verbose)
                         )
 
-                        let requestNow = now()
-
                         # show request info
                         # if we're on .verbose mode
                         if verbose:
