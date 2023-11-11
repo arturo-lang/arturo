@@ -129,8 +129,8 @@ when isMainModule and not defined(WEB):
 
         var action: CmdAction = evalCode
         var runConsole  = static readFile("src/scripts/console.art")
-        var runUpdate   = static readFile("src/scripts/update.art")
-        var runModule   = static readFile("src/scripts/module.art")
+        #var runUpdate   = static readFile("src/scripts/update.art")
+        #var runModule   = static readFile("src/scripts/module.art")
         var muted: bool = not isColorFriendlyTerminal()
 
         var unrecognizedOption = ""
