@@ -32,6 +32,8 @@ when not defined(WEB):
 import vm/lib
 import vm/[env, errors, eval, exec, parse]
 
+import vm/values/custom/[vversion]
+
 #=======================================
 # Methods
 #=======================================
@@ -524,17 +526,29 @@ proc defineSymbols*() =
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "import given module",
+        description = "import given package",
         args        = {
-            "module"    : {String,Literal,Block}
+            "package"   : {String,Literal,Block}
         },
-        attrs       = NoAttrs,
+        attrs       = {
+            "version"   : ({Version,Block},"specify package version")
+        },
         returns     = {Nothing},
         # TODO(Core/import) add documentation example
         #  labels: library, documentation, easy
         example     = """
         """:
             #=======================================================
+            var versionSpec = (VersionGreater, VVersion(major: 0, minor: 0, patch: 0, extra: ""))
+            
+            if checkAttr("version"):
+                if aVersion.kind == Version:
+                    versionSpec = (VersionEqual, aVersion.version)
+                else:
+                    versionSpec = (
+                        parseVersionCondition(aVersion.a[0]),
+                        aVersion.a[1]
+                    )
             discard
 
     # TODO(Core/let) block assignments should properly handle readonly Values
