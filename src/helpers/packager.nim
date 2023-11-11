@@ -30,8 +30,6 @@ when not defined(WEB):
 
 import vm/[env]
 
-import vm/values/value
-
 import vm/values/custom/[vversion]
 
 #=======================================
