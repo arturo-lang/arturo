@@ -83,21 +83,21 @@ Options:
     -e, --evaluate             Evaluate given code
     -r, --repl                 Show repl / interactive console
 
-    -u, --update               Update to latest version
-
-    -m, --module           
-            list               List all available modules
-            remote             List all available remote modules
-            info <name>        Get info about given module
-            install <name>     Install remote module by name
-            uninstall <name>   Uninstall module by name
-            update             Update all local modules
-
     --no-color                 Mute all colors from output
 
     -h, --help                 Show this help screen
     -v, --version              Show current version
 """
+
+# -u, --update               Update to latest version
+
+# -m, --module           
+#         list               List all available modules
+#         remote             List all available remote modules
+#         info <name>        Get info about given module
+#         install <name>     Install remote module by name
+#         uninstall <name>   Uninstall module by name
+#         update             Update all local modules
 
     #=======================================
     # Helpers
@@ -129,8 +129,8 @@ when isMainModule and not defined(WEB):
 
         var action: CmdAction = evalCode
         var runConsole  = static readFile("src/scripts/console.art")
-        var runUpdate   = static readFile("src/scripts/update.art")
-        var runModule   = static readFile("src/scripts/module.art")
+        #var runUpdate   = static readFile("src/scripts/update.art")
+        #var runModule   = static readFile("src/scripts/module.art")
         var muted: bool = not isColorFriendlyTerminal()
 
         var unrecognizedOption = ""
@@ -162,13 +162,13 @@ when isMainModule and not defined(WEB):
                         of "x","execute":
                             action = readBcode
                             code = token.val
-                        of "u","update":
-                            action = evalCode
-                            code = runUpdate
-                        of "m", "module":
-                            action = evalCode
-                            code = runModule
-                            break
+                        # of "u","update":
+                        #     action = evalCode
+                        #     code = runUpdate
+                        # of "m", "module":
+                        #     action = evalCode
+                        #     code = runModule
+                        #     break
                         of "no-color":
                             muted = true
                         of "h","help":
