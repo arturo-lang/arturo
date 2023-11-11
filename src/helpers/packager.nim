@@ -125,10 +125,11 @@ proc installRemotePackage*(name: string, version: VersionSpec): bool =
         packageSpec = "https://{name}.pkgr.art/{version[1]}/spec".fmt
 
     let spec = waitFor (newAsyncHttpClient().getContent(packageSpec))
-    let specFolder = "{HomeDir}.arturo/packages/specs/{name}"
+    let specFolder = "{HomeDir}.arturo/packages/specs/{name}".fmt
     createDir(specFolder)
-    let specFile = "{specFolder}/{version[1]}.art".fmt
-    
+    echo "creating folder: " & specFolder
+    let specFile = "{specFolder}/{actualVersion}.art".fmt
+    echo "writing file: " & specFile
     writeToFile(specFile, spec)
     
     return true
