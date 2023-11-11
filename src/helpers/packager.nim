@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import std/dirs, os, strformat, strutils
+import os, strformat
 
 when not defined(WEB):
     import helpers/url
@@ -99,10 +99,13 @@ proc checkLocalFile*(src: string): (bool, string) =
             return (false, src)
 
 proc checkLocalPackage*(src: string, version: VersionSpec): (bool, string) =
-    let expectedPath = "{HomeDir}/.arturo/packages/cache/{src}".fmt
+    let expectedPath = "{HomeDir}.arturo/packages/cache/{src}".fmt
+    echo $expectedPath
     if expectedPath.dirExists():
         for vers in walkDir(expectedPath):
             echo $(vers)
+            var (_, name, ext) = splitFile(vers.path)
+            echo "-> " & name & "." & ext
         return (true, src)
     else:
         return (false, src)
