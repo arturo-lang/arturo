@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import algorithm, os, sequtils, strformat
+import algorithm, os, sequtils, strformat, tables
 
 when not defined(WEB):
     import helpers/url
@@ -128,7 +128,7 @@ proc getEntryFileForPackage*(name: string, location: string, version: VVersion):
     let specFile = "{HomeDir}.arturo/packages/specs/{name}/{version}.art".fmt
     let specDict = execDictionary(doParse(specFile, isFile=true))
     
-    return location & "/" & specDict.d["entry"].s
+    return location & "/" & specDict["entry"].s
 
 proc getPackageSource*(src: string, version: VersionSpec, latest: bool): string {.inline.} =
     var source = src
