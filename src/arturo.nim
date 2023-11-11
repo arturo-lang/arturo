@@ -162,13 +162,13 @@ when isMainModule and not defined(WEB):
                         of "x","execute":
                             action = readBcode
                             code = token.val
-                        of "u","update":
-                            action = evalCode
-                            code = runUpdate
-                        of "m", "module":
-                            action = evalCode
-                            code = runModule
-                            break
+                        # of "u","update":
+                        #     action = evalCode
+                        #     code = runUpdate
+                        # of "m", "module":
+                        #     action = evalCode
+                        #     code = runModule
+                        #     break
                         of "no-color":
                             muted = true
                         of "h","help":
