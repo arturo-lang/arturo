@@ -124,6 +124,12 @@ proc getSourceFromRepo*(repo: string): string =
 proc getSourceFromLocalFile*(path: string): string =
     return path
 
+proc getEntryFileForPackage*(name: string, location: string, version: VVersion): string =
+    let specFile = "{HomeDir}.arturo/packages/specs/{name}/{version}.art".fmt
+    let specDict = execDictionary(doParse(specFile, isFile=true))
+    
+    return location & "/" & specDict.d["entry"].s
+
 proc getPackageSource*(src: string, version: VersionSpec, latest: bool): string {.inline.} =
     var source = src
 
@@ -138,13 +144,17 @@ proc getPackageSource*(src: string, version: VersionSpec, latest: bool): string 
             if (let (isLocalPackage, packageSource)=checkLocalPackage(src, version); isLocalPackage):
                 let (packageLocation, packageVersion) = packageSource
                 verifyDependencies(src, packageVersion)
-                return getSourceFromLocalFile(packageLocation & "/main.art")
+                return getSourceFromLocalFile(
+                    getEntryFileForPackage(src, packageLocation, packageVersion)
+                )
             else:
                 installRemotePackage(src, version)
                 if (let (isLocalPackage, packageSource)=checkLocalPackage(src, version); isLocalPackage):
                     let (packageLocation, packageVersion) = packageSource
                     verifyDependencies(src, packageVersion)
-                    return getSourceFromLocalFile(packageLocation & "/main.art")
+                    return getSourceFromLocalFile(
+                        getEntryFileForPackage(src, packageLocation, packageVersion)
+                    )
                 else:
                     echo "not found"
                     return ""
