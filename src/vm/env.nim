@@ -28,6 +28,7 @@ import pcre
 
 import os, strutils, tables, times, system
 
+import helpers/system
 import helpers/terminal
 
 import vm/[parse,values/value]
@@ -110,7 +111,7 @@ proc getSystemInfo*(): ValueDict =
                 else:
                     newString(getAppFilename()),
             "cpu"       : newDictionary(),
-            "os"        : newString(hostOS),
+            "os"        : newString(systemOs),
             "hostname"  : newString(""),
             "release"   : 
                 when defined(MINI):
@@ -119,7 +120,7 @@ proc getSystemInfo*(): ValueDict =
                     newLiteral("full")
         }.toOrderedTable
         
-        result["cpu"].d["arch"] = newLiteral(hostCPU.replace("i386","x86"))
+        result["cpu"].d["arch"] = newLiteral(systemArch)
         result["cpu"].d["endian"] = 
             if cpuEndian == Endianness.littleEndian:
                 newLiteral("little")
