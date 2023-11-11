@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import os, strformat
+import algorithm, os, sequtils, strformat
 
 when not defined(WEB):
     import helpers/url
@@ -39,14 +39,7 @@ import vm/values/custom/[vversion]
 #=======================================
 
 type
-    VersionConditionKind* = enum
-        VersionEqual,
-        VersionGreater,
-        VersionGreaterOrEqual,
-        VersionLess,
-        VersionLessOrEqual
-
-    VersionSpec* = (VersionConditionKind, VVersion)
+    VersionSpec* = (bool, VVersion)
 
     PackageKind* = enum
         OfficialPackage,
@@ -59,7 +52,7 @@ type
 #=======================================
 
 let
-    LatestPackageVersion* = (VersionGreater, VVersion(major: 0, minor: 0, patch: 0, extra: ""))
+    NoPackageVersion* = VVersion(major: 0, minor: 0, patch: 0, extra: "")
 
     # DataSourceKind* = enum
     #     WebData,
@@ -72,22 +65,6 @@ let
 # Helpers
 #=======================================
 
-proc parseVersionCondition*(vsym: Value): VersionConditionKind =
-    case vsym.m:
-        of equal:
-            return VersionEqual
-        of greaterthan:
-            return VersionGreater
-        of greaterequal:
-            return VersionGreaterOrEqual
-        of lessthan:
-            return VersionLess
-        of equalless:
-            return VersionLessOrEqual
-        else:
-            # shouldn't reach here
-            return VersionEqual
-
 proc checkLocalFile*(src: string): (bool, string) =
     if src.fileExists():
         return (true, src)
@@ -98,24 +75,46 @@ proc checkLocalFile*(src: string): (bool, string) =
         else:
             return (false, src)
 
+proc getLocalPackageVersions(inPath: string, ordered: SortOrder): seq[(string, VVersion)] =
+    result = (toSeq(walkDir(inPath))).map(
+            proc (vers: tuple[kind: PathComponent, path: string]):(string,VVersion) = 
+                let filepath = vers.path
+                let (_, name, ext) = splitFile(filepath)
+                (filepath, newVVersion(name & ext))
+        ).sorted(
+            proc (a: (string,VVersion), b: (string,VVersion)): int =
+                cmp(a[1], b[1])
+        , order=ordered)
+
+proc getBestVersion(within: seq[(string, VVersion)], version: VersionSpec): string =
+    let checkingForMinimum = version[0]
+    let checkingForVersion = version[1]
+
+    for vers in within:
+        if checkingForMinimum:
+            if (vers[1] > checkingForVersion or vers[1] == checkingForVersion):
+                return vers[0]
+        else:
+            if vers[1] == checkingForVersion:
+                return vers[0]
+
+    return ""
+
 proc checkLocalPackage*(src: string, version: VersionSpec): (bool, string) =
     let expectedPath = "{HomeDir}.arturo/packages/cache/{src}".fmt
     echo $expectedPath
+    
     if expectedPath.dirExists():
-        for vers in walkDir(expectedPath):
-            echo $(vers)
-            var (_, name, ext) = splitFile(vers.path)
-            echo "-> " & name & "." & ext
-        return (true, src)
+        let got = getBestVersion(
+            getLocalPackageVersions(expectedPath, SortOrder.Descending),
+            version
+        )
+        if got == "":
+            return (false, got)
+        else:
+            return (true, got & "/main.art")
     else:
         return (false, src)
-
-proc isLocalPackage*(src: string, version: VersionSpec): bool =
-    let expectedPath = "{HomeDir}/.arturo/packages/cache/{src}".fmt
-    if expectedPath.dirExists():
-        return true
-    else:
-        return false
 
 # proc getPackageKind*(src: string): PackageKind {.inline.} =
 #     if src.isUrl():
