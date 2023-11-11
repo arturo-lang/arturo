@@ -32,8 +32,6 @@ when not defined(WEB):
 import vm/lib
 import vm/[env, errors, eval, exec, parse]
 
-import vm/values/custom/[vversion]
-
 #=======================================
 # Methods
 #=======================================
@@ -531,6 +529,7 @@ proc defineSymbols*() =
             "package"   : {String,Literal,Block}
         },
         attrs       = {
+            "latest"    : ({Logical},"always check for the latest version available"),
             "version"   : ({Version,Block},"specify package version")
         },
         returns     = {Nothing},
@@ -539,7 +538,8 @@ proc defineSymbols*() =
         example     = """
         """:
             #=======================================================
-            var versionSpec = (VersionGreater, VVersion(major: 0, minor: 0, patch: 0, extra: ""))
+            var versionSpec = LatestPackageVersion
+            let latest = hadAttr("latest")
             
             if checkAttr("version"):
                 if aVersion.kind == Version:
@@ -550,7 +550,7 @@ proc defineSymbols*() =
                         aVersion.a[1].version
                     )
 
-            echo $(getPackage(x.s, versionSpec))
+            echo $(getPackageSource(x.s, versionSpec, latest))
 
     # TODO(Core/let) block assignments should properly handle readonly Values
     #  In a few words: we should make sure that `[a b]: [1 2]` is the same as 
