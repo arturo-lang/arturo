@@ -33,8 +33,8 @@ when defined(ssl):
 #=======================================
 
 when not defined(WEB):
-    import algorithm, asyncdispatch, browsers, httpclient
-    import httpcore, std/net, os, strformat
+    import algorithm, asyncdispatch, browsers
+    import httpclient, httpcore, std/net, os
     import strutils, times, uri
 
     when defined(ssl):
