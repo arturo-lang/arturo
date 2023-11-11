@@ -10,13 +10,13 @@
 # Libraries
 #=======================================
 
-import algorithm, os, sequtils, strformat, tables
+import algorithm, sequtils, strformat, tables
 
 when not defined(WEB):
     import helpers/url
 
-# when not defined(WEB):
-#     import asyncdispatch, httpClient, os
+when not defined(WEB):
+    import asyncdispatch, httpClient, os
 
 # when defined(SAFE):
 #     import vm/errors
@@ -28,9 +28,12 @@ when not defined(WEB):
 #     import tables
 #     import vm/globals
 
+import helpers/io
+
 import vm/[env, exec, parse, values/types]
 
 import vm/values/custom/[vversion]
+
 
 #=======================================
 # Types
@@ -112,7 +115,23 @@ proc checkLocalPackage*(src: string, version: VersionSpec): (bool, VersionLocati
 #=======================================
 
 proc installRemotePackage*(name: string, version: VersionSpec): bool =
-    discard
+    var packageSpec: string 
+    var actualVersion: VVersion
+    if version[0]:
+        actualVersion = version[1]
+        packageSpec = "https://{name}.pkgr.art/spec".fmt
+    else:
+        actualVersion = version[1]
+        packageSpec = "https://{name}.pkgr.art/{version[1]}/spec".fmt
+
+    let spec = waitFor (newAsyncHttpClient().getContent(packageSpec))
+    let specFolder = "{HomeDir}.arturo/packages/specs/{name}"
+    createDir(specFolder)
+    let specFile = "{specFolder}/{version[1]}.art".fmt
+    
+    writeToFile(specFile, spec)
+    
+    return true
 
 proc verifyDependencies*(name: string, version: VVersion) =
     discard
@@ -171,31 +190,3 @@ proc getPackageSource*(src: string, version: VersionSpec, latest: bool): string 
                 else:
                     echo "not found"
                     return ""
-
-    # if src.isUrl():
-    #     return UserRepo
-    # elif isLocalFile(src):
-    #     return LocalFile
-    # else:
-    #     if isLocalPackage(src, version):
-    #         return OfficialPackage
-    #     else:
-    #         return InvalidPackage
-
-# proc getType*(src: string): DataSource {.inline.} =
-#     when not defined(WEB):
-#         when defined(PORTABLE):
-#             if SymExists("_portable") and GetSym("_portable").d.hasKey("embed") and GetSym("_portable").d["embed"].d.hasKey(src):
-#                 return (GetSym("_portable").d["embed"].d[src].s, FileData)
-                            
-#         if src.isUrl():
-#             when defined(SAFE): RuntimeError_OperationNotPermitted("read")
-#             let content = waitFor (newAsyncHttpClient().getContent(src))
-#             result = (content, WebData)
-#         elif src.fileExists():
-#             when defined(SAFE): RuntimeError_OperationNotPermitted("read")
-#             result = (readFile(src), FileData)
-#         else:
-#             result = (src, TextData)
-#     else:
-#         result = (src, TextData)
