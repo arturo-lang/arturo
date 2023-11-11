@@ -25,7 +25,7 @@ const
     ArturoVersion*    = static readFile("version/version").strip()      ## The current version of Arturo
     ArturoBuild*      = static readFile("version/build").strip()        ## The current build number of Arturo
 
-    ArturoVersionMain*  = "arturo v/" & ArturoVersion
-    ArturoVersionBuild* = " b/" & ArturoBuild &
-                          " (" & systemArch & "/" & systemOs & ")"
+    ArturoVersionTxt* = "arturo v/" & ArturoVersion &                   ## The current version text
+                        " b/" & ArturoBuild &
+                        " (" & systemArch & "/" & systemOs & ")"
                         
