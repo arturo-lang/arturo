@@ -114,23 +114,27 @@ proc checkLocalPackage*(src: string, version: VersionSpec): (bool, VersionLocati
 # Methods
 #=======================================
 
+proc readSpec(name: string, version: VVersion): ValueDict =
+    let specFile = "{HomeDir}.arturo/packages/specs/{name}/{version}.art".fmt
+    result = execDictionary(doParse(specFile, isFile=true))
+
+proc readSpecFromContent(content: string): ValueDict =
+    result = execDictionary(doParse(content, isFile=false))
+
 proc installRemotePackage*(name: string, version: VersionSpec): bool =
     var packageSpec: string 
-    var actualVersion: VVersion
     if version[0]:
-        actualVersion = version[1]
         packageSpec = "https://{name}.pkgr.art/spec".fmt
     else:
-        actualVersion = version[1]
         packageSpec = "https://{name}.pkgr.art/{version[1]}/spec".fmt
 
-    let spec = waitFor (newAsyncHttpClient().getContent(packageSpec))
+    let specContent = waitFor (newAsyncHttpClient().getContent(packageSpec))
+    let spec = readSpecFromContent(specContent)
+    let actualVersion = spec["version"].version
     let specFolder = "{HomeDir}.arturo/packages/specs/{name}".fmt
     createDir(specFolder)
-    echo "creating folder: " & specFolder
     let specFile = "{specFolder}/{actualVersion}.art".fmt
-    echo "writing file: " & specFile
-    writeToFile(specFile, spec)
+    writeToFile(specFile, specContent)
     
     return true
 
@@ -143,10 +147,6 @@ proc getSourceFromRepo*(repo: string): string =
 
 proc getSourceFromLocalFile*(path: string): string =
     return path
-
-proc readSpec(name: string, version: VVersion): ValueDict =
-    let specFile = "{HomeDir}.arturo/packages/specs/{name}/{version}.art".fmt
-    result = execDictionary(doParse(specFile, isFile=true))
 
 proc getEntryFileForPackage*(location: string, spec: ValueDict): string =
     return location & "/" & spec["entry"].s
