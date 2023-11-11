@@ -17,5 +17,5 @@ import strutils
 #=======================================
 
 const
-    systemArch = hostCPU.replace("i386","x86")
-    systemOs = hostOS.replace("macosx","macos")
+    systemArch* = hostCPU.replace("i386","x86")
+    systemOs* = hostOS.replace("macosx","macos")
