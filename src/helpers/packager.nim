@@ -28,7 +28,7 @@ when not defined(WEB):
 #     import tables
 #     import vm/globals
 
-import vm/[env, exec, parse]
+import vm/[env, exec, parse, values/types]
 
 import vm/values/custom/[vversion]
 
@@ -111,7 +111,7 @@ proc checkLocalPackage*(src: string, version: VersionSpec): (bool, VersionLocati
 # Methods
 #=======================================
 
-proc installRemotePackage*(name: string, version: VersionSpec) =
+proc installRemotePackage*(name: string, version: VersionSpec): bool =
     discard
 
 proc verifyDependencies*(name: string, version: VVersion) =
@@ -124,11 +124,29 @@ proc getSourceFromRepo*(repo: string): string =
 proc getSourceFromLocalFile*(path: string): string =
     return path
 
-proc getEntryFileForPackage*(name: string, location: string, version: VVersion): string =
+proc readSpec(name: string, version: VVersion): ValueDict =
     let specFile = "{HomeDir}.arturo/packages/specs/{name}/{version}.art".fmt
-    let specDict = execDictionary(doParse(specFile, isFile=true))
-    
-    return location & "/" & specDict["entry"].s
+    result = execDictionary(doParse(specFile, isFile=true))
+
+proc getEntryFileForPackage*(location: string, spec: ValueDict): string =
+    return location & "/" & spec["entry"].s
+
+proc loadLocalPackage(src: string, version: VersionSpec): (bool, string) =
+    if (let (isLocalPackage, packageSource)=checkLocalPackage(src, version); isLocalPackage):
+        let (packageLocation, packageVersion) = packageSource
+        let packageSpec = readSpec(src, packageVersion)
+        verifyDependencies(src, packageVersion)
+        return (true, getSourceFromLocalFile(
+            getEntryFileForPackage(packageLocation, packageSpec)
+        ))
+    else:
+        return (false, "")
+
+proc loadRemotePackage(src: string, version: VersionSpec): (bool, string) =
+    if installRemotePackage(src, version):
+        return loadLocalPackage(src, version)
+    else:
+        return (false, "")
 
 proc getPackageSource*(src: string, version: VersionSpec, latest: bool): string {.inline.} =
     var source = src
@@ -139,26 +157,20 @@ proc getPackageSource*(src: string, version: VersionSpec, latest: bool): string 
         return getSourceFromLocalFile(fileSrc)
     else:
         if latest:
-            return "latest"
-        else:
-            if (let (isLocalPackage, packageSource)=checkLocalPackage(src, version); isLocalPackage):
-                let (packageLocation, packageVersion) = packageSource
-                verifyDependencies(src, packageVersion)
-                return getSourceFromLocalFile(
-                    getEntryFileForPackage(src, packageLocation, packageVersion)
-                )
+            if (let (ok,finalSource) = loadRemotePackage(src,version); ok):
+                return finalSource
             else:
-                installRemotePackage(src, version)
-                if (let (isLocalPackage, packageSource)=checkLocalPackage(src, version); isLocalPackage):
-                    let (packageLocation, packageVersion) = packageSource
-                    verifyDependencies(src, packageVersion)
-                    return getSourceFromLocalFile(
-                        getEntryFileForPackage(src, packageLocation, packageVersion)
-                    )
+                echo "not found"
+                return ""
+        else:
+            if (let (ok, finalSource) = loadLocalPackage(src, version); ok):
+                return finalSource
+            else:
+                if (let (ok,finalSource) = loadRemotePackage(src,version); ok):
+                    return finalSource
                 else:
                     echo "not found"
                     return ""
-
 
     # if src.isUrl():
     #     return UserRepo
