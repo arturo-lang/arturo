@@ -28,6 +28,7 @@ import pcre
 
 import os, strutils, tables, times, system
 
+import helpers/system
 import helpers/terminal
 
 import vm/[parse,values/value]
