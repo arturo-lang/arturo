@@ -547,9 +547,10 @@ proc defineSymbols*() =
                 else:
                     versionSpec = (
                         parseVersionCondition(aVersion.a[0]),
-                        aVersion.a[1]
+                        aVersion.a[1].version
                     )
-            discard
+
+            echo $(getPackage(x.s, versionSpec))
 
     # TODO(Core/let) block assignments should properly handle readonly Values
     #  In a few words: we should make sure that `[a b]: [1 2]` is the same as 
