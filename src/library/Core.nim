@@ -545,7 +545,15 @@ proc defineSymbols*() =
             if checkAttr("version"):
                 versionSpec = (hadAttr("min"), aVersion.version)
 
-            echo $(getPackageSource(x.s, versionSpec, latest))
+            let src = getPackageSource(x.s, versionSpec, latest)
+            
+            addPath(src)
+
+            let parsed = doParse(src, isFile=true)
+            if not parsed.isNil:
+                execUnscoped(parsed)
+
+            discard popPath()
 
     # TODO(Core/let) block assignments should properly handle readonly Values
     #  In a few words: we should make sure that `[a b]: [1 2]` is the same as 
