@@ -12,7 +12,7 @@
 # Libraries
 #=======================================
 
-import strformat
+import parseutils, strformat, strutils
 
 #=======================================
 # Types
@@ -46,3 +46,26 @@ func `>`*(a, b: VVersion): bool {.inline,enforceNoRaises.} =
 
 func `$`*(v: VVersion): string {.inline,enforceNoRaises.} =
     fmt("{v.major}.{v.minor}.{v.patch}{v.extra}")
+    
+func newVVersion(v: string): VVersion =
+    var numPart: string
+    var extraPart: string
+    var lastIndex : int
+    for i, c in v:
+        lastIndex = i
+        if c notin {'+','-'}:
+            numPart.add(c)
+        else:
+            extraPart &= c
+            break
+
+    extraPart &= v[lastIndex+1 .. ^1]
+
+    let parts: seq[string] = numPart.split(".")
+
+    return VVersion(
+        major: parseInt(parts[0]),
+        minor: parseInt(parts[1]),
+        patch: parseInt(parts[2]),
+        extra: extraPart
+    )
