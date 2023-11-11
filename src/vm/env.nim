@@ -110,7 +110,7 @@ proc getSystemInfo*(): ValueDict =
                 else:
                     newString(getAppFilename()),
             "cpu"       : newDictionary(),
-            "os"        : newString(hostOS),
+            "os"        : newString(hostOS.replace("macosx","macos")),
             "hostname"  : newString(""),
             "release"   : 
                 when defined(MINI):
