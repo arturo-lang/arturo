@@ -111,7 +111,7 @@ proc getSystemInfo*(): ValueDict =
                 else:
                     newString(getAppFilename()),
             "cpu"       : newDictionary(),
-            "os"        : newString(hostOS.replace("macosx","macos")),
+            "os"        : newString(systemOs),
             "hostname"  : newString(""),
             "release"   : 
                 when defined(MINI):
@@ -120,7 +120,7 @@ proc getSystemInfo*(): ValueDict =
                     newLiteral("full")
         }.toOrderedTable
         
-        result["cpu"].d["arch"] = newLiteral(hostCPU.replace("i386","x86"))
+        result["cpu"].d["arch"] = newLiteral(systemArch)
         result["cpu"].d["endian"] = 
             if cpuEndian == Endianness.littleEndian:
                 newLiteral("little")
