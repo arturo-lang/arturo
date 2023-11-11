@@ -221,7 +221,7 @@ when isMainModule and not defined(WEB):
             of showHelp:
                 printHelp()
             of showVersion:
-                echo ArturoVersionTxt
+                echo bold(whiteColor) & "ONE" & resetColor() & ArturoVersionTxt
     else:
         arguments = commandLineParams()
         code = static readFile(getEnv("PORTABLE_INPUT"))
