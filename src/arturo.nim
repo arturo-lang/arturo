@@ -83,21 +83,21 @@ Options:
     -e, --evaluate             Evaluate given code
     -r, --repl                 Show repl / interactive console
 
-    -u, --update               Update to latest version
-
-    -m, --module           
-            list               List all available modules
-            remote             List all available remote modules
-            info <name>        Get info about given module
-            install <name>     Install remote module by name
-            uninstall <name>   Uninstall module by name
-            update             Update all local modules
-
     --no-color                 Mute all colors from output
 
     -h, --help                 Show this help screen
     -v, --version              Show current version
 """
+
+# -u, --update               Update to latest version
+
+# -m, --module           
+#         list               List all available modules
+#         remote             List all available remote modules
+#         info <name>        Get info about given module
+#         install <name>     Install remote module by name
+#         uninstall <name>   Uninstall module by name
+#         update             Update all local modules
 
     #=======================================
     # Helpers
