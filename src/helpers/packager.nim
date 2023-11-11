@@ -129,10 +129,11 @@ proc checkLocalPackage*(src: string, version: VersionSpec): (bool, string) =
 #=======================================
 
 proc getSourceFromRepo*(repo: string): string =
-    return "getSourceFromRepo: " & repo
+    echo "getSourceFromRepo: " & repo
+    return ""
 
 proc getSourceFromLocalFile*(path: string): string =
-    return "getSourceFromLocalFile: " & path
+    return path
 
 proc getPackageSource*(src: string, version: VersionSpec, latest: bool): string {.inline.} =
     var source = src
@@ -149,9 +150,10 @@ proc getPackageSource*(src: string, version: VersionSpec, latest: bool): string 
             return "latest"
         else:
             if (let (isLocalPackage, fileSrc)=checkLocalPackage(src, version); isLocalPackage):
-                return getSourceFromLocalFile("package / " & fileSrc)
+                return getSourceFromLocalFile(fileSrc)
             else:
-                return "should check for remote repo"
+                echo "should check for remote repo"
+                return ""
 
 
     # if src.isUrl():
