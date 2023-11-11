@@ -28,7 +28,7 @@ when not defined(WEB):
 #     import tables
 #     import vm/globals
 
-import vm/[env]
+import vm/[env, exec, parse]
 
 import vm/values/custom/[vversion]
 
@@ -38,12 +38,7 @@ import vm/values/custom/[vversion]
 
 type
     VersionSpec* = (bool, VVersion)
-
-    PackageKind* = enum
-        OfficialPackage,
-        UserRepo,
-        LocalFile,
-        InvalidPackage
+    VersionLocation* = (string, VVersion)
 
 #=======================================
 # Constants
@@ -51,6 +46,7 @@ type
 
 let
     NoPackageVersion* = VVersion(major: 0, minor: 0, patch: 0, extra: "")
+    NoVersionLocation* = ("", NoPackageVersion)
 
     # DataSourceKind* = enum
     #     WebData,
@@ -73,32 +69,32 @@ proc checkLocalFile*(src: string): (bool, string) =
         else:
             return (false, src)
 
-proc getLocalPackageVersions(inPath: string, ordered: SortOrder): seq[(string, VVersion)] =
+proc getLocalPackageVersions(inPath: string, ordered: SortOrder): seq[VersionLocation] =
     result = (toSeq(walkDir(inPath))).map(
-            proc (vers: tuple[kind: PathComponent, path: string]):(string,VVersion) = 
+            proc (vers: tuple[kind: PathComponent, path: string]): VersionLocation = 
                 let filepath = vers.path
                 let (_, name, ext) = splitFile(filepath)
                 (filepath, newVVersion(name & ext))
         ).sorted(
-            proc (a: (string,VVersion), b: (string,VVersion)): int =
+            proc (a: VersionLocation, b: VersionLocation): int =
                 cmp(a[1], b[1])
         , order=ordered)
 
-proc getBestVersion(within: seq[(string, VVersion)], version: VersionSpec): string =
+proc getBestVersion(within: seq[VersionLocation], version: VersionSpec): VersionLocation =
     let checkingForMinimum = version[0]
     let checkingForVersion = version[1]
 
     for vers in within:
         if checkingForMinimum:
             if (vers[1] > checkingForVersion or vers[1] == checkingForVersion):
-                return vers[0]
+                return vers
         else:
             if vers[1] == checkingForVersion:
-                return vers[0]
+                return vers
 
-    return ""
+    return NoVersionLocation
 
-proc checkLocalPackage*(src: string, version: VersionSpec): (bool, string) =
+proc checkLocalPackage*(src: string, version: VersionSpec): (bool, VersionLocation) =
     let expectedPath = "{HomeDir}.arturo/packages/cache/{src}".fmt
     echo $expectedPath
     
@@ -107,24 +103,19 @@ proc checkLocalPackage*(src: string, version: VersionSpec): (bool, string) =
             getLocalPackageVersions(expectedPath, SortOrder.Descending),
             version
         )
-        if got == "":
-            return (false, got)
-        else:
-            return (true, got & "/main.art")
+        return (got[0]!="", got)
     else:
-        return (false, src)
-
-# proc getPackageKind*(src: string): PackageKind {.inline.} =
-#     if src.isUrl():
-#         return UserRepo
-#     elif isLocalFile(src):
-#         return LocalFile
-#     else:
-#         if isLocalPackage(src,version)
+        return (false, NoVersionLocation)
 
 #=======================================
 # Methods
 #=======================================
+
+proc installRemotePackage*(name: string, version: VersionSpec) =
+    discard
+
+proc verifyDependencies*(name: string, version: VVersion) =
+    discard
 
 proc getSourceFromRepo*(repo: string): string =
     echo "getSourceFromRepo: " & repo
@@ -136,10 +127,7 @@ proc getSourceFromLocalFile*(path: string): string =
 proc getPackageSource*(src: string, version: VersionSpec, latest: bool): string {.inline.} =
     var source = src
 
-    # let pkgKind = getPackageKind(source)
-
     if src.isUrl():
-        # user repo
         return getSourceFromRepo(src)
     elif (let (isLocalFile, fileSrc)=checkLocalFile(src); isLocalFile):
         return getSourceFromLocalFile(fileSrc)
@@ -147,11 +135,19 @@ proc getPackageSource*(src: string, version: VersionSpec, latest: bool): string 
         if latest:
             return "latest"
         else:
-            if (let (isLocalPackage, fileSrc)=checkLocalPackage(src, version); isLocalPackage):
-                return getSourceFromLocalFile(fileSrc)
+            if (let (isLocalPackage, packageSource)=checkLocalPackage(src, version); isLocalPackage):
+                let (packageLocation, packageVersion) = packageSource
+                verifyDependencies(src, packageVersion)
+                return getSourceFromLocalFile(packageLocation & "/main.art")
             else:
-                echo "should check for remote repo"
-                return ""
+                installRemotePackage(src, version)
+                if (let (isLocalPackage, packageSource)=checkLocalPackage(src, version); isLocalPackage):
+                    let (packageLocation, packageVersion) = packageSource
+                    verifyDependencies(src, packageVersion)
+                    return getSourceFromLocalFile(packageLocation & "/main.art")
+                else:
+                    echo "not found"
+                    return ""
 
 
     # if src.isUrl():
