@@ -224,7 +224,7 @@ proc loadLocalPackage(src: string, version: VersionSpec): (bool, string) =
         let (packageLocation, packageVersion) = packageSource
         stdout.write "- Loading local package: {src} {packageVersion}".fmt
         let packageSpec = readSpec(src, packageVersion)
-        verifyDependencies(src, packageVersion)
+        verifyDependencies(packageSpec["depends"].a)
         stdout.write " ✅\n"
         stdout.flushFile()
         return (true, getSourceFromLocalFile(
@@ -243,12 +243,12 @@ proc loadRemotePackage(src: string, version: VersionSpec): (bool, string) =
 proc getPackageSource*(src: string, version: VersionSpec, latest: bool): string {.inline.} =
     var source = src
 
-    if src.isUrl():
-        return getSourceFromRepo(src)
-    elif (let (isLocalFile, fileSrc)=checkLocalFile(src); isLocalFile):
+    if (let (isLocalFile, fileSrc)=checkLocalFile(src); isLocalFile):
         return getSourceFromLocalFile(fileSrc)
     elif (let (isLocalFolder, fileSrc)=checkLocalFolder(src); isLocalFolder):
         return getSourceFromLocalFile(fileSrc)
+    elif src.isUrl():
+        return getSourceFromRepo(src)
     else:
         if latest:
             if (let (ok,finalSource) = loadRemotePackage(src,version); ok):
