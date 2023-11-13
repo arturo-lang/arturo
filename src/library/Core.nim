@@ -551,17 +551,20 @@ proc defineSymbols*() =
             if verbose:
                 VerbosePackager = true
 
-            let src = getPackageSource(x.s, versionSpec, latest)
+            if (let res = getPackageSource(x.s, versionSpec, latest); res.isSome):
+                let src = got.get()
             
-            addPath(src)
+                addPath(src)
 
-            let parsed = doParse(src, isFile=true)
-            if not parsed.isNil:
-                execUnscoped(parsed)
+                let parsed = doParse(src, isFile=true)
+                if not parsed.isNil:
+                    execUnscoped(parsed)
 
-            discard popPath()
+                discard popPath()
 
-            VerbosePackager = verboseBefore
+                VerbosePackager = verboseBefore
+            else:
+                echo "something went wrong!"
 
     # TODO(Core/let) block assignments should properly handle readonly Values
     #  In a few words: we should make sure that `[a b]: [1 2]` is the same as 
