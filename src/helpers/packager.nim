@@ -19,6 +19,7 @@ import extras/miniz
 
 when not defined(WEB):
     import helpers/io
+    import helpers/terminal
     import helpers/url
 
 import vm/[env, exec, parse, values/types]
@@ -169,7 +170,7 @@ proc installRemotePackage*(name: string, version: VersionSpec): bool =
     let actualFolder = "{HomeDir}.arturo/packages/cache/{name}/{actualSubFolder}".fmt
     moveDir(actualFolder, "{HomeDir}.arturo/packages/cache/{name}/{actualVersion}".fmt)
 
-    stdout.write " ✅\n"
+    stdout.write bold(greenColor) & " ✓" & resetColor() & "\n"
     stdout.flushFile()
     return true
 
@@ -267,7 +268,7 @@ proc loadLocalPackage(src: string, version: VersionSpec): (bool, string) =
         let packageSpec = readSpec(src, packageVersion)
         if not verifyDependencies(packageSpec["depends"].a):
             return (false, "")
-        stdout.write " ✅\n"
+        stdout.write bold(greenColor) & " ✓" & resetColor() & "\n"
         stdout.flushFile()
         return (true, getSourceFromLocalFile(
             getEntryFileForPackage(packageLocation, packageSpec)
