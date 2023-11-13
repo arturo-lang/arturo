@@ -295,11 +295,11 @@ proc getPackageSource*(
     ## the appropriate entry source filepath
 
     # is it a file?
-    if (let (ok, final)=checkLocalFile(pkg); ok):
+    if (let (ok, final) = checkLocalFile(pkg); ok):
         return final
 
     # maybe it's a folder with a "package" in it?
-    if (let (ok, final)=checkLocalFolder(pkg); ok):
+    if (let (ok, final) = checkLocalFolder(pkg); ok):
         return final
     
     # maybe it's a github repository url?
