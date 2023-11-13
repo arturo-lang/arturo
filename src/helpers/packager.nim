@@ -217,6 +217,7 @@ proc getSourceFromRepo*(repo: string): string =
         client.downloadFile(pkgUrl, "{folderPath}/pkg.zip".fmt)
         let files = miniz.unzipAndGetFiles("{folderPath}/pkg.zip", "{HomeDir}.arturo/tmp".fmt)
         let (actualSubFolder, _, _) = splitFile(files[0])
+        let actualFolder = "{HomeDir}.arturo/tmp/{actualSubFolder}".fmt
         moveDir(actualFolder, folderPath)
     # https://github.com/arturo-lang/arturo/archives/master.zip
     # let pkgUrl = spec["url"].s
