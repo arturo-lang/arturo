@@ -22,7 +22,7 @@
 # Libraries
 #=======================================
 
-import algorithm, hashes
+import algorithm, hashes, options
 
 import helpers/datasource
 when not defined(WEB):
