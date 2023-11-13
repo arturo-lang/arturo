@@ -531,7 +531,8 @@ proc defineSymbols*() =
         attrs       = {
             "latest"    : ({Logical},"always check for the latest version available"),
             "min"       : ({Logical},"get any version >= the specified one"),
-            "version"   : ({Version},"specify package version")
+            "verbose"   : ({Logical},"output extra information"),
+            "version"   : ({Version},"specify package version"),
         },
         returns     = {Nothing},
         # TODO(Core/import) add documentation example
@@ -541,9 +542,14 @@ proc defineSymbols*() =
             #=======================================================
             var versionSpec = (true, NoPackageVersion)
             let latest = hadAttr("latest")
+            let verbose = hadAttr("verbose")
             
             if checkAttr("version"):
                 versionSpec = (hadAttr("min"), aVersion.version)
+
+            let verboseBefore = VerbosePackager
+            if verbose:
+                VerbosePackager = true
 
             let src = getPackageSource(x.s, versionSpec, latest)
             
@@ -554,6 +560,8 @@ proc defineSymbols*() =
                 execUnscoped(parsed)
 
             discard popPath()
+
+            VerbosePackager = verboseBefore
 
     # TODO(Core/let) block assignments should properly handle readonly Values
     #  In a few words: we should make sure that `[a b]: [1 2]` is the same as 
