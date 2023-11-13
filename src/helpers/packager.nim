@@ -10,7 +10,8 @@
 # Libraries
 #=======================================
 
-import algorithm, sequtils, strformat, strutils, tables
+import algorithm, options
+import sequtils, strformat, strutils, tables
 
 when not defined(WEB):
     import asyncdispatch, httpClient, os
@@ -33,8 +34,6 @@ import vm/values/custom/[vsymbol, vversion]
 type
     VersionSpec*        = (bool, VVersion)
     VersionLocation*    = (string, VVersion)
-
-    ImportResult*       = (bool, string)
 
 #=======================================
 # Constants
@@ -70,15 +69,15 @@ var
 # Forward declarations
 #=======================================
 
-proc loadLocalPackage(src: string, version: VersionSpec, latest: bool = false): (bool, string)
-proc loadRemotePackage(src: string, version: VersionSpec): (bool, string)
+proc loadLocalPackage(src: string, version: VersionSpec, latest: bool = false): Option[string]
+proc loadRemotePackage(src: string, version: VersionSpec): Option[string]
 proc verifyDependencies*(deps: seq[Value]): bool
 
 #=======================================
 # Helpers
 #=======================================
 
-proc getEntryPointFromSourceFolder*(folder: string): ImportResult =
+proc getEntryPointFromSourceFolder*(folder: string): Option[string] =
     ## In a supposed package source folder,
     ## look either for the 'entry' as defined in the package's info.art
     ## or a main.art file - our default entry point
@@ -100,28 +99,25 @@ proc getEntryPointFromSourceFolder*(folder: string): ImportResult =
         if infoArt.hasKey("depends"):
             allOk = verifyDependencies(infoArt["depends"].a)
 
-    return (allOk, entryPoint)
+    if allOk:
+        return some(entryPoint)
 
-proc checkLocalFile*(filePath: string): ImportResult =
+proc checkLocalFile*(filePath: string): Option[string] =
     ## Check if file exists at given path
     ## or alternatively "file.art"
 
     if filePath.fileExists():
-        return (true, filePath)
+        return some(filePath)
     else:
         if (let fileWithExtension = filePath & ".art"; fileWithExtension.fileExists()):
-            return (true, fileWithExtension)
-        else:
-            return NoImportResult
+            return some(fileWithExtension)
 
-proc checkLocalFolder*(folderPath: string): (bool, string) =
+proc checkLocalFolder*(folderPath: string): Option[string] =
     ## Check if valid package folder exists 
     ## at given path and return entry filepath
 
     if folderPath.dirExists():
         return getEntryPointFromSourceFolder(folderPath)
-    else:
-        return NoImportResult
 
 proc getLocalPackageVersions(inPath: string, ordered: SortOrder): seq[VersionLocation] =
     result = (toSeq(walkDir(inPath))).map(
@@ -230,18 +226,17 @@ proc verifyDependencies*(deps: seq[Value]): bool =
     for dep in depList:
         let src = dep[0]
         let version = dep[1]
-        if (let (ok, finalSource) = loadLocalPackage(src, version); ok):
+        if loadLocalPackage(src, version).isSome:
             discard
         else:
-            if (let (ok,finalSource) = loadRemotePackage(src,version); ok):
+            if loadRemotePackage(src,version).isSome:
                 discard
             else:
-                echo "not found"
                 allOk = false
 
     return allOk
 
-proc getSourceFromRepo*(repo: string, latest: bool = false): ImportResult =
+proc getSourceFromRepo*(repo: string, latest: bool = false): Option[string] =
     let cleanName = repo.replace("https://github.com/","")
     let parts = cleanName.split("/")
 
@@ -259,10 +254,7 @@ proc getSourceFromRepo*(repo: string, latest: bool = false): ImportResult =
 
     return getEntryPointFromSourceFolder(folderPath)
 
-proc getEntryFileForPackage*(location: string, spec: ValueDict): string =
-    return location & "/" & spec["entry"].s
-
-proc loadLocalPackage(src: string, version: VersionSpec, latest: bool = false): (bool, string) =
+proc loadLocalPackage(src: string, version: VersionSpec, latest: bool = false): Option[string] =
     if latest:
         return loadRemotePackage(src, version)
 
@@ -271,48 +263,46 @@ proc loadLocalPackage(src: string, version: VersionSpec, latest: bool = false): 
         stdout.write "- Loading local package: {src} {packageVersion}".fmt
         let packageSpec = readSpec(src, packageVersion)
         if not verifyDependencies(packageSpec["depends"].a):
-            return (false, "")
+            return
+
         stdout.write bold(greenColor) & " ✔" & resetColor() & "\n"
         stdout.flushFile()
-        return (true, getEntryFileForPackage(packageLocation, packageSpec))
-    else:
-        return (false, "")
 
-proc loadRemotePackage(src: string, version: VersionSpec): (bool, string) =
+        return some(packageLocation & "/" & packageSpec["entry"].s)
+
+proc loadRemotePackage(src: string, version: VersionSpec): Option[string] =
     echo "- Querying remote packages...".fmt
     if installRemotePackage(src, version):
         return loadLocalPackage(src, version)
-    else:
-        return (false, "")
 
 proc getPackageSource*(
     pkg: string, 
     verspec: VersionSpec, 
     latest: bool
-): string {.inline.} =
+): Option[string] {.inline.} =
     ## Given a package name and a version specification
     ## try to find the best match and return
     ## the appropriate entry source filepath
 
     # is it a file?
-    if (let (ok, final) = checkLocalFile(pkg); ok):
-        return final
+    if (result = checkLocalFile(pkg); result.isSome):
+        return
 
     # maybe it's a folder with a "package" in it?
-    if (let (ok, final) = checkLocalFolder(pkg); ok):
-        return final
+    if (result = checkLocalFolder(pkg); result.isSome):
+        return
     
     # maybe it's a github repository url?
     if pkg.isUrl():
-        if (let (ok, final) = getSourceFromRepo(pkg, latest); ok):
-            return final
+        if (result = getSourceFromRepo(pkg, latest); result.isSome):
+            return
 
     # maybe it's a package we already have locally?
-    if (let (ok, final) = loadLocalPackage(pkg, verspec, latest); ok):
-        return final
+    if (result = loadLocalPackage(pkg, verspec, latest); result.isSome):
+        return
     else:
         # maybe it's a remote package we should fetch?
-        if (let (ok, final) = loadRemotePackage(pkg, verspec); ok):
-            return final
+        if (result = loadRemotePackage(pkg, verspec); result.isSome):
+            return
     
-    return "not found"
+    return none(string)
