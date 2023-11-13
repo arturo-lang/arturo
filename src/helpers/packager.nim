@@ -23,7 +23,7 @@ when not defined(WEB):
 
 import vm/[env, exec, parse, values/types]
 
-import vm/values/custom/[vversion]
+import vm/values/custom/[vsymbol, vversion]
 
 
 #=======================================
@@ -48,6 +48,10 @@ let
     #     TextData
 
     # DataSource* = (string, DataSourceKind)
+
+proc loadLocalPackage(src: string, version: VersionSpec): (bool, string)
+proc loadRemotePackage(src: string, version: VersionSpec): (bool, string)
+proc verifyDependencies*(deps: seq[Value]): bool
 
 #=======================================
 # Helpers
@@ -76,6 +80,8 @@ proc checkLocalFolder*(src: string): (bool, string) =
                 discard
             else:
                 allOk = false
+            
+            allOk = verifyDependencies(infoArt["depends"])
         elif ("{src}/main.art".fmt).fileExists():
             discard
         else:
@@ -144,6 +150,8 @@ proc installRemotePackage*(name: string, version: VersionSpec): bool =
     let specContent = waitFor (newAsyncHttpClient().getContent(packageSpec))
     let spec = readSpecFromContent(specContent)
     let actualVersion = spec["version"].version
+    if not verifyDependencies(spec["depends"].a):
+        return false
     let specFolder = "{HomeDir}.arturo/packages/specs/{name}".fmt
     stdout.write "- Installing package: {name} {actualVersion}".fmt
     createDir(specFolder)
@@ -167,6 +175,39 @@ proc installRemotePackage*(name: string, version: VersionSpec): bool =
 
 proc verifyDependencies*(name: string, version: VVersion) =
     discard
+
+proc verifyDependencies*(deps: seq[Value]): bool = 
+    var depList: seq[(string, VersionSpec)] = @[]
+
+    for dep in deps:
+        if dep.kind == Word or dep.kind == Literal or dep.kind == String:
+            depList.add((dep.s, (false, NoPackageVersion)))
+        elif dep.kind == Block:
+            if dep.a[0].kind == Word or dep.a[0].kind == Literal or dep.a[0].kind == String:
+                if dep.a.len == 1:
+                    depList.add((dep.a[0].s, (false, NoPackageVersion)))
+                elif dep.a.len == 2:
+                    depList.add((dep.a[0].s, (false, dep.a[1].version)))
+                elif dep.a.len == 3:
+                    if dep.a[1].m == greaterequal or dep.a[1].m == greaterthan:
+                        depList.add((dep.a[0].s, (true, dep.a[2].version)))
+                    elif dep.a[1].m == equal:
+                        depList.add((dep.a[0].s, (false, dep.a[2].version)))
+
+    var allOk = true
+    for dep in depList:
+        let src = dep[0]
+        let version = dep[1]
+        if (let (ok, finalSource) = loadLocalPackage(src, version); ok):
+            discard
+        else:
+            if (let (ok,finalSource) = loadRemotePackage(src,version); ok):
+                discard
+            else:
+                echo "not found"
+                allOk = false
+
+    return allOk
 
 proc getSourceFromRepo*(repo: string): string =
     echo "getSourceFromRepo: " & repo
