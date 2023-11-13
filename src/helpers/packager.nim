@@ -68,14 +68,14 @@ proc checkLocalFile*(src: string): (bool, string) =
             return (false, src)
 
 proc checkLocalFolder*(src: string): (bool, string) =
-    let mainSource = "{src}/main.art".fmt
+    var mainSource = "{src}/main.art".fmt
     var allOk = true
     if src.dirExists():
         if ("{src}/info.art".fmt).fileExists():
             let infoArt = execDictionary(doParse("{src}/info.art".fmt, isFile=true))
             let entryPoint = infoArt["entry"].s
             if ("{src}/{entryPoint}.art".fmt).fileExists():
-                let main = "{src}/{entryPoint}.art"
+                mainSource = "{src}/{entryPoint}.art"
             elif ("{src}/main.art".fmt).fileExists():
                 discard
             else:
@@ -227,18 +227,29 @@ proc getSourceFromRepo*(repo: string): string =
         let actualFolder = "{HomeDir}.arturo/tmp/{actualSubFolder}".fmt
         echo "actualFolder: {actualFolder}".fmt
         moveDir(actualFolder, folderPath)
-    # https://github.com/arturo-lang/arturo/archives/master.zip
-    # let pkgUrl = spec["url"].s
-    # let client = newHttpClient()
-    # createDir("{HomeDir}.arturo/tmp/".fmt)
-    # let tmpPkgZip = "{HomeDir}.arturo/tmp/pkg.zip".fmt
-    # client.downloadFile(pkgUrl, tmpPkgZip)
-    # createDir("{HomeDir}.arturo/packages/cache/{name}".fmt)
-    # let files = miniz.unzipAndGetFiles(tmpPkgZip, "{HomeDir}.arturo/packages/cache/{name}".fmt)
-    # let (actualSubFolder, _, _) = splitFile(files[0])
-    # let actualFolder = "{HomeDir}.arturo/packages/cache/{name}/{actualSubFolder}".fmt
-    # moveDir(actualFolder, "{HomeDir}.arturo/packages/cache/{name}/{actualVersion}".fmt)
 
+        discard tryRemoveFile("{HomeDir}.arturo/tmp/pkg.zip".fmt)
+        let src = folderPath
+        var allOk = false
+        var mainSource = "{src}/main.art".fmt
+        if ("{src}/info.art".fmt).fileExists():
+            let infoArt = execDictionary(doParse("{src}/info.art".fmt, isFile=true))
+            let entryPoint = infoArt["entry"].s
+            if ("{src}/{entryPoint}.art".fmt).fileExists():
+                mainSource = "{src}/{entryPoint}.art"
+            elif ("{src}/main.art".fmt).fileExists():
+                discard
+            else:
+                allOk = false
+            
+            allOk = verifyDependencies(infoArt["depends"].a)
+        elif ("{src}/main.art".fmt).fileExists():
+            discard
+        else:
+            allOk = false
+
+        if allOk:
+            return mainSource
     
     return ""
 
