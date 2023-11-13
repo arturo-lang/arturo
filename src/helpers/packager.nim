@@ -20,17 +20,6 @@ import extras/miniz
 when not defined(WEB):
     import helpers/io
     import helpers/url
-    import helpers/terminal
-
-# when defined(SAFE):
-#     import vm/errors
-
-# when not defined(WEB):
-#     import helpers/url
-
-# when defined(PORTABLE):
-#     import tables
-#     import vm/globals
 
 import vm/[env, exec, parse, values/types]
 
