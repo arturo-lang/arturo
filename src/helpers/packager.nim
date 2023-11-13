@@ -31,23 +31,30 @@ import vm/values/custom/[vsymbol, vversion]
 #=======================================
 
 type
-    VersionSpec* = (bool, VVersion)
-    VersionLocation* = (string, VVersion)
+    VersionSpec*        = (bool, VVersion)
+    VersionLocation*    = (string, VVersion)
+
+    ImportResult*       = (bool, string)
 
 #=======================================
 # Constants
 #=======================================
 
 let
-    NoPackageVersion* = VVersion(major: 0, minor: 0, patch: 0, extra: "")
-    NoVersionLocation* = ("", NoPackageVersion)
+    NoPackageVersion*   = VVersion(major: 0, minor: 0, patch: 0, extra: "")
+    NoVersionLocation*  = ("", NoPackageVersion)
+    NoImportResult*     = (false, "")
 
 const
     PackageFolder*      = "{HomeDir}.arturo/packages/"
 
+    SpecLatestUrl*      = "https://{pkg}.pkgr.art/spec"
+    SpecVersionUrl*     = "https://{pkg}.pkgr.art/{version}/spec"
+
     SpecFolder*         = PackageFolder & "specs/"
     SpecPackage*        = SpecFolder & "{pkg}/"
     SpecFile*           = SpecPackage & "{version}.art"
+
     CacheFolder*        = PackageFolder & "cache/"
     CachePackage*       = CacheFolder & "{pkg}/"
     CacheFiles*         = CachePackage & "{version}/"
@@ -71,39 +78,46 @@ proc verifyDependencies*(deps: seq[Value]): bool
 # Helpers
 #=======================================
 
-proc checkLocalFile*(src: string): (bool, string) =
-    if src.fileExists():
-        return (true, src)
-    else:
-        let srcWithExtension = src & ".art"
-        if srcWithExtension.fileExists():
-            return (true, srcWithExtension)
-        else:
-            return (false, src)
-
-proc checkLocalFolder*(src: string): (bool, string) =
-    var mainSource = "{src}/main.art".fmt
+proc getEntryPointFromSourceFolder*(folder: string): ImportResult =
+    var entryPoint = "{folder}/main.art".fmt
     var allOk = true
-    if src.dirExists():
-        if ("{src}/info.art".fmt).fileExists():
-            let infoArt = execDictionary(doParse("{src}/info.art".fmt, isFile=true))
-            let entryPoint = infoArt["entry"].s
-            if ("{src}/{entryPoint}.art".fmt).fileExists():
-                mainSource = "{src}/{entryPoint}.art".fmt
-            elif ("{src}/main.art".fmt).fileExists():
-                discard
-            else:
-                allOk = false
-            
-            allOk = verifyDependencies(infoArt["depends"].a)
-        elif ("{src}/main.art".fmt).fileExists():
-            discard
-        else:
-            allOk = false
-    else:
-        allOk = false
 
-    return (allOk, mainSource)
+    if (let infoPath = "{folder}/info.art".fmt; infoPath.fileExists()):
+        let infoArt = execDictionary(doParse(infoPath, isFile=true))
+
+        if infoArt.hasKey("entry"):
+            let entryName = infoArt["entry"].s
+            entryPoint = "{folder}/{entryName}.art".fmt
+
+        if not entryPoint.fileExists():
+            # should throw!
+            allOk = false
+
+        if infoArt.hasKey("depends"):
+            allOk = verifyDependencies(infoArt["depends"].a)
+
+    return (allOk, entryPoint)
+
+proc checkLocalFile*(filePath: string): ImportResult =
+    ## Check if file exists at given path
+    ## or alternatively "file.art"
+
+    if filePath.fileExists():
+        return (true, filePath)
+    else:
+        if (let fileWithExtension = filePath & ".art"; fileWithExtension.fileExists()):
+            return (true, fileWithExtension)
+        else:
+            return NoImportResult
+
+proc checkLocalFolder*(folderPath: string): (bool, string) =
+    ## Check if valid package folder exists 
+    ## at given path and return entry filepath
+
+    if folderPath.dirExists():
+        return getEntryPointFromSourceFolder(folderPath)
+    else:
+        return NoImportResult
 
 proc getLocalPackageVersions(inPath: string, ordered: SortOrder): seq[VersionLocation] =
     result = (toSeq(walkDir(inPath))).map(
@@ -153,12 +167,13 @@ proc readSpec(pkg: string, version: VVersion): ValueDict =
 proc readSpecFromContent(content: string): ValueDict =
     result = execDictionary(doParse(content, isFile=false))
 
-proc installRemotePackage*(pkg: string, version: VersionSpec): bool =
+proc installRemotePackage*(pkg: string, verspec: VersionSpec): bool =
     var packageSpec: string 
-    if version[0]:
-        packageSpec = "https://{pkg}.pkgr.art/spec".fmt
+    if verspec[0]:
+        packageSpec = SpecLatestUrl.fmt
     else:
-        packageSpec = "https://{pkg}.pkgr.art/{version[1]}/spec".fmt
+        let version = verspec[1]
+        packageSpec = SpecVersionUrl.fmt
 
     let specContent = waitFor (newAsyncHttpClient().getContent(packageSpec))
     let spec = readSpecFromContent(specContent)
