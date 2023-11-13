@@ -552,7 +552,7 @@ proc defineSymbols*() =
                 VerbosePackager = true
 
             if (let res = getPackageSource(x.s, versionSpec, latest); res.isSome):
-                let src = got.get()
+                let src = res.get()
             
                 addPath(src)
 
