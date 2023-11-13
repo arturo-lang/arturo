@@ -133,6 +133,7 @@ proc installRemotePackage*(name: string, version: VersionSpec): bool =
     let spec = readSpecFromContent(specContent)
     let actualVersion = spec["version"].version
     let specFolder = "{HomeDir}.arturo/packages/specs/{name}".fmt
+    echo "- Installing package: {name} {actualVersion}".fmt
     createDir(specFolder)
     let specFile = "{specFolder}/{actualVersion}.art".fmt
     writeToFile(specFile, specContent)
@@ -167,6 +168,7 @@ proc getEntryFileForPackage*(location: string, spec: ValueDict): string =
 proc loadLocalPackage(src: string, version: VersionSpec): (bool, string) =
     if (let (isLocalPackage, packageSource)=checkLocalPackage(src, version); isLocalPackage):
         let (packageLocation, packageVersion) = packageSource
+        echo "- Loading local package: {src} {packageVersion}".fmt
         let packageSpec = readSpec(src, packageVersion)
         verifyDependencies(src, packageVersion)
         return (true, getSourceFromLocalFile(
@@ -176,6 +178,7 @@ proc loadLocalPackage(src: string, version: VersionSpec): (bool, string) =
         return (false, "")
 
 proc loadRemotePackage(src: string, version: VersionSpec): (bool, string) =
+    echo "- Querying remote packages...".fmt
     if installRemotePackage(src, version):
         return loadLocalPackage(src, version)
     else:
