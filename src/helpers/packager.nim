@@ -143,7 +143,10 @@ proc installRemotePackage*(name: string, version: VersionSpec): bool =
     let tmpPkgZip = "{HomeDir}.arturo/tmp/pkg.zip".fmt
     client.downloadFile(pkgUrl, tmpPkgZip)
     createDir("{HomeDir}.arturo/packages/{name}".fmt)
-    echo $miniz.unzipAndGetFiles(tmpPkgZip, "{HomeDir}.arturo/packages/{name}".fmt)
+    let files = $miniz.unzipAndGetFiles(tmpPkgZip, "{HomeDir}.arturo/packages/{name}".fmt)
+    let (actualSubFolder, _, _) = splitFile(files[0])
+    let actualFolder = "{HomeDir}.arturo/packages/{name}/{actualSubFolder}".fmt
+    moveDir(actualFolder, "{HomeDir}.arturo/packages/{name}/{actualVersion}".fmt)
 
     
     return true
