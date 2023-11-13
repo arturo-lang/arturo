@@ -207,14 +207,17 @@ proc verifyDependencies*(deps: seq[Value]): bool =
     return allOk
 
 proc getSourceFromRepo*(repo: string): string =
-    let cleanName = repo.replace("https://github.com","")
+    let cleanName = repo.replace("https://github.com/","")
     let parts = cleanName.split("/")
 
     let folderPath = "{HomeDir}.arturo/tmp/{parts[1]}@{parts[0]}".fmt
     if not dirExists(folderPath):
         let client = newHttpClient()
         let pkgUrl = "{repo}/archive/main.zip".fmt
-        client.downloadFile(pkgUrl, folderPath)
+        client.downloadFile(pkgUrl, "{folderPath}/pkg.zip".fmt)
+        let files = miniz.unzipAndGetFiles("{folderPath}/pkg.zip", "{HomeDir}.arturo/tmp".fmt)
+        let (actualSubFolder, _, _) = splitFile(files[0])
+        moveDir(actualFolder, folderPath)
     # https://github.com/arturo-lang/arturo/archives/master.zip
     # let pkgUrl = spec["url"].s
     # let client = newHttpClient()
