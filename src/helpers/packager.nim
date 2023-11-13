@@ -81,7 +81,7 @@ proc checkLocalFolder*(src: string): (bool, string) =
             else:
                 allOk = false
             
-            allOk = verifyDependencies(infoArt["depends"])
+            allOk = verifyDependencies(infoArt["depends"].a)
         elif ("{src}/main.art".fmt).fileExists():
             discard
         else:
