@@ -150,7 +150,7 @@ proc installRemotePackage*(name: string, version: VersionSpec): bool =
     let actualFolder = "{HomeDir}.arturo/packages/cache/{name}/{actualSubFolder}".fmt
     moveDir(actualFolder, "{HomeDir}.arturo/packages/cache/{name}/{actualVersion}".fmt)
 
-    stdout.write fg(greenColor) & "✓" & resetColor()
+    stdout.write " ✅\n"
     stdout.flushFile()
     return true
 
@@ -173,7 +173,7 @@ proc loadLocalPackage(src: string, version: VersionSpec): (bool, string) =
         stdout.write "- Loading local package: {src} {packageVersion}".fmt
         let packageSpec = readSpec(src, packageVersion)
         verifyDependencies(src, packageVersion)
-        stdout.write fg(greenColor) & "✓" & resetColor()
+        stdout.write " ✅\n"
         stdout.flushFile()
         return (true, getSourceFromLocalFile(
             getEntryFileForPackage(packageLocation, packageSpec)
