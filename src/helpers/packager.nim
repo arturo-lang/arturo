@@ -49,14 +49,9 @@ let
 var
     VerbosePackager* = false
 
-
-
-    # DataSourceKind* = enum
-    #     WebData,
-    #     FileData,
-    #     TextData
-
-    # DataSource* = (string, DataSourceKind)
+#=======================================
+# Forward declarations
+#=======================================
 
 proc loadLocalPackage(src: string, version: VersionSpec): (bool, string)
 proc loadRemotePackage(src: string, version: VersionSpec): (bool, string)
