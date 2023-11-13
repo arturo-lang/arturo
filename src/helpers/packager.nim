@@ -183,6 +183,8 @@ proc installRemotePackage*(pkg: string, version: VersionSpec): bool =
     let version = actualVersion
     moveDir(actualFolder, CacheFiles.fmt)
 
+    discard tryRemoveFile("{HomeDir}.arturo/tmp/pkg.zip".fmt)
+
     stdout.write bold(greenColor) & " ✔" & resetColor() & "\n"
     stdout.flushFile()
     return true
