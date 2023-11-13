@@ -75,7 +75,7 @@ proc checkLocalFolder*(src: string): (bool, string) =
             let infoArt = execDictionary(doParse("{src}/info.art".fmt, isFile=true))
             let entryPoint = infoArt["entry"].s
             if ("{src}/{entryPoint}.art".fmt).fileExists():
-                mainSource = "{src}/{entryPoint}.art"
+                mainSource = "{src}/{entryPoint}.art".fmt
             elif ("{src}/main.art".fmt).fileExists():
                 discard
             else:
@@ -229,7 +229,7 @@ proc getSourceFromRepo*(repo: string): string =
         moveDir(actualFolder, folderPath)
 
         discard tryRemoveFile("{HomeDir}.arturo/tmp/pkg.zip".fmt)
-    
+
     let src = folderPath
     var allOk = false
     var mainSource = "{src}/main.art".fmt
@@ -237,7 +237,7 @@ proc getSourceFromRepo*(repo: string): string =
         let infoArt = execDictionary(doParse("{src}/info.art".fmt, isFile=true))
         let entryPoint = infoArt["entry"].s
         if ("{src}/{entryPoint}.art".fmt).fileExists():
-            mainSource = "{src}/{entryPoint}.art"
+            mainSource = "{src}/{entryPoint}.art".fmt
         elif ("{src}/main.art".fmt).fileExists():
             discard
         else:
