@@ -42,6 +42,16 @@ let
     NoPackageVersion* = VVersion(major: 0, minor: 0, patch: 0, extra: "")
     NoVersionLocation* = ("", NoPackageVersion)
 
+const
+    PackageFolder*      = "{HomeDir}.arturo/packages/"
+
+    SpecFolder*         = PackageFolder & "specs/"
+    SpecPackage*        = SpecFolder & "{pkg}/"
+    SpecFile*           = SpecPackage & "{version}.art"
+    CacheFolder*        = PackageFolder & "cache/"
+    CachePackage*       = CacheFolder & "{pkg}/"
+    CacheFiles*         = CachePackage & "{version}/"
+
 #=======================================
 # Global Variables
 #=======================================
@@ -120,8 +130,8 @@ proc getBestVersion(within: seq[VersionLocation], version: VersionSpec): Version
 
     return NoVersionLocation
 
-proc checkLocalPackage*(src: string, version: VersionSpec): (bool, VersionLocation) =
-    let expectedPath = "{HomeDir}.arturo/packages/cache/{src}".fmt
+proc checkLocalPackage*(pkg: string, version: VersionSpec): (bool, VersionLocation) =
+    let expectedPath = CachePackage.fmt
 
     if expectedPath.dirExists():
         let got = getBestVersion(
@@ -136,27 +146,27 @@ proc checkLocalPackage*(src: string, version: VersionSpec): (bool, VersionLocati
 # Methods
 #=======================================
 
-proc readSpec(name: string, version: VVersion): ValueDict =
-    let specFile = "{HomeDir}.arturo/packages/specs/{name}/{version}.art".fmt
+proc readSpec(pkg: string, version: VVersion): ValueDict =
+    let specFile = SpecFile.fmt
     result = execDictionary(doParse(specFile, isFile=true))
 
 proc readSpecFromContent(content: string): ValueDict =
     result = execDictionary(doParse(content, isFile=false))
 
-proc installRemotePackage*(name: string, version: VersionSpec): bool =
+proc installRemotePackage*(pkg: string, version: VersionSpec): bool =
     var packageSpec: string 
     if version[0]:
-        packageSpec = "https://{name}.pkgr.art/spec".fmt
+        packageSpec = "https://{pkg}.pkgr.art/spec".fmt
     else:
-        packageSpec = "https://{name}.pkgr.art/{version[1]}/spec".fmt
+        packageSpec = "https://{pkg}.pkgr.art/{version[1]}/spec".fmt
 
     let specContent = waitFor (newAsyncHttpClient().getContent(packageSpec))
     let spec = readSpecFromContent(specContent)
     let actualVersion = spec["version"].version
     if not verifyDependencies(spec["depends"].a):
         return false
-    let specFolder = "{HomeDir}.arturo/packages/specs/{name}".fmt
-    stdout.write "- Installing package: {name} {actualVersion}".fmt
+    let specFolder = SpecPackage.fmt
+    stdout.write "- Installing package: {pkg} {actualVersion}".fmt
     createDir(specFolder)
     let specFile = "{specFolder}/{actualVersion}.art".fmt
     writeToFile(specFile, specContent)
@@ -166,11 +176,12 @@ proc installRemotePackage*(name: string, version: VersionSpec): bool =
     createDir("{HomeDir}.arturo/tmp/".fmt)
     let tmpPkgZip = "{HomeDir}.arturo/tmp/pkg.zip".fmt
     client.downloadFile(pkgUrl, tmpPkgZip)
-    createDir("{HomeDir}.arturo/packages/cache/{name}".fmt)
-    let files = miniz.unzipAndGetFiles(tmpPkgZip, "{HomeDir}.arturo/packages/cache/{name}".fmt)
+    createDir(CachePackage.fmt)
+    let files = miniz.unzipAndGetFiles(tmpPkgZip, CachePackage.fmt)
     let (actualSubFolder, _, _) = splitFile(files[0])
-    let actualFolder = "{HomeDir}.arturo/packages/cache/{name}/{actualSubFolder}".fmt
-    moveDir(actualFolder, "{HomeDir}.arturo/packages/cache/{name}/{actualVersion}".fmt)
+    let actualFolder = "{HomeDir}.arturo/packages/cache/{pkg}/{actualSubFolder}".fmt
+    let version = actualVersion
+    moveDir(actualFolder, CacheFiles.fmt)
 
     stdout.write bold(greenColor) & " ✔" & resetColor() & "\n"
     stdout.flushFile()
