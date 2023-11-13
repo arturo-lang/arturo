@@ -139,8 +139,10 @@ proc installRemotePackage*(name: string, version: VersionSpec): bool =
 
     let pkgUrl = spec["url"].s
     let client = newHttpClient()
+    createDir("{HomeDir}.arturo/tmp/")
     let tmpPkgZip = "{HomeDir}.arturo/tmp/pkg.zip".fmt
     client.downloadFile(pkgUrl, tmpPkgZip)
+    createDir("{HomeDir}.arturo/packages/{name}/{actualVersion}")
     miniz.unzip(tmpPkgZip, "{HomeDir}.arturo/packages/{name}/{actualVersion}".fmt)
     
     return true
