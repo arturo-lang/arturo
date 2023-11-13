@@ -20,6 +20,7 @@ import extras/miniz
 when not defined(WEB):
     import helpers/io
     import helpers/url
+    import helpers/terminal
 
 # when defined(SAFE):
 #     import vm/errors
@@ -100,7 +101,7 @@ proc getBestVersion(within: seq[VersionLocation], version: VersionSpec): Version
 
 proc checkLocalPackage*(src: string, version: VersionSpec): (bool, VersionLocation) =
     let expectedPath = "{HomeDir}.arturo/packages/cache/{src}".fmt
-    echo $expectedPath
+    #echo $expectedPath
     
     if expectedPath.dirExists():
         let got = getBestVersion(
@@ -133,7 +134,7 @@ proc installRemotePackage*(name: string, version: VersionSpec): bool =
     let spec = readSpecFromContent(specContent)
     let actualVersion = spec["version"].version
     let specFolder = "{HomeDir}.arturo/packages/specs/{name}".fmt
-    echo "- Installing package: {name} {actualVersion}".fmt
+    stdout.write "- Installing package: {name} {actualVersion}".fmt
     createDir(specFolder)
     let specFile = "{specFolder}/{actualVersion}.art".fmt
     writeToFile(specFile, specContent)
@@ -149,7 +150,8 @@ proc installRemotePackage*(name: string, version: VersionSpec): bool =
     let actualFolder = "{HomeDir}.arturo/packages/cache/{name}/{actualSubFolder}".fmt
     moveDir(actualFolder, "{HomeDir}.arturo/packages/cache/{name}/{actualVersion}".fmt)
 
-    
+    stdout.write fg(greenColor) & "✓" & resetColor()
+    stdout.flushFile()
     return true
 
 proc verifyDependencies*(name: string, version: VVersion) =
@@ -168,9 +170,11 @@ proc getEntryFileForPackage*(location: string, spec: ValueDict): string =
 proc loadLocalPackage(src: string, version: VersionSpec): (bool, string) =
     if (let (isLocalPackage, packageSource)=checkLocalPackage(src, version); isLocalPackage):
         let (packageLocation, packageVersion) = packageSource
-        echo "- Loading local package: {src} {packageVersion}".fmt
+        stdout.write "- Loading local package: {src} {packageVersion}".fmt
         let packageSpec = readSpec(src, packageVersion)
         verifyDependencies(src, packageVersion)
+        stdout.write fg(greenColor) & "✓" & resetColor()
+        stdout.flushFile()
         return (true, getSourceFromLocalFile(
             getEntryFileForPackage(packageLocation, packageSpec)
         ))
