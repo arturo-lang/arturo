@@ -229,27 +229,28 @@ proc getSourceFromRepo*(repo: string): string =
         moveDir(actualFolder, folderPath)
 
         discard tryRemoveFile("{HomeDir}.arturo/tmp/pkg.zip".fmt)
-        let src = folderPath
-        var allOk = false
-        var mainSource = "{src}/main.art".fmt
-        if ("{src}/info.art".fmt).fileExists():
-            let infoArt = execDictionary(doParse("{src}/info.art".fmt, isFile=true))
-            let entryPoint = infoArt["entry"].s
-            if ("{src}/{entryPoint}.art".fmt).fileExists():
-                mainSource = "{src}/{entryPoint}.art"
-            elif ("{src}/main.art".fmt).fileExists():
-                discard
-            else:
-                allOk = false
-            
-            allOk = verifyDependencies(infoArt["depends"].a)
+    
+    let src = folderPath
+    var allOk = false
+    var mainSource = "{src}/main.art".fmt
+    if ("{src}/info.art".fmt).fileExists():
+        let infoArt = execDictionary(doParse("{src}/info.art".fmt, isFile=true))
+        let entryPoint = infoArt["entry"].s
+        if ("{src}/{entryPoint}.art".fmt).fileExists():
+            mainSource = "{src}/{entryPoint}.art"
         elif ("{src}/main.art".fmt).fileExists():
             discard
         else:
             allOk = false
+        
+        allOk = verifyDependencies(infoArt["depends"].a)
+    elif ("{src}/main.art".fmt).fileExists():
+        discard
+    else:
+        allOk = false
 
-        if allOk:
-            return mainSource
+    if allOk:
+        return mainSource
     
     return ""
 
