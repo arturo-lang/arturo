@@ -173,9 +173,6 @@ proc installRemotePackage*(name: string, version: VersionSpec): bool =
     stdout.flushFile()
     return true
 
-proc verifyDependencies*(name: string, version: VVersion) =
-    discard
-
 proc verifyDependencies*(deps: seq[Value]): bool = 
     var depList: seq[(string, VersionSpec)] = @[]
 
