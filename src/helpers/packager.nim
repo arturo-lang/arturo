@@ -122,8 +122,7 @@ proc getBestVersion(within: seq[VersionLocation], version: VersionSpec): Version
 
 proc checkLocalPackage*(src: string, version: VersionSpec): (bool, VersionLocation) =
     let expectedPath = "{HomeDir}.arturo/packages/cache/{src}".fmt
-    #echo $expectedPath
-    
+
     if expectedPath.dirExists():
         let got = getBestVersion(
             getLocalPackageVersions(expectedPath, SortOrder.Descending),
@@ -216,20 +215,12 @@ proc getSourceFromRepo*(repo: string): string =
 
     let folderPath = "{HomeDir}.arturo/tmp/{parts[1]}@{parts[0]}".fmt
     if not dirExists(folderPath):
-        echo "folder not exists"
         let client = newHttpClient()
         let pkgUrl = "{repo}/archive/main.zip".fmt
         client.downloadFile(pkgUrl, "{HomeDir}.arturo/tmp/pkg.zip".fmt)
-        echo "downloading file: {pkgUrl}".fmt
-        echo "as: {HomeDir}.arturo/tmp/pkg.zip".fmt
         let files = miniz.unzipAndGetFiles("{HomeDir}.arturo/tmp/pkg.zip".fmt, "{HomeDir}.arturo/tmp".fmt)
-        echo "unzipped: {HomeDir}.arturo/tmp/pkg.zip".fmt
-        echo "into: {HomeDir}.arturo/tmp".fmt
-        echo "and got: " & $(files)
         let (actualSubFolder, _, _) = splitFile(files[0])
-        echo "actualSubFolder: {actualSubFolder}".fmt
         let actualFolder = "{HomeDir}.arturo/tmp/{actualSubFolder}".fmt
-        echo "actualFolder: {actualFolder}".fmt
         moveDir(actualFolder, folderPath)
 
         discard tryRemoveFile("{HomeDir}.arturo/tmp/pkg.zip".fmt)
