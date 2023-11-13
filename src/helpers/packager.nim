@@ -70,7 +70,7 @@ var
 # Forward declarations
 #=======================================
 
-proc loadLocalPackage(src: string, version: VersionSpec): (bool, string)
+proc loadLocalPackage(src: string, version: VersionSpec, latest: bool = false): (bool, string)
 proc loadRemotePackage(src: string, version: VersionSpec): (bool, string)
 proc verifyDependencies*(deps: seq[Value]): bool
 
@@ -241,12 +241,12 @@ proc verifyDependencies*(deps: seq[Value]): bool =
 
     return allOk
 
-proc getSourceFromRepo*(repo: string): ImportResult =
+proc getSourceFromRepo*(repo: string, latest: bool = false): ImportResult =
     let cleanName = repo.replace("https://github.com/","")
     let parts = cleanName.split("/")
 
     let folderPath = "{HomeDir}.arturo/tmp/{parts[1]}@{parts[0]}".fmt
-    if not dirExists(folderPath):
+    if (not dirExists(folderPath)) or latest:
         let client = newHttpClient()
         let pkgUrl = "{repo}/archive/main.zip".fmt
         client.downloadFile(pkgUrl, "{HomeDir}.arturo/tmp/pkg.zip".fmt)
@@ -259,13 +259,13 @@ proc getSourceFromRepo*(repo: string): ImportResult =
 
     return getEntryPointFromSourceFolder(folderPath)
 
-proc getSourceFromLocalFile*(path: string): string =
-    return path
-
 proc getEntryFileForPackage*(location: string, spec: ValueDict): string =
     return location & "/" & spec["entry"].s
 
-proc loadLocalPackage(src: string, version: VersionSpec): (bool, string) =
+proc loadLocalPackage(src: string, version: VersionSpec, latest: bool = false): (bool, string) =
+    if latest:
+        return loadRemotePackage(src, version)
+
     if (let (isLocalPackage, packageSource)=checkLocalPackage(src, version); isLocalPackage):
         let (packageLocation, packageVersion) = packageSource
         stdout.write "- Loading local package: {src} {packageVersion}".fmt
@@ -274,9 +274,7 @@ proc loadLocalPackage(src: string, version: VersionSpec): (bool, string) =
             return (false, "")
         stdout.write bold(greenColor) & " ✔" & resetColor() & "\n"
         stdout.flushFile()
-        return (true, getSourceFromLocalFile(
-            getEntryFileForPackage(packageLocation, packageSpec)
-        ))
+        return (true, getEntryFileForPackage(packageLocation, packageSpec))
     else:
         return (false, "")
 
@@ -287,29 +285,22 @@ proc loadRemotePackage(src: string, version: VersionSpec): (bool, string) =
     else:
         return (false, "")
 
-proc getPackageSource*(src: string, version: VersionSpec, latest: bool): string {.inline.} =
-    var source = src
+proc getPackageSource*(pkg: string, verspec: VersionSpec, latest: bool): string {.inline.} =
 
-    if (let (isLocalFile, fileSrc)=checkLocalFile(src); isLocalFile):
-        return getSourceFromLocalFile(fileSrc)
-    elif (let (isLocalFolder, fileSrc)=checkLocalFolder(src); isLocalFolder):
-        return getSourceFromLocalFile(fileSrc)
-    elif src.isUrl():
-        if (let (ok, finalSource) = getSourceFromRepo(src); ok):
-            return finalSource
+    if (let (isLocalFile, final)=checkLocalFile(pkg); isLocalFile):
+        return final
+
+    if (let (isLocalFolder, final)=checkLocalFolder(pkg); isLocalFolder):
+        return final
+    
+    if pkg.isUrl():
+        if (let (ok, final) = getSourceFromRepo(pkg, latest); ok):
+            return final
+
+    if (let (ok, final) = loadLocalPackage(pkg, verspec, latest); ok):
+        return final
     else:
-        if latest:
-            if (let (ok,finalSource) = loadRemotePackage(src,version); ok):
-                return finalSource
-            else:
-                echo "not found"
-                return ""
-        else:
-            if (let (ok, finalSource) = loadLocalPackage(src, version); ok):
-                return finalSource
-            else:
-                if (let (ok,finalSource) = loadRemotePackage(src,version); ok):
-                    return finalSource
-                else:
-                    echo "not found"
-                    return ""
+        if (let (ok, final) = loadRemotePackage(pkg, verspec); ok):
+            return final
+    
+    return "not found"
