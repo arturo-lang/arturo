@@ -224,7 +224,8 @@ proc loadLocalPackage(src: string, version: VersionSpec): (bool, string) =
         let (packageLocation, packageVersion) = packageSource
         stdout.write "- Loading local package: {src} {packageVersion}".fmt
         let packageSpec = readSpec(src, packageVersion)
-        verifyDependencies(packageSpec["depends"].a)
+        if not verifyDependencies(packageSpec["depends"].a):
+            return (false, "")
         stdout.write " ✅\n"
         stdout.flushFile()
         return (true, getSourceFromLocalFile(
