@@ -26,7 +26,6 @@ import vm/[env, exec, parse, values/types]
 
 import vm/values/custom/[vsymbol, vversion]
 
-
 #=======================================
 # Types
 #=======================================
@@ -42,6 +41,15 @@ type
 let
     NoPackageVersion* = VVersion(major: 0, minor: 0, patch: 0, extra: "")
     NoVersionLocation* = ("", NoPackageVersion)
+
+#=======================================
+# Global Variables
+#=======================================
+
+var
+    VerbosePackager* = false
+
+
 
     # DataSourceKind* = enum
     #     WebData,
