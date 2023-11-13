@@ -79,6 +79,10 @@ proc verifyDependencies*(deps: seq[Value]): bool
 #=======================================
 
 proc getEntryPointFromSourceFolder*(folder: string): ImportResult =
+    ## In a supposed package source folder,
+    ## look either for the 'entry' as defined in the package's info.art
+    ## or a main.art file - our default entry point
+
     var entryPoint = "{folder}/main.art".fmt
     var allOk = true
 
@@ -237,7 +241,7 @@ proc verifyDependencies*(deps: seq[Value]): bool =
 
     return allOk
 
-proc getSourceFromRepo*(repo: string): string =
+proc getSourceFromRepo*(repo: string): ImportResult =
     let cleanName = repo.replace("https://github.com/","")
     let parts = cleanName.split("/")
 
@@ -253,29 +257,7 @@ proc getSourceFromRepo*(repo: string): string =
 
         discard tryRemoveFile("{HomeDir}.arturo/tmp/pkg.zip".fmt)
 
-    let src = folderPath
-    var allOk = false
-    var mainSource = "{src}/main.art".fmt
-    if ("{src}/info.art".fmt).fileExists():
-        let infoArt = execDictionary(doParse("{src}/info.art".fmt, isFile=true))
-        let entryPoint = infoArt["entry"].s
-        if ("{src}/{entryPoint}.art".fmt).fileExists():
-            mainSource = "{src}/{entryPoint}.art".fmt
-        elif ("{src}/main.art".fmt).fileExists():
-            discard
-        else:
-            allOk = false
-        
-        allOk = verifyDependencies(infoArt["depends"].a)
-    elif ("{src}/main.art".fmt).fileExists():
-        discard
-    else:
-        allOk = false
-
-    if allOk:
-        return mainSource
-    
-    return ""
+    return getEntryPointFromSourceFolder(folderPath)
 
 proc getSourceFromLocalFile*(path: string): string =
     return path
@@ -313,7 +295,8 @@ proc getPackageSource*(src: string, version: VersionSpec, latest: bool): string 
     elif (let (isLocalFolder, fileSrc)=checkLocalFolder(src); isLocalFolder):
         return getSourceFromLocalFile(fileSrc)
     elif src.isUrl():
-        return getSourceFromRepo(src)
+        if (let (ok, finalSource) = getSourceFromRepo(src); ok):
+            return finalSource
     else:
         if latest:
             if (let (ok,finalSource) = loadRemotePackage(src,version); ok):
