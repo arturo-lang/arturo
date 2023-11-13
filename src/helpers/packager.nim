@@ -13,10 +13,13 @@
 import algorithm, sequtils, strformat, tables
 
 when not defined(WEB):
-    import helpers/url
+    import asyncdispatch, httpClient, os
+
+import extras/miniz
 
 when not defined(WEB):
-    import asyncdispatch, httpClient, os
+    import helpers/io
+    import helpers/url
 
 # when defined(SAFE):
 #     import vm/errors
@@ -27,8 +30,6 @@ when not defined(WEB):
 # when defined(PORTABLE):
 #     import tables
 #     import vm/globals
-
-import helpers/io
 
 import vm/[env, exec, parse, values/types]
 
@@ -135,6 +136,12 @@ proc installRemotePackage*(name: string, version: VersionSpec): bool =
     createDir(specFolder)
     let specFile = "{specFolder}/{actualVersion}.art".fmt
     writeToFile(specFile, specContent)
+
+    let pkgUrl = spec["url"].s
+    let client = newHttpClient()
+    let tmpPkgZip = "{HomeDir}.arturo/tmp/pkg.zip".fmt
+    client.downloadFile(pkgUrl, tmpPkgZip)
+    miniz.unzip(tmpPkgZip, "{HomeDir}.arturo/packages/{name}/{actualVersion}".fmt)
     
     return true
 
