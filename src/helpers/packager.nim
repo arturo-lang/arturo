@@ -218,7 +218,7 @@ proc getSourceFromRepo*(repo: string): string =
         client.downloadFile(pkgUrl, "{HomeDir}.arturo/tmp/pkg.zip".fmt)
         echo "downloading file: {pkgUrl}".fmt
         echo "as: {HomeDir}.arturo/tmp/pkg.zip".fmt
-        let files = miniz.unzipAndGetFiles("{HomeDir}.arturo/tmp/pkg.zip", "{HomeDir}.arturo/tmp".fmt)
+        let files = miniz.unzipAndGetFiles("{HomeDir}.arturo/tmp/pkg.zip".fmt, "{HomeDir}.arturo/tmp".fmt)
         echo "unzipped: {HomeDir}.arturo/tmp/pkg.zip".fmt
         echo "into: {HomeDir}.arturo/tmp".fmt
         echo "and got: " & $(files)
