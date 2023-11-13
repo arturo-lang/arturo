@@ -247,6 +247,8 @@ proc getPackageSource*(src: string, version: VersionSpec, latest: bool): string 
         return getSourceFromRepo(src)
     elif (let (isLocalFile, fileSrc)=checkLocalFile(src); isLocalFile):
         return getSourceFromLocalFile(fileSrc)
+    elif (let (isLocalFolder, fileSrc)=checkLocalFolder(src); isLocalFolder):
+        return getSourceFromLocalFile(fileSrc)
     else:
         if latest:
             if (let (ok,finalSource) = loadRemotePackage(src,version); ok):
