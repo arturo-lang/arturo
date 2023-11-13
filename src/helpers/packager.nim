@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import algorithm, sequtils, strformat, tables
+import algorithm, sequtils, strformat, strutils, tables
 
 when not defined(WEB):
     import asyncdispatch, httpClient, os
