@@ -880,6 +880,27 @@ proc unzip*(src, dst: string) =
   discard pZip.mz_zip_reader_end()
   dealloc(pZip)
 
+proc unzipAndGetFiles*(src, dst: string): seq[string] =
+  var pZip: ptr mz_zip_archive = cast[ptr mz_zip_archive](alloc0(sizeof(mz_zip_archive)))
+  discard pZip.mz_zip_reader_init_file(src.cstring, 0)
+  let total = pZip.mz_zip_reader_get_num_files()
+  if total == 0:
+    return
+  for i in 0..total-1:
+    let isDir = pZip.mz_zip_reader_is_file_a_directory(i)
+    if isDir == 0:
+      # Extract file
+      let size = pZip.mz_zip_reader_get_filename(i, nil, 0)
+      var filename: cstring = cast[cstring](alloc(size))
+      discard pZip.mz_zip_reader_get_filename(i, filename, size)
+      result.add($filename)
+      let dest = dst / $filename
+      dest.parentDir.createDir()
+      dest.writeFile("")
+      discard pZip.mz_zip_reader_extract_to_file(i, cstring(dest), 0)
+  discard pZip.mz_zip_reader_end()
+  dealloc(pZip)
+
 type Zip* = object
   c : mz_zip_archive
   mode: FileMode
