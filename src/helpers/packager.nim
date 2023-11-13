@@ -63,6 +63,28 @@ proc checkLocalFile*(src: string): (bool, string) =
         else:
             return (false, src)
 
+proc checkLocalFolder*(src: string): (bool, string) =
+    let mainSource = "{src}/main.art".fmt
+    var allOk = true
+    if src.dirExists():
+        if ("{src}/info.art".fmt).fileExists():
+            let infoArt = execDictionary(doParse("{src}/info.art".fmt, isFile=true))
+            let entryPoint = infoArt["entry"].s
+            if ("{src}/{entryPoint}.art".fmt).fileExists():
+                let main = "{src}/{entryPoint}.art"
+            elif ("{src}/main.art".fmt).fileExists():
+                discard
+            else:
+                allOk = false
+        elif ("{src}/main.art".fmt).fileExists():
+            discard
+        else:
+            allOk = false
+    else:
+        allOk = false
+
+    return (allOk, mainSource)
+
 proc getLocalPackageVersions(inPath: string, ordered: SortOrder): seq[VersionLocation] =
     result = (toSeq(walkDir(inPath))).map(
             proc (vers: tuple[kind: PathComponent, path: string]): VersionLocation = 
