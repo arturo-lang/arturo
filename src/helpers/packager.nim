@@ -285,21 +285,33 @@ proc loadRemotePackage(src: string, version: VersionSpec): (bool, string) =
     else:
         return (false, "")
 
-proc getPackageSource*(pkg: string, verspec: VersionSpec, latest: bool): string {.inline.} =
+proc getPackageSource*(
+    pkg: string, 
+    verspec: VersionSpec, 
+    latest: bool
+): string {.inline.} =
+    ## Given a package name and a version specification
+    ## try to find the best match and return
+    ## the appropriate entry source filepath
 
-    if (let (isLocalFile, final)=checkLocalFile(pkg); isLocalFile):
+    # is it a file?
+    if (let (ok, final)=checkLocalFile(pkg); ok):
         return final
 
-    if (let (isLocalFolder, final)=checkLocalFolder(pkg); isLocalFolder):
+    # maybe it's a folder with a "package" in it?
+    if (let (ok, final)=checkLocalFolder(pkg); ok):
         return final
     
+    # maybe it's a github repository url?
     if pkg.isUrl():
         if (let (ok, final) = getSourceFromRepo(pkg, latest); ok):
             return final
 
+    # maybe it's a package we already have locally?
     if (let (ok, final) = loadLocalPackage(pkg, verspec, latest); ok):
         return final
     else:
+        # maybe it's a remote package we should fetch?
         if (let (ok, final) = loadRemotePackage(pkg, verspec); ok):
             return final
     
