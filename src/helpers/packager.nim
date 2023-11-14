@@ -69,7 +69,7 @@ const
 #=======================================
 
 var
-    VerbosePackager* = false
+    VerbosePackager* = true
 
 #=======================================
 # Forward declarations
@@ -182,7 +182,7 @@ proc installRemotePackage*(pkg: string, verspec: VersionSpec): bool =
         let version = verspec.ver
         packageSpec = SpecVersionUrl.fmt
 
-    ShowMessage "Downloading spec"
+    ShowMessage "Downloading spec: {pkg}".fmt
     var specContent: string
     try:
         specContent = waitFor (newAsyncHttpClient().getContent(packageSpec))
@@ -191,22 +191,24 @@ proc installRemotePackage*(pkg: string, verspec: VersionSpec): bool =
 
     let spec = readSpecFromContent(specContent)
     let version = spec["version"].version
+
+    let specFolder = SpecPackage.fmt
+    createDir(specFolder)
+    let specFile = "{specFolder}/{version}.art".fmt
+    writeToFile(specFile, specContent)
     ShowSuccess()
+
     if spec.hasDependencies() and not verifyDependencies(spec["depends"].a):
         return false
-    let specFolder = SpecPackage.fmt
+    
+    let pkgUrl = spec["url"].s
+    pkgUrl.downloadPackageSourceInto(CacheFiles.fmt)
 
     ShowMessage "Installing package: {pkg} {version}".fmt
     try:
         discard waitFor (newAsyncHttpClient().getContent("https://pkgr.art/download.php?pkg={pkg}&ver={version}&mgk=18966".fmt))
     except Exception as e:
         discard
-    createDir(specFolder)
-    let specFile = "{specFolder}/{version}.art".fmt
-    writeToFile(specFile, specContent)
-
-    let pkgUrl = spec["url"].s
-    pkgUrl.downloadPackageSourceInto(CacheFiles.fmt)
 
     ShowSuccess()
     return true
@@ -286,7 +288,13 @@ proc processRemoteRepo(pkg: string, branch: string = "main", latest: bool = fals
 
     if (not dirExists(repoFolder)) or latest:
         let pkgUrl = RepoPackageUrl.fmt
-        pkgUrl.downloadPackageSourceInto(repoFolder)
+        try:
+            pkgUrl.downloadPackageSourceInto(repoFolder)
+        except Exception as e:
+            if e.msg.contains("404"):
+                RuntimeError_PackageRepoNotFound(pkg)
+            else:
+                RuntimeError_PackageUnknownError(pkg)
 
     return getEntryPointFromSourceFolder(repoFolder)
 
