@@ -182,6 +182,7 @@ proc installRemotePackage*(pkg: string, verspec: VersionSpec): bool =
         let version = verspec.ver
         packageSpec = SpecVersionUrl.fmt
 
+    ShowMessage "Downloading spec"
     var specContent: string
     try:
         specContent = waitFor (newAsyncHttpClient().getContent(packageSpec))
@@ -190,10 +191,12 @@ proc installRemotePackage*(pkg: string, verspec: VersionSpec): bool =
 
     let spec = readSpecFromContent(specContent)
     let version = spec["version"].version
+    ShowSuccess()
     if spec.hasDependencies() and not verifyDependencies(spec["depends"].a):
         return false
     let specFolder = SpecPackage.fmt
-    stdout.write "- Installing package: {pkg} {version}".fmt
+
+    ShowMessage "Installing package: {pkg} {version}".fmt
     try:
         discard waitFor (newAsyncHttpClient().getContent("https://pkgr.art/download.php?pkg={pkg}&ver={version}&mgk=18966".fmt))
     except Exception as e:
@@ -205,11 +208,11 @@ proc installRemotePackage*(pkg: string, verspec: VersionSpec): bool =
     let pkgUrl = spec["url"].s
     pkgUrl.downloadPackageSourceInto(CacheFiles.fmt)
 
-    stdout.write bold(greenColor) & " ✔" & resetColor() & "\n"
-    stdout.flushFile()
+    ShowSuccess()
     return true
 
 proc verifyDependencies*(deps: seq[Value]): bool = 
+    ShowMessageNl "Verifying dependencies"
     var depList: seq[(string, VersionSpec)] = @[]
 
     for dep in deps:
@@ -274,7 +277,7 @@ proc processRemoteRepo(pkg: string, branch: string = "main", latest: bool = fals
     if not pkg.match(re"https://github.com/([\w\-]+)/([\w\-]+)", matches):
         RuntimeError_PackageRepoNotCorrect(pkg)
 
-    ShowMessageNl "Loading from repository..."
+    ShowMessageNl "Loading from repository"
 
     let owner = matches[0]
     let repo = matches[1]
@@ -310,7 +313,7 @@ proc processRemotePackage(pkg: string, verspec: VersionSpec): Option[string] =
     ## Check if there is a remote package with the given name/specificiation
     ## in our registry
 
-    echo "- Querying remote packages...".fmt
+    ShowMessageNl "Querying registry"
     if installRemotePackage(pkg, verspec):
         return processLocalPackage(pkg, verspec)
 
