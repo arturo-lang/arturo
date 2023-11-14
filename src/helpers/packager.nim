@@ -144,7 +144,7 @@ proc lookupLocalPackageVersion*(pkg: string, version: VersionSpec): Option[Versi
                     let filepath = vers.path
                     let (_, name, ext) = splitFile(filepath)
                     (filepath, newVVersion(name & ext))
-            ).sorted(proc (a: VersionLocation, b: VersionLocation): int = cmp(a.ver, b.ver), order=SortOrder.Ascending)
+            ).sorted(proc (a: VersionLocation, b: VersionLocation): int = cmp(a.ver, b.ver), order=SortOrder.Descending)
 
         # Go through them and return the one - if any -
         # that matches the version specification we are looking for
