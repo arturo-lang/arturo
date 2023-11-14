@@ -414,7 +414,17 @@ proc RuntimeError_PackageNotFound*(pkg: string) =
 proc RuntimeError_PackageRepoNotCorrect*(repo: string) =
     panic RuntimeError,
           "package repository url not correct: ;" &
-          "_" & repo & "_"
+          repo
+
+proc RuntimeError_PackageRepoNotFound*(repo: string) =
+    panic RuntimeError,
+          "package repository not found: ;" &
+          repo
+
+proc RuntimeError_PackageUnknownError*(pkg: string) =
+    panic RuntimeError,
+          "unexpected error while installing package: ;" &
+          pkg
 
 # Program errors
 
