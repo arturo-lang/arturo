@@ -309,5 +309,3 @@ proc getEntryForPackage*(
         # maybe it's a remote package we should fetch?
         if (result = processRemotePackage(pkg, verspec); result.isSome):
             return
-    
-    return none(string)
