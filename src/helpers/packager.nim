@@ -242,9 +242,9 @@ proc processRemoteRepo(repo: string, latest: bool = false): Option[string] =
     ## Check remote github repo with an Arturo
     ## package in it and clone it locally
 
-    if not repo.match(re"https:\/\/github.com\/[\w\-]+\/[\w\-]+")):
+    if not repo.match(re"https:\/\/github.com\/[\w\-]+\/[\w\-]+"):
         RuntimeError_PackageRepoNotCorrect(repo)
-        
+
     let cleanName = repo.replace("https://github.com/","")
     let parts = cleanName.split("/")
 
