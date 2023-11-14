@@ -45,18 +45,23 @@ let
     NoImportResult*     = (false, "")
 
 const
-    PackageFolder*      = "{HomeDir}.arturo/packages/"
+    TmpFolder           = "{HomeDir}.arturo/tmp"
+    PackageFolder       = "{HomeDir}.arturo/packages/"
+    PackageTmpZip       = TmpFolder & "/pkg.zip"
 
-    SpecLatestUrl*      = "https://{pkg}.pkgr.art/spec"
-    SpecVersionUrl*     = "https://{pkg}.pkgr.art/{version}/spec"
+    SpecLatestUrl       = "https://{pkg}.pkgr.art/spec"
+    SpecVersionUrl      = "https://{pkg}.pkgr.art/{version}/spec"
 
-    SpecFolder*         = PackageFolder & "specs/"
-    SpecPackage*        = SpecFolder & "{pkg}/"
-    SpecFile*           = SpecPackage & "{version}.art"
+    SpecFolder          = PackageFolder & "specs/"
+    SpecPackage         = SpecFolder & "{pkg}/"
+    SpecFile            = SpecPackage & "{version}.art"
 
-    CacheFolder*        = PackageFolder & "cache/"
-    CachePackage*       = CacheFolder & "{pkg}/"
-    CacheFiles*         = CachePackage & "{version}/"
+    CacheFolder         = PackageFolder & "cache/"
+    CachePackage        = CacheFolder & "{pkg}/"
+    CacheFiles          = CachePackage & "{version}/"
+
+    RepoFolder          = PackageFolder & "repos/"
+    RepoPackage         = RepoFolder & "{repo}@{owner}/"
 
 #=======================================
 # Global Variables
@@ -137,6 +142,16 @@ proc readSpec(pkg: string, version: VVersion): ValueDict =
 
 proc readSpecFromContent(content: string): ValueDict =
     result = execDictionary(doParse(content, isFile=false))
+
+proc downloadPackageSourceInto*(url: string, target: string) =
+    let client = newHttpClient()
+    let pkgUrl = url
+    client.downloadFile(pkgUrl, PackageTmpZip.fmt)
+    let files = miniz.unzipAndGetFiles(PackageTmpZip.fmt, TmpFolder.fmt)
+    let (actualSubFolder, _, _) = splitFile(files[0])
+    let actualFolder = TmpFolder.fmt & "/" & actualSubFolder
+    moveDir(actualFolder, target)
+    discard tryRemoveFile(PackageTmpZip.fmt)
 
 proc installRemotePackage*(pkg: string, verspec: VersionSpec): bool =
     var packageSpec: string 
@@ -238,29 +253,38 @@ proc processLocalFolder(folderPath: string): Option[string] =
     if folderPath.dirExists():
         return getEntryPointFromSourceFolder(folderPath)
 
-proc processRemoteRepo(repo: string, latest: bool = false): Option[string] =
+proc processRemoteRepo(pkg: string, latest: bool = false): Option[string] =
     ## Check remote github repo with an Arturo
     ## package in it and clone it locally
 
-    if not repo.match(re"https:\/\/github.com\/[\w\-]+\/[\w\-]+"):
-        RuntimeError_PackageRepoNotCorrect(repo)
+    var matches: seq[string]
+    if not pkg.match(re"https:\/\/github.com\/([\w\-]+)\/([\w\-]+)\/?"):
+        RuntimeError_PackageRepoNotCorrect(pkg)
 
-    let cleanName = repo.replace("https://github.com/","")
-    let parts = cleanName.split("/")
+    echo $(matches)
 
-    let folderPath = "{HomeDir}.arturo/tmp/{parts[1]}@{parts[0]}".fmt
-    if (not dirExists(folderPath)) or latest:
-        let client = newHttpClient()
-        let pkgUrl = "{repo}/archive/main.zip".fmt
-        client.downloadFile(pkgUrl, "{HomeDir}.arturo/tmp/pkg.zip".fmt)
-        let files = miniz.unzipAndGetFiles("{HomeDir}.arturo/tmp/pkg.zip".fmt, "{HomeDir}.arturo/tmp".fmt)
-        let (actualSubFolder, _, _) = splitFile(files[0])
-        let actualFolder = "{HomeDir}.arturo/tmp/{actualSubFolder}".fmt
-        moveDir(actualFolder, folderPath)
+    let owner = matches[0]
+    let repo = matches[1]
 
-        discard tryRemoveFile("{HomeDir}.arturo/tmp/pkg.zip".fmt)
+    let repoFolder = RepoPackage.fmt
 
-    return getEntryPointFromSourceFolder(folderPath)
+    if (not dirExists(repoFolder)) or latest:
+        let pkgUrl = "{pkg}/archive/main.zip".fmt
+
+        pkgUrl.downloadPackageSourceInto(repoFolder)
+
+        # downloadPackageSourceInto
+        # let client = newHttpClient()
+        # let pkgUrl = "{repo}/archive/main.zip".fmt
+        # client.downloadFile(pkgUrl, "{HomeDir}.arturo/tmp/pkg.zip".fmt)
+        # let files = miniz.unzipAndGetFiles("{HomeDir}.arturo/tmp/pkg.zip".fmt, "{HomeDir}.arturo/tmp".fmt)
+        # let (actualSubFolder, _, _) = splitFile(files[0])
+        # let actualFolder = "{HomeDir}.arturo/tmp/{actualSubFolder}".fmt
+        # moveDir(actualFolder, folderPath)
+
+        # discard tryRemoveFile("{HomeDir}.arturo/tmp/pkg.zip".fmt)
+
+    return getEntryPointFromSourceFolder(repoFolder)
 
 proc processLocalPackage(src: string, version: VersionSpec, latest: bool = false): Option[string] =
     ## Check for local package installed in our home folder
