@@ -188,7 +188,7 @@ proc installRemotePackage*(pkg: string, verspec: VersionSpec): bool =
         let version = verspec.ver
         packageSpec = SpecVersionUrl.fmt
 
-    ShowMessage "Downloading spec: {pkg}".fmt
+    ShowMessage "Downloading spec: {pkg}.pkgr.art".fmt
     var specContent: string
     try:
         specContent = waitFor (newAsyncHttpClient().getContent(packageSpec))
