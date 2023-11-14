@@ -69,8 +69,8 @@ var
 # Forward declarations
 #=======================================
 
-proc loadLocalPackage(src: string, version: VersionSpec, latest: bool = false): Option[string]
-proc loadRemotePackage(src: string, version: VersionSpec): Option[string]
+proc processLocalPackage(src: string, version: VersionSpec, latest: bool = false): Option[string]
+proc processRemotePackage(src: string, version: VersionSpec): Option[string]
 proc verifyDependencies*(deps: seq[Value]): bool
 
 #=======================================
@@ -102,7 +102,7 @@ proc getEntryPointFromSourceFolder*(folder: string): Option[string] =
     if allOk:
         return some(entryPoint)
 
-proc checkLocalFile*(filePath: string): Option[string] =
+proc processLocalFile*(filePath: string): Option[string] =
     ## Check if file exists at given path
     ## or alternatively "file.art"
 
@@ -112,7 +112,7 @@ proc checkLocalFile*(filePath: string): Option[string] =
         if (let fileWithExtension = filePath & ".art"; fileWithExtension.fileExists()):
             return some(fileWithExtension)
 
-proc checkLocalFolder*(folderPath: string): Option[string] =
+proc processLocalFolder*(folderPath: string): Option[string] =
     ## Check if valid package folder exists 
     ## at given path and return entry filepath
 
@@ -226,17 +226,17 @@ proc verifyDependencies*(deps: seq[Value]): bool =
     for dep in depList:
         let src = dep[0]
         let version = dep[1]
-        if loadLocalPackage(src, version).isSome:
+        if processLocalPackage(src, version).isSome:
             discard
         else:
-            if loadRemotePackage(src,version).isSome:
+            if processRemotePackage(src,version).isSome:
                 discard
             else:
                 allOk = false
 
     return allOk
 
-proc getSourceFromRepo*(repo: string, latest: bool = false): Option[string] =
+proc processRemoteRepo*(repo: string, latest: bool = false): Option[string] =
     let cleanName = repo.replace("https://github.com/","")
     let parts = cleanName.split("/")
 
@@ -254,9 +254,9 @@ proc getSourceFromRepo*(repo: string, latest: bool = false): Option[string] =
 
     return getEntryPointFromSourceFolder(folderPath)
 
-proc loadLocalPackage(src: string, version: VersionSpec, latest: bool = false): Option[string] =
+proc processLocalPackage(src: string, version: VersionSpec, latest: bool = false): Option[string] =
     if latest:
-        return loadRemotePackage(src, version)
+        return processRemotePackage(src, version)
 
     if (let (isLocalPackage, packageSource)=checkLocalPackage(src, version); isLocalPackage):
         let (packageLocation, packageVersion) = packageSource
@@ -270,10 +270,10 @@ proc loadLocalPackage(src: string, version: VersionSpec, latest: bool = false): 
 
         return some(packageLocation & "/" & packageSpec["entry"].s)
 
-proc loadRemotePackage(src: string, version: VersionSpec): Option[string] =
+proc processRemotePackage(src: string, version: VersionSpec): Option[string] =
     echo "- Querying remote packages...".fmt
     if installRemotePackage(src, version):
-        return loadLocalPackage(src, version)
+        return processLocalPackage(src, version)
 
 proc getPackageSource*(
     pkg: string, 
@@ -285,24 +285,24 @@ proc getPackageSource*(
     ## the appropriate entry source filepath
 
     # is it a file?
-    if (result = checkLocalFile(pkg); result.isSome):
+    if (result = processLocalFile(pkg); result.isSome):
         return
 
     # maybe it's a folder with a "package" in it?
-    if (result = checkLocalFolder(pkg); result.isSome):
+    if (result = processLocalFolder(pkg); result.isSome):
         return
     
     # maybe it's a github repository url?
     if pkg.isUrl():
-        if (result = getSourceFromRepo(pkg, latest); result.isSome):
+        if (result = processRemoteRepo(pkg, latest); result.isSome):
             return
 
     # maybe it's a package we already have locally?
-    if (result = loadLocalPackage(pkg, verspec, latest); result.isSome):
+    if (result = processLocalPackage(pkg, verspec, latest); result.isSome):
         return
     else:
         # maybe it's a remote package we should fetch?
-        if (result = loadRemotePackage(pkg, verspec); result.isSome):
+        if (result = processRemotePackage(pkg, verspec); result.isSome):
             return
     
     return none(string)
