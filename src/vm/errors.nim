@@ -411,6 +411,11 @@ proc RuntimeError_PackageNotFound*(pkg: string) =
           "package not found: ;" &
           "_" & pkg & "_"
 
+proc RuntimeError_PackageRepoNotCorrect*(repo: string) =
+    panic RuntimeError,
+          "package repository url not correct: ;" &
+          "_" & repo & "_"
+
 # Program errors
 
 proc ProgramError_panic*(message: string, code: int) =
