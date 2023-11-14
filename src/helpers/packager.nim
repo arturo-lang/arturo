@@ -75,8 +75,8 @@ var
 # Forward declarations
 #=======================================
 
-proc processLocalPackage(src: string, version: VersionSpec, latest: bool = false): Option[string]
-proc processRemotePackage(src: string, version: VersionSpec): Option[string]
+proc processLocalPackage(pkg: string, verspec: VersionSpec, latest: bool = false): Option[string]
+proc processRemotePackage(pkg: string, verspec: VersionSpec): Option[string]
 proc verifyDependencies*(deps: seq[Value]): bool
 
 #=====================================
@@ -85,6 +85,20 @@ proc verifyDependencies*(deps: seq[Value]): bool
 
 template hasDependencies(item: ValueDict): bool =
     (item.hasKey("depends") and item["depends"].kind == Block)
+
+template ShowMessage(msg: string, trail="..."): untyped =
+    if VerbosePackager:
+        stdout.write "- " & msg & trail
+
+template ShowMessageNl(msg: string, trail="..."): untyped =
+    if VerbosePackager:
+        ShowMessage(msg, trail)
+        stdout.write "\n"
+
+template ShowSuccess(): untyped =
+    if VerbosePackager:
+        stdout.write bold(greenColor) & " ✔" & resetColor() & "\n"
+        stdout.flushFile()
 
 #=======================================
 # Helpers
@@ -145,21 +159,27 @@ proc readSpecFromContent(content: string): ValueDict =
     result = execDictionary(doParse(content, isFile=false))
 
 proc downloadPackageSourceInto*(url: string, target: string) =
-    let client = newHttpClient()
-    let pkgUrl = url
-    client.downloadFile(pkgUrl, PackageTmpZip.fmt)
+    ## Download url containing a package source, unzip it
+    ## and move everything into the target folder
+    
+    ShowMessage "Downloading sources"
+
+    newHttpClient().downloadFile(url, PackageTmpZip.fmt)
     let files = miniz.unzipAndGetFiles(PackageTmpZip.fmt, TmpFolder.fmt)
     let (actualSubFolder, _, _) = splitFile(files[0])
     let actualFolder = TmpFolder.fmt & "/" & actualSubFolder
+    createDir(target) # make sure the path (and all subdirs) exist
     moveDir(actualFolder, target)
     discard tryRemoveFile(PackageTmpZip.fmt)
 
+    ShowSuccess()
+
 proc installRemotePackage*(pkg: string, verspec: VersionSpec): bool =
     var packageSpec: string 
-    if verspec[0]:
+    if verspec.min:
         packageSpec = SpecLatestUrl.fmt
     else:
-        let version = verspec[1]
+        let version = verspec.ver
         packageSpec = SpecVersionUrl.fmt
 
     var specContent: string
@@ -169,37 +189,21 @@ proc installRemotePackage*(pkg: string, verspec: VersionSpec): bool =
         RuntimeError_PackageNotFound(pkg)
 
     let spec = readSpecFromContent(specContent)
-    let actualVersion = spec["version"].version
+    let version = spec["version"].version
     if spec.hasDependencies() and not verifyDependencies(spec["depends"].a):
         return false
     let specFolder = SpecPackage.fmt
-    stdout.write "- Installing package: {pkg} {actualVersion}".fmt
+    stdout.write "- Installing package: {pkg} {version}".fmt
     try:
-        echo "calling: " & "https://pkgr.art/download.php?pkg={pkg}&ver={actualVersion}&mgk=18966".fmt
-        discard waitFor (newAsyncHttpClient().getContent("https://pkgr.art/download.php?pkg={pkg}&ver={actualVersion}&mgk=18966".fmt))
+        discard waitFor (newAsyncHttpClient().getContent("https://pkgr.art/download.php?pkg={pkg}&ver={version}&mgk=18966".fmt))
     except Exception as e:
-        echo "error!"
-        echo $(e.msg)
         discard
     createDir(specFolder)
-    let specFile = "{specFolder}/{actualVersion}.art".fmt
+    let specFile = "{specFolder}/{version}.art".fmt
     writeToFile(specFile, specContent)
 
     let pkgUrl = spec["url"].s
-    let version = actualVersion
     pkgUrl.downloadPackageSourceInto(CacheFiles.fmt)
-    # let client = newHttpClient()
-    # createDir("{HomeDir}.arturo/tmp/".fmt)
-    # let tmpPkgZip = "{HomeDir}.arturo/tmp/pkg.zip".fmt
-    # client.downloadFile(pkgUrl, tmpPkgZip)
-    # createDir(CachePackage.fmt)
-    # let files = miniz.unzipAndGetFiles(tmpPkgZip, CachePackage.fmt)
-    # let (actualSubFolder, _, _) = splitFile(files[0])
-    # let actualFolder = "{HomeDir}.arturo/packages/cache/{pkg}/{actualSubFolder}".fmt
-    # let version = actualVersion
-    # moveDir(actualFolder, CacheFiles.fmt)
-
-    #discard tryRemoveFile("{HomeDir}.arturo/tmp/pkg.zip".fmt)
 
     stdout.write bold(greenColor) & " ✔" & resetColor() & "\n"
     stdout.flushFile()
@@ -244,9 +248,13 @@ proc processLocalFile(filePath: string): Option[string] =
     ## or alternatively "file.art"
 
     if filePath.fileExists():
+        ShowMessage "Loading from local file"
+        ShowSuccess()
         return some(filePath)
     else:
         if (let fileWithExtension = filePath & ".art"; fileWithExtension.fileExists()):
+            ShowMessage "Loading from local file"
+            ShowSuccess()
             return some(fileWithExtension)
 
 proc processLocalFolder(folderPath: string): Option[string] =
@@ -254,7 +262,9 @@ proc processLocalFolder(folderPath: string): Option[string] =
     ## at given path and return entry filepath
 
     if folderPath.dirExists():
-        return getEntryPointFromSourceFolder(folderPath)
+        if (result = getEntryPointFromSourceFolder(folderPath); result.isSome):
+            ShowMessage "Loading from local folder"
+            ShowSuccess()
 
 proc processRemoteRepo(pkg: string, branch: string = "main", latest: bool = false): Option[string] =
     ## Check remote github repo with an Arturo
@@ -263,6 +273,8 @@ proc processRemoteRepo(pkg: string, branch: string = "main", latest: bool = fals
     var matches: array[2, string]
     if not pkg.match(re"https://github.com/([\w\-]+)/([\w\-]+)", matches):
         RuntimeError_PackageRepoNotCorrect(pkg)
+
+    ShowMessageNl "Loading from repository..."
 
     let owner = matches[0]
     let repo = matches[1]
@@ -275,17 +287,17 @@ proc processRemoteRepo(pkg: string, branch: string = "main", latest: bool = fals
 
     return getEntryPointFromSourceFolder(repoFolder)
 
-proc processLocalPackage(src: string, version: VersionSpec, latest: bool = false): Option[string] =
+proc processLocalPackage(pkg: string, verspec: VersionSpec, latest: bool = false): Option[string] =
     ## Check for local package installed in our home folder
     ## and return its entry point
 
     if latest:
-        return processRemotePackage(src, version)
+        return processRemotePackage(pkg, verspec)
 
-    if (let localPackage = lookupLocalPackageVersion(src, version); localPackage.isSome):
-        let (packageLocation, packageVersion) = localPackage.get()
-        stdout.write "- Loading local package: {src} {packageVersion}".fmt
-        let packageSpec = readSpec(src, packageVersion)
+    if (let localPackage = lookupLocalPackageVersion(pkg, verspec); localPackage.isSome):
+        let (packageLocation, version) = localPackage.get()
+        stdout.write "- Loading local package: {pkg} {version}".fmt
+        let packageSpec = readSpec(pkg, version)
         if packageSpec.hasDependencies() and not verifyDependencies(packageSpec["depends"].a):
             return
 
@@ -294,13 +306,13 @@ proc processLocalPackage(src: string, version: VersionSpec, latest: bool = false
 
         return some(packageLocation & "/" & packageSpec["entry"].s)
 
-proc processRemotePackage(src: string, version: VersionSpec): Option[string] =
+proc processRemotePackage(pkg: string, verspec: VersionSpec): Option[string] =
     ## Check if there is a remote package with the given name/specificiation
     ## in our registry
 
     echo "- Querying remote packages...".fmt
-    if installRemotePackage(src, version):
-        return processLocalPackage(src, version)
+    if installRemotePackage(pkg, verspec):
+        return processLocalPackage(pkg, verspec)
 
 #=======================================
 # Methods
