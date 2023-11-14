@@ -163,7 +163,7 @@ proc installRemotePackage*(pkg: string, verspec: VersionSpec): bool =
         discard waitFor (newAsyncHttpClient().getContent("https://pkgr.art/download.php?pkg={pkg}&ver={actualVersion}&mgk=18966".fmt))
     except Exception as e:
         echo "error!"
-        echo $(e)
+        echo $(e.msg)
         discard
     createDir(specFolder)
     let specFile = "{specFolder}/{actualVersion}.art".fmt
