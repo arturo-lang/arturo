@@ -169,6 +169,7 @@ proc downloadPackageSourceInto*(url: string, target: string) =
     
     ShowMessage "Downloading sources"
 
+    removeDir(target) # delete it, just in case
     newHttpClient().downloadFile(url, PackageTmpZip.fmt)
     let files = miniz.unzipAndGetFiles(PackageTmpZip.fmt, TmpFolder.fmt)
     let (actualSubFolder, _, _) = splitFile(files[0])
