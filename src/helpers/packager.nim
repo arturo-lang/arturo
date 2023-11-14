@@ -203,12 +203,12 @@ proc installRemotePackage*(pkg: string, verspec: VersionSpec): bool =
     let specFile = "{specFolder}/{version}.art".fmt
     writeToFile(specFile, specContent)
     ShowSuccess()
-
-    if spec.hasDependencies() and not verifyDependencies(spec["depends"].a):
-        return false
     
     let pkgUrl = spec["url"].s
     pkgUrl.downloadPackageSourceInto(CacheFiles.fmt)
+
+    if spec.hasDependencies() and not verifyDependencies(spec["depends"].a):
+        return false
 
     ShowMessage "Installing package: {pkg} {version}".fmt
     try:
@@ -221,6 +221,7 @@ proc installRemotePackage*(pkg: string, verspec: VersionSpec): bool =
 
 proc verifyDependencies*(deps: seq[Value]): bool = 
     ShowMessageNl "Verifying dependencies"
+    
     var depList: seq[(string, VersionSpec)] = @[]
 
     for dep in deps:
@@ -280,13 +281,15 @@ proc processLocalFolder(folderPath: string): Option[string] =
 proc processRemoteRepo(pkg: string, branch: string = "main", latest: bool = false): Option[string] =
     ## Check remote github repo with an Arturo
     ## package in it and clone it locally
+    
+    ShowMessage "Loading from repository"
 
     var matches: array[2, string]
     if not pkg.match(re"https://github.com/([\w\-]+)/([\w\-]+)", matches):
         WillShowError()
         RuntimeError_PackageRepoNotCorrect(pkg)
 
-    ShowMessageNl "Loading from repository"
+    ShowSuccess()
 
     let owner = matches[0]
     let repo = matches[1]
@@ -316,9 +319,8 @@ proc processLocalPackage(pkg: string, verspec: VersionSpec, latest: bool = false
     if (let localPackage = lookupLocalPackageVersion(pkg, verspec); localPackage.isSome):
         let (packageLocation, version) = localPackage.get()
         ShowMessage "Loading local package: {pkg} {version}".fmt
+        
         let packageSpec = readSpec(pkg, version)
-        # if packageSpec.hasDependencies() and not verifyDependencies(packageSpec["depends"].a):
-        #     return
 
         ShowSuccess()
 
