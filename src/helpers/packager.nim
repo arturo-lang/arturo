@@ -32,8 +32,8 @@ import vm/values/custom/[vsymbol, vversion]
 #=======================================
 
 type
-    VersionSpec*        = (bool, VVersion)
-    VersionLocation*    = (string, VVersion)
+    VersionSpec*        = tuple[min: bool, ver: VVersion]
+    VersionLocation*    = tuple[loc: string, ver: VVersion]
 
 #=======================================
 # Constants
@@ -109,42 +109,27 @@ proc getEntryPointFromSourceFolder*(folder: string): Option[string] =
     if allOk:
         return some(entryPoint)
 
-proc getLocalPackageVersions(inPath: string, ordered: SortOrder): seq[VersionLocation] =
-    result = (toSeq(walkDir(inPath))).map(
-            proc (vers: tuple[kind: PathComponent, path: string]): VersionLocation = 
-                let filepath = vers.path
-                let (_, name, ext) = splitFile(filepath)
-                (filepath, newVVersion(name & ext))
-        ).sorted(
-            proc (a: VersionLocation, b: VersionLocation): int =
-                cmp(a[1], b[1])
-        , order=ordered)
+proc checkLocalPackage*(pkg: string, version: VersionSpec): Option[VersionLocation] =
+    let packagesPath = CachePackage.fmt
 
-proc getBestVersion(within: seq[VersionLocation], version: VersionSpec): VersionLocation =
-    let checkingForMinimum = version[0]
-    let checkingForVersion = version[1]
+    if packagesPath.dirExists():
+        # Get all local versions
+        let localVersions = (toSeq(walkDir(packagesPath))).map(
+                proc (vers: tuple[kind: PathComponent, path: string]): VersionLocation = 
+                    let filepath = vers.path
+                    let (_, name, ext) = splitFile(filepath)
+                    (filepath, newVVersion(name & ext))
+            ).sorted(proc (a: VersionLocation, b: VersionLocation): int = cmp(a.ver, b.ver), order=SortOrder.Ascending)
 
-    for vers in within:
-        if checkingForMinimum:
-            if (vers[1] > checkingForVersion or vers[1] == checkingForVersion):
-                return vers
-        else:
-            if vers[1] == checkingForVersion:
-                return vers
-
-    return NoVersionLocation
-
-proc checkLocalPackage*(pkg: string, version: VersionSpec): (bool, VersionLocation) =
-    let expectedPath = CachePackage.fmt
-
-    if expectedPath.dirExists():
-        let got = getBestVersion(
-            getLocalPackageVersions(expectedPath, SortOrder.Descending),
-            version
-        )
-        return (got[0]!="", got)
-    else:
-        return (false, NoVersionLocation)
+        # Go through them and return the one - if any -
+        # that matches the version specification we are looking for
+        for found in localVersions:
+            if version.min:
+                if (found.ver > version.ver or found.ver == version.ver):
+                    return some(found)
+            else:
+                if found.ver == version.ver:
+                    return some(found)
 
 proc readSpec(pkg: string, version: VVersion): ValueDict =
     let specFile = SpecFile.fmt
