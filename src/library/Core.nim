@@ -529,10 +529,11 @@ proc defineSymbols*() =
             "package"   : {String,Literal,Block}
         },
         attrs       = {
-            "latest"    : ({Logical},"always check for the latest version available"),
-            "min"       : ({Logical},"get any version >= the specified one"),
-            "verbose"   : ({Logical},"output extra information"),
             "version"   : ({Version},"specify package version"),
+            "min"       : ({Logical},"get any version >= the specified one"),
+            "branch"    : ({String,Literal},"use specific branch for repository url (default: main)"),
+            "latest"    : ({Logical},"always check for the latest version available"),
+            "verbose"   : ({Logical},"output extra information")
         },
         returns     = {Nothing},
         # TODO(Core/import) add documentation example
@@ -540,20 +541,24 @@ proc defineSymbols*() =
         example     = """
         """:
             #=======================================================
-            var versionSpec = (true, NoPackageVersion)
+            var verspec = (true, NoPackageVersion)
+            var branch = "main"
             let latest = hadAttr("latest")
             let verbose = hadAttr("verbose")
             
             let pkg = x.s
             
             if checkAttr("version"):
-                versionSpec = (hadAttr("min"), aVersion.version)
+                verspec = (hadAttr("min"), aVersion.version)
+
+            if checkAttr("branch"):
+                branch = aBranch.s
 
             let verboseBefore = VerbosePackager
             if verbose:
                 VerbosePackager = true
 
-            if (let res = getEntryForPackage(pkg, versionSpec, latest); res.isSome):
+            if (let res = getEntryForPackage(pkg, verspec, branch, latest); res.isSome):
                 let src = res.get()
             
                 addPath(src)
