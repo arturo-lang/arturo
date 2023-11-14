@@ -109,7 +109,7 @@ proc getEntryPointFromSourceFolder*(folder: string): Option[string] =
     if allOk:
         return some(entryPoint)
 
-proc checkLocalPackage*(pkg: string, version: VersionSpec): Option[VersionLocation] =
+proc lookupLocalPackageVersion*(pkg: string, version: VersionSpec): Option[VersionLocation] =
     let packagesPath = CachePackage.fmt
 
     if packagesPath.dirExists():
@@ -254,8 +254,8 @@ proc processLocalPackage(src: string, version: VersionSpec, latest: bool = false
     if latest:
         return processRemotePackage(src, version)
 
-    if (let (isLocalPackage, packageSource)=checkLocalPackage(src, version); isLocalPackage):
-        let (packageLocation, packageVersion) = packageSource
+    if (let localPackage = lookupLocalPackageVersion(src, version); localPackage.isSome):
+        let (packageLocation, packageVersion) = localPackage.get()
         stdout.write "- Loading local package: {src} {packageVersion}".fmt
         let packageSpec = readSpec(src, packageVersion)
         if packageSpec.hasDependencies() and not verifyDependencies(packageSpec["depends"].a):
