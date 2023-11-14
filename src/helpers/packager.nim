@@ -159,8 +159,11 @@ proc installRemotePackage*(pkg: string, verspec: VersionSpec): bool =
     let specFolder = SpecPackage.fmt
     stdout.write "- Installing package: {pkg} {actualVersion}".fmt
     try:
+        echo "calling: " & "https://pkgr.art/download.php?pkg={pkg}&ver={actualVersion}&mgk=18966".fmt
         discard waitFor (newAsyncHttpClient().getContent("https://pkgr.art/download.php?pkg={pkg}&ver={actualVersion}&mgk=18966".fmt))
-    except Exception:
+    except Exception as e:
+        echo "error!"
+        echo $(e)
         discard
     createDir(specFolder)
     let specFile = "{specFolder}/{actualVersion}.art".fmt
