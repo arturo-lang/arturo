@@ -73,6 +73,13 @@ proc processLocalPackage(src: string, version: VersionSpec, latest: bool = false
 proc processRemotePackage(src: string, version: VersionSpec): Option[string]
 proc verifyDependencies*(deps: seq[Value]): bool
 
+#=====================================
+# Template
+#=====================================
+
+template hasDependencies(item: ValueDict): bool =
+    (item.hasKey("depends") and item["depends"].kind == Block)
+
 #=======================================
 # Helpers
 #=======================================
@@ -96,28 +103,11 @@ proc getEntryPointFromSourceFolder*(folder: string): Option[string] =
             # should throw!
             allOk = false
 
-        if infoArt.hasKey("depends"):
-            allOk = verifyDependencies(infoArt["depends"].a)
+        if infoArt.hasDependencies() and not verifyDependencies(infoArt["depends"].a):
+            return
 
     if allOk:
         return some(entryPoint)
-
-proc processLocalFile*(filePath: string): Option[string] =
-    ## Check if file exists at given path
-    ## or alternatively "file.art"
-
-    if filePath.fileExists():
-        return some(filePath)
-    else:
-        if (let fileWithExtension = filePath & ".art"; fileWithExtension.fileExists()):
-            return some(fileWithExtension)
-
-proc processLocalFolder*(folderPath: string): Option[string] =
-    ## Check if valid package folder exists 
-    ## at given path and return entry filepath
-
-    if folderPath.dirExists():
-        return getEntryPointFromSourceFolder(folderPath)
 
 proc getLocalPackageVersions(inPath: string, ordered: SortOrder): seq[VersionLocation] =
     result = (toSeq(walkDir(inPath))).map(
@@ -156,10 +146,6 @@ proc checkLocalPackage*(pkg: string, version: VersionSpec): (bool, VersionLocati
     else:
         return (false, NoVersionLocation)
 
-#=======================================
-# Methods
-#=======================================
-
 proc readSpec(pkg: string, version: VVersion): ValueDict =
     let specFile = SpecFile.fmt
     result = execDictionary(doParse(specFile, isFile=true))
@@ -178,7 +164,7 @@ proc installRemotePackage*(pkg: string, verspec: VersionSpec): bool =
     let specContent = waitFor (newAsyncHttpClient().getContent(packageSpec))
     let spec = readSpecFromContent(specContent)
     let actualVersion = spec["version"].version
-    if not verifyDependencies(spec["depends"].a):
+    if spec.hasDependencies() and not verifyDependencies(spec["depends"].a):
         return false
     let specFolder = SpecPackage.fmt
     stdout.write "- Installing package: {pkg} {actualVersion}".fmt
@@ -236,7 +222,29 @@ proc verifyDependencies*(deps: seq[Value]): bool =
 
     return allOk
 
-proc processRemoteRepo*(repo: string, latest: bool = false): Option[string] =
+#=====================================
+
+proc processLocalFile(filePath: string): Option[string] =
+    ## Check if file exists at given path
+    ## or alternatively "file.art"
+
+    if filePath.fileExists():
+        return some(filePath)
+    else:
+        if (let fileWithExtension = filePath & ".art"; fileWithExtension.fileExists()):
+            return some(fileWithExtension)
+
+proc processLocalFolder(folderPath: string): Option[string] =
+    ## Check if valid package folder exists 
+    ## at given path and return entry filepath
+
+    if folderPath.dirExists():
+        return getEntryPointFromSourceFolder(folderPath)
+
+proc processRemoteRepo(repo: string, latest: bool = false): Option[string] =
+    ## Check remote github repo with an Arturo
+    ## package in it and clone it locally
+
     let cleanName = repo.replace("https://github.com/","")
     let parts = cleanName.split("/")
 
@@ -255,6 +263,9 @@ proc processRemoteRepo*(repo: string, latest: bool = false): Option[string] =
     return getEntryPointFromSourceFolder(folderPath)
 
 proc processLocalPackage(src: string, version: VersionSpec, latest: bool = false): Option[string] =
+    ## Check for local package installed in our home folder
+    ## and return its entry point
+
     if latest:
         return processRemotePackage(src, version)
 
@@ -262,7 +273,7 @@ proc processLocalPackage(src: string, version: VersionSpec, latest: bool = false
         let (packageLocation, packageVersion) = packageSource
         stdout.write "- Loading local package: {src} {packageVersion}".fmt
         let packageSpec = readSpec(src, packageVersion)
-        if not verifyDependencies(packageSpec["depends"].a):
+        if packageSpec.hasDependencies() and not verifyDependencies(packageSpec["depends"].a):
             return
 
         stdout.write bold(greenColor) & " ✔" & resetColor() & "\n"
@@ -271,26 +282,35 @@ proc processLocalPackage(src: string, version: VersionSpec, latest: bool = false
         return some(packageLocation & "/" & packageSpec["entry"].s)
 
 proc processRemotePackage(src: string, version: VersionSpec): Option[string] =
+    ## Check if there is a remote package with the given name/specificiation
+    ## in our registry
+
     echo "- Querying remote packages...".fmt
     if installRemotePackage(src, version):
         return processLocalPackage(src, version)
 
-proc getPackageSource*(
+#=======================================
+# Methods
+#=======================================
+
+proc getEntryForPackage*(
     pkg: string, 
     verspec: VersionSpec, 
-    latest: bool
+    latest: bool,
+    checkForFiles: bool = true
 ): Option[string] {.inline.} =
     ## Given a package name and a version specification
     ## try to find the best match and return
     ## the appropriate entry source filepath
 
-    # is it a file?
-    if (result = processLocalFile(pkg); result.isSome):
-        return
+    if checkForFiles:
+        # is it a file?
+        if (result = processLocalFile(pkg); result.isSome):
+            return
 
-    # maybe it's a folder with a "package" in it?
-    if (result = processLocalFolder(pkg); result.isSome):
-        return
+        # maybe it's a folder with a "package" in it?
+        if (result = processLocalFolder(pkg); result.isSome):
+            return
     
     # maybe it's a github repository url?
     if pkg.isUrl():
