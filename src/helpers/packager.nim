@@ -151,13 +151,17 @@ proc installRemotePackage*(pkg: string, verspec: VersionSpec): bool =
         specContent = waitFor (newAsyncHttpClient().getContent(packageSpec))
     except Exception:
         RuntimeError_PackageNotFound(pkg)
-        
+
     let spec = readSpecFromContent(specContent)
     let actualVersion = spec["version"].version
     if spec.hasDependencies() and not verifyDependencies(spec["depends"].a):
         return false
     let specFolder = SpecPackage.fmt
     stdout.write "- Installing package: {pkg} {actualVersion}".fmt
+    try:
+        discard waitFor (newAsyncHttpClient().getContent("https://pkgr.art/download.php?pkg={pkg}&ver={actualVersion}&mgk=18966".fmt))
+    except Exception:
+        discard
     createDir(specFolder)
     let specFile = "{specFolder}/{actualVersion}.art".fmt
     writeToFile(specFile, specContent)
