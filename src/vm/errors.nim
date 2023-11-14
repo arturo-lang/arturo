@@ -386,7 +386,7 @@ proc RuntimeError_OperationNotPermitted*(operation: string) =
           
 proc RuntimeError_StackUnderflow*() =
     panic RuntimeError,
-            "stack underflow"
+        "stack underflow"
 
 proc RuntimeError_ConfigNotFound*(gkey: string, akey: string) =
     panic RuntimeError,
@@ -405,6 +405,10 @@ proc RuntimeError_CompatibleBrowserNotFound*() =
 proc RuntimeError_CompatibleBrowserCouldNotOpenWindow*() =
     panic RuntimeError,
           "could not open a Chrome-compatible browser window"
+
+proc RuntimeError_PackageNotFound*(pkg: string) =
+    panic RuntimeError,
+          "package not found: " & pkg
 
 
 # Program errors
