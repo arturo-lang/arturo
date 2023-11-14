@@ -86,19 +86,24 @@ proc verifyDependencies*(deps: seq[Value]): bool
 template hasDependencies(item: ValueDict): bool =
     (item.hasKey("depends") and item["depends"].kind == Block)
 
-template ShowMessage(msg: string, trail="..."): untyped =
+template ShowMessage(msg: string): untyped =
     if VerbosePackager:
-        stdout.write "- " & msg & trail
+        stdout.write "- " & msg
 
 template ShowMessageNl(msg: string, trail="..."): untyped =
     if VerbosePackager:
-        ShowMessage(msg, trail)
+        ShowMessage msg & trail
         stdout.write "\n"
 
 template ShowSuccess(): untyped =
     if VerbosePackager:
         stdout.write bold(greenColor) & " ✔" & resetColor() & "\n"
         stdout.flushFile()
+
+template WillShowError(): untyped = 
+    if VerbosePackager:
+        stdout.flushFile()
+        echo ""
 
 #=======================================
 # Helpers
@@ -187,6 +192,7 @@ proc installRemotePackage*(pkg: string, verspec: VersionSpec): bool =
     try:
         specContent = waitFor (newAsyncHttpClient().getContent(packageSpec))
     except Exception:
+        WillShowError()
         RuntimeError_PackageNotFound(pkg)
 
     let spec = readSpecFromContent(specContent)
@@ -277,6 +283,7 @@ proc processRemoteRepo(pkg: string, branch: string = "main", latest: bool = fals
 
     var matches: array[2, string]
     if not pkg.match(re"https://github.com/([\w\-]+)/([\w\-]+)", matches):
+        WillShowError()
         RuntimeError_PackageRepoNotCorrect(pkg)
 
     ShowMessageNl "Loading from repository"
@@ -291,6 +298,7 @@ proc processRemoteRepo(pkg: string, branch: string = "main", latest: bool = fals
         try:
             pkgUrl.downloadPackageSourceInto(repoFolder)
         except Exception as e:
+            WillShowError()
             if e.msg.contains("404"):
                 RuntimeError_PackageRepoNotFound(pkg)
             else:
@@ -307,13 +315,12 @@ proc processLocalPackage(pkg: string, verspec: VersionSpec, latest: bool = false
 
     if (let localPackage = lookupLocalPackageVersion(pkg, verspec); localPackage.isSome):
         let (packageLocation, version) = localPackage.get()
-        stdout.write "- Loading local package: {pkg} {version}".fmt
+        ShowMessage "Loading local package: {pkg} {version}".fmt
         let packageSpec = readSpec(pkg, version)
-        if packageSpec.hasDependencies() and not verifyDependencies(packageSpec["depends"].a):
-            return
+        # if packageSpec.hasDependencies() and not verifyDependencies(packageSpec["depends"].a):
+        #     return
 
-        stdout.write bold(greenColor) & " ✔" & resetColor() & "\n"
-        stdout.flushFile()
+        ShowSuccess()
 
         return some(packageLocation & "/" & packageSpec["entry"].s)
 
