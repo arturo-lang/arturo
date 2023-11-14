@@ -23,7 +23,7 @@ when not defined(WEB):
     import helpers/terminal
     import helpers/url
 
-import vm/[env, exec, parse, values/types]
+import vm/[env, errors, exec, parse, values/types]
 
 import vm/values/custom/[vsymbol, vversion]
 
@@ -146,7 +146,12 @@ proc installRemotePackage*(pkg: string, verspec: VersionSpec): bool =
         let version = verspec[1]
         packageSpec = SpecVersionUrl.fmt
 
-    let specContent = waitFor (newAsyncHttpClient().getContent(packageSpec))
+    var specContent: string
+    try:
+        specContent = waitFor (newAsyncHttpClient().getContent(packageSpec))
+    except Exception:
+        RuntimeError_PackageNotFound(pkg)
+        
     let spec = readSpecFromContent(specContent)
     let actualVersion = spec["version"].version
     if spec.hasDependencies() and not verifyDependencies(spec["depends"].a):
