@@ -408,8 +408,8 @@ proc RuntimeError_CompatibleBrowserCouldNotOpenWindow*() =
 
 proc RuntimeError_PackageNotFound*(pkg: string) =
     panic RuntimeError,
-          "package not found: " & pkg
-
+          "package not found: ;" &
+          "_" & pkg & "_"
 
 # Program errors
 
