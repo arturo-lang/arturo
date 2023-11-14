@@ -317,7 +317,7 @@ proc getEntryForPackage*(
     # maybe it's a package we already have locally?
     if (result = processLocalPackage(pkg, verspec, latest); result.isSome):
         return
-    else:
-        # maybe it's a remote package we should fetch?
-        if (result = processRemotePackage(pkg, verspec); result.isSome):
-            return
+    
+    # maybe it's a remote package we should fetch?
+    if (result = processRemotePackage(pkg, verspec); result.isSome):
+        return
