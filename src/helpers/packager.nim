@@ -186,18 +186,20 @@ proc installRemotePackage*(pkg: string, verspec: VersionSpec): bool =
     writeToFile(specFile, specContent)
 
     let pkgUrl = spec["url"].s
-    let client = newHttpClient()
-    createDir("{HomeDir}.arturo/tmp/".fmt)
-    let tmpPkgZip = "{HomeDir}.arturo/tmp/pkg.zip".fmt
-    client.downloadFile(pkgUrl, tmpPkgZip)
-    createDir(CachePackage.fmt)
-    let files = miniz.unzipAndGetFiles(tmpPkgZip, CachePackage.fmt)
-    let (actualSubFolder, _, _) = splitFile(files[0])
-    let actualFolder = "{HomeDir}.arturo/packages/cache/{pkg}/{actualSubFolder}".fmt
     let version = actualVersion
-    moveDir(actualFolder, CacheFiles.fmt)
+    pkgUrl.downloadPackageSourceInto(CacheFiles.fmt)
+    # let client = newHttpClient()
+    # createDir("{HomeDir}.arturo/tmp/".fmt)
+    # let tmpPkgZip = "{HomeDir}.arturo/tmp/pkg.zip".fmt
+    # client.downloadFile(pkgUrl, tmpPkgZip)
+    # createDir(CachePackage.fmt)
+    # let files = miniz.unzipAndGetFiles(tmpPkgZip, CachePackage.fmt)
+    # let (actualSubFolder, _, _) = splitFile(files[0])
+    # let actualFolder = "{HomeDir}.arturo/packages/cache/{pkg}/{actualSubFolder}".fmt
+    # let version = actualVersion
+    # moveDir(actualFolder, CacheFiles.fmt)
 
-    discard tryRemoveFile("{HomeDir}.arturo/tmp/pkg.zip".fmt)
+    #discard tryRemoveFile("{HomeDir}.arturo/tmp/pkg.zip".fmt)
 
     stdout.write bold(greenColor) & " ✔" & resetColor() & "\n"
     stdout.flushFile()
