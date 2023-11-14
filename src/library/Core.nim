@@ -544,6 +544,8 @@ proc defineSymbols*() =
             let latest = hadAttr("latest")
             let verbose = hadAttr("verbose")
             
+            let pkg = x.s
+            
             if checkAttr("version"):
                 versionSpec = (hadAttr("min"), aVersion.version)
 
@@ -551,7 +553,7 @@ proc defineSymbols*() =
             if verbose:
                 VerbosePackager = true
 
-            if (let res = getEntryForPackage(x.s, versionSpec, latest); res.isSome):
+            if (let res = getEntryForPackage(pkg, versionSpec, latest); res.isSome):
                 let src = res.get()
             
                 addPath(src)
@@ -564,7 +566,7 @@ proc defineSymbols*() =
 
                 VerbosePackager = verboseBefore
             else:
-                echo "something went wrong!"
+                RuntimeError_PackageNotFound(pkg)
 
     # TODO(Core/let) block assignments should properly handle readonly Values
     #  In a few words: we should make sure that `[a b]: [1 2]` is the same as 
