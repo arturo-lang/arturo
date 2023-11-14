@@ -62,6 +62,7 @@ const
 
     RepoFolder          = PackageFolder & "repos/"
     RepoPackage         = RepoFolder & "{repo}@{owner}/"
+    RepoPackageUrl      = "{pkg}/archive/{branch}.zip"
 
 #=======================================
 # Global Variables
@@ -253,15 +254,13 @@ proc processLocalFolder(folderPath: string): Option[string] =
     if folderPath.dirExists():
         return getEntryPointFromSourceFolder(folderPath)
 
-proc processRemoteRepo(pkg: string, latest: bool = false): Option[string] =
+proc processRemoteRepo(pkg: string, branch: string = "main", latest: bool = false): Option[string] =
     ## Check remote github repo with an Arturo
     ## package in it and clone it locally
 
-    var matches: seq[string]
-    if not pkg.match(re"https:\/\/github.com\/([\w\-]+)\/([\w\-]+)\/?"):
+    var matches: array[2, string]
+    if not pkg.match(re"https://github.com/([\w\-]+)/([\w\-]+)", matches):
         RuntimeError_PackageRepoNotCorrect(pkg)
-
-    echo $(matches)
 
     let owner = matches[0]
     let repo = matches[1]
@@ -269,20 +268,8 @@ proc processRemoteRepo(pkg: string, latest: bool = false): Option[string] =
     let repoFolder = RepoPackage.fmt
 
     if (not dirExists(repoFolder)) or latest:
-        let pkgUrl = "{pkg}/archive/main.zip".fmt
-
+        let pkgUrl = RepoPackageUrl.fmt
         pkgUrl.downloadPackageSourceInto(repoFolder)
-
-        # downloadPackageSourceInto
-        # let client = newHttpClient()
-        # let pkgUrl = "{repo}/archive/main.zip".fmt
-        # client.downloadFile(pkgUrl, "{HomeDir}.arturo/tmp/pkg.zip".fmt)
-        # let files = miniz.unzipAndGetFiles("{HomeDir}.arturo/tmp/pkg.zip".fmt, "{HomeDir}.arturo/tmp".fmt)
-        # let (actualSubFolder, _, _) = splitFile(files[0])
-        # let actualFolder = "{HomeDir}.arturo/tmp/{actualSubFolder}".fmt
-        # moveDir(actualFolder, folderPath)
-
-        # discard tryRemoveFile("{HomeDir}.arturo/tmp/pkg.zip".fmt)
 
     return getEntryPointFromSourceFolder(repoFolder)
 
@@ -320,6 +307,7 @@ proc processRemotePackage(src: string, version: VersionSpec): Option[string] =
 proc getEntryForPackage*(
     pkg: string, 
     verspec: VersionSpec, 
+    branch: string,
     latest: bool,
     checkForFiles: bool = true
 ): Option[string] {.inline.} =
@@ -338,7 +326,7 @@ proc getEntryForPackage*(
     
     # maybe it's a github repository url?
     if pkg.isUrl():
-        if (result = processRemoteRepo(pkg, latest); result.isSome):
+        if (result = processRemoteRepo(pkg, branch, latest); result.isSome):
             return
 
     # maybe it's a package we already have locally?
