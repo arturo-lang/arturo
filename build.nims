@@ -613,10 +613,20 @@ cmd package, "Package arturo app and build executable":
     config.buildPackage()
 
 cmd docs, "Build the documentation":
+    ## docs:
+    ##     Builds the developer documentation
+    ## 
+    ##     --help
+
     --define:DOCGEN
     buildDocs()
 
 cmd test, "Run test suite":
+    ## test:
+    ##     Runs test suite
+    ## 
+    ##     --help
+
     let
         localBin = BINARY.toExe
         installedBin = TARGET_FILE
@@ -625,6 +635,11 @@ cmd test, "Run test suite":
         quit performTest(localBin).toErrorCode
 
 cmd benchmark, "Run benchmark suite":
+    ## benchmark:
+    ##     Runs benchmark suite
+    ## 
+    ##     --help
+
     let
         localBin = BINARY.toExe
         installedBin = TARGET_FILE
