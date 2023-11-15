@@ -79,14 +79,11 @@ var
 
 proc processLocalPackage(pkg: string, verspec: VersionSpec, latest: bool = false): Option[string]
 proc processRemotePackage(pkg: string, verspec: VersionSpec): Option[string]
-proc verifyDependencies*(deps: seq[Value]): bool
+proc verifyDependencies*(deps: seq[Value])
 
 #=====================================
 # Template
 #=====================================
-
-template hasDependencies(item: ValueDict): bool =
-    (item.hasKey("depends") and item["depends"].kind == Block)
 
 template ShowMessage(msg: string): untyped =
     if VerbosePackager:
@@ -116,6 +113,47 @@ template WillShowError(): untyped =
 # Helpers
 #=======================================
 
+proc hasDependencies(item: ValueDict): Option[ValueArray] {.inline.} =
+    ## Check if there is a .depends field in the spec
+    ## and return its content if it's properly set
+
+    if (item.hasKey("depends") and item["depends"].kind == Block):
+        return some(item["depends"].a)
+
+proc hasEntry(item: ValueDict): Option[string] {.inline.} =
+    ## Check if there is an .entry field in the spec
+    ## and return it if it's properly set
+
+    if (item.hasKey("entry") and item["entry"].kind in {String,Literal}):
+        return some(item["entry"].s)
+
+proc hasVersion(item: ValueDict): Option[VVersion] {.inline.} =
+    ## Check if there is an .version field in the spec
+    ## and return it if it's properly set
+
+    if (item.hasKey("version") and item["version"].kind == Version):
+        return some(item["version"].version)
+
+proc hasUrl(item: ValueDict): Option[string] {.inline.} =
+    ## Check if there is an .url field in the spec
+    ## and return it if it's properly set
+
+    if (item.hasKey("url") and item["url"].kind == String):
+        return some(item["url"].s)
+
+proc readSpec(content: string): ValueDict =
+    ## Read spec from existing content;
+    ## mostly for remote packages where we actually
+    ## download the spec directly
+
+    result = execDictionary(doParse(content, isFile=false))
+
+proc readSpec(pkg: string, version: VVersion): ValueDict =
+    ## Read spec from locally installed package
+    
+    let specFile = SpecFile.fmt
+    result = execDictionary(doParse(specFile, isFile=true))
+
 proc getEntryPointFromSourceFolder*(folder: string): Option[string] =
     ## In a supposed package source folder,
     ## look either for the 'entry' as defined in the package's info.art
@@ -127,21 +165,23 @@ proc getEntryPointFromSourceFolder*(folder: string): Option[string] =
     if (let infoPath = "{folder}/info.art".fmt; infoPath.fileExists()):
         let infoArt = execDictionary(doParse(infoPath, isFile=true))
 
-        if infoArt.hasKey("entry"):
-            let entryName = infoArt["entry"].s
-            entryPoint = "{folder}/{entryName}.art".fmt
+        if (let entryName = infoArt.hasEntry(); entryName.isSome):
+            entryPoint = "{folder}/{entryName.get()}.art".fmt
 
-        if not entryPoint.fileExists():
-            # should throw!
-            allOk = false
+        if (let deps = infoArt.hasDependencies(); deps.isSome):
+            verifyDependencies(deps.get())
 
-        if infoArt.hasDependencies() and not verifyDependencies(infoArt["depends"].a):
-            return
+    if not entryPoint.fileExists():
+        # should throw?
+        allOk = false
 
     if allOk:
         return some(entryPoint)
 
 proc lookupLocalPackageVersion*(pkg: string, version: VersionSpec): Option[VersionLocation] =
+    ## Look for a specific package by name and a version specification
+    ## among the ones that are already installed locally
+
     let packagesPath = CachePackage.fmt
 
     if packagesPath.dirExists():
@@ -163,13 +203,6 @@ proc lookupLocalPackageVersion*(pkg: string, version: VersionSpec): Option[Versi
                 if found.ver == version.ver:
                     return some(found)
 
-proc readSpec(pkg: string, version: VVersion): ValueDict =
-    let specFile = SpecFile.fmt
-    result = execDictionary(doParse(specFile, isFile=true))
-
-proc readSpecFromContent(content: string): ValueDict =
-    result = execDictionary(doParse(content, isFile=false))
-
 proc downloadPackageSourceInto*(url: string, target: string) =
     ## Download url containing a package source, unzip it
     ## and move everything into the target folder
@@ -187,47 +220,10 @@ proc downloadPackageSourceInto*(url: string, target: string) =
 
     ShowSuccess()
 
-proc installRemotePackage*(pkg: string, verspec: VersionSpec): bool =
-    var packageSpec: string 
-    if verspec.min:
-        packageSpec = SpecLatestUrl.fmt
-    else:
-        let version = verspec.ver
-        packageSpec = SpecVersionUrl.fmt
+proc verifyDependencies*(deps: seq[Value]) = 
+    ## Verify that all declared dependencies for given package
+    ## are met and - if not - install them
 
-    ShowMessage "Downloading spec: {pkg}.pkgr.art".fmt
-    var specContent: string
-    try:
-        specContent = waitFor (newAsyncHttpClient().getContent(packageSpec))
-    except Exception:
-        WillShowError()
-        RuntimeError_PackageNotFound(pkg)
-
-    let spec = readSpecFromContent(specContent)
-    let version = spec["version"].version
-
-    let specFolder = SpecPackage.fmt
-    createDir(specFolder)
-    let specFile = "{specFolder}/{version}.art".fmt
-    writeToFile(specFile, specContent)
-    ShowSuccess()
-    
-    let pkgUrl = spec["url"].s
-    pkgUrl.downloadPackageSourceInto(CacheFiles.fmt)
-
-    if spec.hasDependencies() and not verifyDependencies(spec["depends"].a):
-        return false
-
-    ShowMessage "Installing package: {pkg} {version}".fmt
-    try:
-        discard waitFor (newAsyncHttpClient().getContent("https://pkgr.art/download.php?pkg={pkg}&ver={version}&mgk=18966".fmt))
-    except Exception:
-        discard
-
-    ShowSuccess()
-    return true
-
-proc verifyDependencies*(deps: seq[Value]): bool = 
     ShowMessageNl "Verifying dependencies"
     
     var depList: seq[(string, VersionSpec)] = @[]
@@ -258,7 +254,6 @@ proc verifyDependencies*(deps: seq[Value]): bool =
     if not depsOk:
         ShowWarning MalformedDepends
 
-    var allOk = true
     for dep in depList:
         let src = dep[0]
         let version = dep[1]
@@ -267,10 +262,6 @@ proc verifyDependencies*(deps: seq[Value]): bool =
         else:
             if processRemotePackage(src,version).isSome:
                 discard
-            else:
-                allOk = false
-
-    return allOk
 
 #=====================================
 
@@ -343,15 +334,65 @@ proc processLocalPackage(pkg: string, verspec: VersionSpec, latest: bool = false
 
         ShowSuccess()
 
-        return some(packageLocation & "/" & packageSpec["entry"].s)
+        if (let entryName = hasEntry(packageSpec); entryName.isSome):
+            if (let entryFile = packageLocation & "/" & entryName.get(); entryFile.fileExists()):
+                return some(entryFile)
 
 proc processRemotePackage(pkg: string, verspec: VersionSpec): Option[string] =
     ## Check if there is a remote package with the given name/specificiation
     ## in our registry
 
     ShowMessageNl "Querying registry"
-    if installRemotePackage(pkg, verspec):
-        return processLocalPackage(pkg, verspec)
+    var packageSpecUrl: string 
+    if verspec.min:
+        packageSpecUrl = SpecLatestUrl.fmt
+    else:
+        let version = verspec.ver
+        packageSpecUrl = SpecVersionUrl.fmt
+
+    ShowMessage "Downloading spec: {pkg}.pkgr.art".fmt
+    var specContent: string
+    try:
+        specContent = waitFor (newAsyncHttpClient().getContent(packageSpecUrl))
+    except Exception:
+        WillShowError()
+        RuntimeError_PackageNotFound(pkg)
+
+    let spec = readSpec(specContent)
+    var version: VVersion
+    if (let vv = spec.hasVersion(); vv.isSome):
+        version = vv.get()
+    else:
+        RuntimeError_CorruptRemoteSpec(pkg)
+
+    let specFolder = SpecPackage.fmt
+    createDir(specFolder)
+    let specFile = "{specFolder}/{version}.art".fmt
+    writeToFile(specFile, specContent)
+    ShowSuccess()
+    
+    var pkgUrl: string
+    if (let uu = spec.hasUrl(); uu.isSome):
+        pkgUrl = uu.get()
+    else:
+        RuntimeError_CorruptRemoteSpec(pkg)
+    
+    pkgUrl.downloadPackageSourceInto(CacheFiles.fmt)
+
+    if (let deps = spec.hasDependencies(); deps.isSome):
+        verifyDependencies(deps.get())
+
+    ShowMessage "Installing package: {pkg} {version}".fmt
+    try:
+        discard waitFor (newAsyncHttpClient().getContent("https://pkgr.art/download.php?pkg={pkg}&ver={version}&mgk=18966".fmt))
+    except Exception:
+        # if this fails, the worst thing that could happen
+        # is the package stats won't be updated; so, no big deal
+        discard 
+
+    ShowSuccess()
+
+    return processLocalPackage(pkg, verspec)
 
 #=======================================
 # Methods
