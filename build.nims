@@ -130,16 +130,16 @@ func sep(ch: char = '='): string =
 proc showLogo*() =
     echo sep()
     # Sets GREEN
-    echo "                               _                                     "
-    echo "                              | |                                    "
-    echo "                     __ _ _ __| |_ _   _ _ __ ___                    "
-    echo "                    / _` | '__| __| | | | '__/ _ \                   "
-    echo "                   | (_| | |  | |_| |_| | | | (_) |                  "
-    echo "                    \__,_|_|   \__|\__,_|_|  \___/                   "
-    echo "{CLEAR}{BOLD}                                                        ".fmt
-    echo "                     Arturo Programming Language{CLEAR}              ".fmt
-    echo "                      (c)2023 Yanis Zafirópulos                      "
-    echo "                                                                     "
+    echo r"                               _                                     "
+    echo r"                              | |                                    "
+    echo r"                     __ _ _ __| |_ _   _ _ __ ___                    "
+    echo r"                    / _` | '__| __| | | | '__/ _ \                   "
+    echo r"                   | (_| | |  | |_| |_| | | | (_) |                  "
+    echo r"                    \__,_|_|   \__|\__,_|_|  \___/                   "
+    echo r"{CLEAR}{BOLD}                                                        ".fmt
+    echo r"                     Arturo Programming Language{CLEAR}              ".fmt
+    echo r"                      (c)2023 Yanis Zafirópulos                      "
+    echo r"                                                                     "
 
 proc showHeader*(title: string) =
     echo sep()
