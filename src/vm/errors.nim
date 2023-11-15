@@ -168,13 +168,19 @@ proc CompilerError_UnrecognizedPackageCommand*(name: string) =
 
 proc CompilerError_NoPackageCommand*() =
     panic CompilerError,
-          "no _package_ command command given;" &
-          "have a look at --help for more info",
+          "no _package_ command command given -;" &
+          "have a look at the options below",
           throw=false
 
 proc CompilerError_ExtraneousParameter*(name: string) =
     panic CompilerError,
           "extraneous command-line option found:" & ";" &
+          "_" & name & "_",
+          throw=false
+
+proc CompilerError_NotEnoughParameters*(name: string) =
+    panic CompilerError,
+          "not enough parameters for:" & ";" &
           "_" & name & "_",
           throw=false
 

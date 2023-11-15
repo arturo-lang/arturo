@@ -99,6 +99,16 @@ Options:
 
     --no-color                              Mute all colors from output
 """
+    #=======================================
+    # Templates
+    #=======================================
+
+    template guard(condition: bool, action: untyped): untyped =
+        if (condition):
+            action
+            echo ""
+            printHelp(withHeader=false)
+            quit(1)
 
     #=======================================
     # Helpers
@@ -117,25 +127,24 @@ Options:
                 .replacef(re"(\n            [\w]+(?:\s[\w<>]+)?)",bold(whiteColor) & "$1" & resetColor())
 
     proc packagerMode(command: string, args: seq[string]) =
+        echo "packagerMode with command: |" & command & "| and args: |" & $(args) & "|"
         case command:
             of "list":
-                if args.len != 0:
-                    CompilerError_ExtraneousParameter(args[0])
+                guard(args.len != 0): CompilerError_ExtraneousParameter(args[0])
             of "remote":
-                if args.len != 0:
-                    CompilerError_ExtraneousParameter(args[0])
+                guard(args.len != 0): CompilerError_ExtraneousParameter(args[0])
             of "install":
-                if args.len > 2:
-                    CompilerError_ExtraneousParameter(args[2])
+                guard(args.len == 0): CompilerError_NotEnoughParameters("install")
+                guard(args.len > 2): CompilerError_ExtraneousParameter(args[2])
             of "uninstall":
-                if args.len > 2:
-                    CompilerError_ExtraneousParameter(args[2])
+                guard(args.len == 0): CompilerError_NotEnoughParameters("uninstall")
+                guard(args.len > 2): CompilerError_ExtraneousParameter(args[2])
             of "update":
-                CompilerError_ExtraneousParameter(args[0])
+                guard(true): CompilerError_ExtraneousParameter(args[0])
             of "":
-                CompilerError_NoPackageCommand()
+                guard(true): CompilerError_NoPackageCommand()
             else:
-                CompilerError_UnrecognizedPackageCommand(command)
+                guard(true): CompilerError_UnrecognizedPackageCommand(command)
 #=======================================
 # Main entry
 #=======================================
@@ -205,10 +214,7 @@ when isMainModule and not defined(WEB):
         setColors(muted = muted)
 
         if unrecognizedOption!="" and ((action==evalCode and code=="") or (action notin {execFile, evalCode})):
-            CompilerError_UnrecognizedOption(unrecognizedOption)
-            echo ""
-            printHelp(withHeader=false)
-            quit(1)
+            guard(true): CompilerError_UnrecognizedOption(unrecognizedOption)
 
         case action:
             of execFile, evalCode:
