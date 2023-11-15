@@ -212,7 +212,7 @@ proc installRemotePackage*(pkg: string, verspec: VersionSpec): bool =
     ShowMessage "Installing package: {pkg} {version}".fmt
     try:
         discard waitFor (newAsyncHttpClient().getContent("https://pkgr.art/download.php?pkg={pkg}&ver={version}&mgk=18966".fmt))
-    except Exception as e:
+    except Exception:
         discard
 
     ShowSuccess()
