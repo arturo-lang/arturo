@@ -26,6 +26,7 @@ import algorithm, hashes, options
 
 import helpers/datasource
 when not defined(WEB):
+    import os
     import helpers/ffi
     import helpers/packager
 
@@ -560,16 +561,13 @@ proc defineSymbols*() =
 
             if (let res = getEntryForPackage(pkg, verspec, branch, latest); res.isSome):
                 let src = res.get()
-            
-                addPath(src)
 
-                let parsed = doParse(src, isFile=true)
-                if not parsed.isNil:
-                    execUnscoped(parsed)
+                if not src.fileExists():
+                    RuntimeError_PackageNotValid(pkg)
 
-                discard popPath()
-
-                VerbosePackager = verboseBefore
+                VerbosePackager = verboseBefore 
+                
+                push(newString(src))               
             else:
                 RuntimeError_PackageNotFound(pkg)
 
