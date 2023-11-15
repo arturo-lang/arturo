@@ -181,10 +181,11 @@ proc showEnvironment*() =
 proc showBuildInfo*(config: BuildConfig) =
     let 
         params = flags.join(" ")
-
+        version = "version/version".staticRead()
+        build = "version/buildVersion".staticRead()
     
     section "Building..."
-    echo fmt"{GRAY}   version: " & staticRead("version/version") & " b/" & staticRead("version/build")
+    echo fmt"{GRAY}   version: {version}/{build}"
     echo fmt"   config: {config.version}{CLEAR}"
 
     if not config.silentCompilation:
