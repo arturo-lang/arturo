@@ -425,7 +425,7 @@ proc performTests*(binary: string): bool =
 
     showHeader "test"
     try:
-        exec fmt"{targetFile} ./tools/tester.art"
+        exec fmt"{binary} ./tools/tester.art"
     except:
         return false
 
