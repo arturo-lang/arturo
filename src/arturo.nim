@@ -127,7 +127,6 @@ Options:
                 .replacef(re"(\n            [\w]+(?:\s[\w<>]+)?)",bold(whiteColor) & "$1" & resetColor())
 
     proc packagerMode(command: string, args: seq[string]) =
-        echo "packagerMode with command: |" & command & "| and args: |" & $(args) & "|"
         VerbosePackager = true
         CmdlinePackager = true
         case command:
@@ -143,10 +142,10 @@ Options:
                 var min = true
                 if args.len == 2:
                     let ps = doParse(args[1], isFile=false)
-                    if ps[0].kind != Version:
+                    if ps.a[0].kind != Version:
                         echo "not a valid version!"
 
-                    vv = ps[0].version
+                    vv = ps.a[0].version
                     min = false
                 run(proc()=
                     let got = packageInstall(args[0], (min, vv))
