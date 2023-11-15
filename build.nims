@@ -369,48 +369,68 @@ proc buildArturo*(config: BuildConfig) =
     showFooter()
 
 proc buildPackage*(config: BuildConfig) =
-    showHeader "package"
 
-    let package = config.binary
+    # Helper functions
 
-    # generate portable data
-    section "Processing data..."
+    proc dataFile(package: string): string =
+        return fmt"{package}.data.json"
 
-    writeFile("{package}.data.json".fmt, staticExec(r"arturo --package-info {package}.art".fmt))
-    echo "{GRAY}   written to: {package}.data.json{CLEAR}".fmt
+    proc file(package: string): string =
+        return fmt"{package}.art"
 
-    # set up environment
-    section "Setting up options..."
+    proc info(package: string): string =
+        staticExec fmt"arturo --package-info {package.file}"
 
-    putEnv("PORTABLE_INPUT", "{package}.art".fmt)
-    putEnv("PORTABLE_DATA", "{package}.data.json".fmt)
+    # Subroutines
 
-    echo "{GRAY}   done".fmt
+    proc generateData(package: string) =
+        section "Processing data..."
+        (package.dataFile).writeFile(package.info)
+        echo fmt"{GRAY}   written to: {package.dataFile}{CLEAR}"
 
-    # show environment & build info
-    showEnvironment()
-    config.showBuildInfo()
+    proc setEnvUp(package: string) =
+        section "Setting up options..."
 
-    echo "{GRAY}".fmt
-    
-    --forceBuild:on
-    --opt:size
-    --define:NOERRORLINES
-    --define:PORTABLE
-    let params = flags.join(" ")
-    echo r"{GRAY}FLAGS: {params}".fmt
-    echo r""
+        putEnv "PORTABLE_INPUT", package.file
+        putEnv "PORTABLE_DATA", package.dataFile
 
-    echo "{GRAY}".fmt
+        echo fmt"{GRAY}   done"
 
-    if (let cd = compile(config, showFooter=false); 
-        cd != 0):
-        quit(cd)
+    proc setFlagsUp() =
+        --forceBuild:on
+        --opt:size
+        --define:NOERRORLINES
+        --define:PORTABLE
 
-    # clean up
-    rmFile(r"{package}.data.json".fmt)
+    proc showFlags() =
+        let params = flags.join(" ")
+        echo fmt"{GRAY}FLAGS: {params}"
+        echo ""
 
-    echo "{CLEAR}".fmt
+    proc cleanUp(package: string) =
+        rmFile package.dataFile
+        echo "{CLEAR}".fmt
+
+    proc main() =
+        let package = config.binary
+        
+        showHeader "package"
+
+        package.generateData()
+        package.setEnvUp()
+        showEnvironment()
+        config.showBuildInfo()
+        
+        setFlagsUp()
+        showFlags()
+
+        if (let cd = compile(config, showFooter=false); cd != 0):
+            quit(cd)
+
+        package.cleanUp()
+
+    main()
+        
 
 proc buildDocs*() =
     let params = flags.join(" ")
