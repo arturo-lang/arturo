@@ -53,6 +53,7 @@ when not defined(WEB) and not defined(PORTABLE):
             readBcode
             writeBcode
             showPInfo
+            packagerMode
             showHelp
             showVersion
 
@@ -99,16 +100,6 @@ Options:
     --no-color                              Mute all colors from output
 """
 
-# -u, --update               Update to latest version
-
-# -m, --module           
-#         list               List all available modules
-#         remote             List all available remote modules
-#         info <name>        Get info about given module
-#         install <name>     Install remote module by name
-#         uninstall <name>   Uninstall module by name
-#         update             Update all local modules
-
     #=======================================
     # Helpers
     #=======================================
@@ -124,6 +115,15 @@ Options:
                 .replacef(re"(\w+:)", bold(cyanColor) & "$1" & resetColor())
                 .replacef(re"Arturo", bold(greenColor) & "Arturo" & resetColor())
                 .replacef(re"(\n            [\w]+(?:\s[\w<>]+)?)",bold(whiteColor) & "$1" & resetColor())
+
+    proc packagerMode(command: string, args: seq[string]) =
+        case command:
+            of "list":
+            of "remote":
+            of "install":
+            of "uninstall":
+            of "update":
+            else:
     
 #=======================================
 # Main entry
@@ -175,10 +175,10 @@ when isMainModule and not defined(WEB):
                         # of "u","update":
                         #     action = evalCode
                         #     code = runUpdate
-                        # of "m", "module":
-                        #     action = evalCode
-                        #     code = runModule
-                        #     break
+                        of "p", "package":
+                            action = packagerMode
+                            code = token.val
+                            #break
                         of "no-color":
                             muted = true
                         of "h","help":
@@ -224,6 +224,9 @@ when isMainModule and not defined(WEB):
                 let bcode = readBytecode(code)
                 let parsed = doParse(bcode[0], isFile=false).a[0]
                 runBytecode(Translation(constants: parsed.a, instructions: bcode[1]), filename, arguments)
+
+            of packagerMode:
+                packagerMode(code, arguments)
 
             of showPInfo:
                 showPackageInfo(code)
