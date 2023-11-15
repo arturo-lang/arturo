@@ -45,13 +45,13 @@ include ".config/who.nims"
 #=======================================
 
 let
-    
+
     GREEN*      = bold(greenColor)
     MAGENTA*    = fg(magentaColor)
     GRAY*       = fg(grayColor)
     CLEAR*      = resetColor()
     BOLD*       = bold()
-    
+
     root = getHomeDir()/".arturo"
 
     paths: tuple = (
@@ -60,7 +60,7 @@ let
         targetStores:   root/"stores",
         mainFile:       "src"/"arturo.nim",
     )
-    
+
 
 #=======================================
 # Variables
@@ -94,15 +94,15 @@ func backend(config: BuildConfig): string =
         return "js"
 
 func silentCompilation(config: BuildConfig): bool =
-    ## CI and User builds should actually be silent, 
+    ## CI and User builds should actually be silent,
     ## the most important is the exit code.
     ## But for developers, it's useful to have a detailed log.
     not (config.isDeveloper or config.shouldLog)
 
 func webVersion(config: BuildConfig): bool =
     config.version == "@web"
-    
-func buildConfig(): BuildConfig = 
+
+func buildConfig(): BuildConfig =
     (
         binary:             "bin/arturo".toExe,
         version:            "@full",
@@ -123,7 +123,7 @@ proc panic(msg: string = "", exitCode: int = QuitFailure) =
 
 proc warn(msg: string) =
     echo redColor.fg, msg.dedent, resetColor()
-    
+
 func sep(ch: char = '='): string =
     return "".align(80, ch)
 
@@ -179,11 +179,11 @@ proc showEnvironment*() =
     echo fmt"   compiler: Nim v{NimVersion}{CLEAR}"
 
 proc showBuildInfo*(config: BuildConfig) =
-    let 
+    let
         params = flags.join(" ")
         version = "version/version".staticRead()
         build = "version/buildVersion".staticRead()
-    
+
     section "Building..."
     echo fmt"{GRAY}   version: {version}/{build}"
     echo fmt"   config: {config.version}{CLEAR}"
@@ -256,14 +256,14 @@ proc compressBinary(config: BuildConfig) =
     assert config.shouldCompress
     assert config.webVersion:
         "Compress should work only for @web versions."
-        
+
     section "Post-processing..."
 
     echo fmt"{GRAY}   compressing binary...{CLEAR}"
     let minBin = config.binary.replace(".js",".min.js")
-    let CompressionRessult = 
+    let CompressionRessult =
         gorgeEx fmt"uglifyjs {config.binary} -c -m ""toplevel,reserved=['A$']"" -c -o {minBin}"
-    
+
     if CompressionRessult.exitCode != QuitSuccess:
         warn "uglifyjs: 3rd-party tool not available"
     else:
@@ -284,13 +284,13 @@ proc updateBuild*() =
     for ln in output.split("\n"):
         echo fmt"{GRAY}   " & ln.strip() & fmt"{CLEAR}"
 
-proc compile*(config: BuildConfig, showFooter: bool = false): int 
+proc compile*(config: BuildConfig, showFooter: bool = false): int
     {. raises: [OSError, ValueError, Exception] .} =
-    
+
     result = QuitSuccess
-    let 
+    let
         params = flags.join(" ")
-              
+
     proc windowsHostSpecific() =
         if config.isDeveloper and not flags.contains("NOWEBVIEW"):
             discard gorgeEx "src\\extras\\webview\\deps\\build.bat"
@@ -299,12 +299,12 @@ proc compile*(config: BuildConfig, showFooter: bool = false): int
 
     proc unixHostSpecific() =
         --passL:"\"-lm\""
-            
+
     if "windows" == hostOS:
          windowsHostSpecific()
     else:
         unixHostSpecific()
-    
+
     if config.silentCompilation:
         let res = gorgeEx fmt"nim {config.backend} {params} -o:{config.binary} {paths.mainFile}"
         result = res.exitCode
@@ -315,7 +315,7 @@ proc compile*(config: BuildConfig, showFooter: bool = false): int
 proc installAll*(config: BuildConfig) =
     assert not config.webVersion:
         "Web builds can't be installed"
-    
+
     section "Installing..."
 
     verifyDirectories()
@@ -401,14 +401,14 @@ proc buildPackage*(config: BuildConfig) =
 
     proc main() =
         let package = config.binary
-        
+
         showHeader "package"
 
         package.generateData()
         package.setEnvUp()
         showEnvironment()
         config.showBuildInfo()
-        
+
         setFlagsUp()
         showFlags()
 
@@ -418,7 +418,7 @@ proc buildPackage*(config: BuildConfig) =
         package.cleanUp()
 
     main()
-        
+
 
 proc buildDocs*() =
     let params = flags.join(" ")
@@ -473,10 +473,10 @@ cmd install, "Build arturo and install executable":
     ##     --raw                        disables compression
     ##     --help
 
-    const 
-        availableCPUs = @["amd-64", "x64", "x86-64", "arm-64", "i386", "x86", 
+    const
+        availableCPUs = @["amd-64", "x64", "x86-64", "arm-64", "i386", "x86",
                           "x86-32", "arm", "arm-32"]
-        availableOSes = @["freebsd", "openbsd", "netbsd", "linux", "mac", 
+        availableOSes = @["freebsd", "openbsd", "netbsd", "linux", "mac",
                           "macos", "macosx", "win", "windows",]
         availableBuilds = @["full", "mini", "safe", "web"]
         availableProfilers = @["default", "mem", "native", "profile"]
@@ -491,14 +491,14 @@ cmd install, "Build arturo and install executable":
             arm64 = [availableCPUs[3]]
             x86 = availableCPUs[4..6]
             arm32 = availableCPUs[7..8]
-            
+
         >> amd64: amd64Config()
         >> arm64: arm64Config()
         >> x86:   arm64Config()
         >> arm32: arm32Config()
-        
+
     match args.getOptionValue("build", default="full", into=availableBuilds):
-        >> ["full"]: 
+        >> ["full"]:
             fullBuildConfig()
         >> ["mini"]:
             miniBuildConfig()
@@ -512,26 +512,26 @@ cmd install, "Build arturo and install executable":
                                       .replace(".exe", ".js")
             config.version    = "@web"
             miniBuild()
-            
+
     match args.getOptionValue("os", default=hostOS, into=availableOSes):
-        let 
+        let
             bsd = availableOSes[0..2]
             linux = [availableOSes[3]]
             macos = availableOSes[4..6]
             windows = availableOSes[7..8]
-            
+
         >> bsd:     discard
         >> linux:   discard
         >> macos:   discard
         >> windows: discard
-        
-    match args.getOptionValue("profiler", default="none", short="p", 
+
+    match args.getOptionValue("profiler", default="none", short="p",
                               into=availableProfilers):
         >> ["default"]: profilerConfig()
         >> ["mem"]:     memProfileConfig()
         >> ["native"]:  nativeProfileConfig()
         >> ["profile"]: profileConfig()
-        
+
     match args.getOptionValue("who", default="", into= @["user", "dev"]):
         >> ["user"]:
             config.isDeveloper = false
@@ -539,20 +539,20 @@ cmd install, "Build arturo and install executable":
         >> ["dev"]:
             config.isDeveloper = true
             devConfig()
-        
+
     if args.hasFlag("debug", "d"):
         config.shouldCompress = false
         debugConfig()
-        
+
     if args.hasFlag("local"):
         config.shouldInstall = false
-        
+
     if args.hasFlag("log", "l"):
         config.shouldLog = true
-        
+
     if args.hasFlag("raw"):
         config.shouldCompress = false
-        
+
     if args.hasFlag("release"):
         releaseConfig()
 
@@ -566,13 +566,13 @@ cmd package, "Package arturo app and build executable":
     ##          [amd64, arm, arm64, i386, x86]
     ##     --debug -d                   enables debugging
     ##     --help
-    
-    const availableCPUs = @["amd-64", "x64", "x86-64", "arm-64", "i386", "x86", 
+
+    const availableCPUs = @["amd-64", "x64", "x86-64", "arm-64", "i386", "x86",
                           "x86-32", "arm", "arm-32"]
-    
+
     var config = buildConfig()
     config.binary = args.getPositionalArg()
-    
+
     match args.getOptionValue("arch", short="a",
                               default=hostCPU,
                               into=availableCPUs):
@@ -581,12 +581,12 @@ cmd package, "Package arturo app and build executable":
             arm64 = [availableCPUs[3]]
             x86 = availableCPUs[4..6]
             arm32 = availableCPUs[7..8]
-            
+
         >> amd64: amd64Config()
         >> arm64: arm64Config()
         >> x86:   arm64Config()
         >> arm32: arm32Config()
-        
+
     if args.hasFlag("debug", "d"):
         config.shouldCompress = false
         debugConfig()
@@ -596,7 +596,7 @@ cmd package, "Package arturo app and build executable":
 cmd docs, "Build the documentation":
     ## docs:
     ##     Builds the developer documentation
-    ## 
+    ##
     ##     --help
 
     --define:DOCGEN
@@ -605,20 +605,20 @@ cmd docs, "Build the documentation":
 cmd test, "Run test suite":
     ## test:
     ##     Runs test suite
-    ## 
+    ##
     ##     --help
 
     let
         localBin = BINARY.toExe
         installedBin = TARGET_FILE
-    
+
     unless performTests(installedBin):
         quit performTests(localBin).toErrorCode
 
 cmd benchmark, "Run benchmark suite":
     ## benchmark:
     ##     Runs benchmark suite
-    ## 
+    ##
     ##     --help
 
     let
