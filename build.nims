@@ -138,7 +138,7 @@ func sep(ch: char = '='): string =
 
 proc showLogo*() =
     echo sep()
-    echo r"{colors.green}                                                       ".fmt
+    echo r"{colors.green}                 _                                     ".fmt
     echo r"                              | |                                    "
     echo r"                     __ _ _ __| |_ _   _ _ __ ___                    "
     echo r"                    / _` | '__| __| | | | '__/ _ \                   "
