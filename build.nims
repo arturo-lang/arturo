@@ -410,13 +410,13 @@ proc buildDocs*() =
     exec(r"nim doc --project --index:on --outdir:dev-docs {params} src/arturo.nim".fmt)
     exec(r"nim buildIndex -o:dev-docs/theindex.html dev-docs")
 
-proc performTests*() =
+proc performTests*(binary: string) =
     showHeader "test"
     try:
         exec r"{TARGET_FILE} ./tools/tester.art".fmt
     except:
         try:
-            exec r"{toExe(BINARY)} ./tools/tester.art".fmt
+            exec r"{binary.toExe} ./tools/tester.art".fmt
         except:
             quit(QuitFailure)
 
@@ -609,7 +609,7 @@ cmd docs, "Build the documentation":
     buildDocs()
 
 cmd test, "Run test suite":
-    performTests()
+    BINARY.performTests()
 
 cmd benchmark, "Run benchmark suite":
     performBenchmarks()
