@@ -420,13 +420,13 @@ proc performTests*(binary: string, targetFile: string) =
         except:
             quit(QuitFailure)
 
-proc performBenchmarks*() =
+proc performBenchmarks*(binary: string, targetFile: string) =
     showHeader "benchmark"
     try:
-        exec r"{TARGET_FILE} ./tools/benchmarker.art".fmt
+        exec r"{targetFile} ./tools/benchmarker.art".fmt
     except:
         try:
-            exec r"{toExe(BINARY)} ./tools/benchmarker.art".fmt
+            exec r"{binary} ./tools/benchmarker.art".fmt
         except:
             quit(QuitFailure)
 
@@ -615,4 +615,7 @@ cmd test, "Run test suite":
     performTest localBin, installedBin
 
 cmd benchmark, "Run benchmark suite":
-    performBenchmarks()
+    let
+        localBin = BINARY.toExe
+        installedBin = TARGET_FILE
+    performBenchmarks localBin, installedBin
