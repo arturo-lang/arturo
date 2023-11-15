@@ -612,7 +612,7 @@ cmd test, "Run test suite":
     let
         localBin = BINARY.toExe
         installedBin = TARGET_FILE
-    performTests(localBin, installedBin)
+    performTest localBin, installedBin
 
 cmd benchmark, "Run benchmark suite":
     performBenchmarks()
