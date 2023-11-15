@@ -139,8 +139,17 @@ Options:
                 guard(args.len == 0): CompilerError_NotEnoughParameters("install")
                 guard(args.len > 2): CompilerError_ExtraneousParameter(args[2])
 
+                var vv = NoPackageVersion
+                var min = true
+                if args.len == 2:
+                    let ps = doParse(args[1], isFile=false)
+                    if ps[0].kind != Version:
+                        echo "not a valid version!"
+
+                    vv = ps[0].version
+                    min = false
                 run(proc()=
-                    let got = packageInstall(args[0], (true, NoPackageVersion))
+                    let got = packageInstall(args[0], (min, vv))
                     if not got:
                         echo "package was already installed"
                 )
