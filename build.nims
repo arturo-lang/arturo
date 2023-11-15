@@ -296,8 +296,8 @@ proc updateBuild*() =
                                     .strip()
                                     .parseInt()
                                     .succ()
-    
-        build.writeFile $buildVersion
+
+        file.writeFile $buildVersion
     
     proc main() =
         let buildFile = "version/build"
