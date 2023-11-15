@@ -420,15 +420,14 @@ proc buildDocs*() =
     exec(r"nim doc --project --index:on --outdir:dev-docs {params} src/arturo.nim".fmt)
     exec(r"nim buildIndex -o:dev-docs/theindex.html dev-docs")
 
-proc performTests*(binary: string, targetFile: string) =
+proc performTests*(binary: string): bool =
+    result = true
+
     showHeader "test"
     try:
-        exec r"{targetFile} ./tools/tester.art".fmt
+        exec fmt"{targetFile} ./tools/tester.art"
     except:
-        try:
-            exec r"{binary} ./tools/tester.art".fmt
-        except:
-            quit(QuitFailure)
+        return false
 
 proc performBenchmarks*(binary: string, targetFile: string) =
     showHeader "benchmark"
@@ -622,7 +621,9 @@ cmd test, "Run test suite":
     let
         localBin = BINARY.toExe
         installedBin = TARGET_FILE
-    performTest localBin, installedBin
+    
+    unless performTest(installedBin):
+        quit performTest(localBin).toErrorCode
 
 cmd benchmark, "Run benchmark suite":
     let
