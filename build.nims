@@ -196,9 +196,10 @@ proc showBuildInfo*(config: BuildConfig) =
 #=======================================
 
 func toErrorCode(a: bool): int =
-    result = QuitFailure
     if a:
         return QuitSuccess
+    else:
+        return QuitFailure
 
 template unless(condition: int, body: untyped) =
     if not condition:
