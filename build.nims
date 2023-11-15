@@ -611,8 +611,8 @@ cmd test, "Run test suite":
         localBin = BINARY.toExe
         installedBin = TARGET_FILE
     
-    unless performTest(installedBin):
-        quit performTest(localBin).toErrorCode
+    unless performTests(installedBin):
+        quit performTests(localBin).toErrorCode
 
 cmd benchmark, "Run benchmark suite":
     ## benchmark:
