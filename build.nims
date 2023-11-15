@@ -191,6 +191,11 @@ proc showBuildInfo*(config: BuildConfig) =
 # Helpers
 #=======================================
 
+func toErrorCode(a: bool): int =
+    result = QuitFailure
+    if a:
+        return QuitSuccess
+
 template unless(condition: int, body: untyped) =
     if not condition:
         body
