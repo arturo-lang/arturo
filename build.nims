@@ -339,8 +339,8 @@ proc installAll*(config: BuildConfig) =
 
     # Helper functions
 
-    proc copy(file: string, from: string, to: string) =
-        cpFile from.joinPath(file), to.joinPath(file)
+    proc copy(file: string, source: string, target: string) =
+        cpFile source.joinPath(file), target.joinPath(file)
 
     # Methods
 
