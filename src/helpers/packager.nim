@@ -405,7 +405,7 @@ proc processRemotePackage(pkg: string, verspec: VersionSpec, doLoad: bool = true
 #=======================================
 
 proc packageInstall*(pkg: string, verspec: VersionSpec): bool =
-    if processRemoteRepo(pkg, branch, latest).isSome:
+    if processRemoteRepo(pkg, "main", true).isSome:
         return true
 
     if processLocalPackage(pkg, verspec, false).isSome:
