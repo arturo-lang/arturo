@@ -23,6 +23,7 @@
 #=======================================
 
 import algorithm, hashes, options
+import sequtils, sugar
 
 import helpers/datasource
 when not defined(WEB):
@@ -534,9 +535,10 @@ proc defineSymbols*() =
             "min"       : ({Logical},"get any version >= the specified one"),
             "branch"    : ({String,Literal},"use specific branch for repository url (default: main)"),
             "latest"    : ({Logical},"always check for the latest version available"),
+            "lean"      : ({Logical},"return as a dictionary, instead of importing in main namespace"),
             "verbose"   : ({Logical},"output extra information")
         },
-        returns     = {Nothing},
+        returns     = {Nothing,Dictionary,Block},
         # TODO(Core/import) add documentation example
         #  labels: library, documentation, easy
         example     = """
@@ -546,8 +548,15 @@ proc defineSymbols*() =
             var branch = "main"
             let latest = hadAttr("latest")
             let verbose = hadAttr("verbose")
+            let lean = hadAttr("lean")
             
-            let pkg = x.s
+            var pkgs: seq[string]
+            if xKind == String:
+                pkgs.add(x.s)
+            else:
+                pkgs = x.a.map((p)=>p.s)
+
+            let multiple = pkgs.len > 1
             
             if checkAttr("version"):
                 verspec = (hadAttr("min"), aVersion.version)
@@ -559,17 +568,36 @@ proc defineSymbols*() =
             if verbose:
                 VerbosePackager = true
 
-            if (let res = getEntryForPackage(pkg, verspec, branch, latest); res.isSome):
-                let src = res.get()
+            var ret: ValueArray
 
-                if not src.fileExists():
-                    RuntimeError_PackageNotValid(pkg)
+            for pkg in pkgs:
+                if (let res = getEntryForPackage(pkg, verspec, branch, latest); res.isSome):
+                    let src = res.get()
 
-                VerbosePackager = verboseBefore 
+                    if not src.fileExists():
+                        RuntimeError_PackageNotValid(pkg)
 
-                push(newString(src))               
-            else:
-                RuntimeError_PackageNotFound(pkg)
+                    addPath(src)
+
+                    if not lean:
+                        let parsed = doParse(src, isFile=true)
+                        if not parsed.isNil:
+                            execUnscoped(parsed)
+                    else:
+                        let got = execDictionary(doParse(src, isFile=true))
+                        if multiple:
+                            ret.add(newDictionary(got))
+                        else:
+                            push(newDictionary(got))
+
+                    discard popPath()              
+                else:
+                    RuntimeError_PackageNotFound(pkg)
+
+            VerbosePackager = verboseBefore
+
+            if multiple:
+                push(newBlock(ret))
 
     # TODO(Core/let) block assignments should properly handle readonly Values
     #  In a few words: we should make sure that `[a b]: [1 2]` is the same as 
