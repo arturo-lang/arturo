@@ -341,28 +341,38 @@ proc installAll*(config: BuildConfig) =
 #=======================================
 
 proc buildArturo*(config: BuildConfig) =
-    showHeader "install"
+    
+    # Methods 
+    
+    proc showInfo(config: BuildConfig) =
+        showEnvironment()
+        config.showBuildInfo()
 
-    # if the one who's building is some guy going back the nick "drkameleon" -
-    # who might that be ?! - then it's a DEV build
-    if config.isDeveloper:
+    proc setDevmodeUp() =
         section "Updating build..."
         updateBuild()
         devConfig()
 
-    # show environment & build info
-    showEnvironment()
-    config.showBuildInfo()
+    proc tryCompilation(config: BuildConfig) =
+        if (let cd = config.compile(showFooter=true); cd != 0):
+            quit(cd)
 
-    if (let cd = compile(config, showFooter=true); cd != 0):
-        quit(cd)
+    proc main() =
+        showHeader "install"
 
-    config.compressBinary()
+        if config.isDeveloper:
+            setDevmodeUp()
 
-    if config.shouldInstall:
-        config.installAll()
+        config.showInfo()
+        config.tryCompilation()
+        config.compressBinary()
 
-    showFooter()
+        if config.shouldInstall:
+            config.installAll()
+
+        showFooter()
+
+    main()
 
 proc buildPackage*(config: BuildConfig) =
 
