@@ -151,7 +151,7 @@ proc showLogo*() =
 
 proc showHeader*(title: string) =
     echo sep()
-    echo fmt" ► {title.toUpperAscii()}                                            "
+    echo fmt" ► {title.toUpperAscii()}"
     echo sep()
 
 proc section*(title: string) =
