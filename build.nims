@@ -429,15 +429,14 @@ proc performTests*(binary: string): bool =
     except:
         return false
 
-proc performBenchmarks*(binary: string, targetFile: string) =
+proc performBenchmarks*(binary: string) =
+    result = true
+
     showHeader "benchmark"
     try:
-        exec r"{targetFile} ./tools/benchmarker.art".fmt
+        exec fmt"{binary} ./tools/benchmarker.art"
     except:
-        try:
-            exec r"{binary} ./tools/benchmarker.art".fmt
-        except:
-            quit(QuitFailure)
+        return false
 
 proc showHelp*(error=false, errorMsg="") =
 
@@ -629,4 +628,6 @@ cmd benchmark, "Run benchmark suite":
     let
         localBin = BINARY.toExe
         installedBin = TARGET_FILE
-    performBenchmarks localBin, installedBin
+
+    unless performBenchmarks(installedBin):
+        quit performBenchmarks(localBin).toErrorCode
