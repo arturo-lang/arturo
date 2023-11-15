@@ -201,7 +201,7 @@ func toErrorCode(a: bool): int =
     else:
         return QuitFailure
 
-template unless(condition: int, body: untyped) =
+template unless(condition: bool, body: untyped) =
     if not condition:
         body
 
