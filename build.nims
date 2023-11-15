@@ -190,6 +190,11 @@ proc showBuildInfo*(config: BuildConfig) =
 #=======================================
 # Helpers
 #=======================================
+
+template unless(condition: int, body: untyped) =
+    if not condition:
+        body
+
 # TODO(build.nims) JavaScript compression not working correctly
 #  labels: web,bug
 proc recompressJS*(jsFile: string) =
