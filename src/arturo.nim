@@ -140,7 +140,7 @@ Options:
                 guard(args.len == 0): CompilerError_NotEnoughParameters("uninstall")
                 guard(args.len > 2): CompilerError_ExtraneousParameter(args[2])
             of "update":
-                guard(true): CompilerError_ExtraneousParameter(args[0])
+                guard(args.len != 0): CompilerError_ExtraneousParameter(args[0])
             of "":
                 guard(true): CompilerError_NoPackageCommand()
             else:
