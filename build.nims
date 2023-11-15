@@ -144,7 +144,7 @@ proc showLogo*() =
     echo r"                    / _` | '__| __| | | | '__/ _ \                   "
     echo r"                   | (_| | |  | |_| |_| | | | (_) |                  "
     echo r"                    \__,_|_|   \__|\__,_|_|  \___/                   "
-    echo r"{styles.reset}{styles.bold}                                          ".fmt
+    echo r"{styles.clear}{styles.bold}                                          ".fmt
     echo r"                     Arturo Programming Language{styles.clear}       ".fmt
     echo r"                      (c)2023 Yanis Zafirópulos                      "
     echo r"                                                                     "
