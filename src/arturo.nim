@@ -29,6 +29,7 @@ when defined(PORTABLE):
     import os
 
 when not defined(WEB):
+    import helpers/packager
     import helpers/terminal
 
 when not defined(WEB) and not defined(PORTABLE):
@@ -135,6 +136,8 @@ Options:
             of "install":
                 guard(args.len == 0): CompilerError_NotEnoughParameters("install")
                 guard(args.len > 2): CompilerError_ExtraneousParameter(args[2])
+
+                discard getEntryForPackage(args[0], (0, NoPackageVersion))
             of "uninstall":
                 guard(args.len == 0): CompilerError_NotEnoughParameters("uninstall")
                 guard(args.len > 2): CompilerError_ExtraneousParameter(args[2])
@@ -144,6 +147,7 @@ Options:
                 guard(true): CompilerError_NoPackageCommand()
             else:
                 guard(true): CompilerError_UnrecognizedPackageCommand(command)
+
 #=======================================
 # Main entry
 #=======================================

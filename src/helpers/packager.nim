@@ -293,7 +293,7 @@ proc processRemoteRepo(pkg: string, branch: string = "main", latest: bool = fals
     ## package in it and clone it locally
     
     if pkg.isUrl():
-        
+
         ShowMessage "Loading from repository"
 
         var matches: array[2, string]
@@ -403,8 +403,8 @@ proc processRemotePackage(pkg: string, verspec: VersionSpec): Option[string] =
 proc getEntryForPackage*(
     pkg: string, 
     verspec: VersionSpec, 
-    branch: string,
-    latest: bool,
+    branch: string = "main",
+    latest: bool = false,
     checkForFiles: bool = true
 ): Option[string] {.inline.} =
     ## Given a package name and a version specification
