@@ -126,12 +126,12 @@ proc log(msg: string) =
     for line in msg.splitlines:
         echo colors.gray, "  " & line.dedent, styles.clear
 
-proc panic(msg: string = "", exitCode: int = QuitFailure) =
-    echo colors.red, msg.dedent, styles.clear
-    quit exitCode
-
 proc warn(msg: string) =
     echo colors.red, msg.dedent, styles.clear
+
+proc panic(msg: string = "", exitCode: int = QuitFailure) =
+    warn msg
+    quit exitCode
 
 func sep(ch: char = '='): string =
     return "".align(80, ch)
