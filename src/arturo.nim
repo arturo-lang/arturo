@@ -128,6 +128,8 @@ Options:
 
     proc packagerMode(command: string, args: seq[string]) =
         echo "packagerMode with command: |" & command & "| and args: |" & $(args) & "|"
+        VerbosePackager = true
+        CmdlinePackager = true
         case command:
             of "list":
                 guard(args.len != 0): CompilerError_ExtraneousParameter(args[0])

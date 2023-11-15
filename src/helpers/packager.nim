@@ -71,7 +71,8 @@ const
 #=======================================
 
 var
-    VerbosePackager* = true
+    VerbosePackager* = false
+    CmdlinePackager* = false
 
 #=======================================
 # Forward declarations
@@ -294,7 +295,7 @@ proc processRemoteRepo(pkg: string, branch: string = "main", latest: bool = fals
     
     if pkg.isUrl():
 
-        ShowMessage "Loading from repository"
+        ShowMessage "Fetching repository"
 
         var matches: array[2, string]
         if not pkg.match(re"https://github.com/([\w\-]+)/([\w\-]+)", matches):
@@ -330,11 +331,13 @@ proc processLocalPackage(pkg: string, verspec: VersionSpec, latest: bool = false
 
     if (let localPackage = lookupLocalPackageVersion(pkg, verspec); localPackage.isSome):
         let (packageLocation, version) = localPackage.get()
-        ShowMessage "Loading local package: {pkg} {version}".fmt
+        if not CmdlinePackager:
+            ShowMessage "Loading local package: {pkg} {version}".fmt
         
         let packageSpec = readSpec(pkg, version)
 
-        ShowSuccess()
+        if not CmdlinePackager:
+            ShowSuccess()
 
         if (let entryName = hasEntry(packageSpec); entryName.isSome):
             if (let entryFile = packageLocation & "/" & entryName.get(); entryFile.fileExists()):
@@ -402,9 +405,14 @@ proc processRemotePackage(pkg: string, verspec: VersionSpec, doLoad: bool = true
 #=======================================
 
 proc packageInstall*(pkg: string, verspec: VersionSpec): bool =
+    if processRemoteRepo(pkg, branch, latest).isSome:
+        return true
+
     if processLocalPackage(pkg, verspec, false).isSome:
         return false # already installed
+
     discard processRemotePackage(pkg, verspec, doLoad=false)
+
     return true
 
 proc getEntryForPackage*(
