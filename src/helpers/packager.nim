@@ -239,9 +239,9 @@ proc verifyDependencies*(deps: seq[Value]): bool =
             if dep.a[0].kind == Word or dep.a[0].kind == Literal or dep.a[0].kind == String:
                 if dep.a.len == 1:
                     depList.add((dep.a[0].s, (false, NoPackageVersion)))
-                elif dep.a.len == 2:
+                elif dep.a.len == 2 and dep.a[1].kind == Version:
                     depList.add((dep.a[0].s, (false, dep.a[1].version)))
-                elif dep.a.len == 3:
+                elif dep.a.len == 3 and dep.a[1].kind == Symbol and dep.a[2].kind == Version:
                     if dep.a[1].m == greaterequal or dep.a[1].m == greaterthan:
                         depList.add((dep.a[0].s, (true, dep.a[2].version)))
                     elif dep.a[1].m == equal:
