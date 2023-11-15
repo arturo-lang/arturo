@@ -359,7 +359,7 @@ proc installAll*(config: BuildConfig) =
     proc giveBinaryPermission() =
         exec fmt"chmod +x {TARGET_FILE}"
 
-    proc main(config: BuildConfig)
+    proc main(config: BuildConfig) =
         assert not config.webVersion:
             "Web builds can't be installed"
 
