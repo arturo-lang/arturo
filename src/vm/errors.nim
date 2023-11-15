@@ -421,6 +421,11 @@ proc RuntimeError_PackageRepoNotFound*(repo: string) =
           "package repository not found: ;" &
           repo
 
+proc RuntimeError_CorruptRemoteSpec*(pkg: string) =
+    panic RuntimeError,
+          "corrupt spec file for remote package: ;" &
+          pkg
+
 proc RuntimeError_PackageUnknownError*(pkg: string) =
     panic RuntimeError,
           "unexpected error while installing package: ;" &
