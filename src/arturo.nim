@@ -119,12 +119,23 @@ Options:
     proc packagerMode(command: string, args: seq[string]) =
         case command:
             of "list":
+                if args.len != 0:
+                    CompilerError_ExtraneousParameter(args[0])
             of "remote":
+                if args.len != 0:
+                    CompilerError_ExtraneousParameter(args[0])
             of "install":
+                if args.len > 2:
+                    CompilerError_ExtraneousParameter(args[2])
             of "uninstall":
+                if args.len > 2:
+                    CompilerError_ExtraneousParameter(args[2])
             of "update":
+                CompilerError_ExtraneousParameter(args[0])
+            of "":
+                CompilerError_NoPackageCommand()
             else:
-    
+                CompilerError_UnrecognizedPackageCommand(command)
 #=======================================
 # Main entry
 #=======================================
