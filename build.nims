@@ -449,7 +449,7 @@ proc performTests*(binary: string): bool =
     except:
         return false
 
-proc performBenchmarks*(binary: string) =
+proc performBenchmarks*(binary: string): bool =
     result = true
 
     showHeader "benchmark"
