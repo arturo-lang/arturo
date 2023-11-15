@@ -137,7 +137,12 @@ Options:
                 guard(args.len == 0): CompilerError_NotEnoughParameters("install")
                 guard(args.len > 2): CompilerError_ExtraneousParameter(args[2])
 
-                discard getEntryForPackage(args[0], (true, NoPackageVersion))
+                run(proc()=
+                    let got = packageInstall(args[0], (true, NoPackageVersion))
+                    if not got:
+                        echo "package was already installed"
+                )
+                    
             of "uninstall":
                 guard(args.len == 0): CompilerError_NotEnoughParameters("uninstall")
                 guard(args.len > 2): CompilerError_ExtraneousParameter(args[2])
