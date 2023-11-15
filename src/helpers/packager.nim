@@ -350,13 +350,14 @@ proc processRemotePackage(pkg: string, verspec: VersionSpec): Option[string] =
         let version = verspec.ver
         packageSpecUrl = SpecVersionUrl.fmt
 
-    ShowMessage "Downloading spec: {pkg}.pkgr.art".fmt
     var specContent: string
     try:
         specContent = waitFor (newAsyncHttpClient().getContent(packageSpecUrl))
     except Exception:
         WillShowError()
         RuntimeError_PackageNotFound(pkg)
+
+    ShowMessage "Downloading spec: {pkg}.pkgr.art".fmt
 
     let spec = readSpec(specContent)
     var version: VVersion
