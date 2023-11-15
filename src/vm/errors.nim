@@ -180,8 +180,8 @@ proc CompilerError_ExtraneousParameter*(name: string) =
 
 proc CompilerError_NotEnoughParameters*(name: string) =
     panic CompilerError,
-          "not enough parameters for:" & ";" &
-          "_" & name & "_",
+          "not enough parameters for " & "_" & name & "_ -;" &
+          "consult the help screen below",
           throw=false
 
 # Syntax errors
