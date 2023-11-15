@@ -609,7 +609,10 @@ cmd docs, "Build the documentation":
     buildDocs()
 
 cmd test, "Run test suite":
-    BINARY.performTests()
+    let
+        localBin = BINARY
+        installedBin = TARGET_FILE
+    performTests(localBin, installedBin)
 
 cmd benchmark, "Run benchmark suite":
     performBenchmarks()
