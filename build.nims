@@ -47,9 +47,10 @@ include ".config/who.nims"
 let
 
     colors: tuple = (
+        gray: grayColor.fg,
         green: greenColor.bold,
         magenta: magentaColor.fg,
-        gray: grayColor.fg,
+        red: redColor.fg
     )
 
     styles: tuple = (
@@ -126,11 +127,11 @@ proc log(msg: string) =
         echo colors.gray, "  " & line.dedent, styles.clear
 
 proc panic(msg: string = "", exitCode: int = QuitFailure) =
-    echo redColor.fg, msg.dedent, resetColor()
+    echo colors.red, msg.dedent, styles.clear
     quit exitCode
 
 proc warn(msg: string) =
-    echo redColor.fg, msg.dedent, resetColor()
+    echo colors.red, msg.dedent, styles.clear
 
 func sep(ch: char = '='): string =
     return "".align(80, ch)
