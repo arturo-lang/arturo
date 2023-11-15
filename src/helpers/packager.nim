@@ -41,8 +41,6 @@ type
 
 let
     NoPackageVersion*   = VVersion(major: 0, minor: 0, patch: 0, extra: "")
-    NoVersionLocation*  = ("", NoPackageVersion)
-    NoImportResult*     = (false, "")
 
 const
     TmpFolder           = "{HomeDir}.arturo/tmp"
