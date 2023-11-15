@@ -321,20 +321,45 @@ proc compile*(config: BuildConfig, showFooter: bool = false): int
         exec fmt"nim {config.backend} {params} -o:{config.binary} {paths.mainFile}"
 
 proc installAll*(config: BuildConfig) =
-    assert not config.webVersion:
-        "Web builds can't be installed"
 
-    section "Installing..."
+    # Helper functions
 
-    verifyDirectories()
-    echo "   copying files..."
-    cpFile(config.binary, TARGET_FILE)
-    if hostOS != "windows":
+    proc copy(file: string, from: string, to: string) =
+        cpFile from.joinPath(file), to.joinPath(file)
+
+    # Methods
+    
+    proc copyWebView() =
+        let sourcePath = "src\\extras\\webview\\deps\\dlls\\x64\\"
+            targetPath = "bin"
+        log "copying webview..."
+        "webview.dll".copy(sourcePath, targetPath)
+        "WebView2Loader.dll".copy(sourcePath, targetPath)
+
+    proc copyArturo(config: BuildConfig) =
+        log "copying files..."
+        cpFile(config.binary, TARGET_FILE)
+
+    proc giveBinaryPermission() =
         exec fmt"chmod +x {TARGET_FILE}"
-    else:
-        cpFile("src\\extras\\webview\\deps\\dlls\\x64\\webview.dll","bin\\webview.dll")
-        cpFile("src\\extras\\webview\\deps\\dlls\\x64\\WebView2Loader.dll","bin\\WebView2Loader.dll")
-    echo fmt"   deployed to: {root}{styles.clear}"
+
+    proc main(config: BuildConfig)
+        assert not config.webVersion:
+            "Web builds can't be installed"
+
+        section "Installing..."
+
+        verifyDirectories()
+        config.copyArturo()
+
+        if hostOS != "windows":
+            giveBinaryPermission()
+        else:
+            copyWebView()
+
+        log fmt"deployed to: {root}"
+
+    main(config)
 
 #=======================================
 # Methods
@@ -343,7 +368,7 @@ proc installAll*(config: BuildConfig) =
 proc buildArturo*(config: BuildConfig) =
     
     # Methods 
-    
+
     proc showInfo(config: BuildConfig) =
         showEnvironment()
         config.showBuildInfo()
