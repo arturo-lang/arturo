@@ -78,7 +78,7 @@ var
 #=======================================
 
 proc processLocalPackage(pkg: string, verspec: VersionSpec, latest: bool = false): Option[string]
-proc processRemotePackage(pkg: string, verspec: VersionSpec): Option[string]
+proc processRemotePackage(pkg: string, verspec: VersionSpec, doLoad: bool = true): Option[string]
 proc verifyDependencies*(deps: seq[Value])
 
 #=====================================
@@ -340,7 +340,7 @@ proc processLocalPackage(pkg: string, verspec: VersionSpec, latest: bool = false
             if (let entryFile = packageLocation & "/" & entryName.get(); entryFile.fileExists()):
                 return some(entryFile)
 
-proc processRemotePackage(pkg: string, verspec: VersionSpec): Option[string] =
+proc processRemotePackage(pkg: string, verspec: VersionSpec, doLoad: bool = true): Option[string] =
     ## Check if there is a remote package with the given name/specificiation
     ## in our registry
 
@@ -394,24 +394,31 @@ proc processRemotePackage(pkg: string, verspec: VersionSpec): Option[string] =
 
     ShowSuccess()
 
-    return processLocalPackage(pkg, verspec)
+    if doLoad:
+        return processLocalPackage(pkg, verspec)
 
 #=======================================
 # Methods
 #=======================================
+
+proc packageInstall*(pkg: string, verspec: VersionSpec): bool =
+    if processLocalPackage(pkg, verspec, false).isSome:
+        return false # already installed
+    discard processRemotePackage(pkg, verspec, doLoad=false)
+    return true
 
 proc getEntryForPackage*(
     pkg: string, 
     verspec: VersionSpec, 
     branch: string = "main",
     latest: bool = false,
-    checkForFiles: bool = true
+    checkForLocalPaths: bool = true
 ): Option[string] {.inline.} =
     ## Given a package name and a version specification
     ## try to find the best match and return
     ## the appropriate entry source filepath
 
-    if checkForFiles:
+    if checkForLocalPaths:
         # is it a file?
         if (result = processLocalFile(pkg); result.isSome):
             return
