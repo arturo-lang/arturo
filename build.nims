@@ -130,62 +130,62 @@ func sep(ch: char = '='): string =
 proc showLogo*() =
     echo sep()
     # Sets GREEN
-    echo r"                               _                                     "
-    echo r"                              | |                                    "
-    echo r"                     __ _ _ __| |_ _   _ _ __ ___                    "
-    echo r"                    / _` | '__| __| | | | '__/ _ \                   "
-    echo r"                   | (_| | |  | |_| |_| | | | (_) |                  "
-    echo r"                    \__,_|_|   \__|\__,_|_|  \___/                   "
-    echo r"{CLEAR}{BOLD}                                                        ".fmt
-    echo r"                     Arturo Programming Language{CLEAR}              ".fmt
-    echo r"                      (c)2023 Yanis Zafirópulos                      "
-    echo r"                                                                     "
+    echo "                               _                                     "
+    echo "                              | |                                    "
+    echo "                     __ _ _ __| |_ _   _ _ __ ___                    "
+    echo "                    / _` | '__| __| | | | '__/ _ \                   "
+    echo "                   | (_| | |  | |_| |_| | | | (_) |                  "
+    echo "                    \__,_|_|   \__|\__,_|_|  \___/                   "
+    echo "{CLEAR}{BOLD}                                                        ".fmt
+    echo "                     Arturo Programming Language{CLEAR}              ".fmt
+    echo "                      (c)2023 Yanis Zafirópulos                      "
+    echo "                                                                     "
 
 proc showHeader*(title: string) =
     echo sep()
-    echo r" ► {title.toUpperAscii()}                                            ".fmt
+    echo fmt" ► {title.toUpperAscii()}                                            "
     echo sep()
 
 proc section*(title: string) =
-    echo r"{CLEAR}".fmt
+    echo fmt"{CLEAR}"
     echo sep('-')
-    echo r" {MAGENTA}●{CLEAR} {title}".fmt
+    echo fmt" {MAGENTA}●{CLEAR} {title}"
     echo sep('-')
 
 proc showFooter*() =
-    echo r"{CLEAR}".fmt
+    echo fmt"{CLEAR}"
     echo sep()
-    echo r" {MAGENTA}●{CLEAR}{GREEN} Awesome!{CLEAR}".fmt
+    echo fmt" {MAGENTA}●{CLEAR}{GREEN} Awesome!{CLEAR}"
     echo sep()
-    echo r"   Arturo has been successfully built & installed!"
+    echo "   Arturo has been successfully built & installed!"
     if hostOS != "windows":
-        echo r""
-        echo r"   To be able to run it,"
-        echo r"   first make sure its in your $PATH:"
-        echo r""
-        echo r"          export PATH=$HOME/.arturo/bin:$PATH"
-        echo r""
-        echo r"   and add it to your {getShellRc()},".fmt
-        echo r"   so that it's set automatically every time."
-    echo r""
-    echo r"   Rock on! :)"
+        echo ""
+        echo "   To be able to run it,"
+        echo "   first make sure its in your $PATH:"
+        echo ""
+        echo "          export PATH=$HOME/.arturo/bin:$PATH"
+        echo ""
+        echo fmt"   and add it to your {getShellRc()},"
+        echo "   so that it's set automatically every time."
+    echo ""
+    echo "   Rock on! :)"
     echo sep()
-    echo r"{CLEAR}".fmt
+    echo fmt"{CLEAR}"
 
 proc showEnvironment*() =
     section "Checking environment..."
 
-    echo "{GRAY}   os: {hostOS}".fmt
-    echo "   compiler: Nim v{NimVersion}{CLEAR}".fmt
+    echo fmt"{GRAY}   os: {hostOS}"
+    echo fmt"   compiler: Nim v{NimVersion}{CLEAR}"
 
 proc showBuildInfo*(config: BuildConfig) =
     let params = flags.join(" ")
     section "Building..."
-    echo "{GRAY}   version: ".fmt & staticRead("version/version") & " b/" & staticRead("version/build")
-    echo "   config: {config.version}{CLEAR}".fmt
+    echo fmt"{GRAY}   version: " & staticRead("version/version") & " b/" & staticRead("version/build")
+    echo fmt"   config: {config.version}{CLEAR}"
 
     if not config.silentCompilation:
-        echo "{GRAY}   flags: {params}{CLEAR}".fmt
+        echo fmt"{GRAY}   flags: {params}{CLEAR}"
 
 #=======================================
 # Helpers
@@ -271,10 +271,10 @@ proc compressBinary(config: BuildConfig) =
         
     section "Post-processing..."
 
-    echo r"{GRAY}   compressing binary...{CLEAR}".fmt
+    echo fmt"{GRAY}   compressing binary...{CLEAR}"
     let minBin = config.binary.replace(".js",".min.js")
     let CompressionRessult = 
-        gorgeEx r"uglifyjs {config.binary} -c -m ""toplevel,reserved=['A$']"" -c -o {minBin}".fmt
+        gorgeEx fmt"uglifyjs {config.binary} -c -m ""toplevel,reserved=['A$']"" -c -o {minBin}"
     
     if CompressionRessult.exitCode != QuitSuccess:
         warn "uglifyjs: 3rd-party tool not available"
@@ -282,7 +282,7 @@ proc compressBinary(config: BuildConfig) =
         recompressJS(minBin)
 
 proc verifyDirectories*() =
-    echo "{GRAY}   setting up directories...".fmt
+    echo fmt"{GRAY}   setting up directories..."
     # create target dirs recursively, if they don't exist
     mkdir paths.target
     mkdir paths.targetLib
@@ -292,9 +292,9 @@ proc updateBuild*() =
     # will only be called in DEV mode -
     # basically, increment the build number by one and perform a git commit
     writeFile("version/build", $(readFile("version/build").strip.parseInt + 1))
-    let (output, _) = gorgeEx r"git commit -m 'build update' version/build".fmt
+    let (output, _) = gorgeEx fmt"git commit -m 'build update' version/build"
     for ln in output.split("\n"):
-        echo "{GRAY}   ".fmt & ln.strip() & "{CLEAR}".fmt
+        echo fmt"{GRAY}   " & ln.strip() & fmt"{CLEAR}"
 
 proc compile*(config: BuildConfig, showFooter: bool = false): int 
     {. raises: [OSError, ValueError, Exception] .} =
@@ -321,7 +321,7 @@ proc compile*(config: BuildConfig, showFooter: bool = false): int
         let res = gorgeEx fmt"nim {config.backend} {params} -o:{config.binary} {paths.mainFile}"
         result = res.exitCode
     else:
-        echo "{GRAY}".fmt
+        echo fmt"{GRAY}"
         exec fmt"nim {config.backend} {params} -o:{config.binary} {paths.mainFile}"
 
 proc installAll*(config: BuildConfig) =
@@ -334,11 +334,11 @@ proc installAll*(config: BuildConfig) =
     echo "   copying files..."
     cpFile(config.binary, TARGET_FILE)
     if hostOS != "windows":
-        exec(r"chmod +x {TARGET_FILE}".fmt)
+        exec fmt"chmod +x {TARGET_FILE}"
     else:
         cpFile("src\\extras\\webview\\deps\\dlls\\x64\\webview.dll","bin\\webview.dll")
         cpFile("src\\extras\\webview\\deps\\dlls\\x64\\WebView2Loader.dll","bin\\WebView2Loader.dll")
-    echo "   deployed to: {root}{CLEAR}".fmt
+    echo fmt"   deployed to: {root}{CLEAR}"
 
 #=======================================
 # Methods
@@ -409,7 +409,7 @@ proc buildPackage*(config: BuildConfig) =
 
     proc cleanUp(package: string) =
         rmFile package.dataFile
-        echo "{CLEAR}".fmt
+        echo fmt"{CLEAR}"
 
     proc main() =
         let package = config.binary
@@ -437,8 +437,8 @@ proc buildDocs*() =
     showHeader "docs"
 
     section "Generating documentation..."
-    exec(r"nim doc --project --index:on --outdir:dev-docs {params} src/arturo.nim".fmt)
-    exec(r"nim buildIndex -o:dev-docs/theindex.html dev-docs")
+    exec fmt"nim doc --project --index:on --outdir:dev-docs {params} src/arturo.nim"
+    exec "nim buildIndex -o:dev-docs/theindex.html dev-docs"
 
 proc performTests*(binary: string): bool =
     result = true
