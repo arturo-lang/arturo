@@ -83,7 +83,7 @@ Options:
     -e, --evaluate             Evaluate given code
     -r, --repl                 Show repl / interactive console
 
-    --no-color                 Mute all colors from output
+        --no-color             Mute all colors from output
 
     -h, --help                 Show this help screen
     -v, --version              Show current version
