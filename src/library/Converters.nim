@@ -917,6 +917,9 @@ proc defineSymbols*() =
             elif xKind==String:
                 let (src, tp) = getSource(x.s)
 
+                echo "looking up source for: " & x.s
+                echo "got: " & src
+
                 if tp!=TextData:
                     dict = execDictionary(doParse(src, isFile=false))#, isIsolated=true)
                 else:
