@@ -179,7 +179,10 @@ proc showEnvironment*() =
     echo fmt"   compiler: Nim v{NimVersion}{CLEAR}"
 
 proc showBuildInfo*(config: BuildConfig) =
-    let params = flags.join(" ")
+    let 
+        params = flags.join(" ")
+
+    
     section "Building..."
     echo fmt"{GRAY}   version: " & staticRead("version/version") & " b/" & staticRead("version/build")
     echo fmt"   config: {config.version}{CLEAR}"
@@ -434,6 +437,7 @@ proc buildPackage*(config: BuildConfig) =
 
 proc buildDocs*() =
     let params = flags.join(" ")
+        
     showHeader "docs"
 
     section "Generating documentation..."
