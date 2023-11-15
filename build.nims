@@ -121,6 +121,9 @@ func buildConfig(): BuildConfig =
 # Output
 #=======================================
 
+proc log(msg: string) =
+    for line in msg.splitlines:
+        echo colors.gray, "  " & line.dedent, styles.clear
 
 proc panic(msg: string = "", exitCode: int = QuitFailure) =
     echo redColor.fg, msg.dedent, resetColor()
@@ -179,8 +182,8 @@ proc showFooter*() =
 proc showEnvironment*() =
     section "Checking environment..."
 
-    echo fmt"{colors.gray}   os: {hostOS}"
-    echo fmt"   compiler: Nim v{NimVersion}{styles.clear}"
+    log fmt"os: {hostOS}"
+    log fmt"compiler: Nim v{NimVersion}"
 
 proc showBuildInfo*(config: BuildConfig) =
     let
@@ -189,11 +192,11 @@ proc showBuildInfo*(config: BuildConfig) =
         build = "version/build".staticRead()
 
     section "Building..."
-    echo fmt"{colors.gray}   version: {version}/{build}"
-    echo fmt"   config: {config.version}{styles.clear}"
+    log fmt"version: {version}/{build}"
+    log fmt"config: {config.version}"
 
     if not config.silentCompilation:
-        echo fmt"{colors.gray}   flags: {params}{styles.clear}"
+        log fmt"flags: {params}"
 
 #=======================================
 # Helpers
@@ -263,7 +266,7 @@ proc compressBinary(config: BuildConfig) =
 
     section "Post-processing..."
 
-    echo fmt"{colors.gray}   compressing binary...{styles.clear}"
+    log "compressing binary..."
     let minBin = config.binary.replace(".js",".min.js")
     let CompressionRessult =
         gorgeEx fmt"uglifyjs {config.binary} -c -m ""toplevel,reserved=['A$']"" -c -o {minBin}"
@@ -274,7 +277,7 @@ proc compressBinary(config: BuildConfig) =
         recompressJS(minBin)
 
 proc verifyDirectories*() =
-    echo fmt"{colors.gray}   setting up directories..."
+    log "setting up directories..."
     # create target dirs recursively, if they don't exist
     mkdir paths.target
     mkdir paths.targetLib
@@ -286,7 +289,7 @@ proc updateBuild*() =
     writeFile("version/build", $(readFile("version/build").strip.parseInt + 1))
     let (output, _) = gorgeEx fmt"git commit -m 'build update' version/build"
     for ln in output.split("\n"):
-        echo fmt"{colors.gray}   " & ln.strip() & fmt"{styles.clear}"
+        echo ln.strip()
 
 proc compile*(config: BuildConfig, showFooter: bool = false): int
     {. raises: [OSError, ValueError, Exception] .} =
@@ -378,7 +381,7 @@ proc buildPackage*(config: BuildConfig) =
     proc generateData(package: string) =
         section "Processing data..."
         (package.dataFile).writeFile(package.info)
-        echo fmt"{colors.gray}   written to: {package.dataFile}{styles.clear}"
+        log fmt"written to: {package.dataFile}"
 
     proc setEnvUp(package: string) =
         section "Setting up options..."
@@ -386,7 +389,7 @@ proc buildPackage*(config: BuildConfig) =
         putEnv "PORTABLE_INPUT", package.file
         putEnv "PORTABLE_DATA", package.dataFile
 
-        echo fmt"{colors.gray}   done"
+        log fmt"done!"
 
     proc setFlagsUp() =
         --forceBuild:on
@@ -396,7 +399,7 @@ proc buildPackage*(config: BuildConfig) =
 
     proc showFlags() =
         let params = flags.join(" ")
-        echo fmt"{colors.gray}FLAGS: {params}"
+        log fmt"FLAGS: {params}"
         echo ""
 
     proc cleanUp(package: string) =
