@@ -424,12 +424,17 @@ proc RuntimeError_PackageRepoNotFound*(repo: string) =
 proc RuntimeError_CorruptRemoteSpec*(pkg: string) =
     panic RuntimeError,
           "corrupt spec file for remote package: ;" &
-          pkg
+          "_" & pkg & "_"
+
+proc RuntimeError_PackageNotValid*(pkg: string) =
+    panic RuntimeError,
+          "invalid package: ;" &
+          "_" & pkg & "_" 
 
 proc RuntimeError_PackageUnknownError*(pkg: string) =
     panic RuntimeError,
           "unexpected error while installing package: ;" &
-          pkg
+          "_" & pkg & "_"
 
 # Program errors
 
