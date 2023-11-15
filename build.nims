@@ -303,7 +303,7 @@ proc updateBuild*() =
         let buildFile = "version/build"
         increaseVersion(buildFile)
         for line in commit(buildFile).splitLines:
-            echo ln.strip()
+            echo line.strip()
 
     main()
 
