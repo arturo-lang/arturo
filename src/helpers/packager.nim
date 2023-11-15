@@ -292,32 +292,34 @@ proc processRemoteRepo(pkg: string, branch: string = "main", latest: bool = fals
     ## Check remote github repo with an Arturo
     ## package in it and clone it locally
     
-    ShowMessage "Loading from repository"
+    if pkg.isUrl():
+        
+        ShowMessage "Loading from repository"
 
-    var matches: array[2, string]
-    if not pkg.match(re"https://github.com/([\w\-]+)/([\w\-]+)", matches):
-        WillShowError()
-        RuntimeError_PackageRepoNotCorrect(pkg)
-
-    ShowSuccess()
-
-    let owner = matches[0]
-    let repo = matches[1]
-
-    let repoFolder = RepoPackage.fmt
-
-    if (not dirExists(repoFolder)) or latest:
-        let pkgUrl = RepoPackageUrl.fmt
-        try:
-            pkgUrl.downloadPackageSourceInto(repoFolder)
-        except Exception as e:
+        var matches: array[2, string]
+        if not pkg.match(re"https://github.com/([\w\-]+)/([\w\-]+)", matches):
             WillShowError()
-            if e.msg.contains("404"):
-                RuntimeError_PackageRepoNotFound(pkg)
-            else:
-                RuntimeError_PackageUnknownError(pkg)
+            RuntimeError_PackageRepoNotCorrect(pkg)
 
-    return getEntryPointFromSourceFolder(repoFolder)
+        ShowSuccess()
+
+        let owner = matches[0]
+        let repo = matches[1]
+
+        let repoFolder = RepoPackage.fmt
+
+        if (not dirExists(repoFolder)) or latest:
+            let pkgUrl = RepoPackageUrl.fmt
+            try:
+                pkgUrl.downloadPackageSourceInto(repoFolder)
+            except Exception as e:
+                WillShowError()
+                if e.msg.contains("404"):
+                    RuntimeError_PackageRepoNotFound(pkg)
+                else:
+                    RuntimeError_PackageUnknownError(pkg)
+
+        return getEntryPointFromSourceFolder(repoFolder)
 
 proc processLocalPackage(pkg: string, verspec: VersionSpec, latest: bool = false): Option[string] =
     ## Check for local package installed in our home folder
@@ -419,9 +421,8 @@ proc getEntryForPackage*(
             return
     
     # maybe it's a github repository url?
-    if pkg.isUrl():
-        if (result = processRemoteRepo(pkg, branch, latest); result.isSome):
-            return
+    if (result = processRemoteRepo(pkg, branch, latest); result.isSome):
+        return
 
     # maybe it's a package we already have locally?
     if (result = processLocalPackage(pkg, verspec, latest); result.isSome):
