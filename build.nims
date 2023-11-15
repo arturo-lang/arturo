@@ -416,7 +416,7 @@ proc performTests*(binary: string, targetFile: string) =
         exec r"{targetFile} ./tools/tester.art".fmt
     except:
         try:
-            exec r"{binary.toExe} ./tools/tester.art".fmt
+            exec r"{binary} ./tools/tester.art".fmt
         except:
             quit(QuitFailure)
 
@@ -610,7 +610,7 @@ cmd docs, "Build the documentation":
 
 cmd test, "Run test suite":
     let
-        localBin = BINARY
+        localBin = BINARY.toExe
         installedBin = TARGET_FILE
     performTests(localBin, installedBin)
 
