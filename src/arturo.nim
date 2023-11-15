@@ -76,17 +76,28 @@ Arguments:
         Path to the source code file to execute -
         usually with an .art extension
 
+Commands:
+    -p, --package               
+            list                            List all available packages
+            remote                          List all available remote packages
+            install <package> [version]     Install given remote package
+            uninstall <package> [version]   Uninstall given local package
+            update                          Update all local packages
+
+    -e, --evaluate <code>                   Evaluate given code
+
+    -c, --compile <script>                  Compile script and write bytecode
+    -x, --execute <bytecode>                Execute script from bytecode
+
+    -r, --repl                              Show repl / interactive console
+    
+    -h, --help                              Show this help screen
+    -v, --version                           Show current version
+
 Options:
-    -c, --compile              Compile script and write bytecode
-    -x, --execute              Execute script from bytecode
 
-    -e, --evaluate             Evaluate given code
-    -r, --repl                 Show repl / interactive console
+    --no-color                              Mute all colors from output
 
-        --no-color             Mute all colors from output
-
-    -h, --help                 Show this help screen
-    -v, --version              Show current version
 """
 
 # -u, --update               Update to latest version
