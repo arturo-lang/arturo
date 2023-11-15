@@ -96,7 +96,6 @@ Commands:
     -v, --version                           Show current version
 
 Options:
-
     --no-color                              Mute all colors from output
 """
     #=======================================
