@@ -182,7 +182,7 @@ proc showBuildInfo*(config: BuildConfig) =
     let
         params = flags.join(" ")
         version = "version/version".staticRead()
-        build = "version/buildVersion".staticRead()
+        build = "version/build".staticRead()
 
     section "Building..."
     echo fmt"{GRAY}   version: {version}/{build}"
