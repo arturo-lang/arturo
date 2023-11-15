@@ -137,7 +137,7 @@ Options:
                 guard(args.len == 0): CompilerError_NotEnoughParameters("install")
                 guard(args.len > 2): CompilerError_ExtraneousParameter(args[2])
 
-                discard getEntryForPackage(args[0], (0, NoPackageVersion))
+                discard getEntryForPackage(args[0], (false, NoPackageVersion))
             of "uninstall":
                 guard(args.len == 0): CompilerError_NotEnoughParameters("uninstall")
                 guard(args.len > 2): CompilerError_ExtraneousParameter(args[2])
