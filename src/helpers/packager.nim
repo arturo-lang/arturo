@@ -354,7 +354,6 @@ proc processRemotePackage(pkg: string, verspec: VersionSpec): Option[string] =
     try:
         specContent = waitFor (newAsyncHttpClient().getContent(packageSpecUrl))
     except Exception:
-        WillShowError()
         RuntimeError_PackageNotFound(pkg)
 
     ShowMessage "Downloading spec: {pkg}.pkgr.art".fmt
