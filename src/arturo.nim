@@ -97,7 +97,6 @@ Commands:
 Options:
 
     --no-color                              Mute all colors from output
-
 """
 
 # -u, --update               Update to latest version
