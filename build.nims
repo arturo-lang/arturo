@@ -285,12 +285,27 @@ proc verifyDirectories*() =
     mkdir paths.targetStores
 
 proc updateBuild*() =
-    # will only be called in DEV mode -
-    # basically, increment the build number by one and perform a git commit
-    writeFile("version/build", $(readFile("version/build").strip.parseInt + 1))
-    let (output, _) = gorgeEx fmt"git commit -m 'build update' version/build"
-    for ln in output.split("\n"):
-        echo ln.strip()
+    ## Increment the build version by one and perform a commit.
+    
+    proc commit(file: string): string =
+        let cmd = fmt"git commit -m 'build update' {file}"
+        cmd.gorgeEx().output
+
+    proc increaseVersion(file: string) =
+        let buildVersion: int = file.readFile()
+                                    .strip()
+                                    .parseInt()
+                                    .succ()
+    
+        build.writeFile $buildVersion
+    
+    proc main() =
+        let buildFile = "version/build"
+        increaseVersion(buildFile)
+        for line in commit(buildFile).splitLines:
+            echo ln.strip()
+
+    main()
 
 proc compile*(config: BuildConfig, showFooter: bool = false): int
     {. raises: [OSError, ValueError, Exception] .} =
@@ -328,7 +343,7 @@ proc installAll*(config: BuildConfig) =
         cpFile from.joinPath(file), to.joinPath(file)
 
     # Methods
-    
+
     proc copyWebView() =
         let sourcePath = "src\\extras\\webview\\deps\\dlls\\x64\\"
             targetPath = "bin"
