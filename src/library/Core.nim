@@ -566,7 +566,7 @@ proc defineSymbols*() =
                     RuntimeError_PackageNotValid(pkg)
 
                 VerbosePackager = verboseBefore 
-                
+
                 push(newString(src))               
             else:
                 RuntimeError_PackageNotFound(pkg)
