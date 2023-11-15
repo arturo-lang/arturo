@@ -438,34 +438,6 @@ proc performBenchmarks*(binary: string) =
     except:
         return false
 
-proc showHelp*(error=false, errorMsg="") =
-
-    if not error:
-        showHeader("Help")
-
-    echo r" install              : Build arturo and install executable"
-    echo r"      mini            : Build MINI version (optional)"
-    echo r"      web             : Build Web/JS version (optional)"
-    echo r""
-    echo r" package <script>     : Package arturo app and build executable"
-    echo r""
-    echo r" test                 : Run test suite"
-    echo r" benchmark            : Run benchmark suite"
-    echo r""
-    echo r" help                 : Show this help screen"
-    echo r""
-    echo r"---------------------------------------------------------------------"
-    echo r" ✼ Example:"
-    echo r"---------------------------------------------------------------------"
-    echo r""
-    echo r" ./build.nims install         -> to build & install the full version "
-    echo r" ./build.nims install mini    -> to build & install the mini version "
-    echo r" ./build.nims package script  -> to package your <script>.art app    "
-    echo r""
-
-    if error:
-        quit(QuitFailure)
-
 #=======================================
 # Main
 #=======================================
