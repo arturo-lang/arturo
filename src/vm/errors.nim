@@ -159,6 +159,21 @@ proc CompilerError_UnrecognizedOption*(name: string) =
           "_" & name & "_",
           throw=false
 
+proc CompilerError_UnrecognizedPackageCommand*(name: string) =
+    panic CompilerError,
+          "unrecognized _package_ command:" & ";" &
+          "_" & name & "_"
+
+proc CompilerError_UnrecognizedPackageCommand*(name: string) =
+    panic CompilerError,
+          "no _package_ command command given;" &
+          "have a look at --help for more info"
+
+proc CompilerError_ExtraneousParameter*(name: string) =
+    panic CompilerError,
+          "extraneous command-line option found:" & ";" &
+          "_" & name & "_"
+
 # Syntax errors
 
 proc SyntaxError_MissingClosingSquareBracket*(lineno: int, context: string) =
