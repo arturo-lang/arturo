@@ -43,6 +43,7 @@ let
     NoPackageVersion*   = VVersion(major: 0, minor: 0, patch: 0, extra: "")
 
 const
+    # Paths
     TmpFolder           = "{HomeDir}.arturo/tmp"
     PackageFolder       = "{HomeDir}.arturo/packages/"
     PackageTmpZip       = TmpFolder & "/pkg.zip"
@@ -61,6 +62,9 @@ const
     RepoFolder          = PackageFolder & "repos/"
     RepoPackage         = RepoFolder & "{repo}@{owner}/"
     RepoPackageUrl      = "{pkg}/archive/{branch}.zip"
+
+    # Warnings
+    MalformedDepends    = "Malformed .depends field"
 
 #=======================================
 # Global Variables
@@ -87,6 +91,11 @@ template hasDependencies(item: ValueDict): bool =
 template ShowMessage(msg: string): untyped =
     if VerbosePackager:
         stdout.write "- " & msg
+
+template ShowWarning(msg: string): untyped =
+    if VerbosePackager:
+        stdout.write bold(redColor) & "! " & resetColor() & "\n"
+        stdout.flushFile()
 
 template ShowMessageNl(msg: string, trail="..."): untyped =
     if VerbosePackager:
@@ -222,7 +231,7 @@ proc verifyDependencies*(deps: seq[Value]): bool =
     ShowMessageNl "Verifying dependencies"
     
     var depList: seq[(string, VersionSpec)] = @[]
-
+    var depsOk = true
     for dep in deps:
         if dep.kind == Word or dep.kind == Literal or dep.kind == String:
             depList.add((dep.s, (false, NoPackageVersion)))
@@ -237,6 +246,17 @@ proc verifyDependencies*(deps: seq[Value]): bool =
                         depList.add((dep.a[0].s, (true, dep.a[2].version)))
                     elif dep.a[1].m == equal:
                         depList.add((dep.a[0].s, (false, dep.a[2].version)))
+                    else:
+                        depsOk = false
+                else:
+                    depsOk = false
+            else:
+                depsOk = false
+        else:
+            depsOk = false
+
+    if not depsOk:
+        ShowWarning MalformedDepends
 
     var allOk = true
     for dep in depList:
