@@ -345,7 +345,8 @@ proc installAll*(config: BuildConfig) =
     # Methods
 
     proc copyWebView() =
-        let sourcePath = "src\\extras\\webview\\deps\\dlls\\x64\\"
+        let 
+            sourcePath = "src\\extras\\webview\\deps\\dlls\\x64\\"
             targetPath = "bin"
         log "copying webview..."
         "webview.dll".copy(sourcePath, targetPath)
