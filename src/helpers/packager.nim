@@ -369,7 +369,7 @@ proc updatePackage(pkg: string, path: string): bool =
 
     let maxLocalVersion = versions[0].ver
 
-    ShowMessageNl "Checking package {pkg}".fmt
+    ShowMessageNl "Updating package: {pkg}".fmt
     var packageSpecUrl = SpecLatestUrl.fmt
     var specContent: string
     try:
@@ -645,7 +645,7 @@ proc packageUpdateAll*() =
             if not updatePackage(local[0], local[1]):
                 echo "- Package is up-to-date"
     else:
-        echo fg(redColor) & "\n! No local packages found\n" & resetColor()
+        echo fg(redColor) & "! No local packages found\n" & resetColor()
         echo "  You may find the complete list at https://pkgr.art"
         echo "  or use: " & fg(grayColor) & "arturo --package remote\n" & resetColor()
         return
