@@ -234,6 +234,17 @@ when not defined(WEB):
             savePendingStores()
 
             return evaled
+    
+    proc run*(bl: proc()) =
+        handleVMErrors:
+            if not initialized:
+                initialize(
+                    @[], 
+                    "", 
+                    isFile=false, 
+                    newBlock()
+                )
+            bl()
 
 else:
 

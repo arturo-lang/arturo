@@ -29,6 +29,7 @@ when defined(PORTABLE):
     import os
 
 when not defined(WEB):
+    import helpers/packager
     import helpers/terminal
 
 when not defined(WEB) and not defined(PORTABLE):
@@ -53,6 +54,7 @@ when not defined(WEB) and not defined(PORTABLE):
             readBcode
             writeBcode
             showPInfo
+            packagerMode
             showHelp
             showVersion
 
@@ -95,19 +97,18 @@ Commands:
     -v, --version                           Show current version
 
 Options:
-
     --no-color                              Mute all colors from output
 """
+    #=======================================
+    # Templates
+    #=======================================
 
-# -u, --update               Update to latest version
-
-# -m, --module           
-#         list               List all available modules
-#         remote             List all available remote modules
-#         info <name>        Get info about given module
-#         install <name>     Install remote module by name
-#         uninstall <name>   Uninstall module by name
-#         update             Update all local modules
+    template guard(condition: bool, action: untyped): untyped =
+        if (condition):
+            action
+            echo ""
+            printHelp(withHeader=false)
+            quit(1)
 
     #=======================================
     # Helpers
@@ -124,7 +125,43 @@ Options:
                 .replacef(re"(\w+:)", bold(cyanColor) & "$1" & resetColor())
                 .replacef(re"Arturo", bold(greenColor) & "Arturo" & resetColor())
                 .replacef(re"(\n            [\w]+(?:\s[\w<>]+)?)",bold(whiteColor) & "$1" & resetColor())
-    
+
+    proc packagerMode(command: string, args: seq[string]) =
+        VerbosePackager = true
+        CmdlinePackager = true
+        case command:
+            of "list":
+                guard(args.len != 0): CompilerError_ExtraneousParameter(command, args[0])
+                run(proc()=
+                    packageListLocal()
+                )
+            of "remote":
+                guard(args.len != 0): CompilerError_ExtraneousParameter(command, args[0])
+                run(proc()=
+                    packageListRemote()
+                )
+            of "install":
+                guard(args.len == 0): CompilerError_NotEnoughParameters(command)
+                guard(args.len > 2): CompilerError_ExtraneousParameter(command, args[2])
+                run(proc()=
+                    packageInstall(args[0], (if args.len==2: args[1] else: ""))
+                )
+            of "uninstall":
+                guard(args.len == 0): CompilerError_NotEnoughParameters(command)
+                guard(args.len > 2): CompilerError_ExtraneousParameter(command, args[2])
+                run(proc()=
+                    packageUninstall(args[0], (if args.len==2: args[1] else: ""))
+                )
+            of "update":
+                guard(args.len != 0): CompilerError_ExtraneousParameter(command, args[1])
+                run(proc()=
+                    packageUpdateAll()
+                )
+            of "":
+                guard(true): CompilerError_NoPackageCommand()
+            else:
+                guard(true): CompilerError_UnrecognizedPackageCommand(command)
+
 #=======================================
 # Main entry
 #=======================================
@@ -175,10 +212,10 @@ when isMainModule and not defined(WEB):
                         # of "u","update":
                         #     action = evalCode
                         #     code = runUpdate
-                        # of "m", "module":
-                        #     action = evalCode
-                        #     code = runModule
-                        #     break
+                        of "p", "package":
+                            action = packagerMode
+                            code = token.val
+                            #break
                         of "no-color":
                             muted = true
                         of "h","help":
@@ -194,10 +231,7 @@ when isMainModule and not defined(WEB):
         setColors(muted = muted)
 
         if unrecognizedOption!="" and ((action==evalCode and code=="") or (action notin {execFile, evalCode})):
-            CompilerError_UnrecognizedOption(unrecognizedOption)
-            echo ""
-            printHelp(withHeader=false)
-            quit(1)
+            guard(true): CompilerError_UnrecognizedOption(unrecognizedOption)
 
         case action:
             of execFile, evalCode:
@@ -224,6 +258,9 @@ when isMainModule and not defined(WEB):
                 let bcode = readBytecode(code)
                 let parsed = doParse(bcode[0], isFile=false).a[0]
                 runBytecode(Translation(constants: parsed.a, instructions: bcode[1]), filename, arguments)
+
+            of packagerMode:
+                packagerMode(code, arguments)
 
             of showPInfo:
                 showPackageInfo(code)

@@ -151,12 +151,37 @@ proc showVMErrors*(e: ref Exception) =
 proc CompilerError_ScriptNotExists*(name: string) =
     panic CompilerError,
           "given script path doesn't exist:" & ";" &
-          "_" & name & "_"
+          "_" & name & "_",
+          throw=false
 
 proc CompilerError_UnrecognizedOption*(name: string) =
     panic CompilerError,
           "unrecognized command-line option:" & ";" &
           "_" & name & "_",
+          throw=false
+
+proc CompilerError_UnrecognizedPackageCommand*(name: string) =
+    panic CompilerError,
+          "unrecognized _package_ command:" & ";" &
+          "_" & name & "_",
+          throw=false
+
+proc CompilerError_NoPackageCommand*() =
+    panic CompilerError,
+          "no _package_ command command given -;" &
+          "have a look at the options below",
+          throw=false
+
+proc CompilerError_ExtraneousParameter*(subcmd: string, name: string) =
+    panic CompilerError,
+          "extraneous parameter for " & "_" & subcmd & "_:;" &
+          name,
+          throw=false
+
+proc CompilerError_NotEnoughParameters*(name: string) =
+    panic CompilerError,
+          "not enough parameters for " & "_" & name & "_ -;" &
+          "consult the help screen below",
           throw=false
 
 # Syntax errors
@@ -435,6 +460,11 @@ proc RuntimeError_PackageUnknownError*(pkg: string) =
     panic RuntimeError,
           "unexpected error while installing package: ;" &
           "_" & pkg & "_"
+
+proc RuntimeError_PackageInvalidVersion*(vers: string) =
+    panic RuntimeError,
+          "error parsing package version: ;" &
+          "_" & vers & "_"
 
 # Program errors
 
