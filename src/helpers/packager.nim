@@ -418,7 +418,13 @@ proc packageListLocal*() =
     discard
 
 proc packageListRemote*() =
-    discard
+    try:
+        let list = waitFor (newAsyncHttpClient().getContent("https://pkgr.art/getlist.php".fmt))
+        let listDict = execDictionary(doParse(list, isFile=false))
+        for key in listDict.keys:
+            echo "- {key}".fmt
+    except Exception:
+        echo "Something went wrong"
 
 proc packageInstall*(pkg: string, version: string) =
     let verspec = getVersionSpecFromString(version)
