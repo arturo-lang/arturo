@@ -370,13 +370,16 @@ proc buildPackage*(config: BuildConfig) =
 
 
 proc buildDocs*() =
-    let params = flags.join(" ")
+    let 
+        params = flags.join(" ")
+        genDocs = fmt"nim doc --project --index:on --outdir:dev-docs {params} src/arturo.nim"
+        genIndex = "nim buildIndex -o:dev-docs/theindex.html dev-docs"
 
     showHeader "docs"
 
     section "Generating documentation..."
-    exec fmt"nim doc --project --index:on --outdir:dev-docs {params} src/arturo.nim"
-    exec "nim buildIndex -o:dev-docs/theindex.html dev-docs"
+    genDocs.exec()
+    genIndex.exec()
 
 proc performTests*(binary: string): bool =
     result = true
