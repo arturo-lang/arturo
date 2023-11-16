@@ -202,32 +202,49 @@ proc getAllLocalPackages(): seq[(string,string)] =
 
 proc removeLocalPackage(pkg: string, version: VVersion): bool =
     let cacheFolder = CacheFiles.fmt
+    
     if cacheFolder.dirExists():
+        ShowMessageNl "Uninstalling package: {pkg} {version}".fmt
+        ShowMessage "Deleting cache"
         removeDir(cacheFolder)
+        ShowSuccess()
     else:
+        ShowMessage "Deleting cache"
+        stdout.write "\n"
+        stdout.flushFile()
         return false
 
+    ShowMessage "Deleting spec"
     let specFile = SpecFile.fmt
     if specFile.fileExists():
         try:
             discard tryRemoveFile(specFile)
+            ShowSuccess()
         except Exception:
+            stdout.write "\n"
+            stdout.flushFile()
             return false
     else: 
+        stdout.write "\n"
+        stdout.flushFile()
         return false
 
+    ShowMessage "Cleaning up"
     let packagesPath = CachePackage.fmt
     if getLocalVersionsInPath(packagesPath).len == 0:
         removeDir(packagesPath)
 
         let specPath = SpecPackage.fmt
         removeDir(specPath)
+    ShowSuccess()
 
     return true
 
 proc removeAllLocalPackageVersions(pkg: string): bool =
     let packagesPath = CachePackage.fmt
     let localVersions =  getLocalVersionsInPath(packagesPath)
+    if localVersions.len == 0:
+        return false
     for found in localVersions:
         if not removeLocalPackage(pkg, found.ver):
             return false
