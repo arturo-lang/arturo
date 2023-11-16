@@ -498,7 +498,7 @@ proc packageUninstall*(pkg: string, version: string) =
     let verspec = getVersionSpecFromString(version)
 
     if verspec.ver == NoPackageVersion:
-        if removeAllLocalPackageVersions():
+        if removeAllLocalPackageVersions(pkg):
             echo "done!"
         else:
             echo "package wasn't there"
