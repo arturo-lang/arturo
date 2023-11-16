@@ -71,14 +71,17 @@ const
 #=======================================
 
 var
-    VerbosePackager* = true
+    VerbosePackager* = false
+    CmdlinePackager* = false
 
 #=======================================
 # Forward declarations
 #=======================================
 
+proc getLocalVersionsInPath(path: string): seq[VersionLocation]
+
 proc processLocalPackage(pkg: string, verspec: VersionSpec, latest: bool = false): Option[string]
-proc processRemotePackage(pkg: string, verspec: VersionSpec): Option[string]
+proc processRemotePackage(pkg: string, verspec: VersionSpec, doLoad: bool = true): Option[string]
 proc verifyDependencies*(deps: seq[Value])
 
 #=====================================
@@ -178,7 +181,88 @@ proc getEntryPointFromSourceFolder*(folder: string): Option[string] =
     if allOk:
         return some(entryPoint)
 
-proc lookupLocalPackageVersion*(pkg: string, version: VersionSpec): Option[VersionLocation] =
+proc getAllLocalPackages(): seq[(string,string)] =
+    ## Get a list of all the packages - name & path -
+    ## that are installed locally
+
+    return (toSeq(walkDir(CacheFolder.fmt))).map(
+            proc (vers: tuple[kind: PathComponent, path: string]): (string,string) = 
+                let filepath = vers.path
+                let (_, name, _) = splitFile(filepath)
+                let pkg = name
+                let specPath = SpecPackage.fmt
+                if specPath.dirExists():
+                    (name, filepath)
+                else:
+                    ("", "")
+        ).filter(
+            proc (z: (string,string)): bool =
+                z[0]!="" and z[1]!=""
+        )
+
+proc removeLocalPackage(pkg: string, version: VVersion): bool =
+    let cacheFolder = CacheFiles.fmt
+    
+    if cacheFolder.dirExists():
+        ShowMessageNl "Uninstalling package: {pkg} {version}".fmt
+        ShowMessage "Deleting cache"
+        removeDir(cacheFolder)
+        ShowSuccess()
+    else:
+        ShowMessage "Deleting cache"
+        stdout.write "\n"
+        stdout.flushFile()
+        return false
+
+    ShowMessage "Deleting spec"
+    let specFile = SpecFile.fmt
+    if specFile.fileExists():
+        try:
+            discard tryRemoveFile(specFile)
+            ShowSuccess()
+        except Exception:
+            stdout.write "\n"
+            stdout.flushFile()
+            return false
+    else: 
+        stdout.write "\n"
+        stdout.flushFile()
+        return false
+
+    ShowMessage "Cleaning up"
+    let packagesPath = CachePackage.fmt
+    if getLocalVersionsInPath(packagesPath).len == 0:
+        removeDir(packagesPath)
+
+        let specPath = SpecPackage.fmt
+        removeDir(specPath)
+    ShowSuccess()
+
+    return true
+
+proc removeAllLocalPackageVersions(pkg: string): bool =
+    let packagesPath = CachePackage.fmt
+    let localVersions =  getLocalVersionsInPath(packagesPath)
+    if localVersions.len == 0:
+        return false
+    for found in localVersions:
+        if not removeLocalPackage(pkg, found.ver):
+            return false
+
+    return true
+
+proc getLocalVersionsInPath(path: string): seq[VersionLocation] =
+    ## Get a sorted list of all cached versions found
+    ## for a given package, using path
+
+    return (toSeq(walkDir(path))).map(
+            proc (vers: tuple[kind: PathComponent, path: string]): VersionLocation = 
+                let filepath = vers.path
+                let (_, name, ext) = splitFile(filepath)
+                (filepath, newVVersion(name & ext))
+        ).sorted(proc (a: VersionLocation, b: VersionLocation): int = cmp(a.ver, b.ver), order=SortOrder.Descending)
+
+proc lookupLocalPackageVersion(pkg: string, version: VersionSpec): Option[VersionLocation] =
     ## Look for a specific package by name and a version specification
     ## among the ones that are already installed locally
 
@@ -186,12 +270,7 @@ proc lookupLocalPackageVersion*(pkg: string, version: VersionSpec): Option[Versi
 
     if packagesPath.dirExists():
         # Get all local versions
-        let localVersions = (toSeq(walkDir(packagesPath))).map(
-                proc (vers: tuple[kind: PathComponent, path: string]): VersionLocation = 
-                    let filepath = vers.path
-                    let (_, name, ext) = splitFile(filepath)
-                    (filepath, newVVersion(name & ext))
-            ).sorted(proc (a: VersionLocation, b: VersionLocation): int = cmp(a.ver, b.ver), order=SortOrder.Descending)
+        let localVersions =  getLocalVersionsInPath(packagesPath)
 
         # Go through them and return the one - if any -
         # that matches the version specification we are looking for
@@ -263,6 +342,55 @@ proc verifyDependencies*(deps: seq[Value]) =
             if processRemotePackage(src,version).isSome:
                 discard
 
+proc getVersionSpecFromString(vers: string): VersionSpec =
+    if vers != "": 
+        let ps = doParse(vers, isFile=false)
+        if ps.kind != Block or ps.a.len != 1 or ps.a[0].kind != Version:
+            RuntimeError_PackageInvalidVersion(vers)
+
+        return (false, ps.a[0].version)
+    else:
+        return (true, NoPackageVersion)
+
+func getShortData(initial: string, lim: int): seq[string] =
+    result = @[initial]
+    if result[0].len>lim:
+        let parts = result[0].splitWhitespace()
+        let middle = (parts.len div 2)
+        result = @[
+            parts[0..middle].join(" "),
+            parts[middle+1..^1].join(" ")
+        ]
+
+proc updatePackage(pkg: string, path: string): bool =
+    let versions = getLocalVersionsInPath(path)
+    if versions.len == 0: 
+        return false
+
+    let maxLocalVersion = versions[0].ver
+
+    ShowMessageNl "Updating package: {pkg}".fmt
+    var packageSpecUrl = SpecLatestUrl.fmt
+    var specContent: string
+    try:
+        specContent = waitFor (newAsyncHttpClient().getContent(packageSpecUrl))
+    except Exception:
+        RuntimeError_PackageNotFound(pkg)
+
+    let spec = readSpec(specContent)
+    var version: VVersion
+    if (let vv = spec.hasVersion(); vv.isSome):
+        version = vv.get()
+    else:
+        RuntimeError_CorruptRemoteSpec(pkg)
+
+    if version > maxLocalVersion:
+        discard processRemotePackage(pkg, (true, NoPackageVersion), doLoad=false)
+    else:
+        return false
+
+    return true
+
 #=====================================
 
 proc processLocalFile(filePath: string): Option[string] =
@@ -293,8 +421,8 @@ proc processRemoteRepo(pkg: string, branch: string = "main", latest: bool = fals
     ## package in it and clone it locally
     
     if pkg.isUrl():
-        
-        ShowMessage "Loading from repository"
+
+        ShowMessage "Fetching repository"
 
         var matches: array[2, string]
         if not pkg.match(re"https://github.com/([\w\-]+)/([\w\-]+)", matches):
@@ -330,17 +458,19 @@ proc processLocalPackage(pkg: string, verspec: VersionSpec, latest: bool = false
 
     if (let localPackage = lookupLocalPackageVersion(pkg, verspec); localPackage.isSome):
         let (packageLocation, version) = localPackage.get()
-        ShowMessage "Loading local package: {pkg} {version}".fmt
+        if not CmdlinePackager:
+            ShowMessage "Loading local package: {pkg} {version}".fmt
         
         let packageSpec = readSpec(pkg, version)
 
-        ShowSuccess()
+        if not CmdlinePackager:
+            ShowSuccess()
 
         if (let entryName = hasEntry(packageSpec); entryName.isSome):
             if (let entryFile = packageLocation & "/" & entryName.get(); entryFile.fileExists()):
                 return some(entryFile)
 
-proc processRemotePackage(pkg: string, verspec: VersionSpec): Option[string] =
+proc processRemotePackage(pkg: string, verspec: VersionSpec, doLoad: bool = true): Option[string] =
     ## Check if there is a remote package with the given name/specificiation
     ## in our registry
 
@@ -394,7 +524,133 @@ proc processRemotePackage(pkg: string, verspec: VersionSpec): Option[string] =
 
     ShowSuccess()
 
-    return processLocalPackage(pkg, verspec)
+    if doLoad:
+        return processLocalPackage(pkg, verspec)
+
+#=======================================
+# Command-line interface
+#=======================================
+
+proc packageListLocal*() =
+    let localPackages = getAllLocalPackages()
+
+    if localPackages.len > 0:
+        echo fg(cyanColor) & "\n  Local packages\n" & resetColor()
+        echo "-".repeat(80)
+        echo "  " & "Package".alignLeft(30) & "Available Version(s)"
+        echo "-".repeat(80)
+        for local in localPackages:
+            let packageName = local[0]
+
+            let versions = getLocalVersionsInPath(local[1])
+            var vers: seq[string]
+            for version in versions:
+                vers.add($(version.ver))
+            let packageVersions = vers.join(", ")
+            
+            stdout.write "- " & bold(whiteColor) & packageName.alignLeft(30) & resetColor()
+            stdout.write fg(grayColor) & packageVersions & resetColor()
+            stdout.write "\n"
+            stdout.flushFile()
+        echo fg(greenColor) & "\n  {localPackages.len} packages found".fmt & resetColor()
+        echo ""
+    else:
+        echo fg(redColor) & "\n! No local packages found\n" & resetColor()
+        echo "  You may find the complete list at https://pkgr.art"
+        echo "  or use: " & fg(grayColor) & "arturo --package remote\n" & resetColor()
+
+proc packageListRemote*() =
+    try:
+        let list = waitFor (newAsyncHttpClient().getContent("https://pkgr.art/list.art".fmt))
+        let listDict = execDictionary(doParse(list, isFile=false))
+
+        echo fg(cyanColor) & "\n  Remote packages\n" & resetColor()
+        echo "-".repeat(80)
+        echo "  " & "Package".alignLeft(30) & "Description"
+        echo "-".repeat(80)
+        for key,val in listDict:
+            let desc = val.d["description"].s
+            var installed = "-"
+            if lookupLocalPackageVersion(key, (true,NoPackageVersion)).isSome:
+                installed = "*"
+            stdout.write "{installed} ".fmt & bold(whiteColor) & key.alignLeft(30) & resetColor()
+            for i,line in getShortData(desc, 46):
+                if i > 0:
+                    stdout.write "  " & "".alignLeft(30)
+                stdout.write line
+                stdout.write "\n"
+                stdout.flushFile()
+            
+        echo fg(greenColor) & "\n  {listDict.len} packages found".fmt & resetColor()
+        echo ""
+    except Exception:
+        echo fg(redColor) & "\n! Something went wrong!\n" & resetColor()
+        echo "  Try again later or submit an issue report if the bug persists:"
+        echo "  " & fg(grayColor) & "https://github.com/arturo-lang/arturo/issues" & resetColor()
+
+proc packageInstall*(pkg: string, version: string) =
+    let verspec = getVersionSpecFromString(version)
+
+    echo fg(cyanColor) & "\n  Install package\n" & resetColor()
+
+    if processRemoteRepo(pkg, "main", true).isSome:
+        echo fg(greenColor) & "\n  Done.\n" & resetColor()
+        return
+
+    if processLocalPackage(pkg, verspec, false).isSome:
+        echo fg(redColor) & "\n! The package is already installed\n" & resetColor()
+        echo "  You may install a different version https://pkgr.art"
+        echo "  by using: " & fg(grayColor) & "arturo --package install {pkg} <version>\n".fmt & resetColor()
+        return # already installed
+
+    try:
+        discard processRemotePackage(pkg, verspec, doLoad=false)
+    except Exception as ex:
+        let message = ex.msg.replacef(re"_([^_]+)_",fmt("{bold()}$1{resetColor}"))
+        echo fg(redColor) & "\n! Something went wrong\n" & resetColor()
+        for m in message.split(";"):
+            echo "  " & m
+        echo ""
+        return
+
+    echo fg(greenColor) & "\n  Done.\n" & resetColor()
+
+proc packageUninstall*(pkg: string, version: string) =
+    let verspec = getVersionSpecFromString(version)
+
+    echo fg(cyanColor) & "\n  Uninstall package\n" & resetColor()
+
+    if verspec.ver == NoPackageVersion:
+        if removeAllLocalPackageVersions(pkg):
+            echo fg(greenColor) & "\n  Done.\n" & resetColor()
+        else:
+            echo fg(redColor) & "\n! The package was not found\n" & resetColor()
+            echo "  You may see the list of available packages"
+            echo "  by using: " & fg(grayColor) & "arturo --package list\n".fmt & resetColor()
+    else:
+        if removeLocalPackage(pkg, verspec.ver):
+            echo fg(greenColor) & "\n  Done.\n" & resetColor()
+        else:
+            echo fg(redColor) & "\n! The package was not found\n" & resetColor()
+            echo "  You may see the list of local packages"
+            echo "  by using: " & fg(grayColor) & "arturo --package list\n".fmt & resetColor()
+
+proc packageUpdateAll*() =
+    echo fg(cyanColor) & "\n  Update packages\n" & resetColor()
+
+    let localPackages = getAllLocalPackages()
+
+    if localPackages.len > 0:
+        for local in localPackages:
+            if not updatePackage(local[0], local[1]):
+                echo "- Package is up-to-date"
+    else:
+        echo fg(redColor) & "! No local packages found\n" & resetColor()
+        echo "  You may find the complete list at https://pkgr.art"
+        echo "  or use: " & fg(grayColor) & "arturo --package remote\n" & resetColor()
+        return
+
+    echo fg(greenColor) & "\n  Done.\n" & resetColor()
 
 #=======================================
 # Methods
@@ -403,15 +659,15 @@ proc processRemotePackage(pkg: string, verspec: VersionSpec): Option[string] =
 proc getEntryForPackage*(
     pkg: string, 
     verspec: VersionSpec, 
-    branch: string,
-    latest: bool,
-    checkForFiles: bool = true
+    branch: string = "main",
+    latest: bool = false,
+    checkForLocalPaths: bool = true
 ): Option[string] {.inline.} =
     ## Given a package name and a version specification
     ## try to find the best match and return
     ## the appropriate entry source filepath
 
-    if checkForFiles:
+    if checkForLocalPaths:
         # is it a file?
         if (result = processLocalFile(pkg); result.isSome):
             return

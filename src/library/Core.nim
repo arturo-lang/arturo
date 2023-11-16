@@ -522,6 +522,21 @@ proc defineSymbols*() =
 
             push(newLogical(condition))
 
+    # TODO(Core/__VerbosePackager) Find an elegant way to inject hidden functions
+    #  labels: library, enhancement, cleanup
+    builtin "__VerbosePackager",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "",
+        args        = NoArgs,
+        attrs       = NoAttrs,
+        returns     = {Nothing,Dictionary,Block},
+        example     = """
+        """:
+            #=======================================================
+            VerbosePackager = true
+
     builtin "import",
         alias       = unaliased, 
         op          = opNop,
