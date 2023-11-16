@@ -54,7 +54,7 @@ let
     )
 
     binary: tuple = (
-        source: "bin"/"arturo"
+        source: "bin"/"arturo",
         target: paths.target/"arturo".toExe
     )
 
