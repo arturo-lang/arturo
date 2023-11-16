@@ -155,8 +155,8 @@ proc compressBinary(config: BuildConfig) =
         recompressJS(minBin)
 
 proc verifyDirectories*() =
+    ## Create target dirs recursively, if they don't exist
     log "setting up directories..."
-    # create target dirs recursively, if they don't exist
     mkdir paths.target
     mkdir paths.targetLib
     mkdir paths.targetStores
