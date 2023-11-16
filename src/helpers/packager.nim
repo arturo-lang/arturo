@@ -370,7 +370,7 @@ proc updatePackage(pkg: string, path: string): bool =
     let maxLocalVersion = versions[0].ver
 
     ShowMessageNl "Checking package {pkg}".fmt
-    var packageSpecUrl: SpecLatestUrl.fmt
+    var packageSpecUrl = SpecLatestUrl.fmt
     var specContent: string
     try:
         specContent = waitFor (newAsyncHttpClient().getContent(packageSpecUrl))
