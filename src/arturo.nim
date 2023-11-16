@@ -153,7 +153,7 @@ Options:
                     packageUninstall(args[0], (if args.len==2: args[1] else: ""))
                 )
             of "update":
-                guard(args.len != 0): CompilerError_ExtraneousParameter(command)
+                guard(args.len != 0): CompilerError_ExtraneousParameter(command, args[1])
                 run(proc()=
                     packageUpdateAll()
                 )
