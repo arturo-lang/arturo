@@ -263,6 +263,19 @@ proc installAll*(config: BuildConfig) =
 
     main(config)
 
+proc showBuildInfo*(config: BuildConfig) =
+    let
+        params = flags.join(" ")
+        version = "version/version".staticRead()
+        build = "version/build".staticRead()
+
+    section "Building..."
+    log fmt"version: {version}/{build}"
+    log fmt"config: {config.version}"
+
+    if not config.silentCompilation:
+        log fmt"flags: {params}"
+
 #=======================================
 # Methods
 #=======================================
