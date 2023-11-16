@@ -26,7 +26,6 @@ import ".config/utils/ui.nims"
 #=======================================
 
 mode = ScriptMode.Silent
-NoColors = hostOS == "windows"
 
 #=======================================
 # Flag system
