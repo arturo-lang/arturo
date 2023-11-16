@@ -207,8 +207,11 @@ proc removeLocalPackage(pkg: string, version: VVersion): bool =
         return false
 
     let packagesPath = CachePackage.fmt
-    if getLocalVersions(packagesPath).len == 0:
+    if getLocalVersionsInPath(packagesPath).len == 0:
         removeDir(packagesPath)
+
+        let specPath = SpecPackage.fmt
+        removeDir(specPath)
 
     return true
 
@@ -465,14 +468,23 @@ proc processRemotePackage(pkg: string, verspec: VersionSpec, doLoad: bool = true
 proc packageListLocal*() =
     let localPackages = getAllLocalPackages()
 
-    for local in localPackages:
-        echo local[0]
-        let versions = getLocalVersionsInPath(local[1])
-        var vers: seq[string]
-        for version in versions:
-            vers.add($(version.ver))
-        echo "\t" & vers.join(", ")
-    discard
+    if localPackages.len > 0:
+        for local in localPackages:
+            let packageName = local[0]
+
+            let versions = getLocalVersionsInPath(local[1])
+            var vers: seq[string]
+            for version in versions:
+                vers.add($(version.ver))
+            let packageVersions = vers.join(", ")
+            
+            stdout.write bold(whiteColor) & packageName.alignLeft(50) & resetColor()
+            stdout.write fg(grayColor) & packageVersions & resetColor()
+    else:
+        echo "⚠️ No local packages found!\n"
+        echo "You may find the complete list at https://pkgr.art"
+        echo "or use: arturo --package remote"
+
 
 proc packageListRemote*() =
     try:
