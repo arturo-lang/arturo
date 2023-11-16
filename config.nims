@@ -1,9 +1,5 @@
 import os, strutils
 
-# TODO(config.nims) Do we need this?
-#  Hopefully, it doesn't mess things up too much; but if it's used - and when - we should know.
-#  labels: installer
-
 proc defaultConfig() =
     --cincludes:extras
     --path:src
