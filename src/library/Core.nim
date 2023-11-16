@@ -522,6 +522,19 @@ proc defineSymbols*() =
 
             push(newLogical(condition))
 
+    builtin "__VerbosePackager",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "",
+        args        = NoArgs,
+        attrs       = NoAttrs,
+        returns     = {Nothing,Dictionary,Block},
+        example     = """
+        """:
+            #=======================================================
+            VerbosePackager
+
     builtin "import",
         alias       = unaliased, 
         op          = opNop,
