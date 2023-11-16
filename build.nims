@@ -313,6 +313,7 @@ proc compile*(config: BuildConfig, showFooter: bool = false): int
     result = QuitSuccess
     let
         params = flags.join(" ")
+        cmd = fmt"nim {config.backend} {params} -o:{config.binary} {paths.mainFile}"
 
     proc windowsHostSpecific() =
         if config.isDeveloper and not flags.contains("NOWEBVIEW"):
@@ -329,11 +330,10 @@ proc compile*(config: BuildConfig, showFooter: bool = false): int
         unixHostSpecific()
 
     if config.silentCompilation:
-        let res = gorgeEx fmt"nim {config.backend} {params} -o:{config.binary} {paths.mainFile}"
-        result = res.exitCode
+        return cmd.gorgeEx().exitCode
     else:
         echo fmt"{colors.gray}"
-        exec fmt"nim {config.backend} {params} -o:{config.binary} {paths.mainFile}"
+        cmd.exec()
 
 proc installAll*(config: BuildConfig) =
 
