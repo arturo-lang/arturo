@@ -19,8 +19,6 @@
 import os
 import strformat, strutils
 
-import src/helpers/terminal
-
 import ".config/utils/ui.nims"
 
 #=======================================
