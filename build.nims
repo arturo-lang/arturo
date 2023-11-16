@@ -111,25 +111,23 @@ template unless(condition: bool, body: untyped) =
 proc recompressJS*(jsFile: string) =
     let outputFile = jsFile #.replace(".min.js", ".final.min.js")
     var js = readFile(jsFile)
-
-    # replace Field0, Field1, etc with F0, F1, etc
-    js = js.replaceWord("Field0", "F0")
+            # replace Field0, Field1, etc with F0, F1, etc
+           .replaceWord("Field0", "F0")
            .replaceWord("Field1", "F1")
            .replaceWord("Field2", "F2")
            .replaceWord("Field3", "F3")
+            # replace redundant error messages
+           .multiReplace(
+                ("field '", ""),
+                ("' is not accessible for type '", ""),
+                ("' using ", ""),
+                ("'kind = ", ""),
+                ("'iKind = ", ""),
+                ("'tpKind = ", ""),
+                ("'fnKind = ", "")
+            )
 
-    # replace redundant error messages
-    js = js.multiReplace(
-        ("field '", ""),
-        ("' is not accessible for type '", ""),
-        ("' using ", ""),
-        ("'kind = ", ""),
-        ("'iKind = ", ""),
-        ("'tpKind = ", ""),
-        ("'fnKind = ", "")
-    )
-
-    writeFile(outputFile, js)
+    outputFile.writeFile js
 
 proc miniBuild*() =
     # all the necessary "modes" for mini builds
