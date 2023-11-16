@@ -5,6 +5,8 @@ import std/sugar
 import std/strformat
 import std/strutils
 
+from std/system/nimscript import writeTask
+
 let
     args* = commandLineParams()
     command = if "build.nims" in paramStr(1):
