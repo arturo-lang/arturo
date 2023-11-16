@@ -195,11 +195,6 @@ proc updateBuild*() =
 proc compile*(config: BuildConfig, showFooter: bool = false): int
     {. raises: [OSError, ValueError, Exception] .} =
 
-    result = QuitSuccess
-    let
-        params = flags.join(" ")
-        cmd = fmt"nim {config.backend} {params} -o:{config.binary} {paths.mainFile}"
-
     proc windowsHostSpecific() =
         if config.isDeveloper and not flags.contains("NOWEBVIEW"):
             discard gorgeEx "src\\extras\\webview\\deps\\build.bat"
@@ -208,6 +203,11 @@ proc compile*(config: BuildConfig, showFooter: bool = false): int
 
     proc unixHostSpecific() =
         --passL:"\"-lm\""
+
+    result = QuitSuccess
+    let
+        params = flags.join(" ")
+        cmd = fmt"nim {config.backend} {params} -o:{config.binary} {paths.mainFile}"
 
     if "windows" == hostOS:
          windowsHostSpecific()
