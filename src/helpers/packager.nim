@@ -184,10 +184,9 @@ proc getEntryPointFromSourceFolder*(folder: string): Option[string] =
 proc getAllLocalPackages(): seq[(string,string)] =
     ## Get a list of all the packages - name & path -
     ## that are installed locally
-    echo "here"
+
     return (toSeq(walkDir(CacheFolder.fmt))).map(
             proc (vers: tuple[kind: PathComponent, path: string]): (string,string) = 
-                echo vers.path
                 let filepath = vers.path
                 let (_, name, _) = splitFile(filepath)
                 (name, filepath)
@@ -480,11 +479,13 @@ proc packageListLocal*() =
             
             stdout.write bold(whiteColor) & packageName.alignLeft(50) & resetColor()
             stdout.write fg(grayColor) & packageVersions & resetColor()
+            stdout.write "\n"
+            stdout.flushFile()
+        echo ""
     else:
         echo "⚠️ No local packages found!\n"
         echo "You may find the complete list at https://pkgr.art"
-        echo "or use: arturo --package remote"
-
+        echo "or use: arturo --package remote\n"
 
 proc packageListRemote*() =
     try:
