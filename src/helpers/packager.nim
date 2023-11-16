@@ -189,7 +189,15 @@ proc getAllLocalPackages(): seq[(string,string)] =
             proc (vers: tuple[kind: PathComponent, path: string]): (string,string) = 
                 let filepath = vers.path
                 let (_, name, _) = splitFile(filepath)
-                (name, filepath)
+                let pkg = name
+                let specPath = SpecPackage.fmt
+                if specPath.dirExists():
+                    (name, filepath)
+                else:
+                    ("", "")
+        ).filter(
+            proc (z: (string,string)): bool =
+                z[0]!="" and z[1]!=""
         )
 
 proc removeLocalPackage(pkg: string, version: VVersion): bool =
