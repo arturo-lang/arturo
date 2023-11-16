@@ -423,7 +423,11 @@ proc packageListRemote*() =
         let listDict = execDictionary(doParse(list, isFile=false))
         for key,val in listDict:
             let desc = val.d["description"].s
-            echo "- {key}: {desc}".fmt
+            var installed = "-"
+            if lookupLocalPackageVersion(pkg, (true,NoPackageVersion)).isSome:
+                installed = "+"
+                let (packageLocation, version) = localPackage.get()
+            echo "{installed} {key}: {desc}".fmt
     except Exception:
         echo "Something went wrong"
 
