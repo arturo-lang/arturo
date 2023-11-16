@@ -138,20 +138,6 @@ proc recompressJS*(jsFile: string) =
 
     writeFile(outputFile, js)
 
-proc getShellRc*(): string =
-    # will only be called on non-Windows systems -
-    # are there any more shells that are not taken into account?
-    let (output, _) = gorgeEx("echo $SHELL")
-    case output:
-        of "/bin/zsh":
-            result = "~/.zshrc"
-        of "/bin/bash":
-            result = "~/.bashrc or ~/.profile"
-        of "/bin/sh":
-            result = "~/.profile"
-        else:
-            result = "~/.profile"
-
 proc miniBuild*() =
     # all the necessary "modes" for mini builds
     miniBuildConfig()
