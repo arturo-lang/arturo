@@ -206,6 +206,10 @@ proc removeLocalPackage(pkg: string, version: VVersion): bool =
     else: 
         return false
 
+    let packagesPath = CachePackage.fmt
+    if getLocalVersions(packagesPath).len == 0:
+        removeDir(packagesPath)
+
     return true
 
 proc removeAllLocalPackageVersions(pkg: string): bool =
