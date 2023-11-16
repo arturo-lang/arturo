@@ -419,10 +419,11 @@ proc packageListLocal*() =
 
 proc packageListRemote*() =
     try:
-        let list = waitFor (newAsyncHttpClient().getContent("https://pkgr.art/getlist.php".fmt))
+        let list = waitFor (newAsyncHttpClient().getContent("https://pkgr.art/list.art".fmt))
         let listDict = execDictionary(doParse(list, isFile=false))
-        for key in listDict.keys:
-            echo "- {key}".fmt
+        for key,val in listDict:
+            let desc = val.d["description"].s
+            echo "- {key}: {desc}".fmt
     except Exception:
         echo "Something went wrong"
 
