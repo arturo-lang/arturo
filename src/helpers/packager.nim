@@ -585,14 +585,14 @@ proc packageUninstall*(pkg: string, version: string) =
         if removeAllLocalPackageVersions(pkg):
             echo fg(greenColor) & "\n  Done.\n" & resetColor()
         else:
-            echo "\n ⚠️  " & fg(redColor) & "The package was not found\n" & resetColor()
+            echo " ⚠️  " & fg(redColor) & "The package was not found\n" & resetColor()
             echo "You may see the list of available packages"
             echo "by using: " & fg(grayColor) & "arturo --package list\n".fmt & resetColor()
     else:
         if removeLocalPackage(pkg, verspec.ver):
             echo fg(greenColor) & "\n  Done.\n" & resetColor()
         else:
-            echo "\n ⚠️  " & fg(redColor) & "The package was not found\n" & resetColor()
+            echo " ⚠️  " & fg(redColor) & "The package was not found\n" & resetColor()
             echo "You may see the list of local packages"
             echo "by using: " & fg(grayColor) & "arturo --package list\n".fmt & resetColor()
 
