@@ -264,6 +264,16 @@ proc verifyDependencies*(deps: seq[Value]) =
             if processRemotePackage(src,version).isSome:
                 discard
 
+proc getVersionSpecFromString(vers: string): VersionSpec =
+    if vers != "": 
+        let ps = doParse(vers, isFile=false)
+        if ps.kind != Block or ps.a.len != 1 or ps.a[0].kind != Version:
+            echo "not a valid version!"
+
+        return (false, ps.a[0].version)
+    else:
+        return (true, NoPackageVersion)
+
 #=====================================
 
 proc processLocalFile(filePath: string): Option[string] =
@@ -401,19 +411,35 @@ proc processRemotePackage(pkg: string, verspec: VersionSpec, doLoad: bool = true
         return processLocalPackage(pkg, verspec)
 
 #=======================================
-# Methods
+# Command-line interface
 #=======================================
 
-proc packageInstall*(pkg: string, verspec: VersionSpec): bool =
+proc packageListLocal*() =
+    discard
+
+proc packageListRemote*() =
+    discard
+
+proc packageInstall*(pkg: string, version: string) =
+    let verspec = getVersionSpecFromString(version)
+
     if processRemoteRepo(pkg, "main", true).isSome:
-        return true
+        return
 
     if processLocalPackage(pkg, verspec, false).isSome:
-        return false # already installed
+        return # already installed
 
     discard processRemotePackage(pkg, verspec, doLoad=false)
 
-    return true
+proc packageUninstall*(pkg: string, version: string) =
+    let verspec = getVersionSpecFromString(version)
+
+proc packageUpdateAll*() =
+    discard
+
+#=======================================
+# Methods
+#=======================================
 
 proc getEntryForPackage*(
     pkg: string, 

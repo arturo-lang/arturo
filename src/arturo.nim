@@ -132,32 +132,31 @@ Options:
         case command:
             of "list":
                 guard(args.len != 0): CompilerError_ExtraneousParameter(args[0])
+                run(proc()=
+                    packageListLocal()
+                )
             of "remote":
                 guard(args.len != 0): CompilerError_ExtraneousParameter(args[0])
+                run(proc()=
+                    packageListRemote()
+                )
             of "install":
                 guard(args.len == 0): CompilerError_NotEnoughParameters("install")
                 guard(args.len > 2): CompilerError_ExtraneousParameter(args[2])
-
-                var vv = NoPackageVersion
-                var min = true
-                if args.len == 2:
-                    let ps = doParse(args[1], isFile=false)
-                    if ps.a[0].kind != Version:
-                        echo "not a valid version!"
-
-                    vv = ps.a[0].version
-                    min = false
                 run(proc()=
-                    let got = packageInstall(args[0], (min, vv))
-                    if not got:
-                        echo "package was already installed"
+                    packageInstall(args[0], (if args.len==2: args[1] else: ""))
                 )
-                    
             of "uninstall":
                 guard(args.len == 0): CompilerError_NotEnoughParameters("uninstall")
                 guard(args.len > 2): CompilerError_ExtraneousParameter(args[2])
+                run(proc()=
+                    packageUninstall(args[0], (if args.len==2: args[1] else: ""))
+                )
             of "update":
                 guard(args.len != 0): CompilerError_ExtraneousParameter(args[0])
+                run(proc()=
+                    packageUpdateAll()
+                )
             of "":
                 guard(true): CompilerError_NoPackageCommand()
             else:
