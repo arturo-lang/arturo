@@ -209,7 +209,10 @@ proc removeLocalPackage(pkg: string, version: VVersion): bool =
 
     let specFile = SpecFile.fmt
     if specFile.fileExists():
-        discard tryRemoveFile(specFile)
+        try:
+            discard tryRemoveFile(specFile)
+        except Exception:
+            return false
     else: 
         return false
 
@@ -543,7 +546,7 @@ proc packageInstall*(pkg: string, version: string) =
     echo fg(cyanColor) & "\n  Install package\n" & resetColor()
 
     if processRemoteRepo(pkg, "main", true).isSome:
-        echo fg(greenColor) & "Done.\n" & resetColor()
+        echo fg(greenColor) & "\n  Done.\n" & resetColor()
         return
 
     if processLocalPackage(pkg, verspec, false).isSome:
@@ -554,7 +557,7 @@ proc packageInstall*(pkg: string, version: string) =
 
     discard processRemotePackage(pkg, verspec, doLoad=false)
 
-    echo fg(greenColor) & "Done.\n" & resetColor()
+    echo fg(greenColor) & "\n  Done.\n" & resetColor()
 
 proc packageUninstall*(pkg: string, version: string) =
     let verspec = getVersionSpecFromString(version)
@@ -563,14 +566,14 @@ proc packageUninstall*(pkg: string, version: string) =
 
     if verspec.ver == NoPackageVersion:
         if removeAllLocalPackageVersions(pkg):
-            echo fg(greenColor) & "Done." & resetColor()
+            echo fg(greenColor) & "\n  Done.\n" & resetColor()
         else:
             echo "\n ⚠️  " & fg(redColor) & "The package was not found\n" & resetColor()
             echo "You may see the list of available packages"
             echo "by using: " & fg(grayColor) & "arturo --package list\n".fmt & resetColor()
     else:
         if removeLocalPackage(pkg, verspec.ver):
-            echo fg(greenColor) & "Done." & resetColor()
+            echo fg(greenColor) & "\n  Done.\n" & resetColor()
         else:
             echo "\n ⚠️  " & fg(redColor) & "The package was not found\n" & resetColor()
             echo "You may see the list of local packages"
