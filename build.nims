@@ -18,7 +18,6 @@
 
 import os
 import strformat, strutils
-import with
 
 import ".config/utils/ui.nims"
 import ".config/utils/cli.nims"
