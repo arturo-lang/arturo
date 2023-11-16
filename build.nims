@@ -53,14 +53,10 @@ let
         mainFile:       "src"/"arturo.nim",
     )
 
-
-#=======================================
-# Variables
-#=======================================
-
-let
-    BINARY              = "bin/arturo"
-    TARGET_FILE         = paths.target/"arturo".toExe
+    binary: tuple (
+        source: "bin"/"arturo"
+        target: paths.target/"arturo".toExe
+    )
 
 #=======================================
 # Types
@@ -511,7 +507,7 @@ cmd install, "Build arturo and install executable":
     if args.hasFlag("release"):
         releaseConfig()
 
-    config.buildArturo(TARGET_FILE)
+    config.buildArturo(binary.target)
 
 cmd package, "Package arturo app and build executable":
     ## package <pkg-name>:
@@ -564,8 +560,8 @@ cmd test, "Run test suite":
     ##     --help
 
     let
-        localBin = BINARY.toExe
-        installedBin = TARGET_FILE
+        localBin = binary.source.toExe
+        installedBin = binary.target
 
     unless performTests(installedBin):
         quit performTests(localBin).toErrorCode
@@ -577,8 +573,8 @@ cmd benchmark, "Run benchmark suite":
     ##     --help
 
     let
-        localBin = BINARY.toExe
-        installedBin = TARGET_FILE
+        localBin = binary.source.toExe
+        installedBin = binary.target
 
     unless performBenchmarks(installedBin):
         quit performBenchmarks(localBin).toErrorCode
