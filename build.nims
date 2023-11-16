@@ -58,7 +58,7 @@ let
 # Variables
 #=======================================
 
-var
+let
     BINARY              = "bin/arturo"
     TARGET_FILE         = paths.target/"arturo".toExe
 
@@ -277,7 +277,7 @@ proc showBuildInfo*(config: BuildConfig) =
 # Methods
 #=======================================
 
-proc buildArturo*(config: BuildConfig) =
+proc buildArturo*(config: BuildConfig, targetFile: string) =
     
     # Methods 
 
@@ -305,7 +305,7 @@ proc buildArturo*(config: BuildConfig) =
         config.compressBinary()
 
         if config.shouldInstall:
-            config.installAll(TARGET_FILE)
+            config.installAll(targetFile)
 
         showFooter()
 
@@ -511,7 +511,7 @@ cmd install, "Build arturo and install executable":
     if args.hasFlag("release"):
         releaseConfig()
 
-    config.buildArturo()
+    config.buildArturo(TARGET_FILE)
 
 cmd package, "Package arturo app and build executable":
     ## package <pkg-name>:
