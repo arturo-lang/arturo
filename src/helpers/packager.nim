@@ -506,8 +506,7 @@ proc packageListLocal*() =
     let localPackages = getAllLocalPackages()
 
     if localPackages.len > 0:
-        echo fg(cyanColor) & "\n  Local packages" & resetColor()
-        echo "\n  {localPackages.len} packages found".fmt
+        echo fg(cyanColor) & "\n  Local packages\n" & resetColor()
         echo "-".repeat(80)
         echo "  " & "Package".alignLeft(30) & "Available Version(s)"
         echo "-".repeat(80)
@@ -524,6 +523,7 @@ proc packageListLocal*() =
             stdout.write fg(grayColor) & packageVersions & resetColor()
             stdout.write "\n"
             stdout.flushFile()
+        echo fg(greenColor) & "\n  {localPackages.len} packages found".fmt & resetColor()
         echo ""
     else:
         echo "\n ⚠️  " & fg(redColor) & "No local packages found!\n" & resetColor()
@@ -535,8 +535,7 @@ proc packageListRemote*() =
         let list = waitFor (newAsyncHttpClient().getContent("https://pkgr.art/list.art".fmt))
         let listDict = execDictionary(doParse(list, isFile=false))
 
-        echo fg(cyanColor) & "\n  Remote packages" & resetColor()
-        echo "\n  {listDict.len} packages found".fmt & resetColor()
+        echo fg(cyanColor) & "\n  Remote packages\n" & resetColor()
         echo "-".repeat(80)
         echo "  " & "Package".alignLeft(30) & "Description"
         echo "-".repeat(80)
@@ -553,6 +552,7 @@ proc packageListRemote*() =
                 stdout.write "\n"
                 stdout.flushFile()
             
+        echo fg(greenColor) & "\n  {listDict.len} packages found".fmt & resetColor()
         echo ""
     except Exception:
         echo "\n ⚠️  " & fg(redColor) & "Something went wrong!\n" & resetColor()
