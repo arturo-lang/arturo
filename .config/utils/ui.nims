@@ -3,6 +3,11 @@ import "../../src/helpers/terminal.nim"
 import std/strformat
 import std/strutils
 
+## Internal configuration
+## ----------------------
+
+NoColors = hostOS == "windows"
+
 ## Internal Functions
 ## ------------------
 
