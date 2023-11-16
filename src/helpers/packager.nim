@@ -526,7 +526,7 @@ proc packageListLocal*() =
         echo fg(greenColor) & "\n  {localPackages.len} packages found".fmt & resetColor()
         echo ""
     else:
-        echo "\n! " & fg(redColor) & "No local packages found!\n" & resetColor()
+        echo fg(redColor) & "\n! No local packages found\n" & resetColor()
         echo "  You may find the complete list at https://pkgr.art"
         echo "  or use: " & fg(grayColor) & "arturo --package remote\n" & resetColor()
 
@@ -555,7 +555,7 @@ proc packageListRemote*() =
         echo fg(greenColor) & "\n  {listDict.len} packages found".fmt & resetColor()
         echo ""
     except Exception:
-        echo "\n! " & fg(redColor) & "Something went wrong!\n" & resetColor()
+        echo fg(redColor) & "\n! Something went wrong!\n" & resetColor()
         echo "  Try again later or submit an issue report if the bug persists:"
         echo "  " & fg(grayColor) & "https://github.com/arturo-lang/arturo/issues" & resetColor()
 
@@ -569,12 +569,20 @@ proc packageInstall*(pkg: string, version: string) =
         return
 
     if processLocalPackage(pkg, verspec, false).isSome:
-        echo "! " & fg(redColor) & "The package is already installed\n" & resetColor()
+        echo fg(redColor) & "\n! The package is already installed\n" & resetColor()
         echo "  You may install a different version https://pkgr.art"
         echo "  by using: " & fg(grayColor) & "arturo --package install {pkg} <version>\n".fmt & resetColor()
         return # already installed
 
-    discard processRemotePackage(pkg, verspec, doLoad=false)
+    try:
+        discard processRemotePackage(pkg, verspec, doLoad=false)
+    except Exception as ex:
+        let message = ex.msg.replacef(re"_([^_]+)_",fmt("{bold()}$1{resetColor}"))
+        echo fg(redColor) & "\n! Something went wrong\n" & resetColor()
+        for m in message.split(";"):
+            echo "  " & m
+        echo ""
+        return
 
     echo fg(greenColor) & "\n  Done.\n" & resetColor()
 
@@ -587,14 +595,14 @@ proc packageUninstall*(pkg: string, version: string) =
         if removeAllLocalPackageVersions(pkg):
             echo fg(greenColor) & "\n  Done.\n" & resetColor()
         else:
-            echo "! " & fg(redColor) & "The package was not found\n" & resetColor()
+            echo fg(redColor) & "\n! The package was not found\n" & resetColor()
             echo "  You may see the list of available packages"
             echo "  by using: " & fg(grayColor) & "arturo --package list\n".fmt & resetColor()
     else:
         if removeLocalPackage(pkg, verspec.ver):
             echo fg(greenColor) & "\n  Done.\n" & resetColor()
         else:
-            echo "! " & fg(redColor) & "The package was not found\n" & resetColor()
+            echo fg(redColor) & "\n! The package was not found\n" & resetColor()
             echo "  You may see the list of local packages"
             echo "  by using: " & fg(grayColor) & "arturo --package list\n".fmt & resetColor()
 
