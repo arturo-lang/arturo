@@ -131,29 +131,29 @@ Options:
         CmdlinePackager = true
         case command:
             of "list":
-                guard(args.len != 0): CompilerError_ExtraneousParameter(args[0])
+                guard(args.len != 0): CompilerError_ExtraneousParameter(command, args[0])
                 run(proc()=
                     packageListLocal()
                 )
             of "remote":
-                guard(args.len != 0): CompilerError_ExtraneousParameter(args[0])
+                guard(args.len != 0): CompilerError_ExtraneousParameter(command, args[0])
                 run(proc()=
                     packageListRemote()
                 )
             of "install":
-                guard(args.len == 0): CompilerError_NotEnoughParameters("install")
-                guard(args.len > 2): CompilerError_ExtraneousParameter(args[2])
+                guard(args.len == 0): CompilerError_NotEnoughParameters(command)
+                guard(args.len > 2): CompilerError_ExtraneousParameter(command, args[2])
                 run(proc()=
                     packageInstall(args[0], (if args.len==2: args[1] else: ""))
                 )
             of "uninstall":
-                guard(args.len == 0): CompilerError_NotEnoughParameters("uninstall")
-                guard(args.len > 2): CompilerError_ExtraneousParameter(args[2])
+                guard(args.len == 0): CompilerError_NotEnoughParameters(command)
+                guard(args.len > 2): CompilerError_ExtraneousParameter(command, args[2])
                 run(proc()=
                     packageUninstall(args[0], (if args.len==2: args[1] else: ""))
                 )
             of "update":
-                guard(args.len != 0): CompilerError_ExtraneousParameter(args[0])
+                guard(args.len != 0): CompilerError_ExtraneousParameter(command)
                 run(proc()=
                     packageUpdateAll()
                 )

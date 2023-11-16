@@ -172,10 +172,10 @@ proc CompilerError_NoPackageCommand*() =
           "have a look at the options below",
           throw=false
 
-proc CompilerError_ExtraneousParameter*(name: string) =
+proc CompilerError_ExtraneousParameter*(subcmd: string, name: string) =
     panic CompilerError,
-          "extraneous command-line option found:" & ";" &
-          "_" & name & "_",
+          "extraneous parameter for " & "_" & subcmd & "_:;" &
+          name,
           throw=false
 
 proc CompilerError_NotEnoughParameters*(name: string) =
