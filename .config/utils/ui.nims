@@ -6,6 +6,19 @@ import std/strutils
 ## Internal Functions
 ## ------------------
 
+proc getShellRc(): string =
+    ## will only be called on non-Windows systems -
+    let (output, _) = gorgeEx("echo $SHELL")
+    case output:
+        of "/bin/zsh":
+            result = "~/.zshrc"
+        of "/bin/bash":
+            result = "~/.bashrc or ~/.profile"
+        of "/bin/sh":
+            result = "~/.profile"
+        else:
+            result = "~/.profile"
+
 func sep(ch: char = '='): string =
     return "".align(80, ch)
 
