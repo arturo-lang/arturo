@@ -535,7 +535,7 @@ proc packageListRemote*() =
         let list = waitFor (newAsyncHttpClient().getContent("https://pkgr.art/list.art".fmt))
         let listDict = execDictionary(doParse(list, isFile=false))
 
-        echo fg(cyanColor) & "\n  Local packages" & resetColor()
+        echo fg(cyanColor) & "\n  Remote packages" & resetColor()
         echo "\n  {listDict.len} packages found".fmt & resetColor()
         echo "-".repeat(80)
         echo "  " & "Package".alignLeft(30) & "Description"
