@@ -218,7 +218,7 @@ proc compile*(config: BuildConfig, showFooter: bool = false): int
         echo fmt"{colors.gray}"
         cmd.exec()
 
-proc installAll*(config: BuildConfig) =
+proc installAll*(config: BuildConfig, targetFile: string) =
 
     # Helper functions
 
@@ -235,12 +235,12 @@ proc installAll*(config: BuildConfig) =
         "webview.dll".copy(sourcePath, targetPath)
         "WebView2Loader.dll".copy(sourcePath, targetPath)
 
-    proc copyArturo(config: BuildConfig) =
+    proc copyArturo(config: BuildConfig, targetFile: string) =
         log "copying files..."
-        cpFile(config.binary, TARGET_FILE)
+        cpFile(config.binary, targetFile)
 
-    proc giveBinaryPermission() =
-        exec fmt"chmod +x {TARGET_FILE}"
+    proc giveBinaryPermission(targetFile: string) =
+        exec fmt"chmod +x {targetFile}"
 
     proc main(config: BuildConfig) =
         assert not config.webVersion:
@@ -249,10 +249,10 @@ proc installAll*(config: BuildConfig) =
         section "Installing..."
 
         verifyDirectories()
-        config.copyArturo()
+        config.copyArturo(targetFile)
 
         if hostOS != "windows":
-            giveBinaryPermission()
+            giveBinaryPermission(targetFile)
         else:
             copyWebView()
 
@@ -305,7 +305,7 @@ proc buildArturo*(config: BuildConfig) =
         config.compressBinary()
 
         if config.shouldInstall:
-            config.installAll()
+            config.installAll(TARGET_FILE)
 
         showFooter()
 
