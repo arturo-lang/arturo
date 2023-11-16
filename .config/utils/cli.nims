@@ -5,8 +5,6 @@ import std/sugar
 import std/strformat
 import std/strutils
 
-from std/system/nimscript import writeTask
-
 let
     args* = commandLineParams()
     command = if "build.nims" in paramStr(1):
@@ -157,6 +155,14 @@ template help(ident: typed, status: int) =
     for line in ident.implementationToStr.getDocs():
         echo line
     quit status
+
+proc writeTask(name, desc: string) =
+    ## This is the original ``writeTask`` by (c) Copyright 2015 Andreas Rumpf
+    ## Original source: https://github.com/nim-lang/Nim/blob/4793fc0fc137326c8441e33af514028bab7b82bc/lib/system/nimscript.nim#L357
+    if desc.len > 0:
+        var spaces = " "
+        for i in 0 ..< 20 - name.len: spaces.add ' '
+        echo name, spaces, desc
 
 template cmd*(name: untyped; description: string; body: untyped): untyped =
     ## This is a modification of the original ``task`` by (c) Copyright 2015 Andreas Rumpf
