@@ -461,6 +461,11 @@ proc RuntimeError_PackageUnknownError*(pkg: string) =
           "unexpected error while installing package: ;" &
           "_" & pkg & "_"
 
+proc RuntimeError_PackageInvalidVersion*(vers: string) =
+    panic RuntimeError,
+          "error parsing package version: ;" &
+          "_" & vers & "_"
+
 # Program errors
 
 proc ProgramError_panic*(message: string, code: int) =
