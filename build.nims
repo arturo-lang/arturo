@@ -62,8 +62,6 @@ var
     BINARY              = "bin/arturo"
     TARGET_FILE         = paths.target/"arturo".toExe
 
-    ARGS: seq[string]   = @[]
-
 #=======================================
 # Types
 #=======================================
