@@ -18,6 +18,7 @@
 
 import os
 import strformat, strutils
+import with
 
 import ".config/utils/ui.nims"
 import ".config/utils/cli.nims"
@@ -157,9 +158,8 @@ proc compressBinary(config: BuildConfig) =
 proc verifyDirectories*() =
     ## Create target dirs recursively, if they don't exist
     log "setting up directories..."
-    mkdir paths.target
-    mkdir paths.targetLib
-    mkdir paths.targetStores
+    for path in [paths.target, paths.targetLib, paths.targetStores]:
+        mkdir path
 
 proc updateBuild*() =
     ## Increment the build version by one and perform a commit.
@@ -285,6 +285,7 @@ proc buildArturo*(config: BuildConfig, targetFile: string) =
         devConfig()
 
     proc tryCompilation(config: BuildConfig) =
+        ## Panics if can't compile.
         if (let cd = config.compile(showFooter=true); cd != 0):
             quit(cd)
 
