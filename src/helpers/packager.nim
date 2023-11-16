@@ -78,6 +78,8 @@ var
 # Forward declarations
 #=======================================
 
+proc getLocalVersionsInPath(path: string): seq[VersionLocation]
+
 proc processLocalPackage(pkg: string, verspec: VersionSpec, latest: bool = false): Option[string]
 proc processRemotePackage(pkg: string, verspec: VersionSpec, doLoad: bool = true): Option[string]
 proc verifyDependencies*(deps: seq[Value])
@@ -179,7 +181,54 @@ proc getEntryPointFromSourceFolder*(folder: string): Option[string] =
     if allOk:
         return some(entryPoint)
 
-proc lookupLocalPackageVersion*(pkg: string, version: VersionSpec): Option[VersionLocation] =
+proc getAllLocalPackages(): seq[(string,string)] =
+    ## Get a list of all the packages - name & path -
+    ## that are installed locally
+    echo "here"
+    return (toSeq(walkDir(CacheFolder.fmt))).map(
+            proc (vers: tuple[kind: PathComponent, path: string]): (string,string) = 
+                echo vers.path
+                let filepath = vers.path
+                let (_, name, _) = splitFile(filepath)
+                (name, filepath)
+        )
+
+proc removeLocalPackage(pkg: string, version: VVersion): bool =
+    let cacheFolder = CacheFiles.fmt
+    if cacheFolder.dirExists():
+        removeDir(cacheFolder)
+    else:
+        return false
+
+    let specFile = SpecFile.fmt
+    if specFile.fileExists():
+        discard tryRemoveFile(specFile)
+    else: 
+        return false
+
+    return true
+
+proc removeAllLocalPackageVersions(pkg: string): bool =
+    let packagesPath = CachePackage.fmt
+    let localVersions =  getLocalVersionsInPath(packagesPath)
+    for found in localVersions:
+        if not removeLocalPackage(pkg, found.ver):
+            return false
+
+    return true
+
+proc getLocalVersionsInPath(path: string): seq[VersionLocation] =
+    ## Get a sorted list of all cached versions found
+    ## for a given package, using path
+
+    return (toSeq(walkDir(path))).map(
+            proc (vers: tuple[kind: PathComponent, path: string]): VersionLocation = 
+                let filepath = vers.path
+                let (_, name, ext) = splitFile(filepath)
+                (filepath, newVVersion(name & ext))
+        ).sorted(proc (a: VersionLocation, b: VersionLocation): int = cmp(a.ver, b.ver), order=SortOrder.Descending)
+
+proc lookupLocalPackageVersion(pkg: string, version: VersionSpec): Option[VersionLocation] =
     ## Look for a specific package by name and a version specification
     ## among the ones that are already installed locally
 
@@ -187,12 +236,7 @@ proc lookupLocalPackageVersion*(pkg: string, version: VersionSpec): Option[Versi
 
     if packagesPath.dirExists():
         # Get all local versions
-        let localVersions = (toSeq(walkDir(packagesPath))).map(
-                proc (vers: tuple[kind: PathComponent, path: string]): VersionLocation = 
-                    let filepath = vers.path
-                    let (_, name, ext) = splitFile(filepath)
-                    (filepath, newVVersion(name & ext))
-            ).sorted(proc (a: VersionLocation, b: VersionLocation): int = cmp(a.ver, b.ver), order=SortOrder.Descending)
+        let localVersions =  getLocalVersionsInPath(packagesPath)
 
         # Go through them and return the one - if any -
         # that matches the version specification we are looking for
@@ -415,6 +459,15 @@ proc processRemotePackage(pkg: string, verspec: VersionSpec, doLoad: bool = true
 #=======================================
 
 proc packageListLocal*() =
+    let localPackages = getAllLocalPackages()
+
+    for local in localPackages:
+        echo local[0]
+        let versions = getLocalVersionsInPath(local[1])
+        var vers: seq[string]
+        for version in versions:
+            vers.add($(version.ver))
+        echo "\t" & vers.join(", ")
     discard
 
 proc packageListRemote*() =
@@ -424,9 +477,8 @@ proc packageListRemote*() =
         for key,val in listDict:
             let desc = val.d["description"].s
             var installed = "-"
-            if lookupLocalPackageVersion(pkg, (true,NoPackageVersion)).isSome:
+            if lookupLocalPackageVersion(key, (true,NoPackageVersion)).isSome:
                 installed = "+"
-                let (packageLocation, version) = localPackage.get()
             echo "{installed} {key}: {desc}".fmt
     except Exception:
         echo "Something went wrong"
@@ -444,6 +496,17 @@ proc packageInstall*(pkg: string, version: string) =
 
 proc packageUninstall*(pkg: string, version: string) =
     let verspec = getVersionSpecFromString(version)
+
+    if verspec.ver == NoPackageVersion:
+        if removeAllLocalPackageVersions():
+            echo "done!"
+        else:
+            echo "package wasn't there"
+    else:
+        if removeLocalPackage(pkg, verspec.ver):
+            echo "done!"
+        else:
+            echo "package wasn't there"
 
 proc packageUpdateAll*() =
     discard
