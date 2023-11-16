@@ -346,7 +346,7 @@ proc getVersionSpecFromString(vers: string): VersionSpec =
     if vers != "": 
         let ps = doParse(vers, isFile=false)
         if ps.kind != Block or ps.a.len != 1 or ps.a[0].kind != Version:
-            echo "not a valid version!"
+            RuntimeError_PackageInvalidVersion(vers)
 
         return (false, ps.a[0].version)
     else:
