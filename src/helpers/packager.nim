@@ -362,6 +362,35 @@ func getShortData(initial: string, lim: int): seq[string] =
             parts[middle+1..^1].join(" ")
         ]
 
+proc updatePackage(pkg: string, path: string): bool =
+    let versions = getLocalVersionsInPath(path)
+    if versions.len == 0: 
+        return false
+
+    let maxLocalVersion = versions[0].ver
+
+    ShowMessageNl "Checking package {pkg}".fmt
+    var packageSpecUrl: SpecLatestUrl.fmt
+    var specContent: string
+    try:
+        specContent = waitFor (newAsyncHttpClient().getContent(packageSpecUrl))
+    except Exception:
+        RuntimeError_PackageNotFound(pkg)
+
+    let spec = readSpec(specContent)
+    var version: VVersion
+    if (let vv = spec.hasVersion(); vv.isSome):
+        version = vv.get()
+    else:
+        RuntimeError_CorruptRemoteSpec(pkg)
+
+    if version > maxLocalVersion:
+        discard processRemotePackage(pkg, (true, NoPackageVersion), doLoad=false)
+    else:
+        return false
+
+    return true
+
 #=====================================
 
 proc processLocalFile(filePath: string): Option[string] =
@@ -607,7 +636,21 @@ proc packageUninstall*(pkg: string, version: string) =
             echo "  by using: " & fg(grayColor) & "arturo --package list\n".fmt & resetColor()
 
 proc packageUpdateAll*() =
-    discard
+    echo fg(cyanColor) & "\n  Update packages\n" & resetColor()
+
+    let localPackages = getAllLocalPackages()
+
+    if localPackages.len > 0:
+        for local in localPackages:
+            if not updatePackage(local[0], local[1]):
+                echo "- Package is up-to-date"
+    else:
+        echo fg(redColor) & "\n! No local packages found\n" & resetColor()
+        echo "  You may find the complete list at https://pkgr.art"
+        echo "  or use: " & fg(grayColor) & "arturo --package remote\n" & resetColor()
+        return
+
+    echo fg(greenColor) & "\n  Done.\n" & resetColor()
 
 #=======================================
 # Methods
