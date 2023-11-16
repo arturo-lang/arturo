@@ -332,6 +332,16 @@ proc getVersionSpecFromString(vers: string): VersionSpec =
     else:
         return (true, NoPackageVersion)
 
+func getShortData(initial: string, lim: int): seq[string] =
+    result = @[initial]
+    if result[0].len>lim:
+        let parts = result[0].splitWhitespace()
+        let middle = (parts.len div 2)
+        result = @[
+            parts[0..middle].join(" "),
+            parts[middle+1..^1].join(" ")
+        ]
+
 #=====================================
 
 proc processLocalFile(filePath: string): Option[string] =
@@ -476,6 +486,10 @@ proc packageListLocal*() =
     let localPackages = getAllLocalPackages()
 
     if localPackages.len > 0:
+        echo fg(cyanColor) & "\n  {localPackages.len} packages found".fmt & resetColor()
+        echo "-".repeat(80)
+        echo "  " & "Package".alignLeft(30) & "Available Version(s)"
+        echo "-".repeat(80)
         for local in localPackages:
             let packageName = local[0]
 
@@ -485,53 +499,82 @@ proc packageListLocal*() =
                 vers.add($(version.ver))
             let packageVersions = vers.join(", ")
             
-            stdout.write bold(whiteColor) & packageName.alignLeft(50) & resetColor()
+            stdout.write "- " & bold(whiteColor) & packageName.alignLeft(30) & resetColor()
             stdout.write fg(grayColor) & packageVersions & resetColor()
             stdout.write "\n"
             stdout.flushFile()
         echo ""
     else:
-        echo "⚠️ No local packages found!\n"
+        echo "\n ⚠️  " & fg(redColor) & "No local packages found!\n" & resetColor()
         echo "You may find the complete list at https://pkgr.art"
-        echo "or use: arturo --package remote\n"
+        echo "or use: " & fg(grayColor) & "arturo --package remote\n" & resetColor()
 
 proc packageListRemote*() =
     try:
         let list = waitFor (newAsyncHttpClient().getContent("https://pkgr.art/list.art".fmt))
         let listDict = execDictionary(doParse(list, isFile=false))
+
+        echo fg(cyanColor) & "\n  {listDict.len} packages found".fmt & resetColor()
+        echo "-".repeat(80)
+        echo "  " & "Package".alignLeft(30) & "Description"
+        echo "-".repeat(80)
         for key,val in listDict:
             let desc = val.d["description"].s
             var installed = "-"
             if lookupLocalPackageVersion(key, (true,NoPackageVersion)).isSome:
-                installed = "+"
-            echo "{installed} {key}: {desc}".fmt
+                installed = "*"
+            stdout.write "{installed} ".fmt & bold(whiteColor) & key.alignLeft(30) & resetColor()
+            for i,line in getShortData(desc, 46):
+                if i > 0:
+                    stdout.write "  " & "".alignLeft(30)
+                stdout.write line
+                stdout.write "\n"
+                stdout.flushFile()
+            
+        echo ""
     except Exception:
-        echo "Something went wrong"
+        echo "\n ⚠️  " & fg(redColor) & "Something went wrong!\n" & resetColor()
+        echo "Try again later or submit an issue report if the bug persists:"
+        echo fg(grayColor) & "https://github.com/arturo-lang/arturo/issues" & resetColor()
 
 proc packageInstall*(pkg: string, version: string) =
     let verspec = getVersionSpecFromString(version)
 
+    echo fg(cyanColor) & "\n  Install package\n" & resetColor()
+
     if processRemoteRepo(pkg, "main", true).isSome:
+        echo fg(greenColor) & "Done.\n" & resetColor()
         return
 
     if processLocalPackage(pkg, verspec, false).isSome:
+        echo "\n ⚠️  " & fg(redColor) & "The package is already installed\n" & resetColor()
+        echo "You may install a different version https://pkgr.art"
+        echo "by using: " & fg(grayColor) & "arturo --package install {pkg} <version>\n".fmt & resetColor()
         return # already installed
 
     discard processRemotePackage(pkg, verspec, doLoad=false)
 
+    echo fg(greenColor) & "Done.\n" & resetColor()
+
 proc packageUninstall*(pkg: string, version: string) =
     let verspec = getVersionSpecFromString(version)
 
+    echo fg(cyanColor) & "\n  Uninstall package\n" & resetColor()
+
     if verspec.ver == NoPackageVersion:
         if removeAllLocalPackageVersions(pkg):
-            echo "done!"
+            echo fg(greenColor) & "Done." & resetColor()
         else:
-            echo "package wasn't there"
+            echo "\n ⚠️  " & fg(redColor) & "The package was not found\n" & resetColor()
+            echo "You may see the list of available packages"
+            echo "by using: " & fg(grayColor) & "arturo --package list\n".fmt & resetColor()
     else:
         if removeLocalPackage(pkg, verspec.ver):
-            echo "done!"
+            echo fg(greenColor) & "Done." & resetColor()
         else:
-            echo "package wasn't there"
+            echo "\n ⚠️  " & fg(redColor) & "The package was not found\n" & resetColor()
+            echo "You may see the list of local packages"
+            echo "by using: " & fg(grayColor) & "arturo --package list\n".fmt & resetColor()
 
 proc packageUpdateAll*() =
     discard
