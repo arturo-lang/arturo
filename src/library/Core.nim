@@ -533,7 +533,7 @@ proc defineSymbols*() =
         example     = """
         """:
             #=======================================================
-            VerbosePackager
+            VerbosePackager = true
 
     builtin "import",
         alias       = unaliased, 
