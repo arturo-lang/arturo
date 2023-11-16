@@ -567,7 +567,7 @@ proc packageInstall*(pkg: string, version: string) =
         return
 
     if processLocalPackage(pkg, verspec, false).isSome:
-        echo "\n ⚠️  " & fg(redColor) & "The package is already installed\n" & resetColor()
+        echo " ⚠️  " & fg(redColor) & "The package is already installed\n" & resetColor()
         echo "You may install a different version https://pkgr.art"
         echo "by using: " & fg(grayColor) & "arturo --package install {pkg} <version>\n".fmt & resetColor()
         return # already installed
