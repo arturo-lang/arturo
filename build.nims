@@ -20,6 +20,7 @@ import os
 import strformat, strutils
 
 import ".config/utils/ui.nims"
+import ".config/utils/cli.nims"
 
 #=======================================
 # Initialize globals
@@ -31,7 +32,6 @@ mode = ScriptMode.Silent
 # Flag system
 #=======================================
 
-include ".config/utils/cli.nims"
 include ".config/utils/flags.nims"
 
 include ".config/arch.nims"
