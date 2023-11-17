@@ -601,10 +601,8 @@ proc defineSymbols*() =
                     else:
                         let got = execDictionary(doParse(src, isFile=true))
                         if multiple:
-                            echo "multiple"
                             ret.add(newDictionary(got))
                         else:
-                            echo "dict"
                             push(newDictionary(got))
 
                     discard popPath()              
