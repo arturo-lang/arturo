@@ -344,11 +344,18 @@ proc verifyDependencies*(deps: seq[Value]) =
 
 proc getVersionSpecFromString(vers: string): VersionSpec =
     if vers != "": 
-        let ps = doParse(vers, isFile=false)
-        if ps.kind != Block or ps.a.len != 1 or ps.a[0].kind != Version:
-            RuntimeError_PackageInvalidVersion(vers)
-
-        return (false, ps.a[0].version)
+        try:
+            let ps = doParse(vers, isFile=false)
+            if ps.kind != Block or ps.a.len != 1 or ps.a[0].kind != Version:
+                RuntimeError_PackageInvalidVersion(vers)
+            return (false, ps.a[0].version)
+        except Exception as ex:
+            let message = ex.msg.replacef(re"_([^_]+)_",fmt("{bold()}$1{resetColor}"))
+            echo fg(redColor) & "\n! Something went wrong\n" & resetColor()
+            for m in message.split(";"):
+                echo "  " & m
+            echo ""
+            quit(1)
     else:
         return (true, NoPackageVersion)
 
@@ -552,7 +559,7 @@ proc packageListLocal*() =
             stdout.write fg(grayColor) & packageVersions & resetColor()
             stdout.write "\n"
             stdout.flushFile()
-        echo fg(greenColor) & "\n  {localPackages.len} packages found".fmt & resetColor()
+        echo fg(greenColor) & "\n  {localPackages.len} packages found.".fmt & resetColor()
         echo ""
     else:
         echo fg(redColor) & "\n! No local packages found\n" & resetColor()
@@ -581,7 +588,7 @@ proc packageListRemote*() =
                 stdout.write "\n"
                 stdout.flushFile()
             
-        echo fg(greenColor) & "\n  {listDict.len} packages found".fmt & resetColor()
+        echo fg(greenColor) & "\n  {listDict.len} packages found.".fmt & resetColor()
         echo ""
     except Exception:
         echo fg(redColor) & "\n! Something went wrong!\n" & resetColor()
@@ -593,18 +600,19 @@ proc packageInstall*(pkg: string, version: string) =
 
     echo fg(cyanColor) & "\n  Install package\n" & resetColor()
 
-    if processRemoteRepo(pkg, "main", true).isSome:
-        echo fg(greenColor) & "\n  Done.\n" & resetColor()
-        return
-
-    if processLocalPackage(pkg, verspec, false).isSome:
-        echo fg(redColor) & "\n! The package is already installed\n" & resetColor()
-        echo "  You may install a different version https://pkgr.art"
-        echo "  by using: " & fg(grayColor) & "arturo --package install {pkg} <version>\n".fmt & resetColor()
-        return # already installed
-
     try:
+        if processRemoteRepo(pkg, "main", true).isSome:
+            echo fg(greenColor) & "\n  Done.\n" & resetColor()
+            return
+
+        if processLocalPackage(pkg, verspec, false).isSome:
+            echo fg(redColor) & "\n! The package is already installed\n" & resetColor()
+            echo "  You may install a different version https://pkgr.art"
+            echo "  by using: " & fg(grayColor) & "arturo --package install {pkg} <version>\n".fmt & resetColor()
+            return # already installed
+    
         discard processRemotePackage(pkg, verspec, doLoad=false)
+
     except Exception as ex:
         let message = ex.msg.replacef(re"_([^_]+)_",fmt("{bold()}$1{resetColor}"))
         echo fg(redColor) & "\n! Something went wrong\n" & resetColor()
