@@ -151,8 +151,7 @@ proc showVMErrors*(e: ref Exception) =
 proc CompilerError_ScriptNotExists*(name: string) =
     panic CompilerError,
           "given script path doesn't exist:" & ";" &
-          "_" & name & "_",
-          throw=false
+          "_" & name & "_"
 
 proc CompilerError_UnrecognizedOption*(name: string) =
     panic CompilerError,
