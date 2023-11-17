@@ -566,7 +566,7 @@ proc defineSymbols*() =
             let lean = hadAttr("lean")
             
             var pkgs: seq[string]
-            if xKind == String:
+            if xKind in {String, Literal}:
                 pkgs.add(x.s)
             else:
                 pkgs = x.a.map((p)=>p.s)
@@ -601,8 +601,10 @@ proc defineSymbols*() =
                     else:
                         let got = execDictionary(doParse(src, isFile=true))
                         if multiple:
+                            echo "multiple"
                             ret.add(newDictionary(got))
                         else:
+                            echo "dict"
                             push(newDictionary(got))
 
                     discard popPath()              
