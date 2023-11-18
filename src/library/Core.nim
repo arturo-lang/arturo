@@ -537,6 +537,10 @@ proc defineSymbols*() =
             #=======================================================
             VerbosePackager = true
 
+    # TODO(Core/import) `.lean` not always working properly
+    #  basically, if you make 2 imports of the same package, one `.lean` and another normal one
+    #  the 2nd one breaks. Does it have to do with our `execDictionary`?
+    #  labels: library, bug, unit-test
     builtin "import",
         alias       = unaliased, 
         op          = opNop,
