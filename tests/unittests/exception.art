@@ -98,3 +98,38 @@ do [
     ]
 
 ]
+
+
+topic "Using the exception function"
+do [
+
+    myException: exception.message: "Can't read file" 
+            'fileNotFound
+
+    ensure -> :excepion = type myException
+    passed
+
+    ensure -> 'osError <> myException
+    ensure -> 'fileNotFound = myException
+    passed
+
+    ensure ->  "Can't read file" = myException\message
+    passed
+
+
+    cat: $[file :string][
+        throw myException
+    ]
+
+    if err: <= try -> cat "test.art" [
+        ensure -> :exception = type err
+        passed
+
+        ensure -> 'osError <> err
+        ensure -> 'fileNotFound = err
+        passed
+
+        ensure -> "Can't read file" = err\message
+        passed
+    ]
+]
