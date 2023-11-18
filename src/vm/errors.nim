@@ -159,6 +159,30 @@ proc CompilerError_UnrecognizedOption*(name: string) =
           "_" & name & "_",
           throw=false
 
+proc CompilerError_UnrecognizedPackageCommand*(name: string) =
+    panic CompilerError,
+          "unrecognized _package_ command:" & ";" &
+          "_" & name & "_",
+          throw=false
+
+proc CompilerError_NoPackageCommand*() =
+    panic CompilerError,
+          "no _package_ command command given -;" &
+          "have a look at the options below",
+          throw=false
+
+proc CompilerError_ExtraneousParameter*(subcmd: string, name: string) =
+    panic CompilerError,
+          "extraneous parameter for " & "_" & subcmd & "_:;" &
+          name,
+          throw=false
+
+proc CompilerError_NotEnoughParameters*(name: string) =
+    panic CompilerError,
+          "not enough parameters for " & "_" & name & "_ -;" &
+          "consult the help screen below",
+          throw=false
+
 # Syntax errors
 
 proc SyntaxError_MissingClosingSquareBracket*(lineno: int, context: string) =
@@ -386,7 +410,7 @@ proc RuntimeError_OperationNotPermitted*(operation: string) =
           
 proc RuntimeError_StackUnderflow*() =
     panic RuntimeError,
-            "stack underflow"
+        "stack underflow"
 
 proc RuntimeError_ConfigNotFound*(gkey: string, akey: string) =
     panic RuntimeError,
@@ -406,6 +430,40 @@ proc RuntimeError_CompatibleBrowserCouldNotOpenWindow*() =
     panic RuntimeError,
           "could not open a Chrome-compatible browser window"
 
+proc RuntimeError_PackageNotFound*(pkg: string) =
+    panic RuntimeError,
+          "package not found: ;" &
+          "_" & pkg & "_"
+
+proc RuntimeError_PackageRepoNotCorrect*(repo: string) =
+    panic RuntimeError,
+          "package repository url not correct: ;" &
+          repo
+
+proc RuntimeError_PackageRepoNotFound*(repo: string) =
+    panic RuntimeError,
+          "package repository not found: ;" &
+          repo
+
+proc RuntimeError_CorruptRemoteSpec*(pkg: string) =
+    panic RuntimeError,
+          "corrupt spec file for remote package: ;" &
+          "_" & pkg & "_"
+
+proc RuntimeError_PackageNotValid*(pkg: string) =
+    panic RuntimeError,
+          "invalid package: ;" &
+          "_" & pkg & "_" 
+
+proc RuntimeError_PackageUnknownError*(pkg: string) =
+    panic RuntimeError,
+          "unexpected error while installing package: ;" &
+          "_" & pkg & "_"
+
+proc RuntimeError_PackageInvalidVersion*(vers: string) =
+    panic RuntimeError,
+          "error parsing package version: ;" &
+          "_" & vers & "_"
 
 # Program errors
 

@@ -305,28 +305,7 @@ func newRational*(num: Value, den: Value): Value {.inline, enforceNoRaises.} =
 
 func newVersion*(v: string): Value {.inline.} =
     ## create Version value from string
-    var numPart: string
-    var extraPart: string
-    var lastIndex : int
-    for i, c in v:
-        lastIndex = i
-        if c notin {'+','-'}:
-            numPart.add(c)
-        else:
-            extraPart &= c
-            break
-
-    extraPart &= v[lastIndex+1 .. ^1]
-
-    let parts: seq[string] = numPart.split(".")
-    Value(kind: Version,
-        version: VVersion(
-            major: parseInt(parts[0]),
-            minor: parseInt(parts[1]),
-            patch: parseInt(parts[2]),
-            extra: extraPart
-        )
-    )
+    Value(kind: Version, version: newVVersion(v))
 
 func newVersion*(v: VVersion): Value {.inline, enforceNoRaises.} =
     ## create Version value from VVersion

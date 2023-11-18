@@ -12,7 +12,7 @@
 # Libraries
 #=======================================
 
-import strformat
+import strformat, strutils
 
 #=======================================
 # Types
@@ -44,5 +44,36 @@ func `>`*(a, b: VVersion): bool {.inline,enforceNoRaises.} =
         (a.minor == b.minor and a.patch > b.patch)
     ))
 
+proc cmp*(x: VVersion, y: VVersion): int {.inline.}=
+    if x < y:
+        return -1
+    elif x > y:
+        return 1
+    else:
+        return 0
+
 func `$`*(v: VVersion): string {.inline,enforceNoRaises.} =
     fmt("{v.major}.{v.minor}.{v.patch}{v.extra}")
+    
+func newVVersion*(v: string): VVersion =
+    var numPart: string
+    var extraPart: string
+    var lastIndex : int
+    for i, c in v:
+        lastIndex = i
+        if c notin {'+','-'}:
+            numPart.add(c)
+        else:
+            extraPart &= c
+            break
+
+    extraPart &= v[lastIndex+1 .. ^1]
+
+    let parts: seq[string] = numPart.split(".")
+
+    return VVersion(
+        major: parseInt(parts[0]),
+        minor: parseInt(parts[1]),
+        patch: parseInt(parts[2]),
+        extra: extraPart
+    )
