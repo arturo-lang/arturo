@@ -558,8 +558,6 @@ proc defineSymbols*() =
             "verbose"   : ({Logical},"output extra information")
         },
         returns     = {Nothing,Dictionary,Block},
-        # TODO(Core/import) add documentation example
-        #  labels: library, documentation, easy
         example     = """
             import "dummy"                      ; import the package 'dummy'
             do ::
