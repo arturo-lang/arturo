@@ -1,0 +1,100 @@
+; helper function 
+debug: $[variable][
+    print[variable type variable]
+]
+
+topic: $[topic :string] -> print ~"\n>> |topic|"
+passed: $[] -> print "[+] passed!"
+
+
+topic "basic-convertion"
+do [
+    ; declaration of an exception 
+    ; only :literal is accepted for this convertion 
+    err: to :exception 'fileNotFound 
+
+    ensure -> :exception = type err
+    passed
+
+    ensure -> 'osError <> err
+    ensure -> 'fileNotFound = err
+    passed
+]
+
+
+topic "throwing exceptions"
+do [
+
+    ; `throw` immediately raises an exception,
+    ; catched by `try`
+    err: try -> throw 'fileNotFound
+
+    ensure -> :exception = type err
+    passed
+
+    ensure -> 'osError <> err
+    ensure -> 'fileNotFound = err
+    passed
+]
+
+
+topic "Custom message error"
+do [
+
+    ; You can also add a message using `.message` attribute
+    ; This permits the creation of a more detailed log.
+    err: try [
+        throw
+            .message: "This file does not exist for the given path" 
+            'fileNotFound
+    ]
+
+    ensure -> :exception = type err
+    passed
+
+    ensure -> 'osError <> err
+    ensure -> 'fileNotFound = err
+    passed
+
+    ensure -> "This file does not exist for the given path" = err\message
+    passed
+]
+
+
+topic "Using functions"
+do [
+
+    cat: $[file :string][
+        throw.message: "Can't read file" 'fileNotFound
+    ]
+
+    if err: <= try -> cat "test.art" [
+        ensure -> :exception = type err
+        passed
+
+        ensure -> 'osError <> err
+        ensure -> 'fileNotFound = err
+        passed
+
+        ensure -> "Can't read file" = err\message
+        passed
+    ]
+
+    bun: $[file :string][
+        return "I'm a bunny 🐰"
+    ]
+
+    if not err: <= try [content: <= bun "test.art"] [
+        ensure -> :exception <> type err
+        ensure -> :null = type err
+        passed
+
+        ensure -> 'fileNotFound <> err
+        ensure -> null = err
+        passed
+        
+        ensure -> "I'm a bunny 🐰" = content
+        passed
+    ]
+
+]
