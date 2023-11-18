@@ -561,6 +561,35 @@ proc defineSymbols*() =
         # TODO(Core/import) add documentation example
         #  labels: library, documentation, easy
         example     = """
+            import "dummy"                      ; import the package 'dummy'
+            do ::
+                print dummyFunc 10              ; and use it :)
+            ..........
+            import.version:0.0.3 "dummy"        ; import a specific version
+
+            import.min.version:0.0.3 "dummy"    ; import at least the give version;
+                                                ; if there is a newer one, it will pull this one
+            ..........
+            import.latest "dummy"               ; whether we already have the package or not
+                                                ; always try to pull the latest version
+            ..........
+            import "https://github.com/arturo-lang/dummy-package"
+            ; we may also import user repositories directly
+
+            import.branch:"main" "https://github.com/arturo-lang/dummy-package"
+            ; even specifying the branch to pull
+            ..........
+            import "somefile.art"               ; importing a local file is possible
+
+            import "somepackage"                ; the same works if we have a folder that
+                                                ; is actually structured like a package
+            ..........
+            d: import.lean "dummy"              ; importing a package as a dictionary
+                                                ; for better namespace isolation
+
+            do [
+                print d\dummyFunc 10            ; works fine :)
+            ]
         """:
             #=======================================================
             var verspec = (true, NoPackageVersion)
