@@ -581,10 +581,15 @@ proc processBlock*(
         when not isLabel:
             if (let curr = Syms.getOrDefault(val.p[0].s, nil); not curr.isNil):
                 let next {.cursor.} = val.p[1]
-                if curr.kind==Dictionary and (next.kind==Literal or next.kind==Word):
-                    if (let item = curr.d.getOrDefault(next.s, nil); not item.isNil):
-                        if item.kind == Function:
-                            pathCallV = item
+                if (next.kind==Literal or next.kind==Word):
+                    if curr.kind==Dictionary:
+                        if (let item = curr.d.getOrDefault(next.s, nil); not item.isNil):
+                            if item.kind == Function:
+                                pathCallV = item
+                    elif curr.kind==Object:
+                        if (let item = curr.o.getOrDefault(next.s, nil); not item.isNil):
+                            if item.kind == Function:
+                                pathCallV = item
 
         if not pathCallV.isNil:
             target.addChild(Node(kind: OtherCall, arity: pathCallV.arity, op: opNop, value: pathCallV))
