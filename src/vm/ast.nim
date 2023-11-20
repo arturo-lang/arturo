@@ -593,13 +593,18 @@ proc processBlock*(
                                 pathCallV = item
 
         if not pathCallV.isNil:
+            var arityCut: int
             if baseV.isNil:
+                arityCut = 0
                 target.addChild(Node(kind: OtherCall, arity: pathCallV.arity, op: opNop, value: pathCallV))
             else:
+                arityCut = 1
                 let c = Node(kind: OtherCall, arity: pathCallV.arity, op: opNop, value: pathCallV)
                 c.addChild(newVariable(baseV))
                 target.addChild(c)
-            target.rollThrough()
+
+            if pathCallV.arity != arityCut:
+                target.rollThrough()
         else:
             let basePath {.cursor.} = val.p[0]
 
