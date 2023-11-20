@@ -577,7 +577,7 @@ proc processBlock*(
 
     proc addPath(target: var Node, val: Value, isLabel: static bool=false) =
         var pathCallV: Value = nil
-
+        var baseV: Value = nil
         when not isLabel:
             if (let curr = Syms.getOrDefault(val.p[0].s, nil); not curr.isNil):
                 let next {.cursor.} = val.p[1]
@@ -589,10 +589,16 @@ proc processBlock*(
                     elif curr.kind==Object:
                         if (let item = curr.o.getOrDefault(next.s, nil); not item.isNil):
                             if item.kind == Function:
+                                baseV = val.p[0]
                                 pathCallV = item
 
         if not pathCallV.isNil:
-            target.addChild(Node(kind: OtherCall, arity: pathCallV.arity, op: opNop, value: pathCallV))
+            if baseV.isNil:
+                target.addChild(Node(kind: OtherCall, arity: pathCallV.arity, op: opNop, value: pathCallV))
+            else:
+                let c = Node(kind: OtherCall, arity: pathCallV.arity, op: opNop, value: pathCallV)
+                c.addChild(newVariable(baseV))
+                target.addChild(c)
             target.rollThrough()
         else:
             let basePath {.cursor.} = val.p[0]
