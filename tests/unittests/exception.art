@@ -7,34 +7,34 @@ topic: $[topic :string] -> print ~"\n>> |topic|"
 passed: $[] -> print "[+] passed!"
 
 
-topic "throwing exceptions"
+topic "throwing errors"
 do [
 
-    ; `throw` immediately raises an exception,
+    ; `throw` immediately raises an error,
     ; catched by `try`
     err: try -> throw "File not found"
 
-    ensure -> :exception = type err
-    ensure -> :exceptionKind = type err\kind
+    ensure -> :error = type err
+    ensure -> :errorKind = type err\kind
     ensure -> :string = type err\message
     passed
 
-    ensure -> genericException = err\kind
+    ensure -> genericError = err\kind
     ensure -> "File not found" = err\message
     passed
 ]
 
 
-topic "Custom exceptions"
+topic "Custom errors"
 do [
 
-    fileNotFound: to :exceptionKind "File not found"
+    fileNotFound: to :errorKind "File not found"
 
-    ensure -> :exceptionKind = type fileNotFound
+    ensure -> :errorKind = type fileNotFound
     ensure -> :string = type fileNotFound\label
     passed
 
-    ensure -> genericException <> fileNotFound
+    ensure -> genericError <> fileNotFound
     ensure -> "File not found!" = fileNotFound\label
     passed
 
@@ -45,13 +45,13 @@ do [
             "Are you sure about this file's existence?"
     ]
 
-    ensure -> :exception = type err
+    ensure -> :error = type err
     ensure -> :excepionKind = type err\kind
     ensure -> :string = type err\message 
     passed
 
     ensure -> fileNotFound = err\kind
-    ensure -> genericException <> err\kind
+    ensure -> genericError <> err\kind
     ensure -> "Are you sure about this file's existence?" = err\message
     passed
 
@@ -63,11 +63,11 @@ do [
 
     fileNotFound: to :excepionKind "File Not Found"
 
-    ensure -> :exceptionKind = type fileNotFound
+    ensure -> :errorKind = type fileNotFound
     ensure -> :string = type fileNotFound\label
     passed
 
-    ensure -> genericException <> fileNotFound
+    ensure -> genericError <> fileNotFound
     ensure -> "File Not Found!" = fileNotFound\label
     passed
 
@@ -79,10 +79,10 @@ do [
     ]
 
     if err: <= try -> cat "test.art" [
-        ensure -> :exception = type err
+        ensure -> :error = type err
         passed
 
-        ensure -> genericException <> err
+        ensure -> genericError <> err
         ensure -> fileNotFound = err
         passed
 
@@ -98,10 +98,10 @@ do [
     ]
 
     if err: <= try -> dog "test.art" [
-        ensure -> :exception = type err
+        ensure -> :error = type err
         passed
 
-        ensure -> genericException <> err
+        ensure -> genericError <> err
         ensure -> fileNotFound = err
         passed
 
@@ -117,11 +117,11 @@ do [
     ]
 
     if not err: <= try [content: bun "test.art"] [
-        ensure -> :exception <> type err
+        ensure -> :error <> type err
         ensure -> :null = type err
         passed
 
-        ensure -> genericException <> err
+        ensure -> genericError <> err
         ensure -> fileNotFound <> err
         ensure -> null = err
         passed
@@ -133,16 +133,16 @@ do [
 ]
 
 
-topic "Using the exception function"
+topic "Using the error function"
 do [
 
     fileNotFound: excepion "File not found!"
 
-    ensure -> :exceptionKind = type fileNotFound
+    ensure -> :errorKind = type fileNotFound
     ensure -> :string = type fileNotFound\label
     passed
 
-    ensure -> genericException <> fileNotFound
+    ensure -> genericError <> fileNotFound
     ensure -> "File not found!" = fileNotFound\label
     passed
 
@@ -152,10 +152,10 @@ do [
     ]
 
     if err: <= try -> cat "test.art" [
-        ensure -> :exception = type err
+        ensure -> :error = type err
         passed
 
-        ensure -> genericException <> err
+        ensure -> genericError <> err
         ensure -> fileNotFound = err
         passed
 
@@ -168,10 +168,10 @@ do [
     ]
 
     if err: <= try -> dog "test.art" [
-        ensure -> :exception = type err
+        ensure -> :error = type err
         passed
 
-        ensure -> genericException <> err
+        ensure -> genericError <> err
         ensure -> fileNotFound = err
         passed
 
