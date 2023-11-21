@@ -7,89 +7,122 @@ topic: $[topic :string] -> print ~"\n>> |topic|"
 passed: $[] -> print "[+] passed!"
 
 
-topic "basic-convertion"
-do [
-    ; declaration of an exception 
-    ; only :literal is accepted for this convertion 
-    err: to :exception 'fileNotFound 
-
-    ensure -> :exception = type err
-    passed
-
-    ensure -> 'osError <> err
-    ensure -> 'fileNotFound = err
-    passed
-]
-
-
 topic "throwing exceptions"
 do [
 
     ; `throw` immediately raises an exception,
     ; catched by `try`
-    err: try -> throw 'fileNotFound
+    err: try -> throw "File not found"
 
     ensure -> :exception = type err
+    ensure -> :exceptionKind = type err\kind
+    ensure -> :string = type err\message
     passed
 
-    ensure -> 'osError <> err
-    ensure -> 'fileNotFound = err
+    ensure -> genericException = err\kind
+    ensure -> "File not found" = err\message
     passed
 ]
 
 
-topic "Custom message error"
+topic "Custom exceptions"
 do [
+
+    fileNotFound: to :exceptionKind "File not found"
+
+    ensure -> :exceptionKind = type fileNotFound
+    ensure -> :string = type fileNotFound\label
+    passed
+
+    ensure -> genericException <> fileNotFound
+    ensure -> "File not found!" = fileNotFound\label
+    passed
 
     ; You can also add a message using `.message` attribute
     ; This permits the creation of a more detailed log.
     err: try [
-        throw
-            .message: "This file does not exist for the given path" 
-            'fileNotFound
+        throw.as: fileNotFound 
+            "Are you sure about this file's existence?"
     ]
 
     ensure -> :exception = type err
+    ensure -> :excepionKind = type err\kind
+    ensure -> :string = type err\message 
     passed
 
-    ensure -> 'osError <> err
-    ensure -> 'fileNotFound = err
+    ensure -> fileNotFound = err\kind
+    ensure -> genericException <> err\kind
+    ensure -> "Are you sure about this file's existence?" = err\message
     passed
 
-    ensure -> "This file does not exist for the given path" = err\message
-    passed
 ]
 
 
 topic "Using functions"
 do [
 
+    fileNotFound: to :excepionKind "File Not Found"
+
+    ensure -> :exceptionKind = type fileNotFound
+    ensure -> :string = type fileNotFound\label
+    passed
+
+    ensure -> genericException <> fileNotFound
+    ensure -> "File Not Found!" = fileNotFound\label
+    passed
+
+    ; Using a custom error message 
+    ; instead of the original one from `fileNotFound`
+
     cat: $[file :string][
-        throw.message: "Can't read file" 'fileNotFound
+        throw.as: fileNotFound "Can't read file"
     ]
 
     if err: <= try -> cat "test.art" [
         ensure -> :exception = type err
         passed
 
-        ensure -> 'osError <> err
-        ensure -> 'fileNotFound = err
+        ensure -> genericException <> err
+        ensure -> fileNotFound = err
         passed
 
         ensure -> "Can't read file" = err\message
         passed
     ]
 
+    ; Using the default error message from `fileNotFound`
+    ; So we don't have to write the same thing twice.
+
+    dog: $[file :string][
+        throw fileNotFound
+    ]
+
+    if err: <= try -> dog "test.art" [
+        ensure -> :exception = type err
+        passed
+
+        ensure -> genericException <> err
+        ensure -> fileNotFound = err
+        passed
+
+        ensure -> "Can't read file" = err\message
+        passed
+    ]
+
+    ; Describes what happerns when the function does not raises anything
+    ; Basically, `try` should return `:null` instead.
+
     bun: $[file :string][
         return "I'm a bunny 🐰"
     ]
 
-    if not err: <= try [content: <= bun "test.art"] [
+    if not err: <= try [content: bun "test.art"] [
         ensure -> :exception <> type err
         ensure -> :null = type err
         passed
 
-        ensure -> 'fileNotFound <> err
+        ensure -> genericException <> err
+        ensure -> fileNotFound <> err
         ensure -> null = err
         passed
         
@@ -103,33 +136,47 @@ do [
 topic "Using the exception function"
 do [
 
-    myException: exception.message: "Can't read file" 
-            'fileNotFound
+    fileNotFound: excepion "File not found!"
 
-    ensure -> :excepion = type myException
+    ensure -> :exceptionKind = type fileNotFound
+    ensure -> :string = type fileNotFound\label
     passed
 
-    ensure -> 'osError <> myException
-    ensure -> 'fileNotFound = myException
-    passed
-
-    ensure ->  "Can't read file" = myException\message
+    ensure -> genericException <> fileNotFound
+    ensure -> "File not found!" = fileNotFound\label
     passed
 
 
     cat: $[file :string][
-        throw myException
+        throw fileNotFound
     ]
 
     if err: <= try -> cat "test.art" [
         ensure -> :exception = type err
         passed
 
-        ensure -> 'osError <> err
-        ensure -> 'fileNotFound = err
+        ensure -> genericException <> err
+        ensure -> fileNotFound = err
         passed
 
-        ensure -> "Can't read file" = err\message
+        ensure -> "File not found!" = err\message
         passed
     ]
+
+    dog: $[file :string][
+        throw.as: fileNotFound "Where is the file?"
+    ]
+
+    if err: <= try -> dog "test.art" [
+        ensure -> :exception = type err
+        passed
+
+        ensure -> genericException <> err
+        ensure -> fileNotFound = err
+        passed
+
+        ensure -> "Where is the file?" = err\message
+        passed
+    ]
+
 ]
