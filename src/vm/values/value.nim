@@ -381,7 +381,7 @@ func newPathLabel*(p: sink ValueArray): Value {.inline, enforceNoRaises.} =
     ## create PathLabel value from ValueArray
     Value(kind: PathLabel, p: p)
 
-func newPathLiteral*(pl: sink ValueArray): Value {.inline, enforceNoRaises.} =
+func newPathLiteral*(p: sink ValueArray): Value {.inline, enforceNoRaises.} =
     ## create PathLiteral value from ValueArray
     Value(kind: PathLiteral, p: p)
 
