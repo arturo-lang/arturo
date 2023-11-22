@@ -125,7 +125,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "call function with given list of parameters",
         args        = {
-            "function"  : {String,Literal,Function},
+            "function"  : {String,Literal,PathLiteral,Function},
             "params"    : {Block}
         },
         attrs       = {
@@ -193,6 +193,8 @@ proc defineSymbols*() =
 
                 if xKind in {Literal, String}:
                     fun = FetchSym(x.s)
+                elif xKind == PathLiteral:
+                    fun = FetchPathSym(x.p)
                 else:
                     fun = x
 
