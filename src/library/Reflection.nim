@@ -813,6 +813,23 @@ proc defineSymbols*() =
             #=======================================================
             push(newLogical(xKind==PathLabel))
 
+    builtin "pathLiteral?",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "checks if given value is of type :pathLiteral",
+        args        = {
+            "value" : {Any}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            pathLiteral? 'a\b\c
+            ; => true
+        """:
+            #=======================================================
+            push(newLogical(xKind==PathLiteral))
+
     builtin "quantity?",
         alias       = unaliased, 
         op          = opNop,
