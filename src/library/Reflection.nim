@@ -99,6 +99,8 @@ proc getValueForPathLiteral(pl: ValueArray): Value =
             else: 
                 discard
 
+        pidx = pidx + 1
+
 #=======================================
 # Methods
 #=======================================
