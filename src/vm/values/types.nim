@@ -24,7 +24,7 @@ when not defined(NOGMP):
     import helpers/bignums
 
 import vm/opcodes
-import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vquantity, vrange, vrational, vregex, vsocket, vsymbol, vversion]
+import vm/values/custom/[vbinary, vcolor, vcomplex, verror, vlogical, vquantity, vrange, vrational, vregex, vsocket, vsymbol, vversion]
 import vm/values/flags
 
 #=======================================
@@ -248,10 +248,14 @@ type
                PathLabel:   p*  : ValueArray
             of Symbol,
                SymbolLiteral:
-                   m*  : VSymbol
+                m*  : VSymbol
             of Regex:       rx* : VRegex
             of Unit:        u*  : VUnit
             of Quantity:    q*  : VQuantity
+            of Error:
+                err* = VError
+            of ErrorKind:
+                errKind* = VErrorKind
             of Color:       l*  : VColor
             of Date:
                 e*     : ValueDict
