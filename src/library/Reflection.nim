@@ -972,6 +972,23 @@ proc defineSymbols*() =
             #=======================================================
             push(newLogical(PathStack.len == 1))
 
+    builtin "store?",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "checks if given value is of type :store",
+        args        = {
+            "value" : {Any}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            store? config
+            ; => true
+        """:
+            #=======================================================
+            push(newLogical(xKind==Store))
+
     builtin "string?",
         alias       = unaliased, 
         op          = opNop,
