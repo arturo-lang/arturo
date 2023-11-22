@@ -83,23 +83,25 @@ type
 
         Unit            = 19
         Quantity        = 20
-        Regex           = 21
-        Color           = 22
-        Date            = 23
-        Binary          = 24
-        Dictionary      = 25
-        Object          = 26
-        Store           = 27
-        Function        = 28
-        Inline          = 29
-        Block           = 30
-        Range           = 31
-        Database        = 32
-        Socket          = 33    
-        Bytecode        = 34
+        Error           = 21
+        ErrorKind       = 22
+        Regex           = 23
+        Color           = 24
+        Date            = 25
+        Binary          = 26
+        Dictionary      = 27
+        Object          = 28
+        Store           = 29
+        Function        = 30
+        Inline          = 31
+        Block           = 32
+        Range           = 33
+        Database        = 34
+        Socket          = 35    
+        Bytecode        = 36
 
-        Nothing         = 35
-        Any             = 36
+        Nothing         = 37
+        Any             = 38
 
     ValueSpec* = set[ValueKind]
 
