@@ -76,6 +76,8 @@ proc generateCustomObject(prot: Prototype, arguments: ValueArray | ValueDict): V
                     var newParams = v.params
                     newParams.insert("this")
                     self.o[k] = newFunction(newParams, v.main)
+                    if not v.info.isNil:
+                        self.o[k].info = v.info
                 else:
                     self.o[k] = v
     )
