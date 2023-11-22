@@ -650,35 +650,36 @@ proc copyValue*(v: Value): Value {.inline.} =
     ## ``new`` and value copying, in general (when needed)
 
     case v.kind:
-        of Null:        result = VNULL
-        of Logical:     result = newLogical(v.b)
+        of Null:            result = VNULL
+        of Logical:         result = newLogical(v.b)
         of Integer:     
             if likely(v.iKind == NormalInteger): 
                 result = newInteger(v.i)
             else:
                 when defined(WEB) or not defined(NOGMP): 
                     result = newInteger(v.bi)
-        of Floating:    result = newFloating(v.f)
-        of Complex:     result = newComplex(v.z)
-        of Rational:    result = newRational(v.rat)
-        of Version:     result = newVersion(v.version)
+        of Floating:        result = newFloating(v.f)
+        of Complex:         result = newComplex(v.z)
+        of Rational:        result = newRational(v.rat)
+        of Version:         result = newVersion(v.version)
         of Type:        
             if likely(v.tpKind==BuiltinType):
                 result = newType(v.t)
             else:
                 result = newUserType(v.ts.name, v.ts.fields)
-        of Char:        result = newChar(v.c)
+        of Char:            result = newChar(v.c)
 
-        of String:      result = newString(v.s)
-        of Word:        result = newWord(v.s)
-        of Literal:     result = newLiteral(v.s)
-        of Label:       result = newLabel(v.s)
+        of String:          result = newString(v.s)
+        of Word:            result = newWord(v.s)
+        of Literal:         result = newLiteral(v.s)
+        of Label:           result = newLabel(v.s)
 
-        of Attribute:        result = newAttribute(v.s)
-        of AttributeLabel:   result = newAttributeLabel(v.s)
+        of Attribute:       result = newAttribute(v.s)
+        of AttributeLabel:  result = newAttributeLabel(v.s)
 
-        of Path:        result = newPath(v.p)
-        of PathLabel:   result = newPathLabel(v.p)
+        of Path:            result = newPath(v.p)
+        of PathLabel:       result = newPathLabel(v.p)
+        of PathLiteral:     result = newPathLiteral(v.p)
 
         of Symbol:          result = newSymbol(v.m)
         of SymbolLiteral:   result = newSymbolLiteral(v.m)
@@ -697,9 +698,9 @@ proc copyValue*(v: Value): Value {.inline.} =
         of Range:
             result = newRange(v.rng.start, v.rng.stop, v.rng.step, v.rng.infinite, v.rng.numeric, v.rng.forward)
 
-        of Dictionary:  result = newDictionary(v.d[])
-        of Object:      result = newObject(v.o[], v.proto)
-        of Store:       result = newStore(v.sto)
+        of Dictionary:      result = newDictionary(v.d[])
+        of Object:          result = newObject(v.o[], v.proto)
+        of Store:           result = newStore(v.sto)
 
         of Function:    
             if v.fnKind == UserFunction:
