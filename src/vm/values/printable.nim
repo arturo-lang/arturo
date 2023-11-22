@@ -259,7 +259,8 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
            AttributeLabel    : dumpAttribute(v)
 
         of Path,
-           PathLabel    :
+           PathLabel,
+           PathLiteral  :
             dumpBlockStart(v)
 
             for i,child in v.p:
