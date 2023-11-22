@@ -19,7 +19,7 @@ import helpers/strings
 when not defined(WEB):
     import helpers/stores
 
-import vm/[errors, values/printable, values/value]
+import vm/[errors, values/value]
 
 #=======================================
 # Globals
@@ -153,20 +153,23 @@ proc FetchPathSym(pl: ValueArray): Value =
                     of String, Word, Literal, Label:
                         result = GetKey(result.d, p.s)
                     else:
-                        result = GetKey(result.d, $(p))
+                        discard
+                        #result = GetKey(result.d, $(p))
             of Object:
                 case pKind:
                     of String, Word, Literal, Label:
                         result = GetKey(result.o, p.s)
                     else:
-                        result = GetKey(result.o, $(p))
+                        discard
+                        #result = GetKey(result.o, $(p))
             of Store:
                 when not defined(WEB):
                     case pKind:
                         of String, Word, Literal, Label:
                             result = getStoreKey(result.sto, p.s)
                         else:
-                            result = getStoreKey(result.sto, $(p))
+                            discard
+                            #result = getStoreKey(result.sto, $(p))
             of String:
                 result = newChar(result.s.runeAtPos(p.i))
             of Date:
