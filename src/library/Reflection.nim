@@ -20,6 +20,7 @@
 #=======================================
 
 import helpers/benchmark
+
 when not defined(WEB):
     import helpers/helper
 
@@ -380,7 +381,7 @@ proc defineSymbols*() =
             rule        = PrefixPrecedence,
             description = "print info for given symbol",
             args        = {
-                "symbol": {String,Literal,SymbolLiteral}
+                "symbol": {String,Literal,SymbolLiteral,PathLiteral}
             },
             attrs       = {
                 "get"       : ({Logical},"get information as dictionary")
@@ -390,11 +391,13 @@ proc defineSymbols*() =
             info 'print
 
             ; |--------------------------------------------------------------------------------
-            ; |          print  :function                                          0x1028B3410
+            ; |          print  :function                                                   Io
             ; |--------------------------------------------------------------------------------
             ; |                 print given value to screen with newline
             ; |--------------------------------------------------------------------------------
             ; |          usage  print value :any
+            ; |
+            ; |        options  .lines -> print each value in block in a new line
             ; |
             ; |        returns  :nothing
             ; |--------------------------------------------------------------------------------
@@ -430,6 +433,9 @@ proc defineSymbols*() =
 
                     if value.isNil:
                         RuntimeError_AliasNotFound($(x.m))
+                elif xKind == PathLiteral:
+                    searchable = $(x.p[^1])
+                    value = FetchPathSym(x.p)
                 else:
                     searchable = x.s
                     value = FetchSym(x.s)
@@ -737,6 +743,23 @@ proc defineSymbols*() =
             #=======================================================
             push(newLogical(xKind==PathLabel))
 
+    builtin "pathLiteral?",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "checks if given value is of type :pathLiteral",
+        args        = {
+            "value" : {Any}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            pathLiteral? 'a\b\c
+            ; => true
+        """:
+            #=======================================================
+            push(newLogical(xKind==PathLiteral))
+
     builtin "quantity?",
         alias       = unaliased, 
         op          = opNop,
@@ -841,6 +864,24 @@ proc defineSymbols*() =
             #=======================================================
             push(newLogical(SymExists(x.s)))
 
+    builtin "socket?",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "checks if given value is of type :socket",
+        args        = {
+            "value" : {Any}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            server: listen 18966
+            socket? server
+            ; => true
+        """:
+            #=======================================================
+            push(newLogical(xKind==Socket))
+
     builtin "stack",
         alias       = unaliased, 
         op          = opNop,
@@ -878,6 +919,23 @@ proc defineSymbols*() =
         """:
             #=======================================================
             push(newLogical(PathStack.len == 1))
+
+    builtin "store?",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "checks if given value is of type :store",
+        args        = {
+            "value" : {Any}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            store? config
+            ; => true
+        """:
+            #=======================================================
+            push(newLogical(xKind==Store))
 
     builtin "string?",
         alias       = unaliased, 
