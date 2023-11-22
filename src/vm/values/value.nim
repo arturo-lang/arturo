@@ -915,7 +915,8 @@ func hash*(v: Value): Hash {.inline.}=
            AttributeLabel        : result = result !& hash(v.s)
 
         of Path,
-           PathLabel    : 
+           PathLabel,
+           PathLiteral  : 
             for i in v.p:
                 result = result !& hash(i)
 
