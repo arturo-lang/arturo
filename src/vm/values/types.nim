@@ -245,6 +245,7 @@ type
                AttributeLabel:       s*  : string
             of Path,
                PathLabel:   p*  : ValueArray
+            of PathLiteral: pl* : seq[string]
             of Symbol,
                SymbolLiteral:
                    m*  : VSymbol
