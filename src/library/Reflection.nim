@@ -19,7 +19,7 @@
 # Libraries
 #=======================================
 
-import algorithm, sequtils, sugar, unicode
+import sequtils, sugar, unicode
 
 import helpers/benchmark
 when not defined(WEB):
