@@ -12,11 +12,14 @@
 # Libraries
 #=======================================
 
-import sequtils, tables
+import sequtils, sugar, tables, unicode
 
 import helpers/strings
 
-import vm/[errors, values/value]
+when not defined(WEB):
+    import helpers/stores
+
+import vm/[errors, values/printable, values/value]
 
 #=======================================
 # Globals
@@ -119,6 +122,79 @@ proc FetchSym*(s: string, unsafe: static bool = false): Value {.inline.} =
             RuntimeError_SymbolNotFound(s, suggestAlternative(s))
     else:
         Syms[s]
+
+proc FetchPathSym(pl: ValueArray): Value =
+    ## Gets a the `.p` field of a PathLiteral value
+    ## looks up all subsequent path fields
+    ## and returns the value
+    result = FetchSym(pl[0].s)
+    var pidx = 1
+    while pidx < pl.len:
+        var p = pl[pidx]
+        let pKind = p.kind
+        
+        case result.kind:
+            of Block:
+                result = GetArrayIndex(result.a, p.i)
+            of Range:
+                discard#result = result.rng[p.i]
+            of Binary:
+                result = newInteger(int(result.n[p.i]))
+            of Bytecode:
+                if p.s == "data":
+                    result = newBlock(result.trans.constants)
+                elif p.s == "code":
+                    result = newBlock(result.trans.instructions.map((w) =>
+                            newInteger(int(w))))
+                else:
+                    result = VNULL
+            of Dictionary:
+                case pKind:
+                    of String, Word, Literal, Label:
+                        result = GetKey(result.d, p.s)
+                    else:
+                        result = GetKey(result.d, $(p))
+            of Object:
+                case pKind:
+                    of String, Word, Literal, Label:
+                        result = GetKey(result.o, p.s)
+                    else:
+                        result = GetKey(result.o, $(p))
+            of Store:
+                when not defined(WEB):
+                    case pKind:
+                        of String, Word, Literal, Label:
+                            result = getStoreKey(result.sto, p.s)
+                        else:
+                            result = getStoreKey(result.sto, $(p))
+            of String:
+                result = newChar(result.s.runeAtPos(p.i))
+            of Date:
+                result = GetKey(result.e, p.s)
+            of Complex:
+                case pKind:
+                    of String, Word, Literal, Label:
+                        if ("real" == p.s or "re" == p.s):
+                            result = newFloating(result.z.re)
+                        elif ("image" == p.s or "im" == p.s or "img" == p.s):
+                            result = newFloating(result.z.im)
+                        else:
+                            const keys: seq[string] = @["real", "re", "image", "img", "im"]
+                            RuntimeError_KeyNotFound(p.s, keys)
+                    of Integer:
+                        case p.i:
+                            of 0:
+                                result = newFloating(result.z.re)
+                            of 1:
+                                result = newFloating(result.z.im)
+                            else:
+                                RuntimeError_OutOfBounds(p.i, 1)
+                    else:
+                        discard
+            else: 
+                discard
+
+        pidx = pidx + 1
 
 template GetSym*(s: string): untyped =
     ## Get value for given symbol in table
