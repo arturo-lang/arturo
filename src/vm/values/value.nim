@@ -381,9 +381,9 @@ func newPathLabel*(p: sink ValueArray): Value {.inline, enforceNoRaises.} =
     ## create PathLabel value from ValueArray
     Value(kind: PathLabel, p: p)
 
-func newPathLiteral*(pl: sink seq[string]): Value {.inline, enforceNoRaises.} =
-    ## create PathLiteral value from an array of strings
-    Value(kind: PathLiteral, pl: pl)
+func newPathLiteral*(pl: sink ValueArray): Value {.inline, enforceNoRaises.} =
+    ## create PathLiteral value from ValueArray
+    Value(kind: PathLiteral, p: p)
 
 func newSymbol*(m: VSymbol): Value {.inline, enforceNoRaises.} =
     ## create Symbol value from VSymbol
