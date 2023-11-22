@@ -121,7 +121,7 @@ proc FetchSym*(s: string, unsafe: static bool = false): Value {.inline.} =
     else:
         Syms[s]
 
-proc FetchPathSym(pl: ValueArray): Value =
+proc FetchPathSym*(pl: ValueArray): Value =
     ## Gets a the `.p` field of a PathLiteral value
     ## looks up all subsequent path fields
     ## and returns the value
