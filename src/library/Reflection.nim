@@ -19,8 +19,6 @@
 # Libraries
 #=======================================
 
-import sequtils
-
 import helpers/benchmark
 
 when not defined(WEB):
