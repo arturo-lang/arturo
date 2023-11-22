@@ -934,6 +934,24 @@ proc defineSymbols*() =
             #=======================================================
             push(newLogical(SymExists(x.s)))
 
+    builtin "socket?",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "checks if given value is of type :socket",
+        args        = {
+            "value" : {Any}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            server: listen 18966
+            socket? server
+            ; => true
+        """:
+            #=======================================================
+            push(newLogical(xKind==Socket))
+
     builtin "stack",
         alias       = unaliased, 
         op          = opNop,
