@@ -34,7 +34,7 @@ when defined(NOGMP):
 
 import vm/opcodes
 
-import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vquantity, vrange, vrational, vregex, vsocket, vsymbol, vversion]
+import vm/values/custom/[vbinary, vcolor, vcomplex, verror, vlogical, vquantity, vrange, vrational, vregex, vsocket, vsymbol, vversion]
 
 import vm/values/types
 import vm/values/flags
@@ -408,7 +408,7 @@ proc newUnit*(u: string): Value {.inline.} =
 proc newQuantity*(v: Value, atoms: VUnit): Value {.inline, enforceNoRaises.} =
     ## create Quantity value from a numerical value ``v`` (Value) + ``atoms`` (VUnit)
     result = Value(kind: Quantity)
-    if v.kind == Integer:
+    if v.kind == Integer: 
         if v.iKind == NormalInteger:
             result.q = toQuantity(v.i, atoms)
         else:
@@ -429,6 +429,28 @@ proc newQuantity*(q: VQuantity, copy: static bool = false): Value {.inline, enfo
         Value(kind: Quantity, q: toQuantity(q.original, q.atoms))
     else:
         Value(kind: Quantity, q: q)
+
+
+proc newErrorKind*(errorKind: VErrorKind): Value {.inline.} =
+    result = Value(kind: VErrorKind, errKind: errorKind)
+    result.errKind.label = "Unknown Error"
+
+proc newErrorKind*(errorKind: VErrorKind, label: string): Value {.inline.} =
+    result = Value(kind: VErrorKind, errKind: errorKind)
+    result.errKind.label = label
+
+proc newError*(error: VError): Value {.inline.} =
+    result = Value(kind: VError, err: error)
+
+proc newError*(error: VError, kind: VErrorKind): Value {.inline.} =
+    result = Value(kind: VError, err: error)
+    result.err.kind = kind
+
+proc newError*(error: VError, label: string, msg: string = ""): Value {.inline.} =
+    result = Value(kind: VError, err: error)
+    result.err.kind = VErrorKind(label: label)
+    result.err.msg = if msg == "": label 
+                     else: msg
 
 func newRegex*(rx: sink VRegex): Value {.inline, enforceNoRaises.} =
     ## create Regex value from VRegex
