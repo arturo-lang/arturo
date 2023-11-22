@@ -48,7 +48,8 @@ proc generateJsonNode*(n: Value): JsonNode =
            Attribute,
            AttributeLabel   : result = newJString(n.s)
         of Path,
-           PathLabel    : 
+           PathLabel,
+           PathLiteral  : 
            result = newJArray()
            for v in n.p:
                 result.add(generateJsonNode(v))
