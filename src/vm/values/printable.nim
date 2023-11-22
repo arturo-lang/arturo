@@ -96,7 +96,8 @@ proc `$`*(v: Value): string {.inline.} =
            Attribute,
            AttributeLabel        : return v.s
         of Path,
-           PathLabel    :
+           PathLabel,
+           PathLiteral   :
             result = v.p.map((x) => $(x)).join("\\")
         of Symbol,
            SymbolLiteral:
