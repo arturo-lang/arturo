@@ -705,6 +705,8 @@ proc copyValue*(v: Value): Value {.inline.} =
         of Regex:           result = newRegex(v.rx)
         of Unit:            result = newUnit(v.u)
         of Quantity:        result = newQuantity(v.q, copy=true)
+        of Error:           result = newError(v.err)
+        of ErrorKind:       result = newErrorKind(v.errKind)
         of Color:           result = newColor(v.l)
         of Date:            result = newDate(v.eobj[])
         of Binary:          result = newBinary(v.n)
