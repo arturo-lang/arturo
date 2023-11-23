@@ -79,8 +79,9 @@ proc getOptionValue*(args: seq[string], cmd: string, default: string,
             quit fmt"Missing value for --{cmd}.", QuitFailure
 
         let next = args[idx.succ]
-        if not allowGenericArgument or next >>? into:
+        if allowGenericArgument or next >>? into:
             return next
+
         quit fmt"{next} isn't into {into} for --{cmd}.", QuitFailure
 
 
