@@ -253,9 +253,9 @@ type
             of Unit:        u*  : VUnit
             of Quantity:    q*  : VQuantity
             of Error:
-                err* = VError
+                err*: VError
             of ErrorKind:
-                errKind* = VErrorKind
+                errKind*: VErrorKind
             of Color:       l*  : VColor
             of Date:
                 e*     : ValueDict
