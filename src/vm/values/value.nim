@@ -434,6 +434,15 @@ proc newQuantity*(q: VQuantity, copy: static bool = false): Value {.inline, enfo
     else:
         Value(kind: Quantity, q: q)
 
+proc newErrorKind(): Value {.inline, enforceNoRaises.} =
+    Value(kind: ErrorKind, errKind: VErrorKind(label: "Generic Error"))
+
+proc newErrorKind(label: string): Value {.inline, enforceNoRaises.} =
+    Value(kind: ErrorKind, errKind: VErrorKind(label: label))
+
+proc newErrorKind(errKind: VErrorKind): Value {.inline, enforceNoRaises.} =
+    Value(kind: ErrorKind, errKind: errKind)
+
 func newRegex*(rx: sink VRegex): Value {.inline, enforceNoRaises.} =
     ## create Regex value from VRegex
     Value(kind: Regex, rx: rx)
