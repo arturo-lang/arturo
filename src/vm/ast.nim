@@ -578,6 +578,13 @@ proc processBlock*(
     proc addPath(target: var Node, val: Value, isLabel: static bool=false) =
         var pathCallV: Value = nil
         var baseV: Value = nil
+        # TODO(VM/ast) Doesn't correctly recognize nested dictionary/object methods
+        #  for example, let's say `d` is a dictionary or object with a function
+        #  `someFunc` inside. `d\someFunc` *will* be correctly recognized as a function call
+        #  and the appropriate AST will be generated.
+        #  Now, if we have the exact same function inside a `subd` dictionary/object
+        #  that is in turn *inside* another one, then e.g. `d\subd\someFunc` will *not* work!
+        #  labels: vm, ast, bug, critical
         when not isLabel:
             if (let curr = Syms.getOrDefault(val.p[0].s, nil); not curr.isNil):
                 let next {.cursor.} = val.p[1]
