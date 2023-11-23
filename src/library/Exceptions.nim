@@ -2,6 +2,8 @@
 {.used.}
 
 import vm/lib
+import vm/exec
+import vm/errors
 import vm/values/custom/verror
 
 proc defineSymbols*() =
