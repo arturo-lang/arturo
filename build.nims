@@ -408,6 +408,7 @@ cmd install, "Build arturo and install executable":
     ##
     ##     --arch: $hostCPU             chooses the target CPU
     ##          [amd64, arm, arm64, i386, x86]
+    ##     --as: arturo                 changes the name of the binary
     ##     --build -b: string = full    chooses the target Build Version
     ##          [full, mini, web]
     ##     --os: $hostOS                chooses the target OS
@@ -431,6 +432,8 @@ cmd install, "Build arturo and install executable":
         availableProfilers = @["default", "mem", "native", "profile"]
 
     var config = buildConfig()
+
+    config.binary = "bin"/args.getOptionValue("as", default="arturo").toExe
 
     match args.getOptionValue("arch", short="a",
                               default=hostCPU,
