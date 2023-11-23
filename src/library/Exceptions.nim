@@ -6,6 +6,33 @@ import vm/values/custom/verror
 
 proc defineSymbols*() =
 
+    builtin "throws?",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "perform action, and return true if errors were thrown",
+        args        = {
+            "action": {Block,Bytecode}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            throws? [
+                1 + 2
+            ] 
+            ; => false
+
+            throws? -> 1/0
+            ; => true
+        """:
+            #=======================================================
+            try:
+                execUnscoped(x)
+
+                push(VFALSE)
+            except CatchableError, Defect:
+                push(VTRUE)
+
     builtin "try",
         alias       = unaliased, 
         op          = opNop,
