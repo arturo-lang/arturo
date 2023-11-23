@@ -811,35 +811,6 @@ proc defineSymbols*() =
             except CatchableError, Defect:
                 push(VTRUE)
 
-    builtin "try",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "perform action and catch possible errors",
-        args        = {
-            "action": {Block,Bytecode}
-        },
-        attrs       = {
-            "verbose"   : ({Logical},"print all error messages as usual")
-        },
-        returns     = {Nothing},
-        example     = """
-            try [
-                ; let's try something dangerous
-                print 10 / 0
-            ]
-            
-            ; we catch the exception but do nothing with it
-        """:
-            #=======================================================
-            let verbose = (hadAttr("verbose"))
-            try:
-                execUnscoped(x)
-            except CatchableError, Defect:
-                let e = getCurrentException()
-                if verbose:
-                    showVMErrors(e)
-
     # TODO(Core) add new `catch` method?
     #  Currently, `try?` works with `else`, pretty much like `if?`
     #  but we cannot do anything with the exception itself, in case
