@@ -557,7 +557,6 @@ cmd test, "Run test suite":
     ##     --help
 
     let
-        let
         binary = args.getOptionValue("using", default="arturo", short="u").toExe
         paths: tuple[string] = (
             local: "bin"/binary,
