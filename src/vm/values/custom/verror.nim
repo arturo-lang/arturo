@@ -3,10 +3,10 @@ import std/strformat
 
 type
     VError* = ref object of CatchableError
-        kind: VErrorKind
+        kind*: VErrorKind
         
     VErrorKind* = ref object
-        label: string
+        label*: string
 
 proc newDefaultError(): VError =
     const labelID = "Generic Error"
