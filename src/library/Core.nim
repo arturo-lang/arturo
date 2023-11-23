@@ -811,41 +811,6 @@ proc defineSymbols*() =
             except CatchableError, Defect:
                 push(VTRUE)
 
-    builtin "try?",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "perform action, catch possible errors and return status",
-        args        = {
-            "action": {Block,Bytecode}
-        },
-        attrs       = {
-            "verbose"   : ({Logical},"print all error messages as usual")
-        },
-        returns     = {Logical},
-        example     = """
-            try? [
-                ; let's try something dangerous
-                print 10 / 0
-            ]
-            else [
-                print "something went terribly wrong..."
-            ]
-            
-            ; something went terribly wrong...
-        """:
-            #=======================================================
-            let verbose = (hadAttr("verbose"))
-            try:
-                execUnscoped(x)
-
-                push(VTRUE)
-            except CatchableError, Defect:
-                let e = getCurrentException()
-                if verbose:
-                    showVMErrors(e)
-                push(VFALSE)
-
     builtin "unless",
         alias       = unaliased, 
         op          = opUnless,
