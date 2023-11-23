@@ -158,7 +158,8 @@ proc `==`*(x: Value, y: Value): bool =
                Attribute,
                AttributeLabel: return x.s == y.s
             of Path,
-               PathLabel: return x.p == y.p
+               PathLabel,
+               PathLiteral: return x.p == y.p
             of Symbol: return x.m == y.m
             of Regex: return x.rx == y.rx
             of Binary: return x.n == y.n

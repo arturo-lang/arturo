@@ -795,7 +795,7 @@ template parseAndAddSymbol(p: var Parser, topBlock: var Value) =
         p.bufpos = pos
         AddToken newSymbol(p.symbol)
 
-template parsePath(p: var Parser, root: Value, curLevel: int) =
+template parsePath(p: var Parser, root: Value, curLevel: int, asLiteral: bool = false) =
     p.values.add(@[root])
 
     while p.buf[p.bufpos]==Backslash:
@@ -811,10 +811,13 @@ template parsePath(p: var Parser, root: Value, curLevel: int) =
                 if hasDot: p.values[^1].add(newFloating(p.value))
                 else: p.values[^1].add(newInteger(p.value))
             of LBracket:
-                inc(p.bufpos)
-                setLen(p.value,0)
-                var subblock = parseBlock(p,curLevel+1,isSubBlock=true)
-                p.values[^1].add(subblock)
+                when asLiteral:
+                    break
+                else:
+                    inc(p.bufpos)
+                    setLen(p.value,0)
+                    var subblock = parseBlock(p,curLevel+1,isSubBlock=true)
+                    p.values[^1].add(subblock)
             else:
                 break
 
@@ -977,7 +980,20 @@ proc parseBlock(p: var Parser, level: int, isSubBlock: bool = false, isSubInline
                     # else:
                     #     SyntaxError_EmptyLiteral(p.lineNumber, getContext(p, p.bufpos-1))
                 else:
-                    if p.buf[p.bufpos]==Tick:
+                    if p.buf[p.bufpos] == Backslash:
+                        if (p.buf[p.bufpos+1] in PermittedIdentifiers_Start) or 
+                           (p.buf[p.bufpos+1] in PermittedNumbers_Start):
+                            parsePath(p, newWord(p.value), level, asLiteral=true)
+                            # if p.buf[p.bufpos]==Colon:
+                            #     inc(p.bufpos)
+                            #     AddToken newPathLabel(p.values[^1])
+                            # else:
+                            AddToken newPathLiteral(p.values[^1])
+                            discard p.values.pop()
+                        else:
+                            inc(p.bufpos)
+                            AddToken newSymbol(backslash)
+                    elif p.buf[p.bufpos]==Tick:
                         #parseString(p, stopper=BackTick)
                         AddToken newChar(p.value)
                         inc(p.bufpos)

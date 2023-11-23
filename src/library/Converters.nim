@@ -69,8 +69,17 @@ proc generateCustomObject(prot: Prototype, arguments: ValueArray | ValueDict): V
     newObject(arguments, prot, proc (self: Value, prot: Prototype) =
         if (let initMethod = prot.methods.getOrDefault("init", nil); not initMethod.isNil):
             prot.doInit(self)
-            # push self
-            # callFunction(initMethod)
+
+        for k,v in prot.methods:
+            if k != "init" and k != "print" and k != "compare":
+                if v.kind==Function:
+                    var newParams = v.params
+                    newParams.insert("this")
+                    self.o[k] = newFunction(newParams, v.main)
+                    if not v.info.isNil:
+                        self.o[k].info = v.info
+                else:
+                    self.o[k] = v
     )
 
 template throwCannotConvert(): untyped =
@@ -576,6 +585,7 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                Any,
                Path,
                PathLabel,
+               PathLiteral,
                Binary: throwCannotConvert()
 
 #=======================================
