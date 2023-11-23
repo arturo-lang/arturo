@@ -548,6 +548,24 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                 else:
                     throwCannotConvert()
 
+            of Error:
+                case tp 
+                of String:
+                    return newString($(y.err.kind.label))
+                of Literal:
+                        return newLiteral($(y.err.kind.label))
+                else:
+                    throwCannotConvert()
+
+            of ErrorKind:
+                case tp 
+                of String:
+                    return newString($(y.errKind.label))
+                of Literal:
+                        return newLiteral($(y.errKind.label))
+                else:
+                    throwCannotConvert()
+
             of Regex:
                 case tp:
                     of String:
