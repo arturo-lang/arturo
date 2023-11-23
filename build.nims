@@ -50,11 +50,6 @@ let
         mainFile:       "src"/"arturo.nim",
     )
 
-    binary: tuple = (
-        source: "bin"/"arturo",
-        target: paths.target/"arturo".toExe
-    )
-
 #=======================================
 # Types
 #=======================================
