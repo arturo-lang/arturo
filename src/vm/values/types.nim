@@ -78,30 +78,31 @@ type
         AttributeLabel  = 14
         Path            = 15
         PathLabel       = 16
-        Symbol          = 17
-        SymbolLiteral   = 18
+        PathLiteral     = 17
+        Symbol          = 18
+        SymbolLiteral   = 19
 
-        Unit            = 19
-        Quantity        = 20
-        Error           = 21
-        ErrorKind       = 22
-        Regex           = 23
-        Color           = 24
-        Date            = 25
-        Binary          = 26
-        Dictionary      = 27
-        Object          = 28
-        Store           = 29
-        Function        = 30
-        Inline          = 31
-        Block           = 32
-        Range           = 33
-        Database        = 34
-        Socket          = 35    
-        Bytecode        = 36
+        Unit            = 20
+        Quantity        = 21
+        Error           = 22
+        ErrorKind       = 23
+        Regex           = 24
+        Color           = 25
+        Date            = 26
+        Binary          = 27
+        Dictionary      = 28
+        Object          = 29
+        Store           = 30
+        Function        = 31
+        Inline          = 32
+        Block           = 33
+        Range           = 34
+        Database        = 35
+        Socket          = 36    
+        Bytecode        = 37
 
-        Nothing         = 37
-        Any             = 38
+        Nothing         = 38
+        Any             = 39
 
     ValueSpec* = set[ValueKind]
 
@@ -245,7 +246,8 @@ type
                Attribute,
                AttributeLabel:       s*  : string
             of Path,
-               PathLabel:   p*  : ValueArray
+               PathLabel,
+               PathLiteral      :   p*  : ValueArray
             of Symbol,
                SymbolLiteral:
                 m*  : VSymbol

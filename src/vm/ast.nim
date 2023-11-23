@@ -577,18 +577,34 @@ proc processBlock*(
 
     proc addPath(target: var Node, val: Value, isLabel: static bool=false) =
         var pathCallV: Value = nil
-
+        var baseV: Value = nil
         when not isLabel:
             if (let curr = Syms.getOrDefault(val.p[0].s, nil); not curr.isNil):
                 let next {.cursor.} = val.p[1]
-                if curr.kind==Dictionary and (next.kind==Literal or next.kind==Word):
-                    if (let item = curr.d.getOrDefault(next.s, nil); not item.isNil):
-                        if item.kind == Function:
-                            pathCallV = item
+                if (next.kind==Literal or next.kind==Word):
+                    if curr.kind==Dictionary:
+                        if (let item = curr.d.getOrDefault(next.s, nil); not item.isNil):
+                            if item.kind == Function:
+                                pathCallV = item
+                    elif curr.kind==Object:
+                        if (let item = curr.o.getOrDefault(next.s, nil); not item.isNil):
+                            if item.kind == Function:
+                                baseV = val.p[0]
+                                pathCallV = item
 
         if not pathCallV.isNil:
-            target.addChild(Node(kind: OtherCall, arity: pathCallV.arity, op: opNop, value: pathCallV))
-            target.rollThrough()
+            var arityCut: int
+            if baseV.isNil:
+                arityCut = 0
+                target.addChild(Node(kind: OtherCall, arity: pathCallV.arity, op: opNop, value: pathCallV))
+            else:
+                arityCut = 1
+                let c = Node(kind: OtherCall, arity: pathCallV.arity, op: opNop, value: pathCallV)
+                c.addChild(newVariable(baseV))
+                target.addChild(c)
+
+            if pathCallV.arity != arityCut:
+                target.rollThrough()
         else:
             let basePath {.cursor.} = val.p[0]
 
