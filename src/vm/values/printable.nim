@@ -108,6 +108,10 @@ proc `$`*(v: Value): string {.inline.} =
             return $(v.q)
         of Regex:
             return $(v.rx)
+        of Error:
+            return $(v.err)
+        of ErrorKind:
+            return $(v.errKind)
         of Color        :
             return $(v.l)
 
