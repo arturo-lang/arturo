@@ -254,7 +254,7 @@ type
             of Regex:       rx* : VRegex
             of Unit:        u*  : VUnit
             of Quantity:    q*  : VQuantity
-            of Error:
+            of Error: 
                 err*: VError
             of ErrorKind:
                 errKind*: VErrorKind
