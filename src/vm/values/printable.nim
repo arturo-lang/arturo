@@ -27,7 +27,7 @@ import vm/globals
 import vm/opcodes
 import vm/values/value
 
-import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vquantity, vrange, vrational, vregex, vsocket, vversion]
+import vm/values/custom/[vbinary, vcolor, vcomplex, verror, vlogical, vquantity, vrange, vrational, vregex, vsocket, vversion]
 
 #=======================================
 # Helpers
