@@ -2,10 +2,10 @@
 import std/strformat
 
 type
-    VError* = object of CatchableError
+    VError* = ref object of CatchableError
         kind: VErrorKind
         
-    VErrorKind* = object
+    VErrorKind* = ref object
         label: string
 
 proc newDefaultError(): VError =
