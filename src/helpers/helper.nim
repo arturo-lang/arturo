@@ -148,7 +148,7 @@ proc getUsageForFunction(obj: ValueObj): seq[string] =
         let
             templateArg  = fmt"{arg[0]}"
             templateType = fmt"{fg(grayColor)}{getTypeString(arg[1])}"
-        result.add fmt"{spaceBefore} {templateArg} {templateType}"
+        result.add fmt"{spaceBefore}{templateArg} {templateType}"
 
 
 proc getOptionsForFunction(value: Value): seq[string] =
