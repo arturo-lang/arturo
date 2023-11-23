@@ -8,14 +8,11 @@ type
     VErrorKind* = ref object
         label*: string
 
-proc newDefaultError(): VError =
-    const labelID = "Generic Error"
-    result = VError(kind: VErrorKind(label: labelID))
-    result.msg = labelID
-    return result
+proc newDefaultError(): VErrorKind =
+    result = VErrorKind(label: "Generic Error")
 
 let 
-    genericError*: VError = newDefaultError()
+    genericError*: VErrorKind = newDefaultError()
 
 func `$`*(kind: VErrorKind): string {.inline,enforceNoRaises.} =
     kind.label
