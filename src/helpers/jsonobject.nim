@@ -57,8 +57,8 @@ proc generateJsonNode*(n: Value): JsonNode =
            SymbolLiteral: result = newJString($(n.m))
         of Unit         : result = newJString($(n.u))
         of Quantity     : result = newJString($(n.q))
-        of Error        : result = newJString($n.err)
-        of ErrorKind    : result = newJString($n.errKind)
+        of Error        : result = newJString($(n.err))
+        of ErrorKind    : result = newJString($(n.errKind))
         of Regex        : result = newJString($(n.rx))
         of Color        : result = newJString($(n))
         of Date         : discard
