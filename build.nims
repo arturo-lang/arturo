@@ -558,7 +558,7 @@ cmd test, "Run test suite":
 
     let
         binary = args.getOptionValue("using", default="arturo", short="u").toExe
-        paths: tuple[string] = (
+        paths: tuple = (
             local: "bin"/binary,
             global: getHomeDir()/binary
         )
@@ -575,7 +575,7 @@ cmd benchmark, "Run benchmark suite":
     
     let
         binary = args.getOptionValue("using", default="arturo", short="u").toExe
-        paths: tuple[string] = (
+        paths: tuple = (
             local: "bin"/binary,
             global: getHomeDir()/binary
         )
