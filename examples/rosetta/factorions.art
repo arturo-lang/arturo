@@ -1,10 +1,9 @@
 factorials: [1 1 2 6 24 120 720 5040 40320 362880 3628800 39916800]
 
 factorion?: function [n, base][
-    try? [
+    if throws? [
         n = sum map digits.base:base n 'x -> factorials\[x]
-    ]
-    else [
+    ][
         print ["n:" n "base:" base]
         false
     ]
