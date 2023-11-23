@@ -948,6 +948,10 @@ func hash*(v: Value): Hash {.inline.}=
 
         of Regex        : result = result !& hash(v.rx)
 
+        of Error        : result = result !& hash(v.err.kind.label)
+
+        of ErrorKind    : result = result !& hash(v.errKind.label)
+
         of Color        : result = result !& cast[Hash](v.l)
 
         of Date         : discard
