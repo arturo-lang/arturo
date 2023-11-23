@@ -17,9 +17,9 @@ proc newDefaultError(): VError =
 let 
     genericError*: VError = newDefaultError()
 
-func `$`*(kind: VErrorKind): string =
+func `$`*(kind: VErrorKind): string {.inline,enforceNoRaises.} =
     kind.label
 
-func `$`*(error: VError): string =
+func `$`*(error: VError): string {.inline,enforceNoRaises.} =
     fmt"{error.kind}: {error.msg}"
 
