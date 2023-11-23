@@ -570,12 +570,16 @@ cmd test, "Run test suite":
 cmd benchmark, "Run benchmark suite":
     ## benchmark:
     ##     Runs benchmark suite
-    ##
+    ## 
+    ##     --using -u: arturo           runs with the given binary
     ##     --help
-
+    
     let
-        localBin = binary.source.toExe
-        installedBin = binary.target
+        binary = args.getOptionValue("using", default="arturo", short="u").toExe
+        paths: tuple[string] = (
+            local: "bin"/binary,
+            global: getHomeDir()/binary
+        )
 
-    unless performBenchmarks(installedBin):
-        quit performBenchmarks(localBin).toErrorCode
+    unless paths.global.performBenchmarks():
+        quit paths.local.performBenchmarks().toErrorCode
