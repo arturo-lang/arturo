@@ -280,6 +280,9 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
         of Unit         : dumpPrimitive($(v.u), v)
         of Quantity     : dumpPrimitive($(v.q), v)
 
+        of Error        : dumpPrimitive($(v.err), v)       
+        of ErrorKind    : dumpPrimitive($(v.errKind), v)
+
         of Regex        : dumpPrimitive($(v.rx), v)
 
         of Color        : dumpPrimitive($(v.l), v)
