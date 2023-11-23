@@ -12,9 +12,10 @@
 # Libraries
 #=======================================
 
-import sequtils, tables
+import sequtils, tables, unicode
 
 import helpers/strings
+
 
 import vm/[errors, values/value]
 
@@ -119,6 +120,38 @@ proc FetchSym*(s: string, unsafe: static bool = false): Value {.inline.} =
             RuntimeError_SymbolNotFound(s, suggestAlternative(s))
     else:
         Syms[s]
+
+proc FetchPathSym*(pl: ValueArray): Value =
+    ## Gets a the `.p` field of a PathLiteral value
+    ## looks up all subsequent path fields
+    ## and returns the value
+    result = FetchSym(pl[0].s)
+    var pidx = 1
+    while pidx < pl.len:
+        var p = pl[pidx]
+        let pKind = p.kind
+        
+        case result.kind:
+            of Block:
+                result = GetArrayIndex(result.a, p.i)
+            of Dictionary:
+                case pKind:
+                    of String, Word, Literal, Label:
+                        result = GetKey(result.d, p.s)
+                    else:
+                        result = GetKey(result.d, $(p.i))
+            of Object:
+                case pKind:
+                    of String, Word, Literal, Label:
+                        result = GetKey(result.o, p.s)
+                    else:
+                        result = GetKey(result.o, $(p.i))
+            of String:
+                result = newChar(result.s.runeAtPos(p.i))
+            else: 
+                discard
+
+        pidx = pidx + 1
 
 template GetSym*(s: string): untyped =
     ## Get value for given symbol in table
