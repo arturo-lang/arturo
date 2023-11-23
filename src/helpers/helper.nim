@@ -375,7 +375,7 @@ proc getInfo*(objName: string, objValue: Value, aliases: SymbolDict): ValueDict 
     if obj.val.info.isNil:
         return
     
-    # ====> In case of 'info attribute be present: 
+    # ====> In case 'info attribute is present: 
     
     if obj.val.info.descr  != "":  result["description"] = newString(obj.val.info.descr) 
     if obj.val.info.module != "": result["module"]       = newString(obj.val.info.module)
