@@ -59,7 +59,8 @@ proc panic*(msg: string = "", exitCode: int = QuitFailure) =
 
 proc showLogo*() =
     echo sep()
-    echo r"{colors.green}                 _                                     ".fmt
+    echo colors.green
+    echo r"                               _                                     "
     echo r"                              | |                                    "
     echo r"                     __ _ _ __| |_ _   _ _ __ ___                    "
     echo r"                    / _` | '__| __| | | | '__/ _ \                   "
