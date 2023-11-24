@@ -41,12 +41,12 @@ include ".config/who.nims"
 #=======================================
 
 let
-    root = getHomeDir()/".arturo"
+    targetDir = getHomeDir()/".arturo"
 
     paths: tuple = (
-        target:         root/"bin",
-        targetLib:      root/"lib",
-        targetStores:   root/"stores",
+        targetBin:      targetDir/"bin",
+        targetLib:      targetDir/"lib",
+        targetStores:   targetDir/"stores",
         mainFile:       "src"/"arturo.nim",
     )
 
@@ -241,7 +241,7 @@ proc installAll*(config: BuildConfig, targetFile: string) =
         else:
             copyWebView()
 
-        log fmt"deployed to: {root}"
+        log fmt"deployed to: {targetDir}"
 
     main(config)
 
@@ -503,7 +503,7 @@ cmd install, "Build arturo and install executable":
     if args.hasFlag("release"):
         releaseConfig()
 
-    config.buildArturo(paths.target/config.binary)
+    config.buildArturo(targetDir/config.binary)
 
 cmd package, "Package arturo app and build executable":
     ## package <pkg-name>:
@@ -560,7 +560,7 @@ cmd test, "Run test suite":
         binary = args.getOptionValue("using", default="arturo", short="u").toExe
         paths: tuple = (
             local: "bin"/binary,
-            global: paths.target/binary
+            global: paths.targetBin/binary
         )
 
     unless paths.global.performTests():
@@ -577,7 +577,7 @@ cmd benchmark, "Run benchmark suite":
         binary = args.getOptionValue("using", default="arturo", short="u").toExe
         paths: tuple = (
             local: "bin"/binary,
-            global: paths.target/binary
+            global: paths.targetBin/binary
         )
 
     unless paths.global.performBenchmarks():
