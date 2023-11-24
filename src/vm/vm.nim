@@ -27,13 +27,16 @@ when not defined(WEB):
     import helpers/stores
 
 import vm/[
+    ast,
     env, 
     errors, 
     eval, 
     exec, 
     globals, 
+    opcodes,
     parse, 
     stack, 
+    values/custom/vbinary,
     values/value, 
     version
 ]
@@ -163,6 +166,16 @@ template initialize(args: seq[string], filename: string, isFile:bool, scriptData
 
     # library
     setupLibrary()
+
+    # misc
+    ExecPrematureAstNode = proc (node: Node, dictionary: bool) =
+        var consts: ValueArray
+        var it: VBinary
+
+        evaluateBlock(node, consts, it, isDictionary=dictionary, omitNewlines=false)
+        it.add(byte(opEnd))
+
+        execUnscoped(Translation(constants: consts, instructions: it))
 
     # set VM as initialized
     initialized = true

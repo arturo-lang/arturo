@@ -105,6 +105,8 @@ var
 
     PipeParent : Node
 
+    ExecPrematureAstNode*: proc (node: Node, dictionary: bool)
+
 #=======================================
 # Constants
 #=======================================
@@ -852,6 +854,18 @@ proc processBlock*(
 
                     of pipe             :
                         current.addPotentialTrailingPipe()
+
+                    of exclamation      :
+                        let lastChild = current.children[^1]
+                        let ll = current.children.high
+                        current.children.delete(ll,ll)
+                        let wrapped = newRootNode()
+                        wrapped.addChild(lastChild)
+
+                        ExecPrematureAstNode(wrapped, asDictionary)
+                        for k,v in Syms.pairs:
+                            if v.kind == Function:
+                                TmpArities[k] = v.arity
 
                     else:
                         when processingArrow: ArrowBlock[^1].add(item)
