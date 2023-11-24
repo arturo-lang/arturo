@@ -4,7 +4,7 @@
 ; since it's the only one that contains data for the examples.
 ;
 ; So, first build like:
-;  ./build.nims install docgen --as:arturo-docgen
+;  ./build.nims build docgen --as:arturo-docgen
 ;
 ; And then, run like:
 ;  arturo-docgen tools/nodocs.art

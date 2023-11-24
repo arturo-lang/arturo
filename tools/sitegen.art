@@ -4,7 +4,7 @@
 ; How this works:
 ;---------------------------------------------------------------------------------
 ; - Before anything, build Arturo for docgen (to have the necessary line data):
-;       ./build.nims install docgen 
+;       ./build.nims build docgen 
 ; - First, run this script - to generate all necessary data & templates
 ; - Then, go to docs/website
 ; - Finally, run: webize --build --at: ../../../arturo-lang.io/

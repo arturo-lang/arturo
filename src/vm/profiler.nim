@@ -14,7 +14,7 @@
 ## Profiler for the Arturo VM.
 ## 
 ## To enable, compile with: 
-## `./build.nims install profiler`
+## `./build.nims build profiler`
 
 when defined(PROFILER):
     {.push profiler: off.}
