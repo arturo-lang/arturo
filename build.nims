@@ -446,7 +446,7 @@ cmd build, "Build arturo and optionally install the executable":
         >> x86:   arm64Config()
         >> arm32: arm32Config()
 
-    match args.getOptionValue("mode", short="m" default="full", into=availableBuilds):
+    match args.getOptionValue("mode", short="m", default="full", into=availableBuilds):
         >> ["full"]:
             fullBuildConfig()
         >> ["mini"]:
