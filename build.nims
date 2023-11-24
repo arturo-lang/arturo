@@ -402,21 +402,22 @@ cmd build, "Build arturo and optionally install the executable":
     ## build:
     ##     Provides a cross-compilation for the Arturo's binary.
     ##
-    ##     --arch: $hostCPU             chooses the target CPU
+    ##     --arch -a: $hostCPU          chooses the target CPU
     ##          [amd64, arm, arm64, i386, x86]
     ##     --as: arturo                 changes the name of the binary
-    ##     --build -b: string = full    chooses the target Build Version
+    ##     --mode -m: full              chooses the target Build Version
     ##          [full, mini, web]
     ##     --os: $hostOS                chooses the target OS
     ##          [freebsd, linux, openbsd, mac, macos, macosx, netbsd, win, windows]
     ##     --profiler -p: none          defines which profiler use
     ##          [default, mem, native, none, profile]
-    ##     --who: string = user         defines who is compiling the code
+    ##     --who: none                  defines who is compiling the code
     ##          [dev, user]
     ##     --debug -d                   enables debugging
     ##     --install -i                 installs the final binary
     ##     --log -l                     shows compilation logs
     ##     --raw                        disables compression
+    ##     --release                    enable release config mode
     ##     --help
 
     let
@@ -445,7 +446,7 @@ cmd build, "Build arturo and optionally install the executable":
         >> x86:   arm64Config()
         >> arm32: arm32Config()
 
-    match args.getOptionValue("build", default="full", into=availableBuilds):
+    match args.getOptionValue("mode", short="m" default="full", into=availableBuilds):
         >> ["full"]:
             fullBuildConfig()
         >> ["mini"]:
