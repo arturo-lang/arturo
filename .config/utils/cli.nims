@@ -179,7 +179,7 @@ template cmd*(name: untyped; description: string; body: untyped): untyped =
     proc `name Task`*() =
         body
 
-    if command ==? "help":
+    if command >>? ["--help"]:
         writeTask(astToStr(name), description)
     elif command ==? astToStr(name):
         if args.hasFlag("help", short="h"):
