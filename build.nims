@@ -418,7 +418,7 @@ cmd install, "Build arturo and install executable":
     ##     --raw                        disables compression
     ##     --help
 
-    const
+    let
         availableCPUs = @["amd-64", "x64", "x86-64", "arm-64", "i386", "x86",
                           "x86-32", "arm", "arm-32"]
         availableOSes = @["freebsd", "openbsd", "netbsd", "linux", "mac",
@@ -503,7 +503,7 @@ cmd install, "Build arturo and install executable":
     if args.hasFlag("release"):
         releaseConfig()
 
-    config.buildArturo(binary.target)
+    config.buildArturo(paths.target/config.binary)
 
 cmd package, "Package arturo app and build executable":
     ## package <pkg-name>:
@@ -560,7 +560,7 @@ cmd test, "Run test suite":
         binary = args.getOptionValue("using", default="arturo", short="u").toExe
         paths: tuple = (
             local: "bin"/binary,
-            global: getHomeDir()/binary
+            global: paths.target/binary
         )
 
     unless paths.global.performTests():
@@ -577,7 +577,7 @@ cmd benchmark, "Run benchmark suite":
         binary = args.getOptionValue("using", default="arturo", short="u").toExe
         paths: tuple = (
             local: "bin"/binary,
-            global: getHomeDir()/binary
+            global: paths.target/binary
         )
 
     unless paths.global.performBenchmarks():
