@@ -134,9 +134,11 @@ iterator getDocs(impl: string): string =
     ## This iterates until the end of the documentation block.
     var found = false
     for line in impl.splitLines():
-        let cleanline = line.strip()
+        var cleanline = line.strip()
         if cleanline.startsWith("##"):
-            yield cleanline[3 .. cleanline.high]
+            cleanline.removeprefix "##"
+            cleanline.removeprefix " "
+            yield cleanline 
             found = true
         # Don't iterate until the end of the implementation,
         # Just until the end of the impl's documentation
