@@ -397,7 +397,7 @@ proc performBenchmarks*(binary: string): bool =
 
 showLogo()
 
-cmd install, "Build arturo and install executable":
+cmd build, "Build arturo and optionally install the executable":
     ## build:
     ##     Provides a cross-compilation for the Arturo's binary.
     ##
@@ -413,7 +413,7 @@ cmd install, "Build arturo and install executable":
     ##     --who: string = user         defines who is compiling the code
     ##          [dev, user]
     ##     --debug -d                   enables debugging
-    ##     --local                      disables installation
+    ##     --install -i                 installs the final binary
     ##     --log -l                     shows compilation logs
     ##     --raw                        disables compression
     ##     --help
@@ -491,7 +491,7 @@ cmd install, "Build arturo and install executable":
         config.shouldCompress = false
         debugConfig()
 
-    if args.hasFlag("local"):
+    if args.hasFlag("install", "i"):
         config.shouldInstall = false
 
     if args.hasFlag("log", "l"):
