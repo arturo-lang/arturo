@@ -24,6 +24,7 @@ import ".config/utils/cli.nims"
 #=======================================
 
 mode = ScriptMode.Silent
+--hints:off
 
 #=======================================
 # Flag system
