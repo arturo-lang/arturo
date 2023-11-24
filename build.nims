@@ -149,7 +149,7 @@ proc compressBinary(config: BuildConfig) =
 proc verifyDirectories*() =
     ## Create target dirs recursively, if they don't exist
     log "setting up directories..."
-    for path in [paths.target, paths.targetLib, paths.targetStores]:
+    for path in [paths.targetBin, paths.targetLib, paths.targetStores]:
         mkdir path
 
 proc updateBuild*() =
