@@ -12,7 +12,9 @@ let
         else:
             paramStr(1)
 
-template `==?`(a, b: string): bool = cmpIgnoreStyle(a, b) == 0
+template `==?`(a, b: string): bool =
+    0 == strutils.cmpIgnoreStyle(a.replace("-"), b.replace("-"))
+
 proc `>>?`(element: string, container: openarray[string]): bool =
     result = false
     for el in container:
