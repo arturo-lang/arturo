@@ -833,14 +833,29 @@ proc defineSymbols*() =
             else:
                 definedMethods = z.d
 
+            var inherited = false
             if checkAttr("as"):
+                inherited = true
+
                 x.ts.inherits = aAs
                 x.ts.fields.add(aAs.ts.fields)
 
             x.ts.fields.add(y.a)
-            x.ts.methods = newDictionary(execDictionary(z)).d
-            
-            if (let initMethod = definedMethods.getOrDefault("init", nil); not initMethod.isNil):
+            for key,val in definedMethods:
+                if key != "init" and key != "print" and key != "compare":
+                    x.ts.methods[key] = val
+
+            var initMethod: Value = nil
+            if inherited:
+                if (let inheritedInit = x.ts.inherits.ts.methods.getOrDefault("init", nil); not inheritedInit.isNil):
+                    initMethod = inheritedInit.main
+            if (let thisInit = definedMethods.getOrDefault("init", nil); not thisInit.isNil):
+                if initMethod.isNil:
+                    initMethod = thisInit
+                else:
+                    initMethod.a.add(thisInit.a)
+
+            if not initMethod.isNil:
                 x.ts.methods["init"] = newFunction(
                     @["this"],
                     initMethod
@@ -849,7 +864,16 @@ proc defineSymbols*() =
                     push v
                     callFunction(x.ts.methods["init"])
 
-            if (let printMethod = definedMethods.getOrDefault("print", nil); not printMethod.isNil):
+            var printMethod: Value = nil
+
+            if (let thisPrint = definedMethods.getOrDefault("print", nil); not thisPrint.isNil):
+                printMethod = thisPrint
+            else:
+                if inherited:
+                    if (let inheritedPrint = x.ts.inherits.ts.methods.getOrDefault("print", nil); not inheritedPrint.isNil):
+                        printMethod = inheritedPrint.main
+
+            if not printMethod.isNil:
                 x.ts.methods["print"] = newFunction(
                     @["this"],
                     printMethod
@@ -859,7 +883,16 @@ proc defineSymbols*() =
                     callFunction(x.ts.methods["print"])
                     stack.pop().s
 
-            if (let compareMethod = definedMethods.getOrDefault("compare", nil); not compareMethod.isNil):
+            var compareMethod: Value = nil
+
+            if (let thisCompare = definedMethods.getOrDefault("compare", nil); not thisCompare.isNil):
+                compareMethod = thisCompare
+            else:
+                if inherited:
+                    if (let inheritedCompare = x.ts.inherits.ts.methods.getOrDefault("compare", nil); not inheritedCompare.isNil):
+                        compareMethod = inheritedCompare.main
+
+            if not compareMethod.isNil:
                 if compareMethod.kind==Block:
                     x.ts.methods["compare"] = newFunction(
                         @["this","that"],
