@@ -767,7 +767,7 @@ proc defineSymbols*() =
         args        = {
             "type"      : {Type},
             "fields"    : {Block},
-            "methods"   : {Block}
+            "methods"   : {Block,Dictionary}
         },
         attrs       = {
             "as"    : ({Type}, "inherit given type")
@@ -826,13 +826,21 @@ proc defineSymbols*() =
         """:
             #=======================================================
             requireValueBlock(y, {Word,Literal})
-            x.ts.fields = y.a
+
+            var definedMethods: ValueDict
+            if z.kind == Block:
+                definedMethods = newDictionary(execDictionary(z)).d
+            else:
+                definedMethods = z.d
 
             if checkAttr("as"):
                 x.ts.inherits = aAs
+                x.ts.fields.add(aAs.ts.fields)
 
+            x.ts.fields.add(y.a)
             x.ts.methods = newDictionary(execDictionary(z)).d
-            if (let initMethod = x.ts.methods.getOrDefault("init", nil); not initMethod.isNil):
+            
+            if (let initMethod = definedMethods.getOrDefault("init", nil); not initMethod.isNil):
                 x.ts.methods["init"] = newFunction(
                     @["this"],
                     initMethod
@@ -841,7 +849,7 @@ proc defineSymbols*() =
                     push v
                     callFunction(x.ts.methods["init"])
 
-            if (let printMethod = x.ts.methods.getOrDefault("print", nil); not printMethod.isNil):
+            if (let printMethod = definedMethods.getOrDefault("print", nil); not printMethod.isNil):
                 x.ts.methods["print"] = newFunction(
                     @["this"],
                     printMethod
@@ -851,7 +859,7 @@ proc defineSymbols*() =
                     callFunction(x.ts.methods["print"])
                     stack.pop().s
 
-            if (let compareMethod = x.ts.methods.getOrDefault("compare", nil); not compareMethod.isNil):
+            if (let compareMethod = definedMethods.getOrDefault("compare", nil); not compareMethod.isNil):
                 if compareMethod.kind==Block:
                     x.ts.methods["compare"] = newFunction(
                         @["this","that"],
