@@ -829,7 +829,7 @@ proc defineSymbols*() =
             x.ts.fields = y.a
 
             if checkAttr("as"):
-                x.ts.inherits = aAs.ts
+                x.ts.inherits = aAs
 
             x.ts.methods = newDictionary(execDictionary(z)).d
             if (let initMethod = x.ts.methods.getOrDefault("init", nil); not initMethod.isNil):
