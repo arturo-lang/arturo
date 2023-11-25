@@ -9,547 +9,578 @@
 # initial conversion to NimScript thanks to:
 # - Patrick (skydive241@gmx.de)
 
-# TODO(build.nims) General cleanup needed
-#  labels: installer, enhancement, cleanup
-
 #=======================================
 # Libraries
 #=======================================
 
-import os, parseopt, sequtils
-import strformat, strutils, tables
+import os
+import strformat, strutils
 
-import src/helpers/terminal
+import ".config/utils/ui.nims"
+import ".config/utils/cli.nims"
 
 #=======================================
 # Initialize globals
 #=======================================
 
 mode = ScriptMode.Silent
-NoColors = hostOS == "windows"
+--hints:off
+
+#=======================================
+# Flag system
+#=======================================
+
+include ".config/utils/flags.nims"
+
+include ".config/arch.nims"
+include ".config/buildmode.nims"
+include ".config/devtools.nims"
+include ".config/who.nims"
 
 #=======================================
 # Constants
 #=======================================
 
 let
-    # terminal color aliases
-    RED*        = fg(redColor)
-    GREEN*      = bold(greenColor)
-    BLUE*       = fg(blueColor)
-    MAGENTA*    = fg(magentaColor)
-    CYAN*       = fg(cyanColor)
-    GRAY*       = fg(grayColor)
-    CLEAR*      = resetColor()
-    BOLD*       = bold()
+    targetDir = getHomeDir()/".arturo"
 
-    # paths
-    ROOT_DIR        = r"{getHomeDir()}.arturo".fmt
-    TARGET_DIR      = r"{ROOT_DIR}/bin".fmt
-    TARGET_LIB      = r"{ROOT_DIR}/lib".fmt
-    TARGET_STORES   = r"{ROOT_DIR}/stores".fmt
-    MAIN            = r"src/arturo.nim"
-
-    # configuration options
-    OPTIONS = {
-        "arm"               : "--cpu:arm -d:bit32",
-        "arm64"             : "--cpu:arm64 --gcc.path:/usr/bin --gcc.exe:aarch64-linux-gnu-gcc --gcc.linkerexe:aarch64-linux-gnu-gcc",
-        "debug"             : "-d:DEBUG --debugger:on --debuginfo --linedir:on",
-        "dev"               : "--embedsrc:on -d:DEV --listCmd",
-        "docgen"            : "-d:DOCGEN",
-        "dontcompress"      : "",
-        "dontinstall"       : "",
-        "full"              : "-d:ssl",
-        "log"               : "",
-        "memprofile"        : "-d:PROFILE --profiler:off --stackTrace:on --d:memProfiler",
-        "mini"              : "",
-        "noasciidecode"     : "-d:NOASCIIDECODE",
-        "noclipboard"       : "-d:NOCLIPBOARD",
-        "nodev"             : "",
-        "nodialogs"         : "-d:NODIALOGS",
-        "noerrorlines"      : "-d:NOERRORLINES",
-        "nogmp"             : "-d:NOGMP",
-        "noparsers"         : "-d:NOPARSERS",
-        "nosqlite"          : "-d:NOSQLITE",
-        "nowebview"         : "-d:NOWEBVIEW",
-        "optimized"         : "-d:OPTIMIZED",
-        "profile"           : "-d:PROFILE --profiler:on --stackTrace:on",
-        "profilenative"     : "--debugger:native",
-        "profiler"          : "-d:PROFILER --profiler:on --stackTrace:on",
-        "release"           : (when hostOS=="windows": "-d:strip" else: "-d:strip --passC:'-flto' --passL:'-flto'"),
-        "safe"              : "-d:SAFE",
-        "vcc"               : "",
-        "web"               : "--verbosity:3 -d:WEB",
-        "x86"               : "--cpu:i386 -d:bit32 " & (when defined(gcc): "--passC:'-m32' --passL:'-m32'" else: ""),  
-        "amd64"             : ""
-    }.toTable
+    paths: tuple = (
+        targetBin:      targetDir/"bin",
+        targetLib:      targetDir/"lib",
+        targetStores:   targetDir/"stores",
+        mainFile:       "src"/"arturo.nim",
+    )
 
 #=======================================
-# Variables
+# Types
 #=======================================
 
-var
-    BINARY              = "bin/arturo"
-    TARGET_FILE         = toExe(r"{TARGET_DIR}/arturo".fmt)
-    COMPILER            = "c"
-    COMPRESS            = true
-    INSTALL             = true
-    PRINT_LOG           = false
-    RUN_UNIT_TESTS      = false
-    FOR_WEB             = false
-    IS_DEV              = false 
-    MODE                = ""       
+type BuildConfig = tuple
+    binary, version: string
+    shouldCompress, shouldInstall, shouldLog, isDeveloper: bool
 
-    FLAGS*              = "--verbosity:1 --hints:on --hint:ProcessingStmt:off --hint:XCannotRaiseY:off --warning:GcUnsafe:off --warning:CastSizes:off --warning:ProveInit:off --warning:ProveField:off --warning:Uninit:off --warning:BareExcept:off --threads:off " & 
-                          "--skipUserCfg:on --colors:off -d:danger " &
-                          "--panics:off --mm:orc -d:useMalloc --checks:off " &
-                          "--cincludes:extras --opt:speed --nimcache:.cache " & (when hostOS != "windows": "--passL:'-pthread' " else: " ") &
-                          "--path:src "
-    CONFIG              ="@full"
+func webVersion(config: BuildConfig): bool
 
-    ARGS: seq[string]   = @[] 
+func backend(config: BuildConfig): string =
+    result = "c"
+    if config.webVersion:
+        return "js"
 
-#=======================================
-# Forward declarations
-#=======================================
+func silentCompilation(config: BuildConfig): bool =
+    ## CI and User builds should actually be silent,
+    ## the most important is the exit code.
+    ## But for developers, it's useful to have a detailed log.
+    not (config.isDeveloper or config.shouldLog)
 
-proc getShellRc*(): string
+func webVersion(config: BuildConfig): bool =
+    config.version == "@web"
 
-#=======================================
-# Output
-#=======================================
-
-proc showLogo*() =
-    echo r"====================================================================={GREEN}".fmt
-    echo r"                               _                                     "
-    echo r"                              | |                                    "
-    echo r"                     __ _ _ __| |_ _   _ _ __ ___                    "
-    echo r"                    / _` | '__| __| | | | '__/ _ \                   "
-    echo r"                   | (_| | |  | |_| |_| | | | (_) |                  "
-    echo r"                    \__,_|_|   \__|\__,_|_|  \___/                   "
-    echo r"{CLEAR}{BOLD}                                                        ".fmt
-    echo r"                     Arturo Programming Language{CLEAR}              ".fmt
-    echo r"                      (c)2023 Yanis Zafirópulos                      "
-    echo r"                                                                     "
-
-proc showHeader*(title: string) = 
-    echo r"====================================================================="
-    echo r" ► {title.toUpperAscii()}                                            ".fmt
-    echo r"====================================================================="
-
-proc section*(title: string) =
-    echo r"{CLEAR}".fmt
-    echo r"--------------------------------------------"
-    echo r" {MAGENTA}●{CLEAR} {title}".fmt
-    echo r"--------------------------------------------"
-
-proc showFooter*() =
-    echo r"{CLEAR}".fmt
-    echo r"====================================================================="
-    echo r" {MAGENTA}●{CLEAR}{GREEN} Awesome!{CLEAR}".fmt
-    echo r"====================================================================="
-    echo r"   Arturo has been successfully built & installed!"
-    if hostOS != "windows":
-        echo r""
-        echo r"   To be able to run it,"
-        echo r"   first make sure its in your $PATH:"
-        echo r""
-        echo r"          export PATH=$HOME/.arturo/bin:$PATH"
-        echo r""
-        echo r"   and add it to your {getShellRc()},".fmt
-        echo r"   so that it's set automatically every time."
-    echo r""
-    echo r"   Rock on! :)"
-    echo r"====================================================================="
-    echo r"{CLEAR}".fmt
-
-proc showEnvironment*() =
-    section "Checking environment..."
-
-    echo "{GRAY}   os: {hostOS}".fmt
-    echo "   compiler: Nim v{NimVersion}{CLEAR}".fmt
-
-proc showBuildInfo*() =
-    section "Building..."
-
-    echo "{GRAY}   version: ".fmt & staticRead("version/version") & " b/" & staticRead("version/build")
-    echo "   config: {CONFIG}{CLEAR}".fmt
-
-    if IS_DEV or PRINT_LOG:
-        echo "{GRAY}   flags: {FLAGS}{CLEAR}".fmt
+func buildConfig(): BuildConfig =
+    (
+        binary:             "bin/arturo".toExe,
+        version:            "@full",
+        shouldCompress:     true,
+        shouldInstall:      true,
+        shouldLog:          false,
+        isDeveloper:        false,
+    )
 
 #=======================================
 # Helpers
 #=======================================
+
+func toErrorCode(a: bool): int =
+    if a:
+        return QuitSuccess
+    else:
+        return QuitFailure
+
+template unless(condition: bool, body: untyped) =
+    if not condition:
+        body
+
 # TODO(build.nims) JavaScript compression not working correctly
 #  labels: web,bug
 proc recompressJS*(jsFile: string) =
     let outputFile = jsFile #.replace(".min.js", ".final.min.js")
     var js = readFile(jsFile)
-
-    # replace Field0, Field1, etc with F0, F1, etc
-    js = js.replaceWord("Field0", "F0")
+            # replace Field0, Field1, etc with F0, F1, etc
+           .replaceWord("Field0", "F0")
            .replaceWord("Field1", "F1")
            .replaceWord("Field2", "F2")
            .replaceWord("Field3", "F3")
+            # replace redundant error messages
+           .multiReplace(
+                ("field '", ""),
+                ("' is not accessible for type '", ""),
+                ("' using ", ""),
+                ("'kind = ", ""),
+                ("'iKind = ", ""),
+                ("'tpKind = ", ""),
+                ("'fnKind = ", "")
+            )
 
-    # replace redundant error messages
-    js = js.multiReplace(
-        ("field '", ""),
-        ("' is not accessible for type '", ""),
-        ("' using ", ""),
-        ("'kind = ", ""),
-        ("'iKind = ", ""),
-        ("'tpKind = ", ""),
-        ("'fnKind = ", "")
-    )
-
-    # replace other more-verbose identifiers
-    # js = js.multiReplace(
-    #     ("Stack_1660944389", "STA"),
-    #     #("finalizer", "FIN"),
-    #     # ("counter", "COU"),
-    #     # ("tpKindValue", "TKDV"),
-    #     # ("tpKind", "TKD"),
-    #     # ("iKindValue", "IKDV"),
-    #     # ("iKind", "IKD"),
-    #     # ("fnKindValue", "FKDV"),
-    #     # ("fnKind", "FKD"),
-    #     # ("dbKindValue", "DKDV"),
-    #     # ("dbKind", "DKD"),
-    #     # ("offsetBase", "OFFB"),
-    #     # ("offset", "OFF")
-    # )
-
-    writeFile(outputFile, js)
-
-proc getShellRc*(): string =
-    # will only be called on non-Windows systems -
-    # are there any more shells that are not taken into account?
-    let (output, _) = gorgeEx("echo $SHELL")
-    case output:
-        of "/bin/zsh":
-            result = "~/.zshrc"
-        of "/bin/bash":
-            result = "~/.bashrc or ~/.profile"
-        of "/bin/sh":
-            result = "~/.profile"
-        else:
-            result = "~/.profile"
+    outputFile.writeFile js
 
 proc miniBuild*() =
     # all the necessary "modes" for mini builds
-    for k in [
-        "noasciidecode", 
-        "noclipboard",
-        "nodialogs",
-        "nogmp", 
-        "noparsers", 
-        "nosqlite", 
-        "nowebview"
-    ]:
-        FLAGS = "{FLAGS} {OPTIONS[k]}".fmt
+    miniBuildConfig()
 
     # plus, shrinking + the MINI flag
-    FLAGS = FLAGS & " -d:MINI"
     if hostOS=="freebsd" or hostOS=="openbsd" or hostOS=="netbsd":
-        FLAGS = FLAGS & " --verbosity:3 "
+        --verbosity:3
 
-proc compressBinary() =
-    if COMPRESS:
-        section "Post-processing..."
+proc compressBinary(config: BuildConfig) =
+    assert config.shouldCompress
+    assert config.webVersion:
+        "Compress should work only for @web versions."
 
-        echo r"{GRAY}   compressing binary...{CLEAR}".fmt
-        if FOR_WEB:
-            let minBin = BINARY.replace(".js",".min.js")
-            let (_, code) = gorgeEx r"uglifyjs {BINARY} -c -m ""toplevel,reserved=['A$']"" -c -o {minBin}".fmt
-            if code!=0:
-                echo "{RED}   uglifyjs: 3rd-party tool not available{CLEAR}".fmt
-            else:
-                recompressJS(minBin)
-        else:
-            discard
-        # TODO(build.nims) Check & fix upx-based compression on Linux
-        #  right now, especially on Linux, `upx` seems to be destroying the final binary
-        #  labels: bug, enhancement, linux, installer
-        
-        #     let upx = "upx"
+    section "Post-processing..."
 
-        #     let (_, code) = gorgeEx r"{upx} -q {toExe(BINARY)}".fmt
-        #     if code!=0:
-        #         echo "{RED}   upx: 3rd-party tool not available{CLEAR}".fmt
+    log "compressing binary..."
+    let minBin = config.binary.replace(".js",".min.js")
+    let CompressionRessult =
+        gorgeEx fmt"uglifyjs {config.binary} -c -m ""toplevel,reserved=['A$']"" -c -o {minBin}"
+
+    if CompressionRessult.exitCode != QuitSuccess:
+        warn "uglifyjs: 3rd-party tool not available"
+    else:
+        recompressJS(minBin)
 
 proc verifyDirectories*() =
-    echo "{GRAY}   setting up directories...".fmt
-    # create target dirs recursively, if they don't exist
-    mkdir TARGET_DIR
-    mkdir TARGET_LIB
-    mkdir TARGET_STORES
+    ## Create target dirs recursively, if they don't exist
+    log "setting up directories..."
+    for path in [paths.targetBin, paths.targetLib, paths.targetStores]:
+        mkdir path
 
 proc updateBuild*() =
-    # will only be called in DEV mode -
-    # basically, increment the build number by one and perform a git commit
-    writeFile("version/build", $(readFile("version/build").strip.parseInt + 1))
-    let (output, _) = gorgeEx r"git commit -m 'build update' version/build".fmt
-    for ln in output.split("\n"):
-        echo "{GRAY}   ".fmt & ln.strip() & "{CLEAR}".fmt
+    ## Increment the build version by one and perform a commit.
+    
+    proc commit(file: string): string =
+        let cmd = fmt"git commit -m 'build update' {file}"
+        cmd.gorgeEx().output
 
-proc compile*(footer=false): int =
-    var outp = ""
-    var res = 0
+    proc increaseVersion(file: string) =
+        let buildVersion: int = file.readFile()
+                                    .strip()
+                                    .parseInt()
+                                    .succ()
 
-    # use VCC for non-MINI Windows builds
-    if (hostOS=="windows" and not FLAGS.contains("NOWEBVIEW") and IS_DEV):
-        let (_,_) = gorgeEx "src\\extras\\webview\\deps\\build.bat"
+        file.writeFile $buildVersion
+    
+    proc main() =
+        let buildFile = "version/build"
+        increaseVersion(buildFile)
+        for line in commit(buildFile).splitLines:
+            echo line.strip()
 
-    # if hostOS=="windows":
-    #     FLAGS = """{FLAGS} --passL:"-static """.fmt & staticExec("pkg-config --libs-only-L libcrypto").strip() & """ -lcrypto -Bdynamic" """.fmt
-    #     echo FLAGS
-    when defined(windows):
-        FLAGS = """{FLAGS}  --passL:"-static-libstdc++ -static-libgcc -Wl,-Bstatic -lstdc++ -Wl,-Bdynamic" --gcc.linkerexe="g++"""".fmt
+    main()
+
+proc compile*(config: BuildConfig, showFooter: bool = false): int
+    {. raises: [OSError, ValueError, Exception] .} =
+
+    proc windowsHostSpecific() =
+        if config.isDeveloper and not flags.contains("NOWEBVIEW"):
+            discard gorgeEx "src\\extras\\webview\\deps\\build.bat"
+        --passL:"\"-static-libstdc++ -static-libgcc -Wl,-Bstatic -lstdc++ -Wl,-Bdynamic\""
+        --gcc.linkerexe:"g++"
+
+    proc unixHostSpecific() =
+        --passL:"\"-lm\""
+
+    result = QuitSuccess
+    let
+        params = flags.join(" ")
+        cmd = fmt"nim {config.backend} {params} -o:{config.binary} {paths.mainFile}"
+
+    if "windows" == hostOS:
+         windowsHostSpecific()
     else:
-        FLAGS = """{FLAGS} --passL:"-lm"""".fmt
-    # let's go for it
-    if IS_DEV or PRINT_LOG:
-        # if we're in dev mode we don't really care about the success/failure of the process -
-        # I guess we'll see it in front of us
-        echo "{GRAY}".fmt
-        try:
-            exec "nim {COMPILER} {FLAGS} -o:{toExe(BINARY)} {MAIN}".fmt
-        except:
-            echo r"{RED}  CRASHED!!!{CLEAR}".fmt
-            res = QuitFailure
+        unixHostSpecific()
+
+    if config.silentCompilation:
+        return cmd.gorgeEx().exitCode
     else:
-        # but when it's running e.g. as a CI build,
-        # we most definitely want it a) to be silent, b) to capture the exit code
-        (outp, res) = gorgeEx "nim {COMPILER} {FLAGS} -o:{toExe(BINARY)} {MAIN}".fmt
+        echo fmt"{colors.gray}"
+        cmd.exec()
 
-    return res
+proc installAll*(config: BuildConfig, targetFile: string) =
 
-proc installAll*() =
-    if INSTALL and not FOR_WEB:
+    # Helper functions
+
+    proc copy(file: string, source: string, target: string) =
+        cpFile source.joinPath(file), target.joinPath(file)
+
+    # Methods
+
+    proc copyWebView() =
+        let 
+            sourcePath = "src\\extras\\webview\\deps\\dlls\\x64\\"
+            targetPath = "bin"
+        log "copying webview..."
+        "webview.dll".copy(sourcePath, targetPath)
+        "WebView2Loader.dll".copy(sourcePath, targetPath)
+
+    proc copyArturo(config: BuildConfig, targetFile: string) =
+        log "copying files..."
+        cpFile(config.binary, targetFile)
+
+    proc giveBinaryPermission(targetFile: string) =
+        exec fmt"chmod +x {targetFile}"
+
+    proc main(config: BuildConfig) =
+        assert not config.webVersion:
+            "Web builds can't be installed"
+
         section "Installing..."
 
         verifyDirectories()
-        echo "   copying files..."
-        cpFile(toExe(BINARY), TARGET_FILE)
+        config.copyArturo(targetFile)
+
         if hostOS != "windows":
-            exec(r"chmod +x {TARGET_FILE}".fmt)
+            giveBinaryPermission(targetFile)
         else:
-            cpFile("src\\extras\\webview\\deps\\dlls\\x64\\webview.dll","bin\\webview.dll")
-            cpFile("src\\extras\\webview\\deps\\dlls\\x64\\WebView2Loader.dll","bin\\WebView2Loader.dll")
-        echo "   deployed to: {ROOT_DIR}{CLEAR}".fmt
+            copyWebView()
+
+        log fmt"deployed to: {targetDir}"
+
+    main(config)
+
+proc showBuildInfo*(config: BuildConfig) =
+    let
+        params = flags.join(" ")
+        version = "version/version".staticRead()
+        build = "version/build".staticRead()
+
+    section "Building..."
+    log fmt"version: {version}/{build}"
+    log fmt"config: {config.version}"
+
+    if not config.silentCompilation:
+        log fmt"flags: {params}"
 
 #=======================================
 # Methods
 #=======================================
 
-proc buildArturo*() =
-    showHeader "install"
+proc buildArturo*(config: BuildConfig, targetFile: string) =
     
-    # if the one who's building is some guy going back the nick "drkameleon" -
-    # who might that be ?! - then it's a DEV build
-    if IS_DEV:
+    # Methods 
+
+    proc showInfo(config: BuildConfig) =
+        showEnvironment()
+        config.showBuildInfo()
+
+    proc setDevmodeUp() =
         section "Updating build..."
         updateBuild()
-        FLAGS = FLAGS & " " & OPTIONS["dev"]
+        devConfig()
 
-    # show environment & build info
-    showEnvironment()
-    showBuildInfo()
+    proc tryCompilation(config: BuildConfig) =
+        ## Panics if can't compile.
+        if (let cd = config.compile(showFooter=true); cd != 0):
+            quit(cd)
 
-    if (let cd = compile(footer=true); cd != 0):
-        quit(cd)
+    proc main() =
+        showHeader "install"
 
-    compressBinary()
+        if config.isDeveloper:
+            setDevmodeUp()
 
-    installAll()
+        config.showInfo()
+        config.tryCompilation()
+        config.compressBinary()
 
-    showFooter()
+        if config.shouldInstall:
+            config.installAll(targetFile)
 
-proc buildPackage*() =
-    showHeader "package"
+        showFooter()
 
-    let package = ARGS[0]
+    main()
 
-    # generate portable data
-    section "Processing data..."
+proc buildPackage*(config: BuildConfig) =
 
-    writeFile("{package}.data.json".fmt, staticExec(r"arturo --package-info {package}.art".fmt))
-    echo "{GRAY}   written to: {package}.data.json{CLEAR}".fmt
+    # Helper functions
 
-    # set up environment
-    section "Setting up options..."
+    proc dataFile(package: string): string =
+        return fmt"{package}.data.json"
 
-    putEnv("PORTABLE_INPUT", "{package}.art".fmt)
-    putEnv("PORTABLE_DATA", "{package}.data.json".fmt)
+    proc file(package: string): string =
+        return fmt"{package}.art"
 
-    echo "{GRAY}   done".fmt
+    proc info(package: string): string =
+        staticExec fmt"arturo --package-info {package.file}"
 
-    # show environment & build info
-    showEnvironment()
-    showBuildInfo()
+    # Subroutines
 
-    echo "{GRAY}".fmt
-        
-    BINARY="{package}".fmt
-    FLAGS="{FLAGS} --forceBuild:on --opt:size -d:NOERRORLINES -d:PORTABLE".fmt
-    echo r"{GRAY}FLAGS: {FLAGS}".fmt
-    echo r""
+    proc generateData(package: string) =
+        section "Processing data..."
+        (package.dataFile).writeFile(package.info)
+        log fmt"written to: {package.dataFile}"
 
-    echo "{GRAY}".fmt
+    proc setEnvUp(package: string) =
+        section "Setting up options..."
 
-    if (let cd = compile(footer=false); cd != 0):
-        quit(cd)
-        
-    # clean up
-    rmFile(r"{package}.data.json".fmt)
+        putEnv "PORTABLE_INPUT", package.file
+        putEnv "PORTABLE_DATA", package.dataFile
 
-    echo "{CLEAR}".fmt
+        log fmt"done!"
+
+    proc setFlagsUp() =
+        --forceBuild:on
+        --opt:size
+        --define:NOERRORLINES
+        --define:PORTABLE
+
+    proc showFlags() =
+        let params = flags.join(" ")
+        log fmt"FLAGS: {params}"
+        echo ""
+
+    proc cleanUp(package: string) =
+        rmFile package.dataFile
+        echo fmt"{styles.clear}"
+
+    proc main() =
+        let package = config.binary
+
+        showHeader "package"
+
+        package.generateData()
+        package.setEnvUp()
+        showEnvironment()
+        config.showBuildInfo()
+
+        setFlagsUp()
+        showFlags()
+
+        if (let cd = compile(config, showFooter=false); cd != 0):
+            quit(cd)
+
+        package.cleanUp()
+
+    main()
+
 
 proc buildDocs*() =
+    let 
+        params = flags.join(" ")
+        genDocs = fmt"nim doc --project --index:on --outdir:dev-docs {params} src/arturo.nim"
+        genIndex = "nim buildIndex -o:dev-docs/theindex.html dev-docs"
+
     showHeader "docs"
 
     section "Generating documentation..."
-    exec(r"nim doc --project --index:on --outdir:dev-docs {FLAGS} src/arturo.nim".fmt)
-    exec(r"nim buildIndex -o:dev-docs/theindex.html dev-docs")
+    genDocs.exec()
+    genIndex.exec()
 
-proc performTests*() =
+proc performTests*(binary: string): bool =
+    result = true
+
     showHeader "test"
     try:
-        exec r"{TARGET_FILE} ./tools/tester.art".fmt
+        exec fmt"{binary} ./tools/tester.art"
     except:
-        try: 
-            exec r"{toExe(BINARY)} ./tools/tester.art".fmt
-        except:
-            quit(QuitFailure)
+        return false
 
-proc performBenchmarks*() = 
+proc performBenchmarks*(binary: string): bool =
+    result = true
+
     showHeader "benchmark"
     try:
-        exec r"{TARGET_FILE} ./tools/benchmarker.art".fmt
+        exec fmt"{binary} ./tools/benchmarker.art"
     except:
-        try: 
-            exec r"{toExe(BINARY)} ./tools/benchmarker.art".fmt
-        except:
-            quit(QuitFailure)
-
-proc showHelp*(error=false, errorMsg="") =
-    if error:
-        showHeader("Error")
-        echo r"{RED}".fmt
-        echo r" " & errorMsg
-        echo r" Please choose one of the ones below:"
-        echo r"{CLEAR}".fmt
-    else:
-        showHeader("Help")
-
-    echo r" install              : Build arturo and install executable"
-    echo r"      mini            : Build MINI version (optional)"
-    echo r"      web             : Build Web/JS version (optional)"
-    echo r""
-    echo r" package <script>     : Package arturo app and build executable"
-    echo r""
-    echo r" test                 : Run test suite"
-    echo r" benchmark            : Run benchmark suite"
-    echo r""
-    echo r" help                 : Show this help screen"
-    echo r""
-    echo r"---------------------------------------------------------------------"
-    echo r" ✼ Example:"
-    echo r"---------------------------------------------------------------------"
-    echo r""
-    echo r" ./build.nims install         -> to build & install the full version "
-    echo r" ./build.nims install mini    -> to build & install the mini version "
-    echo r" ./build.nims package script  -> to package your <script>.art app    "
-    echo r""
-
-    if error:
-        quit(QuitFailure)
+        return false
 
 #=======================================
 # Main
 #=======================================
 
-# check environment
-let userName = if hostOS == "windows": getEnv("USERNAME") else: staticExec("whoami")
-IS_DEV = userName == "drkameleon"
-
-# parse command line
-var p = initOptParser("") 
-while true:
-    p.next()
-
-    case p.kind:
-        of cmdArgument:
-            if p.key in ["install", "package", "docs", "test", "benchmark", "help"]:
-                if MODE == "":
-                    MODE = p.key
-                else:
-                    showLogo()
-                    showHelp(error=true, errorMsg="Multiple operations specified!")
-            else:
-                if p.key notin ["e", "./build.nims", "build.nims", "build"]:
-                    if OPTIONS.hasKey(p.key):
-                        FLAGS = "{FLAGS} {OPTIONS[p.key]}".fmt
-                        case p.key:
-                            of "debug":
-                                COMPRESS = false
-                            of "dev":
-                                IS_DEV = true
-                            of "dontcompress":
-                                COMPRESS = false
-                            of "dontinstall":
-                                INSTALL = false
-                            of "log":
-                                PRINT_LOG = true
-                            of "mini":
-                                miniBuild()
-                                CONFIG = "@mini"
-                            of "nodev":
-                                IS_DEV = false
-                            of "web":
-                                miniBuild()
-                                FOR_WEB = true
-                                COMPILER = "js"
-                                BINARY = r"{BINARY}.js".fmt
-                                CONFIG = "@web"
-                            else:
-                                discard
-                    else:
-                        ARGS.add(p.key)
-        of cmdShortOption, cmdLongOption:   
-            if p.key=="as":
-                BINARY = "bin/" & p.val
-                TARGET_FILE = toExe(r"{TARGET_DIR}/{p.val}".fmt)
-            else:
-                if p.key != "hints":
-                    showLogo()
-                    showHelp(error=true, errorMsg="Erroneous argument supplied!")
-        of cmdEnd: 
-            break
-
-if CONFIG == "@full":
-    FLAGS = FLAGS & " " & OPTIONS["full"]
-
-# show our log anyway
 showLogo()
 
-# process accordingly
-try:
-    case MODE:
-        of "install"    :   buildArturo()
-        of "package"    :   buildPackage()
-        of "docs"       :   buildDocs()
-        of "test"       :   performTests()
-        of "benchmark"  :   performBenchmarks()
-        of "help"       :   showHelp()
-        of ""           :   showHelp(error=true, errorMsg=r"No operation specified.")
-        else            :   showHelp(error=true, errorMsg=r"Not a valid operation: {MODE}".fmt)
-except:
-    quit(QuitFailure)
+cmd build, "Build arturo and optionally install the executable":
+    ## build:
+    ##     Provides a cross-compilation for the Arturo's binary.
+    ##
+    ##     --arch -a: $hostCPU          chooses the target CPU
+    ##          [amd64, arm, arm64, i386, x86]
+    ##     --as: arturo                 changes the name of the binary
+    ##     --mode -m: full              chooses the target Build Version
+    ##          [full, mini, web]
+    ##     --os: $hostOS                chooses the target OS
+    ##          [freebsd, linux, openbsd, mac, macos, macosx, netbsd, win, windows]
+    ##     --profiler -p: none          defines which profiler use
+    ##          [default, mem, native, none, profile]
+    ##     --who: none                  defines who is compiling the code
+    ##          [dev, user]
+    ##     --debug -d                   enables debugging
+    ##     --install -i                 installs the final binary
+    ##     --log -l                     shows compilation logs
+    ##     --raw                        disables compression
+    ##     --release                    enable release config mode
+    ##     --help
 
-#=======================================
-# This is the end,
-# my only friend, the end...
-#=======================================
+    let
+        availableCPUs = @["amd-64", "x64", "x86-64", "arm-64", "i386", "x86",
+                          "x86-32", "arm", "arm-32"]
+        availableOSes = @["freebsd", "openbsd", "netbsd", "linux", "mac",
+                          "macos", "macosx", "win", "windows",]
+        availableBuilds = @["full", "mini", "safe", "web"]
+        availableProfilers = @["default", "mem", "native", "profile"]
+
+    var config = buildConfig()
+
+    config.binary = "bin"/args.getOptionValue("as", default="arturo").toExe
+
+    match args.getOptionValue("arch", short="a",
+                              default=hostCPU,
+                              into=availableCPUs):
+        let
+            amd64 = availableCPUs[0..2]
+            arm64 = [availableCPUs[3]]
+            x86 = availableCPUs[4..6]
+            arm32 = availableCPUs[7..8]
+
+        >> amd64: amd64Config()
+        >> arm64: arm64Config()
+        >> x86:   arm64Config()
+        >> arm32: arm32Config()
+
+    match args.getOptionValue("mode", short="m", default="full", into=availableBuilds):
+        >> ["full"]:
+            fullBuildConfig()
+        >> ["mini"]:
+            miniBuildConfig()
+            config.version = "@mini"
+            miniBuild()
+        >> ["safe"]:
+            safeBuildConfig()
+            miniBuild()
+        >> ["web"]:
+            config.binary     = config.binary
+                                      .replace(".exe", ".js")
+            config.version    = "@web"
+            miniBuild()
+
+    match args.getOptionValue("os", default=hostOS, into=availableOSes):
+        let
+            bsd = availableOSes[0..2]
+            linux = [availableOSes[3]]
+            macos = availableOSes[4..6]
+            windows = availableOSes[7..8]
+
+        >> bsd:     discard
+        >> linux:   discard
+        >> macos:   discard
+        >> windows: discard
+
+    match args.getOptionValue("profiler", default="none", short="p",
+                              into=availableProfilers):
+        >> ["default"]: profilerConfig()
+        >> ["mem"]:     memProfileConfig()
+        >> ["native"]:  nativeProfileConfig()
+        >> ["profile"]: profileConfig()
+
+    match args.getOptionValue("who", default="", into= @["user", "dev"]):
+        >> ["user"]:
+            config.isDeveloper = false
+            userConfig()
+        >> ["dev"]:
+            config.isDeveloper = true
+            devConfig()
+
+    if args.hasFlag("debug", "d"):
+        config.shouldCompress = false
+        debugConfig()
+
+    if args.hasFlag("install", "i"):
+        config.shouldInstall = false
+
+    if args.hasFlag("log", "l"):
+        config.shouldLog = true
+
+    if args.hasFlag("raw"):
+        config.shouldCompress = false
+
+    if args.hasFlag("release"):
+        releaseConfig()
+
+    config.buildArturo(targetDir/config.binary)
+
+cmd package, "Package arturo app and build executable":
+    ## package <pkg-name>:
+    ##     Compiles packages into executables.
+    ##
+    ##     --arch: $hostCPU             chooses the target CPU
+    ##          [amd64, arm, arm64, i386, x86]
+    ##     --debug -d                   enables debugging
+    ##     --help
+
+    const availableCPUs = @["amd-64", "x64", "x86-64", "arm-64", "i386", "x86",
+                          "x86-32", "arm", "arm-32"]
+
+    var config = buildConfig()
+    config.binary = args.getPositionalArg()
+
+    match args.getOptionValue("arch", short="a",
+                              default=hostCPU,
+                              into=availableCPUs):
+        let
+            amd64 = availableCPUs[0..2]
+            arm64 = [availableCPUs[3]]
+            x86 = availableCPUs[4..6]
+            arm32 = availableCPUs[7..8]
+
+        >> amd64: amd64Config()
+        >> arm64: arm64Config()
+        >> x86:   arm64Config()
+        >> arm32: arm32Config()
+
+    if args.hasFlag("debug", "d"):
+        config.shouldCompress = false
+        debugConfig()
+
+    config.buildPackage()
+
+cmd docs, "Build the documentation":
+    ## docs:
+    ##     Builds the developer documentation
+    ##
+    ##     --help
+
+    --define:DOCGEN
+    buildDocs()
+
+cmd test, "Run test suite":
+    ## test:
+    ##     Runs test suite
+    ##
+    ##     --using -u: arturo           runs with the given binary
+    ##     --help
+
+    let
+        binary = args.getOptionValue("using", default="arturo", short="u").toExe
+        paths: tuple = (
+            local: "bin"/binary,
+            global: paths.targetBin/binary
+        )
+
+    unless paths.global.performTests():
+        quit paths.local.performTests().toErrorCode
+
+cmd benchmark, "Run benchmark suite":
+    ## benchmark:
+    ##     Runs benchmark suite
+    ## 
+    ##     --using -u: arturo           runs with the given binary
+    ##     --help
+    
+    let
+        binary = args.getOptionValue("using", default="arturo", short="u").toExe
+        paths: tuple = (
+            local: "bin"/binary,
+            global: paths.targetBin/binary
+        )
+
+    unless paths.global.performBenchmarks():
+        quit paths.local.performBenchmarks().toErrorCode
