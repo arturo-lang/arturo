@@ -595,22 +595,16 @@ do [
         init: -> this\name: capitalize this\name
         print: -> 
             render "NAME: |this\name|, AGE: |this\age|"
-        between?: [
+        compare: [
             if this\age > that\age -> return 1
             if this\age = that\age -> return 0
             if this\age < that\age -> return neg 1
         ]   
     ]
     
-    define.as: :person :student [name age id][  
-        init: -> this\name: capitalize this\name
+    define.as: :person :student [id][  
         print: -> 
             render "NAME: |this\name|, AGE: |this\age|, ID: |this\id|"
-        between?: [
-            if this\age > that\age -> return 1
-            if this\age = that\age -> return 0
-            if this\age < that\age -> return neg 1
-        ]
     ]
     
     a: to :person ["John" 16]
@@ -1108,15 +1102,9 @@ do [
         ]   
     ]
     
-    define.as: :person :student [name age id][  
-        init: -> this\name: capitalize this\name
+    define.as: :person :student [id][  
         print: -> 
             render "NAME: |this\name|, AGE: |this\age|, ID: |this\id|"
-        compare: [
-            if this\age > that\age -> return 1
-            if this\age = that\age -> return 0
-            if this\age < that\age -> return neg 1
-        ]
     ]
     
     a: to :person ["John" 16]
@@ -1702,8 +1690,7 @@ do [
             render "NAME: |this\name|, AGE: |this\age|"
     ]
     
-    define.as: :person :student [name age id][  
-        init: -> this\name: capitalize this\name
+    define.as: :person :student [id][  
         print: -> 
             render "NAME: |this\name|, AGE: |this\age|, ID: |this\id|"
     ]
@@ -1729,15 +1716,9 @@ do [
         ]   
     ]
     
-    define.as: :person :student [name age id][  
-        init: -> this\name: capitalize this\name
+    define.as: :person :student [id][  
         print: -> 
             render "NAME: |this\name|, AGE: |this\age|, ID: |this\id|"
-        compare: [
-            if this\age > that\age -> return 1
-            if this\age = that\age -> return 0
-            if this\age < that\age -> return neg 1
-        ]
     ]
     
     a: to :person ["John" 16]
@@ -2874,8 +2855,7 @@ do [
             render "NAME: |this\name|, AGE: |this\age|"
     ]
     
-    define.as: :person :student [name age id][  
-        init: -> this\name: capitalize this\name
+    define.as: :person :student [id][  
         print: -> 
             render "NAME: |this\name|, AGE: |this\age|, ID: |this\id|"
     ]
@@ -2901,15 +2881,9 @@ do [
         ]   
     ]
     
-    define.as: :person :student [name age id][  
-        init: -> this\name: capitalize this\name
+    define.as: :person :student [id][  
         print: -> 
             render "NAME: |this\name|, AGE: |this\age|, ID: |this\id|"
-        compare: [
-            if this\age > that\age -> return 1
-            if this\age = that\age -> return 0
-            if this\age < that\age -> return neg 1
-        ]
     ]
     
     a: to :person ["John" 16]
@@ -4111,8 +4085,7 @@ do [
             render "NAME: |this\name|, AGE: |this\age|"
     ]
     
-    define.as: :person :student [name age id][  
-        init: -> this\name: capitalize this\name
+    define.as: :person :student [id][  
         print: -> 
             render "NAME: |this\name|, AGE: |this\age|, ID: |this\id|"
     ]
@@ -4138,15 +4111,9 @@ do [
         ]   
     ]
     
-    define.as: :person :student [name age id][  
-        init: -> this\name: capitalize this\name
+    define.as: :person :student [id][  
         print: -> 
             render "NAME: |this\name|, AGE: |this\age|, ID: |this\id|"
-        compare: [
-            if this\age > that\age -> return 1
-            if this\age = that\age -> return 0
-            if this\age < that\age -> return neg 1
-        ]
     ]
     
     a: to :person ["John" 16]
@@ -5306,8 +5273,7 @@ do [
             render "NAME: |this\name|, AGE: |this\age|"
     ]
     
-    define.as: :person :student [name age id][  
-        init: -> this\name: capitalize this\name
+    define.as: :person :student [id][  
         print: -> 
             render "NAME: |this\name|, AGE: |this\age|, ID: |this\id|"
     ]
@@ -5333,15 +5299,9 @@ do [
         ]   
     ]
     
-    define.as: :person :student [name age id][  
-        init: -> this\name: capitalize this\name
+    define.as: :person :student [id][  
         print: -> 
             render "NAME: |this\name|, AGE: |this\age|, ID: |this\id|"
-        compare: [
-            if this\age > that\age -> return 1
-            if this\age = that\age -> return 0
-            if this\age < that\age -> return neg 1
-        ]
     ]
     
     a: to :person ["John" 16]
@@ -6543,8 +6503,7 @@ do [
             render "NAME: |this\name|, AGE: |this\age|"
     ]
     
-    define.as: :person :student [name age id][  
-        init: -> this\name: capitalize this\name
+    define.as: :person :student [id][  
         print: -> 
             render "NAME: |this\name|, AGE: |this\age|, ID: |this\id|"
     ]
@@ -6570,15 +6529,9 @@ do [
         ]   
     ]
     
-    define.as: :person :student [name age id][  
-        init: -> this\name: capitalize this\name
+    define.as: :person :student [id][  
         print: -> 
             render "NAME: |this\name|, AGE: |this\age|, ID: |this\id|"
-        compare: [
-            if this\age > that\age -> return 1
-            if this\age = that\age -> return 0
-            if this\age < that\age -> return neg 1
-        ]
     ]
     
     a: to :person ["John" 16]
@@ -7647,8 +7600,7 @@ do [
             render "NAME: |this\name|, AGE: |this\age|"
     ]
     
-    define.as: :person :student [name age id][  
-        init: -> this\name: capitalize this\name
+    define.as: :person :student [id][  
         print: -> 
             render "NAME: |this\name|, AGE: |this\age|, ID: |this\id|"
     ]
@@ -7674,15 +7626,9 @@ do [
         ]   
     ]
     
-    define.as: :person :student [name age id][  
-        init: -> this\name: capitalize this\name
+    define.as: :person :student [id][  
         print: -> 
             render "NAME: |this\name|, AGE: |this\age|, ID: |this\id|"
-        compare: [
-            if this\age > that\age -> return 1
-            if this\age = that\age -> return 0
-            if this\age < that\age -> return neg 1
-        ]
     ]
     
     a: to :person ["John" 16]
@@ -8710,8 +8656,7 @@ do [
             render "NAME: |this\name|, AGE: |this\age|"
     ]
     
-    define.as: :person :student [name age id][  
-        init: -> this\name: capitalize this\name
+    define.as: :person :student [id][  
         print: -> 
             render "NAME: |this\name|, AGE: |this\age|, ID: |this\id|"
     ]
@@ -8737,15 +8682,9 @@ do [
         ]   
     ]
     
-    define.as: :person :student [name age id][  
-        init: -> this\name: capitalize this\name
+    define.as: :person :student [id][  
         print: -> 
             render "NAME: |this\name|, AGE: |this\age|, ID: |this\id|"
-        compare: [
-            if this\age > that\age -> return 1
-            if this\age = that\age -> return 0
-            if this\age < that\age -> return neg 1
-        ]
     ]
     
     a: to :person ["John" 16]
