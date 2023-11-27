@@ -2105,9 +2105,8 @@ topic "set - :object"
 do [
 
     define :person [name, surname][]
-    print "before"
     user: to :person []
-    print "after"
+
     set user 'name "John"
     ensure -> "John" = user\name
     passed

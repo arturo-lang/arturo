@@ -66,16 +66,11 @@ proc parseFL(s: string): float =
         raise newException(ValueError, "invalid float: " & s)
 
 proc generateCustomObject(prot: Prototype, arguments: ValueArray | ValueDict): Value =
-    echo "before newObject"
     newObject(arguments, prot, proc (self: Value, prot: Prototype) =
-        echo "in newObject initializer"
         if (let initMethod = prot.methods.getOrDefault("init", nil); not initMethod.isNil):
-            echo "found init?!"
             prot.doInit(self)
-        echo "after check init"
 
         for k,v in prot.methods:
-            echo "processing: " & k
             if k != "init" and k != "print" and k != "compare":
                 if v.kind==Function:
                     var newParams = v.params
@@ -85,7 +80,6 @@ proc generateCustomObject(prot: Prototype, arguments: ValueArray | ValueDict): V
                         self.o[k].info = v.info
                 else:
                     self.o[k] = v
-        echo "end..."
     )
 
 template throwCannotConvert(): untyped =
@@ -845,7 +839,6 @@ proc defineSymbols*() =
             x.ts.methods = initOrderedTable[string,Value]()
 
             if checkAttr("inherits"):
-                echo ".inherits is set"
                 inherited = true
 
                 x.ts.inherits = aInherits
