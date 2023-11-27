@@ -852,9 +852,9 @@ proc defineSymbols*() =
                 x.ts.fields.add(aInherits.ts.fields)
 
             x.ts.fields.add(y.a)
-            # for key,val in definedMethods:
-            #     if key != "init" and key != "print" and key != "compare":
-            #         x.ts.methods[key] = val
+            for key,val in definedMethods:
+                if key != "init" and key != "print" and key != "compare":
+                    x.ts.methods[key] = val
 
             var initMethod: Value = nil
             if inherited:
