@@ -770,7 +770,7 @@ proc defineSymbols*() =
             "methods"   : {Block,Dictionary}
         },
         attrs       = {
-            "inherits"  : ({Type}, "inherit given type")
+            "as"    : ({Type}, "inherit given type")
         },
         returns     = {Nothing},
         example     = """
@@ -838,11 +838,11 @@ proc defineSymbols*() =
             x.ts.fields = @[]
             x.ts.methods = initOrderedTable[string,Value]()
 
-            if checkAttr("inherits"):
+            if checkAttr("as"):
                 inherited = true
 
-                x.ts.inherits = aInherits
-                x.ts.fields.add(aInherits.ts.fields)
+                x.ts.inherits = aAs
+                x.ts.fields.add(aAs.ts.fields)
 
             x.ts.fields.add(y.a)
             for key,val in definedMethods:
