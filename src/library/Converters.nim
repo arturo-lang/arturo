@@ -68,7 +68,15 @@ proc parseFL(s: string): float =
 proc generateCustomObject(prot: Prototype, arguments: ValueArray | ValueDict): Value =
     newObject(arguments, prot, proc (self: Value, prot: Prototype) =
         if (let initMethod = prot.methods.getOrDefault("init", nil); not initMethod.isNil):
-            prot.doInit(self)
+            when arguments is ValueArray:
+                if arguments.len != initMethod.arity - 1:
+                    echo "not correct number of arguments!"
+
+                for arg in arguments.reversed:
+                    push arg
+                push self
+                callFunction(initMethod)
+            #prot.doInit(self)
 
         for k,v in prot.methods:
             if k != "init" and k != "print" and k != "compare":
@@ -849,24 +857,31 @@ proc defineSymbols*() =
                 if key != "init" and key != "print" and key != "compare":
                     x.ts.methods[key] = val
 
-            var initMethod: Value = nil
-            if inherited:
-                if (let inheritedInit = x.ts.inherits.ts.methods.getOrDefault("init", nil); not inheritedInit.isNil):
-                    initMethod = inheritedInit.main
-            if (let thisInit = definedMethods.getOrDefault("init", nil); not thisInit.isNil):
-                if initMethod.isNil:
-                    initMethod = thisInit
-                else:
-                    initMethod.a.add(thisInit.a)
+            # var initMethod: Value = nil
+            # if inherited:
+            #     if (let inheritedInit = x.ts.inherits.ts.methods.getOrDefault("init", nil); not inheritedInit.isNil):
+            #         initMethod = inheritedInit.main
+            # if (let thisInit = definedMethods.getOrDefault("init", nil); not thisInit.isNil):
+            #     if initMethod.isNil:
+            #         initMethod = thisInit
+            #     else:
+            #         initMethod.a.add(thisInit.a)
 
-            if not initMethod.isNil:
-                x.ts.methods["init"] = newFunction(
-                    @["this"],
-                    initMethod
-                )
-                x.ts.doInit = proc (v:Value) =
-                    push v
-                    callFunction(x.ts.methods["init"])
+            # if not initMethod.isNil:
+            #     x.ts.methods["init"] = newFunction(
+            #         @["this"],
+            #         initMethod
+            #     )
+            #     x.ts.doInit = proc (v:Value) =
+            #         push v
+            #         callFunction(x.ts.methods["init"])
+            if (let thisInit = definedMethods.getOrDefault("init", nil); not thisInit.isNil):
+                thisInit.params.insert("this")
+                thisInit.arity += 1
+                x.ts.methods["init"] = thisInit
+            x.ts.doInit = proc (v: Value) =
+                push v
+                callFunction(x.ts.methods["init"])
 
             var printMethod: Value = nil
 
