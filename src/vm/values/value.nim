@@ -494,14 +494,20 @@ proc newObject*(args: ValueArray, prot: Prototype, initializer: proc (self: Valu
     ## and initializer function
     var fields = o
     var i = 0
+    echo "inNewObject"
     while i<args.len and i<prot.fields.len:
         let k = prot.fields[i]
         fields[k.s] = args[i]
         i += 1
+    echo "inNewObject: after setting fields"
 
     result = newObject(fields, prot)
+
+    echo "after newObject :-> newObject"
     
     initializer(result, prot)
+    
+    echo "in newObject: after initializer"
 
 proc newObject*(args: ValueDict, prot: Prototype, initializer: proc (self: Value, prot: Prototype), o: ValueDict = newOrderedTable[string,Value]()): Value {.inline.} =
     ## create Object value from ValueDict with given prototype 
