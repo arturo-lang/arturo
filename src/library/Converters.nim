@@ -1325,89 +1325,12 @@ proc defineSymbols*() =
             else:
                 definedMethods = y.d
 
-            # Important! if we don't empty them forcefully
-            # if we re-define a type inside the same piece of code
-            # it'll merge everything; we could obviously throw 
-            # an error when a type is redefined, but... 
-            # is it really an error? Arturo is not C++!
-            x.ts.fields = @[]
-            x.ts.methods = initOrderedTable[string,Value]()
+            var generated = generateCustomObject(x.ts, @[])
 
-            for key,val in definedMethods:
-                x.ts.methods[key] = val
+            for k,v in definedMethods:
+                generated.o[k] = v
 
-            # setup our object initializer
-            # via the magic `init` method
-            if (let initMethod = x.ts.methods.getOrDefault("init", nil); not initMethod.isNil):
-                # TODO(Converters\define) we should verify that our `init` is properly defined
-                #  and if not, throw an appropriate error
-                #  mainly, that it's a Function
-                #  labels: library, error handling, oop
-                initMethod.injectThis()
-                x.ts.doInit = proc (self: Value, arguments: ValueArray) =
-                    for arg in arguments.reversed:
-                        push arg
-                    push self
-                    callFunction(initMethod)
-
-            # check if there is a `print` magic method;
-            # the custom equivalent of the `printable` module
-            # only for Object values
-            if (let printMethod = x.ts.methods.getOrDefault("print", nil); not printMethod.isNil):
-                # TODO(Converters\define) we should verify that our `print` is properly defined
-                #  and if not, throw an appropriate error
-                #  mainly, that it's a Function with *no* arguments
-                #  labels: library, error handling, oop
-                printMethod.injectThis()
-                x.ts.doPrint = proc (self: Value): string =
-                    push self
-                    callFunction(printMethod)
-                    stack.pop().s
-
-            # check if there is a `compare` magic method;
-            # this is to be used for sorting, etc
-            if (let compareMethod = x.ts.methods.getOrDefault("compare", nil); not compareMethod.isNil):
-                # TODO(Converters\define) we should verify that our `compare` is properly defined
-                #  and if not, throw an appropriate error
-                #  mainly, that it's a Function with one argument
-                #  labels: library, error handling, oop
-                compareMethod.injectThis()
-                x.ts.doCompare = proc (self: Value, other: Value): int =
-                    push other
-                    push self
-                    callFunction(compareMethod)
-                    stack.pop().i
-
-            # var compareMethod: Value = nil
-
-            # if (let thisCompare = definedMethods.getOrDefault("compare", nil); not thisCompare.isNil):
-            #     compareMethod = thisCompare
-            # else:
-            #     if inherited:
-            #         if (let inheritedCompare = x.ts.inherits.ts.methods.getOrDefault("compare", nil); not inheritedCompare.isNil):
-            #             compareMethod = inheritedCompare.main
-
-            # if not compareMethod.isNil:
-            #     if compareMethod.kind==Block:
-            #         x.ts.methods["compare"] = newFunction(
-            #             @["this","that"],
-            #             compareMethod
-            #         )
-            #     else:
-            #         let key = compareMethod
-            #         x.ts.methods["compare"] = newFunction(
-            #             @["this","that"],
-            #             newBlock(@[
-            #                 newWord("if"), newPath(@[newWord("this"), key]), newSymbol(greaterthan), newPath(@[newWord("that"), key]), newBlock(@[newWord("return"),newInteger(1)]),
-            #                 newWord("if"), newPath(@[newWord("this"), key]), newSymbol(equal), newPath(@[newWord("that"), key]), newBlock(@[newWord("return"),newInteger(0)]),
-            #                 newWord("return"), newWord("neg"), newInteger(1)
-            #             ])
-            #         )
-            #     x.ts.doCompare = proc(v1,v2:Value):int =
-            #         push v2
-            #         push v1
-            #         callFunction(x.ts.methods["compare"])
-            #         stack.pop().i
+            push(generated)
 
     builtin "range",
         alias       = ellipsis,
