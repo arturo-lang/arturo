@@ -1313,7 +1313,7 @@ proc defineSymbols*() =
             "prototype"     : {Block,Dictionary}
         },
         attrs       = NoAttrs,
-        returns     = {Nothing},
+        returns     = {Type},
         example     = """
         """:
             #=======================================================
@@ -1325,10 +1325,10 @@ proc defineSymbols*() =
             else:
                 definedMethods = y.d
 
-            var generated = generateCustomObject(x.ts, ValueArray(@[]))
+            var generated = newUserType(x.ts.name, extended=true)
 
             for k,v in definedMethods:
-                generated.o[k] = v
+                generated.ts.methods[k] = v
 
             push(generated)
 
