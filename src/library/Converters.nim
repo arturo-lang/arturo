@@ -795,7 +795,7 @@ proc defineSymbols*() =
         },
         attrs       = {
             "as"    : ({Type}, "inherit given type"),
-            "with"  : ({Block}, "automatically initialize given fields (creates a constructor)")
+            "having": ({Block}, "automatically initialize given fields (creates a constructor)")
         },
         returns     = {Nothing},
         example     = """
@@ -878,8 +878,8 @@ proc defineSymbols*() =
 
             # check if we are to create a magic
             # constructor with given fields
-            if checkAttr("with"):
-                x.ts.fields.add(aWith.a)
+            if checkAttr("having"):
+                x.ts.fields.add(aHaving.a)
 
             for key,val in definedMethods:
                 x.ts.methods[key] = val
