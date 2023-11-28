@@ -883,6 +883,13 @@ proc defineSymbols*() =
                 # if key != "init" and key != "print" and key != "compare":
                 x.ts.methods[key] = val
 
+            if (let initMethod = x.ts.methods.getOrDefault("init", nil); not initMethod.isNil):
+                # we have an `init` method
+                # TODO(Converters\define) we should verify that our `init` is properly defined
+                #  and if not, throw an appropriate error
+                #  labels: library, error handling, oop
+
+
             if (let thisInit = definedMethods.getOrDefault("init", nil); not thisInit.isNil):
                 thisInit.params.insert("this")
                 thisInit.arity += 1
