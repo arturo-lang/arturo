@@ -893,12 +893,11 @@ proc defineSymbols*() =
                 #  labels: library, error handling, oop
                 initMethod.params.insert("this")
                 initMethod.arity += 1
-                #x.ts.methods["init"] = initMethod
                 x.ts.doInit = proc (self: Value, arguments: ValueArray) =
                     for arg in arguments.reversed:
                         push arg
                     push self
-                    callFunction(x.ts.methods["init"])
+                    callFunction(initMethod)
 
             # check if there is a `print` magic method;
             # the custom equivalent of the `printable` module
@@ -910,10 +909,9 @@ proc defineSymbols*() =
                 #  labels: library, error handling, oop
                 printMethod.params.insert("this")
                 printMethod.arity += 1
-                x.ts.methods["print"] = printMethod
                 x.ts.doPrint = proc (self: Value): string =
                     push self
-                    callFunction(x.ts.methods["print"])
+                    callFunction(printMethod)
                     stack.pop().s
 
             # check if there is a `compare` magic method;
@@ -925,11 +923,10 @@ proc defineSymbols*() =
                 #  labels: library, error handling, oop
                 compareMethod.params.insert("this")
                 compareMethod.arity += 1
-                x.ts.methods["compare"] = compareMethod
                 x.ts.doCompare = proc (self: Value, other: Value): int =
                     push other
                     push self
-                    callFunction(x.ts.methods["compare"])
+                    callFunction(compareMethod)
                     stack.pop().i
 
             # var compareMethod: Value = nil
