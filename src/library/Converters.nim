@@ -796,7 +796,7 @@ proc defineSymbols*() =
         description = "define new type with given prototype",
         args        = {
             "type"          : {Type},
-            "prototype"     : {Block,Dictionary}
+            "prototype"     : {Block, Dictionary, Type}
         },
         attrs       = {
             "as"    : ({Type}, "inherit given type"),
@@ -860,8 +860,10 @@ proc defineSymbols*() =
             var definedMethods: ValueDict
             if y.kind == Block:
                 definedMethods = newDictionary(execDictionary(y)).d
-            else:
+            elif y.kind == Dictionary:
                 definedMethods = y.d
+            else:
+                definedMethods = y.ts.methods
 
             # Important! if we don't empty them forcefully
             # if we re-define a type inside the same piece of code
