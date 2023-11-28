@@ -79,6 +79,11 @@ proc parseFL(s: string): float =
     if L != s.len or L == 0:
         raise newException(ValueError, "invalid float: " & s)
 
+proc injectThis(meth: Value) =
+    if meth.params.len < 1 or meth.params[0] != "this":
+        meth.params.insert("this")
+        meth.arity += 1
+
 proc generateCustomObject(prot: Prototype, arguments: ValueArray | ValueDict): Value =
     newObject(arguments, prot, proc (self: Value, prot: Prototype) =
         for methodName, objectMethod in prot.methods:
@@ -891,9 +896,7 @@ proc defineSymbols*() =
                 #  and if not, throw an appropriate error
                 #  mainly, that it's a Function
                 #  labels: library, error handling, oop
-                if initMethod.params.len < 1 or initMethod.params[0] != "this":
-                    initMethod.params.insert("this")
-                    initMethod.arity += 1
+                initMethod.injectThis()
                 x.ts.doInit = proc (self: Value, arguments: ValueArray) =
                     for arg in arguments.reversed:
                         push arg
@@ -908,9 +911,7 @@ proc defineSymbols*() =
                 #  and if not, throw an appropriate error
                 #  mainly, that it's a Function with *no* arguments
                 #  labels: library, error handling, oop
-                if printMethod.params.len < 1 or printMethod.params[0] != "this":
-                    printMethod.params.insert("this")
-                    printMethod.arity += 1
+                printMethod.injectThis()
                 x.ts.doPrint = proc (self: Value): string =
                     push self
                     callFunction(printMethod)
@@ -923,9 +924,7 @@ proc defineSymbols*() =
                 #  and if not, throw an appropriate error
                 #  mainly, that it's a Function with one argument
                 #  labels: library, error handling, oop
-                if compareMethod.params.len < 1 or compareMethod.params[0] != "this":
-                    compareMethod.params.insert("this")
-                    compareMethod.arity += 1
+                compareMethod.injectThis()
                 x.ts.doCompare = proc (self: Value, other: Value): int =
                     push other
                     push self
