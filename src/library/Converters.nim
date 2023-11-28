@@ -799,7 +799,6 @@ proc defineSymbols*() =
             "prototype"     : {Block, Dictionary, Type}
         },
         attrs       = {
-            "as"    : ({Type}, "inherit given type"),
             "having": ({Block}, "automatically initialize given fields (creates a constructor)")
         },
         returns     = {Nothing},
@@ -875,16 +874,6 @@ proc defineSymbols*() =
             # is it really an error? Arturo is not C++!
             x.ts.fields = @[]
             x.ts.methods = initOrderedTable[string,Value]()
-
-            # check if we inherit an existing type
-            var inherited = false
-            if checkAttr("as"):
-                inherited = true
-
-                x.ts.inherits = aAs
-
-                for key,val in aAs.ts.methods:
-                    x.ts.methods[key] = val
 
             # check if we are to create a magic
             # constructor with given fields
