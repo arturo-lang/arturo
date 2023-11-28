@@ -67,29 +67,30 @@ proc parseFL(s: string): float =
 
 proc generateCustomObject(prot: Prototype, arguments: ValueArray | ValueDict): Value =
     newObject(arguments, prot, proc (self: Value, prot: Prototype) =
-        if (let initMethod = prot.methods.getOrDefault("init", nil); not initMethod.isNil):
-            when arguments is ValueArray:
-                if arguments.len != initMethod.arity - 1:
-                    # TODO(generateCustomObject) should throw if number of arguments is not correct
-                    #  labels: error handling, oop, vm, values
-                    echo "not correct number of arguments!"
+        for methodName, objectMethod in prot.methods:
+            case methodName:
+                of "init":
+                    when arguments is ValueArray:
+                        if arguments.len != objectMethod.arity - 1:
+                            # TODO(generateCustomObject) should throw if number of arguments is not correct
+                            #  labels: error handling, oop, vm, values
+                            echo "not correct number of arguments!"
 
-                for arg in arguments.reversed:
-                    push arg
-                push self
-                callFunction(initMethod)
-            #prot.doInit(self)
-
-        for k,v in prot.methods:
-            if k != "init" and k != "print" and k != "compare":
-                if v.kind==Function:
-                    var newParams = v.params
-                    newParams.insert("this")
-                    self.o[k] = newFunction(newParams, v.main)
-                    if not v.info.isNil:
-                        self.o[k].info = v.info
+                        for arg in arguments.reversed:
+                            push arg
+                        push self
+                        callFunction(objectMethod)
+                of "print": discard
+                of "compare": discard
                 else:
-                    self.o[k] = v
+                    if objectMethod.kind==Function:
+                        var newParams = objectMethod.params
+                        newParams.insert("this")
+                        self.o[methodName] = newFunction(newParams, objectMethod.main)
+                        if (let methodInfo = objectMethod.info; not methodInfo.isNil):
+                            self.o[methodName].info = methodInfo
+                    else:
+                        self.o[methodName] = objectMethod
     )
 
 template throwCannotConvert(): untyped =
