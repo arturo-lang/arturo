@@ -790,7 +790,7 @@ proc defineSymbols*() =
     # TODO(Converters/define) not defined inheritance behavior when using `.as`
     #  labels: library, enhancement
     builtin "define",
-        alias       = dollar,
+        alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "define new type with given prototype",
@@ -1332,16 +1332,6 @@ proc defineSymbols*() =
             # is it really an error? Arturo is not C++!
             x.ts.fields = @[]
             x.ts.methods = initOrderedTable[string,Value]()
-
-            # check if we inherit an existing type
-            var inherited = false
-            if checkAttr("as"):
-                inherited = true
-
-                x.ts.inherits = aAs
-
-                for key,val in aAs.ts.methods:
-                    x.ts.methods[key] = val
 
             # check if we are to create a magic
             # constructor with given fields
