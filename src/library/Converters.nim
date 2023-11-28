@@ -916,36 +916,52 @@ proc defineSymbols*() =
                     callFunction(x.ts.methods["print"])
                     stack.pop().s
 
-            var compareMethod: Value = nil
-
-            if (let thisCompare = definedMethods.getOrDefault("compare", nil); not thisCompare.isNil):
-                compareMethod = thisCompare
-            else:
-                if inherited:
-                    if (let inheritedCompare = x.ts.inherits.ts.methods.getOrDefault("compare", nil); not inheritedCompare.isNil):
-                        compareMethod = inheritedCompare.main
-
-            if not compareMethod.isNil:
-                if compareMethod.kind==Block:
-                    x.ts.methods["compare"] = newFunction(
-                        @["this","that"],
-                        compareMethod
-                    )
-                else:
-                    let key = compareMethod
-                    x.ts.methods["compare"] = newFunction(
-                        @["this","that"],
-                        newBlock(@[
-                            newWord("if"), newPath(@[newWord("this"), key]), newSymbol(greaterthan), newPath(@[newWord("that"), key]), newBlock(@[newWord("return"),newInteger(1)]),
-                            newWord("if"), newPath(@[newWord("this"), key]), newSymbol(equal), newPath(@[newWord("that"), key]), newBlock(@[newWord("return"),newInteger(0)]),
-                            newWord("return"), newWord("neg"), newInteger(1)
-                        ])
-                    )
-                x.ts.doCompare = proc(v1,v2:Value):int =
-                    push v2
-                    push v1
+            # check if there is a `compare` magic method;
+            # this is to be used for sorting, etc
+            if (let compareMethod = x.ts.methods.getOrDefault("compare", nil); not compareMethod.isNil):
+                # TODO(Converters\define) we should verify that our `compare` is properly defined
+                #  and if not, throw an appropriate error
+                #  mainly, that it's a Function with one argument
+                #  labels: library, error handling, oop
+                compareMethod.params.insert("this")
+                compareMethod.arity += 1
+                x.ts.methods["compare"] = compareMethod
+                x.ts.doCompare = proc (self: Value, other: Value): int =
+                    push other
+                    push self
                     callFunction(x.ts.methods["compare"])
                     stack.pop().i
+
+            # var compareMethod: Value = nil
+
+            # if (let thisCompare = definedMethods.getOrDefault("compare", nil); not thisCompare.isNil):
+            #     compareMethod = thisCompare
+            # else:
+            #     if inherited:
+            #         if (let inheritedCompare = x.ts.inherits.ts.methods.getOrDefault("compare", nil); not inheritedCompare.isNil):
+            #             compareMethod = inheritedCompare.main
+
+            # if not compareMethod.isNil:
+            #     if compareMethod.kind==Block:
+            #         x.ts.methods["compare"] = newFunction(
+            #             @["this","that"],
+            #             compareMethod
+            #         )
+            #     else:
+            #         let key = compareMethod
+            #         x.ts.methods["compare"] = newFunction(
+            #             @["this","that"],
+            #             newBlock(@[
+            #                 newWord("if"), newPath(@[newWord("this"), key]), newSymbol(greaterthan), newPath(@[newWord("that"), key]), newBlock(@[newWord("return"),newInteger(1)]),
+            #                 newWord("if"), newPath(@[newWord("this"), key]), newSymbol(equal), newPath(@[newWord("that"), key]), newBlock(@[newWord("return"),newInteger(0)]),
+            #                 newWord("return"), newWord("neg"), newInteger(1)
+            #             ])
+            #         )
+            #     x.ts.doCompare = proc(v1,v2:Value):int =
+            #         push v2
+            #         push v1
+            #         callFunction(x.ts.methods["compare"])
+            #         stack.pop().i
 
     builtin "dictionary",
         alias       = sharp,
