@@ -1539,7 +1539,10 @@ proc defineSymbols*() =
 
                 push newBlock(ret)
 
-
+    # TODO(Converters\with) this function doesn't belong here
+    #  I mean... yes, it does "create" a new block... but it most certainly doesn't really
+    #  convert anything to anything...
+    #  labels: cleanup, enhancement, library
     builtin "with",
         alias       = unaliased,
         op          = opNop,
