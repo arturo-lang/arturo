@@ -399,6 +399,10 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                         return(newDictionary(dict))
 
                     of Object:
+                        # TODO(convertedValueToType) should throw in case the user type is not initialized
+                        #  right now, if we do `to :person []` without first having done `define :person ...`
+                        #  seems to be working. But what is that supposed to do?
+                        #  labels: error handling, bug, oop, vm, values
                         if x.tpKind==UserType:
                             let stop = SP
                             execUnscoped(y)
