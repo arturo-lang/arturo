@@ -854,7 +854,9 @@ proc defineSymbols*() =
                 x.ts.inherits = aAs
                 x.ts.fields.add(aAs.ts.fields)
 
-            x.ts.fields.add(y.a)
+            if checkAttr("with"):
+                x.ts.fields.add(aWith.a)
+                
             for key,val in definedMethods:
                 if key != "init" and key != "print" and key != "compare":
                     x.ts.methods[key] = val
