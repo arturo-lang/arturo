@@ -891,12 +891,8 @@ proc defineSymbols*() =
                 #  and if not, throw an appropriate error
                 #  mainly, that it's a Function
                 #  labels: library, error handling, oop
-                echo "initMethod.arity (before): " & $(initMethod.arity)
-                echo "x.ts.method['init'].arity (before): " & $(x.ts.methods["init"].arity)
                 initMethod.params.insert("this")
                 initMethod.arity += 1
-                echo "initMethod.arity (after): " & $(initMethod.arity)
-                echo "x.ts.method['init'].arity (after): " & $(x.ts.methods["init"].arity)
                 #x.ts.methods["init"] = initMethod
                 x.ts.doInit = proc (self: Value, arguments: ValueArray) =
                     for arg in arguments.reversed:
