@@ -779,7 +779,8 @@ proc defineSymbols*() =
             "methods"   : {Block,Dictionary}
         },
         attrs       = {
-            "as"    : ({Type}, "inherit given type")
+            "as"    : ({Type}, "inherit given type"),
+            "with"  : ({Block}, "automatically initialize given fields (creates a constructor)")
         },
         returns     = {Nothing},
         example     = """
