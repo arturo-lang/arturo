@@ -315,13 +315,20 @@ func newType*(t: ValueKind): Value {.inline, enforceNoRaises.} =
     ## create Type (BuiltinType) value from ValueKind
     Value(kind: Type, tpKind: BuiltinType, t: t)
 
-proc newUserType*(n: string, f: ValueArray = @[]): Value {.inline.} =
+proc newUserType*(n: string, f: ValueArray = @[], extended: static bool = false): Value {.inline.} =
     ## create Type (UserType) value from string
     if (let lookup = TypeLookup.getOrDefault(n, nil); not lookup.isNil):
-        return lookup
+        when extended:
+            result = Value(kind: Type, tpKind: UserType, t: Object, ts: Prototype(name: n, fields: f, methods: initOrderedTable[string,Value](), inherits: nil))
+        else:
+            return lookup
     else:
-        result = Value(kind: Type, tpKind: UserType, t: Object, ts: Prototype(name: n, fields: f, methods: initOrderedTable[string,Value](), inherits: nil))
-        TypeLookup[n] = result
+        when extended:
+            # should throw
+            discard
+        else:
+            result = Value(kind: Type, tpKind: UserType, t: Object, ts: Prototype(name: n, fields: f, methods: initOrderedTable[string,Value](), inherits: nil))
+            TypeLookup[n] = result
 
 proc newType*(t: string): Value {.inline.} =
     ## create Type value from string
