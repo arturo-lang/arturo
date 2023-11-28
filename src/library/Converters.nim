@@ -776,7 +776,6 @@ proc defineSymbols*() =
         description = "define new type with given prototype",
         args        = {
             "type"      : {Type},
-            "fields"    : {Block},
             "methods"   : {Block,Dictionary}
         },
         attrs       = {
