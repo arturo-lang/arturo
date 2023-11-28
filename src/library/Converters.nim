@@ -851,35 +851,46 @@ proc defineSymbols*() =
             ; NAME: Jane, SURNAME: Doe, AGE: 33
         """:
             #=======================================================
+            # Get our defined methods
+            # as a dictionary
             var definedMethods: ValueDict
             if y.kind == Block:
                 definedMethods = newDictionary(execDictionary(y)).d
             else:
                 definedMethods = y.d
 
-            var inherited = false
-
+            # Important! if we don't empty them forcefully
+            # if we re-define a type inside the same piece of code
+            # it'll merge everything; we could obviously throw 
+            # an error when a type is redefined, but... 
+            # is it really an error? Arturo is not C++!
             x.ts.fields = @[]
             x.ts.methods = initOrderedTable[string,Value]()
 
+            # check if we inherit an existing type
+            var inherited = false
             if checkAttr("as"):
                 inherited = true
 
                 x.ts.inherits = aAs
-                x.ts.fields.add(aAs.ts.fields)
 
                 for key,val in aAs.ts.methods:
                     x.ts.methods[key] = val
 
+            # check if we are to create a magic
+            # constructor with given fields
             if checkAttr("with"):
                 x.ts.fields.add(aWith.a)
 
             for key,val in definedMethods:
                 x.ts.methods[key] = val
 
+            # setup our object initializer
+            # via the magic `init` method
             if (let initMethod = x.ts.methods.getOrDefault("init", nil); not initMethod.isNil):
                 # TODO(Converters\define) we should verify that our `init` is properly defined
                 #  and if not, throw an appropriate error
+                #  mainly, that it's a Function
                 #  labels: library, error handling, oop
                 initMethod.params.insert("this")
                 initMethod.arity += 1
@@ -891,24 +902,41 @@ proc defineSymbols*() =
                     push self
                     callFunction(x.ts.methods["init"])
 
-            var printMethod: Value = nil
+            # check if there is a `print` magic method;
+            # the custom equivalent of the `printable` module
+            # only for Object values
+            if (let printMethod = x.ts.methods.getOrDefault("print", nil); not printMethod.isNil):
+                # TODO(Converters\define) we should verify that our `print` is properly defined
+                #  and if not, throw an appropriate error
+                #  mainly, that it's a Function with *no* arguments
+                #  labels: library, error handling, oop
+                printMethod.params.insert("this")
+                printMethod.arity += 1
+                x.ts.methods["print"] = printMethod
 
-            if (let thisPrint = definedMethods.getOrDefault("print", nil); not thisPrint.isNil):
-                printMethod = thisPrint
-            else:
-                if inherited:
-                    if (let inheritedPrint = x.ts.inherits.ts.methods.getOrDefault("print", nil); not inheritedPrint.isNil):
-                        printMethod = inheritedPrint.main
-
-            if not printMethod.isNil:
-                x.ts.methods["print"] = newFunction(
-                    @["this"],
-                    printMethod
-                )
-                x.ts.doPrint = proc(v:Value):string =
-                    push v
+                x.ts.doPrint = proc (self: Value): string =
+                    push self
                     callFunction(x.ts.methods["print"])
                     stack.pop().s
+
+            # var printMethod: Value = nil
+
+            # if (let thisPrint = definedMethods.getOrDefault("print", nil); not thisPrint.isNil):
+            #     printMethod = thisPrint
+            # else:
+            #     if inherited:
+            #         if (let inheritedPrint = x.ts.inherits.ts.methods.getOrDefault("print", nil); not inheritedPrint.isNil):
+            #             printMethod = inheritedPrint.main
+
+            # if not printMethod.isNil:
+            #     x.ts.methods["print"] = newFunction(
+            #         @["this"],
+            #         printMethod
+            #     )
+            #     x.ts.doPrint = proc(v:Value):string =
+            #         push v
+            #         callFunction(x.ts.methods["print"])
+            #         stack.pop().s
 
             var compareMethod: Value = nil
 
