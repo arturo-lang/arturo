@@ -434,23 +434,23 @@ proc newQuantity*(q: VQuantity, copy: static bool = false): Value {.inline, enfo
     else:
         Value(kind: Quantity, q: q)
 
-proc newErrorKind(): Value {.inline, enforceNoRaises.} =
+proc newErrorKind*(): Value {.inline, enforceNoRaises.} =
     Value(kind: ErrorKind, errKind: VErrorKind(label: "Generic Error"))
 
-proc newErrorKind(label: string): Value {.inline, enforceNoRaises.} =
+proc newErrorKind**(label: string): Value {.inline, enforceNoRaises.} =
     Value(kind: ErrorKind, errKind: VErrorKind(label: label))
 
-proc newErrorKind(errKind: VErrorKind): Value {.inline, enforceNoRaises.} =
+proc newErrorKind*(errKind: VErrorKind): Value {.inline, enforceNoRaises.} =
     Value(kind: ErrorKind, errKind: errKind)
 
-proc newError(kind: VErrorKind, msg: string = ""): Value {.inline, enforceNoRaises.} =
+proc newError*(kind: VErrorKind, msg: string = ""): Value {.inline, enforceNoRaises.} =
     result = Value(kind: Error, err: VError(kind: kind))
     result.err.msg = msg
 
-proc newError(err: VError): Value {.inline, enforceNoRaises.} =
+proc newError*(err: VError): Value {.inline, enforceNoRaises.} =
     Value(kind: Error, err: err)
 
-proc newGenericError(): Value {.inline, enforceNoRaises.} =
+proc newGenericError*(): Value {.inline, enforceNoRaises.} =
     Value(kind: Error, err: VError(kind: genericError))
 
 func newRegex*(rx: sink VRegex): Value {.inline, enforceNoRaises.} =
