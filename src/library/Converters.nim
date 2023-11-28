@@ -838,10 +838,10 @@ proc defineSymbols*() =
             requireValueBlock(y, {Word,Literal})
 
             var definedMethods: ValueDict
-            if z.kind == Block:
-                definedMethods = newDictionary(execDictionary(z)).d
+            if y.kind == Block:
+                definedMethods = newDictionary(execDictionary(y)).d
             else:
-                definedMethods = z.d
+                definedMethods = y.d
 
             var inherited = false
 
@@ -856,7 +856,7 @@ proc defineSymbols*() =
 
             if checkAttr("with"):
                 x.ts.fields.add(aWith.a)
-                
+
             for key,val in definedMethods:
                 if key != "init" and key != "print" and key != "compare":
                     x.ts.methods[key] = val
