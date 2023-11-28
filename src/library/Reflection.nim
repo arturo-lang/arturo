@@ -543,6 +543,11 @@ proc defineSymbols*() =
             else:
                 push(newLogical(xKind==Integer))
 
+    # TODO(Reflection\is?) not working correctly for Object values
+    #  it should definitely return true if the object's type is the given one.
+    #  what happens if the object inherits from given type?
+    #  should that be a matter of e.g. an extra `.strict` option?
+    #  labels: library, bug, enhancement, open discussion
     builtin "is?",
         alias       = unaliased, 
         op          = opNop,
