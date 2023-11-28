@@ -445,6 +445,9 @@ proc defineSymbols*() =
                 else:
                     printInfo(searchable, value, Aliases)
 
+    # TODO(Reflection\inherits?) not working correctly
+    #  it seems to be returning `true` invariably...
+    #  labels: library, bug
     builtin "inherits?",
         alias       = unaliased, 
         op          = opNop,
