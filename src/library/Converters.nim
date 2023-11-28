@@ -883,24 +883,6 @@ proc defineSymbols*() =
                 # if key != "init" and key != "print" and key != "compare":
                 x.ts.methods[key] = val
 
-            # var initMethod: Value = nil
-            # if inherited:
-            #     if (let inheritedInit = x.ts.inherits.ts.methods.getOrDefault("init", nil); not inheritedInit.isNil):
-            #         initMethod = inheritedInit.main
-            # if (let thisInit = definedMethods.getOrDefault("init", nil); not thisInit.isNil):
-            #     if initMethod.isNil:
-            #         initMethod = thisInit
-            #     else:
-            #         initMethod.a.add(thisInit.a)
-
-            # if not initMethod.isNil:
-            #     x.ts.methods["init"] = newFunction(
-            #         @["this"],
-            #         initMethod
-            #     )
-            #     x.ts.doInit = proc (v:Value) =
-            #         push v
-            #         callFunction(x.ts.methods["init"])
             if (let thisInit = definedMethods.getOrDefault("init", nil); not thisInit.isNil):
                 thisInit.params.insert("this")
                 thisInit.arity += 1
