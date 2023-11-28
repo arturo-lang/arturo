@@ -37,7 +37,7 @@ import vm/lib
 import vm/[bytecode, errors, eval, exec, opcodes, parse]
 
 import vm/values/printable
-import vm/values/custom/[vbinary, vrange, vrational]
+import vm/values/custom/[vbinary, verror, vrange, vrational]
 
 #=======================================
 # Variables
@@ -286,6 +286,8 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                             throwConversionFailed()
                     of Regex:
                         return newRegex(y.s)
+                    of ErrorKind:
+                        return newErrorKind(y.s)
                     of Binary:
                         var ret: VBinary = newSeq[byte](y.s.len)
                         for i,ch in y.s:
