@@ -855,8 +855,6 @@ proc defineSymbols*() =
             ; NAME: Jane, SURNAME: Doe, AGE: 33
         """:
             #=======================================================
-            requireValueBlock(y, {Word,Literal})
-
             var definedMethods: ValueDict
             if y.kind == Block:
                 definedMethods = newDictionary(execDictionary(y)).d
