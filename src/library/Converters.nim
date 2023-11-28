@@ -99,9 +99,11 @@ proc generateCustomObject(prot: Prototype, arguments: ValueArray | ValueDict): V
                 of "compare": discard
                 else:
                     if objectMethod.kind==Function:
-                        var newParams = objectMethod.params
-                        newParams.insert("this")
-                        self.o[methodName] = newFunction(newParams, objectMethod.main)
+                        let objMethod = copyValue(objectMethod)
+                        objMethod.injectThis()
+                        # var newParams = objectMethod.params
+                        # newParams.insert("this")
+                        self.o[methodName] = objMethod#newFunction(newParams, objectMethod.main)
                         if (let methodInfo = objectMethod.info; not methodInfo.isNil):
                             self.o[methodName].info = methodInfo
                     else:
@@ -1332,11 +1334,6 @@ proc defineSymbols*() =
             # is it really an error? Arturo is not C++!
             x.ts.fields = @[]
             x.ts.methods = initOrderedTable[string,Value]()
-
-            # check if we are to create a magic
-            # constructor with given fields
-            if checkAttr("having"):
-                x.ts.fields.add(aHaving.a)
 
             for key,val in definedMethods:
                 x.ts.methods[key] = val
