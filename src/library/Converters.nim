@@ -95,10 +95,6 @@ proc generateCustomObject(prot: Prototype, arguments: ValueArray | ValueDict): V
                             echo "not correct number of arguments!"
                         echo "running doInit"
                         prot.doInit(self, arguments)
-                        # for arg in arguments.reversed:
-                        #     push arg
-                        # push self
-                        # callFunction(objectMethod)
                 of "print": discard
                 of "compare": discard
                 else:
