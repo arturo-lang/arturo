@@ -139,7 +139,7 @@ type
         name*       : string
         fields*     : ValueArray
         methods*    : ValueDict
-        doInit*     : proc (v:Value)
+        doInit*     : proc (self:Value, arguments:ValueArray)
         doPrint*    : proc (v:Value): string
         doCompare*  : proc (a,b:Value): int
         inherits*   : Value
