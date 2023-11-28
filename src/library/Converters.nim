@@ -80,20 +80,16 @@ proc parseFL(s: string): float =
         raise newException(ValueError, "invalid float: " & s)
 
 proc generateCustomObject(prot: Prototype, arguments: ValueArray | ValueDict): Value =
-    echo "generating new custom object"
     newObject(arguments, prot, proc (self: Value, prot: Prototype) =
-        echo "in initializer"
         for methodName, objectMethod in prot.methods:
-            echo "processing method: " & $(methodName)
             case methodName:
                 of "init":
-                    echo "in init:"
                     when arguments is ValueArray:
                         if arguments.len != objectMethod.arity - 1:
                             # TODO(generateCustomObject) should throw if number of arguments is not correct
                             #  labels: error handling, oop, vm, values
-                            echo "not correct number of arguments!"
-                        echo "running doInit"
+                            echo "incorrect number of arguments"
+
                         prot.doInit(self, arguments)
                 of "print": discard
                 of "compare": discard
@@ -879,13 +875,9 @@ proc defineSymbols*() =
                 x.ts.fields.add(aWith.a)
 
             for key,val in definedMethods:
-                # if key != "init" and key != "print" and key != "compare":
-                echo "adding method: " & $(key)
                 x.ts.methods[key] = val
 
             if (let initMethod = x.ts.methods.getOrDefault("init", nil); not initMethod.isNil):
-                echo "found init method"
-                # we have an `init` method
                 # TODO(Converters\define) we should verify that our `init` is properly defined
                 #  and if not, throw an appropriate error
                 #  labels: library, error handling, oop
@@ -895,7 +887,7 @@ proc defineSymbols*() =
 
                 x.ts.doInit = proc (self: Value, arguments: ValueArray) =
                     for arg in arguments.reversed:
-                            push arg
+                        push arg
                     push self
                     callFunction(x.ts.methods["init"])
 
