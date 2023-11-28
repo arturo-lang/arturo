@@ -101,9 +101,7 @@ proc generateCustomObject(prot: Prototype, arguments: ValueArray | ValueDict): V
                     if objectMethod.kind==Function:
                         let objMethod = copyValue(objectMethod)
                         objMethod.injectThis()
-                        # var newParams = objectMethod.params
-                        # newParams.insert("this")
-                        self.o[methodName] = objMethod#newFunction(newParams, objectMethod.main)
+                        self.o[methodName] = objMethod
                         if (let methodInfo = objectMethod.info; not methodInfo.isNil):
                             self.o[methodName].info = methodInfo
                     else:
