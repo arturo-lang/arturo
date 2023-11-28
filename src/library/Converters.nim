@@ -859,10 +859,13 @@ proc defineSymbols*() =
             # as a dictionary
             var definedMethods: ValueDict
             if y.kind == Block:
+                x.ts.inherits = nil
                 definedMethods = newDictionary(execDictionary(y)).d
             elif y.kind == Dictionary:
+                x.ts.inherits = nil
                 definedMethods = y.d
             else:
+                x.ts.inherits = y
                 definedMethods = y.ts.methods
 
             # Important! if we don't empty them forcefully
