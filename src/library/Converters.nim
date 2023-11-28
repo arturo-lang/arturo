@@ -90,10 +90,11 @@ proc generateCustomObject(prot: Prototype, arguments: ValueArray | ValueDict): V
                             #  labels: error handling, oop, vm, values
                             echo "not correct number of arguments!"
 
-                        for arg in arguments.reversed:
-                            push arg
-                        push self
-                        callFunction(objectMethod)
+                        prot.doInit(self, arguments)
+                        # for arg in arguments.reversed:
+                        #     push arg
+                        # push self
+                        # callFunction(objectMethod)
                 of "print": discard
                 of "compare": discard
                 else:
@@ -891,6 +892,12 @@ proc defineSymbols*() =
                 initMethod.params.insert("this")
                 initMethod.arity += 1
                 x.ts.methods["init"] = initMethod
+
+                x.ts.doInit = proc (self: Value, arguments: ValueArray) =
+                    for arg in arguments.reversed:
+                            push arg
+                    push self
+                    callFunction(x.ts.methods["init"])
 
             var printMethod: Value = nil
 
