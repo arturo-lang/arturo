@@ -775,8 +775,8 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "define new type with given prototype",
         args        = {
-            "type"      : {Type},
-            "methods"   : {Block,Dictionary}
+            "type"          : {Type},
+            "prototype"     : {Block,Dictionary}
         },
         attrs       = {
             "as"    : ({Type}, "inherit given type"),
