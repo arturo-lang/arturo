@@ -70,6 +70,8 @@ proc generateCustomObject(prot: Prototype, arguments: ValueArray | ValueDict): V
         if (let initMethod = prot.methods.getOrDefault("init", nil); not initMethod.isNil):
             when arguments is ValueArray:
                 if arguments.len != initMethod.arity - 1:
+                    # TODO(generateCustomObject) should throw if number of arguments is not correct
+                    #  labels: error handling, oop, vm, values
                     echo "not correct number of arguments!"
 
                 for arg in arguments.reversed:
