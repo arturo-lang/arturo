@@ -888,15 +888,9 @@ proc defineSymbols*() =
                 # TODO(Converters\define) we should verify that our `init` is properly defined
                 #  and if not, throw an appropriate error
                 #  labels: library, error handling, oop
-
-
-            if (let thisInit = definedMethods.getOrDefault("init", nil); not thisInit.isNil):
-                thisInit.params.insert("this")
-                thisInit.arity += 1
-                x.ts.methods["init"] = thisInit
-            x.ts.doInit = proc (v: Value) =
-                push v
-                callFunction(x.ts.methods["init"])
+                initMethod.params.insert("this")
+                initMethod.arity += 1
+                x.ts.methods["init"] = initMethod
 
             var printMethod: Value = nil
 
