@@ -1325,7 +1325,7 @@ proc defineSymbols*() =
             else:
                 definedMethods = y.d
 
-            var generated = generateCustomObject(x.ts, @[])
+            var generated = generateCustomObject(x.ts, ValueArray(@[]))
 
             for k,v in definedMethods:
                 generated.o[k] = v
