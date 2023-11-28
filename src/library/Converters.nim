@@ -891,8 +891,9 @@ proc defineSymbols*() =
                 #  and if not, throw an appropriate error
                 #  mainly, that it's a Function
                 #  labels: library, error handling, oop
-                initMethod.params.insert("this")
-                initMethod.arity += 1
+                if initMethod.params.len < 1 or initMethod.params[0] != "this":
+                    initMethod.params.insert("this")
+                    initMethod.arity += 1
                 x.ts.doInit = proc (self: Value, arguments: ValueArray) =
                     for arg in arguments.reversed:
                         push arg
@@ -907,8 +908,9 @@ proc defineSymbols*() =
                 #  and if not, throw an appropriate error
                 #  mainly, that it's a Function with *no* arguments
                 #  labels: library, error handling, oop
-                printMethod.params.insert("this")
-                printMethod.arity += 1
+                if printMethod.params.len < 1 or printMethod.params[0] != "this":
+                    printMethod.params.insert("this")
+                    printMethod.arity += 1
                 x.ts.doPrint = proc (self: Value): string =
                     push self
                     callFunction(printMethod)
@@ -921,8 +923,9 @@ proc defineSymbols*() =
                 #  and if not, throw an appropriate error
                 #  mainly, that it's a Function with one argument
                 #  labels: library, error handling, oop
-                compareMethod.params.insert("this")
-                compareMethod.arity += 1
+                if compareMethod.params.len < 1 or compareMethod.params[0] != "this":
+                    compareMethod.params.insert("this")
+                    compareMethod.arity += 1
                 x.ts.doCompare = proc (self: Value, other: Value): int =
                     push other
                     push self
