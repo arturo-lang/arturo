@@ -84,7 +84,7 @@ serveInternal: function [Request, verbose][
                 action: ROUTES\[Request\method]\[pattern]
 
                 serverResponse\serverPattern: pattern
-                try?.verbose [
+                if throws? [
                     (block? var'action)? [
                         serverResponse\serverBody: do action
                     ][
@@ -92,10 +92,7 @@ serveInternal: function [Request, verbose][
                     ]
                     if null? serverResponse\serverStatus ->
                         serverResponse\serverStatus: 200 ; OK
-                ]
-                else [
-                    serverResponse\serverStatus: 500 ; Internal Server Error
-                ]
+                ] -> serverResponse\serverStatus: 500 ; Internal Server Error
             ]
         ]
     ]
