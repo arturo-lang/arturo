@@ -80,20 +80,23 @@ proc parseFL(s: string): float =
         raise newException(ValueError, "invalid float: " & s)
 
 proc generateCustomObject(prot: Prototype, arguments: ValueArray | ValueDict): Value =
+    echo "creating new custom object"
     newObject(arguments, prot, proc (self: Value, prot: Prototype) =
         for methodName, objectMethod in prot.methods:
             case methodName:
                 of "init":
+                    echo "initializing"
                     when arguments is ValueArray:
                         if arguments.len != objectMethod.arity - 1:
                             # TODO(generateCustomObject) should throw if number of arguments is not correct
                             #  labels: error handling, oop, vm, values
                             echo "incorrect number of arguments"
-
+                        echo "calling initializer"
                         prot.doInit(self, arguments)
                 of "print": discard
                 of "compare": discard
                 else:
+                    echo "different case: " & methodName
                     if objectMethod.kind==Function:
                         var newParams = objectMethod.params
                         newParams.insert("this")
@@ -853,6 +856,7 @@ proc defineSymbols*() =
             #=======================================================
             # Get our defined methods
             # as a dictionary
+            echo "defining new type"
             var definedMethods: ValueDict
             if y.kind == Block:
                 definedMethods = newDictionary(execDictionary(y)).d
@@ -877,17 +881,21 @@ proc defineSymbols*() =
                 for key,val in aAs.ts.methods:
                     x.ts.methods[key] = val
 
+            echo "post inheritance"
+
             # check if we are to create a magic
             # constructor with given fields
             if checkAttr("with"):
                 x.ts.fields.add(aWith.a)
 
             for key,val in definedMethods:
+                echo "setting method: " & key
                 x.ts.methods[key] = val
 
             # setup our object initializer
             # via the magic `init` method
             if (let initMethod = x.ts.methods.getOrDefault("init", nil); not initMethod.isNil):
+                echo "found init method"
                 # TODO(Converters\define) we should verify that our `init` is properly defined
                 #  and if not, throw an appropriate error
                 #  mainly, that it's a Function
@@ -895,7 +903,7 @@ proc defineSymbols*() =
                 initMethod.params.insert("this")
                 initMethod.arity += 1
                 x.ts.methods["init"] = initMethod
-
+                echo "setting it up"
                 x.ts.doInit = proc (self: Value, arguments: ValueArray) =
                     for arg in arguments.reversed:
                         push arg
@@ -906,6 +914,7 @@ proc defineSymbols*() =
             # the custom equivalent of the `printable` module
             # only for Object values
             if (let printMethod = x.ts.methods.getOrDefault("print", nil); not printMethod.isNil):
+                echo "found print method"
                 # TODO(Converters\define) we should verify that our `print` is properly defined
                 #  and if not, throw an appropriate error
                 #  mainly, that it's a Function with *no* arguments
@@ -913,7 +922,7 @@ proc defineSymbols*() =
                 printMethod.params.insert("this")
                 printMethod.arity += 1
                 x.ts.methods["print"] = printMethod
-
+                echo "setting it up"
                 x.ts.doPrint = proc (self: Value): string =
                     push self
                     callFunction(x.ts.methods["print"])
