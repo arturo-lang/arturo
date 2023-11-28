@@ -319,7 +319,7 @@ proc newUserType*(n: string, f: ValueArray = @[], extended: static bool = false)
     ## create Type (UserType) value from string
     if (let lookup = TypeLookup.getOrDefault(n, nil); not lookup.isNil):
         when extended:
-            result = Value(kind: Type, tpKind: UserType, t: Object, ts: Prototype(name: "_" & n, fields: lookup.ts.fields, methods: lookup.ts.methods, inherits: nil))
+            result = Value(kind: Type, tpKind: UserType, t: Object, ts: Prototype(name: n, fields: lookup.ts.fields, methods: lookup.ts.methods, inherits: nil))
         else:
             return lookup
     else:
