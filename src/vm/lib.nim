@@ -12,10 +12,10 @@
 # Libraries
 #=======================================
 
-import macros, sequtils, strutils, tables
+import macros, strutils, tables
 export strutils, tables
 
-import vm/[checks, globals, errors, opcodes, stack, values/comparison, values/operators, values/printable, values/value]
+import vm/[checks, globals, opcodes, stack, values/comparison, values/operators, values/printable, values/value]
 export checks, comparison, globals, opcodes, operators, printable, stack, value
 
 import vm/values/custom/[vcolor, vcomplex, vlogical, vquantity, vrational, vregex, vsymbol]
