@@ -46,19 +46,6 @@ import vm/[bytecode, errors, opcodes, parse]
 import vm/values/printable
 
 #=======================================
-# Helpers
-#=======================================
-
-func canBeInlined(v: Value): bool {.enforceNoRaises.} =
-    for item in v.a:
-        if item.kind == Label:
-            return false
-        elif item.kind == Block:
-            if not canBeInlined(item):
-                return false
-    return true
-
-#=======================================
 # Definitions
 #=======================================
 
