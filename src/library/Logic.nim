@@ -26,7 +26,7 @@ import vm/[exec]
 # Main symbols
 #=======================================
 
-proc defineSymbols*() =
+proc defineLibrary*() =
 
     builtin "all?",
         alias       = unaliased, 
@@ -477,4 +477,4 @@ proc defineSymbols*() =
 # Add Library
 #=======================================
 
-Libraries.add(defineSymbols)
+Libraries.add(defineLibrary)

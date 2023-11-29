@@ -27,7 +27,7 @@ import vm/lib
 # Main symbols
 #=======================================
 
-proc defineSymbols*() =
+proc defineLibrary*() =
 
     # TODO(Dates) more potential built-in function candidates?
     #  we could also make use of our recently-added `:quantity` values
@@ -389,4 +389,4 @@ proc defineSymbols*() =
 # Add Library
 #=======================================
 
-Libraries.add(defineSymbols)
+Libraries.add(defineLibrary)

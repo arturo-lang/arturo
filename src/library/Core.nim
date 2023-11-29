@@ -38,7 +38,7 @@ import vm/[env, errors, eval, exec, parse]
 # Main symbols
 #=======================================
 
-proc defineSymbols*() =
+proc defineLibrary*() =
 
     # TODO(Core) add new `throw` built-in method?
     #  this could easily work with a new `:exception` built-in type
@@ -1205,4 +1205,4 @@ proc defineSymbols*() =
 # Add Library
 #=======================================
 
-Libraries.add(defineSymbols)
+Libraries.add(defineLibrary)

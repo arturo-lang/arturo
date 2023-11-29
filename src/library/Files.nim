@@ -45,7 +45,7 @@ when not defined(WEB):
 # Main symbols
 #=======================================
 
-proc defineSymbols*() =
+proc defineLibrary*() =
 
     # TODO(Files) more potential built-in function candidates?
     #  labels: library, enhancement, open discussion
@@ -599,4 +599,4 @@ proc defineSymbols*() =
 # Add Library
 #=======================================
 
-Libraries.add(defineSymbols)
+Libraries.add(defineLibrary)

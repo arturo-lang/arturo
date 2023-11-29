@@ -61,7 +61,7 @@ template replaceStrWith(str: var string, src: Value, dst: Value): untyped =
 # Main symbols
 #=======================================
 
-proc defineSymbols*() =
+proc defineLibrary*() =
     
     # TODO(Strings\alphabet) Should we move it to the Sets module?
     #  yes, strings are composed by characters which - together - form an alphabet.
@@ -1178,4 +1178,4 @@ proc defineSymbols*() =
 # Add Library
 #=======================================
 
-Libraries.add(defineSymbols)
+Libraries.add(defineLibrary)

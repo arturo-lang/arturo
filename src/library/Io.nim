@@ -47,7 +47,7 @@ when defined(WEB):
 # Main symbols
 #=======================================
 
-proc defineSymbols*() =
+proc defineLibrary*() =
 
     builtin "clear",
         alias       = unaliased, 
@@ -353,4 +353,4 @@ proc defineSymbols*() =
 # Add Library
 #=======================================
 
-Libraries.add(defineSymbols)
+Libraries.add(defineLibrary)

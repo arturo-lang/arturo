@@ -28,7 +28,7 @@ when not defined(NOGMP):
 # Main symbols
 #=======================================
 
-proc defineSymbols*() =
+proc defineLibrary*() =
 
     builtin "add",
         alias       = plus, 
@@ -263,4 +263,4 @@ proc defineSymbols*() =
 # Add Library
 #=======================================
 
-Libraries.add(defineSymbols)
+Libraries.add(defineLibrary)

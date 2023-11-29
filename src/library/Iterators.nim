@@ -418,7 +418,7 @@ template doIterate(
 # Methods
 #=======================================
 
-proc defineSymbols*() =
+proc defineLibrary*() =
 
     builtin "arrange",
         alias       = unaliased,
@@ -1475,4 +1475,4 @@ proc defineSymbols*() =
 # Add Library
 #=======================================
 
-Libraries.add(defineSymbols)
+Libraries.add(defineLibrary)

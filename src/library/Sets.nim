@@ -29,7 +29,7 @@ import vm/lib
 # Main symbols
 #=======================================
 
-proc defineSymbols*() =
+proc defineLibrary*() =
 
     builtin "difference",
         alias       = unaliased, 
@@ -312,4 +312,4 @@ proc defineSymbols*() =
 # Add Library
 #=======================================
 
-Libraries.add(defineSymbols)
+Libraries.add(defineLibrary)

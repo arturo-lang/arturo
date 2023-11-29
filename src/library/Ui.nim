@@ -39,7 +39,7 @@ when not defined(NODIALOGS):
 # Main symbols
 #=======================================
 
-proc defineSymbols*() =
+proc defineLibrary*() =
 
     when not defined(NODIALOGS):
         
@@ -347,4 +347,4 @@ proc defineSymbols*() =
 # Add Library
 #=======================================
 
-Libraries.add(defineSymbols)
+Libraries.add(defineLibrary)

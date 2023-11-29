@@ -622,7 +622,7 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
 # Main symbols
 #=======================================
 
-proc defineSymbols*() =
+proc defineLibrary*() =
 
     # TODO(Converters) resolving `from`/`to`/`as` clutter?
     #  Right now, we have 4 different built-in function performing different-but-similar actions.
@@ -1586,4 +1586,4 @@ proc defineSymbols*() =
 # Add Library
 #=======================================
 
-Libraries.add(defineSymbols)
+Libraries.add(defineLibrary)

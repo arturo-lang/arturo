@@ -53,7 +53,7 @@ template processTrigonometric(fun: untyped): untyped =
 # Main symbols
 #=======================================
  
-proc defineSymbols*() =
+proc defineLibrary*() =
 
     builtin "abs",
         alias       = unaliased, 
@@ -1478,4 +1478,4 @@ proc defineSymbols*() =
 # Add Library
 #=======================================
 
-Libraries.add(defineSymbols)
+Libraries.add(defineLibrary)
