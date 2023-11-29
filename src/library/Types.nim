@@ -135,7 +135,7 @@ proc defineLibrary*() =
             # setup our object initializer
             # via the magic `init` method
             if (let initMethod = x.ts.methods.getOrDefault("init", nil); not initMethod.isNil):
-                # TODO(Converters\define) we should verify that our `init` is properly defined
+                # TODO(Types\define) we should verify that our `init` is properly defined
                 #  and if not, throw an appropriate error
                 #  mainly, that it's a Function
                 #  labels: library, error handling, oop
@@ -150,7 +150,7 @@ proc defineLibrary*() =
             # the custom equivalent of the `printable` module
             # only for Object values
             if (let printMethod = x.ts.methods.getOrDefault("print", nil); not printMethod.isNil):
-                # TODO(Converters\define) we should verify that our `print` is properly defined
+                # TODO(Types\define) we should verify that our `print` is properly defined
                 #  and if not, throw an appropriate error
                 #  mainly, that it's a Function with *no* arguments
                 #  labels: library, error handling, oop
@@ -163,7 +163,7 @@ proc defineLibrary*() =
             # check if there is a `compare` magic method;
             # this is to be used for sorting, etc
             if (let compareMethod = x.ts.methods.getOrDefault("compare", nil); not compareMethod.isNil):
-                # TODO(Converters\define) we should verify that our `compare` is properly defined
+                # TODO(Types\define) we should verify that our `compare` is properly defined
                 #  and if not, throw an appropriate error
                 #  mainly, that it's a Function with one argument
                 #  labels: library, error handling, oop
