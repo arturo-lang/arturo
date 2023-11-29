@@ -35,6 +35,19 @@ import vm/lib
 import vm/[env, errors, eval, exec, parse]
 
 #=======================================
+# Helpers
+#=======================================
+
+func canBeInlined(v: Value): bool {.enforceNoRaises.} =
+    for item in v.a:
+        if item.kind == Label:
+            return false
+        elif item.kind == Block:
+            if not canBeInlined(item):
+                return false
+    return true
+
+#=======================================
 # Definitions
 #=======================================
 
