@@ -38,11 +38,15 @@ import vm/[env, errors, eval, exec, parse]
 # Definitions
 #=======================================
 
+# TODO(Core) add new `throw` built-in method?
+#  this could easily work with a new `:exception` built-in type
+#  labels: library, new feature,open discussion
+
 proc defineLibrary*() =
 
-    # TODO(Core) add new `throw` built-in method?
-    #  this could easily work with a new `:exception` built-in type
-    #  labels: library, new feature,open discussion
+    #----------------------------
+    # Functions
+    #----------------------------
 
     builtin "alias",
         alias       = unaliased, 
@@ -428,8 +432,7 @@ proc defineLibrary*() =
             #=======================================================
             let y = stack.pop() # pop the value of the previous operation (hopefully an 'if?' or 'when?')
             if isFalse(y): 
-                execUnscoped(x)
-            
+                execUnscoped(x)  
             
     builtin "ensure",
         alias       = unaliased, 
@@ -486,43 +489,6 @@ proc defineLibrary*() =
             let condition = not (xKind==Null or isFalse(x))
             if condition: 
                 execUnscoped(y)
-
-    builtin "if?",
-        alias       = unaliased, 
-        op          = opIfE,
-        rule        = PrefixPrecedence,
-        description = "perform action, if given condition is not false or null and return condition result",
-        args        = {
-            "condition" : {Any},
-            "action"    : {Block}
-        },
-        attrs       = NoAttrs,
-        returns     = {Logical},
-        example     = """
-            x: 2
-            
-            result: if? x=2 -> print "yes, that's right!"
-            ; yes, that's right!
-            
-            print result
-            ; true
-            ..........
-            x: 2
-            z: 3
-            
-            if? x>z [
-                print "x was greater than z"
-            ]
-            else [
-                print "nope, x was not greater than z"
-            ]
-        """:
-            #=======================================================
-            let condition = not (xKind==Null or isFalse(x))
-            if condition: 
-                execUnscoped(y)
-
-            push(newLogical(condition))
 
     # TODO(Core/__VerbosePackager) Find an elegant way to inject hidden functions
     #  labels: library, enhancement, cleanup
@@ -654,7 +620,6 @@ proc defineLibrary*() =
     #  doesn't handle this properly; but it should.
     #  See also: https://discord.com/channels/765519132186640445/829324913097048065/1099426535569633401
     #  labels: library, bug, critical
-
     builtin "let",
         alias       = colon, 
         op          = opNop,
@@ -728,11 +693,6 @@ proc defineLibrary*() =
             #=======================================================
             push(copyValue(x))
 
-    constant "null",
-        alias       = slashedzero,
-        description = "the NULL constant":
-            VNULL
-
     builtin "return",
         alias       = unaliased, 
         op          = opReturn,
@@ -784,33 +744,6 @@ proc defineLibrary*() =
             else:
                 execUnscoped(z)
 
-    builtin "throws?",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "perform action, and return true if errors were thrown",
-        args        = {
-            "action": {Block,Bytecode}
-        },
-        attrs       = NoAttrs,
-        returns     = {Logical},
-        example     = """
-            throws? [
-                1 + 2
-            ] 
-            ; => false
-
-            throws? -> 1/0
-            ; => true
-        """:
-            #=======================================================
-            try:
-                execUnscoped(x)
-
-                push(VFALSE)
-            except CatchableError, Defect:
-                push(VTRUE)
-
     builtin "try",
         alias       = unaliased, 
         op          = opNop,
@@ -840,60 +773,6 @@ proc defineLibrary*() =
                 if verbose:
                     showVMErrors(e)
 
-    # TODO(Core) add new `catch` method?
-    #  Currently, `try?` works with `else`, pretty much like `if?`
-    #  but we cannot do anything with the exception itself, in case
-    #  this `try?` has failed
-    #
-    #  So, why not add a `catch` method, where we could do something like:
-    #  ```
-    #  try? [
-    #      ; let's try something dangerous
-    #      print 10 / 0
-    #  ]
-    #  catch 'e [
-    #      print "something went terribly wrong..."
-    #      print e
-    #  ]
-    #  ```
-    #  In that case, `e` would hold the Exception, which should preferrably be
-    #  of a distinct Exception type.
-    #  labels: library,new feature,enhancement,open discussion
-    builtin "try?",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "perform action, catch possible errors and return status",
-        args        = {
-            "action": {Block,Bytecode}
-        },
-        attrs       = {
-            "verbose"   : ({Logical},"print all error messages as usual")
-        },
-        returns     = {Logical},
-        example     = """
-            try? [
-                ; let's try something dangerous
-                print 10 / 0
-            ]
-            else [
-                print "something went terribly wrong..."
-            ]
-            
-            ; something went terribly wrong...
-        """:
-            #=======================================================
-            let verbose = (hadAttr("verbose"))
-            try:
-                execUnscoped(x)
-
-                push(VTRUE)
-            except CatchableError, Defect:
-                let e = getCurrentException()
-                if verbose:
-                    showVMErrors(e)
-                push(VFALSE)
-
     builtin "unless",
         alias       = unaliased, 
         op          = opUnless,
@@ -916,43 +795,6 @@ proc defineLibrary*() =
             if condition: 
                 execUnscoped(y)
 
-    builtin "unless?",
-        alias       = unaliased, 
-        op          = opUnlessE,
-        rule        = PrefixPrecedence,
-        description = "perform action, if given condition is false or null and return condition result",
-        args        = {
-            "condition" : {Any},
-            "action"    : {Block,Bytecode}
-        },
-        attrs       = NoAttrs,
-        returns     = {Logical},
-        example     = """
-            x: 2
-            
-            result: unless? x=1 -> print "yep, x is not 1!"
-            ; yep, x is not 1!
-            
-            print result
-            ; true
-            
-            z: 1
-            
-            unless? x>z [
-                print "yep, x was not greater than z"
-            ]
-            else [
-                print "x was greater than z"
-            ]
-            ; x was greater than z
-        """:
-            #=======================================================
-            let condition = xKind==Null or isFalse(x)
-            if condition: 
-                execUnscoped(y)
-
-            push(newLogical(condition))
-            
     builtin "unstack",
         alias       = unaliased, 
         op          = opNop,
@@ -996,7 +838,6 @@ proc defineLibrary*() =
                         res.add stack.pop()
                         i+=1
                     push(newBlock(res))
-
 
     builtin "until",
         alias       = unaliased, 
@@ -1068,46 +909,6 @@ proc defineLibrary*() =
                 push(FetchSym(x.s))
             else:
                 push(FetchPathSym(x.p))
-
-    builtin "when?",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "check if a specific condition is fulfilled and, if so, execute given action",
-        args        = {
-            "condition" : {Block},
-            "action"    : {Block}
-        },
-        attrs       = NoAttrs,
-        returns     = {Logical},
-        example     = """
-            a: 2
-            case [a]
-                when? [<2] -> print "a is less than 2"
-                when? [=2] -> print "a is 2"
-                else       -> print "a is greater than 2"
-        """:
-            #=======================================================
-            let z = stack.pop()
-            if isFalse(z):
-
-                let top = sTop()
-
-                var newb: Value = newBlock()
-                for old in top.a:
-                    newb.a.add(old)
-                for cond in x.a:
-                    newb.a.add(cond)
-
-                execUnscoped(newb)
-
-                if isTrue(sTop()):
-                    execUnscoped(y)
-                    discard stack.pop()
-                    discard stack.pop()
-                    push(newLogical(true))
-            else:
-                push(z)
 
     builtin "while",
         alias       = unaliased, 
@@ -1200,6 +1001,214 @@ proc defineLibrary*() =
                     blk.insert(newLabel(item.s))
 
             push(newBlock(blk))
+
+    #----------------------------
+    # Predicates
+    #----------------------------
+
+    builtin "if?",
+        alias       = unaliased, 
+        op          = opIfE,
+        rule        = PrefixPrecedence,
+        description = "perform action, if given condition is not false or null and return condition result",
+        args        = {
+            "condition" : {Any},
+            "action"    : {Block}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            x: 2
+            
+            result: if? x=2 -> print "yes, that's right!"
+            ; yes, that's right!
+            
+            print result
+            ; true
+            ..........
+            x: 2
+            z: 3
+            
+            if? x>z [
+                print "x was greater than z"
+            ]
+            else [
+                print "nope, x was not greater than z"
+            ]
+        """:
+            #=======================================================
+            let condition = not (xKind==Null or isFalse(x))
+            if condition: 
+                execUnscoped(y)
+
+            push(newLogical(condition))
+
+    builtin "throws?",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "perform action, and return true if errors were thrown",
+        args        = {
+            "action": {Block,Bytecode}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            throws? [
+                1 + 2
+            ] 
+            ; => false
+
+            throws? -> 1/0
+            ; => true
+        """:
+            #=======================================================
+            try:
+                execUnscoped(x)
+
+                push(VFALSE)
+            except CatchableError, Defect:
+                push(VTRUE)
+
+    # TODO(Core) add new `catch` method?
+    #  Currently, `try?` works with `else`, pretty much like `if?`
+    #  but we cannot do anything with the exception itself, in case
+    #  this `try?` has failed
+    #
+    #  So, why not add a `catch` method, where we could do something like:
+    #  ```
+    #  try? [
+    #      ; let's try something dangerous
+    #      print 10 / 0
+    #  ]
+    #  catch 'e [
+    #      print "something went terribly wrong..."
+    #      print e
+    #  ]
+    #  ```
+    #  In that case, `e` would hold the Exception, which should preferrably be
+    #  of a distinct Exception type.
+    #  labels: library,new feature,enhancement,open discussion
+    builtin "try?",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "perform action, catch possible errors and return status",
+        args        = {
+            "action": {Block,Bytecode}
+        },
+        attrs       = {
+            "verbose"   : ({Logical},"print all error messages as usual")
+        },
+        returns     = {Logical},
+        example     = """
+            try? [
+                ; let's try something dangerous
+                print 10 / 0
+            ]
+            else [
+                print "something went terribly wrong..."
+            ]
+            
+            ; something went terribly wrong...
+        """:
+            #=======================================================
+            let verbose = (hadAttr("verbose"))
+            try:
+                execUnscoped(x)
+
+                push(VTRUE)
+            except CatchableError, Defect:
+                let e = getCurrentException()
+                if verbose:
+                    showVMErrors(e)
+                push(VFALSE)
+
+    builtin "unless?",
+        alias       = unaliased, 
+        op          = opUnlessE,
+        rule        = PrefixPrecedence,
+        description = "perform action, if given condition is false or null and return condition result",
+        args        = {
+            "condition" : {Any},
+            "action"    : {Block,Bytecode}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            x: 2
+            
+            result: unless? x=1 -> print "yep, x is not 1!"
+            ; yep, x is not 1!
+            
+            print result
+            ; true
+            
+            z: 1
+            
+            unless? x>z [
+                print "yep, x was not greater than z"
+            ]
+            else [
+                print "x was greater than z"
+            ]
+            ; x was greater than z
+        """:
+            #=======================================================
+            let condition = xKind==Null or isFalse(x)
+            if condition: 
+                execUnscoped(y)
+
+            push(newLogical(condition))
+
+    builtin "when?",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "check if a specific condition is fulfilled and, if so, execute given action",
+        args        = {
+            "condition" : {Block},
+            "action"    : {Block}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            a: 2
+            case [a]
+                when? [<2] -> print "a is less than 2"
+                when? [=2] -> print "a is 2"
+                else       -> print "a is greater than 2"
+        """:
+            #=======================================================
+            let z = stack.pop()
+            if isFalse(z):
+
+                let top = sTop()
+
+                var newb: Value = newBlock()
+                for old in top.a:
+                    newb.a.add(old)
+                for cond in x.a:
+                    newb.a.add(cond)
+
+                execUnscoped(newb)
+
+                if isTrue(sTop()):
+                    execUnscoped(y)
+                    discard stack.pop()
+                    discard stack.pop()
+                    push(newLogical(true))
+            else:
+                push(z)
+
+    #----------------------------
+    # Constants
+    #----------------------------
+
+    constant "null",
+        alias       = slashedzero,
+        description = "the NULL constant":
+            VNULL
 
 #=======================================
 # Add Library
