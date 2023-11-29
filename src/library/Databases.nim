@@ -47,6 +47,10 @@ import vm/lib
 
 proc defineLibrary*() =
 
+    #----------------------------
+    # Functions
+    #----------------------------
+
     when not defined(NOSQLITE):
 
         builtin "close",
