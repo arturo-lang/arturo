@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import algorithm, parseutils, sequtils, strformat, sugar, times, unicode
+import algorithm, parseutils, sequtils, strformat, strutils, sugar, times, unicode
 
 import helpers/arrays
 when not defined(NOGMP):
@@ -29,7 +29,7 @@ when not defined(WEB):
 import vm/[bytecode, errors, eval, exec, opcodes, parse]
 
 import vm/values/[value, printable]
-import vm/values/custom/[vbinary, vrange, vrational]
+import vm/values/custom/[vbinary, vlogical, vrange, vrational]
     
 #=======================================
 # Helpers
