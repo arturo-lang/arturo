@@ -48,6 +48,10 @@ when not defined(WEB):
 
 proc defineLibrary*() =
 
+    #----------------------------
+    # Functions
+    #----------------------------
+
     builtin "arg",
         alias       = unaliased, 
         op          = opNop,
@@ -376,25 +380,6 @@ proc defineLibrary*() =
         """:
             push(getScriptInfo())
 
-    when not defined(WEB):
-        builtin "superuser?",
-            alias       = unaliased, 
-            op          = opNop,
-            rule        = PrefixPrecedence,
-            description = "check if current user has administrator/root privileges",
-            args        = NoArgs,
-            attrs       = NoAttrs,
-            returns     = {Logical},
-            example     = """
-            ; when running as root
-            superuser?          ; => true
-
-            ; when running as regular user
-            superuser?          ; => false
-            """:
-                #=======================================================
-                push newLogical(isAdmin())
-
     # TODO(System/sys) normalize the way CPU architecture is shown
     #  in our new release builds, we annotate x86_64/amd64 builds as "x86_64"
     #  here, our sys\cpu field would return "amd64"
@@ -494,6 +479,30 @@ proc defineLibrary*() =
                         discard terminateProcess(pid, errCode)
                     else:
                         sendSignal(int32(pid), errCode)
+
+    #----------------------------
+    # Predicates
+    #----------------------------
+
+    when not defined(WEB):
+
+        builtin "superuser?",
+            alias       = unaliased, 
+            op          = opNop,
+            rule        = PrefixPrecedence,
+            description = "check if current user has administrator/root privileges",
+            args        = NoArgs,
+            attrs       = NoAttrs,
+            returns     = {Logical},
+            example     = """
+            ; when running as root
+            superuser?          ; => true
+
+            ; when running as regular user
+            superuser?          ; => false
+            """:
+                #=======================================================
+                push newLogical(isAdmin())
 
 #=======================================
 # Add Library
