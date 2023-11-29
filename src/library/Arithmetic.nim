@@ -30,6 +30,10 @@ when not defined(NOGMP):
 
 proc defineLibrary*() =
 
+    #----------------------------
+    # Functions
+    #----------------------------
+
     builtin "add",
         alias       = plus, 
         op          = opAdd,
