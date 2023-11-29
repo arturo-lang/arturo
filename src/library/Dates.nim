@@ -27,11 +27,11 @@ import vm/lib
 # Definitions
 #=======================================
 
-proc defineLibrary*() =
+# TODO(Dates) more potential built-in function candidates?
+#  we could also make use of our recently-added `:quantity` values
+#  labels: library, enhancement, open discussion
 
-    # TODO(Dates) more potential built-in function candidates?
-    #  we could also make use of our recently-added `:quantity` values
-    #  labels: library, enhancement, open discussion
+proc defineLibrary*() =
 
     builtin "after",
         alias       = unaliased, 
@@ -261,7 +261,6 @@ proc defineLibrary*() =
             #=======================================================
             push(newDate(now()))
 
-    
     builtin "past?",
         alias       = unaliased, 
         op          = opNop,
