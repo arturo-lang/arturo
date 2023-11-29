@@ -49,6 +49,10 @@ when defined(WEB):
 
 proc defineLibrary*() =
 
+    #----------------------------
+    # Functions
+    #----------------------------
+
     builtin "clear",
         alias       = unaliased, 
         op          = opNop,
