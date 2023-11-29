@@ -8,7 +8,7 @@ type
     VErrorKind* = ref object
         label*: string
 
-proc newDefaultError(): VErrorKind =
+proc newDefaultError*(): VErrorKind =
     result = VErrorKind(label: "Generic Error")
 
 let 
