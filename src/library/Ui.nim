@@ -41,6 +41,10 @@ when not defined(NODIALOGS):
 
 proc defineLibrary*() =
 
+    #----------------------------
+    # Functions
+    #----------------------------
+
     when not defined(NODIALOGS):
         
         builtin "alert",
