@@ -51,6 +51,10 @@ proc defineLibrary*() =
             "having": ({Block}, "automatically initialize given fields (creates a constructor)")
         },
         returns     = {Nothing},
+        # TODO(Types\define) update documentation example
+        #  to reflect changes to OOP aspects of Arturo in general
+        #  and the `define` function in particular
+        #  labels: library, documentation, easy
         example     = """
             define :person [name surname age][
 
