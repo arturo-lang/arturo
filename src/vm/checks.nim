@@ -14,7 +14,7 @@
 
 import sequtils
 
-import vm/values/[value]
+import vm/values/[value, printable]
 
 #=======================================
 # Helpers
