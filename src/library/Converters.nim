@@ -40,6 +40,9 @@ when not defined(NOGMP):
     import helpers/bignums
 
 import helpers/datasource
+
+import helpers/objects
+
 when not defined(NOASCIIDECODE):
     import helpers/strings
 
