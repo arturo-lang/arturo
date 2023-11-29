@@ -33,6 +33,10 @@ import vm/lib
 
 proc defineLibrary*() =
 
+    #----------------------------
+    # Functions
+    #----------------------------
+
     builtin "after",
         alias       = unaliased, 
         op          = opNop,
@@ -156,6 +160,42 @@ proc defineLibrary*() =
             else:
                 push(newDate(x.eobj - ti))
 
+    builtin "now",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "get date/time now",
+        args        = NoArgs,
+        attrs       = NoAttrs,
+        returns     = {Date},
+        example     = """
+            print now           ; 2020-10-23T14:16:13+02:00
+            
+            time: now
+            inspect time
+            
+            ; [ :date
+            ;       hour        : 14 :integer
+            ;       minute      : 16 :integer
+            ;       second      : 55 :integer
+            ;       nanosecond  : 82373000 :integer
+            ;       day         : 23 :integer
+            ;       Day         : Friday :string
+            ;       month       : 10 :integer
+            ;       Month       : October :string
+            ;       year        : 2020 :integer
+            ;       utc         : -7200 :integer
+            ; ]
+            
+            print now\year      ; 2020
+        """:
+            #=======================================================
+            push(newDate(now()))
+
+    #----------------------------
+    # Predicates
+    #----------------------------
+
     builtin "friday?",
         alias       = unaliased, 
         op          = opNop,
@@ -228,38 +268,6 @@ proc defineLibrary*() =
         """:
             #=======================================================
             push(newLogical(x.eobj.weekday == dMon))
-
-    builtin "now",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "get date/time now",
-        args        = NoArgs,
-        attrs       = NoAttrs,
-        returns     = {Date},
-        example     = """
-            print now           ; 2020-10-23T14:16:13+02:00
-            
-            time: now
-            inspect time
-            
-            ; [ :date
-            ;       hour        : 14 :integer
-            ;       minute      : 16 :integer
-            ;       second      : 55 :integer
-            ;       nanosecond  : 82373000 :integer
-            ;       day         : 23 :integer
-            ;       Day         : Friday :string
-            ;       month       : 10 :integer
-            ;       Month       : October :string
-            ;       year        : 2020 :integer
-            ;       utc         : -7200 :integer
-            ; ]
-            
-            print now\year      ; 2020
-        """:
-            #=======================================================
-            push(newDate(now()))
 
     builtin "past?",
         alias       = unaliased, 
