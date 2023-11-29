@@ -21,7 +21,7 @@ proc injectThis*(meth: Value) =
         meth.params.insert("this")
         meth.arity += 1
 
-proc generateCustomObject(prot: Prototype, arguments: ValueArray | ValueDict): Value =
+proc generateCustomObject*(prot: Prototype, arguments: ValueArray | ValueDict): Value =
     newObject(arguments, prot, proc (self: Value, prot: Prototype) =
         for methodName, objectMethod in prot.methods:
             case methodName:
