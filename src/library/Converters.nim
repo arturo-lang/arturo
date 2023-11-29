@@ -79,11 +79,6 @@ proc parseFL(s: string): float =
     if L != s.len or L == 0:
         raise newException(ValueError, "invalid float: " & s)
 
-proc injectThis(meth: Value) =
-    if meth.params.len < 1 or meth.params[0] != "this":
-        meth.params.insert("this")
-        meth.arity += 1
-
 proc generateCustomObject(prot: Prototype, arguments: ValueArray | ValueDict): Value =
     newObject(arguments, prot, proc (self: Value, prot: Prototype) =
         for methodName, objectMethod in prot.methods:
