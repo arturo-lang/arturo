@@ -50,7 +50,7 @@ template processTrigonometric(fun: untyped): untyped =
     else: push(newFloating(fun(asFloat(v))))
 
 #=======================================
-# Methods
+# Main symbols
 #=======================================
  
 proc defineSymbols*() =

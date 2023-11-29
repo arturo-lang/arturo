@@ -54,7 +54,7 @@ when defined(SAFE):
     import vm/[errors]
 
 #=======================================
-# Methods
+# Main symbols
 #=======================================
 
 proc defineSymbols*() =

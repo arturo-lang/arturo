@@ -43,7 +43,7 @@ when not defined(WEB):
         ActiveProcesses = initOrderedTable[int, Process]()
 
 #=======================================
-# Methods
+# Main symbols
 #=======================================
 
 proc defineSymbols*() =

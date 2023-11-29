@@ -30,7 +30,7 @@ import vm/lib
 import vm/[env, errors, eval, exec]
 
 #=======================================
-# Methods
+# Main symbols
 #=======================================
 
 proc defineSymbols*() =

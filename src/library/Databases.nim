@@ -30,7 +30,7 @@ when not defined(NOSQLITE):
 import vm/lib
 
 #=======================================
-# Methods
+# Main symbols
 #=======================================
 
 # TODO(Databases) Add support for IndexedDB

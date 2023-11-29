@@ -42,7 +42,7 @@ when not defined(WEB):
     import vm/[bytecode, errors, parse]
 
 #=======================================
-# Methods
+# Main symbols
 #=======================================
 
 proc defineSymbols*() =
