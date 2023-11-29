@@ -364,7 +364,6 @@ proc defineLibrary*() =
 
     # TODO(System\script) add documentation example
     #  labels: library, documentation, easy
-
     builtin "script",
         alias       = unaliased, 
         op          = opNop,
