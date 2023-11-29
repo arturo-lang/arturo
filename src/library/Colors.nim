@@ -24,7 +24,7 @@ import sequtils, sugar
 import vm/lib
 
 #=======================================
-# Main symbols
+# Definitions
 #=======================================
 
 proc defineLibrary*() =

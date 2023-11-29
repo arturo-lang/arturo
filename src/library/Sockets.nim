@@ -31,7 +31,7 @@ when not defined(WEB):
     import vm/errors
 
 #=======================================
-# Main symbols
+# Definitions
 #=======================================
 
 # TODO(Sockets) Verify the whole module & check for missing functionality

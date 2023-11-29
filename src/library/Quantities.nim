@@ -52,7 +52,7 @@ template convertQuantity(x, y: Value, xKind, yKind: ValueKind): untyped =
         push newQuantity(toQuantity(y.rat, qs))
 
 #=======================================
-# Main symbols
+# Definitions
 #=======================================
 
 proc defineLibrary*() =

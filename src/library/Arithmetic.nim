@@ -25,7 +25,7 @@ when not defined(NOGMP):
     import helpers/bignums as BignumsHelper
 
 #=======================================
-# Main symbols
+# Definitions
 #=======================================
 
 proc defineLibrary*() =

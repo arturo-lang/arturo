@@ -35,7 +35,7 @@ import vm/lib
 import vm/[env, errors, eval, exec, parse]
 
 #=======================================
-# Main symbols
+# Definitions
 #=======================================
 
 proc defineLibrary*() =
