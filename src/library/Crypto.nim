@@ -43,6 +43,10 @@ import vm/lib
 
 proc defineLibrary*() =
 
+    #----------------------------
+    # Functions
+    #----------------------------
+
     builtin "crc",
         alias       = unaliased, 
         op          = opNop,
