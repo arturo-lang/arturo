@@ -19,6 +19,8 @@
 # Libraries
 #=======================================
 
+import algorithm
+
 import helpers/objects
 
 import vm/lib
