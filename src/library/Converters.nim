@@ -39,6 +39,7 @@ import helpers/arrays
 when not defined(NOGMP):
     import helpers/bignums
 
+import helpers/conversion
 import helpers/datasource
 import helpers/objects
 
