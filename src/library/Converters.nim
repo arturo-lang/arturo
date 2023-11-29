@@ -106,12 +106,6 @@ proc generateCustomObject(prot: Prototype, arguments: ValueArray | ValueDict): V
                         self.o[methodName] = objectMethod
     )
 
-template throwCannotConvert(): untyped =
-    RuntimeError_CannotConvert(codify(y), $(y.kind), (if x.tpKind==UserType: x.ts.name else: $(x.t)))
-
-template throwConversionFailed(): untyped =
-    RuntimeError_ConversionFailed(codify(y), $(y.kind), (if x.tpKind==UserType: x.ts.name else: $(x.t)))
-
 #=======================================
 # Definitions
 #=======================================

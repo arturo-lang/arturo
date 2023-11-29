@@ -13,6 +13,16 @@
 import vm/values/value
 
 #=======================================
+# Helpers
+#=======================================
+
+template throwCannotConvert(): untyped =
+    RuntimeError_CannotConvert(codify(y), $(y.kind), (if x.tpKind==UserType: x.ts.name else: $(x.t)))
+
+template throwConversionFailed(): untyped =
+    RuntimeError_ConversionFailed(codify(y), $(y.kind), (if x.tpKind==UserType: x.ts.name else: $(x.t)))
+
+#=======================================
 # Methods
 #=======================================
 
