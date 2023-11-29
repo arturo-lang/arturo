@@ -19,10 +19,11 @@
 # Libraries
 #=======================================
 
-import algorithm
+import algorithm, sequtils, sugar, unicode
 
 import helpers/conversion
 import helpers/objects
+import helpers/ranges
 
 import vm/lib
 import vm/[exec]
