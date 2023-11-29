@@ -288,11 +288,6 @@ proc defineLibrary*() =
             else:
                 ProgramError_panic(x.s.replace("\n",";"), code)
 
-    # TODO(Paths/path) move to System module?
-    #  although it's about paths, actually it's more about *system* paths;
-    #  rather than path manipulation. So, that could be a better fit.
-    #  labels: enhancement, library
-
     # TODO(Paths/path) shouldn't be considered a constant
     #  let's say constants are exactly that: constants.
     #  if the exact same "constant" returns different results based on
