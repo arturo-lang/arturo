@@ -31,6 +31,7 @@ import algorithm, os, random, sequtils
 import strutils, sugar, unicode
 
 import helpers/arrays
+import helpers/datasource
 import helpers/dictionaries
 import helpers/combinatorics
 import helpers/ranges
