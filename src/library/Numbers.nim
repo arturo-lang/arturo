@@ -52,6 +52,11 @@ template processTrigonometric(fun: untyped): untyped =
 #=======================================
 # Definitions
 #=======================================
+
+# TODO(Numbers) add `cbrt` built-in function
+#  the goal would be to have a function that returns the cubic root of a number
+#  potential use: https://rosettacode.org/wiki/Cubic_special_primes
+#  labels: library, enhancement, new feature
  
 proc defineLibrary*() =
 
@@ -393,7 +398,6 @@ proc defineLibrary*() =
             #=======================================================
             push(newInteger(int(ceil(asFloat(x)))))
 
-
     builtin "clamp",
         alias       = unaliased, 
         op          = opNop,
@@ -446,7 +450,6 @@ proc defineLibrary*() =
             else:
                 discard
              
-
     builtin "conj",
         alias       = unaliased, 
         op          = opNop,
@@ -1361,10 +1364,6 @@ proc defineLibrary*() =
             #=======================================================
             processTrigonometric(sinh)
 
-    # TODO(Numbers) add `cbrt` built-in function
-    #  the goal would be to have a function that returns the cubic root of a number
-    #  potential use: https://rosettacode.org/wiki/Cubic_special_primes
-    #  labels: library, enhancement, new feature
     builtin "sqrt",
         alias       = unaliased, 
         op          = opNop,
