@@ -33,6 +33,10 @@ proc defineLibrary*() =
     #  Is it worth the fuss?
     #  labels: library, enhancement, open discussion
 
+    #----------------------------
+    # Functions
+    #----------------------------
+
     builtin "and",
         alias       = unaliased, 
         op          = opBAnd,
