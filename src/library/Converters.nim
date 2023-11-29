@@ -76,12 +76,6 @@ func canBeInlined(v: Value): bool {.enforceNoRaises.} =
                 return false
     return true
 
-proc parseFL(s: string): float =
-    result = 0.0
-    let L = parseutils.parseFloat(s, result, 0)
-    if L != s.len or L == 0:
-        raise newException(ValueError, "invalid float: " & s)
-
 proc generateCustomObject(prot: Prototype, arguments: ValueArray | ValueDict): Value =
     newObject(arguments, prot, proc (self: Value, prot: Prototype) =
         for methodName, objectMethod in prot.methods:
