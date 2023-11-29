@@ -36,6 +36,10 @@ import vm/values/custom/[vrange]
 
 proc defineLibrary*() =
 
+    #----------------------------
+    # Functions
+    #----------------------------
+
     builtin "average",
         alias       = unaliased,
         op          = opNop,
