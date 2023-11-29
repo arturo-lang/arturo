@@ -57,49 +57,9 @@ template convertQuantity(x, y: Value, xKind, yKind: ValueKind): untyped =
 
 proc defineLibrary*() =
 
-    when not defined(NOGMP):
-        addPhysicalConstants()
-        
-    addPropertyPredicates()
-
-    builtin "conforms?",
-        alias       = colonequal,
-        op          = opNop,
-        rule        = InfixPrecedence,
-        description = "check if given quantities/units are compatible",
-        args        = {
-            "a"     : {Quantity, Unit},
-            "b"     : {Quantity, Unit}
-        },
-        attrs       = NoAttrs,
-        returns     = {Logical},
-        example     = """
-            conforms? 3`m `m                ; => true
-            conforms? 4`m `cm               ; => true
-
-            4`yd := 5`m                     ; => true
-            5`m := `s                       ; => false
-            ..........
-            givenValue: 6`yd/s      
-
-            conforms? givenValue `m         ; => false
-            conforms? givenValue `km/h      ; => true
-            ..........
-            3`m := 4`m                      ; => true
-            5`W := 5`N                      ; => false
-            5`W := 3`J/s                    ; => true
-        """:
-            #=======================================================
-            if xKind == Quantity:
-                if yKind == Quantity:
-                    push newLogical(x.q =~ y.q)
-                else:
-                    push newLogical(x.q =~ y.u)
-            else:
-                if yKind == Quantity:
-                    push newLogical(x.u =~ y.q)
-                else:
-                    push newLogical(x.u =~ y.u)
+    #----------------------------
+    # Functions
+    #----------------------------
 
     builtin "convert",
         alias       = longarrowright,
@@ -312,6 +272,58 @@ proc defineLibrary*() =
                     push newUnit(getBaseUnits(x.u))
                 else:
                     push(newUnit(x.u))
+
+    #----------------------------
+    # Predicates
+    #----------------------------
+
+    builtin "conforms?",
+        alias       = colonequal,
+        op          = opNop,
+        rule        = InfixPrecedence,
+        description = "check if given quantities/units are compatible",
+        args        = {
+            "a"     : {Quantity, Unit},
+            "b"     : {Quantity, Unit}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            conforms? 3`m `m                ; => true
+            conforms? 4`m `cm               ; => true
+
+            4`yd := 5`m                     ; => true
+            5`m := `s                       ; => false
+            ..........
+            givenValue: 6`yd/s      
+
+            conforms? givenValue `m         ; => false
+            conforms? givenValue `km/h      ; => true
+            ..........
+            3`m := 4`m                      ; => true
+            5`W := 5`N                      ; => false
+            5`W := 3`J/s                    ; => true
+        """:
+            #=======================================================
+            if xKind == Quantity:
+                if yKind == Quantity:
+                    push newLogical(x.q =~ y.q)
+                else:
+                    push newLogical(x.q =~ y.u)
+            else:
+                if yKind == Quantity:
+                    push newLogical(x.u =~ y.q)
+                else:
+                    push newLogical(x.u =~ y.u)
+
+    addPropertyPredicates()
+
+    #----------------------------
+    # Constants
+    #----------------------------
+
+    when not defined(NOGMP):
+        addPhysicalConstants()
 
 #=======================================
 # Add Library
