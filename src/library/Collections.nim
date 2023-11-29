@@ -379,7 +379,79 @@ proc defineLibrary*() =
             else:
                 let res = unzip(x.a.map((z)=>(requireValue(z,{Block,Inline});(z.a[0], z.a[1]))))
                 push(newBlock(@[newBlock(res[0]), newBlock(res[1])]))
-                
+
+    builtin "dictionary",
+        alias       = sharp,
+        op          = opDict,
+        rule        = PrefixPrecedence,
+        description = "create dictionary from given block or file, by getting all internal symbols",
+        args        = {
+            "source": {String,Block}
+        },
+        attrs       = {
+            "with"  : ({Block},"embed given symbols"),
+            "raw"   : ({Logical},"create dictionary from raw block"),
+            "lower" : ({Logical},"automatically convert all keys to lowercase")
+        },
+        returns     = {Dictionary},
+        example     = """
+            none: #[]               ; none: []
+            a: #[
+                name: "John"
+                age: 34
+            ]
+            ; a: [name: "John", age: 34]
+
+            d: #[
+                name: "John"
+                print "we are in the block"
+                age: 34
+                print "yep"
+            ]
+            ; we are in the block
+            ; yep
+            ; d: [name: "John", age: 34]
+            ..........
+            e: #.lower [
+                Name: "John"
+                suRnaMe: "Doe"
+                AGE: 35
+            ]
+            ; e: [name:John, surname:Doe, age:35]
+        """:
+            #=======================================================
+            var dict: ValueDict
+
+            if xKind==Block:
+                if (hadAttr("raw")):
+                    dict = initOrderedTable[string,Value]()
+                    var idx = 0
+                    while idx < x.a.len:
+                        dict[x.a[idx].s] = x.a[idx+1]
+                        idx += 2
+                else:
+                    dict = execDictionary(x)
+            elif xKind==String:
+                let (src, tp) = getSource(x.s)
+
+                if tp!=TextData:
+                    dict = execDictionary(doParse(src, isFile=false))#, isIsolated=true)
+                else:
+                    RuntimeError_FileNotFound(x.s)
+
+            if checkAttr("with"):
+                for x in aWith.a:
+                    requireValue(x, {Word,Literal})
+                    dict[x.s] = FetchSym(x.s)
+
+            if (hadAttr("lower")):
+                var oldDict = dict
+                dict = initOrderedTable[string,Value]()
+                for k,v in pairs(oldDict):
+                    dict[k.toLower()] = v
+
+            push(newDictionary(dict))
+
     builtin "drop",
         alias       = unaliased,
         op          = opNop,
