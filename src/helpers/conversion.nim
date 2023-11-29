@@ -26,7 +26,7 @@ import helpers/ranges
 when not defined(WEB):
     import helpers/stores
 
-import vm/[bytecode, errors, eval, exec, opcodes, parse]
+import vm/[bytecode, checks, errors, eval, exec, opcodes, parse]
 
 import vm/values/[value, printable]
 import vm/values/custom/[vbinary, vlogical, vrange, vrational]
