@@ -37,7 +37,7 @@ proc defineLibrary*() =
     #----------------------------
 
     builtin "blend",
-        alias       = at, 
+        alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "blend given colors and get result",
