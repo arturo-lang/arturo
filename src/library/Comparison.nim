@@ -25,12 +25,12 @@ import vm/lib
 # Definitions
 #=======================================
 
-proc defineLibrary*() =
+# TODO(Comparison) add built-in function for "approximately equal"
+#  This could serve in cases where we want to compare between weirdly-rounded floating-point numbers and integers, e.g.: 3.0000001 and 3.
+#  But: we'll obviously have to somehow "define" this... approximate equality.
+#  labels: library, enhancement, open discussion
 
-    # TODO(Comparison) add built-in function for "approximately equal"
-    #  This could serve in cases where we want to compare between weirdly-rounded floating-point numbers and integers, e.g.: 3.0000001 and 3.
-    #  But: we'll obviously have to somehow "define" this... approximate equality.
-    #  labels: library, enhancement, open discussion
+proc defineLibrary*() =
 
     builtin "between?",
         alias       = thickarrowboth, 
