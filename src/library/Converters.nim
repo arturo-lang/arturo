@@ -36,8 +36,6 @@
 import algorithm, sequtils, strformat, sugar, unicode
 
 import helpers/arrays
-
-import helpers/conversion
 import helpers/datasource
 
 when not defined(NOASCIIDECODE):
