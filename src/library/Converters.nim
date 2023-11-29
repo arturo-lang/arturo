@@ -33,7 +33,7 @@
 # Libraries
 #=======================================
 
-import sequtils, strformat, sugar
+import sequtils, strformat
 
 import helpers/datasource
 
