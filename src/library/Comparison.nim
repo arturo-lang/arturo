@@ -32,6 +32,43 @@ import vm/lib
 
 proc defineLibrary*() =
 
+    #----------------------------
+    # Functions
+    #----------------------------
+
+    # TODO(Comparison/compare) verify it's working right
+    #  The main problem seems to be this vague `else:`.
+    #  In a few words: Even comparisons that are simply not possible will return 1 (!)
+    #  see also: https://github.com/arturo-lang/arturo/pull/1139#issuecomment-1509404906
+    #  labels: library, critical, bug
+    builtin "compare",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "compare given values and return -1, 0, or 1 based on the result",
+        args        = {
+            "valueA": {Any},
+            "valueB": {Any}
+        },
+        attrs       = NoAttrs,
+        returns     = {Integer},
+        example     = """
+            compare 1 2           ; => -1
+            compare 3 3           ; => 0
+            compare 4 3           ; => 1
+        """:
+            #=======================================================
+            if x < y:
+                push(I1M)
+            elif x == y:
+                push(I0)
+            else:
+                push(I1)
+
+    #----------------------------
+    # Predicates
+    #----------------------------
+
     builtin "between?",
         alias       = thickarrowboth, 
         op          = opNop,
@@ -65,35 +102,6 @@ proc defineLibrary*() =
         
             if y < z: x.isBetween(y, z)
             else: x.isBetween(z, y)
-
-    # TODO(Comparison/compare) verify it's working right
-    #  The main problem seems to be this vague `else:`.
-    #  In a few words: Even comparisons that are simply not possible will return 1 (!)
-    #  see also: https://github.com/arturo-lang/arturo/pull/1139#issuecomment-1509404906
-    #  labels: library, critical, bug
-    builtin "compare",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "compare given values and return -1, 0, or 1 based on the result",
-        args        = {
-            "valueA": {Any},
-            "valueB": {Any}
-        },
-        attrs       = NoAttrs,
-        returns     = {Integer},
-        example     = """
-            compare 1 2           ; => -1
-            compare 3 3           ; => 0
-            compare 4 3           ; => 1
-        """:
-            #=======================================================
-            if x < y:
-                push(I1M)
-            elif x == y:
-                push(I0)
-            else:
-                push(I1)
 
     builtin "equal?",
         alias       = equal, 
