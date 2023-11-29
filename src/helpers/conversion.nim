@@ -30,6 +30,12 @@ import vm/[bytecode, checks, errors, eval, exec, opcodes, parse, stack]
 
 import vm/values/[value, printable]
 import vm/values/custom/[vbinary, vcolor, vlogical, vrange, vrational]
+
+#=======================================
+# Constants
+#=======================================
+
+let currentBuiltinName = "to"
     
 #=======================================
 # Helpers
@@ -312,7 +318,6 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
             of Block:
                 case tp:
                     of Complex:
-                        let currentBuiltinName = "to"
                         requireBlockSize(y, 2)
 
                         let firstElem {.cursor} = y.a[0]
@@ -322,7 +327,6 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                         
                         return newComplex(firstElem, secondElem)
                     of Rational:
-                        let currentBuiltinName = "to"
                         requireBlockSize(y, 2)
                         
                         let firstElem {.cursor} = y.a[0]
@@ -368,7 +372,6 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                             throwCannotConvert()
 
                     of Quantity:
-                        let currentBuiltinName = "to"
                         requireBlockSize(y, 2)
                         
                         let firstElem {.cursor} = y.a[0]
@@ -382,7 +385,6 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                             return newQuantity(firstElem, secondElem.s)
 
                     of Color:
-                        let currentBuiltinName = "to"
                         requireBlockSize(y, 3, 4)
 
                         if (hadAttr("hsl")):
