@@ -33,18 +33,15 @@
 # Libraries
 #=======================================
 
-import algorithm, sequtils, strformat, sugar, unicode
+import sequtils, strformat, sugar, unicode
 
-import helpers/arrays
 import helpers/datasource
 
 when not defined(NOASCIIDECODE):
     import helpers/strings
 
-import helpers/ranges
-
 import vm/lib
-import vm/[bytecode, errors, eval, exec, opcodes, parse]
+import vm/[bytecode, errors, exec, opcodes, parse]
 
 import vm/values/printable
 
