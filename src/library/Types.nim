@@ -21,6 +21,7 @@
 
 import algorithm
 
+import helpers/conversion
 import helpers/objects
 
 import vm/lib
