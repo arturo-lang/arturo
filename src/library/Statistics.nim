@@ -31,10 +31,10 @@ import vm/values/custom/[vrange]
 # Definitions
 #=======================================
 
-proc defineLibrary*() =
+# TODO(Statistics) more potential built-in function candidates?
+#  labels: library, enhancement, open discussion
 
-    # TODO(Statistics) more potential built-in function candidates?
-    #  labels: library, enhancement, open discussion
+proc defineLibrary*() =
 
     builtin "average",
         alias       = unaliased,
