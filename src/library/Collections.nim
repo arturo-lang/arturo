@@ -123,7 +123,6 @@ proc defineLibrary*() =
                     else:
                         push newBlock(x.a & y)
 
-
     builtin "chop",
         alias       = unaliased,
         op          = opNop,
@@ -197,7 +196,6 @@ proc defineLibrary*() =
                     else: push(newBlock())
                 else: discard
 
-
     # TODO(Collections/combine) should also work with in-place Literals?
     #  labels: library, enhancement, open discussion
     builtin "combine",
@@ -246,7 +244,6 @@ proc defineLibrary*() =
             else:
                 push(newBlock(getCombinations(x.a, sz, doRepeat).map((
                         z)=>newBlock(z))))
-
 
     # TODO(Collections/contains?) add new `.key` option?
     #  this would allow us to check whether the given dictionary contains a specific key
@@ -397,7 +394,6 @@ proc defineLibrary*() =
                 let res = unzip(x.a.map((z)=>(requireValue(z,{Block,Inline});(z.a[0], z.a[1]))))
                 push(newBlock(@[newBlock(res[0]), newBlock(res[1])]))
                 
-
     builtin "drop",
         alias       = unaliased,
         op          = opNop,
@@ -764,7 +760,6 @@ proc defineLibrary*() =
                     else:
                         discard
                 else: discard
-
 
     # TODO(Collections/in?) add new `.key` option?
     #  same as with `contains?`
@@ -1278,8 +1273,7 @@ proc defineLibrary*() =
             else:
                 push(newBlock(getPermutations(x.a, sz, doRepeat).map((
                         z)=>newBlock(z))))
-                        
-                        
+                                       
     builtin "pop",
         alias       = unaliased,
         op          = opNop,
@@ -1360,8 +1354,6 @@ proc defineLibrary*() =
                 else: discard
             else: raise newException(ValueError, "Attribute 'n can't be 0 or negative.")
                 
-
-
     builtin "prepend",
         alias       = unaliased,
         op          = opNop,
@@ -2115,7 +2107,6 @@ proc defineLibrary*() =
 
             push newLogical(isSorted(x.a, ascending = ascending))
 
-
     # TODO(Collections\split) Add better support for unicode strings
     #  Currently, simple split works fine - but using different attributes (at, every, by, etc) doesn't
     #  labels: library,bug
@@ -2126,7 +2117,6 @@ proc defineLibrary*() =
     #   split.every: 3 'b, debug b
     #  ```
     #  labels: library, bug
-
     builtin "split",
         alias       = unaliased,
         op          = opSplit,
