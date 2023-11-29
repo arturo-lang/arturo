@@ -54,7 +54,7 @@ import vm/lib
 import vm/[bytecode, errors, eval, exec, opcodes, parse]
 
 import vm/values/printable
-import vm/values/custom/[vbinary, vrange, vrational]
+import vm/values/custom/[vbinary, vcolor, vrange, vrational]
 
 #=======================================
 # Variables
