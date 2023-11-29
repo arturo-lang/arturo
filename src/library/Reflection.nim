@@ -33,7 +33,7 @@ import vm/[env, errors, eval, exec]
 # Main symbols
 #=======================================
 
-proc defineSymbols*() =
+proc defineLibrary*() =
     
     builtin "arity",
         alias       = unaliased, 
@@ -1128,4 +1128,4 @@ proc defineSymbols*() =
 # Add Library
 #=======================================
 
-Libraries.add(defineSymbols)
+Libraries.add(defineLibrary)

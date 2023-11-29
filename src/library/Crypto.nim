@@ -41,7 +41,7 @@ import vm/lib
 # Main symbols
 #=======================================
 
-proc defineSymbols*() =
+proc defineLibrary*() =
 
     builtin "crc",
         alias       = unaliased, 
@@ -238,4 +238,4 @@ proc defineSymbols*() =
 # Add Library
 #=======================================
 
-Libraries.add(defineSymbols)
+Libraries.add(defineLibrary)

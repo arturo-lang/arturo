@@ -25,7 +25,7 @@ import vm/lib
 # Main symbols
 #=======================================
 
-proc defineSymbols*() =
+proc defineLibrary*() =
 
     # TODO(Comparison) add built-in function for "approximately equal"
     #  This could serve in cases where we want to compare between weirdly-rounded floating-point numbers and integers, e.g.: 3.0000001 and 3.
@@ -238,4 +238,4 @@ proc defineSymbols*() =
 # Add Library
 #=======================================
 
-Libraries.add(defineSymbols)
+Libraries.add(defineLibrary)

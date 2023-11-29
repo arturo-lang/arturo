@@ -25,7 +25,7 @@ import vm/lib
 # Main symbols
 #=======================================
 
-proc defineSymbols*() =
+proc defineLibrary*() =
     
     # TODO(Binary) more potential built-in function candidates?
     #  I'm thinking that we could probably add functions that allows to either clear or "set" a specific bit.
@@ -248,4 +248,4 @@ proc defineSymbols*() =
 # Add Library
 #=======================================
 
-Libraries.add(defineSymbols)
+Libraries.add(defineLibrary)

@@ -55,7 +55,7 @@ template convertQuantity(x, y: Value, xKind, yKind: ValueKind): untyped =
 # Main symbols
 #=======================================
 
-proc defineSymbols*() =
+proc defineLibrary*() =
 
     when not defined(NOGMP):
         addPhysicalConstants()
@@ -317,4 +317,4 @@ proc defineSymbols*() =
 # Add Library
 #=======================================
 
-Libraries.add(defineSymbols)
+Libraries.add(defineLibrary)

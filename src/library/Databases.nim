@@ -45,7 +45,7 @@ import vm/lib
 #  Currently, the only supported database is Sqlite
 #  labels: library,enhancement
 
-proc defineSymbols*() =
+proc defineLibrary*() =
 
     when not defined(NOSQLITE):
 
@@ -151,4 +151,4 @@ proc defineSymbols*() =
 # Add Library
 #=======================================
 
-Libraries.add(defineSymbols)
+Libraries.add(defineLibrary)

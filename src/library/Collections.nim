@@ -49,7 +49,7 @@ import vm/errors as err
 # Main symbols
 #=======================================
 
-proc defineSymbols*() =
+proc defineLibrary*() =
 
     builtin "append",
         alias       = doubleplus,
@@ -2592,4 +2592,4 @@ proc defineSymbols*() =
 # Add Library
 #=======================================
 
-Libraries.add(defineSymbols)
+Libraries.add(defineLibrary)

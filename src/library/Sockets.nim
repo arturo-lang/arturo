@@ -40,7 +40,7 @@ when not defined(WEB):
 #  features
 #  labels: open discussion
 
-proc defineSymbols*() =
+proc defineLibrary*() =
     
     when not defined(WEB):
 
@@ -292,4 +292,4 @@ proc defineSymbols*() =
 # Add Library
 #=======================================
 
-Libraries.add(defineSymbols)
+Libraries.add(defineLibrary)
