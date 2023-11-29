@@ -59,6 +59,10 @@ when defined(SAFE):
 
 proc defineLibrary*() =
 
+    #----------------------------
+    # Functions
+    #----------------------------
+
     when not defined(WEB):
 
         builtin "browse",
