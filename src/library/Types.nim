@@ -756,6 +756,23 @@ proc defineLibrary*() =
             #=======================================================
             push(newLogical(xKind==Type))
 
+    builtin "unit?",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "checks if given value is of type :unit",
+        args        = {
+            "value" : {Any}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            unit? `m
+            ; => true
+        """:
+            #=======================================================
+            push(newLogical(xKind==Unit))
+
     builtin "version?",
         alias       = unaliased, 
         op          = opNop,
