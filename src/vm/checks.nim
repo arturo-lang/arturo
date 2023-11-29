@@ -12,8 +12,9 @@
 # Libraries
 #=======================================
 
-import sequtils
+import sequtils, strutils
 
+import vm/errors
 import vm/values/[value, printable]
 
 #=======================================
