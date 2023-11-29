@@ -44,7 +44,7 @@ when defined(WEB):
         echo buffer
 
 #=======================================
-# Methods
+# Main symbols
 #=======================================
 
 proc defineSymbols*() =

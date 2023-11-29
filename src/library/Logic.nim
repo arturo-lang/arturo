@@ -23,7 +23,7 @@ import vm/lib
 import vm/[exec]
 
 #=======================================
-# Methods
+# Main symbols
 #=======================================
 
 proc defineSymbols*() =

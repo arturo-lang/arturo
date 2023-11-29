@@ -38,7 +38,7 @@ import helpers/url
 import vm/lib
 
 #=======================================
-# Methods
+# Main symbols
 #=======================================
 
 proc defineSymbols*() =

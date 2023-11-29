@@ -28,7 +28,7 @@ import vm/lib
 import vm/values/custom/[vrange]
 
 #=======================================
-# Methods
+# Main symbols
 #=======================================
 
 proc defineSymbols*() =

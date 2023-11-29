@@ -58,7 +58,7 @@ template replaceStrWith(str: var string, src: Value, dst: Value): untyped =
         str = str.replaceAll(src.rx, dst.s)
 
 #=======================================
-# Methods
+# Main symbols
 #=======================================
 
 proc defineSymbols*() =

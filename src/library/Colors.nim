@@ -24,7 +24,7 @@ import sequtils, sugar
 import vm/lib
 
 #=======================================
-# Methods
+# Main symbols
 #=======================================
 
 proc defineSymbols*() =

@@ -46,7 +46,7 @@ import vm/values/custom/[vbinary, vrange]
 import vm/errors as err
 
 #=======================================
-# Methods
+# Main symbols
 #=======================================
 
 proc defineSymbols*() =
