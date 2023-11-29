@@ -216,6 +216,8 @@ proc defineLibrary*() =
         },
         attrs       = NoAttrs,
         returns     = {Type},
+        # TODO(Types\is) add documentation example
+        #  labels: library, documentation, easy
         example     = """
         """:
             #=======================================================
