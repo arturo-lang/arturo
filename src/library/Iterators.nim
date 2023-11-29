@@ -420,6 +420,10 @@ template doIterate(
 
 proc defineLibrary*() =
 
+    #----------------------------
+    # Functions
+    #----------------------------
+
     builtin "arrange",
         alias       = unaliased,
         op          = opNop,
@@ -698,47 +702,6 @@ proc defineLibrary*() =
                     cntr += 1
             do:
                 push(newInteger(cntr))
-
-    builtin "every?",
-        alias       = unaliased,
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "check if every item in collection satisfies given condition",
-        args        = {
-            "collection"    : {Integer,String,Block,Range,Inline,Dictionary,Object},
-            "params"        : {Literal,Block,Null},
-            "condition"     : {Block,Bytecode}
-        },
-        attrs       = {
-            "with"      : ({Literal},"use given index")
-        },
-        returns     = {Logical},
-        example     = """
-            if every? [2 4 6 8] 'x [even? x]
-                -> print "every number is an even integer"
-            ; every number is an even integer
-            ..........
-            print every? 1..10 'x -> x < 11
-            ; true
-            ..........
-            print every? 1..10 [x y]-> 20 > x+y
-            ; true
-            ..........
-            print every? [2 3 5 7 11 14] 'x [prime? x]
-            ; false
-            ..........
-            print every?.with:'i ["one" "two" "three"] 'x -> 4 > (size x)-i
-            ; true
-        """:
-            #=======================================================
-            doIterate(itLit=false, itCap=false, itInf=false, itCounter=false, itRolling=false, VFALSE):
-                discard
-            do:
-                if isFalse(stack.pop()):
-                    push(VFALSE)
-                    return
-            do:
-                push(VTRUE)
 
     builtin "filter",
         alias       = unaliased,
@@ -1426,6 +1389,51 @@ proc defineLibrary*() =
                 else:
                     if unlikely(inPlace): RawInPlaced = newBlock(res)
                     else: push(newBlock(res))
+
+    #----------------------------
+    # Predicates
+    #----------------------------
+
+    builtin "every?",
+        alias       = unaliased,
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "check if every item in collection satisfies given condition",
+        args        = {
+            "collection"    : {Integer,String,Block,Range,Inline,Dictionary,Object},
+            "params"        : {Literal,Block,Null},
+            "condition"     : {Block,Bytecode}
+        },
+        attrs       = {
+            "with"      : ({Literal},"use given index")
+        },
+        returns     = {Logical},
+        example     = """
+            if every? [2 4 6 8] 'x [even? x]
+                -> print "every number is an even integer"
+            ; every number is an even integer
+            ..........
+            print every? 1..10 'x -> x < 11
+            ; true
+            ..........
+            print every? 1..10 [x y]-> 20 > x+y
+            ; true
+            ..........
+            print every? [2 3 5 7 11 14] 'x [prime? x]
+            ; false
+            ..........
+            print every?.with:'i ["one" "two" "three"] 'x -> 4 > (size x)-i
+            ; true
+        """:
+            #=======================================================
+            doIterate(itLit=false, itCap=false, itInf=false, itCounter=false, itRolling=false, VFALSE):
+                discard
+            do:
+                if isFalse(stack.pop()):
+                    push(VFALSE)
+                    return
+            do:
+                push(VTRUE)
 
     builtin "some?",
         alias       = unaliased,
