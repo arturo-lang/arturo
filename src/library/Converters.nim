@@ -33,7 +33,7 @@
 # Libraries
 #=======================================
 
-import sequtils, strformat, sugar, unicode
+import sequtils, strformat, sugar
 
 import helpers/datasource
 
@@ -41,7 +41,7 @@ when not defined(NOASCIIDECODE):
     import helpers/strings
 
 import vm/lib
-import vm/[bytecode, errors, exec, opcodes, parse]
+import vm/[bytecode, errors, opcodes, parse]
 
 import vm/values/printable
 
