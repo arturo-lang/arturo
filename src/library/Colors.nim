@@ -27,10 +27,14 @@ import vm/lib
 # Definitions
 #=======================================
 
+# TODO(Colors) more potential built-in function candidates?
+#  labels: library, enhancement, open discussion
+
 proc defineLibrary*() =
 
-    # TODO(Colors) more potential built-in function candidates?
-    #  labels: library, enhancement, open discussion
+    #----------------------------
+    # Functions
+    #----------------------------
 
     builtin "blend",
         alias       = at, 
