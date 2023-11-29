@@ -34,6 +34,10 @@ import vm/[env, errors, eval, exec]
 #=======================================
 
 proc defineLibrary*() =
+
+    #----------------------------
+    # Functions
+    #----------------------------
     
     builtin "arity",
         alias       = unaliased, 
@@ -86,6 +90,229 @@ proc defineLibrary*() =
                 push(VNULL)
             else:
                 push(val)
+
+    builtin "attrs",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "get dictionary of set attributes",
+        args        = NoArgs,
+        attrs       = NoAttrs,
+        returns     = {Dictionary},
+        example     = """
+            greet: function [x][
+                print ["Hello" x "!"]
+                print attrs
+            ]
+            
+            greet.later "John"
+            
+            ; Hello John!
+            ; [
+            ;    later:    true
+            ; ]
+        """:
+            #=======================================================
+            push(getAttrsDict())
+
+    builtin "benchmark",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "benchmark given code",
+        args        = {
+            "action": {Block,Bytecode}
+        },
+        attrs       = {
+            "get"   : ({Logical},"get benchmark time")
+        },
+        returns     = {Nothing,Floating},
+        example     = """
+            benchmark [ 
+                ; some process that takes some time
+                loop 1..10000 => prime? 
+            ]
+            
+            ; [benchmark] time: 0.065s
+            ..........
+            benchmark.get [
+                loop 1..10000 => prime?
+            ]
+            ; => 0.3237628936767578
+        """:
+            #=======================================================
+            let preevaled = evalOrGet(x)
+            if (hadAttr("get")):
+                let time = getBenchmark:
+                    execUnscoped(preevaled)
+
+                push newQuantity(toQuantity(time, parseAtoms("ms")))
+            else:
+                benchmark "":
+                    execUnscoped(preevaled)
+
+    when not defined(WEB):
+
+        builtin "info",
+            alias       = unaliased, 
+            op          = opNop,
+            rule        = PrefixPrecedence,
+            description = "print info for given symbol",
+            args        = {
+                "symbol": {String,Literal,SymbolLiteral,PathLiteral}
+            },
+            attrs       = {
+                "get"       : ({Logical},"get information as dictionary")
+            },
+            returns     = {Dictionary,Nothing},
+            example     = """
+            info 'print
+
+            ; |--------------------------------------------------------------------------------
+            ; |          print  :function                                                   Io
+            ; |--------------------------------------------------------------------------------
+            ; |                 print given value to screen with newline
+            ; |--------------------------------------------------------------------------------
+            ; |          usage  print value :any
+            ; |
+            ; |        options  .lines -> print each value in block in a new line
+            ; |
+            ; |        returns  :nothing
+            ; |--------------------------------------------------------------------------------
+            ..........
+            info '++
+
+            ; |--------------------------------------------------------------------------------
+            ; |         append  :function                                          0x107555A10
+            ; |          alias  ++
+            ; |--------------------------------------------------------------------------------
+            ; |                 append value to given collection
+            ; |--------------------------------------------------------------------------------
+            ; |          usage  append collection :char :string :literal :block
+            ; |                        value :any
+            ; |
+            ; |        returns  :string :block :nothing
+            ; |--------------------------------------------------------------------------------
+            ..........
+            print info.get 'print
+            ; [name:print address:0x1028B3410 type::function module:Io args:[value:[:any]] attrs:[] returns:[:nothing] description:print given value to screen with newline example:print "Hello world!"          ; Hello world!]
+            """:
+                #=======================================================
+                var searchable: string
+                var value: Value = nil
+
+                if xKind == SymbolLiteral:
+                    searchable = $(x.m)
+                    for (sym, binding) in pairs(Aliases):
+                        if sym == x.m:
+                            searchable = binding.name.s
+                            value = FetchSym(searchable)
+                            break
+
+                    if value.isNil:
+                        RuntimeError_AliasNotFound($(x.m))
+                elif xKind == PathLiteral:
+                    searchable = $(x.p[^1])
+                    value = FetchPathSym(x.p)
+                else:
+                    searchable = x.s
+                    value = FetchSym(x.s)
+                
+                if (hadAttr("get")):
+                    push(newDictionary(getInfo(searchable, value, Aliases)))
+                else:
+                    printInfo(searchable, value, Aliases)
+
+    builtin "inspect",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "print full dump of given value to screen",
+        args        = {
+            "value" : {Any}
+        },
+        attrs       = {
+            "muted" : ({Logical},"don't use color output")
+        },
+        returns     = {Nothing},
+        example     = """
+            inspect 3                 ; 3 :integer
+            
+            a: "some text"
+            inspect a                 ; some text :string
+        """:
+            #=======================================================
+            when defined(WEB):
+                resetStdout()
+            let mutedOutput = (hadAttr("muted")) or NoColors
+            x.dump(0, false, muted=mutedOutput)
+
+    builtin "stack",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "get current stack",
+        args        = NoArgs,
+        attrs       = NoAttrs,
+        returns     = {Dictionary},
+        example     = """
+            1 2 3 "done"
+
+            print stack
+            ; 1 2 3 done
+        """:
+            #=======================================================
+            push(newBlock(Stack[0..SP-1]))
+
+    builtin "symbols",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "get currently defined symbols",
+        args        = NoArgs,
+        attrs       = NoAttrs,
+        returns     = {Dictionary},
+        example     = """
+            a: 2
+            b: "hello"
+            
+            print symbols
+            
+            ; [
+            ;    a: 2
+            ;    b: "hello"
+            ;_]
+        """:
+            #=======================================================
+            var symbols: ValueDict = initOrderedTable[string,Value]()
+            for k,v in pairs(Syms):
+                if k[0]!=toUpperAscii(k[0]):
+                    symbols[k] = v
+            push(newDictionary(symbols))
+
+    builtin "type",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "get type of given value",
+        args        = {
+            "value" : {Any}
+        },
+        attrs       = NoAttrs,
+        returns     = {Type},
+        example     = """
+            print type 18966          ; :integer
+            print type "hello world"  ; :string
+        """:
+            #=======================================================
+            if xKind != Object:
+                push(newType(xKind))
+            else:
+                push(newUserType(x.proto.name))
+
+    #----------------------------
+    # Predicates
+    #----------------------------
 
     builtin "attr?",
         alias       = unaliased, 
@@ -150,66 +377,6 @@ proc defineLibrary*() =
         """:
             #=======================================================
             push(newLogical(xKind==AttributeLabel))
-
-    builtin "attrs",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "get dictionary of set attributes",
-        args        = NoArgs,
-        attrs       = NoAttrs,
-        returns     = {Dictionary},
-        example     = """
-            greet: function [x][
-                print ["Hello" x "!"]
-                print attrs
-            ]
-            
-            greet.later "John"
-            
-            ; Hello John!
-            ; [
-            ;    later:    true
-            ; ]
-        """:
-            #=======================================================
-            push(getAttrsDict())
-
-    builtin "benchmark",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "benchmark given code",
-        args        = {
-            "action": {Block,Bytecode}
-        },
-        attrs       = {
-            "get"   : ({Logical},"get benchmark time")
-        },
-        returns     = {Nothing,Floating},
-        example     = """
-            benchmark [ 
-                ; some process that takes some time
-                loop 1..10000 => prime? 
-            ]
-            
-            ; [benchmark] time: 0.065s
-            ..........
-            benchmark.get [
-                loop 1..10000 => prime?
-            ]
-            ; => 0.3237628936767578
-        """:
-            #=======================================================
-            let preevaled = evalOrGet(x)
-            if (hadAttr("get")):
-                let time = getBenchmark:
-                    execUnscoped(preevaled)
-
-                push newQuantity(toQuantity(time, parseAtoms("ms")))
-            else:
-                benchmark "":
-                    execUnscoped(preevaled)
 
     builtin "binary?",
         alias       = unaliased, 
@@ -373,78 +540,6 @@ proc defineLibrary*() =
             #=======================================================
             push(newLogical(xKind==Dictionary))
 
-    when not defined(WEB):
-
-        builtin "info",
-            alias       = unaliased, 
-            op          = opNop,
-            rule        = PrefixPrecedence,
-            description = "print info for given symbol",
-            args        = {
-                "symbol": {String,Literal,SymbolLiteral,PathLiteral}
-            },
-            attrs       = {
-                "get"       : ({Logical},"get information as dictionary")
-            },
-            returns     = {Dictionary,Nothing},
-            example     = """
-            info 'print
-
-            ; |--------------------------------------------------------------------------------
-            ; |          print  :function                                                   Io
-            ; |--------------------------------------------------------------------------------
-            ; |                 print given value to screen with newline
-            ; |--------------------------------------------------------------------------------
-            ; |          usage  print value :any
-            ; |
-            ; |        options  .lines -> print each value in block in a new line
-            ; |
-            ; |        returns  :nothing
-            ; |--------------------------------------------------------------------------------
-            ..........
-            info '++
-
-            ; |--------------------------------------------------------------------------------
-            ; |         append  :function                                          0x107555A10
-            ; |          alias  ++
-            ; |--------------------------------------------------------------------------------
-            ; |                 append value to given collection
-            ; |--------------------------------------------------------------------------------
-            ; |          usage  append collection :char :string :literal :block
-            ; |                        value :any
-            ; |
-            ; |        returns  :string :block :nothing
-            ; |--------------------------------------------------------------------------------
-            ..........
-            print info.get 'print
-            ; [name:print address:0x1028B3410 type::function module:Io args:[value:[:any]] attrs:[] returns:[:nothing] description:print given value to screen with newline example:print "Hello world!"          ; Hello world!]
-            """:
-                #=======================================================
-                var searchable: string
-                var value: Value = nil
-
-                if xKind == SymbolLiteral:
-                    searchable = $(x.m)
-                    for (sym, binding) in pairs(Aliases):
-                        if sym == x.m:
-                            searchable = binding.name.s
-                            value = FetchSym(searchable)
-                            break
-
-                    if value.isNil:
-                        RuntimeError_AliasNotFound($(x.m))
-                elif xKind == PathLiteral:
-                    searchable = $(x.p[^1])
-                    value = FetchPathSym(x.p)
-                else:
-                    searchable = x.s
-                    value = FetchSym(x.s)
-                
-                if (hadAttr("get")):
-                    push(newDictionary(getInfo(searchable, value, Aliases)))
-                else:
-                    printInfo(searchable, value, Aliases)
-
     # TODO(Reflection\inherits?) not working correctly
     #  it seems to be returning `true` invariably...
     #  labels: library, bug
@@ -493,30 +588,6 @@ proc defineLibrary*() =
         """:
             #=======================================================
             push(newLogical(xKind==Inline))
-
-    builtin "inspect",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "print full dump of given value to screen",
-        args        = {
-            "value" : {Any}
-        },
-        attrs       = {
-            "muted" : ({Logical},"don't use color output")
-        },
-        returns     = {Nothing},
-        example     = """
-            inspect 3                 ; 3 :integer
-            
-            a: "some text"
-            inspect a                 ; some text :string
-        """:
-            #=======================================================
-            when defined(WEB):
-                resetStdout()
-            let mutedOutput = (hadAttr("muted")) or NoColors
-            x.dump(0, false, muted=mutedOutput)
 
     builtin "integer?",
         alias       = unaliased, 
@@ -919,23 +990,6 @@ proc defineLibrary*() =
             #=======================================================
             push(newLogical(xKind==Socket))
 
-    builtin "stack",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "get current stack",
-        args        = NoArgs,
-        attrs       = NoAttrs,
-        returns     = {Dictionary},
-        example     = """
-            1 2 3 "done"
-
-            print stack
-            ; 1 2 3 done
-        """:
-            #=======================================================
-            push(newBlock(Stack[0..SP-1]))
-
     builtin "standalone?",
         alias       = unaliased, 
         op          = opNop,
@@ -1025,52 +1079,6 @@ proc defineLibrary*() =
         """:
             #=======================================================
             push(newLogical(xKind==SymbolLiteral))
-
-    builtin "symbols",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "get currently defined symbols",
-        args        = NoArgs,
-        attrs       = NoAttrs,
-        returns     = {Dictionary},
-        example     = """
-            a: 2
-            b: "hello"
-            
-            print symbols
-            
-            ; [
-            ;    a: 2
-            ;    b: "hello"
-            ;_]
-        """:
-            #=======================================================
-            var symbols: ValueDict = initOrderedTable[string,Value]()
-            for k,v in pairs(Syms):
-                if k[0]!=toUpperAscii(k[0]):
-                    symbols[k] = v
-            push(newDictionary(symbols))
-
-    builtin "type",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "get type of given value",
-        args        = {
-            "value" : {Any}
-        },
-        attrs       = NoAttrs,
-        returns     = {Type},
-        example     = """
-            print type 18966          ; :integer
-            print type "hello world"  ; :string
-        """:
-            #=======================================================
-            if xKind != Object:
-                push(newType(xKind))
-            else:
-                push(newUserType(x.proto.name))
 
     builtin "type?",
         alias       = unaliased, 
