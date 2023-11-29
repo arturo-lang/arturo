@@ -37,7 +37,7 @@ import vm/[errors, eval, exec]
 import vm/values/custom/vrange
 
 #=======================================
-# Main symbols
+# Definitions
 #=======================================
 
 template iteratorLoop(justLiteral: bool, forever: bool, before: untyped, body: untyped) {.dirty.} =

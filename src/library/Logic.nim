@@ -23,7 +23,7 @@ import vm/lib
 import vm/[exec]
 
 #=======================================
-# Main symbols
+# Definitions
 #=======================================
 
 proc defineLibrary*() =

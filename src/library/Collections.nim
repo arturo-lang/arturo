@@ -46,7 +46,7 @@ import vm/values/custom/[vbinary, vrange]
 import vm/errors as err
 
 #=======================================
-# Main symbols
+# Definitions
 #=======================================
 
 proc defineLibrary*() =

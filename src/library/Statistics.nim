@@ -28,7 +28,7 @@ import vm/lib
 import vm/values/custom/[vrange]
 
 #=======================================
-# Main symbols
+# Definitions
 #=======================================
 
 proc defineLibrary*() =

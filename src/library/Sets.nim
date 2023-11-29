@@ -26,7 +26,7 @@ import helpers/sets
 import vm/lib
 
 #=======================================
-# Main symbols
+# Definitions
 #=======================================
 
 proc defineLibrary*() =

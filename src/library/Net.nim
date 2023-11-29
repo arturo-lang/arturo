@@ -54,7 +54,7 @@ when defined(SAFE):
     import vm/[errors]
 
 #=======================================
-# Main symbols
+# Definitions
 #=======================================
 
 proc defineLibrary*() =

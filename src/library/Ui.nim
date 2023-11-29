@@ -36,7 +36,7 @@ when not defined(NODIALOGS):
     import helpers/dialogs
 
 #=======================================
-# Main symbols
+# Definitions
 #=======================================
 
 proc defineLibrary*() =

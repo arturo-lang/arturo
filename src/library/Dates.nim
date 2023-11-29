@@ -24,7 +24,7 @@ import times
 import vm/lib
 
 #=======================================
-# Main symbols
+# Definitions
 #=======================================
 
 proc defineLibrary*() =

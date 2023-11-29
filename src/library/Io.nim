@@ -44,7 +44,7 @@ when defined(WEB):
         echo buffer
 
 #=======================================
-# Main symbols
+# Definitions
 #=======================================
 
 proc defineLibrary*() =
