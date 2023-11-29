@@ -456,7 +456,7 @@ proc defineLibrary*() =
             #=======================================================
             push(newLogical(xKind==Dictionary))
 
-    # TODO(Reflection\inherits?) not working correctly
+    # TODO(Types\inherits?) not working correctly
     #  it seems to be returning `true` invariably...
     #  labels: library, bug
     builtin "inherits?",
@@ -470,7 +470,7 @@ proc defineLibrary*() =
         },
         attrs       = NoAttrs,
         returns     = {Logical},
-        # TODO(Reflection\inherits?) add documentation example
+        # TODO(Types\inherits?) add documentation example
         #  labels: library, documentation, easy
         example     = """
         """:
