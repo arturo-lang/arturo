@@ -33,15 +33,12 @@
 # Libraries
 #=======================================
 
-import algorithm, parseutils, sequtils, strformat, sugar, times, unicode
+import algorithm, sequtils, strformat, sugar, unicode
 
 import helpers/arrays
-when not defined(NOGMP):
-    import helpers/bignums
 
 import helpers/conversion
 import helpers/datasource
-import helpers/objects
 
 when not defined(NOASCIIDECODE):
     import helpers/strings
@@ -54,7 +51,6 @@ import vm/lib
 import vm/[bytecode, errors, eval, exec, opcodes, parse]
 
 import vm/values/printable
-import vm/values/custom/[vbinary, vrange, vrational]
 
 #=======================================
 # Variables
