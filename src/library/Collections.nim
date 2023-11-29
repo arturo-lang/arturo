@@ -41,7 +41,7 @@ import helpers/strings
 import helpers/unisort
 
 import vm/lib
-
+import vm/[exec, parse]
 import vm/values/custom/[vbinary, vrange]
 
 import vm/errors as err
