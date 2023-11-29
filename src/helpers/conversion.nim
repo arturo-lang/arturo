@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import algorithm, parseutils, sequtils, strformat, strutils, sugar, times, unicode
+import algorithm, parseutils, sequtils, strformat, strutils, sugar, tables, times, unicode
 
 import helpers/arrays
 when not defined(NOGMP):
