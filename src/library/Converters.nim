@@ -1582,46 +1582,6 @@ proc defineSymbols*() =
 
                 push newBlock(ret)
 
-    # TODO(Converters\with) this function doesn't belong here
-    #  I mean... yes, it does "create" a new block... but it most certainly doesn't really
-    #  convert anything to anything...
-    #  labels: cleanup, enhancement, library
-    builtin "with",
-        alias       = unaliased,
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "create closure-style block by embedding given words",
-        args        = {
-            "embed" : {Literal, Block},
-            "body"  : {Block}
-        },
-        attrs       = NoAttrs,
-        returns     = {Block},
-        example     = """
-            f: function [x][
-                with [x][
-                    "the multiple of" x "is" 2*x
-                ]
-            ]
-
-            multiplier: f 10
-
-            print multiplier
-            ; the multiple of 10 is 20
-        """:
-            #=======================================================
-            var blk: ValueArray = y.a
-            if xKind == Literal:
-                blk.insert(FetchSym(x.s))
-                blk.insert(newLabel(x.s))
-            else:
-                for item in x.a:
-                    requireValue(item, {Word,Literal})
-                    blk.insert(FetchSym(item.s))
-                    blk.insert(newLabel(item.s))
-
-            push(newBlock(blk))
-
 #=======================================
 # Add Library
 #=======================================
