@@ -1586,6 +1586,43 @@ proc defineLibrary*() =
 
                 push newBlock(ret)
 
+    #----------------------------
+    # Predicates
+    #----------------------------
+
+    # TODO(Reflection\inherits?) not working correctly
+    #  it seems to be returning `true` invariably...
+    #  labels: library, bug
+    builtin "inherits?",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "check whether value inherits given type",
+        args        = {
+            "type"  : {Type},
+            "value" : {Any}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        # TODO(Reflection\inherits?) add documentation example
+        #  labels: library, documentation, easy
+        example     = """
+        """:
+            #=======================================================
+            if yKind != Object:
+                push(VFALSE)
+            else:
+                var currentType = y.proto.inherits
+                var found = false
+                while not currentType.isNil:
+                    if currentType == x:
+                        found = true
+                        break
+                    currentType = currentType.ts.inherits
+                
+                push(newLogical(found)) 
+
+
 #=======================================
 # Add Library
 #=======================================
