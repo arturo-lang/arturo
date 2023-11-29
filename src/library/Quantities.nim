@@ -316,6 +316,13 @@ proc defineLibrary*() =
                 else:
                     push newLogical(x.u =~ y.u)
 
+    # TODO(Quantities) erroneous module name for property predicates
+    #  For any of the, automatically-generated, property predicates,
+    #  e.g. `mass?` the module shown when we do e.g. `info'mass?` is
+    #  always `macros` - which is basically the file that Nim considers
+    #  to be the current one (= Nim stdlib's macros module), and that's
+    #  what we pick by mistake...
+    #  labels: library, bug
     addPropertyPredicates()
 
     #----------------------------
