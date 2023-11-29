@@ -28,6 +28,9 @@ when not defined(NOGMP):
 # Definitions
 #=======================================
 
+# TODO(Arithmetic) add `powmod` built-in function?
+#  labels: library, enhancement, open discussion
+
 proc defineLibrary*() =
 
     #----------------------------
@@ -238,9 +241,6 @@ proc defineLibrary*() =
         """:
             #=======================================================
             generateOperationB("pow", `^`, `^=`)
-
-    # TODO(Arithmetic) add `powmod` built-in function?
-    #  labels: library, enhancement, open discussion
 
     builtin "sub",
         alias       = minus, 
