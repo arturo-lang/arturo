@@ -45,14 +45,18 @@ when not defined(WEB):
 # Definitions
 #=======================================
 
+# TODO(Files) more potential built-in function candidates?
+#  labels: library, enhancement, open discussion
+
+# TODO(Files) add function to enable writing/reading to/from binary files
+#  this should obviously support writing a 16-bit int, and all this
+#  labels: library, enhancement, new feature, open discussion
+
 proc defineLibrary*() =
 
-    # TODO(Files) more potential built-in function candidates?
-    #  labels: library, enhancement, open discussion
-
-    # TODO(Files) add function to enable writing/reading to/from binary files
-    #  this should obviously support writing a 16-bit int, and all this
-    #  labels: library, enhancement, new feature, open discussion
+    #----------------------------
+    # Functions
+    #----------------------------
 
     when not defined(WEB):
 
@@ -117,50 +121,6 @@ proc defineLibrary*() =
                         discard
                 else: 
                     discard tryRemoveFile(x.s)
-
-        builtin "exists?",
-            alias       = unaliased, 
-            op          = opNop,
-            rule        = PrefixPrecedence,
-            description = "check if given file exists",
-            args        = {
-                "file"  : {String}
-            },
-            attrs       = {
-                "directory" : ({Logical},"check for directory")
-            },
-            returns     = {Logical},
-            example     = """
-            if exists? "somefile.txt" [ 
-                print "file exists!" 
-            ]
-            """:
-                #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("exists?")
-
-                if (hadAttr("directory")): 
-                    push(newLogical(dirExists(x.s)))
-                else: 
-                    push(newLogical(fileExists(x.s)))
-
-        builtin "hidden?",
-            alias       = unaliased, 
-            op          = opNop,
-            rule        = PrefixPrecedence,
-            description = "check if file/folder at given path is hidden",
-            args        = {
-                "file"      : {String}
-            },
-            attrs       = NoAttrs,
-            returns     = {Logical},
-            example     = """
-            hidden? "README.md"     ; => false
-            hidden? ".git"          ; => true
-            """:
-                #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("hidden?")
-
-                push newLogical(isHidden(x.s))
 
         builtin "move",
             alias       = unaliased, 
@@ -594,6 +554,54 @@ proc defineLibrary*() =
 
                 let files: seq[string] = y.a.map((z)=>z.s)
                 miniz.zip(files, x.s)
+
+    #----------------------------
+    # Predicates
+    #----------------------------
+
+        builtin "exists?",
+            alias       = unaliased, 
+            op          = opNop,
+            rule        = PrefixPrecedence,
+            description = "check if given file exists",
+            args        = {
+                "file"  : {String}
+            },
+            attrs       = {
+                "directory" : ({Logical},"check for directory")
+            },
+            returns     = {Logical},
+            example     = """
+            if exists? "somefile.txt" [ 
+                print "file exists!" 
+            ]
+            """:
+                #=======================================================
+                when defined(SAFE): RuntimeError_OperationNotPermitted("exists?")
+
+                if (hadAttr("directory")): 
+                    push(newLogical(dirExists(x.s)))
+                else: 
+                    push(newLogical(fileExists(x.s)))
+
+        builtin "hidden?",
+            alias       = unaliased, 
+            op          = opNop,
+            rule        = PrefixPrecedence,
+            description = "check if file/folder at given path is hidden",
+            args        = {
+                "file"      : {String}
+            },
+            attrs       = NoAttrs,
+            returns     = {Logical},
+            example     = """
+            hidden? "README.md"     ; => false
+            hidden? ".git"          ; => true
+            """:
+                #=======================================================
+                when defined(SAFE): RuntimeError_OperationNotPermitted("hidden?")
+
+                push newLogical(isHidden(x.s))
 
 #=======================================
 # Add Library
