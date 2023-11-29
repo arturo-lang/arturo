@@ -37,24 +37,11 @@ when defined(SAFE):
 
 proc defineLibrary*() =
 
-    when not defined(WEB):
+    #----------------------------
+    # Functions
+    #----------------------------
 
-        builtin "absolute?",
-            alias       = unaliased,
-            op          = opNop,
-            rule        = PrefixPrecedence,
-            description = "check if given path is an absolute path",
-            args        = {
-                "path"  : {String}
-            },
-            attrs       = NoAttrs,
-            returns     = {Logical},
-            example     = """
-            absolute? "/usr/bin"        ; => true
-            absolute? "usr/bin"         ; => false
-            """:
-                #=======================================================
-                push(newLogical(isAbsolute(x.s)))
+    when not defined(WEB):
 
         # TODO(Paths\extract) implement for Web/JS builds
         #  labels: library,enhancement,web
@@ -330,6 +317,29 @@ proc defineLibrary*() =
             """:
                 #=======================================================
                 push(newString(joinPath(env.currentPath(),x.s)))
+
+    #----------------------------
+    # Predicates
+    #----------------------------
+
+    when not defined(WEB):
+        
+        builtin "absolute?",
+            alias       = unaliased,
+            op          = opNop,
+            rule        = PrefixPrecedence,
+            description = "check if given path is an absolute path",
+            args        = {
+                "path"  : {String}
+            },
+            attrs       = NoAttrs,
+            returns     = {Logical},
+            example     = """
+            absolute? "/usr/bin"        ; => true
+            absolute? "usr/bin"         ; => false
+            """:
+                #=======================================================
+                push(newLogical(isAbsolute(x.s)))
 
 #=======================================
 # Add Library
