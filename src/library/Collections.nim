@@ -51,6 +51,10 @@ import vm/errors as err
 
 proc defineLibrary*() =
 
+    #----------------------------
+    # Functions
+    #----------------------------
+
     builtin "append",
         alias       = doubleplus,
         op          = opAppend,
@@ -245,109 +249,6 @@ proc defineLibrary*() =
                 push(newBlock(getCombinations(x.a, sz, doRepeat).map((
                         z)=>newBlock(z))))
 
-    # TODO(Collections/contains?) add new `.key` option?
-    #  this would allow us to check whether the given dictionary contains a specific key
-    #  instead of a value, which is the default way `contains?` works right now with dictionaries
-    #  labels: library, enhancement, open discussion
-    builtin "contains?",
-        alias       = unaliased,
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "check if collection contains given value",
-        args        = {
-            "collection": {String, Block, Range, Dictionary},
-            "value"     : {Any}
-        },
-        attrs       = {
-            "at"    : ({Integer}, "check at given location within collection"),
-            "deep"    : ({Logical}, "searches recursively in deep for a value.")
-        },
-        returns     = {Logical},
-        example     = """
-            arr: [1 2 3 4]
-
-            contains? arr 5             ; => false
-            contains? arr 2             ; => true
-            ..........
-            user: #[
-                name: "John"
-                surname: "Doe"
-            ]
-
-            contains? dict "John"       ; => true
-            contains? dict "Paul"       ; => false
-
-            contains? keys dict "name"  ; => true
-            ..........
-            contains? "hello" "x"       ; => false
-            contains? "hello" `h`       ; => true
-            ..........
-            contains?.at:1 "hello" "el" ; => true
-            contains?.at:4 "hello" `o`  ; => true
-            ..........
-            print contains?.at:2 ["one" "two" "three"] "two"
-            ; false
-
-            print contains?.at:1 ["one" "two" "three"] "two"
-            ; true
-            ..........
-            print contains?.deep [1 2 4 [3 4 [5 6] 7] 8 [9 10]] 6
-            ; true
-            ..........
-            user: #[ 
-                name: "John" surname: "Doe"
-                mom: #[ name: "Jane" surname: "Doe" ]
-            ]
-            
-            print contains?.deep user "Jane"
-            ; true
-        """:
-            #=======================================================
-            if checkAttr("at"):
-                let at = aAt.i
-                case xKind:
-                    of String:
-                        if yKind == Regex:
-                            push(newLogical(x.s.contains(y.rx, at)))
-                        elif yKind == Char:
-                            push(newLogical(toRunes(x.s)[at] == y.c))
-                        else:
-                            push(newLogical(x.s.continuesWith(y.s, at)))
-                    of Block:
-                        push(newLogical(x.a[at] == y))
-                    of Range:
-                        push(newLogical(x.rng[at] == y))
-                    of Dictionary:
-                        let values = toSeq(x.d.values)
-                        push(newLogical(values[at] == y))
-                    else:
-                        discard
-            else:
-                case xKind:
-                    of String:
-                        if yKind == Regex:
-                            push(newLogical(x.s.contains(y.rx)))
-                        elif yKind == Char:
-                            push(newLogical($(y.c) in x.s))
-                        else:
-                            push(newLogical(y.s in x.s))
-                    of Block:
-                        if hadAttr("deep"):
-                            push newLogical(x.a.inNestedBlock(y))
-                        else:
-                            push(newLogical(y in x.a))
-                    of Range:
-                        push(newLogical(y in x.rng))
-                    of Dictionary:
-                        if hadAttr("deep"):
-                            let values: ValueArray = x.d.getValuesinDeep()
-                            push newLogical(y in values)
-                        else:
-                            let values = toSeq(x.d.values)
-                            push(newLogical(y in values))
-                    else:
-                        discard
-
     # TODO(Collections/couple) should work with in-place Literals
     #  labels: library, enhancement
     builtin "couple",
@@ -490,32 +391,6 @@ proc defineLibrary*() =
                 of String: InPlaced.s = ""
                 of Block: InPlaced.a = @[]
                 of Dictionary: InPlaced.d = initOrderedTable[string, Value]()
-                else: discard
-
-    builtin "empty?",
-        alias       = unaliased,
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "check if given collection is empty",
-        args        = {
-            "collection": {String, Block, Dictionary, Null}
-        },
-        attrs       = NoAttrs,
-        returns     = {Logical},
-        example     = """
-            empty? ""             ; => true
-            empty? []             ; => true
-            empty? #[]            ; => true
-
-            empty? [1 "two" 3]    ; => false
-        """:
-            #=======================================================
-            case xKind:
-                of Null: push(VTRUE)
-                of String: push(newLogical(x.s == ""))
-                of Block:
-                    push(newLogical(x.a.len == 0))
-                of Dictionary: push(newLogical(x.d.len == 0))
                 else: discard
 
     builtin "extend",
@@ -761,108 +636,6 @@ proc defineLibrary*() =
                         discard
                 else: discard
 
-    # TODO(Collections/in?) add new `.key` option?
-    #  same as with `contains?`
-    #  labels: library, enhancement, open discussion
-    builtin "in?",
-        alias       = unaliased,
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "check if value exists in given collection",
-        args        = {
-            "value"     : {Any},
-            "collection": {String, Block, Range, Dictionary}
-        },
-        attrs       = {
-            "at"    : ({Integer}, "check at given location within collection"),
-            "deep"    : ({Logical}, "searches recursively in deep for a value.")
-        },
-        returns     = {Logical},
-        example     = """
-            arr: [1 2 3 4]
-
-            in? 5 arr             ; => false
-            in? 2 arr             ; => true
-            ..........
-            user: #[
-                name: "John"
-                surname: "Doe"
-            ]
-
-            in? "John" dict       ; => true
-            in? "Paul" dict       ; => false
-
-            in? "name" keys dict  ; => true
-            ..........
-            in? "x" "hello"       ; => false
-            in? `h` "hello"       ; => true
-            ..........
-            in?.at:1 "el" "hello" ; => true
-            in?.at:4 `o` "hello"  ; => true
-            ..........
-            print in?.at:2 "two" ["one" "two" "three"]
-            ; false
-
-            print in?.at:1 "two" ["one" "two" "three"]
-            ; true
-            ..........
-            print in?.deep 6 [1 2 4 [3 4 [5 6] 7] 8 [9 10]]
-            ; true
-            ..........
-            user: #[ 
-                name: "John" surname: "Doe"
-                mom: #[ name: "Jane" surname: "Doe" ]
-            ]
-            
-            print in?.deep "Jane" user
-            ; true
-        """:
-            #=======================================================
-            if checkAttr("at"):
-                let at = aAt.i
-                case yKind:
-                    of String:
-                        if xKind == Regex:
-                            push(newLogical(y.s.contains(x.rx, at)))
-                        elif xKind == Char:
-                            push(newLogical(toRunes(y.s)[at] == x.c))
-                        else:
-                            push(newLogical(y.s.continuesWith(x.s, at)))
-                    of Block:
-                        push(newLogical(y.a[at] == x))
-                    of Range:
-                        push(newLogical(y.rng[at] == x))
-                    of Dictionary:
-                        let values = toSeq(y.d.values)
-                        push(newLogical(values[at] == x))
-                    else:
-                        discard
-            else:
-                case yKind:
-                    of String:
-                        if xKind == Regex:
-                            push(newLogical(y.s.contains(x.rx)))
-                        elif xKind == Char:
-                            push(newLogical($(x.c) in y.s))
-                        else:
-                            push(newLogical(x.s in y.s))
-                    of Block:
-                        if hadAttr("deep"):
-                            push newLogical(y.a.inNestedBlock(x))
-                        else:
-                            push(newLogical(x in y.a))
-                    of Range:
-                        push(newLogical(x in y.rng))
-                    of Dictionary:
-                        if hadAttr("deep"):
-                            let values: ValueArray = y.d.getValuesinDeep()
-                            push newLogical(x in values)
-                        else:
-                            let values = toSeq(y.d.values)
-                            push(newLogical(x in values))
-                    else:
-                        discard
-
     # TODO(Collections/index) add `.from:` & `.to:` options to search in range
     #  The two options don't have to be used at the same time. For example:
     #  - just setting `.from:` will search from given index to the end
@@ -978,39 +751,6 @@ proc defineLibrary*() =
                         copied[y.s] = z
                         push(newDictionary(copied))
                     else: discard
-
-    builtin "key?",
-        alias       = unaliased,
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "check if collection contains given key",
-        args        = {
-            "collection": {Dictionary, Object},
-            "key"       : {Any}
-        },
-        attrs       = NoAttrs,
-        returns     = {Logical},
-        example     = """
-            user: #[
-                name: "John"
-                surname: "Doe"
-            ]
-
-            key? user 'age            ; => false
-            if key? user 'name [
-                print ["Hello" user\name]
-            ]
-            ; Hello John
-        """:
-            #=======================================================
-            var needle: string
-            if yKind == String: needle = y.s
-            else: needle = $(y)
-
-            if xKind == Dictionary:
-                push(newLogical(x.d.hasKey(needle)))
-            else:
-                push(newLogical(x.o.hasKey(needle)))
 
     builtin "keys",
         alias       = unaliased,
@@ -1176,56 +916,6 @@ proc defineLibrary*() =
                             inc(i)
 
                         push(minElement)
-
-    builtin "one?",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "check if given number or collection size is one",
-        args        = {
-            "number"    : {Integer,Floating,String,Block,Range,Dictionary,Object,Null},
-        },
-        attrs       = NoAttrs,
-        returns     = {Logical},
-        example     = """
-            one? 5              ; => false
-            one? 4-3            ; => true
-            ..........
-            one? 1.0            ; => true
-            one? 0.0            ; => false
-            ..........
-            items: ["apple"]
-            one? items          ; => true
-
-            items: [1 2 3]
-            one? items          ; => false
-            ..........
-            one? ø              ; => false
-        """:
-            #=======================================================
-            case xKind:
-                of Integer:
-                    if x.iKind == BigInteger:
-                        when defined(WEB):
-                            push(newLogical(x.bi==big(1)))
-                        elif not defined(NOGMP):
-                            push(newLogical(x.bi==newInt(1)))
-                    else:
-                        push(newLogical(x.i == 1))
-                of Floating:
-                    push(newLogical(x.f == 1.0))
-                of String:
-                    push(newLogical(runeLen(x.s) == 1))
-                of Block:
-                    push(newLogical(x.a.len == 1))
-                of Range:
-                    push(newLogical(x.rng.len == 1))
-                of Dictionary:
-                    push(newLogical(x.d.len == 1))
-                of Object:
-                    push(newLogical(x.o.len == 1))
-                else:
-                    push(VFALSE)
 
     builtin "permutate",
         alias       = unaliased,
@@ -2075,38 +1765,6 @@ proc defineLibrary*() =
                                         cmp(x[0], y[0])
                                     , order = sortOrdering)
 
-    # TODO(Collections/sorted?) doesn't work properly
-    #  it should work in an identical way as `sort`
-    #  labels: library, enhancement
-    builtin "sorted?",
-        alias       = unaliased,
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "check if given collection is already sorted",
-        args        = {
-            "collection": {Block}
-        },
-        attrs       = {
-            "descending": ({Logical}, "check for sorting in ascending order")
-        },
-        returns     = {Logical},
-        example     = """
-            sorted? [1 2 3 4 5]         ; => true
-            sorted? [4 3 2 1 5]         ; => false
-            sorted? [5 4 3 2 1]         ; => false
-            ..........
-            sorted?.descending [5 4 3 2 1]      ; => true
-            sorted?.descending [4 3 2 1 5]      ; => false
-            sorted?.descending [1 2 3 4 5]      ; => false
-        """:
-            #=======================================================
-            var ascending = true
-
-            if (hadAttr("descending")):
-                ascending = false
-
-            push newLogical(isSorted(x.a, ascending = ascending))
-
     # TODO(Collections\split) Add better support for unicode strings
     #  Currently, simple split works fine - but using different attributes (at, every, by, etc) doesn't
     #  labels: library,bug
@@ -2527,6 +2185,356 @@ proc defineLibrary*() =
             else:
                 let s = toSeq(x.o.values)
                 push(newBlock(s))
+
+    #----------------------------
+    # Predicates
+    #----------------------------
+
+    # TODO(Collections/contains?) add new `.key` option?
+    #  this would allow us to check whether the given dictionary contains a specific key
+    #  instead of a value, which is the default way `contains?` works right now with dictionaries
+    #  labels: library, enhancement, open discussion
+    builtin "contains?",
+        alias       = unaliased,
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "check if collection contains given value",
+        args        = {
+            "collection": {String, Block, Range, Dictionary},
+            "value"     : {Any}
+        },
+        attrs       = {
+            "at"    : ({Integer}, "check at given location within collection"),
+            "deep"    : ({Logical}, "searches recursively in deep for a value.")
+        },
+        returns     = {Logical},
+        example     = """
+            arr: [1 2 3 4]
+
+            contains? arr 5             ; => false
+            contains? arr 2             ; => true
+            ..........
+            user: #[
+                name: "John"
+                surname: "Doe"
+            ]
+
+            contains? dict "John"       ; => true
+            contains? dict "Paul"       ; => false
+
+            contains? keys dict "name"  ; => true
+            ..........
+            contains? "hello" "x"       ; => false
+            contains? "hello" `h`       ; => true
+            ..........
+            contains?.at:1 "hello" "el" ; => true
+            contains?.at:4 "hello" `o`  ; => true
+            ..........
+            print contains?.at:2 ["one" "two" "three"] "two"
+            ; false
+
+            print contains?.at:1 ["one" "two" "three"] "two"
+            ; true
+            ..........
+            print contains?.deep [1 2 4 [3 4 [5 6] 7] 8 [9 10]] 6
+            ; true
+            ..........
+            user: #[ 
+                name: "John" surname: "Doe"
+                mom: #[ name: "Jane" surname: "Doe" ]
+            ]
+            
+            print contains?.deep user "Jane"
+            ; true
+        """:
+            #=======================================================
+            if checkAttr("at"):
+                let at = aAt.i
+                case xKind:
+                    of String:
+                        if yKind == Regex:
+                            push(newLogical(x.s.contains(y.rx, at)))
+                        elif yKind == Char:
+                            push(newLogical(toRunes(x.s)[at] == y.c))
+                        else:
+                            push(newLogical(x.s.continuesWith(y.s, at)))
+                    of Block:
+                        push(newLogical(x.a[at] == y))
+                    of Range:
+                        push(newLogical(x.rng[at] == y))
+                    of Dictionary:
+                        let values = toSeq(x.d.values)
+                        push(newLogical(values[at] == y))
+                    else:
+                        discard
+            else:
+                case xKind:
+                    of String:
+                        if yKind == Regex:
+                            push(newLogical(x.s.contains(y.rx)))
+                        elif yKind == Char:
+                            push(newLogical($(y.c) in x.s))
+                        else:
+                            push(newLogical(y.s in x.s))
+                    of Block:
+                        if hadAttr("deep"):
+                            push newLogical(x.a.inNestedBlock(y))
+                        else:
+                            push(newLogical(y in x.a))
+                    of Range:
+                        push(newLogical(y in x.rng))
+                    of Dictionary:
+                        if hadAttr("deep"):
+                            let values: ValueArray = x.d.getValuesinDeep()
+                            push newLogical(y in values)
+                        else:
+                            let values = toSeq(x.d.values)
+                            push(newLogical(y in values))
+                    else:
+                        discard
+
+    builtin "empty?",
+        alias       = unaliased,
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "check if given collection is empty",
+        args        = {
+            "collection": {String, Block, Dictionary, Null}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            empty? ""             ; => true
+            empty? []             ; => true
+            empty? #[]            ; => true
+
+            empty? [1 "two" 3]    ; => false
+        """:
+            #=======================================================
+            case xKind:
+                of Null: push(VTRUE)
+                of String: push(newLogical(x.s == ""))
+                of Block:
+                    push(newLogical(x.a.len == 0))
+                of Dictionary: push(newLogical(x.d.len == 0))
+                else: discard
+
+    # TODO(Collections/in?) add new `.key` option?
+    #  same as with `contains?`
+    #  labels: library, enhancement, open discussion
+    builtin "in?",
+        alias       = unaliased,
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "check if value exists in given collection",
+        args        = {
+            "value"     : {Any},
+            "collection": {String, Block, Range, Dictionary}
+        },
+        attrs       = {
+            "at"    : ({Integer}, "check at given location within collection"),
+            "deep"    : ({Logical}, "searches recursively in deep for a value.")
+        },
+        returns     = {Logical},
+        example     = """
+            arr: [1 2 3 4]
+
+            in? 5 arr             ; => false
+            in? 2 arr             ; => true
+            ..........
+            user: #[
+                name: "John"
+                surname: "Doe"
+            ]
+
+            in? "John" dict       ; => true
+            in? "Paul" dict       ; => false
+
+            in? "name" keys dict  ; => true
+            ..........
+            in? "x" "hello"       ; => false
+            in? `h` "hello"       ; => true
+            ..........
+            in?.at:1 "el" "hello" ; => true
+            in?.at:4 `o` "hello"  ; => true
+            ..........
+            print in?.at:2 "two" ["one" "two" "three"]
+            ; false
+
+            print in?.at:1 "two" ["one" "two" "three"]
+            ; true
+            ..........
+            print in?.deep 6 [1 2 4 [3 4 [5 6] 7] 8 [9 10]]
+            ; true
+            ..........
+            user: #[ 
+                name: "John" surname: "Doe"
+                mom: #[ name: "Jane" surname: "Doe" ]
+            ]
+            
+            print in?.deep "Jane" user
+            ; true
+        """:
+            #=======================================================
+            if checkAttr("at"):
+                let at = aAt.i
+                case yKind:
+                    of String:
+                        if xKind == Regex:
+                            push(newLogical(y.s.contains(x.rx, at)))
+                        elif xKind == Char:
+                            push(newLogical(toRunes(y.s)[at] == x.c))
+                        else:
+                            push(newLogical(y.s.continuesWith(x.s, at)))
+                    of Block:
+                        push(newLogical(y.a[at] == x))
+                    of Range:
+                        push(newLogical(y.rng[at] == x))
+                    of Dictionary:
+                        let values = toSeq(y.d.values)
+                        push(newLogical(values[at] == x))
+                    else:
+                        discard
+            else:
+                case yKind:
+                    of String:
+                        if xKind == Regex:
+                            push(newLogical(y.s.contains(x.rx)))
+                        elif xKind == Char:
+                            push(newLogical($(x.c) in y.s))
+                        else:
+                            push(newLogical(x.s in y.s))
+                    of Block:
+                        if hadAttr("deep"):
+                            push newLogical(y.a.inNestedBlock(x))
+                        else:
+                            push(newLogical(x in y.a))
+                    of Range:
+                        push(newLogical(x in y.rng))
+                    of Dictionary:
+                        if hadAttr("deep"):
+                            let values: ValueArray = y.d.getValuesinDeep()
+                            push newLogical(x in values)
+                        else:
+                            let values = toSeq(y.d.values)
+                            push(newLogical(x in values))
+                    else:
+                        discard
+
+    builtin "key?",
+        alias       = unaliased,
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "check if collection contains given key",
+        args        = {
+            "collection": {Dictionary, Object},
+            "key"       : {Any}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            user: #[
+                name: "John"
+                surname: "Doe"
+            ]
+
+            key? user 'age            ; => false
+            if key? user 'name [
+                print ["Hello" user\name]
+            ]
+            ; Hello John
+        """:
+            #=======================================================
+            var needle: string
+            if yKind == String: needle = y.s
+            else: needle = $(y)
+
+            if xKind == Dictionary:
+                push(newLogical(x.d.hasKey(needle)))
+            else:
+                push(newLogical(x.o.hasKey(needle)))
+
+    builtin "one?",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "check if given number or collection size is one",
+        args        = {
+            "number"    : {Integer,Floating,String,Block,Range,Dictionary,Object,Null},
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            one? 5              ; => false
+            one? 4-3            ; => true
+            ..........
+            one? 1.0            ; => true
+            one? 0.0            ; => false
+            ..........
+            items: ["apple"]
+            one? items          ; => true
+
+            items: [1 2 3]
+            one? items          ; => false
+            ..........
+            one? ø              ; => false
+        """:
+            #=======================================================
+            case xKind:
+                of Integer:
+                    if x.iKind == BigInteger:
+                        when defined(WEB):
+                            push(newLogical(x.bi==big(1)))
+                        elif not defined(NOGMP):
+                            push(newLogical(x.bi==newInt(1)))
+                    else:
+                        push(newLogical(x.i == 1))
+                of Floating:
+                    push(newLogical(x.f == 1.0))
+                of String:
+                    push(newLogical(runeLen(x.s) == 1))
+                of Block:
+                    push(newLogical(x.a.len == 1))
+                of Range:
+                    push(newLogical(x.rng.len == 1))
+                of Dictionary:
+                    push(newLogical(x.d.len == 1))
+                of Object:
+                    push(newLogical(x.o.len == 1))
+                else:
+                    push(VFALSE)
+
+    # TODO(Collections/sorted?) doesn't work properly
+    #  it should work in an identical way as `sort`
+    #  labels: library, enhancement
+    builtin "sorted?",
+        alias       = unaliased,
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "check if given collection is already sorted",
+        args        = {
+            "collection": {Block}
+        },
+        attrs       = {
+            "descending": ({Logical}, "check for sorting in ascending order")
+        },
+        returns     = {Logical},
+        example     = """
+            sorted? [1 2 3 4 5]         ; => true
+            sorted? [4 3 2 1 5]         ; => false
+            sorted? [5 4 3 2 1]         ; => false
+            ..........
+            sorted?.descending [5 4 3 2 1]      ; => true
+            sorted?.descending [4 3 2 1 5]      ; => false
+            sorted?.descending [1 2 3 4 5]      ; => false
+        """:
+            #=======================================================
+            var ascending = true
+
+            if (hadAttr("descending")):
+                ascending = false
+
+            push newLogical(isSorted(x.a, ascending = ascending))
 
     builtin "zero?",
         alias       = unaliased, 
