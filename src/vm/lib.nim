@@ -173,6 +173,9 @@ template builtin*(n: string, alias: VSymbol, op: OpCode, rule: PrecedenceKind, d
         elif n=="print"             : DoPrint = b.action()
 
         when alias != unaliased:
+            if Aliases.hasKey(alias):
+                echo "Already aliased! -> " & $(alias)
+                echo "and trying to realias to: " & $(n)
             Aliases[alias] = AliasBinding(
                 precedence: rule,
                 name: newWord(n)
