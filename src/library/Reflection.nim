@@ -290,26 +290,6 @@ proc defineLibrary*() =
                     symbols[k] = v
             push(newDictionary(symbols))
 
-    builtin "type",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "get type of given value",
-        args        = {
-            "value" : {Any}
-        },
-        attrs       = NoAttrs,
-        returns     = {Type},
-        example     = """
-            print type 18966          ; :integer
-            print type "hello world"  ; :string
-        """:
-            #=======================================================
-            if xKind != Object:
-                push(newType(xKind))
-            else:
-                push(newUserType(x.proto.name))
-
     #----------------------------
     # Predicates
     #----------------------------
