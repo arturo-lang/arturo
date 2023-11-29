@@ -8,6 +8,31 @@ import vm/values/custom/verror
 
 proc defineSymbols*() =
 
+    builtin "throw",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "throws an :error",
+        args        = {
+            "message": {String}
+        },
+        attrs       = {
+            "as": ({ErrorKind}, "throws an :error as some specific :errorKind")
+        },
+        returns     = {Nothing},
+        example     = """
+        """:
+            #=======================================================
+            let kind: VErrorKind = if checkAttr "as":
+                aAs.errKind
+            else:
+                verror.newDefaultError()
+
+            var error = verror.VError(kind: kind)
+            error.msg = x.s
+
+            raise error 
+
     builtin "throws?",
         alias       = unaliased, 
         op          = opNop,
