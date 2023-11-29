@@ -51,13 +51,6 @@ import vm/[bytecode, errors, eval, exec, opcodes, parse]
 import vm/values/printable
 
 #=======================================
-# Variables
-#=======================================
-
-var
-    currentBuiltinName: string
-
-#=======================================
 # Helpers
 #=======================================
 
