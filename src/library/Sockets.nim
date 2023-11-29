@@ -41,6 +41,10 @@ when not defined(WEB):
 #  labels: open discussion
 
 proc defineLibrary*() =
+
+    #----------------------------
+    # Functions
+    #----------------------------
     
     when not defined(WEB):
 
@@ -235,32 +239,6 @@ proc defineLibrary*() =
 
                 x.sock.socket.send(message)
 
-        builtin "send?",
-            alias       = unaliased, 
-            op          = opNop,
-            rule        = PrefixPrecedence,
-            description = "send given message to selected socket and return true if successful",
-            args        = {
-                "destination"   : {Socket},
-                "message"       : {String}    
-            },
-            attrs       = NoAttrs,
-            returns     = {Logical},
-            example     = """
-            ; connect to a local server on port 256
-            socket: connect.to:"localhost" 256
-
-            ; send a message to the server
-            ; and check if it was successful
-            sent?: send? socket "Hello Socket World"
-
-            print ["Message was sent successfully:" sent?]
-            """:
-                #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("send?")
-
-                push newLogical(x.sock.socket.trySend(y.s))
-
         builtin "unplug",
             alias       = unaliased, 
             op          = opNop,
@@ -287,6 +265,38 @@ proc defineLibrary*() =
                 x.sock.socket.close()
     else:
         discard
+
+    #----------------------------
+    # Predicates
+    #----------------------------
+
+    when not defined(WEB):
+
+        builtin "send?",
+            alias       = unaliased, 
+            op          = opNop,
+            rule        = PrefixPrecedence,
+            description = "send given message to selected socket and return true if successful",
+            args        = {
+                "destination"   : {Socket},
+                "message"       : {String}    
+            },
+            attrs       = NoAttrs,
+            returns     = {Logical},
+            example     = """
+            ; connect to a local server on port 256
+            socket: connect.to:"localhost" 256
+
+            ; send a message to the server
+            ; and check if it was successful
+            sent?: send? socket "Hello Socket World"
+
+            print ["Message was sent successfully:" sent?]
+            """:
+                #=======================================================
+                when defined(SAFE): RuntimeError_OperationNotPermitted("send?")
+
+                push newLogical(x.sock.socket.trySend(y.s))
 
 #=======================================
 # Add Library
