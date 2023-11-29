@@ -293,10 +293,18 @@ proc defineLibrary*() =
     #  if the exact same "constant" returns different results based on
     #  the system it's running on, then it's not a constant.
     #  labels: library, enhancement
-    constant "path",
-        alias       = unaliased,
-        description = "common path constants":
-            newDictionary(getPathInfo())
+    builtin "path",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "exit program with error message",
+        args        = NoArgs,
+        attrs       = NoAttrs,
+        returns     = {Dictionary},
+        example     = """
+        """:
+            #=======================================================
+            push(newDictionary(getPathInfo()))
 
     when not defined(WEB):
         # TODO(System\pause) implement for Web/JS builds
