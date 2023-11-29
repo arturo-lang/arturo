@@ -1129,35 +1129,6 @@ proc defineLibrary*() =
 
             push(ret)
 
-    builtin "is",
-        alias       = unaliased,
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "get derivative type with given prototype",
-        args        = {
-            "type"          : {Type},
-            "prototype"     : {Block,Dictionary}
-        },
-        attrs       = NoAttrs,
-        returns     = {Type},
-        example     = """
-        """:
-            #=======================================================
-            # Get our defined methods
-            # as a dictionary
-            var definedMethods: ValueDict
-            if y.kind == Block:
-                definedMethods = newDictionary(execDictionary(y)).d
-            else:
-                definedMethods = y.d
-
-            var generated = newUserType(x.ts.name, extended=true)
-
-            for k,v in definedMethods:
-                generated.ts.methods[k] = v
-
-            push(generated)
-
     builtin "range",
         alias       = ellipsis,
         op          = opRange,
