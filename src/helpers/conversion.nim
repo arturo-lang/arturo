@@ -12,21 +12,16 @@
 
 import algorithm, parseutils, sequtils, strformat, strutils, sugar, tables, times, unicode
 
-import helpers/arrays
 when not defined(NOGMP):
     import helpers/bignums
 
-import helpers/datasource
 import helpers/objects
-
-when not defined(NOASCIIDECODE):
-    import helpers/strings
 
 import helpers/ranges
 when not defined(WEB):
     import helpers/stores
 
-import vm/[bytecode, checks, errors, eval, exec, opcodes, parse, stack]
+import vm/[checks, errors, eval, exec, parse, stack]
 
 import vm/values/[value, printable]
 import vm/values/custom/[vbinary, vcolor, vlogical, vrange, vrational]
