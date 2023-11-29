@@ -498,7 +498,7 @@ proc defineLibrary*() =
             else:
                 push(newLogical(xKind==Integer))
 
-    # TODO(Reflection\is?) not working correctly for Object values
+    # TODO(Types\is?) not working correctly for Object values
     #  it should definitely return true if the object's type is the given one.
     #  what happens if the object inherits from given type?
     #  should that be a matter of e.g. an extra `.strict` option?
