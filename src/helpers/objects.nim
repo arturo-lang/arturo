@@ -16,3 +16,7 @@ import vm/values/value
 # Methods
 #=======================================
 
+proc injectThis*(meth: Value) =
+    if meth.params.len < 1 or meth.params[0] != "this":
+        meth.params.insert("this")
+        meth.arity += 1
