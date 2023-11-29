@@ -38,8 +38,6 @@ proc defineLibrary*() =
     # Functions
     #----------------------------
 
-    # TODO(Types/define) not defined inheritance behavior when using `.as`
-    #  labels: library, enhancement
     builtin "define",
         alias       = unaliased,
         op          = opNop,
