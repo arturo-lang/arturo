@@ -14,7 +14,7 @@
 
 import sequtils, strutils
 
-import vm/errors
+import vm/[stack, errors]
 import vm/values/[value, printable]
 
 #=======================================
