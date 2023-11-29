@@ -9,9 +9,28 @@
 #=======================================
 # Libraries
 #=======================================
-    
-import vm/values/value
 
+import algorithm, parseutils, sequtils, strformat, sugar, times, unicode
+
+import helpers/arrays
+when not defined(NOGMP):
+    import helpers/bignums
+
+import helpers/datasource
+import helpers/objects
+
+when not defined(NOASCIIDECODE):
+    import helpers/strings
+
+import helpers/ranges
+when not defined(WEB):
+    import helpers/stores
+
+import vm/[bytecode, errors, eval, exec, opcodes, parse]
+
+import vm/values/[value, printable]
+import vm/values/custom/[vbinary, vrange, vrational]
+    
 #=======================================
 # Helpers
 #=======================================
