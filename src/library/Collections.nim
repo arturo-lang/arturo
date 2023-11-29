@@ -127,6 +127,90 @@ proc defineLibrary*() =
                     else:
                         push newBlock(x.a & y)
 
+    builtin "array",
+        alias       = at,
+        op          = opArray,
+        rule        = PrefixPrecedence,
+        description = "create array from given block, by reducing/calculating all internal values",
+        args        = {
+            "source": {Any}
+        },
+        attrs       = {
+            "of"    : ({Integer,Block},"initialize an empty n-dimensional array with given dimensions")
+        },
+        returns     = {Block},
+        example     = """
+            none: @[]               ; none: []
+            a: @[1 2 3]             ; a: [1 2 3]
+
+            b: 5
+            c: @[b b+1 b+2]         ; c: [5 6 7]
+
+            d: @[
+                3+1
+                print "we are in the block"
+                123
+                print "yep"
+            ]
+            ; we are in the block
+            ; yep
+            ; => [4 123]
+            ..........
+            ; initializing empty array with initial value
+            x: array.of: 2 "done"
+            inspect.muted x
+            ; [ :block
+            ;     done :string
+            ;     done :string
+            ; ]
+            ..........
+            ; initializing empty n-dimensional array with initial value
+            x: array.of: [3 4] 0          ; initialize a 3x4 2D array
+                                            ; with zeros
+            ; => [[0 0 0 0] [0 0 0 0] [0 0 0 0]]
+        """:
+            #=======================================================
+            if checkAttr("of"):
+                if aOf.kind == Integer:
+                    let size = aOf.i
+                    let blk:ValueArray = safeRepeat(x, size)
+                    push newBlock(blk)
+                else:
+                    var val: Value = copyValue(x)
+                    var blk: ValueArray
+
+                    for item in aOf.a.reversed:
+                        requireValue(item, {Integer})
+                        blk = safeRepeat(val, item.i)
+                        val = newBlock(blk.map((v)=>copyValue(v)))
+
+                    push newBlock(blk)
+            else:
+                if xKind==Range:
+                    push(newBlock(toSeq(items(x.rng))))
+                else:
+                    if xKind==Block:
+                        let stop = SP
+                        execUnscoped(x)
+                        let arr: ValueArray = sTopsFrom(stop)
+                        SP = stop
+
+                        push(newBlock(arr))
+                    elif xKind==String:
+                        let stop = SP
+                        let (_{.inject.}, tp) = getSource(x.s)
+
+                        if tp!=TextData:
+                            execUnscoped(doParse(x.s, isFile=false))
+                        else:
+                            RuntimeError_FileNotFound(x.s)
+                        let arr: ValueArray = sTopsFrom(stop)
+                        SP = stop
+
+                        push(newBlock(arr))
+                    else:
+                        push(newBlock(@[x]))
+
     builtin "chop",
         alias       = unaliased,
         op          = opNop,
