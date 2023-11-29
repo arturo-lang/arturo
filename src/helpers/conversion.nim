@@ -29,7 +29,7 @@ when not defined(WEB):
 import vm/[bytecode, checks, errors, eval, exec, opcodes, parse, stack]
 
 import vm/values/[value, printable]
-import vm/values/custom/[vbinary, vlogical, vrange, vrational]
+import vm/values/custom/[vbinary, vcolor, vlogical, vrange, vrational]
     
 #=======================================
 # Helpers
