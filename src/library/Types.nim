@@ -320,9 +320,6 @@ proc defineLibrary*() =
             ; => #5C527A
         """:
             #=======================================================
-            if y.kind == Block:
-                Converters.currentBuiltinName = currentBuiltinName
-
             if xKind==Type:
                 let tp = x.t
                 push convertedValueToType(x, y, tp, popAttr("format"))
