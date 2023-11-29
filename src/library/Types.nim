@@ -19,6 +19,8 @@
 # Libraries
 #=======================================
 
+import helpers/objects
+
 import vm/lib
 import vm/[exec]
 
