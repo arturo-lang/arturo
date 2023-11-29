@@ -35,6 +35,12 @@ import vm/values/custom/[vbinary, vlogical, vrange, vrational]
 # Helpers
 #=======================================
 
+proc parseFL(s: string): float =
+    result = 0.0
+    let L = parseutils.parseFloat(s, result, 0)
+    if L != s.len or L == 0:
+        raise newException(ValueError, "invalid float: " & s)
+
 template throwCannotConvert(): untyped =
     RuntimeError_CannotConvert(codify(y), $(y.kind), (if x.tpKind==UserType: x.ts.name else: $(x.t)))
 
