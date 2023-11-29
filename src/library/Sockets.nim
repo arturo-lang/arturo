@@ -263,8 +263,6 @@ proc defineLibrary*() =
                 when defined(SAFE): RuntimeError_OperationNotPermitted("unplug")
 
                 x.sock.socket.close()
-    else:
-        discard
 
     #----------------------------
     # Predicates
