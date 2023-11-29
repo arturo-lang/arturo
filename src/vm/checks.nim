@@ -16,10 +16,6 @@
 # Helpers
 #=======================================
 
-#=======================================
-# Methods
-#=======================================
-
 proc showWrongArgumentTypeError*(name: string, pos: int, params: openArray[Value], expected: openArray[(string, set[ValueKind])]) =
     ## show relevant error message in case ``require`` 
     ## fails to validate the arguments passed to the 
@@ -58,6 +54,10 @@ proc showWrongValueAttrTypeError*(fName: string, attr: string, actual: Value, ex
             expected
 
     RuntimeError_IncompatibleBlockValueAttribute(fName, "." & attr, actualStr, acceptedStr)
+
+#=======================================
+# Methods
+#=======================================
 
 template require*(name: string, spec: untyped): untyped =
     ## make sure that the given arguments match the given spec, 
