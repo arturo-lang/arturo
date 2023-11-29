@@ -76,30 +76,6 @@ func canBeInlined(v: Value): bool {.enforceNoRaises.} =
                 return false
     return true
 
-proc generateCustomObject(prot: Prototype, arguments: ValueArray | ValueDict): Value =
-    newObject(arguments, prot, proc (self: Value, prot: Prototype) =
-        for methodName, objectMethod in prot.methods:
-            case methodName:
-                of "init":
-                    when arguments is ValueArray:
-                        if arguments.len != objectMethod.arity - 1:
-                            # TODO(generateCustomObject) should throw if number of arguments is not correct
-                            #  labels: error handling, oop, vm, values
-                            echo "incorrect number of arguments"
-                        prot.doInit(self, arguments)
-                of "print": discard
-                of "compare": discard
-                else:
-                    if objectMethod.kind==Function:
-                        let objMethod = copyValue(objectMethod)
-                        objMethod.injectThis()
-                        self.o[methodName] = objMethod
-                        if (let methodInfo = objectMethod.info; not methodInfo.isNil):
-                            self.o[methodName].info = methodInfo
-                    else:
-                        self.o[methodName] = objectMethod
-    )
-
 #=======================================
 # Definitions
 #=======================================
