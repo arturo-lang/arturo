@@ -312,6 +312,7 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
             of Block:
                 case tp:
                     of Complex:
+                        let currentBuiltinName = "to"
                         requireBlockSize(y, 2)
 
                         let firstElem {.cursor} = y.a[0]
@@ -321,6 +322,7 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                         
                         return newComplex(firstElem, secondElem)
                     of Rational:
+                        let currentBuiltinName = "to"
                         requireBlockSize(y, 2)
                         
                         let firstElem {.cursor} = y.a[0]
@@ -366,7 +368,7 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                             throwCannotConvert()
 
                     of Quantity:
-                        discard
+                        let currentBuiltinName = "to"
                         requireBlockSize(y, 2)
                         
                         let firstElem {.cursor} = y.a[0]
@@ -380,6 +382,7 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                             return newQuantity(firstElem, secondElem.s)
 
                     of Color:
+                        let currentBuiltinName = "to"
                         requireBlockSize(y, 3, 4)
 
                         if (hadAttr("hsl")):
