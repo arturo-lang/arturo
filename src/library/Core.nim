@@ -620,12 +620,6 @@ proc defineLibrary*() =
                     x.a
                 else: @[x]
 
-            # TODO(Converters\function) Verify safety of implicit `.inline`s
-            #  labels: library, benchmark, open discussion
-            if not inline:
-                if canBeInlined(y):
-                    inline = true
-
             push(newFunctionFromDefinition(argBlock, y, imports, exports, memoize, inline))
 
     builtin "if",
