@@ -47,9 +47,7 @@ proc defineLibrary*() =
             "type"          : {Type},
             "prototype"     : {Block, Dictionary, Type}
         },
-        attrs       = {
-            "having": ({Block}, "automatically initialize given fields (creates a constructor)")
-        },
+        attrs       = NoAttrs,
         returns     = {Nothing},
         # TODO(Types\define) update documentation example
         #  to reflect changes to OOP aspects of Arturo in general
@@ -126,11 +124,6 @@ proc defineLibrary*() =
             else:
                 x.ts.inherits = y
                 x.ts.methods = y.ts.methods
-
-            # check if we are to create a magic
-            # constructor with given fields
-            if checkAttr("having"):
-                x.ts.fields.add(aHaving.a)
 
             # setup our object initializer
             # via the magic `init` method
