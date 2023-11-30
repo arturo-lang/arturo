@@ -374,10 +374,10 @@ proc defineLibrary*() =
                 else:
                     InPlaced.c = InPlaced.c.toLower()
 
-    # TODO(Strings/match) should work for Web builds as well
+    # TODO(Strings\match) should work for Web builds as well
     #  labels: library, web, bug
 
-    # TODO(Strings/match) add support for Char values as the value-to-match
+    # TODO(Strings\match) add support for Char values as the value-to-match
     #  labels: library, enhancement
     when not defined(WEB):
         builtin "match",
@@ -707,7 +707,7 @@ proc defineLibrary*() =
                 else:
                     push(newString(res))
 
-    # TODO(Strings/replace) better implementation with more options needed
+    # TODO(Strings\replace) better implementation with more options needed
     #  Obviously, no need to overdo it here. But at least, we could add support for things like `.once`
     #  or strict replacement of the matched groups, etc - if possible, in the style of `match`
     #
@@ -1020,7 +1020,7 @@ proc defineLibrary*() =
 
     when not defined(WEB):
 
-        # TODO(Strings/match?) should work for Web builds as well
+        # TODO(Strings\match?) should work for Web builds as well
         #  labels: library, web, bug
         builtin "match?",
             alias       = unaliased, 
