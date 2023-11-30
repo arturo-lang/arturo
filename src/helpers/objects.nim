@@ -30,6 +30,7 @@ proc generateCustomObject*(prot: Prototype, arguments: ValueArray | ValueDict): 
                         if arguments.len != objectMethod.arity - 1:
                             # TODO(generateCustomObject) should throw if number of arguments is not correct
                             #  labels: error handling, oop, vm, values
+                            echo "calling init: " & $(arguments.len) & " given - " & $(objectMethod.arity - 1) & " expected"
                             echo "incorrect number of arguments"
                         prot.doInit(self, arguments)
                     else:
