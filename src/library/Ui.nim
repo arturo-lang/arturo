@@ -36,10 +36,14 @@ when not defined(NODIALOGS):
     import helpers/dialogs
 
 #=======================================
-# Methods
+# Definitions
 #=======================================
 
-proc defineSymbols*() =
+proc defineLibrary*() =
+
+    #----------------------------
+    # Functions
+    #----------------------------
 
     when not defined(NODIALOGS):
         
@@ -347,4 +351,4 @@ proc defineSymbols*() =
 # Add Library
 #=======================================
 
-Libraries.add(defineSymbols)
+Libraries.add(defineLibrary)
