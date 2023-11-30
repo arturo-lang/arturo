@@ -60,8 +60,24 @@ proc defineLibrary*() =
     # Functions
     #----------------------------
 
-    # TODO(Converters/as) is `.unwrapped` working as expected?
+    # TODO(Converters\as) is `.unwrapped` working as expected?
     #  labels: library, bug
+
+    # TODO(Converters\as) do we really need this?
+    #  judging from the options, we have 3 that are number related:
+    #  `.binary`, `.hex`, `.octal` (and they are identical as the
+    #  option for `from`; only doing the reverse operation), we have
+    #  one that converts a string to ascii (!) - this could go as a 
+    #  separate function into the Strings module? - and the rest of
+    #  the options are pretty much code-related: `.code`, `.pretty`,
+    #  & `.unwrapped` are for converting a value to Arturo code 
+    #  (could also become one separate function) and `.data` works
+    #  like a Collections/dictionary option (it does return a dictionary,
+    #  doesn't it - not sure!). Sure thing is, we should either eliminate
+    #  this module altogether, or rename it, and/or split the existing functions
+    #  into different sub-functions, and/or distribute these sub-functions
+    #  to different existing modules. (What am I writing here?! Who knows...)
+    #  labels: library, cleanup, open discussion
     builtin "as",
         alias       = unaliased,
         op          = opNop,
@@ -136,10 +152,11 @@ proc defineLibrary*() =
 
     # TODO(Converters\from) Do we really need this?
     #  We can definitely support hex/binary literals, but how would we support string to number conversion? Perhaps, with `.to` and option?
+    #  With a different function altogether?
     #  It's basically rather confusing...
     #  labels: library, cleanup, enhancement, open discussion
 
-    # TODO(Converters/from) revise use of `.opcode`
+    # TODO(Converters\from) revise use of `.opcode`
     #  labels: library, enhancement, open discussion
     builtin "from",
         alias       = unaliased,
