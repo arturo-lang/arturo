@@ -34,10 +34,16 @@ proc generateCustomObject*(prot: Prototype, arguments: ValueArray | ValueDict): 
                         prot.doInit(self, arguments)
                     else:
                         let initArgs = prot.methods["init"].params
+                        echo "initParams:"
+                        echo $(initArgs)
                         let sortedArgs = (toSeq(values(arguments))).sorted(proc (xv: Value, yv: Value): int =
                             let xIdx = initArgs.find(xv.s)
                             let yIdx = initArgs.find(yv.s)
                             if xIdx == -1 or yIdx == -1:
+                                echo "looking for (xv.s): " & (xv.s)
+                                echo "got: " & $(xIdx)
+                                echo "looking for (yv.s): " & (yv.s)
+                                echo "got: " & $(yIdx)
                                 echo "incorrect argument"
                             cmp(xIdx, yIdx)
                         )
