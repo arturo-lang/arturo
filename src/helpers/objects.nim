@@ -32,6 +32,7 @@ proc generateCustomObject*(prot: Prototype, arguments: ValueArray | ValueDict): 
                             #  labels: error handling, oop, vm, values
                             echo "calling init: " & $(arguments.len) & " given - " & $(objectMethod.arity - 1) & " expected"
                             echo "all params: " & $(prot.methods["init"].params)
+                            echo "objectMethod params: " & $(objectMethod.params)
                             echo "incorrect number of arguments"
                         prot.doInit(self, arguments)
                     else:
