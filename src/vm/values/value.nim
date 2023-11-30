@@ -565,7 +565,7 @@ func newFunctionFromDefinition*(params: ValueArray, main: Value, imports: Value 
     #  labels: library, benchmark, open discussion
     var inline = forceInline
     if not inline:
-        if canBeInlined(y):
+        if canBeInlined(main):
             inline = true
 
     var argTypes = initOrderedTable[string,ValueSpec]()
