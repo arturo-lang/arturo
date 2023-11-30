@@ -148,7 +148,6 @@ proc defineLibrary*() =
                             ])
 
                     x.ts.methods["init"] = newFunctionFromDefinition(y.a, initInnerBlock)
-                    echo "defined new type :" & $(x.ts.name) & " with fields: " & $(y.a.len)
                 else:
                     x.ts.methods = newDictionary(execDictionary(y)).d
             elif y.kind == Dictionary:
@@ -173,6 +172,8 @@ proc defineLibrary*() =
                         push arg
                     push self
                     callFunction(initMethod)
+                echo "defined new type :" & $(x.ts.name) & " with fields: " & $(x.ts.methods["init"].params.len)
+                echo "--> " & $(x.ts.methods["init"].params)
 
             # check if there is a `print` magic method;
             # the custom equivalent of the `printable` module
