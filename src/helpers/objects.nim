@@ -34,7 +34,7 @@ proc generateCustomObject*(prot: Prototype, arguments: ValueArray | ValueDict): 
                         prot.doInit(self, arguments)
                     else:
                         let initArgs = prot.methods["init"].params
-                        let sortedArgs = (toSeq(values(arguments))).sorted(proc (xv: Value, yv: Value) =
+                        let sortedArgs = (toSeq(values(arguments))).sorted(proc (xv: Value, yv: Value): int =
                             let xIdx = initArgs.find(xv.s)
                             let yIdx = initArgs.find(yv.s)
                             if xIdx == -1 or yIdx == -1:
