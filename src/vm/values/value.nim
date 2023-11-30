@@ -584,7 +584,7 @@ func newFunctionFromDefinition*(params: ValueArray, main: Value, imports: Value 
                 argTypes[varName.s].incl(Any)
             i += 1
 
-        var mainBody: ValueArray = y.a
+        var mainBody: ValueArray = main.a
         mainBody.insert(body)
 
         result = newFunction(args,newBlock(mainBody),imports,exports,memoize,inline)
@@ -594,20 +594,20 @@ func newFunctionFromDefinition*(params: ValueArray, main: Value, imports: Value 
                 argTypes[arg.s] = {Any}
         else:
             argTypes[""] = {Nothing}
-        result = newFunction(params.map((w)=>w.s),y,imports,exports,memoize,inline)
+        result = newFunction(params.map((w)=>w.s),main,imports,exports,memoize,inline)
 
     result.info = ValueInfo(kind: Function)
 
-    if not y.data.isNil:
-        if y.data.kind==Dictionary:
+    if not main.data.isNil:
+        if main.data.kind==Dictionary:
 
-            if (let descriptionData = y.data.d.getOrDefault("description", nil); not descriptionData.isNil):
+            if (let descriptionData = main.data.d.getOrDefault("description", nil); not descriptionData.isNil):
                 result.info.descr = descriptionData.s
                 result.info.module = ""
 
-            if y.data.d.hasKey("options") and y.data.d["options"].kind==Dictionary:
+            if main.data.d.hasKey("options") and main.data.d["options"].kind==Dictionary:
                 var options = initOrderedTable[string,(ValueSpec,string)]()
-                for (k,v) in pairs(y.data.d["options"].d):
+                for (k,v) in pairs(main.data.d["options"].d):
                     if v.kind==Type:
                         options[k] = ({v.t}, "")
                     elif v.kind==String:
@@ -625,7 +625,7 @@ func newFunctionFromDefinition*(params: ValueArray, main: Value, imports: Value 
 
                 result.info.attrs = options
 
-            if (let returnsData = y.data.d.getOrDefault("returns", nil); not returnsData.isNil):
+            if (let returnsData = main.data.d.getOrDefault("returns", nil); not returnsData.isNil):
                 if returnsData.kind==Type:
                     result.info.returns = {returnsData.t}
                 else:
@@ -635,7 +635,7 @@ func newFunctionFromDefinition*(params: ValueArray, main: Value, imports: Value 
                     result.info.returns = returns
 
             when defined(DOCGEN):
-                if (let exampleData = y.data.d.getOrDefault("example", nil); not exampleData.isNil):
+                if (let exampleData = main.data.d.getOrDefault("example", nil); not exampleData.isNil):
                     result.info.example = exampleData.s
 
     result.info.args = argTypes
