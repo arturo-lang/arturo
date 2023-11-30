@@ -36,7 +36,7 @@ proc defineLibrary*() =
     # Functions
     #----------------------------
 
-    # TODO(Comparison/compare) verify it's working right
+    # TODO(Comparison\compare) verify it's working right
     #  The main problem seems to be this vague `else:`.
     #  In a few words: Even comparisons that are simply not possible will return 1 (!)
     #  see also: https://github.com/arturo-lang/arturo/pull/1139#issuecomment-1509404906
