@@ -42,7 +42,8 @@ proc defineLibrary*() =
     #  Initially, I had thought of adding a `.having:` option that would
     #  automatically create an `init` method, simply assigning all arguments
     #  to `this` - but this is achievable, for simple functions, through the main
-    #  block. Also, we could add an option to create an automated `compare` method.
+    #  block. That's what we're doing sort-of with `.sortable`, albeit I'm not
+    #  even sure I like this one, or that it's that practical. Let's see...
     #  labels: library, enhancement, open discussion
     builtin "define",
         alias       = unaliased,
