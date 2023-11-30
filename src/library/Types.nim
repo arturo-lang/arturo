@@ -240,6 +240,22 @@ proc defineLibrary*() =
 
             push(generated)
 
+    # TODO(Types\to) revise attributes
+    #  the attributes to this function seem to me a bit confusing. I mean, `to` is
+    #  supposed to convert a value to a given type. Obviously, if we convert a Block
+    #  value e.g. to a Color, we may need to check whether the contained values are HSL
+    #  or HSV or whatever, but having 2 extra options, for one type only (that on top of
+    #  it, I haven't ever used even myself - not once!), in a function that does 1 million
+    #  other things, seems like not a good idea. Also, if we start sticking options here
+    #  for different things (e.g. why not take all options from `dictionary` and include them
+    #  all here as well?), this is going to end up being monstrous...
+    #  labels: library, enhancement, cleanup, open discussion
+
+    # TODO(Types\to) `.format` could become a distinct function?
+    #  having a `format` function (in the Strings module?) would make a lot of sense
+    #  actually, plus it would help us to start getting rid of things that don't belong to `to`
+    #  leaving the function cleaner and much more to-the-point
+    #  labels: library, enhancement, cleanup, open discussion
     builtin "to",
         alias       = unaliased,
         op          = opTo,
