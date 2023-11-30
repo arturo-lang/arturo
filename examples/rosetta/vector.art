@@ -1,9 +1,13 @@
 ; by @Krenium
 
 define :vector [
-    x y
-][
-    print: -> render "(|this\x|, |this\y|)"   ; prettyprint function
+    init: function [x,y][
+        this\x: x
+        this\y: y
+    ]
+    print: function [][
+        render "(|this\x|, |this\y|)"   ; prettyprint function
+    ]
 ]
 
 ensureVector: function [block][
