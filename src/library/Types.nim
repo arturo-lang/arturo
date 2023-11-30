@@ -117,24 +117,20 @@ proc defineLibrary*() =
 
             # Get our defined methods
             # as a dictionary
-            var definedMethods: ValueDict
             if y.kind == Block:
                 x.ts.inherits = nil
-                definedMethods = newDictionary(execDictionary(y)).d
+                x.ts.methods = newDictionary(execDictionary(y)).d
             elif y.kind == Dictionary:
                 x.ts.inherits = nil
-                definedMethods = y.d
+                x.ts.methods = y.d
             else:
                 x.ts.inherits = y
-                definedMethods = y.ts.methods
+                x.ts.methods = y.ts.methods
 
             # check if we are to create a magic
             # constructor with given fields
             if checkAttr("having"):
                 x.ts.fields.add(aHaving.a)
-
-            for key,val in definedMethods:
-                x.ts.methods[key] = val
 
             # setup our object initializer
             # via the magic `init` method
