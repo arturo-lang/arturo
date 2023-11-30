@@ -156,7 +156,7 @@ proc defineLibrary*() =
             else:
                 x.ts.inherits = y
                 for k,v in y.ts.methods:
-                    x.ts.methods[k] = v
+                    x.ts.methods[k] = copyValue(v)
                 #x.ts.methods = y.ts.methods
 
             # setup our object initializer
