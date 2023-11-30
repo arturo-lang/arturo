@@ -548,9 +548,17 @@ func newFunction*(params: seq[string], main: Value, imports: Value = nil, export
         )
     )
 
-func newFunctionFromDefinition*(params: ValueArray, main: Value, imports: Value = nil, exports: Value = nil, memoize: bool = false, inline: bool = false): Value {.inline, enforceNoRaises.} =
+func newFunctionFromDefinition*(params: ValueArray, main: Value, imports: Value = nil, exports: Value = nil, memoize: bool = false, forceInline: bool = false): Value {.inline, enforceNoRaises.} =
     ## create Function (UserFunction) value with given parameters,
     ## generate type checkers, and process info if necessary
+    
+    # TODO(VM/values/value) Verify inlining safety  in `newFunctionFromDefinition`
+    #  labels: library, benchmark, open discussion
+    var inline = forceInline
+    if not inline:
+        if canBeInlined(y):
+            inline = true
+
     var argTypes = initOrderedTable[string,ValueSpec]()
 
     if params.countIt(it.kind == Type) > 0:
