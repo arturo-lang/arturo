@@ -640,8 +640,6 @@ func newFunctionFromDefinition*(params: ValueArray, main: Value, imports: Value 
 
     result.info.args = argTypes
 
-    push(ret)
-
 func newBuiltin*(desc: sink string, modl: sink string, line: int, ar: int8, ag: sink OrderedTable[string,ValueSpec], at: sink OrderedTable[string,(ValueSpec,string)], ret: ValueSpec, exa: sink string, opc: OpCode, act: BuiltinAction): Value {.inline, enforceNoRaises.} =
     ## create Function (BuiltinFunction) value with given details
     result = Value(
