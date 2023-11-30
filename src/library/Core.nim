@@ -328,7 +328,7 @@ proc defineLibrary*() =
             #=======================================================
             raise ContinueTriggered()
 
-    # TODO(Core/do) not working well with Bytecode?
+    # TODO(Core\do) not working well with Bytecode?
     #  labels: bug, critical, library, values
     builtin "do",
         alias       = unaliased, 
@@ -741,7 +741,7 @@ proc defineLibrary*() =
             if condition: 
                 execUnscoped(y)
 
-    # TODO(Core/__VerbosePackager) Find an elegant way to inject hidden functions
+    # TODO(Core\__VerbosePackager) Find an elegant way to inject hidden functions
     #  labels: library, enhancement, cleanup
     builtin "__VerbosePackager",
         alias       = unaliased, 
@@ -756,7 +756,7 @@ proc defineLibrary*() =
             #=======================================================
             VerbosePackager = true
 
-    # TODO(Core/import) `.lean` not always working properly
+    # TODO(Core\import) `.lean` not always working properly
     #  basically, if you make 2 imports of the same package, one `.lean` and another normal one
     #  the 2nd one breaks. Does it have to do with our `execDictionary`?
     #  labels: library, bug, unit-test
@@ -864,7 +864,7 @@ proc defineLibrary*() =
             if multiple:
                 push(newBlock(ret))
 
-    # TODO(Core/let) block assignments should properly handle readonly Values
+    # TODO(Core\let) block assignments should properly handle readonly Values
     #  In a few words: we should make sure that `[a b]: [1 2]` is the same as 
     #  assigning each value one by one, which means that there should be an *implicit* 
     #  new Value created for readonly value. Apparently, `setSym` in VM/globals 
