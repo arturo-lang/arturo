@@ -53,7 +53,9 @@ proc defineLibrary*() =
             "type"          : {Type},
             "prototype"     : {Block, Dictionary, Type}
         },
-        attrs       = NoAttrs,
+        attrs       = {
+            "sortable"    : ({Literal,String},"set field to use for comparisons and sorting"),
+        },
         returns     = {Nothing},
         # TODO(Types\define) update documentation example
         #  to reflect changes to OOP aspects of Arturo in general
@@ -118,6 +120,17 @@ proc defineLibrary*() =
             # is it really an error? Arturo is not C++!
             x.ts.fields = @[]
             x.ts.methods = initOrderedTable[string,Value]()
+
+            # Check if .sortable is set and - if so -
+            # auto-generate the corresponding `compare` method
+            if checkAttr("sortable"):
+                let key = aSortable
+                let compareInnerBlock = newBlock(@[
+                    newWord("if"), newPath(@[newWord("this"), key]), newSymbol(greaterthan), newPath(@[newWord("that"), key]), newBlock(@[newWord("return"),newInteger(1)]),
+                    newWord("if"), newPath(@[newWord("this"), key]), newSymbol(equal), newPath(@[newWord("that"), key]), newBlock(@[newWord("return"),newInteger(0)]),
+                    newWord("return"), newWord("neg"), newInteger(1)
+                ])
+                x.ts.methods["compare"] = newFunctionFromDefinition(@[newWord("that")], compareInnerBlock)
 
             # Get our defined methods
             # as a dictionary
