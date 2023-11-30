@@ -1230,7 +1230,7 @@ proc defineLibrary*() =
                         if unlikely(inPlace): RawInPlaced = newBlock(selected)
                         else: push(newBlock(selected))
 
-    # TODO(Iterators/select) should `.first` & `.last` return just one element?
+    # TODO(Iterators\select) should `.first` & `.last` return just one element?
     #  Right now, they both return a block with this one element inside. 
     #  The original idea was that since `.first` can either be a switch-type of 
     #  attribute or an attributeLabel (that is: taking an argument), it would
