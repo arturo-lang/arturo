@@ -550,7 +550,6 @@ func newFunction*(params: seq[string], main: Value, imports: Value = nil, export
 func newFunctionFromDefinition*(params: ValueArray, main: Value, imports: Value = nil, exports: Value = nil, memoize: bool = false, inline: bool = false): Value {.inline, enforceNoRaises.} =
     ## create Function (UserFunction) value with given parameters,
     ## generate type checkers, and process info if necessary
-    var ret: Value
     var argTypes = initOrderedTable[string,ValueSpec]()
 
     if params.countIt(it.kind == Type) > 0:
@@ -588,23 +587,23 @@ func newFunctionFromDefinition*(params: ValueArray, main: Value, imports: Value 
         var mainBody: ValueArray = y.a
         mainBody.insert(body)
 
-        ret = newFunction(args,newBlock(mainBody),imports,exports,memoize,inline)
+        result = newFunction(args,newBlock(mainBody),imports,exports,memoize,inline)
     else:
         if argBlock.len > 0:
             for arg in argBlock:
                 argTypes[arg.s] = {Any}
         else:
             argTypes[""] = {Nothing}
-        ret = newFunction(argBlock.map((w)=>w.s),y,imports,exports,memoize,inline)
+        result = newFunction(argBlock.map((w)=>w.s),y,imports,exports,memoize,inline)
 
-    ret.info = ValueInfo(kind: Function)
+    result.info = ValueInfo(kind: Function)
 
     if not y.data.isNil:
         if y.data.kind==Dictionary:
 
             if (let descriptionData = y.data.d.getOrDefault("description", nil); not descriptionData.isNil):
-                ret.info.descr = descriptionData.s
-                ret.info.module = ""
+                result.info.descr = descriptionData.s
+                result.info.module = ""
 
             if y.data.d.hasKey("options") and y.data.d["options"].kind==Dictionary:
                 var options = initOrderedTable[string,(ValueSpec,string)]()
@@ -624,22 +623,22 @@ func newFunctionFromDefinition*(params: ValueArray, main: Value, imports: Value 
                         else:
                             options[k] = (vspec, "")
 
-                ret.info.attrs = options
+                result.info.attrs = options
 
             if (let returnsData = y.data.d.getOrDefault("returns", nil); not returnsData.isNil):
                 if returnsData.kind==Type:
-                    ret.info.returns = {returnsData.t}
+                    result.info.returns = {returnsData.t}
                 else:
                     var returns: ValueSpec
                     for tp in returnsData.a:
                         returns.incl(tp.t)
-                    ret.info.returns = returns
+                    result.info.returns = returns
 
             when defined(DOCGEN):
                 if (let exampleData = y.data.d.getOrDefault("example", nil); not exampleData.isNil):
-                    ret.info.example = exampleData.s
+                    result.info.example = exampleData.s
 
-    ret.info.args = argTypes
+    result.info.args = argTypes
 
     push(ret)
 
