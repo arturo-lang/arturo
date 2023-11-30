@@ -131,6 +131,7 @@ var
 # Forward Declarations
 #=======================================
 
+func newBlock*(a: sink ValueArray = @[], data: sink Value = nil): Value {.inline, enforceNoRaises.}
 func newDictionary*(d: sink ValueDict = newOrderedTable[string,Value]()): Value {.inline.}
 func valueAsString*(v: Value): string {.inline,enforceNoRaises.}
 func hash*(v: Value): Hash {.inline.}
