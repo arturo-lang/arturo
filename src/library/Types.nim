@@ -199,37 +199,6 @@ proc defineLibrary*() =
                     callFunction(compareMethod)
                     stack.pop().i
 
-            # var compareMethod: Value = nil
-
-            # if (let thisCompare = definedMethods.getOrDefault("compare", nil); not thisCompare.isNil):
-            #     compareMethod = thisCompare
-            # else:
-            #     if inherited:
-            #         if (let inheritedCompare = x.ts.inherits.ts.methods.getOrDefault("compare", nil); not inheritedCompare.isNil):
-            #             compareMethod = inheritedCompare.main
-
-            # if not compareMethod.isNil:
-            #     if compareMethod.kind==Block:
-            #         x.ts.methods["compare"] = newFunction(
-            #             @["this","that"],
-            #             compareMethod
-            #         )
-            #     else:
-            #         let key = compareMethod
-            #         x.ts.methods["compare"] = newFunction(
-            #             @["this","that"],
-            #             newBlock(@[
-            #                 newWord("if"), newPath(@[newWord("this"), key]), newSymbol(greaterthan), newPath(@[newWord("that"), key]), newBlock(@[newWord("return"),newInteger(1)]),
-            #                 newWord("if"), newPath(@[newWord("this"), key]), newSymbol(equal), newPath(@[newWord("that"), key]), newBlock(@[newWord("return"),newInteger(0)]),
-            #                 newWord("return"), newWord("neg"), newInteger(1)
-            #             ])
-            #         )
-            #     x.ts.doCompare = proc(v1,v2:Value):int =
-            #         push v2
-            #         push v1
-            #         callFunction(x.ts.methods["compare"])
-            #         stack.pop().i
-
     builtin "is",
         alias       = unaliased,
         op          = opNop,
