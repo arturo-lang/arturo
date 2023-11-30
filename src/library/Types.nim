@@ -107,6 +107,14 @@ proc defineLibrary*() =
             ; NAME: Jane, SURNAME: Doe, AGE: 33
         """:
             #=======================================================
+            # Important! if we don't empty them forcefully
+            # if we re-define a type inside the same piece of code
+            # it'll merge everything; we could obviously throw 
+            # an error when a type is redefined, but... 
+            # is it really an error? Arturo is not C++!
+            x.ts.fields = @[]
+            x.ts.methods = initOrderedTable[string,Value]()
+
             # Get our defined methods
             # as a dictionary
             var definedMethods: ValueDict
@@ -119,14 +127,6 @@ proc defineLibrary*() =
             else:
                 x.ts.inherits = y
                 definedMethods = y.ts.methods
-
-            # Important! if we don't empty them forcefully
-            # if we re-define a type inside the same piece of code
-            # it'll merge everything; we could obviously throw 
-            # an error when a type is redefined, but... 
-            # is it really an error? Arturo is not C++!
-            x.ts.fields = @[]
-            x.ts.methods = initOrderedTable[string,Value]()
 
             # check if we are to create a magic
             # constructor with given fields
