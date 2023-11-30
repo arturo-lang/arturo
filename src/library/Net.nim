@@ -152,7 +152,7 @@ proc defineLibrary*() =
                     
                     retrieveConfig("mail", "using")
 
-                    # TODO(Net/mail) raise error, if there is no configuration provided whatsoever
+                    # TODO(Net\mail) raise error, if there is no configuration provided whatsoever
                     #  perhaps, this could be also done in a more "templated" way; at least, for Config values
                     #  labels: library, bug
 
@@ -282,7 +282,7 @@ proc defineLibrary*() =
                             headers = headers
                         )
                     else:
-                        # TODO(Net/request) show warning/error when trying to use SSL certificates in MINI builds
+                        # TODO(Net\request) show warning/error when trying to use SSL certificates in MINI builds
                         #  labels: library, error handling, enhancement
                         client = newHttpClient(
                             userAgent = agent,
