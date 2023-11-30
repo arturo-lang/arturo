@@ -589,12 +589,12 @@ func newFunctionFromDefinition*(params: ValueArray, main: Value, imports: Value 
 
         result = newFunction(args,newBlock(mainBody),imports,exports,memoize,inline)
     else:
-        if argBlock.len > 0:
-            for arg in argBlock:
+        if params.len > 0:
+            for arg in params:
                 argTypes[arg.s] = {Any}
         else:
             argTypes[""] = {Nothing}
-        result = newFunction(argBlock.map((w)=>w.s),y,imports,exports,memoize,inline)
+        result = newFunction(params.map((w)=>w.s),y,imports,exports,memoize,inline)
 
     result.info = ValueInfo(kind: Function)
 
