@@ -38,6 +38,13 @@ proc defineLibrary*() =
     # Functions
     #----------------------------
 
+    # TODO(Types\define) add options for automated functions?
+    #  Initially, I had thought of adding a `.having:` option that would
+    #  automatically create an `init` method, simply assigning all arguments
+    #  to `this` - but this is achievable, for simple functions, through the main
+    #  block. That's what we're doing sort-of with `.sortable`, albeit I'm not
+    #  even sure I like this one, or that it's that practical. Let's see...
+    #  labels: library, enhancement, open discussion
     builtin "define",
         alias       = unaliased,
         op          = opNop,
@@ -48,7 +55,7 @@ proc defineLibrary*() =
             "prototype"     : {Block, Dictionary, Type}
         },
         attrs       = {
-            "having": ({Block}, "automatically initialize given fields (creates a constructor)")
+            "sortable"    : ({Literal,String},"set field to use for comparisons and sorting"),
         },
         returns     = {Nothing},
         # TODO(Types\define) update documentation example
@@ -107,19 +114,6 @@ proc defineLibrary*() =
             ; NAME: Jane, SURNAME: Doe, AGE: 33
         """:
             #=======================================================
-            # Get our defined methods
-            # as a dictionary
-            var definedMethods: ValueDict
-            if y.kind == Block:
-                x.ts.inherits = nil
-                definedMethods = newDictionary(execDictionary(y)).d
-            elif y.kind == Dictionary:
-                x.ts.inherits = nil
-                definedMethods = y.d
-            else:
-                x.ts.inherits = y
-                definedMethods = y.ts.methods
-
             # Important! if we don't empty them forcefully
             # if we re-define a type inside the same piece of code
             # it'll merge everything; we could obviously throw 
@@ -128,13 +122,40 @@ proc defineLibrary*() =
             x.ts.fields = @[]
             x.ts.methods = initOrderedTable[string,Value]()
 
-            # check if we are to create a magic
-            # constructor with given fields
-            if checkAttr("having"):
-                x.ts.fields.add(aHaving.a)
+            # Check if .sortable is set and - if so -
+            # auto-generate the corresponding `compare` method
+            if checkAttr("sortable"):
+                let key = aSortable
+                let compareInnerBlock = newBlock(@[
+                    newWord("if"), newPath(@[newWord("this"), key]), newSymbol(greaterthan), newPath(@[newWord("that"), key]), newBlock(@[newWord("return"),newInteger(1)]),
+                    newWord("if"), newPath(@[newWord("this"), key]), newSymbol(equal), newPath(@[newWord("that"), key]), newBlock(@[newWord("return"),newInteger(0)]),
+                    newWord("return"), newWord("neg"), newInteger(1)
+                ])
+                x.ts.methods["compare"] = newFunctionFromDefinition(@[newWord("that")], compareInnerBlock)
 
-            for key,val in definedMethods:
-                x.ts.methods[key] = val
+            # Get our defined methods
+            # as a dictionary
+            if y.kind == Block:
+                x.ts.inherits = nil
+                
+                if y.a.len > 0 and y.a[0].kind == Word:
+                    let initInnerBlock = newBlock()
+                    for val in y.a:
+                        if val.kind in {Word,Literal,String}:
+                            initInnerBlock.a.add(@[
+                                newPathLabel(@[newWord("this"), newWord(val.s)]),
+                                newWord(val.s)
+                            ])
+
+                    x.ts.methods["init"] = newFunctionFromDefinition(y.a, initInnerBlock)
+                else:
+                    x.ts.methods = newDictionary(execDictionary(y)).d
+            elif y.kind == Dictionary:
+                x.ts.inherits = nil
+                x.ts.methods = y.d
+            else:
+                x.ts.inherits = y
+                x.ts.methods = y.ts.methods
 
             # setup our object initializer
             # via the magic `init` method
@@ -177,37 +198,6 @@ proc defineLibrary*() =
                     push self
                     callFunction(compareMethod)
                     stack.pop().i
-
-            # var compareMethod: Value = nil
-
-            # if (let thisCompare = definedMethods.getOrDefault("compare", nil); not thisCompare.isNil):
-            #     compareMethod = thisCompare
-            # else:
-            #     if inherited:
-            #         if (let inheritedCompare = x.ts.inherits.ts.methods.getOrDefault("compare", nil); not inheritedCompare.isNil):
-            #             compareMethod = inheritedCompare.main
-
-            # if not compareMethod.isNil:
-            #     if compareMethod.kind==Block:
-            #         x.ts.methods["compare"] = newFunction(
-            #             @["this","that"],
-            #             compareMethod
-            #         )
-            #     else:
-            #         let key = compareMethod
-            #         x.ts.methods["compare"] = newFunction(
-            #             @["this","that"],
-            #             newBlock(@[
-            #                 newWord("if"), newPath(@[newWord("this"), key]), newSymbol(greaterthan), newPath(@[newWord("that"), key]), newBlock(@[newWord("return"),newInteger(1)]),
-            #                 newWord("if"), newPath(@[newWord("this"), key]), newSymbol(equal), newPath(@[newWord("that"), key]), newBlock(@[newWord("return"),newInteger(0)]),
-            #                 newWord("return"), newWord("neg"), newInteger(1)
-            #             ])
-            #         )
-            #     x.ts.doCompare = proc(v1,v2:Value):int =
-            #         push v2
-            #         push v1
-            #         callFunction(x.ts.methods["compare"])
-            #         stack.pop().i
 
     builtin "is",
         alias       = unaliased,

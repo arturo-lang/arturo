@@ -131,6 +131,7 @@ var
 # Forward Declarations
 #=======================================
 
+func newBlock*(a: sink ValueArray = @[], data: sink Value = nil): Value {.inline, enforceNoRaises.}
 func newDictionary*(d: sink ValueDict = newOrderedTable[string,Value]()): Value {.inline.}
 func valueAsString*(v: Value): string {.inline,enforceNoRaises.}
 func hash*(v: Value): Hash {.inline.}
@@ -152,6 +153,15 @@ template isNull*(val: Value): bool  = val.kind == Null
 template isFalse*(val: Value): bool = IsFalse in val.flags
 template isMaybe*(val: Value): bool = IsMaybe in val.flags
 template isTrue*(val: Value): bool  = IsTrue in val.flags
+
+func canBeInlined(v: Value): bool {.enforceNoRaises.} =
+    for item in v.a:
+        if item.kind == Label:
+            return false
+        elif item.kind == Block:
+            if not canBeInlined(item):
+                return false
+    return true
 
 #=======================================
 # Constructors
@@ -546,6 +556,107 @@ func newFunction*(params: seq[string], main: Value, imports: Value = nil, export
             bcode: nil
         )
     )
+
+func newFunctionFromDefinition*(params: ValueArray, main: Value, imports: Value = nil, exports: Value = nil, memoize: bool = false, forceInline: bool = false): Value {.inline, enforceNoRaises.} =
+    ## create Function value with given parameters,
+    ## generate type checkers, and process info if necessary
+    
+    # TODO(VM/values/value) Verify inlining safety  in `newFunctionFromDefinition`
+    #  labels: library, benchmark, open discussion
+    var inline = forceInline
+    if not inline:
+        if canBeInlined(main):
+            inline = true
+
+    var argTypes = initOrderedTable[string,ValueSpec]()
+
+    if params.countIt(it.kind == Type) > 0:
+        var args: seq[string]
+        var body: ValueArray
+
+        var i = 0
+        while i < params.len:
+            let varName = params[i]
+            args.add(params[i].s)
+            argTypes[params[i].s] = {}
+            if i+1 < params.len and params[i+1].kind == Type:
+                var typeArr: ValueArray
+
+                while i+1 < params.len and params[i+1].kind == Type:
+                    typeArr.add(newWord("is?"))
+                    typeArr.add(params[i+1])
+                    argTypes[varName.s].incl(params[i+1].t)
+                    typeArr.add(varName)
+                    i += 1
+
+                body.add(newWord("ensure"))
+                if typeArr.len == 3:
+                    body.add(newBlock(typeArr))
+                else:
+                    body.add(newBlock(@[
+                        newWord("any?"),
+                        newWord("array"),
+                        newBlock(typeArr)
+                    ]))
+            else:
+                argTypes[varName.s].incl(Any)
+            i += 1
+
+        var mainBody: ValueArray = main.a
+        mainBody.insert(body)
+
+        result = newFunction(args,newBlock(mainBody),imports,exports,memoize,inline)
+    else:
+        if params.len > 0:
+            for arg in params:
+                argTypes[arg.s] = {Any}
+        else:
+            argTypes[""] = {Nothing}
+        result = newFunction(params.map((w)=>w.s),main,imports,exports,memoize,inline)
+
+    result.info = ValueInfo(kind: Function)
+
+    if not main.data.isNil:
+        if main.data.kind==Dictionary:
+
+            if (let descriptionData = main.data.d.getOrDefault("description", nil); not descriptionData.isNil):
+                result.info.descr = descriptionData.s
+                result.info.module = ""
+
+            if main.data.d.hasKey("options") and main.data.d["options"].kind==Dictionary:
+                var options = initOrderedTable[string,(ValueSpec,string)]()
+                for (k,v) in pairs(main.data.d["options"].d):
+                    if v.kind==Type:
+                        options[k] = ({v.t}, "")
+                    elif v.kind==String:
+                        options[k] = ({Logical}, v.s)
+                    elif v.kind==Block:
+                        var vspec: ValueSpec
+                        var i = 0
+                        while i < v.a.len and v.a[i].kind==Type:
+                            vspec.incl(v.a[i].t)
+                            i += 1
+                        if v.a[i].kind==String:
+                            options[k] = (vspec, v.a[i].s)
+                        else:
+                            options[k] = (vspec, "")
+
+                result.info.attrs = options
+
+            if (let returnsData = main.data.d.getOrDefault("returns", nil); not returnsData.isNil):
+                if returnsData.kind==Type:
+                    result.info.returns = {returnsData.t}
+                else:
+                    var returns: ValueSpec
+                    for tp in returnsData.a:
+                        returns.incl(tp.t)
+                    result.info.returns = returns
+
+            when defined(DOCGEN):
+                if (let exampleData = main.data.d.getOrDefault("example", nil); not exampleData.isNil):
+                    result.info.example = exampleData.s
+
+    result.info.args = argTypes
 
 func newBuiltin*(desc: sink string, modl: sink string, line: int, ar: int8, ag: sink OrderedTable[string,ValueSpec], at: sink OrderedTable[string,(ValueSpec,string)], ret: ValueSpec, exa: sink string, opc: OpCode, act: BuiltinAction): Value {.inline, enforceNoRaises.} =
     ## create Function (BuiltinFunction) value with given details
