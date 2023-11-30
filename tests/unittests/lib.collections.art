@@ -825,12 +825,15 @@ do [
 
 topic "get - :object"
 do [
-    define :person [name, surname][
-        init: ->
-            this\name: capitalize this\name
+    define :person [
+        init: function [name, surname][
+            this\name: capitalize name
+            this\surname: surname
+        ]
 
-        print: ->
+        print: function [][
             ~"NAME: |this\name|, SURNAME: |this\surname|"
+        ]
     ]
 
     p: to :person ["John" "Doe"]
@@ -1228,12 +1231,15 @@ do [
 topic "key? - :object"
 do [
 
-    define :person [name, surname][
-        init: ->
-            this\name: capitalize this\name
+    define :person [
+        init: function [name, surname][
+            this\name: capitalize name
+            this\surname: surname
+        ]
 
-        print: ->
+        print: function [][
             ~"NAME: |this\name|, SURNAME: |this\surname|"
+        ]
     ]
 
     p: to :person ["John" "Doe"]
@@ -1261,12 +1267,15 @@ do [
 topic "keys - :object"
 do [
 
-    define :person [name, surname][
-        init: ->
-            this\name: capitalize this\name
+    define :person [
+        init: function [name, surname][
+            this\name: capitalize name
+            this\surname: surname
+        ]
 
-        print: ->
+        print: function [][
             ~"NAME: |this\name|, SURNAME: |this\surname|"
+        ]
     ]
 
     p: to :person ["John" "Doe"]
@@ -1454,10 +1463,10 @@ do [
     ensure -> not? one? #[name: "Jane" surname: "Doe"]
     passed
 
-    define :person [name, surname][]
-    define :pet [name][]
+    define :person [name, surname]
+    define :pet [name]
     ensure -> one? to :pet ["Johnis"]
-    ensure -> one? to :person ["John"]
+    ;ensure -> one? to :person ["John"] ; will throw!
     ensure -> not? one? to :person ["John" "Doe"]
     passed
 
@@ -2104,8 +2113,8 @@ do [
 topic "set - :object"
 do [
 
-    define :person [name, surname][]
-    user: to :person []
+    define :person [name, surname]
+    user: to :person ["some" "name"]
 
     set user 'name "John"
     ensure -> "John" = user\name
@@ -2244,12 +2253,10 @@ do [
     ensure -> 0 = size #[]
     passed
 
-    define :person [name, surname][]
-    p: to :person []
+    define :person [name, surname]
+    p: to :person ["John" "Doe"]
 
-    ensure -> 0 = size p
-    p\name: "Jane"
-    ensure -> 1 = size p
+    ensure -> 2 = size p
     passed
 
     ensure -> 0 = size null
@@ -3272,7 +3279,7 @@ do [
 
 topic "values - :object"
 do [
-    define :person [name, surname][]
+    define :person [name, surname]
     p: to :person ["John" "Doe"]
 
     ensure -> ["John" "Doe"] = values p
@@ -3328,12 +3335,12 @@ do [
     ensure -> not? zero? #[name: "Jane" surname: "Doe"]
     passed
 
-    define :person [name, surname][]
-    define :pet [name][]
-    ensure -> zero? to :pet []
-    ensure -> zero? to :person []
+    define :person [name, surname]
+    define :pet [name]
+    ; ensure -> zero? to :pet []
+    ; ensure -> zero? to :person []
     ensure -> not? zero? to :pet ["Johnis"]
-    ensure -> not? zero? to :person ["John"]
+    ; ensure -> not? zero? to :person ["John"]
     ensure -> not? zero? to :person ["John" "Doe"]
     passed
 
