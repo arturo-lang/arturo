@@ -626,6 +626,8 @@ proc defineLibrary*() =
                 if canBeInlined(y):
                     inline = true
 
+            push(newFunctionFromDefinition(argBlock, y, imports, exports, memoize, inline))
+
             var ret: Value
             var argTypes = initOrderedTable[string,ValueSpec]()
 
