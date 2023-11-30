@@ -553,22 +553,22 @@ func newFunctionFromDefinition*(params: ValueArray, main: Value, imports: Value 
     var ret: Value
     var argTypes = initOrderedTable[string,ValueSpec]()
 
-    if argBlock.countIt(it.kind == Type) > 0:
+    if params.countIt(it.kind == Type) > 0:
         var args: seq[string]
         var body: ValueArray
 
         var i = 0
-        while i < argBlock.len:
-            let varName = argBlock[i]
-            args.add(argBlock[i].s)
-            argTypes[argBlock[i].s] = {}
-            if i+1 < argBlock.len and argBlock[i+1].kind == Type:
+        while i < params.len:
+            let varName = params[i]
+            args.add(params[i].s)
+            argTypes[params[i].s] = {}
+            if i+1 < params.len and params[i+1].kind == Type:
                 var typeArr: ValueArray
 
-                while i+1 < argBlock.len and argBlock[i+1].kind == Type:
+                while i+1 < params.len and params[i+1].kind == Type:
                     typeArr.add(newWord("is?"))
-                    typeArr.add(argBlock[i+1])
-                    argTypes[varName.s].incl(argBlock[i+1].t)
+                    typeArr.add(params[i+1])
+                    argTypes[varName.s].incl(params[i+1].t)
                     typeArr.add(varName)
                     i += 1
 
