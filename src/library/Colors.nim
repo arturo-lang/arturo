@@ -24,16 +24,20 @@ import sequtils, sugar
 import vm/lib
 
 #=======================================
-# Methods
+# Definitions
 #=======================================
 
-proc defineSymbols*() =
+# TODO(Colors) more potential built-in function candidates?
+#  labels: library, enhancement, open discussion
 
-    # TODO(Colors) more potential built-in function candidates?
-    #  labels: library, enhancement, open discussion
+proc defineLibrary*() =
+
+    #----------------------------
+    # Functions
+    #----------------------------
 
     builtin "blend",
-        alias       = at, 
+        alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "blend given colors and get result",
@@ -301,4 +305,4 @@ proc defineSymbols*() =
 # Add Library
 #=======================================
 
-Libraries.add(defineSymbols)
+Libraries.add(defineLibrary)

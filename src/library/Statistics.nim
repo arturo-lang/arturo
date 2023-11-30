@@ -28,13 +28,17 @@ import vm/lib
 import vm/values/custom/[vrange]
 
 #=======================================
-# Methods
+# Definitions
 #=======================================
 
-proc defineSymbols*() =
+# TODO(Statistics) more potential built-in function candidates?
+#  labels: library, enhancement, open discussion
 
-    # TODO(Statistics) more potential built-in function candidates?
-    #  labels: library, enhancement, open discussion
+proc defineLibrary*() =
+
+    #----------------------------
+    # Functions
+    #----------------------------
 
     builtin "average",
         alias       = unaliased,
@@ -221,4 +225,4 @@ proc defineSymbols*() =
 # Add Library
 #=======================================
 
-Libraries.add(defineSymbols)
+Libraries.add(defineLibrary)

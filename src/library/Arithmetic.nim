@@ -25,10 +25,17 @@ when not defined(NOGMP):
     import helpers/bignums as BignumsHelper
 
 #=======================================
-# Methods
+# Definitions
 #=======================================
 
-proc defineSymbols*() =
+# TODO(Arithmetic) add `powmod` built-in function?
+#  labels: library, enhancement, open discussion
+
+proc defineLibrary*() =
+
+    #----------------------------
+    # Functions
+    #----------------------------
 
     builtin "add",
         alias       = plus, 
@@ -235,9 +242,6 @@ proc defineSymbols*() =
             #=======================================================
             generateOperationB("pow", `^`, `^=`)
 
-    # TODO(Arithmetic) add `powmod` built-in function?
-    #  labels: library, enhancement, open discussion
-
     builtin "sub",
         alias       = minus, 
         op          = opSub,
@@ -263,4 +267,4 @@ proc defineSymbols*() =
 # Add Library
 #=======================================
 
-Libraries.add(defineSymbols)
+Libraries.add(defineLibrary)

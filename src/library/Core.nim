@@ -35,14 +35,51 @@ import vm/lib
 import vm/[env, errors, eval, exec, parse]
 
 #=======================================
-# Methods
+# Helpers
 #=======================================
 
-proc defineSymbols*() =
+func canBeInlined(v: Value): bool {.enforceNoRaises.} =
+    for item in v.a:
+        if item.kind == Label:
+            return false
+        elif item.kind == Block:
+            if not canBeInlined(item):
+                return false
+    return true
 
-    # TODO(Core) add new `throw` built-in method?
-    #  this could easily work with a new `:exception` built-in type
-    #  labels: library, new feature,open discussion
+#=======================================
+# Definitions
+#=======================================
+
+# TODO(Core) add new `throw` built-in method?
+#  this could easily work with a new `:exception` built-in type
+#  labels: library, new feature,open discussion
+
+# TODO(Core) add new `catch` method?
+#  Currently, `try?` works with `else`, pretty much like `if?`
+#  but we cannot do anything with the exception itself, in case
+#  this `try?` has failed
+#
+#  So, why not add a `catch` method, where we could do something like:
+#  ```
+#  try? [
+#      ; let's try something dangerous
+#      print 10 / 0
+#  ]
+#  catch 'e [
+#      print "something went terribly wrong..."
+#      print e
+#  ]
+#  ```
+#  In that case, `e` would hold the Exception, which should preferrably be
+#  of a distinct Exception type.
+#  labels: library,new feature,enhancement,open discussion
+
+proc defineLibrary*() =
+
+    #----------------------------
+    # Functions
+    #----------------------------
 
     builtin "alias",
         alias       = unaliased, 
@@ -291,7 +328,7 @@ proc defineSymbols*() =
             #=======================================================
             raise ContinueTriggered()
 
-    # TODO(Core/do) not working well with Bytecode?
+    # TODO(Core\do) not working well with Bytecode?
     #  labels: bug, critical, library, values
     builtin "do",
         alias       = unaliased, 
@@ -428,8 +465,7 @@ proc defineSymbols*() =
             #=======================================================
             let y = stack.pop() # pop the value of the previous operation (hopefully an 'if?' or 'when?')
             if isFalse(y): 
-                execUnscoped(x)
-            
+                execUnscoped(x)  
             
     builtin "ensure",
         alias       = unaliased, 
@@ -465,6 +501,224 @@ proc defineSymbols*() =
                 if isFalse(stack.pop()):
                     AssertionError_AssertionFailed(x.codify())
 
+    builtin "function",
+        alias       = dollar,
+        op          = opFunc,
+        rule        = PrefixPrecedence,
+        description = "create function with given arguments and body",
+        args        = {
+            "arguments" : {Literal, Block},
+            "body"      : {Block}
+        },
+        attrs       = {
+            "import"    : ({Block},"import/embed given list of symbols from current environment"),
+            "export"    : ({Block},"export given symbols to parent"),
+            "memoize"   : ({Logical},"store results of function calls"),
+            "inline"    : ({Logical},"execute function without scope")
+        },
+        returns     = {Function},
+        example     = """
+            f: function [x][ x + 2 ]
+            print f 10                ; 12
+
+            f: $[x][x+2]
+            print f 10                ; 12
+            ..........
+            multiply: function [x,y][
+                x * y
+            ]
+            print multiply 3 5        ; 15
+            ..........
+            ; forcing typed parameters
+            addThem: function [
+                x :integer
+                y :integer :floating
+            ][
+                x + y
+            ]
+            ..........
+            ; adding complete documentation for user function
+            ; using data comments within the body
+            addThem: function [
+                x :integer :floating
+                y :integer :floating
+            ][
+                ;; description: « takes two numbers and adds them up
+                ;; options: [
+                ;;      mul: :integer « also multiply by given number
+                ;; ]
+                ;; returns: :integer :floating
+                ;; example: {
+                ;;      addThem 10 20
+                ;;      addThem.mult:3 10 20
+                ;; }
+
+                mult?: attr 'mult
+                if? not? null? mult? ->
+                    return mult? * x + y
+                else ->
+                    return x + y
+            ]
+
+            info'addThem
+
+            ; |--------------------------------------------------------------------------------
+            ; |        addThem  :function                                          0x10EF0E528
+            ; |--------------------------------------------------------------------------------
+            ; |                 takes two numbers and adds them up
+            ; |--------------------------------------------------------------------------------
+            ; |          usage  addThem x :integer :floating
+            ; |                         y :integer :floating
+            ; |
+            ; |        options  .mult :integer -> also multiply by given number
+            ; |
+            ; |        returns  :integer :floating
+            ; |--------------------------------------------------------------------------------
+            ..........
+            publicF: function .export:['x] [z][
+                print ["z =>" z]
+                x: 5
+            ]
+
+            publicF 10
+            ; z => 10
+
+            print x
+            ; 5
+            ..........
+            ; memoization
+            fib: $[x].memoize[
+                if? x<2 [1]
+                else [(fib x-1) + (fib x-2)]
+            ]
+
+            loop 1..25 [x][
+                print ["Fibonacci of" x "=" fib x]
+            ]
+        """:
+            #=======================================================
+            var imports: Value = nil
+            if checkAttr("import"):
+                var ret = initOrderedTable[string,Value]()
+                for item in aImport.a:
+                    requireAttrValue("import", item, {Word, Literal})
+                    ret[item.s] = FetchSym(item.s)
+                imports = newDictionary(ret)
+
+            var exports: Value = nil
+
+            if checkAttr("export"):
+                requireAttrValueBlock("export", aExport, {Word, Literal})
+                exports = aExport
+
+            var memoize = (hadAttr("memoize"))
+            var inline = (hadAttr("inline"))
+
+            let argBlock {.cursor.} =
+                if xKind == Block: 
+                    requireValueBlock(x, {Word, Literal, Type})
+                    x.a
+                else: @[x]
+
+            # TODO(Converters\function) Verify safety of implicit `.inline`s
+            #  labels: library, benchmark, open discussion
+            if not inline:
+                if canBeInlined(y):
+                    inline = true
+
+            var ret: Value
+            var argTypes = initOrderedTable[string,ValueSpec]()
+
+            if argBlock.countIt(it.kind == Type) > 0:
+                var args: seq[string]
+                var body: ValueArray
+
+                var i = 0
+                while i < argBlock.len:
+                    let varName = argBlock[i]
+                    args.add(argBlock[i].s)
+                    argTypes[argBlock[i].s] = {}
+                    if i+1 < argBlock.len and argBlock[i+1].kind == Type:
+                        var typeArr: ValueArray
+
+                        while i+1 < argBlock.len and argBlock[i+1].kind == Type:
+                            typeArr.add(newWord("is?"))
+                            typeArr.add(argBlock[i+1])
+                            argTypes[varName.s].incl(argBlock[i+1].t)
+                            typeArr.add(varName)
+                            i += 1
+
+                        body.add(newWord("ensure"))
+                        if typeArr.len == 3:
+                            body.add(newBlock(typeArr))
+                        else:
+                            body.add(newBlock(@[
+                                newWord("any?"),
+                                newWord("array"),
+                                newBlock(typeArr)
+                            ]))
+                    else:
+                        argTypes[varName.s].incl(Any)
+                    i += 1
+
+                var mainBody: ValueArray = y.a
+                mainBody.insert(body)
+
+                ret = newFunction(args,newBlock(mainBody),imports,exports,memoize,inline)
+            else:
+                if argBlock.len > 0:
+                    for arg in argBlock:
+                        argTypes[arg.s] = {Any}
+                else:
+                    argTypes[""] = {Nothing}
+                ret = newFunction(argBlock.map((w)=>w.s),y,imports,exports,memoize,inline)
+
+            ret.info = ValueInfo(kind: Function)
+
+            if not y.data.isNil:
+                if y.data.kind==Dictionary:
+
+                    if (let descriptionData = y.data.d.getOrDefault("description", nil); not descriptionData.isNil):
+                        ret.info.descr = descriptionData.s
+                        ret.info.module = ""
+
+                    if y.data.d.hasKey("options") and y.data.d["options"].kind==Dictionary:
+                        var options = initOrderedTable[string,(ValueSpec,string)]()
+                        for (k,v) in pairs(y.data.d["options"].d):
+                            if v.kind==Type:
+                                options[k] = ({v.t}, "")
+                            elif v.kind==String:
+                                options[k] = ({Logical}, v.s)
+                            elif v.kind==Block:
+                                var vspec: ValueSpec
+                                var i = 0
+                                while i < v.a.len and v.a[i].kind==Type:
+                                    vspec.incl(v.a[i].t)
+                                    i += 1
+                                if v.a[i].kind==String:
+                                    options[k] = (vspec, v.a[i].s)
+                                else:
+                                    options[k] = (vspec, "")
+
+                        ret.info.attrs = options
+
+                    if (let returnsData = y.data.d.getOrDefault("returns", nil); not returnsData.isNil):
+                        if returnsData.kind==Type:
+                            ret.info.returns = {returnsData.t}
+                        else:
+                            var returns: ValueSpec
+                            for tp in returnsData.a:
+                                returns.incl(tp.t)
+                            ret.info.returns = returns
+
+                    when defined(DOCGEN):
+                        if (let exampleData = y.data.d.getOrDefault("example", nil); not exampleData.isNil):
+                            ret.info.example = exampleData.s
+
+            ret.info.args = argTypes
+
+            push(ret)
+
     builtin "if",
         alias       = unaliased, 
         op          = opIf,
@@ -487,44 +741,7 @@ proc defineSymbols*() =
             if condition: 
                 execUnscoped(y)
 
-    builtin "if?",
-        alias       = unaliased, 
-        op          = opIfE,
-        rule        = PrefixPrecedence,
-        description = "perform action, if given condition is not false or null and return condition result",
-        args        = {
-            "condition" : {Any},
-            "action"    : {Block}
-        },
-        attrs       = NoAttrs,
-        returns     = {Logical},
-        example     = """
-            x: 2
-            
-            result: if? x=2 -> print "yes, that's right!"
-            ; yes, that's right!
-            
-            print result
-            ; true
-            ..........
-            x: 2
-            z: 3
-            
-            if? x>z [
-                print "x was greater than z"
-            ]
-            else [
-                print "nope, x was not greater than z"
-            ]
-        """:
-            #=======================================================
-            let condition = not (xKind==Null or isFalse(x))
-            if condition: 
-                execUnscoped(y)
-
-            push(newLogical(condition))
-
-    # TODO(Core/__VerbosePackager) Find an elegant way to inject hidden functions
+    # TODO(Core\__VerbosePackager) Find an elegant way to inject hidden functions
     #  labels: library, enhancement, cleanup
     builtin "__VerbosePackager",
         alias       = unaliased, 
@@ -539,7 +756,7 @@ proc defineSymbols*() =
             #=======================================================
             VerbosePackager = true
 
-    # TODO(Core/import) `.lean` not always working properly
+    # TODO(Core\import) `.lean` not always working properly
     #  basically, if you make 2 imports of the same package, one `.lean` and another normal one
     #  the 2nd one breaks. Does it have to do with our `execDictionary`?
     #  labels: library, bug, unit-test
@@ -647,14 +864,13 @@ proc defineSymbols*() =
             if multiple:
                 push(newBlock(ret))
 
-    # TODO(Core/let) block assignments should properly handle readonly Values
+    # TODO(Core\let) block assignments should properly handle readonly Values
     #  In a few words: we should make sure that `[a b]: [1 2]` is the same as 
     #  assigning each value one by one, which means that there should be an *implicit* 
     #  new Value created for readonly value. Apparently, `setSym` in VM/globals 
     #  doesn't handle this properly; but it should.
     #  See also: https://discord.com/channels/765519132186640445/829324913097048065/1099426535569633401
     #  labels: library, bug, critical
-
     builtin "let",
         alias       = colon, 
         op          = opNop,
@@ -728,11 +944,6 @@ proc defineSymbols*() =
             #=======================================================
             push(copyValue(x))
 
-    constant "null",
-        alias       = slashedzero,
-        description = "the NULL constant":
-            VNULL
-
     builtin "return",
         alias       = unaliased, 
         op          = opReturn,
@@ -784,33 +995,6 @@ proc defineSymbols*() =
             else:
                 execUnscoped(z)
 
-    builtin "throws?",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "perform action, and return true if errors were thrown",
-        args        = {
-            "action": {Block,Bytecode}
-        },
-        attrs       = NoAttrs,
-        returns     = {Logical},
-        example     = """
-            throws? [
-                1 + 2
-            ] 
-            ; => false
-
-            throws? -> 1/0
-            ; => true
-        """:
-            #=======================================================
-            try:
-                execUnscoped(x)
-
-                push(VFALSE)
-            except CatchableError, Defect:
-                push(VTRUE)
-
     builtin "try",
         alias       = unaliased, 
         op          = opNop,
@@ -840,60 +1024,6 @@ proc defineSymbols*() =
                 if verbose:
                     showVMErrors(e)
 
-    # TODO(Core) add new `catch` method?
-    #  Currently, `try?` works with `else`, pretty much like `if?`
-    #  but we cannot do anything with the exception itself, in case
-    #  this `try?` has failed
-    #
-    #  So, why not add a `catch` method, where we could do something like:
-    #  ```
-    #  try? [
-    #      ; let's try something dangerous
-    #      print 10 / 0
-    #  ]
-    #  catch 'e [
-    #      print "something went terribly wrong..."
-    #      print e
-    #  ]
-    #  ```
-    #  In that case, `e` would hold the Exception, which should preferrably be
-    #  of a distinct Exception type.
-    #  labels: library,new feature,enhancement,open discussion
-    builtin "try?",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "perform action, catch possible errors and return status",
-        args        = {
-            "action": {Block,Bytecode}
-        },
-        attrs       = {
-            "verbose"   : ({Logical},"print all error messages as usual")
-        },
-        returns     = {Logical},
-        example     = """
-            try? [
-                ; let's try something dangerous
-                print 10 / 0
-            ]
-            else [
-                print "something went terribly wrong..."
-            ]
-            
-            ; something went terribly wrong...
-        """:
-            #=======================================================
-            let verbose = (hadAttr("verbose"))
-            try:
-                execUnscoped(x)
-
-                push(VTRUE)
-            except CatchableError, Defect:
-                let e = getCurrentException()
-                if verbose:
-                    showVMErrors(e)
-                push(VFALSE)
-
     builtin "unless",
         alias       = unaliased, 
         op          = opUnless,
@@ -916,43 +1046,6 @@ proc defineSymbols*() =
             if condition: 
                 execUnscoped(y)
 
-    builtin "unless?",
-        alias       = unaliased, 
-        op          = opUnlessE,
-        rule        = PrefixPrecedence,
-        description = "perform action, if given condition is false or null and return condition result",
-        args        = {
-            "condition" : {Any},
-            "action"    : {Block,Bytecode}
-        },
-        attrs       = NoAttrs,
-        returns     = {Logical},
-        example     = """
-            x: 2
-            
-            result: unless? x=1 -> print "yep, x is not 1!"
-            ; yep, x is not 1!
-            
-            print result
-            ; true
-            
-            z: 1
-            
-            unless? x>z [
-                print "yep, x was not greater than z"
-            ]
-            else [
-                print "x was greater than z"
-            ]
-            ; x was greater than z
-        """:
-            #=======================================================
-            let condition = xKind==Null or isFalse(x)
-            if condition: 
-                execUnscoped(y)
-
-            push(newLogical(condition))
-            
     builtin "unstack",
         alias       = unaliased, 
         op          = opNop,
@@ -996,7 +1089,6 @@ proc defineSymbols*() =
                         res.add stack.pop()
                         i+=1
                     push(newBlock(res))
-
 
     builtin "until",
         alias       = unaliased, 
@@ -1069,46 +1161,6 @@ proc defineSymbols*() =
             else:
                 push(FetchPathSym(x.p))
 
-    builtin "when?",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "check if a specific condition is fulfilled and, if so, execute given action",
-        args        = {
-            "condition" : {Block},
-            "action"    : {Block}
-        },
-        attrs       = NoAttrs,
-        returns     = {Logical},
-        example     = """
-            a: 2
-            case [a]
-                when? [<2] -> print "a is less than 2"
-                when? [=2] -> print "a is 2"
-                else       -> print "a is greater than 2"
-        """:
-            #=======================================================
-            let z = stack.pop()
-            if isFalse(z):
-
-                let top = sTop()
-
-                var newb: Value = newBlock()
-                for old in top.a:
-                    newb.a.add(old)
-                for cond in x.a:
-                    newb.a.add(cond)
-
-                execUnscoped(newb)
-
-                if isTrue(sTop()):
-                    execUnscoped(y)
-                    discard stack.pop()
-                    discard stack.pop()
-                    push(newLogical(true))
-            else:
-                push(z)
-
     builtin "while",
         alias       = unaliased, 
         op          = opWhile,
@@ -1164,9 +1216,234 @@ proc defineSymbols*() =
                         popped = stack.pop()
                     do:
                         discard
+    
+    builtin "with",
+        alias       = unaliased,
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "create closure-style block by embedding given words",
+        args        = {
+            "embed" : {Literal, Block},
+            "body"  : {Block}
+        },
+        attrs       = NoAttrs,
+        returns     = {Block},
+        example     = """
+            f: function [x][
+                with [x][
+                    "the multiple of" x "is" 2*x
+                ]
+            ]
+
+            multiplier: f 10
+
+            print multiplier
+            ; the multiple of 10 is 20
+        """:
+            #=======================================================
+            var blk: ValueArray = y.a
+            if xKind == Literal:
+                blk.insert(FetchSym(x.s))
+                blk.insert(newLabel(x.s))
+            else:
+                for item in x.a:
+                    requireValue(item, {Word,Literal})
+                    blk.insert(FetchSym(item.s))
+                    blk.insert(newLabel(item.s))
+
+            push(newBlock(blk))
+
+    #----------------------------
+    # Predicates
+    #----------------------------
+
+    builtin "if?",
+        alias       = unaliased, 
+        op          = opIfE,
+        rule        = PrefixPrecedence,
+        description = "perform action, if given condition is not false or null and return condition result",
+        args        = {
+            "condition" : {Any},
+            "action"    : {Block}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            x: 2
+            
+            result: if? x=2 -> print "yes, that's right!"
+            ; yes, that's right!
+            
+            print result
+            ; true
+            ..........
+            x: 2
+            z: 3
+            
+            if? x>z [
+                print "x was greater than z"
+            ]
+            else [
+                print "nope, x was not greater than z"
+            ]
+        """:
+            #=======================================================
+            let condition = not (xKind==Null or isFalse(x))
+            if condition: 
+                execUnscoped(y)
+
+            push(newLogical(condition))
+
+    builtin "throws?",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "perform action, and return true if errors were thrown",
+        args        = {
+            "action": {Block,Bytecode}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            throws? [
+                1 + 2
+            ] 
+            ; => false
+
+            throws? -> 1/0
+            ; => true
+        """:
+            #=======================================================
+            try:
+                execUnscoped(x)
+
+                push(VFALSE)
+            except CatchableError, Defect:
+                push(VTRUE)
+
+    builtin "try?",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "perform action, catch possible errors and return status",
+        args        = {
+            "action": {Block,Bytecode}
+        },
+        attrs       = {
+            "verbose"   : ({Logical},"print all error messages as usual")
+        },
+        returns     = {Logical},
+        example     = """
+            try? [
+                ; let's try something dangerous
+                print 10 / 0
+            ]
+            else [
+                print "something went terribly wrong..."
+            ]
+            
+            ; something went terribly wrong...
+        """:
+            #=======================================================
+            let verbose = (hadAttr("verbose"))
+            try:
+                execUnscoped(x)
+
+                push(VTRUE)
+            except CatchableError, Defect:
+                let e = getCurrentException()
+                if verbose:
+                    showVMErrors(e)
+                push(VFALSE)
+
+    builtin "unless?",
+        alias       = unaliased, 
+        op          = opUnlessE,
+        rule        = PrefixPrecedence,
+        description = "perform action, if given condition is false or null and return condition result",
+        args        = {
+            "condition" : {Any},
+            "action"    : {Block,Bytecode}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            x: 2
+            
+            result: unless? x=1 -> print "yep, x is not 1!"
+            ; yep, x is not 1!
+            
+            print result
+            ; true
+            
+            z: 1
+            
+            unless? x>z [
+                print "yep, x was not greater than z"
+            ]
+            else [
+                print "x was greater than z"
+            ]
+            ; x was greater than z
+        """:
+            #=======================================================
+            let condition = xKind==Null or isFalse(x)
+            if condition: 
+                execUnscoped(y)
+
+            push(newLogical(condition))
+
+    builtin "when?",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "check if a specific condition is fulfilled and, if so, execute given action",
+        args        = {
+            "condition" : {Block},
+            "action"    : {Block}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            a: 2
+            case [a]
+                when? [<2] -> print "a is less than 2"
+                when? [=2] -> print "a is 2"
+                else       -> print "a is greater than 2"
+        """:
+            #=======================================================
+            let z = stack.pop()
+            if isFalse(z):
+
+                let top = sTop()
+
+                var newb: Value = newBlock()
+                for old in top.a:
+                    newb.a.add(old)
+                for cond in x.a:
+                    newb.a.add(cond)
+
+                execUnscoped(newb)
+
+                if isTrue(sTop()):
+                    execUnscoped(y)
+                    discard stack.pop()
+                    discard stack.pop()
+                    push(newLogical(true))
+            else:
+                push(z)
+
+    #----------------------------
+    # Constants
+    #----------------------------
+
+    constant "null",
+        alias       = slashedzero,
+        description = "the NULL constant":
+            VNULL
 
 #=======================================
 # Add Library
 #=======================================
 
-Libraries.add(defineSymbols)
+Libraries.add(defineLibrary)
