@@ -148,6 +148,7 @@ proc defineLibrary*() =
                             ])
 
                     x.ts.methods["init"] = newFunctionFromDefinition(y.a, initInnerBlock)
+                    echo "defined new type :" & $(x.ts.name) & " with fields: " & $(y.a.len)
                 else:
                     x.ts.methods = newDictionary(execDictionary(y)).d
             elif y.kind == Dictionary:
