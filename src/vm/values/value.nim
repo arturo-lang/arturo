@@ -558,7 +558,7 @@ func newFunction*(params: seq[string], main: Value, imports: Value = nil, export
     )
 
 func newFunctionFromDefinition*(params: ValueArray, main: Value, imports: Value = nil, exports: Value = nil, memoize: bool = false, forceInline: bool = false): Value {.inline, enforceNoRaises.} =
-    ## create Function (UserFunction) value with given parameters,
+    ## create Function value with given parameters,
     ## generate type checkers, and process info if necessary
     
     # TODO(VM/values/value) Verify inlining safety  in `newFunctionFromDefinition`
