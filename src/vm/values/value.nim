@@ -154,6 +154,15 @@ template isFalse*(val: Value): bool = IsFalse in val.flags
 template isMaybe*(val: Value): bool = IsMaybe in val.flags
 template isTrue*(val: Value): bool  = IsTrue in val.flags
 
+func canBeInlined(v: Value): bool {.enforceNoRaises.} =
+    for item in v.a:
+        if item.kind == Label:
+            return false
+        elif item.kind == Block:
+            if not canBeInlined(item):
+                return false
+    return true
+
 #=======================================
 # Constructors
 #=======================================
