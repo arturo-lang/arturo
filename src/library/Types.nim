@@ -123,7 +123,19 @@ proc defineLibrary*() =
             # as a dictionary
             if y.kind == Block:
                 x.ts.inherits = nil
-                x.ts.methods = newDictionary(execDictionary(y)).d
+                
+                if y.a.len > 0 and y.a[0].kind == Word:
+                    let initInnerBlock = newBlock()
+                    for val in y.a:
+                        if val.kind in {Word,Literal,String}:
+                            initInnerBlock.a.add(@[
+                                newPathLabel(@[newWord("this"), newWord(val.s)]),
+                                newWord(val.s)
+                            ])
+
+                    x.ts.methods["init"] = newFunctionFromDefinition(y.a, initInnerBlock)
+                else:
+                    x.ts.methods = newDictionary(execDictionary(y)).d
             elif y.kind == Dictionary:
                 x.ts.inherits = nil
                 x.ts.methods = y.d
