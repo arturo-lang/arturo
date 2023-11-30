@@ -285,7 +285,7 @@ proc defineLibrary*() =
                     else: push(newBlock())
                 else: discard
 
-    # TODO(Collections/combine) should also work with in-place Literals?
+    # TODO(Collections\combine) should also work with in-place Literals?
     #  labels: library, enhancement, open discussion
     builtin "combine",
         alias       = unaliased,
@@ -334,7 +334,7 @@ proc defineLibrary*() =
                 push(newBlock(getCombinations(x.a, sz, doRepeat).map((
                         z)=>newBlock(z))))
 
-    # TODO(Collections/couple) should work with in-place Literals
+    # TODO(Collections\couple) should work with in-place Literals
     #  labels: library, enhancement
     builtin "couple",
         alias       = unaliased,
@@ -793,7 +793,7 @@ proc defineLibrary*() =
                         discard
                 else: discard
 
-    # TODO(Collections/index) add `.from:` & `.to:` options to search in range
+    # TODO(Collections\index) add `.from:` & `.to:` options to search in range
     #  The two options don't have to be used at the same time. For example:
     #  - just setting `.from:` will search from given index to the end
     #  - just setting `.to:` will search from the beginning to given index
@@ -846,7 +846,7 @@ proc defineLibrary*() =
                         push(VNULL)
                 else: discard
 
-    # TODO(Collections/insert) add new `.many` option?
+    # TODO(Collections\insert) add new `.many` option?
     #  or something similar - the name doesn't have to be this one
     #  basically, the idea would allow us to do something like:
     #  `insert.many [1 4 5 6] 1 [2 3]` and get back `[1 2 3 4 5 6]`
@@ -1318,7 +1318,7 @@ proc defineLibrary*() =
 
             push newRange(limX, limY, step, infinite, numeric, forward)
 
-    # TODO(Collections/remove) is `.index` broken?
+    # TODO(Collections\remove) is `.index` broken?
     #  Example: `remove.index 3 'a, debug a`
     #  labels: library, bug
     builtin "remove",
@@ -1581,7 +1581,7 @@ proc defineLibrary*() =
                 if x.a.len == 0: push(VNULL)
                 else: push(sample(x.a))
 
-    # TODO(Collections/set) not working with Bytecode values
+    # TODO(Collections\set) not working with Bytecode values
     #  example:
     #  ```
     #      bt: to :bytecode [print "hello"]
@@ -1779,13 +1779,13 @@ proc defineLibrary*() =
                 else:
                     push(newBlock())
 
-    # TODO(Collections/sort) clean rewrite needed
+    # TODO(Collections\sort) clean rewrite needed
     #  the whole implementation looks like a patchwork of ideas and is not that
     #  easy to debug.
     #  also, there seem to be different types of issues: https://github.com/arturo-lang/arturo/pull/1045#issuecomment-1458960243
     #  labels: library, cleanup
 
-    # TODO(Collection/sort) make sure all options work as expected for Literal values too
+    # TODO(Collection\sort) make sure all options work as expected for Literal values too
     #  see: https://github.com/arturo-lang/arturo/pull/1045#issuecomment-1458960243
     #  labels: library, bug, critical
     builtin "sort",
@@ -1978,7 +1978,7 @@ proc defineLibrary*() =
     #  Currently, simple split works fine - but using different attributes (at, every, by, etc) doesn't
     #  labels: library,bug
 
-    # TODO(Collections/split) `.by` not working properly with Literal values?
+    # TODO(Collections\split) `.by` not working properly with Literal values?
     #  example: ```
     #   b: ["Arnold" "Andreas" "Paul" "Ricard" "Linus" "Yanis" "Helena" "Eva" "Blanca"]
     #   split.every: 3 'b, debug b
@@ -2399,7 +2399,7 @@ proc defineLibrary*() =
     # Predicates
     #----------------------------
 
-    # TODO(Collections/contains?) add new `.key` option?
+    # TODO(Collections\contains?) add new `.key` option?
     #  this would allow us to check whether the given dictionary contains a specific key
     #  instead of a value, which is the default way `contains?` works right now with dictionaries
     #  labels: library, enhancement, open discussion
@@ -2528,7 +2528,7 @@ proc defineLibrary*() =
                 of Dictionary: push(newLogical(x.d.len == 0))
                 else: discard
 
-    # TODO(Collections/in?) add new `.key` option?
+    # TODO(Collections\in?) add new `.key` option?
     #  same as with `contains?`
     #  labels: library, enhancement, open discussion
     builtin "in?",
@@ -2713,7 +2713,7 @@ proc defineLibrary*() =
                 else:
                     push(VFALSE)
 
-    # TODO(Collections/sorted?) doesn't work properly
+    # TODO(Collections\sorted?) doesn't work properly
     #  it should work in an identical way as `sort`
     #  labels: library, enhancement
     builtin "sorted?",
