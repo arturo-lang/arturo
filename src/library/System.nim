@@ -288,7 +288,7 @@ proc defineLibrary*() =
             else:
                 ProgramError_panic(x.s.replace("\n",";"), code)
 
-    # TODO(Paths/path) shouldn't be considered a constant
+    # TODO(Paths\path) shouldn't be considered a constant
     #  let's say constants are exactly that: constants.
     #  if the exact same "constant" returns different results based on
     #  the system it's running on, then it's not a constant.
@@ -380,7 +380,7 @@ proc defineLibrary*() =
     #  So, its current usefulness is very much doubtable.
     #  labels: library, enhancement, open discussion
 
-    # TODO(System/script) also add information about the current script being executed
+    # TODO(System\script) also add information about the current script being executed
     #  another location could also be Paths/path
     #  labels: library,enhancement
 
@@ -398,7 +398,7 @@ proc defineLibrary*() =
         """:
             push(getScriptInfo())
 
-    # TODO(System/sys) normalize the way CPU architecture is shown
+    # TODO(System\sys) normalize the way CPU architecture is shown
     #  in our new release builds, we annotate x86_64/amd64 builds as "x86_64"
     #  here, our sys\cpu field would return "amd64"
     #
