@@ -32,6 +32,18 @@ proc generateCustomObject*(prot: Prototype, arguments: ValueArray | ValueDict): 
                             #  labels: error handling, oop, vm, values
                             echo "incorrect number of arguments"
                         prot.doInit(self, arguments)
+                    else:
+                        let initArgs = prot.methods["init"].params
+                        let sortedArgs = (toSeq(values(arguments))).sorted(proc (xv: Value, yv: Value) =
+                            let xIdx = initArgs.find(xv.s)
+                            let yIdx = initArgs.find(yv.s)
+                            if xIdx == -1 or yIdx == -1:
+                                echo "incorrect argument"
+                            cmp(xIdx, yIdx)
+                        )
+                        if sortedArgs.len != objectMethod.arity - 1:
+                            echo "incorrect number of arguments"
+                        prot.doInit(self, sortedArgs)
                 of "print": discard
                 of "compare": discard
                 else:
