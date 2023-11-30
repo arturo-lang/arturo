@@ -38,6 +38,12 @@ proc defineLibrary*() =
     # Functions
     #----------------------------
 
+    # TODO(Types\define) add options for automated functions?
+    #  Initially, I had thought of adding a `.having:` option that would
+    #  automatically create an `init` method, simply assigning all arguments
+    #  to `this` - but this is achievable, for simple functions, through the main
+    #  block. Also, we could add an option to create an automated `compare` method.
+    #  labels: library, enhancement, open discussion
     builtin "define",
         alias       = unaliased,
         op          = opNop,
