@@ -36,16 +36,18 @@ proc generateCustomObject*(prot: Prototype, arguments: ValueArray | ValueDict): 
                         let initArgs = prot.methods["init"].params
                         echo "initParams:"
                         echo $(initArgs)
-                        let sortedArgs = (toSeq(values(arguments))).sorted(proc (xv: Value, yv: Value): int =
-                            let xIdx = initArgs.find(xv.s)
-                            let yIdx = initArgs.find(yv.s)
+                        let sortedArgs = (toSeq(pairs(arguments))).sorted(proc (xv: (string,Value), yv: (string,Value)): int =
+                            let xIdx = initArgs.find(xv[0])
+                            let yIdx = initArgs.find(yv[0])
                             if xIdx == -1 or yIdx == -1:
-                                echo "looking for (xv.s): " & (xv.s)
+                                echo "looking for (xv[0]): " & (xv[0])
                                 echo "got: " & $(xIdx)
-                                echo "looking for (yv.s): " & (yv.s)
+                                echo "looking for (yv[0]): " & (yv[0])
                                 echo "got: " & $(yIdx)
                                 echo "incorrect argument"
                             cmp(xIdx, yIdx)
+                        ).map(proc (rz: (string,Value)): Value = 
+                            rz[1]
                         )
                         if sortedArgs.len != objectMethod.arity - 1:
                             echo "incorrect number of arguments"
