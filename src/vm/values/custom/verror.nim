@@ -12,7 +12,7 @@ proc newDefaultError*(): VErrorKind =
     result = VErrorKind(label: "Generic Error")
 
 let 
-    genericError*: VErrorKind = newDefaultError()
+    genericErrorKind*: VErrorKind = newDefaultError()
 
 func `$`*(kind: VErrorKind): string {.inline,enforceNoRaises.} =
     kind.label
