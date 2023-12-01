@@ -154,22 +154,44 @@ proc defineLibrary*() =
                 x.ts.inherits = nil
                 x.ts.methods = y.d
             else:
-                x.ts.inherits = y
+                x.ts.inherits = copyValue(y)
                 for k,v in y.ts.methods:
                     x.ts.methods[k] = copyValue(v)
 
             # setup our object initializer
             # via the magic `init` method
+            echo "defining new type: :" & x.ts.name 
             if (let initMethod = x.ts.methods.getOrDefault("init", nil); not initMethod.isNil):
                 # TODO(Types\define) we should verify that our `init` is properly defined
                 #  and if not, throw an appropriate error
                 #  mainly, that it's a Function
                 #  labels: library, error handling, oop
                 initMethod.injectThis()
+                #initMethod.injectSuper()
+                var insertable = @[newLabel("super")]
+                if x.ts.inherits.isNil:
+                    insertable.add(newWord("null"))
+                else:
+                    insertable.add(@[
+                        newWord("function"),
+                        newBlock(x.ts.inherits.ts.methods["init"].params.filter(proc (zz: string): bool = zz != "this").map(proc (zz: string): Value = newWord(zz))),
+                        x.ts.inherits.ts.methods["init"].main,
+                        newWord("do"),
+                        newSymbol(doublecolon)
+                    ])
+                initMethod.main.a.insert(insertable)
+
+                var superMethod = VNULL
+                if not x.ts.inherits.isNil and x.ts.inherits.ts.methods.hasKey("init"):
+                    superMethod = x.ts.inherits.ts.methods["init"]
+                    #dump(superMethod)
+
                 x.ts.doInit = proc (self: Value, arguments: ValueArray) =
+                    echo "INSIDE doInit"
                     for arg in arguments.reversed:
                         push arg
                     push self
+                    #push superMethod
                     callFunction(initMethod)
 
             # check if there is a `print` magic method;
@@ -225,6 +247,7 @@ proc defineLibrary*() =
                 definedMethods = y.d
 
             var generated = newUserType(x.ts.name, extended=true)
+            generated.ts.inherits = copyValue(x)
 
             for k,v in definedMethods:
                 generated.ts.methods[k] = v
