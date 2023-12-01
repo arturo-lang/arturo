@@ -170,19 +170,7 @@ proc defineLibrary*() =
                 # inject a reference to the equivalent
                 # method from the parent as `super` -
                 # if there is one ofc
-                var insertable = @[newLabel("super")]
-                if x.ts.inherits.isNil or not x.ts.inherits.ts.methods.hasKey("init"):
-                    insertable.add(newWord("null"))
-                else:
-                    let parentInit = x.ts.inherits.ts.methods["init"]
-                    insertable.add(@[
-                        newWord("function"),
-                        newBlock(parentInit.params.filter(proc (zz: string): bool = zz != "this").map(proc (zz: string): Value = newWord(zz))),
-                        parentInit.main,
-                        newWord("do"),
-                        newSymbol(doublecolon)
-                    ])
-                initMethod.main.a.insert(insertable)
+                initMethod.injectSuper(x.ts.inherits)
 
                 x.ts.doInit = proc (self: Value, arguments: ValueArray) =
                     for arg in arguments.reversed:
