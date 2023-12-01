@@ -298,6 +298,18 @@ proc RuntimeError_IncompatibleBlockSize*(functionName: string, got: int, expecte
           "incompatible block size: " & $(got) & ";" &
           "expected: " & $(expected)
 
+proc RuntimeError_IncorrectNumberOfArgumentsForInitializer*(typeName: string, got: int, expected: seq[string]) =
+    panic RuntimeError,
+          "cannot initialize object of type _:" & (typeName) & "_;" &
+          "wrong number of parameters: " & $(got) & ";" &
+          "expected: " & $(expected.len) & " (" & expected.join(", ") & ")"
+
+proc RuntimeError_IncorrectArgumentForInitializer*(typeName: string, got: string, expected: seq[string]) =
+    panic RuntimeError,
+          "cannot initialize object of type _:" & (typeName) & "_;" &
+          "with named parameter: " & $(got) & ";" &
+          "expected: " & expected.join(", ")
+
 proc RuntimeError_InvalidOperation*(operation: string, argA, argB: string) =
     panic RuntimeError,
             "invalid operation _" & operation & "_;" &

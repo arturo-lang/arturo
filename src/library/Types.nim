@@ -154,7 +154,7 @@ proc defineLibrary*() =
                 x.ts.inherits = nil
                 x.ts.methods = y.d
             else:
-                x.ts.inherits = y
+                x.ts.inherits = copyValue(y)
                 for k,v in y.ts.methods:
                     x.ts.methods[k] = copyValue(v)
 
@@ -166,6 +166,12 @@ proc defineLibrary*() =
                 #  mainly, that it's a Function
                 #  labels: library, error handling, oop
                 initMethod.injectThis()
+
+                # inject a reference to the equivalent
+                # method from the parent as `super` -
+                # if there is one ofc
+                initMethod.injectSuper(x.ts.inherits)
+
                 x.ts.doInit = proc (self: Value, arguments: ValueArray) =
                     for arg in arguments.reversed:
                         push arg
@@ -225,6 +231,7 @@ proc defineLibrary*() =
                 definedMethods = y.d
 
             var generated = newUserType(x.ts.name, extended=true)
+            generated.ts.inherits = copyValue(x)
 
             for k,v in definedMethods:
                 generated.ts.methods[k] = v

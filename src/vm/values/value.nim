@@ -785,7 +785,7 @@ proc copyValue*(v: Value): Value {.inline.} =
             if likely(v.tpKind==BuiltinType):
                 result = newType(v.t)
             else:
-                result = newUserType(v.ts.name, v.ts.fields)
+                result = newUserType(v.ts.name, v.ts.fields, extended = true)
         of Char:            result = newChar(v.c)
 
         of String:          result = newString(v.s)
