@@ -443,6 +443,10 @@ proc newErrorKind*(label: string): Value {.inline, enforceNoRaises.} =
 proc newErrorKind*(errKind: VErrorKind): Value {.inline, enforceNoRaises.} =
     Value(kind: ErrorKind, errKind: errKind)
 
+proc newError*(error: ref Exception | CatchableError | Defect): Value {.inline, enforceNoRaises.} =
+    result = Value(kind: Error, err: VError(kind: VErrorKind(verror.genericErrorKind)))
+    result.err.msg = error.msg
+
 proc newError*(kind: VErrorKind, msg: string = ""): Value {.inline, enforceNoRaises.} =
     result = Value(kind: Error, err: VError(kind: kind))
     result.err.msg = msg
