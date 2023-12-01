@@ -53,9 +53,9 @@ proc generateCustomObject*(prot: Prototype, arguments: ValueArray | ValueDict, i
                                     RuntimeError_IncorrectArgumentForInitializer(prot.name, yv[0], cleanObjectMethodArgs)
                             else:
                                 let cleanObjectMethodArgs = objectMethod.params.filter(proc (ss :string): bool = ss != "this")
-                                    RuntimeError_IncorrectArgumentForInitializer(prot.name, xv[0], cleanObjectMethodArgs)
+                                RuntimeError_IncorrectArgumentForInitializer(prot.name, xv[0], cleanObjectMethodArgs)
                         ).map(proc (rz: (string,Value)): Value = rz[1])
-                        
+
                         if sortedArgs.len != objectMethod.arity - magicParamsExpected:
                             let cleanObjectMethodArgs = objectMethod.params.filter(proc (ss :string): bool = ss != "this")
                             RuntimeError_IncorrectNumberOfArgumentsForInitializer(prot.name, arguments.len, cleanObjectMethodArgs)
