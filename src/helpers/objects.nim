@@ -47,7 +47,7 @@ proc generateCustomObject*(prot: Prototype, arguments: ValueArray | ValueDict, i
                         let sortedArgs = (toSeq(pairs(arguments))).sorted(proc (xv: (string,Value), yv: (string,Value)): int =
                             if (let xIdx = initArgs.find(xv[0]); xIdx != -1):
                                 if (let yIdx = initArgs.find(yv[0]); yIdx != -1):
-                                    cmp(xIdx, yIdx)
+                                    return cmp(xIdx, yIdx)
                                 else:
                                     let cleanObjectMethodArgs = objectMethod.params.filter(proc (ss :string): bool = ss != "this")
                                     RuntimeError_IncorrectArgumentForInitializer(prot.name, yv[0], cleanObjectMethodArgs)
