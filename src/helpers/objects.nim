@@ -30,11 +30,7 @@ proc injectSuper*(meth: Value) =
 
 proc generateCustomObject*(prot: Prototype, arguments: ValueArray | ValueDict, initialize: static bool = true): Value =
     newObject(arguments, prot, proc (self: Value, prot: Prototype) =
-        var magicParamsExpected = # super, this
-            #if not prot.inherits.isNil:
-                1
-            #else:
-            #    1
+        var magicParamsExpected = 1
 
         for methodName, objectMethod in prot.methods:
             case methodName:
@@ -43,24 +39,26 @@ proc generateCustomObject*(prot: Prototype, arguments: ValueArray | ValueDict, i
                         if arguments.len != objectMethod.arity - magicParamsExpected:
                             # TODO(generateCustomObject) should throw if number of arguments is not correct
                             #  labels: error handling, oop, vm, values
-                            let cleanObjectMethodArgs = objectMethod.params.filter(proc (ss :string): bool =
-                                ss != "this" and ss != "super"
-                            )
+                            let cleanObjectMethodArgs = objectMethod.params.filter(proc (ss :string): bool = ss != "this")
                             RuntimeError_IncorrectNumberOfArgumentsForInitializer(prot.name, arguments.len, cleanObjectMethodArgs)
                         prot.doInit(self, arguments)
                     else:
                         let initArgs = objectMethod.params
                         let sortedArgs = (toSeq(pairs(arguments))).sorted(proc (xv: (string,Value), yv: (string,Value)): int =
-                            let xIdx = initArgs.find(xv[0])
-                            let yIdx = initArgs.find(yv[0])
-                            if xIdx == -1 or yIdx == -1:
-                                echo "incorrect argument"
-                            cmp(xIdx, yIdx)
-                        ).map(proc (rz: (string,Value)): Value = 
-                            rz[1]
-                        )
+                            if (let xIdx = initArgs.find(xv[0]); xIdx != -1):
+                                if (yIdx = initArgs.find(yv[0]); yIdx != -1):
+                                    cmp(xIdx, yIdx)
+                                else:
+                                    let cleanObjectMethodArgs = objectMethod.params.filter(proc (ss :string): bool = ss != "this")
+                                    RuntimeError_IncorrectArgumentForInitializer(prot.name, yv[0], cleanObjectMethodArgs)
+                            else:
+                                let cleanObjectMethodArgs = objectMethod.params.filter(proc (ss :string): bool = ss != "this")
+                                    RuntimeError_IncorrectArgumentForInitializer(prot.name, xv[0], cleanObjectMethodArgs)
+                        ).map(proc (rz: (string,Value)): Value = rz[1])
+                        
                         if sortedArgs.len != objectMethod.arity - magicParamsExpected:
-                            echo "incorrect number of arguments"
+                            let cleanObjectMethodArgs = objectMethod.params.filter(proc (ss :string): bool = ss != "this")
+                            RuntimeError_IncorrectNumberOfArgumentsForInitializer(prot.name, arguments.len, cleanObjectMethodArgs)
                         prot.doInit(self, sortedArgs)
                 of "print": discard
                 of "compare": discard
