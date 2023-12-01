@@ -591,20 +591,30 @@ do [
     
     topic « between? - :object
     
-    define :person [name age][  
-        init: -> this\name: capitalize this\name
-        print: -> 
+    define :person [  
+        init: function [name, age][
+            this\name: capitalize name
+            this\age: age
+        ]
+        print: function [][
             render "NAME: |this\name|, AGE: |this\age|"
-        compare: [
+        ]
+        compare: function [that][
             if this\age > that\age -> return 1
             if this\age = that\age -> return 0
             if this\age < that\age -> return neg 1
         ]   
     ]
     
-    define.as: :person :student [id][  
-        print: -> 
+    define :student is :person [  
+        init: function [name, age, id][
+            this\name: capitalize name
+            this\age: age
+            this\id: id
+        ]
+        print: function [][
             render "NAME: |this\name|, AGE: |this\age|, ID: |this\id|"
+        ]
     ]
     
     a: to :person ["John" 16]
@@ -1091,20 +1101,30 @@ do [
     
     topic « compare - :object
     
-    define :person [name age][  
-        init: -> this\name: capitalize this\name
-        print: -> 
+    define :person [  
+        init: function [name, age][
+            this\name: capitalize name
+            this\age: age
+        ]
+        print: function [][
             render "NAME: |this\name|, AGE: |this\age|"
-        compare: [
+        ]
+        compare: function [that][
             if this\age > that\age -> return 1
             if this\age = that\age -> return 0
             if this\age < that\age -> return neg 1
         ]   
     ]
     
-    define.as: :person :student [id][  
-        print: -> 
+    define :student is :person [  
+        init: function [name, age, id][
+            this\name: capitalize name
+            this\age: age
+            this\id: id
+        ]
+        print: function [][
             render "NAME: |this\name|, AGE: |this\age|, ID: |this\id|"
+        ]
     ]
     
     a: to :person ["John" 16]
@@ -1684,15 +1704,25 @@ do [
 
     topic « equal? - :object
     
-    define :person [name age][  
-        init: -> this\name: capitalize this\name
-        print: -> 
+    define :person [  
+        init: function [name,age][
+            this\name: capitalize name
+            this\age: age
+        ]
+        print: function [][ 
             render "NAME: |this\name|, AGE: |this\age|"
+        ]
     ]
     
-    define.as: :person :student [id][  
-        print: -> 
+    define :student is :person [
+        init: function [name, age, id][
+            this\name: capitalize name
+            this\age: age
+            this\id: id
+        ]  
+        print: function [][
             render "NAME: |this\name|, AGE: |this\age|, ID: |this\id|"
+        ]
     ]
     
     a: to :person ["Joe" 32]
@@ -1705,20 +1735,30 @@ do [
     ensure -> equal? a to :person ["Jane" 32]
     passed
     
-    define :person [name age][  
-        init: -> this\name: capitalize this\name
-        print: -> 
+    define :person [  
+        init: function [name, age][
+            this\name: capitalize name
+            this\age: age
+        ]
+        print: function [][
             render "NAME: |this\name|, AGE: |this\age|"
-        compare: [
+        ]
+        compare: function [that][
             if this\age > that\age -> return 1
             if this\age = that\age -> return 0
             if this\age < that\age -> return neg 1
         ]   
     ]
     
-    define.as: :person :student [id][  
-        print: -> 
+    define :student is :person [  
+        init: function [name, age, id][
+            this\name: capitalize name
+            this\age: age
+            this\id: id
+        ]
+        print: function [][
             render "NAME: |this\name|, AGE: |this\age|, ID: |this\id|"
+        ]
     ]
     
     a: to :person ["John" 16]
@@ -2222,7 +2262,7 @@ do [
     ] => not? passed
     
     ; for :dictionary, :object & :date
-    define :person [name surname][]
+    define :person [name surname]
     
     a: to :person ["Walter" "Pinkman"]
     b: to :date .format: "YYYY MMM dd" "2023 Jan 15"
@@ -2849,15 +2889,25 @@ do [
     
     topic « greater? - :object
     
-    define :person [name age][  
-        init: -> this\name: capitalize this\name
-        print: -> 
+    define :person [  
+        init: function [name, age][
+            this\name: capitalize name
+            this\age: age
+        ]
+        print: function [][
             render "NAME: |this\name|, AGE: |this\age|"
+        ]
     ]
     
-    define.as: :person :student [id][  
-        print: -> 
+    define :student is :person [  
+        init: function [name, age, id][
+            this\name: capitalize name
+            this\age: age
+            this\id: id
+        ]
+        print: function [][
             render "NAME: |this\name|, AGE: |this\age|, ID: |this\id|"
+        ]
     ]
     
     a: to :person ["Joe" 32]
@@ -2870,20 +2920,30 @@ do [
     ensure -> not? greater? a to :person ["Jane" 32]
     passed
     
-    define :person [name age][  
-        init: -> this\name: capitalize this\name
-        print: -> 
+    define :person [  
+        init: function [name, age][
+            this\name: capitalize name
+            this\age: age
+        ]
+        print: function [][
             render "NAME: |this\name|, AGE: |this\age|"
-        compare: [
+        ]
+        compare: function [that][
             if this\age > that\age -> return 1
             if this\age = that\age -> return 0
             if this\age < that\age -> return neg 1
         ]   
     ]
     
-    define.as: :person :student [id][  
-        print: -> 
+    define :student is :person [  
+        init: function [name, age, id][
+            this\name: capitalize name
+            this\age: age
+            this\id: id
+        ]
+        print: function [][
             render "NAME: |this\name|, AGE: |this\age|, ID: |this\id|"
+        ]
     ]
     
     a: to :person ["John" 16]
@@ -3404,7 +3464,7 @@ do [
     ] => not? passed
     
     ; for :dictionary, :object & :date
-    define :person [name surname][]
+    define :person [name surname]
     
     a: to :person ["Walter" "Pinkman"]
     b: to :date .format: "YYYY MMM dd" "2023 Jan 15"
@@ -4079,15 +4139,25 @@ do [
     
     topic « greaterOrEqual? - :object
     
-    define :person [name age][  
-        init: -> this\name: capitalize this\name
-        print: -> 
+    define :person [  
+        init: function [name, age][
+            this\name: capitalize name
+            this\age: age
+        ]
+        print: function [][
             render "NAME: |this\name|, AGE: |this\age|"
+        ] 
     ]
     
-    define.as: :person :student [id][  
-        print: -> 
+    define :student is :person [  
+        init: function [name, age, id][
+            this\name: capitalize name
+            this\age: age
+            this\id: id
+        ]
+        print: function [][
             render "NAME: |this\name|, AGE: |this\age|, ID: |this\id|"
+        ]
     ]
     
     a: to :person ["Joe" 32]
@@ -4100,20 +4170,30 @@ do [
     ensure -> greaterOrEqual? a to :person ["Jane" 32]
     passed
     
-    define :person [name age][  
-        init: -> this\name: capitalize this\name
-        print: -> 
+    define :person [  
+        init: function [name, age][
+            this\name: capitalize name
+            this\age: age
+        ]
+        print: function [][
             render "NAME: |this\name|, AGE: |this\age|"
-        compare: [
+        ]
+        compare: function [that][
             if this\age > that\age -> return 1
             if this\age = that\age -> return 0
             if this\age < that\age -> return neg 1
         ]   
     ]
     
-    define.as: :person :student [id][  
-        print: -> 
+    define :student is :person [  
+        init: function [name, age, id][
+            this\name: capitalize name
+            this\age: age
+            this\id: id
+        ]
+        print: function [][
             render "NAME: |this\name|, AGE: |this\age|, ID: |this\id|"
+        ]
     ]
     
     a: to :person ["John" 16]
@@ -4636,7 +4716,7 @@ do [
     ] => not? passed
     
     ; for :dictionary, :object & :date
-    define :person [name surname][]
+    define :person [name surname]
     
     a: to :person ["Walter" "Pinkman"]
     b: to :date .format: "YYYY MMM dd" "2023 Jan 15"
@@ -5267,15 +5347,25 @@ do [
     
     topic « less? - :object
     
-    define :person [name age][  
-        init: -> this\name: capitalize this\name
-        print: -> 
+    define :person [  
+        init: function [name, age][
+            this\name: capitalize name
+            this\age: age
+        ]
+        print: function [][
             render "NAME: |this\name|, AGE: |this\age|"
+        ]
     ]
     
-    define.as: :person :student [id][  
-        print: -> 
+    define :student is :person [  
+        init: function [name, age, id][
+            this\name: capitalize name
+            this\age: age
+            this\id: id
+        ]
+        print: function [][
             render "NAME: |this\name|, AGE: |this\age|, ID: |this\id|"
+        ]
     ]
     
     a: to :person ["Joe" 32]
@@ -5288,20 +5378,30 @@ do [
     ensure -> not? less? a to :person ["Jane" 32]
     passed
     
-   define :person [name age][  
-        init: -> this\name: capitalize this\name
-        print: -> 
+   define :person [  
+        init: function [name, age][
+            this\name: capitalize name
+            this\age: age
+        ]
+        print: function [][
             render "NAME: |this\name|, AGE: |this\age|"
-        compare: [
+        ]
+        compare: function [that][
             if this\age > that\age -> return 1
             if this\age = that\age -> return 0
             if this\age < that\age -> return neg 1
         ]   
     ]
     
-    define.as: :person :student [id][  
-        print: -> 
+    define :student is :person [  
+        init: function [name, age, id][
+            this\name: capitalize name
+            this\age: age
+            this\id: id
+        ]
+        print: function [][
             render "NAME: |this\name|, AGE: |this\age|, ID: |this\id|"
+        ]
     ]
     
     a: to :person ["John" 16]
@@ -5821,7 +5921,7 @@ do [
     ] => not? passed
     
     ; for :dictionary, :object & :date
-    define :person [name surname][]
+    define :person [name surname]
     
     a: to :person ["Walter" "Pinkman"]
     b: to :date .format: "YYYY MMM dd" "2023 Jan 15"
@@ -6497,15 +6597,25 @@ do [
     
     topic « lessOrEqual? - :object
     
-    define :person [name age][  
-        init: -> this\name: capitalize this\name
-        print: -> 
+    define :person [  
+        init: function [name, age][
+            this\name: capitalize name
+            this\age: age
+        ]
+        print: function [][
             render "NAME: |this\name|, AGE: |this\age|"
+        ] 
     ]
     
-    define.as: :person :student [id][  
-        print: -> 
+    define :student is :person [  
+        init: function [name, age, id][
+            this\name: capitalize name
+            this\age: age
+            this\id: id
+        ]
+        print: function [][
             render "NAME: |this\name|, AGE: |this\age|, ID: |this\id|"
+        ]
     ]
     
     a: to :person ["Joe" 32]
@@ -6518,20 +6628,30 @@ do [
     ensure -> lessOrEqual? a to :person ["Jane" 32]
     passed
     
-    define :person [name age][  
-        init: -> this\name: capitalize this\name
-        print: -> 
+    define :person [  
+        init: function [name, age][
+            this\name: capitalize name
+            this\age: age
+        ]
+        print: function [][
             render "NAME: |this\name|, AGE: |this\age|"
-        compare: [
+        ]
+        compare: function [that][
             if this\age > that\age -> return 1
             if this\age = that\age -> return 0
             if this\age < that\age -> return neg 1
         ]   
     ]
     
-    define.as: :person :student [id][  
-        print: -> 
+    define :student is :person [  
+        init: function [name, age, id][
+            this\name: capitalize name
+            this\age: age
+            this\id: id
+        ]
+        print: function [][
             render "NAME: |this\name|, AGE: |this\age|, ID: |this\id|"
+        ]
     ]
     
     a: to :person ["John" 16]
@@ -7053,7 +7173,7 @@ do [
     ] => not? passed
     
     ; for :dictionary, :object & :date
-    define :person [name surname][]
+    define :person [name surname]
     
     a: to :person ["Walter" "Pinkman"]
     b: to :date .format: "YYYY MMM dd" "2023 Jan 15"
@@ -7594,15 +7714,25 @@ do [
     
     topic « notEqual? - :object
     
-    define :person [name age][  
-        init: -> this\name: capitalize this\name
-        print: -> 
+    define :person [  
+        init: function [name, age][
+            this\name: capitalize name
+            this\age: age
+        ]
+        print: function [][
             render "NAME: |this\name|, AGE: |this\age|"
+        ]  
     ]
     
-    define.as: :person :student [id][  
-        print: -> 
+    define :student is :person [  
+        init: function [name, age, id][
+            this\name: capitalize name
+            this\age: age
+            this\id: id
+        ]
+        print: function [][
             render "NAME: |this\name|, AGE: |this\age|, ID: |this\id|"
+        ]
     ]
     
     a: to :person ["Joe" 32]
@@ -7615,20 +7745,30 @@ do [
     ensure -> not? notEqual? a to :person ["Jane" 32]
     passed
     
-    define :person [name age][  
-        init: -> this\name: capitalize this\name
-        print: -> 
+    define :person [  
+        init: function [name, age][
+            this\name: capitalize name
+            this\age: age
+        ]
+        print: function [][
             render "NAME: |this\name|, AGE: |this\age|"
-        compare: [
+        ]
+        compare: function [that][
             if this\age > that\age -> return 1
             if this\age = that\age -> return 0
             if this\age < that\age -> return neg 1
         ]   
     ]
     
-    define.as: :person :student [id][  
-        print: -> 
+    define :student is :person [  
+        init: function [name, age, id][
+            this\name: capitalize name
+            this\age: age
+            this\id: id
+        ]
+        print: function [][
             render "NAME: |this\name|, AGE: |this\age|, ID: |this\id|"
+        ]
     ]
     
     a: to :person ["John" 16]
@@ -8149,7 +8289,7 @@ do [
     ] => not? passed
     
     ; for :dictionary, :object & :date
-    define :person [name surname][]
+    define :person [name surname]
     
     a: to :person ["Walter" "Pinkman"]
     b: to :date .format: "YYYY MMM dd" "2023 Jan 15"
@@ -8650,15 +8790,25 @@ do [
     
     topic « same? - :object
     
-    define :person [name age][  
-        init: -> this\name: capitalize this\name
-        print: -> 
+    define :person [  
+        init: function [name, age][
+            this\name: capitalize name
+            this\age: age
+        ]
+        print: function [][
             render "NAME: |this\name|, AGE: |this\age|"
+        ] 
     ]
     
-    define.as: :person :student [id][  
-        print: -> 
+    define :student is :person [  
+        init: function [name, age, id][
+            this\name: capitalize name
+            this\age: age
+            this\id: id
+        ]
+        print: function [][
             render "NAME: |this\name|, AGE: |this\age|, ID: |this\id|"
+        ]
     ]
     
     a: to :person ["Joe" 32]
@@ -8671,20 +8821,30 @@ do [
     ensure -> same? a to :person ["Jane" 32]
     passed
     
-    define :person [name age][  
-        init: -> this\name: capitalize this\name
-        print: -> 
+    define :person [  
+        init: function [name, age][
+            this\name: capitalize name
+            this\age: age
+        ]
+        print: function [][
             render "NAME: |this\name|, AGE: |this\age|"
-        compare: [
+        ]
+        compare: function [that][
             if this\age > that\age -> return 1
             if this\age = that\age -> return 0
             if this\age < that\age -> return neg 1
         ]   
     ]
     
-    define.as: :person :student [id][  
-        print: -> 
+    define :student is :person [  
+        init: function [name, age, id][
+            this\name: capitalize name
+            this\age: age
+            this\id: id
+        ]
+        print: function [][
             render "NAME: |this\name|, AGE: |this\age|, ID: |this\id|"
+        ]
     ]
     
     a: to :person ["John" 16]
@@ -9196,7 +9356,7 @@ do [
     ] => not? passed
     
     ; for :dictionary, :object & :date
-    define :person [name surname][]
+    define :person [name surname]
     
     a: to :person ["Walter" "Pinkman"]
     b: to :date .format: "YYYY MMM dd" "2023 Jan 15"
