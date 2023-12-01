@@ -160,7 +160,6 @@ proc defineLibrary*() =
 
             # setup our object initializer
             # via the magic `init` method
-            echo "defining new type: :" & x.ts.name 
             if (let initMethod = x.ts.methods.getOrDefault("init", nil); not initMethod.isNil):
                 # TODO(Types\define) we should verify that our `init` is properly defined
                 #  and if not, throw an appropriate error
@@ -187,7 +186,6 @@ proc defineLibrary*() =
                     #dump(superMethod)
 
                 x.ts.doInit = proc (self: Value, arguments: ValueArray) =
-                    echo "INSIDE doInit"
                     for arg in arguments.reversed:
                         push arg
                     push self
