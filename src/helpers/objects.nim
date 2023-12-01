@@ -31,10 +31,11 @@ proc generateCustomObject*(prot: Prototype, arguments: ValueArray | ValueDict): 
                             # TODO(generateCustomObject) should throw if number of arguments is not correct
                             #  labels: error handling, oop, vm, values
                             echo "calling init: " & $(arguments.len) & " given - " & $(objectMethod.arity - 1) & " expected"
+                            echo "objectMethod params: " & $(objectMethod.params)
                             echo "incorrect number of arguments"
                         prot.doInit(self, arguments)
                     else:
-                        let initArgs = prot.methods["init"].params
+                        let initArgs = objectMethod.params
                         let sortedArgs = (toSeq(pairs(arguments))).sorted(proc (xv: (string,Value), yv: (string,Value)): int =
                             let xIdx = initArgs.find(xv[0])
                             let yIdx = initArgs.find(yv[0])
