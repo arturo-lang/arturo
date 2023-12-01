@@ -71,7 +71,7 @@ proc defineSymbols*() =
         attrs       = {
             "verbose"   : ({Logical},"print all error messages as usual")
         },
-        returns     = {Nothing},
+        returns     = {Error, Null},
         example     = """
             try [
                 ; let's try something dangerous
@@ -84,8 +84,13 @@ proc defineSymbols*() =
             let verbose = hadAttr "verbose" 
             try:
                 execUnscoped(x)
-            except CatchableError, Defect:
+                push(VNULL)
+            except CatchableError, Defect, VError:
                 let e = getCurrentException()
+                if e of VError:
+                    push newError(e)
+                else:
+                    push newError(e)
                 if verbose:
                     showVMErrors(e)
 
