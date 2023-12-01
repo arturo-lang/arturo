@@ -1,8 +1,8 @@
-define :point [x,y][]
-define :line [a, b][
-    init: [
-        this\slope: div this\b\y-this\a\y this\b\x-this\a\x
-        this\yInt: this\a\y - this\slope*this\a\x
+define :point [x,y]
+define :line [
+    init: function [a :point, b :point][
+        this\slope: div b\y-a\y b\x-a\x
+        this\yInt: a\y - this\slope*a\x
     ]
 ]
 
