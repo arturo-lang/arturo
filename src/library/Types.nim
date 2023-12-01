@@ -171,13 +171,14 @@ proc defineLibrary*() =
                 # method from the parent as `super` -
                 # if there is one ofc
                 var insertable = @[newLabel("super")]
-                if x.ts.inherits.isNil:
+                if x.ts.inherits.isNil or not x.ts.inherits.ts.methods.hasKey("init"):
                     insertable.add(newWord("null"))
                 else:
+                    let parentInit = x.ts.inherits.ts.methods["init"]
                     insertable.add(@[
                         newWord("function"),
-                        newBlock(x.ts.inherits.ts.methods["init"].params.filter(proc (zz: string): bool = zz != "this").map(proc (zz: string): Value = newWord(zz))),
-                        x.ts.inherits.ts.methods["init"].main,
+                        newBlock(parentInit.params.filter(proc (zz: string): bool = zz != "this").map(proc (zz: string): Value = newWord(zz))),
+                        parentInit.main,
                         newWord("do"),
                         newSymbol(doublecolon)
                     ])
