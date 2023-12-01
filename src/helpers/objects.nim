@@ -10,9 +10,10 @@
 # Libraries
 #=======================================
 
-import sequtils
+import sequtils, tables
     
 import vm/values/value
+import vm/values/custom/[vsymbol]
 
 #=======================================
 # Methods
@@ -23,10 +24,20 @@ proc injectThis*(meth: Value) =
         meth.params.insert("this")
         meth.arity += 1
 
-proc injectSuper*(meth: Value) =
-    if meth.params.len < 1 or meth.params[0] != "super":
-        meth.params.insert("super")
-        meth.arity += 1
+proc injectSuper*(meth: Value, parent: Value) =
+    var insertable = @[newLabel("super")]
+    if parent.isNil or not parent.ts.methods.hasKey("init"):
+        insertable.add(newWord("null"))
+    else:
+        let parentInit = parent.ts.methods["init"]
+        insertable.add(@[
+            newWord("function"),
+            newBlock(parentInit.params.filter(proc (zz: string): bool = zz != "this").map(proc (zz: string): Value = newWord(zz))),
+            parentInit.main,
+            newWord("do"),
+            newSymbol(doublecolon)
+        ])
+    meth.main.a.insert(insertable)
 
 proc generateCustomObject*(prot: Prototype, arguments: ValueArray | ValueDict, initialize: static bool = true): Value =
     newObject(arguments, prot, proc (self: Value, prot: Prototype) =
