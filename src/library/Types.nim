@@ -155,11 +155,8 @@ proc defineLibrary*() =
                 x.ts.methods = y.d
             else:
                 x.ts.inherits = y
-                echo "inheriting type :" & $(y.ts.name) & " with fields: " & $(y.ts.methods["init"].params.len)
-                echo "--> " & $(y.ts.methods["init"].params)
                 for k,v in y.ts.methods:
                     x.ts.methods[k] = copyValue(v)
-                #x.ts.methods = y.ts.methods
 
             # setup our object initializer
             # via the magic `init` method
@@ -174,8 +171,6 @@ proc defineLibrary*() =
                         push arg
                     push self
                     callFunction(initMethod)
-                echo "defined new type :" & $(x.ts.name) & " with fields: " & $(x.ts.methods["init"].params.len)
-                echo "--> " & $(x.ts.methods["init"].params)
 
             # check if there is a `print` magic method;
             # the custom equivalent of the `printable` module
