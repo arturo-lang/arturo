@@ -166,7 +166,10 @@ proc defineLibrary*() =
                 #  mainly, that it's a Function
                 #  labels: library, error handling, oop
                 initMethod.injectThis()
-                #initMethod.injectSuper()
+
+                # inject a reference to the equivalent
+                # method from the parent as `super` -
+                # if there is one ofc
                 var insertable = @[newLabel("super")]
                 if x.ts.inherits.isNil:
                     insertable.add(newWord("null"))
@@ -180,16 +183,10 @@ proc defineLibrary*() =
                     ])
                 initMethod.main.a.insert(insertable)
 
-                var superMethod = VNULL
-                if not x.ts.inherits.isNil and x.ts.inherits.ts.methods.hasKey("init"):
-                    superMethod = x.ts.inherits.ts.methods["init"]
-                    #dump(superMethod)
-
                 x.ts.doInit = proc (self: Value, arguments: ValueArray) =
                     for arg in arguments.reversed:
                         push arg
                     push self
-                    #push superMethod
                     callFunction(initMethod)
 
             # check if there is a `print` magic method;
