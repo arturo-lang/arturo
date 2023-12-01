@@ -455,7 +455,7 @@ proc newError*(err: VError): Value {.inline, enforceNoRaises.} =
     Value(kind: Error, err: err)
 
 proc newGenericError*(): Value {.inline, enforceNoRaises.} =
-    Value(kind: Error, err: VError(kind: genericError))
+    Value(kind: Error, err: VError(kind: genericErrorKind))
 
 func newRegex*(rx: sink VRegex): Value {.inline, enforceNoRaises.} =
     ## create Regex value from VRegex
