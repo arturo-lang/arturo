@@ -632,7 +632,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "get collection's item by given index",
         args        = {
-            "collection": {String, Block, Range, Dictionary, Object, Store, Date, Binary, Bytecode, Complex},
+            "collection": {String, Block, Range, Dictionary, Object, Store, Date, Binary, Bytecode, Complex, Error},
             "index"     : {Any}
         },
         attrs       = NoAttrs,
@@ -763,7 +763,19 @@ proc defineSymbols*() =
                             err.RuntimeError_OutOfBounds(y.i, 1)
                     else:
                         discard
-                else: discard
+                of Error:
+                    if yKind in {String, Word, Literal, Label}:
+                        case y.s
+                        of "message":
+                            push(newString(x.err.msg))
+                        of "kind":
+                            push(newErrorKind(x.err.kind))
+                        else:
+                            discard
+                    else:
+                        discard
+                else: 
+                    discard
 
 
     # TODO(Collections/in?) add new `.key` option?
