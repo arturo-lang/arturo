@@ -47,9 +47,6 @@ proc generateCustomObject*(prot: Prototype, arguments: ValueArray | ValueDict, i
                                 ss != "this" and ss != "super"
                             )
                             RuntimeError_IncorrectNumberOfArgumentsForInitializer(prot.name, arguments.len, cleanObjectMethodArgs)
-                            # echo "calling init: " & $(arguments.len) & " given - " & $(objectMethod.arity - 1) & " expected"
-                            # echo "objectMethod params: " & $(objectMethod.params)
-                            # echo "incorrect number of arguments"
                         prot.doInit(self, arguments)
                     else:
                         let initArgs = objectMethod.params
