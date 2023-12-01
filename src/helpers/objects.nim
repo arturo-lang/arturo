@@ -29,7 +29,6 @@ proc injectSuper*(meth: Value) =
         meth.arity += 1
 
 proc generateCustomObject*(prot: Prototype, arguments: ValueArray | ValueDict, initialize: static bool = true): Value =
-    echo "creating new object of type: :" & $(prot.name)
     newObject(arguments, prot, proc (self: Value, prot: Prototype) =
         var magicParamsExpected = # super, this
             #if not prot.inherits.isNil:
@@ -40,8 +39,6 @@ proc generateCustomObject*(prot: Prototype, arguments: ValueArray | ValueDict, i
         for methodName, objectMethod in prot.methods:
             case methodName:
                 of "init":
-                    echo "initializing object"
-                    echo "- with initialize"
                     when arguments is ValueArray:
                         if arguments.len != objectMethod.arity - magicParamsExpected:
                             # TODO(generateCustomObject) should throw if number of arguments is not correct
@@ -53,7 +50,6 @@ proc generateCustomObject*(prot: Prototype, arguments: ValueArray | ValueDict, i
                             # echo "calling init: " & $(arguments.len) & " given - " & $(objectMethod.arity - 1) & " expected"
                             # echo "objectMethod params: " & $(objectMethod.params)
                             # echo "incorrect number of arguments"
-                        echo "> before doInit"
                         prot.doInit(self, arguments)
                     else:
                         let initArgs = objectMethod.params
