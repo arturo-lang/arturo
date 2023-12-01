@@ -9,6 +9,8 @@
 #=======================================
 # Libraries
 #=======================================
+
+import sequtils
     
 import vm/values/value
 
@@ -21,18 +23,37 @@ proc injectThis*(meth: Value) =
         meth.params.insert("this")
         meth.arity += 1
 
-proc generateCustomObject*(prot: Prototype, arguments: ValueArray | ValueDict): Value =
+proc injectSuper*(meth: Value) =
+    if meth.params.len < 1 or meth.params[0] != "super":
+        meth.params.insert("super")
+        meth.arity += 1
+
+proc generateCustomObject*(prot: Prototype, arguments: ValueArray | ValueDict, initialize: static bool = true): Value =
+    echo "creating new object of type: :" & $(prot.name)
     newObject(arguments, prot, proc (self: Value, prot: Prototype) =
+        var magicParamsExpected = # super, this
+            #if not prot.inherits.isNil:
+                1
+            #else:
+            #    1
+
         for methodName, objectMethod in prot.methods:
             case methodName:
                 of "init":
+                    echo "initializing object"
+                    echo "- with initialize"
                     when arguments is ValueArray:
-                        if arguments.len != objectMethod.arity - 1:
+                        if arguments.len != objectMethod.arity - magicParamsExpected:
                             # TODO(generateCustomObject) should throw if number of arguments is not correct
                             #  labels: error handling, oop, vm, values
-                            echo "calling init: " & $(arguments.len) & " given - " & $(objectMethod.arity - 1) & " expected"
-                            echo "objectMethod params: " & $(objectMethod.params)
-                            echo "incorrect number of arguments"
+                            let cleanObjectMethodArgs = objectMethod.params.filter(proc (ss :string): bool =
+                                ss != "this" and ss != "super"
+                            )
+                            RuntimeError_IncorrectNumberOfArgumentsForInitializer(prot.name, arguments.len, cleanObjectMethodArgs)
+                            # echo "calling init: " & $(arguments.len) & " given - " & $(objectMethod.arity - 1) & " expected"
+                            # echo "objectMethod params: " & $(objectMethod.params)
+                            # echo "incorrect number of arguments"
+                        echo "> before doInit"
                         prot.doInit(self, arguments)
                     else:
                         let initArgs = objectMethod.params
@@ -45,7 +66,7 @@ proc generateCustomObject*(prot: Prototype, arguments: ValueArray | ValueDict): 
                         ).map(proc (rz: (string,Value)): Value = 
                             rz[1]
                         )
-                        if sortedArgs.len != objectMethod.arity - 1:
+                        if sortedArgs.len != objectMethod.arity - magicParamsExpected:
                             echo "incorrect number of arguments"
                         prot.doInit(self, sortedArgs)
                 of "print": discard
