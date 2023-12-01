@@ -155,6 +155,8 @@ proc defineLibrary*() =
                 x.ts.methods = y.d
             else:
                 x.ts.inherits = y
+                echo "inheriting type :" & $(y.ts.name) & " with fields: " & $(y.ts.methods["init"].params.len)
+                echo "--> " & $(y.ts.methods["init"].params)
                 for k,v in y.ts.methods:
                     x.ts.methods[k] = copyValue(v)
                 #x.ts.methods = y.ts.methods
