@@ -31,7 +31,7 @@ proc defineSymbols*() =
             let kind: VErrorKind = if checkAttr "as":
                 aAs.errKind
             else:
-                verror.newDefaultError()
+                verror.genericErrorKind
 
             var error = verror.VError(kind: kind)
             error.msg = x.s
@@ -90,12 +90,13 @@ proc defineSymbols*() =
             try:
                 execUnscoped(x)
                 push(VNULL)
-            except CatchableError, Defect, VError:
+            except VError as e:
+                push newError(e)
+                if verbose:
+                    showVMErrors(e)
+            except CatchableError, Defect:
                 let e = getCurrentException()
-                if e of VError:
-                    push newError(e)
-                else:
-                    push newError(e)
+                push newError(e)
                 if verbose:
                     showVMErrors(e)
 
