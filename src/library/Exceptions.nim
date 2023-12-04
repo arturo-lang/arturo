@@ -19,7 +19,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "throws an :error",
         args        = {
-            "message": {String}
+            "message": {String, ErrorKind}
         },
         attrs       = {
             "as": ({ErrorKind}, "throws an :error as some specific :errorKind")
@@ -30,11 +30,16 @@ proc defineSymbols*() =
             #=======================================================
             let kind: VErrorKind = if checkAttr "as":
                 aAs.errKind
+            elif xkind == ErrorKind:
+                x.errKind
             else:
                 verror.genericErrorKind
 
             var error = verror.VError(kind: kind)
-            error.msg = x.s
+            if xkind == String:
+                error.msg = x.s
+            elif xkind == ErrorKind:
+                error.msg = x.errkind.label
 
             raise error 
 
