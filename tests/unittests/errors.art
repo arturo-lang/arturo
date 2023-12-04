@@ -35,7 +35,7 @@ do [
     passed
 
     ensure -> genericError <> fileNotFound
-    ensure -> "File not found!" = fileNotFound\label
+    ensure -> "File not found" = fileNotFound\label
     passed
 
     ; You can also add a message using `.message` attribute
@@ -46,7 +46,7 @@ do [
     ]
 
     ensure -> :error = type err
-    ensure -> :excepionKind = type err\kind
+    ensure -> :errorKind = type err\kind
     ensure -> :string = type err\message 
     passed
 
@@ -61,14 +61,14 @@ do [
 topic "Using functions"
 do [
 
-    fileNotFound: to :excepionKind "File Not Found"
+    fileNotFound: to :errorKind "File Not Found"
 
     ensure -> :errorKind = type fileNotFound
     ensure -> :string = type fileNotFound\label
     passed
 
     ensure -> genericError <> fileNotFound
-    ensure -> "File Not Found!" = fileNotFound\label
+    ensure -> "File Not Found" = fileNotFound\label
     passed
 
     ; Using a custom error message 
@@ -105,7 +105,8 @@ do [
         ensure -> fileNotFound = err
         passed
 
-        ensure -> "Can't read file" = err\message
+        ensure -> "File Not Found"  =  err\message
+        ensure -> "Can't read file" <> err\message
         passed
     ]
 
@@ -116,7 +117,7 @@ do [
         return "I'm a bunny 🐰"
     ]
 
-    if not err: <= try [content: bun "test.art"] [
+    if not? err: <= try [content: bun "test.art"] [
         ensure -> :error <> type err
         ensure -> :null = type err
         passed
@@ -136,7 +137,7 @@ do [
 topic "Using the error function"
 do [
 
-    fileNotFound: excepion "File not found!"
+    fileNotFound: to :errorKind "File not found!"
 
     ensure -> :errorKind = type fileNotFound
     ensure -> :string = type fileNotFound\label
@@ -145,7 +146,6 @@ do [
     ensure -> genericError <> fileNotFound
     ensure -> "File not found!" = fileNotFound\label
     passed
-
 
     cat: $[file :string][
         throw fileNotFound
