@@ -8,6 +8,11 @@ import vm/values/custom/verror
 
 proc defineSymbols*() =
 
+    constant "genericError",
+        alias       = unaliased,
+        description = "A generic :errorKind":
+            newErrorKind(verror.genericErrorKind)
+
     builtin "throw",
         alias       = unaliased, 
         op          = opNop,
