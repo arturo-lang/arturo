@@ -140,6 +140,10 @@ proc `==`*(x: Value, y: Value): bool =
                 return x.q == y.q
         else:
             return false
+    elif x.kind == Error and y.kind == ErrorKind:
+        return x.err.kind == y.errkind
+    elif x.kind == ErrorKind and y.kind == Error:
+        return x.errkind == y.err.kind
     else:
         if x.kind != y.kind: return false
 
