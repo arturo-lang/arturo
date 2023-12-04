@@ -632,7 +632,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "get collection's item by given index",
         args        = {
-            "collection": {String, Block, Range, Dictionary, Object, Store, Date, Binary, Bytecode, Complex, Error},
+            "collection": {String, Block, Range, Dictionary, Object, Store, Date, Binary, Bytecode, Complex, Error, ErrorKind},
             "index"     : {Any}
         },
         attrs       = NoAttrs,
@@ -774,6 +774,9 @@ proc defineSymbols*() =
                             discard
                     else:
                         discard
+                of ErrorKind:
+                    if yKind in {String, Word, Literal, Label} and y.s == "label":
+                        push(newString(x.errkind.label))
                 else: 
                     discard
 
