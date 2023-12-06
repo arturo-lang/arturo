@@ -373,6 +373,22 @@ proc defineSymbols*() =
             #=======================================================
             push(newLogical(xKind==Dictionary))
 
+    builtin "error?",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "checks if given value is of type :error",
+        args        = {
+            "value" : {Any}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            error? try -> throw "Some Error"
+            ; => true
+        """:
+            #=======================================================
+            push(newLogical(xKind==Error))
     when not defined(WEB):
 
         builtin "info",
