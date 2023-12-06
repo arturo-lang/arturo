@@ -59,6 +59,7 @@ proc generateCustomObject*(prot: Prototype, arguments: ValueArray | ValueDict, i
                             #  labels: error handling, oop, vm, values
                             let cleanObjectMethodArgs = objectMethod.params.filter(proc (ss :string): bool = ss != "this")
                             RuntimeError_IncorrectNumberOfArgumentsForInitializer(prot.name, arguments.len, cleanObjectMethodArgs)
+                        echo "==> initializing new object"
                         prot.doInit(self, arguments)
                     else:
                         let initArgs = objectMethod.params

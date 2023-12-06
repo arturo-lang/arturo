@@ -177,6 +177,7 @@ proc defineLibrary*() =
                 initMethod.injectSuper(x.ts.inherits)
 
                 x.ts.doInit = proc (self: Value, arguments: ValueArray) =
+                    echo "(in doInit)"
                     for arg in arguments.reversed:
                         push arg
                     push self
