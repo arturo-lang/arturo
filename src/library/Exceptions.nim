@@ -26,6 +26,30 @@ proc defineSymbols*() =
         },
         returns     = {Nothing},
         example     = """
+            err: try -> throw "Page not found"
+            err\kind
+            ; => Generic Error
+            err\message
+            ; => Page not found
+
+            ; or you can alternatively use custom errorKind
+
+            pageNotFound: to :errorKind "404: Page not Found"
+
+            err: try -> throw.as: pageNotFound "Seems that the page does not exist"
+            err\kind
+            ; => 404: Page not Found
+            err\message
+            ; => Seems that the page does not exist
+
+            ; Or even use the :errorKind's label as the message itself
+
+            err: try -> throw pageNotFound
+            err\kind
+            ; => 404: Page not Found
+            err\message
+            ; => 404: Page not Found
+
         """:
             #=======================================================
             let kind: VErrorKind = if checkAttr "as":
