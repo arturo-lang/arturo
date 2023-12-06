@@ -107,12 +107,13 @@ proc defineSymbols*() =
         },
         returns     = {Error, Null},
         example     = """
-            try [
+            err: try [
                 ; let's try something dangerous
                 print 10 / 0
             ]
-            
-            ; we catch the exception but do nothing with it
+
+            type err
+            ; => :error
         """:
             #=======================================================
             let verbose = hadAttr "verbose" 
