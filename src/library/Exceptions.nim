@@ -125,7 +125,7 @@ proc defineSymbols*() =
                 -> print val
             ; => Generic Error: some error
 
-            (genericError = err: <= try -> val: f)?
+            (genericError = err: <= try -> val: g)?
                 -> print err
                 -> print val
             ; => hi
