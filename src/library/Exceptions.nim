@@ -114,6 +114,21 @@ proc defineSymbols*() =
 
             type err
             ; => :error
+
+            ; Tips: mixing errors and returned values
+            
+            f: $[][ throw "some error" ]
+            g: $[][ return "hi" ]
+            
+            (genericError = err: <= try -> val: f)?
+                -> print err
+                -> print val
+            ; => Generic Error: some error
+
+            (genericError = err: <= try -> val: f)?
+                -> print err
+                -> print val
+            ; => hi
         """:
             #=======================================================
             let verbose = hadAttr "verbose" 
