@@ -21,14 +21,21 @@ import vm/values/custom/[vsymbol]
 
 proc injectThis*(meth: Value) =
     if meth.params.len < 1 or meth.params[0] != "this":
+        echo "- injecting *this*"
         meth.params.insert("this")
         meth.arity += 1
 
 proc injectSuper*(meth: Value, parent: Value) =
+    # TODO(objects/injectSuper) should support `super` in all methods
+    #  right now, it supports it only in `init`
+    #  labels: bug, oop
     var insertable = @[newLabel("super")]
+    echo "- injecting *super*"
     if parent.isNil or not parent.ts.methods.hasKey("init"):
         insertable.add(newWord("null"))
+        echo "  .... as `null`"
     else:
+        echo "  .... as a function"
         let parentInit = parent.ts.methods["init"]
         insertable.add(@[
             newWord("function"),

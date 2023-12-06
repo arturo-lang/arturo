@@ -122,6 +122,8 @@ proc defineLibrary*() =
             x.ts.fields = @[]
             x.ts.methods = initOrderedTable[string,Value]()
 
+            echo "defining new type..."
+
             # Check if .sortable is set and - if so -
             # auto-generate the corresponding `compare` method
             if checkAttr("sortable"):
@@ -154,6 +156,7 @@ proc defineLibrary*() =
                 x.ts.inherits = nil
                 x.ts.methods = y.d
             else:
+                echo "...based on existing type"
                 x.ts.inherits = copyValue(y)
                 for k,v in y.ts.methods:
                     x.ts.methods[k] = copyValue(v)
@@ -161,6 +164,7 @@ proc defineLibrary*() =
             # setup our object initializer
             # via the magic `init` method
             if (let initMethod = x.ts.methods.getOrDefault("init", nil); not initMethod.isNil):
+                echo "there is an init method!"
                 # TODO(Types\define) we should verify that our `init` is properly defined
                 #  and if not, throw an appropriate error
                 #  mainly, that it's a Function
