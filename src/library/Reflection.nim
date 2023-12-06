@@ -389,6 +389,26 @@ proc defineSymbols*() =
         """:
             #=======================================================
             push(newLogical(xKind==Error))
+
+    builtin "errorKind?",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "checks if given value is of type :errorKind",
+        args        = {
+            "value" : {Any}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            errorKind? to :errorKind "Some error kind"
+            ; => true
+            errorKind? genericError
+            ; => true
+        """:
+            #=======================================================
+            push(newLogical(xKind==Errorkind))
+
     when not defined(WEB):
 
         builtin "info",
