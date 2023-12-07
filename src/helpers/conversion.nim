@@ -247,6 +247,8 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat:Value = nil): Val
                             return newSymbol(y.s)
                         except ValueError:
                             throwConversionFailed()
+                    of ErrorKind:
+                        return newErrorKind(y.s)
                     of Regex:
                         return newRegex(y.s)
                     of Binary:
