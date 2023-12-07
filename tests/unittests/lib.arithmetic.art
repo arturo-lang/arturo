@@ -1501,11 +1501,9 @@ do [
     ensure -> 0.0 = fdiv 0 1
     passed
     
-    try? -> 1.0 // 0
-    else -> passed
+    if throws? -> 1.0 // 0 -> passed
     
-    try? -> fdiv 1 0
-    else -> passed
+    if throws? -> fdiv 1 0 -> passed
     
     ensure -> 0.5 = 1 // 2
     ensure -> 2.0 = 2 // 1
@@ -1537,17 +1535,13 @@ do [
     ensure -> (fdiv 0 1.0) = fdiv 0.0 1
     passed
     
-    try? -> 1 // 0.0
-    else -> passed
+    if throws? -> 1 // 0.0 -> passed
 
-    try? -> 1.0 // 0
-    else -> passed
+    if throws? -> 1.0 // 0 -> passed
     
-    try? -> fdiv 1.0 0
-    else -> passed
+    if throws? -> fdiv 1.0 0 -> passed
 
-    try? -> fdiv 1.0 0
-    else -> passed
+    if throws? -> fdiv 1.0 0 -> passed
     
     ensure -> 2.0 = 1 // 0.5
     ensure -> 0.5 = 1.0 // 2

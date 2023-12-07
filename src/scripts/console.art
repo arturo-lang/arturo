@@ -203,7 +203,7 @@ while [true] [
         inp: inp ++ "\n" ++ input ".. " ++ indentation
     ]
 
-    try?.verbose [
+    if throws? [
         try.verbose to :block inp
 
         StackSize: size stack
@@ -212,8 +212,5 @@ while [true] [
         if Got <> null 			[ print color #gray render.once "=> |Got|" ]
 
         print ""
-    ]
-    else [
-        print ""
-    ]
+    ] -> print ""
 ]

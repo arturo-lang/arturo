@@ -660,7 +660,7 @@ proc defineLibrary*() =
         rule        = PrefixPrecedence,
         description = "get collection's item by given index",
         args        = {
-            "collection": {String, Block, Range, Dictionary, Object, Store, Date, Binary, Bytecode, Complex},
+            "collection": {String, Block, Range, Dictionary, Object, Store, Date, Binary, Bytecode, Complex, Error, ErrorKind},
             "index"     : {Any}
         },
         attrs       = NoAttrs,
@@ -791,7 +791,22 @@ proc defineLibrary*() =
                             err.RuntimeError_OutOfBounds(y.i, 1)
                     else:
                         discard
-                else: discard
+                of Error:
+                    if yKind in {String, Word, Literal, Label}:
+                        case y.s
+                        of "message":
+                            push(newString(x.err.msg))
+                        of "kind":
+                            push(newErrorKind(x.err.kind))
+                        else:
+                            discard
+                    else:
+                        discard
+                of ErrorKind:
+                    if yKind in {String, Word, Literal, Label} and y.s == "label":
+                        push(newString(x.errkind.label))
+                else: 
+                    discard
 
     # TODO(Collections\index) add `.from:` & `.to:` options to search in range
     #  The two options don't have to be used at the same time. For example:

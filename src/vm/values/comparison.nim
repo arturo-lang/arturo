@@ -140,6 +140,10 @@ proc `==`*(x: Value, y: Value): bool =
                 return x.q == y.q
         else:
             return false
+    elif x.kind == Error and y.kind == ErrorKind:
+        return x.err.kind == y.errkind
+    elif x.kind == ErrorKind and y.kind == Error:
+        return x.errkind == y.err.kind
     else:
         if x.kind != y.kind: return false
 
@@ -162,6 +166,8 @@ proc `==`*(x: Value, y: Value): bool =
                PathLiteral: return x.p == y.p
             of Symbol: return x.m == y.m
             of Regex: return x.rx == y.rx
+            of Error: return x.err == y.err
+            of ErrorKind: return x.errkind == y.errkind
             of Binary: return x.n == y.n
             of Bytecode: return x.trans[] == y.trans[]
             of Inline,
