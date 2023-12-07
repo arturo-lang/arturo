@@ -49,7 +49,6 @@ proc defineSymbols*() =
             ; => 404: Page not Found
             err\message
             ; => 404: Page not Found
-
         """:
             #=======================================================
             let kind: VErrorKind = if checkAttr "as":
