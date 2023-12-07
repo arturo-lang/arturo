@@ -268,8 +268,7 @@ do [
     passed
 
     b: "Arturo"
-    try? -> chop chop chop 'b
-    else -> passed
+    if throws? -> chop chop chop 'b -> passed
 ]
 
 topic "chop.times - :string < :string (literal) :string"
@@ -301,8 +300,7 @@ do [
     passed
 
     b: [1 2 3 4 5]
-    try? -> chop chop chop 'b
-    else -> passed
+    if throws? -> chop chop chop 'b -> passed
 ]
 
 topic "chop.times - :block < :block (literal) :block"
@@ -716,11 +714,9 @@ do [
     ensure -> 5 = first.n: 0 range 5 0
     passed
 
-    try? -> first.n: neg 2 range 0 5
-    else -> passed
+    if throws? -> first.n: neg 2 range 0 5 -> passed
 
-    try? -> first.n: 7 range 0 5
-    else -> passed
+    if throws? -> first.n: 7 range 0 5 -> passed
 
 ]
 
@@ -1344,11 +1340,9 @@ do [
     ensure -> 0 = last.n: 0 range 5 0
     passed
 
-    try? -> last.n: neg 2 range 0 5
-    else -> passed
+    if throws? -> last.n: neg 2 range 0 5 -> passed
 
-    try? -> last.n: 7 range 0 5
-    else -> passed
+    if throws? -> last.n: 7 range 0 5 -> passed
 
 
 ]

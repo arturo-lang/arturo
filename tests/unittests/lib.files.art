@@ -635,12 +635,12 @@ do [
     inspect read ~"|dir|/test.bin"
     ; temp/read-file/test.bin :string
 
-    try? -> inspect read.file ~"|dir|/test.bin"
-    else -> print "error raised as expected!"
-    ; >> Runtime | File: lib.files.art
-    ; error | Line: 578
-    ;       |
-    ;       | file not found: temp/test.bin
+    if throws? -> inspect read.file ~"|dir|/test.bin"
+        -> print "error raised as expected!"
+        ; >> Runtime | File: lib.files.art
+        ; error | Line: 578
+        ;       |
+        ;       | file not found: temp/test.bin
 
 ]
 

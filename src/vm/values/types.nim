@@ -24,7 +24,7 @@ when not defined(NOGMP):
     import helpers/bignums
 
 import vm/opcodes
-import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vquantity, vrange, vrational, vregex, vsocket, vsymbol, vversion]
+import vm/values/custom/[vbinary, vcolor, vcomplex, verror, vlogical, vquantity, vrange, vrational, vregex, vsocket, vsymbol, vversion]
 import vm/values/flags
 
 #=======================================
@@ -84,23 +84,25 @@ type
 
         Unit            = 20
         Quantity        = 21
-        Regex           = 22
-        Color           = 23
-        Date            = 24
-        Binary          = 25
-        Dictionary      = 26
-        Object          = 27
-        Store           = 28
-        Function        = 29
-        Inline          = 30
-        Block           = 31
-        Range           = 32
-        Database        = 33
-        Socket          = 34    
-        Bytecode        = 35
+        Error           = 22
+        ErrorKind       = 23
+        Regex           = 24
+        Color           = 25
+        Date            = 26
+        Binary          = 27
+        Dictionary      = 28
+        Object          = 29
+        Store           = 30
+        Function        = 31
+        Inline          = 32
+        Block           = 33
+        Range           = 34
+        Database        = 35
+        Socket          = 36    
+        Bytecode        = 37
 
-        Nothing         = 36
-        Any             = 37
+        Nothing         = 38
+        Any             = 39
 
     ValueSpec* = set[ValueKind]
 
@@ -248,10 +250,14 @@ type
                PathLiteral      :   p*  : ValueArray
             of Symbol,
                SymbolLiteral:
-                   m*  : VSymbol
+                m*  : VSymbol
             of Regex:       rx* : VRegex
             of Unit:        u*  : VUnit
             of Quantity:    q*  : VQuantity
+            of Error: 
+                err*: VError
+            of ErrorKind:
+                errKind*: VErrorKind
             of Color:       l*  : VColor
             of Date:
                 e*     : ValueDict
