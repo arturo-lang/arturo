@@ -10,19 +10,19 @@ proc defineSymbols*() =
 
     constant "genericError",
         alias       = unaliased,
-        description = "A generic :errorKind":
+        description = "a generic error":
             newErrorKind(verror.genericErrorKind)
 
     builtin "throw",
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "throws an :error",
+        description = "throw an error with given message",
         args        = {
             "message": {String, ErrorKind}
         },
         attrs       = {
-            "as": ({ErrorKind}, "throws an :error as some specific :errorKind")
+            "as": ({ErrorKind}, "consider the error as one of given subtype")
         },
         returns     = {Nothing},
         example     = """
