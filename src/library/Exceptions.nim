@@ -1,17 +1,39 @@
 
+#=======================================================
+# Arturo
+# Programming Language + Bytecode VM compiler
+# (c) 2019-2023 Yanis Zafirópulos
+#
+# @file: library/Exceptions.nim
+#=======================================================
+
+## The main Exceptions module 
+## (part of the standard library)
+
+#=======================================
+# Pragmas
+#=======================================
+
 {.used.}
+
+#=======================================
+# Libraries
+#=======================================
 
 import vm/lib
 import vm/exec
 import vm/errors
 import vm/values/custom/verror
 
+#=======================================
+# Definitions
+#=======================================
+
 proc defineSymbols*() =
 
-    constant "genericError",
-        alias       = unaliased,
-        description = "a generic error":
-            newErrorKind(verror.genericErrorKind)
+    #----------------------------
+    # Functions
+    #----------------------------
 
     builtin "throw",
         alias       = unaliased, 
@@ -143,5 +165,14 @@ proc defineSymbols*() =
                 push newError(e)
                 if verbose:
                     showVMErrors(e)
+
+    #----------------------------
+    # Constants
+    #----------------------------
+
+    constant "genericError",
+        alias       = unaliased,
+        description = "a generic error":
+            newErrorKind(verror.genericErrorKind)
 
 Libraries.add(defineSymbols)
