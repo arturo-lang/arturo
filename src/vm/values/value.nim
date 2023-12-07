@@ -461,7 +461,7 @@ proc newErrorKind*(errKind: VErrorKind): Value {.inline, enforceNoRaises.} =
     Value(kind: ErrorKind, errKind: errKind)
 
 proc newError*(error: ref Exception | CatchableError | Defect): Value {.inline, enforceNoRaises.} =
-    result = Value(kind: Error, err: VError(kind: VErrorKind(verror.genericErrorKind)))
+    result = Value(kind: Error, err: VError(kind: verror.genericErrorKind))
     result.err.msg = error.msg
 
 proc newError*(kind: VErrorKind, msg: string = ""): Value {.inline, enforceNoRaises.} =
