@@ -27,7 +27,7 @@ import vm/globals
 import vm/opcodes
 import vm/values/value
 
-import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vquantity, vrange, vrational, vregex, vsocket, vversion]
+import vm/values/custom/[vbinary, vcolor, vcomplex, verror, vlogical, vquantity, vrange, vrational, vregex, vsocket, vversion]
 
 #=======================================
 # Helpers
@@ -108,6 +108,10 @@ proc `$`*(v: Value): string {.inline.} =
             return $(v.q)
         of Regex:
             return $(v.rx)
+        of Error:
+            return $(v.err)
+        of ErrorKind:
+            return $(v.errKind)
         of Color        :
             return $(v.l)
 
@@ -275,6 +279,9 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
 
         of Unit         : dumpPrimitive($(v.u), v)
         of Quantity     : dumpPrimitive($(v.q), v)
+
+        of Error        : dumpPrimitive($(v.err), v)       
+        of ErrorKind    : dumpPrimitive($(v.errKind), v)
 
         of Regex        : dumpPrimitive($(v.rx), v)
 
