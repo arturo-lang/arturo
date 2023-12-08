@@ -1,0 +1,182 @@
+; helper function 
+debug: $[variable][
+    print[variable type variable]
+]
+
+topic: $[topic :string] -> print ~"\n>> |topic|"
+passed: $[] -> print "[+] passed!"
+
+
+topic "throwing errors"
+do [
+
+    ; `throw` immediately raises an error,
+    ; catched by `try`
+    err: try -> throw "File not found"
+
+    ensure -> :error = type err
+    ensure -> :errorKind = type err\kind
+    ensure -> :string = type err\message
+    passed
+
+    ensure -> genericError = err\kind
+    ensure -> "File not found" = err\message
+    passed
+]
+
+
+topic "Custom errors"
+do [
+
+    fileNotFound: to :errorKind "File not found"
+
+    ensure -> :errorKind = type fileNotFound
+    ensure -> :string = type fileNotFound\label
+    passed
+
+    ensure -> genericError <> fileNotFound
+    ensure -> "File not found" = fileNotFound\label
+    passed
+
+    ; You can also add a message using `.message` attribute
+    ; This permits the creation of a more detailed log.
+    err: try [
+        throw.as: fileNotFound 
+            "Are you sure about this file's existence?"
+    ]
+
+    ensure -> :error = type err
+    ensure -> :errorKind = type err\kind
+    ensure -> :string = type err\message 
+    passed
+
+    ensure -> fileNotFound = err\kind
+    ensure -> genericError <> err\kind
+    ensure -> "Are you sure about this file's existence?" = err\message
+    passed
+
+]
+
+
+topic "Using functions"
+do [
+
+    fileNotFound: to :errorKind "File Not Found"
+
+    ensure -> :errorKind = type fileNotFound
+    ensure -> :string = type fileNotFound\label
+    passed
+
+    ensure -> genericError <> fileNotFound
+    ensure -> "File Not Found" = fileNotFound\label
+    passed
+
+    ; Using a custom error message 
+    ; instead of the original one from `fileNotFound`
+
+    cat: $[file :string][
+        throw.as: fileNotFound "Can't read file"
+    ]
+
+    if err: <= try -> cat "test.art" [
+        ensure -> :error = type err
+        passed
+
+        ensure -> genericError <> err
+        ensure -> fileNotFound = err
+        passed
+
+        ensure -> "Can't read file" = err\message
+        passed
+    ]
+
+    ; Using the default error message from `fileNotFound`
+    ; So we don't have to write the same thing twice.
+
+    dog: $[file :string][
+        throw fileNotFound
+    ]
+
+    if err: <= try -> dog "test.art" [
+        ensure -> :error = type err
+        passed
+
+        ensure -> genericError <> err
+        ensure -> fileNotFound = err
+        passed
+
+        ensure -> "File Not Found"  =  err\message
+        ensure -> "Can't read file" <> err\message
+        passed
+    ]
+
+    ; Describes what happerns when the function does not raises anything
+    ; Basically, `try` should return `:null` instead.
+
+    bun: $[file :string][
+        return "I'm a bunny 🐰"
+    ]
+
+    if not? err: <= try [content: bun "test.art"] [
+        ensure -> :error <> type err
+        ensure -> :null = type err
+        passed
+
+        ensure -> genericError <> err
+        ensure -> fileNotFound <> err
+        ensure -> null = err
+        passed
+        
+        ensure -> "I'm a bunny 🐰" = content
+        passed
+    ]
+
+]
+
+
+topic "Using the error function"
+do [
+
+    fileNotFound: to :errorKind "File not found!"
+
+    ensure -> :errorKind = type fileNotFound
+    ensure -> :string = type fileNotFound\label
+    passed
+
+    ensure -> genericError <> fileNotFound
+    ensure -> "File not found!" = fileNotFound\label
+    passed
+
+    cat: $[file :string][
+        throw fileNotFound
+    ]
+
+    if err: <= try -> cat "test.art" [
+        ensure -> :error = type err
+        passed
+
+        ensure -> genericError <> err
+        ensure -> fileNotFound = err
+        passed
+
+        ensure -> "File not found!" = err\message
+        passed
+    ]
+
+    dog: $[file :string][
+        throw.as: fileNotFound "Where is the file?"
+    ]
+
+    if err: <= try -> dog "test.art" [
+        ensure -> :error = type err
+        passed
+
+        ensure -> genericError <> err
+        ensure -> fileNotFound = err
+        passed
+
+        ensure -> "Where is the file?" = err\message
+        passed
+    ]
+
+]
