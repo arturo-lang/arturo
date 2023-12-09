@@ -527,7 +527,7 @@ func newDictionary*(d: sink SymTable): Value {.inline, enforceNoRaises.} =
 
 func newObject*(o: sink ValueDict = newOrderedTable[string,Value](), proto: sink Prototype): Value {.inline, enforceNoRaises.} =
     ## create Object value from ValueDict with given prototype
-    Value(kind: Object, o: o, proto: proto)
+    Value(kind: Object, o: o, proto: proto, magic: MagicMethods())
 
 proc newObject*(args: ValueArray, prot: Prototype, initializer: proc (self: Value, prot: Prototype), o: ValueDict = newOrderedTable[string,Value]()): Value {.inline.} =
     ## create Object value from ValueArray with given prototype 

@@ -161,55 +161,63 @@ proc defineLibrary*() =
                 for k,v in y.ts.methods:
                     x.ts.methods[k] = copyValue(v)
 
-            # setup our object initializer
-            # via the magic `init` method
-            if (let initMethod = x.ts.methods.getOrDefault("init", nil); not initMethod.isNil):
-                echo "there is an init method!"
-                # TODO(Types\define) we should verify that our `init` is properly defined
-                #  and if not, throw an appropriate error
-                #  mainly, that it's a Function
-                #  labels: library, error handling, oop
-                initMethod.injectThis()
+            x.ts.prepareMethods()
 
-                # inject a reference to the equivalent
-                # method from the parent as `super` -
-                # if there is one ofc
-                initMethod.injectSuper(x.ts.inherits)
+            # # setup our object initializer
+            # # via the magic `init` method
+            # if (let initMethod = x.ts.methods.getOrDefault("init", nil); not initMethod.isNil):
+            #     echo "there is an init method!"
+            #     # TODO(Types\define) we should verify that our `init` is properly defined
+            #     #  and if not, throw an appropriate error
+            #     #  mainly, that it's a Function
+            #     #  labels: library, error handling, oop
+            #     initMethod.injectThis()
 
-                x.ts.doInit = proc (self: Value, arguments: ValueArray) =
-                    echo "(in doInit)"
-                    for arg in arguments.reversed:
-                        push arg
-                    push self
-                    callFunction(initMethod)
+            #     # inject a reference to the equivalent
+            #     # method from the parent as `super` -
+            #     # if there is one ofc
+            #     #initMethod.injectSuper(x.ts.inherits)
 
-            # check if there is a `print` magic method;
-            # the custom equivalent of the `printable` module
-            # only for Object values
-            if (let printMethod = x.ts.methods.getOrDefault("print", nil); not printMethod.isNil):
-                # TODO(Types\define) we should verify that our `print` is properly defined
-                #  and if not, throw an appropriate error
-                #  mainly, that it's a Function with *no* arguments
-                #  labels: library, error handling, oop
-                printMethod.injectThis()
-                x.ts.doPrint = proc (self: Value): string =
-                    push self
-                    callFunction(printMethod)
-                    stack.pop().s
+            #     x.ts.doInit = proc (self: Value, arguments: ValueArray) =
+            #         echo "(in doInit)"
+            #         for arg in arguments.reversed:
+            #             push arg
+            #         push self
+            #         callFunction(initMethod)
 
-            # check if there is a `compare` magic method;
-            # this is to be used for sorting, etc
-            if (let compareMethod = x.ts.methods.getOrDefault("compare", nil); not compareMethod.isNil):
-                # TODO(Types\define) we should verify that our `compare` is properly defined
-                #  and if not, throw an appropriate error
-                #  mainly, that it's a Function with one argument
-                #  labels: library, error handling, oop
-                compareMethod.injectThis()
-                x.ts.doCompare = proc (self: Value, other: Value): int =
-                    push other
-                    push self
-                    callFunction(compareMethod)
-                    stack.pop().i
+            # # check if there is a `print` magic method;
+            # # the custom equivalent of the `printable` module
+            # # only for Object values
+            # if (let printMethod = x.ts.methods.getOrDefault("print", nil); not printMethod.isNil):
+            #     # TODO(Types\define) we should verify that our `print` is properly defined
+            #     #  and if not, throw an appropriate error
+            #     #  mainly, that it's a Function with *no* arguments
+            #     #  labels: library, error handling, oop
+            #     printMethod.injectThis()
+            #     x.ts.doPrint = proc (self: Value): string =
+            #         push self
+            #         callFunction(printMethod)
+            #         stack.pop().s
+
+            # # check if there is a `compare` magic method;
+            # # this is to be used for sorting, etc
+            # if (let compareMethod = x.ts.methods.getOrDefault("compare", nil); not compareMethod.isNil):
+            #     # TODO(Types\define) we should verify that our `compare` is properly defined
+            #     #  and if not, throw an appropriate error
+            #     #  mainly, that it's a Function with one argument
+            #     #  labels: library, error handling, oop
+            #     compareMethod.injectThis()
+            #     x.ts.doCompare = proc (self: Value, other: Value): int =
+            #         push other
+            #         push self
+            #         callFunction(compareMethod)
+            #         stack.pop().i
+
+            for k,v in pairs(x.ts.methods):
+                echo "------------"
+                echo k
+                echo "------------"
+                dump(v)
 
     builtin "is",
         alias       = unaliased,

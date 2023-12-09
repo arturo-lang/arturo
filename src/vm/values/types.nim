@@ -142,9 +142,12 @@ type
         fields*     : ValueArray
         methods*    : ValueDict
         doInit*     : proc (self:Value, arguments:ValueArray)
+        
+        inherits*   : Value
+
+    MagicMethods* = ref object
         doPrint*    : proc (v:Value): string
         doCompare*  : proc (a,b:Value): int
-        inherits*   : Value
 
     SymbolDict*   = OrderedTable[VSymbol,AliasBinding]
 
@@ -273,6 +276,7 @@ type
             of Object:
                 o*: ValueDict   # fields
                 proto*: Prototype # custom type pointer
+                magic*: MagicMethods
             of Store:
                 sto*: VStore
             of Function:
