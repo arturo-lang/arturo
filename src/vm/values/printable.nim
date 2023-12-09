@@ -138,7 +138,7 @@ proc `$`*(v: Value): string {.inline.} =
 
         of Object:
             if (let printMethod = v.proto.methods.getOrDefault("print", nil); not printMethod.isNil):
-                return v.proto.doPrint(v)
+                return v.magic.doPrint(v)
             else:
                 var items: seq[string]
                 for key,value in v.o:

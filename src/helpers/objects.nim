@@ -10,10 +10,12 @@
 # Libraries
 #=======================================
 
-import sequtils, tables
+import algorithm, sequtils, tables
     
 import vm/values/value
 import vm/values/custom/[vsymbol]
+
+import vm/[exec, stack]
 
 #=======================================
 # Methods
@@ -21,9 +23,12 @@ import vm/values/custom/[vsymbol]
 
 proc injectThis*(meth: Value) =
     if meth.params.len < 1 or meth.params[0] != "this":
+        echo "meth.arity was was: " & $(meth.arity)
         echo "- injecting *this*"
         meth.params.insert("this")
+        echo "meth.arity was: " & $(meth.arity)
         meth.arity += 1
+        echo "meth.arity is: " & $(meth.arity)
 
 proc injectSuper*(meth: Value, parent: Value) =
     # TODO(objects/injectSuper) should support `super` in all methods
@@ -45,6 +50,57 @@ proc injectSuper*(meth: Value, parent: Value) =
             newSymbol(doublecolon)
         ])
     meth.main.a.insert(insertable)
+
+proc prepareMethods*(proto: Prototype) =
+    # setup our object initializer
+    # via the magic `init` method
+    if (let initMethod = proto.methods.getOrDefault("init", nil); not initMethod.isNil):
+        echo "there is an init method!"
+        # TODO(Types\define) we should verify that our `init` is properly defined
+        #  and if not, throw an appropriate error
+        #  mainly, that it's a Function
+        #  labels: library, error handling, oop
+        initMethod.injectThis()
+
+        # inject a reference to the equivalent
+        # method from the parent as `super` -
+        # if there is one ofc
+        #initMethod.injectSuper(x.ts.inherits)
+
+        proto.doInit = proc (self: Value, arguments: ValueArray) =
+            echo "(in doInit)"
+            for arg in arguments.reversed:
+                push arg
+            push self
+            callFunction(initMethod)
+
+    # # check if there is a `print` magic method;
+    # # the custom equivalent of the `printable` module
+    # # only for Object values
+    # if (let printMethod = proto.methods.getOrDefault("print", nil); not printMethod.isNil):
+    #     # TODO(Types\define) we should verify that our `print` is properly defined
+    #     #  and if not, throw an appropriate error
+    #     #  mainly, that it's a Function with *no* arguments
+    #     #  labels: library, error handling, oop
+    #     printMethod.injectThis()
+    #     proto.doPrint = proc (self: Value): string =
+    #         push self
+    #         callFunction(printMethod)
+    #         stack.pop().s
+
+    # # check if there is a `compare` magic method;
+    # # this is to be used for sorting, etc
+    # if (let compareMethod = proto.methods.getOrDefault("compare", nil); not compareMethod.isNil):
+    #     # TODO(Types\define) we should verify that our `compare` is properly defined
+    #     #  and if not, throw an appropriate error
+    #     #  mainly, that it's a Function with one argument
+    #     #  labels: library, error handling, oop
+    #     compareMethod.injectThis()
+    #     proto.doCompare = proc (self: Value, other: Value): int =
+    #         push other
+    #         push self
+    #         callFunction(compareMethod)
+    #         stack.pop().i
 
 proc generateCustomObject*(prot: Prototype, arguments: ValueArray | ValueDict, initialize: static bool = true): Value =
     newObject(arguments, prot, proc (self: Value, prot: Prototype) =
@@ -79,8 +135,25 @@ proc generateCustomObject*(prot: Prototype, arguments: ValueArray | ValueDict, i
                             let cleanObjectMethodArgs = objectMethod.params.filter(proc (ss :string): bool = ss != "this")
                             RuntimeError_IncorrectNumberOfArgumentsForInitializer(prot.name, arguments.len, cleanObjectMethodArgs)
                         prot.doInit(self, sortedArgs)
-                of "print": discard
-                of "compare": discard
+                of "print": 
+                    #self.o[methodName] = objectMethod
+                    self.o[methodName].injectThis()
+                    echo "adding magic: doPrint"
+                    self.magic.doPrint = proc (self: Value): string =
+                        push self
+                        callFunction(self.o[methodName], "\\print")
+                        stack.pop().s
+                    echo "done"
+                of "compare":
+                    #self.o[methodName] = objectMethod
+                    self.o[methodName].injectThis()
+                    echo "adding magic: doCompare"
+                    self.magic.doCompare = proc (self: Value, other: Value): int =
+                        push other
+                        push self
+                        callFunction(self.o[methodName], "\\compare")
+                        stack.pop().i
+                    echo "done"
                 else:
                     if objectMethod.kind==Function:
                         let objMethod = copyValue(objectMethod)
