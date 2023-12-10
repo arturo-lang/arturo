@@ -48,10 +48,10 @@ let
 
 proc log*(msg: string) =
     for line in msg.splitlines:
-        echo colors.gray, "  " & line.dedent, styles.clear
+        echo colors.gray, "  ", line.dedent, styles.clear
 
 proc warn*(msg: string) =
-    echo colors.red, msg.dedent, styles.clear
+    echo colors.red, "  ", msg.dedent, styles.clear
 
 proc panic*(msg: string = "", exitCode: int = QuitFailure) =
     warn msg
