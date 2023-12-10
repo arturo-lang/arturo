@@ -283,7 +283,7 @@ proc buildArturo*(config: BuildConfig, targetFile: string) =
     proc tryCompilation(config: BuildConfig) =
         ## Panics if can't compile.
         if (let cd = config.compile(showFooter=true); cd != 0):
-            quit(cd)
+            panic "Compilation failed. Please try again with --log and report it.", cd
 
     proc main() =
         showHeader "install"
