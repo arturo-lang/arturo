@@ -229,10 +229,14 @@ proc installAll*(config: BuildConfig, targetFile: string) =
         exec fmt"chmod +x {targetFile}"
 
     proc main(config: BuildConfig) =
-        assert not config.webVersion:
-            "Web builds can't be installed"
+
+        if not config.shouldInstall:
+            return
 
         section "Installing..."
+
+        if config.webVersion:
+            panic "Web builds can't be installed, please don't use --install"
 
         verifyDirectories()
         config.copyArturo(targetFile)
