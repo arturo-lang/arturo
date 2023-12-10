@@ -131,9 +131,9 @@ proc miniBuild*() =
         --verbosity:3
 
 proc compressBinary(config: BuildConfig) =
-    assert config.shouldCompress
-    assert config.webVersion:
-        "Compress should work only for @web versions."
+
+    if (not config.shouldCompress) or (not config.webVersion):
+        return
 
     section "Post-processing..."
 
