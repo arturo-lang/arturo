@@ -359,7 +359,7 @@ proc buildPackage*(config: BuildConfig) =
         showFlags()
 
         if (let cd = compile(config, showFooter=false); cd != 0):
-            panic "Package building failed", cd
+            panic "Package building failed. Please try again with --log and report it.", cd
 
         package.cleanUp()
 
