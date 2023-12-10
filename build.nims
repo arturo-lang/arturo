@@ -80,7 +80,7 @@ func buildConfig(): BuildConfig =
         binary:             "bin/arturo".toExe,
         version:            "@full",
         shouldCompress:     true,
-        shouldInstall:      true,
+        shouldInstall:      false,
         shouldLog:          false,
         isDeveloper:        false,
     )
