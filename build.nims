@@ -498,7 +498,7 @@ cmd build, "Build arturo and optionally install the executable":
         debugConfig()
 
     if args.hasFlag("install", "i"):
-        config.shouldInstall = false
+        config.shouldInstall = true
 
     if args.hasFlag("log", "l"):
         config.shouldLog = true
