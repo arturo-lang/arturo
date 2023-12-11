@@ -116,7 +116,6 @@ jobs:
           cp src/extras/webview/deps/dlls/x64/WebView2Loader.dll arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}
 
           cp bin/arturo.exe arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}
-          cp *.dll arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}
 
       # curl -L https://arturo-lang.s3.amazonaws.com/libcrypto-1_1-x64.dll -o libcrypto-1_1-x64.dll
       # curl -L https://arturo-lang.s3.amazonaws.com/libssl-1_1-x64.dll -o libssl-1_1-x64.dll
@@ -133,7 +132,6 @@ jobs:
           cp *.dll *.pem arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}
 
           cp bin/arturo.exe arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}
-          cp *.dll arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}
 
       - name: Upload Artifacts
         uses: 'actions/upload-artifact@v1'
