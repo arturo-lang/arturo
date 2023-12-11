@@ -289,14 +289,20 @@ proc downloadPackageSourceInto*(url: string, target: string) =
     ShowMessage "Downloading sources"
 
     removeDir(target) # delete it, just in case
+    echo "after removeDir"
     newHttpClient().downloadFile(url, PackageTmpZip.fmt)
+    echo "after downloadFile"
     let files = miniz.unzipAndGetFiles(PackageTmpZip.fmt, TmpFolder.fmt)
+    echo "after unzip"
     let (actualSubFolder, _, _) = splitFile(files[0])
+    echo "after splitFile"
     let actualFolder = TmpFolder.fmt / actualSubFolder
     createDir(target) # make sure the path (and all subdirs) exist
+    echo "after createDir"
     moveDir(actualFolder, target)
+    echo "after moveDir"
     discard tryRemoveFile(PackageTmpZip.fmt)
-
+    echo "tryRemoveFile"
     ShowSuccess()
 
 proc verifyDependencies*(deps: seq[Value]) = 
