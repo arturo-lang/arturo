@@ -109,8 +109,9 @@ jobs:
           curl -L https://arturo-lang.s3.amazonaws.com/sqlite3_64.dll -o sqlite3_64.dll
           curl -L https://arturo-lang.s3.amazonaws.com/libgcc_s_seh-1.dll -o libgcc_s_seh-1.dll
           curl -L https://arturo-lang.s3.amazonaws.com/pcre64.dll -o pcre64.dll
+          curl -L https://curl.se/ca/cacert.pem -o cacert.pem
 
-          cp *.dll arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}
+          cp *.dll *.pem arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}
           cp src/extras/webview/deps/dlls/x64/webview.dll arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}
           cp src/extras/webview/deps/dlls/x64/WebView2Loader.dll arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}
 
@@ -127,8 +128,9 @@ jobs:
           
           curl -L https://arturo-lang.s3.amazonaws.com/libwinpthread-1.dll -o libwinpthread-1.dll
           curl -L https://arturo-lang.s3.amazonaws.com/pcre64.dll -o pcre64.dll
+          curl -L https://curl.se/ca/cacert.pem -o cacert.pem
 
-          cp *.dll arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}
+          cp *.dll *.pem arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}
 
           cp bin/arturo.exe arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}
           cp *.dll arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}
