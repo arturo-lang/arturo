@@ -111,7 +111,8 @@ jobs:
           curl -L https://arturo-lang.s3.amazonaws.com/pcre64.dll -o pcre64.dll
           curl -L https://curl.se/ca/cacert.pem -o cacert.pem
 
-          cp *.dll *.pem arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}
+          cp *.dll arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}
+          cp *.pem arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}
           cp src/extras/webview/deps/dlls/x64/webview.dll arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}
           cp src/extras/webview/deps/dlls/x64/WebView2Loader.dll arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}
 
@@ -129,7 +130,8 @@ jobs:
           curl -L https://arturo-lang.s3.amazonaws.com/pcre64.dll -o pcre64.dll
           curl -L https://curl.se/ca/cacert.pem -o cacert.pem
 
-          cp *.dll *.pem arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}
+          cp *.dll arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}
+          cp *.pem arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}
 
           cp bin/arturo.exe arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}
 
