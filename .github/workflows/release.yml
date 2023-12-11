@@ -432,7 +432,6 @@ jobs:
           cp bin/arturo.exe arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}
           cp README.md arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}
           cp LICENSE arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}
-          cp *.dll arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}
 
       - name: Create artifact (mini)
         if: matrix.version == 'mini'
@@ -448,7 +447,6 @@ jobs:
           cp bin/arturo.exe arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}
           cp README.md arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}
           cp LICENSE arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}
-          cp *.dll arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}
 
       - name: Package artifact
         run: |
