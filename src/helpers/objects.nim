@@ -36,12 +36,12 @@ proc injectSuper*(meth: Value, parent: Value) =
     #  labels: bug, oop
     var insertable = @[newLabel("super")]
     echo "- injecting *super*"
-    if parent.isNil or not parent.ts.methods.hasKey("init"):
+    if parent.isNil or not parent.ts.content.hasKey("init"):
         insertable.add(newWord("null"))
         echo "  .... as `null`"
     else:
         echo "  .... as a function"
-        let parentInit = parent.ts.methods["init"]
+        let parentInit = parent.ts.content["init"]
         insertable.add(@[
             newWord("function"),
             newBlock(parentInit.params.filter(proc (zz: string): bool = zz != "this").map(proc (zz: string): Value = newWord(zz))),
@@ -54,7 +54,7 @@ proc injectSuper*(meth: Value, parent: Value) =
 proc prepareMethods*(proto: Prototype) =
     # setup our object initializer
     # via the magic `init` method
-    if (let initMethod = proto.methods.getOrDefault("init", nil); not initMethod.isNil):
+    if (let initMethod = proto.content.getOrDefault("init", nil); not initMethod.isNil):
         echo "there is an init method!"
         # TODO(Types\define) we should verify that our `init` is properly defined
         #  and if not, throw an appropriate error
@@ -67,12 +67,12 @@ proc prepareMethods*(proto: Prototype) =
         # if there is one ofc
         #initMethod.injectSuper(x.ts.inherits)
 
-        proto.doInit = proc (self: Value, arguments: ValueArray) =
-            echo "(in doInit)"
-            for arg in arguments.reversed:
-                push arg
-            push self
-            callFunction(initMethod)
+        # proto.doInit = proc (self: Value, arguments: ValueArray) =
+        #     echo "(in doInit)"
+        #     for arg in arguments.reversed:
+        #         push arg
+        #     push self
+        #     callFunction(initMethod)
 
     # # check if there is a `print` magic method;
     # # the custom equivalent of the `printable` module
@@ -102,65 +102,65 @@ proc prepareMethods*(proto: Prototype) =
     #         callFunction(compareMethod)
     #         stack.pop().i
 
-proc generateCustomObject*(prot: Prototype, arguments: ValueArray | ValueDict, initialize: static bool = true): Value =
-    newObject(arguments, prot, proc (self: Value, prot: Prototype) =
-        var magicParamsExpected = 1
+# proc generateCustomObject*(prot: Prototype, arguments: ValueArray | ValueDict, initialize: static bool = true): Value =
+#     newObject(arguments, prot, proc (self: Value, prot: Prototype) =
+#         var magicParamsExpected = 1
 
-        for methodName, objectMethod in prot.methods:
-            case methodName:
-                of "init":
-                    when arguments is ValueArray:
-                        if arguments.len != objectMethod.arity - magicParamsExpected:
-                            # TODO(generateCustomObject) should throw if number of arguments is not correct
-                            #  labels: error handling, oop, vm, values
-                            let cleanObjectMethodArgs = objectMethod.params.filter(proc (ss :string): bool = ss != "this")
-                            RuntimeError_IncorrectNumberOfArgumentsForInitializer(prot.name, arguments.len, cleanObjectMethodArgs)
-                        echo "==> initializing new object"
-                        prot.doInit(self, arguments)
-                    else:
-                        let initArgs = objectMethod.params
-                        let sortedArgs = (toSeq(pairs(arguments))).sorted(proc (xv: (string,Value), yv: (string,Value)): int =
-                            if (let xIdx = initArgs.find(xv[0]); xIdx != -1):
-                                if (let yIdx = initArgs.find(yv[0]); yIdx != -1):
-                                    return cmp(xIdx, yIdx)
-                                else:
-                                    let cleanObjectMethodArgs = objectMethod.params.filter(proc (ss :string): bool = ss != "this")
-                                    RuntimeError_IncorrectArgumentForInitializer(prot.name, yv[0], cleanObjectMethodArgs)
-                            else:
-                                let cleanObjectMethodArgs = objectMethod.params.filter(proc (ss :string): bool = ss != "this")
-                                RuntimeError_IncorrectArgumentForInitializer(prot.name, xv[0], cleanObjectMethodArgs)
-                        ).map(proc (rz: (string,Value)): Value = rz[1])
+#         for methodName, objectMethod in prot.content:
+#             case methodName:
+#                 of "init":
+#                     when arguments is ValueArray:
+#                         if arguments.len != objectMethod.arity - magicParamsExpected:
+#                             # TODO(generateCustomObject) should throw if number of arguments is not correct
+#                             #  labels: error handling, oop, vm, values
+#                             let cleanObjectMethodArgs = objectMethod.params.filter(proc (ss :string): bool = ss != "this")
+#                             RuntimeError_IncorrectNumberOfArgumentsForInitializer(prot.name, arguments.len, cleanObjectMethodArgs)
+#                         echo "==> initializing new object"
+#                         #prot.doInit(self, arguments)
+#                     else:
+#                         let initArgs = objectMethod.params
+#                         let sortedArgs = (toSeq(pairs(arguments))).sorted(proc (xv: (string,Value), yv: (string,Value)): int =
+#                             if (let xIdx = initArgs.find(xv[0]); xIdx != -1):
+#                                 if (let yIdx = initArgs.find(yv[0]); yIdx != -1):
+#                                     return cmp(xIdx, yIdx)
+#                                 else:
+#                                     let cleanObjectMethodArgs = objectMethod.params.filter(proc (ss :string): bool = ss != "this")
+#                                     RuntimeError_IncorrectArgumentForInitializer(prot.name, yv[0], cleanObjectMethodArgs)
+#                             else:
+#                                 let cleanObjectMethodArgs = objectMethod.params.filter(proc (ss :string): bool = ss != "this")
+#                                 RuntimeError_IncorrectArgumentForInitializer(prot.name, xv[0], cleanObjectMethodArgs)
+#                         ).map(proc (rz: (string,Value)): Value = rz[1])
 
-                        if sortedArgs.len != objectMethod.arity - magicParamsExpected:
-                            let cleanObjectMethodArgs = objectMethod.params.filter(proc (ss :string): bool = ss != "this")
-                            RuntimeError_IncorrectNumberOfArgumentsForInitializer(prot.name, arguments.len, cleanObjectMethodArgs)
-                        prot.doInit(self, sortedArgs)
-                of "print": 
-                    #self.o[methodName] = objectMethod
-                    self.o[methodName].injectThis()
-                    echo "adding magic: doPrint"
-                    self.magic.doPrint = proc (self: Value): string =
-                        push self
-                        callFunction(self.o[methodName], "\\print")
-                        stack.pop().s
-                    echo "done"
-                of "compare":
-                    #self.o[methodName] = objectMethod
-                    self.o[methodName].injectThis()
-                    echo "adding magic: doCompare"
-                    self.magic.doCompare = proc (self: Value, other: Value): int =
-                        push other
-                        push self
-                        callFunction(self.o[methodName], "\\compare")
-                        stack.pop().i
-                    echo "done"
-                else:
-                    if objectMethod.kind==Function:
-                        let objMethod = copyValue(objectMethod)
-                        objMethod.injectThis()
-                        self.o[methodName] = objMethod
-                        if (let methodInfo = objectMethod.info; not methodInfo.isNil):
-                            self.o[methodName].info = methodInfo
-                    else:
-                        self.o[methodName] = objectMethod
-    )
+#                         if sortedArgs.len != objectMethod.arity - magicParamsExpected:
+#                             let cleanObjectMethodArgs = objectMethod.params.filter(proc (ss :string): bool = ss != "this")
+#                             RuntimeError_IncorrectNumberOfArgumentsForInitializer(prot.name, arguments.len, cleanObjectMethodArgs)
+#                         #prot.doInit(self, sortedArgs)
+#                 of "print": 
+#                     #self.o[methodName] = objectMethod
+#                     self.o[methodName].injectThis()
+#                     echo "adding magic: doPrint"
+#                     self.magic.doPrint = proc (self: Value): string =
+#                         push self
+#                         callFunction(self.o[methodName], "\\print")
+#                         stack.pop().s
+#                     echo "done"
+#                 of "compare":
+#                     #self.o[methodName] = objectMethod
+#                     self.o[methodName].injectThis()
+#                     echo "adding magic: doCompare"
+#                     self.magic.doCompare = proc (self: Value, other: Value): int =
+#                         push other
+#                         push self
+#                         callFunction(self.o[methodName], "\\compare")
+#                         stack.pop().i
+#                     echo "done"
+#                 else:
+#                     if objectMethod.kind==Function:
+#                         let objMethod = copyValue(objectMethod)
+#                         objMethod.injectThis()
+#                         self.o[methodName] = objMethod
+#                         if (let methodInfo = objectMethod.info; not methodInfo.isNil):
+#                             self.o[methodName].info = methodInfo
+#                     else:
+#                         self.o[methodName] = objectMethod
+#     )

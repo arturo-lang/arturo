@@ -138,12 +138,10 @@ type
         name*:       Value
 
     Prototype* = ref object
-        name*       : string
-        fields*     : ValueArray
-        methods*    : ValueDict
-        doInit*     : proc (self:Value, arguments:ValueArray)
-        
-        inherits*   : Value
+        name*           : string
+        content*        : ValueDict
+        inherits*       : Value
+        initialized*    : bool
 
     MagicMethods* = ref object
         doPrint*    : proc (v:Value): string
@@ -274,9 +272,9 @@ type
                     rng*    : VRange
             of Dictionary:  d*  : ValueDict
             of Object:
-                o*: ValueDict   # fields
-                proto*: Prototype # custom type pointer
-                magic*: MagicMethods
+                o*      : ValueDict 
+                proto*  : Prototype 
+                magic*  : MagicMethods
             of Store:
                 sto*: VStore
             of Function:

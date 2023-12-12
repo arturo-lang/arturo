@@ -194,7 +194,7 @@ proc `==`*(x: Value, y: Value): bool =
             of Unit:
                 return x.u == y.u
             of Object:
-                if (let compareMethod = x.proto.methods.getOrDefault("compare", nil); not compareMethod.isNil):
+                if not x.magic.doCompare.isNil:
                     return x.magic.doCompare(x,y) == 0
                 else:
                     if x.o.len != y.o.len: return false
@@ -401,7 +401,7 @@ proc `<`*(x: Value, y: Value): bool {.inline.}=
             of Unit:
                 return false
             of Object:
-                if (let compareMethod = x.proto.methods.getOrDefault("compare", nil); not compareMethod.isNil):
+                if not x.magic.doCompare.isNil:
                     return x.magic.doCompare(x, y) == -1
                 else:
                     return false
@@ -513,7 +513,7 @@ proc `>`*(x: Value, y: Value): bool {.inline.}=
             of Unit:
                 return false
             of Object:
-                if (let compareMethod = x.proto.methods.getOrDefault("compare", nil); not compareMethod.isNil):
+                if not x.magic.doCompare.isNil:
                     return x.magic.doCompare(x,y) == 1
                 else:
                     return false
