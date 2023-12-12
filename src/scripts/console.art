@@ -204,7 +204,7 @@ while [true] [
     ]
 
     if throws? [
-        try.verbose to :block inp
+        err: try.verbose to :block inp
 
         StackSize: size stack
 
