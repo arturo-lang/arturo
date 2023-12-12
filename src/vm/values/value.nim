@@ -325,20 +325,26 @@ func newType*(t: ValueKind): Value {.inline, enforceNoRaises.} =
     ## create Type (BuiltinType) value from ValueKind
     Value(kind: Type, tpKind: BuiltinType, t: t)
 
-proc newUserType*(n: string, f: ValueArray = @[], extended: static bool = false): Value {.inline.} =
+proc newUserType*(n: string): Value {.inline.} =
     ## create Type (UserType) value from string
+    echo "newUserType -> " & n
     if (let lookup = TypeLookup.getOrDefault(n, nil); not lookup.isNil):
-        when extended:
-            result = Value(kind: Type, tpKind: UserType, t: Object, ts: Prototype(name: n, fields: lookup.ts.fields, methods: newOrderedTable(toSeq(pairs(lookup.ts.methods))), inherits: nil))
-        else:
-            return lookup
+        echo "found type"
+        for k in keys(TypeLookup):
+            echo "- " & k
+        return lookup
     else:
-        when extended:
-            # should throw
-            discard
-        else:
-            result = Value(kind: Type, tpKind: UserType, t: Object, ts: Prototype(name: n, fields: f, methods: initOrderedTable[string,Value](), inherits: nil))
-            TypeLookup[n] = result
+        echo "creating type"
+        result = Value(kind: Type, tpKind: UserType, t: Object, ts: Prototype(name: n, content: initOrderedTable[string,Value](), inherits: nil, initialized: false))
+        TypeLookup[n] = result
+
+proc newUserTypeExtension*(content: ValueDict, inherits: Value): Value {.inline.} =
+    Value(kind: Type, tpKind: UserType, t: Object, ts: Prototype(
+        name: "_",
+        content: content,
+        inherits: inherits,
+        initialized: false
+    ))
 
 proc newType*(t: string): Value {.inline.} =
     ## create Type value from string
@@ -529,34 +535,34 @@ func newObject*(o: sink ValueDict = newOrderedTable[string,Value](), proto: sink
     ## create Object value from ValueDict with given prototype
     Value(kind: Object, o: o, proto: proto, magic: MagicMethods())
 
-proc newObject*(args: ValueArray, prot: Prototype, initializer: proc (self: Value, prot: Prototype), o: ValueDict = newOrderedTable[string,Value]()): Value {.inline.} =
-    ## create Object value from ValueArray with given prototype 
-    ## and initializer function
-    var fields = o
-    var i = 0
+# proc newObject*(args: ValueArray, prot: Prototype, initializer: proc (self: Value, prot: Prototype), o: ValueDict = newOrderedTable[string,Value]()): Value {.inline.} =
+#     ## create Object value from ValueArray with given prototype 
+#     ## and initializer function
+#     var fields = o
+#     var i = 0
 
-    while i<args.len and i<prot.fields.len:
-        let k = prot.fields[i]
-        fields[k.s] = args[i]
-        i += 1
+#     while i<args.len and i<prot.fields.len:
+#         let k = prot.fields[i]
+#         fields[k.s] = args[i]
+#         i += 1
 
-    result = newObject(fields, prot)
+#     result = newObject(fields, prot)
 
-    initializer(result, prot)
+#     initializer(result, prot)
 
-proc newObject*(args: ValueDict, prot: Prototype, initializer: proc (self: Value, prot: Prototype), o: ValueDict = newOrderedTable[string,Value]()): Value {.inline.} =
-    ## create Object value from ValueDict with given prototype 
-    ## and initializer function, using another object ``o`` as 
-    ## a parent object
-    var fields = o
-    for k,v in pairs(args):
-        for item in prot.fields:
-            if item.s == k:
-                fields[k] = v
+# proc newObject*(args: ValueDict, prot: Prototype, initializer: proc (self: Value, prot: Prototype), o: ValueDict = newOrderedTable[string,Value]()): Value {.inline.} =
+#     ## create Object value from ValueDict with given prototype 
+#     ## and initializer function, using another object ``o`` as 
+#     ## a parent object
+#     var fields = o
+#     for k,v in pairs(args):
+#         for item in prot.fields:
+#             if item.s == k:
+#                 fields[k] = v
 
-    result = newObject(fields, prot)
+#     result = newObject(fields, prot)
     
-    initializer(result, prot)
+#     initializer(result, prot)
 
 proc newStore*(sto: VStore): Value {.inline, enforceNoRaises.} =
     ## create Store value from VStore
@@ -808,7 +814,8 @@ proc copyValue*(v: Value): Value {.inline.} =
             if likely(v.tpKind==BuiltinType):
                 result = newType(v.t)
             else:
-                result = newUserType(v.ts.name, v.ts.fields, extended = true)
+                result = newUserTypeExtension(v.ts.content[], copyValue(v.ts.inherits))
+                result.ts.name = v.ts.name
         of Char:            result = newChar(v.c)
 
         of String:          result = newString(v.s)

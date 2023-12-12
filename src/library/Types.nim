@@ -114,110 +114,138 @@ proc defineLibrary*() =
             ; NAME: Jane, SURNAME: Doe, AGE: 33
         """:
             #=======================================================
+            var definitions: ValueDict = newOrderedTable[string,Value]()
+
+            echo "defining: " & x.ts.name
+
+            if x.tpKind == UserType:
+                # TODO(Types\is) we should check if type is initialized
+                #  labels: error handling,enhancement
+                for k,v in x.ts.content:
+                    definitions[k] = v
+
+            if y.kind == Block:
+                definitions = newDictionary(execDictionary(y)).d
+            elif y.kind == Dictionary:
+                for k,v in y.d:
+                    definitions[k] = v
+            else:
+                x.ts.inherits = y.ts.inherits
+                # TODO(Types\define) check if 3rd parameter is a BuiltinType
+                #  labels: error handling, enhancement
+                for k,v in y.ts.content:
+                    definitions[k] = v
+
+            x.ts.content = definitions
+
+            x.ts.initialized = true
+
             # Important! if we don't empty them forcefully
             # if we re-define a type inside the same piece of code
             # it'll merge everything; we could obviously throw 
             # an error when a type is redefined, but... 
             # is it really an error? Arturo is not C++!
-            x.ts.fields = @[]
-            x.ts.methods = initOrderedTable[string,Value]()
 
-            echo "defining new type..."
 
-            # Check if .sortable is set and - if so -
-            # auto-generate the corresponding `compare` method
-            if checkAttr("sortable"):
-                let key = aSortable
-                let compareInnerBlock = newBlock(@[
-                    newWord("if"), newPath(@[newWord("this"), key]), newSymbol(greaterthan), newPath(@[newWord("that"), key]), newBlock(@[newWord("return"),newInteger(1)]),
-                    newWord("if"), newPath(@[newWord("this"), key]), newSymbol(equal), newPath(@[newWord("that"), key]), newBlock(@[newWord("return"),newInteger(0)]),
-                    newWord("return"), newWord("neg"), newInteger(1)
-                ])
-                x.ts.methods["compare"] = newFunctionFromDefinition(@[newWord("that")], compareInnerBlock)
+            # x.ts.fields = @[]
+            # x.ts.content = initOrderedTable[string,Value]()
 
-            # Get our defined methods
-            # as a dictionary
-            if y.kind == Block:
-                x.ts.inherits = nil
+            # echo "defining new type..."
+
+            # # Check if .sortable is set and - if so -
+            # # auto-generate the corresponding `compare` method
+            # if checkAttr("sortable"):
+            #     let key = aSortable
+            #     let compareInnerBlock = newBlock(@[
+            #         newWord("if"), newPath(@[newWord("this"), key]), newSymbol(greaterthan), newPath(@[newWord("that"), key]), newBlock(@[newWord("return"),newInteger(1)]),
+            #         newWord("if"), newPath(@[newWord("this"), key]), newSymbol(equal), newPath(@[newWord("that"), key]), newBlock(@[newWord("return"),newInteger(0)]),
+            #         newWord("return"), newWord("neg"), newInteger(1)
+            #     ])
+            #     x.ts.methods["compare"] = newFunctionFromDefinition(@[newWord("that")], compareInnerBlock)
+
+            # # Get our defined methods
+            # # as a dictionary
+            # if y.kind == Block:
+            #     x.ts.inherits = nil
                 
-                if y.a.len > 0 and y.a[0].kind == Word:
-                    let initInnerBlock = newBlock()
-                    for val in y.a:
-                        if val.kind in {Word,Literal,String}:
-                            initInnerBlock.a.add(@[
-                                newPathLabel(@[newWord("this"), newWord(val.s)]),
-                                newWord(val.s)
-                            ])
+            #     if y.a.len > 0 and y.a[0].kind == Word:
+            #         let initInnerBlock = newBlock()
+            #         for val in y.a:
+            #             if val.kind in {Word,Literal,String}:
+            #                 initInnerBlock.a.add(@[
+            #                     newPathLabel(@[newWord("this"), newWord(val.s)]),
+            #                     newWord(val.s)
+            #                 ])
 
-                    x.ts.methods["init"] = newFunctionFromDefinition(y.a, initInnerBlock)
-                else:
-                    x.ts.methods = newDictionary(execDictionary(y)).d
-            elif y.kind == Dictionary:
-                x.ts.inherits = nil
-                x.ts.methods = y.d
-            else:
-                echo "...based on existing type"
-                x.ts.inherits = copyValue(y)
-                for k,v in y.ts.methods:
-                    x.ts.methods[k] = copyValue(v)
+            #         x.ts.methods["init"] = newFunctionFromDefinition(y.a, initInnerBlock)
+            #     else:
+            #         x.ts.methods = newDictionary(execDictionary(y)).d
+            # elif y.kind == Dictionary:
+            #     x.ts.inherits = nil
+            #     x.ts.methods = y.d
+            # else:
+            #     echo "...based on existing type"
+            #     x.ts.inherits = copyValue(y)
+            #     for k,v in y.ts.methods:
+            #         x.ts.methods[k] = copyValue(v)
 
-            x.ts.prepareMethods()
+            # x.ts.prepareMethods()
 
-            # # setup our object initializer
-            # # via the magic `init` method
-            # if (let initMethod = x.ts.methods.getOrDefault("init", nil); not initMethod.isNil):
-            #     echo "there is an init method!"
-            #     # TODO(Types\define) we should verify that our `init` is properly defined
-            #     #  and if not, throw an appropriate error
-            #     #  mainly, that it's a Function
-            #     #  labels: library, error handling, oop
-            #     initMethod.injectThis()
+            # # # setup our object initializer
+            # # # via the magic `init` method
+            # # if (let initMethod = x.ts.methods.getOrDefault("init", nil); not initMethod.isNil):
+            # #     echo "there is an init method!"
+            # #     # TODO(Types\define) we should verify that our `init` is properly defined
+            # #     #  and if not, throw an appropriate error
+            # #     #  mainly, that it's a Function
+            # #     #  labels: library, error handling, oop
+            # #     initMethod.injectThis()
 
-            #     # inject a reference to the equivalent
-            #     # method from the parent as `super` -
-            #     # if there is one ofc
-            #     #initMethod.injectSuper(x.ts.inherits)
+            # #     # inject a reference to the equivalent
+            # #     # method from the parent as `super` -
+            # #     # if there is one ofc
+            # #     #initMethod.injectSuper(x.ts.inherits)
 
-            #     x.ts.doInit = proc (self: Value, arguments: ValueArray) =
-            #         echo "(in doInit)"
-            #         for arg in arguments.reversed:
-            #             push arg
-            #         push self
-            #         callFunction(initMethod)
+            # #     x.ts.doInit = proc (self: Value, arguments: ValueArray) =
+            # #         echo "(in doInit)"
+            # #         for arg in arguments.reversed:
+            # #             push arg
+            # #         push self
+            # #         callFunction(initMethod)
 
-            # # check if there is a `print` magic method;
-            # # the custom equivalent of the `printable` module
-            # # only for Object values
-            # if (let printMethod = x.ts.methods.getOrDefault("print", nil); not printMethod.isNil):
-            #     # TODO(Types\define) we should verify that our `print` is properly defined
-            #     #  and if not, throw an appropriate error
-            #     #  mainly, that it's a Function with *no* arguments
-            #     #  labels: library, error handling, oop
-            #     printMethod.injectThis()
-            #     x.ts.doPrint = proc (self: Value): string =
-            #         push self
-            #         callFunction(printMethod)
-            #         stack.pop().s
+            # # # check if there is a `print` magic method;
+            # # # the custom equivalent of the `printable` module
+            # # # only for Object values
+            # # if (let printMethod = x.ts.methods.getOrDefault("print", nil); not printMethod.isNil):
+            # #     # TODO(Types\define) we should verify that our `print` is properly defined
+            # #     #  and if not, throw an appropriate error
+            # #     #  mainly, that it's a Function with *no* arguments
+            # #     #  labels: library, error handling, oop
+            # #     printMethod.injectThis()
+            # #     x.ts.doPrint = proc (self: Value): string =
+            # #         push self
+            # #         callFunction(printMethod)
+            # #         stack.pop().s
 
-            # # check if there is a `compare` magic method;
-            # # this is to be used for sorting, etc
-            # if (let compareMethod = x.ts.methods.getOrDefault("compare", nil); not compareMethod.isNil):
-            #     # TODO(Types\define) we should verify that our `compare` is properly defined
-            #     #  and if not, throw an appropriate error
-            #     #  mainly, that it's a Function with one argument
-            #     #  labels: library, error handling, oop
-            #     compareMethod.injectThis()
-            #     x.ts.doCompare = proc (self: Value, other: Value): int =
-            #         push other
-            #         push self
-            #         callFunction(compareMethod)
-            #         stack.pop().i
+            # # # check if there is a `compare` magic method;
+            # # # this is to be used for sorting, etc
+            # # if (let compareMethod = x.ts.methods.getOrDefault("compare", nil); not compareMethod.isNil):
+            # #     # TODO(Types\define) we should verify that our `compare` is properly defined
+            # #     #  and if not, throw an appropriate error
+            # #     #  mainly, that it's a Function with one argument
+            # #     #  labels: library, error handling, oop
+            # #     compareMethod.injectThis()
+            # #     x.ts.doCompare = proc (self: Value, other: Value): int =
+            # #         push other
+            # #         push self
+            # #         callFunction(compareMethod)
+            # #         stack.pop().i
 
-            for k,v in pairs(x.ts.methods):
-                echo "------------"
-                echo k
-                echo "------------"
-                dump(v)
+            # for k,v in pairs(x.ts.methods):
+            #     echo "------------"
+            #     echo k
+            #     echo "------------"
+            #     dump(v)
 
     builtin "is",
         alias       = unaliased,
@@ -235,21 +263,27 @@ proc defineLibrary*() =
         example     = """
         """:
             #=======================================================
-            # Get our defined methods
+            # Get our defined fields & methods
             # as a dictionary
-            var definedMethods: ValueDict
+            var definitions: ValueDict = newOrderedTable[string,Value]()
+            var extra: ValueDict
+
+            if x.tpKind == UserType:
+                # TODO(Types\is) we should check if type is initialized
+                #  labels: error handling,enhancement
+                for k,v in x.ts.content:
+                    definitions[k] = v
+
             if y.kind == Block:
-                definedMethods = newDictionary(execDictionary(y)).d
+                extra = newDictionary(execDictionary(y)).d
             else:
-                definedMethods = y.d
 
-            var generated = newUserType(x.ts.name, extended=true)
-            generated.ts.inherits = copyValue(x)
+                extra = y.d
 
-            for k,v in definedMethods:
-                generated.ts.methods[k] = v
+            for k,v in extra:
+                definitions[k] = v
 
-            push(generated)
+            push newUserTypeExtension(definitions, x)
 
     # TODO(Types\to) revise attributes
     #  the attributes to this function seem to me a bit confusing. I mean, `to` is
