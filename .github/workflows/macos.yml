@@ -71,7 +71,7 @@ jobs:
           
       - name: Build Arturo
         run: |
-          echo "$HOME/.arturo/bin" >> $GITHUB_PATH
+          echo "./bin" >> $GITHUB_PATH
           ./build.nims build --mode ${{ matrix.version }} --log
           
       - name: Upload Artifacts
