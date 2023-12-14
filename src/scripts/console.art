@@ -36,8 +36,9 @@ loop symbols [k,v][
 historyPath: join.path @[path\home ".arturo" "history.lst"]
 
 ; set all packager-related operations as verbose
-
-__VerbosePackager
+if sys\release = 'full [
+    __VerbosePackager
+]
 
 ; helpers & templates
 
