@@ -84,8 +84,6 @@ jobs:
         if: matrix.version == 'full'
         run: |
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
-          arturo -p list
-          arturo -p install dummy
           arturo tools/tester.art
 
       - name: Run unit tests (mini)
