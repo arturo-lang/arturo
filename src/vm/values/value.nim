@@ -110,7 +110,7 @@ let
 #=======================================
 
 var 
-    TypeLookup = initOrderedTable[string,Value]()
+    TypeLookup = initOrderedTable[string,Prototype]()
 
     # global action references
     DoAdd*, DoSub*, DoMul*, DoDiv*, DoFdiv*, DoMod*, DoPow*                 : BuiltinAction
@@ -325,26 +325,42 @@ func newType*(t: ValueKind): Value {.inline, enforceNoRaises.} =
     ## create Type (BuiltinType) value from ValueKind
     Value(kind: Type, tpKind: BuiltinType, t: t)
 
-proc newUserType*(n: string): Value {.inline.} =
-    ## create Type (UserType) value from string
-    echo "newUserType -> " & n
-    if (let lookup = TypeLookup.getOrDefault(n, nil); not lookup.isNil):
-        echo "found type"
-        for k in keys(TypeLookup):
-            echo "- " & k
-        return lookup
-    else:
-        echo "creating type"
-        result = Value(kind: Type, tpKind: UserType, t: Object, ts: Prototype(name: n, content: initOrderedTable[string,Value](), inherits: nil, initialized: false))
-        TypeLookup[n] = result
+# proc newUserType*(n: string): Value {.inline.} =
+#     ## create Type (UserType) value from string
+#     echo "newUserType -> " & n
+#     if (let lookup = TypeLookup.getOrDefault(n, nil); not lookup.isNil):
+#         echo "found type"
+#         for k in keys(TypeLookup):
+#             echo "- " & k
+#         echo "what we found: " & lookup.ts.name
+#         return lookup
+#     else:
+#         echo "creating type"
+#         result = Value(kind: Type, tpKind: UserType, t: Object, ts: Prototype(name: n, content: initOrderedTable[string,Value](), inherits: nil, initialized: false))
+#         echo "- with name: " & n
+#         TypeLookup[n] = result
+#         echo "- name @ TL: " & TypeLookup[n].ts.name
 
-proc newUserTypeExtension*(content: ValueDict, inherits: Value): Value {.inline.} =
-    Value(kind: Type, tpKind: UserType, t: Object, ts: Prototype(
-        name: "_",
-        content: content,
-        inherits: inherits,
-        initialized: false
-    ))
+# proc newUserTypeExtension*(content: ValueDict, inherits: Value): Value {.inline.} =
+#     Value(kind: Type, tpKind: UserType, t: Object, ts: Prototype(
+#         name: "_",
+#         content: content,
+#         inherits: inherits,
+#         initialized: false
+#     ))
+
+proc setUserType*(tid: string, proto: Prototype = nil) {.inline.} =
+    if proto.isNil:
+        discard TypeLookup.hasKeyOrPut(tid, nil)
+    else:
+        TypeLookup[tid] = proto
+
+proc getUserType*(tid: string): Prototype {.inline.} =
+    return TypeLookup[tid]
+
+proc newUserType*(tid: string, proto: Prototype = nil): Value {.inline.} =
+    setUserType(tid, proto)
+    Value(kind: Type, tpKind: UserType, tid: tid)
 
 proc newType*(t: string): Value {.inline.} =
     ## create Type value from string
@@ -814,8 +830,8 @@ proc copyValue*(v: Value): Value {.inline.} =
             if likely(v.tpKind==BuiltinType):
                 result = newType(v.t)
             else:
-                result = newUserTypeExtension(v.ts.content[], copyValue(v.ts.inherits))
-                result.ts.name = v.ts.name
+                result = newUserType(v.tid)#TypeExtension(v.ts.content[], copyValue(v.ts.inherits))
+                #result.ts.name = v.ts.name
         of Char:            result = newChar(v.c)
 
         of String:          result = newString(v.s)
@@ -984,7 +1000,7 @@ func consideredEqual*(x: Value, y: Value): bool {.inline,enforceNoRaises.} =
             if x.tpKind==BuiltinType:
                 return x.t == y.t
             else:
-                return x.ts.name == y.ts.name
+                return x.tid == y.tid
         of Char: return x.c == y.c
         of Symbol,
            SymbolLiteral: return x.m == y.m
@@ -1055,7 +1071,10 @@ func hash*(v: Value): Hash {.inline.}=
             result = result !& cast[Hash](v.minor)
             result = result !& cast[Hash](v.patch)
             result = result !& hash(v.extra)
-        of Type         : result = result !& cast[Hash](ord(v.t))
+        of Type         : 
+            result = result !& hash(v.tpKind)
+            result = result !& cast[Hash](ord(v.t))
+            result = result !& hash(v.tid)   
         of Char         : result = result !& cast[Hash](ord(v.c))
         of String       : result = result !& hash(v.s)
         

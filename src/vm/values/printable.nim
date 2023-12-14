@@ -57,7 +57,7 @@ proc valueKind*(v: Value, withBigInfo: static bool = false): string {.inline.} =
         if v.tpKind==BuiltinType:
             result = stringify(v.t)
         else:
-            result = ":" & v.ts.name
+            result = ":" & v.tid#s.name
     else:
         result = stringify(v.kind)
         when withBigInfo:
@@ -251,7 +251,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
             if v.tpKind==BuiltinType:
                 dumpPrimitive(($(v.t)).toLowerAscii(), v)
             else:
-                dumpPrimitive(v.ts.name, v)
+                dumpPrimitive(v.tid, v)
         of Char         : dumpPrimitive($(v.c), v)
         of String       : dumpPrimitive(v.s, v)
         
@@ -505,7 +505,7 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
             if v.tpKind==BuiltinType:
                 result &= ":" & ($v.t).toLowerAscii()
             else:
-                result &= ":" & v.ts.name
+                result &= ":" & v.tid
         of Char         : result &= "'" & $(v.c) & "'"
         of String       : 
             if safeStrings:

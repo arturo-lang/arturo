@@ -31,25 +31,26 @@ proc injectThis*(meth: Value) =
         echo "meth.arity is: " & $(meth.arity)
 
 proc injectSuper*(meth: Value, parent: Value) =
-    # TODO(objects/injectSuper) should support `super` in all methods
-    #  right now, it supports it only in `init`
-    #  labels: bug, oop
-    var insertable = @[newLabel("super")]
-    echo "- injecting *super*"
-    if parent.isNil or not parent.ts.content.hasKey("init"):
-        insertable.add(newWord("null"))
-        echo "  .... as `null`"
-    else:
-        echo "  .... as a function"
-        let parentInit = parent.ts.content["init"]
-        insertable.add(@[
-            newWord("function"),
-            newBlock(parentInit.params.filter(proc (zz: string): bool = zz != "this").map(proc (zz: string): Value = newWord(zz))),
-            parentInit.main,
-            newWord("do"),
-            newSymbol(doublecolon)
-        ])
-    meth.main.a.insert(insertable)
+    discard
+    # # TODO(objects/injectSuper) should support `super` in all methods
+    # #  right now, it supports it only in `init`
+    # #  labels: bug, oop
+    # var insertable = @[newLabel("super")]
+    # echo "- injecting *super*"
+    # if parent.isNil or not parent.ts.content.hasKey("init"):
+    #     insertable.add(newWord("null"))
+    #     echo "  .... as `null`"
+    # else:
+    #     echo "  .... as a function"
+    #     let parentInit = parent.ts.content["init"]
+    #     insertable.add(@[
+    #         newWord("function"),
+    #         newBlock(parentInit.params.filter(proc (zz: string): bool = zz != "this").map(proc (zz: string): Value = newWord(zz))),
+    #         parentInit.main,
+    #         newWord("do"),
+    #         newSymbol(doublecolon)
+    #     ])
+    # meth.main.a.insert(insertable)
 
 proc prepareMethods*(proto: Prototype) =
     # setup our object initializer
