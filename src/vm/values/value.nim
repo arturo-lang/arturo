@@ -859,7 +859,7 @@ proc copyValue*(v: Value): Value {.inline.} =
         of Inline:          result = newInline(v.a)
         of Block:       
             if v.data.isNil: 
-                result = Value(kind: Block, a: v.a)
+                result = newBlock(v.a.map((vv)=>copyValue(vv)))
             else:
                 result = newBlock(v.a.map((vv)=>copyValue(vv)), copyValue(v.data))
         of Range:
