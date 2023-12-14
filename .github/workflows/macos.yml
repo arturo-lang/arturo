@@ -73,6 +73,9 @@ jobs:
         run: |
           echo "$HOME/.arturo/bin" >> $GITHUB_PATH
           ./build.nims build --mode ${{ matrix.version }} --log
+          ls ./bin/
+          ls ~/.arturo/
+          ls ~/.arturo/bin/
           
       - name: Upload Artifacts
         uses: 'actions/upload-artifact@v2'
