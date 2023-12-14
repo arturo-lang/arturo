@@ -19,6 +19,9 @@
 # Libraries
 #=======================================
 
+when not defined(WEB):
+    import oids
+
 import algorithm, sequtils, sugar, unicode
 
 import helpers/conversion
@@ -116,13 +119,17 @@ proc defineLibrary*() =
             #=======================================================
             var definitions: ValueDict = newOrderedTable[string,Value]()
 
-            echo "defining: " & x.ts.name
+            echo "defining: " & x.tid
 
-            if x.tpKind == UserType:
-                # TODO(Types\is) we should check if type is initialized
-                #  labels: error handling,enhancement
-                for k,v in x.ts.content:
-                    definitions[k] = v
+            
+
+            # if x.tpKind == UserType:
+            #     # TODO(Types\is) we should check if type is initialized
+            #     #  labels: error handling,enhancement
+            #     for k,v in x.ts.content:
+            #         definitions[k] = v
+
+            var proto: Prototype = Prototype()
 
             if y.kind == Block:
                 definitions = newDictionary(execDictionary(y)).d
@@ -130,15 +137,23 @@ proc defineLibrary*() =
                 for k,v in y.d:
                     definitions[k] = v
             else:
-                x.ts.inherits = y.ts.inherits
-                # TODO(Types\define) check if 3rd parameter is a BuiltinType
-                #  labels: error handling, enhancement
-                for k,v in y.ts.content:
-                    definitions[k] = v
+                echo "yproto: " & y.tid
+                if (let yproto = getUserType(y.tid); not yproto.isNil):
+                    proto.inherits = yproto.inherits
+                    # TODO(Types\define) check if 3rd parameter is a BuiltinType
+                    #  labels: error handling, enhancement
+                    for k,v in yproto.content:
+                        echo "parent proto > " & $(k)
+                        definitions[k] = v
 
-            x.ts.content = definitions
+            proto.content = definitions
 
-            x.ts.initialized = true
+            proto.initialized = true
+
+            for k,v in proto.content:
+                echo "> has " & $(k)
+
+            setUserType(x.tid, proto)
 
             # Important! if we don't empty them forcefully
             # if we re-define a type inside the same piece of code
@@ -271,19 +286,22 @@ proc defineLibrary*() =
             if x.tpKind == UserType:
                 # TODO(Types\is) we should check if type is initialized
                 #  labels: error handling,enhancement
-                for k,v in x.ts.content:
-                    definitions[k] = v
+                if (let xproto = getUserType(x.tid); not xproto.isNil):
+                    for k,v in xproto.content:
+                        definitions[k] = v
 
             if y.kind == Block:
                 extra = newDictionary(execDictionary(y)).d
             else:
-
                 extra = y.d
 
             for k,v in extra:
                 definitions[k] = v
 
-            push newUserTypeExtension(definitions, x)
+            let newTid = x.tid & "_" & $(genOid())
+            
+            setUserType(newTid, Prototype(content:definitions))
+            push newUserType(newTid)#(definitions, x)
 
     # TODO(Types\to) revise attributes
     #  the attributes to this function seem to me a bit confusing. I mean, `to` is
@@ -678,18 +696,19 @@ proc defineLibrary*() =
         example     = """
         """:
             #=======================================================
-            if yKind != Object:
-                push(VFALSE)
-            else:
-                var currentType = y.proto.inherits
-                var found = false
-                while not currentType.isNil:
-                    if currentType == x:
-                        found = true
-                        break
-                    currentType = currentType.ts.inherits
+            discard
+            # if yKind != Object:
+            #     push(VFALSE)
+            # else:
+            #     var currentType = y.proto.inherits
+            #     var found = false
+            #     while not currentType.isNil:
+            #         if currentType == x:
+            #             found = true
+            #             break
+            #         currentType = currentType.ts.inherits
                 
-                push(newLogical(found)) 
+            #     push(newLogical(found)) 
 
     builtin "inline?",
         alias       = unaliased, 
@@ -789,7 +808,7 @@ proc defineLibrary*() =
                     if x.tpKind == BuiltinType:
                         push(newLogical(x == newType(y.proto.name)))
                     else:
-                        push(newLogical(x.ts.name == y.proto.name))
+                        push(newLogical(x.tid == y.tid))
 
     builtin "floating?",
         alias       = unaliased, 
