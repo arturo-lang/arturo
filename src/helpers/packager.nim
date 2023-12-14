@@ -296,7 +296,7 @@ proc downloadPackageSourceInto*(url: string, target: string) =
     let actualFolder = TmpFolder.fmt / actualSubFolder
     createDir(target) # make sure the path (and all subdirs) exist
     moveDir(actualFolder, target)
-    discard tryRemoveFile(PackageTmpZip.fmt)
+    echo tryRemoveFile(PackageTmpZip.fmt)
 
     ShowSuccess()
 
