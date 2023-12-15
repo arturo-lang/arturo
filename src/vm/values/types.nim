@@ -295,11 +295,24 @@ type
     FuncObj = typeof(VFunction()[])
 
 #=======================================
+# Constants
+#=======================================
+
+const
+    RootObjectName = "object"
+
+let 
+    ObjectPrototype* = Prototype(name: RootObjectName)
+    ObjectType* = Value(kind: Type, tpKind: UserType, tid: RootObjectName)
+
+#=======================================
 # Variables
 #=======================================
 
 var
-    TypeLookup = initOrderedTable[string,Prototype]()
+    TypeLookup*: OrderedTable[string,Prototype] = {
+        RootObjectName: ObjectPrototype
+    }.toOrderedTable
 
 #=======================================
 # Benchmarking
