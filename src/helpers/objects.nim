@@ -22,7 +22,7 @@ import vm/[exec, stack]
 #=======================================
 
 proc generatedInit*(params: ValueArray): Value =
-    if params.all((x) => x.kind in {Word, Literal, String, Type}):
+    if params.len > 0 and params.all((x) => x.kind in {Word, Literal, String, Type}):
         let initBody = newBlock()
         for val in params:
             if val.kind in {Word, Literal, String}:
