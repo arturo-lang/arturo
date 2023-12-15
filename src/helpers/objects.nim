@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import algorithm, sequtils, tables
+import algorithm, sequtils, sugar, tables
     
 import vm/values/value
 import vm/values/custom/[vsymbol]
@@ -20,6 +20,20 @@ import vm/[exec, stack]
 #=======================================
 # Methods
 #=======================================
+
+proc generatedInit*(params: ValueArray): Value =
+    if params.all((x) => x.kind in {Word, Literal, String, Type}):
+        let initBody = newBlock()
+        for val in params:
+            if val.kind in {Word, Literal, String}:
+                initBody.a.add(@[
+                    newPathLabel(@[newWord("this"), newWord(val.s)]),
+                    newWord(val.s)
+                ])
+
+        return newFunctionFromDefinition(params, initBody)
+    
+    return nil
 
 proc injectThis*(meth: Value) =
     if meth.params.len < 1 or meth.params[0] != "this":
