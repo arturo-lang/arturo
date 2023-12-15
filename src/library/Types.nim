@@ -118,7 +118,7 @@ proc defineLibrary*() =
         """:
             #=======================================================
             var definitions: ValueDict = newOrderedTable[string,Value]()
-            var inherits: Value = nil
+            var inherits: Value = ObjectType
 
             if y.kind == Block:
                 if (let initMethod = generatedInit(y.a); not initMethod.isNil):
@@ -147,6 +147,12 @@ proc defineLibrary*() =
                     discard
 
             setType(x.tid, newPrototype(x.tid, definitions, inherits))
+
+            push newDictionary({
+                "name": newString(x.tid),
+                "definitions": newDictionary(definitions),
+                "inherits": inherits
+            }.toOrderedTable)
 
             # Important! if we don't empty them forcefully
             # if we re-define a type inside the same piece of code
@@ -275,7 +281,7 @@ proc defineLibrary*() =
             # as a dictionary
             var definitions: ValueDict = newOrderedTable[string,Value]()
             var extra: ValueDict
-            var inherits: Value
+            var inherits: Value = ObjectType
 
             if x.tpKind == UserType:
                 if (let xproto = getType(x.tid); not xproto.isNil):
