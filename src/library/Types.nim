@@ -138,7 +138,7 @@ proc defineLibrary*() =
                     definitions[k] = v
             else:
                 echo "yproto: " & y.tid
-                if (let yproto = getUserType(y.tid); not yproto.isNil):
+                if (let yproto = getType(y.tid); not yproto.isNil):
                     proto.inherits = yproto.inherits
                     # TODO(Types\define) check if 3rd parameter is a BuiltinType
                     #  labels: error handling, enhancement
@@ -153,7 +153,7 @@ proc defineLibrary*() =
             for k,v in proto.content:
                 echo "> has " & $(k)
 
-            setUserType(x.tid, proto)
+            setType(x.tid, proto)
 
             # Important! if we don't empty them forcefully
             # if we re-define a type inside the same piece of code
@@ -286,7 +286,7 @@ proc defineLibrary*() =
             if x.tpKind == UserType:
                 # TODO(Types\is) we should check if type is initialized
                 #  labels: error handling,enhancement
-                if (let xproto = getUserType(x.tid); not xproto.isNil):
+                if (let xproto = getType(x.tid); not xproto.isNil):
                     for k,v in xproto.content:
                         definitions[k] = v
 
@@ -300,7 +300,7 @@ proc defineLibrary*() =
 
             let newTid = x.tid & "_" & $(genOid())
             
-            setUserType(newTid, Prototype(content:definitions))
+            setType(newTid, Prototype(content:definitions))
             push newUserType(newTid)#(definitions, x)
 
     # TODO(Types\to) revise attributes

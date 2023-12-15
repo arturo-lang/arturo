@@ -110,8 +110,6 @@ let
 #=======================================
 
 var 
-    TypeLookup = initOrderedTable[string,Prototype]()
-
     # global action references
     DoAdd*, DoSub*, DoMul*, DoDiv*, DoFdiv*, DoMod*, DoPow*                 : BuiltinAction
     DoNeg*, DoInc*, DoDec*                                                  : BuiltinAction
@@ -349,17 +347,8 @@ func newType*(t: ValueKind): Value {.inline, enforceNoRaises.} =
 #         initialized: false
 #     ))
 
-proc setUserType*(tid: string, proto: Prototype = nil) {.inline.} =
-    if proto.isNil:
-        discard TypeLookup.hasKeyOrPut(tid, nil)
-    else:
-        TypeLookup[tid] = proto
-
-proc getUserType*(tid: string): Prototype {.inline.} =
-    return TypeLookup[tid]
-
 proc newUserType*(tid: string, proto: Prototype = nil): Value {.inline.} =
-    setUserType(tid, proto)
+    setType(tid, proto)
     Value(kind: Type, tpKind: UserType, tid: tid)
 
 proc newType*(t: string): Value {.inline.} =
