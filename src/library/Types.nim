@@ -295,7 +295,10 @@ proc defineLibrary*() =
                 discard
 
             if y.kind == Block:
-                extra = newDictionary(execDictionary(y)).d
+                if (let initMethod = generatedInit(y.a); not initMethod.isNil):
+                    extra["init"] = initMethod
+                else:
+                    extra = newDictionary(execDictionary(y)).d
             else:
                 for k,v in y.d:
                     extra[k] = v
