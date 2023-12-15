@@ -421,3 +421,6 @@ proc setType*(tid: string, proto: Prototype = nil) {.inline.} =
 
 proc getType*(tid: string): Prototype {.inline.} =
     return TypeLookup[tid]
+
+proc newPrototype*(name: string, content: ValueDict, inherits: Value = nil): Prototype {.inline.} =
+    Prototype(name: name, content: content, inherits: inherits)
