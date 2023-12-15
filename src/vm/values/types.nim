@@ -295,7 +295,17 @@ type
     ValueObj = typeof(Value()[])
     FuncObj = typeof(VFunction()[])
 
+#=======================================
+# Variables
+#=======================================
+
+var
+    TypeLookup = initOrderedTable[string,Prototype]()
+
+#=======================================
 # Benchmarking
+#=======================================
+
 {.hints: on.} # Apparently we cannot disable just `Name` hints?
 {.hint: "Value's inner type is currently " & $sizeof(ValueObj) & ".".}
 {.hint: "Function's inner type is currently " & $sizeof(FuncObj) & ".".}
@@ -358,7 +368,7 @@ makeAccessor(funcType, action)
 makeAccessor(funcType, op)
 
 #=======================================
-# Methods
+# Helpers
 #=======================================
 
 template getValuePair*(): untyped =
@@ -399,3 +409,16 @@ proc `||`*(va: static[ValueKind | IntegerKind], vb: static[ValueKind | IntegerKi
             result = result or cast[uint32](ord(Integer))
         elif vb == BigInteger:
             result = result or cast[uint32](ord(Integer)) or (1.uint32 shl 15)
+
+#=======================================
+# Methods
+#=======================================
+
+proc setType*(tid: string, proto: Prototype = nil) {.inline.} =
+    if proto.isNil:
+        discard TypeLookup.hasKeyOrPut(tid, nil)
+    else:
+        TypeLookup[tid] = proto
+
+proc getType*(tid: string): Prototype {.inline.} =
+    return TypeLookup[tid]
