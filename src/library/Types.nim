@@ -128,7 +128,7 @@ proc defineLibrary*() =
             else:
                 if y.tpKind == UserType:
                     if (let yproto = getType(y.tid); not yproto.isNil):
-                        inherits = y
+                        inherits = yproto.inherits
                         
                         for k,v in yproto.content:
                             definitions[k] = v
@@ -272,6 +272,23 @@ proc defineLibrary*() =
             # as a dictionary
             var definitions: ValueDict = newOrderedTable[string,Value]()
             var extra: ValueDict
+
+            if x.tpKind == UserType:
+                if (let xproto = getType(x.tid); not xproto.isNil):
+                    inherits = y
+                    
+                    for k,v in yproto.content:
+                        definitions[k] = v
+                else:
+                    # TODO(Types\define) check if inherited type is defined
+                    #  if not we should show an error
+                    #  labels: oop, error handing
+                    discard
+            else:
+                # TODO(Types\define) check if inherited type is a BuiltinType
+                #  how do we handle this?
+                #  labels: error handling, enhancement
+                discard
 
             if x.tpKind == UserType:
                 # TODO(Types\is) we should check if type is initialized
