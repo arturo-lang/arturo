@@ -118,18 +118,7 @@ proc defineLibrary*() =
         """:
             #=======================================================
             var definitions: ValueDict = newOrderedTable[string,Value]()
-
-            echo "defining: " & x.tid
-
-            
-
-            # if x.tpKind == UserType:
-            #     # TODO(Types\is) we should check if type is initialized
-            #     #  labels: error handling,enhancement
-            #     for k,v in x.ts.content:
-            #         definitions[k] = v
-
-            var proto: Prototype = Prototype()
+            var inherits: Value = nil
 
             if y.kind == Block:
                 definitions = newDictionary(execDictionary(y)).d
@@ -137,23 +126,24 @@ proc defineLibrary*() =
                 for k,v in y.d:
                     definitions[k] = v
             else:
-                echo "yproto: " & y.tid
-                if (let yproto = getType(y.tid); not yproto.isNil):
-                    proto.inherits = yproto.inherits
-                    # TODO(Types\define) check if 3rd parameter is a BuiltinType
+                if y.tpKind == UserType:
+                    if (let yproto = getType(y.tid); not yproto.isNil):
+                        inherits = y
+                        
+                        for k,v in yproto.content:
+                            definitions[k] = v
+                    else:
+                        # TODO(Types\define) check if inherited type is defined
+                        #  if not we should show an error
+                        #  labels: oop, error handing
+                        discard
+                else:
+                    # TODO(Types\define) check if inherited type is a BuiltinType
+                    #  how do we handle this?
                     #  labels: error handling, enhancement
-                    for k,v in yproto.content:
-                        echo "parent proto > " & $(k)
-                        definitions[k] = v
+                    discard
 
-            proto.content = definitions
-
-            proto.initialized = true
-
-            for k,v in proto.content:
-                echo "> has " & $(k)
-
-            setType(x.tid, proto)
+            setType(x.tid, newPrototype(x.tid, definitions, inherits))
 
             # Important! if we don't empty them forcefully
             # if we re-define a type inside the same piece of code
