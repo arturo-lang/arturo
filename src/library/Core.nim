@@ -29,7 +29,8 @@ import helpers/datasource
 when not defined(WEB):
     import os
     import helpers/ffi
-    import helpers/packager
+    when not defined(MINI):
+        import helpers/packager
 
 import vm/lib
 import vm/[env, errors, eval, exec, parse]
@@ -631,128 +632,166 @@ proc defineLibrary*() =
             if condition: 
                 execUnscoped(y)
 
-    # TODO(Core\__VerbosePackager) Find an elegant way to inject hidden functions
-    #  labels: library, enhancement, cleanup
-    builtin "__VerbosePackager",
+    builtin "if?",
         alias       = unaliased, 
-        op          = opNop,
+        op          = opIfE,
         rule        = PrefixPrecedence,
-        description = "",
-        args        = NoArgs,
-        attrs       = NoAttrs,
-        returns     = {Nothing,Dictionary,Block},
-        example     = """
-        """:
-            #=======================================================
-            VerbosePackager = true
-
-    # TODO(Core\import) `.lean` not always working properly
-    #  basically, if you make 2 imports of the same package, one `.lean` and another normal one
-    #  the 2nd one breaks. Does it have to do with our `execDictionary`?
-    #  labels: library, bug, unit-test
-    builtin "import",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "import given package",
+        description = "perform action, if given condition is not false or null and return condition result",
         args        = {
-            "package"   : {String,Literal,Block}
+            "condition" : {Any},
+            "action"    : {Block}
         },
-        attrs       = {
-            "version"   : ({Version},"specify package version"),
-            "min"       : ({Logical},"get any version >= the specified one"),
-            "branch"    : ({String,Literal},"use specific branch for repository url (default: main)"),
-            "latest"    : ({Logical},"always check for the latest version available"),
-            "lean"      : ({Logical},"return as a dictionary, instead of importing in main namespace"),
-            "verbose"   : ({Logical},"output extra information")
-        },
-        returns     = {Nothing,Dictionary,Block},
+        attrs       = NoAttrs,
+        returns     = {Logical},
         example     = """
-            import "dummy"                      ; import the package 'dummy'
-            do ::
-                print dummyFunc 10              ; and use it :)
+            x: 2
+            
+            result: if? x=2 -> print "yes, that's right!"
+            ; yes, that's right!
+            
+            print result
+            ; true
             ..........
-            import.version:0.0.3 "dummy"        ; import a specific version
-
-            import.min.version:0.0.3 "dummy"    ; import at least the give version;
-                                                ; if there is a newer one, it will pull this one
-            ..........
-            import.latest "dummy"               ; whether we already have the package or not
-                                                ; always try to pull the latest version
-            ..........
-            import "https://github.com/arturo-lang/dummy-package"
-            ; we may also import user repositories directly
-
-            import.branch:"main" "https://github.com/arturo-lang/dummy-package"
-            ; even specifying the branch to pull
-            ..........
-            import "somefile.art"               ; importing a local file is possible
-
-            import "somepackage"                ; the same works if we have a folder that
-                                                ; is actually structured like a package
-            ..........
-            d: import.lean "dummy"              ; importing a package as a dictionary
-                                                ; for better namespace isolation
-
-            do [
-                print d\dummyFunc 10            ; works fine :)
+            x: 2
+            z: 3
+            
+            if? x>z [
+                print "x was greater than z"
+            ]
+            else [
+                print "nope, x was not greater than z"
             ]
         """:
             #=======================================================
-            var verspec = (true, NoPackageVersion)
-            var branch = "main"
-            let latest = hadAttr("latest")
-            let verbose = hadAttr("verbose")
-            let lean = hadAttr("lean")
-            
-            var pkgs: seq[string]
-            if xKind in {String, Literal}:
-                pkgs.add(x.s)
-            else:
-                pkgs = x.a.map((p)=>p.s)
+            let condition = not (xKind==Null or isFalse(x))
+            if condition: 
+                execUnscoped(y)
 
-            let multiple = pkgs.len > 1
-            
-            if checkAttr("version"):
-                verspec = (hadAttr("min"), aVersion.version)
+            push(newLogical(condition))
 
-            if checkAttr("branch"):
-                branch = aBranch.s
-
-            let verboseBefore = VerbosePackager
-            if verbose:
+    when not defined(MINI):
+        # TODO(Core/__VerbosePackager) Find an elegant way to inject hidden functions
+        #  labels: library, enhancement, cleanup
+        builtin "__VerbosePackager",
+            alias       = unaliased, 
+            op          = opNop,
+            rule        = PrefixPrecedence,
+            description = "",
+            args        = NoArgs,
+            attrs       = NoAttrs,
+            returns     = {Nothing,Dictionary,Block},
+            example     = """
+            """:
+                #=======================================================
                 VerbosePackager = true
 
-            var ret: ValueArray
+        # TODO(Core/import) `.lean` not always working properly
+        #  basically, if you make 2 imports of the same package, one `.lean` and another normal one
+        #  the 2nd one breaks. Does it have to do with our `execDictionary`?
+        #  labels: library, bug, unit-test
+        builtin "import",
+            alias       = unaliased, 
+            op          = opNop,
+            rule        = PrefixPrecedence,
+            description = "import given package",
+            args        = {
+                "package"   : {String,Literal,Block}
+            },
+            attrs       = {
+                "version"   : ({Version},"specify package version"),
+                "min"       : ({Logical},"get any version >= the specified one"),
+                "branch"    : ({String,Literal},"use specific branch for repository url (default: main)"),
+                "latest"    : ({Logical},"always check for the latest version available"),
+                "lean"      : ({Logical},"return as a dictionary, instead of importing in main namespace"),
+                "verbose"   : ({Logical},"output extra information")
+            },
+            returns     = {Nothing,Dictionary,Block},
+            example     = """
+                import "dummy"                      ; import the package 'dummy'
+                do ::
+                    print dummyFunc 10              ; and use it :)
+                ..........
+                import.version:0.0.3 "dummy"        ; import a specific version
 
-            for pkg in pkgs:
-                if (let res = getEntryForPackage(pkg, verspec, branch, latest); res.isSome):
-                    let src = res.get()
+                import.min.version:0.0.3 "dummy"    ; import at least the give version;
+                                                    ; if there is a newer one, it will pull this one
+                ..........
+                import.latest "dummy"               ; whether we already have the package or not
+                                                    ; always try to pull the latest version
+                ..........
+                import "https://github.com/arturo-lang/dummy-package"
+                ; we may also import user repositories directly
 
-                    if not src.fileExists():
-                        RuntimeError_PackageNotValid(pkg)
+                import.branch:"main" "https://github.com/arturo-lang/dummy-package"
+                ; even specifying the branch to pull
+                ..........
+                import "somefile.art"               ; importing a local file is possible
 
-                    addPath(src)
+                import "somepackage"                ; the same works if we have a folder that
+                                                    ; is actually structured like a package
+                ..........
+                d: import.lean "dummy"              ; importing a package as a dictionary
+                                                    ; for better namespace isolation
 
-                    if not lean:
-                        let parsed = doParse(src, isFile=true)
-                        if not parsed.isNil:
-                            execUnscoped(parsed)
-                    else:
-                        let got = execDictionary(doParse(src, isFile=true))
-                        if multiple:
-                            ret.add(newDictionary(got))
-                        else:
-                            push(newDictionary(got))
-
-                    discard popPath()              
+                do [
+                    print d\dummyFunc 10            ; works fine :)
+                ]
+            """:
+                #=======================================================
+                var verspec = (true, NoPackageVersion)
+                var branch = "main"
+                let latest = hadAttr("latest")
+                let verbose = hadAttr("verbose")
+                let lean = hadAttr("lean")
+                
+                var pkgs: seq[string]
+                if xKind in {String, Literal}:
+                    pkgs.add(x.s)
                 else:
-                    RuntimeError_PackageNotFound(pkg)
+                    pkgs = x.a.map((p)=>p.s)
 
-            VerbosePackager = verboseBefore
+                let multiple = pkgs.len > 1
+                
+                if checkAttr("version"):
+                    verspec = (hadAttr("min"), aVersion.version)
 
-            if multiple:
-                push(newBlock(ret))
+                if checkAttr("branch"):
+                    branch = aBranch.s
+
+                let verboseBefore = VerbosePackager
+                if verbose:
+                    VerbosePackager = true
+
+                var ret: ValueArray
+
+                for pkg in pkgs:
+                    if (let res = getEntryForPackage(pkg, verspec, branch, latest); res.isSome):
+                        let src = res.get()
+
+                        if not src.fileExists():
+                            RuntimeError_PackageNotValid(pkg)
+
+                        addPath(src)
+
+                        if not lean:
+                            let parsed = doParse(src, isFile=true)
+                            if not parsed.isNil:
+                                execUnscoped(parsed)
+                        else:
+                            let got = execDictionary(doParse(src, isFile=true))
+                            if multiple:
+                                ret.add(newDictionary(got))
+                            else:
+                                push(newDictionary(got))
+
+                        discard popPath()              
+                    else:
+                        RuntimeError_PackageNotFound(pkg)
+
+                VerbosePackager = verboseBefore
+
+                if multiple:
+                    push(newBlock(ret))
 
     # TODO(Core\let) block assignments should properly handle readonly Values
     #  In a few words: we should make sure that `[a b]: [1 2]` is the same as 
