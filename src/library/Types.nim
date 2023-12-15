@@ -272,43 +272,38 @@ proc defineLibrary*() =
             # as a dictionary
             var definitions: ValueDict = newOrderedTable[string,Value]()
             var extra: ValueDict
+            var inherits: Value
 
             if x.tpKind == UserType:
                 if (let xproto = getType(x.tid); not xproto.isNil):
-                    inherits = y
+                    inherits = x
                     
-                    for k,v in yproto.content:
+                    for k,v in xproto.content:
                         definitions[k] = v
                 else:
-                    # TODO(Types\define) check if inherited type is defined
+                    # TODO(Types\is) check if inherited type is defined
                     #  if not we should show an error
                     #  labels: oop, error handing
                     discard
             else:
-                # TODO(Types\define) check if inherited type is a BuiltinType
+                # TODO(Types\is) check if inherited type is a BuiltinType
                 #  how do we handle this?
                 #  labels: error handling, enhancement
                 discard
 
-            if x.tpKind == UserType:
-                # TODO(Types\is) we should check if type is initialized
-                #  labels: error handling,enhancement
-                if (let xproto = getType(x.tid); not xproto.isNil):
-                    for k,v in xproto.content:
-                        definitions[k] = v
-
             if y.kind == Block:
                 extra = newDictionary(execDictionary(y)).d
             else:
-                extra = y.d
+                for k,v in y.d:
+                    extra[k] = v
 
             for k,v in extra:
                 definitions[k] = v
 
-            let newTid = x.tid & "_" & $(genOid())
+            let tmpTid = x.tid & "_" & $(genOid())
+            setType(tmpTid, newPrototype("_" & x.tid, definitions, inherits))
             
-            setType(newTid, Prototype(content:definitions))
-            push newUserType(newTid)#(definitions, x)
+            push newUserType(tmpTid)
 
     # TODO(Types\to) revise attributes
     #  the attributes to this function seem to me a bit confusing. I mean, `to` is
