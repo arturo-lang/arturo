@@ -301,18 +301,12 @@ type
 const
     RootObjectName = "object"
 
-let 
-    ObjectPrototype* = Prototype(name: RootObjectName)
-    ObjectType* = Value(kind: Type, tpKind: UserType, tid: RootObjectName)
-
 #=======================================
 # Variables
 #=======================================
 
 var
-    TypeLookup*: OrderedTable[string,Prototype] = {
-        RootObjectName: ObjectPrototype
-    }.toOrderedTable
+    TypeLookup*: OrderedTable[string,Prototype]
 
 #=======================================
 # Benchmarking
