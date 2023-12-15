@@ -121,7 +121,10 @@ proc defineLibrary*() =
             var inherits: Value = nil
 
             if y.kind == Block:
-                definitions = newDictionary(execDictionary(y)).d
+                if (let initMethod = generatedInit(y.a); not initMethod.isNil):
+                    definitions["init"] = initMethod
+                else:
+                    definitions = newDictionary(execDictionary(y)).d
             elif y.kind == Dictionary:
                 for k,v in y.d:
                     definitions[k] = v
@@ -302,7 +305,7 @@ proc defineLibrary*() =
 
             let tmpTid = x.tid & "_" & $(genOid())
             setType(tmpTid, newPrototype("_" & x.tid, definitions, inherits))
-            
+
             push newUserType(tmpTid)
 
     # TODO(Types\to) revise attributes
