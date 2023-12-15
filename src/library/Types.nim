@@ -118,7 +118,7 @@ proc defineLibrary*() =
         """:
             #=======================================================
             var definitions: ValueDict = newOrderedTable[string,Value]()
-            var inherits: Value = ObjectType
+            var inherits: Value = VNULL
 
             if y.kind == Block:
                 if (let initMethod = generatedInit(y.a); not initMethod.isNil):
@@ -281,7 +281,7 @@ proc defineLibrary*() =
             # as a dictionary
             var definitions: ValueDict = newOrderedTable[string,Value]()
             var extra: ValueDict
-            var inherits: Value = ObjectType
+            var inherits: Value = VNULL
 
             if x.tpKind == UserType:
                 if (let xproto = getType(x.tid); not xproto.isNil):
