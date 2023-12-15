@@ -141,7 +141,6 @@ type
         name*           : string
         content*        : ValueDict
         inherits*       : Value
-        initialized*    : bool
 
     MagicMethods* = ref object
         doPrint*    : proc (v:Value): string
