@@ -21,7 +21,7 @@ import vm/[exec, stack]
 # Methods
 #=======================================
 
-proc generatedInit*(params: ValueArray): Value =
+func generatedInit*(params: ValueArray): Value {.inline.} =
     if params.len > 0 and params.all((x) => x.kind in {Word, Literal, String, Type}):
         let initBody = newBlock()
         for val in params:
@@ -35,7 +35,7 @@ proc generatedInit*(params: ValueArray): Value =
     
     return nil
 
-proc generatedCompare*(key: Value): Value =
+func generatedCompare*(key: Value): Value {.inline.} =
     let compareBody = newBlock(@[
         newWord("if"), newPath(@[newWord("this"), key]), newSymbol(greaterthan), newPath(@[newWord("that"), key]), newBlock(@[newWord("return"),newInteger(1)]),
         newWord("if"), newPath(@[newWord("this"), key]), newSymbol(equal), newPath(@[newWord("that"), key]), newBlock(@[newWord("return"),newInteger(0)]),
@@ -44,7 +44,7 @@ proc generatedCompare*(key: Value): Value =
 
     return newFunctionFromDefinition(@[newWord("that")], compareBody)
 
-proc getTypeFields*(defs: ValueDict): ValueDict =
+proc getTypeFields*(defs: ValueDict): ValueDict {.inline.} =
     result = newOrderedTable[string,Value]()
 
     if (let initFunction = defs.getOrDefault("init", nil); not initFunction.isNil):
@@ -65,19 +65,28 @@ proc getTypeFields*(defs: ValueDict): ValueDict =
                         result[sublastElement.s] = newBlock(lastElement.a.filter((x) => x.kind == Type))
             i += 2
 
+proc injectingThis*(fun: Value): Value {.inline.} =
+    result = copyValue(fun)
+    if result.params.len < 1 or result.params[0] != "this":
+        result.params.insert("this")
+        result.arity += 1
+
 proc generateNewObject*(pr: Prototype, values: ValueArray): Value =
     result = Value(kind: Object, o:newOrderedTable[string,Value](), proto: pr, magic: MagicMethods())
     for k,v in pr.content:
-        result.o[k] = v
+        if v.kind == Function:
+            result.o[k] = injectingThis(v)
+        else:
+            result.o[k] = copyValue(v)
 
-proc injectThis*(meth: Value) =
-    if meth.params.len < 1 or meth.params[0] != "this":
-        echo "meth.arity was was: " & $(meth.arity)
-        echo "- injecting *this*"
-        meth.params.insert("this")
-        echo "meth.arity was: " & $(meth.arity)
-        meth.arity += 1
-        echo "meth.arity is: " & $(meth.arity)
+# proc injectThis*(meth: Value) =
+#     if meth.params.len < 1 or meth.params[0] != "this":
+#         echo "meth.arity was was: " & $(meth.arity)
+#         echo "- injecting *this*"
+#         meth.params.insert("this")
+#         echo "meth.arity was: " & $(meth.arity)
+#         meth.arity += 1
+#         echo "meth.arity is: " & $(meth.arity)
 
 proc injectSuper*(meth: Value, parent: Value) =
     discard
