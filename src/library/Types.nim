@@ -22,7 +22,7 @@
 when not defined(WEB):
     import oids
 
-import algorithm, sequtils, sugar, unicode
+import sequtils, sugar, tables, unicode
 
 import helpers/conversion
 import helpers/objects
@@ -149,12 +149,14 @@ proc defineLibrary*() =
             if checkAttr("sortable"):
                 definitions["compare"] = generatedCompare(aSortable)
 
-            setType(x.tid, newPrototype(x.tid, definitions, inherits))
+            let typeFields = getTypeFields(definitions)
+            setType(x.tid, newPrototype(x.tid, definitions, inherits, typeFields))
 
             push newDictionary({
                 "name": newString(x.tid),
                 "definitions": newDictionary(definitions),
-                "inherits": inherits
+                "inherits": inherits,
+                "fields": newDictionary(typeFields)
             }.toOrderedTable)
 
             # Important! if we don't empty them forcefully
