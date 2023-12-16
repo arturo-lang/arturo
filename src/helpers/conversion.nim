@@ -43,10 +43,10 @@ proc parseFL(s: string): float =
         raise newException(ValueError, "invalid float: " & s)
 
 template throwCannotConvert(): untyped =
-    RuntimeError_CannotConvert(codify(y), $(y.kind), (if x.tpKind==UserType: x.ts.name else: $(x.t)))
+    RuntimeError_CannotConvert(codify(y), $(y.kind), (if x.tpKind==UserType: x.tid else: $(x.t)))
 
 template throwConversionFailed(): untyped =
-    RuntimeError_ConversionFailed(codify(y), $(y.kind), (if x.tpKind==UserType: x.ts.name else: $(x.t)))
+    RuntimeError_ConversionFailed(codify(y), $(y.kind), (if x.tpKind==UserType: x.tid else: $(x.t)))
 
 #=======================================
 # Methods
@@ -364,7 +364,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat:Value = nil): Val
                             let arr: ValueArray = sTopsFrom(stop)
                             SP = stop
 
-                            return generateCustomObject(x.ts, arr)
+                            return generateNewObject(getType(x.tid), arr)
                         else:
                             throwCannotConvert()
 
@@ -440,7 +440,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat:Value = nil): Val
                         return newString($(y))
                     of Object:
                         if x.tpKind==UserType:
-                            return generateCustomObject(x.ts, y.d)
+                            return generateNewObject(getType(x.tid), y.d)
                         else:
                             throwCannotConvert()
                     of Bytecode:

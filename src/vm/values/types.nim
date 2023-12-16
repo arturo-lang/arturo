@@ -138,13 +138,14 @@ type
         name*:       Value
 
     Prototype* = ref object
-        name*       : string
-        fields*     : ValueArray
-        methods*    : ValueDict
-        doInit*     : proc (self:Value, arguments:ValueArray)
+        name*           : string
+        content*        : ValueDict
+        inherits*       : Value
+        fields*         : ValueDict
+
+    MagicMethods* = ref object
         doPrint*    : proc (v:Value): string
         doCompare*  : proc (a,b:Value): int
-        inherits*   : Value
 
     SymbolDict*   = OrderedTable[VSymbol,AliasBinding]
 
@@ -236,7 +237,7 @@ type
             of Type:
                 t*  : ValueKind
                 case tpKind*: TypeKind:
-                    of UserType:    ts* : Prototype
+                    of UserType:    tid* : string
                     of BuiltinType: discard
             of Char:        c*  : Rune
             of String,
@@ -271,8 +272,9 @@ type
                     rng*    : VRange
             of Dictionary:  d*  : ValueDict
             of Object:
-                o*: ValueDict   # fields
-                proto*: Prototype # custom type pointer
+                o*      : ValueDict 
+                proto*  : Prototype 
+                magic*  : MagicMethods
             of Store:
                 sto*: VStore
             of Function:
@@ -293,7 +295,24 @@ type
     ValueObj = typeof(Value()[])
     FuncObj = typeof(VFunction()[])
 
+#=======================================
+# Constants
+#=======================================
+
+const
+    RootObjectName = "object"
+
+#=======================================
+# Variables
+#=======================================
+
+var
+    TypeLookup*: OrderedTable[string,Prototype]
+
+#=======================================
 # Benchmarking
+#=======================================
+
 {.hints: on.} # Apparently we cannot disable just `Name` hints?
 {.hint: "Value's inner type is currently " & $sizeof(ValueObj) & ".".}
 {.hint: "Function's inner type is currently " & $sizeof(FuncObj) & ".".}
@@ -356,7 +375,7 @@ makeAccessor(funcType, action)
 makeAccessor(funcType, op)
 
 #=======================================
-# Methods
+# Helpers
 #=======================================
 
 template getValuePair*(): untyped =
@@ -397,3 +416,19 @@ proc `||`*(va: static[ValueKind | IntegerKind], vb: static[ValueKind | IntegerKi
             result = result or cast[uint32](ord(Integer))
         elif vb == BigInteger:
             result = result or cast[uint32](ord(Integer)) or (1.uint32 shl 15)
+
+#=======================================
+# Methods
+#=======================================
+
+proc setType*(tid: string, proto: Prototype = nil) {.inline.} =
+    if proto.isNil:
+        discard TypeLookup.hasKeyOrPut(tid, nil)
+    else:
+        TypeLookup[tid] = proto
+
+proc getType*(tid: string): Prototype {.inline.} =
+    return TypeLookup[tid]
+
+proc newPrototype*(name: string, content: ValueDict, inherits: Value, fields: ValueDict = newOrderedTable[string,Value]()): Prototype {.inline.} =
+    Prototype(name: name, content: content, inherits: inherits, fields: fields)
