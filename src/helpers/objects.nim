@@ -45,16 +45,23 @@ proc generatedCompare*(key: Value): Value =
     return newFunctionFromDefinition(@[newWord("that")], compareBody)
 
 proc getTypeFields*(defs: ValueDict): ValueDict =
+    echo "in getTypeFields"
     if (let initFunction = defs.getOrDefault("init", nil); not initFunction.isNil):
+        echo "has init function!"
+
         for p in initFunction.params:
             result[p] = newType("any")
 
         let ensureW = newWord("ensure")
 
         var i = 0
-        while i < initFunction.a.len - 1:
-            if (let ensureBlock = initFunction.a[i+1]; initFunction.a[i] == ensureW and ensureBlock.kind == Block):
+        while i < initFunction.main.a.len - 1:
+            echo "testing i: " & $(i)
+            echo "element kind: " & $(init)
+            if (let ensureBlock = initFunction.main.a[i+1]; initFunction.main.a[i] == ensureW and ensureBlock.kind == Block):
+                echo "... and everything is correct, we have an `ensure` and a block"
                 let lastElement = ensureBlock.a[^1]
+                echo "the last element is: " & $(lastElement.kind)
                 if lastElement.kind == Word:
                     if ensureBlock.a[^2].kind == Type:
                         result[lastElement.s] = ensureBlock.a[^2]
