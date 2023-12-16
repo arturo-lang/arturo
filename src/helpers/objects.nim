@@ -136,7 +136,7 @@ proc generateNewObject*(pr: Prototype, values: ValueArray | ValueDict): Value =
 
     if (let comparatorMethod = result.o.getOrDefault(ComparatorField, nil); (not comparatorMethod.isNil) and comparatorMethod.kind == Function):
         result.magic.doCompare = proc (self: Value, other: Value): int =
-            callFunction(comparatorMethod, "\\" * ComparatorField, @[self, other])
+            callFunction(comparatorMethod, "\\" & ComparatorField, @[self, other])
             stack.pop().i
 
 # proc injectThis*(meth: Value) =
