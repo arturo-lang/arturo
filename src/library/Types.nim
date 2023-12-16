@@ -121,8 +121,8 @@ proc defineLibrary*() =
             var inherits: Value = VNULL
 
             if y.kind == Block:
-                if (let initMethod = generatedInit(y.a); not initMethod.isNil):
-                    definitions["init"] = initMethod
+                if (let constructorMethod = generatedConstructor(y.a); not constructorMethod.isNil):
+                    definitions[ConstructorField] = constructorMethod
                 else:
                     definitions = newDictionary(execDictionary(y)).d
             elif y.kind == Dictionary:
@@ -306,8 +306,8 @@ proc defineLibrary*() =
                 discard
 
             if y.kind == Block:
-                if (let initMethod = generatedInit(y.a); not initMethod.isNil):
-                    extra["init"] = initMethod
+                if (let constructorMethod = generatedConstructor(y.a); not constructorMethod.isNil):
+                    extra[ConstructorField] = constructorMethod
                 else:
                     extra = newDictionary(execDictionary(y)).d
             else:
