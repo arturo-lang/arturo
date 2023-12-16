@@ -50,14 +50,15 @@ proc getTypeFields*(defs: ValueDict): ValueDict =
         echo "has init function!"
 
         for p in initFunction.params:
+            echo "processing param: " & p
             result[p] = newType("any")
-
+        echo "after processing params"
         let ensureW = newWord("ensure")
-
+        echo "after ensure"
         var i = 0
         while i < initFunction.main.a.len - 1:
             echo "testing i: " & $(i)
-            echo "element kind: " & $(init)
+            echo "element kind: " & $(initFunction.main.a[i].kind)
             if (let ensureBlock = initFunction.main.a[i+1]; initFunction.main.a[i] == ensureW and ensureBlock.kind == Block):
                 echo "... and everything is correct, we have an `ensure` and a block"
                 let lastElement = ensureBlock.a[^1]
@@ -70,6 +71,7 @@ proc getTypeFields*(defs: ValueDict): ValueDict =
                     if sublastElement.kind == Word and lastElement.a[^2].kind == Type:
                         result[sublastElement.s] = newBlock(lastElement.a.filter((x) => x.kind == Type))
             i += 2
+        echo "after while"
 
 proc injectThis*(meth: Value) =
     if meth.params.len < 1 or meth.params[0] != "this":
