@@ -24,6 +24,7 @@ import vm/[exec, errors, stack]
 let
     ConstructorField*   = "init"
     StringifyField*     = "print"
+    ComparatorField*    = "compare"
 
 #=======================================
 # Helpers
@@ -132,6 +133,11 @@ proc generateNewObject*(pr: Prototype, values: ValueArray | ValueDict): Value =
         result.magic.doPrint = proc (self: Value): string =
             callFunction(stringifyMethod, "\\" & StringifyField, @[self])
             stack.pop().s
+
+    if (let comparatorMethod = result.o.getOrDefault(ComparatorField, nil); (not comparatorMethod.isNil) and comparatorMethod.kind == Function):
+        result.magic.doCompare = proc (self: Value, other: Value): int =
+            callFunction(comparatorMethod, "\\" * ComparatorField, @[self, other])
+            stack.pop().i
 
 # proc injectThis*(meth: Value) =
 #     if meth.params.len < 1 or meth.params[0] != "this":
