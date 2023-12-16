@@ -122,24 +122,36 @@ proc injectingThis*(fun: Value): Value {.inline.} =
         result.arity += 1
 
 proc generateNewObject*(pr: Prototype, values: ValueArray | ValueDict): Value =
+    # create basic object
     result = newObject(pr)
 
+    # migrate all content and 
+    # process internal methods accordingly
     for k,v in pr.content:
         if v.kind == Function:
+            # inject `this`
             result.o[k] = injectingThis(v)
+
+            # check if it's a magic method
             result.processMagicMethods(k)
         else:
             result.o[k] = copyValue(v)
 
+    # verify arguments
     checkArguments(pr, values)
 
+    # and process them accordingly
     var args: ValueArray = @[]
-    
     if not fetchConstructorArguments(pr, values, args):
         when values is ValueDict:
+            # if there is no constructor defined
+            # and we try to initialize the object with a dictionary,
+            # let's just copy the values
             for k,v in values:
                 result.o[k] = v
     
+    # perform initialization 
+    # using the available constructor
     if (let constructorMethod = result.o.getOrDefault(ConstructorField, nil); (not constructorMethod.isNil) and constructorMethod.kind == Function):
         args.insert(result)
         callFunction(constructorMethod, "\\" & ConstructorField, args)
