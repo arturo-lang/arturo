@@ -11,6 +11,7 @@ proc arm64Config() =
     --gcc.linkerexe:"aarch64-linux-gnu-gcc"
     
 proc x86Config() =
+    --verbosity:3
     --cpu:i386 
     --define:bit32
     if defined(gcc): 
@@ -18,6 +19,7 @@ proc x86Config() =
         --passL:"'-m32'"
         
 proc arm32Config() = 
+    --verbosity:3
     --cpu:arm 
     --define:bit32
     
