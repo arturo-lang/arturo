@@ -36,7 +36,7 @@ template checkArguments(pr: Prototype, values: ValueArray | ValueDict) =
         if pr.fields.len != 0 and pr.fields.len != values.len:
             RuntimeError_IncorrectNumberOfArgumentsForInitializer(pr.name, values.len, toSeq(pr.fields.keys))
 
-func fetchConstructorArguments(pr: Prototype, values: ValueArray | ValueDict, args: var ValueArray): bool =
+proc fetchConstructorArguments(pr: Prototype, values: ValueArray | ValueDict, args: var ValueArray): bool =
     result = true
 
     when values is ValueArray:
