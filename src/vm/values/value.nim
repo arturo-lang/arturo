@@ -349,7 +349,7 @@ func newType*(t: ValueKind): Value {.inline, enforceNoRaises.} =
 
 proc newUserType*(tid: string, proto: Prototype = nil): Value {.inline.} =
     setType(tid, proto)
-    Value(kind: Type, tpKind: UserType, tid: tid)
+    Value(kind: Type, tpKind: UserType, t: Object, tid: tid)
 
 proc newType*(t: string): Value {.inline.} =
     ## create Type value from string
