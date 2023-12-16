@@ -95,14 +95,14 @@ proc callFunction*(f: Value, fnName: string, args: ValueArray) =
     ## and execute it with given arguments
     if f.fnKind==UserFunction:
         hookProcProfiler("exec/callFunction:user"):
-            if unlikely(SP < f.arity):
-                RuntimeError_NotEnoughArguments(fnName, f.arity)
-
             var safeToProceed = true
             for arg in args.reversed:
                 push arg
                 if arg.kind == Function:
                     safeToProceed = false
+
+            if unlikely(SP < f.arity):
+                RuntimeError_NotEnoughArguments(fnName, f.arity)
 
             if f.inline: 
                 if safeToProceed: execFunctionInline(f, hash(fnName))
