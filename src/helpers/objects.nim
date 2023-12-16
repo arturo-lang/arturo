@@ -10,18 +10,25 @@
 # Libraries
 #=======================================
 
-import algorithm, std/enumerate, sequtils, sugar, tables
+import std/enumerate, sequtils, sugar, tables
     
 import vm/values/[value, comparison]
 import vm/values/custom/[vsymbol]
 
-import vm/[exec, errors, stack]
+import vm/[exec, errors]
+
+#=======================================
+# Constants
+#=======================================
+
+let
+    ConstructorField* = "init"
 
 #=======================================
 # Helpers
 #=======================================
 
-template checkIfCorrectArgumentsPassed(pr: Prototype, values: ValueArray | ValueDict) =
+template checkArguments(pr: Prototype, values: ValueArray | ValueDict) =
     when values is ValueArray:
         if pr.fields.len != values.len:
             RuntimeError_IncorrectNumberOfArgumentsForInitializer(pr.name, values.len, toSeq(pr.fields.keys))
@@ -29,7 +36,7 @@ template checkIfCorrectArgumentsPassed(pr: Prototype, values: ValueArray | Value
         if pr.fields.len != 0 && pr.fields.len != values.len:
             RuntimeError_IncorrectNumberOfArgumentsForInitializer(pr.name, values.len, toSeq(pr.fields.keys))
 
-func fetchArgumentsForConstructor(pr: Prototype, values: ValueArray | ValueDict, args: var ValueArray): bool =
+func fetchConstructorArguments(pr: Prototype, values: ValueArray | ValueDict, args: var ValueArray): bool =
     result = true
 
     when values is ValueArray:
@@ -49,17 +56,17 @@ func fetchArgumentsForConstructor(pr: Prototype, values: ValueArray | ValueDict,
 # Methods
 #=======================================
 
-func generatedInit*(params: ValueArray): Value {.inline.} =
+func generatedConstructor*(params: ValueArray): Value {.inline.} =
     if params.len > 0 and params.all((x) => x.kind in {Word, Literal, String, Type}):
-        let initBody = newBlock()
+        let constructorBody = newBlock()
         for val in params:
             if val.kind in {Word, Literal, String}:
-                initBody.a.add(@[
+                constructorBody.a.add(@[
                     newPathLabel(@[newWord("this"), newWord(val.s)]),
                     newWord(val.s)
                 ])
 
-        return newFunctionFromDefinition(params, initBody)
+        return newFunctionFromDefinition(params, constructorBody)
     
     return nil
 
@@ -75,14 +82,14 @@ func generatedCompare*(key: Value): Value {.inline.} =
 proc getTypeFields*(defs: ValueDict): ValueDict {.inline.} =
     result = newOrderedTable[string,Value]()
 
-    if (let initFunction = defs.getOrDefault("init", nil); not initFunction.isNil):
-        for p in initFunction.params:
+    if (let constructorMethod = defs.getOrDefault(ConstructorField, nil); not constructorMethod.isNil):
+        for p in constructorMethod.params:
             result[p] = newType(Any)
 
         let ensureW = newWord("ensure")
         var i = 0
-        while i < initFunction.main.a.len - 1:
-            if (let ensureBlock = initFunction.main.a[i+1]; initFunction.main.a[i] == ensureW and ensureBlock.kind == Block):
+        while i < constructorMethod.main.a.len - 1:
+            if (let ensureBlock = constructorMethod.main.a[i+1]; constructorMethod.main.a[i] == ensureW and ensureBlock.kind == Block):
                 let lastElement = ensureBlock.a[^1]
                 if lastElement.kind == Word:
                     if ensureBlock.a[^2].kind == Type:
@@ -107,19 +114,18 @@ proc generateNewObject*(pr: Prototype, values: ValueArray | ValueDict): Value =
         else:
             result.o[k] = copyValue(v)
 
-    checkIfCorrectArgumentsPassed(pr, values)
+    checkArguments(pr, values)
 
     var args: ValueArray = @[]
     
-    if not fetchArgumentsForConstructor(pr, values, args):
+    if not fetchConstructorArguments(pr, values, args):
         when values is ValueDict:
             for k,v in values:
                 result.o[k] = v
     
-    if (let initMethod = result.o.getOrDefault("init", nil); (not initMethod.isNil) and initMethod.kind == Function):
+    if (let constructorMethod = result.o.getOrDefault(ConstructorField, nil); (not constructorMethod.isNil) and constructorMethod.kind == Function):
         args.insert(result)
-        echo "args: () " & $(args.len)
-        initMethod.callFunction("init", args)
+        callFunction(constructorMethod, "\\" & ConstructorField, args)
 
 # proc injectThis*(meth: Value) =
 #     if meth.params.len < 1 or meth.params[0] != "this":
