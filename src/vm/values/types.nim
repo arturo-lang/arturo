@@ -272,8 +272,8 @@ type
                     rng*    : VRange
             of Dictionary:  d*  : ValueDict
             of Object:
-                o*      : ValueDict 
                 proto*  : Prototype 
+                o*      : ValueDict 
                 magic*  : MagicMethods
             of Store:
                 sto*: VStore
