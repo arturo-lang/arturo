@@ -60,7 +60,7 @@ proc getTypeFields*(defs: ValueDict): ValueDict =
                         result[lastElement.s] = ensureBlock.a[^2]
                 elif lastElement.kind == Block:
                     let sublastElement = lastElement.a[^1]
-                    if sublastElement == Word and lastElement.a[^2].kind == Type:
+                    if sublastElement.kind == Word and lastElement.a[^2].kind == Type:
                         result[sublastElement.s] = newBlock(lastElement.a.filter((x) => x.kind == Type))
             i += 2
 
