@@ -536,9 +536,9 @@ func newDictionary*(d: sink SymTable): Value {.inline, enforceNoRaises.} =
     ## create Dictionary value from SymTable
     newDictionary(toSeq(d.pairs).toOrderedTable)
 
-func newObject*(o: sink ValueDict = newOrderedTable[string,Value](), proto: sink Prototype): Value {.inline, enforceNoRaises.} =
+func newObject*(proto: sink Prototype, o: sink ValueDict = newOrderedTable[string,Value](), magic: MagicMethods = MagicMethods()): Value {.inline, enforceNoRaises.} =
     ## create Object value from ValueDict with given prototype
-    Value(kind: Object, o: o, proto: proto, magic: MagicMethods())
+    Value(kind: Object, proto: proto, o: o, magic: magic)
 
 # proc newObject*(args: ValueArray, prot: Prototype, initializer: proc (self: Value, prot: Prototype), o: ValueDict = newOrderedTable[string,Value]()): Value {.inline.} =
 #     ## create Object value from ValueArray with given prototype 
@@ -855,7 +855,7 @@ proc copyValue*(v: Value): Value {.inline.} =
             result = newRange(v.rng.start, v.rng.stop, v.rng.step, v.rng.infinite, v.rng.numeric, v.rng.forward)
 
         of Dictionary:      result = newDictionary(v.d[])
-        of Object:          result = newObject(v.o[], v.proto)
+        of Object:          result = newObject(v.proto, v.o[], v.magic)
         of Store:           result = newStore(v.sto)
 
         of Function:    
