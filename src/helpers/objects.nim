@@ -46,7 +46,7 @@ proc generatedCompare*(key: Value): Value =
 
 proc getTypeFields*(defs: ValueDict): ValueDict =
     result = newOrderedTable[string,Value]()
-    
+
     if (let initFunction = defs.getOrDefault("init", nil); not initFunction.isNil):
         for p in initFunction.params:
             result[p] = newType(Any)
@@ -66,7 +66,7 @@ proc getTypeFields*(defs: ValueDict): ValueDict =
             i += 2
 
 proc generateNewObject*(pr: Prototype, values: ValueArray): Value =
-    result = Value(kind: Object)
+    result = Value(kind: Object, o:newOrderedTable[string,Value](), proto: pr, magic: MagicMethods())
     for k,v in pr.content:
         result.o[k] = v
 
