@@ -10,12 +10,40 @@
 # Libraries
 #=======================================
 
-import algorithm, sequtils, sugar, tables
+import algorithm, std/enumerate, sequtils, sugar, tables
     
 import vm/values/[value, comparison]
 import vm/values/custom/[vsymbol]
 
-import vm/[exec, stack]
+import vm/[exec, errors, stack]
+
+#=======================================
+# Helpers
+#=======================================
+
+template checkIfCorrectArgumentsPassed(pr: Prototype, values: ValueArray | ValueDict) =
+    when values is ValueArray:
+        if pr.fields.len != values.len:
+            RuntimeError_IncorrectNumberOfArgumentsForInitializer(pr.name, values.len, toSeq(pr.fields.keys))
+    else:
+        if pr.fields.len != 0 && pr.fields.len != values.len:
+            RuntimeError_IncorrectNumberOfArgumentsForInitializer(pr.name, values.len, toSeq(pr.fields.keys))
+
+func fetchArgumentsForConstructor(pr: Prototype, values: ValueArray | ValueDict, args: var ValueArray): bool =
+    result = true
+
+    when values is ValueArray:
+        for v in values:
+            args.add(v)
+    else:
+        if pr.fields.len == 0:
+            return false
+        else:
+            for i,k in enumerate(pr.fields.keys):
+                if (let vv = values.getOrDefault(k, nil); not vv.isNil):
+                    args.add(vv)
+                else:
+                    RuntimeError_MissingArgumentForInitializer(pr.name, k)
 
 #=======================================
 # Methods
@@ -71,13 +99,25 @@ proc injectingThis*(fun: Value): Value {.inline.} =
         result.params.insert("this")
         result.arity += 1
 
-proc generateNewObject*(pr: Prototype, values: ValueArray): Value =
+proc generateNewObject*(pr: Prototype, values: ValueArray | ValueDict): Value =
     result = Value(kind: Object, o:newOrderedTable[string,Value](), proto: pr, magic: MagicMethods())
     for k,v in pr.content:
         if v.kind == Function:
             result.o[k] = injectingThis(v)
         else:
             result.o[k] = copyValue(v)
+
+    checkIfCorrectArgumentsPassed(pr, values)
+
+    var args: ValueArray = @[]
+    
+    if not fetchArgumentsForConstructor(pr, values, args):
+        for k,v in values:
+            result.o[k] = v
+    
+    if (let initMethod = result.o.getOrDefault("init", nil); (not initMethod.isNil) and initMethod.kind == Function):
+        args.add(result)
+        initMethod.callFunction("init", args)
 
 # proc injectThis*(meth: Value) =
 #     if meth.params.len < 1 or meth.params[0] != "this":
