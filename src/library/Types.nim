@@ -146,6 +146,9 @@ proc defineLibrary*() =
                     #  labels: error handling, enhancement
                     discard
 
+            if checkAttr("sortable"):
+                definitions["compare"] = generatedCompare(aSortable)
+
             setType(x.tid, newPrototype(x.tid, definitions, inherits))
 
             push newDictionary({
