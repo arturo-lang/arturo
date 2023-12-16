@@ -117,7 +117,8 @@ proc generateNewObject*(pr: Prototype, values: ValueArray | ValueDict): Value =
                 result.o[k] = v
     
     if (let initMethod = result.o.getOrDefault("init", nil); (not initMethod.isNil) and initMethod.kind == Function):
-        args.add(result)
+        args.insert(result)
+        echo "args: () " & $(args.len)
         initMethod.callFunction("init", args)
 
 # proc injectThis*(meth: Value) =
