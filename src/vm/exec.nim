@@ -22,7 +22,7 @@
 # Libraries
 #=======================================
 
-import hashes, macros, sugar, tables
+import algorithm, hashes, macros, sugar, tables
 
 import vm/[
     bytecode, 
@@ -58,6 +58,9 @@ var
 # Forward Declarations
 #=======================================
 
+proc execFunction*(fun: Value, fid: Hash)
+proc execFunctionInline*(fun: Value, fid: Hash)
+
 proc ExecLoop*(cnst: ValueArray, it: VBinary)
 
 #=======================================
@@ -86,6 +89,27 @@ proc dStoreByIndex(cnst: ValueArray, idx: int, doPop: static bool = true) {.inli
 template loadByIndex(idx: int):untyped =
     hookProcProfiler("exec/loadByIndex"):
         stack.push(FetchSym(cnst[idx].s))
+
+proc callFunction*(f: Value, fnName: string, args: ValueArray) =
+    ## Take a Function value, whether a user or a built-in one, 
+    ## and execute it with given arguments
+    if f.fnKind==UserFunction:
+        hookProcProfiler("exec/callFunction:user"):
+            var safeToProceed = true
+            for arg in args.reversed:
+                push arg
+                if arg.kind == Function:
+                    safeToProceed = false
+
+            if unlikely(SP < f.arity):
+                RuntimeError_NotEnoughArguments(fnName, f.arity)
+
+            if f.inline: 
+                if safeToProceed: execFunctionInline(f, hash(fnName))
+                else: execFunction(f, hash(fnName))
+            else: execFunction(f, hash(fnName))
+    else:
+        f.action()()
 
 template callFunction*(f: Value, fnName: string = "<closure>"):untyped =
     ## Take a Function value, whether a user or a built-in one, 

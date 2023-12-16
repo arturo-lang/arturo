@@ -153,7 +153,7 @@ proc `==`*(x: Value, y: Value): bool =
             of Complex: return x.z == y.z
             of Version:
                 return x.version == y.version
-            of Type: return x.t == y.t
+            of Type: return x.tpKind == y.tpKind and ((x.tpKind == BuiltinType and x.t == y.t) or (x.tpKind == UserType and x.tid == y.tid))
             of Char: return x.c == y.c
             of String,
                Word,
@@ -194,8 +194,8 @@ proc `==`*(x: Value, y: Value): bool =
             of Unit:
                 return x.u == y.u
             of Object:
-                if (let compareMethod = x.proto.methods.getOrDefault("compare", nil); not compareMethod.isNil):
-                    return x.proto.doCompare(x,y) == 0
+                if not x.magic.doCompare.isNil:
+                    return x.magic.doCompare(x,y) == 0
                 else:
                     if x.o.len != y.o.len: return false
 
@@ -401,8 +401,8 @@ proc `<`*(x: Value, y: Value): bool {.inline.}=
             of Unit:
                 return false
             of Object:
-                if (let compareMethod = x.proto.methods.getOrDefault("compare", nil); not compareMethod.isNil):
-                    return x.proto.doCompare(x, y) == -1
+                if not x.magic.doCompare.isNil:
+                    return x.magic.doCompare(x, y) == -1
                 else:
                     return false
             of Date:
@@ -513,8 +513,8 @@ proc `>`*(x: Value, y: Value): bool {.inline.}=
             of Unit:
                 return false
             of Object:
-                if (let compareMethod = x.proto.methods.getOrDefault("compare", nil); not compareMethod.isNil):
-                    return x.proto.doCompare(x,y) == 1
+                if not x.magic.doCompare.isNil:
+                    return x.magic.doCompare(x,y) == 1
                 else:
                     return false
             of Date:
