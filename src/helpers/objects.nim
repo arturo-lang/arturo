@@ -112,8 +112,9 @@ proc generateNewObject*(pr: Prototype, values: ValueArray | ValueDict): Value =
     var args: ValueArray = @[]
     
     if not fetchArgumentsForConstructor(pr, values, args):
-        for k,v in values:
-            result.o[k] = v
+        when values is ValueDict:
+            for k,v in values:
+                result.o[k] = v
     
     if (let initMethod = result.o.getOrDefault("init", nil); (not initMethod.isNil) and initMethod.kind == Function):
         args.add(result)
