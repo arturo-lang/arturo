@@ -35,6 +35,15 @@ proc generatedInit*(params: ValueArray): Value =
     
     return nil
 
+proc generatedCompare*(key: Value): Value =
+    let compareBody = newBlock(@[
+        newWord("if"), newPath(@[newWord("this"), key]), newSymbol(greaterthan), newPath(@[newWord("that"), key]), newBlock(@[newWord("return"),newInteger(1)]),
+        newWord("if"), newPath(@[newWord("this"), key]), newSymbol(equal), newPath(@[newWord("that"), key]), newBlock(@[newWord("return"),newInteger(0)]),
+        newWord("return"), newWord("neg"), newInteger(1)
+    ])
+
+    return newFunctionFromDefinition(@[newWord("that")], compareBody)
+
 proc injectThis*(meth: Value) =
     if meth.params.len < 1 or meth.params[0] != "this":
         echo "meth.arity was was: " & $(meth.arity)
