@@ -119,7 +119,7 @@ proc prepareMethods*(proto: Prototype) =
         #  and if not, throw an appropriate error
         #  mainly, that it's a Function
         #  labels: library, error handling, oop
-        initMethod.injectThis()
+        #initMethod.injectThis()
 
         # inject a reference to the equivalent
         # method from the parent as `super` -
