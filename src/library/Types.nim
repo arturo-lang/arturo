@@ -285,7 +285,7 @@ proc defineLibrary*() =
             # Get our defined fields & methods
             # as a dictionary
             var definitions: ValueDict = newOrderedTable[string,Value]()
-            var extra: ValueDict
+            var extra: ValueDict = newOrderedTable[string,Value]()
             var inherits: Value = VNULL
 
             if x.tpKind == UserType:
