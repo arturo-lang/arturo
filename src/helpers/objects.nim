@@ -63,6 +63,11 @@ proc getTypeFields*(defs: ValueDict): ValueDict =
                         result[sublastElement.s] = newBlock(lastElement.a.filter((x) => x.kind == Type))
             i += 2
 
+proc generateNewObject*(pr: Prototype, values: ValueArray): Value =
+    result = Value(kind: Object)
+    for k,v in pr.content:
+        result.o[k] = v
+
 proc injectThis*(meth: Value) =
     if meth.params.len < 1 or meth.params[0] != "this":
         echo "meth.arity was was: " & $(meth.arity)

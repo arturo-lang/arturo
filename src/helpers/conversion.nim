@@ -365,7 +365,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat:Value = nil): Val
                             SP = stop
 
                             discard
-                            #return generateCustomObject(x.ts, arr)
+                            return generateNewObject(getType(x.tid), arr)
                         else:
                             throwCannotConvert()
 
