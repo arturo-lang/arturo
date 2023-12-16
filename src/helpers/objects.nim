@@ -22,7 +22,8 @@ import vm/[exec, errors]
 #=======================================
 
 let
-    ConstructorField* = "init"
+    ConstructorField*   = "init"
+    StringifyField*     = "print"
 
 #=======================================
 # Helpers
@@ -126,6 +127,10 @@ proc generateNewObject*(pr: Prototype, values: ValueArray | ValueDict): Value =
     if (let constructorMethod = result.o.getOrDefault(ConstructorField, nil); (not constructorMethod.isNil) and constructorMethod.kind == Function):
         args.insert(result)
         callFunction(constructorMethod, "\\" & ConstructorField, args)
+
+    if (let stringifyMethod = result.o.getOrDefault(StringifyField, nil); (not stringifyMethod.isNil) and stringifyMethod.kind == Function):
+        result.magic.doPrint = proc (self: Value) =
+            callFunction(stringifyMethod, "\\" & StringifyField, @[self])
 
 # proc injectThis*(meth: Value) =
 #     if meth.params.len < 1 or meth.params[0] != "this":
