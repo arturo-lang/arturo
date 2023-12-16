@@ -15,7 +15,7 @@ import std/enumerate, sequtils, sugar, tables
 import vm/values/[value, comparison]
 import vm/values/custom/[vsymbol]
 
-import vm/[exec, errors]
+import vm/[exec, errors, stack]
 
 #=======================================
 # Constants
@@ -129,8 +129,9 @@ proc generateNewObject*(pr: Prototype, values: ValueArray | ValueDict): Value =
         callFunction(constructorMethod, "\\" & ConstructorField, args)
 
     if (let stringifyMethod = result.o.getOrDefault(StringifyField, nil); (not stringifyMethod.isNil) and stringifyMethod.kind == Function):
-        result.magic.doPrint = proc (self: Value) =
+        result.magic.doPrint = proc (self: Value): string =
             callFunction(stringifyMethod, "\\" & StringifyField, @[self])
+            stack.pop().s
 
 # proc injectThis*(meth: Value) =
 #     if meth.params.len < 1 or meth.params[0] != "this":
