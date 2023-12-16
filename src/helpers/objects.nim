@@ -21,7 +21,7 @@ import vm/[exec, errors, stack]
 # Constants
 #=======================================
 
-let
+const
     ConstructorField*   = "init"
     StringifyField*     = "print"
     ComparatorField*    = "compare"
@@ -53,6 +53,19 @@ proc fetchConstructorArguments(pr: Prototype, values: ValueArray | ValueDict, ar
                     args.add(vv)
                 else:
                     RuntimeError_MissingArgumentForInitializer(pr.name, k)
+
+func processMagicMethods(target: Value, methodName: string) =
+    case methodName:
+        of StringifyField:
+            target.magic.doPrint = proc (self: Value): string =
+                callFunction(target.o[methodName], "\\" & StringifyField, @[self])
+                stack.pop().s
+        of ComparatorField:
+            target.magic.doCompare = proc (self: Value, other: Value): int =
+                callFunction(target.o[methodName], "\\" & ComparatorField, @[self, other])
+                stack.pop().i
+        else:
+            discard
 
 #=======================================
 # Methods
@@ -113,6 +126,7 @@ proc generateNewObject*(pr: Prototype, values: ValueArray | ValueDict): Value =
     for k,v in pr.content:
         if v.kind == Function:
             result.o[k] = injectingThis(v)
+            result.processMagicMethods(k)
         else:
             result.o[k] = copyValue(v)
 
@@ -128,25 +142,6 @@ proc generateNewObject*(pr: Prototype, values: ValueArray | ValueDict): Value =
     if (let constructorMethod = result.o.getOrDefault(ConstructorField, nil); (not constructorMethod.isNil) and constructorMethod.kind == Function):
         args.insert(result)
         callFunction(constructorMethod, "\\" & ConstructorField, args)
-
-    if (let stringifyMethod = result.o.getOrDefault(StringifyField, nil); (not stringifyMethod.isNil) and stringifyMethod.kind == Function):
-        result.magic.doPrint = proc (self: Value): string =
-            callFunction(stringifyMethod, "\\" & StringifyField, @[self])
-            stack.pop().s
-
-    if (let comparatorMethod = result.o.getOrDefault(ComparatorField, nil); (not comparatorMethod.isNil) and comparatorMethod.kind == Function):
-        result.magic.doCompare = proc (self: Value, other: Value): int =
-            callFunction(comparatorMethod, "\\" & ComparatorField, @[self, other])
-            stack.pop().i
-
-# proc injectThis*(meth: Value) =
-#     if meth.params.len < 1 or meth.params[0] != "this":
-#         echo "meth.arity was was: " & $(meth.arity)
-#         echo "- injecting *this*"
-#         meth.params.insert("this")
-#         echo "meth.arity was: " & $(meth.arity)
-#         meth.arity += 1
-#         echo "meth.arity is: " & $(meth.arity)
 
 proc injectSuper*(meth: Value, parent: Value) =
     discard
