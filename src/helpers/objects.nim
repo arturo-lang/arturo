@@ -44,6 +44,26 @@ proc generatedCompare*(key: Value): Value =
 
     return newFunctionFromDefinition(@[newWord("that")], compareBody)
 
+proc getTypeFields*(defs: ValueDict): ValueDict =
+    if (let initFunction = defs.getOrDefault("init", nil); not initFunction.isNil):
+        for p in initFunction.params:
+            result[p] = newType("any")
+
+        let ensureW = newWord("ensure")
+
+        var i = 0
+        while i < initFunction.a.len - 1:
+            if (let ensureBlock = initFunction.a[i+1]; initFunction.a[i] == ensureW and ensureBlock.kind == Block):
+                let lastElement = ensureBlock.a[^1]
+                if lastElement.kind == Word:
+                    if ensureBlock.a[^2].kind == Type:
+                        result[lastElement.s] = ensureBlock.a[^2]
+                elif lastElement.kind == Block:
+                    let sublastElement = lastElement.a[^1]
+                    if sublastElement == Word and lastElement.a[^2].kind == Type:
+                        result[sublastElement.s] = newBlock(lastElement.a.filter((x) => x.kind == Type))
+            i += 2
+
 proc injectThis*(meth: Value) =
     if meth.params.len < 1 or meth.params[0] != "this":
         echo "meth.arity was was: " & $(meth.arity)

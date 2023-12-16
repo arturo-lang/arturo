@@ -141,6 +141,7 @@ type
         name*           : string
         content*        : ValueDict
         inherits*       : Value
+        fields*         : ValueDict
 
     MagicMethods* = ref object
         doPrint*    : proc (v:Value): string
@@ -429,5 +430,5 @@ proc setType*(tid: string, proto: Prototype = nil) {.inline.} =
 proc getType*(tid: string): Prototype {.inline.} =
     return TypeLookup[tid]
 
-proc newPrototype*(name: string, content: ValueDict, inherits: Value = nil): Prototype {.inline.} =
-    Prototype(name: name, content: content, inherits: inherits)
+proc newPrototype*(name: string, content: ValueDict, inherits: Value, fields: ValueDict = newOrderedTable[string,Value]()): Prototype {.inline.} =
+    Prototype(name: name, content: content, inherits: inherits, fields: fields)
