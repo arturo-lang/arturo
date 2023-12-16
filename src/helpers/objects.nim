@@ -12,7 +12,7 @@
 
 import algorithm, sequtils, sugar, tables
     
-import vm/values/value
+import vm/values/[value, comparison]
 import vm/values/custom/[vsymbol]
 
 import vm/[exec, stack]
@@ -45,24 +45,15 @@ proc generatedCompare*(key: Value): Value =
     return newFunctionFromDefinition(@[newWord("that")], compareBody)
 
 proc getTypeFields*(defs: ValueDict): ValueDict =
-    echo "in getTypeFields"
     if (let initFunction = defs.getOrDefault("init", nil); not initFunction.isNil):
-        echo "has init function!"
-
         for p in initFunction.params:
-            echo "processing param: " & p
-            result[p] = newType("any")
-        echo "after processing params"
+            result[p] = newType(Any)
+
         let ensureW = newWord("ensure")
-        echo "after ensure"
         var i = 0
         while i < initFunction.main.a.len - 1:
-            echo "testing i: " & $(i)
-            echo "element kind: " & $(initFunction.main.a[i].kind)
             if (let ensureBlock = initFunction.main.a[i+1]; initFunction.main.a[i] == ensureW and ensureBlock.kind == Block):
-                echo "... and everything is correct, we have an `ensure` and a block"
                 let lastElement = ensureBlock.a[^1]
-                echo "the last element is: " & $(lastElement.kind)
                 if lastElement.kind == Word:
                     if ensureBlock.a[^2].kind == Type:
                         result[lastElement.s] = ensureBlock.a[^2]
@@ -71,7 +62,6 @@ proc getTypeFields*(defs: ValueDict): ValueDict =
                     if sublastElement.kind == Word and lastElement.a[^2].kind == Type:
                         result[sublastElement.s] = newBlock(lastElement.a.filter((x) => x.kind == Type))
             i += 2
-        echo "after while"
 
 proc injectThis*(meth: Value) =
     if meth.params.len < 1 or meth.params[0] != "this":
