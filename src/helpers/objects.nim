@@ -45,6 +45,8 @@ proc generatedCompare*(key: Value): Value =
     return newFunctionFromDefinition(@[newWord("that")], compareBody)
 
 proc getTypeFields*(defs: ValueDict): ValueDict =
+    result = newOrderedTable[string,Value]()
+    
     if (let initFunction = defs.getOrDefault("init", nil); not initFunction.isNil):
         for p in initFunction.params:
             result[p] = newType(Any)
