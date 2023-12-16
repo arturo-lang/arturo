@@ -107,7 +107,7 @@ proc injectingThis*(fun: Value): Value {.inline.} =
         result.arity += 1
 
 proc generateNewObject*(pr: Prototype, values: ValueArray | ValueDict): Value =
-    result = Value(kind: Object, o:newOrderedTable[string,Value](), proto: pr, magic: MagicMethods())
+    result = Value(kind: Object, o: newOrderedTable[string,Value](), proto: pr, magic: MagicMethods())
     for k,v in pr.content:
         if v.kind == Function:
             result.o[k] = injectingThis(v)

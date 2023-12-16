@@ -364,7 +364,6 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat:Value = nil): Val
                             let arr: ValueArray = sTopsFrom(stop)
                             SP = stop
 
-                            discard
                             return generateNewObject(getType(x.tid), arr)
                         else:
                             throwCannotConvert()
@@ -441,8 +440,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat:Value = nil): Val
                         return newString($(y))
                     of Object:
                         if x.tpKind==UserType:
-                            discard
-                            #return generateCustomObject(x.ts, y.d)
+                            return generateNewObject(getType(x.tid), y.d)
                         else:
                             throwCannotConvert()
                     of Bytecode:
