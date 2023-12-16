@@ -307,7 +307,7 @@ proc RuntimeError_IncorrectNumberOfArgumentsForInitializer*(typeName: string, go
 proc RuntimeError_MissingArgumentForInitializer*(typeName: string, missing: string) =
     panic RuntimeError,
           "cannot initialize object of type _:" & (typeName) & "_;" &
-          "missing field: " & $(missing) & ";"
+          "missing field: " & $(missing)
 
 proc RuntimeError_InvalidOperation*(operation: string, argA, argB: string) =
     panic RuntimeError,
