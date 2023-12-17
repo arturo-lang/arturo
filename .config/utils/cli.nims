@@ -16,12 +16,13 @@ func args*(cli: CLI): seq[string] =
     return commandLineParams()
 
 func command(cli: CLI): string =
-    result = if cli.args.len <= 1:
+    let args = cli.args
+    result = if args.len <= 1:
         cli.defaultCommand
-    elif cli.args[1].startsWith("-"):
+    elif args[1].startsWith("-"):
         cli.defaultCommand
     else:
-        cli.args[1]
+        args[1]
 
 var cliInstance* = CLI( 
     defaultCommand: "help",
