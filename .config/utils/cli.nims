@@ -9,20 +9,21 @@ import std/strutils
 type CLI* = object
     args*: seq[string]
     header*: seq[string]
-    command: string
+    defaultCommand*: string
     availableCommands: seq[string]
     printed: bool
 
+func command(cli: CLI): string =
+    result = if cli.args.len <= 1:
+        cli.defaultCommand
+    elif cli.args[1].startsWith("-"):
+        cli.defaultCommand
+    else:
+        cli.args[1]
+
 var cliInstance* = CLI( 
     args: commandLineParams(),
-    command: if commandLineParams().len <= 1:
-            # "./build.nims" or "nim ./build.nims"
-            "build"
-        elif commandLineParams()[1].startsWith("-"):
-            # "./build.nims <flags>" or "nim ./build.nims <flags>"
-            "build"
-        else:
-            commandLineParams()[1],
+    defaultCommand: "help",
     availableCommands: @["help", "--help"],
     header: @[""],
     printed: false
