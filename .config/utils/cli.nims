@@ -5,18 +5,25 @@ import std/sugar
 import std/strformat
 import std/strutils
 
-let
-    args* = commandLineParams()
-    command = if args.len <= 1:
+
+type CLI* = object
+    args*: seq[string]
+    command: string
+    availableCommands: seq[string]
+
+var cliInstance* = CLI( 
+    args: commandLineParams(),
+    command: if commandLineParams().len <= 1:
             # "./build.nims" or "nim ./build.nims"
             "build"
-        elif args[1].startsWith("-"):
+        elif commandLineParams()[1].startsWith("-"):
             # "./build.nims <flags>" or "nim ./build.nims <flags>"
             "build"
         else:
-            args[1]
+            commandLineParams()[1],
+    availableCommands: @["help", "--help"],
+)
 
-var availableCommands = @["help"]
 
 template `==?`(a, b: string): bool =
     0 == strutils.cmpIgnoreStyle(a.replace("-"), b.replace("-"))
@@ -167,18 +174,18 @@ template cmd*(name: untyped; description: string; body: untyped): untyped =
     proc `name Task`*() =
         body
 
-    if command >>? ["--help"]:
+    if cliInstance.command >>? ["--help"]:
         writeTask(astToStr(name), description)
-    elif command ==? astToStr(name):
-        if args.hasFlag("help", short="h"):
+    elif cliInstance.command ==? astToStr(name):
+        if cliInstance.args.hasFlag("help", short="h"):
             help `name Task`, QuitSuccess
         else:
-            availableCommands.add astToStr(name)
+            cliInstance.availableCommands.add astToStr(name)
             `name Task`()
 
 
 proc helpForMissingCommand*() =
-    if command in availableCommands:
+    if cliInstance.command in cliInstance.availableCommands:
         return
 
     exec "nim ./build.nims help"
