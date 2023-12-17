@@ -46,15 +46,19 @@ proc printHeader(cli: var CLI) =
 
 
 template `==?`(a, b: string): bool =
+    ## checks if ``a`` is similar to ``b``.
     0 == strutils.cmpIgnoreStyle(a.replace("-"), b.replace("-"))
 
 proc `>>?`(element: string, container: openarray[string]): bool =
+    ## Checks if an ``element`` is similar to some into a ``container``.
     result = false
     for el in container:
         if element ==? el:
             return true
 
 proc getPositionalArg*(args: seq[string], pos: int): string =
+    ## Gets an argument given some ``pos``.
+    ## Quits, if the arg is a flag.
     let msg = "Missing possitional argument."
     if args.len < pos.succ:
         quit msg, QuitFailure
@@ -207,6 +211,8 @@ template cmd*(name: untyped; description: string; body: untyped): untyped =
 
 
 proc helpForMissingCommand*() =
+    ## Checks if the typed command don't exists into the available ones.
+    ## If they don't, call the `help` function.
     if cliInstance.command in cliInstance.availableCommands:
         return
 
