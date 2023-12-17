@@ -404,7 +404,7 @@ cliInstance.header = getLogo()
 let 
     args = cliInstance.args
 
-cmd build, "Build arturo and optionally install the executable":
+cmd build, "[default] Build arturo and optionally install the executable":
     ## build:
     ##     Provides a cross-compilation for the Arturo's binary.
     ##
