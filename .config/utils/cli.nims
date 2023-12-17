@@ -7,11 +7,13 @@ import std/strutils
 
 
 type CLI* = object
-    args*: seq[string]
     header*: seq[string]
     defaultCommand*: string
     availableCommands: seq[string]
     printed: bool
+
+func args*(cli: CLI): seq[string] =
+    return commandLineParams()
 
 func command(cli: CLI): string =
     result = if cli.args.len <= 1:
@@ -22,7 +24,6 @@ func command(cli: CLI): string =
         cli.args[1]
 
 var cliInstance* = CLI( 
-    args: commandLineParams(),
     defaultCommand: "help",
     availableCommands: @["help", "--help"],
     header: @[""],
