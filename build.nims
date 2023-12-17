@@ -401,6 +401,7 @@ proc performBenchmarks*(binary: string): bool =
 #=======================================
 
 cliInstance.header = getLogo()
+cliInstance.defaultCommand = "build"
 let 
     args = cliInstance.args
 
