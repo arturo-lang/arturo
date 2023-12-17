@@ -400,6 +400,9 @@ proc performBenchmarks*(binary: string): bool =
 # Main
 #=======================================
 
+let 
+    args = cliInstance.args
+
 showLogo()
 
 cmd build, "Build arturo and optionally install the executable":
