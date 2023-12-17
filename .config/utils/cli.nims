@@ -32,6 +32,11 @@ proc printHeader(cli: var CLI) =
     if cli.printed:
         return
 
+    try:
+        exec "clear"
+    except:
+        exec "cls"
+
     for line in cli.header:
         echo line
     cli.printed = true
