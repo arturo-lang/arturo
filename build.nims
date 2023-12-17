@@ -588,3 +588,5 @@ cmd benchmark, "Run benchmark suite":
 
     unless paths.global.performBenchmarks():
         quit paths.local.performBenchmarks().toErrorCode
+
+helpForMissingCommand()

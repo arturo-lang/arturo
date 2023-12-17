@@ -16,6 +16,8 @@ let
         else:
             args[1]
 
+var availableCommands = @["help"]
+
 template `==?`(a, b: string): bool =
     0 == strutils.cmpIgnoreStyle(a.replace("-"), b.replace("-"))
 
@@ -174,4 +176,12 @@ template cmd*(name: untyped; description: string; body: untyped): untyped =
         if args.hasFlag("help", short="h"):
             help `name Task`, QuitSuccess
         else:
+            availableCommands.add astToStr(name)
             `name Task`()
+
+
+proc helpForMissingCommand*() =
+    if command in availableCommands:
+        return
+
+    exec "nim ./build.nims help"
