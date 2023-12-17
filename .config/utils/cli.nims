@@ -7,10 +7,14 @@ import std/strutils
 
 let
     args* = commandLineParams()
-    command = if "build.nims" in paramStr(1):
-            paramStr(2)
+    command = if args.len <= 1:
+            # "./build.nims" or "nim ./build.nims"
+            "build"
+        elif args[1].startsWith("-"):
+            # "./build.nims <flags>" or "nim ./build.nims <flags>"
+            "build"
         else:
-            paramStr(1)
+            args[1]
 
 template `==?`(a, b: string): bool =
     0 == strutils.cmpIgnoreStyle(a.replace("-"), b.replace("-"))
