@@ -8,8 +8,10 @@ import std/strutils
 
 type CLI* = object
     args*: seq[string]
+    header*: seq[string]
     command: string
     availableCommands: seq[string]
+    printed: bool
 
 var cliInstance* = CLI( 
     args: commandLineParams(),
@@ -22,7 +24,17 @@ var cliInstance* = CLI(
         else:
             commandLineParams()[1],
     availableCommands: @["help", "--help"],
+    header: @[""],
+    printed: false
 )
+
+proc printHeader(cli: var CLI) =
+    if cli.printed:
+        return
+
+    for line in cli.header:
+        echo line
+    cli.printed = true
 
 
 template `==?`(a, b: string): bool =
@@ -175,8 +187,10 @@ template cmd*(name: untyped; description: string; body: untyped): untyped =
         body
 
     if cliInstance.command >>? ["--help"]:
+        cliInstance.printHeader()
         writeTask(astToStr(name), description)
     elif cliInstance.command ==? astToStr(name):
+        cliInstance.printHeader()
         if cliInstance.args.hasFlag("help", short="h"):
             help `name Task`, QuitSuccess
         else:
