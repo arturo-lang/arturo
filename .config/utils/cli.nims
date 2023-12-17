@@ -28,29 +28,14 @@ proc `>>?`(element: string, container: openarray[string]): bool =
 proc alwaysValid(x: string): bool =
     true
 
-proc getPositionalArg*(args: seq[string], 
-                       isValid: (string) -> bool = alwaysValid
-    ): string =
-    
-    func isFLag(arg: string): bool =
-        arg.startsWith("-")
-    func isOptionalParam(args: seq[string], pos: int): bool =
-        result = false
-        let previous = args[pos.pred]
-        if previous.isFlag:
-            return true
-        
-    for pos in 0..args.high:
-        if args[pos].isFLag:
-            continue
-        if isOptionalParam(args, pos):
-            continue
-        if args[pos].isValid:
-            return args[pos]
-        break
-    
-    quit fmt"Missing possitional argument.", QuitFailure
-    
+proc getPositionalArg*(args: seq[string], pos: int): string =
+    let msg = "Missing possitional argument."
+    if args.len < pos.succ:
+        quit msg, QuitFailure
+    elif args[pos].startsWith("-"):
+        quit msg, QuitFailure
+    else:
+        return args[pos]
 
 proc getOptionValue*(args: seq[string], cmd: string, default: string,
                      short: string = "", into: seq[string] = @[]): string =

@@ -524,7 +524,7 @@ cmd package, "Package arturo app and build executable":
                           "x86-32", "arm", "arm-32"]
 
     var config = buildConfig()
-    config.binary = args.getPositionalArg()
+    config.binary = args.getPositionalArg(2)
 
     match args.getOptionValue("arch", short="a",
                               default=hostCPU,
