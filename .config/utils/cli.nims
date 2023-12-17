@@ -27,9 +27,6 @@ proc `>>?`(element: string, container: openarray[string]): bool =
         if element ==? el:
             return true
 
-proc alwaysValid(x: string): bool =
-    true
-
 proc getPositionalArg*(args: seq[string], pos: int): string =
     let msg = "Missing possitional argument."
     if args.len < pos.succ:
