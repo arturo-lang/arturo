@@ -38,7 +38,8 @@ proc printHeader(cli: var CLI) =
     try:
         exec "clear"
     except:
-        exec "cls"
+        try:
+            discard gorgeEx "cls"
 
     for line in cli.header:
         echo line
