@@ -400,9 +400,12 @@ proc performBenchmarks*(binary: string): bool =
 # Main
 #=======================================
 
-showLogo()
+cliInstance.header = getLogo()
+cliInstance.defaultCommand = "build"
+let 
+    args = cliInstance.args
 
-cmd build, "Build arturo and optionally install the executable":
+cmd build, "[default] Build arturo and optionally install the executable":
     ## build:
     ##     Provides a cross-compilation for the Arturo's binary.
     ##
@@ -524,7 +527,7 @@ cmd package, "Package arturo app and build executable":
                           "x86-32", "arm", "arm-32"]
 
     var config = buildConfig()
-    config.binary = args.getPositionalArg()
+    config.binary = args.getPositionalArg(2)
 
     match args.getOptionValue("arch", short="a",
                               default=hostCPU,
@@ -588,3 +591,5 @@ cmd benchmark, "Run benchmark suite":
 
     unless paths.global.performBenchmarks():
         quit paths.local.performBenchmarks().toErrorCode
+
+helpForMissingCommand()
