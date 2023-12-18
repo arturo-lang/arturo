@@ -5,48 +5,67 @@ import std/sugar
 import std/strformat
 import std/strutils
 
-let
-    args* = commandLineParams()
-    command = if "build.nims" in paramStr(1):
-            paramStr(2)
-        else:
-            paramStr(1)
+
+type CLI* = object
+    header*: seq[string]
+    defaultCommand*: string
+    availableCommands: seq[string]
+    printed: bool
+
+func args*(cli: CLI): seq[string] =
+    return commandLineParams()
+
+func command(cli: CLI): string =
+    let args = cli.args
+    result = if args.len <= 1:
+        cli.defaultCommand
+    elif args[1].startsWith("-"):
+        cli.defaultCommand
+    else:
+        args[1]
+
+var cliInstance* = CLI( 
+    defaultCommand: "help",
+    availableCommands: @["help", "--help"],
+    header: @[""],
+    printed: false
+)
+
+proc printHeader(cli: var CLI) =
+    if cli.printed:
+        return
+
+    try:
+        exec "clear"
+    except:
+        discard gorgeEx "cls"
+
+    for line in cli.header:
+        echo line
+    cli.printed = true
+
 
 template `==?`(a, b: string): bool =
+    ## checks if ``a`` is similar to ``b``.
     0 == strutils.cmpIgnoreStyle(a.replace("-"), b.replace("-"))
 
 proc `>>?`(element: string, container: openarray[string]): bool =
+    ## Checks if an ``element`` is similar to some into a ``container``.
     result = false
     for el in container:
         if element ==? el:
             return true
 
-proc alwaysValid(x: string): bool =
-    true
-
-proc getPositionalArg*(args: seq[string], 
-                       isValid: (string) -> bool = alwaysValid
-    ): string =
-    
-    func isFLag(arg: string): bool =
-        arg.startsWith("-")
-    func isOptionalParam(args: seq[string], pos: int): bool =
-        result = false
-        let previous = args[pos.pred]
-        if previous.isFlag:
-            return true
-        
-    for pos in 0..args.high:
-        if args[pos].isFLag:
-            continue
-        if isOptionalParam(args, pos):
-            continue
-        if args[pos].isValid:
-            return args[pos]
-        break
-    
-    quit fmt"Missing possitional argument.", QuitFailure
-    
+proc getPositionalArg*(args: seq[string], pos: int): string =
+    ## Gets an argument given some ``pos``.
+    ## Quits, if the arg is a flag.
+    let msg = "Missing possitional argument."
+    if args.len < pos.succ:
+        quit msg, QuitFailure
+    elif args[pos].startsWith("-"):
+        quit msg, QuitFailure
+    else:
+        return args[pos]
 
 proc getOptionValue*(args: seq[string], cmd: string, default: string,
                      short: string = "", into: seq[string] = @[]): string =
@@ -179,10 +198,22 @@ template cmd*(name: untyped; description: string; body: untyped): untyped =
     proc `name Task`*() =
         body
 
-    if command >>? ["--help"]:
+    if cliInstance.command >>? ["--help"]:
+        cliInstance.printHeader()
         writeTask(astToStr(name), description)
-    elif command ==? astToStr(name):
-        if args.hasFlag("help", short="h"):
+    elif cliInstance.command ==? astToStr(name):
+        cliInstance.printHeader()
+        if cliInstance.args.hasFlag("help", short="h"):
             help `name Task`, QuitSuccess
         else:
+            cliInstance.availableCommands.add astToStr(name)
             `name Task`()
+
+
+proc helpForMissingCommand*() =
+    ## Checks if the typed command don't exists into the available ones.
+    ## If they don't, call the `help` function.
+    if cliInstance.command in cliInstance.availableCommands:
+        return
+
+    exec "nim ./build.nims help"
