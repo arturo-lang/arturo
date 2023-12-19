@@ -385,6 +385,14 @@ makeAccessor(funcType, inline)
 makeAccessor(funcType, action)
 makeAccessor(funcType, op)
 
+# Method
+
+makeAccessor(methType, marity)
+makeAccessor(methType, mparams)
+makeAccessor(methType, mmain)
+makeAccessor(methType, mbcode)
+makeAccessor(methType, moverride)
+
 #=======================================
 # Helpers
 #=======================================
