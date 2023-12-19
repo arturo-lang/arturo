@@ -68,6 +68,7 @@ type
         OtherCall           # Call to a function that is not a builtin
         BuiltinCall         # Call to a builtin function
         SpecialCall         # Call to a special function
+        MethodCall          # Call to an object method
 
     NodeArray* = seq[Node]
 
