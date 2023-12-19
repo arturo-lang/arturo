@@ -163,6 +163,11 @@ proc `$`*(v: Value): string {.inline.} =
             else:
                 result &= "<function:builtin>" 
 
+        of Method       :
+            result = ""
+            result &= "<method>" & $(newWordBlock(v.mparams))
+            result &= "(" & fmt("{cast[uint](v.mmain):#X}") & ")"
+
         of Database:
             when not defined(NOSQLITE):
                 if v.dbKind==SqliteDatabase: result = fmt("<database>({cast[uint](v.sqlitedb):#X})")
@@ -400,6 +405,16 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
 
             dumpBlockEnd()
 
+        of Method       :
+            dumpBlockStart(v)
+
+            dump(newWordBlock(v.mparams), level+1, false, muted=muted)
+            dump(v.mmain, level+1, true, muted=muted)
+
+            stdout.write "\n"
+
+            dumpBlockEnd()
+
         of Database     :
             when not defined(NOSQLITE):
                 if v.dbKind==SqliteDatabase: stdout.write fmt("[sqlite db] {cast[uint](v.sqlitedb):#X}")
@@ -612,6 +627,13 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
                     if val==v:
                         result &= "var'" & sym
                         break
+
+        of Method:
+            result &= "method "
+            result &= codify(newWordBlock(v.mparams),pretty,unwrapped,level+1, false, safeStrings=safeStrings)
+
+            result &= " "
+            result &= codify(v.mmain,pretty,unwrapped,level+1, true, safeStrings=safeStrings)
 
         else:
             result &= ""
