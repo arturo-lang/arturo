@@ -94,15 +94,16 @@ type
         Object          = 29
         Store           = 30
         Function        = 31
-        Inline          = 32
-        Block           = 33
-        Range           = 34
-        Database        = 35
-        Socket          = 36    
-        Bytecode        = 37
+        Method          = 32
+        Inline          = 33
+        Block           = 34
+        Range           = 35
+        Database        = 36
+        Socket          = 37    
+        Bytecode        = 38
 
-        Nothing         = 38
-        Any             = 39
+        Nothing         = 39
+        Any             = 40
 
     ValueSpec* = set[ValueKind]
 
@@ -287,6 +288,8 @@ type
                 sto*: VStore
             of Function:
                 funcType*: VFunction
+            of Method:
+                methType*: VMethod
             of Database:
                 case dbKind*: DatabaseKind:
                     of SqliteDatabase:
