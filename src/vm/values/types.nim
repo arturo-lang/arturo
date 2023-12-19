@@ -183,6 +183,13 @@ type
                 op*         : OpCode
                 action*     : BuiltinAction
 
+    VMethod* = ref object
+        marity*     : int8
+        mparams*    : seq[string]
+        mmain*      : Value
+        mbcode*     : Value
+        moverride*  : bool
+
     VStore* = ref object
         data*       : ValueDict     # the actual data
         path*       : string        # the path to the store
