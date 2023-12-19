@@ -629,7 +629,7 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 of opCallX              : i += 2; callByIndex(int(uint16(it[i-1]) shl 8 + byte(it[i]))) 
 
                 # [0x70-0x7F]
-                # function calls
+                # method calls
                 of opMeth0              : callMethodByIndex(0)  
                 of opMeth1              : callMethodByIndex(1)
                 of opMeth2              : callMethodByIndex(2)
