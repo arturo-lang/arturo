@@ -591,6 +591,19 @@ func newFunction*(params: seq[string], main: Value, imports: Value = nil, export
         )
     )
 
+func newMethod*(params: seq[string], main: Value, override: bool = true, injectThis: static bool = true): Value {.inline, enforceNoRaises.} =
+    Value(
+        kind: Method,
+        info: nil,
+        methType: VMethod(
+            marity: int8(params.len) + (when injectThis: 1 else: 0),
+            mparams: (when injectThis: "this" & params else: params),
+            mmain: main,
+            mbcode: nil,
+            moverride: override
+        )
+    )
+
 func newFunctionFromDefinition*(params: ValueArray, main: Value, imports: Value = nil, exports: Value = nil, memoize: bool = false, forceInline: bool = false): Value {.inline, enforceNoRaises.} =
     ## create Function value with given parameters,
     ## generate type checkers, and process info if necessary
@@ -866,6 +879,8 @@ proc copyValue*(v: Value): Value {.inline.} =
                     result = newBuiltin(v.info.descr, v.info.module, v.info.line, v.arity, v.info.args, v.info.attrs, v.info.returns, v.info.example, v.op, v.action)
                 else:
                     result = newBuiltin(v.info.descr, v.info.module, 0, v.arity, v.info.args, v.info.attrs, v.info.returns, "", v.op, v.action)
+        of Method:
+            result = newMethod(v.mparams, v.mmain, v.moverride, injectThis=false)
 
         of Database:    
             when not defined(NOSQLITE):
@@ -1135,6 +1150,11 @@ func hash*(v: Value): Hash {.inline.}=
                 result = result !& hash(v.inline)
             else:
                 result = result !& cast[Hash](unsafeAddr v)
+
+        of Method       :
+            result = result !& hash(v.mparams)
+            result = result !& hash(v.mmain)
+            result = result !& hash(v.moverride)
 
         of Database:
             when not defined(NOSQLITE):

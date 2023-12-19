@@ -565,6 +565,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat:Value = nil): Val
                         throwCannotConvert()
 
             of Function,
+               Method,
                Database,
                Socket,
                Nothing,
