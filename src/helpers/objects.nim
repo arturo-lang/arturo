@@ -22,6 +22,9 @@ import vm/[exec, errors, stack]
 #=======================================
 
 const
+    ThisRef*            = "this"
+    SuperRef*           = "super"
+
     ConstructorField*   = "init"
     StringifyField*     = "print"
     ComparatorField*    = "compare"
@@ -32,10 +35,10 @@ const
 
 template checkArguments(pr: Prototype, values: ValueArray | ValueDict) =
     when values is ValueArray:
-        if pr.fields.len != values.len:
+        if (pr.fields.len - 1) != values.len:
             RuntimeError_IncorrectNumberOfArgumentsForInitializer(pr.name, values.len, toSeq(pr.fields.keys))
     else:
-        if pr.fields.len != 0 and pr.fields.len != values.len:
+        if pr.fields.len != 0 and (pr.fields.len - 1) != values.len:
             RuntimeError_IncorrectNumberOfArgumentsForInitializer(pr.name, values.len, toSeq(pr.fields.keys))
 
 proc fetchConstructorArguments(pr: Prototype, values: ValueArray | ValueDict, args: var ValueArray): bool =
@@ -49,10 +52,11 @@ proc fetchConstructorArguments(pr: Prototype, values: ValueArray | ValueDict, ar
             return false
         else:
             for i,k in enumerate(pr.fields.keys):
-                if (let vv = values.getOrDefault(k, nil); not vv.isNil):
-                    args.add(vv)
-                else:
-                    RuntimeError_MissingArgumentForInitializer(pr.name, k)
+                if k != ThisRef:
+                    if (let vv = values.getOrDefault(k, nil); not vv.isNil):
+                        args.add(vv)
+                    else:
+                        RuntimeError_MissingArgumentForInitializer(pr.name, k)
 
 func processMagicMethods(target: Value, methodName: string) =
     case methodName:
@@ -77,7 +81,7 @@ func generatedConstructor*(params: ValueArray): Value {.inline.} =
         for val in params:
             if val.kind in {Word, Literal, String}:
                 constructorBody.a.add(@[
-                    newPathLabel(@[newWord("this"), newWord(val.s)]),
+                    newPathLabel(@[newWord(ThisRef), newWord(val.s)]),
                     newWord(val.s)
                 ])
 
@@ -87,8 +91,8 @@ func generatedConstructor*(params: ValueArray): Value {.inline.} =
 
 func generatedCompare*(key: Value): Value {.inline.} =
     let compareBody = newBlock(@[
-        newWord("if"), newPath(@[newWord("this"), key]), newSymbol(greaterthan), newPath(@[newWord("that"), key]), newBlock(@[newWord("return"),newInteger(1)]),
-        newWord("if"), newPath(@[newWord("this"), key]), newSymbol(equal), newPath(@[newWord("that"), key]), newBlock(@[newWord("return"),newInteger(0)]),
+        newWord("if"), newPath(@[newWord(ThisRef), key]), newSymbol(greaterthan), newPath(@[newWord("that"), key]), newBlock(@[newWord("return"),newInteger(1)]),
+        newWord("if"), newPath(@[newWord(ThisRef), key]), newSymbol(equal), newPath(@[newWord("that"), key]), newBlock(@[newWord("return"),newInteger(0)]),
         newWord("return"), newWord("neg"), newInteger(1)
     ])
 
@@ -117,9 +121,24 @@ proc getTypeFields*(defs: ValueDict): ValueDict {.inline.} =
 
 proc injectingThis*(fun: Value): Value {.inline.} =
     result = copyValue(fun)
-    if result.params.len < 1 or result.params[0] != "this":
-        result.params.insert("this")
+    if result.params.len < 1 or result.params[0] != ThisRef:
+        result.params.insert(ThisRef)
         result.arity += 1
+
+proc uninjectingThis*(fun: Value): Value {.inline.} =
+    result = copyValue(fun)
+    if result.params.len >= 1 and result.params[0] == ThisRef:
+        result.params.delete(0..0)
+        result.arity -= 1
+
+proc injectingSuper*(fun: Value, super: Value): Value {.inline.} =
+    result = copyValue(fun)
+
+    let injection = @[
+        newLabel(SuperRef), newWord("function"), newBlock(super.params.map((w)=>newWord(w))), super.main
+    ]
+
+    result.main.a.insert(injection)
 
 proc generateNewObject*(pr: Prototype, values: ValueArray | ValueDict): Value =
     # create basic object
@@ -128,14 +147,10 @@ proc generateNewObject*(pr: Prototype, values: ValueArray | ValueDict): Value =
     # migrate all content and 
     # process internal methods accordingly
     for k,v in pr.content:
-        if v.kind == Function:
-            # inject `this`
-            result.o[k] = injectingThis(v)
+        result.o[k] = copyValue(v)
 
-            # check if it's a magic method
+        if v.kind == Function:
             result.processMagicMethods(k)
-        else:
-            result.o[k] = copyValue(v)
 
     # verify arguments
     checkArguments(pr, values)
@@ -155,25 +170,3 @@ proc generateNewObject*(pr: Prototype, values: ValueArray | ValueDict): Value =
     if (let constructorMethod = result.o.getOrDefault(ConstructorField, nil); (not constructorMethod.isNil) and constructorMethod.kind == Function):
         args.insert(result)
         callFunction(constructorMethod, "\\" & ConstructorField, args)
-
-proc injectSuper*(meth: Value, parent: Value) =
-    discard
-    # # TODO(objects/injectSuper) should support `super` in all methods
-    # #  right now, it supports it only in `init`
-    # #  labels: bug, oop
-    # var insertable = @[newLabel("super")]
-    # echo "- injecting *super*"
-    # if parent.isNil or not parent.ts.content.hasKey("init"):
-    #     insertable.add(newWord("null"))
-    #     echo "  .... as `null`"
-    # else:
-    #     echo "  .... as a function"
-    #     let parentInit = parent.ts.content["init"]
-    #     insertable.add(@[
-    #         newWord("function"),
-    #         newBlock(parentInit.params.filter(proc (zz: string): bool = zz != "this").map(proc (zz: string): Value = newWord(zz))),
-    #         parentInit.main,
-    #         newWord("do"),
-    #         newSymbol(doublecolon)
-    #     ])
-    # meth.main.a.insert(insertable)
