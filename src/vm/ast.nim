@@ -114,7 +114,7 @@ const
     NoStartingLine  = 1896618966'u32
 
     TerminalNode*   : set[NodeKind] = {ConstantValue, VariableLoad}
-    CallNode*       : set[NodeKind] = {AttributeNode..SpecialCall}
+    CallNode*       : set[NodeKind] = {AttributeNode..MethodCall}
 
 #=======================================
 # Forward declarations
@@ -480,7 +480,7 @@ proc processBlock*(
                         target.addCall(aliased.name.s, fun=symfunc)
 
     proc getCallNode(name: string, arity: int8 = -1, fun: Value = nil): Node =
-        var callType: OtherCall..SpecialCall = OtherCall
+        var callType: OtherCall..MethodCall = OtherCall
 
         var fn {.cursor.}: Value =
             if fun.isNil:
@@ -597,6 +597,8 @@ proc processBlock*(
                     elif curr.kind==Object:
                         if (let item = curr.o.getOrDefault(next.s, nil); not item.isNil):
                             if item.kind == Function:
+                                pathCallV = item
+                            elif item.kind == Method:
                                 baseV = val.p[0]
                                 pathCallV = item
 
@@ -607,7 +609,7 @@ proc processBlock*(
                 target.addChild(Node(kind: OtherCall, arity: pathCallV.arity, op: opNop, value: pathCallV))
             else:
                 arityCut = 1
-                let c = Node(kind: OtherCall, arity: pathCallV.arity, op: opNop, value: pathCallV)
+                let c = Node(kind: MethodCall, arity: pathCallV.arity, op: opNop, value: pathCallV)
                 c.addChild(newVariable(baseV))
                 target.addChild(c)
 
