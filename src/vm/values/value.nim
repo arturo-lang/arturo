@@ -705,6 +705,10 @@ func newFunctionFromDefinition*(params: ValueArray, main: Value, imports: Value 
 
     result.info.args = argTypes
 
+# TODO(VM/values/value) `newMethodFromDefinition` redundant?
+#  could we possibly "merge" it with `newFunctionFromDefinition` or 
+#  at least create e.g. a template?
+#  labels: values, enhancement, cleanup
 func newMethodFromDefinition*(params: ValueArray, main: Value, override: bool): Value {.inline, enforceNoRaises.} =
     ## create Method value with given parameters,
     ## generate type checkers, and process info if necessary
