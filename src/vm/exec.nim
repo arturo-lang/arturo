@@ -131,9 +131,22 @@ template callFunction*(f: Value, fnName: string = "<closure>"):untyped =
     else:
         f.action()()
 
+template callMethod*(f: Value, methName: string = "<closure>"):untyped =
+    ## Take a Method value, 
+    ## and execute it
+    hookProcProfiler("exec/callMethod"):
+        if unlikely(SP < f.marity):
+            RuntimeError_NotEnoughArguments(methName, f.marity)
+
+        execMethod(f, hash(methName))
+
 template callByName(symIndx: string):untyped =
     let fun = FetchSym(symIndx)
     callFunction(fun, symIndx)
+
+template callMethodByName(symIndx: string):untyped =
+    let meth = FetchSym(symIndx)
+    callMethod(meth, symIndx)
 
 template callByIndex(idx: int):untyped =
     hookProcProfiler("exec/callByIndex"):
@@ -141,6 +154,13 @@ template callByIndex(idx: int):untyped =
             callFunction(cnst[idx])
         else:
             callByName(cnst[idx].s)
+
+template callMethodByIndex(idx: int):untyped =
+    hookProcProfiler("exec/callMethodByIndex"):
+        if cnst[idx].kind==Method:
+            callMethod(cnst[idx])
+        else:
+            callMethodByName(cnst[idx].s)
 
 template fetchAttributeByIndex(idx: int):untyped =
     stack.pushAttr(cnst[idx].s, stack.pop())
@@ -406,6 +426,35 @@ proc execFunctionInline*(fun: Value, fid: Hash) =
             setMemoized(fid, memoizedParams, stack.peek(0))
 
         finalizeLeakless()
+
+proc execMethod*(meth: Value, fid: Hash) =
+    ## Execute given Method value with scoping
+    ## 
+    ## This means:
+    ## - All symbols declared inside will NOT be 
+    ##   available in the outer scope
+    ## - Symbols re-assigned inside will NOT 
+    ##   overwrite the value in the outer scope
+
+    var savedSyms: SymTable
+
+    savedSyms = Syms
+
+    for arg in meth.mparams:
+        # pop argument and set it
+        SetSym(arg, stack.pop())
+
+    if meth.mbcode.isNil:
+        meth.mbcode = newBytecode(doEval(meth.mmain, isFunctionBlock=true))
+
+    try:
+        ExecLoop(meth.mbcode().trans.constants, meth.mbcode().trans.instructions)
+
+    except ReturnTriggered:
+        discard
+
+    finally:
+        Syms = savedSyms
 
 proc ExecLoop*(cnst: ValueArray, it: VBinary) =
     ## The main execution loop.
