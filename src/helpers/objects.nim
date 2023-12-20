@@ -85,7 +85,7 @@ func generatedConstructor*(params: ValueArray): Value {.inline.} =
                     newWord(val.s)
                 ])
 
-        return newFunctionFromDefinition(params, constructorBody)
+        return newMethodFromDefinition(params, constructorBody)
     
     return nil
 
@@ -96,7 +96,7 @@ func generatedCompare*(key: Value): Value {.inline.} =
         newWord("return"), newWord("neg"), newInteger(1)
     ])
 
-    return newFunctionFromDefinition(@[newWord("that")], compareBody)
+    return newMethodFromDefinition(@[newWord("that")], compareBody)
 
 proc getTypeFields*(defs: ValueDict): ValueDict {.inline.} =
     result = newOrderedTable[string,Value]()
