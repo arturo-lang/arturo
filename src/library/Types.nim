@@ -249,7 +249,7 @@ proc defineLibrary*() =
             "body"      : {Block}
         },
         attrs       = {
-            "distinct"  : ({Logical},"method doesn't override any magic method")
+            "distinct"  : ({Logical},"shouldn't be treated as a magic method")
         },
         returns     = {Method},
         # TODO(Types\method) add documentation example
@@ -257,7 +257,7 @@ proc defineLibrary*() =
         example     = """
         """:
             #=======================================================
-            let override = not hadAttr("distinct")
+            let magic = not hadAttr("distinct")
             
             let argBlock {.cursor.} =
                 if xKind == Block: 
@@ -265,7 +265,7 @@ proc defineLibrary*() =
                     x.a
                 else: @[x]
 
-            push(newMethodFromDefinition(argBlock, y, override))
+            push(newMethodFromDefinition(argBlock, y, magic))
 
     # TODO(Types\to) revise attributes
     #  the attributes to this function seem to me a bit confusing. I mean, `to` is

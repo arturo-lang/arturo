@@ -150,7 +150,7 @@ proc generateNewObject*(pr: Prototype, values: ValueArray | ValueDict): Value =
     for k,v in pr.content:
         result.o[k] = copyValue(v)
 
-        if v.kind == Method:
+        if v.kind == Method and v.magic:
             result.processMagicMethods(k)
 
     # verify arguments
