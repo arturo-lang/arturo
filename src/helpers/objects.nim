@@ -36,10 +36,10 @@ const
 
 template checkArguments(pr: Prototype, values: ValueArray | ValueDict) =
     when values is ValueArray:
-        if (pr.fields.len - 1) != values.len:
+        if pr.fields.len != values.len:
             RuntimeError_IncorrectNumberOfArgumentsForInitializer(pr.name, values.len, toSeq(pr.fields.keys))
     else:
-        if pr.fields.len != 0 and (pr.fields.len - 1) != values.len:
+        if pr.fields.len != 0 and pr.fields.len != values.len:
             RuntimeError_IncorrectNumberOfArgumentsForInitializer(pr.name, values.len, toSeq(pr.fields.keys))
 
 proc fetchConstructorArguments(pr: Prototype, values: ValueArray | ValueDict, args: var ValueArray): bool =
