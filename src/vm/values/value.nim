@@ -906,6 +906,16 @@ proc newStringDictionary*(a: TableRef[string, seq[string]], collapseBlocks=false
         else:
             result.d[k] = newStringBlock(v)
 
+# TODO(VM/values/value) add better unit-tests for deep copies
+#  right now, in tests/unittests/deepcopies, we're testing integers
+#  strings, blocks and dictionaries. The tests could/should cover pretty
+#  much every type (nested or not)
+#  labels: values, unit-test
+
+# TODO(VM/values/value) create proper constructor overloads for deep-copying
+#  `newQuantity(.., copy=true)` would be the example. It should operate statically,
+#  at runtime!
+#  labels: values, enhancement, cleanup
 proc copyValue*(v: Value): Value {.inline.} =
     ## copy given value (deep copy) and return 
     ## the result
@@ -965,7 +975,11 @@ proc copyValue*(v: Value): Value {.inline.} =
         of Range:
             result = newRange(v.rng.start, v.rng.stop, v.rng.step, v.rng.infinite, v.rng.numeric, v.rng.forward)
 
-        of Dictionary:      result = newDictionary(v.d[])
+        of Dictionary:      
+            let dcopy = newOrderedTable[string,Value]()
+            for key,val in v.d:
+                dcopy[key] = copyValue(val)
+            result = newDictionary(dcopy)
         of Object:          result = newObject(v.proto, v.o[], v.magic)
         of Store:           result = newStore(v.sto)
 

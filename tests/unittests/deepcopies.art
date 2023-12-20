@@ -1,0 +1,65 @@
+topic: $[topic :string] -> print ~"\n>> |topic|"
+check: $[blk][
+    ensure blk
+    print "[+] passed!"
+]
+
+;-------------------
+
+topic ":integer"
+
+a: 2
+b: new a
+a: 3
+check -> a <> b
+
+c: 2
+d: new c
+inc 'c
+check -> c <> d
+
+topic ":string"
+
+a: "John"
+b: new a
+'a ++ " Doe"
+check -> a <> b
+
+c: "John"
+d: new c
+d\2: "a"
+check -> c <> d
+
+topic ":block"
+
+a: [1 2 3]
+b: new a
+a: [3 4 5]
+check -> a <> b
+
+c: [1 2 3]
+d: new c
+'c ++ 4
+check -> c <> d
+
+e: [1 [2 3]]
+f: new e
+f\0: 4
+check -> e <> f
+
+g: [1 [2 3]]
+h: new g
+h\1\0: 4
+check -> g <> h
+
+topic ":dictionary"
+
+a: #[name: "John" surname: "Doe"]
+b: new a
+a\name: "Jane"
+check -> a <> b
+
+c: #[name: "list" content: [1 2 3]]
+d: new c
+c\content\0: 4
+check -> c <> d
