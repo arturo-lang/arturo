@@ -62,11 +62,11 @@ func processMagicMethods(target: Value, methodName: string) =
     case methodName:
         of StringifyField:
             target.magic.doPrint = proc (self: Value): string =
-                callFunction(target.o[methodName], "\\" & StringifyField, @[self])
+                callMethod(target.o[methodName], "\\" & StringifyField, @[self])
                 stack.pop().s
         of ComparatorField:
             target.magic.doCompare = proc (self: Value, other: Value): int =
-                callFunction(target.o[methodName], "\\" & ComparatorField, @[self, other])
+                callMethod(target.o[methodName], "\\" & ComparatorField, @[self, other])
                 stack.pop().i
         else:
             discard
@@ -149,7 +149,7 @@ proc generateNewObject*(pr: Prototype, values: ValueArray | ValueDict): Value =
     for k,v in pr.content:
         result.o[k] = copyValue(v)
 
-        if v.kind == Function:
+        if v.kind == Method:
             result.processMagicMethods(k)
 
     # verify arguments
@@ -167,6 +167,6 @@ proc generateNewObject*(pr: Prototype, values: ValueArray | ValueDict): Value =
     
     # perform initialization 
     # using the available constructor
-    if (let constructorMethod = result.o.getOrDefault(ConstructorField, nil); (not constructorMethod.isNil) and constructorMethod.kind == Function):
+    if (let constructorMethod = result.o.getOrDefault(ConstructorField, nil); (not constructorMethod.isNil) and constructorMethod.kind == Method):
         args.insert(result)
-        callFunction(constructorMethod, "\\" & ConstructorField, args)
+        callMethod(constructorMethod, "\\" & ConstructorField, args)
