@@ -723,7 +723,11 @@ proc copyValue*(v: Value): Value {.inline.} =
         of Range:
             result = newRange(v.rng.start, v.rng.stop, v.rng.step, v.rng.infinite, v.rng.numeric, v.rng.forward)
 
-        of Dictionary:      result = newDictionary(v.d[])
+        of Dictionary:      
+            let dcopy = newOrderedTable[string,Value]()
+            for key,val in v.d:
+                dcopy[key] = copyValue(val)
+            result = newDictionary(dcopy)
         of Object:          result = newObject(v.o[], v.proto)
         of Store:           result = newStore(v.sto)
 
