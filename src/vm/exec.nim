@@ -60,6 +60,7 @@ var
 
 proc execFunction*(fun: Value, fid: Hash)
 proc execFunctionInline*(fun: Value, fid: Hash)
+proc execMethod*(meth: Value, fid: Hash)
 
 proc ExecLoop*(cnst: ValueArray, it: VBinary)
 
@@ -130,6 +131,17 @@ template callFunction*(f: Value, fnName: string = "<closure>"):untyped =
             else: execFunction(f, hash(fnName))
     else:
         f.action()()
+
+proc callMethod*(f: Value, methName: string, args: ValueArray) =
+    ## Take a Method value,
+    ## and execute it with given arguments
+    hookProcProfiler("exec/callMethod"):
+        for arg in args.reversed:
+            push arg
+        if unlikely(SP < f.marity):
+            RuntimeError_NotEnoughArguments(methName, f.marity)
+
+        execMethod(f, hash(methName))
 
 template callMethod*(f: Value, methName: string = "<closure>"):untyped =
     ## Take a Method value, 
