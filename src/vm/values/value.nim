@@ -591,7 +591,7 @@ func newFunction*(params: seq[string], main: Value, imports: Value = nil, export
         )
     )
 
-func newMethod*(params: seq[string], main: Value, magic: bool = true, injectThis: static bool = true): Value {.inline, enforceNoRaises.} =
+func newMethod*(params: seq[string], main: Value, isDistinct: bool = false, injectThis: static bool = true): Value {.inline, enforceNoRaises.} =
     Value(
         kind: Method,
         info: nil,
@@ -600,7 +600,7 @@ func newMethod*(params: seq[string], main: Value, magic: bool = true, injectThis
             mparams: (when injectThis: "this" & params else: params),
             mmain: main,
             mbcode: nil,
-            mmagic: magic
+            mdistinct: isDistinct
         )
     )
 
@@ -992,7 +992,7 @@ proc copyValue*(v: Value): Value {.inline.} =
                 else:
                     result = newBuiltin(v.info.descr, v.info.module, 0, v.arity, v.info.args, v.info.attrs, v.info.returns, "", v.op, v.action)
         of Method:
-            result = newMethod(v.mparams, v.mmain, v.moverride, injectThis=false)
+            result = newMethod(v.mparams, v.mmain, v.mdistinct, injectThis=false)
 
         of Database:    
             when not defined(NOSQLITE):
@@ -1266,7 +1266,7 @@ func hash*(v: Value): Hash {.inline.}=
         of Method       :
             result = result !& hash(v.mparams)
             result = result !& hash(v.mmain)
-            result = result !& hash(v.moverride)
+            result = result !& hash(v.mdistinct)
 
         of Database:
             when not defined(NOSQLITE):

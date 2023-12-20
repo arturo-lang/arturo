@@ -257,7 +257,7 @@ proc defineLibrary*() =
         example     = """
         """:
             #=======================================================
-            let magic = not hadAttr("distinct")
+            let isDistinct = hadAttr("distinct")
             
             let argBlock {.cursor.} =
                 if xKind == Block: 
@@ -265,7 +265,7 @@ proc defineLibrary*() =
                     x.a
                 else: @[x]
 
-            push(newMethodFromDefinition(argBlock, y, magic))
+            push(newMethodFromDefinition(argBlock, y, isDistinct))
 
     # TODO(Types\to) revise attributes
     #  the attributes to this function seem to me a bit confusing. I mean, `to` is
