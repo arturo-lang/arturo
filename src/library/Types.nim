@@ -249,7 +249,7 @@ proc defineLibrary*() =
             "body"      : {Block}
         },
         attrs       = {
-            "new"       : ({Logical},"method doesn't overriding any parent or magic method")
+            "distinct"  : ({Logical},"method doesn't override any magic method")
         },
         returns     = {Method},
         # TODO(Types\method) add documentation example
@@ -257,7 +257,7 @@ proc defineLibrary*() =
         example     = """
         """:
             #=======================================================
-            let override = not hadAttr("new")
+            let override = not hadAttr("distinct")
             
             let argBlock {.cursor.} =
                 if xKind == Block: 
