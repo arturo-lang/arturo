@@ -255,30 +255,15 @@ proc defineLibrary*() =
         example     = """
         """:
             #=======================================================
-            var imports: Value = nil
-            if checkAttr("import"):
-                var ret = initOrderedTable[string,Value]()
-                for item in aImport.a:
-                    requireAttrValue("import", item, {Word, Literal})
-                    ret[item.s] = FetchSym(item.s)
-                imports = newDictionary(ret)
-
-            var exports: Value = nil
-
-            if checkAttr("export"):
-                requireAttrValueBlock("export", aExport, {Word, Literal})
-                exports = aExport
-
-            var memoize = (hadAttr("memoize"))
-            var inline = (hadAttr("inline"))
-
+            let override = not hadAttr("new")
+            
             let argBlock {.cursor.} =
                 if xKind == Block: 
                     requireValueBlock(x, {Word, Literal, Type})
                     x.a
                 else: @[x]
 
-            push(newFunctionFromDefinition(argBlock, y, imports, exports, memoize, inline))
+            push(newMethodFromDefinition(argBlock, y, override))
 
     # TODO(Types\to) revise attributes
     #  the attributes to this function seem to me a bit confusing. I mean, `to` is
