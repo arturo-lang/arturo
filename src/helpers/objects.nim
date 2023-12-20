@@ -104,10 +104,11 @@ proc getTypeFields*(defs: ValueDict): ValueDict {.inline.} =
 
     if (let constructorMethod = defs.getOrDefault(ConstructorM, nil); not constructorMethod.isNil):
         for p in constructorMethod.params:
-            result[p] = newType(Any)
+            if p != "this":
+                result[p] = newType(Any)
 
         let ensureW = newWord("ensure")
-        var i = 0
+        var i = 1
         while i < constructorMethod.main.a.len - 1:
             if (let ensureBlock = constructorMethod.main.a[i+1]; constructorMethod.main.a[i] == ensureW and ensureBlock.kind == Block):
                 let lastElement = ensureBlock.a[^1]
