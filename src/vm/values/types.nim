@@ -189,7 +189,7 @@ type
         mparams*    : seq[string]
         mmain*      : Value
         mbcode*     : Value
-        mmagic*     : bool
+        mdistinct*  : bool
 
     VStore* = ref object
         data*       : ValueDict     # the actual data
@@ -391,7 +391,7 @@ makeAccessor(methType, marity)
 makeAccessor(methType, mparams)
 makeAccessor(methType, mmain)
 makeAccessor(methType, mbcode)
-makeAccessor(methType, mmagic)
+makeAccessor(methType, mdistinct)
 
 #=======================================
 # Helpers
