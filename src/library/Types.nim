@@ -126,16 +126,18 @@ proc defineLibrary*() =
                     definitions[ConstructorM] = constructorMethod
                 else:
                     for k,v in newDictionary(execDictionary(y)).d:
-                        if v.kind == Function:
-                            definitions[k] = v.injectingThis()
-                        else:
-                            definitions[k] = v
+                        definitions[k] = v
+                        # if v.kind == Function:
+                        #     definitions[k] = v.injectingThis()
+                        # else:
+                        #     definitions[k] = v
             elif y.kind == Dictionary:
                 for k,v in y.d:
-                    if v.kind == Function:
-                        definitions[k] = v.injectingThis()
-                    else:
-                        definitions[k] = v
+                    definitions[k] = v
+                    # if v.kind == Function:
+                    #     definitions[k] = v.injectingThis()
+                    # else:
+                    #     definitions[k] = v
             else:
                 if y.tpKind == UserType:
                     if (let yproto = getType(y.tid); not yproto.isNil):
@@ -199,7 +201,7 @@ proc defineLibrary*() =
                     inherits = x
                     
                     for k,v in xproto.content:
-                        if v.kind == Function:
+                        if v.kind == Method:
                             super[k] = v.uninjectingThis()
 
                         definitions[k] = copyValue(v)
