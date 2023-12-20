@@ -25,9 +25,10 @@ const
     ThisRef*            = "this"
     SuperRef*           = "super"
 
-    ConstructorField*   = "init"
-    StringifyField*     = "print"
-    ComparatorField*    = "compare"
+    # magic methods
+    ConstructorM*       = "init"
+    ToStringM*          = "print"
+    CompareM*           = "compare"
 
 #=======================================
 # Helpers
@@ -60,13 +61,13 @@ proc fetchConstructorArguments(pr: Prototype, values: ValueArray | ValueDict, ar
 
 func processMagicMethods(target: Value, methodName: string) =
     case methodName:
-        of StringifyField:
+        of ToStringM:
             target.magic.doPrint = proc (self: Value): string =
-                callMethod(target.o[methodName], "\\" & StringifyField, @[self])
+                callMethod(target.o[methodName], "\\" & ToStringM, @[self])
                 stack.pop().s
-        of ComparatorField:
+        of CompareM:
             target.magic.doCompare = proc (self: Value, other: Value): int =
-                callMethod(target.o[methodName], "\\" & ComparatorField, @[self, other])
+                callMethod(target.o[methodName], "\\" & CompareM, @[self, other])
                 stack.pop().i
         else:
             discard
@@ -101,7 +102,7 @@ func generatedCompare*(key: Value): Value {.inline.} =
 proc getTypeFields*(defs: ValueDict): ValueDict {.inline.} =
     result = newOrderedTable[string,Value]()
 
-    if (let constructorMethod = defs.getOrDefault(ConstructorField, nil); not constructorMethod.isNil):
+    if (let constructorMethod = defs.getOrDefault(ConstructorM, nil); not constructorMethod.isNil):
         for p in constructorMethod.params:
             result[p] = newType(Any)
 
@@ -167,6 +168,6 @@ proc generateNewObject*(pr: Prototype, values: ValueArray | ValueDict): Value =
     
     # perform initialization 
     # using the available constructor
-    if (let constructorMethod = result.o.getOrDefault(ConstructorField, nil); (not constructorMethod.isNil) and constructorMethod.kind == Method):
+    if (let constructorMethod = result.o.getOrDefault(ConstructorM, nil); (not constructorMethod.isNil) and constructorMethod.kind == Method):
         args.insert(result)
-        callMethod(constructorMethod, "\\" & ConstructorField, args)
+        callMethod(constructorMethod, "\\" & ConstructorM, args)

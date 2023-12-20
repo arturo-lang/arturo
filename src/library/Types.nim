@@ -123,7 +123,7 @@ proc defineLibrary*() =
 
             if y.kind == Block:
                 if (let constructorMethod = generatedConstructor(y.a); not constructorMethod.isNil):
-                    definitions[ConstructorField] = constructorMethod
+                    definitions[ConstructorM] = constructorMethod
                 else:
                     for k,v in newDictionary(execDictionary(y)).d:
                         if v.kind == Function:
@@ -216,7 +216,7 @@ proc defineLibrary*() =
 
             if y.kind == Block:
                 if (let constructorMethod = generatedConstructor(y.a); not constructorMethod.isNil):
-                    extra[ConstructorField] = constructorMethod
+                    extra[ConstructorM] = constructorMethod
                 else:
                     extra = newDictionary(execDictionary(y)).d
             else:
