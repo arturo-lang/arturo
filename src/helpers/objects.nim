@@ -136,7 +136,7 @@ proc injectingSuper*(fun: Value, super: Value): Value {.inline.} =
     result = copyValue(fun)
 
     let injection = @[
-        newLabel(SuperRef), newWord("function"), newBlock(super.params.map((w)=>newWord(w))), super.main
+        newLabel(SuperRef), newWord("function"), newBlock(super.mparams.map((w)=>newWord(w))), super.mmain
     ]
 
     result.main.a.insert(injection)
