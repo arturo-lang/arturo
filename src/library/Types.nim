@@ -240,8 +240,8 @@ proc defineLibrary*() =
             push newUserType(tmpTid)
 
     builtin "method",
-        alias       = dollar,
-        op          = opFunc,
+        alias       = unaliased,
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "create type method with given arguments and body",
         args        = {
@@ -257,6 +257,7 @@ proc defineLibrary*() =
         example     = """
         """:
             #=======================================================
+            echo "in -> method"
             let isDistinct = hadAttr("distinct")
             
             let argBlock {.cursor.} =
@@ -265,6 +266,7 @@ proc defineLibrary*() =
                     x.a
                 else: @[x]
 
+            echo "creating new method from definition"
             push(newMethodFromDefinition(argBlock, y, isDistinct))
 
     # TODO(Types\to) revise attributes
