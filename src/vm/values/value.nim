@@ -591,7 +591,7 @@ func newFunction*(params: seq[string], main: Value, imports: Value = nil, export
         )
     )
 
-func newMethod*(params: seq[string], main: Value, override: bool = true, injectThis: static bool = true): Value {.inline, enforceNoRaises.} =
+func newMethod*(params: seq[string], main: Value, magic: bool = true, injectThis: static bool = true): Value {.inline, enforceNoRaises.} =
     Value(
         kind: Method,
         info: nil,
@@ -600,7 +600,7 @@ func newMethod*(params: seq[string], main: Value, override: bool = true, injectT
             mparams: (when injectThis: "this" & params else: params),
             mmain: main,
             mbcode: nil,
-            moverride: override
+            mmagic: magic
         )
     )
 
@@ -709,7 +709,7 @@ func newFunctionFromDefinition*(params: ValueArray, main: Value, imports: Value 
 #  could we possibly "merge" it with `newFunctionFromDefinition` or 
 #  at least create e.g. a template?
 #  labels: values, enhancement, cleanup
-func newMethodFromDefinition*(params: ValueArray, main: Value, override: bool = true): Value {.inline, enforceNoRaises.} =
+func newMethodFromDefinition*(params: ValueArray, main: Value, magic: bool = true): Value {.inline, enforceNoRaises.} =
     ## create Method value with given parameters,
     ## generate type checkers, and process info if necessary
 
@@ -750,14 +750,14 @@ func newMethodFromDefinition*(params: ValueArray, main: Value, override: bool = 
         var mainBody: ValueArray = main.a
         mainBody.insert(body)
 
-        result = newMethod(args,newBlock(mainBody),override)
+        result = newMethod(args,newBlock(mainBody),magic)
     else:
         if params.len > 0:
             for arg in params:
                 argTypes[arg.s] = {Any}
         else:
             argTypes[""] = {Nothing}
-        result = newMethod(params.map((w)=>w.s),main,override)
+        result = newMethod(params.map((w)=>w.s),main,magic)
 
     result.info = ValueInfo(kind: Method)
 
