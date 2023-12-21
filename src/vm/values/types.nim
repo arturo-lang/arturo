@@ -152,6 +152,7 @@ type
         doCompare*  : proc (a,b:Value): int
 
         doGet*      : proc (a,b:Value): Value
+        doSet*      : proc (a,b,c:Value)
 
     SymbolDict*   = OrderedTable[VSymbol,AliasBinding]
 
