@@ -33,6 +33,10 @@ const
     GetM*               = "get"
     SetM*               = "set"
 
+    EqualQM*            = "equal?"
+    LessQM*             = "less?"
+    GreaterQM*          = "greater?"
+
 #=======================================
 # Helpers
 #=======================================
@@ -82,6 +86,18 @@ func processMagicMethods(target: Value, methodName: string) =
         of SetM:
             target.magic.doSet = proc (self: Value, key: Value, val: Value) =
                 callMethod(target.o[methodName], "\\" & SetM, @[self, key, val])
+        of EqualQM:
+            target.magic.doEqualQ = proc (self: Value, other: Value): bool =
+                callMethod(target.o[methodName], "\\" & EqualQM, @[self, other])
+                isTrue(stack.pop())
+        of LessQM:
+            target.magic.doEqualQ = proc (self: Value, other: Value): bool =
+                callMethod(target.o[methodName], "\\" & LessQM, @[self, other])
+                isTrue(stack.pop())
+        of GreaterQM:
+            target.magic.doEqualQ = proc (self: Value, other: Value): bool =
+                callMethod(target.o[methodName], "\\" & GreaterQM, @[self, other])
+                isTrue(stack.pop())
         else:
             discard
 

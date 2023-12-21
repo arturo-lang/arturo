@@ -153,6 +153,10 @@ type
 
         doGet*      : proc (a,b:Value): Value
         doSet*      : proc (a,b,c:Value)
+        
+        doEqualQ*   : proc (a,b:Value): bool
+        doLessQ*    : proc (a,b:Value): bool
+        doGreaterQ* : proc (a,b:Value): bool
 
     SymbolDict*   = OrderedTable[VSymbol,AliasBinding]
 
