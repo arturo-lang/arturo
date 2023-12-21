@@ -31,6 +31,7 @@ const
     CompareM*           = "compare"
 
     GetM*               = "get"
+    SetM*               = "set"
 
 #=======================================
 # Helpers
@@ -78,6 +79,9 @@ func processMagicMethods(target: Value, methodName: string) =
             target.magic.doGet = proc (self: Value, key: Value): Value =
                 callMethod(target.o[methodName], "\\" & GetM, @[self, key])
                 stack.pop()
+        of SetM:
+            target.magic.doSet = proc (self: Value, key: Value, val: Value) =
+                callMethod(target.o[methodName], "\\" & SetM, @[self, key, val])
         else:
             discard
 
