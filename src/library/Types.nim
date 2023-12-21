@@ -220,7 +220,8 @@ proc defineLibrary*() =
                 if (let constructorMethod = generatedConstructor(y.a); not constructorMethod.isNil):
                     extra[ConstructorM] = constructorMethod
                 else:
-                    extra = newDictionary(execDictionary(y)).d
+                    for k,v in newDictionary(execDictionary(y)).d:
+                        extra[k] = v
             else:
                 for k,v in y.d:
                     extra[k] = v
@@ -229,6 +230,8 @@ proc defineLibrary*() =
                 if v.kind == Method:
                     if (let superF = super.getOrDefault(k, nil); not superF.isNil):
                         definitions[k] = v.injectingSuper(superF)
+                    else:
+                        definitions[k] = copyValue(v)
                         
                     definitions[k].injectThis()
                 else:
