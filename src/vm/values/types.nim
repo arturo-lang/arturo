@@ -138,14 +138,11 @@ type
         precedence*: PrecedenceKind
         name*:       Value
 
-    FieldType* = set[ValueKind]
-    FieldTable* = OrderedTable[string,FieldType]
-
     Prototype* = ref object
         name*           : string
         content*        : ValueDict
         inherits*       : Value
-        fields*         : FieldTable
+        fields*         : ValueDict
         super*          : ValueDict
 
     MagicMethods* = ref object
@@ -454,5 +451,5 @@ proc setType*(tid: string, proto: Prototype = nil) {.inline.} =
 proc getType*(tid: string): Prototype {.inline.} =
     return TypeLookup[tid]
 
-proc newPrototype*(name: string, content: ValueDict, inherits: Value, fields: FieldTable = initOrderedTable[string,FieldType](), super: ValueDict = newOrderedTable[string,Value]()): Prototype {.inline.} =
+proc newPrototype*(name: string, content: ValueDict, inherits: Value, fields: ValueDict = newOrderedTable[string,Value](), super: ValueDict = newOrderedTable[string,Value]()): Prototype {.inline.} =
     Prototype(name: name, content: content, inherits: inherits, fields: fields, super: super)
