@@ -52,7 +52,7 @@ proc fetchConstructorArguments(pr: Prototype, values: ValueArray | ValueDict, ar
         if pr.fields.len == 0:
             return false
         else:
-            for i,k in enumerate(pr.fields.keys):
+            for k,v in pr.fields:
                 if k != ThisRef:
                     if (let vv = values.getOrDefault(k, nil); not vv.isNil):
                         args.add(vv)
