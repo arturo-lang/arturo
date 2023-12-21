@@ -751,16 +751,16 @@ proc defineLibrary*() =
                             if (let got = GetKey(x.o, y.s, withError=false); not got.isNil):
                                 push(got)
                             elif not x.magic.doGet.isNil:
-                                push(x.magic.doGet(x.o, y.s))
+                                push(x.magic.doGet(x, y))
                             else:
-                                GetKey(x.o, y.s) # Merely to trigger the error
+                                discard GetKey(x.o, y.s) # Merely to trigger the error
                         else:
                             if (let got = GetKey(x.o, $(y), withError=false); not got.isNil):
                                 push(got)
                             elif not x.magic.doGet.isNil:
-                                push(x.magic.doGet(x.o, $(y)))
+                                push(x.magic.doGet(x, y))
                             else:
-                                GetKey(x.o, $(y)) # Merely to trigger the error
+                                discard GetKey(x.o, $(y)) # Merely to trigger the error
                 of Store:
                     when not defined(WEB):
                         case yKind:
