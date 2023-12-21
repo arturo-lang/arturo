@@ -30,7 +30,7 @@ const
     ToStringM*          = "print"
     CompareM*           = "compare"
 
-    GetM*               = "get"
+    GetM*               = "gett"
     SetM*               = "set"
 
 #=======================================
@@ -63,6 +63,7 @@ proc fetchConstructorArguments(pr: Prototype, values: ValueArray | ValueDict, ar
                         RuntimeError_MissingArgumentForInitializer(pr.name, k)
 
 func processMagicMethods(target: Value, methodName: string) =
+    debugEcho "processing magic method: " & methodName
     case methodName:
         of ConstructorM:
             target.magic.doInit = proc (args: ValueArray) =
@@ -77,7 +78,7 @@ func processMagicMethods(target: Value, methodName: string) =
                 stack.pop().i
         of GetM:
             target.magic.doGet = proc (self: Value, key: Value): Value =
-                callMethod(target.o[methodName], "\\" & GetM, @[self, other])
+                callMethod(target.o[methodName], "\\" & GetM, @[self, key])
                 stack.pop()
         else:
             discard
