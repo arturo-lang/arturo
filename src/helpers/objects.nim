@@ -30,8 +30,7 @@ const
     ToStringM*          = "print"
     CompareM*           = "compare"
 
-    GetM*               = "gett"
-    SetM*               = "set"
+    GetM*               = "get"
 
 #=======================================
 # Helpers
@@ -63,7 +62,6 @@ proc fetchConstructorArguments(pr: Prototype, values: ValueArray | ValueDict, ar
                         RuntimeError_MissingArgumentForInitializer(pr.name, k)
 
 func processMagicMethods(target: Value, methodName: string) =
-    debugEcho "processing magic method: " & methodName
     case methodName:
         of ConstructorM:
             target.magic.doInit = proc (args: ValueArray) =
