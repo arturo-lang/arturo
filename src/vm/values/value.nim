@@ -709,7 +709,7 @@ func newFunctionFromDefinition*(params: ValueArray, main: Value, imports: Value 
 #  could we possibly "merge" it with `newFunctionFromDefinition` or 
 #  at least create e.g. a template?
 #  labels: values, enhancement, cleanup
-func newMethodFromDefinition*(params: ValueArray, main: Value, magic: bool = true): Value {.inline, enforceNoRaises.} =
+func newMethodFromDefinition*(params: ValueArray, main: Value, isDistinct: bool = false): Value {.inline, enforceNoRaises.} =
     ## create Method value with given parameters,
     ## generate type checkers, and process info if necessary
 
@@ -750,14 +750,14 @@ func newMethodFromDefinition*(params: ValueArray, main: Value, magic: bool = tru
         var mainBody: ValueArray = main.a
         mainBody.insert(body)
 
-        result = newMethod(args,newBlock(mainBody),magic)
+        result = newMethod(args,newBlock(mainBody),isDistinct)
     else:
         if params.len > 0:
             for arg in params:
                 argTypes[arg.s] = {Any}
         else:
             argTypes[""] = {Nothing}
-        result = newMethod(params.map((w)=>w.s),main,magic)
+        result = newMethod(params.map((w)=>w.s),main,isDistinct)
 
     result.info = ValueInfo(kind: Method)
 
