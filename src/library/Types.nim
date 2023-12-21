@@ -127,24 +127,16 @@ proc defineLibrary*() =
                 else:
                     for k,v in newDictionary(execDictionary(y)).d:
                         definitions[k] = v
-                        # if v.kind == Function:
-                        #     definitions[k] = v.injectingThis()
-                        # else:
-                        #     definitions[k] = v
             elif y.kind == Dictionary:
                 for k,v in y.d:
-                    definitions[k] = v
-                    # if v.kind == Function:
-                    #     definitions[k] = v.injectingThis()
-                    # else:
-                    #     definitions[k] = v
+                    definitions[k] = copyValue(v)
             else:
                 if y.tpKind == UserType:
                     if (let yproto = getType(y.tid); not yproto.isNil):
                         inherits = yproto.inherits
                         super = yproto.super
                         for k,v in yproto.content:
-                            definitions[k] = v
+                            definitions[k] = copyValue(v)
                     else:
                         # TODO(Types\define) check if inherited type is defined
                         #  if not we should show an error
@@ -224,7 +216,7 @@ proc defineLibrary*() =
                         extra[k] = v
             else:
                 for k,v in y.d:
-                    extra[k] = v
+                    extra[k] = copyValue(v)
 
             for k,v in extra:
                 if v.kind == Method:
