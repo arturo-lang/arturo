@@ -304,6 +304,14 @@ proc RuntimeError_IncorrectNumberOfArgumentsForInitializer*(typeName: string, go
           "wrong number of parameters: " & $(got) & ";" &
           "expected: " & $(expected.len) & " (" & expected.join(", ") & ")"
 
+# not used!
+proc RuntimeError_IncorrectArgumentTypeForInitializer*(typeName: string, key: string, got: string, expected: seq[string]) =
+    panic RuntimeError,
+          "cannot initialize object of type _:" & (typeName) & "_;" &
+          "wrong type for field: " & $(key) & ";" &
+          "got: " & $(got) & ";" &
+          "expected: " & expected.join(", ")
+
 proc RuntimeError_MissingArgumentForInitializer*(typeName: string, missing: string) =
     panic RuntimeError,
           "cannot initialize object of type _:" & (typeName) & "_;" &
