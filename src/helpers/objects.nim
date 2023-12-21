@@ -30,6 +30,9 @@ const
     ToStringM*          = "print"
     CompareM*           = "compare"
 
+    GetM*               = "get"
+    SetM*               = "set"
+
 #=======================================
 # Helpers
 #=======================================
@@ -72,6 +75,10 @@ func processMagicMethods(target: Value, methodName: string) =
             target.magic.doCompare = proc (self: Value, other: Value): int =
                 callMethod(target.o[methodName], "\\" & CompareM, @[self, other])
                 stack.pop().i
+        of GetM:
+            target.magic.doGet = proc (self: Value, key: Value): Value =
+                callMethod(target.o[methodName], "\\" & GetM, @[self, other])
+                stack.pop()
         else:
             discard
 
