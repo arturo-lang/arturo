@@ -150,7 +150,7 @@ proc generateNewObject*(pr: Prototype, values: ValueArray | ValueDict): Value =
     # process internal methods accordingly
     for k,v in pr.content:
         result.o[k] = copyValue(v)
-
+        echo "--- " & k & " distinct?: " & $(v.mdistinct)
         if v.kind == Method and not v.mdistinct:
             result.processMagicMethods(k)
 
