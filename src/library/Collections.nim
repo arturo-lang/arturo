@@ -28,7 +28,7 @@ when not defined(NOGMP):
     import helpers/bignums as BignumsHelper
 
 import algorithm, os, random, sequtils
-import strutils, sugar, unicode
+import strutils, sugar, tables, unicode
 
 import helpers/arrays
 import helpers/datasource
@@ -1674,11 +1674,14 @@ proc defineLibrary*() =
                         else:
                             x.d[$(y)] = z
                 of Object:
-                    case yKind:
-                        of String, Word, Literal, Label:
-                            x.o[y.s] = z
-                        else:
-                            x.o[$(y)] = z
+                    if unlikely((not x.magic.doSet.isNil) and (y.kind in {String,Word,Literal,Label}) and (y.s notin toSeq(x.proto.fields.keys()))):
+                        x.magic.doSet(x, y, z)
+                    else:
+                        case yKind:
+                            of String, Word, Literal, Label:
+                                x.o[y.s] = z
+                            else:
+                                x.o[$(y)] = z
                 of Store:
                     when not defined(WEB):
                         case yKind:
