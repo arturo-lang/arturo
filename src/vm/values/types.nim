@@ -138,16 +138,19 @@ type
         precedence*: PrecedenceKind
         name*:       Value
 
+    FieldType* = set[ValueKind]
+    FieldTable* = OrderedTable[string,FieldType]
+
     Prototype* = ref object
         name*           : string
         content*        : ValueDict
         inherits*       : Value
-        fields*         : ValueDict
+        fields*         : FieldTable
         super*          : ValueDict
 
     MagicMethods* = ref object
         doInit*     : proc (vs:ValueArray)
-        
+
         doPrint*    : proc (v:Value): string
         doCompare*  : proc (a,b:Value): int
 
