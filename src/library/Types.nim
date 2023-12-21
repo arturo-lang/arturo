@@ -257,7 +257,6 @@ proc defineLibrary*() =
         example     = """
         """:
             #=======================================================
-            echo "in -> method"
             let isDistinct = hadAttr("distinct")
             
             let argBlock {.cursor.} =
@@ -266,7 +265,6 @@ proc defineLibrary*() =
                     x.a
                 else: @[x]
 
-            echo "creating new method from definition"
             push(newMethodFromDefinition(argBlock, y, isDistinct))
 
     # TODO(Types\to) revise attributes

@@ -39,7 +39,7 @@ template checkArguments(pr: Prototype, values: ValueArray | ValueDict) =
         if pr.fields.len != values.len:
             RuntimeError_IncorrectNumberOfArgumentsForInitializer(pr.name, values.len, toSeq(pr.fields.keys))
     else:
-        if pr.fields.len != 0 and pr.fields.len != values.len:
+        if (pr.fields.len != 0 or (pr.fields.len == 0 and pr.content.hasKey(ConstructorM))) and pr.fields.len != values.len:
             RuntimeError_IncorrectNumberOfArgumentsForInitializer(pr.name, values.len, toSeq(pr.fields.keys))
 
 proc fetchConstructorArguments(pr: Prototype, values: ValueArray | ValueDict, args: var ValueArray): bool =
@@ -152,7 +152,6 @@ proc generateNewObject*(pr: Prototype, values: ValueArray | ValueDict): Value =
     # process internal methods accordingly
     for k,v in pr.content:
         result.o[k] = copyValue(v)
-        echo "--- " & k & " distinct?: " & $(v.mdistinct)
         if v.kind == Method and not v.mdistinct:
             result.processMagicMethods(k)
 
