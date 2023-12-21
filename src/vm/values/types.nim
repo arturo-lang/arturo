@@ -151,6 +151,8 @@ type
         doPrint*    : proc (v:Value): string
         doCompare*  : proc (a,b:Value): int
 
+        doGet*      : proc (a,b:Value): Value
+
     SymbolDict*   = OrderedTable[VSymbol,AliasBinding]
 
     ValueInfo* = ref object
