@@ -102,7 +102,7 @@ func generatedCompare*(key: Value): Value {.inline.} =
 
     return newMethodFromDefinition(@[newWord("that")], compareBody)
 
-proc getTypeFields*(defs: ValueDict): ValueDict {.inline.} =
+proc getFieldTable*(defs: ValueDict): ValueDict {.inline.} =
     result = newOrderedTable[string,Value]()
 
     if (let constructorMethod = defs.getOrDefault(ConstructorM, nil); not constructorMethod.isNil):

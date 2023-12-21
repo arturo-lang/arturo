@@ -161,16 +161,16 @@ proc defineLibrary*() =
             if checkAttr("sortable"):
                 definitions["compare"] = generatedCompare(aSortable)
 
-            let typeFields = getTypeFields(definitions)
-            setType(x.tid, newPrototype(x.tid, definitions, inherits, typeFields, super))
+            let fieldTable = getFieldTable(definitions)
+            setType(x.tid, newPrototype(x.tid, definitions, inherits, fieldTable, super))
 
             # Debugging!!
-            push newDictionary({
-                "name": newString(x.tid),
-                "definitions": newDictionary(definitions),
-                "inherits": inherits,
-                "fields": newDictionary(typeFields)
-            }.toOrderedTable)
+            # push newDictionary({
+            #     "name": newString(x.tid),
+            #     "definitions": newDictionary(definitions),
+            #     "inherits": inherits,
+            #     "fields": newDictionary(typeFields)
+            # }.toOrderedTable)
 
     builtin "is",
         alias       = unaliased,
