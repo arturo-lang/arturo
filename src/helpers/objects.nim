@@ -55,7 +55,6 @@ proc fetchConstructorArguments(pr: Prototype, values: ValueArray | ValueDict, ar
             for k,v in pr.fields:
                 if k != ThisRef:
                     if (let vv = values.getOrDefault(k, nil); not vv.isNil):
-                        checkNamedFieldValue(pr, k, vv, v)
                         args.add(vv)
                     else:
                         RuntimeError_MissingArgumentForInitializer(pr.name, k)
