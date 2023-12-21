@@ -61,6 +61,9 @@ proc fetchConstructorArguments(pr: Prototype, values: ValueArray | ValueDict, ar
 
 func processMagicMethods(target: Value, methodName: string) =
     case methodName:
+        of ConstructorM:
+            target.magic.doInit = proc (args: ValueArray) =
+                callMethod(target.o[methodName], "\\" & ConstructorM, args)
         of ToStringM:
             target.magic.doPrint = proc (self: Value): string =
                 callMethod(target.o[methodName], "\\" & ToStringM, @[self])
@@ -169,6 +172,6 @@ proc generateNewObject*(pr: Prototype, values: ValueArray | ValueDict): Value =
     
     # perform initialization 
     # using the available constructor
-    if (let constructorMethod = result.o.getOrDefault(ConstructorM, nil); (not constructorMethod.isNil) and constructorMethod.kind == Method):
+    if (let constructor = result.magic.doInit; not constructor.isNil):
         args.insert(result)
-        callMethod(constructorMethod, "\\" & ConstructorM, args)
+        constructor(args)

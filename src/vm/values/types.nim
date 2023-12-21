@@ -146,6 +146,7 @@ type
         super*          : ValueDict
 
     MagicMethods* = ref object
+        doInit*     : proc (vs:ValueArray)
         doPrint*    : proc (v:Value): string
         doCompare*  : proc (a,b:Value): int
 
