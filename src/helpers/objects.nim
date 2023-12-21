@@ -10,9 +10,9 @@
 # Libraries
 #=======================================
 
-import std/enumerate, sequtils, sugar, tables
+import std/sequtils, sugar, tables
     
-import vm/values/[value, comparison]
+import vm/values/[value, comparison, printable]
 import vm/values/custom/[vsymbol]
 
 import vm/[exec, errors, stack]
@@ -55,6 +55,7 @@ proc fetchConstructorArguments(pr: Prototype, values: ValueArray | ValueDict, ar
             for k,v in pr.fields:
                 if k != ThisRef:
                     if (let vv = values.getOrDefault(k, nil); not vv.isNil):
+                        checkNamedFieldValue(pr, k, vv, v)
                         args.add(vv)
                     else:
                         RuntimeError_MissingArgumentForInitializer(pr.name, k)

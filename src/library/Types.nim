@@ -169,7 +169,7 @@ proc defineLibrary*() =
                 "name": newString(x.tid),
                 "definitions": newDictionary(definitions),
                 "inherits": inherits,
-                "fields": newDictionary(typeFields)
+                "fields": newDictionary(fieldTable)
             }.toOrderedTable)
 
     builtin "is",
