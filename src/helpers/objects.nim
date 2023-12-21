@@ -130,11 +130,10 @@ proc injectingThis*(fun: Value): Value {.inline.} =
         result.params.insert(ThisRef)
         result.arity += 1
 
-proc uninjectingThis*(fun: Value): Value {.inline.} =
-    result = copyValue(fun)
-    if result.params.len >= 1 and result.params[0] == ThisRef:
-        result.params.delete(0..0)
-        result.arity -= 1
+proc injectThis*(fun: Value) {.inline.} =
+    if fun.params.len >= 1 and fun.params[0] == ThisRef:
+        fun.params.delete(0..0)
+        fun.arity -= 1
 
 proc injectingSuper*(fun: Value, super: Value): Value {.inline.} =
     result = copyValue(fun)

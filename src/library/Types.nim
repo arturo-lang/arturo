@@ -226,11 +226,11 @@ proc defineLibrary*() =
                     extra[k] = v
 
             for k,v in extra:
-                if v.kind == Function:
+                if v.kind == Method:
                     if (let superF = super.getOrDefault(k, nil); not superF.isNil):
-                        definitions[k] = v.injectingSuper(superF).injectingThis()
-                    else:
-                        definitions[k] = v.injectingThis()
+                        definitions[k] = v.injectingSuper(superF)
+                        
+                    definitions[k].injectThis()
                 else:
                     definitions[k] = v
 
