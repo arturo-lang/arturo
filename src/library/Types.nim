@@ -123,26 +123,20 @@ proc defineLibrary*() =
 
             if y.kind == Block:
                 if (let constructorMethod = generatedConstructor(y.a); not constructorMethod.isNil):
-                    definitions[ConstructorField] = constructorMethod
+                    definitions[ConstructorM] = constructorMethod
                 else:
                     for k,v in newDictionary(execDictionary(y)).d:
-                        if v.kind == Function:
-                            definitions[k] = v.injectingThis()
-                        else:
-                            definitions[k] = v
+                        definitions[k] = v
             elif y.kind == Dictionary:
                 for k,v in y.d:
-                    if v.kind == Function:
-                        definitions[k] = v.injectingThis()
-                    else:
-                        definitions[k] = v
+                    definitions[k] = copyValue(v)
             else:
                 if y.tpKind == UserType:
                     if (let yproto = getType(y.tid); not yproto.isNil):
                         inherits = yproto.inherits
                         super = yproto.super
                         for k,v in yproto.content:
-                            definitions[k] = v
+                            definitions[k] = copyValue(v)
                     else:
                         # TODO(Types\define) check if inherited type is defined
                         #  if not we should show an error
@@ -159,16 +153,16 @@ proc defineLibrary*() =
             if checkAttr("sortable"):
                 definitions["compare"] = generatedCompare(aSortable)
 
-            let typeFields = getTypeFields(definitions)
-            setType(x.tid, newPrototype(x.tid, definitions, inherits, typeFields, super))
+            let fieldTable = getFieldTable(definitions)
+            setType(x.tid, newPrototype(x.tid, definitions, inherits, fieldTable, super))
 
             # Debugging!!
-            # push newDictionary({
-            #     "name": newString(x.tid),
-            #     "definitions": newDictionary(definitions),
-            #     "inherits": inherits,
-            #     "fields": newDictionary(typeFields)
-            # }.toOrderedTable)
+            push newDictionary({
+                "name": newString(x.tid),
+                "definitions": newDictionary(definitions),
+                "inherits": inherits,
+                "fields": newDictionary(fieldTable)
+            }.toOrderedTable)
 
     builtin "is",
         alias       = unaliased,
@@ -199,7 +193,7 @@ proc defineLibrary*() =
                     inherits = x
                     
                     for k,v in xproto.content:
-                        if v.kind == Function:
+                        if v.kind == Method:
                             super[k] = v.uninjectingThis()
 
                         definitions[k] = copyValue(v)
@@ -216,19 +210,22 @@ proc defineLibrary*() =
 
             if y.kind == Block:
                 if (let constructorMethod = generatedConstructor(y.a); not constructorMethod.isNil):
-                    extra[ConstructorField] = constructorMethod
+                    extra[ConstructorM] = constructorMethod
                 else:
-                    extra = newDictionary(execDictionary(y)).d
+                    for k,v in newDictionary(execDictionary(y)).d:
+                        extra[k] = v
             else:
                 for k,v in y.d:
-                    extra[k] = v
+                    extra[k] = copyValue(v)
 
             for k,v in extra:
-                if v.kind == Function:
+                if v.kind == Method:
                     if (let superF = super.getOrDefault(k, nil); not superF.isNil):
-                        definitions[k] = v.injectingSuper(superF).injectingThis()
+                        definitions[k] = v.injectingSuper(superF)
                     else:
-                        definitions[k] = v.injectingThis()
+                        definitions[k] = copyValue(v)
+                        
+                    definitions[k].injectThis()
                 else:
                     definitions[k] = v
 
@@ -848,6 +845,23 @@ proc defineLibrary*() =
         """:
             #=======================================================
             push(newLogical(xKind==Logical))
+
+    builtin "method?",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "checks if given value is of type :method",
+        args        = {
+            "value" : {Any}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        # TODO(Types\method?) add documentation example
+        #  labels: library, documentation, easy
+        example     = """
+        """:
+            #=======================================================
+            push(newLogical(xKind == Method))
 
     builtin "null?",
         alias       = unaliased, 

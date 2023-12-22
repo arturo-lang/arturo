@@ -137,8 +137,8 @@ proc `$`*(v: Value): string {.inline.} =
             result = "[" & items.join(" ") & "]"
 
         of Object:
-            if not v.magic.doPrint.isNil:
-                return v.magic.doPrint(v)
+            if not v.magic.toString.isNil:
+                return v.magic.toString(v).s
             else:
                 var items: seq[string]
                 for key,value in v.o:
@@ -163,6 +163,11 @@ proc `$`*(v: Value): string {.inline.} =
             else:
                 result &= "<function:builtin>" 
 
+        of Method       :
+            result = ""
+            result &= "<method>" & $(newWordBlock(v.mparams))
+            result &= "(" & fmt("{cast[uint](v.mmain):#X}") & ")"
+
         of Database:
             when not defined(NOSQLITE):
                 if v.dbKind==SqliteDatabase: result = fmt("<database>({cast[uint](v.sqlitedb):#X})")
@@ -180,6 +185,10 @@ proc `$`*(v: Value): string {.inline.} =
 
 
 proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepend="") {.exportc.} = 
+
+    proc dumpGeneric(str: string, v: Value) =
+        if not muted:   stdout.write fmt("{resetColor}{str}{fg(grayColor)} :{($(v.kind)).toLowerAscii()}{resetColor}\n")
+        else:           stdout.write fmt("{str} :{($(v.kind)).toLowerAscii()}\n")
     
     proc dumpPrimitive(str: string, v: Value) =
         if not muted:   stdout.write fmt("{bold(greenColor)}{str}{fg(grayColor)} :{($(v.kind)).toLowerAscii()}{resetColor}")
@@ -381,8 +390,11 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
                     for i in 0..level: stdout.write "        "
 
                     stdout.write unicode.alignLeft(key & " ", maxLen) & ":"
-
-                    dump(value, level+1, false, muted=muted)
+                    if value.kind == Method:
+                        for i in 0..level: stdout.write "        "
+                        dumpGeneric("(" & value.params.filter((zz) => zz != "this").join(", ") & ")", value)
+                    else:
+                        dump(value, level+1, false, muted=muted)
 
             dumpBlockEnd()
 
@@ -395,6 +407,16 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
             else:
                 for i in 0..level: stdout.write "        "
                 stdout.write "(builtin)"
+
+            stdout.write "\n"
+
+            dumpBlockEnd()
+
+        of Method       :
+            dumpBlockStart(v)
+
+            dump(newWordBlock(v.mparams), level+1, false, muted=muted)
+            dump(v.mmain, level+1, true, muted=muted)
 
             stdout.write "\n"
 
@@ -470,6 +492,11 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
 #  Indentation is not working right for inner dictionaries and blocks
 #  Check: `print as.pretty.code.unwrapped info.get 'get`
 #  labels: values,enhancement,library
+
+# TODO(VM/values/printable) Implement `as.code` for Object values
+#  we should over a magic method for that - `asCode`? - and if it's not
+#  there, either throw an error, or do sth (but what?!)
+#  labels: values,enhancement,oop
 
 proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: bool=false, isKeyVal: bool=false, safeStrings: bool = false): string {.inline.} =
     result = ""
@@ -612,6 +639,13 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
                     if val==v:
                         result &= "var'" & sym
                         break
+
+        of Method:
+            result &= "method "
+            result &= codify(newWordBlock(v.mparams),pretty,unwrapped,level+1, false, safeStrings=safeStrings)
+
+            result &= " "
+            result &= codify(v.mmain,pretty,unwrapped,level+1, true, safeStrings=safeStrings)
 
         else:
             result &= ""

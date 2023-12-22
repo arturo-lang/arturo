@@ -591,6 +591,19 @@ func newFunction*(params: seq[string], main: Value, imports: Value = nil, export
         )
     )
 
+func newMethod*(params: seq[string], main: Value, isDistinct: bool = false, injectThis: static bool = true): Value {.inline, enforceNoRaises.} =
+    Value(
+        kind: Method,
+        info: nil,
+        methType: VMethod(
+            marity: int8(params.len) + (when injectThis: 1 else: 0),
+            mparams: (when injectThis: "this" & params else: params),
+            mmain: main,
+            mbcode: nil,
+            mdistinct: isDistinct
+        )
+    )
+
 func newFunctionFromDefinition*(params: ValueArray, main: Value, imports: Value = nil, exports: Value = nil, memoize: bool = false, forceInline: bool = false): Value {.inline, enforceNoRaises.} =
     ## create Function value with given parameters,
     ## generate type checkers, and process info if necessary
@@ -649,6 +662,104 @@ func newFunctionFromDefinition*(params: ValueArray, main: Value, imports: Value 
         result = newFunction(params.map((w)=>w.s),main,imports,exports,memoize,inline)
 
     result.info = ValueInfo(kind: Function)
+
+    if not main.data.isNil:
+        if main.data.kind==Dictionary:
+
+            if (let descriptionData = main.data.d.getOrDefault("description", nil); not descriptionData.isNil):
+                result.info.descr = descriptionData.s
+                result.info.module = ""
+
+            if main.data.d.hasKey("options") and main.data.d["options"].kind==Dictionary:
+                var options = initOrderedTable[string,(ValueSpec,string)]()
+                for (k,v) in pairs(main.data.d["options"].d):
+                    if v.kind==Type:
+                        options[k] = ({v.t}, "")
+                    elif v.kind==String:
+                        options[k] = ({Logical}, v.s)
+                    elif v.kind==Block:
+                        var vspec: ValueSpec
+                        var i = 0
+                        while i < v.a.len and v.a[i].kind==Type:
+                            vspec.incl(v.a[i].t)
+                            i += 1
+                        if v.a[i].kind==String:
+                            options[k] = (vspec, v.a[i].s)
+                        else:
+                            options[k] = (vspec, "")
+
+                result.info.attrs = options
+
+            if (let returnsData = main.data.d.getOrDefault("returns", nil); not returnsData.isNil):
+                if returnsData.kind==Type:
+                    result.info.returns = {returnsData.t}
+                else:
+                    var returns: ValueSpec
+                    for tp in returnsData.a:
+                        returns.incl(tp.t)
+                    result.info.returns = returns
+
+            when defined(DOCGEN):
+                if (let exampleData = main.data.d.getOrDefault("example", nil); not exampleData.isNil):
+                    result.info.example = exampleData.s
+
+    result.info.args = argTypes
+
+# TODO(VM/values/value) `newMethodFromDefinition` redundant?
+#  could we possibly "merge" it with `newFunctionFromDefinition` or 
+#  at least create e.g. a template?
+#  labels: values, enhancement, cleanup
+func newMethodFromDefinition*(params: ValueArray, main: Value, isDistinct: bool = false): Value {.inline, enforceNoRaises.} =
+    ## create Method value with given parameters,
+    ## generate type checkers, and process info if necessary
+
+    var argTypes = initOrderedTable[string,ValueSpec]()
+
+    if params.countIt(it.kind == Type) > 0:
+        var args: seq[string]
+        var body: ValueArray
+
+        var i = 0
+        while i < params.len:
+            let varName = params[i]
+            args.add(params[i].s)
+            argTypes[params[i].s] = {}
+            if i+1 < params.len and params[i+1].kind == Type:
+                var typeArr: ValueArray
+
+                while i+1 < params.len and params[i+1].kind == Type:
+                    typeArr.add(newWord("is?"))
+                    typeArr.add(params[i+1])
+                    argTypes[varName.s].incl(params[i+1].t)
+                    typeArr.add(varName)
+                    i += 1
+
+                body.add(newWord("ensure"))
+                if typeArr.len == 3:
+                    body.add(newBlock(typeArr))
+                else:
+                    body.add(newBlock(@[
+                        newWord("any?"),
+                        newWord("array"),
+                        newBlock(typeArr)
+                    ]))
+            else:
+                argTypes[varName.s].incl(Any)
+            i += 1
+
+        var mainBody: ValueArray = main.a
+        mainBody.insert(body)
+
+        result = newMethod(args,newBlock(mainBody),isDistinct)
+    else:
+        if params.len > 0:
+            for arg in params:
+                argTypes[arg.s] = {Any}
+        else:
+            argTypes[""] = {Nothing}
+        result = newMethod(params.map((w)=>w.s),main,isDistinct)
+
+    result.info = ValueInfo(kind: Method)
 
     if not main.data.isNil:
         if main.data.kind==Dictionary:
@@ -880,6 +991,8 @@ proc copyValue*(v: Value): Value {.inline.} =
                     result = newBuiltin(v.info.descr, v.info.module, v.info.line, v.arity, v.info.args, v.info.attrs, v.info.returns, v.info.example, v.op, v.action)
                 else:
                     result = newBuiltin(v.info.descr, v.info.module, 0, v.arity, v.info.args, v.info.attrs, v.info.returns, "", v.op, v.action)
+        of Method:
+            result = newMethod(v.mparams, v.mmain, v.mdistinct, injectThis=false)
 
         of Database:    
             when not defined(NOSQLITE):
@@ -1149,6 +1262,11 @@ func hash*(v: Value): Hash {.inline.}=
                 result = result !& hash(v.inline)
             else:
                 result = result !& cast[Hash](unsafeAddr v)
+
+        of Method       :
+            result = result !& hash(v.mparams)
+            result = result !& hash(v.mmain)
+            result = result !& hash(v.mdistinct)
 
         of Database:
             when not defined(NOSQLITE):

@@ -196,6 +196,8 @@ proc `==`*(x: Value, y: Value): bool =
             of Object:
                 if not x.magic.doCompare.isNil:
                     return x.magic.doCompare(x,y) == 0
+                elif not x.magic.doEqualQ.isNil:
+                    return x.magic.doEqualQ(x,y)
                 else:
                     if x.o.len != y.o.len: return false
 
@@ -231,13 +233,6 @@ proc `==`*(x: Value, y: Value): bool =
 #  If the final decision is to not support this, then we should throw an appropriate
 #  error message (e.g. "cannot compare Dictionary values"), along with an appropriate
 #  (new) error template at VM/errors
-#  see also: https://github.com/arturo-lang/arturo/pull/1139
-#  labels: enhancement,values,error handling,open discussion
-
-# TODO(VM/values/comparison) how should we handle Object values?
-#  right now, Object make feature a custom `compare` method which is called an used
-#  for the comparison. However, if there is no such method, we end up having the exact
-#  same issues we have with Dictionaries. So, how is that to be dealt with?
 #  see also: https://github.com/arturo-lang/arturo/pull/1139
 #  labels: enhancement,values,error handling,open discussion
 
@@ -403,7 +398,10 @@ proc `<`*(x: Value, y: Value): bool {.inline.}=
             of Object:
                 if not x.magic.doCompare.isNil:
                     return x.magic.doCompare(x, y) == -1
+                elif not x.magic.doLessQ.isNil:
+                    return x.magic.doLessQ(x, y)
                 else:
+                    # should throw!
                     return false
             of Date:
                 return x.eobj[] < y.eobj[]
@@ -515,6 +513,8 @@ proc `>`*(x: Value, y: Value): bool {.inline.}=
             of Object:
                 if not x.magic.doCompare.isNil:
                     return x.magic.doCompare(x,y) == 1
+                elif not x.magic.doGreaterQ.isNil:
+                    return x.magic.doGreaterQ(x,y)
                 else:
                     return false
             of Date:
