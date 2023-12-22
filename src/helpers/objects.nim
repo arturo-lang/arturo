@@ -41,6 +41,7 @@ const
     SubM*               = "sub"
     MulM*               = "mul"
     DivM*               = "div"
+    FDivM*              = "fdiv"
     ModM*               = "mod"
     PowM*               = "pow"
 
@@ -122,6 +123,9 @@ func processMagicMethods(target: Value, methodName: string) =
         of DivM:
             target.magic.doDiv = proc (self: Value, other: Value) =
                 callMethod(target.o[methodName], "\\" & DivM, @[self, other])
+        of FDivM:
+            target.magic.doFDiv = proc (self: Value, other: Value) =
+                callMethod(target.o[methodName], "\\" & FDivM, @[self, other])
         of ModM:
             target.magic.doMod = proc (self: Value, other: Value) =
                 callMethod(target.o[methodName], "\\" & ModM, @[self, other])

@@ -162,6 +162,7 @@ type
         doSub*      : proc (a,b:Value)
         doMul*      : proc (a,b:Value)
         doDiv*      : proc (a,b:Value)
+        doFDiv*     : proc (a,b:Value)
         doMod*      : proc (a,b:Value)
         doPow*      : proc (a,b:Value)
         

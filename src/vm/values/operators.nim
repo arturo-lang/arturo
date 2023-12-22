@@ -933,7 +933,7 @@ proc `//`*(x: Value, y: Value): Value =
         of Quantity   || Rational       :   return newQuantity(x.q // y.rat)
         of Quantity   || Quantity       :   return newQuantity(x.q // y.q)
         else:
-            return invalidOperation("fdiv")
+            objectOperationOrNothing("fdiv", doFDiv)
 
 proc `//=`*(x: var Value, y: Value) =
     ## divide (floating-point division) given values
@@ -966,7 +966,7 @@ proc `//=`*(x: var Value, y: Value) =
         of Quantity   || Rational       :   x.q //= y.rat
         of Quantity   || Quantity       :   x.q //= y.q
         else:
-            discard invalidOperation("fdiv")
+            objectOperationOrNothing("fdiv", doFDiv, inplace=true)
 
 proc `%`*(x: Value, y: Value): Value =
     ## perform the modulo operation between given values and return the result
