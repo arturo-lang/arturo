@@ -344,6 +344,9 @@ type
 const
     RootObjectName = "object"
 
+let 
+    NoPrototypeFound* = Prototype(name: "prototype-error")
+
 #=======================================
 # Variables
 #=======================================
@@ -477,8 +480,12 @@ proc setType*(tid: string, proto: Prototype = nil) {.inline.} =
     else:
         TypeLookup[tid] = proto
 
-proc getType*(tid: string): Prototype {.inline.} =
-    return TypeLookup[tid]
+proc getType*(tid: string, safe: static bool = false): Prototype {.inline.} =
+    when safe:
+        return TypeLookup.getOrDefault(tid, NoPrototypeFound)
+    else:
+        return TypeLookup[tid]
+
 
 proc newPrototype*(name: string, content: ValueDict, inherits: Value, fields: ValueDict = newOrderedTable[string,Value](), super: ValueDict = newOrderedTable[string,Value]()): Prototype {.inline.} =
     Prototype(name: name, content: content, inherits: inherits, fields: fields, super: super)
