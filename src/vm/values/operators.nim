@@ -532,11 +532,6 @@ proc `+`*(x: Value, y: Value): Value =
         of Quantity   || Quantity       :   return newQuantity(x.q + y.q)
         else:
             objectOperationOrNothing("add", doAdd)
-            # if x.kind == Object and not x.magic.doAdd.isNil:
-            #     x.magic.doAdd(x,y)
-            #     return stack.pop()
-
-            # return invalidOperation("add")
 
 proc `+=`*(x: var Value, y: Value) =
     ## add given values
