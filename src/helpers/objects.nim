@@ -88,6 +88,12 @@ proc fetchConstructorArguments(pr: Prototype, values: ValueArray | ValueDict, ar
                     else:
                         RuntimeError_MissingArgumentForInitializer(pr.name, k)
 
+# TODO(Helpers/objects) Should check defined magic methods for validity
+#  obviously, we cannot check everything beforehand (if the parems are correct
+#  or if the method return what it should - or if it returns at all, for that
+#  matter). But we should - at least - check if the given magic method has the
+#  correct number of arguments. And if not, throw an error.
+#  labels: oop, error handling
 func processMagicMethods(target: Value, methodName: string) =
     case methodName:
         of ConstructorM:
