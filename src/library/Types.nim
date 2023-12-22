@@ -577,7 +577,7 @@ proc defineLibrary*() =
                     push(newLogical(not getType(x.tid).isNil))
             else:
                 try:
-                    discard parseEnum[ValueKind](x.s)
+                    discard parseEnum[ValueKind](x.s.capitalizeAscii())
                     push(VTRUE)
                 except:
                     let tp = getType(x.s, safe=true)
