@@ -874,6 +874,23 @@ proc defineLibrary*() =
             #=======================================================
             push(newLogical(xKind==Logical))
 
+    builtin "method?",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "checks if given value is of type :method",
+        args        = {
+            "value" : {Any}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        # TODO(Types\method?) add documentation example
+        #  labels: library, documentation, easy
+        example     = """
+        """:
+            #=======================================================
+            push(newLogical(xKind == Method))
+
     builtin "null?",
         alias       = unaliased, 
         op          = opNop,
