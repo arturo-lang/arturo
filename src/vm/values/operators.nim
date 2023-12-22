@@ -996,7 +996,7 @@ proc `%`*(x: Value, y: Value): Value =
         # of Quantity   || Rational       :   return newQuantity(x.q % y.rat)
         # of Quantity   || Quantity       :   return newQuantity(x.q % y.q)
         else:
-            return invalidOperation("mod")
+            objectOperationOrNothing("mod", doMod)
 
 proc `%=`*(x: var Value, y: Value) =
     ## perform the modulo operation between given values
@@ -1028,7 +1028,7 @@ proc `%=`*(x: var Value, y: Value) =
         # of Quantity   || Rational       :   x.q %= y.rat
         # of Quantity   || Quantity       :   x.q %= y.q
         else:
-            discard invalidOperation("mod")
+            objectOperationOrNothing("mod", doMod, inplace=true)
 
 proc `/%`*(x: Value, y: Value): Value =
     ## perform the divmod operation between given values
