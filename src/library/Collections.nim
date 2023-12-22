@@ -579,6 +579,28 @@ proc defineLibrary*() =
 
                 push(res)
 
+    builtin "fields",
+        alias       = unaliased,
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "get list of field keys for given object",
+        args        = {
+            "object": {Object}
+        },
+        attrs       = NoAttrs,
+        returns     = {Block},
+        # TODO(Collections\fields) add documentation example
+        #  labels: library, documentation, easy
+        example     = """
+        """:
+            #=======================================================
+            var s: seq[string]
+            for k,v in x.o:
+                if v.kind != Method:
+                    s.add(k)
+
+            push(newStringBlock(s))
+
     builtin "first",
         alias       = unaliased,
         op          = opNop,
