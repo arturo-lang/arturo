@@ -849,6 +849,34 @@ proc defineLibrary*() =
             else:
                 SetInPlace(y, safe=true)
 
+    builtin "method",
+        alias       = unaliased,
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "create type method with given arguments and body",
+        args        = {
+            "arguments" : {Literal, Block},
+            "body"      : {Block}
+        },
+        attrs       = {
+            "distinct"  : ({Logical},"shouldn't be treated as a magic method")
+        },
+        returns     = {Method},
+        # TODO(Core\method) add documentation example
+        #  labels: library, documentation, easy
+        example     = """
+        """:
+            #=======================================================
+            let isDistinct = hadAttr("distinct")
+            
+            let argBlock {.cursor.} =
+                if xKind == Block: 
+                    requireValueBlock(x, {Word, Literal, Type})
+                    x.a
+                else: @[x]
+
+            push(newMethodFromDefinition(argBlock, y, isDistinct))
+
     builtin "new",
         alias       = unaliased, 
         op          = opNop,

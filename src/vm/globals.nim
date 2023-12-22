@@ -80,13 +80,14 @@ func suggestAlternative(s: string, reference: SymTable | ValueDict = Syms): seq[
 # Safe access
 #---------------------
 
-template GetKey*(dict: ValueDict, key: string): untyped =
+template GetKey*(dict: ValueDict, key: string, withError: static bool = true): untyped =
     ## Checks if a symbol name exists in given dictionary
     ## - if it doesn't, raise a SymbolNotFound error
     ## - otherwise, return its value
     let toRet = dict.getOrDefault(key, nil)
-    if unlikely(toRet.isNil):
-        RuntimeError_KeyNotFound(key, suggestAlternative(key, reference=dict))
+    when withError:
+        if unlikely(toRet.isNil):
+            RuntimeError_KeyNotFound(key, suggestAlternative(key, reference=dict))
     toRet
 
 template GetArrayIndex*(arr: ValueArray, indx: int): untyped =

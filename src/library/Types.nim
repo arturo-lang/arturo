@@ -127,24 +127,16 @@ proc defineLibrary*() =
                 else:
                     for k,v in newDictionary(execDictionary(y)).d:
                         definitions[k] = v
-                        # if v.kind == Function:
-                        #     definitions[k] = v.injectingThis()
-                        # else:
-                        #     definitions[k] = v
             elif y.kind == Dictionary:
                 for k,v in y.d:
-                    definitions[k] = v
-                    # if v.kind == Function:
-                    #     definitions[k] = v.injectingThis()
-                    # else:
-                    #     definitions[k] = v
+                    definitions[k] = copyValue(v)
             else:
                 if y.tpKind == UserType:
                     if (let yproto = getType(y.tid); not yproto.isNil):
                         inherits = yproto.inherits
                         super = yproto.super
                         for k,v in yproto.content:
-                            definitions[k] = v
+                            definitions[k] = copyValue(v)
                     else:
                         # TODO(Types\define) check if inherited type is defined
                         #  if not we should show an error
@@ -220,15 +212,18 @@ proc defineLibrary*() =
                 if (let constructorMethod = generatedConstructor(y.a); not constructorMethod.isNil):
                     extra[ConstructorM] = constructorMethod
                 else:
-                    extra = newDictionary(execDictionary(y)).d
+                    for k,v in newDictionary(execDictionary(y)).d:
+                        extra[k] = v
             else:
                 for k,v in y.d:
-                    extra[k] = v
+                    extra[k] = copyValue(v)
 
             for k,v in extra:
                 if v.kind == Method:
                     if (let superF = super.getOrDefault(k, nil); not superF.isNil):
                         definitions[k] = v.injectingSuper(superF)
+                    else:
+                        definitions[k] = copyValue(v)
                         
                     definitions[k].injectThis()
                 else:
@@ -238,34 +233,6 @@ proc defineLibrary*() =
             setType(tmpTid, newPrototype("_" & x.tid, definitions, inherits, super))
 
             push newUserType(tmpTid)
-
-    builtin "method",
-        alias       = unaliased,
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "create type method with given arguments and body",
-        args        = {
-            "arguments" : {Literal, Block},
-            "body"      : {Block}
-        },
-        attrs       = {
-            "distinct"  : ({Logical},"shouldn't be treated as a magic method")
-        },
-        returns     = {Method},
-        # TODO(Types\method) add documentation example
-        #  labels: library, documentation, easy
-        example     = """
-        """:
-            #=======================================================
-            let isDistinct = hadAttr("distinct")
-            
-            let argBlock {.cursor.} =
-                if xKind == Block: 
-                    requireValueBlock(x, {Word, Literal, Type})
-                    x.a
-                else: @[x]
-
-            push(newMethodFromDefinition(argBlock, y, isDistinct))
 
     # TODO(Types\to) revise attributes
     #  the attributes to this function seem to me a bit confusing. I mean, `to` is
@@ -878,6 +845,23 @@ proc defineLibrary*() =
         """:
             #=======================================================
             push(newLogical(xKind==Logical))
+
+    builtin "method?",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "checks if given value is of type :method",
+        args        = {
+            "value" : {Any}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        # TODO(Types\method?) add documentation example
+        #  labels: library, documentation, easy
+        example     = """
+        """:
+            #=======================================================
+            push(newLogical(xKind == Method))
 
     builtin "null?",
         alias       = unaliased, 

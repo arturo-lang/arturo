@@ -146,10 +146,39 @@ type
         super*          : ValueDict
 
     MagicMethods* = ref object
-        doInit*     : proc (vs:ValueArray)
+        doInit*         : proc (vs:ValueArray)
 
-        doPrint*    : proc (v:Value): string
-        doCompare*  : proc (a,b:Value): int
+        doCompare*      : proc (a,b:Value): int
+
+        doGet*          : proc (a,b:Value): Value
+        doSet*          : proc (a,b,c:Value)
+        
+        doEqualQ*       : proc (a,b:Value): bool
+        doLessQ*        : proc (a,b:Value): bool
+        doGreaterQ*     : proc (a,b:Value): bool
+        
+        doAdd*          : proc (a,b:Value)
+        doSub*          : proc (a,b:Value)
+        doMul*          : proc (a,b:Value)
+        doDiv*          : proc (a,b:Value)
+        doFDiv*         : proc (a,b:Value)
+        doMod*          : proc (a,b:Value)
+        doPow*          : proc (a,b:Value)
+        
+        doInc*          : proc (v:Value)
+        doDec*          : proc (v:Value)
+
+        doNeg*          : proc (v:Value)
+
+        doKeyQ*         : proc (a,b:Value): bool
+        doContainsQ*    : proc (a,b:Value): bool
+
+        toString*       : proc (v:Value): Value
+        toInteger*      : proc (v:Value): Value
+        toFloating*     : proc (v:Value): Value
+        toLogical*      : proc (v:Value): Value
+        toBlock*        : proc (v:Value): Value
+        toDictionary*   : proc (v:Value): Value
 
     SymbolDict*   = OrderedTable[VSymbol,AliasBinding]
 

@@ -27,8 +27,37 @@ const
 
     # magic methods
     ConstructorM*       = "init"
-    ToStringM*          = "print"
+
+    GetM*               = "get"
+    SetM*               = "set"
+
     CompareM*           = "compare"
+    EqualQM*            = "equal?"
+    LessQM*             = "less?"
+    GreaterQM*          = "greater?"
+
+    AddM*               = "add"
+    SubM*               = "sub"
+    MulM*               = "mul"
+    DivM*               = "div"
+    FDivM*              = "fdiv"
+    ModM*               = "mod"
+    PowM*               = "pow"
+
+    IncM*               = "inc"
+    DecM*               = "dec"
+
+    NegM*               = "neg"
+
+    KeyQM*              = "key?"
+    ContainsQM*         = "contains?"
+
+    ToStringM*          = "toString"
+    ToIntegerM*         = "toInteger"
+    ToFloatingM*        = "toFloating"
+    ToLogicalM*         = "toLogical"
+    ToBlockM*           = "toBlock"
+    ToDictionaryM*      = "toDictionary"
 
 #=======================================
 # Helpers
@@ -59,19 +88,102 @@ proc fetchConstructorArguments(pr: Prototype, values: ValueArray | ValueDict, ar
                     else:
                         RuntimeError_MissingArgumentForInitializer(pr.name, k)
 
+# TODO(Helpers/objects) Should check defined magic methods for validity
+#  obviously, we cannot check everything beforehand (if the parems are correct
+#  or if the method return what it should - or if it returns at all, for that
+#  matter). But we should - at least - check if the given magic method has the
+#  correct number of arguments. And if not, throw an error.
+#  labels: oop, error handling
 func processMagicMethods(target: Value, methodName: string) =
     case methodName:
         of ConstructorM:
             target.magic.doInit = proc (args: ValueArray) =
                 callMethod(target.o[methodName], "\\" & ConstructorM, args)
-        of ToStringM:
-            target.magic.doPrint = proc (self: Value): string =
-                callMethod(target.o[methodName], "\\" & ToStringM, @[self])
-                stack.pop().s
+        of GetM:
+            target.magic.doGet = proc (self: Value, key: Value): Value =
+                callMethod(target.o[methodName], "\\" & GetM, @[self, key])
+                stack.pop()
+        of SetM:
+            target.magic.doSet = proc (self: Value, key: Value, val: Value) =
+                callMethod(target.o[methodName], "\\" & SetM, @[self, key, val])
         of CompareM:
             target.magic.doCompare = proc (self: Value, other: Value): int =
                 callMethod(target.o[methodName], "\\" & CompareM, @[self, other])
                 stack.pop().i
+        of EqualQM:
+            target.magic.doEqualQ = proc (self: Value, other: Value): bool =
+                callMethod(target.o[methodName], "\\" & EqualQM, @[self, other])
+                isTrue(stack.pop())
+        of LessQM:
+            target.magic.doEqualQ = proc (self: Value, other: Value): bool =
+                callMethod(target.o[methodName], "\\" & LessQM, @[self, other])
+                isTrue(stack.pop())
+        of GreaterQM:
+            target.magic.doEqualQ = proc (self: Value, other: Value): bool =
+                callMethod(target.o[methodName], "\\" & GreaterQM, @[self, other])
+                isTrue(stack.pop())
+        of AddM:
+            target.magic.doAdd = proc (self: Value, other: Value) =
+                callMethod(target.o[methodName], "\\" & AddM, @[self, other])
+        of SubM:
+            target.magic.doSub = proc (self: Value, other: Value) =
+                callMethod(target.o[methodName], "\\" & SubM, @[self, other])
+        of MulM:
+            target.magic.doMul = proc (self: Value, other: Value) =
+                callMethod(target.o[methodName], "\\" & MulM, @[self, other])
+        of DivM:
+            target.magic.doDiv = proc (self: Value, other: Value) =
+                callMethod(target.o[methodName], "\\" & DivM, @[self, other])
+        of FDivM:
+            target.magic.doFDiv = proc (self: Value, other: Value) =
+                callMethod(target.o[methodName], "\\" & FDivM, @[self, other])
+        of ModM:
+            target.magic.doMod = proc (self: Value, other: Value) =
+                callMethod(target.o[methodName], "\\" & ModM, @[self, other])
+        of PowM:
+            target.magic.doPow = proc (self: Value, other: Value) =
+                callMethod(target.o[methodName], "\\" & PowM, @[self, other])
+        of IncM:
+            target.magic.doInc = proc (self: Value) =
+                callMethod(target.o[methodName], "\\" & IncM, @[self])
+        of DecM:
+            target.magic.doDec = proc (self: Value) =
+                callMethod(target.o[methodName], "\\" & DecM, @[self])
+        of NegM:
+            target.magic.doNeg = proc (self: Value) =
+                callMethod(target.o[methodName], "\\" & NegM, @[self])
+        of KeyQM:
+            target.magic.doKeyQ = proc (self: Value, key: Value): bool =
+                callMethod(target.o[methodName], "\\" & KeyQM, @[self, key])
+                isTrue(stack.pop())
+        of ContainsQM:
+            target.magic.doContainsQ = proc (self: Value, key: Value): bool =
+                callMethod(target.o[methodName], "\\" & KeyQM, @[self, key])
+                isTrue(stack.pop())
+        of ToStringM:
+            target.magic.toString = proc (self: Value): Value =
+                callMethod(target.o[methodName], "\\" & ToStringM, @[self])
+                stack.pop()
+        of ToIntegerM:
+            target.magic.toInteger = proc (self: Value): Value =
+                callMethod(target.o[methodName], "\\" & ToIntegerM, @[self])
+                stack.pop()
+        of ToFloatingM:
+            target.magic.toFloating = proc (self: Value): Value =
+                callMethod(target.o[methodName], "\\" & ToFloatingM, @[self])
+                stack.pop()
+        of ToLogicalM:
+            target.magic.toLogical = proc (self: Value): Value =
+                callMethod(target.o[methodName], "\\" & ToLogicalM, @[self])
+                stack.pop()
+        of ToBlockM:
+            target.magic.toBlock = proc (self: Value): Value =
+                callMethod(target.o[methodName], "\\" & ToBlockM, @[self])
+                stack.pop()
+        of ToDictionaryM:
+            target.magic.toDictionary = proc (self: Value): Value =
+                callMethod(target.o[methodName], "\\" & ToDictionaryM, @[self])
+                stack.pop()
         else:
             discard
 
