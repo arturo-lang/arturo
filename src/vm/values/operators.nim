@@ -528,9 +528,7 @@ proc `+=`*(x: var Value, y: Value) =
         of Quantity   || Rational       :   x.q += y.rat
         of Quantity   || Quantity       :   x.q += y.q
         else:
-            if x.kind == Object and not x.magic.doAdd.isNil:
-                x.magic.doAdd(x,y)
-            discard invalidOperation("add")
+            objectOperationOrNothing("add", doAdd, inplace=true)
 
 proc inc*(x: Value): Value =
     ## increment given value and return the result
