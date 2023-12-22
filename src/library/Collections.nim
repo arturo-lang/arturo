@@ -583,7 +583,7 @@ proc defineLibrary*() =
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "get list of field keys for given object",
+        description = "get list of fields for given object",
         args        = {
             "object": {Object}
         },
@@ -1075,6 +1075,28 @@ proc defineLibrary*() =
                             inc(i)
 
                         push(maxElement)
+
+    builtin "methods",
+        alias       = unaliased,
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "get list of methods for given object",
+        args        = {
+            "object": {Object}
+        },
+        attrs       = NoAttrs,
+        returns     = {Block},
+        # TODO(Collections\methods) add documentation example
+        #  labels: library, documentation, easy
+        example     = """
+        """:
+            #=======================================================
+            var s: seq[string]
+            for k,v in x.o:
+                if v.kind == Method:
+                    s.add(k)
+
+            push(newStringBlock(s))
 
     builtin "min",
         alias       = unaliased,
