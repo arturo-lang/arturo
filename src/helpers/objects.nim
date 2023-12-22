@@ -50,6 +50,9 @@ const
 
     NegM*               = "neg"
 
+    KeyQM*              = "key?"
+    ContainsQM*         = "contains?"
+
 #=======================================
 # Helpers
 #=======================================
@@ -141,6 +144,14 @@ func processMagicMethods(target: Value, methodName: string) =
         of NegM:
             target.magic.doNeg = proc (self: Value) =
                 callMethod(target.o[methodName], "\\" & NegM, @[self])
+        of KeyQM:
+            target.magic.doKeyQ = proc (self: Value, key: Value): bool =
+                callMethod(target.o[methodName], "\\" & KeyQM, @[self, key])
+                isTrue(stack.pop())
+        of ContainsQM:
+            target.magic.doContainsQ = proc (self: Value, key: Value): bool =
+                callMethod(target.o[methodName], "\\" & KeyQM, @[self, key])
+                isTrue(stack.pop())
         else:
             discard
 

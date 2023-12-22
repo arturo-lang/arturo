@@ -2437,7 +2437,7 @@ proc defineLibrary*() =
         rule        = PrefixPrecedence,
         description = "check if collection contains given value",
         args        = {
-            "collection": {String, Block, Range, Dictionary},
+            "collection": {String, Block, Range, Dictionary, Object},
             "value"     : {Any}
         },
         attrs       = {
@@ -2502,6 +2502,13 @@ proc defineLibrary*() =
                     of Dictionary:
                         let values = toSeq(x.d.values)
                         push(newLogical(values[at] == y))
+                    of Object:
+                        if unlikely(not x.magic.doContainsQ.isNil):
+                            pushAttr("at", aAt)
+                            push(newLogical(x.magic.doContainsQ(x, y)))
+                        else:
+                            let values = toSeq(x.o.values)
+                            push(newLogical(values[at] == y))
                     else:
                         discard
             else:
@@ -2527,6 +2534,19 @@ proc defineLibrary*() =
                         else:
                             let values = toSeq(x.d.values)
                             push(newLogical(y in values))
+                    of Object:
+                        if unlikely(not x.magic.doContainsQ.isNil):
+                            if hadAttr("deep"):
+                                pushAttr("deep", VTRUE)
+
+                            push(newLogical(x.magic.doContainsQ(x, y)))
+                        else:
+                            if hadAttr("deep"):
+                                let values: ValueArray = x.o.getValuesinDeep()
+                                push newLogical(y in values)
+                            else:
+                                let values = toSeq(x.o.values)
+                                push(newLogical(y in values))
                     else:
                         discard
 
@@ -2566,7 +2586,7 @@ proc defineLibrary*() =
         description = "check if value exists in given collection",
         args        = {
             "value"     : {Any},
-            "collection": {String, Block, Range, Dictionary}
+            "collection": {String, Block, Range, Dictionary, Object}
         },
         attrs       = {
             "at"    : ({Integer}, "check at given location within collection"),
@@ -2630,6 +2650,13 @@ proc defineLibrary*() =
                     of Dictionary:
                         let values = toSeq(y.d.values)
                         push(newLogical(values[at] == x))
+                    of Object:
+                        if unlikely(not y.magic.doContainsQ.isNil):
+                            pushAttr("at", aAt)
+                            push(newLogical(y.magic.doContainsQ(y, x)))
+                        else:
+                            let values = toSeq(y.o.values)
+                            push(newLogical(values[at] == x))
                     else:
                         discard
             else:
@@ -2655,6 +2682,19 @@ proc defineLibrary*() =
                         else:
                             let values = toSeq(y.d.values)
                             push(newLogical(x in values))
+                    of Object:
+                        if unlikely(not y.magic.doContainsQ.isNil):
+                            if hadAttr("deep"):
+                                pushAttr("deep", VTRUE)
+
+                            push(newLogical(y.magic.doContainsQ(y, x)))
+                        else:
+                            if hadAttr("deep"):
+                                let values: ValueArray = y.o.getValuesinDeep()
+                                push newLogical(x in values)
+                            else:
+                                let values = toSeq(y.o.values)
+                                push(newLogical(x in values))
                     else:
                         discard
 
@@ -2689,7 +2729,10 @@ proc defineLibrary*() =
             if xKind == Dictionary:
                 push(newLogical(x.d.hasKey(needle)))
             else:
-                push(newLogical(x.o.hasKey(needle)))
+                if unlikely(not x.magic.doKey.isNil):
+                    push(newLogical(x.magic.doKey(x, y)))
+                else:
+                    push(newLogical(x.o.hasKey(needle)))
 
     builtin "one?",
         alias       = unaliased, 
