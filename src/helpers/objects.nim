@@ -55,9 +55,9 @@ const
     ToStringM*          = "toString"
     ToIntegerM*         = "toInteger"
     ToFloatingM*        = "toFloating"
-    ToLogical*          = "toLogical"
-    ToBlock*            = "toBlock"
-    ToDictionary*       = "toDictionary"
+    ToLogicalM*         = "toLogical"
+    ToBlockM*           = "toBlock"
+    ToDictionaryM*      = "toDictionary"
 
 #=======================================
 # Helpers
