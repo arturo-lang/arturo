@@ -27,12 +27,11 @@ const
 
     # magic methods
     ConstructorM*       = "init"
-    ToStringM*          = "print"
-    CompareM*           = "compare"
 
     GetM*               = "get"
     SetM*               = "set"
 
+    CompareM*           = "compare"
     EqualQM*            = "equal?"
     LessQM*             = "less?"
     GreaterQM*          = "greater?"
@@ -94,14 +93,6 @@ func processMagicMethods(target: Value, methodName: string) =
         of ConstructorM:
             target.magic.doInit = proc (args: ValueArray) =
                 callMethod(target.o[methodName], "\\" & ConstructorM, args)
-        of ToStringM:
-            target.magic.doPrint = proc (self: Value): string =
-                callMethod(target.o[methodName], "\\" & ToStringM, @[self])
-                stack.pop().s
-        of CompareM:
-            target.magic.doCompare = proc (self: Value, other: Value): int =
-                callMethod(target.o[methodName], "\\" & CompareM, @[self, other])
-                stack.pop().i
         of GetM:
             target.magic.doGet = proc (self: Value, key: Value): Value =
                 callMethod(target.o[methodName], "\\" & GetM, @[self, key])
@@ -109,6 +100,10 @@ func processMagicMethods(target: Value, methodName: string) =
         of SetM:
             target.magic.doSet = proc (self: Value, key: Value, val: Value) =
                 callMethod(target.o[methodName], "\\" & SetM, @[self, key, val])
+        of CompareM:
+            target.magic.doCompare = proc (self: Value, other: Value): int =
+                callMethod(target.o[methodName], "\\" & CompareM, @[self, other])
+                stack.pop().i
         of EqualQM:
             target.magic.doEqualQ = proc (self: Value, other: Value): bool =
                 callMethod(target.o[methodName], "\\" & EqualQM, @[self, other])

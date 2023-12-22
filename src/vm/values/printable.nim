@@ -137,8 +137,8 @@ proc `$`*(v: Value): string {.inline.} =
             result = "[" & items.join(" ") & "]"
 
         of Object:
-            if not v.magic.doPrint.isNil:
-                return v.magic.doPrint(v)
+            if not v.magic.toString.isNil:
+                return v.magic.toString(v).s
             else:
                 var items: seq[string]
                 for key,value in v.o:
