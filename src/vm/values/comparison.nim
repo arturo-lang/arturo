@@ -236,13 +236,6 @@ proc `==`*(x: Value, y: Value): bool =
 #  see also: https://github.com/arturo-lang/arturo/pull/1139
 #  labels: enhancement,values,error handling,open discussion
 
-# TODO(VM/values/comparison) how should we handle Object values?
-#  right now, Object make feature a custom `compare` method which is called an used
-#  for the comparison. However, if there is no such method, we end up having the exact
-#  same issues we have with Dictionaries. So, how is that to be dealt with?
-#  see also: https://github.com/arturo-lang/arturo/pull/1139
-#  labels: enhancement,values,error handling,open discussion
-
 # TODO(VM/values/comparison) add `<`/`>` support for Path values?
 #  currently, `=` is supported but not `<` and `>`!
 #  the logic should be the same as with blocks, as it's - internally -
