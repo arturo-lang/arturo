@@ -89,6 +89,7 @@ proc generateJsonNode*(n: Value): JsonNode =
         of Complex,
            Rational,
            Function,
+           Method,
            Database,
            Socket,
            Bytecode,

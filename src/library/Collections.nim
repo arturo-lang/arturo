@@ -28,7 +28,7 @@ when not defined(NOGMP):
     import helpers/bignums as BignumsHelper
 
 import algorithm, os, random, sequtils
-import strutils, sugar, unicode
+import strutils, sugar, tables, unicode
 
 import helpers/arrays
 import helpers/datasource
@@ -579,6 +579,28 @@ proc defineLibrary*() =
 
                 push(res)
 
+    builtin "fields",
+        alias       = unaliased,
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "get list of fields for given object",
+        args        = {
+            "object": {Object}
+        },
+        attrs       = NoAttrs,
+        returns     = {Block},
+        # TODO(Collections\fields) add documentation example
+        #  labels: library, documentation, easy
+        example     = """
+        """:
+            #=======================================================
+            var s: seq[string]
+            for k,v in x.o:
+                if v.kind != Method:
+                    s.add(k)
+
+            push(newStringBlock(s))
+
     builtin "first",
         alias       = unaliased,
         op          = opNop,
@@ -748,9 +770,19 @@ proc defineLibrary*() =
                 of Object:
                     case yKind:
                         of String, Word, Literal, Label:
-                            push(GetKey(x.o, y.s))
+                            if (let got = GetKey(x.o, y.s, withError=false); not got.isNil):
+                                push(got)
+                            elif not x.magic.doGet.isNil:
+                                push(x.magic.doGet(x, y))
+                            else:
+                                discard GetKey(x.o, y.s) # Merely to trigger the error
                         else:
-                            push(GetKey(x.o, $(y)))
+                            if (let got = GetKey(x.o, $(y), withError=false); not got.isNil):
+                                push(got)
+                            elif not x.magic.doGet.isNil:
+                                push(x.magic.doGet(x, y))
+                            else:
+                                discard GetKey(x.o, $(y)) # Merely to trigger the error
                 of Store:
                     when not defined(WEB):
                         case yKind:
@@ -1043,6 +1075,28 @@ proc defineLibrary*() =
                             inc(i)
 
                         push(maxElement)
+
+    builtin "methods",
+        alias       = unaliased,
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "get list of methods for given object",
+        args        = {
+            "object": {Object}
+        },
+        attrs       = NoAttrs,
+        returns     = {Block},
+        # TODO(Collections\methods) add documentation example
+        #  labels: library, documentation, easy
+        example     = """
+        """:
+            #=======================================================
+            var s: seq[string]
+            for k,v in x.o:
+                if v.kind == Method:
+                    s.add(k)
+
+            push(newStringBlock(s))
 
     builtin "min",
         alias       = unaliased,
@@ -1664,11 +1718,14 @@ proc defineLibrary*() =
                         else:
                             x.d[$(y)] = z
                 of Object:
-                    case yKind:
-                        of String, Word, Literal, Label:
-                            x.o[y.s] = z
-                        else:
-                            x.o[$(y)] = z
+                    if unlikely((not x.magic.doSet.isNil) and (y.kind in {String,Word,Literal,Label}) and (y.s notin toSeq(x.proto.fields.keys()))):
+                        x.magic.doSet(x, y, z)
+                    else:
+                        case yKind:
+                            of String, Word, Literal, Label:
+                                x.o[y.s] = z
+                            else:
+                                x.o[$(y)] = z
                 of Store:
                     when not defined(WEB):
                         case yKind:
@@ -2424,7 +2481,7 @@ proc defineLibrary*() =
         rule        = PrefixPrecedence,
         description = "check if collection contains given value",
         args        = {
-            "collection": {String, Block, Range, Dictionary},
+            "collection": {String, Block, Range, Dictionary, Object},
             "value"     : {Any}
         },
         attrs       = {
@@ -2489,6 +2546,13 @@ proc defineLibrary*() =
                     of Dictionary:
                         let values = toSeq(x.d.values)
                         push(newLogical(values[at] == y))
+                    of Object:
+                        if unlikely(not x.magic.doContainsQ.isNil):
+                            pushAttr("at", aAt)
+                            push(newLogical(x.magic.doContainsQ(x, y)))
+                        else:
+                            let values = toSeq(x.o.values)
+                            push(newLogical(values[at] == y))
                     else:
                         discard
             else:
@@ -2514,6 +2578,19 @@ proc defineLibrary*() =
                         else:
                             let values = toSeq(x.d.values)
                             push(newLogical(y in values))
+                    of Object:
+                        if unlikely(not x.magic.doContainsQ.isNil):
+                            if hadAttr("deep"):
+                                pushAttr("deep", VTRUE)
+
+                            push(newLogical(x.magic.doContainsQ(x, y)))
+                        else:
+                            if hadAttr("deep"):
+                                let values: ValueArray = x.o.getValuesinDeep()
+                                push newLogical(y in values)
+                            else:
+                                let values = toSeq(x.o.values)
+                                push(newLogical(y in values))
                     else:
                         discard
 
@@ -2553,7 +2630,7 @@ proc defineLibrary*() =
         description = "check if value exists in given collection",
         args        = {
             "value"     : {Any},
-            "collection": {String, Block, Range, Dictionary}
+            "collection": {String, Block, Range, Dictionary, Object}
         },
         attrs       = {
             "at"    : ({Integer}, "check at given location within collection"),
@@ -2617,6 +2694,13 @@ proc defineLibrary*() =
                     of Dictionary:
                         let values = toSeq(y.d.values)
                         push(newLogical(values[at] == x))
+                    of Object:
+                        if unlikely(not y.magic.doContainsQ.isNil):
+                            pushAttr("at", aAt)
+                            push(newLogical(y.magic.doContainsQ(y, x)))
+                        else:
+                            let values = toSeq(y.o.values)
+                            push(newLogical(values[at] == x))
                     else:
                         discard
             else:
@@ -2642,6 +2726,19 @@ proc defineLibrary*() =
                         else:
                             let values = toSeq(y.d.values)
                             push(newLogical(x in values))
+                    of Object:
+                        if unlikely(not y.magic.doContainsQ.isNil):
+                            if hadAttr("deep"):
+                                pushAttr("deep", VTRUE)
+
+                            push(newLogical(y.magic.doContainsQ(y, x)))
+                        else:
+                            if hadAttr("deep"):
+                                let values: ValueArray = y.o.getValuesinDeep()
+                                push newLogical(x in values)
+                            else:
+                                let values = toSeq(y.o.values)
+                                push(newLogical(x in values))
                     else:
                         discard
 
@@ -2676,7 +2773,10 @@ proc defineLibrary*() =
             if xKind == Dictionary:
                 push(newLogical(x.d.hasKey(needle)))
             else:
-                push(newLogical(x.o.hasKey(needle)))
+                if unlikely(not x.magic.doKeyQ.isNil):
+                    push(newLogical(x.magic.doKeyQ(x, y)))
+                else:
+                    push(newLogical(x.o.hasKey(needle)))
 
     builtin "one?",
         alias       = unaliased, 

@@ -94,15 +94,16 @@ type
         Object          = 29
         Store           = 30
         Function        = 31
-        Inline          = 32
-        Block           = 33
-        Range           = 34
-        Database        = 35
-        Socket          = 36    
-        Bytecode        = 37
+        Method          = 32
+        Inline          = 33
+        Block           = 34
+        Range           = 35
+        Database        = 36
+        Socket          = 37    
+        Bytecode        = 38
 
-        Nothing         = 38
-        Any             = 39
+        Nothing         = 39
+        Any             = 40
 
     ValueSpec* = set[ValueKind]
 
@@ -145,8 +146,39 @@ type
         super*          : ValueDict
 
     MagicMethods* = ref object
-        doPrint*    : proc (v:Value): string
-        doCompare*  : proc (a,b:Value): int
+        doInit*         : proc (vs:ValueArray)
+
+        doCompare*      : proc (a,b:Value): int
+
+        doGet*          : proc (a,b:Value): Value
+        doSet*          : proc (a,b,c:Value)
+        
+        doEqualQ*       : proc (a,b:Value): bool
+        doLessQ*        : proc (a,b:Value): bool
+        doGreaterQ*     : proc (a,b:Value): bool
+        
+        doAdd*          : proc (a,b:Value)
+        doSub*          : proc (a,b:Value)
+        doMul*          : proc (a,b:Value)
+        doDiv*          : proc (a,b:Value)
+        doFDiv*         : proc (a,b:Value)
+        doMod*          : proc (a,b:Value)
+        doPow*          : proc (a,b:Value)
+        
+        doInc*          : proc (v:Value)
+        doDec*          : proc (v:Value)
+
+        doNeg*          : proc (v:Value)
+
+        doKeyQ*         : proc (a,b:Value): bool
+        doContainsQ*    : proc (a,b:Value): bool
+
+        toString*       : proc (v:Value): Value
+        toInteger*      : proc (v:Value): Value
+        toFloating*     : proc (v:Value): Value
+        toLogical*      : proc (v:Value): Value
+        toBlock*        : proc (v:Value): Value
+        toDictionary*   : proc (v:Value): Value
 
     SymbolDict*   = OrderedTable[VSymbol,AliasBinding]
 
@@ -182,6 +214,13 @@ type
             of BuiltinFunction:
                 op*         : OpCode
                 action*     : BuiltinAction
+
+    VMethod* = ref object
+        marity*     : int8
+        mparams*    : seq[string]
+        mmain*      : Value
+        mbcode*     : Value
+        mdistinct*  : bool
 
     VStore* = ref object
         data*       : ValueDict     # the actual data
@@ -280,6 +319,8 @@ type
                 sto*: VStore
             of Function:
                 funcType*: VFunction
+            of Method:
+                methType*: VMethod
             of Database:
                 case dbKind*: DatabaseKind:
                     of SqliteDatabase:
@@ -374,6 +415,14 @@ makeAccessor(funcType, bcode)
 makeAccessor(funcType, inline)
 makeAccessor(funcType, action)
 makeAccessor(funcType, op)
+
+# Method
+
+makeAccessor(methType, marity)
+makeAccessor(methType, mparams)
+makeAccessor(methType, mmain)
+makeAccessor(methType, mbcode)
+makeAccessor(methType, mdistinct)
 
 #=======================================
 # Helpers
