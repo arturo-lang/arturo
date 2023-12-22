@@ -2729,8 +2729,8 @@ proc defineLibrary*() =
             if xKind == Dictionary:
                 push(newLogical(x.d.hasKey(needle)))
             else:
-                if unlikely(not x.magic.doKey.isNil):
-                    push(newLogical(x.magic.doKey(x, y)))
+                if unlikely(not x.magic.doKeyQ.isNil):
+                    push(newLogical(x.magic.doKeyQ(x, y)))
                 else:
                     push(newLogical(x.o.hasKey(needle)))
 
