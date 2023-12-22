@@ -430,6 +430,19 @@ template normalIntegerShrI*(x: var Value, y: int): untyped =
     ## and set result in-place
     x.i = x.i shr y
 
+template objectOperationOrNothing*(operation: string, mgk: untyped, inplace: static bool = false): untyped =
+    if x.kind == Object and not x.magic.`mgk`.isNil:
+        when inplace:
+            x.magic.`mgk`(x,y)
+        else:
+            x.magic.`mgk`(x,y)
+            return stack.pop()
+    else:
+        when inplace:
+            discard invalidOperation(operation)
+        else:
+            return invalidOperation(operation)
+
 #=======================================
 # Methods
 #=======================================
@@ -518,7 +531,12 @@ proc `+`*(x: Value, y: Value): Value =
         of Quantity   || Rational       :   return newQuantity(x.q + y.rat)
         of Quantity   || Quantity       :   return newQuantity(x.q + y.q)
         else:
-            return invalidOperation("add")
+            objectOperationOrNothing("add", doAdd)
+            # if x.kind == Object and not x.magic.doAdd.isNil:
+            #     x.magic.doAdd(x,y)
+            #     return stack.pop()
+
+            # return invalidOperation("add")
 
 proc `+=`*(x: var Value, y: Value) =
     ## add given values
@@ -561,6 +579,8 @@ proc `+=`*(x: var Value, y: Value) =
         of Quantity   || Rational       :   x.q += y.rat
         of Quantity   || Quantity       :   x.q += y.q
         else:
+            if x.kind == Object and not x.magic.doAdd.isNil:
+                x.magic.doAdd(x,y)
             discard invalidOperation("add")
 
 proc inc*(x: Value): Value =
