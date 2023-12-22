@@ -22,7 +22,7 @@ when not defined(NOGMP):
 
 import helpers/intrinsics
 
-import vm/errors
+import vm/[errors, stack]
 
 import vm/values/types
 import vm/values/value
