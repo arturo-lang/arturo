@@ -678,6 +678,11 @@ proc defineLibrary*() =
             else:
                 push(newLogical(xKind==Integer))
 
+    # TODO(Types\is?) should add `.strict` option for Object values?
+    #  in that case, it would return true only if the object's type
+    #  is the given one. If it inherits the given type - including
+    #  something like `is? :object someObj` - would return false
+    #  labels: library, enhancement, open discussion
     builtin "is?",
         alias       = unaliased, 
         op          = opNop,
