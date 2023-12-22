@@ -43,8 +43,8 @@ proc defineLibrary*() =
         rule        = InfixPrecedence,
         description = "add given values and return result",
         args        = {
-            "valueA": {Integer,Floating,Complex,Rational,Color,Quantity,Literal},
-            "valueB": {Integer,Floating,Complex,Rational,Color,Quantity}
+            "valueA": {Integer,Floating,Complex,Rational,Color,Quantity,Object,Literal},
+            "valueB": {Integer,Floating,Complex,Rational,Color,Quantity,Object}
         },
         attrs       = NoAttrs,
         returns     = {Integer,Floating,Complex,Rational,Color,Quantity,Nothing},
