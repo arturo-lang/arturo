@@ -861,7 +861,7 @@ proc `/`*(x: Value, y: Value): Value =
         of Quantity   || Rational       :   return newQuantity(x.q / y.rat)
         of Quantity   || Quantity       :   return newQuantity(x.q / y.q)
         else:
-            return invalidOperation("div")
+            objectOperationOrNothing("div", doDiv)
 
 proc `/=`*(x: var Value, y: Value) =
     ## divide (integer division) given values
@@ -903,7 +903,7 @@ proc `/=`*(x: var Value, y: Value) =
         of Quantity   || Rational       :   x.q /= y.rat
         of Quantity   || Quantity       :   x.q /= y.q
         else:
-            discard invalidOperation("div")
+            objectOperationOrNothing("div", doDiv, inplace=true)
 
 proc `//`*(x: Value, y: Value): Value =
     ## divide (floating-point division) given values and return the result
