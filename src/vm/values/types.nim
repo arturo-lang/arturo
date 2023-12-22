@@ -174,6 +174,13 @@ type
         doKeyQ*         : proc (a,b:Value): bool
         doContainsQ*    : proc (a,b:Value): bool
 
+        toString*       : proc (v:Value): Value
+        toInteger*      : proc (v:Value): Value
+        toFloating*     : proc (v:Value): Value
+        toLogical*      : proc (v:Value): Value
+        toBlock*        : proc (v:Value): Value
+        toDictionary*   : proc (v:Value): Value
+
     SymbolDict*   = OrderedTable[VSymbol,AliasBinding]
 
     ValueInfo* = ref object
