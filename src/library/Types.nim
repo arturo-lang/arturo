@@ -761,7 +761,7 @@ proc defineLibrary*() =
                                         break
                     push newLogical(res)
             else:
-                if x.t in {Object,Any}:
+                if x.t in {Object,Any} and x.tpKind == BuiltinType:
                     push(VTRUE)
                 else:
                     if x.tpKind == BuiltinType:
