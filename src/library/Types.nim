@@ -555,6 +555,34 @@ proc defineLibrary*() =
             #=======================================================
             push(newLogical(xKind==Date))
 
+    builtin "defined?",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "checks if given type is defined",
+        args        = {
+            "type" : {Type, String, Literal, Word}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        # TODO(Types\defined?) add documentation example
+        #  labels: library, documentation, easy
+        example     = """
+        """:
+            #=======================================================
+            if xKind == Type:
+                if x.tpKind == BuiltinType:
+                    push(VTRUE)
+                else:
+                    push(newLogical(not getType(x.tid).isNil))
+            else:
+                try:
+                    discard parseEnum[ValueKind](x.s)
+                    push(VTRUE)
+                except:
+                    let tp = getType(x.s, safe=true)
+                    push(newLogical(not (tp.isNil or tp == NoPrototypeFound)))
+
     builtin "dictionary?",
         alias       = unaliased, 
         op          = opNop,
