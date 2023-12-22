@@ -661,7 +661,7 @@ proc dec*(x: Value): Value =
         of Complex: return newComplex(x.z-1.0)
         of Quantity: return newQuantity(x.q - 1)
         else:
-            return invalidOperation("dec")
+            objectOperationOrNothing("dec", doDec, oneparam=true)
 
 proc decI*(x: var Value) =
     ## increment given value
@@ -678,7 +678,7 @@ proc decI*(x: var Value) =
         of Complex: x.z = x.z - 1.0
         of Quantity: x.q -= 1
         else:
-            discard invalidOperation("dec")
+            objectOperationOrNothing("dec", doDec, oneparam=true, inplace=true)
 
 proc `*`*(x: Value, y: Value): Value =
     ## multiply given values and return the result
