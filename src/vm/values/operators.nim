@@ -547,7 +547,7 @@ proc inc*(x: Value): Value =
         of Complex: return newComplex(x.z+1.0)
         of Quantity: return newQuantity(x.q + 1)
         else:
-            return invalidOperation("inc")
+            objectOperationOrNothing("inc", doInc, oneparam=true)
 
 proc incI*(x: var Value) =
     ## increment given value
@@ -564,7 +564,7 @@ proc incI*(x: var Value) =
         of Complex: x.z = x.z + 1.0
         of Quantity: x.q += 1
         else:
-            discard invalidOperation("inc")
+            objectOperationOrNothing("inc", doInc, oneparam=true, inplace=true)
 
 proc `-`*(x: Value, y: Value): Value = 
     ## subtract given values and return the result
