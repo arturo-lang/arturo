@@ -47,6 +47,8 @@ const
     IncM*               = "inc"
     DecM*               = "dec"
 
+    NegM*               = "neg"
+
 #=======================================
 # Helpers
 #=======================================
@@ -132,6 +134,9 @@ func processMagicMethods(target: Value, methodName: string) =
         of DecM:
             target.magic.doDec = proc (self: Value) =
                 callMethod(target.o[methodName], "\\" & DecM, @[self])
+        of NegM:
+            target.magic.doNeg = proc (self: Value) =
+                callMethod(target.o[methodName], "\\" & NegM, @[self])
         else:
             discard
 
