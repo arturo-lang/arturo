@@ -430,13 +430,17 @@ template normalIntegerShrI*(x: var Value, y: int): untyped =
     ## and set result in-place
     x.i = x.i shr y
 
-template objectOperationOrNothing*(operation: string, mgk: untyped, inplace: static bool = false): untyped =
+template objectOperationOrNothing*(operation: string, mgk: untyped, oneparam: static bool = false, inplace: static bool = false): untyped =
     if x.kind == Object and not x.magic.`mgk`.isNil:
         when inplace:
             pushAttr("inplace", VTRUE)
-            x.magic.`mgk`(x,y)
+        
+        when oneparam:
+            x.magic.`mgk`(x)
         else:
-            x.magic.`mgk`(x,y)
+            x.magic.`mgk`(x, y)
+
+        when not inplace:
             return stack.pop()
     else:
         when inplace:
