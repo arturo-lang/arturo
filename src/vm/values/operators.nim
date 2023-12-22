@@ -433,6 +433,7 @@ template normalIntegerShrI*(x: var Value, y: int): untyped =
 template objectOperationOrNothing*(operation: string, mgk: untyped, inplace: static bool = false): untyped =
     if x.kind == Object and not x.magic.`mgk`.isNil:
         when inplace:
+            pushAttr("inplace", VTRUE)
             x.magic.`mgk`(x,y)
         else:
             x.magic.`mgk`(x,y)
