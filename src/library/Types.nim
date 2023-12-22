@@ -234,34 +234,6 @@ proc defineLibrary*() =
 
             push newUserType(tmpTid)
 
-    builtin "method",
-        alias       = unaliased,
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "create type method with given arguments and body",
-        args        = {
-            "arguments" : {Literal, Block},
-            "body"      : {Block}
-        },
-        attrs       = {
-            "distinct"  : ({Logical},"shouldn't be treated as a magic method")
-        },
-        returns     = {Method},
-        # TODO(Types\method) add documentation example
-        #  labels: library, documentation, easy
-        example     = """
-        """:
-            #=======================================================
-            let isDistinct = hadAttr("distinct")
-            
-            let argBlock {.cursor.} =
-                if xKind == Block: 
-                    requireValueBlock(x, {Word, Literal, Type})
-                    x.a
-                else: @[x]
-
-            push(newMethodFromDefinition(argBlock, y, isDistinct))
-
     # TODO(Types\to) revise attributes
     #  the attributes to this function seem to me a bit confusing. I mean, `to` is
     #  supposed to convert a value to a given type. Obviously, if we convert a Block
