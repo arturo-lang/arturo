@@ -37,6 +37,16 @@ const
     LessQM*             = "less?"
     GreaterQM*          = "greater?"
 
+    AddM*               = "add"
+    SubM*               = "sub"
+    MulM*               = "mul"
+    DivM*               = "div"
+    ModM*               = "mod"
+    PowM*               = "pow"
+
+    IncM*               = "inc"
+    DecM*               = "dec"
+
 #=======================================
 # Helpers
 #=======================================
@@ -98,6 +108,30 @@ func processMagicMethods(target: Value, methodName: string) =
             target.magic.doEqualQ = proc (self: Value, other: Value): bool =
                 callMethod(target.o[methodName], "\\" & GreaterQM, @[self, other])
                 isTrue(stack.pop())
+        of AddM:
+            target.magic.doAdd = proc (self: Value, other: Value) =
+                callMethod(target.o[methodName], "\\" & AddM, @[self, other])
+        of SubM:
+            target.magic.doSub = proc (self: Value, other: Value) =
+                callMethod(target.o[methodName], "\\" & SubM, @[self, other])
+        of MulM:
+            target.magic.doMul = proc (self: Value, other: Value) =
+                callMethod(target.o[methodName], "\\" & MulM, @[self, other])
+        of DivM:
+            target.magic.doDiv = proc (self: Value, other: Value) =
+                callMethod(target.o[methodName], "\\" & DivM, @[self, other])
+        of ModM:
+            target.magic.doMod = proc (self: Value, other: Value) =
+                callMethod(target.o[methodName], "\\" & ModM, @[self, other])
+        of PowM:
+            target.magic.doPow = proc (self: Value, other: Value) =
+                callMethod(target.o[methodName], "\\" & PowM, @[self, other])
+        of IncM:
+            target.magic.doInc = proc (self: Value) =
+                callMethod(target.o[methodName], "\\" & IncM, @[self, other])
+        of DecM:
+            target.magic.doDec = proc (self: Value) =
+                callMethod(target.o[methodName], "\\" & DecM, @[self, other])
         else:
             discard
 
