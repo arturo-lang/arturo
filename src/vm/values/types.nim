@@ -165,8 +165,10 @@ type
         doMod*      : proc (a,b:Value)
         doPow*      : proc (a,b:Value)
         
-        doInc*      : proc (a:Value)
+        doInc*      : proc (v:Value)
         doDec*      : proc (v:Value)
+
+        doNeg*      : proc (v:Value)
 
     SymbolDict*   = OrderedTable[VSymbol,AliasBinding]
 

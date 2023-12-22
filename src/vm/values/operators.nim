@@ -805,7 +805,7 @@ proc neg*(x: Value): Value =
         of Complex: return newComplex(x.z*(-1.0))
         of Quantity: return newQuantity(x.q*(-1))
         else:
-            return invalidOperation("neg")
+            objectOperationOrNothing("neg", doNeg, oneparam=true)
 
 proc negI*(x: var Value) =
     ## negate given value
@@ -822,7 +822,7 @@ proc negI*(x: var Value) =
         of Complex: x.z *= -1.0
         of Quantity: x.q *= -1
         else:
-            discard invalidOperation("neg")
+            objectOperationOrNothing("neg", doNeg, oneparam=true, inplace=true)
 
 proc `/`*(x: Value, y: Value): Value =
     ## divide (integer division) given values and return the result
