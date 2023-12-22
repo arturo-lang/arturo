@@ -775,7 +775,13 @@ proc defineLibrary*() =
                             var found = false
                             var currentPrototype = y.proto
                             while true:
-                                if currentPrototype[] == givenPrototype[]:
+                                # TODO(Types\is?) better inheritance identification needed
+                                #  right now, we're merely comparing the names of the prototypes
+                                #  but what if the prototype has been redefined in the meantime?
+                                #  we actually have to implement a proper `==` overload for 
+                                #  Prototype values!
+                                #  labels: bug, values
+                                if currentPrototype.name == givenPrototype.name:
                                     found = true
                                     break
 
