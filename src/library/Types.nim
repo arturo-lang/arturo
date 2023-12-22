@@ -765,9 +765,27 @@ proc defineLibrary*() =
                     push(VTRUE)
                 else:
                     if x.tpKind == BuiltinType:
-                        push(newLogical(x == newType(y.proto.name)))
+                        push(VFALSE)
+                        #push(newLogical(x == newType(y.proto.name)))
                     else:
-                        push(newLogical(x.tid == y.tid))
+                        let givenPrototype = getType(x.tid, safe=true)
+                        if givenPrototype == NoPrototypeFound:
+                            push(VFALSE)
+                        else:
+                            var found = false
+                            var currentPrototype = y.proto
+                            while true:
+                                if currentPrototype[] == givenPrototype[]:
+                                    found = true
+                                    break
+
+                                if y.proto.inherits == VNULL: break
+                                if (let newProto = getType(y.proto.inherits.tid, safe=true); newProto != NoPrototypeFound):
+                                    currentPrototype = newProto
+                                else:
+                                    break
+
+                            push(newLogical(found))
 
     builtin "floating?",
         alias       = unaliased, 
