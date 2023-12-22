@@ -128,10 +128,10 @@ func processMagicMethods(target: Value, methodName: string) =
                 callMethod(target.o[methodName], "\\" & PowM, @[self, other])
         of IncM:
             target.magic.doInc = proc (self: Value) =
-                callMethod(target.o[methodName], "\\" & IncM, @[self, other])
+                callMethod(target.o[methodName], "\\" & IncM, @[self])
         of DecM:
             target.magic.doDec = proc (self: Value) =
-                callMethod(target.o[methodName], "\\" & DecM, @[self, other])
+                callMethod(target.o[methodName], "\\" & DecM, @[self])
         else:
             discard
 
