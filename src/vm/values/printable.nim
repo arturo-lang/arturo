@@ -486,6 +486,11 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
 #  Check: `print as.pretty.code.unwrapped info.get 'get`
 #  labels: values,enhancement,library
 
+# TODO(VM/values/printable) Implement `as.code` for Object values
+#  we should over a magic method for that - `asCode`? - and if it's not
+#  there, either throw an error, or do sth (but what?!)
+#  labels: values,enhancement,oop
+
 proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: bool=false, isKeyVal: bool=false, safeStrings: bool = false): string {.inline.} =
     result = ""
 
