@@ -711,11 +711,6 @@ proc defineLibrary*() =
             else:
                 push(newLogical(xKind==Integer))
 
-    # TODO(Types\is?) not working correctly for Object values
-    #  it should definitely return true if the object's type is the given one.
-    #  what happens if the object inherits from given type?
-    #  should that be a matter of e.g. an extra `.strict` option?
-    #  labels: library, bug, enhancement, open discussion
     builtin "is?",
         alias       = unaliased, 
         op          = opNop,
@@ -766,7 +761,6 @@ proc defineLibrary*() =
                 else:
                     if x.tpKind == BuiltinType:
                         push(VFALSE)
-                        #push(newLogical(x == newType(y.proto.name)))
                     else:
                         let givenPrototype = getType(x.tid, safe=true)
                         if givenPrototype == NoPrototypeFound:
