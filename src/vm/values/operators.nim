@@ -733,7 +733,7 @@ proc `*`*(x: Value, y: Value): Value =
         of Unit       || Unit           :   return newUnit(flatten(x.u & y.u))
 
         else:
-            return invalidOperation("mul")
+            objectOperationOrNothing("mul", doMul)
 
 proc `*=`*(x: var Value, y: Value) =
     ## multiply given values
@@ -791,7 +791,7 @@ proc `*=`*(x: var Value, y: Value) =
         of Unit       || Unit           :   x.u = flatten(x.u & y.u)
 
         else:
-            discard invalidOperation("mul")
+            objectOperationOrNothing("mul", doMul, inplace=true)
 
 proc neg*(x: Value): Value =
     ## negate given value and return the result
