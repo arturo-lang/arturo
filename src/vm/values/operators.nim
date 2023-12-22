@@ -604,7 +604,7 @@ proc `-`*(x: Value, y: Value): Value =
         of Quantity   || Rational       :   return newQuantity(x.q - y.rat)
         of Quantity   || Quantity       :   return newQuantity(x.q - y.q)
         else:
-            return invalidOperation("sub")
+            objectOperationOrNothing("sub", doSub)
 
 proc `-=`*(x: var Value, y: Value) = 
     ## subtract given values
@@ -647,7 +647,7 @@ proc `-=`*(x: var Value, y: Value) =
         of Quantity   || Rational       :   x.q -= y.rat
         of Quantity   || Quantity       :   x.q -= y.q
         else:
-            discard invalidOperation("sub")
+            objectOperationOrNothing("sub", doSub, inplace=true)
 
 proc dec*(x: Value): Value =
     ## decrement given value and return the result
