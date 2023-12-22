@@ -187,8 +187,8 @@ proc `$`*(v: Value): string {.inline.} =
 proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepend="") {.exportc.} = 
 
     proc dumpGeneric(str: string, v: Value) =
-        if not muted:   stdout.write fmt("{resetColor}{str}{fg(grayColor)} :{($(v.kind)).toLowerAscii()}{resetColor}")
-        else:           stdout.write fmt("{str} :{($(v.kind)).toLowerAscii()}")
+        if not muted:   stdout.write fmt("{resetColor}{str}{fg(grayColor)} :{($(v.kind)).toLowerAscii()}{resetColor}\n")
+        else:           stdout.write fmt("{str} :{($(v.kind)).toLowerAscii()}\n")
     
     proc dumpPrimitive(str: string, v: Value) =
         if not muted:   stdout.write fmt("{bold(greenColor)}{str}{fg(grayColor)} :{($(v.kind)).toLowerAscii()}{resetColor}")
@@ -390,7 +390,6 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
                     for i in 0..level: stdout.write "        "
 
                     stdout.write unicode.alignLeft(key & " ", maxLen) & ":"
-                    echo "--> " & $(value.kind)
                     if value.kind == Method:
                         for i in 0..level: stdout.write "        "
                         dumpGeneric("(" & value.params.filter((zz) => zz != "this").join(", ") & ")", value)
