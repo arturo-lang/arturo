@@ -453,9 +453,35 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat:Value = nil): Val
             of Object:
                 case tp:
                     of String:
-                        return newString($(y))
+                        if not y.magic.toString.isNil:
+                            return y.magic.toString(y)
+                        else:
+                            return newString($(y))
+                    of Integer:
+                        if not y.magic.toInteger.isNil:
+                            return y.magic.toInteger(y)
+                        else:
+                            throwCannotConvert()
+                    of Floating:
+                        if not y.magic.toFloating.isNil:
+                            return y.magic.toFloating(y)
+                        else:
+                            throwCannotConvert()
+                    of Logical:
+                        if not y.magic.toLogical.isNil:
+                            return y.magic.toLogical(y)
+                        else:
+                            throwCannotConvert()
+                    of Block:
+                        if not y.magic.toBlock.isNil:
+                            return y.magic.toBlock(y)
+                        else:
+                            throwCannotConvert()
                     of Dictionary:
-                        return newDictionary(y.o)
+                        if not y.magic.toDictionary.isNil:
+                            return y.magic.toDictionary(y)
+                        else:
+                            return newDictionary(y.o)
                     else:
                         throwCannotConvert()
 

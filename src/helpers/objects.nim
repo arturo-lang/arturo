@@ -53,6 +53,13 @@ const
     KeyQM*              = "key?"
     ContainsQM*         = "contains?"
 
+    ToStringM*          = "toString"
+    ToIntegerM*         = "toInteger"
+    ToFloatingM*        = "toFloating"
+    ToLogical*          = "toLogical"
+    ToBlock*            = "toBlock"
+    ToDictionary*       = "toDictionary"
+
 #=======================================
 # Helpers
 #=======================================
@@ -152,6 +159,30 @@ func processMagicMethods(target: Value, methodName: string) =
             target.magic.doContainsQ = proc (self: Value, key: Value): bool =
                 callMethod(target.o[methodName], "\\" & KeyQM, @[self, key])
                 isTrue(stack.pop())
+        of ToStringM:
+            target.magic.toString = proc (self: Value): Value =
+                callMethod(target.o[methodName], "\\" & ToStringM, @[self])
+                stack.pop()
+        of ToIntegerM:
+            target.magic.toInteger = proc (self: Value): Value =
+                callMethod(target.o[methodName], "\\" & ToIntegerM, @[self])
+                stack.pop()
+        of ToFloatingM:
+            target.magic.toFloating = proc (self: Value): Value =
+                callMethod(target.o[methodName], "\\" & ToFloatingM, @[self])
+                stack.pop()
+        of ToLogicalM:
+            target.magic.toLogical = proc (self: Value): Value =
+                callMethod(target.o[methodName], "\\" & ToLogicalM, @[self])
+                stack.pop()
+        of ToBlockM:
+            target.magic.toBlock = proc (self: Value): Value =
+                callMethod(target.o[methodName], "\\" & ToBlockM, @[self])
+                stack.pop()
+        of ToDictionaryM:
+            target.magic.toDictionary = proc (self: Value): Value =
+                callMethod(target.o[methodName], "\\" & ToDictionaryM, @[self])
+                stack.pop()
         else:
             discard
 
