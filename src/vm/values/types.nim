@@ -157,6 +157,15 @@ type
         doEqualQ*   : proc (a,b:Value): bool
         doLessQ*    : proc (a,b:Value): bool
         doGreaterQ* : proc (a,b:Value): bool
+        
+        doAdd*      : proc (a,b:Value): Value
+        doSub*      : proc (a,b:Value): Value
+        doMul*      : proc (a,b:Value): Value
+        doDiv*      : proc (a,b:Value): Value
+        doMod*      : proc (a,b:Value): Value
+        
+        doInc*      : proc (a:Value): Value
+        doDec*      : proc (v:Value): Value
 
     SymbolDict*   = OrderedTable[VSymbol,AliasBinding]
 
