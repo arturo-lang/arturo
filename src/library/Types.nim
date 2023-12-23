@@ -178,12 +178,12 @@ proc defineLibrary*() =
             setType(x.tid, newPrototype(x.tid, definitions, inherits, fieldTable, super))
 
             # Debugging!!
-            push newDictionary({
-                "name": newString(x.tid),
-                "definitions": newDictionary(definitions),
-                "inherits": inherits,
-                "fields": newDictionary(fieldTable)
-            }.toOrderedTable)
+            # push newDictionary({
+            #     "name": newString(x.tid),
+            #     "definitions": newDictionary(definitions),
+            #     "inherits": inherits,
+            #     "fields": newDictionary(fieldTable)
+            # }.toOrderedTable)
 
     builtin "is",
         alias       = unaliased,
