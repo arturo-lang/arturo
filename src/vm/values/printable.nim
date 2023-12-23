@@ -142,7 +142,8 @@ proc `$`*(v: Value): string {.inline.} =
             else:
                 var items: seq[string]
                 for key,value in v.o:
-                    items.add(key  & ":" & $(value))
+                    if value.kind != Method:
+                        items.add(key  & ":" & $(value))
 
                 result = "[" & items.join(" ") & "]"
 
