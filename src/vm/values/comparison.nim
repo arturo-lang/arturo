@@ -122,33 +122,32 @@ proc `==`*(x: Value, y: Value): bool =
             discard
 
     elif x.kind == Quantity or y.kind == Quantity:
-        if y.kind == Integer:
+        case pair
+        of Quantity || Integer:
             if y.iKind == NormalInteger:
                 return x.q == y.i
             else:
                 when not defined(NOGMP):
                     return x.q == y.bi
-        elif y.kind == Floating:
+        of Quantity || Floating:
             return x.q == y.f
-        elif y.kind == Rational:
+        of Quantity || Rational:
             return x.q == y.rat
-        elif y.kind == Quantity:
-            if x.kind == Integer:
+        of Integer || Quantity:
                 if x.iKind == NormalInteger:
                     return x.i == y.q
                 else:
                     when not defined(NOGMP):
                         return x.bi == y.q
-            elif x.kind == Floating:
+        of Floating || Quantity:
                 return x.f == y.q
-            elif x.kind == Rational:
+        of Rational || Quantity:
                 return x.rat == y.q
-            else:
+        of Quantity || Quantity:
                 return x.q == y.q
         else:
             return false
-    elif x.kind == Error and y.kind == ErrorKind:
-        return x.err.kind == y.errkind
+        
     elif x.kind == ErrorKind and y.kind == Error:
         return x.errkind == y.err.kind
     else:
