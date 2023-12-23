@@ -136,8 +136,8 @@ proc `$`*(v: Value): string {.inline.} =
             result = "[" & items.join(" ") & "]"
 
         of Object:
-            if not v.magic.toString.isNil:
-                v.magic.toString(v)
+            if (let mgk = v.magic.getOrDefault(ToStringM, nil); not mgk.isNil):
+                mgk(@[v])
                 return stack.pop().s
             else:
                 var items: seq[string]
