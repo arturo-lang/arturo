@@ -61,7 +61,10 @@ proc `==`*(x: ValueArray, y: ValueArray): bool {.inline, enforceNoRaises.} =
 #  labels: vm, values, enhancement, unit-test
 
 proc `==`*(x: Value, y: Value): bool =
-    if x.kind in {Integer, Floating, Rational} and y.kind in {Integer, Floating, Rational}:
+    
+    let numericKind = {Integer, Floating, Rational}
+
+    if x.kind in numericKind and y.kind in numericKind:
         if x.kind==Integer:
             if y.kind==Integer: 
                 if likely(x.iKind==NormalInteger and y.iKind==NormalInteger):
