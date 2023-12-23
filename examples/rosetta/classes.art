@@ -3,19 +3,19 @@ define :person .sortable:'age [
     ; define a new custom type "Person"
     ; with fields: name, surname, age
 
-    init: function [name, surname, age][
+    init: method [name, surname, age][
         this\name: capitalize name
         this\surname: surname
         this\age: age
     ]
 
     ; custom print function
-    print: function [][
+    toString: method [][
         render "NAME: |this\name|, SURNAME: |this\surname|, AGE: |this\age|"
     ]
 
     ; create a method for our custom type
-    sayHello: function [][
+    sayHello: method [][
         print ["Hello" this\name]
     ]
 ]
