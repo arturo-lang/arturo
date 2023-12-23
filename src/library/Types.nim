@@ -84,9 +84,7 @@ proc defineLibrary*() =
             "type"          : {Type},
             "prototype"     : {Block, Dictionary, Type}
         },
-        attrs       = {
-            "sortable"    : ({Literal,String},"set field to use for comparisons and sorting"),
-        },
+        attrs       = NoAttrs,
         returns     = {Nothing},
         # TODO(Types\define) update documentation example
         #  to reflect changes to OOP aspects of Arturo in general
@@ -175,11 +173,7 @@ proc defineLibrary*() =
                     #  labels: error handling, enhancement
                     discard
 
-            # Check if .sortable is set and - if so -
-            # auto-generate the corresponding `compare` method
-            if checkAttr("sortable"):
-                definitions["compare"] = generatedCompare(aSortable)
-
+            # Get fields
             let fieldTable = getFieldTable(definitions)
             setType(x.tid, newPrototype(x.tid, definitions, inherits, fieldTable, super))
 
