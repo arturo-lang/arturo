@@ -15,7 +15,7 @@ import std/sequtils, sugar, tables
 import vm/values/[value, comparison]
 import vm/values/custom/[vsymbol]
 
-import vm/[exec, errors, stack]
+import vm/[exec, errors]
 
 #=======================================
 # Types
