@@ -62,61 +62,65 @@ proc `==`*(x: ValueArray, y: ValueArray): bool {.inline, enforceNoRaises.} =
 
 proc `==`*(x: Value, y: Value): bool =
     
-    let numericKind = {Integer, Floating, Rational}
+    let 
+        numericKind = {Integer, Floating, Rational}
+        pair = getValuePair()
 
     if x.kind in numericKind and y.kind in numericKind:
-        if x.kind==Integer:
-            if y.kind==Integer: 
-                if likely(x.iKind==NormalInteger and y.iKind==NormalInteger):
-                    return x.i==y.i
-                elif x.iKind==NormalInteger and y.iKind==BigInteger:
-                    when defined(WEB):
-                        return big(x.i)==y.bi
-                    elif not defined(NOGMP):
-                        return x.i==y.bi
-                elif x.iKind==BigInteger and y.iKind==NormalInteger:
-                    when defined(WEB):
-                        return x.bi==big(y.i)
-                    elif not defined(NOGMP):
-                        return x.bi==y.i
-                else:
-                    when defined(WEB) or not defined(NOGMP):
-                        return x.bi==y.bi
-            elif y.kind==Rational:
-                if likely(x.iKind==NormalInteger):
-                    return toRational(x.i)==y.rat
-                else:
-                    return false
-            else: 
-                if x.iKind==NormalInteger:
-                    return float(x.i)==y.f
-                else:
-                    when defined(WEB):
-                        return x.bi==big(int(y.f))
-                    elif not defined(NOGMP):
-                        return (x.bi)==int(y.f)
-        elif x.kind==Rational:
-            if y.kind==Integer:
-                if likely(y.iKind==NormalInteger):
-                    return x.rat == toRational(y.i)
-                else:
-                    return false
-            elif y.kind==Rational:
-                return x.rat == y.rat
+        case pair
+        of Integer || Integer:
+            if likely(x.iKind==NormalInteger and y.iKind==NormalInteger):
+                return x.i==y.i
+            elif x.iKind==NormalInteger and y.iKind==BigInteger:
+                when defined(WEB):
+                    return big(x.i)==y.bi
+                elif not defined(NOGMP):
+                    return x.i==y.bi
+            elif x.iKind==BigInteger and y.iKind==NormalInteger:
+                when defined(WEB):
+                    return x.bi==big(y.i)
+                elif not defined(NOGMP):
+                    return x.bi==y.i
             else:
-                return x.rat == toRational(y.f)
+                when defined(WEB) or not defined(NOGMP):
+                    return x.bi==y.bi
+        of Integer || Rational:
+            if likely(x.iKind==NormalInteger):
+                return toRational(x.i)==y.rat
+            else:
+                return false
+        of Integer || Floating: 
+            if x.iKind==NormalInteger:
+                return float(x.i)==y.f
+            else:
+                when defined(WEB):
+                    return x.bi==big(int(y.f))
+                elif not defined(NOGMP):
+                    return (x.bi)==int(y.f)
+        of Rational || Integer:
+            if likely(y.iKind==NormalInteger):
+                return x.rat == toRational(y.i)
+            else:
+                return false
+        of Rational || Rational:
+            return x.rat == y.rat
+        of Rational || Floating:
+            return x.rat == toRational(y.f)
+        of Floating || Integer:
+            if y.iKind==NormalInteger:
+                return x.f==float(y.i)
+            else:
+                when defined(WEB):
+                    return big(int(x.f))==y.bi
+                elif not defined(NOGMP):
+                    return int(x.f)==y.bi        
+        of Floating || Rational:
+            return toRational(x.f)==y.rat
+        of Floating || Floating:
+            return x.f==y.f
         else:
-            if y.kind==Integer: 
-                if y.iKind==NormalInteger:
-                    return x.f==float(y.i)
-                else:
-                    when defined(WEB):
-                        return big(int(x.f))==y.bi
-                    elif not defined(NOGMP):
-                        return int(x.f)==y.bi        
-            elif y.kind==Rational:
-                return toRational(x.f)==y.rat
-            else: return x.f==y.f
+            discard
+
     elif x.kind == Quantity or y.kind == Quantity:
         if y.kind == Integer:
             if y.iKind == NormalInteger:
