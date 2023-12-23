@@ -786,14 +786,14 @@ proc defineLibrary*() =
                             if (let got = GetKey(x.o, y.s, withError=false); not got.isNil):
                                 push(got)
                             elif not x.magic.doGet.isNil:
-                                push(x.magic.doGet(x, y))
+                                x.magic.doGet(x, y) # value already pushed
                             else:
                                 discard GetKey(x.o, y.s) # Merely to trigger the error
                         else:
                             if (let got = GetKey(x.o, $(y), withError=false); not got.isNil):
                                 push(got)
                             elif not x.magic.doGet.isNil:
-                                push(x.magic.doGet(x, y))
+                                x.magic.doGet(x, y) # value already pushed
                             else:
                                 discard GetKey(x.o, $(y)) # Merely to trigger the error
                 of Store:

@@ -106,9 +106,8 @@ func processMagicMethods(target: Value, methodName: string) =
             target.magic.doInit = proc (args: ValueArray) =
                 callMethod(target.o[methodName], "\\" & ConstructorM, args)
         of GetM:
-            target.magic.doGet = proc (self: Value, key: Value): Value =
+            target.magic.doGet = proc (self: Value, key: Value) =
                 callMethod(target.o[methodName], "\\" & GetM, @[self, key])
-                stack.pop()
         of SetM:
             target.magic.doSet = proc (self: Value, key: Value, val: Value) =
                 callMethod(target.o[methodName], "\\" & SetM, @[self, key, val])
