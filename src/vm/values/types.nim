@@ -150,7 +150,7 @@ type
 
         doCompare*      : proc (a,b:Value): int
 
-        doGet*          : proc (a,b:Value): Value
+        doGet*          : proc (a,b:Value)
         doSet*          : proc (a,b,c:Value)
         
         doChanging*     : proc (a,b:Value)
