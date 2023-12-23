@@ -3,7 +3,7 @@ define :matrix [
         this\X: X
     ]
 
-    toString: method [][
+    string: method [][
         result: ""
         loop this\X 'arr [
             result: result ++ "[" ++ 

@@ -1,15 +1,15 @@
 [ :point
         init      :        (x, y) :method
-        toString  :        () :method
+        string    :        () :method
         x         :        10.0 :floating
         y         :        20.0 :floating
 ]
 [ :circle
         init      :        (center, radius) :method
-        toString  :        () :method
+        string    :        () :method
         center    :        [ :point
                 init      :                (x, y) :method
-                toString  :                () :method
+                string    :                () :method
                 x         :                10.0 :floating
                 y         :                20.0 :floating
         ]
