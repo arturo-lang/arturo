@@ -123,7 +123,7 @@ proc defineLibrary*() =
 
             if y.kind == Block:
                 if (let constructorMethod = generatedConstructor(y.a); not constructorMethod.isNil):
-                    definitions[ConstructorM] = constructorMethod
+                    definitions[$ConstructorM] = constructorMethod
                 else:
                     for k,v in newDictionary(execDictionary(y)).d:
                         definitions[k] = v
