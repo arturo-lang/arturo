@@ -145,46 +145,58 @@ type
         fields*         : ValueDict
         super*          : ValueDict
 
-    MagicMethods* = ref object
-        doInit*         : proc (vs:ValueArray)
+    MagicMethodInternal* = 
+        proc (values: ValueArray)
 
-        doCompare*      : proc (a,b:Value)
+    MagicMethod* = enum
+        ConstructorM        = "init"
 
-        doGet*          : proc (a,b:Value)
-        doSet*          : proc (a,b,c:Value)
-        
-        doChanging*     : proc (a,b:Value)
-        doChanged*      : proc (a,b:Value)
-        
-        doEqualQ*       : proc (a,b:Value)
-        doLessQ*        : proc (a,b:Value)
-        doGreaterQ*     : proc (a,b:Value)
-        
-        doAdd*          : proc (a,b:Value)
-        doSub*          : proc (a,b:Value)
-        doMul*          : proc (a,b:Value)
-        doDiv*          : proc (a,b:Value)
-        doFDiv*         : proc (a,b:Value)
-        doMod*          : proc (a,b:Value)
-        doPow*          : proc (a,b:Value)
-        
-        doInc*          : proc (v:Value)
-        doDec*          : proc (v:Value)
+        GetM                = "get"
+        SetM                = "set"
 
-        doNeg*          : proc (v:Value)
+        ChangingM           = "changing"
+        ChangedM            = "changed"
 
-        doKeyQ*         : proc (a,b:Value)
-        doContainsQ*    : proc (a,b:Value)
+        CompareM            = "compare"
+        EqualQM             = "equal?"
+        LessQM              = "less?"
+        GreaterQM           = "greater?"
 
-        doAppend*       : proc (a,b:Value)
-        doRemove*       : proc (a,b:Value)
+        AddM                = "add"
+        SubM                = "sub"
+        MulM                = "mul"
+        DivM                = "div"
+        FDivM               = "fdiv"
+        ModM                = "mod"
+        PowM                = "pow"
 
-        toString*       : proc (v:Value)
-        toInteger*      : proc (v:Value)
-        toFloating*     : proc (v:Value)
-        toLogical*      : proc (v:Value)
-        toBlock*        : proc (v:Value)
-        toDictionary*   : proc (v:Value)
+        IncM                = "inc"
+        DecM                = "dec"
+
+        NegM                = "neg"
+
+        KeyQM               = "key?"
+        ContainsQM          = "contains?"
+
+        AppendM             = "append"
+        RemoveM             = "remove"
+
+        ToStringM           = "toString"
+        ToIntegerM          = "toInteger"
+        ToFloatingM         = "toFloating"
+        ToLogicalM          = "toLogical"
+        ToBlockM            = "toBlock"
+        ToDictionaryM       = "toDictionary"
+
+    MagicMethods* = Table[MagicMethod, MagicMethodInternal]
+        # doInit*, doGet*, doSet*, 
+        # doChanging*, doChanged*,
+        # doCompare*, doEqualQ*, doLessQ*, doGreaterQ*,
+        # doAdd*, doSub*, doMul*, doDiv*, doFDiv*, doMod*, doPow*,
+        # doInc*, doDec*, doNeg*,
+        # doKeyQ*, doContainsQ*, doAppend*, doRemove*,
+        # toString*, toInteger*, toFloating*,
+        # toLogical*, toBlock*, toDictionary*   : MagicMethodInternal
 
     SymbolDict*   = OrderedTable[VSymbol,AliasBinding]
 
