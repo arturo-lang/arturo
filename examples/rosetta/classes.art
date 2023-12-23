@@ -10,7 +10,7 @@ define :person .sortable:'age [
     ]
 
     ; custom print function
-    toString: method [][
+    string: method [][
         render "NAME: |this\name|, SURNAME: |this\surname|, AGE: |this\age|"
     ]
 

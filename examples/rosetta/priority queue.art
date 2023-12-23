@@ -3,7 +3,7 @@ define :item [
         this\priority: priority
         this\value: value
     ]
-    toString: method [][
+    string: method [][
         ~"(|this\priority|, |this\value|)"
     ]
 ]

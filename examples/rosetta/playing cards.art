@@ -11,7 +11,7 @@ define :card [rank, suit][
         this\suit: suit
     ]
 
-    toString: method [][
+    string: method [][
         R: ø
         case [this\rank=]
             when? [1] -> R: 'A'

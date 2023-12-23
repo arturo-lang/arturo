@@ -4,7 +4,7 @@ define :point [
         this\y: y
     ]
 
-    toString: method [][
+    string: method [][
         render "point (x: |this\x|, y: |this\y|)"
     ]
 ]
@@ -15,7 +15,7 @@ define :circle [
         this\radius: radius
     ]
     
-    toString: method [][
+    string: method [][
         render "circle (center: |this\center|, radius: |this\radius|)"
     ]
 ]
