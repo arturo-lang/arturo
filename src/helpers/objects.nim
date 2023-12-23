@@ -183,29 +183,23 @@ func processMagicMethods(target: Value, mm: var MagicMethods, methodName: string
             mm.doRemove = proc (self: Value, other: Value) =
                 callMethod(target, "\\" & methodName, @[self, other])
         of $ToStringM:
-            mm.toString = proc (self: Value): Value =
+            mm.toString = proc (self: Value) =
                 callMethod(target, "\\" & methodName, @[self])
-                stack.pop()
         of $ToIntegerM:
-            mm.toInteger = proc (self: Value): Value =
+            mm.toInteger = proc (self: Value) =
                 callMethod(target, "\\" & methodName, @[self])
-                stack.pop()
         of $ToFloatingM:
-            mm.toFloating = proc (self: Value): Value =
+            mm.toFloating = proc (self: Value) =
                 callMethod(target, "\\" & methodName, @[self])
-                stack.pop()
         of $ToLogicalM:
-            mm.toLogical = proc (self: Value): Value =
+            mm.toLogical = proc (self: Value) =
                 callMethod(target, "\\" & methodName, @[self])
-                stack.pop()
         of $ToBlockM:
-            mm.toBlock = proc (self: Value): Value =
+            mm.toBlock = proc (self: Value) =
                 callMethod(target, "\\" & methodName, @[self])
-                stack.pop()
         of $ToDictionaryM:
-            mm.toDictionary = proc (self: Value): Value =
+            mm.toDictionary = proc (self: Value) =
                 callMethod(target, "\\" & methodName, @[self])
-                stack.pop()
         else:
             discard
 

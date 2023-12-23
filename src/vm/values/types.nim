@@ -179,12 +179,12 @@ type
         doAppend*       : proc (a,b:Value)
         doRemove*       : proc (a,b:Value)
 
-        toString*       : proc (v:Value): Value
-        toInteger*      : proc (v:Value): Value
-        toFloating*     : proc (v:Value): Value
-        toLogical*      : proc (v:Value): Value
-        toBlock*        : proc (v:Value): Value
-        toDictionary*   : proc (v:Value): Value
+        toString*       : proc (v:Value)
+        toInteger*      : proc (v:Value)
+        toFloating*     : proc (v:Value)
+        toLogical*      : proc (v:Value)
+        toBlock*        : proc (v:Value)
+        toDictionary*   : proc (v:Value)
 
     SymbolDict*   = OrderedTable[VSymbol,AliasBinding]
 

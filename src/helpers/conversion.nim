@@ -454,32 +454,38 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat:Value = nil): Val
                 case tp:
                     of String:
                         if not y.magic.toString.isNil:
-                            return y.magic.toString(y)
+                            y.magic.toString(y)
+                            return stack.pop()
                         else:
                             return newString($(y))
                     of Integer:
                         if not y.magic.toInteger.isNil:
-                            return y.magic.toInteger(y)
+                            y.magic.toInteger(y)
+                            return stack.pop()
                         else:
                             throwCannotConvert()
                     of Floating:
                         if not y.magic.toFloating.isNil:
-                            return y.magic.toFloating(y)
+                            y.magic.toFloating(y)
+                            return stack.pop()
                         else:
                             throwCannotConvert()
                     of Logical:
                         if not y.magic.toLogical.isNil:
-                            return y.magic.toLogical(y)
+                            y.magic.toLogical(y)
+                            return stack.pop()
                         else:
                             throwCannotConvert()
                     of Block:
                         if not y.magic.toBlock.isNil:
-                            return y.magic.toBlock(y)
+                            y.magic.toBlock(y)
+                            return stack.pop()
                         else:
                             throwCannotConvert()
                     of Dictionary:
                         if not y.magic.toDictionary.isNil:
-                            return y.magic.toDictionary(y)
+                            y.magic.toDictionary(y)
+                            return stack.pop()
                         else:
                             return newDictionary(y.o)
                     else:
