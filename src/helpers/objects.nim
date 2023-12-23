@@ -123,21 +123,17 @@ func processMagicMethods(target: Value, mm: var MagicMethods, methodName: string
             mm.doChanged = proc (self: Value, key: Value) =
                 callMethod(target, "\\" & methodName, @[self, key])
         of $CompareM:
-            mm.doCompare = proc (self: Value, other: Value): int =
+            mm.doCompare = proc (self: Value, other: Value) =
                 callMethod(target, "\\" & methodName, @[self, other])
-                stack.pop().i
         of $EqualQM:
-            mm.doEqualQ = proc (self: Value, other: Value): bool =
+            mm.doEqualQ = proc (self: Value, other: Value) =
                 callMethod(target, "\\" & methodName, @[self, other])
-                isTrue(stack.pop())
         of $LessQM:
-            mm.doLessQ = proc (self: Value, other: Value): bool =
+            mm.doLessQ = proc (self: Value, other: Value) =
                 callMethod(target, "\\" & methodName, @[self, other])
-                isTrue(stack.pop())
         of $GreaterQM:
-            mm.doGreaterQ = proc (self: Value, other: Value): bool =
+            mm.doGreaterQ = proc (self: Value, other: Value) =
                 callMethod(target, "\\" & methodName, @[self, other])
-                isTrue(stack.pop())
         of $AddM:
             mm.doAdd = proc (self: Value, other: Value) =
                 callMethod(target, "\\" & methodName, @[self, other])

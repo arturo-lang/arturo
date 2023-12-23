@@ -148,7 +148,7 @@ type
     MagicMethods* = ref object
         doInit*         : proc (vs:ValueArray)
 
-        doCompare*      : proc (a,b:Value): int
+        doCompare*      : proc (a,b:Value)
 
         doGet*          : proc (a,b:Value)
         doSet*          : proc (a,b,c:Value)
@@ -156,9 +156,9 @@ type
         doChanging*     : proc (a,b:Value)
         doChanged*      : proc (a,b:Value)
         
-        doEqualQ*       : proc (a,b:Value): bool
-        doLessQ*        : proc (a,b:Value): bool
-        doGreaterQ*     : proc (a,b:Value): bool
+        doEqualQ*       : proc (a,b:Value)
+        doLessQ*        : proc (a,b:Value)
+        doGreaterQ*     : proc (a,b:Value)
         
         doAdd*          : proc (a,b:Value)
         doSub*          : proc (a,b:Value)

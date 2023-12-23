@@ -20,6 +20,7 @@ when defined(WEB):
 when not defined(NOGMP):
     import helpers/bignums as BignumsHelper
 
+import vm/stack
 import vm/values/custom/[vcolor, vcomplex, vlogical, vquantity, vrange, vrational, vregex, vversion]
 import vm/values/value
 
@@ -195,9 +196,11 @@ proc `==`*(x: Value, y: Value): bool =
                 return x.u == y.u
             of Object:
                 if not x.magic.doCompare.isNil:
-                    return x.magic.doCompare(x,y) == 0
+                    x.magic.doCompare(x,y) 
+                    stack.pop().i == 0
                 elif not x.magic.doEqualQ.isNil:
-                    return x.magic.doEqualQ(x,y)
+                    x.magic.doEqualQ(x,y)
+                    return isTrue(stack.pop())
                 else:
                     if x.o.len != y.o.len: return false
 
@@ -397,9 +400,11 @@ proc `<`*(x: Value, y: Value): bool {.inline.}=
                 return false
             of Object:
                 if not x.magic.doCompare.isNil:
-                    return x.magic.doCompare(x, y) == -1
+                    x.magic.doCompare(x, y) 
+                    return stack.pop().i == -1
                 elif not x.magic.doLessQ.isNil:
-                    return x.magic.doLessQ(x, y)
+                     x.magic.doLessQ(x, y)
+                     return isTrue(stack.pop())
                 else:
                     # should throw!
                     return false
@@ -512,9 +517,11 @@ proc `>`*(x: Value, y: Value): bool {.inline.}=
                 return false
             of Object:
                 if not x.magic.doCompare.isNil:
-                    return x.magic.doCompare(x,y) == 1
+                    x.magic.doCompare(x,y) 
+                    return stack.pop().i == 1
                 elif not x.magic.doGreaterQ.isNil:
-                    return x.magic.doGreaterQ(x,y)
+                    x.magic.doGreaterQ(x,y)
+                    return isTrue(stack.pop())
                 else:
                     return false
             of Date:
