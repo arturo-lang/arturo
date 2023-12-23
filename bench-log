@@ -1,0 +1,9 @@
+commit 4db240ef8a1fad04752d22a800c6f66bc17f6ef4
+Author: RickBarretto <78623871+RickBarretto@users.noreply.github.com>
+Date:   Sat Dec 23 19:39:16 2023 -0300
+
+    [bench]: add custom temporary benchmarker
+
+real	4m41.062s
+user	0m0.015s
+sys	0m0.000s
