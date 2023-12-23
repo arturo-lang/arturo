@@ -102,7 +102,7 @@ proc defineLibrary*() =
                     elif yKind == Integer:
                         InPlaced.n &= numberToBinary(y.i)
                 elif InPlaced.kind == Object:
-                    if (let mgk = InPlaced.magic.getOrDefault(AppendM, nil); not mgk.isNil):
+                    if InPlaced.magic.fetch(AppendM):
                         pushAttr("inplace", VTRUE)
                         mgk(@[InPlaced, y])
                     else:
@@ -129,7 +129,7 @@ proc defineLibrary*() =
                     elif yKind == Integer:
                         push(newBinary(x.n & numberToBinary(y.i)))
                 elif xKind == Object:
-                    if (let mgk = x.magic.getOrDefault(AppendM, nil); not mgk.isNil):
+                    if x.magic.fetch(AppendM):
                         mgk(@[x, y]) # value already pushed
                     else:
                         # TODO(Collections\append) no magic method for object values should be an error
@@ -785,14 +785,14 @@ proc defineLibrary*() =
                         of String, Word, Literal, Label:
                             if (let got = GetKey(x.o, y.s, withError=false); not got.isNil):
                                 push(got)
-                            elif (let mgk = x.magic.getOrDefault(GetM, nil); not mgk.isNil):
+                            elif x.magic.fetch(GetM):
                                 mgk(@[x, y]) # value already pushed
                             else:
                                 discard GetKey(x.o, y.s) # Merely to trigger the error
                         else:
                             if (let got = GetKey(x.o, $(y), withError=false); not got.isNil):
                                 push(got)
-                            elif (let mgk = x.magic.getOrDefault(GetM, nil); not mgk.isNil):
+                            elif x.magic.fetch(GetM):
                                 mgk(@[x, y]) # value already pushed
                             else:
                                 discard GetKey(x.o, $(y)) # Merely to trigger the error
@@ -1480,7 +1480,7 @@ proc defineLibrary*() =
                     else:
                         SetInPlace(newDictionary(InPlaced.d.removeAll(y, key)))
                 elif InPlaced.kind == Object:
-                    if (let mgk = InPlaced.magic.getOrDefault(RemoveM, nil); not mgk.isNil):
+                    if InPlaced.magic.fetch(RemoveM):
                         pushAttr("inplace", VTRUE)
                         mgk(@[InPlaced,y])
                     else:
@@ -1525,7 +1525,7 @@ proc defineLibrary*() =
                     else:
                         push(newDictionary(x.d.removeAll(y, key)))
                 elif xKind == Object:
-                    if (let mgk = x.magic.getOrDefault(RemoveM, nil); not mgk.isNil):
+                    if x.magic.fetch(RemoveM):
                         mgk(@[x, y]) # already pushed value
                     else:
                         let key = (hadAttr("key"))
@@ -1750,9 +1750,9 @@ proc defineLibrary*() =
                         else:
                             x.d[$(y)] = z
                 of Object:
-                    if unlikely((let mgk = x.magic.getOrDefault(ChangingM, nil); not mgk.isNil)):
+                    if unlikely(x.magic.fetch(ChangingM)):
                         mgk(@[x, y])
-                    if ((let mgk = x.magic.getOrDefault(SetM, nil); not mgk.isNil) and (y.kind in {String,Word,Literal,Label}) and (y.s notin toSeq(x.proto.fields.keys()))):
+                    if (x.magic.fetch(SetM) and (y.kind in {String,Word,Literal,Label}) and (y.s notin toSeq(x.proto.fields.keys()))):
                         mgk(@[x, y, z])
                     else:
                         case yKind:
@@ -1760,7 +1760,7 @@ proc defineLibrary*() =
                                 x.o[y.s] = z
                             else:
                                 x.o[$(y)] = z
-                    if unlikely((let mgk = x.magic.getOrDefault(ChangedM, nil); not mgk.isNil)):
+                    if unlikely(x.magic.fetch(ChangedM)):
                         mgk(@[x, y])
                 of Store:
                     when not defined(WEB):
@@ -2583,7 +2583,7 @@ proc defineLibrary*() =
                         let values = toSeq(x.d.values)
                         push(newLogical(values[at] == y))
                     of Object:
-                        if unlikely((let mgk = x.magic.getOrDefault(ContainsQM, nil); not mgk.isNil)):
+                        if unlikely(x.magic.fetch(ContainsQM)):
                             pushAttr("at", aAt)
                             mgk(@[x, y]) # already pushes value
                         else:
@@ -2615,7 +2615,7 @@ proc defineLibrary*() =
                             let values = toSeq(x.d.values)
                             push(newLogical(y in values))
                     of Object:
-                        if unlikely((let mgk = x.magic.getOrDefault(ContainsQM, nil); not mgk.isNil)):
+                        if unlikely(x.magic.fetch(ContainsQM)):
                             if hadAttr("deep"):
                                 pushAttr("deep", VTRUE)
 
@@ -2731,7 +2731,7 @@ proc defineLibrary*() =
                         let values = toSeq(y.d.values)
                         push(newLogical(values[at] == x))
                     of Object:
-                        if unlikely((let mgk = x.magic.getOrDefault(ContainsQM, nil); not mgk.isNil)):
+                        if unlikely(x.magic.fetch(ContainsQM)):
                             pushAttr("at", aAt)
                             mgk(@[y, x]) # already pushes value
                         else:
@@ -2763,7 +2763,7 @@ proc defineLibrary*() =
                             let values = toSeq(y.d.values)
                             push(newLogical(x in values))
                     of Object:
-                        if unlikely((let mgk = x.magic.getOrDefault(ContainsQM, nil); not mgk.isNil)):
+                        if unlikely(x.magic.fetch(ContainsQM)):
                             if hadAttr("deep"):
                                 pushAttr("deep", VTRUE)
 
@@ -2809,7 +2809,7 @@ proc defineLibrary*() =
             if xKind == Dictionary:
                 push(newLogical(x.d.hasKey(needle)))
             else:
-                if unlikely((let mgk = x.magic.getOrDefault(KeyQM, nil); not mgk.isNil)):
+                if unlikely(x.magic.fetch(KeyQM)):
                     mgk(@[x, y]) # already pushes value
                 else:
                     push(newLogical(x.o.hasKey(needle)))
