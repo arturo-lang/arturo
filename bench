@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+git log -n 1 --pretty=medium > bench-log
+
+{ time ./bin/arturo.exe ./tools/tester.art; } 2>> bench-log
+
+git add bench-log
+git commit -m "[bench]: update benchmark's log"
