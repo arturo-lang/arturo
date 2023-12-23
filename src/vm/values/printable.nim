@@ -23,8 +23,7 @@ when not defined(NOGMP):
 
 import helpers/terminal as TerminalHelper
 
-import vm/globals
-import vm/opcodes
+import vm/[globals, opcodes, stack]
 import vm/values/value
 
 import vm/values/custom/[vbinary, vcolor, vcomplex, verror, vlogical, vquantity, vrange, vrational, vregex, vsocket, vversion]
@@ -138,7 +137,8 @@ proc `$`*(v: Value): string {.inline.} =
 
         of Object:
             if not v.magic.toString.isNil:
-                return v.magic.toString(v).s
+                v.magic.toString(v)
+                return stack.pop().s
             else:
                 var items: seq[string]
                 for key,value in v.o:
