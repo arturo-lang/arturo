@@ -62,11 +62,11 @@ proc defineLibrary*() =
         rule        = InfixPrecedence,
         description = "append value to given collection",
         args        = {
-            "collection": {String, Char, Block, Binary, Literal},
+            "collection": {String, Char, Block, Object, Binary, Literal},
             "value"     : {Any}
         },
         attrs       = NoAttrs,
-        returns     = {String, Block, Binary, Nothing},
+        returns     = {String, Block, Object, Binary, Nothing},
         example     = """
             append "hell" "o"         ; => "hello"
             append [1 2 3] 4          ; => [1 2 3 4]
@@ -101,6 +101,12 @@ proc defineLibrary*() =
                         InPlaced.n &= y.n
                     elif yKind == Integer:
                         InPlaced.n &= numberToBinary(y.i)
+                elif InPlaced.kind == Object:
+                    if not InPlaced.magic.doAppend.isNil:
+                        pushAttr("inplace", VTRUE)
+                        InPlaced.magic.doAppend(InPlaced, y)
+                    else:
+                        discard
                 else:
                     if yKind == Block:
                         InPlaced.a.add(y.a)
@@ -122,6 +128,13 @@ proc defineLibrary*() =
                         push(newBinary(x.n & y.n))
                     elif yKind == Integer:
                         push(newBinary(x.n & numberToBinary(y.i)))
+                elif xKind == Object:
+                    if not x.magic.doAppend.isNil:
+                        x.magic.doAppend(x, y) # value already pushed
+                    else:
+                        # TODO(Collections\append) no magic method for object values should be an error
+                        #  labels: library, oop, error handling
+                        discard
                 else:
                     if yKind==Block:
                         push newBlock(x.a & y.a)
