@@ -480,7 +480,7 @@ proc `||`*(va: static[ValueKind | IntegerKind], vb: static[ValueKind | IntegerKi
         elif vb == BigInteger:
             result = result or cast[uint32](ord(Integer)) or (1.uint32 shl 15)
 
-template fetch*(what: MagicMethods, magicMethodId: MagicMethod): untyped =
+template fetch*(what: MagicMethods, magicMethodId: MagicMethod): untyped {.dirty.} =
     (let mgk = what.getOrDefault(magicMethodId, nil); not mgk.isNil)
 
 #=======================================
