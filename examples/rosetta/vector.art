@@ -23,7 +23,7 @@ define :vector [
     ]
 
     string: method [][
-        render "(|this\x|, |this\y|)"   ; prettyprint function
+        render "(|this\x|, |this\y|)"
     ]
 ]
 
