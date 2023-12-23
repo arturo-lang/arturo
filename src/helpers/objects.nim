@@ -164,9 +164,9 @@ proc generateNewObject*(pr: Prototype, values: ValueArray | ValueDict): Value =
     
     # perform initialization 
     # using the available constructor
-    if magicMethods.fetch(ConstructorM):
+    if (let constructor = magicMethods.getOrDefault(ConstructorM, nil); not constructor.isNil):
         args.insert(result)
-        mgk(args)
+        constructor(args)
 
     # embed magic methods as well
     result.magic = magicMethods
