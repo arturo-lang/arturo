@@ -22,7 +22,7 @@ when not defined(NOGMP):
 
 import vm/stack
 import vm/values/custom/[vcolor, vcomplex, vlogical, vquantity, vrange, vrational, vregex, vversion]
-import vm/values/value
+import vm/values/[types,value]
 
 #=======================================
 # Forward declarations
@@ -195,11 +195,11 @@ proc `==`*(x: Value, y: Value): bool =
             of Unit:
                 return x.u == y.u
             of Object:
-                if not x.magic.doCompare.isNil:
-                    x.magic.doCompare(x,y) 
+                if (let mgk = x.magic.getOrDefault(CompareM, nil); not mgk.isNil):
+                    mgk(@[x,y]) 
                     return stack.pop().i == 0
-                elif not x.magic.doEqualQ.isNil:
-                    x.magic.doEqualQ(x,y)
+                elif (let mgk = x.magic.getOrDefault(EqualQM, nil); not mgk.isNil):
+                    mgk(@[x,y])
                     return isTrue(stack.pop())
                 else:
                     if x.o.len != y.o.len: return false
@@ -399,11 +399,11 @@ proc `<`*(x: Value, y: Value): bool {.inline.}=
             of Unit:
                 return false
             of Object:
-                if not x.magic.doCompare.isNil:
-                    x.magic.doCompare(x, y) 
+                if (let mgk = x.magic.getOrDefault(CompareM, nil); not mgk.isNil):
+                    mgk(@[x, y]) 
                     return stack.pop().i == -1
-                elif not x.magic.doLessQ.isNil:
-                     x.magic.doLessQ(x, y)
+                elif (let mgk = x.magic.getOrDefault(LessQM, nil); not mgk.isNil):
+                     mgk(@[x, y])
                      return isTrue(stack.pop())
                 else:
                     # should throw!
@@ -516,11 +516,11 @@ proc `>`*(x: Value, y: Value): bool {.inline.}=
             of Unit:
                 return false
             of Object:
-                if not x.magic.doCompare.isNil:
-                    x.magic.doCompare(x,y) 
+                if (let mgk = x.magic.getOrDefault(CompareM, nil); not mgk.isNil):
+                    mgk(@[x,y]) 
                     return stack.pop().i == 1
-                elif not x.magic.doGreaterQ.isNil:
-                    x.magic.doGreaterQ(x,y)
+                elif (let mgk = x.magic.getOrDefault(GreaterQM, nil); not mgk.isNil):
+                    mgk(@[x,y])
                     return isTrue(stack.pop())
                 else:
                     return false
