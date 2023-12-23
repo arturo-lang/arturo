@@ -1,43 +1,36 @@
 ; by @Krenium
 
 define :vector [
-    init: function [x,y][
+    init: method [x,y][
         this\x: x
         this\y: y
     ]
-    print: function [][
+    
+    add: method [that :vector][
+        to :vector @[this\x + that\x, this\y + that\y]
+    ]
+
+    sub: method [that :vector][
+        to :vector @[this\x - that\x, this\y - that\y]
+    ]
+
+    mul: method [n :integer][
+        to :vector @[this\x * n, this\y * n]
+    ]
+
+    div: method [n :integer][
+        to :vector @[this\x // n, this\y // n]
+    ]
+
+    toString: method [][
         render "(|this\x|, |this\y|)"   ; prettyprint function
     ]
-]
-
-ensureVector: function [block][
-    ensure -> every? @block => [is? :vector &]
-]
-
-vadd: function [a b][
-    ensureVector [a b]
-    to :vector @[a\x + b\x, a\y + b\y]
-]
-
-vsub: function [a b][
-    ensureVector [a b]
-    to :vector @[a\x - b\x, a\y - b\y]
-]
-
-vmul: function [a n][
-    ensureVector [a]
-    to :vector @[a\x * n, a\y * n]
-]
-
-vdiv: function [a n][
-    ensureVector [a]
-    to :vector @[a\x // n, a\y // n]
 ]
 
 ; test our vector object
 a: to :vector [5 7]
 b: to :vector [2 3]
-print [a '+ b '= vadd a b]
-print [a '- b '= vsub a b]
-print [a '* 11 '= vmul a 11]
-print [a '/ 11 '= vdiv a 2]
+print [a '+ b '= a + b]
+print [a '- b '= a - b]
+print [a '* 11 '= a * 11]
+print [a '/ 11 '= a / 2]

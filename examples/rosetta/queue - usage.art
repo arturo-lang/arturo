@@ -1,17 +1,17 @@
 define :queue [
-    init: function [][
+    init: method [][
         this\items: []
     ]
 
-    empty?: function [][
+    empty?: method [][
         zero? this\items
     ]
 
-    push: function [item][
+    push: method [item][
         this\items: this\items ++ item
     ]
 
-    pop: function [][
+    pop: method [][
         ensure [not? this\empty?]
 
         result: this\items\0

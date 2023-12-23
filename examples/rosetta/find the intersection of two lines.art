@@ -1,8 +1,9 @@
 define :point [x,y]
 define :line [
-    init: function [a :point, b :point][
-        this\slope: div b\y-a\y b\x-a\x
-        this\yInt: a\y - this\slope*a\x
+    init: method [a :point, b :point][
+        slope: div b\y-a\y b\x-a\x
+        this\slope: slope
+        this\yInt: a\y - slope*a\x
     ]
 ]
 

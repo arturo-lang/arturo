@@ -1,9 +1,9 @@
 define :matrix [
-    init: function [X][
+    init: method [X][
         this\X: X
     ]
 
-    print: function [][
+    toString: method [][
         result: ""
         loop this\X 'arr [
             result: result ++ "[" ++ 

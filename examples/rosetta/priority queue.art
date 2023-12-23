@@ -1,27 +1,27 @@
 define :item [
-    init: function [priority, value][
+    init: method [priority, value][
         this\priority: priority
         this\value: value
     ]
-    print: function [][
+    toString: method [][
         ~"(|this\priority|, |this\value|)"
     ]
 ]
 define :queue [
-    init: function [items][
+    init: method [items][
         this\items: arrange items 'it -> it\priority
     ]
 
-    empty?: function [][
+    empty?: method [][
         zero? this\items
     ]
 
-    push: function [item][
+    push: method [item][
         this\items: this\items ++ item
         this\items: arrange this\items 'it -> it\priority
     ]
 
-    pop: function [][
+    pop: method [][
         ensure [not? this\empty?]
         
         result: this\items\0
