@@ -1,21 +1,21 @@
 define :point [
-    init: function [x :floating, y :floating][
+    init: method [x :floating, y :floating][
         this\x: x
         this\y: y
     ]
 
-    print: function [][
+    toString: method [][
         render "point (x: |this\x|, y: |this\y|)"
     ]
 ]
 
 define :circle [
-    init: function [center :point, radius :floating][
+    init: method [center :point, radius :floating][
         this\center: center
         this\radius: radius
     ]
     
-    print: function [][
+    toString: method [][
         render "circle (center: |this\center|, radius: |this\radius|)"
     ]
 ]

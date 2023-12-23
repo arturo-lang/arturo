@@ -1,22 +1,22 @@
 define :history [
-    init: function [][
+    init: method [][
         this\record: @[0]
     ]
-    assign: function [newValue][
+    assign: method [newValue][
         this\record: this\record ++ newValue
     ]
 
-    records: function [][
+    records: method [][
         this\record
     ]
 
-    retrieve: function [][
+    retrieve: method [][
         result: last this\record
         this\record: chop this\record
         return result
     ]
 
-    current: function [][
+    current: method [][
         return last this\record
     ]
 ]

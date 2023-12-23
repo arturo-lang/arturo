@@ -1,6 +1,6 @@
 ; by @Krenium
 
-define :city [name population][]
+define :city [name population]
 
 records: map [
     ["Lagos" 21.0]
