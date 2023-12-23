@@ -41,6 +41,33 @@ proc defineLibrary*() =
     # Functions
     #----------------------------
 
+    builtin "construct",
+        alias       = unaliased,
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "create a type constructor method automatically using given arguments",
+        args        = {
+            "arguments"     : {Literal, Block}
+        },
+        attrs       = NoAttrs,
+        returns     = {Method},
+        # TODO(Types\construct) add documentation example
+        #  labels: library, documentation, easy
+        example     = """
+        """:
+            #=======================================================
+            var args: ValueArray
+
+            if xKind == Literal: args = @[x]
+            else: args = x.a
+
+            if (let constructorMethod = generatedConstructor(args); not constructorMethod.isNil):
+                push(constructorMethod)
+            else:
+                # TODO(Types\construct) should show error if the constructor cannot be generated
+                #  labels: library, oop, error handling
+                discard
+
     # TODO(Types\define) add options for automated functions?
     #  Initially, I had thought of adding a `.having:` option that would
     #  automatically create an `init` method, simply assigning all arguments
