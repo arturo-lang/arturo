@@ -195,10 +195,10 @@ proc `==`*(x: Value, y: Value): bool =
             of Unit:
                 return x.u == y.u
             of Object:
-                if (let mgk = x.magic.getOrDefault(CompareM, nil); not mgk.isNil):
+                if x.magic.fetch(CompareM):
                     mgk(@[x,y]) 
                     return stack.pop().i == 0
-                elif (let mgk = x.magic.getOrDefault(EqualQM, nil); not mgk.isNil):
+                elif x.magic.fetch(EqualQM):
                     mgk(@[x,y])
                     return isTrue(stack.pop())
                 else:
@@ -399,10 +399,10 @@ proc `<`*(x: Value, y: Value): bool {.inline.}=
             of Unit:
                 return false
             of Object:
-                if (let mgk = x.magic.getOrDefault(CompareM, nil); not mgk.isNil):
+                if x.magic.fetch(CompareM):
                     mgk(@[x, y]) 
                     return stack.pop().i == -1
-                elif (let mgk = x.magic.getOrDefault(LessQM, nil); not mgk.isNil):
+                elif x.magic.fetch(LessQM):
                      mgk(@[x, y])
                      return isTrue(stack.pop())
                 else:
@@ -516,10 +516,10 @@ proc `>`*(x: Value, y: Value): bool {.inline.}=
             of Unit:
                 return false
             of Object:
-                if (let mgk = x.magic.getOrDefault(CompareM, nil); not mgk.isNil):
+                if x.magic.fetch(CompareM):
                     mgk(@[x,y]) 
                     return stack.pop().i == 1
-                elif (let mgk = x.magic.getOrDefault(GreaterQM, nil); not mgk.isNil):
+                elif x.magic.fetch(GreaterQM):
                     mgk(@[x,y])
                     return isTrue(stack.pop())
                 else:

@@ -453,37 +453,37 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat:Value = nil): Val
             of Object:
                 case tp:
                     of String:
-                        if (let mgk = y.magic.getOrDefault(ToStringM, nil); not mgk.isNil):
+                        if y.magic.fetch(ToStringM):
                             mgk(@[y])
                             return stack.pop()
                         else:
                             return newString($(y))
                     of Integer:
-                        if (let mgk = y.magic.getOrDefault(ToIntegerM, nil); not mgk.isNil):
+                        if y.magic.fetch(ToIntegerM):
                             mgk(@[y])
                             return stack.pop()
                         else:
                             throwCannotConvert()
                     of Floating:
-                        if (let mgk = y.magic.getOrDefault(ToFloatingM, nil); not mgk.isNil):
+                        if y.magic.fetch(ToFloatingM):
                             mgk(@[y])
                             return stack.pop()
                         else:
                             throwCannotConvert()
                     of Logical:
-                        if (let mgk = y.magic.getOrDefault(ToLogicalM, nil); not mgk.isNil):
+                        if y.magic.fetch(ToLogicalM):
                             mgk(@[y])
                             return stack.pop()
                         else:
                             throwCannotConvert()
                     of Block:
-                        if (let mgk = y.magic.getOrDefault(ToBlockM, nil); not mgk.isNil):
+                        if y.magic.fetch(ToBlockM):
                             mgk(@[y])
                             return stack.pop()
                         else:
                             throwCannotConvert()
                     of Dictionary:
-                        if (let mgk = y.magic.getOrDefault(ToDictionaryM, nil); not mgk.isNil):
+                        if y.magic.fetch(ToDictionaryM):
                             mgk(@[y])
                             return stack.pop()
                         else:
