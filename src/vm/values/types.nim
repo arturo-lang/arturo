@@ -181,12 +181,15 @@ type
         AppendM             = "append"
         RemoveM             = "remove"
 
-        ToStringM           = "toString"
-        ToIntegerM          = "toInteger"
-        ToFloatingM         = "toFloating"
-        ToLogicalM          = "toLogical"
-        ToBlockM            = "toBlock"
-        ToDictionaryM       = "toDictionary"
+        ToStringM           = "string"
+        ToIntegerM          = "integer"
+        ToFloatingM         = "floating"
+        ToRationalM         = "rational"
+        ToComplexM          = "complex"
+        ToQuantityM         = "quantity"
+        ToLogicalM          = "logical"
+        ToBlockM            = "block"
+        ToDictionaryM       = "dictionary"
 
     MagicMethods* = Table[MagicMethod, MagicMethodInternal]
 

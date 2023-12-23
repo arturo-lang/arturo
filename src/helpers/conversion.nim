@@ -470,6 +470,24 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat:Value = nil): Val
                             return stack.pop()
                         else:
                             throwCannotConvert()
+                    of Rational:
+                        if y.magic.fetch(ToRationalM):
+                            mgk(@[y])
+                            return stack.pop()
+                        else:
+                            throwCannotConvert()
+                    of Complex:
+                        if y.magic.fetch(ToComplexM):
+                            mgk(@[y])
+                            return stack.pop()
+                        else:
+                            throwCannotConvert()
+                    of Quantity:
+                        if y.magic.fetch(ToQuantityM):
+                            mgk(@[y])
+                            return stack.pop()
+                        else:
+                            throwCannotConvert()
                     of Logical:
                         if y.magic.fetch(ToLogicalM):
                             mgk(@[y])
