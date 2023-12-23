@@ -173,6 +173,9 @@ type
         doKeyQ*         : proc (a,b:Value): bool
         doContainsQ*    : proc (a,b:Value): bool
 
+        doAppend*       : proc (a,b:Value)
+        doRemove*       : proc (a,b:Value)
+
         toString*       : proc (v:Value): Value
         toInteger*      : proc (v:Value): Value
         toFloating*     : proc (v:Value): Value

@@ -52,6 +52,9 @@ const
     KeyQM*              = "key?"
     ContainsQM*         = "contains?"
 
+    AppendM*            = "append"
+    RemoveM*            = "remove"
+
     ToStringM*          = "toString"
     ToIntegerM*         = "toInteger"
     ToFloatingM*        = "toFloating"
@@ -160,6 +163,12 @@ func processMagicMethods(target: Value, methodName: string) =
             target.magic.doContainsQ = proc (self: Value, key: Value): bool =
                 callMethod(target.o[methodName], "\\" & KeyQM, @[self, key])
                 isTrue(stack.pop())
+        of AppendM:
+            target.magic.doAppend = proc (self: Value, other: Value) =
+                callMethod(target.o[methodName], "\\" & AppendM, @[self, other])
+        of RemoveM:
+            target.magic.doRemove = proc (self: Value, other: Value) =
+                callMethod(target.o[methodName], "\\" & RemoveM, @[self, other])
         of ToStringM:
             target.magic.toString = proc (self: Value): Value =
                 callMethod(target.o[methodName], "\\" & ToStringM, @[self])
