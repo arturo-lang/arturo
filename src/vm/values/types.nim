@@ -189,14 +189,6 @@ type
         ToDictionaryM       = "toDictionary"
 
     MagicMethods* = Table[MagicMethod, MagicMethodInternal]
-        # doInit*, doGet*, doSet*, 
-        # doChanging*, doChanged*,
-        # doCompare*, doEqualQ*, doLessQ*, doGreaterQ*,
-        # doAdd*, doSub*, doMul*, doDiv*, doFDiv*, doMod*, doPow*,
-        # doInc*, doDec*, doNeg*,
-        # doKeyQ*, doContainsQ*, doAppend*, doRemove*,
-        # toString*, toInteger*, toFloating*,
-        # toLogical*, toBlock*, toDictionary*   : MagicMethodInternal
 
     SymbolDict*   = OrderedTable[VSymbol,AliasBinding]
 
