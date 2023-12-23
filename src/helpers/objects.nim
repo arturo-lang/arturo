@@ -60,103 +60,13 @@ proc fetchConstructorArguments(pr: Prototype, values: ValueArray | ValueDict, ar
 #  matter). But we should - at least - check if the given magic method has the
 #  correct number of arguments. And if not, throw an error.
 #  labels: oop, error handling
-func processMagicMethods(target: Value, mm: var MagicMethods, methodName: string) {.inline.} =
+func processMagic(mm: var MagicMethods, methodName: string, target: Value) {.inline.} =
     try:
         let mgk = parseEnum[MagicMethod](methodName)
         mm[mgk] = proc (args: ValueArray) =
             callMethod(target, "\\" & methodName, args)
     except:
         discard
-    # case methodName:
-    #     of $ConstructorM:
-    #         mm.doInit = proc (args: ValueArray) =
-    #             callMethod(target, "\\" & methodName, args)
-    #     of $GetM:
-    #         mm.doGet = proc (self: Value, key: Value) =
-    #             callMethod(target, "\\" & methodName, @[self, key])
-    #     of $SetM:
-    #         mm.doSet = proc (self: Value, key: Value, val: Value) =
-    #             callMethod(target, "\\" & methodName, @[self, key, val])
-    #     of $ChangingM:
-    #         mm.doChanged = proc (self: Value, key: Value) =
-    #             callMethod(target, "\\" & methodName, @[self, key])
-    #     of $ChangedM:
-    #         mm.doChanged = proc (self: Value, key: Value) =
-    #             callMethod(target, "\\" & methodName, @[self, key])
-    #     of $CompareM:
-    #         mm.doCompare = proc (self: Value, other: Value) =
-    #             callMethod(target, "\\" & methodName, @[self, other])
-    #     of $EqualQM:
-    #         mm.doEqualQ = proc (self: Value, other: Value) =
-    #             callMethod(target, "\\" & methodName, @[self, other])
-    #     of $LessQM:
-    #         mm.doLessQ = proc (self: Value, other: Value) =
-    #             callMethod(target, "\\" & methodName, @[self, other])
-    #     of $GreaterQM:
-    #         mm.doGreaterQ = proc (self: Value, other: Value) =
-    #             callMethod(target, "\\" & methodName, @[self, other])
-    #     of $AddM:
-    #         mm.doAdd = proc (self: Value, other: Value) =
-    #             callMethod(target, "\\" & methodName, @[self, other])
-    #     of $SubM:
-    #         mm.doSub = proc (self: Value, other: Value) =
-    #             callMethod(target, "\\" & methodName, @[self, other])
-    #     of $MulM:
-    #         mm.doMul = proc (self: Value, other: Value) =
-    #             callMethod(target, "\\" & methodName, @[self, other])
-    #     of $DivM:
-    #         mm.doDiv = proc (self: Value, other: Value) =
-    #             callMethod(target, "\\" & methodName, @[self, other])
-    #     of $FDivM:
-    #         mm.doFDiv = proc (self: Value, other: Value) =
-    #             callMethod(target, "\\" & methodName, @[self, other])
-    #     of $ModM:
-    #         mm.doMod = proc (self: Value, other: Value) =
-    #             callMethod(target, "\\" & methodName, @[self, other])
-    #     of $PowM:
-    #         mm.doPow = proc (self: Value, other: Value) =
-    #             callMethod(target, "\\" & methodName, @[self, other])
-    #     of $IncM:
-    #         mm.doInc = proc (self: Value) =
-    #             callMethod(target, "\\" & methodName, @[self])
-    #     of $DecM:
-    #         mm.doDec = proc (self: Value) =
-    #             callMethod(target, "\\" & methodName, @[self])
-    #     of $NegM:
-    #         mm.doNeg = proc (self: Value) =
-    #             callMethod(target, "\\" & methodName, @[self])
-    #     of $KeyQM:
-    #         mm.doKeyQ = proc (self: Value, key: Value) =
-    #             callMethod(target, "\\" & methodName, @[self, key])
-    #     of $ContainsQM:
-    #         mm.doContainsQ = proc (self: Value, key: Value) =
-    #             callMethod(target, "\\" & methodName, @[self, key])
-    #     of $AppendM:
-    #         mm.doAppend = proc (self: Value, other: Value) =
-    #             callMethod(target, "\\" & methodName, @[self, other])
-    #     of $RemoveM:
-    #         mm.doRemove = proc (self: Value, other: Value) =
-    #             callMethod(target, "\\" & methodName, @[self, other])
-    #     of $ToStringM:
-    #         mm.toString = proc (self: Value) =
-    #             callMethod(target, "\\" & methodName, @[self])
-    #     of $ToIntegerM:
-    #         mm.toInteger = proc (self: Value) =
-    #             callMethod(target, "\\" & methodName, @[self])
-    #     of $ToFloatingM:
-    #         mm.toFloating = proc (self: Value) =
-    #             callMethod(target, "\\" & methodName, @[self])
-    #     of $ToLogicalM:
-    #         mm.toLogical = proc (self: Value) =
-    #             callMethod(target, "\\" & methodName, @[self])
-    #     of $ToBlockM:
-    #         mm.toBlock = proc (self: Value) =
-    #             callMethod(target, "\\" & methodName, @[self])
-    #     of $ToDictionaryM:
-    #         mm.toDictionary = proc (self: Value) =
-    #             callMethod(target, "\\" & methodName, @[self])
-    #     else:
-    #         discard
 
 #=======================================
 # Methods
@@ -237,7 +147,7 @@ proc generateNewObject*(pr: Prototype, values: ValueArray | ValueDict): Value =
     for k,v in pr.content:
         result.o[k] = copyValue(v)
         if v.kind == Method and not v.mdistinct:
-            processMagicMethods(v, magicMethods, k)
+            processMagic(magicMethods, k, v)
 
     # verify arguments
     checkArguments(pr, values)
