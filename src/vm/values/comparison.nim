@@ -148,10 +148,18 @@ proc `==`*(x: Value, y: Value): bool =
         else:
             return false
         
-    elif x.kind == ErrorKind and y.kind == Error:
-        return x.errkind == y.err.kind
-    else:
-        if x.kind != y.kind: return false
+    elif x.kind in {Error, ErrorKind} and y.kind in {Error, ErrorKind}:
+        case pair
+        of Error || ErrorKind:
+            return x.err.kind == y.errkind
+        of ErrorKind || Error:
+            return x.errkind == y.err.kind
+        of Error || Error:
+            return x.err == y.err
+        of ErrorKind || ErrorKind:
+            return x.errkind == y.errkind
+        else:
+            return false
 
         case x.kind:
             of Null: return true
