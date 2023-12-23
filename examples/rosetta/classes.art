@@ -1,5 +1,5 @@
 ; defining a custom type
-define :person .sortable:'age [                           
+define :person [                           
     ; define a new custom type "Person"
     ; with fields: name, surname, age
 
@@ -13,6 +13,8 @@ define :person .sortable:'age [
     string: method [][
         render "NAME: |this\name|, SURNAME: |this\surname|, AGE: |this\age|"
     ]
+
+    compare: sortable 'age
 
     ; create a method for our custom type
     sayHello: method [][
