@@ -102,9 +102,9 @@ proc defineLibrary*() =
                     elif yKind == Integer:
                         InPlaced.n &= numberToBinary(y.i)
                 elif InPlaced.kind == Object:
-                    if not InPlaced.magic.doAppend.isNil:
+                    if (let mgk = InPlaced.magic.getOrDefault(AppendM, nil); not mgk.isNil):
                         pushAttr("inplace", VTRUE)
-                        InPlaced.magic.doAppend(InPlaced, y)
+                        mgk(@[InPlaced, y])
                     else:
                         discard
                 else:
@@ -129,8 +129,8 @@ proc defineLibrary*() =
                     elif yKind == Integer:
                         push(newBinary(x.n & numberToBinary(y.i)))
                 elif xKind == Object:
-                    if not x.magic.doAppend.isNil:
-                        x.magic.doAppend(x, y) # value already pushed
+                    if (let mgk = x.magic.getOrDefault(AppendM, nil); not mgk.isNil):
+                        mgk(@[x, y]) # value already pushed
                     else:
                         # TODO(Collections\append) no magic method for object values should be an error
                         #  labels: library, oop, error handling
@@ -785,15 +785,15 @@ proc defineLibrary*() =
                         of String, Word, Literal, Label:
                             if (let got = GetKey(x.o, y.s, withError=false); not got.isNil):
                                 push(got)
-                            elif not x.magic.doGet.isNil:
-                                x.magic.doGet(x, y) # value already pushed
+                            elif (let mgk = x.magic.getOrDefault(GetM, nil); not mgk.isNil):
+                                mgk(@[x, y]) # value already pushed
                             else:
                                 discard GetKey(x.o, y.s) # Merely to trigger the error
                         else:
                             if (let got = GetKey(x.o, $(y), withError=false); not got.isNil):
                                 push(got)
-                            elif not x.magic.doGet.isNil:
-                                x.magic.doGet(x, y) # value already pushed
+                            elif (let mgk = x.magic.getOrDefault(GetM, nil); not mgk.isNil):
+                                mgk(@[x, y]) # value already pushed
                             else:
                                 discard GetKey(x.o, $(y)) # Merely to trigger the error
                 of Store:
@@ -1480,9 +1480,9 @@ proc defineLibrary*() =
                     else:
                         SetInPlace(newDictionary(InPlaced.d.removeAll(y, key)))
                 elif InPlaced.kind == Object:
-                    if not x.magic.doRemove.isNil:
+                    if (let mgk = InPlaced.magic.getOrDefault(RemoveM, nil); not mgk.isNil):
                         pushAttr("inplace", VTRUE)
-                        InPlaced.magic.doRemove(InPlaced,y)
+                        mgk(@[InPlaced,y])
                     else:
                         let key = (hadAttr("key"))
                         if (hadAttr("once")):
@@ -1525,8 +1525,8 @@ proc defineLibrary*() =
                     else:
                         push(newDictionary(x.d.removeAll(y, key)))
                 elif xKind == Object:
-                    if not x.magic.doRemove.isNil:
-                        x.magic.doRemove(x, y) # already pushed value
+                    if (let mgk = x.magic.getOrDefault(RemoveM, nil); not mgk.isNil):
+                        mgk(@[x, y]) # already pushed value
                     else:
                         let key = (hadAttr("key"))
                         if (hadAttr("once")):
@@ -1750,18 +1750,18 @@ proc defineLibrary*() =
                         else:
                             x.d[$(y)] = z
                 of Object:
-                    if unlikely(not x.magic.doChanging.isNil):
-                        x.magic.doChanging(x, y)
-                    if unlikely((not x.magic.doSet.isNil) and (y.kind in {String,Word,Literal,Label}) and (y.s notin toSeq(x.proto.fields.keys()))):
-                        x.magic.doSet(x, y, z)
+                    if unlikely((let mgk = x.magic.getOrDefault(ChangingM, nil); not mgk.isNil)):
+                        mgk(@[x, y])
+                    if ((let mgk = x.magic.getOrDefault(SetM, nil); not mgk.isNil) and (y.kind in {String,Word,Literal,Label}) and (y.s notin toSeq(x.proto.fields.keys()))):
+                        mgk(@[x, y, z])
                     else:
                         case yKind:
                             of String, Word, Literal, Label:
                                 x.o[y.s] = z
                             else:
                                 x.o[$(y)] = z
-                    if unlikely(not x.magic.doChanged.isNil):
-                        x.magic.doChanged(x, y)
+                    if unlikely((let mgk = x.magic.getOrDefault(ChangedM, nil); not mgk.isNil)):
+                        mgk(@[x, y])
                 of Store:
                     when not defined(WEB):
                         case yKind:
@@ -2583,9 +2583,9 @@ proc defineLibrary*() =
                         let values = toSeq(x.d.values)
                         push(newLogical(values[at] == y))
                     of Object:
-                        if unlikely(not x.magic.doContainsQ.isNil):
+                        if unlikely((let mgk = x.magic.getOrDefault(ContainsQM, nil); not mgk.isNil)):
                             pushAttr("at", aAt)
-                            x.magic.doContainsQ(x, y) # already pushes value
+                            mgk(@[x, y]) # already pushes value
                         else:
                             let values = toSeq(x.o.values)
                             push(newLogical(values[at] == y))
@@ -2615,11 +2615,11 @@ proc defineLibrary*() =
                             let values = toSeq(x.d.values)
                             push(newLogical(y in values))
                     of Object:
-                        if unlikely(not x.magic.doContainsQ.isNil):
+                        if unlikely((let mgk = x.magic.getOrDefault(ContainsQM, nil); not mgk.isNil)):
                             if hadAttr("deep"):
                                 pushAttr("deep", VTRUE)
 
-                            x.magic.doContainsQ(x, y) # already pushes value
+                            mgk(@[x, y]) # already pushes value
                         else:
                             if hadAttr("deep"):
                                 let values: ValueArray = x.o.getValuesinDeep()
@@ -2731,9 +2731,9 @@ proc defineLibrary*() =
                         let values = toSeq(y.d.values)
                         push(newLogical(values[at] == x))
                     of Object:
-                        if unlikely(not y.magic.doContainsQ.isNil):
+                        if unlikely((let mgk = x.magic.getOrDefault(ContainsQM, nil); not mgk.isNil)):
                             pushAttr("at", aAt)
-                            y.magic.doContainsQ(y, x) # already pushes value
+                            mgk(@[y, x]) # already pushes value
                         else:
                             let values = toSeq(y.o.values)
                             push(newLogical(values[at] == x))
@@ -2763,11 +2763,11 @@ proc defineLibrary*() =
                             let values = toSeq(y.d.values)
                             push(newLogical(x in values))
                     of Object:
-                        if unlikely(not y.magic.doContainsQ.isNil):
+                        if unlikely((let mgk = x.magic.getOrDefault(ContainsQM, nil); not mgk.isNil)):
                             if hadAttr("deep"):
                                 pushAttr("deep", VTRUE)
 
-                            y.magic.doContainsQ(y, x) # already pushes value
+                            mgk(@[y, x]) # already pushes value
                         else:
                             if hadAttr("deep"):
                                 let values: ValueArray = y.o.getValuesinDeep()
@@ -2809,8 +2809,8 @@ proc defineLibrary*() =
             if xKind == Dictionary:
                 push(newLogical(x.d.hasKey(needle)))
             else:
-                if unlikely(not x.magic.doKeyQ.isNil):
-                    x.magic.doKeyQ(x, y) # already pushes value
+                if unlikely((let mgk = x.magic.getOrDefault(KeyQM, nil); not mgk.isNil)):
+                    mgk(@[x, y]) # already pushes value
                 else:
                     push(newLogical(x.o.hasKey(needle)))
 
