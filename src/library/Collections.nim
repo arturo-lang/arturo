@@ -2585,7 +2585,7 @@ proc defineLibrary*() =
                     of Object:
                         if unlikely(not x.magic.doContainsQ.isNil):
                             pushAttr("at", aAt)
-                            push(newLogical(x.magic.doContainsQ(x, y)))
+                            x.magic.doContainsQ(x, y) # already pushes value
                         else:
                             let values = toSeq(x.o.values)
                             push(newLogical(values[at] == y))
@@ -2619,7 +2619,7 @@ proc defineLibrary*() =
                             if hadAttr("deep"):
                                 pushAttr("deep", VTRUE)
 
-                            push(newLogical(x.magic.doContainsQ(x, y)))
+                            x.magic.doContainsQ(x, y) # already pushes value
                         else:
                             if hadAttr("deep"):
                                 let values: ValueArray = x.o.getValuesinDeep()
@@ -2733,7 +2733,7 @@ proc defineLibrary*() =
                     of Object:
                         if unlikely(not y.magic.doContainsQ.isNil):
                             pushAttr("at", aAt)
-                            push(newLogical(y.magic.doContainsQ(y, x)))
+                            y.magic.doContainsQ(y, x) # already pushes value
                         else:
                             let values = toSeq(y.o.values)
                             push(newLogical(values[at] == x))
@@ -2767,7 +2767,7 @@ proc defineLibrary*() =
                             if hadAttr("deep"):
                                 pushAttr("deep", VTRUE)
 
-                            push(newLogical(y.magic.doContainsQ(y, x)))
+                            y.magic.doContainsQ(y, x) # already pushes value
                         else:
                             if hadAttr("deep"):
                                 let values: ValueArray = y.o.getValuesinDeep()
@@ -2810,7 +2810,7 @@ proc defineLibrary*() =
                 push(newLogical(x.d.hasKey(needle)))
             else:
                 if unlikely(not x.magic.doKeyQ.isNil):
-                    push(newLogical(x.magic.doKeyQ(x, y)))
+                    x.magic.doKeyQ(x, y) # already pushes value
                 else:
                     push(newLogical(x.o.hasKey(needle)))
 

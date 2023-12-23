@@ -165,13 +165,12 @@ func processMagicMethods(target: Value, mm: var MagicMethods, methodName: string
             mm.doNeg = proc (self: Value) =
                 callMethod(target, "\\" & methodName, @[self])
         of $KeyQM:
-            mm.doKeyQ = proc (self: Value, key: Value): bool =
+            mm.doKeyQ = proc (self: Value, key: Value) =
                 callMethod(target, "\\" & methodName, @[self, key])
                 isTrue(stack.pop())
         of $ContainsQM:
-            mm.doContainsQ = proc (self: Value, key: Value): bool =
+            mm.doContainsQ = proc (self: Value, key: Value) =
                 callMethod(target, "\\" & methodName, @[self, key])
-                isTrue(stack.pop())
         of $AppendM:
             mm.doAppend = proc (self: Value, other: Value) =
                 callMethod(target, "\\" & methodName, @[self, other])

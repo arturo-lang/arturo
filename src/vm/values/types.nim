@@ -173,8 +173,8 @@ type
 
         doNeg*          : proc (v:Value)
 
-        doKeyQ*         : proc (a,b:Value): bool
-        doContainsQ*    : proc (a,b:Value): bool
+        doKeyQ*         : proc (a,b:Value)
+        doContainsQ*    : proc (a,b:Value)
 
         doAppend*       : proc (a,b:Value)
         doRemove*       : proc (a,b:Value)
