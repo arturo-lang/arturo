@@ -41,7 +41,7 @@ proc defineLibrary*() =
     # Functions
     #----------------------------
 
-    builtin "construct",
+    builtin "constructor",
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
@@ -51,7 +51,7 @@ proc defineLibrary*() =
         },
         attrs       = NoAttrs,
         returns     = {Method},
-        # TODO(Types\construct) add documentation example
+        # TODO(Types\constructor) add documentation example
         #  labels: library, documentation, easy
         example     = """
         """:
@@ -64,7 +64,7 @@ proc defineLibrary*() =
             if (let constructorMethod = generatedConstructor(args); not constructorMethod.isNil):
                 push(constructorMethod)
             else:
-                # TODO(Types\construct) should show error if the constructor cannot be generated
+                # TODO(Types\constructor) should show error if the constructor cannot be generated
                 #  labels: library, oop, error handling
                 discard
 
