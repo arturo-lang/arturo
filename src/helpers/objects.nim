@@ -254,7 +254,7 @@ proc generateNewObject*(pr: Prototype, values: ValueArray | ValueDict): Value =
     
     # perform initialization 
     # using the available constructor
-    if (let constructor = magicMethods.doInit; not constructor.isNil):
+    if (let constructor = magicMethods.getOrDefault(ConstructorM, nil); not constructor.isNil):
         args.insert(result)
         constructor(args)
 
