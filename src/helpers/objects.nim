@@ -167,7 +167,6 @@ func processMagicMethods(target: Value, mm: var MagicMethods, methodName: string
         of $KeyQM:
             mm.doKeyQ = proc (self: Value, key: Value) =
                 callMethod(target, "\\" & methodName, @[self, key])
-                isTrue(stack.pop())
         of $ContainsQM:
             mm.doContainsQ = proc (self: Value, key: Value) =
                 callMethod(target, "\\" & methodName, @[self, key])
