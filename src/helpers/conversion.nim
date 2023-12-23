@@ -453,38 +453,38 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat:Value = nil): Val
             of Object:
                 case tp:
                     of String:
-                        if not y.magic.toString.isNil:
-                            y.magic.toString(y)
+                        if (let mgk = y.magic.getOrDefault(ToStringM, nil); not mgk.isNil):
+                            mgk(@[y])
                             return stack.pop()
                         else:
                             return newString($(y))
                     of Integer:
-                        if not y.magic.toInteger.isNil:
-                            y.magic.toInteger(y)
+                        if (let mgk = y.magic.getOrDefault(ToIntegerM, nil); not mgk.isNil):
+                            mgk(@[y])
                             return stack.pop()
                         else:
                             throwCannotConvert()
                     of Floating:
-                        if not y.magic.toFloating.isNil:
-                            y.magic.toFloating(y)
+                        if (let mgk = y.magic.getOrDefault(ToFloatingM, nil); not mgk.isNil):
+                            mgk(@[y])
                             return stack.pop()
                         else:
                             throwCannotConvert()
                     of Logical:
-                        if not y.magic.toLogical.isNil:
-                            y.magic.toLogical(y)
+                        if (let mgk = y.magic.getOrDefault(ToLogicalM, nil); not mgk.isNil):
+                            mgk(@[y])
                             return stack.pop()
                         else:
                             throwCannotConvert()
                     of Block:
-                        if not y.magic.toBlock.isNil:
-                            y.magic.toBlock(y)
+                        if (let mgk = y.magic.getOrDefault(ToBlockM, nil); not mgk.isNil):
+                            mgk(@[y])
                             return stack.pop()
                         else:
                             throwCannotConvert()
                     of Dictionary:
-                        if not y.magic.toDictionary.isNil:
-                            y.magic.toDictionary(y)
+                        if (let mgk = y.magic.getOrDefault(ToDictionaryM, nil); not mgk.isNil):
+                            mgk(@[y])
                             return stack.pop()
                         else:
                             return newDictionary(y.o)
