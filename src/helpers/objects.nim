@@ -104,102 +104,102 @@ func processMagicMethods(target: Value, mm: var MagicMethods, methodName: string
     case methodName:
         of ConstructorM:
             mm.doInit = proc (args: ValueArray) =
-                callMethod(target.o[methodName], "\\" & ConstructorM, args)
+                callMethod(target, "\\" & ConstructorM, args)
         of GetM:
             mm.doGet = proc (self: Value, key: Value) =
-                callMethod(target.o[methodName], "\\" & GetM, @[self, key])
+                callMethod(target, "\\" & GetM, @[self, key])
         of SetM:
             mm.doSet = proc (self: Value, key: Value, val: Value) =
-                callMethod(target.o[methodName], "\\" & SetM, @[self, key, val])
+                callMethod(target, "\\" & SetM, @[self, key, val])
         of ChangingM:
             mm.doChanged = proc (self: Value, key: Value) =
-                callMethod(target.o[methodName], "\\" & ChangingM, @[self, key])
+                callMethod(target, "\\" & ChangingM, @[self, key])
         of ChangedM:
             mm.doChanged = proc (self: Value, key: Value) =
-                callMethod(target.o[methodName], "\\" & ChangedM, @[self, key])
+                callMethod(target, "\\" & ChangedM, @[self, key])
         of CompareM:
             mm.doCompare = proc (self: Value, other: Value): int =
-                callMethod(target.o[methodName], "\\" & CompareM, @[self, other])
+                callMethod(target, "\\" & CompareM, @[self, other])
                 stack.pop().i
         of EqualQM:
             mm.doEqualQ = proc (self: Value, other: Value): bool =
-                callMethod(target.o[methodName], "\\" & EqualQM, @[self, other])
+                callMethod(target, "\\" & EqualQM, @[self, other])
                 isTrue(stack.pop())
         of LessQM:
             mm.doLessQ = proc (self: Value, other: Value): bool =
-                callMethod(target.o[methodName], "\\" & LessQM, @[self, other])
+                callMethod(target, "\\" & LessQM, @[self, other])
                 isTrue(stack.pop())
         of GreaterQM:
             mm.doGreaterQ = proc (self: Value, other: Value): bool =
-                callMethod(target.o[methodName], "\\" & GreaterQM, @[self, other])
+                callMethod(target, "\\" & GreaterQM, @[self, other])
                 isTrue(stack.pop())
         of AddM:
             mm.doAdd = proc (self: Value, other: Value) =
-                callMethod(target.o[methodName], "\\" & AddM, @[self, other])
+                callMethod(target, "\\" & AddM, @[self, other])
         of SubM:
             mm.doSub = proc (self: Value, other: Value) =
-                callMethod(target.o[methodName], "\\" & SubM, @[self, other])
+                callMethod(target, "\\" & SubM, @[self, other])
         of MulM:
             mm.doMul = proc (self: Value, other: Value) =
-                callMethod(target.o[methodName], "\\" & MulM, @[self, other])
+                callMethod(target, "\\" & MulM, @[self, other])
         of DivM:
             mm.doDiv = proc (self: Value, other: Value) =
-                callMethod(target.o[methodName], "\\" & DivM, @[self, other])
+                callMethod(target, "\\" & DivM, @[self, other])
         of FDivM:
             mm.doFDiv = proc (self: Value, other: Value) =
-                callMethod(target.o[methodName], "\\" & FDivM, @[self, other])
+                callMethod(target, "\\" & FDivM, @[self, other])
         of ModM:
             mm.doMod = proc (self: Value, other: Value) =
-                callMethod(target.o[methodName], "\\" & ModM, @[self, other])
+                callMethod(target, "\\" & ModM, @[self, other])
         of PowM:
             mm.doPow = proc (self: Value, other: Value) =
-                callMethod(target.o[methodName], "\\" & PowM, @[self, other])
+                callMethod(target, "\\" & PowM, @[self, other])
         of IncM:
             mm.doInc = proc (self: Value) =
-                callMethod(target.o[methodName], "\\" & IncM, @[self])
+                callMethod(target, "\\" & IncM, @[self])
         of DecM:
             mm.doDec = proc (self: Value) =
-                callMethod(target.o[methodName], "\\" & DecM, @[self])
+                callMethod(target, "\\" & DecM, @[self])
         of NegM:
             mm.doNeg = proc (self: Value) =
-                callMethod(target.o[methodName], "\\" & NegM, @[self])
+                callMethod(target, "\\" & NegM, @[self])
         of KeyQM:
             mm.doKeyQ = proc (self: Value, key: Value): bool =
-                callMethod(target.o[methodName], "\\" & KeyQM, @[self, key])
+                callMethod(target, "\\" & KeyQM, @[self, key])
                 isTrue(stack.pop())
         of ContainsQM:
             mm.doContainsQ = proc (self: Value, key: Value): bool =
-                callMethod(target.o[methodName], "\\" & KeyQM, @[self, key])
+                callMethod(target, "\\" & KeyQM, @[self, key])
                 isTrue(stack.pop())
         of AppendM:
             mm.doAppend = proc (self: Value, other: Value) =
-                callMethod(target.o[methodName], "\\" & AppendM, @[self, other])
+                callMethod(target, "\\" & AppendM, @[self, other])
         of RemoveM:
             mm.doRemove = proc (self: Value, other: Value) =
-                callMethod(target.o[methodName], "\\" & RemoveM, @[self, other])
+                callMethod(target, "\\" & RemoveM, @[self, other])
         of ToStringM:
             mm.toString = proc (self: Value): Value =
-                callMethod(target.o[methodName], "\\" & ToStringM, @[self])
+                callMethod(target, "\\" & ToStringM, @[self])
                 stack.pop()
         of ToIntegerM:
             mm.toInteger = proc (self: Value): Value =
-                callMethod(target.o[methodName], "\\" & ToIntegerM, @[self])
+                callMethod(target, "\\" & ToIntegerM, @[self])
                 stack.pop()
         of ToFloatingM:
             mm.toFloating = proc (self: Value): Value =
-                callMethod(target.o[methodName], "\\" & ToFloatingM, @[self])
+                callMethod(target, "\\" & ToFloatingM, @[self])
                 stack.pop()
         of ToLogicalM:
             mm.toLogical = proc (self: Value): Value =
-                callMethod(target.o[methodName], "\\" & ToLogicalM, @[self])
+                callMethod(target, "\\" & ToLogicalM, @[self])
                 stack.pop()
         of ToBlockM:
             mm.toBlock = proc (self: Value): Value =
-                callMethod(target.o[methodName], "\\" & ToBlockM, @[self])
+                callMethod(target, "\\" & ToBlockM, @[self])
                 stack.pop()
         of ToDictionaryM:
             mm.toDictionary = proc (self: Value): Value =
-                callMethod(target.o[methodName], "\\" & ToDictionaryM, @[self])
+                callMethod(target, "\\" & ToDictionaryM, @[self])
                 stack.pop()
         else:
             discard
@@ -283,7 +283,7 @@ proc generateNewObject*(pr: Prototype, values: ValueArray | ValueDict): Value =
     for k,v in pr.content:
         result.o[k] = copyValue(v)
         if v.kind == Method and not v.mdistinct:
-            result.processMagicMethods(magicMethods, k)
+            processMagicMethods(v, magicMethods, k)
 
     # verify arguments
     checkArguments(pr, values)
