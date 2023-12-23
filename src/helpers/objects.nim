@@ -31,6 +31,9 @@ const
     GetM*               = "get"
     SetM*               = "set"
 
+    ChangingM*          = "changing"
+    ChangedM*           = "changed"
+
     CompareM*           = "compare"
     EqualQM*            = "equal?"
     LessQM*             = "less?"
@@ -109,6 +112,12 @@ func processMagicMethods(target: Value, methodName: string) =
         of SetM:
             target.magic.doSet = proc (self: Value, key: Value, val: Value) =
                 callMethod(target.o[methodName], "\\" & SetM, @[self, key, val])
+        of ChangingM:
+            target.magic.doChanged = proc (self: Value, key: Value) =
+                callMethod(target.o[methodName], "\\" & ChangingM, @[self, key])
+        of ChangedM:
+            target.magic.doChanged = proc (self: Value, key: Value) =
+                callMethod(target.o[methodName], "\\" & ChangedM, @[self, key])
         of CompareM:
             target.magic.doCompare = proc (self: Value, other: Value): int =
                 callMethod(target.o[methodName], "\\" & CompareM, @[self, other])
