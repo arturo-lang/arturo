@@ -136,7 +136,7 @@ proc `$`*(v: Value): string {.inline.} =
             result = "[" & items.join(" ") & "]"
 
         of Object:
-            if (let mgk = v.magic.getOrDefault(ToStringM, nil); not mgk.isNil):
+            if v.magic.fetch(ToStringM):
                 mgk(@[v])
                 return stack.pop().s
             else:
