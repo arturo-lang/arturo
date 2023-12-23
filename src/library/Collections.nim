@@ -1750,6 +1750,8 @@ proc defineLibrary*() =
                         else:
                             x.d[$(y)] = z
                 of Object:
+                    if unlikely(not x.magic.doChanging.isNil):
+                        x.magic.doChanging(x, y)
                     if unlikely((not x.magic.doSet.isNil) and (y.kind in {String,Word,Literal,Label}) and (y.s notin toSeq(x.proto.fields.keys()))):
                         x.magic.doSet(x, y, z)
                     else:
@@ -1758,6 +1760,8 @@ proc defineLibrary*() =
                                 x.o[y.s] = z
                             else:
                                 x.o[$(y)] = z
+                    if unlikely(not x.magic.doChanged.isNil):
+                        x.magic.doChanged(x, y)
                 of Store:
                     when not defined(WEB):
                         case yKind:

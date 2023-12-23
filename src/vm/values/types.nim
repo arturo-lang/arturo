@@ -153,6 +153,9 @@ type
         doGet*          : proc (a,b:Value): Value
         doSet*          : proc (a,b,c:Value)
         
+        doChanging*     : proc (a,b:Value)
+        doChanged*      : proc (a,b:Value)
+        
         doEqualQ*       : proc (a,b:Value): bool
         doLessQ*        : proc (a,b:Value): bool
         doGreaterQ*     : proc (a,b:Value): bool
