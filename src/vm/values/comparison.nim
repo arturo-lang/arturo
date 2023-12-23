@@ -197,7 +197,7 @@ proc `==`*(x: Value, y: Value): bool =
             of Object:
                 if not x.magic.doCompare.isNil:
                     x.magic.doCompare(x,y) 
-                    stack.pop().i == 0
+                    return stack.pop().i == 0
                 elif not x.magic.doEqualQ.isNil:
                     x.magic.doEqualQ(x,y)
                     return isTrue(stack.pop())
