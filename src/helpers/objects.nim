@@ -100,105 +100,105 @@ proc fetchConstructorArguments(pr: Prototype, values: ValueArray | ValueDict, ar
 #  matter). But we should - at least - check if the given magic method has the
 #  correct number of arguments. And if not, throw an error.
 #  labels: oop, error handling
-func processMagicMethods(target: Value, methodName: string) =
+func processMagicMethods(target: Value, mm: var MagicMethods, methodName: string) =
     case methodName:
         of ConstructorM:
-            target.magic.doInit = proc (args: ValueArray) =
+            mm.doInit = proc (args: ValueArray) =
                 callMethod(target.o[methodName], "\\" & ConstructorM, args)
         of GetM:
-            target.magic.doGet = proc (self: Value, key: Value) =
+            mm.doGet = proc (self: Value, key: Value) =
                 callMethod(target.o[methodName], "\\" & GetM, @[self, key])
         of SetM:
-            target.magic.doSet = proc (self: Value, key: Value, val: Value) =
+            mm.doSet = proc (self: Value, key: Value, val: Value) =
                 callMethod(target.o[methodName], "\\" & SetM, @[self, key, val])
         of ChangingM:
-            target.magic.doChanged = proc (self: Value, key: Value) =
+            mm.doChanged = proc (self: Value, key: Value) =
                 callMethod(target.o[methodName], "\\" & ChangingM, @[self, key])
         of ChangedM:
-            target.magic.doChanged = proc (self: Value, key: Value) =
+            mm.doChanged = proc (self: Value, key: Value) =
                 callMethod(target.o[methodName], "\\" & ChangedM, @[self, key])
         of CompareM:
-            target.magic.doCompare = proc (self: Value, other: Value): int =
+            mm.doCompare = proc (self: Value, other: Value): int =
                 callMethod(target.o[methodName], "\\" & CompareM, @[self, other])
                 stack.pop().i
         of EqualQM:
-            target.magic.doEqualQ = proc (self: Value, other: Value): bool =
+            mm.doEqualQ = proc (self: Value, other: Value): bool =
                 callMethod(target.o[methodName], "\\" & EqualQM, @[self, other])
                 isTrue(stack.pop())
         of LessQM:
-            target.magic.doEqualQ = proc (self: Value, other: Value): bool =
+            mm.doLessQ = proc (self: Value, other: Value): bool =
                 callMethod(target.o[methodName], "\\" & LessQM, @[self, other])
                 isTrue(stack.pop())
         of GreaterQM:
-            target.magic.doEqualQ = proc (self: Value, other: Value): bool =
+            mm.doGreaterQ = proc (self: Value, other: Value): bool =
                 callMethod(target.o[methodName], "\\" & GreaterQM, @[self, other])
                 isTrue(stack.pop())
         of AddM:
-            target.magic.doAdd = proc (self: Value, other: Value) =
+            mm.doAdd = proc (self: Value, other: Value) =
                 callMethod(target.o[methodName], "\\" & AddM, @[self, other])
         of SubM:
-            target.magic.doSub = proc (self: Value, other: Value) =
+            mm.doSub = proc (self: Value, other: Value) =
                 callMethod(target.o[methodName], "\\" & SubM, @[self, other])
         of MulM:
-            target.magic.doMul = proc (self: Value, other: Value) =
+            mm.doMul = proc (self: Value, other: Value) =
                 callMethod(target.o[methodName], "\\" & MulM, @[self, other])
         of DivM:
-            target.magic.doDiv = proc (self: Value, other: Value) =
+            mm.doDiv = proc (self: Value, other: Value) =
                 callMethod(target.o[methodName], "\\" & DivM, @[self, other])
         of FDivM:
-            target.magic.doFDiv = proc (self: Value, other: Value) =
+            mm.doFDiv = proc (self: Value, other: Value) =
                 callMethod(target.o[methodName], "\\" & FDivM, @[self, other])
         of ModM:
-            target.magic.doMod = proc (self: Value, other: Value) =
+            mm.doMod = proc (self: Value, other: Value) =
                 callMethod(target.o[methodName], "\\" & ModM, @[self, other])
         of PowM:
-            target.magic.doPow = proc (self: Value, other: Value) =
+            mm.doPow = proc (self: Value, other: Value) =
                 callMethod(target.o[methodName], "\\" & PowM, @[self, other])
         of IncM:
-            target.magic.doInc = proc (self: Value) =
+            mm.doInc = proc (self: Value) =
                 callMethod(target.o[methodName], "\\" & IncM, @[self])
         of DecM:
-            target.magic.doDec = proc (self: Value) =
+            mm.doDec = proc (self: Value) =
                 callMethod(target.o[methodName], "\\" & DecM, @[self])
         of NegM:
-            target.magic.doNeg = proc (self: Value) =
+            mm.doNeg = proc (self: Value) =
                 callMethod(target.o[methodName], "\\" & NegM, @[self])
         of KeyQM:
-            target.magic.doKeyQ = proc (self: Value, key: Value): bool =
+            mm.doKeyQ = proc (self: Value, key: Value): bool =
                 callMethod(target.o[methodName], "\\" & KeyQM, @[self, key])
                 isTrue(stack.pop())
         of ContainsQM:
-            target.magic.doContainsQ = proc (self: Value, key: Value): bool =
+            mm.doContainsQ = proc (self: Value, key: Value): bool =
                 callMethod(target.o[methodName], "\\" & KeyQM, @[self, key])
                 isTrue(stack.pop())
         of AppendM:
-            target.magic.doAppend = proc (self: Value, other: Value) =
+            mm.doAppend = proc (self: Value, other: Value) =
                 callMethod(target.o[methodName], "\\" & AppendM, @[self, other])
         of RemoveM:
-            target.magic.doRemove = proc (self: Value, other: Value) =
+            mm.doRemove = proc (self: Value, other: Value) =
                 callMethod(target.o[methodName], "\\" & RemoveM, @[self, other])
         of ToStringM:
-            target.magic.toString = proc (self: Value): Value =
+            mm.toString = proc (self: Value): Value =
                 callMethod(target.o[methodName], "\\" & ToStringM, @[self])
                 stack.pop()
         of ToIntegerM:
-            target.magic.toInteger = proc (self: Value): Value =
+            mm.toInteger = proc (self: Value): Value =
                 callMethod(target.o[methodName], "\\" & ToIntegerM, @[self])
                 stack.pop()
         of ToFloatingM:
-            target.magic.toFloating = proc (self: Value): Value =
+            mm.toFloating = proc (self: Value): Value =
                 callMethod(target.o[methodName], "\\" & ToFloatingM, @[self])
                 stack.pop()
         of ToLogicalM:
-            target.magic.toLogical = proc (self: Value): Value =
+            mm.toLogical = proc (self: Value): Value =
                 callMethod(target.o[methodName], "\\" & ToLogicalM, @[self])
                 stack.pop()
         of ToBlockM:
-            target.magic.toBlock = proc (self: Value): Value =
+            mm.toBlock = proc (self: Value): Value =
                 callMethod(target.o[methodName], "\\" & ToBlockM, @[self])
                 stack.pop()
         of ToDictionaryM:
-            target.magic.toDictionary = proc (self: Value): Value =
+            mm.toDictionary = proc (self: Value): Value =
                 callMethod(target.o[methodName], "\\" & ToDictionaryM, @[self])
                 stack.pop()
         else:
@@ -278,11 +278,12 @@ proc generateNewObject*(pr: Prototype, values: ValueArray | ValueDict): Value =
     result = newObject(pr)
 
     # migrate all content and 
-    # process internal methods accordingly
+    # process magic method accordingly
+    var magicMethods = MagicMethods()
     for k,v in pr.content:
         result.o[k] = copyValue(v)
         if v.kind == Method and not v.mdistinct:
-            result.processMagicMethods(k)
+            result.processMagicMethods(magicMethods, k)
 
     # verify arguments
     checkArguments(pr, values)
@@ -299,6 +300,9 @@ proc generateNewObject*(pr: Prototype, values: ValueArray | ValueDict): Value =
     
     # perform initialization 
     # using the available constructor
-    if (let constructor = result.magic.doInit; not constructor.isNil):
+    if (let constructor = magicMethods.doInit; not constructor.isNil):
         args.insert(result)
         constructor(args)
+
+    # embed magic methods as well
+    result.magic = magicMethods
