@@ -18,52 +18,57 @@ import vm/values/custom/[vsymbol]
 import vm/[exec, errors, stack]
 
 #=======================================
+# Types
+#=======================================
+
+type
+    MagicMethod* = enum
+        ConstructorM        = "init"
+
+        GetM                = "get"
+        SetM                = "set"
+
+        ChangingM           = "changing"
+        ChangedM            = "changed"
+
+        CompareM            = "compare"
+        EqualQM             = "equal?"
+        LessQM              = "less?"
+        GreaterQM           = "greater?"
+
+        AddM                = "add"
+        SubM                = "sub"
+        MulM                = "mul"
+        DivM                = "div"
+        FDivM               = "fdiv"
+        ModM                = "mod"
+        PowM                = "pow"
+
+        IncM                = "inc"
+        DecM                = "dec"
+
+        NegM                = "neg"
+
+        KeyQM               = "key?"
+        ContainsQM          = "contains?"
+
+        AppendM             = "append"
+        RemoveM             = "remove"
+
+        ToStringM           = "toString"
+        ToIntegerM          = "toInteger"
+        ToFloatingM         = "toFloating"
+        ToLogicalM          = "toLogical"
+        ToBlockM            = "toBlock"
+        ToDictionaryM       = "toDictionary"
+
+#=======================================
 # Constants
 #=======================================
 
 const
     ThisRef*            = "this"
     SuperRef*           = "super"
-
-    # magic methods
-    ConstructorM*       = "init"
-
-    GetM*               = "get"
-    SetM*               = "set"
-
-    ChangingM*          = "changing"
-    ChangedM*           = "changed"
-
-    CompareM*           = "compare"
-    EqualQM*            = "equal?"
-    LessQM*             = "less?"
-    GreaterQM*          = "greater?"
-
-    AddM*               = "add"
-    SubM*               = "sub"
-    MulM*               = "mul"
-    DivM*               = "div"
-    FDivM*              = "fdiv"
-    ModM*               = "mod"
-    PowM*               = "pow"
-
-    IncM*               = "inc"
-    DecM*               = "dec"
-
-    NegM*               = "neg"
-
-    KeyQM*              = "key?"
-    ContainsQM*         = "contains?"
-
-    AppendM*            = "append"
-    RemoveM*            = "remove"
-
-    ToStringM*          = "toString"
-    ToIntegerM*         = "toInteger"
-    ToFloatingM*        = "toFloating"
-    ToLogicalM*         = "toLogical"
-    ToBlockM*           = "toBlock"
-    ToDictionaryM*      = "toDictionary"
 
 #=======================================
 # Helpers
@@ -102,104 +107,104 @@ proc fetchConstructorArguments(pr: Prototype, values: ValueArray | ValueDict, ar
 #  labels: oop, error handling
 func processMagicMethods(target: Value, mm: var MagicMethods, methodName: string) =
     case methodName:
-        of ConstructorM:
+        of $ConstructorM:
             mm.doInit = proc (args: ValueArray) =
-                callMethod(target, "\\" & ConstructorM, args)
-        of GetM:
+                callMethod(target, "\\" & methodName, args)
+        of $GetM:
             mm.doGet = proc (self: Value, key: Value) =
-                callMethod(target, "\\" & GetM, @[self, key])
-        of SetM:
+                callMethod(target, "\\" & methodName, @[self, key])
+        of $SetM:
             mm.doSet = proc (self: Value, key: Value, val: Value) =
-                callMethod(target, "\\" & SetM, @[self, key, val])
-        of ChangingM:
+                callMethod(target, "\\" & methodName, @[self, key, val])
+        of $ChangingM:
             mm.doChanged = proc (self: Value, key: Value) =
-                callMethod(target, "\\" & ChangingM, @[self, key])
-        of ChangedM:
+                callMethod(target, "\\" & methodName, @[self, key])
+        of $ChangedM:
             mm.doChanged = proc (self: Value, key: Value) =
-                callMethod(target, "\\" & ChangedM, @[self, key])
-        of CompareM:
+                callMethod(target, "\\" & methodName, @[self, key])
+        of $CompareM:
             mm.doCompare = proc (self: Value, other: Value): int =
-                callMethod(target, "\\" & CompareM, @[self, other])
+                callMethod(target, "\\" & methodName, @[self, other])
                 stack.pop().i
-        of EqualQM:
+        of $EqualQM:
             mm.doEqualQ = proc (self: Value, other: Value): bool =
-                callMethod(target, "\\" & EqualQM, @[self, other])
+                callMethod(target, "\\" & methodName, @[self, other])
                 isTrue(stack.pop())
-        of LessQM:
+        of $LessQM:
             mm.doLessQ = proc (self: Value, other: Value): bool =
-                callMethod(target, "\\" & LessQM, @[self, other])
+                callMethod(target, "\\" & methodName, @[self, other])
                 isTrue(stack.pop())
-        of GreaterQM:
+        of $GreaterQM:
             mm.doGreaterQ = proc (self: Value, other: Value): bool =
-                callMethod(target, "\\" & GreaterQM, @[self, other])
+                callMethod(target, "\\" & methodName, @[self, other])
                 isTrue(stack.pop())
-        of AddM:
+        of $AddM:
             mm.doAdd = proc (self: Value, other: Value) =
-                callMethod(target, "\\" & AddM, @[self, other])
-        of SubM:
+                callMethod(target, "\\" & methodName, @[self, other])
+        of $SubM:
             mm.doSub = proc (self: Value, other: Value) =
-                callMethod(target, "\\" & SubM, @[self, other])
-        of MulM:
+                callMethod(target, "\\" & methodName, @[self, other])
+        of $MulM:
             mm.doMul = proc (self: Value, other: Value) =
-                callMethod(target, "\\" & MulM, @[self, other])
-        of DivM:
+                callMethod(target, "\\" & methodName, @[self, other])
+        of $DivM:
             mm.doDiv = proc (self: Value, other: Value) =
-                callMethod(target, "\\" & DivM, @[self, other])
-        of FDivM:
+                callMethod(target, "\\" & methodName, @[self, other])
+        of $FDivM:
             mm.doFDiv = proc (self: Value, other: Value) =
-                callMethod(target, "\\" & FDivM, @[self, other])
-        of ModM:
+                callMethod(target, "\\" & methodName, @[self, other])
+        of $ModM:
             mm.doMod = proc (self: Value, other: Value) =
-                callMethod(target, "\\" & ModM, @[self, other])
-        of PowM:
+                callMethod(target, "\\" & methodName, @[self, other])
+        of $PowM:
             mm.doPow = proc (self: Value, other: Value) =
-                callMethod(target, "\\" & PowM, @[self, other])
-        of IncM:
+                callMethod(target, "\\" & methodName, @[self, other])
+        of $IncM:
             mm.doInc = proc (self: Value) =
-                callMethod(target, "\\" & IncM, @[self])
-        of DecM:
+                callMethod(target, "\\" & methodName, @[self])
+        of $DecM:
             mm.doDec = proc (self: Value) =
-                callMethod(target, "\\" & DecM, @[self])
-        of NegM:
+                callMethod(target, "\\" & methodName, @[self])
+        of $NegM:
             mm.doNeg = proc (self: Value) =
-                callMethod(target, "\\" & NegM, @[self])
-        of KeyQM:
+                callMethod(target, "\\" & methodName, @[self])
+        of $KeyQM:
             mm.doKeyQ = proc (self: Value, key: Value): bool =
-                callMethod(target, "\\" & KeyQM, @[self, key])
+                callMethod(target, "\\" & methodName, @[self, key])
                 isTrue(stack.pop())
-        of ContainsQM:
+        of $ContainsQM:
             mm.doContainsQ = proc (self: Value, key: Value): bool =
-                callMethod(target, "\\" & KeyQM, @[self, key])
+                callMethod(target, "\\" & methodName, @[self, key])
                 isTrue(stack.pop())
-        of AppendM:
+        of $AppendM:
             mm.doAppend = proc (self: Value, other: Value) =
-                callMethod(target, "\\" & AppendM, @[self, other])
-        of RemoveM:
+                callMethod(target, "\\" & methodName, @[self, other])
+        of $RemoveM:
             mm.doRemove = proc (self: Value, other: Value) =
-                callMethod(target, "\\" & RemoveM, @[self, other])
-        of ToStringM:
+                callMethod(target, "\\" & methodName, @[self, other])
+        of $ToStringM:
             mm.toString = proc (self: Value): Value =
-                callMethod(target, "\\" & ToStringM, @[self])
+                callMethod(target, "\\" & methodName, @[self])
                 stack.pop()
-        of ToIntegerM:
+        of $ToIntegerM:
             mm.toInteger = proc (self: Value): Value =
-                callMethod(target, "\\" & ToIntegerM, @[self])
+                callMethod(target, "\\" & methodName, @[self])
                 stack.pop()
-        of ToFloatingM:
+        of $ToFloatingM:
             mm.toFloating = proc (self: Value): Value =
-                callMethod(target, "\\" & ToFloatingM, @[self])
+                callMethod(target, "\\" & methodName, @[self])
                 stack.pop()
-        of ToLogicalM:
+        of $ToLogicalM:
             mm.toLogical = proc (self: Value): Value =
-                callMethod(target, "\\" & ToLogicalM, @[self])
+                callMethod(target, "\\" & methodName, @[self])
                 stack.pop()
-        of ToBlockM:
+        of $ToBlockM:
             mm.toBlock = proc (self: Value): Value =
-                callMethod(target, "\\" & ToBlockM, @[self])
+                callMethod(target, "\\" & methodName, @[self])
                 stack.pop()
-        of ToDictionaryM:
+        of $ToDictionaryM:
             mm.toDictionary = proc (self: Value): Value =
-                callMethod(target, "\\" & ToDictionaryM, @[self])
+                callMethod(target, "\\" & methodName, @[self])
                 stack.pop()
         else:
             discard
@@ -234,7 +239,7 @@ func generatedCompare*(key: Value): Value {.inline.} =
 proc getFieldTable*(defs: ValueDict): ValueDict {.inline.} =
     result = newOrderedTable[string,Value]()
 
-    if (let constructorMethod = defs.getOrDefault(ConstructorM, nil); not constructorMethod.isNil):
+    if (let constructorMethod = defs.getOrDefault($ConstructorM, nil); not constructorMethod.isNil):
         for p in constructorMethod.params:
             if p != "this":
                 result[p] = newType(Any)
