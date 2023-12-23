@@ -1409,7 +1409,7 @@ proc defineLibrary*() =
         rule        = InfixPrecedence,
         description = "remove value from given collection",
         args        = {
-            "collection": {String, Block, Dictionary, Literal},
+            "collection": {String, Block, Dictionary, Object, Literal},
             "value"     : {Any}
         },
         attrs       = {
@@ -1479,6 +1479,16 @@ proc defineLibrary*() =
                         SetInPlace(newDictionary(InPlaced.d.removeFirst(y, key)))
                     else:
                         SetInPlace(newDictionary(InPlaced.d.removeAll(y, key)))
+                elif InPlaced.kind == Object:
+                    if not x.magic.doRemove.isNil:
+                        pushAttr("inplace", VTRUE)
+                        InPlaced.magic.doRemove(InPlaced,y)
+                    else:
+                        let key = (hadAttr("key"))
+                        if (hadAttr("once")):
+                            SetInPlace(newObject(InPlaced.proto, InPlaced.o.removeFirst(y, key), InPlaced.magic))
+                        else:
+                            SetInPlace(newObject(InPlaced.proto, InPlaced.o.removeAll(y, key), InPlaced.magic))
             else:
                 if xKind == String:
                     if (hadAttr("once")):
@@ -1514,6 +1524,15 @@ proc defineLibrary*() =
                         push(newDictionary(x.d.removeFirst(y, key)))
                     else:
                         push(newDictionary(x.d.removeAll(y, key)))
+                elif xKind == Object:
+                    if not x.magic.doRemove.isNil:
+                        x.magic.doRemove(x, y) # already pushed value
+                    else:
+                        let key = (hadAttr("key"))
+                        if (hadAttr("once")):
+                            push(newObject(x.proto, x.o.removeFirst(y, key), x.magic))
+                        else:
+                            push(newObject(x.proto, x.o.removeAll(y, key), x.magic))
 
     builtin "repeat",
         alias       = unaliased,
