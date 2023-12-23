@@ -255,6 +255,23 @@ proc defineLibrary*() =
 
             push newUserType(tmpTid)
 
+    builtin "sortable",
+        alias       = unaliased,
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "create a sort descriptor method automatically using given type field",
+        args        = {
+            "field"     : {Literal}
+        },
+        attrs       = NoAttrs,
+        returns     = {Method},
+        # TODO(Types\sortable) add documentation example
+        #  labels: library, documentation, easy
+        example     = """
+        """:
+            #=======================================================
+            push(generatedCompare(x))
+
     # TODO(Types\to) revise attributes
     #  the attributes to this function seem to me a bit confusing. I mean, `to` is
     #  supposed to convert a value to a given type. Obviously, if we convert a Block
