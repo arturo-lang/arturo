@@ -298,46 +298,39 @@ proc `<`*(x: Value, y: Value): bool {.inline.}=
         of BigInteger       || Floating         :   (when GMP: return x.bi < toBig(int(y.f)))
         of BigInteger       || Quantity         :   (when GMP: return x.bi < y.q)
 
-        of Integer          || BigInteger       :   (when GMP: return toBig(x.i) < y.bi)
-        of Rational         || BigInteger       :   (when GMP: return x.rat < toRational(y.bi))
+        of Integer          || BigInteger       :   (when GMP: return toBig(x.i)      < y.bi)
+        of Rational         || BigInteger       :   (when GMP: return x.rat           < toRational(y.bi))
         of Floating         || BigInteger       :   (when GMP: return toBig(int(x.f)) < y.bi)
-        of Quantity         || BigInteger       :   (when GMP: return x.q < y.bi)
-        else:
-            if x.kind != y.kind: return false
-            case x.kind:
-                of Null: return false
-                of Logical: return false
-                of Complex:
-                    if x.z.re == y.z.re:
-                        return x.z.im < y.z.im
-                    else:
-                        return x.z.re < y.z.re
-                of Version: return x.version < y.version
-                of Type: return false
-                of Char: return $(x.c) < $(y.c)
-                of String,
-                    Word,
-                    Label,
-                    Literal,
-                    Attribute,
-                    AttributeLabel: return x.s < y.s
-                of Symbol: return false
-                of Inline,
-                    Block:
-                    return x.a.len < y.a.len
-                of Dictionary:
-                    return false
-                of Unit:
-                    return false
-                of Object:
-                    if (let compareMethod = x.proto.methods.getOrDefault("compare", nil); not compareMethod.isNil):
-                        return x.proto.doCompare(x, y) == -1
-                    else:
-                        return false
-                of Date:
-                    return x.eobj[] < y.eobj[]
-                else:
-                    return false
+        of Quantity         || BigInteger       :   (when GMP: return x.q             < y.bi)
+
+        of Null             || Null             : return false
+        of Logical          || Logical          : return false
+        of Complex          || Complex          :
+            if x.z.re == y.z.re:
+                return x.z.im < y.z.im
+            else:
+                return x.z.re < y.z.re
+        of Version          || Version          : return x.version < y.version
+        of Type             || Type             : return false
+        of Char             || Char             : return $(x.c) < $(y.c)
+        of String           || String,
+            Word            || Word,
+            Label           || Label,
+            Literal         || Literal,
+            Attribute       || Attribute,
+            AttributeLabel  || AttributeLabel   : return x.s < y.s
+        of Symbol           || Symbol           : return false
+        of Inline           || Inline,
+            Block           || Block            : return x.a.len < y.a.len
+        of Dictionary       || Dictionary       : return false
+        of Unit             || Unit             : return false
+        of Object           || Object:
+            if not x.proto.methods.getOrDefault("compare", nil).isNil:
+                return x.proto.doCompare(x, y) == -1
+            else:
+                return false
+        of Date             || Date             : return x.eobj[] < y.eobj[]
+        else                                    : return false
 
 proc `>`*(x: Value, y: Value): bool {.inline.}=
     if x.kind in {Integer, Floating, Rational} and y.kind in {Integer, Floating, Rational}:
