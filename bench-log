@@ -1,17 +1,17 @@
-commit 82ff23335307a63a6e93ab0cddea8869cfabf85f
+commit e7f3347057b028118825df09312065442419921d
 Author: RickBarretto <78623871+RickBarretto@users.noreply.github.com>
-Date:   Sat Dec 23 22:14:46 2023 -0300
+Date:   Sat Dec 23 22:14:52 2023 -0300
 
     [bench]: update benchmark's log
 
 OLD
 
-real	0m1.875s
+real	0m1.780s
 user	0m0.000s
 sys	0m0.000s
 
 CURRENT
 
-real	0m2.183s
+real	0m2.450s
 user	0m0.000s
 sys	0m0.000s
