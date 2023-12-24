@@ -4,12 +4,16 @@ git log -n 1 --pretty=medium > bench-log
 
 echo -e "\nOLD" >> bench-log
 { 
-    time ./bin/reference.exe ./tests/unittests/lib.comparison.art; 
+    time for counter in {1..50} 
+    do ./bin/reference.exe ./tests/unittests/lib.comparison.art
+    done;
 } 2>> bench-log
 
 echo -e "\nCURRENT" >> bench-log
 { 
-    time ./bin/arturo.exe ./tests/unittests/lib.comparison.art; 
+    time for counter in {1..50} 
+    do ./bin/arturo.exe ./tests/unittests/lib.comparison.art
+    done; 
 } 2>> bench-log
 
 git add bench-log
