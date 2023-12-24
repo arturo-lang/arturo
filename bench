@@ -2,7 +2,15 @@
 
 git log -n 1 --pretty=medium > bench-log
 
-{ time ./bin/arturo.exe ./tools/tester.art; } 2>> bench-log
+echo -e "\nOLD" >> bench-log
+{ 
+    time ./bin/reference.exe ./tests/unittests/lib.comparison.art; 
+} 2>> bench-log
+
+echo -e "\nCURRENT" >> bench-log
+{ 
+    time ./bin/arturo.exe ./tests/unittests/lib.comparison.art; 
+} 2>> bench-log
 
 git add bench-log
 git commit -m "[bench]: update benchmark's log"
