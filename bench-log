@@ -1,19 +1,17 @@
-commit 3ffc3675a643801b8337eca16b84ee49382574db
+commit 82ff23335307a63a6e93ab0cddea8869cfabf85f
 Author: RickBarretto <78623871+RickBarretto@users.noreply.github.com>
-Date:   Sat Dec 23 22:14:06 2023 -0300
+Date:   Sat Dec 23 22:14:46 2023 -0300
 
-    [bench]: modify custom temporary benchmarker
-    
-    Comparing using a reference instead
+    [bench]: update benchmark's log
 
 OLD
 
-real	0m1.791s
+real	0m1.875s
 user	0m0.000s
-sys	0m0.015s
+sys	0m0.000s
 
 CURRENT
 
-real	0m1.945s
-user	0m0.015s
+real	0m2.183s
+user	0m0.000s
 sys	0m0.000s
