@@ -1,17 +1,19 @@
-commit e7f3347057b028118825df09312065442419921d
+commit bd21c2a9114696d34efca40767ea55b7361fb9f5
 Author: RickBarretto <78623871+RickBarretto@users.noreply.github.com>
-Date:   Sat Dec 23 22:14:52 2023 -0300
+Date:   Sat Dec 23 22:28:31 2023 -0300
 
-    [bench]: update benchmark's log
+    [bench]: modify custom temporary benchmarker
+    
+    Run 50x per binary
 
 OLD
 
-real	0m1.780s
-user	0m0.000s
-sys	0m0.000s
+real	1m18.964s
+user	0m0.136s
+sys	0m0.075s
 
 CURRENT
 
-real	0m2.450s
-user	0m0.000s
-sys	0m0.000s
+real	1m21.691s
+user	0m0.030s
+sys	0m0.245s
