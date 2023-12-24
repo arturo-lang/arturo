@@ -20,8 +20,10 @@ when defined(WEB):
 when not defined(NOGMP):
     import helpers/bignums as BignumsHelper
 
-import vm/values/custom/[vcolor, vcomplex, vlogical, vquantity, vrange, vrational, vregex, vversion]
+import vm/values/types
 import vm/values/value
+
+import vm/values/custom/[vcolor, vcomplex, vlogical, vquantity, vrange, vrational, vregex, vversion]
 
 #=======================================
 # Constants
@@ -45,6 +47,12 @@ proc `==`*(x: ValueArray, y: ValueArray): bool {.inline, enforceNoRaises.} =
     for i,child in x:
         if not (child==y[i]): return false
     return true
+
+template toBig(v: untyped): untyped =
+    when defined(WEB):
+        big(v)
+    else:
+        v
 
 #=======================================
 # Methods
@@ -71,38 +79,36 @@ proc `==`*(x: Value, y: Value): bool =
     
     let pair = getValuePair()
     case pair:
-
-        of Integer      || Integer              :   return x.i==y.i
-        of Rational     || Rational             :   return x.rat==y.rat
-        of Floating     || Floating             :   return x.f==y.f
-        of Integer      || Rational             :   return toRational(x.i)==y.rat
-        of Quantity     || Quantity             :   return x.q==y.q
+        of Integer          || Integer          :   return x.i==y.i
+        of Rational         || Rational         :   return x.rat==y.rat
+        of Floating         || Floating         :   return x.f==y.f
+        of Integer          || Rational         :   return toRational(x.i)==y.rat
+        of Quantity         || Quantity         :   return x.q==y.q
         
-        of Integer      || Floating             :   return x.i==int(y.f)
-        of Integer      || Quantity             :   return x.i==y.q
+        of Integer          || Floating         :   return float(x.i)==y.f
+        of Integer          || Quantity         :   return x.i==y.q
      
-        of Rational     || Integer              :   return x.rat==toRational(y.i)
-        of Rational     || Floating             :   return x.rat==toRational(y.f)
+        of Rational         || Integer          :   return x.rat==toRational(y.i)
+        of Rational         || Floating         :   return x.rat==toRational(y.f)
         
-        of Floating     || Integer              :   return x.f==float(y.i)
-        of Floating     || Rational             :   return toRational(x.f)==y.rat
+        of Floating         || Integer          :   return x.f==float(y.i)
+        of Floating         || Rational         :   return toRational(x.f)==y.rat
         
-        of Quantity     || Integer              :   return x.q==y.i
-        of Quantity     || Floating             :   return x.q==y.f
-        of Quantity     || Rational             :   return x.q==y.rat
+        of Quantity         || Integer          :   return x.q==y.i
+        of Quantity         || Floating         :   return x.q==y.f
+        of Quantity         || Rational         :   return x.q==y.rat
         
-        when GMP:
-            of BigInteger   || BigInteger       :   return x.bi==y.bi
-           
-            of BigInteger   || Integer          :   return x.bi==big(y.i)
-            of BigInteger   || Rational         :   return x.bi==big(y.i)
-            of BigInteger   || Floating         :   return x.bi==big(y.i)
-            of BigInteger   || Quantity         :   return x.bi==y.q
+        of BigInteger       || BigInteger       :   (when GMP: return x.bi==y.bi)
+        
+        of BigInteger       || Integer          :   (when GMP: return x.bi==toBig(y.i))
+        of BigInteger       || Rational         :   return false
+        of BigInteger       || Floating         :   (when GMP: return x.bi==toBig(int(y.f)))
+        of BigInteger       || Quantity         :   (when GMP: return x.bi==y.q)
 
-            of Integer      || BigInteger       :   return big(x.i)==y.bi
-            of Rational     || BigInteger       :   return x.rat==toRational(y.bi)
-            of Floating     || BigInteger       :   return x.f==toFloat(y.bi)
-            of Quantity     || BigInteger       :   return x.q==y.bi
+        of Integer          || BigInteger       :   (when GMP: return toBig(x.i)==y.bi)
+        of Rational         || BigInteger       :   (when GMP: return x.rat==toRational(y.bi))
+        of Floating         || BigInteger       :   (when GMP: return toBig(int(x.f))==y.bi)
+        of Quantity         || BigInteger       :   (when GMP: return x.q==y.bi)
 
         of Error            || ErrorKind        :   return x.err.kind == y.errkind
         of ErrorKind        || Error            :   return x.errkind == y.err.kind
@@ -126,8 +132,6 @@ proc `==`*(x: Value, y: Value): bool =
             PathLiteral     || PathLiteral      :   return x.p == y.p
         of Symbol           || Symbol           :   return x.m == y.m
         of Regex            || Regex            :   return x.rx == y.rx
-        of Error            || Error            :   return x.err == y.err
-        of ErrorKind        || ErrorKind        :   return x.errkind == y.errkind
         of Binary           || Binary           :   return x.n == y.n
         of Bytecode         || Bytecode         :   return x.trans[] == y.trans[]
         of Inline           || Inline,
