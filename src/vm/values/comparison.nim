@@ -76,122 +76,133 @@ template toBig(v: untyped): untyped =
 #  labels: vm, values, enhancement, unit-test
 
 proc `==`*(x: Value, y: Value): bool =
-    
-    let pair = getValuePair()
-    case pair:
-        of Integer          || Integer          :   return x.i   == y.i
-        of Rational         || Rational         :   return x.rat == y.rat
-        of Floating         || Floating         :   return x.f   == y.f
-        of Quantity         || Quantity         :   return x.q   == y.q
-        
-        of Integer          || Floating         :   return float(x.i)      == y.f
-        of Integer          || Rational         :   return toRational(x.i) == y.rat
-        of Integer          || Quantity         :   return x.i             == y.q
-     
-        of Rational         || Integer          :   return x.rat == toRational(y.i)
-        of Rational         || Floating         :   return x.rat == toRational(y.f)
-        of Rational         || Quantity         :   return x.rat == y.q
-        
-        of Floating         || Integer          :   return x.f             == float(y.i)
-        of Floating         || Rational         :   return toRational(x.f) == y.rat
-        of Floating         || Quantity         :   return x.f             == y.q
-        
-        of Quantity         || Integer          :   return x.q == y.i
-        of Quantity         || Floating         :   return x.q == y.f
-        of Quantity         || Rational         :   return x.q == y.rat
-        
-        of BigInteger       || BigInteger       :   (when GMP: return x.bi == y.bi)
-        
-        of BigInteger       || Integer          :   (when GMP: return x.bi == toBig(y.i))
-        of BigInteger       || Rational         :   return false
-        of BigInteger       || Floating         :   (when GMP: return x.bi == toBig(int(y.f)))
-        of BigInteger       || Quantity         :   (when GMP: return x.bi == y.q)
+    const 
+        numericKinds = {Integer, Rational, Floating, Quantity}
+        errorKinds = {Error, ErrorKind}
+        numericOrErrorKinds = numericKinds + errorKinds
 
-        of Integer          || BigInteger       :   (when GMP: return toBig(x.i) == y.bi)
-        of Rational         || BigInteger       :   (when GMP: return x.rat == toRational(y.bi))
-        of Floating         || BigInteger       :   (when GMP: return toBig(int(x.f)) == y.bi)
-        of Quantity         || BigInteger       :   (when GMP: return x.q == y.bi)
+    if x.kind in numericOrErrorKinds or y.kind in numericOrErrorKinds:
+        let pair = getValuePair()
+        case pair:
+            of Integer    || Integer   : return x.i   == y.i
+            of Rational   || Rational  : return x.rat == y.rat
+            of Floating   || Floating  : return x.f   == y.f
+            of Quantity   || Quantity  : return x.q   == y.q
+            
+            of Integer    || Floating  : return float(x.i)      == y.f
+            of Integer    || Rational  : return toRational(x.i) == y.rat
+            of Integer    || Quantity  : return x.i             == y.q
+        
+            of Rational   || Integer   : return x.rat == toRational(y.i)
+            of Rational   || Floating  : return x.rat == toRational(y.f)
+            of Rational   || Quantity  : return x.rat == y.q
+            
+            of Floating   || Integer   : return x.f             == float(y.i)
+            of Floating   || Rational  : return toRational(x.f) == y.rat
+            of Floating   || Quantity  : return x.f             == y.q
+            
+            of Quantity   || Integer   : return x.q == y.i
+            of Quantity   || Floating  : return x.q == y.f
+            of Quantity   || Rational  : return x.q == y.rat
+            
+            of BigInteger || BigInteger: (when GMP: return x.bi == y.bi)
+            
+            of BigInteger || Integer   : (when GMP: return x.bi == toBig(y.i))
+            of BigInteger || Rational  : return false
+            of BigInteger || Floating  : (when GMP: return x.bi == toBig(int(y.f)))
+            of BigInteger || Quantity  : (when GMP: return x.bi == y.q)
 
-        of Error            || ErrorKind        :   return x.err.kind == y.errkind
-        of ErrorKind        || Error            :   return x.errkind  == y.err.kind
-        of Error            || Error            :   return x.err      == y.err
-        of ErrorKind        || ErrorKind        :   return x.errkind  == y.errkind
-    
-        of Null             || Null             :   return true
-        of Logical          || Logical          :   return x.b       == y.b
-        of Complex          || Complex          :   return x.z       == y.z
-        of Version          || Version          :   return x.version == y.version
-        of Type             || Type             :   return x.t       == y.t
-        of Char             || Char             :   return x.c       == y.c
-        of String           || String,
-            Word            || Word,
-            Label           || Label,
-            Literal         || Literal,
-            Attribute       || Attribute,
-            AttributeLabel  || AttributeLabel   :   return x.s == y.s
-        of Path             || Path,
-            PathLabel       || PathLabel,
-            PathLiteral     || PathLiteral      :   return x.p       == y.p
-        of Symbol           || Symbol           :   return x.m       == y.m
-        of Regex            || Regex            :   return x.rx      == y.rx
-        of Binary           || Binary           :   return x.n       == y.n
-        of Bytecode         || Bytecode         :   return x.trans[] == y.trans[]
-        of Inline           || Inline,
-            Block           || Block            :
+            of Integer    || BigInteger: (when GMP: return toBig(x.i) == y.bi)
+            of Rational   || BigInteger: (when GMP: return x.rat == toRational(y.bi))
+            of Floating   || BigInteger: (when GMP: return toBig(int(x.f)) == y.bi)
+            of Quantity   || BigInteger: (when GMP: return x.q == y.bi)
+
+            of Error      || ErrorKind : return x.err.kind == y.errkind
+            of ErrorKind  || Error     : return x.errkind  == y.err.kind
+            else:
+                if x.kind != y.kind:
+                    return false
+
+    case x.kind:
+        of Error:   
+            return x.err == y.err
+        of ErrorKind:   
+            return x.errkind == y.errkind
+        of Null:   
+            return true
+        of Logical:   
+            return x.b == y.b
+        of Complex:   
+            return x.z == y.z
+        of Version:   
+            return x.version == y.version
+        of Type:   
+            return x.t == y.t
+        of Char:   
+            return x.c == y.c
+        of String, Word, Label, Literal, Attribute, AttributeLabel:
+            return x.s == y.s
+        of Path, PathLabel, PathLiteral:
+            return x.p == y.p
+        of Symbol:
+            return x.m == y.m
+        of Regex:
+            return x.rx == y.rx
+        of Binary:
+            return x.n == y.n
+        of Bytecode:
+            return x.trans[] == y.trans[]
+        of Inline, Block:
             if x.a.len != y.a.len: 
                 return false
-
             for i, child in x.a:
                 if child != y.a[i]: 
                     return false
-
             return true
-
-        of Range            || Range            :   return x.rng == y.rng
-        of Dictionary       || Dictionary:
+        of Range:   
+            return x.rng == y.rng
+        of Dictionary:
             if x.d.len != y.d.len: 
                 return false
-
             for k, v in pairs(x.d):
                 if not y.d.hasKey(k): 
                     return false
                 if v != y.d[k]: 
                     return false
-
             return true
-
-        of Unit             || Unit             :   return x.u == y.u
-        of Object           || Object           :
+        of Unit:   
+            return x.u == y.u
+        of Object:
             if not x.proto.methods.getOrDefault("compare", nil).isNil:
                 return x.proto.doCompare(x,y) == 0
-            else:
-                if x.o.len != y.o.len: 
+            if x.o.len != y.o.len: 
+                return false
+            for k,v in pairs(x.o):
+                if not y.o.hasKey(k): 
                     return false
-
-                for k,v in pairs(x.o):
-                    if not y.o.hasKey(k): 
-                        return false
-                    if not (v == y.o[k]): 
-                        return false
-
-                return true
-
-        of Store            || Store            :   return x.sto.path == y.sto.path and x.sto.kind == y.sto.kind
-        of Color            || Color            :   return x.l == y.l
-        of Function         || Function         :
+                if not (v == y.o[k]): 
+                    return false
+            return true
+        of Store:   
+            return x.sto.path == y.sto.path and x.sto.kind == y.sto.kind
+        of Color:   
+            return x.l == y.l
+        of Function:
             if x.fnKind==UserFunction:
                 return x.params == y.params and x.main == y.main and x.exports == y.exports
             else:
                 return x.action == y.action
-        of Database         || Database         :
+        of Database:
             if x.dbKind != y.dbKind: 
                 return false
             when not defined(NOSQLITE):
                 if x.dbKind==SqliteDatabase: 
                     return cast[uint](x.sqlitedb) == cast[uint](y.sqlitedb)
                 #elif x.dbKind==MysqlDatabase: return cast[uint](x.mysqldb) == cast[uint](y.mysqldb)
-        of Date             || Date             :   return x.eobj[] == y.eobj[]
-        else                                    :   return false
+        of Date:
+            return x.eobj[] == y.eobj[]
+        else:   
+            return false
 
 # TODO(VM/values/comparison) how should we handle Dictionary values?
 #  right now, both `<` and `>` simply return false
@@ -267,135 +278,160 @@ proc `==`*(x: Value, y: Value): bool =
 #  labels: enhancement,values,open discussion,unit-test
 
 proc `<`*(x: Value, y: Value): bool {.inline.}=
-    let pair = getValuePair()
+    const numericKinds = {Integer, Rational, Floating, Quantity}
 
-    case pair:
-        of Integer          || Integer          :   return x.i   < y.i
-        of Rational         || Rational         :   return x.rat < y.rat
-        of Floating         || Floating         :   return x.f   < y.f
-        of Quantity         || Quantity         :   return x.q   < y.q
+    if x.kind in numericKinds or y.kind in numericKinds:
+        let pair = getValuePair()
+        case pair:
+            of Integer    || Integer   :   return x.i   < y.i
+            of Rational   || Rational  :   return x.rat < y.rat
+            of Floating   || Floating  :   return x.f   < y.f
+            of Quantity   || Quantity  :   return x.q   < y.q
+            
+            of Integer    || Floating  :   return float(x.i)      < y.f
+            of Integer    || Rational  :   return toRational(x.i) < y.rat
+            of Integer    || Quantity  :   return x.i             < y.q
         
-        of Integer          || Floating         :   return float(x.i)      < y.f
-        of Integer          || Rational         :   return toRational(x.i) < y.rat
-        of Integer          || Quantity         :   return x.i             < y.q
-     
-        of Rational         || Integer          :   return x.rat < toRational(y.i)
-        of Rational         || Floating         :   return x.rat < toRational(y.f)
-        of Rational         || Quantity         :   return x.rat < y.q
-        
-        of Floating         || Integer          :   return x.f             < float(y.i)
-        of Floating         || Rational         :   return toRational(x.f) < y.rat
-        of Floating         || Quantity         :   return x.f             < y.q
-        
-        of Quantity         || Integer          :   return x.q < y.i
-        of Quantity         || Floating         :   return x.q < y.f
-        of Quantity         || Rational         :   return x.q < y.rat
-        
-        of BigInteger       || BigInteger       :   (when GMP: return x.bi < y.bi)
-        
-        of BigInteger       || Integer          :   (when GMP: return x.bi < toBig(y.i))
-        of BigInteger       || Rational         :   return false
-        of BigInteger       || Floating         :   (when GMP: return x.bi < toBig(int(y.f)))
-        of BigInteger       || Quantity         :   (when GMP: return x.bi < y.q)
+            of Rational   || Integer   :   return x.rat < toRational(y.i)
+            of Rational   || Floating  :   return x.rat < toRational(y.f)
+            of Rational   || Quantity  :   return x.rat < y.q
+            
+            of Floating   || Integer   :   return x.f             < float(y.i)
+            of Floating   || Rational  :   return toRational(x.f) < y.rat
+            of Floating   || Quantity  :   return x.f             < y.q
+            
+            of Quantity   || Integer   :   return x.q < y.i
+            of Quantity   || Floating  :   return x.q < y.f
+            of Quantity   || Rational  :   return x.q < y.rat
+            
+            of BigInteger || BigInteger:   (when GMP: return x.bi < y.bi)
+            
+            of BigInteger || Integer   :   (when GMP: return x.bi < toBig(y.i))
+            of BigInteger || Rational  :   return false
+            of BigInteger || Floating  :   (when GMP: return x.bi < toBig(int(y.f)))
+            of BigInteger || Quantity  :   (when GMP: return x.bi < y.q)
 
-        of Integer          || BigInteger       :   (when GMP: return toBig(x.i)      < y.bi)
-        of Rational         || BigInteger       :   (when GMP: return x.rat           < toRational(y.bi))
-        of Floating         || BigInteger       :   (when GMP: return toBig(int(x.f)) < y.bi)
-        of Quantity         || BigInteger       :   (when GMP: return x.q             < y.bi)
+            of Integer    || BigInteger:   (when GMP: return toBig(x.i)      < y.bi)
+            of Rational   || BigInteger:   (when GMP: return x.rat           < toRational(y.bi))
+            of Floating   || BigInteger:   (when GMP: return toBig(int(x.f)) < y.bi)
+            of Quantity   || BigInteger:   (when GMP: return x.q             < y.bi)
+            else:
+                if x.kind != y.kind:
+                    return false
 
-        of Null             || Null             : return false
-        of Logical          || Logical          : return false
-        of Complex          || Complex          :
+    case x.kind:
+        of Null: 
+            return false
+        of Logical: 
+            return false
+        of Complex:
             if x.z.re == y.z.re:
                 return x.z.im < y.z.im
             else:
                 return x.z.re < y.z.re
-        of Version          || Version          : return x.version < y.version
-        of Type             || Type             : return false
-        of Char             || Char             : return $(x.c) < $(y.c)
-        of String           || String,
-            Word            || Word,
-            Label           || Label,
-            Literal         || Literal,
-            Attribute       || Attribute,
-            AttributeLabel  || AttributeLabel   : return x.s < y.s
-        of Symbol           || Symbol           : return false
-        of Inline           || Inline,
-            Block           || Block            : return x.a.len < y.a.len
-        of Dictionary       || Dictionary       : return false
-        of Unit             || Unit             : return false
-        of Object           || Object:
+        of Version: 
+            return x.version < y.version
+        of Type: 
+            return false
+        of Char: 
+            return $(x.c) < $(y.c)
+        of String, Word, Label, Literal, Attribute, AttributeLabel: 
+            return x.s < y.s
+        of Symbol: 
+            return false
+        of Inline, Block: 
+            return x.a.len < y.a.len
+        of Dictionary: 
+            return false
+        of Unit: 
+            return false
+        of Object:
             if not x.proto.methods.getOrDefault("compare", nil).isNil:
                 return x.proto.doCompare(x, y) == -1
             else:
                 return false
-        of Date             || Date             : return x.eobj[] < y.eobj[]
-        else                                    : return false
+        of Date: 
+            return x.eobj[] < y.eobj[]
+        else: 
+            return false
 
 proc `>`*(x: Value, y: Value): bool {.inline.}=
-    let pair = getValuePair()
-    case pair:
-        of Integer          || Integer          :   return x.i   > y.i
-        of Rational         || Rational         :   return x.rat > y.rat
-        of Floating         || Floating         :   return x.f   > y.f
-        of Quantity         || Quantity         :   return x.q   > y.q
-        
-        of Integer          || Floating         :   return float(x.i)      > y.f
-        of Integer          || Rational         :   return toRational(x.i) > y.rat
-        of Integer          || Quantity         :   return x.i             > y.q
-     
-        of Rational         || Integer          :   return x.rat > toRational(y.i)
-        of Rational         || Floating         :   return x.rat > toRational(y.f)
-        of Rational         || Quantity         :   return x.rat > y.q
-        
-        of Floating         || Integer          :   return x.f             > float(y.i)
-        of Floating         || Rational         :   return toRational(x.f) > y.rat
-        of Floating         || Quantity         :   return x.f             > y.q
-        
-        of Quantity         || Integer          :   return x.q > y.i
-        of Quantity         || Floating         :   return x.q > y.f
-        of Quantity         || Rational         :   return x.q > y.rat
-        
-        of BigInteger       || BigInteger       :   (when GMP: return x.bi > y.bi)
-        
-        of BigInteger       || Integer          :   (when GMP: return x.bi > toBig(y.i))
-        of BigInteger       || Rational         :   return false
-        of BigInteger       || Floating         :   (when GMP: return x.bi > toBig(int(y.f)))
-        of BigInteger       || Quantity         :   (when GMP: return x.bi > y.q)
+    const numericKinds = {Integer, Rational, Floating, Quantity}
 
-        of Integer          || BigInteger       :   (when GMP: return toBig(x.i)      > y.bi)
-        of Rational         || BigInteger       :   (when GMP: return x.rat           > toRational(y.bi))
-        of Floating         || BigInteger       :   (when GMP: return toBig(int(x.f)) > y.bi)
-        of Quantity         || BigInteger       :   (when GMP: return x.q             > y.bi)
+    if x.kind in numericKinds or y.kind in numericKinds:
+        let pair = getValuePair()
+        case pair:
+            of Integer    || Integer   :   return x.i   > y.i
+            of Rational   || Rational  :   return x.rat > y.rat
+            of Floating   || Floating  :   return x.f   > y.f
+            of Quantity   || Quantity  :   return x.q   > y.q
+            
+            of Integer    || Floating  :   return float(x.i)      > y.f
+            of Integer    || Rational  :   return toRational(x.i) > y.rat
+            of Integer    || Quantity  :   return x.i             > y.q
+        
+            of Rational   || Integer   :   return x.rat > toRational(y.i)
+            of Rational   || Floating  :   return x.rat > toRational(y.f)
+            of Rational   || Quantity  :   return x.rat > y.q
+            
+            of Floating   || Integer   :   return x.f             > float(y.i)
+            of Floating   || Rational  :   return toRational(x.f) > y.rat
+            of Floating   || Quantity  :   return x.f             > y.q
+            
+            of Quantity   || Integer   :   return x.q > y.i
+            of Quantity   || Floating  :   return x.q > y.f
+            of Quantity   || Rational  :   return x.q > y.rat
+            
+            of BigInteger || BigInteger:   (when GMP: return x.bi > y.bi)
+            
+            of BigInteger || Integer   :   (when GMP: return x.bi > toBig(y.i))
+            of BigInteger || Rational  :   return false
+            of BigInteger || Floating  :   (when GMP: return x.bi > toBig(int(y.f)))
+            of BigInteger || Quantity  :   (when GMP: return x.bi > y.q)
 
-        of Null             || Null             :   return false
-        of Logical          || Logical          :   return false
-        of Complex          || Complex          :
+            of Integer    || BigInteger:   (when GMP: return toBig(x.i)      > y.bi)
+            of Rational   || BigInteger:   (when GMP: return x.rat           > toRational(y.bi))
+            of Floating   || BigInteger:   (when GMP: return toBig(int(x.f)) > y.bi)
+            of Quantity   || BigInteger:   (when GMP: return x.q             > y.bi)
+            else:
+                if x.kind != y.kind:
+                    return false
+
+    case x.kind:
+        of Null:   
+            return false
+        of Logical:   
+            return false
+        of Complex:
             if x.z.re == y.z.re:
                 return x.z.im > y.z.im
             else:
                 return x.z.re > y.z.re
-        of Version          || Version          :   return x.version > y.version
-        of Type             || Type             :   return false
-        of Char             || Char             :   return $(x.c) > $(y.c)
-        of String           || String,
-            Word            || Word,
-            Label           || Label,
-            Literal         || Literal,
-            Attribute       || Attribute,
-            AttributeLabel  || AttributeLabel   :   return x.s > y.s
-        of Symbol           || Symbol           :   return false
-        of Inline           || Inline,
-            Block           || Block            :   return x.a.len > y.a.len
-        of Dictionary       || Dictionary       :   return false
-        of Unit             || Unit             :   return false
-        of Object           || Object:
+        of Version:   
+            return x.version > y.version
+        of Type:   
+            return false
+        of Char:   
+            return $(x.c) > $(y.c)
+        of String, Word, Label, Literal, Attribute, AttributeLabel:   
+            return x.s > y.s
+        of Symbol:   
+            return false
+        of Inline, Block:   
+            return x.a.len > y.a.len
+        of Dictionary:   
+            return false
+        of Unit:   
+            return false
+        of Object:
             if not x.proto.methods.getOrDefault("compare", nil).isNil:
                 return x.proto.doCompare(x, y) == 1
             else:
                 return false
-        of Date             || Date             :   return x.eobj[] > y.eobj[]
-        else                                    :   return false
+        of Date:   
+            return x.eobj[] > y.eobj[]
+        else:   
+            return false
 
 proc `<=`*(x: Value, y: Value): bool {.inline.}=
     x < y or x == y
