@@ -1,17 +1,17 @@
-commit 2eace1050dced7ce54c9f28b9b99901f3edcd51c
+commit be8aaf74aba9443a2eaef44ae9afc0a2ec68ee7e
 Author: RickBarretto <78623871+RickBarretto@users.noreply.github.com>
-Date:   Sun Dec 24 00:02:22 2023 -0300
+Date:   Sun Dec 24 17:18:16 2023 -0300
 
-    [VM\values\comparison]: minor fix
+    [VM\values\comparison]: use `getValuePair` for non numeric types for `<`
 
 OLD
 
-real	1m11.236s
-user	0m0.030s
-sys	0m0.136s
+real	1m42.013s
+user	0m0.075s
+sys	0m0.106s
 
 CURRENT
 
-real	1m16.390s
-user	0m0.000s
-sys	0m0.107s
+real	1m41.344s
+user	0m0.046s
+sys	0m0.228s
