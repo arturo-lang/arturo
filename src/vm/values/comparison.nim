@@ -147,7 +147,7 @@ proc `==`*(x: Value, y: Value): bool =
                 return x.q == y.q
         else:
             return false
-        
+
     elif x.kind in {Error, ErrorKind} and y.kind in {Error, ErrorKind}:
         case pair
         of Error || ErrorKind:
@@ -160,82 +160,85 @@ proc `==`*(x: Value, y: Value): bool =
             return x.errkind == y.errkind
         else:
             return false
+    else:
+        if x.kind != y.kind: 
+            return false
 
-        case x.kind:
-            of Null: return true
-            of Logical: return x.b == y.b
-            of Complex: return x.z == y.z
-            of Version:
-                return x.version == y.version
-            of Type: return x.t == y.t
-            of Char: return x.c == y.c
-            of String,
-               Word,
-               Label,
-               Literal,
-               Attribute,
-               AttributeLabel: return x.s == y.s
-            of Path,
-               PathLabel,
-               PathLiteral: return x.p == y.p
-            of Symbol: return x.m == y.m
-            of Regex: return x.rx == y.rx
-            of Error: return x.err == y.err
-            of ErrorKind: return x.errkind == y.errkind
-            of Binary: return x.n == y.n
-            of Bytecode: return x.trans[] == y.trans[]
-            of Inline,
-               Block:
+        case pair
+        of Null || Null: return true
+        of Logical || Logical: return x.b == y.b
+        of Complex || Complex: return x.z == y.z
+        of Version || Version:
+            return x.version == y.version
+        of Type || Type: return x.t == y.t
+        of Char || Char: return x.c == y.c
+        of String || String,
+            Word || Word,
+            Label || Label,
+            Literal || Literal,
+            Attribute || Attribute,
+            AttributeLabel || AttributeLabel: return x.s == y.s
+        of Path || Path,
+            PathLabel || PathLabel,
+            PathLiteral || PathLiteral: return x.p == y.p
+        of Symbol || Symbol: return x.m == y.m
+        of Regex || Regex: return x.rx == y.rx
+        of Error || Error: return x.err == y.err
+        of ErrorKind || ErrorKind: return x.errkind == y.errkind
+        of Binary || Binary: return x.n == y.n
+        of Bytecode || Bytecode: return x.trans[] == y.trans[]
+        of Inline || Inline,
+            Block || Block:
 
-                if x.a.len != y.a.len: return false
+            if x.a.len != y.a.len: return false
 
-                for i,child in x.a:
-                    if not (child==y.a[i]): return false
+            for i,child in x.a:
+                if not (child==y.a[i]): return false
 
-                return true
+            return true
 
-            of Range:
-                return x.rng == y.rng
+        of Range || Range:
+            return x.rng == y.rng
 
-            of Dictionary:
-                if x.d.len != y.d.len: return false
+        of Dictionary || Dictionary:
+            if x.d.len != y.d.len: return false
 
-                for k,v in pairs(x.d):
-                    if not y.d.hasKey(k): return false
-                    if not (v==y.d[k]): return false
+            for k,v in pairs(x.d):
+                if not y.d.hasKey(k): return false
+                if not (v==y.d[k]): return false
 
-                return true
-            of Unit:
-                return x.u == y.u
-            of Object:
-                if (let compareMethod = x.proto.methods.getOrDefault("compare", nil); not compareMethod.isNil):
-                    return x.proto.doCompare(x,y) == 0
-                else:
-                    if x.o.len != y.o.len: return false
-
-                    for k,v in pairs(x.o):
-                        if not y.o.hasKey(k): return false
-                        if not (v==y.o[k]): return false
-
-                    return true
-            of Store:
-                return x.sto.path == y.sto.path and x.sto.kind == y.sto.kind
-            of Color:
-                return x.l == y.l
-            of Function:
-                if x.fnKind==UserFunction:
-                    return x.params == y.params and x.main == y.main and x.exports == y.exports
-                else:
-                    return x.action == y.action
-            of Database:
-                if x.dbKind != y.dbKind: return false
-                when not defined(NOSQLITE):
-                    if x.dbKind==SqliteDatabase: return cast[uint](x.sqlitedb) == cast[uint](y.sqlitedb)
-                    #elif x.dbKind==MysqlDatabase: return cast[uint](x.mysqldb) == cast[uint](y.mysqldb)
-            of Date:
-                return x.eobj[] == y.eobj[]
+            return true
+        of Unit || Unit:
+            return x.u == y.u
+        of Object || Object:
+            if (let compareMethod = x.proto.methods.getOrDefault("compare", nil); not compareMethod.isNil):
+                return x.proto.doCompare(x,y) == 0
             else:
-                return false
+                if x.o.len != y.o.len: return false
+
+                for k,v in pairs(x.o):
+                    if not y.o.hasKey(k): return false
+                    if not (v==y.o[k]): return false
+
+                return true
+        of Store || Store:
+            return x.sto.path == y.sto.path and x.sto.kind == y.sto.kind
+        of Color || Color:
+            return x.l == y.l
+        of Function || Function:
+            if x.fnKind==UserFunction:
+                return x.params == y.params and x.main == y.main and x.exports == y.exports
+            else:
+                return x.action == y.action
+        of Database || Database:
+            if x.dbKind != y.dbKind: return false
+            when not defined(NOSQLITE):
+                if x.dbKind==SqliteDatabase: return cast[uint](x.sqlitedb) == cast[uint](y.sqlitedb)
+                #elif x.dbKind==MysqlDatabase: return cast[uint](x.mysqldb) == cast[uint](y.mysqldb)
+        of Date || Date:
+            return x.eobj[] == y.eobj[]
+        else:
+            return false
 
 # TODO(VM/values/comparison) how should we handle Dictionary values?
 #  right now, both `<` and `>` simply return false
