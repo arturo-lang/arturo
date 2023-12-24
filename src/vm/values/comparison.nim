@@ -333,116 +333,69 @@ proc `<`*(x: Value, y: Value): bool {.inline.}=
         else                                    : return false
 
 proc `>`*(x: Value, y: Value): bool {.inline.}=
-    if x.kind in {Integer, Floating, Rational} and y.kind in {Integer, Floating, Rational}:
-        if x.kind==Integer:
-            if y.kind==Integer: 
-                if likely(x.iKind==NormalInteger and y.iKind==NormalInteger):
-                    return x.i>y.i
-                elif x.iKind==NormalInteger and y.iKind==BigInteger:
-                    when defined(WEB):
-                        return big(x.i)>y.bi
-                    elif not defined(NOGMP):
-                        return x.i>y.bi
-                elif x.iKind==BigInteger and y.iKind==NormalInteger:
-                    when defined(WEB):
-                        return x.bi>big(y.i)
-                    elif not defined(NOGMP):
-                        return x.bi>y.i
-                else:
-                    when defined(WEB) or not defined(NOGMP):
-                        return x.bi>y.bi
-            elif y.kind==Rational:
-                return cmp(toRational(x.i), y.rat) > 0
-            else: 
-                if x.iKind==NormalInteger:
-                    return float(x.i)>y.f
-                else:
-                    when defined(WEB):
-                        return x.bi>big(int(y.f))
-                    elif not defined(NOGMP):
-                        return (x.bi)>int(y.f)
-        elif x.kind==Rational:
-            if y.kind==Integer:
-                if likely(y.iKind==NormalInteger):
-                    return cmp(x.rat,toRational(y.i))>0
-                else:
-                    return false
-            elif y.kind==Rational:
-                return cmp(x.rat,y.rat)>0
+    let pair = getValuePair()
+    case pair:
+        of Integer          || Integer          :   return x.i   > y.i
+        of Rational         || Rational         :   return x.rat > y.rat
+        of Floating         || Floating         :   return x.f   > y.f
+        of Quantity         || Quantity         :   return x.q   > y.q
+        
+        of Integer          || Floating         :   return float(x.i)      > y.f
+        of Integer          || Rational         :   return toRational(x.i) > y.rat
+        of Integer          || Quantity         :   return x.i             > y.q
+     
+        of Rational         || Integer          :   return x.rat > toRational(y.i)
+        of Rational         || Floating         :   return x.rat > toRational(y.f)
+        of Rational         || Quantity         :   return x.rat > y.q
+        
+        of Floating         || Integer          :   return x.f             > float(y.i)
+        of Floating         || Rational         :   return toRational(x.f) > y.rat
+        of Floating         || Quantity         :   return x.f             > y.q
+        
+        of Quantity         || Integer          :   return x.q > y.i
+        of Quantity         || Floating         :   return x.q > y.f
+        of Quantity         || Rational         :   return x.q > y.rat
+        
+        of BigInteger       || BigInteger       :   (when GMP: return x.bi > y.bi)
+        
+        of BigInteger       || Integer          :   (when GMP: return x.bi > toBig(y.i))
+        of BigInteger       || Rational         :   return false
+        of BigInteger       || Floating         :   (when GMP: return x.bi > toBig(int(y.f)))
+        of BigInteger       || Quantity         :   (when GMP: return x.bi > y.q)
+
+        of Integer          || BigInteger       :   (when GMP: return toBig(x.i)      > y.bi)
+        of Rational         || BigInteger       :   (when GMP: return x.rat           > toRational(y.bi))
+        of Floating         || BigInteger       :   (when GMP: return toBig(int(x.f)) > y.bi)
+        of Quantity         || BigInteger       :   (when GMP: return x.q             > y.bi)
+
+        of Null             || Null             :   return false
+        of Logical          || Logical          :   return false
+        of Complex          || Complex          :
+            if x.z.re == y.z.re:
+                return x.z.im > y.z.im
             else:
-                return cmp(x.rat,toRational(y.f))>0
-        else:
-            if y.kind==Integer: 
-                if likely(y.iKind==NormalInteger):
-                    return x.f>float(y.i)
-                else:
-                    when defined(WEB):
-                        return big(int(x.f))>y.bi
-                    elif not defined(NOGMP):
-                        return int(x.f)>y.bi   
-            elif y.kind==Rational:
-                return cmp(toRational(x.f), y.rat) > 0     
-            else: return x.f>y.f
-    elif x.kind == Quantity or y.kind == Quantity:
-        if y.kind == Integer:
-            if y.iKind == NormalInteger:
-                return x.q > y.i
-            else:
-                when not defined(NOGMP):
-                    return x.q > y.bi
-        elif y.kind == Floating:
-            return x.q > y.f
-        elif y.kind == Rational:
-            return x.q > y.rat
-        elif y.kind == Quantity:
-            if x.kind == Integer:
-                if x.iKind == NormalInteger:
-                    return x.i > y.q
-                else:
-                    when not defined(NOGMP):
-                        return x.bi > y.q
-            elif x.kind == Floating:
-                return x.f > y.q
-            elif x.kind == Rational:
-                return x.rat > y.q
-            else:
-                return x.q > y.q
-    else:
-        if x.kind != y.kind: return false
-        case x.kind:
-            of Null: return false
-            of Logical: return false
-            of Complex:
-                if x.z.re == y.z.re:
-                    return x.z.im > y.z.im
-                else:
-                    return x.z.re > y.z.re
-            of Version: return x.version > y.version
-            of Type: return false
-            of Char: return $(x.c) > $(y.c)
-            of String,
-               Word,
-               Label,
-               Literal,
-               Attribute,
-               AttributeLabel: return x.s > y.s
-            of Symbol: return false
-            of Inline,
-               Block:
-                return x.a.len > y.a.len
-            of Dictionary:
-                return false
-            of Unit:
-                return false
-            of Object:
-                if (let compareMethod = x.proto.methods.getOrDefault("compare", nil); not compareMethod.isNil):
-                    return x.proto.doCompare(x,y) == 1
-                else:
-                    return false
-            of Date:
-                return x.eobj[] > y.eobj[]
+                return x.z.re > y.z.re
+        of Version          || Version          :   return x.version > y.version
+        of Type             || Type             :   return false
+        of Char             || Char             :   return $(x.c) > $(y.c)
+        of String           || String,
+            Word            || Word,
+            Label           || Label,
+            Literal         || Literal,
+            Attribute       || Attribute,
+            AttributeLabel  || AttributeLabel   :   return x.s > y.s
+        of Symbol           || Symbol           :   return false
+        of Inline           || Inline,
+            Block           || Block            :   return x.a.len > y.a.len
+        of Dictionary       || Dictionary       :   return false
+        of Unit             || Unit             :   return false
+        of Object           || Object:
+            if not x.proto.methods.getOrDefault("compare", nil).isNil:
+                return x.proto.doCompare(x, y) == 1
             else:
                 return false
+        of Date             || Date             :   return x.eobj[] > y.eobj[]
+        else                                    :   return false
 
 proc `<=`*(x: Value, y: Value): bool {.inline.}=
     x < y or x == y
