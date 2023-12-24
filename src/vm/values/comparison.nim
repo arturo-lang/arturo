@@ -82,17 +82,19 @@ proc `==`*(x: Value, y: Value): bool =
         of Integer          || Integer          :   return x.i==y.i
         of Rational         || Rational         :   return x.rat==y.rat
         of Floating         || Floating         :   return x.f==y.f
-        of Integer          || Rational         :   return toRational(x.i)==y.rat
         of Quantity         || Quantity         :   return x.q==y.q
         
         of Integer          || Floating         :   return float(x.i)==y.f
+        of Integer          || Rational         :   return toRational(x.i)==y.rat
         of Integer          || Quantity         :   return x.i==y.q
      
         of Rational         || Integer          :   return x.rat==toRational(y.i)
         of Rational         || Floating         :   return x.rat==toRational(y.f)
+        of Rational         || Quantity         :   return x.rat==y.q
         
         of Floating         || Integer          :   return x.f==float(y.i)
         of Floating         || Rational         :   return toRational(x.f)==y.rat
+        of Floating         || Quantity         :   return x.f==y.q
         
         of Quantity         || Integer          :   return x.q==y.i
         of Quantity         || Floating         :   return x.q==y.f
