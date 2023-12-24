@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+./build.nims --log 
 git log -n 1 --pretty=medium > bench-log
 
 echo -e "\nOLD" >> bench-log
