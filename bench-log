@@ -1,17 +1,17 @@
-commit 8fa3d1bb743fd10de0302d9b2cc29ba1430f4b4d
+commit 1ec6347477e5e646aae23a1e677862705c5f447b
 Author: RickBarretto <78623871+RickBarretto@users.noreply.github.com>
-Date:   Sun Dec 24 17:39:55 2023 -0300
+Date:   Sun Dec 24 18:51:12 2023 -0300
 
-    [bench]: up the amount of samples to 250
+    [VM\values\comparison]: minor fix
 
 OLD
 
-real	9m24.590s
-user	0m0.362s
-sys	0m0.973s
+real	9m2.314s
+user	0m0.332s
+sys	0m0.809s
 
 CURRENT
 
-real	8m52.531s
-user	0m0.454s
-sys	0m0.955s
+real	8m35.180s
+user	0m0.181s
+sys	0m0.842s
