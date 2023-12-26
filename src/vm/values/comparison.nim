@@ -20,8 +20,17 @@ when defined(WEB):
 when not defined(NOGMP):
     import helpers/bignums as BignumsHelper
 
-import vm/values/custom/[vcolor, vcomplex, vlogical, vquantity, vrange, vrational, vregex, vversion]
+import vm/values/types
 import vm/values/value
+
+import vm/values/custom/[vcolor, vcomplex, vlogical, vquantity, vrange, vrational, vregex, vversion]
+
+#=======================================
+# Constants
+#=======================================
+
+const
+    GMP = not defined(NOGMP)
 
 #=======================================
 # Forward declarations
@@ -38,6 +47,12 @@ proc `==`*(x: ValueArray, y: ValueArray): bool {.inline, enforceNoRaises.} =
     for i,child in x:
         if not (child==y[i]): return false
     return true
+
+template toBig(v: untyped): untyped =
+    when defined(WEB):
+        big(v)
+    else:
+        v
 
 #=======================================
 # Methods
@@ -61,167 +76,135 @@ proc `==`*(x: ValueArray, y: ValueArray): bool {.inline, enforceNoRaises.} =
 #  labels: vm, values, enhancement, unit-test
 
 proc `==`*(x: Value, y: Value): bool =
-    if x.kind in {Integer, Floating, Rational} and y.kind in {Integer, Floating, Rational}:
-        if x.kind==Integer:
-            if y.kind==Integer: 
-                if likely(x.iKind==NormalInteger and y.iKind==NormalInteger):
-                    return x.i==y.i
-                elif x.iKind==NormalInteger and y.iKind==BigInteger:
-                    when defined(WEB):
-                        return big(x.i)==y.bi
-                    elif not defined(NOGMP):
-                        return x.i==y.bi
-                elif x.iKind==BigInteger and y.iKind==NormalInteger:
-                    when defined(WEB):
-                        return x.bi==big(y.i)
-                    elif not defined(NOGMP):
-                        return x.bi==y.i
-                else:
-                    when defined(WEB) or not defined(NOGMP):
-                        return x.bi==y.bi
-            elif y.kind==Rational:
-                if likely(x.iKind==NormalInteger):
-                    return toRational(x.i)==y.rat
-                else:
-                    return false
-            else: 
-                if x.iKind==NormalInteger:
-                    return float(x.i)==y.f
-                else:
-                    when defined(WEB):
-                        return x.bi==big(int(y.f))
-                    elif not defined(NOGMP):
-                        return (x.bi)==int(y.f)
-        elif x.kind==Rational:
-            if y.kind==Integer:
-                if likely(y.iKind==NormalInteger):
-                    return x.rat == toRational(y.i)
-                else:
-                    return false
-            elif y.kind==Rational:
-                return x.rat == y.rat
+    const 
+        numericKinds = {Integer, Rational, Floating, Quantity}
+        errorKinds = {Error, ErrorKind}
+        numericOrErrorKinds = numericKinds + errorKinds
+
+    if x.kind in numericOrErrorKinds or y.kind in numericOrErrorKinds:
+        let pair = getValuePair()
+        case pair:
+            of Integer    || Integer   : return x.i   == y.i
+            of Rational   || Rational  : return x.rat == y.rat
+            of Floating   || Floating  : return x.f   == y.f
+            of Quantity   || Quantity  : return x.q   == y.q
+            
+            of Integer    || Floating  : return float(x.i)      == y.f
+            of Integer    || Rational  : return toRational(x.i) == y.rat
+            of Integer    || Quantity  : return x.i             == y.q
+        
+            of Rational   || Integer   : return x.rat == toRational(y.i)
+            of Rational   || Floating  : return x.rat == toRational(y.f)
+            of Rational   || Quantity  : return x.rat == y.q
+            
+            of Floating   || Integer   : return x.f             == float(y.i)
+            of Floating   || Rational  : return toRational(x.f) == y.rat
+            of Floating   || Quantity  : return x.f             == y.q
+            
+            of Quantity   || Integer   : return x.q == y.i
+            of Quantity   || Floating  : return x.q == y.f
+            of Quantity   || Rational  : return x.q == y.rat
+            
+            of BigInteger || BigInteger: (when GMP: return x.bi == y.bi)
+            
+            of BigInteger || Integer   : (when GMP: return x.bi == toBig(y.i))
+            of BigInteger || Rational  : return false
+            of BigInteger || Floating  : (when GMP: return x.bi == toBig(int(y.f)))
+            of BigInteger || Quantity  : (when GMP: return x.bi == y.q)
+
+            of Integer    || BigInteger: (when GMP: return toBig(x.i) == y.bi)
+            of Rational   || BigInteger: (when GMP: return x.rat == toRational(y.bi))
+            of Floating   || BigInteger: (when GMP: return toBig(int(x.f)) == y.bi)
+            of Quantity   || BigInteger: (when GMP: return x.q == y.bi)
+
+            of Error      || ErrorKind : return x.err.kind == y.errkind
+            of ErrorKind  || Error     : return x.errkind  == y.err.kind
             else:
-                return x.rat == toRational(y.f)
-        else:
-            if y.kind==Integer: 
-                if y.iKind==NormalInteger:
-                    return x.f==float(y.i)
-                else:
-                    when defined(WEB):
-                        return big(int(x.f))==y.bi
-                    elif not defined(NOGMP):
-                        return int(x.f)==y.bi        
-            elif y.kind==Rational:
-                return toRational(x.f)==y.rat
-            else: return x.f==y.f
-    elif x.kind == Quantity or y.kind == Quantity:
-        if y.kind == Integer:
-            if y.iKind == NormalInteger:
-                return x.q == y.i
-            else:
-                when not defined(NOGMP):
-                    return x.q == y.bi
-        elif y.kind == Floating:
-            return x.q == y.f
-        elif y.kind == Rational:
-            return x.q == y.rat
-        elif y.kind == Quantity:
-            if x.kind == Integer:
-                if x.iKind == NormalInteger:
-                    return x.i == y.q
-                else:
-                    when not defined(NOGMP):
-                        return x.bi == y.q
-            elif x.kind == Floating:
-                return x.f == y.q
-            elif x.kind == Rational:
-                return x.rat == y.q
-            else:
-                return x.q == y.q
-        else:
-            return false
-    elif x.kind == Error and y.kind == ErrorKind:
-        return x.err.kind == y.errkind
-    elif x.kind == ErrorKind and y.kind == Error:
-        return x.errkind == y.err.kind
-    else:
-        if x.kind != y.kind: return false
+                discard
 
-        case x.kind:
-            of Null: return true
-            of Logical: return x.b == y.b
-            of Complex: return x.z == y.z
-            of Version:
-                return x.version == y.version
-            of Type: return x.t == y.t
-            of Char: return x.c == y.c
-            of String,
-               Word,
-               Label,
-               Literal,
-               Attribute,
-               AttributeLabel: return x.s == y.s
-            of Path,
-               PathLabel,
-               PathLiteral: return x.p == y.p
-            of Symbol: return x.m == y.m
-            of Regex: return x.rx == y.rx
-            of Error: return x.err == y.err
-            of ErrorKind: return x.errkind == y.errkind
-            of Binary: return x.n == y.n
-            of Bytecode: return x.trans[] == y.trans[]
-            of Inline,
-               Block:
+    if x.kind != y.kind:
+        return false
 
-                if x.a.len != y.a.len: return false
-
-                for i,child in x.a:
-                    if not (child==y.a[i]): return false
-
-                return true
-
-            of Range:
-                return x.rng == y.rng
-
-            of Dictionary:
-                if x.d.len != y.d.len: return false
-
-                for k,v in pairs(x.d):
-                    if not y.d.hasKey(k): return false
-                    if not (v==y.d[k]): return false
-
-                return true
-            of Unit:
-                return x.u == y.u
-            of Object:
-                if (let compareMethod = x.proto.methods.getOrDefault("compare", nil); not compareMethod.isNil):
-                    return x.proto.doCompare(x,y) == 0
-                else:
-                    if x.o.len != y.o.len: return false
-
-                    for k,v in pairs(x.o):
-                        if not y.o.hasKey(k): return false
-                        if not (v==y.o[k]): return false
-
-                    return true
-            of Store:
-                return x.sto.path == y.sto.path and x.sto.kind == y.sto.kind
-            of Color:
-                return x.l == y.l
-            of Function:
-                if x.fnKind==UserFunction:
-                    return x.params == y.params and x.main == y.main and x.exports == y.exports
-                else:
-                    return x.action == y.action
-            of Database:
-                if x.dbKind != y.dbKind: return false
-                when not defined(NOSQLITE):
-                    if x.dbKind==SqliteDatabase: return cast[uint](x.sqlitedb) == cast[uint](y.sqlitedb)
-                    #elif x.dbKind==MysqlDatabase: return cast[uint](x.mysqldb) == cast[uint](y.mysqldb)
-            of Date:
-                return x.eobj[] == y.eobj[]
-            else:
+    case x.kind:
+        of Error:   
+            return x.err == y.err
+        of ErrorKind:   
+            return x.errkind == y.errkind
+        of Null:
+            return true
+        of Logical:   
+            return x.b == y.b
+        of Complex:   
+            return x.z == y.z
+        of Version:   
+            return x.version == y.version
+        of Type:   
+            return x.t == y.t
+        of Char:   
+            return x.c == y.c
+        of String, Word, Label, Literal, Attribute, AttributeLabel:
+            return x.s == y.s
+        of Path, PathLabel, PathLiteral:
+            return x.p == y.p
+        of Symbol:
+            return x.m == y.m
+        of Regex:
+            return x.rx == y.rx
+        of Binary:
+            return x.n == y.n
+        of Bytecode:
+            return x.trans[] == y.trans[]
+        of Inline, Block:
+            if x.a.len != y.a.len: 
                 return false
+            for i, child in x.a:
+                if child != y.a[i]: 
+                    return false
+            return true
+        of Range:   
+            return x.rng == y.rng
+        of Dictionary:
+            if x.d.len != y.d.len: 
+                return false
+            for k, v in pairs(x.d):
+                if not y.d.hasKey(k): 
+                    return false
+                if v != y.d[k]: 
+                    return false
+            return true
+        of Unit:   
+            return x.u == y.u
+        of Object:
+            if not x.proto.methods.getOrDefault("compare", nil).isNil:
+                return x.proto.doCompare(x,y) == 0
+            if x.o.len != y.o.len: 
+                return false
+            for k,v in pairs(x.o):
+                if not y.o.hasKey(k): 
+                    return false
+                if not (v == y.o[k]): 
+                    return false
+            return true
+        of Store:   
+            return x.sto.path == y.sto.path and x.sto.kind == y.sto.kind
+        of Color:   
+            return x.l == y.l
+        of Function:
+            if x.fnKind==UserFunction:
+                return x.params == y.params and x.main == y.main and x.exports == y.exports
+            else:
+                return x.action == y.action
+        of Database:
+            if x.dbKind != y.dbKind: 
+                return false
+            when not defined(NOSQLITE):
+                if x.dbKind==SqliteDatabase: 
+                    return cast[uint](x.sqlitedb) == cast[uint](y.sqlitedb)
+                #elif x.dbKind==MysqlDatabase: return cast[uint](x.mysqldb) == cast[uint](y.mysqldb)
+        of Date:
+            return x.eobj[] == y.eobj[]
+        else:   
+            return false
 
 # TODO(VM/values/comparison) how should we handle Dictionary values?
 #  right now, both `<` and `>` simply return false
@@ -297,230 +280,140 @@ proc `==`*(x: Value, y: Value): bool =
 #  labels: enhancement,values,open discussion,unit-test
 
 proc `<`*(x: Value, y: Value): bool {.inline.}=
-    if x.kind in {Integer, Floating, Rational} and y.kind in {Integer, Floating, Rational}:
-        if x.kind==Integer:
-            if y.kind==Integer: 
-                if likely(x.iKind==NormalInteger and y.iKind==NormalInteger):
-                    return x.i<y.i
-                elif x.iKind==NormalInteger and y.iKind==BigInteger:
-                    when defined(WEB):
-                        return big(x.i)<y.bi
-                    elif not defined(NOGMP):
-                        return x.i<y.bi
-                elif x.iKind==BigInteger and y.iKind==NormalInteger:
-                    when defined(WEB):
-                        return x.bi<big(y.i)
-                    elif not defined(NOGMP):
-                        return x.bi<y.i
-                else:
-                    when defined(WEB) or not defined(NOGMP):
-                        return x.bi<y.bi
-            elif y.kind==Rational:
-                return cmp(toRational(x.i), y.rat) < 0
-            else: 
-                if x.iKind==NormalInteger:
-                    return x.i<y.f
-                else:
-                    when defined(WEB):
-                        return x.bi<big(int(y.f))
-                    elif not defined(NOGMP):
-                        return (x.bi)<int(y.f)
-        elif x.kind==Rational:
-            if y.kind==Integer:
-                if likely(y.iKind==NormalInteger):
-                    return cmp(x.rat,toRational(y.i))<0
-                else:
-                    return false
-            elif y.kind==Rational:
-                return cmp(x.rat,y.rat)<0
+    const numericKinds = {Integer, Rational, Floating, Quantity}
+
+    if x.kind in numericKinds or y.kind in numericKinds:
+        let pair = getValuePair()
+        case pair:
+            of Integer    || Integer   :   return x.i   < y.i
+            of Rational   || Rational  :   return x.rat < y.rat
+            of Floating   || Floating  :   return x.f   < y.f
+            of Quantity   || Quantity  :   return x.q   < y.q
+            
+            of Integer    || Floating  :   return float(x.i)      < y.f
+            of Integer    || Rational  :   return toRational(x.i) < y.rat
+            of Integer    || Quantity  :   return x.i             < y.q
+        
+            of Rational   || Integer   :   return x.rat < toRational(y.i)
+            of Rational   || Floating  :   return x.rat < toRational(y.f)
+            of Rational   || Quantity  :   return x.rat < y.q
+            
+            of Floating   || Integer   :   return x.f             < float(y.i)
+            of Floating   || Rational  :   return toRational(x.f) < y.rat
+            of Floating   || Quantity  :   return x.f             < y.q
+            
+            of Quantity   || Integer   :   return x.q < y.i
+            of Quantity   || Floating  :   return x.q < y.f
+            of Quantity   || Rational  :   return x.q < y.rat
+            
+            of BigInteger || BigInteger:   (when GMP: return x.bi < y.bi)
+            
+            of BigInteger || Integer   :   (when GMP: return x.bi < toBig(y.i))
+            of BigInteger || Rational  :   return false
+            of BigInteger || Floating  :   (when GMP: return x.bi < toBig(int(y.f)))
+            of BigInteger || Quantity  :   (when GMP: return x.bi < y.q)
+
+            of Integer    || BigInteger:   (when GMP: return toBig(x.i)      < y.bi)
+            of Rational   || BigInteger:   (when GMP: return x.rat           < toRational(y.bi))
+            of Floating   || BigInteger:   (when GMP: return toBig(int(x.f)) < y.bi)
+            of Quantity   || BigInteger:   (when GMP: return x.q             < y.bi)
             else:
-                return cmp(x.rat,toRational(y.f))<0
-        else:
-            if y.kind==Integer: 
-                if y.iKind==NormalInteger:
-                    return x.f<y.i
-                else:
-                    when defined(WEB):
-                        return big(int(x.f))<y.bi
-                    elif not defined(NOGMP):
-                        return int(x.f)<y.bi      
-            elif y.kind==Rational:
-                return cmp(toRational(x.f), y.rat) < 0  
-            else: return x.f<y.f
-    elif x.kind == Quantity or y.kind == Quantity:
-        if y.kind == Integer:
-            if y.iKind == NormalInteger:
-                return x.q < y.i
+                discard
+
+    if x.kind != y.kind:
+        return false
+
+    case x.kind:
+        of Complex:
+            if x.z.re == y.z.re:
+                return x.z.im < y.z.im
             else:
-                when not defined(NOGMP):
-                    return x.q < y.bi
-        elif y.kind == Floating:
-            return x.q < y.f
-        elif y.kind == Rational:
-            return x.q < y.rat
-        elif y.kind == Quantity:
-            if x.kind == Integer:
-                if x.iKind == NormalInteger:
-                    return x.i < y.q
-                else:
-                    when not defined(NOGMP):
-                        return x.bi < y.q
-            elif x.kind == Floating:
-                return x.f < y.q
-            elif x.kind == Rational:
-                return x.rat < y.q
+                return x.z.re < y.z.re
+        of Version: 
+            return x.version < y.version
+        of Char: 
+            return $(x.c) < $(y.c)
+        of String, Word, Label, Literal, Attribute, AttributeLabel: 
+            return x.s < y.s
+        of Inline, Block: 
+            return x.a.len < y.a.len
+        of Object:
+            if not x.proto.methods.getOrDefault("compare", nil).isNil:
+                return x.proto.doCompare(x, y) == -1
             else:
-                return x.q < y.q
-        else:
+                return false
+        of Date: 
+            return x.eobj[] < y.eobj[]
+        else: 
             return false
-    else:
-        if x.kind != y.kind: return false
-        case x.kind:
-            of Null: return false
-            of Logical: return false
-            of Complex:
-                if x.z.re == y.z.re:
-                    return x.z.im < y.z.im
-                else:
-                    return x.z.re < y.z.re
-            of Version: return x.version < y.version
-            of Type: return false
-            of Char: return $(x.c) < $(y.c)
-            of String,
-               Word,
-               Label,
-               Literal,
-               Attribute,
-               AttributeLabel: return x.s < y.s
-            of Symbol: return false
-            of Inline,
-               Block:
-                return x.a.len < y.a.len
-            of Dictionary:
-                return false
-            of Unit:
-                return false
-            of Object:
-                if (let compareMethod = x.proto.methods.getOrDefault("compare", nil); not compareMethod.isNil):
-                    return x.proto.doCompare(x, y) == -1
-                else:
-                    return false
-            of Date:
-                return x.eobj[] < y.eobj[]
-            else:
-                return false
 
 proc `>`*(x: Value, y: Value): bool {.inline.}=
-    if x.kind in {Integer, Floating, Rational} and y.kind in {Integer, Floating, Rational}:
-        if x.kind==Integer:
-            if y.kind==Integer: 
-                if likely(x.iKind==NormalInteger and y.iKind==NormalInteger):
-                    return x.i>y.i
-                elif x.iKind==NormalInteger and y.iKind==BigInteger:
-                    when defined(WEB):
-                        return big(x.i)>y.bi
-                    elif not defined(NOGMP):
-                        return x.i>y.bi
-                elif x.iKind==BigInteger and y.iKind==NormalInteger:
-                    when defined(WEB):
-                        return x.bi>big(y.i)
-                    elif not defined(NOGMP):
-                        return x.bi>y.i
-                else:
-                    when defined(WEB) or not defined(NOGMP):
-                        return x.bi>y.bi
-            elif y.kind==Rational:
-                return cmp(toRational(x.i), y.rat) > 0
-            else: 
-                if x.iKind==NormalInteger:
-                    return float(x.i)>y.f
-                else:
-                    when defined(WEB):
-                        return x.bi>big(int(y.f))
-                    elif not defined(NOGMP):
-                        return (x.bi)>int(y.f)
-        elif x.kind==Rational:
-            if y.kind==Integer:
-                if likely(y.iKind==NormalInteger):
-                    return cmp(x.rat,toRational(y.i))>0
-                else:
-                    return false
-            elif y.kind==Rational:
-                return cmp(x.rat,y.rat)>0
+    const numericKinds = {Integer, Rational, Floating, Quantity}
+
+    if x.kind in numericKinds or y.kind in numericKinds:
+        let pair = getValuePair()
+        case pair:
+            of Integer    || Integer   :   return x.i   > y.i
+            of Rational   || Rational  :   return x.rat > y.rat
+            of Floating   || Floating  :   return x.f   > y.f
+            of Quantity   || Quantity  :   return x.q   > y.q
+            
+            of Integer    || Floating  :   return float(x.i)      > y.f
+            of Integer    || Rational  :   return toRational(x.i) > y.rat
+            of Integer    || Quantity  :   return x.i             > y.q
+        
+            of Rational   || Integer   :   return x.rat > toRational(y.i)
+            of Rational   || Floating  :   return x.rat > toRational(y.f)
+            of Rational   || Quantity  :   return x.rat > y.q
+            
+            of Floating   || Integer   :   return x.f             > float(y.i)
+            of Floating   || Rational  :   return toRational(x.f) > y.rat
+            of Floating   || Quantity  :   return x.f             > y.q
+            
+            of Quantity   || Integer   :   return x.q > y.i
+            of Quantity   || Floating  :   return x.q > y.f
+            of Quantity   || Rational  :   return x.q > y.rat
+            
+            of BigInteger || BigInteger:   (when GMP: return x.bi > y.bi)
+            
+            of BigInteger || Integer   :   (when GMP: return x.bi > toBig(y.i))
+            of BigInteger || Rational  :   return false
+            of BigInteger || Floating  :   (when GMP: return x.bi > toBig(int(y.f)))
+            of BigInteger || Quantity  :   (when GMP: return x.bi > y.q)
+
+            of Integer    || BigInteger:   (when GMP: return toBig(x.i)      > y.bi)
+            of Rational   || BigInteger:   (when GMP: return x.rat           > toRational(y.bi))
+            of Floating   || BigInteger:   (when GMP: return toBig(int(x.f)) > y.bi)
+            of Quantity   || BigInteger:   (when GMP: return x.q             > y.bi)
             else:
-                return cmp(x.rat,toRational(y.f))>0
-        else:
-            if y.kind==Integer: 
-                if likely(y.iKind==NormalInteger):
-                    return x.f>float(y.i)
-                else:
-                    when defined(WEB):
-                        return big(int(x.f))>y.bi
-                    elif not defined(NOGMP):
-                        return int(x.f)>y.bi   
-            elif y.kind==Rational:
-                return cmp(toRational(x.f), y.rat) > 0     
-            else: return x.f>y.f
-    elif x.kind == Quantity or y.kind == Quantity:
-        if y.kind == Integer:
-            if y.iKind == NormalInteger:
-                return x.q > y.i
+                discard
+
+    if x.kind != y.kind:
+        return false
+
+    case x.kind:
+        of Complex:
+            if x.z.re == y.z.re:
+                return x.z.im > y.z.im
             else:
-                when not defined(NOGMP):
-                    return x.q > y.bi
-        elif y.kind == Floating:
-            return x.q > y.f
-        elif y.kind == Rational:
-            return x.q > y.rat
-        elif y.kind == Quantity:
-            if x.kind == Integer:
-                if x.iKind == NormalInteger:
-                    return x.i > y.q
-                else:
-                    when not defined(NOGMP):
-                        return x.bi > y.q
-            elif x.kind == Floating:
-                return x.f > y.q
-            elif x.kind == Rational:
-                return x.rat > y.q
-            else:
-                return x.q > y.q
-    else:
-        if x.kind != y.kind: return false
-        case x.kind:
-            of Null: return false
-            of Logical: return false
-            of Complex:
-                if x.z.re == y.z.re:
-                    return x.z.im > y.z.im
-                else:
-                    return x.z.re > y.z.re
-            of Version: return x.version > y.version
-            of Type: return false
-            of Char: return $(x.c) > $(y.c)
-            of String,
-               Word,
-               Label,
-               Literal,
-               Attribute,
-               AttributeLabel: return x.s > y.s
-            of Symbol: return false
-            of Inline,
-               Block:
-                return x.a.len > y.a.len
-            of Dictionary:
-                return false
-            of Unit:
-                return false
-            of Object:
-                if (let compareMethod = x.proto.methods.getOrDefault("compare", nil); not compareMethod.isNil):
-                    return x.proto.doCompare(x,y) == 1
-                else:
-                    return false
-            of Date:
-                return x.eobj[] > y.eobj[]
+                return x.z.re > y.z.re
+        of Version:   
+            return x.version > y.version
+        of Char:   
+            return $(x.c) > $(y.c)
+        of String, Word, Label, Literal, Attribute, AttributeLabel:   
+            return x.s > y.s
+        of Inline, Block:   
+            return x.a.len > y.a.len
+        of Object:
+            if not x.proto.methods.getOrDefault("compare", nil).isNil:
+                return x.proto.doCompare(x, y) == 1
             else:
                 return false
+        of Date:   
+            return x.eobj[] > y.eobj[]
+        else:   
+            return false
 
 proc `<=`*(x: Value, y: Value): bool {.inline.}=
     x < y or x == y
