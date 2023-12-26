@@ -20,6 +20,7 @@ when defined(WEB):
 when not defined(NOGMP):
     import helpers/bignums as BignumsHelper
 
+import vm/stack
 import vm/values/types
 import vm/values/value
 
@@ -139,7 +140,7 @@ proc `==`*(x: Value, y: Value): bool =
         of Version:   
             return x.version == y.version
         of Type:   
-            return x.t == y.t
+            return x.tpKind == y.tpKind and ((x.tpKind == BuiltinType and x.t == y.t) or (x.tpKind == UserType and x.tid == y.tid))
         of Char:   
             return x.c == y.c
         of String, Word, Label, Literal, Attribute, AttributeLabel:
@@ -175,16 +176,20 @@ proc `==`*(x: Value, y: Value): bool =
         of Unit:   
             return x.u == y.u
         of Object:
-            if not x.proto.methods.getOrDefault("compare", nil).isNil:
-                return x.proto.doCompare(x,y) == 0
-            if x.o.len != y.o.len: 
-                return false
-            for k,v in pairs(x.o):
-                if not y.o.hasKey(k): 
-                    return false
-                if not (v == y.o[k]): 
-                    return false
-            return true
+            if x.magic.fetch(CompareM):
+                mgk(@[x,y]) 
+                return stack.pop().i == 0
+            elif x.magic.fetch(EqualQM):
+                mgk(@[x,y])
+                return isTrue(stack.pop())
+            else:
+                if x.o.len != y.o.len: return false
+
+                for k,v in pairs(x.o):
+                    if not y.o.hasKey(k): return false
+                    if not (v==y.o[k]): return false
+
+                return true
         of Store:   
             return x.sto.path == y.sto.path and x.sto.kind == y.sto.kind
         of Color:   
@@ -338,9 +343,14 @@ proc `<`*(x: Value, y: Value): bool {.inline.}=
         of Inline, Block: 
             return x.a.len < y.a.len
         of Object:
-            if not x.proto.methods.getOrDefault("compare", nil).isNil:
-                return x.proto.doCompare(x, y) == -1
+            if x.magic.fetch(CompareM):
+                mgk(@[x, y]) 
+                return stack.pop().i == -1
+            elif x.magic.fetch(LessQM):
+                mgk(@[x, y])
+                return isTrue(stack.pop())
             else:
+                # should throw!
                 return false
         of Date: 
             return x.eobj[] < y.eobj[]
@@ -406,8 +416,12 @@ proc `>`*(x: Value, y: Value): bool {.inline.}=
         of Inline, Block:   
             return x.a.len > y.a.len
         of Object:
-            if not x.proto.methods.getOrDefault("compare", nil).isNil:
-                return x.proto.doCompare(x, y) == 1
+            if x.magic.fetch(CompareM):
+                mgk(@[x,y]) 
+                return stack.pop().i == 1
+            elif x.magic.fetch(GreaterQM):
+                mgk(@[x,y])
+                return isTrue(stack.pop())
             else:
                 return false
         of Date:   
