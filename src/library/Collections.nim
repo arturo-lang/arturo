@@ -2820,7 +2820,7 @@ proc defineLibrary*() =
         rule        = PrefixPrecedence,
         description = "check if given number or collection size is one",
         args        = {
-            "number"    : {Integer,Floating,String,Block,Range,Dictionary,Object,Null},
+            "number"    : {Integer,Floating,String,Block,Range,Dictionary,Null},
         },
         attrs       = NoAttrs,
         returns     = {Logical},
@@ -2859,8 +2859,6 @@ proc defineLibrary*() =
                     push(newLogical(x.rng.len == 1))
                 of Dictionary:
                     push(newLogical(x.d.len == 1))
-                of Object:
-                    push(newLogical(x.o.len == 1))
                 else:
                     push(VFALSE)
 
@@ -2902,7 +2900,7 @@ proc defineLibrary*() =
         rule        = PrefixPrecedence,
         description = "check if given number or collection size is zero",
         args        = {
-            "number"    : {Integer,Floating,String,Block,Range,Dictionary,Object,Null},
+            "number"    : {Integer,Floating,String,Block,Range,Dictionary,Null},
         },
         attrs       = NoAttrs,
         returns     = {Logical},
@@ -2941,8 +2939,6 @@ proc defineLibrary*() =
                     push(newLogical(x.rng.len == 0))
                 of Dictionary:
                     push(newLogical(x.d.len == 0))
-                of Object:
-                    push(newLogical(x.o.len == 0))
                 else:
                     push(VTRUE)
 
