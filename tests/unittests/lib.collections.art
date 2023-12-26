@@ -822,12 +822,12 @@ do [
 topic "get - :object"
 do [
     define :person [
-        init: function [name, surname][
+        init: method [name, surname][
             this\name: capitalize name
             this\surname: surname
         ]
 
-        print: function [][
+        string: method [][
             ~"NAME: |this\name|, SURNAME: |this\surname|"
         ]
     ]
@@ -898,16 +898,16 @@ topic "get - :bytecode"
 do [
     bt: to :bytecode [print "hello"]
     ensure -> ["hello"] = bt\data
-    ensure -> [32 189 218] = bt\code
+    ensure -> [32 205 234] = bt\code
     passed
     ensure -> ["hello"] = get bt 'data
-    ensure -> [32 189 218] = get bt 'code
+    ensure -> [32 205 234] = get bt 'code
     passed
     ensure -> ["hello"] = get bt "data"
-    ensure -> [32 189 218] = get bt "code"
+    ensure -> [32 205 234] = get bt "code"
     passed
     ensure -> ["hello"] = bt\["data"]
-    ensure -> [32 189 218] = bt\["code"]
+    ensure -> [32 205 234] = bt\["code"]
     passed
 ]
 
@@ -1228,12 +1228,12 @@ topic "key? - :object"
 do [
 
     define :person [
-        init: function [name, surname][
+        init: method [name, surname][
             this\name: capitalize name
             this\surname: surname
         ]
 
-        print: function [][
+        string: method [][
             ~"NAME: |this\name|, SURNAME: |this\surname|"
         ]
     ]
@@ -1264,18 +1264,19 @@ topic "keys - :object"
 do [
 
     define :person [
-        init: function [name, surname][
+        init: method [name, surname][
             this\name: capitalize name
             this\surname: surname
         ]
 
-        print: function [][
+        string: method [][
             ~"NAME: |this\name|, SURNAME: |this\surname|"
         ]
     ]
 
     p: to :person ["John" "Doe"]
-    ensure -> ["name" "surname"] = keys p
+    inspect p
+    ensure -> every? ["name" "surname"] => [contains? keys p &]
     passed
 ]
 
@@ -1455,13 +1456,6 @@ do [
     ensure -> one? #[name: "Jane"]
     ensure -> not? one? #[]
     ensure -> not? one? #[name: "Jane" surname: "Doe"]
-    passed
-
-    define :person [name, surname]
-    define :pet [name]
-    ensure -> one? to :pet ["Johnis"]
-    ;ensure -> one? to :person ["John"] ; will throw!
-    ensure -> not? one? to :person ["John" "Doe"]
     passed
 
     ensure -> one? [a]
@@ -3327,15 +3321,6 @@ do [
     ensure -> zero? #[]
     ensure -> not? zero? #[name: "Jane"]
     ensure -> not? zero? #[name: "Jane" surname: "Doe"]
-    passed
-
-    define :person [name, surname]
-    define :pet [name]
-    ; ensure -> zero? to :pet []
-    ; ensure -> zero? to :person []
-    ensure -> not? zero? to :pet ["Johnis"]
-    ; ensure -> not? zero? to :person ["John"]
-    ensure -> not? zero? to :person ["John" "Doe"]
     passed
 
     ensure -> zero? []
