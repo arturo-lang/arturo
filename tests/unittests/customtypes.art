@@ -10,16 +10,16 @@
 define :person [                            
     ; define a new custom type "Person"
     ; with fields: name, surname 
-    init: function [name, surname][
+    init: method [name, surname][
         this\name: capitalize name
         this\surname: surname
     ]
 
-    print: function [][
+    string: method [][
         render "NAME: |this\name|, SURNAME: |this\surname|"
     ]
 
-    sayHello: function [][
+    sayHello: method [][
         print ["Hello" this\name]
     ]
 ]
@@ -48,7 +48,10 @@ do [
 ; :CAR
 ;===========================
 
-define :car .sortable:'year [brand, model, year]
+define :car [
+    init: constructor [brand, model, year]
+    compare: sortable 'year
+]
 
 c: to :car #[brand: "Ford" model: "Mustang" year: 1967]
 d: to :car #[brand: "Nissan" model: "Sunny" year: 1991]
