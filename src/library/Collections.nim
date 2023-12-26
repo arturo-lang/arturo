@@ -993,7 +993,11 @@ proc defineLibrary*() =
             if xKind == Dictionary:
                 s = toSeq(x.d.keys)
             else:
-                s = toSeq(x.o.keys)
+                var keysArr: seq[string]
+                for k,v in x.o:
+                    if v.kind != Method:
+                        keysArr.add(k)
+                s = toSeq(keysArr)
 
             push(newStringBlock(s))
 
@@ -1835,6 +1839,11 @@ proc defineLibrary*() =
             elif xKind == Dictionary:
                 push(newInteger(x.d.len))
             elif xKind == Object:
+                var realSize: 0
+                for k,v in x.o:
+                    if v.kind != Method:
+                        realSize += 1
+                push(newInteger(realSize))
                 push(newInteger(x.o.len))
             elif xKind == Range:
                 let sz = x.rng.len
