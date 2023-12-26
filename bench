@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+./build.nims --log 
+git log -n 1 --pretty=medium > bench-log
+
+echo -e "\nOLD" >> bench-log
+{ 
+    time for counter in {1..250} 
+    do ./bin/reference.exe ./tests/unittests/lib.comparison.art
+    done;
+} 2>> bench-log
+
+echo -e "\nCURRENT" >> bench-log
+{ 
+    time for counter in {1..250} 
+    do ./bin/arturo.exe ./tests/unittests/lib.comparison.art
+    done; 
+} 2>> bench-log
+
+git add bench-log
+git commit -m "[bench]: update benchmark's log"
