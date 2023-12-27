@@ -300,7 +300,7 @@ proc RuntimeError_IncompatibleBlockSize*(functionName: string, got: int, expecte
 
 proc RuntimeError_UsingUndefinedType*(typeName: string) =
     panic RuntimeError,
-          "undefined or unknown type: _:" & (typeName) & "_;" &
+          "undefined or unknown type _:" & (typeName) & "_;" &
           "you should make sure it has been properly" & ";" &
           "initialized using `define`"
 
