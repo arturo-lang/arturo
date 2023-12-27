@@ -29,7 +29,7 @@ import helpers/objects
 import helpers/ranges
 
 import vm/lib
-import vm/[exec]
+import vm/[errors, exec]
 
 #=======================================
 # Definitions
@@ -163,6 +163,7 @@ proc defineLibrary*() =
                         for k,v in yproto.content:
                             definitions[k] = copyValue(v)
                     else:
+                        RuntimeError_UsingUndefinedType(y.tid)
                         # TODO(Types\define) check if inherited type is defined
                         #  if not we should show an error
                         #  labels: oop, error handing
