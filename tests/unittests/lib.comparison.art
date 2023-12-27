@@ -592,14 +592,14 @@ do [
     topic « between? - :object
     
     define :person [  
-        init: function [name, age][
+        init: method [name, age][
             this\name: capitalize name
             this\age: age
         ]
-        print: function [][
+        string: method [][
             render "NAME: |this\name|, AGE: |this\age|"
         ]
-        compare: function [that][
+        compare: method [that][
             if this\age > that\age -> return 1
             if this\age = that\age -> return 0
             if this\age < that\age -> return neg 1
@@ -607,12 +607,12 @@ do [
     ]
     
     define :student is :person [  
-        init: function [name, age, id][
+        init: method [name, age, id][
             this\name: capitalize name
             this\age: age
             this\id: id
         ]
-        print: function [][
+        string: method [][
             render "NAME: |this\name|, AGE: |this\age|, ID: |this\id|"
         ]
     ]
@@ -1102,14 +1102,14 @@ do [
     topic « compare - :object
     
     define :person [  
-        init: function [name, age][
+        init: method [name, age][
             this\name: capitalize name
             this\age: age
         ]
-        print: function [][
+        string: method [][
             render "NAME: |this\name|, AGE: |this\age|"
         ]
-        compare: function [that][
+        compare: method [that][
             if this\age > that\age -> return 1
             if this\age = that\age -> return 0
             if this\age < that\age -> return neg 1
@@ -1117,12 +1117,12 @@ do [
     ]
     
     define :student is :person [  
-        init: function [name, age, id][
+        init: method [name, age, id][
             this\name: capitalize name
             this\age: age
             this\id: id
         ]
-        print: function [][
+        string: method [][
             render "NAME: |this\name|, AGE: |this\age|, ID: |this\id|"
         ]
     ]
@@ -1705,22 +1705,22 @@ do [
     topic « equal? - :object
     
     define :person [  
-        init: function [name,age][
+        init: method [name,age][
             this\name: capitalize name
             this\age: age
         ]
-        print: function [][ 
+        string: method [][ 
             render "NAME: |this\name|, AGE: |this\age|"
         ]
     ]
     
     define :student is :person [
-        init: function [name, age, id][
+        init: method [name, age, id][
             this\name: capitalize name
             this\age: age
             this\id: id
         ]  
-        print: function [][
+        string: method [][
             render "NAME: |this\name|, AGE: |this\age|, ID: |this\id|"
         ]
     ]
@@ -1736,14 +1736,14 @@ do [
     passed
     
     define :person [  
-        init: function [name, age][
+        init: method [name, age][
             this\name: capitalize name
             this\age: age
         ]
-        print: function [][
+        string: method [][
             render "NAME: |this\name|, AGE: |this\age|"
         ]
-        compare: function [that][
+        compare: method [that][
             if this\age > that\age -> return 1
             if this\age = that\age -> return 0
             if this\age < that\age -> return neg 1
@@ -1751,12 +1751,12 @@ do [
     ]
     
     define :student is :person [  
-        init: function [name, age, id][
+        init: method [name, age, id][
             this\name: capitalize name
             this\age: age
             this\id: id
         ]
-        print: function [][
+        string: method [][
             render "NAME: |this\name|, AGE: |this\age|, ID: |this\id|"
         ]
     ]
@@ -2890,22 +2890,22 @@ do [
     topic « greater? - :object
     
     define :person [  
-        init: function [name, age][
+        init: method [name, age][
             this\name: capitalize name
             this\age: age
         ]
-        print: function [][
+        string: method [][
             render "NAME: |this\name|, AGE: |this\age|"
         ]
     ]
     
     define :student is :person [  
-        init: function [name, age, id][
+        init: method [name, age, id][
             this\name: capitalize name
             this\age: age
             this\id: id
         ]
-        print: function [][
+        string: method [][
             render "NAME: |this\name|, AGE: |this\age|, ID: |this\id|"
         ]
     ]
@@ -2921,14 +2921,14 @@ do [
     passed
     
     define :person [  
-        init: function [name, age][
+        init: method [name, age][
             this\name: capitalize name
             this\age: age
         ]
-        print: function [][
+        string: method [][
             render "NAME: |this\name|, AGE: |this\age|"
         ]
-        compare: function [that][
+        compare: method [that][
             if this\age > that\age -> return 1
             if this\age = that\age -> return 0
             if this\age < that\age -> return neg 1
@@ -2936,12 +2936,12 @@ do [
     ]
     
     define :student is :person [  
-        init: function [name, age, id][
+        init: method [name, age, id][
             this\name: capitalize name
             this\age: age
             this\id: id
         ]
-        print: function [][
+        string: method [][
             render "NAME: |this\name|, AGE: |this\age|, ID: |this\id|"
         ]
     ]
@@ -4140,22 +4140,22 @@ do [
     topic « greaterOrEqual? - :object
     
     define :person [  
-        init: function [name, age][
+        init: method [name, age][
             this\name: capitalize name
             this\age: age
         ]
-        print: function [][
+        string: method [][
             render "NAME: |this\name|, AGE: |this\age|"
         ] 
     ]
     
     define :student is :person [  
-        init: function [name, age, id][
+        init: method [name, age, id][
             this\name: capitalize name
             this\age: age
             this\id: id
         ]
-        print: function [][
+        string: method [][
             render "NAME: |this\name|, AGE: |this\age|, ID: |this\id|"
         ]
     ]
@@ -4171,14 +4171,14 @@ do [
     passed
     
     define :person [  
-        init: function [name, age][
+        init: method [name, age][
             this\name: capitalize name
             this\age: age
         ]
-        print: function [][
+        string: method [][
             render "NAME: |this\name|, AGE: |this\age|"
         ]
-        compare: function [that][
+        compare: method [that][
             if this\age > that\age -> return 1
             if this\age = that\age -> return 0
             if this\age < that\age -> return neg 1
@@ -4186,12 +4186,12 @@ do [
     ]
     
     define :student is :person [  
-        init: function [name, age, id][
+        init: method [name, age, id][
             this\name: capitalize name
             this\age: age
             this\id: id
         ]
-        print: function [][
+        string: method [][
             render "NAME: |this\name|, AGE: |this\age|, ID: |this\id|"
         ]
     ]
@@ -5348,22 +5348,22 @@ do [
     topic « less? - :object
     
     define :person [  
-        init: function [name, age][
+        init: method [name, age][
             this\name: capitalize name
             this\age: age
         ]
-        print: function [][
+        string: method [][
             render "NAME: |this\name|, AGE: |this\age|"
         ]
     ]
     
     define :student is :person [  
-        init: function [name, age, id][
+        init: method [name, age, id][
             this\name: capitalize name
             this\age: age
             this\id: id
         ]
-        print: function [][
+        string: method [][
             render "NAME: |this\name|, AGE: |this\age|, ID: |this\id|"
         ]
     ]
@@ -5379,14 +5379,14 @@ do [
     passed
     
    define :person [  
-        init: function [name, age][
+        init: method [name, age][
             this\name: capitalize name
             this\age: age
         ]
-        print: function [][
+        string: method [][
             render "NAME: |this\name|, AGE: |this\age|"
         ]
-        compare: function [that][
+        compare: method [that][
             if this\age > that\age -> return 1
             if this\age = that\age -> return 0
             if this\age < that\age -> return neg 1
@@ -5394,12 +5394,12 @@ do [
     ]
     
     define :student is :person [  
-        init: function [name, age, id][
+        init: method [name, age, id][
             this\name: capitalize name
             this\age: age
             this\id: id
         ]
-        print: function [][
+        string: method [][
             render "NAME: |this\name|, AGE: |this\age|, ID: |this\id|"
         ]
     ]
@@ -6598,22 +6598,22 @@ do [
     topic « lessOrEqual? - :object
     
     define :person [  
-        init: function [name, age][
+        init: method [name, age][
             this\name: capitalize name
             this\age: age
         ]
-        print: function [][
+        string: method [][
             render "NAME: |this\name|, AGE: |this\age|"
         ] 
     ]
     
     define :student is :person [  
-        init: function [name, age, id][
+        init: method [name, age, id][
             this\name: capitalize name
             this\age: age
             this\id: id
         ]
-        print: function [][
+        string: method [][
             render "NAME: |this\name|, AGE: |this\age|, ID: |this\id|"
         ]
     ]
@@ -6629,14 +6629,14 @@ do [
     passed
     
     define :person [  
-        init: function [name, age][
+        init: method [name, age][
             this\name: capitalize name
             this\age: age
         ]
-        print: function [][
+        string: method [][
             render "NAME: |this\name|, AGE: |this\age|"
         ]
-        compare: function [that][
+        compare: method [that][
             if this\age > that\age -> return 1
             if this\age = that\age -> return 0
             if this\age < that\age -> return neg 1
@@ -6644,12 +6644,12 @@ do [
     ]
     
     define :student is :person [  
-        init: function [name, age, id][
+        init: method [name, age, id][
             this\name: capitalize name
             this\age: age
             this\id: id
         ]
-        print: function [][
+        string: method [][
             render "NAME: |this\name|, AGE: |this\age|, ID: |this\id|"
         ]
     ]
@@ -7715,22 +7715,22 @@ do [
     topic « notEqual? - :object
     
     define :person [  
-        init: function [name, age][
+        init: method [name, age][
             this\name: capitalize name
             this\age: age
         ]
-        print: function [][
+        string: method [][
             render "NAME: |this\name|, AGE: |this\age|"
         ]  
     ]
     
     define :student is :person [  
-        init: function [name, age, id][
+        init: method [name, age, id][
             this\name: capitalize name
             this\age: age
             this\id: id
         ]
-        print: function [][
+        string: method [][
             render "NAME: |this\name|, AGE: |this\age|, ID: |this\id|"
         ]
     ]
@@ -7746,14 +7746,14 @@ do [
     passed
     
     define :person [  
-        init: function [name, age][
+        init: method [name, age][
             this\name: capitalize name
             this\age: age
         ]
-        print: function [][
+        string: method [][
             render "NAME: |this\name|, AGE: |this\age|"
         ]
-        compare: function [that][
+        compare: method [that][
             if this\age > that\age -> return 1
             if this\age = that\age -> return 0
             if this\age < that\age -> return neg 1
@@ -7761,12 +7761,12 @@ do [
     ]
     
     define :student is :person [  
-        init: function [name, age, id][
+        init: method [name, age, id][
             this\name: capitalize name
             this\age: age
             this\id: id
         ]
-        print: function [][
+        string: method [][
             render "NAME: |this\name|, AGE: |this\age|, ID: |this\id|"
         ]
     ]
@@ -8791,22 +8791,22 @@ do [
     topic « same? - :object
     
     define :person [  
-        init: function [name, age][
+        init: method [name, age][
             this\name: capitalize name
             this\age: age
         ]
-        print: function [][
+        string: method [][
             render "NAME: |this\name|, AGE: |this\age|"
         ] 
     ]
     
     define :student is :person [  
-        init: function [name, age, id][
+        init: method [name, age, id][
             this\name: capitalize name
             this\age: age
             this\id: id
         ]
-        print: function [][
+        string: method [][
             render "NAME: |this\name|, AGE: |this\age|, ID: |this\id|"
         ]
     ]
@@ -8822,14 +8822,14 @@ do [
     passed
     
     define :person [  
-        init: function [name, age][
+        init: method [name, age][
             this\name: capitalize name
             this\age: age
         ]
-        print: function [][
+        string: method [][
             render "NAME: |this\name|, AGE: |this\age|"
         ]
-        compare: function [that][
+        compare: method [that][
             if this\age > that\age -> return 1
             if this\age = that\age -> return 0
             if this\age < that\age -> return neg 1
@@ -8837,12 +8837,12 @@ do [
     ]
     
     define :student is :person [  
-        init: function [name, age, id][
+        init: method [name, age, id][
             this\name: capitalize name
             this\age: age
             this\id: id
         ]
-        print: function [][
+        string: method [][
             render "NAME: |this\name|, AGE: |this\age|, ID: |this\id|"
         ]
     ]
