@@ -604,6 +604,26 @@ proc defineLibrary*() =
         # TODO(Types\defined?) add documentation example
         #  labels: library, documentation, easy
         example     = """
+            defined? :cat
+            ; => false
+            defined? "cat"
+            ; => false
+            defined? 'cat
+            ; => false
+
+            define :cat [
+                init: constructor [name :string age :integer]
+            ]
+
+            defined? :cat
+            ; => true
+            defined? "cat"
+            ; => true
+            defined? 'cat
+            ; => true
+
+            defined? :dog
+            ; => false
         """:
             #=======================================================
             if xKind == Type:
