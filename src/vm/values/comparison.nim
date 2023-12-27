@@ -184,6 +184,7 @@ proc `==`*(x: Value, y: Value): bool =
                 return isTrue(stack.pop())
             else:
                 if x.o.len != y.o.len: return false
+                if x.proto != y.proto: return false
                 for k,v in pairs(x.o):
                     if not y.o.hasKey(k): return false
                     if not (v==y.o[k]): return false
