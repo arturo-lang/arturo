@@ -1081,6 +1081,19 @@ proc defineLibrary*() =
         # TODO(Collections\methods) add documentation example
         #  labels: library, documentation, easy
         example     = """
+        define :cat [
+            init: method [nick][
+                this\nick: join.with: " " @["Mr." capitalize nick]
+            ]
+
+            meow: method [][
+                print [this\nick ":" "'meow!'"]
+            ]
+        ]
+
+        snowflake: to :cat ["snowflake"]
+        methods snowflake
+        ; => [init meow]
         """:
             #=======================================================
             var s: seq[string]
