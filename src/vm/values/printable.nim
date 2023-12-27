@@ -199,10 +199,6 @@ proc `$`*(v: Value): string {.inline.} =
 
 
 proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepend="") {.exportc.} = 
-
-    proc dumpGeneric(str: string, v: Value) =
-        if not muted:   stdout.write fmt("{resetColor}{str}{fg(grayColor)} :{($(v.kind)).toLowerAscii()}{resetColor}\n")
-        else:           stdout.write fmt("{str} :{($(v.kind)).toLowerAscii()}\n")
     
     proc dumpPrimitive(str: string, v: Value) =
         if not muted:   stdout.write fmt("{bold(greenColor)}{str}{fg(grayColor)} :{($(v.kind)).toLowerAscii()}{resetColor}")
