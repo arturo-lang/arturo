@@ -913,6 +913,14 @@ proc defineLibrary*() =
         # TODO(Types\method?) add documentation example
         #  labels: library, documentation, easy
         example     = """
+            greet: method [name :string][print ~"How are you, |name|?"]
+            reply: function [name :string][print ~"Hi, I'm fine |name|!"]
+            
+            method? greet
+            ; => true
+            
+            method? reply
+            ; => false
         """:
             #=======================================================
             push(newLogical(xKind == Method))
