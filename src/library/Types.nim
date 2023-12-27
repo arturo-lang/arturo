@@ -216,6 +216,7 @@ proc defineLibrary*() =
 
                         definitions[k] = copyValue(v)
                 else:
+                    RuntimeError_UsingUndefinedType(x.tid)
                     # TODO(Types\is) check if inherited type is defined
                     #  if not we should show an error
                     #  labels: oop, error handing
