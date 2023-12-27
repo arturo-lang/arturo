@@ -18,6 +18,8 @@
 import std/json, sequtils, sugar
 import tables, unicode
 
+import helpers/objects
+
 when defined(WEB):
     import jsffi, strutils
 
@@ -79,7 +81,7 @@ proc generateJsonNode*(n: Value): JsonNode =
 
         of Object       :
             result = newJObject()
-            for k,v in pairs(n.o):
+            for k,v in n.o.objectPairs:
                 result.add(k, generateJsonNode(v))
         of Store        :
             result = newJObject()
@@ -164,7 +166,7 @@ when defined(WEB):
                     result[cstring(k)] = generateJsObject(v)
             of Object       :
                 result = newJsObject()
-                for k,v in pairs(n.o):
+                for k,v in n.objectPairs:
                     result[cstring(k)] = generateJsObject(v)
             of Store        :
                 result = newJsObject()

@@ -87,9 +87,19 @@ iterator objectValues*(vd: ValueDict): Value =
         if v.kind != Method:
             yield v
 
+iterator objectPairs*(vd: ValueDict): (string, Value) =
+    for k,v in vd:
+        if v.kind != Method:
+            yield (k,v)
+
 #=======================================
 # Methods
 #=======================================
+
+func flattenedObject*(vd: ValueDict): ValueArray =
+    for k,v in vd.objectPairs:
+        result.add(newString(k))
+        result.add(v)
 
 func generatedConstructor*(params: ValueArray): Value {.inline.} =
     if params.len > 0 and params.all((x) => x.kind in {Word, Literal, String, Type}):
