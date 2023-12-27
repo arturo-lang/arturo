@@ -123,12 +123,8 @@ proc `==`*(x: Value, y: Value): bool =
             else:
                 discard
 
-    echo "We are here"
-
     if x.kind != y.kind:
         return false
-
-    echo "And we went here too"
 
     case x.kind:
         of Error:   
@@ -181,19 +177,14 @@ proc `==`*(x: Value, y: Value): bool =
             return x.u == y.u
         of Object:
             if x.magic.fetch(CompareM):
-                echo "found magic COMPARE"
                 mgk(@[x,y]) 
                 return stack.pop().i == 0
             elif x.magic.fetch(EqualQM):
-                echo "found magic EQUAL"
                 mgk(@[x,y])
                 return isTrue(stack.pop())
             else:
-                echo "HERE"
                 if x.o.len != y.o.len: return false
-                echo "LEN is EQUAL"
                 for k,v in pairs(x.o):
-                    echo "CHECKING : " & k
                     if not y.o.hasKey(k): return false
                     if not (v==y.o[k]): return false
 
