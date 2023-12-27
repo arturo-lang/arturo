@@ -601,8 +601,6 @@ proc defineLibrary*() =
         },
         attrs       = NoAttrs,
         returns     = {Logical},
-        # TODO(Types\defined?) add documentation example
-        #  labels: library, documentation, easy
         example     = """
             defined? :cat
             ; => false
