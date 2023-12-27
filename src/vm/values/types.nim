@@ -502,6 +502,5 @@ proc getType*(tid: string, safe: static bool = false): Prototype {.inline.} =
     else:
         return TypeLookup[tid]
 
-
 proc newPrototype*(name: string, content: ValueDict, inherits: Value, fields: ValueDict = newOrderedTable[string,Value](), super: ValueDict = newOrderedTable[string,Value]()): Prototype {.inline.} =
     Prototype(name: name, content: content, inherits: inherits, fields: fields, super: super)
