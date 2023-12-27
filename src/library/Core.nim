@@ -864,7 +864,7 @@ proc defineLibrary*() =
         returns     = {Method},
         example     = """
         define :cat [
-            init: method [nick][
+            init: method [nick :string][
                 this\nick: join.with: " " @["Mr." capitalize nick]
             ]
 
@@ -872,6 +872,10 @@ proc defineLibrary*() =
                 print [~"|this\nick|:" "'meow!'"]
             ]
         ]
+
+        a: to :cat [15]
+        ; >> Assertion | [is? :string nick]
+        ;        error |  
 
         snowflake: to :cat ["snowflake"]
         snowflake\meow
