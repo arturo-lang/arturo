@@ -18,8 +18,6 @@ import sugar, tables, times, unicode
 when defined(WEB):
     import std/jsbigints
 
-import helpers/objects
-
 when not defined(NOGMP):
     import helpers/bignums as BignumsHelper
 
@@ -45,6 +43,20 @@ when defined(WEB):
     
     proc flushFile*(buffer: var string) =
         echo buffer
+
+# repeated from Helpers/objects
+# to avoid recursive imports
+iterator objectKeys(vd: ValueDict): string =
+    for k,v in vd:
+        if v.kind != Method:
+            yield k
+
+# repeated from Helpers/objects
+# to avoid recursive imports
+iterator objectPairs(vd: ValueDict): (string, Value) =
+    for k,v in vd:
+        if v.kind != Method:
+            yield (k,v)
 
 #=======================================
 # Methods
