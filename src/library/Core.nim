@@ -862,8 +862,6 @@ proc defineLibrary*() =
             "distinct"  : ({Logical},"shouldn't be treated as a magic method")
         },
         returns     = {Method},
-        # TODO(Core\method) add documentation example
-        #  labels: library, documentation, easy
         example     = """
         define :cat [
             init: method [nick][
