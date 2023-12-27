@@ -1814,11 +1814,7 @@ proc defineLibrary*() =
             elif xKind == Dictionary:
                 push(newInteger(x.d.len))
             elif xKind == Object:
-                var realSize: int = 0
-                for k,v in x.o:
-                    if v.kind != Method:
-                        realSize += 1
-                push(newInteger(realSize))
+                push(newInteger(x.o.objectSize))
             elif xKind == Range:
                 let sz = x.rng.len
                 if sz == InfiniteRange: push(newFloating(Inf))
