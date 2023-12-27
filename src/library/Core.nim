@@ -864,8 +864,14 @@ proc defineLibrary*() =
         returns     = {Method},
         example     = """
         define :cat [
-            init: method [nick :string][
+            init: method [nick :string age :integer][
                 this\nick: join.with: " " @["Mr." capitalize nick]
+                this\age: age
+            ]
+
+            ; Function overloading
+            add: method [years :integer][
+                this\age: age + this\age
             ]
 
             meow: method [][
@@ -873,16 +879,21 @@ proc defineLibrary*() =
             ]
         ]
 
-        a: to :cat [15]
+        a: to :cat [15 15]
         ; >> Assertion | [is? :string nick]
         ;        error |  
 
-        snowflake: to :cat ["snowflake"]
+        snowflake: to :cat ["snowflake" 3]
+
         snowflake\meow
         ; Mr. Snowflake: 'meow!'
 
         ; use `do -> snowflake\meow` instead 
         ; when running the above code from a file
+
+        add snowflake 3
+        snowflake\age
+        ; => 6
         """:
             #=======================================================
             let isDistinct = hadAttr("distinct")
