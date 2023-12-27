@@ -880,6 +880,9 @@ proc defineLibrary*() =
         snowflake: to :cat ["snowflake"]
         snowflake\meow
         ; Mr. Snowflake: 'meow!'
+
+        ; use `do -> snowflake\meow` instead 
+        ; when running the above code from a file
         """:
             #=======================================================
             let isDistinct = hadAttr("distinct")
