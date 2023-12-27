@@ -2483,7 +2483,7 @@ proc defineLibrary*() =
                 let s = toSeq(x.d.values)
                 push(newBlock(s))
             else:
-                let s = toSeq(x.o.values)
+                let s = toSeq(x.o.objectValues)
                 push(newBlock(s))
 
     #----------------------------
