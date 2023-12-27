@@ -315,6 +315,11 @@ proc RuntimeError_MissingArgumentForInitializer*(typeName: string, missing: stri
           "cannot initialize object of type _:" & (typeName) & "_;" &
           "missing field: " & $(missing)
 
+proc RuntimeError_UnsupportedParentType*(typeName: string) =
+    panic RuntimeError,
+          "subtyping built-in type _:" & (typeName) & "_;" &
+          "is not supported"
+
 proc RuntimeError_InvalidOperation*(operation: string, argA, argB: string) =
     panic RuntimeError,
             "invalid operation _" & operation & "_;" &

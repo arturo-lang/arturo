@@ -22,14 +22,15 @@
 when not defined(WEB):
     import oids
 
-import sequtils, sugar, tables, unicode
+import sequtils, strutils
+import sugar, tables, unicode
 
 import helpers/conversion
 import helpers/objects
 import helpers/ranges
 
 import vm/lib
-import vm/[errors, exec]
+import vm/[parse, errors, exec]
 
 #=======================================
 # Definitions
@@ -218,10 +219,12 @@ proc defineLibrary*() =
                 else:
                     RuntimeError_UsingUndefinedType(x.tid)
             else:
-                # TODO(Types\is) check if inherited type is a BuiltinType
-                #  how do we handle this?
-                #  labels: error handling, enhancement
-                discard
+                if x.t in {Integer, Floating, Rational, Complex, Quantity}:
+                    for k,v in newDictionary(execDictionary(doParse(GenerateNumericSubtype.replace("%TYPE%",":" & ($(x.t)).toLowerAscii()), isFile=false))).d:
+                        super[k] = v.uninjectingThis()
+                        definitions[k] = copyValue(v)
+                else:
+                    RuntimeError_UnsupportedParentType(($(x.t)).toLowerAscii())
 
             if y.kind == Block:
                 if (let constructorMethod = generatedConstructor(y.a); not constructorMethod.isNil):

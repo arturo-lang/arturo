@@ -25,6 +25,84 @@ const
     ThisRef*            = "this"
     SuperRef*           = "super"
 
+    GenerateNumericSubtype* = """
+        init: method [v %TYPE%][
+            this\value: v
+        ]
+
+        compare: method [that][
+            (is? %TYPE% that)? -> compare this\value that\value
+                               -> compare this\value that
+        ]
+
+        add: method [that][
+            to %TYPE% @[
+                add this\value (is? %TYPE% that)? -> that\value -> value
+            ]
+        ]
+
+        sub: method [that][
+            to %TYPE% @[
+                sub this\value (is? %TYPE% that)? -> that\value -> value
+            ]
+        ]
+
+        mul: method [that][
+            to %TYPE% @[
+                mul this\value (is? %TYPE% that)? -> that\value -> value
+            ]
+        ]
+
+        div: method [that][
+            to %TYPE% @[
+                div this\value (is? %TYPE% that)? -> that\value -> value
+            ]
+        ]
+
+        fdiv: method [that][
+            to %TYPE% @[
+                fdiv this\value (is? %TYPE% that)? -> that\value -> value
+            ]
+        ]
+
+        mod: method [that][
+            to %TYPE% @[
+                mod this\value (is? %TYPE% that)? -> that\value -> value
+            ]
+        ]
+
+        pow: method [that][
+            to %TYPE% @[
+                pow this\value (is? %TYPE% that)? -> that\value -> value
+            ]
+        ]
+
+        inc: method [][
+            to %TYPE% @[
+                inc this\value
+            ]
+        ]
+
+        dec: method [][
+            to %TYPE% @[
+                dec this\value
+            ]
+        ]
+
+        neg: method [][
+            to %TYPE% @[
+                neg this\value
+            ]
+        ]
+
+        string: method []-> to :string this\value
+        integer: method []-> to :integer this\value
+        floating: method []-> to :floating this\value
+        rational: method []-> to :rational this\value
+        complex: method []-> to :complex this\value
+        quantity: method []-> to :quantity this\value
+    """
+
 #=======================================
 # Helpers
 #=======================================
