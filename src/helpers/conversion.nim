@@ -363,8 +363,10 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat:Value = nil): Val
 
                             let arr: ValueArray = sTopsFrom(stop)
                             SP = stop
-
-                            return generateNewObject(getType(x.tid), arr)
+                            if (let xProto = getType(x.tid); not xProto.isNil):
+                                return generateNewObject(xProto, arr)
+                            else:
+                                RuntimeError_UsingUndefinedType(x.tid)
                         else:
                             throwCannotConvert()
 
@@ -440,7 +442,10 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat:Value = nil): Val
                         return newString($(y))
                     of Object:
                         if x.tpKind==UserType:
-                            return generateNewObject(getType(x.tid), y.d)
+                            if (let xProto = getType(x.tid); not xProto.isNil):
+                                return generateNewObject(xProto, y.d)
+                            else:
+                                RuntimeError_UsingUndefinedType(x.tid)
                         else:
                             throwCannotConvert()
                     of Bytecode:
