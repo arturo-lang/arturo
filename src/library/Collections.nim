@@ -34,6 +34,7 @@ import helpers/arrays
 import helpers/datasource
 import helpers/dictionaries
 import helpers/combinatorics
+import helpers/objects
 import helpers/ranges
 when not defined(WEB):
     import helpers/stores
@@ -592,28 +593,6 @@ proc defineLibrary*() =
 
                 push(res)
 
-    builtin "fields",
-        alias       = unaliased,
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "get list of fields for given object",
-        args        = {
-            "object": {Object}
-        },
-        attrs       = NoAttrs,
-        returns     = {Block},
-        # TODO(Collections\fields) add documentation example
-        #  labels: library, documentation, easy
-        example     = """
-        """:
-            #=======================================================
-            var s: seq[string]
-            for k,v in x.o:
-                if v.kind != Method:
-                    s.add(k)
-
-            push(newStringBlock(s))
-
     builtin "first",
         alias       = unaliased,
         op          = opNop,
@@ -993,6 +972,9 @@ proc defineLibrary*() =
             if xKind == Dictionary:
                 s = toSeq(x.d.keys)
             else:
+                for k,v in x.o.objectKeys:
+                    echo k & " => " & $(v.kind)
+        
                 var keysArr: seq[string]
                 for k,v in x.o:
                     if v.kind != Method:
