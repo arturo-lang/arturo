@@ -821,12 +821,15 @@ do [
 
 topic "get - :object"
 do [
-    define :person [name, surname][
-        init: ->
-            this\name: capitalize this\name
+    define :person [
+        init: method [name, surname][
+            this\name: capitalize name
+            this\surname: surname
+        ]
 
-        print: ->
+        string: method [][
             ~"NAME: |this\name|, SURNAME: |this\surname|"
+        ]
     ]
 
     p: to :person ["John" "Doe"]
@@ -895,16 +898,16 @@ topic "get - :bytecode"
 do [
     bt: to :bytecode [print "hello"]
     ensure -> ["hello"] = bt\data
-    ensure -> [32 189 218] = bt\code
+    ensure -> [32 205 234] = bt\code
     passed
     ensure -> ["hello"] = get bt 'data
-    ensure -> [32 189 218] = get bt 'code
+    ensure -> [32 205 234] = get bt 'code
     passed
     ensure -> ["hello"] = get bt "data"
-    ensure -> [32 189 218] = get bt "code"
+    ensure -> [32 205 234] = get bt "code"
     passed
     ensure -> ["hello"] = bt\["data"]
-    ensure -> [32 189 218] = bt\["code"]
+    ensure -> [32 205 234] = bt\["code"]
     passed
 ]
 
@@ -1224,12 +1227,15 @@ do [
 topic "key? - :object"
 do [
 
-    define :person [name, surname][
-        init: ->
-            this\name: capitalize this\name
+    define :person [
+        init: method [name, surname][
+            this\name: capitalize name
+            this\surname: surname
+        ]
 
-        print: ->
+        string: method [][
             ~"NAME: |this\name|, SURNAME: |this\surname|"
+        ]
     ]
 
     p: to :person ["John" "Doe"]
@@ -1257,16 +1263,19 @@ do [
 topic "keys - :object"
 do [
 
-    define :person [name, surname][
-        init: ->
-            this\name: capitalize this\name
+    define :person [
+        init: method [name, surname][
+            this\name: capitalize name
+            this\surname: surname
+        ]
 
-        print: ->
+        string: method [][
             ~"NAME: |this\name|, SURNAME: |this\surname|"
+        ]
     ]
 
     p: to :person ["John" "Doe"]
-    ensure -> ["name" "surname"] = keys p
+    ensure -> every? ["name" "surname"] => [contains? keys p &]
     passed
 ]
 
@@ -1446,13 +1455,6 @@ do [
     ensure -> one? #[name: "Jane"]
     ensure -> not? one? #[]
     ensure -> not? one? #[name: "Jane" surname: "Doe"]
-    passed
-
-    define :person [name, surname][]
-    define :pet [name][]
-    ensure -> one? to :pet ["Johnis"]
-    ensure -> one? to :person ["John"]
-    ensure -> not? one? to :person ["John" "Doe"]
     passed
 
     ensure -> one? [a]
@@ -2098,8 +2100,8 @@ do [
 topic "set - :object"
 do [
 
-    define :person [name, surname][]
-    user: to :person []
+    define :person [name, surname]
+    user: to :person ["some" "name"]
 
     set user 'name "John"
     ensure -> "John" = user\name
@@ -2238,12 +2240,10 @@ do [
     ensure -> 0 = size #[]
     passed
 
-    define :person [name, surname][]
-    p: to :person []
+    define :person [name, surname]
+    p: to :person ["John" "Doe"]
 
-    ensure -> 0 = size p
-    p\name: "Jane"
-    ensure -> 1 = size p
+    ensure -> 2 = size p
     passed
 
     ensure -> 0 = size null
@@ -3266,7 +3266,7 @@ do [
 
 topic "values - :object"
 do [
-    define :person [name, surname][]
+    define :person [name, surname]
     p: to :person ["John" "Doe"]
 
     ensure -> ["John" "Doe"] = values p
@@ -3320,15 +3320,6 @@ do [
     ensure -> zero? #[]
     ensure -> not? zero? #[name: "Jane"]
     ensure -> not? zero? #[name: "Jane" surname: "Doe"]
-    passed
-
-    define :person [name, surname][]
-    define :pet [name][]
-    ensure -> zero? to :pet []
-    ensure -> zero? to :person []
-    ensure -> not? zero? to :pet ["Johnis"]
-    ensure -> not? zero? to :person ["John"]
-    ensure -> not? zero? to :person ["John" "Doe"]
     passed
 
     ensure -> zero? []

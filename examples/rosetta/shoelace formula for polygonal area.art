@@ -1,4 +1,4 @@
-define :point [x,y][]
+define :point [x,y]
 
 shoelace: function [pts][
     [leftSum, rightSum]: 0
@@ -11,12 +11,12 @@ shoelace: function [pts][
     return 0.5 * abs leftSum - rightSum
 ]
 
-points: @[
-    to :point [3.0, 4.0]
-    to :point [5.0, 11.0]
-    to :point [12.0, 8.0]
-    to :point [9.0, 5.0]
-    to :point [5.0, 6.0]
+points: to [:point] [
+    [3.0, 4.0]
+    [5.0, 11.0]
+    [12.0, 8.0]
+    [9.0, 5.0]
+    [5.0, 6.0]
 ]
 
 print shoelace points

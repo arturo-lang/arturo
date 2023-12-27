@@ -128,7 +128,6 @@ proc getUsageForFunction(obj: ValueObj): seq[string] =
     
     let 
         args = toSeq(obj.val.info.args.pairs)
-        lenBefore = obj.name.len
         templateName = fmt"{bold()}{obj.name}{resetColor}"
         templateType = fmt"{fg(grayColor)}{getTypeString(args[0][1])}"
         

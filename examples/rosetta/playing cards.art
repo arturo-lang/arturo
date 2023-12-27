@@ -2,13 +2,16 @@ ranks: 1..13
 suits: ['♣', '♦', '♥', '♠']
 
 define :card [rank, suit][
-    init: [
+    init: method [rank, suit][
         ensure -> 
-            and? -> contains? ranks this\rank
-                 -> contains? suits this\suit
+            and? -> contains? ranks rank
+                 -> contains? suits suit
+
+        this\rank: rank
+        this\suit: suit
     ]
 
-    print: [
+    string: method [][
         R: ø
         case [this\rank=]
             when? [1] -> R: 'A'

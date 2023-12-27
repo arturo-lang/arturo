@@ -1,4 +1,4 @@
-define :myClass [name,surname][]
+define :myClass [name, surname]
 
 myInstance: to :myClass ["John" "Doe"]
 print myInstance

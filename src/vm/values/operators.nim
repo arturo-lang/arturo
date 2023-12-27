@@ -12,7 +12,7 @@
 # Libraries
 #=======================================
 
-import lenientops, macros, math, strutils
+import lenientops, macros, math, strutils, tables
 
 when defined(WEB):
     import std/jsbigints
@@ -22,7 +22,7 @@ when not defined(NOGMP):
 
 import helpers/intrinsics
 
-import vm/errors
+import vm/[errors, stack]
 
 import vm/values/types
 import vm/values/value
@@ -430,51 +430,23 @@ template normalIntegerShrI*(x: var Value, y: int): untyped =
     ## and set result in-place
     x.i = x.i shr y
 
-#=======================================
-# Methods
-#=======================================
+template objectOperationOrNothing*(operation: string, mgkMeth: MagicMethod, oneparam: static bool = false, inplace: static bool = false): untyped =
+    if x.kind == Object and x.magic.fetch(mgkMeth):
+        when inplace:
+            pushAttr("inplace", VTRUE)
+        
+        when oneparam:
+            mgk(@[x])
+        else:
+            mgk(@[x, y])
 
-# proc convertToTemperatureUnit*(v: Value, src: UnitName, tgt: UnitName): Value =
-#     ## convert given temperature value ``v`` from ``src`` unit to ``tgt``
-#     case src:
-#         of C:
-#             if tgt==F: return v * newFloating(9/5) + newInteger(32)
-#             elif tgt==K: return v + newFloating(273.15)
-#             else: return v * newFloating(9/5) + newFloating(491.67)
-#         of F:
-#             if tgt==C: return (v - newInteger(32)) * newFloating(5/9)
-#             elif tgt==K: return (v - newInteger(32)) * newFloating(5/9) + newFloating(273.15)
-#             else: return v + newFloating(459.67)
-#         of K: 
-#             if tgt==C: return v - newFloating(273.15)
-#             elif tgt==F: return (v-newFloating(273.15)) * newFloating(9/5) + newInteger(32)
-#             else: return v * newFloating(1.8)
-#         of R:
-#             if tgt==C: return (v - newFloating(491.67)) * newFloating(5/9)
-#             elif tgt==F: return v - newFloating(459.67)
-#             else: return v * newFloating(5/9)
-
-#         else: discard
-
-# proc convertQuantityValue*(nm: Value, fromU: UnitName, toU: UnitName, fromKind = NoUnit, toKind = NoUnit, op = ""): Value =
-#     ## convert given quantity value ``nm`` from ``fromU`` unit to ``toU`` 
-#     var fromK = fromKind
-#     var toK = toKind
-#     if fromK==NoUnit: fromK = quantityKindForName(fromU)
-#     if toK==NoUnit: toK = quantityKindForName(toU)
-
-#     if unlikely(fromK!=toK):
-#         when not defined(WEB):
-#             RuntimeError_CannotConvertQuantity($(nm), stringify(fromU), stringify(fromK), stringify(toU), stringify(toK))
-    
-#     if toK == TemperatureUnit:
-#         return convertToTemperatureUnit(nm, fromU, toU)
-#     else:
-#         let fmultiplier = getQuantityMultiplier(fromU, toU, isCurrency=fromK==CurrencyUnit)
-#         if fmultiplier == 1.0:
-#             return nm
-#         else:
-#             return nm * newFloating(fmultiplier)
+        when not inplace:
+            return stack.pop()
+    else:
+        when inplace:
+            discard invalidOperation(operation)
+        else:
+            return invalidOperation(operation)
 
 #=======================================
 # Overloads
@@ -518,7 +490,7 @@ proc `+`*(x: Value, y: Value): Value =
         of Quantity   || Rational       :   return newQuantity(x.q + y.rat)
         of Quantity   || Quantity       :   return newQuantity(x.q + y.q)
         else:
-            return invalidOperation("add")
+            objectOperationOrNothing("add", AddM)
 
 proc `+=`*(x: var Value, y: Value) =
     ## add given values
@@ -561,7 +533,7 @@ proc `+=`*(x: var Value, y: Value) =
         of Quantity   || Rational       :   x.q += y.rat
         of Quantity   || Quantity       :   x.q += y.q
         else:
-            discard invalidOperation("add")
+            objectOperationOrNothing("add", AddM, inplace=true)
 
 proc inc*(x: Value): Value =
     ## increment given value and return the result
@@ -575,7 +547,7 @@ proc inc*(x: Value): Value =
         of Complex: return newComplex(x.z+1.0)
         of Quantity: return newQuantity(x.q + 1)
         else:
-            return invalidOperation("inc")
+            objectOperationOrNothing("inc", IncM, oneparam=true)
 
 proc incI*(x: var Value) =
     ## increment given value
@@ -592,7 +564,7 @@ proc incI*(x: var Value) =
         of Complex: x.z = x.z + 1.0
         of Quantity: x.q += 1
         else:
-            discard invalidOperation("inc")
+            objectOperationOrNothing("inc", IncM, oneparam=true, inplace=true)
 
 proc `-`*(x: Value, y: Value): Value = 
     ## subtract given values and return the result
@@ -632,7 +604,7 @@ proc `-`*(x: Value, y: Value): Value =
         of Quantity   || Rational       :   return newQuantity(x.q - y.rat)
         of Quantity   || Quantity       :   return newQuantity(x.q - y.q)
         else:
-            return invalidOperation("sub")
+            objectOperationOrNothing("sub", SubM)
 
 proc `-=`*(x: var Value, y: Value) = 
     ## subtract given values
@@ -675,7 +647,7 @@ proc `-=`*(x: var Value, y: Value) =
         of Quantity   || Rational       :   x.q -= y.rat
         of Quantity   || Quantity       :   x.q -= y.q
         else:
-            discard invalidOperation("sub")
+            objectOperationOrNothing("sub", SubM, inplace=true)
 
 proc dec*(x: Value): Value =
     ## decrement given value and return the result
@@ -689,7 +661,7 @@ proc dec*(x: Value): Value =
         of Complex: return newComplex(x.z-1.0)
         of Quantity: return newQuantity(x.q - 1)
         else:
-            return invalidOperation("dec")
+            objectOperationOrNothing("dec", DecM, oneparam=true)
 
 proc decI*(x: var Value) =
     ## increment given value
@@ -706,7 +678,7 @@ proc decI*(x: var Value) =
         of Complex: x.z = x.z - 1.0
         of Quantity: x.q -= 1
         else:
-            discard invalidOperation("dec")
+            objectOperationOrNothing("dec", DecM, oneparam=true, inplace=true)
 
 proc `*`*(x: Value, y: Value): Value =
     ## multiply given values and return the result
@@ -761,7 +733,7 @@ proc `*`*(x: Value, y: Value): Value =
         of Unit       || Unit           :   return newUnit(flatten(x.u & y.u))
 
         else:
-            return invalidOperation("mul")
+            objectOperationOrNothing("mul", MulM)
 
 proc `*=`*(x: var Value, y: Value) =
     ## multiply given values
@@ -819,7 +791,7 @@ proc `*=`*(x: var Value, y: Value) =
         of Unit       || Unit           :   x.u = flatten(x.u & y.u)
 
         else:
-            discard invalidOperation("mul")
+            objectOperationOrNothing("mul", MulM, inplace=true)
 
 proc neg*(x: Value): Value =
     ## negate given value and return the result
@@ -833,7 +805,7 @@ proc neg*(x: Value): Value =
         of Complex: return newComplex(x.z*(-1.0))
         of Quantity: return newQuantity(x.q*(-1))
         else:
-            return invalidOperation("neg")
+            objectOperationOrNothing("neg", NegM, oneparam=true)
 
 proc negI*(x: var Value) =
     ## negate given value
@@ -850,7 +822,7 @@ proc negI*(x: var Value) =
         of Complex: x.z *= -1.0
         of Quantity: x.q *= -1
         else:
-            discard invalidOperation("neg")
+            objectOperationOrNothing("neg", NegM, oneparam=true, inplace=true)
 
 proc `/`*(x: Value, y: Value): Value =
     ## divide (integer division) given values and return the result
@@ -889,7 +861,7 @@ proc `/`*(x: Value, y: Value): Value =
         of Quantity   || Rational       :   return newQuantity(x.q / y.rat)
         of Quantity   || Quantity       :   return newQuantity(x.q / y.q)
         else:
-            return invalidOperation("div")
+            objectOperationOrNothing("div", DivM)
 
 proc `/=`*(x: var Value, y: Value) =
     ## divide (integer division) given values
@@ -931,7 +903,7 @@ proc `/=`*(x: var Value, y: Value) =
         of Quantity   || Rational       :   x.q /= y.rat
         of Quantity   || Quantity       :   x.q /= y.q
         else:
-            discard invalidOperation("div")
+            objectOperationOrNothing("div", DivM, inplace=true)
 
 proc `//`*(x: Value, y: Value): Value =
     ## divide (floating-point division) given values and return the result
@@ -961,7 +933,7 @@ proc `//`*(x: Value, y: Value): Value =
         of Quantity   || Rational       :   return newQuantity(x.q // y.rat)
         of Quantity   || Quantity       :   return newQuantity(x.q // y.q)
         else:
-            return invalidOperation("fdiv")
+            objectOperationOrNothing("fdiv", FDivM)
 
 proc `//=`*(x: var Value, y: Value) =
     ## divide (floating-point division) given values
@@ -994,7 +966,7 @@ proc `//=`*(x: var Value, y: Value) =
         of Quantity   || Rational       :   x.q //= y.rat
         of Quantity   || Quantity       :   x.q //= y.q
         else:
-            discard invalidOperation("fdiv")
+            objectOperationOrNothing("fdiv", FDivM, inplace=true)
 
 proc `%`*(x: Value, y: Value): Value =
     ## perform the modulo operation between given values and return the result
@@ -1024,7 +996,7 @@ proc `%`*(x: Value, y: Value): Value =
         # of Quantity   || Rational       :   return newQuantity(x.q % y.rat)
         # of Quantity   || Quantity       :   return newQuantity(x.q % y.q)
         else:
-            return invalidOperation("mod")
+            objectOperationOrNothing("mod", ModM)
 
 proc `%=`*(x: var Value, y: Value) =
     ## perform the modulo operation between given values
@@ -1056,7 +1028,7 @@ proc `%=`*(x: var Value, y: Value) =
         # of Quantity   || Rational       :   x.q %= y.rat
         # of Quantity   || Quantity       :   x.q %= y.q
         else:
-            discard invalidOperation("mod")
+            objectOperationOrNothing("mod", ModM, inplace=true)
 
 proc `/%`*(x: Value, y: Value): Value =
     ## perform the divmod operation between given values
@@ -1135,7 +1107,7 @@ proc `^`*(x: Value, y: Value): Value =
         # of Quantity   || Rational       :   return newQuantity(x.q ^ y.rat)
         # of Quantity   || Quantity       :   return newQuantity(x.q ^ y.q)
         else:
-            return invalidOperation("pow")
+            objectOperationOrNothing("pow", PowM)
 
 proc `^=`*(x: var Value, y: Value) =
     ## perform the power operation between given values
@@ -1169,7 +1141,7 @@ proc `^=`*(x: var Value, y: Value) =
         # of Quantity   || Rational       :   x.q ^= y.rat
         # of Quantity   || Quantity       :   x.q ^= y.q
         else:
-            discard invalidOperation("pow")
+            objectOperationOrNothing("pow", PowM, inplace=true)
 
 proc `&&`*(x: Value, y: Value): Value =
     ## perform binary-AND between given values and return the result
