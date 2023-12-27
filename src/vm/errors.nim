@@ -298,6 +298,12 @@ proc RuntimeError_IncompatibleBlockSize*(functionName: string, got: int, expecte
           "incompatible block size: " & $(got) & ";" &
           "expected: " & $(expected)
 
+proc RuntimeError_UsingUndefinedType*(typeName: string) =
+    panic RuntimeError,
+          "using undefined or unknown type _:" & (typeName) & "_;" &
+          "you should make sure it has been properly" & ";" &
+          "initialized using `define`"
+
 proc RuntimeError_IncorrectNumberOfArgumentsForInitializer*(typeName: string, got: int, expected: seq[string]) =
     panic RuntimeError,
           "cannot initialize object of type _:" & (typeName) & "_;" &
