@@ -898,6 +898,9 @@ proc defineLibrary*() =
         snowflake\add 3
         print snowflake\age
         ; => 9
+
+        ; use `do [snowflake\add 3]` instead
+        ; when running the above code from a file
         """:
             #=======================================================
             let isDistinct = hadAttr("distinct")
