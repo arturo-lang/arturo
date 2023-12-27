@@ -219,12 +219,13 @@ proc defineLibrary*() =
                 else:
                     RuntimeError_UsingUndefinedType(x.tid)
             else:
-                if x.t in {Integer, Floating, Rational, Complex, Quantity}:
-                    for k,v in newDictionary(execDictionary(doParse(GenerateNumericSubtype.replace("%TYPE%",":" & ($(x.t)).toLowerAscii()), isFile=false))).d:
-                        super[k] = v.uninjectingThis()
-                        definitions[k] = copyValue(v)
-                else:
-                    RuntimeError_UnsupportedParentType(($(x.t)).toLowerAscii())
+                # DRAFT:
+                # if x.t in {Integer, Floating, Rational, Complex, Quantity}:
+                #     for k,v in newDictionary(execDictionary(doParse(GenerateNumericSubtype.replace("%TYPE%",":" & ($(x.t)).toLowerAscii()), isFile=false))).d:
+                #         super[k] = v.uninjectingThis()
+                #         definitions[k] = copyValue(v)
+                # else:
+                RuntimeError_UnsupportedParentType(($(x.t)).toLowerAscii())
 
             if y.kind == Block:
                 if (let constructorMethod = generatedConstructor(y.a); not constructorMethod.isNil):
