@@ -1275,7 +1275,6 @@ do [
     ]
 
     p: to :person ["John" "Doe"]
-    inspect p
     ensure -> every? ["name" "surname"] => [contains? keys p &]
     passed
 ]
