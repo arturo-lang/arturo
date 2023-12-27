@@ -52,8 +52,6 @@ proc defineLibrary*() =
         },
         attrs       = NoAttrs,
         returns     = {Method},
-        # TODO(Types\constructor) add documentation example
-        #  labels: library, documentation, easy
         example     = """
             define :cat [
                 init: constructor [nick :string]
