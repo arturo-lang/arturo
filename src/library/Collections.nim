@@ -1078,8 +1078,6 @@ proc defineLibrary*() =
         },
         attrs       = NoAttrs,
         returns     = {Block},
-        # TODO(Collections\methods) add documentation example
-        #  labels: library, documentation, easy
         example     = """
         define :cat [
             init: method [nick][
