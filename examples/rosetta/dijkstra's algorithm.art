@@ -1,4 +1,4 @@
-define :graph [vertices, neighbours][]
+define :graph [vertices, neighbours]
 
 initGraph: function [edges][
     vs: []

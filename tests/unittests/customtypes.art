@@ -7,53 +7,50 @@
 ; :PERSON
 ;===========================
 
-define :person [                            ; define a new custom type "Person"
-    name                                    ; with fields: name, surname
-    surname
-][ 
-    init: [
-        this\name: capitalize this\name
+define :person [                            
+    ; define a new custom type "Person"
+    ; with fields: name, surname 
+    init: method [name, surname][
+        this\name: capitalize name
+        this\surname: surname
     ]
 
-    print: [
+    string: method [][
         render "NAME: |this\name|, SURNAME: |this\surname|"
     ]
-]
 
-sayHello: function [this][
-    ensure -> is? :person this
-
-    print ["Hello" this\name]
+    sayHello: method [][
+        print ["Hello" this\name]
+    ]
 ]
 
 a: to :person ["John" "Doe"]                    ; let's create 2 "Person"s
 b: to :person ["jane" "Doe"]                    ; and another one
 
-sayHello a                                      ; call inner method
-sayHello b
+do [
+    a\sayHello                                      ; call inner method
+    b\sayHello
 
-print ["The first person's name is:" a\name]    ; access inner field directly
-print ["The second person's name is:" b\name]
+    print ["The first person's name is:" a\name]    ; access inner field directly
+    print ["The second person's name is:" b\name]
 
-a\name: "Bob"                                   ; change inner field
-sayHello a                                      ; and verify persistence
+    a\name: "Bob"                                   ; change inner field
+    a\sayHello                                      ; and verify persistence
 
-print type a                                    ; verify object type
-print is? :person a                             ; and again with `is?`
+    print type a                                    ; verify object type
+    print is? :person a                             ; and again with `is?`
 
-print a                                         ; inspect final objects' state
-print b
+    print a                                         ; inspect final objects' state
+    print b
+]
 
 ;===========================
 ; :CAR
 ;===========================
 
-define :car [brand model year][
-    compare: [
-        if this\year = that\year -> return 0
-        if this\year > that\year -> return 1
-        return neg 1
-    ]
+define :car [
+    init: constructor [brand, model, year]
+    compare: sortable 'year
 ]
 
 c: to :car #[brand: "Ford" model: "Mustang" year: 1967]

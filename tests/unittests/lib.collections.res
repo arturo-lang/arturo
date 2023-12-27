@@ -450,7 +450,6 @@
 [+] passed!
 [+] passed!
 [+] passed!
-[+] passed!
 
 >> permutate
 [+] passed!
@@ -861,7 +860,6 @@
 [+] passed!
 
 >> zero?
-[+] passed!
 [+] passed!
 [+] passed!
 [+] passed!

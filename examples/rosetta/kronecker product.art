@@ -1,5 +1,9 @@
-define :matrix [X][
-    print: [
+define :matrix [
+    init: method [X][
+        this\X: X
+    ]
+
+    string: method [][
         result: ""
         loop this\X 'arr [
             result: result ++ "[" ++ 

@@ -23,8 +23,7 @@ when not defined(NOGMP):
 
 import helpers/terminal as TerminalHelper
 
-import vm/globals
-import vm/opcodes
+import vm/[globals, opcodes, stack]
 import vm/values/value
 
 import vm/values/custom/[vbinary, vcolor, vcomplex, verror, vlogical, vquantity, vrange, vrational, vregex, vsocket, vversion]
@@ -45,6 +44,20 @@ when defined(WEB):
     proc flushFile*(buffer: var string) =
         echo buffer
 
+# repeated from Helpers/objects
+# to avoid recursive imports
+iterator objectKeys(vd: ValueDict): string =
+    for k,v in vd:
+        if v.kind != Method:
+            yield k
+
+# repeated from Helpers/objects
+# to avoid recursive imports
+iterator objectPairs(vd: ValueDict): (string, Value) =
+    for k,v in vd:
+        if v.kind != Method:
+            yield (k,v)
+
 #=======================================
 # Methods
 #=======================================
@@ -57,7 +70,7 @@ proc valueKind*(v: Value, withBigInfo: static bool = false): string {.inline.} =
         if v.tpKind==BuiltinType:
             result = stringify(v.t)
         else:
-            result = ":" & v.ts.name
+            result = ":" & v.tid#s.name
     else:
         result = stringify(v.kind)
         when withBigInfo:
@@ -137,11 +150,12 @@ proc `$`*(v: Value): string {.inline.} =
             result = "[" & items.join(" ") & "]"
 
         of Object:
-            if (let printMethod = v.proto.methods.getOrDefault("print", nil); not printMethod.isNil):
-                return v.proto.doPrint(v)
+            if v.magic.fetch(ToStringM):
+                mgk(@[v])
+                return stack.pop().s
             else:
                 var items: seq[string]
-                for key,value in v.o:
+                for key,value in v.o.objectPairs:
                     items.add(key  & ":" & $(value))
 
                 result = "[" & items.join(" ") & "]"
@@ -162,6 +176,11 @@ proc `$`*(v: Value): string {.inline.} =
                 result &= "(" & fmt("{cast[uint](v.main):#X}") & ")"
             else:
                 result &= "<function:builtin>" 
+
+        of Method       :
+            result = ""
+            result &= "<method>" & $(newWordBlock(v.mparams))
+            result &= "(" & fmt("{cast[uint](v.mmain):#X}") & ")"
 
         of Database:
             when not defined(NOSQLITE):
@@ -251,7 +270,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
             if v.tpKind==BuiltinType:
                 dumpPrimitive(($(v.t)).toLowerAscii(), v)
             else:
-                dumpPrimitive(v.ts.name, v)
+                dumpPrimitive(v.tid, v)
         of Char         : dumpPrimitive($(v.c), v)
         of String       : dumpPrimitive(v.s, v)
         
@@ -372,12 +391,12 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
         of Object   : 
             dumpBlockStart(v)
 
-            let keys = toSeq(v.o.keys)
+            let keys = toSeq(v.o.objectKeys)
 
             if keys.len > 0:
                 let maxLen = (keys.map(proc (x: string):int = x.len)).max + 2
 
-                for key,value in v.o:
+                for key,value in v.o.objectPairs:
                     for i in 0..level: stdout.write "        "
 
                     stdout.write unicode.alignLeft(key & " ", maxLen) & ":"
@@ -395,6 +414,16 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
             else:
                 for i in 0..level: stdout.write "        "
                 stdout.write "(builtin)"
+
+            stdout.write "\n"
+
+            dumpBlockEnd()
+
+        of Method       :
+            dumpBlockStart(v)
+
+            dump(newWordBlock(v.mparams), level+1, false, muted=muted)
+            dump(v.mmain, level+1, true, muted=muted)
 
             stdout.write "\n"
 
@@ -471,6 +500,11 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
 #  Check: `print as.pretty.code.unwrapped info.get 'get`
 #  labels: values,enhancement,library
 
+# TODO(VM/values/printable) Implement `as.code` for Object values
+#  we should over a magic method for that - `asCode`? - and if it's not
+#  there, either throw an error, or do sth (but what?!)
+#  labels: values,enhancement,oop
+
 proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: bool=false, isKeyVal: bool=false, safeStrings: bool = false): string {.inline.} =
     result = ""
 
@@ -505,7 +539,7 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
             if v.tpKind==BuiltinType:
                 result &= ":" & ($v.t).toLowerAscii()
             else:
-                result &= ":" & v.ts.name
+                result &= ":" & v.tid
         of Char         : result &= "'" & $(v.c) & "'"
         of String       : 
             if safeStrings:
@@ -612,6 +646,13 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
                     if val==v:
                         result &= "var'" & sym
                         break
+
+        of Method:
+            result &= "method "
+            result &= codify(newWordBlock(v.mparams),pretty,unwrapped,level+1, false, safeStrings=safeStrings)
+
+            result &= " "
+            result &= codify(v.mmain,pretty,unwrapped,level+1, true, safeStrings=safeStrings)
 
         else:
             result &= ""

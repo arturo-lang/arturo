@@ -29,6 +29,7 @@
 import algorithm, sequtils, sugar, unicode
 
 import helpers/dictionaries
+import helpers/objects
 import helpers/ranges
 
 import vm/lib
@@ -37,7 +38,7 @@ import vm/[errors, eval, exec]
 import vm/values/custom/vrange
 
 #=======================================
-# Helpers
+# Definitions
 #=======================================
 
 template iteratorLoop(justLiteral: bool, forever: bool, before: untyped, body: untyped) {.dirty.} =
@@ -306,7 +307,7 @@ template fetchIterableItems(doesAcceptLiterals=true, defaultReturn: untyped) {.d
             of Dictionary:
                 iterable.d.flattenedDictionary()
             of Object:
-                iterable.o.flattenedDictionary()
+                iterable.o.flattenedObject()
             of String:
                 toSeq(runes(iterable.s)).map((w) => newChar(w))
             of Integer:
@@ -418,7 +419,11 @@ template doIterate(
 # Methods
 #=======================================
 
-proc defineSymbols*() =
+proc defineLibrary*() =
+
+    #----------------------------
+    # Functions
+    #----------------------------
 
     builtin "arrange",
         alias       = unaliased,
@@ -698,47 +703,6 @@ proc defineSymbols*() =
                     cntr += 1
             do:
                 push(newInteger(cntr))
-
-    builtin "every?",
-        alias       = unaliased,
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "check if every item in collection satisfies given condition",
-        args        = {
-            "collection"    : {Integer,String,Block,Range,Inline,Dictionary,Object},
-            "params"        : {Literal,Block,Null},
-            "condition"     : {Block,Bytecode}
-        },
-        attrs       = {
-            "with"      : ({Literal},"use given index")
-        },
-        returns     = {Logical},
-        example     = """
-            if every? [2 4 6 8] 'x [even? x]
-                -> print "every number is an even integer"
-            ; every number is an even integer
-            ..........
-            print every? 1..10 'x -> x < 11
-            ; true
-            ..........
-            print every? 1..10 [x y]-> 20 > x+y
-            ; true
-            ..........
-            print every? [2 3 5 7 11 14] 'x [prime? x]
-            ; false
-            ..........
-            print every?.with:'i ["one" "two" "three"] 'x -> 4 > (size x)-i
-            ; true
-        """:
-            #=======================================================
-            doIterate(itLit=false, itCap=false, itInf=false, itCounter=false, itRolling=false, VFALSE):
-                discard
-            do:
-                if isFalse(stack.pop()):
-                    push(VFALSE)
-                    return
-            do:
-                push(VTRUE)
 
     builtin "filter",
         alias       = unaliased,
@@ -1267,7 +1231,7 @@ proc defineSymbols*() =
                         if unlikely(inPlace): RawInPlaced = newBlock(selected)
                         else: push(newBlock(selected))
 
-    # TODO(Iterators/select) should `.first` & `.last` return just one element?
+    # TODO(Iterators\select) should `.first` & `.last` return just one element?
     #  Right now, they both return a block with this one element inside. 
     #  The original idea was that since `.first` can either be a switch-type of 
     #  attribute or an attributeLabel (that is: taking an argument), it would
@@ -1427,6 +1391,51 @@ proc defineSymbols*() =
                     if unlikely(inPlace): RawInPlaced = newBlock(res)
                     else: push(newBlock(res))
 
+    #----------------------------
+    # Predicates
+    #----------------------------
+
+    builtin "every?",
+        alias       = unaliased,
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "check if every item in collection satisfies given condition",
+        args        = {
+            "collection"    : {Integer,String,Block,Range,Inline,Dictionary,Object},
+            "params"        : {Literal,Block,Null},
+            "condition"     : {Block,Bytecode}
+        },
+        attrs       = {
+            "with"      : ({Literal},"use given index")
+        },
+        returns     = {Logical},
+        example     = """
+            if every? [2 4 6 8] 'x [even? x]
+                -> print "every number is an even integer"
+            ; every number is an even integer
+            ..........
+            print every? 1..10 'x -> x < 11
+            ; true
+            ..........
+            print every? 1..10 [x y]-> 20 > x+y
+            ; true
+            ..........
+            print every? [2 3 5 7 11 14] 'x [prime? x]
+            ; false
+            ..........
+            print every?.with:'i ["one" "two" "three"] 'x -> 4 > (size x)-i
+            ; true
+        """:
+            #=======================================================
+            doIterate(itLit=false, itCap=false, itInf=false, itCounter=false, itRolling=false, VFALSE):
+                discard
+            do:
+                if isFalse(stack.pop()):
+                    push(VFALSE)
+                    return
+            do:
+                push(VTRUE)
+
     builtin "some?",
         alias       = unaliased,
         op          = opNop,
@@ -1475,4 +1484,4 @@ proc defineSymbols*() =
 # Add Library
 #=======================================
 
-Libraries.add(defineSymbols)
+Libraries.add(defineLibrary)

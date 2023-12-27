@@ -1,28 +1,50 @@
 
+#=======================================================
+# Arturo
+# Programming Language + Bytecode VM compiler
+# (c) 2019-2023 Yanis Zafirópulos
+#
+# @file: library/Exceptions.nim
+#=======================================================
+
+## The main Exceptions module 
+## (part of the standard library)
+
+#=======================================
+# Pragmas
+#=======================================
+
 {.used.}
+
+#=======================================
+# Libraries
+#=======================================
 
 import vm/lib
 import vm/exec
 import vm/errors
 import vm/values/custom/verror
 
+#=======================================
+# Definitions
+#=======================================
+
 proc defineSymbols*() =
 
-    constant "genericError",
-        alias       = unaliased,
-        description = "A generic :errorKind":
-            newErrorKind(verror.genericErrorKind)
+    #----------------------------
+    # Functions
+    #----------------------------
 
     builtin "throw",
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "throws an :error",
+        description = "throw an error with given message",
         args        = {
             "message": {String, ErrorKind}
         },
         attrs       = {
-            "as": ({ErrorKind}, "throws an :error as some specific :errorKind")
+            "as": ({ErrorKind}, "consider the error as one of given subtype")
         },
         returns     = {Nothing},
         example     = """
@@ -49,7 +71,6 @@ proc defineSymbols*() =
             ; => 404: Page not Found
             err\message
             ; => 404: Page not Found
-
         """:
             #=======================================================
             let kind: VErrorKind = if checkAttr "as":
@@ -144,5 +165,14 @@ proc defineSymbols*() =
                 push newError(e)
                 if verbose:
                     showVMErrors(e)
+
+    #----------------------------
+    # Constants
+    #----------------------------
+
+    constant "genericError",
+        alias       = unaliased,
+        description = "a generic error":
+            newErrorKind(verror.genericErrorKind)
 
 Libraries.add(defineSymbols)

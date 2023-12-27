@@ -28,11 +28,13 @@ when not defined(NOGMP):
     import helpers/bignums as BignumsHelper
 
 import algorithm, os, random, sequtils
-import strutils, sugar, unicode
+import strutils, sugar, tables, unicode
 
 import helpers/arrays
+import helpers/datasource
 import helpers/dictionaries
 import helpers/combinatorics
+import helpers/objects
 import helpers/ranges
 when not defined(WEB):
     import helpers/stores
@@ -40,16 +42,20 @@ import helpers/strings
 import helpers/unisort
 
 import vm/lib
-
+import vm/[exec, parse]
 import vm/values/custom/[vbinary, vrange]
 
 import vm/errors as err
 
 #=======================================
-# Methods
+# Definitions
 #=======================================
 
-proc defineSymbols*() =
+proc defineLibrary*() =
+
+    #----------------------------
+    # Functions
+    #----------------------------
 
     builtin "append",
         alias       = doubleplus,
@@ -57,11 +63,11 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "append value to given collection",
         args        = {
-            "collection": {String, Char, Block, Binary, Literal},
+            "collection": {String, Char, Block, Object, Binary, Literal},
             "value"     : {Any}
         },
         attrs       = NoAttrs,
-        returns     = {String, Block, Binary, Nothing},
+        returns     = {String, Block, Object, Binary, Nothing},
         example     = """
             append "hell" "o"         ; => "hello"
             append [1 2 3] 4          ; => [1 2 3 4]
@@ -96,6 +102,12 @@ proc defineSymbols*() =
                         InPlaced.n &= y.n
                     elif yKind == Integer:
                         InPlaced.n &= numberToBinary(y.i)
+                elif InPlaced.kind == Object:
+                    if InPlaced.magic.fetch(AppendM):
+                        pushAttr("inplace", VTRUE)
+                        mgk(@[InPlaced, y])
+                    else:
+                        discard
                 else:
                     if yKind == Block:
                         InPlaced.a.add(y.a)
@@ -117,12 +129,102 @@ proc defineSymbols*() =
                         push(newBinary(x.n & y.n))
                     elif yKind == Integer:
                         push(newBinary(x.n & numberToBinary(y.i)))
+                elif xKind == Object:
+                    if x.magic.fetch(AppendM):
+                        mgk(@[x, y]) # value already pushed
+                    else:
+                        # TODO(Collections\append) no magic method for object values should be an error
+                        #  labels: library, oop, error handling
+                        discard
                 else:
                     if yKind==Block:
                         push newBlock(x.a & y.a)
                     else:
                         push newBlock(x.a & y)
 
+    builtin "array",
+        alias       = at,
+        op          = opArray,
+        rule        = PrefixPrecedence,
+        description = "create array from given block, by reducing/calculating all internal values",
+        args        = {
+            "source": {Any}
+        },
+        attrs       = {
+            "of"    : ({Integer,Block},"initialize an empty n-dimensional array with given dimensions")
+        },
+        returns     = {Block},
+        example     = """
+            none: @[]               ; none: []
+            a: @[1 2 3]             ; a: [1 2 3]
+
+            b: 5
+            c: @[b b+1 b+2]         ; c: [5 6 7]
+
+            d: @[
+                3+1
+                print "we are in the block"
+                123
+                print "yep"
+            ]
+            ; we are in the block
+            ; yep
+            ; => [4 123]
+            ..........
+            ; initializing empty array with initial value
+            x: array.of: 2 "done"
+            inspect.muted x
+            ; [ :block
+            ;     done :string
+            ;     done :string
+            ; ]
+            ..........
+            ; initializing empty n-dimensional array with initial value
+            x: array.of: [3 4] 0          ; initialize a 3x4 2D array
+                                            ; with zeros
+            ; => [[0 0 0 0] [0 0 0 0] [0 0 0 0]]
+        """:
+            #=======================================================
+            if checkAttr("of"):
+                if aOf.kind == Integer:
+                    let size = aOf.i
+                    let blk:ValueArray = safeRepeat(x, size)
+                    push newBlock(blk)
+                else:
+                    var val: Value = copyValue(x)
+                    var blk: ValueArray
+
+                    for item in aOf.a.reversed:
+                        requireValue(item, {Integer})
+                        blk = safeRepeat(val, item.i)
+                        val = newBlock(blk.map((v)=>copyValue(v)))
+
+                    push newBlock(blk)
+            else:
+                if xKind==Range:
+                    push(newBlock(toSeq(items(x.rng))))
+                else:
+                    if xKind==Block:
+                        let stop = SP
+                        execUnscoped(x)
+                        let arr: ValueArray = sTopsFrom(stop)
+                        SP = stop
+
+                        push(newBlock(arr))
+                    elif xKind==String:
+                        let stop = SP
+                        let (_{.inject.}, tp) = getSource(x.s)
+
+                        if tp!=TextData:
+                            execUnscoped(doParse(x.s, isFile=false))
+                        else:
+                            RuntimeError_FileNotFound(x.s)
+                        let arr: ValueArray = sTopsFrom(stop)
+                        SP = stop
+
+                        push(newBlock(arr))
+                    else:
+                        push(newBlock(@[x]))
 
     builtin "chop",
         alias       = unaliased,
@@ -197,8 +299,7 @@ proc defineSymbols*() =
                     else: push(newBlock())
                 else: discard
 
-
-    # TODO(Collections/combine) should also work with in-place Literals?
+    # TODO(Collections\combine) should also work with in-place Literals?
     #  labels: library, enhancement, open discussion
     builtin "combine",
         alias       = unaliased,
@@ -247,111 +348,7 @@ proc defineSymbols*() =
                 push(newBlock(getCombinations(x.a, sz, doRepeat).map((
                         z)=>newBlock(z))))
 
-
-    # TODO(Collections/contains?) add new `.key` option?
-    #  this would allow us to check whether the given dictionary contains a specific key
-    #  instead of a value, which is the default way `contains?` works right now with dictionaries
-    #  labels: library, enhancement, open discussion
-    builtin "contains?",
-        alias       = unaliased,
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "check if collection contains given value",
-        args        = {
-            "collection": {String, Block, Range, Dictionary},
-            "value"     : {Any}
-        },
-        attrs       = {
-            "at"    : ({Integer}, "check at given location within collection"),
-            "deep"    : ({Logical}, "searches recursively in deep for a value.")
-        },
-        returns     = {Logical},
-        example     = """
-            arr: [1 2 3 4]
-
-            contains? arr 5             ; => false
-            contains? arr 2             ; => true
-            ..........
-            user: #[
-                name: "John"
-                surname: "Doe"
-            ]
-
-            contains? dict "John"       ; => true
-            contains? dict "Paul"       ; => false
-
-            contains? keys dict "name"  ; => true
-            ..........
-            contains? "hello" "x"       ; => false
-            contains? "hello" `h`       ; => true
-            ..........
-            contains?.at:1 "hello" "el" ; => true
-            contains?.at:4 "hello" `o`  ; => true
-            ..........
-            print contains?.at:2 ["one" "two" "three"] "two"
-            ; false
-
-            print contains?.at:1 ["one" "two" "three"] "two"
-            ; true
-            ..........
-            print contains?.deep [1 2 4 [3 4 [5 6] 7] 8 [9 10]] 6
-            ; true
-            ..........
-            user: #[ 
-                name: "John" surname: "Doe"
-                mom: #[ name: "Jane" surname: "Doe" ]
-            ]
-            
-            print contains?.deep user "Jane"
-            ; true
-        """:
-            #=======================================================
-            if checkAttr("at"):
-                let at = aAt.i
-                case xKind:
-                    of String:
-                        if yKind == Regex:
-                            push(newLogical(x.s.contains(y.rx, at)))
-                        elif yKind == Char:
-                            push(newLogical(toRunes(x.s)[at] == y.c))
-                        else:
-                            push(newLogical(x.s.continuesWith(y.s, at)))
-                    of Block:
-                        push(newLogical(x.a[at] == y))
-                    of Range:
-                        push(newLogical(x.rng[at] == y))
-                    of Dictionary:
-                        let values = toSeq(x.d.values)
-                        push(newLogical(values[at] == y))
-                    else:
-                        discard
-            else:
-                case xKind:
-                    of String:
-                        if yKind == Regex:
-                            push(newLogical(x.s.contains(y.rx)))
-                        elif yKind == Char:
-                            push(newLogical($(y.c) in x.s))
-                        else:
-                            push(newLogical(y.s in x.s))
-                    of Block:
-                        if hadAttr("deep"):
-                            push newLogical(x.a.inNestedBlock(y))
-                        else:
-                            push(newLogical(y in x.a))
-                    of Range:
-                        push(newLogical(y in x.rng))
-                    of Dictionary:
-                        if hadAttr("deep"):
-                            let values: ValueArray = x.d.getValuesinDeep()
-                            push newLogical(y in values)
-                        else:
-                            let values = toSeq(x.d.values)
-                            push(newLogical(y in values))
-                    else:
-                        discard
-
-    # TODO(Collections/couple) should work with in-place Literals
+    # TODO(Collections\couple) should work with in-place Literals
     #  labels: library, enhancement
     builtin "couple",
         alias       = unaliased,
@@ -396,7 +393,78 @@ proc defineSymbols*() =
             else:
                 let res = unzip(x.a.map((z)=>(requireValue(z,{Block,Inline});(z.a[0], z.a[1]))))
                 push(newBlock(@[newBlock(res[0]), newBlock(res[1])]))
-                
+
+    builtin "dictionary",
+        alias       = sharp,
+        op          = opDict,
+        rule        = PrefixPrecedence,
+        description = "create dictionary from given block or file, by getting all internal symbols",
+        args        = {
+            "source": {String,Block}
+        },
+        attrs       = {
+            "with"  : ({Block},"embed given symbols"),
+            "raw"   : ({Logical},"create dictionary from raw block"),
+            "lower" : ({Logical},"automatically convert all keys to lowercase")
+        },
+        returns     = {Dictionary},
+        example     = """
+            none: #[]               ; none: []
+            a: #[
+                name: "John"
+                age: 34
+            ]
+            ; a: [name: "John", age: 34]
+
+            d: #[
+                name: "John"
+                print "we are in the block"
+                age: 34
+                print "yep"
+            ]
+            ; we are in the block
+            ; yep
+            ; d: [name: "John", age: 34]
+            ..........
+            e: #.lower [
+                Name: "John"
+                suRnaMe: "Doe"
+                AGE: 35
+            ]
+            ; e: [name:John, surname:Doe, age:35]
+        """:
+            #=======================================================
+            var dict: ValueDict
+
+            if xKind==Block:
+                if (hadAttr("raw")):
+                    dict = initOrderedTable[string,Value]()
+                    var idx = 0
+                    while idx < x.a.len:
+                        dict[x.a[idx].s] = x.a[idx+1]
+                        idx += 2
+                else:
+                    dict = execDictionary(x)
+            elif xKind==String:
+                let (src, tp) = getSource(x.s)
+
+                if tp!=TextData:
+                    dict = execDictionary(doParse(src, isFile=false))#, isIsolated=true)
+                else:
+                    RuntimeError_FileNotFound(x.s)
+
+            if checkAttr("with"):
+                for x in aWith.a:
+                    requireValue(x, {Word,Literal})
+                    dict[x.s] = FetchSym(x.s)
+
+            if (hadAttr("lower")):
+                var oldDict = dict
+                dict = initOrderedTable[string,Value]()
+                for k,v in pairs(oldDict):
+                    dict[k.toLower()] = v
+
+            push(newDictionary(dict))
 
     builtin "drop",
         alias       = unaliased,
@@ -494,32 +562,6 @@ proc defineSymbols*() =
                 of String: InPlaced.s = ""
                 of Block: InPlaced.a = @[]
                 of Dictionary: InPlaced.d = initOrderedTable[string, Value]()
-                else: discard
-
-    builtin "empty?",
-        alias       = unaliased,
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "check if given collection is empty",
-        args        = {
-            "collection": {String, Block, Dictionary, Null}
-        },
-        attrs       = NoAttrs,
-        returns     = {Logical},
-        example     = """
-            empty? ""             ; => true
-            empty? []             ; => true
-            empty? #[]            ; => true
-
-            empty? [1 "two" 3]    ; => false
-        """:
-            #=======================================================
-            case xKind:
-                of Null: push(VTRUE)
-                of String: push(newLogical(x.s == ""))
-                of Block:
-                    push(newLogical(x.a.len == 0))
-                of Dictionary: push(newLogical(x.d.len == 0))
                 else: discard
 
     builtin "extend",
@@ -720,9 +762,19 @@ proc defineSymbols*() =
                 of Object:
                     case yKind:
                         of String, Word, Literal, Label:
-                            push(GetKey(x.o, y.s))
+                            if (let got = GetKey(x.o, y.s, withError=false); not got.isNil):
+                                push(got)
+                            elif x.magic.fetch(GetM):
+                                mgk(@[x, y]) # value already pushed
+                            else:
+                                discard GetKey(x.o, y.s) # Merely to trigger the error
                         else:
-                            push(GetKey(x.o, $(y)))
+                            if (let got = GetKey(x.o, $(y), withError=false); not got.isNil):
+                                push(got)
+                            elif x.magic.fetch(GetM):
+                                mgk(@[x, y]) # value already pushed
+                            else:
+                                discard GetKey(x.o, $(y)) # Merely to trigger the error
                 of Store:
                     when not defined(WEB):
                         case yKind:
@@ -780,110 +832,7 @@ proc defineSymbols*() =
                 else: 
                     discard
 
-
-    # TODO(Collections/in?) add new `.key` option?
-    #  same as with `contains?`
-    #  labels: library, enhancement, open discussion
-    builtin "in?",
-        alias       = unaliased,
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "check if value exists in given collection",
-        args        = {
-            "value"     : {Any},
-            "collection": {String, Block, Range, Dictionary}
-        },
-        attrs       = {
-            "at"    : ({Integer}, "check at given location within collection"),
-            "deep"    : ({Logical}, "searches recursively in deep for a value.")
-        },
-        returns     = {Logical},
-        example     = """
-            arr: [1 2 3 4]
-
-            in? 5 arr             ; => false
-            in? 2 arr             ; => true
-            ..........
-            user: #[
-                name: "John"
-                surname: "Doe"
-            ]
-
-            in? "John" dict       ; => true
-            in? "Paul" dict       ; => false
-
-            in? "name" keys dict  ; => true
-            ..........
-            in? "x" "hello"       ; => false
-            in? `h` "hello"       ; => true
-            ..........
-            in?.at:1 "el" "hello" ; => true
-            in?.at:4 `o` "hello"  ; => true
-            ..........
-            print in?.at:2 "two" ["one" "two" "three"]
-            ; false
-
-            print in?.at:1 "two" ["one" "two" "three"]
-            ; true
-            ..........
-            print in?.deep 6 [1 2 4 [3 4 [5 6] 7] 8 [9 10]]
-            ; true
-            ..........
-            user: #[ 
-                name: "John" surname: "Doe"
-                mom: #[ name: "Jane" surname: "Doe" ]
-            ]
-            
-            print in?.deep "Jane" user
-            ; true
-        """:
-            #=======================================================
-            if checkAttr("at"):
-                let at = aAt.i
-                case yKind:
-                    of String:
-                        if xKind == Regex:
-                            push(newLogical(y.s.contains(x.rx, at)))
-                        elif xKind == Char:
-                            push(newLogical(toRunes(y.s)[at] == x.c))
-                        else:
-                            push(newLogical(y.s.continuesWith(x.s, at)))
-                    of Block:
-                        push(newLogical(y.a[at] == x))
-                    of Range:
-                        push(newLogical(y.rng[at] == x))
-                    of Dictionary:
-                        let values = toSeq(y.d.values)
-                        push(newLogical(values[at] == x))
-                    else:
-                        discard
-            else:
-                case yKind:
-                    of String:
-                        if xKind == Regex:
-                            push(newLogical(y.s.contains(x.rx)))
-                        elif xKind == Char:
-                            push(newLogical($(x.c) in y.s))
-                        else:
-                            push(newLogical(x.s in y.s))
-                    of Block:
-                        if hadAttr("deep"):
-                            push newLogical(y.a.inNestedBlock(x))
-                        else:
-                            push(newLogical(x in y.a))
-                    of Range:
-                        push(newLogical(x in y.rng))
-                    of Dictionary:
-                        if hadAttr("deep"):
-                            let values: ValueArray = y.d.getValuesinDeep()
-                            push newLogical(x in values)
-                        else:
-                            let values = toSeq(y.d.values)
-                            push(newLogical(x in values))
-                    else:
-                        discard
-
-    # TODO(Collections/index) add `.from:` & `.to:` options to search in range
+    # TODO(Collections\index) add `.from:` & `.to:` options to search in range
     #  The two options don't have to be used at the same time. For example:
     #  - just setting `.from:` will search from given index to the end
     #  - just setting `.to:` will search from the beginning to given index
@@ -936,7 +885,7 @@ proc defineSymbols*() =
                         push(VNULL)
                 else: discard
 
-    # TODO(Collections/insert) add new `.many` option?
+    # TODO(Collections\insert) add new `.many` option?
     #  or something similar - the name doesn't have to be this one
     #  basically, the idea would allow us to do something like:
     #  `insert.many [1 4 5 6] 1 [2 3]` and get back `[1 2 3 4 5 6]`
@@ -999,39 +948,6 @@ proc defineSymbols*() =
                         push(newDictionary(copied))
                     else: discard
 
-    builtin "key?",
-        alias       = unaliased,
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "check if collection contains given key",
-        args        = {
-            "collection": {Dictionary, Object},
-            "key"       : {Any}
-        },
-        attrs       = NoAttrs,
-        returns     = {Logical},
-        example     = """
-            user: #[
-                name: "John"
-                surname: "Doe"
-            ]
-
-            key? user 'age            ; => false
-            if key? user 'name [
-                print ["Hello" user\name]
-            ]
-            ; Hello John
-        """:
-            #=======================================================
-            var needle: string
-            if yKind == String: needle = y.s
-            else: needle = $(y)
-
-            if xKind == Dictionary:
-                push(newLogical(x.d.hasKey(needle)))
-            else:
-                push(newLogical(x.o.hasKey(needle)))
-
     builtin "keys",
         alias       = unaliased,
         op          = opNop,
@@ -1056,7 +972,7 @@ proc defineSymbols*() =
             if xKind == Dictionary:
                 s = toSeq(x.d.keys)
             else:
-                s = toSeq(x.o.keys)
+                s = toSeq(x.o.objectKeys)
 
             push(newStringBlock(s))
 
@@ -1152,6 +1068,28 @@ proc defineSymbols*() =
 
                         push(maxElement)
 
+    builtin "methods",
+        alias       = unaliased,
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "get list of methods for given object",
+        args        = {
+            "object": {Object}
+        },
+        attrs       = NoAttrs,
+        returns     = {Block},
+        # TODO(Collections\methods) add documentation example
+        #  labels: library, documentation, easy
+        example     = """
+        """:
+            #=======================================================
+            var s: seq[string]
+            for k,v in x.o:
+                if v.kind == Method:
+                    s.add(k)
+
+            push(newStringBlock(s))
+
     builtin "min",
         alias       = unaliased,
         op          = opNop,
@@ -1196,56 +1134,6 @@ proc defineSymbols*() =
                             inc(i)
 
                         push(minElement)
-
-    builtin "one?",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "check if given number or collection size is one",
-        args        = {
-            "number"    : {Integer,Floating,String,Block,Range,Dictionary,Object,Null},
-        },
-        attrs       = NoAttrs,
-        returns     = {Logical},
-        example     = """
-            one? 5              ; => false
-            one? 4-3            ; => true
-            ..........
-            one? 1.0            ; => true
-            one? 0.0            ; => false
-            ..........
-            items: ["apple"]
-            one? items          ; => true
-
-            items: [1 2 3]
-            one? items          ; => false
-            ..........
-            one? ø              ; => false
-        """:
-            #=======================================================
-            case xKind:
-                of Integer:
-                    if x.iKind == BigInteger:
-                        when defined(WEB):
-                            push(newLogical(x.bi==big(1)))
-                        elif not defined(NOGMP):
-                            push(newLogical(x.bi==newInt(1)))
-                    else:
-                        push(newLogical(x.i == 1))
-                of Floating:
-                    push(newLogical(x.f == 1.0))
-                of String:
-                    push(newLogical(runeLen(x.s) == 1))
-                of Block:
-                    push(newLogical(x.a.len == 1))
-                of Range:
-                    push(newLogical(x.rng.len == 1))
-                of Dictionary:
-                    push(newLogical(x.d.len == 1))
-                of Object:
-                    push(newLogical(x.o.len == 1))
-                else:
-                    push(VFALSE)
 
     builtin "permutate",
         alias       = unaliased,
@@ -1293,8 +1181,7 @@ proc defineSymbols*() =
             else:
                 push(newBlock(getPermutations(x.a, sz, doRepeat).map((
                         z)=>newBlock(z))))
-                        
-                        
+                                       
     builtin "pop",
         alias       = unaliased,
         op          = opNop,
@@ -1375,8 +1262,6 @@ proc defineSymbols*() =
                 else: discard
             else: raise newException(ValueError, "Attribute 'n can't be 0 or negative.")
                 
-
-
     builtin "prepend",
         alias       = unaliased,
         op          = opNop,
@@ -1442,7 +1327,59 @@ proc defineSymbols*() =
                     else:
                         push newBlock(prepend(x, y, singleValue=true))
 
-    # TODO(Collections/remove) is `.index` broken?
+    builtin "range",
+        alias       = ellipsis,
+        op          = opRange,
+        rule        = InfixPrecedence,
+        description = "get list of values in given range (inclusive)",
+        args        = {
+            "from"  : {Integer, Char},
+            "to"    : {Integer, Floating, Char}
+        },
+        attrs       = {
+            "step"  : ({Integer},"use step between range values")
+        },
+        returns     = {Range},
+        example     = """
+        """:
+            #=======================================================
+            var limX: int
+            var limY: int
+            var numeric = true
+            var infinite = false
+
+            if xKind == Integer: limX = x.i
+            else:
+                numeric = false
+                limX = ord(x.c)
+
+            var forward: bool
+
+            if yKind == Integer: limY = y.i
+            elif yKind == Floating:
+                if y.f == Inf or y.f == NegInf:
+                    infinite = true
+                    if y.f == Inf: forward = true
+                    else: forward = false
+                else:
+                    limY = int(y.f)
+            else:
+                limY = ord(y.c)
+
+            var step = 1
+            if checkAttr("step"):
+                step = aStep.i
+                if step < 0:
+                    step = -step
+                elif step == 0:
+                    RuntimeError_RangeWithZeroStep()
+
+            if not infinite:
+                forward = limX < limY
+
+            push newRange(limX, limY, step, infinite, numeric, forward)
+
+    # TODO(Collections\remove) is `.index` broken?
     #  Example: `remove.index 3 'a, debug a`
     #  labels: library, bug
     builtin "remove",
@@ -1451,7 +1388,7 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "remove value from given collection",
         args        = {
-            "collection": {String, Block, Dictionary, Literal},
+            "collection": {String, Block, Dictionary, Object, Literal},
             "value"     : {Any}
         },
         attrs       = {
@@ -1521,6 +1458,16 @@ proc defineSymbols*() =
                         SetInPlace(newDictionary(InPlaced.d.removeFirst(y, key)))
                     else:
                         SetInPlace(newDictionary(InPlaced.d.removeAll(y, key)))
+                elif InPlaced.kind == Object:
+                    if InPlaced.magic.fetch(RemoveM):
+                        pushAttr("inplace", VTRUE)
+                        mgk(@[InPlaced,y])
+                    else:
+                        let key = (hadAttr("key"))
+                        if (hadAttr("once")):
+                            SetInPlace(newObject(InPlaced.proto, InPlaced.o.removeFirst(y, key), InPlaced.magic))
+                        else:
+                            SetInPlace(newObject(InPlaced.proto, InPlaced.o.removeAll(y, key), InPlaced.magic))
             else:
                 if xKind == String:
                     if (hadAttr("once")):
@@ -1556,6 +1503,15 @@ proc defineSymbols*() =
                         push(newDictionary(x.d.removeFirst(y, key)))
                     else:
                         push(newDictionary(x.d.removeAll(y, key)))
+                elif xKind == Object:
+                    if x.magic.fetch(RemoveM):
+                        mgk(@[x, y]) # already pushed value
+                    else:
+                        let key = (hadAttr("key"))
+                        if (hadAttr("once")):
+                            push(newObject(x.proto, x.o.removeFirst(y, key), x.magic))
+                        else:
+                            push(newObject(x.proto, x.o.removeAll(y, key), x.magic))
 
     builtin "repeat",
         alias       = unaliased,
@@ -1705,7 +1661,7 @@ proc defineSymbols*() =
                 if x.a.len == 0: push(VNULL)
                 else: push(sample(x.a))
 
-    # TODO(Collections/set) not working with Bytecode values
+    # TODO(Collections\set) not working with Bytecode values
     #  example:
     #  ```
     #      bt: to :bytecode [print "hello"]
@@ -1773,11 +1729,18 @@ proc defineSymbols*() =
                         else:
                             x.d[$(y)] = z
                 of Object:
-                    case yKind:
-                        of String, Word, Literal, Label:
-                            x.o[y.s] = z
-                        else:
-                            x.o[$(y)] = z
+                    if unlikely(x.magic.fetch(ChangingM)):
+                        mgk(@[x, y])
+                    if (x.magic.fetch(SetM) and (y.kind in {String,Word,Literal,Label}) and (y.s notin toSeq(x.proto.fields.keys()))):
+                        mgk(@[x, y, z])
+                    else:
+                        case yKind:
+                            of String, Word, Literal, Label:
+                                x.o[y.s] = z
+                            else:
+                                x.o[$(y)] = z
+                    if unlikely(x.magic.fetch(ChangedM)):
+                        mgk(@[x, y])
                 of Store:
                     when not defined(WEB):
                         case yKind:
@@ -1851,7 +1814,7 @@ proc defineSymbols*() =
             elif xKind == Dictionary:
                 push(newInteger(x.d.len))
             elif xKind == Object:
-                push(newInteger(x.o.len))
+                push(newInteger(x.o.objectSize))
             elif xKind == Range:
                 let sz = x.rng.len
                 if sz == InfiniteRange: push(newFloating(Inf))
@@ -1903,13 +1866,13 @@ proc defineSymbols*() =
                 else:
                     push(newBlock())
 
-    # TODO(Collections/sort) clean rewrite needed
+    # TODO(Collections\sort) clean rewrite needed
     #  the whole implementation looks like a patchwork of ideas and is not that
     #  easy to debug.
     #  also, there seem to be different types of issues: https://github.com/arturo-lang/arturo/pull/1045#issuecomment-1458960243
     #  labels: library, cleanup
 
-    # TODO(Collection/sort) make sure all options work as expected for Literal values too
+    # TODO(Collection\sort) make sure all options work as expected for Literal values too
     #  see: https://github.com/arturo-lang/arturo/pull/1045#issuecomment-1458960243
     #  labels: library, bug, critical
     builtin "sort",
@@ -2098,50 +2061,16 @@ proc defineSymbols*() =
                                         cmp(x[0], y[0])
                                     , order = sortOrdering)
 
-    # TODO(Collections/sorted?) doesn't work properly
-    #  it should work in an identical way as `sort`
-    #  labels: library, enhancement
-    builtin "sorted?",
-        alias       = unaliased,
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "check if given collection is already sorted",
-        args        = {
-            "collection": {Block}
-        },
-        attrs       = {
-            "descending": ({Logical}, "check for sorting in ascending order")
-        },
-        returns     = {Logical},
-        example     = """
-            sorted? [1 2 3 4 5]         ; => true
-            sorted? [4 3 2 1 5]         ; => false
-            sorted? [5 4 3 2 1]         ; => false
-            ..........
-            sorted?.descending [5 4 3 2 1]      ; => true
-            sorted?.descending [4 3 2 1 5]      ; => false
-            sorted?.descending [1 2 3 4 5]      ; => false
-        """:
-            #=======================================================
-            var ascending = true
-
-            if (hadAttr("descending")):
-                ascending = false
-
-            push newLogical(isSorted(x.a, ascending = ascending))
-
-
     # TODO(Collections\split) Add better support for unicode strings
     #  Currently, simple split works fine - but using different attributes (at, every, by, etc) doesn't
     #  labels: library,bug
 
-    # TODO(Collections/split) `.by` not working properly with Literal values?
+    # TODO(Collections\split) `.by` not working properly with Literal values?
     #  example: ```
     #   b: ["Arnold" "Andreas" "Paul" "Ricard" "Linus" "Yanis" "Helena" "Eva" "Blanca"]
     #   split.every: 3 'b, debug b
     #  ```
     #  labels: library, bug
-
     builtin "split",
         alias       = unaliased,
         op          = opSplit,
@@ -2550,8 +2479,399 @@ proc defineSymbols*() =
                 let s = toSeq(x.d.values)
                 push(newBlock(s))
             else:
-                let s = toSeq(x.o.values)
+                let s = toSeq(x.o.objectValues)
                 push(newBlock(s))
+
+    #----------------------------
+    # Predicates
+    #----------------------------
+
+    # TODO(Collections\contains?) add new `.key` option?
+    #  this would allow us to check whether the given dictionary contains a specific key
+    #  instead of a value, which is the default way `contains?` works right now with dictionaries
+    #  labels: library, enhancement, open discussion
+    builtin "contains?",
+        alias       = unaliased,
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "check if collection contains given value",
+        args        = {
+            "collection": {String, Block, Range, Dictionary, Object},
+            "value"     : {Any}
+        },
+        attrs       = {
+            "at"    : ({Integer}, "check at given location within collection"),
+            "deep"    : ({Logical}, "searches recursively in deep for a value.")
+        },
+        returns     = {Logical},
+        example     = """
+            arr: [1 2 3 4]
+
+            contains? arr 5             ; => false
+            contains? arr 2             ; => true
+            ..........
+            user: #[
+                name: "John"
+                surname: "Doe"
+            ]
+
+            contains? dict "John"       ; => true
+            contains? dict "Paul"       ; => false
+
+            contains? keys dict "name"  ; => true
+            ..........
+            contains? "hello" "x"       ; => false
+            contains? "hello" `h`       ; => true
+            ..........
+            contains?.at:1 "hello" "el" ; => true
+            contains?.at:4 "hello" `o`  ; => true
+            ..........
+            print contains?.at:2 ["one" "two" "three"] "two"
+            ; false
+
+            print contains?.at:1 ["one" "two" "three"] "two"
+            ; true
+            ..........
+            print contains?.deep [1 2 4 [3 4 [5 6] 7] 8 [9 10]] 6
+            ; true
+            ..........
+            user: #[ 
+                name: "John" surname: "Doe"
+                mom: #[ name: "Jane" surname: "Doe" ]
+            ]
+            
+            print contains?.deep user "Jane"
+            ; true
+        """:
+            #=======================================================
+            if checkAttr("at"):
+                let at = aAt.i
+                case xKind:
+                    of String:
+                        if yKind == Regex:
+                            push(newLogical(x.s.contains(y.rx, at)))
+                        elif yKind == Char:
+                            push(newLogical(toRunes(x.s)[at] == y.c))
+                        else:
+                            push(newLogical(x.s.continuesWith(y.s, at)))
+                    of Block:
+                        push(newLogical(x.a[at] == y))
+                    of Range:
+                        push(newLogical(x.rng[at] == y))
+                    of Dictionary:
+                        let values = toSeq(x.d.values)
+                        push(newLogical(values[at] == y))
+                    of Object:
+                        if unlikely(x.magic.fetch(ContainsQM)):
+                            pushAttr("at", aAt)
+                            mgk(@[x, y]) # already pushes value
+                        else:
+                            let values = toSeq(x.o.values)
+                            push(newLogical(values[at] == y))
+                    else:
+                        discard
+            else:
+                case xKind:
+                    of String:
+                        if yKind == Regex:
+                            push(newLogical(x.s.contains(y.rx)))
+                        elif yKind == Char:
+                            push(newLogical($(y.c) in x.s))
+                        else:
+                            push(newLogical(y.s in x.s))
+                    of Block:
+                        if hadAttr("deep"):
+                            push newLogical(x.a.inNestedBlock(y))
+                        else:
+                            push(newLogical(y in x.a))
+                    of Range:
+                        push(newLogical(y in x.rng))
+                    of Dictionary:
+                        if hadAttr("deep"):
+                            let values: ValueArray = x.d.getValuesinDeep()
+                            push newLogical(y in values)
+                        else:
+                            let values = toSeq(x.d.values)
+                            push(newLogical(y in values))
+                    of Object:
+                        if unlikely(x.magic.fetch(ContainsQM)):
+                            if hadAttr("deep"):
+                                pushAttr("deep", VTRUE)
+
+                            mgk(@[x, y]) # already pushes value
+                        else:
+                            if hadAttr("deep"):
+                                let values: ValueArray = x.o.getValuesinDeep()
+                                push newLogical(y in values)
+                            else:
+                                let values = toSeq(x.o.values)
+                                push(newLogical(y in values))
+                    else:
+                        discard
+
+    builtin "empty?",
+        alias       = unaliased,
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "check if given collection is empty",
+        args        = {
+            "collection": {String, Block, Dictionary, Null}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            empty? ""             ; => true
+            empty? []             ; => true
+            empty? #[]            ; => true
+
+            empty? [1 "two" 3]    ; => false
+        """:
+            #=======================================================
+            case xKind:
+                of Null: push(VTRUE)
+                of String: push(newLogical(x.s == ""))
+                of Block:
+                    push(newLogical(x.a.len == 0))
+                of Dictionary: push(newLogical(x.d.len == 0))
+                else: discard
+
+    # TODO(Collections\in?) add new `.key` option?
+    #  same as with `contains?`
+    #  labels: library, enhancement, open discussion
+    builtin "in?",
+        alias       = unaliased,
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "check if value exists in given collection",
+        args        = {
+            "value"     : {Any},
+            "collection": {String, Block, Range, Dictionary, Object}
+        },
+        attrs       = {
+            "at"    : ({Integer}, "check at given location within collection"),
+            "deep"    : ({Logical}, "searches recursively in deep for a value.")
+        },
+        returns     = {Logical},
+        example     = """
+            arr: [1 2 3 4]
+
+            in? 5 arr             ; => false
+            in? 2 arr             ; => true
+            ..........
+            user: #[
+                name: "John"
+                surname: "Doe"
+            ]
+
+            in? "John" dict       ; => true
+            in? "Paul" dict       ; => false
+
+            in? "name" keys dict  ; => true
+            ..........
+            in? "x" "hello"       ; => false
+            in? `h` "hello"       ; => true
+            ..........
+            in?.at:1 "el" "hello" ; => true
+            in?.at:4 `o` "hello"  ; => true
+            ..........
+            print in?.at:2 "two" ["one" "two" "three"]
+            ; false
+
+            print in?.at:1 "two" ["one" "two" "three"]
+            ; true
+            ..........
+            print in?.deep 6 [1 2 4 [3 4 [5 6] 7] 8 [9 10]]
+            ; true
+            ..........
+            user: #[ 
+                name: "John" surname: "Doe"
+                mom: #[ name: "Jane" surname: "Doe" ]
+            ]
+            
+            print in?.deep "Jane" user
+            ; true
+        """:
+            #=======================================================
+            if checkAttr("at"):
+                let at = aAt.i
+                case yKind:
+                    of String:
+                        if xKind == Regex:
+                            push(newLogical(y.s.contains(x.rx, at)))
+                        elif xKind == Char:
+                            push(newLogical(toRunes(y.s)[at] == x.c))
+                        else:
+                            push(newLogical(y.s.continuesWith(x.s, at)))
+                    of Block:
+                        push(newLogical(y.a[at] == x))
+                    of Range:
+                        push(newLogical(y.rng[at] == x))
+                    of Dictionary:
+                        let values = toSeq(y.d.values)
+                        push(newLogical(values[at] == x))
+                    of Object:
+                        if unlikely(x.magic.fetch(ContainsQM)):
+                            pushAttr("at", aAt)
+                            mgk(@[y, x]) # already pushes value
+                        else:
+                            let values = toSeq(y.o.values)
+                            push(newLogical(values[at] == x))
+                    else:
+                        discard
+            else:
+                case yKind:
+                    of String:
+                        if xKind == Regex:
+                            push(newLogical(y.s.contains(x.rx)))
+                        elif xKind == Char:
+                            push(newLogical($(x.c) in y.s))
+                        else:
+                            push(newLogical(x.s in y.s))
+                    of Block:
+                        if hadAttr("deep"):
+                            push newLogical(y.a.inNestedBlock(x))
+                        else:
+                            push(newLogical(x in y.a))
+                    of Range:
+                        push(newLogical(x in y.rng))
+                    of Dictionary:
+                        if hadAttr("deep"):
+                            let values: ValueArray = y.d.getValuesinDeep()
+                            push newLogical(x in values)
+                        else:
+                            let values = toSeq(y.d.values)
+                            push(newLogical(x in values))
+                    of Object:
+                        if unlikely(x.magic.fetch(ContainsQM)):
+                            if hadAttr("deep"):
+                                pushAttr("deep", VTRUE)
+
+                            mgk(@[y, x]) # already pushes value
+                        else:
+                            if hadAttr("deep"):
+                                let values: ValueArray = y.o.getValuesinDeep()
+                                push newLogical(x in values)
+                            else:
+                                let values = toSeq(y.o.values)
+                                push(newLogical(x in values))
+                    else:
+                        discard
+
+    builtin "key?",
+        alias       = unaliased,
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "check if collection contains given key",
+        args        = {
+            "collection": {Dictionary, Object},
+            "key"       : {Any}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            user: #[
+                name: "John"
+                surname: "Doe"
+            ]
+
+            key? user 'age            ; => false
+            if key? user 'name [
+                print ["Hello" user\name]
+            ]
+            ; Hello John
+        """:
+            #=======================================================
+            var needle: string
+            if yKind == String: needle = y.s
+            else: needle = $(y)
+
+            if xKind == Dictionary:
+                push(newLogical(x.d.hasKey(needle)))
+            else:
+                if unlikely(x.magic.fetch(KeyQM)):
+                    mgk(@[x, y]) # already pushes value
+                else:
+                    push(newLogical(x.o.hasKey(needle)))
+
+    builtin "one?",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "check if given number or collection size is one",
+        args        = {
+            "number"    : {Integer,Floating,String,Block,Range,Dictionary,Null},
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            one? 5              ; => false
+            one? 4-3            ; => true
+            ..........
+            one? 1.0            ; => true
+            one? 0.0            ; => false
+            ..........
+            items: ["apple"]
+            one? items          ; => true
+
+            items: [1 2 3]
+            one? items          ; => false
+            ..........
+            one? ø              ; => false
+        """:
+            #=======================================================
+            case xKind:
+                of Integer:
+                    if x.iKind == BigInteger:
+                        when defined(WEB):
+                            push(newLogical(x.bi==big(1)))
+                        elif not defined(NOGMP):
+                            push(newLogical(x.bi==newInt(1)))
+                    else:
+                        push(newLogical(x.i == 1))
+                of Floating:
+                    push(newLogical(x.f == 1.0))
+                of String:
+                    push(newLogical(runeLen(x.s) == 1))
+                of Block:
+                    push(newLogical(x.a.len == 1))
+                of Range:
+                    push(newLogical(x.rng.len == 1))
+                of Dictionary:
+                    push(newLogical(x.d.len == 1))
+                else:
+                    push(VFALSE)
+
+    # TODO(Collections\sorted?) doesn't work properly
+    #  it should work in an identical way as `sort`
+    #  labels: library, enhancement
+    builtin "sorted?",
+        alias       = unaliased,
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "check if given collection is already sorted",
+        args        = {
+            "collection": {Block}
+        },
+        attrs       = {
+            "descending": ({Logical}, "check for sorting in ascending order")
+        },
+        returns     = {Logical},
+        example     = """
+            sorted? [1 2 3 4 5]         ; => true
+            sorted? [4 3 2 1 5]         ; => false
+            sorted? [5 4 3 2 1]         ; => false
+            ..........
+            sorted?.descending [5 4 3 2 1]      ; => true
+            sorted?.descending [4 3 2 1 5]      ; => false
+            sorted?.descending [1 2 3 4 5]      ; => false
+        """:
+            #=======================================================
+            var ascending = true
+
+            if (hadAttr("descending")):
+                ascending = false
+
+            push newLogical(isSorted(x.a, ascending = ascending))
 
     builtin "zero?",
         alias       = unaliased, 
@@ -2559,7 +2879,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "check if given number or collection size is zero",
         args        = {
-            "number"    : {Integer,Floating,String,Block,Range,Dictionary,Object,Null},
+            "number"    : {Integer,Floating,String,Block,Range,Dictionary,Null},
         },
         attrs       = NoAttrs,
         returns     = {Logical},
@@ -2598,8 +2918,6 @@ proc defineSymbols*() =
                     push(newLogical(x.rng.len == 0))
                 of Dictionary:
                     push(newLogical(x.d.len == 0))
-                of Object:
-                    push(newLogical(x.o.len == 0))
                 else:
                     push(VTRUE)
 
@@ -2607,4 +2925,4 @@ proc defineSymbols*() =
 # Add Library
 #=======================================
 
-Libraries.add(defineSymbols)
+Libraries.add(defineLibrary)

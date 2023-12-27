@@ -25,10 +25,17 @@ when not defined(NOGMP):
     import helpers/bignums as BignumsHelper
 
 #=======================================
-# Methods
+# Definitions
 #=======================================
 
-proc defineSymbols*() =
+# TODO(Arithmetic) add `powmod` built-in function?
+#  labels: library, enhancement, open discussion
+
+proc defineLibrary*() =
+
+    #----------------------------
+    # Functions
+    #----------------------------
 
     builtin "add",
         alias       = plus, 
@@ -36,11 +43,11 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "add given values and return result",
         args        = {
-            "valueA": {Integer,Floating,Complex,Rational,Color,Quantity,Literal},
-            "valueB": {Integer,Floating,Complex,Rational,Color,Quantity}
+            "valueA": {Integer,Floating,Complex,Rational,Color,Quantity,Object,Literal},
+            "valueB": {Integer,Floating,Complex,Rational,Color,Quantity,Object}
         },
         attrs       = NoAttrs,
-        returns     = {Integer,Floating,Complex,Rational,Color,Quantity,Nothing},
+        returns     = {Integer,Floating,Complex,Rational,Color,Quantity,Object,Nothing},
         example     = """
             print add 1 2      ; 3
             print 1 + 3        ; 4
@@ -57,10 +64,10 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "decrease given value by 1",
         args        = {
-            "value" : {Integer,Floating,Complex,Rational,Quantity,Literal}
+            "value" : {Integer,Floating,Complex,Rational,Quantity,Object,Literal}
         },
         attrs       = NoAttrs,
-        returns     = {Integer,Floating,Complex,Rational,Quantity,Nothing},
+        returns     = {Integer,Floating,Complex,Rational,Quantity,Object,Nothing},
         example     = """
             print dec 5        ; 4
             ..........
@@ -76,11 +83,11 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "perform integer division between given values and return result",
         args        = {
-            "valueA": {Integer,Floating,Complex,Rational,Quantity,Literal},
-            "valueB": {Integer,Floating,Complex,Rational,Quantity}
+            "valueA": {Integer,Floating,Complex,Rational,Quantity,Object,Literal},
+            "valueB": {Integer,Floating,Complex,Rational,Quantity,Object}
         },
         attrs       = NoAttrs,
-        returns     = {Integer,Floating,Complex,Rational,Quantity,Nothing},
+        returns     = {Integer,Floating,Complex,Rational,Quantity,Object,Nothing},
         example     = """
             print div 5 2      ; 2
             print 9 / 3        ; 3
@@ -120,11 +127,11 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "divide given values and return result",
         args        = {
-            "valueA": {Integer,Floating,Rational,Quantity,Literal},
+            "valueA": {Integer,Floating,Rational,Quantity,Object,Literal},
             "valueB": {Integer,Floating,Rational,Quantity}
         },
         attrs       = NoAttrs,
-        returns     = {Floating,Rational,Quantity,Nothing},
+        returns     = {Floating,Rational,Quantity,Object,Nothing},
         example     = """
             print fdiv 5 2     ; 2.5
             ..........
@@ -140,10 +147,10 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "increase given value by 1",
         args        = {
-            "value" : {Integer,Floating,Complex,Rational,Quantity,Literal}
+            "value" : {Integer,Floating,Complex,Rational,Quantity,Object,Literal}
         },
         attrs       = NoAttrs,
-        returns     = {Integer,Floating,Complex,Rational,Quantity,Nothing},
+        returns     = {Integer,Floating,Complex,Rational,Quantity,Object,Nothing},
         example     = """
             print inc 5        ; 6
             ..........
@@ -159,11 +166,11 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "calculate the modulo of given values and return result",
         args        = {
-            "valueA": {Integer,Floating,Rational,Quantity,Literal},
+            "valueA": {Integer,Floating,Rational,Quantity,Object,Literal},
             "valueB": {Integer,Floating,Rational,Quantity}
         },
         attrs       = NoAttrs,
-        returns     = {Integer,Floating,Rational,Quantity,Nothing},
+        returns     = {Integer,Floating,Rational,Quantity,Object,Nothing},
         example     = """
             print mod 5 2      ; 1
             print 9 % 3        ; 0
@@ -180,11 +187,11 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "calculate the product of given values and return result",
         args        = {
-            "valueA": {Integer,Floating,Complex,Rational,Quantity,Literal},
-            "valueB": {Integer,Floating,Complex,Rational,Quantity}
+            "valueA": {Integer,Floating,Complex,Rational,Quantity,Object,Literal},
+            "valueB": {Integer,Floating,Complex,Rational,Quantity,Object}
         },
         attrs       = NoAttrs,
-        returns     = {Integer,Floating,Complex,Rational,Nothing},
+        returns     = {Integer,Floating,Complex,Rational,Quantity,Object,Nothing},
         example     = """
             print mul 1 2      ; 2
             print 2 * 3        ; 6
@@ -201,10 +208,10 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "reverse sign of given value and return it",
         args        = {
-            "value" : {Integer,Floating,Complex,Rational,Quantity,Literal}
+            "value" : {Integer,Floating,Complex,Rational,Quantity,Object,Literal}
         },
         attrs       = NoAttrs,
-        returns     = {Integer,Floating,Complex,Rational,Quantity,Nothing},
+        returns     = {Integer,Floating,Complex,Rational,Quantity,Object,Nothing},
         example     = """
             print neg 1        ; -1
             ..........
@@ -220,11 +227,11 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "calculate the power of given values and return result",
         args        = {
-            "valueA": {Integer,Floating,Complex,Rational,Quantity,Literal},
+            "valueA": {Integer,Floating,Complex,Rational,Quantity,Object,Literal},
             "valueB": {Integer,Floating}
         },
         attrs       = NoAttrs,
-        returns     = {Integer,Floating,Complex,Rational,Quantity,Nothing},
+        returns     = {Integer,Floating,Complex,Rational,Quantity,Object,Nothing},
         example     = """
             print pow 2 3      ; 8
             print 3 ^ 2        ; 9
@@ -235,20 +242,17 @@ proc defineSymbols*() =
             #=======================================================
             generateOperationB("pow", `^`, `^=`)
 
-    # TODO(Arithmetic) add `powmod` built-in function?
-    #  labels: library, enhancement, open discussion
-
     builtin "sub",
         alias       = minus, 
         op          = opSub,
         rule        = InfixPrecedence,
         description = "subtract given values and return result",
         args        = {
-            "valueA": {Integer,Floating,Complex,Rational,Color,Quantity,Literal},
-            "valueB": {Integer,Floating,Complex,Rational,Color,Quantity}
+            "valueA": {Integer,Floating,Complex,Rational,Color,Quantity,Object,Literal},
+            "valueB": {Integer,Floating,Complex,Rational,Color,Quantity,Object}
         },
         attrs       = NoAttrs,
-        returns     = {Integer,Floating,Complex,Rational,Color,Quantity,Nothing},
+        returns     = {Integer,Floating,Complex,Rational,Color,Quantity,Object,Nothing},
         example     = """
             print sub 2 1      ; 1
             print 5 - 3        ; 2
@@ -263,4 +267,4 @@ proc defineSymbols*() =
 # Add Library
 #=======================================
 
-Libraries.add(defineSymbols)
+Libraries.add(defineLibrary)
