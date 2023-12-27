@@ -323,30 +323,6 @@ func newType*(t: ValueKind): Value {.inline, enforceNoRaises.} =
     ## create Type (BuiltinType) value from ValueKind
     Value(kind: Type, tpKind: BuiltinType, t: t)
 
-# proc newUserType*(n: string): Value {.inline.} =
-#     ## create Type (UserType) value from string
-#     echo "newUserType -> " & n
-#     if (let lookup = TypeLookup.getOrDefault(n, nil); not lookup.isNil):
-#         echo "found type"
-#         for k in keys(TypeLookup):
-#             echo "- " & k
-#         echo "what we found: " & lookup.ts.name
-#         return lookup
-#     else:
-#         echo "creating type"
-#         result = Value(kind: Type, tpKind: UserType, t: Object, ts: Prototype(name: n, content: initOrderedTable[string,Value](), inherits: nil, initialized: false))
-#         echo "- with name: " & n
-#         TypeLookup[n] = result
-#         echo "- name @ TL: " & TypeLookup[n].ts.name
-
-# proc newUserTypeExtension*(content: ValueDict, inherits: Value): Value {.inline.} =
-#     Value(kind: Type, tpKind: UserType, t: Object, ts: Prototype(
-#         name: "_",
-#         content: content,
-#         inherits: inherits,
-#         initialized: false
-#     ))
-
 proc newUserType*(tid: string, proto: Prototype = nil): Value {.inline.} =
     setType(tid, proto)
     Value(kind: Type, tpKind: UserType, t: Object, tid: tid)
