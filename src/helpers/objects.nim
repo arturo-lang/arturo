@@ -69,6 +69,16 @@ func processMagic(mm: var MagicMethods, methodName: string, target: Value) {.inl
         discard
 
 #=======================================
+# Iterators
+#=======================================
+
+iterator objectKeys*(vd: ValueDict): (string, Value) =
+    for k,v in vd:
+        if v.kind != Method:
+            echo "yielding one..."
+            yield (k,v)
+
+#=======================================
 # Methods
 #=======================================
 
