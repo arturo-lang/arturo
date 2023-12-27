@@ -505,7 +505,11 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat:Value = nil): Val
                             mgk(@[y])
                             return stack.pop()
                         else:
-                            return newDictionary(y.o)
+                            let dd = newOrderedTable[string,Value]()
+                            for k,v in y.o.objectPairs:
+                                dd[k] = copyValue(v)
+
+                            return newDictionary(dd)
                     else:
                         throwCannotConvert()
 

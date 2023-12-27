@@ -18,6 +18,8 @@ import sugar, tables, times, unicode
 when defined(WEB):
     import std/jsbigints
 
+import helpers/objects
+
 when not defined(NOGMP):
     import helpers/bignums as BignumsHelper
 
@@ -141,9 +143,8 @@ proc `$`*(v: Value): string {.inline.} =
                 return stack.pop().s
             else:
                 var items: seq[string]
-                for key,value in v.o:
-                    if value.kind != Method:
-                        items.add(key  & ":" & $(value))
+                for key,value in v.o.objectPairs:
+                    items.add(key  & ":" & $(value))
 
                 result = "[" & items.join(" ") & "]"
 
@@ -382,20 +383,17 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
         of Object   : 
             dumpBlockStart(v)
 
-            let keys = toSeq(v.o.keys)
+            let keys = toSeq(v.o.objectKeys)
 
             if keys.len > 0:
                 let maxLen = (keys.map(proc (x: string):int = x.len)).max + 2
 
-                for key,value in v.o:
+                for key,value in v.o.objectPairs:
                     for i in 0..level: stdout.write "        "
 
                     stdout.write unicode.alignLeft(key & " ", maxLen) & ":"
-                    if value.kind == Method:
-                        for i in 0..level: stdout.write "        "
-                        dumpGeneric("(" & value.params.filter((zz) => zz != "this").join(", ") & ")", value)
-                    else:
-                        dump(value, level+1, false, muted=muted)
+
+                    dump(value, level+1, false, muted=muted)
 
             dumpBlockEnd()
 

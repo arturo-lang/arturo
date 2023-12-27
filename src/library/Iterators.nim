@@ -29,6 +29,7 @@
 import algorithm, sequtils, sugar, unicode
 
 import helpers/dictionaries
+import helpers/objects
 import helpers/ranges
 
 import vm/lib
@@ -306,7 +307,7 @@ template fetchIterableItems(doesAcceptLiterals=true, defaultReturn: untyped) {.d
             of Dictionary:
                 iterable.d.flattenedDictionary()
             of Object:
-                iterable.o.flattenedDictionary()
+                iterable.o.flattenedObject()
             of String:
                 toSeq(runes(iterable.s)).map((w) => newChar(w))
             of Integer:
