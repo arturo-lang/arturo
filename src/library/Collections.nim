@@ -972,14 +972,7 @@ proc defineLibrary*() =
             if xKind == Dictionary:
                 s = toSeq(x.d.keys)
             else:
-                for k,v in x.o.objectKeys:
-                    echo k & " => " & $(v.kind)
-        
-                var keysArr: seq[string]
-                for k,v in x.o:
-                    if v.kind != Method:
-                        keysArr.add(k)
-                s = toSeq(keysArr)
+                s = toSeq(x.o.objectKeys)
 
             push(newStringBlock(s))
 
