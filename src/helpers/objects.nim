@@ -101,6 +101,11 @@ func flattenedObject*(vd: ValueDict): ValueArray =
         result.add(newString(k))
         result.add(v)
 
+func objectSize*(vd: ValueDict): int =
+    for v in vd.objectValues:
+        if v.kind != Method:
+            result += 1
+
 func generatedConstructor*(params: ValueArray): Value {.inline.} =
     if params.len > 0 and params.all((x) => x.kind in {Word, Literal, String, Type}):
         let constructorBody = newBlock()
