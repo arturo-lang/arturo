@@ -865,6 +865,19 @@ proc defineLibrary*() =
         # TODO(Core\method) add documentation example
         #  labels: library, documentation, easy
         example     = """
+        define :cat [
+            init: method [nick][
+                this\nick: join.with: " " @["Mr." capitalize nick]
+            ]
+
+            meow: method [][
+                print [~"|this\nick|:" "'meow!'"]
+            ]
+        ]
+
+        snowflake: to :cat ["snowflake"]
+        snowflake\meow
+        ; Mr. Snowflake: 'meow!'
         """:
             #=======================================================
             let isDistinct = hadAttr("distinct")
