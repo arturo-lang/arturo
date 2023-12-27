@@ -30,7 +30,7 @@ import helpers/objects
 import helpers/ranges
 
 import vm/lib
-import vm/[parse, errors, exec]
+import vm/[errors, exec]
 
 #=======================================
 # Definitions
