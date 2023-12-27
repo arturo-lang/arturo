@@ -55,6 +55,21 @@ proc defineLibrary*() =
         # TODO(Types\constructor) add documentation example
         #  labels: library, documentation, easy
         example     = """
+            define :cat [
+                init: constructor [nick :string]
+
+                meow: method [][
+                    print [this\nick ":" "'meow!'"
+                ]
+            ]
+
+            snowflake: to :cat [15]
+            ; Assertion | [is? :string nick]
+            ;     error |
+
+            snowflake: to :cat ["Snowflake"]
+            snowflake\meow
+            ; Snowflake: 'meow!'
         """:
             #=======================================================
             var args: ValueArray
