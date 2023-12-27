@@ -894,6 +894,10 @@ proc defineLibrary*() =
         add snowflake 3
         snowflake\age
         ; => 6
+
+        snowflake\add 3
+        print snowflake\age
+        ; => 9
         """:
             #=======================================================
             let isDistinct = hadAttr("distinct")
