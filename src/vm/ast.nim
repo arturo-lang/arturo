@@ -608,6 +608,42 @@ proc processBlock*(
                 arityCut = 0
                 target.addChild(Node(kind: OtherCall, arity: pathCallV.arity, op: opNop, value: pathCallV))
             else:
+                # TODO (VM/ast) processing this injection messes up our AST
+                #  Example: 
+                #  ```red
+                #   define :vehicle [wheels :integer]
+                #   define :vehicle [wheels :integer]
+                #   
+                #   define :car is :vehicle [
+                #       init: method [make, model, year][
+                #           super 4
+                #   
+                #           this\make: make
+                #           this\model: model
+                #           this\year: year
+                #       ]
+                #   
+                #       age: method [][
+                #           return now\year - this\year
+                #       ]
+                #   
+                #       string: method [][
+                #           render ~{
+                #               |this\make| |this\model| (|this\year|)
+                #           }
+                #       ]
+                #   ]
+                #   
+                #   myMoto: to :vehicle [2]
+                #   myCar: to :car ["Volvo" "C30" 2009]     ; totally random example lol
+                #   
+                #   do ::
+                #       print myMoto\wheels ; will print 2
+                #       print myCar\age     ; will print 14
+                #       print myCar         ; will print "Volvo C30 (2009)"
+                #  ```
+                #  The above actually print `myCar` *first* and *then* the age!
+                #  labels: oop, ast, bug, critical
                 arityCut = 1
                 let c = Node(kind: MethodCall, arity: pathCallV.arity, op: opNop, value: pathCallV)
                 c.addChild(newVariable(baseV))
