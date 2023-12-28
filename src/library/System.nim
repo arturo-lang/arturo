@@ -125,6 +125,23 @@ proc defineLibrary*() =
             attrs       = NoAttrs,
             returns     = {Store},
             example     = """
+                ; `config` returns a `:store` from `~/.arturo/stores/config.art`
+
+                config
+                ; => []
+                ; `config.art` is empty at first, but we can change this manually
+
+                write.append path\home ++ normalize ".arturo/stores/config.art" 
+                             "language: {Arturo}"
+                config
+                ; => []
+                
+                ; this stills empty, but now try to relaunch Arturo:
+                exit
+                ......................
+                config
+                ; => [language:Arturo]
+
             """:
                 push(Config)
 
