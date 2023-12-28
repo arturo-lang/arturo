@@ -190,17 +190,18 @@ template SetSym*(s: string, v: Value, safe, forceReadOnly: FunctionFlag[true]): 
     ## going ahead and just assign it (pointer copy!)
     Syms[s] = copyValue(v)
 
-
-template SetDictSym*(s: string, v: Value, safe: static bool = false): untyped =
+template SetDictSym*(s: string, v: Value): untyped =
     ## Sets symbol to topmost Dictionary symbol table
-    when safe:
-        # When doing it safely, also check if the value to be assigned is a read-only value
-        # - if it is - we have to copy it first
-        # - otherwise, go ahead and just assign it (pointer copy!)
-        if v.readonly:
-            DictSyms[^1][s] = copyValue(v)
-        else:
-            DictSyms[^1][s] = v
+    DictSyms[^1][s] = v
+
+template SetDictSym*(s: string, v: Value, safe: FunctionFlag[true]): untyped =
+    ## Sets symbol to topmost Dictionary symbol table
+    ## 
+    ## When doing it safely, also check if the value to be assigned is a read-only value
+    ## - if it is - we have to copy it first
+    ## - otherwise, go ahead and just assign it (pointer copy!)
+    if v.readonly:
+        DictSyms[^1][s] = copyValue(v)
     else:
         DictSyms[^1][s] = v
 
