@@ -862,9 +862,45 @@ proc defineLibrary*() =
             "distinct"  : ({Logical},"shouldn't be treated as a magic method")
         },
         returns     = {Method},
-        # TODO(Core\method) add documentation example
-        #  labels: library, documentation, easy
         example     = """
+        define :cat [
+            init: method [nick :string age :integer][
+                this\nick: join.with: " " @["Mr." capitalize nick]
+                this\age: age
+            ]
+
+            ; Function overloading
+            add: method [years :integer][
+                this\age: age + this\age
+            ]
+
+            meow: method [][
+                print [~"|this\nick|:" "'meow!'"]
+            ]
+        ]
+
+        a: to :cat [15 15]
+        ; >> Assertion | [is? :string nick]
+        ;        error |  
+
+        snowflake: to :cat ["snowflake" 3]
+
+        snowflake\meow
+        ; Mr. Snowflake: 'meow!'
+
+        ; use `do -> snowflake\meow` instead 
+        ; when running the above code from a file
+
+        add snowflake 3
+        snowflake\age
+        ; => 6
+
+        snowflake\add 3
+        print snowflake\age
+        ; => 9
+
+        ; use `do [snowflake\add 3]` instead
+        ; when running the above code from a file
         """:
             #=======================================================
             let isDistinct = hadAttr("distinct")
