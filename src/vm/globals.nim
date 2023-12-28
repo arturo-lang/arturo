@@ -56,6 +56,8 @@ var
 # Helpers
 #=======================================
 
+type FunctionFlag[T: static bool] = bool
+
 func suggestAlternative(s: string, reference: SymTable | ValueDict = Syms): seq[string] {.inline.} =
     var levs = initOrderedTable[string,float]()
 
