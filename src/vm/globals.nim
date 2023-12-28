@@ -125,7 +125,7 @@ proc FetchSym*(s: string, unsafe: static bool = false): Value {.inline.} =
     when unsafe:
         Syms[s]
     else:
-        if (result = Syms.getOrDefault(s, nil); unlikely(result.isNil)):
+        if unlikely (result := Syms.getOrDefault(s, nil)).isNil:
             RuntimeError_SymbolNotFound(s, suggestAlternative(s))
 
 proc FetchPathSym*(pl: ValueArray): Value =
