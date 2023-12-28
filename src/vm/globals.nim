@@ -122,11 +122,11 @@ proc FetchSym*(s: string, unsafe: static bool = false): Value {.inline.} =
     ## Checks if a symbol name exists in the symbol table
     ## - if it doesn't, raise a SymbolNotFound error
     ## - otherwise, return its value
-    when not unsafe:
+    when unsafe:
+        Syms[s]
+    else:
         if (result = Syms.getOrDefault(s, nil); unlikely(result.isNil)):
             RuntimeError_SymbolNotFound(s, suggestAlternative(s))
-    else:
-        Syms[s]
 
 proc FetchPathSym*(pl: ValueArray): Value =
     ## Gets a the `.p` field of a PathLiteral value
