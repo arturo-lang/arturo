@@ -58,6 +58,10 @@ var
 
 type FunctionFlag[T: static bool] = bool
 
+template `:=`(a, b: untyped): untyped {.dirty.} =
+    let a = b
+    a
+
 func suggestAlternative(s: string, reference: SymTable | ValueDict = Syms): seq[string] {.inline.} =
     var levs = initOrderedTable[string,float]()
 
