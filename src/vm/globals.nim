@@ -118,15 +118,16 @@ template SymExists*(s: string): untyped =
     ## Checks if a symbol name exists in the symbol table
     Syms.hasKey(s)
 
-proc FetchSym*(s: string, unsafe: static bool = false): Value {.inline.} =
+proc FetchSym*(s: string): Value {.inline.} =
+    ## Fetches a symbol in the symbol table
+    if unlikely (result := Syms.getOrDefault(s, nil)).isNil:
+        RuntimeError_SymbolNotFound(s, suggestAlternative(s))
+
+proc FetchSym*(s: string, unsafe: FunctionFlag[true]): Value {.inline.} =
     ## Checks if a symbol name exists in the symbol table
     ## - if it doesn't, raise a SymbolNotFound error
     ## - otherwise, return its value
-    when unsafe:
-        Syms[s]
-    else:
-        if unlikely (result := Syms.getOrDefault(s, nil)).isNil:
-            RuntimeError_SymbolNotFound(s, suggestAlternative(s))
+    Syms[s]
 
 proc FetchPathSym*(pl: ValueArray): Value =
     ## Gets a the `.p` field of a PathLiteral value
