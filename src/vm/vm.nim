@@ -141,17 +141,33 @@ template initialize(args: seq[string], filename: string, isFile:bool, scriptData
 
     when not defined(WEB):
         # configuration
-        Config = newStore(
-            initStore(
-                "config",
-                doLoad=false,
-                forceExtension=true,
-                createIfNotExists=true,
-                global=true,
-                autosave=true,
-                kind=NativeStore
+
+        let currentDir = os.getCurrentDir()
+
+        if os.fileExists(currentDir/"config.art"):
+            Config = newStore(
+                initStore(
+                    currentDir/"config.art",
+                    doLoad=false,
+                    forceExtension=true,
+                    createIfNotExists=false,
+                    global=false,
+                    autosave=true,
+                    kind=NativeStore
+                )
             )
-        )
+        else:
+            Config = newStore(
+                initStore(
+                    "config",
+                    doLoad=false,
+                    forceExtension=true,
+                    createIfNotExists=true,
+                    global=true,
+                    autosave=true,
+                    kind=NativeStore
+                )
+            )
 
     when not defined(WEB):
         # paths
