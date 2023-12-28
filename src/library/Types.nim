@@ -207,9 +207,39 @@ proc defineLibrary*() =
         },
         attrs       = NoAttrs,
         returns     = {Type},
-        # TODO(Types\is) add documentation example
-        #  labels: library, documentation, easy
         example     = """
+            define :animal [
+                init: constructor [nick :string age :integer]
+                
+                speak: method [][
+                    print "..."
+                ]
+            ]
+
+            define :fish is :animal []
+
+            define :cat is :animal [
+                speak: method [][
+                    print [~"|this\nick|:" "'meow!'"]
+                ] 
+            ]                                                   
+
+            a: to :cat []
+            ; >> Runtime | cannot initialize object of type :cat
+            ;      error | wrong number of parameters: 0
+            ;            | expected: 2 (nick, age)
+
+            scooby: to :animal ["Scooby" 7]
+            scooby\speak
+            ; ...
+
+            bubble: to :fish ["Bubble" 1]            
+            bubble\speak
+            ; ...
+
+            snowflake: to :cat ["Snowflake" 3]
+            snowflake\speak
+            ; Snowflake: 'meow!'
         """:
             #=======================================================
             # Get our defined fields & methods
