@@ -252,11 +252,11 @@ template retrieveConfig*(globalKey: string, attrKey: string): untyped =
     var config {.inject.}: ValueDict
     var configFound = false
 
-    if (let globalConfig = Config.sto.getStoreKey(globalKey, unsafe=true); not globalConfig.isNil):
+    if not (globalConfig := Config.sto.getStoreKey(globalKey, unsafe=true)).isNil:
         configFound = true
         config = globalConfig.d
     
-    if (let attrConfig = getAttr(attrKey); attrConfig != VNULL):
+    if (attrConfig := getAttr(attrKey)) != VNULL:
         configFound = true
         config = attrConfig.d
 
