@@ -118,12 +118,13 @@ proc defineLibrary*() =
             alias       = unaliased, 
             op          = opNop,
             rule        = PrefixPrecedence,
-            description = "get global configuration",
+            description = "get local or global configuration",
             args        = NoArgs,
             attrs       = NoAttrs,
             returns     = {Store},
             example     = """
-                ; `config` returns a `:store` from `~/.arturo/stores/config.art`
+                ; `config` searches for `config.art` into your current directory. 
+                ; if not found, it returns from `~/.arturo/stores/config.art`
 
                 config
                 ; => []
