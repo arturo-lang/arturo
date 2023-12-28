@@ -276,9 +276,19 @@ proc defineLibrary*() =
         },
         attrs       = NoAttrs,
         returns     = {Method},
-        # TODO(Types\sortable) add documentation example
-        #  labels: library, documentation, easy
         example     = """
+            define :cat [
+                init: constructor [name :string age :integer]
+                compare: sortable 'age
+            ]
+
+            snowflake: to :cat ["Snowflake" 3]
+            smith: to :cat ["Smith" 6]
+
+            compare snowflake smith
+            ; => -1
+            snowflake < smith
+            ; => true
         """:
             #=======================================================
             push(generatedCompare(x))
