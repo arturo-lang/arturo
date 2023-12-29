@@ -620,7 +620,10 @@ proc defineLibrary*() =
                     if aN.i == 1 or aN.i == 0:
                         push(x.rng[1, true])
                     else:
-                        push(newRange(x.rng[0..aN.i, true]))
+                        if aN.i > x.rng.len:
+                            push(newRange(x.rng[0..(x.rng.len), true]))
+                        else:
+                            push(newRange(x.rng[0..aN.i, true]))
                 else:
                     if x.a.len == 0: push(newBlock())
                     else:
