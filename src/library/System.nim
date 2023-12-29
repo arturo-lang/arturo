@@ -114,17 +114,33 @@ proc defineLibrary*() =
 
     when not defined(WEB):
 
-        # TODO(System\config) add documentation example
-        #  labels: library, documentation, easy
         builtin "config",
             alias       = unaliased, 
             op          = opNop,
             rule        = PrefixPrecedence,
-            description = "get global configuration",
+            description = "get local or global configuration",
             args        = NoArgs,
             attrs       = NoAttrs,
             returns     = {Store},
             example     = """
+                ; `config` searches for `config.art` into your current directory. 
+                ; if not found, it returns from `~/.arturo/stores/config.art`
+
+                config
+                ; => []
+                ; `config.art` is empty at first, but we can change this manually
+
+                write.append path\home ++ normalize ".arturo/stores/config.art" 
+                             "language: {Arturo}"
+                config
+                ; => []
+                
+                ; this stills empty, but now try to relaunch Arturo:
+                exit
+                ......................
+                config
+                ; => [language:Arturo]
+
             """:
                 push(Config)
 
