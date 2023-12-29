@@ -623,7 +623,11 @@ proc defineLibrary*() =
                         push(newRange(x.rng[0..aN.i, true]))
                 else:
                     if x.a.len == 0: push(newBlock())
-                    else: push(newBlock(x.a[0..aN.i-1]))
+                    else:
+                        if aN.i > x.a.len:
+                            push(newBlock(x.a[0..^1]))
+                        else: 
+                            push(newBlock(x.a[0..aN.i-1]))
             else:
                 if xKind == String:
                     if x.s.len == 0: push(VNULL)
