@@ -716,7 +716,7 @@ do [
 
     if throws? -> first.n: neg 2 range 0 5 -> passed
 
-    if throws? -> first.n: 7 range 0 5 -> passed
+    if not? throws? -> first.n: 7 range 0 5 -> passed
 
 ]
 
