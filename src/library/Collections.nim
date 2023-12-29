@@ -426,6 +426,12 @@ proc defineLibrary*() =
             ; yep
             ; d: [name: "John", age: 34]
             ..........
+            inspect fromBlock: #.raw [a b c d]
+            ; [ :dictionary
+            ;         a  :        b :word
+            ;         c  :        d :word
+            ; ]
+            ..........
             e: #.lower [
                 Name: "John"
                 suRnaMe: "Doe"
