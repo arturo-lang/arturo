@@ -806,7 +806,7 @@ proc defineLibrary*() =
         rule        = InfixPrecedence,
         description = "set symbol to given value",
         args        = {
-            "symbol"    : {String,Literal,Block},
+            "symbol"    : {String,Literal,Block,Word},
             "value"     : {Any}
         },
         attrs       = NoAttrs,
