@@ -9,6 +9,7 @@
          "Crypto"
          "Databases"
          "Dates"
+         "Exceptions"
          "Files"
          "Io"
          "Iterators"
@@ -23,5 +24,6 @@
          "Statistics"
          "Strings"
          "System"
+         "Types"
          "Ui"
 ]
