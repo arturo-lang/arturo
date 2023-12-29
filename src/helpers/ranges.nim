@@ -124,15 +124,21 @@ func `[]`*(rng: VRange, idx: int, returnValue: bool): Value =
         
 func `[]`*(rng: VRange, idx: HSlice, returnValue: bool): VRange =
     
-    if idx.a > rng.len or idx.b > rng.len or idx.a < 0 or idx.b < 0: 
+    if idx.a > rng.len or idx.a < 0 or idx.b < 0: 
         raise newException(ValueError, "Index out of range!!")
+
+    let upperIndex: int = 
+        if idx.b > rng.len:
+            rng.len - 1
+        else:
+            idx.b - 1
 
     let step = 
         if rng.forward: rng.step
         else: -1 * rng.step
 
     var start = rng.start + step*idx.a
-    var stop = rng.start + step*(idx.b-1)
+    var stop = rng.start + step*(upperIndex)
     
     return VRange(
             start:      start,
