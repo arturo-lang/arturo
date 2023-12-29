@@ -39,6 +39,9 @@ loop keys symbols [sym][
     if key? inf 'module [
         fun: inf\name
         lib: inf\module
+        if "macros" = lower lib ->
+            lib: "Quantities"
+
         append 'modules lib
         if not? key? functions lib [
             functions\[lib]: []
@@ -82,6 +85,11 @@ unique 'modules
 
 loop functions [modl,lst][
     target: relative join.path @["../docs/website/pages/documentation/library" lower modl]
+
+    loop list target 'tt [
+        if "_index.art" <> extract.basename tt ->
+            delete tt
+    ]
 
     loop lst 'func [
         funcInfo:  info.get func
