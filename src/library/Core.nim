@@ -806,7 +806,7 @@ proc defineLibrary*() =
         rule        = InfixPrecedence,
         description = "set symbol to given value",
         args        = {
-            "symbol"    : {String,Literal,Block},
+            "symbol"    : {String,Literal,Block,Word},
             "value"     : {Any}
         },
         attrs       = NoAttrs,
@@ -1105,7 +1105,7 @@ proc defineLibrary*() =
         rule        = PrefixPrecedence,
         description = "get symbol value by given name",
         args        = {
-            "symbol"    : {String,Literal,PathLiteral}
+            "symbol"    : {String,Literal,PathLiteral,Word}
         },
         attrs       = NoAttrs,
         returns     = {Any},
@@ -1120,7 +1120,7 @@ proc defineLibrary*() =
             print g 10              ; 12
         """:
             #=======================================================
-            if xKind in {String,Literal}:
+            if xKind in {String,Literal,Word}:
                 push(FetchSym(x.s))
             else:
                 push(FetchPathSym(x.p))
