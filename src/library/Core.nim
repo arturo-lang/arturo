@@ -150,7 +150,7 @@ proc defineLibrary*() =
         rule        = PrefixPrecedence,
         description = "call function with given list of parameters",
         args        = {
-            "function"  : {String,Literal,PathLiteral,Function},
+            "function"  : {String,Word,Literal,PathLiteral,Function},
             "params"    : {Block}
         },
         attrs       = {
@@ -216,7 +216,7 @@ proc defineLibrary*() =
             else:
                 var fun: Value
 
-                if xKind in {Literal, String}:
+                if xKind in {Literal, String, Word}:
                     fun = FetchSym(x.s)
                 elif xKind == PathLiteral:
                     fun = FetchPathSym(x.p)
