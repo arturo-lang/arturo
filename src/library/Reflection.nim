@@ -159,7 +159,7 @@ proc defineLibrary*() =
             rule        = PrefixPrecedence,
             description = "print info for given symbol",
             args        = {
-                "symbol": {String,Literal,SymbolLiteral,PathLiteral}
+                "symbol": {String,Word,Literal,SymbolLiteral,PathLiteral}
             },
             attrs       = {
                 "get"       : ({Logical},"get information as dictionary")
