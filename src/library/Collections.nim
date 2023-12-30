@@ -621,15 +621,15 @@ proc defineLibrary*() =
             if checkAttr("n"):
                 if xKind == String:
                     if x.s.len == 0: push(newString(""))
-                    else: push(newString(x.s[0..aN.i-1]))
+                    else: push(newString(x.s[0..min(aN.i-1, x.s.high)]))
                 elif xKind == Range:
                     if aN.i == 1 or aN.i == 0:
                         push(x.rng[1, true])
                     else:
-                        push(newRange(x.rng[0..aN.i, true]))
+                        push(newRange(x.rng[0..min(aN.i, x.rng.len), true]))
                 else:
                     if x.a.len == 0: push(newBlock())
-                    else: push(newBlock(x.a[0..aN.i-1]))
+                    else: push(newBlock(x.a[0..min(aN.i-1, x.a.high)]))
             else:
                 if xKind == String:
                     if x.s.len == 0: push(VNULL)
