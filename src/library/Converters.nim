@@ -9,20 +9,6 @@
 ## The main Converters module
 ## (part of the standard library)
 
-
-# TODO(Converters) The name of this module is a total misnomer
-#  I think the module needs a thorough cleanup
-#  First and foremost, some of the functions don't belong here
-#  Also, "converters"? The only functions that are really converting
-#  something are `to`, `as` and `from`.
-#  The way I see it, the module could be renamed `types` and include
-#  only the functions that have to do with types: e.g. type constructors
-#  such as `function`, `array`, `dictionary`, `define`, type converters,
-#  e.g. `to`, along with all type-checking predicates (e.g. `integer?`)
-#  that should be migrated from the Reflection module. (leaving there more
-#  obscure things such as `arity` or `set?`, etc)
-#  labels: library, enhancement, cleanup
-
 #=======================================
 # Pragmas
 #=======================================
