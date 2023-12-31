@@ -39,10 +39,6 @@ import vm/[env, errors, eval, exec, parse]
 # Definitions
 #=======================================
 
-# TODO(Core) add new `throw` built-in method?
-#  this could easily work with a new `:exception` built-in type
-#  labels: library, new feature,open discussion
-
 proc defineLibrary*() =
 
     #----------------------------
