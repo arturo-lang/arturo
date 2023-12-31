@@ -43,26 +43,6 @@ import vm/[env, errors, eval, exec, parse]
 #  this could easily work with a new `:exception` built-in type
 #  labels: library, new feature,open discussion
 
-# TODO(Core) add new `catch` method?
-#  Currently, `try?` works with `else`, pretty much like `if?`
-#  but we cannot do anything with the exception itself, in case
-#  this `try?` has failed
-#
-#  So, why not add a `catch` method, where we could do something like:
-#  ```
-#  try? [
-#      ; let's try something dangerous
-#      print 10 / 0
-#  ]
-#  catch 'e [
-#      print "something went terribly wrong..."
-#      print e
-#  ]
-#  ```
-#  In that case, `e` would hold the Exception, which should preferrably be
-#  of a distinct Exception type.
-#  labels: library,new feature,enhancement,open discussion
-
 proc defineLibrary*() =
 
     #----------------------------
