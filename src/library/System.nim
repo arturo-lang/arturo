@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2023 Yanis Zafirópulos
+# (c) 2019-2024 Yanis Zafirópulos
 #
 # @file: library/Shell.nim
 #=======================================================
@@ -400,8 +400,6 @@ proc defineLibrary*() =
     #  another location could also be Paths/path
     #  labels: library,enhancement
 
-    # TODO(System\script) add documentation example
-    #  labels: library, documentation, easy
     builtin "script",
         alias       = unaliased, 
         op          = opNop,
@@ -411,6 +409,49 @@ proc defineLibrary*() =
         attrs       = NoAttrs,
         returns     = {Dictionary},
         example     = """
+            ;; author: {Me :P}
+            ;; year: 2023
+            ;; license: Some License
+            ;; 
+            ;; description: {
+            ;;      This is an example of documentation.
+            ;;
+            ;;      You can get this by using ``script``.
+            ;; }
+            ;;
+            ;; hint: {
+            ;;      Notice that we use `;;` for documentation,
+            ;;      while the single `;` is just a comment, 
+            ;;      that will be ignored.   
+            ;; }
+            ;;
+            ;; export: [
+            ;;    'myFun
+            ;;    'otherFun
+            ;;    'someConst
+            ;; ]
+            ;;
+
+            inspect script
+            ; [ :dictionary
+            ;         author       :        Me :P :string
+            ;         year         :        2023 :integer
+            ;         license      :        [ :block
+            ;                 Some :string
+            ;                 License :string
+            ;         ]
+            ;         description  :        This is an example of documentation.
+            ;  
+            ; You can get this by using ``script``. :string
+            ;         hint         :        Notice that we use `;;` for documentation,
+            ; while the single `;` is just a comment, 
+            ; that will be ignored. :string
+            ;         export       :        [ :block
+            ;                 myFun :string
+            ;                 otherFun :string
+            ;                 someConst :string
+            ;         ]
+            ; ]
         """:
             push(getScriptInfo())
 

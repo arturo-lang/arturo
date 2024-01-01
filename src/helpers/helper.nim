@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2023 Yanis Zafirópulos
+# (c) 2019-2024 Yanis Zafirópulos
 #
 # @file: helpers/datasource.nim
 #=======================================================
@@ -295,7 +295,7 @@ when defined(DOCGEN):
         const 
             repo = "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/"
         
-        info["example"] = newStringBlock(splitExamples(obj.vgetAliasfmtal.info.example))
+        info["example"] = newStringBlock(splitExamples(obj.val.info.example))
         
         if obj.val.info.line == 0:
             return
