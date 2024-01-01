@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2023 Yanis Zafirópulos
+# (c) 2019-2024 Yanis Zafirópulos
 #
 # @file: vm/values/types.nim
 #=======================================================
@@ -24,7 +24,7 @@ when not defined(NOGMP):
     import helpers/bignums
 
 import vm/opcodes
-import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vquantity, vrange, vrational, vregex, vsocket, vsymbol, vversion]
+import vm/values/custom/[vbinary, vcolor, vcomplex, verror, vlogical, vquantity, vrange, vrational, vregex, vsocket, vsymbol, vversion]
 import vm/values/flags
 
 #=======================================
@@ -84,23 +84,26 @@ type
 
         Unit            = 20
         Quantity        = 21
-        Regex           = 22
-        Color           = 23
-        Date            = 24
-        Binary          = 25
-        Dictionary      = 26
-        Object          = 27
-        Store           = 28
-        Function        = 29
-        Inline          = 30
-        Block           = 31
-        Range           = 32
-        Database        = 33
-        Socket          = 34    
-        Bytecode        = 35
+        Error           = 22
+        ErrorKind       = 23
+        Regex           = 24
+        Color           = 25
+        Date            = 26
+        Binary          = 27
+        Dictionary      = 28
+        Object          = 29
+        Store           = 30
+        Function        = 31
+        Method          = 32
+        Inline          = 33
+        Block           = 34
+        Range           = 35
+        Database        = 36
+        Socket          = 37    
+        Bytecode        = 38
 
-        Nothing         = 36
-        Any             = 37
+        Nothing         = 39
+        Any             = 40
 
     ValueSpec* = set[ValueKind]
 
@@ -136,13 +139,59 @@ type
         name*:       Value
 
     Prototype* = ref object
-        name*       : string
-        fields*     : ValueArray
-        methods*    : ValueDict
-        doInit*     : proc (v:Value)
-        doPrint*    : proc (v:Value): string
-        doCompare*  : proc (a,b:Value): int
-        inherits*   : Prototype
+        name*           : string
+        content*        : ValueDict
+        inherits*       : Value
+        fields*         : ValueDict
+        super*          : ValueDict
+
+    MagicMethodInternal* = 
+        proc (values: ValueArray)
+
+    MagicMethod* = enum
+        ConstructorM        = "init"
+
+        GetM                = "get"
+        SetM                = "set"
+
+        ChangingM           = "changing"
+        ChangedM            = "changed"
+
+        CompareM            = "compare"
+        EqualQM             = "equal?"
+        LessQM              = "less?"
+        GreaterQM           = "greater?"
+
+        AddM                = "add"
+        SubM                = "sub"
+        MulM                = "mul"
+        DivM                = "div"
+        FDivM               = "fdiv"
+        ModM                = "mod"
+        PowM                = "pow"
+
+        IncM                = "inc"
+        DecM                = "dec"
+
+        NegM                = "neg"
+
+        KeyQM               = "key?"
+        ContainsQM          = "contains?"
+
+        AppendM             = "append"
+        RemoveM             = "remove"
+
+        ToStringM           = "string"
+        ToIntegerM          = "integer"
+        ToFloatingM         = "floating"
+        ToRationalM         = "rational"
+        ToComplexM          = "complex"
+        ToQuantityM         = "quantity"
+        ToLogicalM          = "logical"
+        ToBlockM            = "block"
+        ToDictionaryM       = "dictionary"
+
+    MagicMethods* = Table[MagicMethod, MagicMethodInternal]
 
     SymbolDict*   = OrderedTable[VSymbol,AliasBinding]
 
@@ -178,6 +227,13 @@ type
             of BuiltinFunction:
                 op*         : OpCode
                 action*     : BuiltinAction
+
+    VMethod* = ref object
+        marity*     : int8
+        mparams*    : seq[string]
+        mmain*      : Value
+        mbcode*     : Value
+        mdistinct*  : bool
 
     VStore* = ref object
         data*       : ValueDict     # the actual data
@@ -234,7 +290,7 @@ type
             of Type:
                 t*  : ValueKind
                 case tpKind*: TypeKind:
-                    of UserType:    ts* : Prototype
+                    of UserType:    tid* : string
                     of BuiltinType: discard
             of Char:        c*  : Rune
             of String,
@@ -248,10 +304,14 @@ type
                PathLiteral      :   p*  : ValueArray
             of Symbol,
                SymbolLiteral:
-                   m*  : VSymbol
+                m*  : VSymbol
             of Regex:       rx* : VRegex
             of Unit:        u*  : VUnit
             of Quantity:    q*  : VQuantity
+            of Error: 
+                err*: VError
+            of ErrorKind:
+                errKind*: VErrorKind
             of Color:       l*  : VColor
             of Date:
                 e*     : ValueDict
@@ -265,12 +325,15 @@ type
                     rng*    : VRange
             of Dictionary:  d*  : ValueDict
             of Object:
-                o*: ValueDict   # fields
-                proto*: Prototype # custom type pointer
+                proto*  : Prototype 
+                o*      : ValueDict 
+                magic*  : MagicMethods
             of Store:
                 sto*: VStore
             of Function:
                 funcType*: VFunction
+            of Method:
+                methType*: VMethod
             of Database:
                 case dbKind*: DatabaseKind:
                     of SqliteDatabase:
@@ -287,7 +350,27 @@ type
     ValueObj = typeof(Value()[])
     FuncObj = typeof(VFunction()[])
 
+#=======================================
+# Constants
+#=======================================
+
+const
+    RootObjectName = "object"
+
+let 
+    NoPrototypeFound* = Prototype(name: "prototype-error")
+
+#=======================================
+# Variables
+#=======================================
+
+var
+    TypeLookup*: OrderedTable[string,Prototype]
+
+#=======================================
 # Benchmarking
+#=======================================
+
 {.hints: on.} # Apparently we cannot disable just `Name` hints?
 {.hint: "Value's inner type is currently " & $sizeof(ValueObj) & ".".}
 {.hint: "Function's inner type is currently " & $sizeof(FuncObj) & ".".}
@@ -349,8 +432,16 @@ makeAccessor(funcType, inline)
 makeAccessor(funcType, action)
 makeAccessor(funcType, op)
 
+# Method
+
+makeAccessor(methType, marity)
+makeAccessor(methType, mparams)
+makeAccessor(methType, mmain)
+makeAccessor(methType, mbcode)
+makeAccessor(methType, mdistinct)
+
 #=======================================
-# Methods
+# Helpers
 #=======================================
 
 template getValuePair*(): untyped =
@@ -391,3 +482,25 @@ proc `||`*(va: static[ValueKind | IntegerKind], vb: static[ValueKind | IntegerKi
             result = result or cast[uint32](ord(Integer))
         elif vb == BigInteger:
             result = result or cast[uint32](ord(Integer)) or (1.uint32 shl 15)
+
+template fetch*(what: MagicMethods, magicMethodId: MagicMethod): untyped {.dirty.} =
+    (let mgk = what.getOrDefault(magicMethodId, nil); not mgk.isNil)
+
+#=======================================
+# Methods
+#=======================================
+
+proc setType*(tid: string, proto: Prototype = nil) {.inline.} =
+    if proto.isNil:
+        discard TypeLookup.hasKeyOrPut(tid, nil)
+    else:
+        TypeLookup[tid] = proto
+
+proc getType*(tid: string, safe: static bool = false): Prototype {.inline.} =
+    when safe:
+        return TypeLookup.getOrDefault(tid, NoPrototypeFound)
+    else:
+        return TypeLookup[tid]
+
+proc newPrototype*(name: string, content: ValueDict, inherits: Value, fields: ValueDict = newOrderedTable[string,Value](), super: ValueDict = newOrderedTable[string,Value]()): Prototype {.inline.} =
+    Prototype(name: name, content: content, inherits: inherits, fields: fields, super: super)

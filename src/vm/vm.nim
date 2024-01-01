@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2023 Yanis Zafirópulos
+# (c) 2019-2024 Yanis Zafirópulos
 #
 # @file: vm/vm.nim
 #=======================================================
@@ -91,6 +91,7 @@ importLib "Core"
 importLib "Crypto"
 importLib "Databases"
 importLib "Dates"
+importLib "Exceptions"
 importLib "Files"
 importLib "Io"
 importLib "Iterators"
@@ -105,6 +106,7 @@ importLib "Sockets"
 importLib "Statistics"
 importLib "Strings"
 importLib "System"
+importLib "Types"
 importLib "Ui"
 
 #=======================================
@@ -142,17 +144,33 @@ template initialize(args: seq[string], filename: string, isFile:bool, scriptData
 
     when not defined(WEB):
         # configuration
-        Config = newStore(
-            initStore(
-                "config",
-                doLoad=false,
-                forceExtension=true,
-                createIfNotExists=true,
-                global=true,
-                autosave=true,
-                kind=NativeStore
+
+        let currentDir = os.getCurrentDir()
+
+        if os.fileExists(currentDir/"config.art"):
+            Config = newStore(
+                initStore(
+                    currentDir/"config.art",
+                    doLoad=false,
+                    forceExtension=true,
+                    createIfNotExists=false,
+                    global=false,
+                    autosave=true,
+                    kind=NativeStore
+                )
             )
-        )
+        else:
+            Config = newStore(
+                initStore(
+                    "config",
+                    doLoad=false,
+                    forceExtension=true,
+                    createIfNotExists=true,
+                    global=true,
+                    autosave=true,
+                    kind=NativeStore
+                )
+            )
 
     when not defined(WEB):
         # paths

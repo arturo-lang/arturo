@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2023 Yanis Zafirópulos
+# (c) 2019-2024 Yanis Zafirópulos
 #
 # @file: vm/values/value.nim
 #=======================================================
@@ -34,7 +34,7 @@ when defined(NOGMP):
 
 import vm/opcodes
 
-import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vquantity, vrange, vrational, vregex, vsocket, vsymbol, vversion]
+import vm/values/custom/[vbinary, vcolor, vcomplex, verror, vlogical, vquantity, vrange, vrational, vregex, vsocket, vsymbol, vversion]
 
 import vm/values/types
 import vm/values/flags
@@ -110,8 +110,6 @@ let
 #=======================================
 
 var 
-    TypeLookup = initOrderedTable[string,Value]()
-
     # global action references
     DoAdd*, DoSub*, DoMul*, DoDiv*, DoFdiv*, DoMod*, DoPow*                 : BuiltinAction
     DoNeg*, DoInc*, DoDec*                                                  : BuiltinAction
@@ -131,6 +129,7 @@ var
 # Forward Declarations
 #=======================================
 
+func newBlock*(a: sink ValueArray = @[], data: sink Value = nil): Value {.inline, enforceNoRaises.}
 func newDictionary*(d: sink ValueDict = newOrderedTable[string,Value]()): Value {.inline.}
 func valueAsString*(v: Value): string {.inline,enforceNoRaises.}
 func hash*(v: Value): Hash {.inline.}
@@ -152,6 +151,15 @@ template isNull*(val: Value): bool  = val.kind == Null
 template isFalse*(val: Value): bool = IsFalse in val.flags
 template isMaybe*(val: Value): bool = IsMaybe in val.flags
 template isTrue*(val: Value): bool  = IsTrue in val.flags
+
+func canBeInlined(v: Value): bool {.enforceNoRaises.} =
+    for item in v.a:
+        if item.kind == Label:
+            return false
+        elif item.kind == Block:
+            if not canBeInlined(item):
+                return false
+    return true
 
 #=======================================
 # Constructors
@@ -315,13 +323,9 @@ func newType*(t: ValueKind): Value {.inline, enforceNoRaises.} =
     ## create Type (BuiltinType) value from ValueKind
     Value(kind: Type, tpKind: BuiltinType, t: t)
 
-proc newUserType*(n: string, f: ValueArray = @[]): Value {.inline.} =
-    ## create Type (UserType) value from string
-    if (let lookup = TypeLookup.getOrDefault(n, nil); not lookup.isNil):
-        return lookup
-    else:
-        result = Value(kind: Type, tpKind: UserType, t: Object, ts: Prototype(name: n, fields: f, methods: initOrderedTable[string,Value](), inherits: nil))
-        TypeLookup[n] = result
+proc newUserType*(tid: string, proto: Prototype = nil): Value {.inline.} =
+    setType(tid, proto)
+    Value(kind: Type, tpKind: UserType, t: Object, tid: tid)
 
 proc newType*(t: string): Value {.inline.} =
     ## create Type value from string
@@ -412,7 +416,7 @@ proc newUnit*(u: string): Value {.inline.} =
 proc newQuantity*(v: Value, atoms: VUnit): Value {.inline, enforceNoRaises.} =
     ## create Quantity value from a numerical value ``v`` (Value) + ``atoms`` (VUnit)
     result = Value(kind: Quantity)
-    if v.kind == Integer:
+    if v.kind == Integer: 
         if v.iKind == NormalInteger:
             result.q = toQuantity(v.i, atoms)
         else:
@@ -433,6 +437,29 @@ proc newQuantity*(q: VQuantity, copy: static bool = false): Value {.inline, enfo
         Value(kind: Quantity, q: toQuantity(q.original, q.atoms))
     else:
         Value(kind: Quantity, q: q)
+
+proc newErrorKind*(): Value {.inline, enforceNoRaises.} =
+    Value(kind: ErrorKind, errKind: VErrorKind(label: "Generic Error"))
+
+proc newErrorKind*(label: string): Value {.inline, enforceNoRaises.} =
+    Value(kind: ErrorKind, errKind: VErrorKind(label: label))
+
+proc newErrorKind*(errKind: VErrorKind): Value {.inline, enforceNoRaises.} =
+    Value(kind: ErrorKind, errKind: errKind)
+
+proc newError*(error: ref Exception | CatchableError | Defect): Value {.inline, enforceNoRaises.} =
+    result = Value(kind: Error, err: VError(kind: verror.genericErrorKind))
+    result.err.msg = error.msg
+
+proc newError*(kind: VErrorKind, msg: string = ""): Value {.inline, enforceNoRaises.} =
+    result = Value(kind: Error, err: VError(kind: kind))
+    result.err.msg = msg
+
+proc newError*(err: VError): Value {.inline, enforceNoRaises.} =
+    Value(kind: Error, err: err)
+
+proc newGenericError*(): Value {.inline, enforceNoRaises.} =
+    Value(kind: Error, err: VError(kind: genericErrorKind))
 
 func newRegex*(rx: sink VRegex): Value {.inline, enforceNoRaises.} =
     ## create Regex value from VRegex
@@ -485,37 +512,38 @@ func newDictionary*(d: sink SymTable): Value {.inline, enforceNoRaises.} =
     ## create Dictionary value from SymTable
     newDictionary(toSeq(d.pairs).toOrderedTable)
 
-func newObject*(o: sink ValueDict = newOrderedTable[string,Value](), proto: sink Prototype): Value {.inline, enforceNoRaises.} =
+func newObject*(proto: sink Prototype, o: sink ValueDict = newOrderedTable[string,Value](), magic: MagicMethods = MagicMethods()): Value {.inline, enforceNoRaises.} =
     ## create Object value from ValueDict with given prototype
-    Value(kind: Object, o: o, proto: proto)
+    Value(kind: Object, proto: proto, o: o, magic: magic)
 
-proc newObject*(args: ValueArray, prot: Prototype, initializer: proc (self: Value, prot: Prototype), o: ValueDict = newOrderedTable[string,Value]()): Value {.inline.} =
-    ## create Object value from ValueArray with given prototype 
-    ## and initializer function
-    var fields = o
-    var i = 0
-    while i<args.len and i<prot.fields.len:
-        let k = prot.fields[i]
-        fields[k.s] = args[i]
-        i += 1
+# proc newObject*(args: ValueArray, prot: Prototype, initializer: proc (self: Value, prot: Prototype), o: ValueDict = newOrderedTable[string,Value]()): Value {.inline.} =
+#     ## create Object value from ValueArray with given prototype 
+#     ## and initializer function
+#     var fields = o
+#     var i = 0
 
-    result = newObject(fields, prot)
+#     while i<args.len and i<prot.fields.len:
+#         let k = prot.fields[i]
+#         fields[k.s] = args[i]
+#         i += 1
+
+#     result = newObject(fields, prot)
+
+#     initializer(result, prot)
+
+# proc newObject*(args: ValueDict, prot: Prototype, initializer: proc (self: Value, prot: Prototype), o: ValueDict = newOrderedTable[string,Value]()): Value {.inline.} =
+#     ## create Object value from ValueDict with given prototype 
+#     ## and initializer function, using another object ``o`` as 
+#     ## a parent object
+#     var fields = o
+#     for k,v in pairs(args):
+#         for item in prot.fields:
+#             if item.s == k:
+#                 fields[k] = v
+
+#     result = newObject(fields, prot)
     
-    initializer(result, prot)
-
-proc newObject*(args: ValueDict, prot: Prototype, initializer: proc (self: Value, prot: Prototype), o: ValueDict = newOrderedTable[string,Value]()): Value {.inline.} =
-    ## create Object value from ValueDict with given prototype 
-    ## and initializer function, using another object ``o`` as 
-    ## a parent object
-    var fields = o
-    for k,v in pairs(args):
-        for item in prot.fields:
-            if item.s == k:
-                fields[k] = v
-
-    result = newObject(fields, prot)
-    
-    initializer(result, prot)
+#     initializer(result, prot)
 
 proc newStore*(sto: VStore): Value {.inline, enforceNoRaises.} =
     ## create Store value from VStore
@@ -538,6 +566,218 @@ func newFunction*(params: seq[string], main: Value, imports: Value = nil, export
             bcode: nil
         )
     )
+
+func newMethod*(params: seq[string], main: Value, isDistinct: bool = false, injectThis: static bool = true): Value {.inline, enforceNoRaises.} =
+    Value(
+        kind: Method,
+        info: nil,
+        methType: VMethod(
+            marity: int8(params.len) + (when injectThis: 1 else: 0),
+            mparams: (when injectThis: "this" & params else: params),
+            mmain: main,
+            mbcode: nil,
+            mdistinct: isDistinct
+        )
+    )
+
+func newFunctionFromDefinition*(params: ValueArray, main: Value, imports: Value = nil, exports: Value = nil, memoize: bool = false, forceInline: bool = false): Value {.inline, enforceNoRaises.} =
+    ## create Function value with given parameters,
+    ## generate type checkers, and process info if necessary
+    
+    # TODO(VM/values/value) Verify inlining safety  in `newFunctionFromDefinition`
+    #  labels: library, benchmark, open discussion
+    var inline = forceInline
+    if not inline:
+        if canBeInlined(main):
+            inline = true
+
+    var argTypes = initOrderedTable[string,ValueSpec]()
+
+    if params.countIt(it.kind == Type) > 0:
+        var args: seq[string]
+        var body: ValueArray
+
+        var i = 0
+        while i < params.len:
+            let varName = params[i]
+            args.add(params[i].s)
+            argTypes[params[i].s] = {}
+            if i+1 < params.len and params[i+1].kind == Type:
+                var typeArr: ValueArray
+
+                while i+1 < params.len and params[i+1].kind == Type:
+                    typeArr.add(newWord("is?"))
+                    typeArr.add(params[i+1])
+                    argTypes[varName.s].incl(params[i+1].t)
+                    typeArr.add(varName)
+                    i += 1
+
+                body.add(newWord("ensure"))
+                if typeArr.len == 3:
+                    body.add(newBlock(typeArr))
+                else:
+                    body.add(newBlock(@[
+                        newWord("any?"),
+                        newWord("array"),
+                        newBlock(typeArr)
+                    ]))
+            else:
+                argTypes[varName.s].incl(Any)
+            i += 1
+
+        var mainBody: ValueArray = main.a
+        mainBody.insert(body)
+
+        result = newFunction(args,newBlock(mainBody),imports,exports,memoize,inline)
+    else:
+        if params.len > 0:
+            for arg in params:
+                argTypes[arg.s] = {Any}
+        else:
+            argTypes[""] = {Nothing}
+        result = newFunction(params.map((w)=>w.s),main,imports,exports,memoize,inline)
+
+    result.info = ValueInfo(kind: Function)
+
+    if not main.data.isNil:
+        if main.data.kind==Dictionary:
+
+            if (let descriptionData = main.data.d.getOrDefault("description", nil); not descriptionData.isNil):
+                result.info.descr = descriptionData.s
+                result.info.module = ""
+
+            if main.data.d.hasKey("options") and main.data.d["options"].kind==Dictionary:
+                var options = initOrderedTable[string,(ValueSpec,string)]()
+                for (k,v) in pairs(main.data.d["options"].d):
+                    if v.kind==Type:
+                        options[k] = ({v.t}, "")
+                    elif v.kind==String:
+                        options[k] = ({Logical}, v.s)
+                    elif v.kind==Block:
+                        var vspec: ValueSpec
+                        var i = 0
+                        while i < v.a.len and v.a[i].kind==Type:
+                            vspec.incl(v.a[i].t)
+                            i += 1
+                        if v.a[i].kind==String:
+                            options[k] = (vspec, v.a[i].s)
+                        else:
+                            options[k] = (vspec, "")
+
+                result.info.attrs = options
+
+            if (let returnsData = main.data.d.getOrDefault("returns", nil); not returnsData.isNil):
+                if returnsData.kind==Type:
+                    result.info.returns = {returnsData.t}
+                else:
+                    var returns: ValueSpec
+                    for tp in returnsData.a:
+                        returns.incl(tp.t)
+                    result.info.returns = returns
+
+            when defined(DOCGEN):
+                if (let exampleData = main.data.d.getOrDefault("example", nil); not exampleData.isNil):
+                    result.info.example = exampleData.s
+
+    result.info.args = argTypes
+
+# TODO(VM/values/value) `newMethodFromDefinition` redundant?
+#  could we possibly "merge" it with `newFunctionFromDefinition` or 
+#  at least create e.g. a template?
+#  labels: values, enhancement, cleanup
+func newMethodFromDefinition*(params: ValueArray, main: Value, isDistinct: bool = false): Value {.inline, enforceNoRaises.} =
+    ## create Method value with given parameters,
+    ## generate type checkers, and process info if necessary
+
+    var argTypes = initOrderedTable[string,ValueSpec]()
+
+    if params.countIt(it.kind == Type) > 0:
+        var args: seq[string]
+        var body: ValueArray
+
+        var i = 0
+        while i < params.len:
+            let varName = params[i]
+            args.add(params[i].s)
+            argTypes[params[i].s] = {}
+            if i+1 < params.len and params[i+1].kind == Type:
+                var typeArr: ValueArray
+
+                while i+1 < params.len and params[i+1].kind == Type:
+                    typeArr.add(newWord("is?"))
+                    typeArr.add(params[i+1])
+                    argTypes[varName.s].incl(params[i+1].t)
+                    typeArr.add(varName)
+                    i += 1
+
+                body.add(newWord("ensure"))
+                if typeArr.len == 3:
+                    body.add(newBlock(typeArr))
+                else:
+                    body.add(newBlock(@[
+                        newWord("any?"),
+                        newWord("array"),
+                        newBlock(typeArr)
+                    ]))
+            else:
+                argTypes[varName.s].incl(Any)
+            i += 1
+
+        var mainBody: ValueArray = main.a
+        mainBody.insert(body)
+
+        result = newMethod(args,newBlock(mainBody),isDistinct)
+    else:
+        if params.len > 0:
+            for arg in params:
+                argTypes[arg.s] = {Any}
+        else:
+            argTypes[""] = {Nothing}
+        result = newMethod(params.map((w)=>w.s),main,isDistinct)
+
+    result.info = ValueInfo(kind: Method)
+
+    if not main.data.isNil:
+        if main.data.kind==Dictionary:
+
+            if (let descriptionData = main.data.d.getOrDefault("description", nil); not descriptionData.isNil):
+                result.info.descr = descriptionData.s
+                result.info.module = ""
+
+            if main.data.d.hasKey("options") and main.data.d["options"].kind==Dictionary:
+                var options = initOrderedTable[string,(ValueSpec,string)]()
+                for (k,v) in pairs(main.data.d["options"].d):
+                    if v.kind==Type:
+                        options[k] = ({v.t}, "")
+                    elif v.kind==String:
+                        options[k] = ({Logical}, v.s)
+                    elif v.kind==Block:
+                        var vspec: ValueSpec
+                        var i = 0
+                        while i < v.a.len and v.a[i].kind==Type:
+                            vspec.incl(v.a[i].t)
+                            i += 1
+                        if v.a[i].kind==String:
+                            options[k] = (vspec, v.a[i].s)
+                        else:
+                            options[k] = (vspec, "")
+
+                result.info.attrs = options
+
+            if (let returnsData = main.data.d.getOrDefault("returns", nil); not returnsData.isNil):
+                if returnsData.kind==Type:
+                    result.info.returns = {returnsData.t}
+                else:
+                    var returns: ValueSpec
+                    for tp in returnsData.a:
+                        returns.incl(tp.t)
+                    result.info.returns = returns
+
+            when defined(DOCGEN):
+                if (let exampleData = main.data.d.getOrDefault("example", nil); not exampleData.isNil):
+                    result.info.example = exampleData.s
+
+    result.info.args = argTypes
 
 func newBuiltin*(desc: sink string, modl: sink string, line: int, ar: int8, ag: sink OrderedTable[string,ValueSpec], at: sink OrderedTable[string,(ValueSpec,string)], ret: ValueSpec, exa: sink string, opc: OpCode, act: BuiltinAction): Value {.inline, enforceNoRaises.} =
     ## create Function (BuiltinFunction) value with given details
@@ -642,6 +882,16 @@ proc newStringDictionary*(a: TableRef[string, seq[string]], collapseBlocks=false
         else:
             result.d[k] = newStringBlock(v)
 
+# TODO(VM/values/value) add better unit-tests for deep copies
+#  right now, in tests/unittests/deepcopies, we're testing integers
+#  strings, blocks and dictionaries. The tests could/should cover pretty
+#  much every type (nested or not)
+#  labels: values, unit-test
+
+# TODO(VM/values/value) create proper constructor overloads for deep-copying
+#  `newQuantity(.., copy=true)` would be the example. It should operate statically,
+#  at runtime!
+#  labels: values, enhancement, cleanup
 proc copyValue*(v: Value): Value {.inline.} =
     ## copy given value (deep copy) and return 
     ## the result
@@ -666,7 +916,8 @@ proc copyValue*(v: Value): Value {.inline.} =
             if likely(v.tpKind==BuiltinType):
                 result = newType(v.t)
             else:
-                result = newUserType(v.ts.name, v.ts.fields)
+                result = newUserType(v.tid)#TypeExtension(v.ts.content[], copyValue(v.ts.inherits))
+                #result.ts.name = v.ts.name
         of Char:            result = newChar(v.c)
 
         of String:          result = newString(v.s)
@@ -686,20 +937,26 @@ proc copyValue*(v: Value): Value {.inline.} =
         of Regex:           result = newRegex(v.rx)
         of Unit:            result = newUnit(v.u)
         of Quantity:        result = newQuantity(v.q, copy=true)
+        of Error:           result = newError(v.err)
+        of ErrorKind:       result = newErrorKind(v.errKind)
         of Color:           result = newColor(v.l)
         of Date:            result = newDate(v.eobj[])
         of Binary:          result = newBinary(v.n)
         of Inline:          result = newInline(v.a)
         of Block:       
             if v.data.isNil: 
-                result = Value(kind: Block, a: v.a)
+                result = newBlock(v.a.map((vv)=>copyValue(vv)))
             else:
                 result = newBlock(v.a.map((vv)=>copyValue(vv)), copyValue(v.data))
         of Range:
             result = newRange(v.rng.start, v.rng.stop, v.rng.step, v.rng.infinite, v.rng.numeric, v.rng.forward)
 
-        of Dictionary:      result = newDictionary(v.d[])
-        of Object:          result = newObject(v.o[], v.proto)
+        of Dictionary:      
+            let dcopy = newOrderedTable[string,Value]()
+            for key,val in v.d:
+                dcopy[key] = copyValue(val)
+            result = newDictionary(dcopy)
+        of Object:          result = newObject(v.proto, v.o[], v.magic)
         of Store:           result = newStore(v.sto)
 
         of Function:    
@@ -710,6 +967,8 @@ proc copyValue*(v: Value): Value {.inline.} =
                     result = newBuiltin(v.info.descr, v.info.module, v.info.line, v.arity, v.info.args, v.info.attrs, v.info.returns, v.info.example, v.op, v.action)
                 else:
                     result = newBuiltin(v.info.descr, v.info.module, 0, v.arity, v.info.args, v.info.attrs, v.info.returns, "", v.op, v.action)
+        of Method:
+            result = newMethod(v.mparams, v.mmain, v.mdistinct, injectThis=false)
 
         of Database:    
             when not defined(NOSQLITE):
@@ -833,7 +1092,7 @@ func consideredEqual*(x: Value, y: Value): bool {.inline,enforceNoRaises.} =
             if x.tpKind==BuiltinType:
                 return x.t == y.t
             else:
-                return x.ts.name == y.ts.name
+                return x.tid == y.tid
         of Char: return x.c == y.c
         of Symbol,
            SymbolLiteral: return x.m == y.m
@@ -904,7 +1163,10 @@ func hash*(v: Value): Hash {.inline.}=
             result = result !& cast[Hash](v.minor)
             result = result !& cast[Hash](v.patch)
             result = result !& hash(v.extra)
-        of Type         : result = result !& cast[Hash](ord(v.t))
+        of Type         : 
+            result = result !& hash(v.tpKind)
+            result = result !& cast[Hash](ord(v.t))
+            result = result !& hash(v.tid)   
         of Char         : result = result !& cast[Hash](ord(v.c))
         of String       : result = result !& hash(v.s)
         
@@ -928,6 +1190,10 @@ func hash*(v: Value): Hash {.inline.}=
         of Quantity     : result = result !& hash(v.q)
 
         of Regex        : result = result !& hash(v.rx)
+
+        of Error        : result = result !& hash(v.err.kind.label)
+
+        of ErrorKind    : result = result !& hash(v.errKind.label)
 
         of Color        : result = result !& cast[Hash](v.l)
 
@@ -972,6 +1238,11 @@ func hash*(v: Value): Hash {.inline.}=
                 result = result !& hash(v.inline)
             else:
                 result = result !& cast[Hash](unsafeAddr v)
+
+        of Method       :
+            result = result !& hash(v.mparams)
+            result = result !& hash(v.mmain)
+            result = result !& hash(v.mdistinct)
 
         of Database:
             when not defined(NOSQLITE):

@@ -34,32 +34,27 @@ repl: function [blk,v][
 parse: function [in,rules][
     pos: 0
     i: 0
-    ; try? [
-        while [i < size rules][
-            rule: rules \ i
-            item: in \ pos
-            case [(type rule)=]
-                when? [:type][
-                    if rule <> type item -> return false
-                    if (i+1) < size rules [
-                        if inline? rules \ i+1 [
-                            i: i + 1
-                            doable: to :block repl rules \ i item 
-                            unless do doable -> return false
-                        ]
+    while [i < size rules][
+        rule: rules \ i
+        item: in \ pos
+        case [(type rule)=]
+            when? [:type][
+                if rule <> type item -> return false
+                if (i+1) < size rules [
+                    if inline? rules \ i+1 [
+                        i: i + 1
+                        doable: to :block repl rules \ i item 
+                        unless do doable -> return false
                     ]
                 ]
-                else [
-                    print ["found something else:" rule]
-                ]
-            i: i + 1
-            pos: pos + 1
-        ]
-        return true
-    ; ]
-    ; else [
-    ;     return false
-    ; ]
+            ]
+            else [
+                print ["found something else:" rule]
+            ]
+        i: i + 1
+        pos: pos + 1
+    ]
+    return true
 ]
 
 print parse to :block "123.123.123.123" ipAddress

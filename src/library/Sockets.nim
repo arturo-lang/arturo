@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2023 Yanis Zafirópulos
+# (c) 2019-2024 Yanis Zafirópulos
 #
 # @file: library/Sockets.nim
 #=======================================================
@@ -31,7 +31,7 @@ when not defined(WEB):
     import vm/errors
 
 #=======================================
-# Methods
+# Definitions
 #=======================================
 
 # TODO(Sockets) Verify the whole module & check for missing functionality
@@ -40,7 +40,11 @@ when not defined(WEB):
 #  features
 #  labels: open discussion
 
-proc defineSymbols*() =
+proc defineLibrary*() =
+
+    #----------------------------
+    # Functions
+    #----------------------------
     
     when not defined(WEB):
 
@@ -235,6 +239,37 @@ proc defineSymbols*() =
 
                 x.sock.socket.send(message)
 
+        builtin "unplug",
+            alias       = unaliased, 
+            op          = opNop,
+            rule        = PrefixPrecedence,
+            description = "close given socket",
+            args        = {
+                "socket"    : {Socket} 
+            },
+            attrs       = NoAttrs,
+            returns     = {Nothing},
+            example     = """
+            ; connect to a local server on port 256
+            socket: connect.to:"localhost" 256
+
+            ; send a message to the server
+            send socket "Hello Socket World"
+
+            ; disconnect from the server
+            unplug socket
+            """:
+                #=======================================================
+                when defined(SAFE): RuntimeError_OperationNotPermitted("unplug")
+
+                x.sock.socket.close()
+
+    #----------------------------
+    # Predicates
+    #----------------------------
+
+    when not defined(WEB):
+
         builtin "send?",
             alias       = unaliased, 
             op          = opNop,
@@ -261,35 +296,8 @@ proc defineSymbols*() =
 
                 push newLogical(x.sock.socket.trySend(y.s))
 
-        builtin "unplug",
-            alias       = unaliased, 
-            op          = opNop,
-            rule        = PrefixPrecedence,
-            description = "close given socket",
-            args        = {
-                "socket"    : {Socket} 
-            },
-            attrs       = NoAttrs,
-            returns     = {Nothing},
-            example     = """
-            ; connect to a local server on port 256
-            socket: connect.to:"localhost" 256
-
-            ; send a message to the server
-            send socket "Hello Socket World"
-
-            ; disconnect from the server
-            unplug socket
-            """:
-                #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("unplug")
-
-                x.sock.socket.close()
-    else:
-        discard
-
 #=======================================
 # Add Library
 #=======================================
 
-Libraries.add(defineSymbols)
+Libraries.add(defineLibrary)

@@ -1,7 +1,7 @@
 ;========================================================
 ; Arturo
 ; Programming Language + Bytecode VM compiler
-; (c) 2019-2023 Yanis Zafirópulos
+; (c) 2019-2024 Yanis Zafirópulos
 ;
 ; @file: system/console.art
 ;========================================================
@@ -36,8 +36,9 @@ loop symbols [k,v][
 historyPath: join.path @[path\home ".arturo" "history.lst"]
 
 ; set all packager-related operations as verbose
-
-__VerbosePackager
+if sys\release = 'full [
+    __VerbosePackager
+]
 
 ; helpers & templates
 
@@ -203,8 +204,8 @@ while [true] [
         inp: inp ++ "\n" ++ input ".. " ++ indentation
     ]
 
-    try?.verbose [
-        try.verbose to :block inp
+    if throws? [
+        err: try.verbose to :block inp
 
         StackSize: size stack
 
@@ -212,8 +213,5 @@ while [true] [
         if Got <> null 			[ print color #gray render.once "=> |Got|" ]
 
         print ""
-    ]
-    else [
-        print ""
-    ]
+    ] -> print ""
 ]

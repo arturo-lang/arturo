@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2023 Yanis Zafirópulos
+# (c) 2019-2024 Yanis Zafirópulos
 #
 # @file: library/Strings.nim
 #=======================================================
@@ -58,10 +58,14 @@ template replaceStrWith(str: var string, src: Value, dst: Value): untyped =
         str = str.replaceAll(src.rx, dst.s)
 
 #=======================================
-# Methods
+# Definitions
 #=======================================
 
-proc defineSymbols*() =
+proc defineLibrary*() =
+
+    #----------------------------
+    # Functions
+    #----------------------------
     
     # TODO(Strings\alphabet) Should we move it to the Sets module?
     #  yes, strings are composed by characters which - together - form an alphabet.
@@ -110,39 +114,6 @@ proc defineSymbols*() =
                 got = getCharset(x.s, withExtras=all)
 
             push(newBlock(got))
-
-    builtin "ascii?",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "check if given character/string is in ASCII",
-        args        = {
-            "string": {Char,String}
-        },
-        attrs       = NoAttrs,
-        returns     = {Logical},
-        example     = """
-            ascii? `d`              ; true
-            ..........
-            ascii? `😀`             ; false
-
-            ascii? "hello world"    ; true
-            ascii? "Hællø wœrld"    ; false
-            ascii? "Γειά!"          ; false
-        """:
-            #=======================================================
-            if xKind==Char:
-                push(newLogical(ord(x.c)<128))
-            else:
-                var allOK = true
-                for ch in runes(x.s):
-                    if ord(ch) >= 128:
-                        allOK = false
-                        push(VFALSE)
-                        break
-
-                if allOK:
-                    push(VTRUE)
 
     builtin "capitalize",
         alias       = unaliased, 
@@ -403,40 +374,10 @@ proc defineSymbols*() =
                 else:
                     InPlaced.c = InPlaced.c.toLower()
 
-    builtin "lower?",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "check if given string is lowercase",
-        args        = {
-            "string": {String,Char}
-        },
-        attrs       = NoAttrs,
-        returns     = {Logical},
-        example     = """
-            lower? "ñ"               ; => true
-            lower? "X"               ; => false
-            lower? "Hello World"     ; => false
-            lower? "hello"           ; => true
-        """:
-            #=======================================================
-            if xKind==Char:
-                push(newLogical(x.c.isLower()))
-            else:
-                var broken = false
-                for c in runes(x.s):
-                    if not c.isLower():
-                        push(VFALSE)
-                        broken = true
-                        break
-
-                if not broken:
-                    push(VTRUE)
-
-    # TODO(Strings/match) should work for Web builds as well
+    # TODO(Strings\match) should work for Web builds as well
     #  labels: library, web, bug
 
-    # TODO(Strings/match) add support for Char values as the value-to-match
+    # TODO(Strings\match) add support for Char values as the value-to-match
     #  labels: library, enhancement
     when not defined(WEB):
         builtin "match",
@@ -569,80 +510,6 @@ proc defineSymbols*() =
 
                     push(newBlock(res))
 
-        # TODO(Strings/match?) should work for Web builds as well
-        #  labels: library, web, bug
-        builtin "match?",
-            alias       = unaliased, 
-            op          = opNop,
-            rule        = PrefixPrecedence,
-            description = "check if string matches given regular expression",
-            args        = {
-                "string": {String},
-                "regex" : {Regex, String}
-            },
-            attrs       = {
-                "in"        : ({Range},"get matches within given range")
-            },
-            returns     = {Logical},
-            example     = """
-            match? "hello" {/l/}            ; => true
-            match? "hello" {/x/}            ; => false
-
-            match? "hello" "l"              ; => true
-            ..........
-            match?.in:0..1 "hello" {/l/}        ; => false
-            match?.in:2..4 "hello" {/l/}        ; => true
-            """:
-                #=======================================================
-                let rgx : VRegex =
-                    if yKind==Regex: y.rx
-                    else: newRegex(y.s).rx
-
-                var iFrom = 0
-                var iTo = int.high
-
-                if checkAttr("in"):
-                    iFrom = aIn.rng.start
-                    if iFrom < 0: 
-                        iFrom = 0
-                        
-                    iTo = aIn.rng.stop
-                    if iTo >= x.s.len: 
-                        iTo = x.s.len-1
-
-                var matched = false
-                for m in x.s.findIter(rgx, iFrom, iTo):
-                    matched = true
-                    break
-
-                push newLogical(matched)
- 
-    builtin "numeric?",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "check if given string is numeric",
-        args        = {
-            "string": {String,Char}
-        },
-        attrs       = NoAttrs,
-        returns     = {Logical},
-        example     = """
-            numeric? "hello"           ; => false
-            numeric? "3.14"            ; => true
-            numeric? "18966"           ; => true
-            numeric? "123xxy"          ; => false
-        """:
-            #=======================================================
-            try:
-                if xKind==Char:
-                    discard parseFloat($(x.c))
-                else:
-                    discard x.s.parseFloat()
-                push(VTRUE)
-            except ValueError:
-                push(VFALSE)
-
     builtin "outdent",
         alias       = unaliased, 
         op          = opNop,
@@ -745,27 +612,6 @@ proc defineSymbols*() =
                     ensureInPlace()
                     InPlaced.s = unicode.align(InPlaced.s, y.i, padding=padding)
 
-    builtin "prefix?",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "check if string starts with given prefix",
-        args        = {
-            "string": {String},
-            "prefix": {String, Regex}
-        },
-        attrs       = NoAttrs,
-        returns     = {Logical},
-        example     = """
-            prefix? "hello" "he"          ; => true
-            prefix? "boom" "he"           ; => false
-        """:
-            #=======================================================
-            if yKind==Regex:
-                push(newLogical(x.s.startsWith(y.rx)))
-            else:
-                push(newLogical(x.s.startsWith(y.s)))
-
     when not defined(WEB):
         # TODO(Strings\render) function should also work for Web/JS builds
         #  the lack of proper RegEx libraries could be handled by using the newly-added JS helper functions
@@ -861,7 +707,7 @@ proc defineSymbols*() =
                 else:
                     push(newString(res))
 
-    # TODO(Strings/replace) better implementation with more options needed
+    # TODO(Strings\replace) better implementation with more options needed
     #  Obviously, no need to overdo it here. But at least, we could add support for things like `.once`
     #  or strict replacement of the matched groups, etc - if possible, in the style of `match`
     #
@@ -959,27 +805,6 @@ proc defineSymbols*() =
             else: 
                 ensureInPlace()
                 InPlaced.s = strutils.strip(InPlaced.s, leading, trailing) 
-
-    builtin "suffix?",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "check if string ends with given suffix",
-        args        = {
-            "string": {String},
-            "suffix": {String, Regex}
-        },
-        attrs       = NoAttrs,
-        returns     = {Logical},
-        example     = """
-            suffix? "hello" "lo"          ; => true
-            suffix? "boom" "lo"           ; => false
-        """:
-            #=======================================================
-            if yKind==Regex:
-                push(newLogical(x.s.endsWith(y.rx)))
-            else:
-                push(newLogical(x.s.endsWith(y.s)))
 
     builtin "translate",
         alias       = unaliased, 
@@ -1085,36 +910,6 @@ proc defineSymbols*() =
                 else:
                     InPlaced.c = InPlaced.c.toUpper()
 
-    builtin "upper?",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "check if given string is uppercase",
-        args        = {
-            "string": {String,Char}
-        },
-        attrs       = NoAttrs,
-        returns     = {Logical},
-        example     = """
-            upper? "Ñ"               ; => true
-            upper? "x"               ; => false
-            upper? "Hello World"     ; => false
-            upper? "HELLO"           ; => true
-        """:
-            #=======================================================
-            if xKind==Char:
-                push(newLogical(x.c.isUpper()))
-            else:
-                var broken = false
-                for c in runes(x.s):
-                    if not c.isUpper():
-                        push(VFALSE)
-                        broken = true
-                        break
-
-                if not broken:
-                    push(VTRUE)
-
     builtin "wordwrap",
         alias       = unaliased, 
         op          = opNop,
@@ -1156,6 +951,221 @@ proc defineSymbols*() =
             else:
                 push newString(wrapWords(x.s, maxLineWidth=cutoff))
 
+    #----------------------------
+    # Predicates
+    #----------------------------
+
+    builtin "ascii?",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "check if given character/string is in ASCII",
+        args        = {
+            "string": {Char,String}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            ascii? `d`              ; true
+            ..........
+            ascii? `😀`             ; false
+
+            ascii? "hello world"    ; true
+            ascii? "Hællø wœrld"    ; false
+            ascii? "Γειά!"          ; false
+        """:
+            #=======================================================
+            if xKind==Char:
+                push(newLogical(ord(x.c)<128))
+            else:
+                var allOK = true
+                for ch in runes(x.s):
+                    if ord(ch) >= 128:
+                        allOK = false
+                        push(VFALSE)
+                        break
+
+                if allOK:
+                    push(VTRUE)
+
+    builtin "lower?",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "check if given string is lowercase",
+        args        = {
+            "string": {String,Char}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            lower? "ñ"               ; => true
+            lower? "X"               ; => false
+            lower? "Hello World"     ; => false
+            lower? "hello"           ; => true
+        """:
+            #=======================================================
+            if xKind==Char:
+                push(newLogical(x.c.isLower()))
+            else:
+                var broken = false
+                for c in runes(x.s):
+                    if not c.isLower():
+                        push(VFALSE)
+                        broken = true
+                        break
+
+                if not broken:
+                    push(VTRUE)
+
+    when not defined(WEB):
+
+        # TODO(Strings\match?) should work for Web builds as well
+        #  labels: library, web, bug
+        builtin "match?",
+            alias       = unaliased, 
+            op          = opNop,
+            rule        = PrefixPrecedence,
+            description = "check if string matches given regular expression",
+            args        = {
+                "string": {String},
+                "regex" : {Regex, String}
+            },
+            attrs       = {
+                "in"        : ({Range},"get matches within given range")
+            },
+            returns     = {Logical},
+            example     = """
+            match? "hello" {/l/}            ; => true
+            match? "hello" {/x/}            ; => false
+
+            match? "hello" "l"              ; => true
+            ..........
+            match?.in:0..1 "hello" {/l/}        ; => false
+            match?.in:2..4 "hello" {/l/}        ; => true
+            """:
+                #=======================================================
+                let rgx : VRegex =
+                    if yKind==Regex: y.rx
+                    else: newRegex(y.s).rx
+
+                var iFrom = 0
+                var iTo = int.high
+
+                if checkAttr("in"):
+                    iFrom = aIn.rng.start
+                    if iFrom < 0: 
+                        iFrom = 0
+                        
+                    iTo = aIn.rng.stop
+                    if iTo >= x.s.len: 
+                        iTo = x.s.len-1
+
+                var matched = false
+                for m in x.s.findIter(rgx, iFrom, iTo):
+                    matched = true
+                    break
+
+                push newLogical(matched)
+
+    builtin "numeric?",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "check if given string is numeric",
+        args        = {
+            "string": {String,Char}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            numeric? "hello"           ; => false
+            numeric? "3.14"            ; => true
+            numeric? "18966"           ; => true
+            numeric? "123xxy"          ; => false
+        """:
+            #=======================================================
+            try:
+                if xKind==Char:
+                    discard parseFloat($(x.c))
+                else:
+                    discard x.s.parseFloat()
+                push(VTRUE)
+            except ValueError:
+                push(VFALSE)
+
+    builtin "prefix?",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "check if string starts with given prefix",
+        args        = {
+            "string": {String},
+            "prefix": {String, Regex}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            prefix? "hello" "he"          ; => true
+            prefix? "boom" "he"           ; => false
+        """:
+            #=======================================================
+            if yKind==Regex:
+                push(newLogical(x.s.startsWith(y.rx)))
+            else:
+                push(newLogical(x.s.startsWith(y.s)))
+
+    builtin "suffix?",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "check if string ends with given suffix",
+        args        = {
+            "string": {String},
+            "suffix": {String, Regex}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            suffix? "hello" "lo"          ; => true
+            suffix? "boom" "lo"           ; => false
+        """:
+            #=======================================================
+            if yKind==Regex:
+                push(newLogical(x.s.endsWith(y.rx)))
+            else:
+                push(newLogical(x.s.endsWith(y.s)))
+
+    builtin "upper?",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "check if given string is uppercase",
+        args        = {
+            "string": {String,Char}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            upper? "Ñ"               ; => true
+            upper? "x"               ; => false
+            upper? "Hello World"     ; => false
+            upper? "HELLO"           ; => true
+        """:
+            #=======================================================
+            if xKind==Char:
+                push(newLogical(x.c.isUpper()))
+            else:
+                var broken = false
+                for c in runes(x.s):
+                    if not c.isUpper():
+                        push(VFALSE)
+                        broken = true
+                        break
+
+                if not broken:
+                    push(VTRUE)
+
     builtin "whitespace?",
         alias       = unaliased, 
         op          = opNop,
@@ -1174,8 +1184,9 @@ proc defineSymbols*() =
             #=======================================================
             push(newLogical(x.s.isEmptyOrWhitespace()))
 
+
 #=======================================
 # Add Library
 #=======================================
 
-Libraries.add(defineSymbols)
+Libraries.add(defineLibrary)

@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2023 Yanis Zafirópulos
+# (c) 2019-2024 Yanis Zafirópulos
 #
 # @file: library/Core.nim
 #=======================================================
@@ -29,20 +29,21 @@ import helpers/datasource
 when not defined(WEB):
     import os
     import helpers/ffi
-    import helpers/packager
+    when not defined(MINI):
+        import helpers/packager
 
 import vm/lib
 import vm/[env, errors, eval, exec, parse]
 
 #=======================================
-# Methods
+# Definitions
 #=======================================
 
-proc defineSymbols*() =
+proc defineLibrary*() =
 
-    # TODO(Core) add new `throw` built-in method?
-    #  this could easily work with a new `:exception` built-in type
-    #  labels: library, new feature,open discussion
+    #----------------------------
+    # Functions
+    #----------------------------
 
     builtin "alias",
         alias       = unaliased, 
@@ -291,7 +292,7 @@ proc defineSymbols*() =
             #=======================================================
             raise ContinueTriggered()
 
-    # TODO(Core/do) not working well with Bytecode?
+    # TODO(Core\do) not working well with Bytecode?
     #  labels: bug, critical, library, values
     builtin "do",
         alias       = unaliased, 
@@ -428,8 +429,7 @@ proc defineSymbols*() =
             #=======================================================
             let y = stack.pop() # pop the value of the previous operation (hopefully an 'if?' or 'when?')
             if isFalse(y): 
-                execUnscoped(x)
-            
+                execUnscoped(x)  
             
     builtin "ensure",
         alias       = unaliased, 
@@ -464,6 +464,127 @@ proc defineSymbols*() =
                 execUnscoped(x)
                 if isFalse(stack.pop()):
                     AssertionError_AssertionFailed(x.codify())
+
+    builtin "function",
+        alias       = dollar,
+        op          = opFunc,
+        rule        = PrefixPrecedence,
+        description = "create function with given arguments and body",
+        args        = {
+            "arguments" : {Literal, Block},
+            "body"      : {Block}
+        },
+        attrs       = {
+            "import"    : ({Block},"import/embed given list of symbols from current environment"),
+            "export"    : ({Block},"export given symbols to parent"),
+            "memoize"   : ({Logical},"store results of function calls"),
+            "inline"    : ({Logical},"execute function without scope")
+        },
+        returns     = {Function},
+        example     = """
+            f: function [x][ x + 2 ]
+            print f 10                ; 12
+
+            f: $[x][x+2]
+            print f 10                ; 12
+            ..........
+            multiply: function [x,y][
+                x * y
+            ]
+            print multiply 3 5        ; 15
+            ..........
+            ; forcing typed parameters
+            addThem: function [
+                x :integer
+                y :integer :floating
+            ][
+                x + y
+            ]
+            ..........
+            ; adding complete documentation for user function
+            ; using data comments within the body
+            addThem: function [
+                x :integer :floating
+                y :integer :floating
+            ][
+                ;; description: « takes two numbers and adds them up
+                ;; options: [
+                ;;      mul: :integer « also multiply by given number
+                ;; ]
+                ;; returns: :integer :floating
+                ;; example: {
+                ;;      addThem 10 20
+                ;;      addThem.mult:3 10 20
+                ;; }
+
+                mult?: attr 'mult
+                if? not? null? mult? ->
+                    return mult? * x + y
+                else ->
+                    return x + y
+            ]
+
+            info'addThem
+
+            ; |--------------------------------------------------------------------------------
+            ; |        addThem  :function                                          0x10EF0E528
+            ; |--------------------------------------------------------------------------------
+            ; |                 takes two numbers and adds them up
+            ; |--------------------------------------------------------------------------------
+            ; |          usage  addThem x :integer :floating
+            ; |                         y :integer :floating
+            ; |
+            ; |        options  .mult :integer -> also multiply by given number
+            ; |
+            ; |        returns  :integer :floating
+            ; |--------------------------------------------------------------------------------
+            ..........
+            publicF: function .export:['x] [z][
+                print ["z =>" z]
+                x: 5
+            ]
+
+            publicF 10
+            ; z => 10
+
+            print x
+            ; 5
+            ..........
+            ; memoization
+            fib: $[x].memoize[
+                if? x<2 [1]
+                else [(fib x-1) + (fib x-2)]
+            ]
+
+            loop 1..25 [x][
+                print ["Fibonacci of" x "=" fib x]
+            ]
+        """:
+            #=======================================================
+            var imports: Value = nil
+            if checkAttr("import"):
+                var ret = initOrderedTable[string,Value]()
+                for item in aImport.a:
+                    requireAttrValue("import", item, {Word, Literal})
+                    ret[item.s] = FetchSym(item.s)
+                imports = newDictionary(ret)
+
+            var exports: Value = nil
+
+            if checkAttr("export"):
+                requireAttrValueBlock("export", aExport, {Word, Literal})
+                exports = aExport
+
+            var memoize = (hadAttr("memoize"))
+            var inline = (hadAttr("inline"))
+
+            let argBlock {.cursor.} =
+                if xKind == Block: 
+                    requireValueBlock(x, {Word, Literal, Type})
+                    x.a
+                else: @[x]
+
+            push(newFunctionFromDefinition(argBlock, y, imports, exports, memoize, inline))
 
     builtin "if",
         alias       = unaliased, 
@@ -524,144 +645,144 @@ proc defineSymbols*() =
 
             push(newLogical(condition))
 
-    # TODO(Core/__VerbosePackager) Find an elegant way to inject hidden functions
-    #  labels: library, enhancement, cleanup
-    builtin "__VerbosePackager",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "",
-        args        = NoArgs,
-        attrs       = NoAttrs,
-        returns     = {Nothing,Dictionary,Block},
-        example     = """
-        """:
-            #=======================================================
-            VerbosePackager = true
-
-    # TODO(Core/import) `.lean` not always working properly
-    #  basically, if you make 2 imports of the same package, one `.lean` and another normal one
-    #  the 2nd one breaks. Does it have to do with our `execDictionary`?
-    #  labels: library, bug, unit-test
-    builtin "import",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "import given package",
-        args        = {
-            "package"   : {String,Literal,Block}
-        },
-        attrs       = {
-            "version"   : ({Version},"specify package version"),
-            "min"       : ({Logical},"get any version >= the specified one"),
-            "branch"    : ({String,Literal},"use specific branch for repository url (default: main)"),
-            "latest"    : ({Logical},"always check for the latest version available"),
-            "lean"      : ({Logical},"return as a dictionary, instead of importing in main namespace"),
-            "verbose"   : ({Logical},"output extra information")
-        },
-        returns     = {Nothing,Dictionary,Block},
-        example     = """
-            import "dummy"                      ; import the package 'dummy'
-            do ::
-                print dummyFunc 10              ; and use it :)
-            ..........
-            import.version:0.0.3 "dummy"        ; import a specific version
-
-            import.min.version:0.0.3 "dummy"    ; import at least the give version;
-                                                ; if there is a newer one, it will pull this one
-            ..........
-            import.latest "dummy"               ; whether we already have the package or not
-                                                ; always try to pull the latest version
-            ..........
-            import "https://github.com/arturo-lang/dummy-package"
-            ; we may also import user repositories directly
-
-            import.branch:"main" "https://github.com/arturo-lang/dummy-package"
-            ; even specifying the branch to pull
-            ..........
-            import "somefile.art"               ; importing a local file is possible
-
-            import "somepackage"                ; the same works if we have a folder that
-                                                ; is actually structured like a package
-            ..........
-            d: import.lean "dummy"              ; importing a package as a dictionary
-                                                ; for better namespace isolation
-
-            do [
-                print d\dummyFunc 10            ; works fine :)
-            ]
-        """:
-            #=======================================================
-            var verspec = (true, NoPackageVersion)
-            var branch = "main"
-            let latest = hadAttr("latest")
-            let verbose = hadAttr("verbose")
-            let lean = hadAttr("lean")
-            
-            var pkgs: seq[string]
-            if xKind in {String, Literal}:
-                pkgs.add(x.s)
-            else:
-                pkgs = x.a.map((p)=>p.s)
-
-            let multiple = pkgs.len > 1
-            
-            if checkAttr("version"):
-                verspec = (hadAttr("min"), aVersion.version)
-
-            if checkAttr("branch"):
-                branch = aBranch.s
-
-            let verboseBefore = VerbosePackager
-            if verbose:
+    when not defined(MINI):
+        # TODO(Core/__VerbosePackager) Find an elegant way to inject hidden functions
+        #  labels: library, enhancement, cleanup
+        builtin "__VerbosePackager",
+            alias       = unaliased, 
+            op          = opNop,
+            rule        = PrefixPrecedence,
+            description = "",
+            args        = NoArgs,
+            attrs       = NoAttrs,
+            returns     = {Nothing,Dictionary,Block},
+            example     = """
+            """:
+                #=======================================================
                 VerbosePackager = true
 
-            var ret: ValueArray
+        # TODO(Core/import) `.lean` not always working properly
+        #  basically, if you make 2 imports of the same package, one `.lean` and another normal one
+        #  the 2nd one breaks. Does it have to do with our `execDictionary`?
+        #  labels: library, bug, unit-test
+        builtin "import",
+            alias       = unaliased, 
+            op          = opNop,
+            rule        = PrefixPrecedence,
+            description = "import given package",
+            args        = {
+                "package"   : {String,Literal,Block}
+            },
+            attrs       = {
+                "version"   : ({Version},"specify package version"),
+                "min"       : ({Logical},"get any version >= the specified one"),
+                "branch"    : ({String,Literal},"use specific branch for repository url (default: main)"),
+                "latest"    : ({Logical},"always check for the latest version available"),
+                "lean"      : ({Logical},"return as a dictionary, instead of importing in main namespace"),
+                "verbose"   : ({Logical},"output extra information")
+            },
+            returns     = {Nothing,Dictionary,Block},
+            example     = """
+                import "dummy"                      ; import the package 'dummy'
+                do ::
+                    print dummyFunc 10              ; and use it :)
+                ..........
+                import.version:0.0.3 "dummy"        ; import a specific version
 
-            for pkg in pkgs:
-                if (let res = getEntryForPackage(pkg, verspec, branch, latest); res.isSome):
-                    let src = res.get()
+                import.min.version:0.0.3 "dummy"    ; import at least the give version;
+                                                    ; if there is a newer one, it will pull this one
+                ..........
+                import.latest "dummy"               ; whether we already have the package or not
+                                                    ; always try to pull the latest version
+                ..........
+                import "https://github.com/arturo-lang/dummy-package"
+                ; we may also import user repositories directly
 
-                    if not src.fileExists():
-                        RuntimeError_PackageNotValid(pkg)
+                import.branch:"main" "https://github.com/arturo-lang/dummy-package"
+                ; even specifying the branch to pull
+                ..........
+                import "somefile.art"               ; importing a local file is possible
 
-                    addPath(src)
+                import "somepackage"                ; the same works if we have a folder that
+                                                    ; is actually structured like a package
+                ..........
+                d: import.lean "dummy"              ; importing a package as a dictionary
+                                                    ; for better namespace isolation
 
-                    if not lean:
-                        let parsed = doParse(src, isFile=true)
-                        if not parsed.isNil:
-                            execUnscoped(parsed)
-                    else:
-                        let got = execDictionary(doParse(src, isFile=true))
-                        if multiple:
-                            ret.add(newDictionary(got))
-                        else:
-                            push(newDictionary(got))
-
-                    discard popPath()              
+                do [
+                    print d\dummyFunc 10            ; works fine :)
+                ]
+            """:
+                #=======================================================
+                var verspec = (true, NoPackageVersion)
+                var branch = "main"
+                let latest = hadAttr("latest")
+                let verbose = hadAttr("verbose")
+                let lean = hadAttr("lean")
+                
+                var pkgs: seq[string]
+                if xKind in {String, Literal}:
+                    pkgs.add(x.s)
                 else:
-                    RuntimeError_PackageNotFound(pkg)
+                    pkgs = x.a.map((p)=>p.s)
 
-            VerbosePackager = verboseBefore
+                let multiple = pkgs.len > 1
+                
+                if checkAttr("version"):
+                    verspec = (hadAttr("min"), aVersion.version)
 
-            if multiple:
-                push(newBlock(ret))
+                if checkAttr("branch"):
+                    branch = aBranch.s
 
-    # TODO(Core/let) block assignments should properly handle readonly Values
+                let verboseBefore = VerbosePackager
+                if verbose:
+                    VerbosePackager = true
+
+                var ret: ValueArray
+
+                for pkg in pkgs:
+                    if (let res = getEntryForPackage(pkg, verspec, branch, latest); res.isSome):
+                        let src = res.get()
+
+                        if not src.fileExists():
+                            RuntimeError_PackageNotValid(pkg)
+
+                        addPath(src)
+
+                        if not lean:
+                            let parsed = doParse(src, isFile=true)
+                            if not parsed.isNil:
+                                execUnscoped(parsed)
+                        else:
+                            let got = execDictionary(doParse(src, isFile=true))
+                            if multiple:
+                                ret.add(newDictionary(got))
+                            else:
+                                push(newDictionary(got))
+
+                        discard popPath()              
+                    else:
+                        RuntimeError_PackageNotFound(pkg)
+
+                VerbosePackager = verboseBefore
+
+                if multiple:
+                    push(newBlock(ret))
+
+    # TODO(Core\let) block assignments should properly handle readonly Values
     #  In a few words: we should make sure that `[a b]: [1 2]` is the same as 
     #  assigning each value one by one, which means that there should be an *implicit* 
     #  new Value created for readonly value. Apparently, `setSym` in VM/globals 
     #  doesn't handle this properly; but it should.
     #  See also: https://discord.com/channels/765519132186640445/829324913097048065/1099426535569633401
     #  labels: library, bug, critical
-
     builtin "let",
         alias       = colon, 
         op          = opNop,
         rule        = InfixPrecedence,
         description = "set symbol to given value",
         args        = {
-            "symbol"    : {String,Literal,Block},
+            "symbol"    : {String,Literal,Block,Word},
             "value"     : {Any}
         },
         attrs       = NoAttrs,
@@ -704,6 +825,70 @@ proc defineSymbols*() =
             else:
                 SetInPlace(y, safe=true)
 
+    builtin "method",
+        alias       = unaliased,
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "create type method with given arguments and body",
+        args        = {
+            "arguments" : {Literal, Block},
+            "body"      : {Block}
+        },
+        attrs       = {
+            "distinct"  : ({Logical},"shouldn't be treated as a magic method")
+        },
+        returns     = {Method},
+        example     = """
+        define :cat [
+            init: method [nick :string age :integer][
+                this\nick: join.with: " " @["Mr." capitalize nick]
+                this\age: age
+            ]
+
+            ; Function overloading
+            add: method [years :integer][
+                this\age: age + this\age
+            ]
+
+            meow: method [][
+                print [~"|this\nick|:" "'meow!'"]
+            ]
+        ]
+
+        a: to :cat [15 15]
+        ; >> Assertion | [is? :string nick]
+        ;        error |  
+
+        snowflake: to :cat ["snowflake" 3]
+
+        snowflake\meow
+        ; Mr. Snowflake: 'meow!'
+
+        ; use `do -> snowflake\meow` instead 
+        ; when running the above code from a file
+
+        add snowflake 3
+        snowflake\age
+        ; => 6
+
+        snowflake\add 3
+        print snowflake\age
+        ; => 9
+
+        ; use `do [snowflake\add 3]` instead
+        ; when running the above code from a file
+        """:
+            #=======================================================
+            let isDistinct = hadAttr("distinct")
+            
+            let argBlock {.cursor.} =
+                if xKind == Block: 
+                    requireValueBlock(x, {Word, Literal, Type})
+                    x.a
+                else: @[x]
+
+            push(newMethodFromDefinition(argBlock, y, isDistinct))
+
     builtin "new",
         alias       = unaliased, 
         op          = opNop,
@@ -727,11 +912,6 @@ proc defineSymbols*() =
         """:
             #=======================================================
             push(copyValue(x))
-
-    constant "null",
-        alias       = slashedzero,
-        description = "the NULL constant":
-            VNULL
 
     builtin "return",
         alias       = unaliased, 
@@ -784,116 +964,6 @@ proc defineSymbols*() =
             else:
                 execUnscoped(z)
 
-    builtin "throws?",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "perform action, and return true if errors were thrown",
-        args        = {
-            "action": {Block,Bytecode}
-        },
-        attrs       = NoAttrs,
-        returns     = {Logical},
-        example     = """
-            throws? [
-                1 + 2
-            ] 
-            ; => false
-
-            throws? -> 1/0
-            ; => true
-        """:
-            #=======================================================
-            try:
-                execUnscoped(x)
-
-                push(VFALSE)
-            except CatchableError, Defect:
-                push(VTRUE)
-
-    builtin "try",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "perform action and catch possible errors",
-        args        = {
-            "action": {Block,Bytecode}
-        },
-        attrs       = {
-            "verbose"   : ({Logical},"print all error messages as usual")
-        },
-        returns     = {Nothing},
-        example     = """
-            try [
-                ; let's try something dangerous
-                print 10 / 0
-            ]
-            
-            ; we catch the exception but do nothing with it
-        """:
-            #=======================================================
-            let verbose = (hadAttr("verbose"))
-            try:
-                execUnscoped(x)
-            except CatchableError, Defect:
-                let e = getCurrentException()
-                if verbose:
-                    showVMErrors(e)
-
-    # TODO(Core) add new `catch` method?
-    #  Currently, `try?` works with `else`, pretty much like `if?`
-    #  but we cannot do anything with the exception itself, in case
-    #  this `try?` has failed
-    #
-    #  So, why not add a `catch` method, where we could do something like:
-    #  ```
-    #  try? [
-    #      ; let's try something dangerous
-    #      print 10 / 0
-    #  ]
-    #  catch 'e [
-    #      print "something went terribly wrong..."
-    #      print e
-    #  ]
-    #  ```
-    #  In that case, `e` would hold the Exception, which should preferrably be
-    #  of a distinct Exception type.
-    #  labels: library,new feature,enhancement,open discussion
-    builtin "try?",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "perform action, catch possible errors and return status",
-        args        = {
-            "action": {Block,Bytecode}
-        },
-        attrs       = {
-            "verbose"   : ({Logical},"print all error messages as usual")
-        },
-        returns     = {Logical},
-        example     = """
-            try? [
-                ; let's try something dangerous
-                print 10 / 0
-            ]
-            else [
-                print "something went terribly wrong..."
-            ]
-            
-            ; something went terribly wrong...
-        """:
-            #=======================================================
-            let verbose = (hadAttr("verbose"))
-            try:
-                execUnscoped(x)
-
-                push(VTRUE)
-            except CatchableError, Defect:
-                let e = getCurrentException()
-                if verbose:
-                    showVMErrors(e)
-                push(VFALSE)
-
     builtin "unless",
         alias       = unaliased, 
         op          = opUnless,
@@ -916,43 +986,6 @@ proc defineSymbols*() =
             if condition: 
                 execUnscoped(y)
 
-    builtin "unless?",
-        alias       = unaliased, 
-        op          = opUnlessE,
-        rule        = PrefixPrecedence,
-        description = "perform action, if given condition is false or null and return condition result",
-        args        = {
-            "condition" : {Any},
-            "action"    : {Block,Bytecode}
-        },
-        attrs       = NoAttrs,
-        returns     = {Logical},
-        example     = """
-            x: 2
-            
-            result: unless? x=1 -> print "yep, x is not 1!"
-            ; yep, x is not 1!
-            
-            print result
-            ; true
-            
-            z: 1
-            
-            unless? x>z [
-                print "yep, x was not greater than z"
-            ]
-            else [
-                print "x was greater than z"
-            ]
-            ; x was greater than z
-        """:
-            #=======================================================
-            let condition = xKind==Null or isFalse(x)
-            if condition: 
-                execUnscoped(y)
-
-            push(newLogical(condition))
-            
     builtin "unstack",
         alias       = unaliased, 
         op          = opNop,
@@ -996,7 +1029,6 @@ proc defineSymbols*() =
                         res.add stack.pop()
                         i+=1
                     push(newBlock(res))
-
 
     builtin "until",
         alias       = unaliased, 
@@ -1049,7 +1081,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "get symbol value by given name",
         args        = {
-            "symbol"    : {String,Literal,PathLiteral}
+            "symbol"    : {String,Literal,PathLiteral,Word}
         },
         attrs       = NoAttrs,
         returns     = {Any},
@@ -1064,50 +1096,10 @@ proc defineSymbols*() =
             print g 10              ; 12
         """:
             #=======================================================
-            if xKind in {String,Literal}:
+            if xKind in {String,Literal,Word}:
                 push(FetchSym(x.s))
             else:
                 push(FetchPathSym(x.p))
-
-    builtin "when?",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "check if a specific condition is fulfilled and, if so, execute given action",
-        args        = {
-            "condition" : {Block},
-            "action"    : {Block}
-        },
-        attrs       = NoAttrs,
-        returns     = {Logical},
-        example     = """
-            a: 2
-            case [a]
-                when? [<2] -> print "a is less than 2"
-                when? [=2] -> print "a is 2"
-                else       -> print "a is greater than 2"
-        """:
-            #=======================================================
-            let z = stack.pop()
-            if isFalse(z):
-
-                let top = sTop()
-
-                var newb: Value = newBlock()
-                for old in top.a:
-                    newb.a.add(old)
-                for cond in x.a:
-                    newb.a.add(cond)
-
-                execUnscoped(newb)
-
-                if isTrue(sTop()):
-                    execUnscoped(y)
-                    discard stack.pop()
-                    discard stack.pop()
-                    push(newLogical(true))
-            else:
-                push(z)
 
     builtin "while",
         alias       = unaliased, 
@@ -1164,9 +1156,234 @@ proc defineSymbols*() =
                         popped = stack.pop()
                     do:
                         discard
+    
+    builtin "with",
+        alias       = unaliased,
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "create closure-style block by embedding given words",
+        args        = {
+            "embed" : {Literal, Block},
+            "body"  : {Block}
+        },
+        attrs       = NoAttrs,
+        returns     = {Block},
+        example     = """
+            f: function [x][
+                with [x][
+                    "the multiple of" x "is" 2*x
+                ]
+            ]
+
+            multiplier: f 10
+
+            print multiplier
+            ; the multiple of 10 is 20
+        """:
+            #=======================================================
+            var blk: ValueArray = y.a
+            if xKind == Literal:
+                blk.insert(FetchSym(x.s))
+                blk.insert(newLabel(x.s))
+            else:
+                for item in x.a:
+                    requireValue(item, {Word,Literal})
+                    blk.insert(FetchSym(item.s))
+                    blk.insert(newLabel(item.s))
+
+            push(newBlock(blk))
+
+    #----------------------------
+    # Predicates
+    #----------------------------
+
+    builtin "if?",
+        alias       = unaliased, 
+        op          = opIfE,
+        rule        = PrefixPrecedence,
+        description = "perform action, if given condition is not false or null and return condition result",
+        args        = {
+            "condition" : {Any},
+            "action"    : {Block}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            x: 2
+            
+            result: if? x=2 -> print "yes, that's right!"
+            ; yes, that's right!
+            
+            print result
+            ; true
+            ..........
+            x: 2
+            z: 3
+            
+            if? x>z [
+                print "x was greater than z"
+            ]
+            else [
+                print "nope, x was not greater than z"
+            ]
+        """:
+            #=======================================================
+            let condition = not (xKind==Null or isFalse(x))
+            if condition: 
+                execUnscoped(y)
+
+            push(newLogical(condition))
+
+    builtin "throws?",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "perform action, and return true if errors were thrown",
+        args        = {
+            "action": {Block,Bytecode}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            throws? [
+                1 + 2
+            ] 
+            ; => false
+
+            throws? -> 1/0
+            ; => true
+        """:
+            #=======================================================
+            try:
+                execUnscoped(x)
+
+                push(VFALSE)
+            except CatchableError, Defect:
+                push(VTRUE)
+
+    builtin "try?",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "perform action, catch possible errors and return status",
+        args        = {
+            "action": {Block,Bytecode}
+        },
+        attrs       = {
+            "verbose"   : ({Logical},"print all error messages as usual")
+        },
+        returns     = {Logical},
+        example     = """
+            try? [
+                ; let's try something dangerous
+                print 10 / 0
+            ]
+            else [
+                print "something went terribly wrong..."
+            ]
+            
+            ; something went terribly wrong...
+        """:
+            #=======================================================
+            let verbose = (hadAttr("verbose"))
+            try:
+                execUnscoped(x)
+
+                push(VTRUE)
+            except CatchableError, Defect:
+                let e = getCurrentException()
+                if verbose:
+                    showVMErrors(e)
+                push(VFALSE)
+
+    builtin "unless?",
+        alias       = unaliased, 
+        op          = opUnlessE,
+        rule        = PrefixPrecedence,
+        description = "perform action, if given condition is false or null and return condition result",
+        args        = {
+            "condition" : {Any},
+            "action"    : {Block,Bytecode}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            x: 2
+            
+            result: unless? x=1 -> print "yep, x is not 1!"
+            ; yep, x is not 1!
+            
+            print result
+            ; true
+            
+            z: 1
+            
+            unless? x>z [
+                print "yep, x was not greater than z"
+            ]
+            else [
+                print "x was greater than z"
+            ]
+            ; x was greater than z
+        """:
+            #=======================================================
+            let condition = xKind==Null or isFalse(x)
+            if condition: 
+                execUnscoped(y)
+
+            push(newLogical(condition))
+
+    builtin "when?",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "check if a specific condition is fulfilled and, if so, execute given action",
+        args        = {
+            "condition" : {Block},
+            "action"    : {Block}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            a: 2
+            case [a]
+                when? [<2] -> print "a is less than 2"
+                when? [=2] -> print "a is 2"
+                else       -> print "a is greater than 2"
+        """:
+            #=======================================================
+            let z = stack.pop()
+            if isFalse(z):
+
+                let top = sTop()
+
+                var newb: Value = newBlock()
+                for old in top.a:
+                    newb.a.add(old)
+                for cond in x.a:
+                    newb.a.add(cond)
+
+                execUnscoped(newb)
+
+                if isTrue(sTop()):
+                    execUnscoped(y)
+                    discard stack.pop()
+                    discard stack.pop()
+                    push(newLogical(true))
+            else:
+                push(z)
+
+    #----------------------------
+    # Constants
+    #----------------------------
+
+    constant "null",
+        alias       = slashedzero,
+        description = "the NULL constant":
+            VNULL
 
 #=======================================
 # Add Library
 #=======================================
 
-Libraries.add(defineSymbols)
+Libraries.add(defineLibrary)

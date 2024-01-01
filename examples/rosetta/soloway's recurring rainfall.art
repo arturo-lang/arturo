@@ -5,11 +5,12 @@ sum: 0
 
 while ø [
     n: input "Enter rainfall as integer (99999 to quit): "
-    try? -> n: to :integer n
-    else [
+
+    if throws? -> n: to :integer n [
         print "Input must be an integer."
         continue
     ]
+
     if 99999 = n -> break
     'i + 1
     'sum + n

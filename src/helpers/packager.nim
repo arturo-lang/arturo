@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2023 Yanis Zafirópulos
+# (c) 2019-2024 Yanis Zafirópulos
 #
 # @file: helpers/packager.nim
 #=======================================================
@@ -44,24 +44,24 @@ let
 
 const
     # Paths
-    TmpFolder           = "{HomeDir}.arturo/tmp"
-    PackageFolder       = "{HomeDir}.arturo/packages/"
-    PackageTmpZip       = TmpFolder & "/pkg.zip"
+    TmpFolder           = "{HomeDir}.arturo" / "tmp"
+    PackageFolder       = "{HomeDir}.arturo" / "packages"
+    PackageTmpZip       = TmpFolder / "pkg.zip"
 
     SpecLatestUrl       = "https://{pkg}.pkgr.art/spec"
     SpecVersionUrl      = "https://{pkg}.pkgr.art/{version}/spec"
 
-    SpecFolder          = PackageFolder & "specs/"
-    SpecPackage         = SpecFolder & "{pkg}/"
-    SpecFile            = SpecPackage & "{version}.art"
+    SpecFolder          = PackageFolder / "specs"
+    SpecPackage         = SpecFolder / "{pkg}"
+    SpecFile            = SpecPackage / "{version}.art"
 
-    CacheFolder         = PackageFolder & "cache/"
-    CachePackage        = CacheFolder & "{pkg}/"
-    CacheFiles          = CachePackage & "{version}/"
+    CacheFolder         = PackageFolder / "cache"
+    CachePackage        = CacheFolder / "{pkg}"
+    CacheFiles          = CachePackage / "{version}"
 
-    RepoFolder          = PackageFolder & "repos/"
-    RepoPackage         = RepoFolder & "{repo}@{owner}/"
-    RepoPackageUrl      = "{pkg}/archive/{branch}.zip"
+    RepoFolder          = PackageFolder / "repos"
+    RepoPackage         = RepoFolder / "{repo}@{owner}"
+    RepoPackageUrl      = "{pkg}" / "archive" / "{branch}.zip"
 
     # Warnings
     MalformedDepends    = "Malformed .depends field"
@@ -162,14 +162,14 @@ proc getEntryPointFromSourceFolder*(folder: string): Option[string] =
     ## look either for the 'entry' as defined in the package's info.art
     ## or a main.art file - our default entry point
 
-    var entryPoint = "{folder}/main.art".fmt
+    var entryPoint = ("{folder}" / "main.art").fmt
     var allOk = true
 
-    if (let infoPath = "{folder}/info.art".fmt; infoPath.fileExists()):
+    if (let infoPath = ("{folder}" / "info.art").fmt; infoPath.fileExists()):
         let infoArt = execDictionary(doParse(infoPath, isFile=true))
 
         if (let entryName = infoArt.hasEntry(); entryName.isSome):
-            entryPoint = "{folder}/{entryName.get()}.art".fmt
+            entryPoint = ("{folder}" / "{entryName.get()}.art").fmt
 
         if (let deps = infoArt.hasDependencies(); deps.isSome):
             verifyDependencies(deps.get())
@@ -288,11 +288,12 @@ proc downloadPackageSourceInto*(url: string, target: string) =
     
     ShowMessage "Downloading sources"
 
+    createDir(TmpFolder.fmt) # make sure the tmp folder exists
     removeDir(target) # delete it, just in case
     newHttpClient().downloadFile(url, PackageTmpZip.fmt)
     let files = miniz.unzipAndGetFiles(PackageTmpZip.fmt, TmpFolder.fmt)
     let (actualSubFolder, _, _) = splitFile(files[0])
-    let actualFolder = TmpFolder.fmt & "/" & actualSubFolder
+    let actualFolder = TmpFolder.fmt / actualSubFolder
     createDir(target) # make sure the path (and all subdirs) exist
     moveDir(actualFolder, target)
     discard tryRemoveFile(PackageTmpZip.fmt)
@@ -474,7 +475,7 @@ proc processLocalPackage(pkg: string, verspec: VersionSpec, latest: bool = false
             ShowSuccess()
 
         if (let entryName = hasEntry(packageSpec); entryName.isSome):
-            if (let entryFile = packageLocation & "/" & entryName.get(); entryFile.fileExists()):
+            if (let entryFile = packageLocation / entryName.get(); entryFile.fileExists()):
                 return some(entryFile)
 
 proc processRemotePackage(pkg: string, verspec: VersionSpec, doLoad: bool = true): Option[string] =
@@ -506,7 +507,7 @@ proc processRemotePackage(pkg: string, verspec: VersionSpec, doLoad: bool = true
 
     let specFolder = SpecPackage.fmt
     createDir(specFolder)
-    let specFile = "{specFolder}/{version}.art".fmt
+    let specFile = ("{specFolder}" / "{version}.art").fmt
     writeToFile(specFile, specContent)
     ShowSuccess()
     

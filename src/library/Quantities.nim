@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2023 Yanis Zafirópulos
+# (c) 2019-2024 Yanis Zafirópulos
 #
 # @file: library/Quantities.nim
 #=======================================================
@@ -52,54 +52,14 @@ template convertQuantity(x, y: Value, xKind, yKind: ValueKind): untyped =
         push newQuantity(toQuantity(y.rat, qs))
 
 #=======================================
-# Methods
+# Definitions
 #=======================================
 
-proc defineSymbols*() =
+proc defineLibrary*() =
 
-    when not defined(NOGMP):
-        addPhysicalConstants()
-        
-    addPropertyPredicates()
-
-    builtin "conforms?",
-        alias       = colonequal,
-        op          = opNop,
-        rule        = InfixPrecedence,
-        description = "check if given quantities/units are compatible",
-        args        = {
-            "a"     : {Quantity, Unit},
-            "b"     : {Quantity, Unit}
-        },
-        attrs       = NoAttrs,
-        returns     = {Logical},
-        example     = """
-            conforms? 3`m `m                ; => true
-            conforms? 4`m `cm               ; => true
-
-            4`yd := 5`m                     ; => true
-            5`m := `s                       ; => false
-            ..........
-            givenValue: 6`yd/s      
-
-            conforms? givenValue `m         ; => false
-            conforms? givenValue `km/h      ; => true
-            ..........
-            3`m := 4`m                      ; => true
-            5`W := 5`N                      ; => false
-            5`W := 3`J/s                    ; => true
-        """:
-            #=======================================================
-            if xKind == Quantity:
-                if yKind == Quantity:
-                    push newLogical(x.q =~ y.q)
-                else:
-                    push newLogical(x.q =~ y.u)
-            else:
-                if yKind == Quantity:
-                    push newLogical(x.u =~ y.q)
-                else:
-                    push newLogical(x.u =~ y.u)
+    #----------------------------
+    # Functions
+    #----------------------------
 
     builtin "convert",
         alias       = longarrowright,
@@ -313,8 +273,67 @@ proc defineSymbols*() =
                 else:
                     push(newUnit(x.u))
 
+    #----------------------------
+    # Predicates
+    #----------------------------
+
+    builtin "conforms?",
+        alias       = colonequal,
+        op          = opNop,
+        rule        = InfixPrecedence,
+        description = "check if given quantities/units are compatible",
+        args        = {
+            "a"     : {Quantity, Unit},
+            "b"     : {Quantity, Unit}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            conforms? 3`m `m                ; => true
+            conforms? 4`m `cm               ; => true
+
+            4`yd := 5`m                     ; => true
+            5`m := `s                       ; => false
+            ..........
+            givenValue: 6`yd/s      
+
+            conforms? givenValue `m         ; => false
+            conforms? givenValue `km/h      ; => true
+            ..........
+            3`m := 4`m                      ; => true
+            5`W := 5`N                      ; => false
+            5`W := 3`J/s                    ; => true
+        """:
+            #=======================================================
+            if xKind == Quantity:
+                if yKind == Quantity:
+                    push newLogical(x.q =~ y.q)
+                else:
+                    push newLogical(x.q =~ y.u)
+            else:
+                if yKind == Quantity:
+                    push newLogical(x.u =~ y.q)
+                else:
+                    push newLogical(x.u =~ y.u)
+
+    # TODO(Quantities) erroneous module name for property predicates
+    #  For any of the, automatically-generated, property predicates,
+    #  e.g. `mass?` the module shown when we do e.g. `info'mass?` is
+    #  always `macros` - which is basically the file that Nim considers
+    #  to be the current one (= Nim stdlib's macros module), and that's
+    #  what we pick by mistake...
+    #  labels: library, bug
+    addPropertyPredicates()
+
+    #----------------------------
+    # Constants
+    #----------------------------
+
+    when not defined(NOGMP):
+        addPhysicalConstants()
+
 #=======================================
 # Add Library
 #=======================================
 
-Libraries.add(defineSymbols)
+Libraries.add(defineLibrary)

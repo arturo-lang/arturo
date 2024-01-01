@@ -48,28 +48,30 @@ let
 
 proc log*(msg: string) =
     for line in msg.splitlines:
-        echo colors.gray, "  " & line.dedent, styles.clear
+        echo colors.gray, "  ", line.dedent, styles.clear
 
 proc warn*(msg: string) =
-    echo colors.red, msg.dedent, styles.clear
+    echo colors.red, "  ", msg.dedent, styles.clear
 
 proc panic*(msg: string = "", exitCode: int = QuitFailure) =
     warn msg
     quit exitCode
 
-proc showLogo*() =
-    echo sep()
-    echo colors.green
-    echo r"                               _                                     "
-    echo r"                              | |                                    "
-    echo r"                     __ _ _ __| |_ _   _ _ __ ___                    "
-    echo r"                    / _` | '__| __| | | | '__/ _ \                   "
-    echo r"                   | (_| | |  | |_| |_| | | | (_) |                  "
-    echo r"                    \__,_|_|   \__|\__,_|_|  \___/                   "
-    echo r"{styles.clear}{styles.bold}                                          ".fmt
-    echo r"                     Arturo Programming Language{styles.clear}       ".fmt
-    echo r"                      (c)2023 Yanis Zafirópulos                      "
-    echo r"                                                                     "
+proc getLogo*(): seq[string] =
+    return @[
+        sep(),
+        colors.green,
+        r"                               _                                     ",
+        r"                              | |                                    ",
+        r"                     __ _ _ __| |_ _   _ _ __ ___                    ",
+        r"                    / _` | '__| __| | | | '__/ _ \                   ",
+        r"                   | (_| | |  | |_| |_| | | | (_) |                  ",
+        r"                    \__,_|_|   \__|\__,_|_|  \___/                   ",
+        r"{styles.clear}{styles.bold}                                          ".fmt,
+        r"                     Arturo Programming Language{styles.clear}       ".fmt,
+        r"                      (c)2023 Yanis Zafirópulos                      ",
+        r"                                                                     ",
+    ]
 
 proc showHeader*(title: string) =
     echo sep()

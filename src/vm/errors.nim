@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2023 Yanis Zafirópulos
+# (c) 2019-2024 Yanis Zafirópulos
 #
 # @file: vm/errors.nim
 #=======================================================
@@ -297,6 +297,28 @@ proc RuntimeError_IncompatibleBlockSize*(functionName: string, got: int, expecte
           "cannot perform _" & (functionName) & ";" &
           "incompatible block size: " & $(got) & ";" &
           "expected: " & $(expected)
+
+proc RuntimeError_UsingUndefinedType*(typeName: string) =
+    panic RuntimeError,
+          "undefined or unknown type _:" & (typeName) & "_;" &
+          "you should make sure it has been properly" & ";" &
+          "initialized using `define`"
+
+proc RuntimeError_IncorrectNumberOfArgumentsForInitializer*(typeName: string, got: int, expected: seq[string]) =
+    panic RuntimeError,
+          "cannot initialize object of type _:" & (typeName) & "_;" &
+          "wrong number of parameters: " & $(got) & ";" &
+          "expected: " & $(expected.len) & " (" & expected.join(", ") & ")"
+
+proc RuntimeError_MissingArgumentForInitializer*(typeName: string, missing: string) =
+    panic RuntimeError,
+          "cannot initialize object of type _:" & (typeName) & "_;" &
+          "missing field: " & $(missing)
+
+proc RuntimeError_UnsupportedParentType*(typeName: string) =
+    panic RuntimeError,
+          "subtyping built-in type _:" & (typeName) & "_;" &
+          "is not supported"
 
 proc RuntimeError_InvalidOperation*(operation: string, argA, argB: string) =
     panic RuntimeError,

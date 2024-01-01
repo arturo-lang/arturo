@@ -4,7 +4,7 @@ sphenic: []
 loop 0..dec size primes 'p1 ->
     loop (p1+1)..dec size primes 'p2 ->
         loop (p2+1)..dec size primes 'p3 ->
-            try -> 'sphenic ++ primes\[p1] * primes\[p2] * primes\[p3]
+            err: try -> 'sphenic ++ primes\[p1] * primes\[p2] * primes\[p3]
 
 sphenicBelow1K: sort unique select sphenic 'x -> x < 1000
 print "Sphenic numbers up to 1000:"

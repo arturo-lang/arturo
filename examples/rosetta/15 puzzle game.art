@@ -160,7 +160,7 @@ movePlayer: $[
         playerPosition   :integer
         relativePosition :integer
     ][
-        try [
+        if throws? [
 
             ; 'otherPosition is the real index of the 'relativePosition
             otherPosition: + playerPosition relativePosition
@@ -173,7 +173,7 @@ movePlayer: $[
             ; -- Updates player's status
             game\playerPosition: otherPosition
             game\movements: inc game\movements
-        ] else -> panic "'movement didn't checked."
+        ] -> panic "'movement didn't checked."
     ]
 
     case [movement]

@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2023 Yanis Zafirópulos
+# (c) 2019-2024 Yanis Zafirópulos
 #
 # @file: vm/exec.nim
 #=======================================================
@@ -22,7 +22,7 @@
 # Libraries
 #=======================================
 
-import hashes, macros, sugar, tables
+import algorithm, hashes, macros, sugar, tables
 
 import vm/[
     bytecode, 
@@ -58,6 +58,10 @@ var
 # Forward Declarations
 #=======================================
 
+proc execFunction*(fun: Value, fid: Hash)
+proc execFunctionInline*(fun: Value, fid: Hash)
+proc execMethod*(meth: Value, fid: Hash)
+
 proc ExecLoop*(cnst: ValueArray, it: VBinary)
 
 #=======================================
@@ -87,6 +91,27 @@ template loadByIndex(idx: int):untyped =
     hookProcProfiler("exec/loadByIndex"):
         stack.push(FetchSym(cnst[idx].s))
 
+proc callFunction*(f: Value, fnName: string, args: ValueArray) =
+    ## Take a Function value, whether a user or a built-in one, 
+    ## and execute it with given arguments
+    if f.fnKind==UserFunction:
+        hookProcProfiler("exec/callFunction:user"):
+            var safeToProceed = true
+            for arg in args.reversed:
+                push arg
+                if arg.kind == Function:
+                    safeToProceed = false
+
+            if unlikely(SP < f.arity):
+                RuntimeError_NotEnoughArguments(fnName, f.arity)
+
+            if f.inline: 
+                if safeToProceed: execFunctionInline(f, hash(fnName))
+                else: execFunction(f, hash(fnName))
+            else: execFunction(f, hash(fnName))
+    else:
+        f.action()()
+
 template callFunction*(f: Value, fnName: string = "<closure>"):untyped =
     ## Take a Function value, whether a user or a built-in one, 
     ## and execute it
@@ -107,9 +132,33 @@ template callFunction*(f: Value, fnName: string = "<closure>"):untyped =
     else:
         f.action()()
 
+proc callMethod*(f: Value, methName: string, args: ValueArray) =
+    ## Take a Method value,
+    ## and execute it with given arguments
+    hookProcProfiler("exec/callMethod"):
+        for arg in args.reversed:
+            push arg
+        if unlikely(SP < f.marity):
+            RuntimeError_NotEnoughArguments(methName, f.marity)
+
+        execMethod(f, hash(methName))
+
+template callMethod*(f: Value, methName: string = "<closure>"):untyped =
+    ## Take a Method value, 
+    ## and execute it
+    hookProcProfiler("exec/callMethod"):
+        if unlikely(SP < f.marity):
+            RuntimeError_NotEnoughArguments(methName, f.marity)
+
+        execMethod(f, hash(methName))
+
 template callByName(symIndx: string):untyped =
     let fun = FetchSym(symIndx)
     callFunction(fun, symIndx)
+
+template callMethodByName(symIndx: string):untyped =
+    let meth = FetchSym(symIndx)
+    callMethod(meth, symIndx)
 
 template callByIndex(idx: int):untyped =
     hookProcProfiler("exec/callByIndex"):
@@ -117,6 +166,13 @@ template callByIndex(idx: int):untyped =
             callFunction(cnst[idx])
         else:
             callByName(cnst[idx].s)
+
+template callMethodByIndex(idx: int):untyped =
+    hookProcProfiler("exec/callMethodByIndex"):
+        if cnst[idx].kind==Method:
+            callMethod(cnst[idx])
+        else:
+            callMethodByName(cnst[idx].s)
 
 template fetchAttributeByIndex(idx: int):untyped =
     stack.pushAttr(cnst[idx].s, stack.pop())
@@ -383,6 +439,35 @@ proc execFunctionInline*(fun: Value, fid: Hash) =
 
         finalizeLeakless()
 
+proc execMethod*(meth: Value, fid: Hash) =
+    ## Execute given Method value with scoping
+    ## 
+    ## This means:
+    ## - All symbols declared inside will NOT be 
+    ##   available in the outer scope
+    ## - Symbols re-assigned inside will NOT 
+    ##   overwrite the value in the outer scope
+
+    var savedSyms: SymTable
+
+    savedSyms = Syms
+
+    for arg in meth.mparams:
+        # pop argument and set it
+        SetSym(arg, stack.pop())
+
+    if meth.mbcode.isNil:
+        meth.mbcode = newBytecode(doEval(meth.mmain, isFunctionBlock=true))
+
+    try:
+        ExecLoop(meth.mbcode().trans.constants, meth.mbcode().trans.instructions)
+
+    except ReturnTriggered:
+        discard
+
+    finally:
+        Syms = savedSyms
+
 proc ExecLoop*(cnst: ValueArray, it: VBinary) =
     ## The main execution loop.
     ## 
@@ -556,6 +641,25 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 of opCallX              : i += 2; callByIndex(int(uint16(it[i-1]) shl 8 + byte(it[i]))) 
 
                 # [0x70-0x7F]
+                # method calls
+                of opMeth0              : callMethodByIndex(0)  
+                of opMeth1              : callMethodByIndex(1)
+                of opMeth2              : callMethodByIndex(2)
+                of opMeth3              : callMethodByIndex(3)
+                of opMeth4              : callMethodByIndex(4)
+                of opMeth5              : callMethodByIndex(5)
+                of opMeth6              : callMethodByIndex(6)
+                of opMeth7              : callMethodByIndex(7)
+                of opMeth8              : callMethodByIndex(8)
+                of opMeth9              : callMethodByIndex(9)
+                of opMeth10             : callMethodByIndex(10)
+                of opMeth11             : callMethodByIndex(11)
+                of opMeth12             : callMethodByIndex(12)
+                of opMeth13             : callMethodByIndex(13)          
+                of opMeth               : i += 1; callMethodByIndex(int(it[i]))
+                of opMethX              : i += 2; callMethodByIndex(int(uint16(it[i-1]) shl 8 + byte(it[i]))) 
+
+                # [0x80-0x8F]
                 # attributes
                 of opAttr0              : fetchAttributeByIndex(0)
                 of opAttr1              : fetchAttributeByIndex(1)
@@ -579,7 +683,7 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 # OP FUNCTIONS
                 #---------------------------------
 
-                # [0x80-0x8F]
+                # [0x90-0x9F]
                 # arithmetic operators
                 of opAdd                : DoAdd()
                 of opSub                : DoSub()
@@ -605,7 +709,7 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
 
                 of RSRV1                : discard
 
-                # [0x90-0x9F]
+                # [0xA0-0xAF]
                 # logical operators
                 of opNot                : DoNot()
                 of opAnd                : DoAnd()
@@ -629,7 +733,7 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 of RSRV5                : discard
                 of RSRV6                : discard
 
-                # [0xA0-0xAF]
+                # [0xB0-0xBF]
                 # branching
                 of opIf                 : DoIf()
                 of opIfE                : DoIfE()
@@ -656,7 +760,7 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 of RSRV8                : discard
                 of RSRV9                : discard
 
-                # [0xB0-0xBF]
+                # [0xC0-0xCF]
                 # generators          
                 of opArray              : DoArray()
                 of opDict               : DoDict()
@@ -686,7 +790,7 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 # LOW-LEVEL OPERATIONS
                 #---------------------------------
 
-                # [0xC0-0xDF]
+                # [0xD0-0xEF]
                 # no operation
                 of opNop                : discard
 

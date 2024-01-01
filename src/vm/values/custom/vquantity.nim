@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2023 Yanis Zafirópulos
+# (c) 2019-2024 Yanis Zafirópulos
 #
 # @file: vm/values/custom/vquantity.nim
 #=======================================================
@@ -163,8 +163,8 @@ proc getPrimitive(unit: PrefixedUnit): Quantity =
 
     if unlikely(result.isCurrency() and isZero(result.value)):
         let xrate = getExchangeRate((symbolName(unit.u.core)).replace("_CoreUnit",""))
-        Quantities[unit.u].value = toRational(xrate)
-        result.value = toRational(xrate)
+        Quantities[unit.u].value = reciprocal(toRational(xrate))
+        result.value = reciprocal(toRational(xrate))
     elif unit.p != No_Prefix:
         result.value *= pow(float(10), float(ord(unit.p)))
 

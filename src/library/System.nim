@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2023 Yanis Zafirópulos
+# (c) 2019-2024 Yanis Zafirópulos
 #
 # @file: library/Shell.nim
 #=======================================================
@@ -43,10 +43,14 @@ when not defined(WEB):
         ActiveProcesses = initOrderedTable[int, Process]()
 
 #=======================================
-# Methods
+# Definitions
 #=======================================
 
-proc defineSymbols*() =
+proc defineLibrary*() =
+
+    #----------------------------
+    # Functions
+    #----------------------------
 
     builtin "arg",
         alias       = unaliased, 
@@ -110,17 +114,33 @@ proc defineSymbols*() =
 
     when not defined(WEB):
 
-        # TODO(System\config) add documentation example
-        #  labels: library, documentation, easy
         builtin "config",
             alias       = unaliased, 
             op          = opNop,
             rule        = PrefixPrecedence,
-            description = "get global configuration",
+            description = "get local or global configuration",
             args        = NoArgs,
             attrs       = NoAttrs,
             returns     = {Store},
             example     = """
+                ; `config` searches for `config.art` into your current directory. 
+                ; if not found, it returns from `~/.arturo/stores/config.art`
+
+                config
+                ; => []
+                ; `config.art` is empty at first, but we can change this manually
+
+                write.append path\home ++ normalize ".arturo/stores/config.art" 
+                             "language: {Arturo}"
+                config
+                ; => []
+                
+                ; this stills empty, but now try to relaunch Arturo:
+                exit
+                ......................
+                config
+                ; => [language:Arturo]
+
             """:
                 push(Config)
 
@@ -284,6 +304,24 @@ proc defineSymbols*() =
             else:
                 ProgramError_panic(x.s.replace("\n",";"), code)
 
+    # TODO(Paths\path) shouldn't be considered a constant
+    #  let's say constants are exactly that: constants.
+    #  if the exact same "constant" returns different results based on
+    #  the system it's running on, then it's not a constant.
+    #  labels: library, enhancement
+    builtin "path",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "get path information",
+        args        = NoArgs,
+        attrs       = NoAttrs,
+        returns     = {Dictionary},
+        example     = """
+        """:
+            #=======================================================
+            push(newDictionary(getPathInfo()))
+
     when not defined(WEB):
         # TODO(System\pause) implement for Web/JS builds
         #  it could easily correspond to some type of javascript timeout
@@ -358,12 +396,9 @@ proc defineSymbols*() =
     #  So, its current usefulness is very much doubtable.
     #  labels: library, enhancement, open discussion
 
-    # TODO(System/script) also add information about the current script being executed
+    # TODO(System\script) also add information about the current script being executed
     #  another location could also be Paths/path
     #  labels: library,enhancement
-
-    # TODO(System\script) add documentation example
-    #  labels: library, documentation, easy
 
     builtin "script",
         alias       = unaliased, 
@@ -374,29 +409,53 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Dictionary},
         example     = """
+            ;; author: {Me :P}
+            ;; year: 2023
+            ;; license: Some License
+            ;; 
+            ;; description: {
+            ;;      This is an example of documentation.
+            ;;
+            ;;      You can get this by using ``script``.
+            ;; }
+            ;;
+            ;; hint: {
+            ;;      Notice that we use `;;` for documentation,
+            ;;      while the single `;` is just a comment, 
+            ;;      that will be ignored.   
+            ;; }
+            ;;
+            ;; export: [
+            ;;    'myFun
+            ;;    'otherFun
+            ;;    'someConst
+            ;; ]
+            ;;
+
+            inspect script
+            ; [ :dictionary
+            ;         author       :        Me :P :string
+            ;         year         :        2023 :integer
+            ;         license      :        [ :block
+            ;                 Some :string
+            ;                 License :string
+            ;         ]
+            ;         description  :        This is an example of documentation.
+            ;  
+            ; You can get this by using ``script``. :string
+            ;         hint         :        Notice that we use `;;` for documentation,
+            ; while the single `;` is just a comment, 
+            ; that will be ignored. :string
+            ;         export       :        [ :block
+            ;                 myFun :string
+            ;                 otherFun :string
+            ;                 someConst :string
+            ;         ]
+            ; ]
         """:
             push(getScriptInfo())
 
-    when not defined(WEB):
-        builtin "superuser?",
-            alias       = unaliased, 
-            op          = opNop,
-            rule        = PrefixPrecedence,
-            description = "check if current user has administrator/root privileges",
-            args        = NoArgs,
-            attrs       = NoAttrs,
-            returns     = {Logical},
-            example     = """
-            ; when running as root
-            superuser?          ; => true
-
-            ; when running as regular user
-            superuser?          ; => false
-            """:
-                #=======================================================
-                push newLogical(isAdmin())
-
-    # TODO(System/sys) normalize the way CPU architecture is shown
+    # TODO(System\sys) normalize the way CPU architecture is shown
     #  in our new release builds, we annotate x86_64/amd64 builds as "x86_64"
     #  here, our sys\cpu field would return "amd64"
     #
@@ -496,8 +555,32 @@ proc defineSymbols*() =
                     else:
                         sendSignal(int32(pid), errCode)
 
+    #----------------------------
+    # Predicates
+    #----------------------------
+
+    when not defined(WEB):
+
+        builtin "superuser?",
+            alias       = unaliased, 
+            op          = opNop,
+            rule        = PrefixPrecedence,
+            description = "check if current user has administrator/root privileges",
+            args        = NoArgs,
+            attrs       = NoAttrs,
+            returns     = {Logical},
+            example     = """
+            ; when running as root
+            superuser?          ; => true
+
+            ; when running as regular user
+            superuser?          ; => false
+            """:
+                #=======================================================
+                push newLogical(isAdmin())
+
 #=======================================
 # Add Library
 #=======================================
 
-Libraries.add(defineSymbols)
+Libraries.add(defineLibrary)

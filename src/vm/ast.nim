@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2023 Yanis Zafirópulos
+# (c) 2019-2024 Yanis Zafirópulos
 #
 # @file: vm/ast.nim
 #=======================================================
@@ -68,6 +68,7 @@ type
         OtherCall           # Call to a function that is not a builtin
         BuiltinCall         # Call to a builtin function
         SpecialCall         # Call to a special function
+        MethodCall          # Call to an object method
 
     NodeArray* = seq[Node]
 
@@ -115,7 +116,7 @@ const
     NoStartingLine  = 1896618966'u32
 
     TerminalNode*   : set[NodeKind] = {ConstantValue, VariableLoad}
-    CallNode*       : set[NodeKind] = {AttributeNode..SpecialCall}
+    CallNode*       : set[NodeKind] = {AttributeNode..MethodCall}
 
 #=======================================
 # Forward declarations
@@ -481,7 +482,7 @@ proc processBlock*(
                         target.addCall(aliased.name.s, fun=symfunc)
 
     proc getCallNode(name: string, arity: int8 = -1, fun: Value = nil): Node =
-        var callType: OtherCall..SpecialCall = OtherCall
+        var callType: OtherCall..MethodCall = OtherCall
 
         var fn {.cursor.}: Value =
             if fun.isNil:
@@ -598,6 +599,8 @@ proc processBlock*(
                     elif curr.kind==Object:
                         if (let item = curr.o.getOrDefault(next.s, nil); not item.isNil):
                             if item.kind == Function:
+                                pathCallV = item
+                            elif item.kind == Method:
                                 baseV = val.p[0]
                                 pathCallV = item
 
@@ -607,8 +610,44 @@ proc processBlock*(
                 arityCut = 0
                 target.addChild(Node(kind: OtherCall, arity: pathCallV.arity, op: opNop, value: pathCallV))
             else:
+                # TODO (VM/ast) processing this injection messes up our AST
+                #  Example: 
+                #  ```red
+                #   define :vehicle [wheels :integer]
+                #   define :vehicle [wheels :integer]
+                #   
+                #   define :car is :vehicle [
+                #       init: method [make, model, year][
+                #           super 4
+                #   
+                #           this\make: make
+                #           this\model: model
+                #           this\year: year
+                #       ]
+                #   
+                #       age: method [][
+                #           return now\year - this\year
+                #       ]
+                #   
+                #       string: method [][
+                #           render ~{
+                #               |this\make| |this\model| (|this\year|)
+                #           }
+                #       ]
+                #   ]
+                #   
+                #   myMoto: to :vehicle [2]
+                #   myCar: to :car ["Volvo" "C30" 2009]     ; totally random example lol
+                #   
+                #   do ::
+                #       print myMoto\wheels ; will print 2
+                #       print myCar\age     ; will print 14
+                #       print myCar         ; will print "Volvo C30 (2009)"
+                #  ```
+                #  The above actually print `myCar` *first* and *then* the age!
+                #  labels: oop, ast, bug, critical
                 arityCut = 1
-                let c = Node(kind: OtherCall, arity: pathCallV.arity, op: opNop, value: pathCallV)
+                let c = Node(kind: MethodCall, arity: pathCallV.arity, op: opNop, value: pathCallV)
                 c.addChild(newVariable(baseV))
                 target.addChild(c)
 

@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2023 Yanis Zafirópulos
+# (c) 2019-2024 Yanis Zafirópulos
 #
 # @file: library/Bitwise.nim
 #=======================================================
@@ -22,16 +22,20 @@
 import vm/lib
 
 #=======================================
-# Methods
+# Definitions
 #=======================================
 
-proc defineSymbols*() =
-    
-    # TODO(Binary) more potential built-in function candidates?
-    #  I'm thinking that we could probably add functions that allows to either clear or "set" a specific bit.
-    #  Potentially, this could lead to the need of having another - e.g. `:bitset` - type.
-    #  Is it worth the fuss?
-    #  labels: library, enhancement, open discussion
+# TODO(Binary) more potential built-in function candidates?
+#  I'm thinking that we could probably add functions that allows to either clear or "set" a specific bit.
+#  Potentially, this could lead to the need of having another - e.g. `:bitset` - type.
+#  Is it worth the fuss?
+#  labels: library, enhancement, open discussion
+
+proc defineLibrary*() =
+
+    #----------------------------
+    # Functions
+    #----------------------------
 
     builtin "and",
         alias       = unaliased, 
@@ -248,4 +252,4 @@ proc defineSymbols*() =
 # Add Library
 #=======================================
 
-Libraries.add(defineSymbols)
+Libraries.add(defineLibrary)

@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2023 Yanis Zafirópulos
+# (c) 2019-2024 Yanis Zafirópulos
 #
 # @file: library/Numbers.nim
 #=======================================================
@@ -50,10 +50,19 @@ template processTrigonometric(fun: untyped): untyped =
     else: push(newFloating(fun(asFloat(v))))
 
 #=======================================
-# Methods
+# Definitions
 #=======================================
+
+# TODO(Numbers) add `cbrt` built-in function
+#  the goal would be to have a function that returns the cubic root of a number
+#  potential use: https://rosettacode.org/wiki/Cubic_special_primes
+#  labels: library, enhancement, new feature
  
-proc defineSymbols*() =
+proc defineLibrary*() =
+
+    #----------------------------
+    # Functions
+    #----------------------------
 
     builtin "abs",
         alias       = unaliased, 
@@ -393,7 +402,6 @@ proc defineSymbols*() =
             #=======================================================
             push(newInteger(int(ceil(asFloat(x)))))
 
-
     builtin "clamp",
         alias       = unaliased, 
         op          = opNop,
@@ -446,7 +454,6 @@ proc defineSymbols*() =
             else:
                 discard
              
-
     builtin "conj",
         alias       = unaliased, 
         op          = opNop,
@@ -659,30 +666,6 @@ proc defineSymbols*() =
                 when defined(WEB) or not defined(NOGMP):
                     push newBlock(getDigits(x.bi, base).map((z)=>newInteger(z)))
 
-    constant "epsilon",
-        alias       = unaliased,
-        description = "the constant e, Euler's number":
-            newFloating(E)
-
-    builtin "even?",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "check if given number is even",
-        args        = {
-            "number"    : {Integer}
-        },
-        attrs       = NoAttrs,
-        returns     = {Logical},
-        example     = """
-            even? 4           ; => true
-            even? 3           ; => false
-            ..........
-            print select 1..10 => even?       ; 2 4 6 8 10
-        """:
-            #=======================================================
-            push(newLogical(x % I2 == I0))
-
     builtin "exp",
         alias       = unaliased, 
         op          = opNop,
@@ -868,38 +851,6 @@ proc defineSymbols*() =
             #=======================================================
             push(newFloating(hypot(asFloat(x), asFloat(y))))
 
-    constant "infinite",
-        alias       = infinite,
-        description = "the IEEE floating point value of positive infinity":
-            newFloating(Inf)
-
-    builtin "infinite?",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "check whether given value is an infinite one",
-        args        = {
-            "value" : {Any}
-        },
-        attrs       = NoAttrs,
-        returns     = {Logical},
-        example     = """
-            infinite? 4             ; false
-            infinite? infinite      ; true
-            infinite? ∞             ; true
-            ..........
-            a: infinite
-            infinite? a             ; true
-            
-            b: 0
-            infinite? b             ; false
-        """:
-            #=======================================================
-            if xKind == Floating and (x.f == Inf or x.f == NegInf):
-                push(VTRUE)
-            else:
-                push(VFALSE)
-
     builtin "lcm",
         alias       = unaliased,
         op          = opNop, 
@@ -982,36 +933,6 @@ proc defineSymbols*() =
             #=======================================================
             push(newFloating(log(asFloat(x),asFloat(y))))
 
-    builtin "negative?",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "check if given number is negative",
-        args        = {
-            "number"    : {Integer,Floating,Complex,Rational}
-        },
-        attrs       = NoAttrs,
-        returns     = {Logical},
-        example     = """
-            negative? 5       ; => false
-            negative? 6-7     ; => true 
-        """:
-            #=======================================================
-            if xKind==Integer:
-                if x.iKind==BigInteger:
-                    when defined(WEB):
-                        push(newLogical(x.bi < big(0)))
-                    elif not defined(NOGMP):
-                        push(newLogical(negative(x.bi)))
-                else:
-                    push(newLogical(x < I0))
-            elif xKind==Floating:
-                push(newLogical(x.f < 0.0))
-            elif xKind==Rational:
-                push(newLogical(isNegative(x.rat)))
-            elif xKind==Complex:
-                push(newLogical(x.z.re < 0.0 or (x.z.re == 0.0 and x.z.im < 0.0)))
-
     builtin "numerator",
         alias       = unaliased, 
         op          = opNop,
@@ -1045,60 +966,6 @@ proc defineSymbols*() =
             else:
                 push(newInteger(getNumerator(rat, big=true)))
 
-    builtin "odd?",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "check if given number is odd",
-        args        = {
-            "number"    : {Integer}
-        },
-        attrs       = NoAttrs,
-        returns     = {Logical},
-        example     = """
-            odd? 4            ; => false
-            odd? 3            ; => true
-            ..........
-            print select 1..10 => odd?       ; 1 3 5 7 9
-        """:
-            #=======================================================
-            push(newLogical(x % I2 == I1))
-
-    constant "pi",
-        alias       = unaliased,
-        description = "the number pi, mathematical constant":
-            newFloating(PI)
-
-    builtin "positive?",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "check if given number is positive",
-        args        = {
-            "number"    : {Integer,Floating,Complex,Rational}
-        },
-        attrs       = NoAttrs,
-        returns     = {Logical},
-        example     = """
-            positive? 5       ; => true
-            positive? 6-7     ; => false
-        """:
-            #=======================================================
-            if xKind==Integer:
-                if x.iKind==BigInteger:
-                    when defined(WEB):
-                        push(newLogical(x.bi > big(0)))
-                    elif not defined(NOGMP):
-                        push(newLogical(positive(x.bi)))
-                else:
-                    push(newLogical(x > I0))
-            elif xKind==Floating:
-                push(newLogical(x.f > 0.0))
-            elif xKind==Rational:
-                push(newLogical(isPositive(x.rat)))
-            elif xKind==Complex:
-                push(newLogical(x.z.re > 0.0 or (x.z.re == 0.0 and x.z.im > 0.0)))
-    
     when not defined(NOGMP):
         # TODO(Numbers\powmod) not working for Web builds
         # labels: web,enhancement
@@ -1128,37 +995,6 @@ proc defineSymbols*() =
                 #=======================================================
                 push(powmod(x, y, z))
         
-    builtin "prime?",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "check if given integer is prime",
-        args        = {
-            "number"    : {Integer}
-        },
-        attrs       = NoAttrs,
-        returns     = {Logical},
-        example     = """
-            prime? 2          ; => true
-            prime? 6          ; => false
-            prime? 11         ; => true
-            ..........
-            ; let's check the 14th Mersenne:
-            ; 53113799281676709868958820655246862732959311772703192319944413
-            ; 82004035598608522427391625022652292856688893294862465010153465
-            ; 79337652707239409519978766587351943831270835393219031728127
-            
-            prime? (2^607)-1  ; => true
-        """:
-            #=======================================================
-            if x.iKind==NormalInteger:
-                push(newLogical(isPrime(x.i.uint64)))
-            else:
-                # TODO(Numbers\prime?) not working for Web builds
-                # labels: web,enhancement
-                when not defined(NOGMP):
-                    push(newLogical(probablyPrime(x.bi,25)>0))
-
     builtin "product",
         alias       = product, 
         op          = opNop,
@@ -1361,10 +1197,6 @@ proc defineSymbols*() =
             #=======================================================
             processTrigonometric(sinh)
 
-    # TODO(Numbers) add `cbrt` built-in function
-    #  the goal would be to have a function that returns the cubic root of a number
-    #  potential use: https://rosettacode.org/wiki/Cubic_special_primes
-    #  labels: library, enhancement, new feature
     builtin "sqrt",
         alias       = unaliased, 
         op          = opNop,
@@ -1468,14 +1300,192 @@ proc defineSymbols*() =
             #=======================================================
             processTrigonometric(tanh)
             
+    #----------------------------
+    # Predicates
+    #----------------------------
+
+    builtin "even?",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "check if given number is even",
+        args        = {
+            "number"    : {Integer}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            even? 4           ; => true
+            even? 3           ; => false
+            ..........
+            print select 1..10 => even?       ; 2 4 6 8 10
+        """:
+            #=======================================================
+            push(newLogical(x % I2 == I0))
+
+    builtin "infinite?",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "check whether given value is an infinite one",
+        args        = {
+            "value" : {Any}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            infinite? 4             ; false
+            infinite? infinite      ; true
+            infinite? ∞             ; true
+            ..........
+            a: infinite
+            infinite? a             ; true
+            
+            b: 0
+            infinite? b             ; false
+        """:
+            #=======================================================
+            if xKind == Floating and (x.f == Inf or x.f == NegInf):
+                push(VTRUE)
+            else:
+                push(VFALSE)
+
+    builtin "negative?",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "check if given number is negative",
+        args        = {
+            "number"    : {Integer,Floating,Complex,Rational}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            negative? 5       ; => false
+            negative? 6-7     ; => true 
+        """:
+            #=======================================================
+            if xKind==Integer:
+                if x.iKind==BigInteger:
+                    when defined(WEB):
+                        push(newLogical(x.bi < big(0)))
+                    elif not defined(NOGMP):
+                        push(newLogical(negative(x.bi)))
+                else:
+                    push(newLogical(x < I0))
+            elif xKind==Floating:
+                push(newLogical(x.f < 0.0))
+            elif xKind==Rational:
+                push(newLogical(isNegative(x.rat)))
+            elif xKind==Complex:
+                push(newLogical(x.z.re < 0.0 or (x.z.re == 0.0 and x.z.im < 0.0)))
+
+    builtin "odd?",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "check if given number is odd",
+        args        = {
+            "number"    : {Integer}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            odd? 4            ; => false
+            odd? 3            ; => true
+            ..........
+            print select 1..10 => odd?       ; 1 3 5 7 9
+        """:
+            #=======================================================
+            push(newLogical(x % I2 == I1))
+
+    builtin "positive?",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "check if given number is positive",
+        args        = {
+            "number"    : {Integer,Floating,Complex,Rational}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            positive? 5       ; => true
+            positive? 6-7     ; => false
+        """:
+            #=======================================================
+            if xKind==Integer:
+                if x.iKind==BigInteger:
+                    when defined(WEB):
+                        push(newLogical(x.bi > big(0)))
+                    elif not defined(NOGMP):
+                        push(newLogical(positive(x.bi)))
+                else:
+                    push(newLogical(x > I0))
+            elif xKind==Floating:
+                push(newLogical(x.f > 0.0))
+            elif xKind==Rational:
+                push(newLogical(isPositive(x.rat)))
+            elif xKind==Complex:
+                push(newLogical(x.z.re > 0.0 or (x.z.re == 0.0 and x.z.im > 0.0)))
+
+    builtin "prime?",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "check if given integer is prime",
+        args        = {
+            "number"    : {Integer}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            prime? 2          ; => true
+            prime? 6          ; => false
+            prime? 11         ; => true
+            ..........
+            ; let's check the 14th Mersenne:
+            ; 53113799281676709868958820655246862732959311772703192319944413
+            ; 82004035598608522427391625022652292856688893294862465010153465
+            ; 79337652707239409519978766587351943831270835393219031728127
+            
+            prime? (2^607)-1  ; => true
+        """:
+            #=======================================================
+            if x.iKind==NormalInteger:
+                push(newLogical(isPrime(x.i.uint64)))
+            else:
+                # TODO(Numbers\prime?) not working for Web builds
+                # labels: web,enhancement
+                when not defined(NOGMP):
+                    push(newLogical(probablyPrime(x.bi,25)>0))
+
+    #----------------------------
+    # Constants
+    #----------------------------
+
+    constant "epsilon",
+        alias       = unaliased,
+        description = "the constant e, Euler's number":
+            newFloating(E)
+
+    constant "infinite",
+        alias       = infinite,
+        description = "the IEEE floating point value of positive infinity":
+            newFloating(Inf)
+
+    constant "pi",
+        alias       = unaliased,
+        description = "the number pi, mathematical constant":
+            newFloating(PI)
+
     constant "tau",
         alias       = unaliased,
         description = "the number tau, mathematical constant":
             newFloating(TAU)
-            
-
+         
 #=======================================
 # Add Library
 #=======================================
 
-Libraries.add(defineSymbols)
+Libraries.add(defineLibrary)

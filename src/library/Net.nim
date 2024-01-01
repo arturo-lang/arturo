@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2023 Yanis Zafirópulos
+# (c) 2019-2024 Yanis Zafirópulos
 #
 # @file: library/Net.nim
 #=======================================================
@@ -54,10 +54,14 @@ when defined(SAFE):
     import vm/[errors]
 
 #=======================================
-# Methods
+# Definitions
 #=======================================
 
-proc defineSymbols*() =
+proc defineLibrary*() =
+
+    #----------------------------
+    # Functions
+    #----------------------------
 
     when not defined(WEB):
 
@@ -148,7 +152,7 @@ proc defineSymbols*() =
                     
                     retrieveConfig("mail", "using")
 
-                    # TODO(Net/mail) raise error, if there is no configuration provided whatsoever
+                    # TODO(Net\mail) raise error, if there is no configuration provided whatsoever
                     #  perhaps, this could be also done in a more "templated" way; at least, for Config values
                     #  labels: library, bug
 
@@ -278,7 +282,7 @@ proc defineSymbols*() =
                             headers = headers
                         )
                     else:
-                        # TODO(Net/request) show warning/error when trying to use SSL certificates in MINI builds
+                        # TODO(Net\request) show warning/error when trying to use SSL certificates in MINI builds
                         #  labels: library, error handling, enhancement
                         client = newHttpClient(
                             userAgent = agent,
@@ -494,4 +498,4 @@ proc defineSymbols*() =
 # Add Library
 #=======================================
 
-Libraries.add(defineSymbols)
+Libraries.add(defineLibrary)

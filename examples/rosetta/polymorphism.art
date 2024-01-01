@@ -1,21 +1,21 @@
-define :point [x,y][
-    init: [
-        ensure -> is? :floating this\x
-        ensure -> is? :floating this\y
+define :point [
+    init: method [x :floating, y :floating][
+        this\x: x
+        this\y: y
     ]
 
-    print: [
+    string: method [][
         render "point (x: |this\x|, y: |this\y|)"
     ]
 ]
 
-define :circle [center,radius][
-    init: [
-        ensure -> is? :point this\center
-        ensure -> is? :floating this\radius
+define :circle [
+    init: method [center :point, radius :floating][
+        this\center: center
+        this\radius: radius
     ]
     
-    print: [
+    string: method [][
         render "circle (center: |this\center|, radius: |this\radius|)"
     ]
 ]

@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2023 Yanis Zafirópulos
+# (c) 2019-2024 Yanis Zafirópulos
 #
 # @file: library/Sets.nim
 #=======================================================
@@ -26,10 +26,14 @@ import helpers/sets
 import vm/lib
 
 #=======================================
-# Methods
+# Definitions
 #=======================================
 
-proc defineSymbols*() =
+proc defineLibrary*() =
+
+    #----------------------------
+    # Functions
+    #----------------------------
 
     builtin "difference",
         alias       = unaliased, 
@@ -69,6 +73,85 @@ proc defineSymbols*() =
                     SetInPlace(newBlock(toSeq(difference(toOrderedSet(InPlaced.a), toOrderedSet(y.a)))))
                 else:
                     push(newBlock(toSeq(difference(toOrderedSet(x.a), toOrderedSet(y.a)))))
+
+    builtin "intersection",
+        alias       = VSymbol.intersection, 
+        op          = opNop,
+        rule        = InfixPrecedence,
+        description = "return the intersection of given sets",
+        args        = {
+            "setA"  : {Block,Literal},
+            "setB"  : {Block}
+        },
+        attrs       = NoAttrs,
+        returns     = {Block,Nothing},
+        example     = """
+            print intersection [1 2 3 4] [3 4 5 6]
+            ; 3 4
+            ..........
+            a: [1 2 3 4]
+            b: [3 4 5 6]
+            intersection 'a b
+            ; a: [3 4]
+        """:
+            #=======================================================
+            if xKind==Literal:
+                ensureInPlace()
+                SetInPlace(newBlock(toSeq(intersection(toOrderedSet(InPlaced.a), toOrderedSet(y.a)))))
+            else:
+                push(newBlock(toSeq(intersection(toOrderedSet(x.a), toOrderedSet(y.a)))))
+
+    builtin "powerset",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "return the powerset of given set",
+        args        = {
+            "set"   : {Block,Literal}
+        },
+        attrs       = NoAttrs,
+        returns     = {Block,Nothing},
+        example     = """
+            powerset [1 2 3]
+            ;  [[] [1] [2] [1 3] [3] [1 2] [2 3] [1 2 3]]
+        """:
+            #=======================================================
+            if xKind==Literal:
+                ensureInPlace()
+                SetInPlace(newBlock(toSeq(powerset(toOrderedSet(InPlaced.a))).map((hs) => newBlock(toSeq(hs)))))
+            else:
+                push(newBlock(toSeq(powerset(toOrderedSet(x.a)).map((hs) => newBlock(toSeq(hs))))))
+
+    builtin "union",
+        alias       = VSymbol.union, 
+        op          = opNop,
+        rule        = InfixPrecedence,
+        description = "return the union of given sets",
+        args        = {
+            "setA"  : {Block,Literal},
+            "setB"  : {Block}
+        },
+        attrs       = NoAttrs,
+        returns     = {Block,Nothing},
+        example     = """
+            print union [1 2 3 4] [3 4 5 6]
+            ; 1 2 3 4 5 6
+            ..........
+            a: [1 2 3 4]
+            b: [3 4 5 6]
+            union 'a b
+            ; a: [1 2 3 4 5 6]
+        """:
+            #=======================================================
+            if xKind==Literal:
+                ensureInPlace()
+                SetInPlace(newBlock(toSeq(union(toOrderedSet(InPlaced.a), toOrderedSet(y.a)))))
+            else:
+                push(newBlock(toSeq(union(toOrderedSet(x.a), toOrderedSet(y.a)))))
+
+    #----------------------------
+    # Predicates
+    #----------------------------
 
     builtin "disjoint?",
         alias       = unaliased, 
@@ -118,54 +201,6 @@ proc defineSymbols*() =
                 push(VTRUE)
             else:
                 push(VFALSE)
-
-    builtin "intersection",
-        alias       = VSymbol.intersection, 
-        op          = opNop,
-        rule        = InfixPrecedence,
-        description = "return the intersection of given sets",
-        args        = {
-            "setA"  : {Block,Literal},
-            "setB"  : {Block}
-        },
-        attrs       = NoAttrs,
-        returns     = {Block,Nothing},
-        example     = """
-            print intersection [1 2 3 4] [3 4 5 6]
-            ; 3 4
-            ..........
-            a: [1 2 3 4]
-            b: [3 4 5 6]
-            intersection 'a b
-            ; a: [3 4]
-        """:
-            #=======================================================
-            if xKind==Literal:
-                ensureInPlace()
-                SetInPlace(newBlock(toSeq(intersection(toOrderedSet(InPlaced.a), toOrderedSet(y.a)))))
-            else:
-                push(newBlock(toSeq(intersection(toOrderedSet(x.a), toOrderedSet(y.a)))))
-
-    builtin "powerset",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "return the powerset of given set",
-        args        = {
-            "set"   : {Block,Literal}
-        },
-        attrs       = NoAttrs,
-        returns     = {Block,Nothing},
-        example     = """
-            powerset [1 2 3]
-            ;  [[] [1] [2] [1 3] [3] [1 2] [2 3] [1 2 3]]
-        """:
-            #=======================================================
-            if xKind==Literal:
-                ensureInPlace()
-                SetInPlace(newBlock(toSeq(powerset(toOrderedSet(InPlaced.a))).map((hs) => newBlock(toSeq(hs)))))
-            else:
-                push(newBlock(toSeq(powerset(toOrderedSet(x.a)).map((hs) => newBlock(toSeq(hs))))))
 
     builtin "subset?",
         alias       = subsetorequal, 
@@ -281,35 +316,8 @@ proc defineSymbols*() =
 
                     push(newLogical(contains))
 
-    builtin "union",
-        alias       = VSymbol.union, 
-        op          = opNop,
-        rule        = InfixPrecedence,
-        description = "return the union of given sets",
-        args        = {
-            "setA"  : {Block,Literal},
-            "setB"  : {Block}
-        },
-        attrs       = NoAttrs,
-        returns     = {Block,Nothing},
-        example     = """
-            print union [1 2 3 4] [3 4 5 6]
-            ; 1 2 3 4 5 6
-            ..........
-            a: [1 2 3 4]
-            b: [3 4 5 6]
-            union 'a b
-            ; a: [1 2 3 4 5 6]
-        """:
-            #=======================================================
-            if xKind==Literal:
-                ensureInPlace()
-                SetInPlace(newBlock(toSeq(union(toOrderedSet(InPlaced.a), toOrderedSet(y.a)))))
-            else:
-                push(newBlock(toSeq(union(toOrderedSet(x.a), toOrderedSet(y.a)))))
-
 #=======================================
 # Add Library
 #=======================================
 
-Libraries.add(defineSymbols)
+Libraries.add(defineLibrary)

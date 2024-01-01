@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2023 Yanis Zafirópulos
+# (c) 2019-2024 Yanis Zafirópulos
 #
 # @file: library/Logic.nim
 #=======================================================
@@ -23,10 +23,14 @@ import vm/lib
 import vm/[exec]
 
 #=======================================
-# Methods
+# Definitions
 #=======================================
 
-proc defineSymbols*() =
+proc defineLibrary*() =
+
+    #----------------------------
+    # Predicates
+    #----------------------------
 
     builtin "all?",
         alias       = unaliased, 
@@ -159,11 +163,6 @@ proc defineSymbols*() =
             if not anyOK:
                 push(newLogical(false))
 
-    constant "false",
-        alias       = unaliased,
-        description = "the FALSE logical constant":
-            VFALSE
-
     builtin "false?",
         alias       = unaliased, 
         op          = opNop,
@@ -184,11 +183,6 @@ proc defineSymbols*() =
             #=======================================================
             if xKind != Logical: push(newLogical(false))
             else: push(newLogical(Not(x.b)))
-
-    constant "maybe",
-        alias       = unaliased,
-        description = "the MAYBE logical constant":
-            VMAYBE
 
     builtin "nand?",
         alias       = logicalnand, 
@@ -365,11 +359,6 @@ proc defineSymbols*() =
                     execUnscoped(y)
                     push(newLogical(stack.pop().b))
 
-    constant "true",
-        alias       = unaliased,
-        description = "the TRUE logical constant":
-            VTRUE
-
     builtin "true?",
         alias       = unaliased, 
         op          = opNop,
@@ -473,8 +462,27 @@ proc defineSymbols*() =
 
             push(newLogical(Xor(a, b)))
             
+    #----------------------------
+    # Constants
+    #----------------------------
+
+    constant "false",
+        alias       = unaliased,
+        description = "the FALSE logical constant":
+            VFALSE
+
+    constant "maybe",
+        alias       = unaliased,
+        description = "the MAYBE logical constant":
+            VMAYBE
+
+    constant "true",
+        alias       = unaliased,
+        description = "the TRUE logical constant":
+            VTRUE
+
 #=======================================
 # Add Library
 #=======================================
 
-Libraries.add(defineSymbols)
+Libraries.add(defineLibrary)

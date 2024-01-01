@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2023 Yanis Zafirópulos
+# (c) 2019-2024 Yanis Zafirópulos
 #
 # @file: library/Path.nim
 #=======================================================
@@ -32,29 +32,16 @@ when defined(SAFE):
     import vm/errors
 
 #=======================================
-# Methods
+# Definitions
 #=======================================
 
-proc defineSymbols*() =
+proc defineLibrary*() =
+
+    #----------------------------
+    # Functions
+    #----------------------------
 
     when not defined(WEB):
-
-        builtin "absolute?",
-            alias       = unaliased,
-            op          = opNop,
-            rule        = PrefixPrecedence,
-            description = "check if given path is an absolute path",
-            args        = {
-                "path"  : {String}
-            },
-            attrs       = NoAttrs,
-            returns     = {Logical},
-            example     = """
-            absolute? "/usr/bin"        ; => true
-            absolute? "usr/bin"         ; => false
-            """:
-                #=======================================================
-                push(newLogical(isAbsolute(x.s)))
 
         # TODO(Paths\extract) implement for Web/JS builds
         #  labels: library,enhancement,web
@@ -297,21 +284,6 @@ proc defineSymbols*() =
                         else:
                             push(newString(normalizedPath(x.s)))
 
-        # TODO(Paths/path) move to System module?
-        #  although it's about paths, actually it's more about *system* paths;
-        #  rather than path manipulation. So, that could be a better fit.
-        #  labels: enhancement, library
-
-        # TODO(Paths/path) shouldn't be considered a constant
-        #  let's say constants are exactly that: constants.
-        #  if the exact same "constant" returns different results based on
-        #  the system it's running on, then it's not a constant.
-        #  labels: library, enhancement
-        constant "path",
-            alias       = unaliased,
-            description = "common path constants":
-                newDictionary(getPathInfo())
-
         builtin "relative",
             alias       = dotslash, 
             op          = opNop,
@@ -331,8 +303,31 @@ proc defineSymbols*() =
                 #=======================================================
                 push(newString(joinPath(env.currentPath(),x.s)))
 
+    #----------------------------
+    # Predicates
+    #----------------------------
+
+    when not defined(WEB):
+        
+        builtin "absolute?",
+            alias       = unaliased,
+            op          = opNop,
+            rule        = PrefixPrecedence,
+            description = "check if given path is an absolute path",
+            args        = {
+                "path"  : {String}
+            },
+            attrs       = NoAttrs,
+            returns     = {Logical},
+            example     = """
+            absolute? "/usr/bin"        ; => true
+            absolute? "usr/bin"         ; => false
+            """:
+                #=======================================================
+                push(newLogical(isAbsolute(x.s)))
+
 #=======================================
 # Add Library
 #=======================================
 
-Libraries.add(defineSymbols)
+Libraries.add(defineLibrary)

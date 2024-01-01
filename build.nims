@@ -80,7 +80,7 @@ func buildConfig(): BuildConfig =
         binary:             "bin/arturo".toExe,
         version:            "@full",
         shouldCompress:     true,
-        shouldInstall:      true,
+        shouldInstall:      false,
         shouldLog:          false,
         isDeveloper:        false,
     )
@@ -131,9 +131,9 @@ proc miniBuild*() =
         --verbosity:3
 
 proc compressBinary(config: BuildConfig) =
-    assert config.shouldCompress
-    assert config.webVersion:
-        "Compress should work only for @web versions."
+
+    if (not config.shouldCompress) or (not config.webVersion):
+        return
 
     section "Post-processing..."
 
@@ -229,10 +229,14 @@ proc installAll*(config: BuildConfig, targetFile: string) =
         exec fmt"chmod +x {targetFile}"
 
     proc main(config: BuildConfig) =
-        assert not config.webVersion:
-            "Web builds can't be installed"
+
+        if not config.shouldInstall:
+            return
 
         section "Installing..."
+
+        if config.webVersion:
+            panic "Web builds can't be installed, please don't use --install"
 
         verifyDirectories()
         config.copyArturo(targetFile)
@@ -279,7 +283,7 @@ proc buildArturo*(config: BuildConfig, targetFile: string) =
     proc tryCompilation(config: BuildConfig) =
         ## Panics if can't compile.
         if (let cd = config.compile(showFooter=true); cd != 0):
-            quit(cd)
+            panic "Compilation failed. Please try again with --log and report it.", cd
 
     proc main() =
         showHeader "install"
@@ -355,7 +359,7 @@ proc buildPackage*(config: BuildConfig) =
         showFlags()
 
         if (let cd = compile(config, showFooter=false); cd != 0):
-            quit(cd)
+            panic "Package building failed. Please try again with --log and report it.", cd
 
         package.cleanUp()
 
@@ -396,9 +400,12 @@ proc performBenchmarks*(binary: string): bool =
 # Main
 #=======================================
 
-showLogo()
+cliInstance.header = getLogo()
+cliInstance.defaultCommand = "build"
+let 
+    args = cliInstance.args
 
-cmd build, "Build arturo and optionally install the executable":
+cmd build, "[default] Build arturo and optionally install the executable":
     ## build:
     ##     Provides a cross-compilation for the Arturo's binary.
     ##
@@ -494,7 +501,7 @@ cmd build, "Build arturo and optionally install the executable":
         debugConfig()
 
     if args.hasFlag("install", "i"):
-        config.shouldInstall = false
+        config.shouldInstall = true
 
     if args.hasFlag("log", "l"):
         config.shouldLog = true
@@ -520,7 +527,7 @@ cmd package, "Package arturo app and build executable":
                           "x86-32", "arm", "arm-32"]
 
     var config = buildConfig()
-    config.binary = args.getPositionalArg()
+    config.binary = args.getPositionalArg(2)
 
     match args.getOptionValue("arch", short="a",
                               default=hostCPU,
@@ -584,3 +591,5 @@ cmd benchmark, "Run benchmark suite":
 
     unless paths.global.performBenchmarks():
         quit paths.local.performBenchmarks().toErrorCode
+
+helpForMissingCommand()

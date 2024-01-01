@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2023 Yanis Zafirópulos
+# (c) 2019-2024 Yanis Zafirópulos
 #
 # @file: library/Files.nim
 #=======================================================
@@ -42,17 +42,21 @@ when not defined(WEB):
     import vm/[bytecode, errors, parse]
 
 #=======================================
-# Methods
+# Definitions
 #=======================================
 
-proc defineSymbols*() =
+# TODO(Files) more potential built-in function candidates?
+#  labels: library, enhancement, open discussion
 
-    # TODO(Files) more potential built-in function candidates?
-    #  labels: library, enhancement, open discussion
+# TODO(Files) add function to enable writing/reading to/from binary files
+#  this should obviously support writing a 16-bit int, and all this
+#  labels: library, enhancement, new feature, open discussion
 
-    # TODO(Files) add function to enable writing/reading to/from binary files
-    #  this should obviously support writing a 16-bit int, and all this
-    #  labels: library, enhancement, new feature, open discussion
+proc defineLibrary*() =
+
+    #----------------------------
+    # Functions
+    #----------------------------
 
     when not defined(WEB):
 
@@ -117,50 +121,6 @@ proc defineSymbols*() =
                         discard
                 else: 
                     discard tryRemoveFile(x.s)
-
-        builtin "exists?",
-            alias       = unaliased, 
-            op          = opNop,
-            rule        = PrefixPrecedence,
-            description = "check if given file exists",
-            args        = {
-                "file"  : {String}
-            },
-            attrs       = {
-                "directory" : ({Logical},"check for directory")
-            },
-            returns     = {Logical},
-            example     = """
-            if exists? "somefile.txt" [ 
-                print "file exists!" 
-            ]
-            """:
-                #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("exists?")
-
-                if (hadAttr("directory")): 
-                    push(newLogical(dirExists(x.s)))
-                else: 
-                    push(newLogical(fileExists(x.s)))
-
-        builtin "hidden?",
-            alias       = unaliased, 
-            op          = opNop,
-            rule        = PrefixPrecedence,
-            description = "check if file/folder at given path is hidden",
-            args        = {
-                "file"      : {String}
-            },
-            attrs       = NoAttrs,
-            returns     = {Logical},
-            example     = """
-            hidden? "README.md"     ; => false
-            hidden? ".git"          ; => true
-            """:
-                #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("hidden?")
-
-                push newLogical(isHidden(x.s))
 
         builtin "move",
             alias       = unaliased, 
@@ -278,12 +238,12 @@ proc defineSymbols*() =
                 except OSError:
                     push(VNULL)
 
-        # TODO(Files/read) add support for different delimiters when in `.csv` mode
+        # TODO(Files\read) add support for different delimiters when in `.csv` mode
         #  this could be something as simple as `.with:` or `.delimiter:`, or `.delimited:`
         #  also see: https://github.com/arturo-lang/arturo/pull/1008#issuecomment-1450571702
         #  labels:library,enhancement
 
-        # TODO(Files/read) show a warning in case an unsupported attribute is used in MINI builds
+        # TODO(Files\read) show a warning in case an unsupported attribute is used in MINI builds
         #  right now, passing e.g. `.html` in a MINI build will silently fail, but
         #  the results might be too confusing: 
         #  https://github.com/arturo-lang/arturo/pull/1008#issuecomment-1451696988
@@ -595,8 +555,56 @@ proc defineSymbols*() =
                 let files: seq[string] = y.a.map((z)=>z.s)
                 miniz.zip(files, x.s)
 
+    #----------------------------
+    # Predicates
+    #----------------------------
+
+        builtin "exists?",
+            alias       = unaliased, 
+            op          = opNop,
+            rule        = PrefixPrecedence,
+            description = "check if given file exists",
+            args        = {
+                "file"  : {String}
+            },
+            attrs       = {
+                "directory" : ({Logical},"check for directory")
+            },
+            returns     = {Logical},
+            example     = """
+            if exists? "somefile.txt" [ 
+                print "file exists!" 
+            ]
+            """:
+                #=======================================================
+                when defined(SAFE): RuntimeError_OperationNotPermitted("exists?")
+
+                if (hadAttr("directory")): 
+                    push(newLogical(dirExists(x.s)))
+                else: 
+                    push(newLogical(fileExists(x.s)))
+
+        builtin "hidden?",
+            alias       = unaliased, 
+            op          = opNop,
+            rule        = PrefixPrecedence,
+            description = "check if file/folder at given path is hidden",
+            args        = {
+                "file"      : {String}
+            },
+            attrs       = NoAttrs,
+            returns     = {Logical},
+            example     = """
+            hidden? "README.md"     ; => false
+            hidden? ".git"          ; => true
+            """:
+                #=======================================================
+                when defined(SAFE): RuntimeError_OperationNotPermitted("hidden?")
+
+                push newLogical(isHidden(x.s))
+
 #=======================================
 # Add Library
 #=======================================
 
-Libraries.add(defineSymbols)
+Libraries.add(defineLibrary)

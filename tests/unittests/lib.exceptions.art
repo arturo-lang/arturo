@@ -1,0 +1,97 @@
+; helper function
+debug: $[variable][
+    print[variable type variable]
+]
+
+topic: $[topic :string] -> print ~"\n>> |topic|"
+passed: $[] -> print "[+] passed!"
+
+; tests
+
+
+topic "genericError"
+do [
+
+    ensure -> :errorKind = type genericError
+    ensure -> "Generic Error" = genericError\label
+    passed
+
+]
+
+topic "throws? (& throw)"
+do [
+
+    topic "throws?: generic errors"
+    do [
+
+        defect: $ => throw "Some error"
+        ensure -> throws? -> defect
+        passed
+
+    ]
+
+    topic "throws?: custom errors"
+    do [
+
+        customErr: to :errorKind "Custom"
+        defect: $ => throw.as: customErr "Some error"
+        ensure -> throws? -> defect
+        passed
+
+    ]
+
+]
+
+
+topic "try (& throw)"
+do [
+
+    topic "try: generic errors"
+    do [
+
+        defect: $[] -> throw "Some error"
+        err: try -> defect
+
+        ensure -> :error = type err
+        ensure -> :errorKind = type err\kind
+        ensure -> :string = type err\message
+        passed
+
+        ensure -> genericError = err\kind
+        ensure -> "Some error" = err\message
+        passed
+
+    ]
+
+    topic "try: custom errors"
+    do [
+
+        customErr: to :errorKind "Custom"
+        defect: $[] -> throw.as: customErr "Some error"
+        err: try -> defect
+
+        ensure -> :error = type err
+        ensure -> :errorKind = type err\kind
+        ensure -> :string = type err\message
+        passed
+
+        ensure -> customErr = err\kind
+        ensure -> "Custom" = err\kind\label
+        ensure -> "Some error" = err\message
+        passed
+
+    ]
+    
+    topic "try: no errors"
+    do [
+
+        defect: $[] -> return "Everything is fine! :)"
+        err: try -> defect
+
+        ensure -> :null = type err
+        ensure -> null = err
+        passed
+
+    ]
+
+]
