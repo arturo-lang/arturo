@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2023 Yanis Zafirópulos
+# (c) 2019-2024 Yanis Zafirópulos
 #
 # @file: library/Collections.nim
 #=======================================================
@@ -2081,13 +2081,6 @@ proc defineLibrary*() =
     # TODO(Collections\split) Add better support for unicode strings
     #  Currently, simple split works fine - but using different attributes (at, every, by, etc) doesn't
     #  labels: library,bug
-
-    # TODO(Collections\split) `.by` not working properly with Literal values?
-    #  example: ```
-    #   b: ["Arnold" "Andreas" "Paul" "Ricard" "Linus" "Yanis" "Helena" "Eva" "Blanca"]
-    #   split.every: 3 'b, debug b
-    #  ```
-    #  labels: library, bug
     builtin "split",
         alias       = unaliased,
         op          = opSplit,
