@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2023 Yanis Zafirópulos
+# (c) 2019-2024 Yanis Zafirópulos
 #
 # @file: library/Iterators.nim
 #=======================================================
@@ -277,6 +277,7 @@ template fetchParamsBlock() {.dirty.} =
     if hasIndex: params.add(withIndex.s)
     if yKind != Null:
         for item in mitems(y.a):
+            item.requireValue({Literal, Word})
             params.add(item.s)
 
 template prepareIteration(doesAcceptLiterals=true) {.dirty.} =

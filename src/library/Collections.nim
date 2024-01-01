@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2023 Yanis Zafirópulos
+# (c) 2019-2024 Yanis Zafirópulos
 #
 # @file: library/Collections.nim
 #=======================================================
@@ -621,15 +621,15 @@ proc defineLibrary*() =
             if checkAttr("n"):
                 if xKind == String:
                     if x.s.len == 0: push(newString(""))
-                    else: push(newString(x.s[0..aN.i-1]))
+                    else: push(newString(x.s[0..min(aN.i-1, x.s.high)]))
                 elif xKind == Range:
                     if aN.i == 1 or aN.i == 0:
                         push(x.rng[1, true])
                     else:
-                        push(newRange(x.rng[0..aN.i, true]))
+                        push(newRange(x.rng[0..min(aN.i, x.rng.len), true]))
                 else:
                     if x.a.len == 0: push(newBlock())
-                    else: push(newBlock(x.a[0..aN.i-1]))
+                    else: push(newBlock(x.a[0..min(aN.i-1, x.a.high)]))
             else:
                 if xKind == String:
                     if x.s.len == 0: push(VNULL)
@@ -2081,13 +2081,6 @@ proc defineLibrary*() =
     # TODO(Collections\split) Add better support for unicode strings
     #  Currently, simple split works fine - but using different attributes (at, every, by, etc) doesn't
     #  labels: library,bug
-
-    # TODO(Collections\split) `.by` not working properly with Literal values?
-    #  example: ```
-    #   b: ["Arnold" "Andreas" "Paul" "Ricard" "Linus" "Yanis" "Helena" "Eva" "Blanca"]
-    #   split.every: 3 'b, debug b
-    #  ```
-    #  labels: library, bug
     builtin "split",
         alias       = unaliased,
         op          = opSplit,

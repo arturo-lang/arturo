@@ -54,47 +54,92 @@
                         <h4 class="title is-size-6-touch is-size-5 is-spaced">Functions</h4>
                         
                         <div class="content">
-                            <ul class="list">
-                                <|| 
-                                    funcList: select map sort keys get pageTree\documentation\library last chop pagePath 'fff [
-                                        @[last chop pagePath, replace replace fff "_" "" "-" "?"]
-                                    ] 'fff [
-                                        and? :function = type var fff\1 '?' <> last fff\1
-                                    ]
-                                ||>
-                                <||= loop funcList 'fff [ ||>
-                                    <li class="list-item"><a href="<||= linkTo ~{documentation/library/|fff\0|/|lower fff\1|} ||>"><||= fff\1 ||></a></li>
-                                <||]||>
-                            </ul>
+                            <|| 
+                                funcList: select map sort keys get pageTree\documentation\library last chop pagePath 'fff [
+                                    @[last chop pagePath, replace replace fff "_" "" "-" "?"]
+                                ] 'fff [
+                                    and? :function = type var fff\1 '?' <> last fff\1
+                                ]
+                                plusOne: (odd? size funcList)? -> 1 -> 0
+                            ||>
+                            <div class="columns is-mobile">
+                                <div class="column is-6">
+                                    <ul class="list">
+                                    <||= loop first.n: plusOne + (size funcList)/2 funcList 'fff [ ||>
+                                        <li class="list-item"><a href="<||= linkTo ~{documentation/library/|fff\0|/|lower fff\1|} ||>"><||= fff\1 ||></a></li>
+                                    <||]||>
+                                    </ul>
+                                </div>
+                                <||= if 1 < size funcList [ ||>
+                                    <div class="column is-6">
+                                        <ul class="list">
+                                        <||= loop last.n: (size funcList)/2 funcList 'fff [ ||>
+                                            <li class="list-item"><a href="<||= linkTo ~{documentation/library/|fff\0|/|lower fff\1|} ||>"><||= fff\1 ||></a></li>
+                                        <||]||>
+                                        </ul>
+                                    </div>
+                                <|| ] ||>
+                            </div>
                         </div>
                     <|| ] ||>
 
                     <||= if predicateCount > 0 [ ||>
                         <h4 class="title is-size-6-touch is-size-5 is-spaced">Predicates</h4>
                         
+                        <||
+                            predicateList: select map sort keys get pageTree\documentation\library last chop pagePath 'fff [ replace replace fff "_" "" "-" "?" ] 'fun [ and? :function = type var fun '?' = last fun ]
+                            plusOne: (odd? size predicateList)? -> 1 -> 0
+                        ||>
                         <div class="content">
-                            <ul class="list">
-                                <||= loop sort keys get pageTree\documentation\library last chop pagePath 'fff [ fun: replace replace fff "_" "" "-" "?" ||>
-                                    <|| if and? :function = type var fun '?' = last fun [ ||>
+                            <div class="columns is-mobile">
+                                <div class="column is-6">
+                                    <ul class="list">
+                                    <||= loop first.n: plusOne + (size predicateList)/2 predicateList 'fun [ ||>
+                                    <li class="list-item"><a href="<||= linkTo ~{documentation/library/|last chop pagePath|/|lower fun|} ||>"><||= fun ||></a></li>
+                                    <||]||>
+                                    </ul>
+                                </div>
+                                <||= if 1 < size predicateList [ ||>
+                                    <div class="column is-6">
+                                        <ul class="list">
+                                        <||= loop last.n: (size predicateList)/2 predicateList 'fun [ ||>
                                         <li class="list-item"><a href="<||= linkTo ~{documentation/library/|last chop pagePath|/|lower fun|} ||>"><||= fun ||></a></li>
-                                    <|| ] ||>
-                                <||]||>
-                            </ul>
+                                        <||]||>
+                                        </ul>
+                                    </div>
+                                <|| ] ||>
+                            </div>
                         </div>
                     <|| ] ||>
 
                     <||= if constantCount > 0 [ ||>
                         <h4 class="title is-size-6-touch is-size-5 is-spaced">Constants</h4>
-                        
+
+                        <||
+                            constantList: select map sort keys get pageTree\documentation\library last chop pagePath 'fff [ replace replace fff "_" "" "-" "?" ] 'fun [ :function <> type var fun ]
+                            plusOne: (odd? size constantList)? -> 1 -> 0
+                        ||>
                         <div class="content">
-                            <ul class="list">
-                                <||= loop sort keys get pageTree\documentation\library last chop pagePath 'fff [ fun: replace replace fff "_" "" "-" "?" ||>
-                                    <|| if :function <> type var fun [ ||>
+                            <div class="columns is-mobile">
+                                <div class="column is-6">
+                                    <ul class="list">
+                                    <||= loop first.n: plusOne + (size constantList)/2 constantList 'fun [ ||>
+                                    <li class="list-item"><a href="<||= linkTo ~{documentation/library/|last chop pagePath|/|lower fun|} ||>"><||= fun ||></a></li>
+                                    <||]||>
+                                    </ul>
+                                </div>
+                                <||= if 1 < size constantList [ ||>
+                                    <div class="column is-6">
+                                        <ul class="list">
+                                        <||= loop last.n: (size constantList)/2 constantList 'fun [ ||>
                                         <li class="list-item"><a href="<||= linkTo ~{documentation/library/|last chop pagePath|/|lower fun|} ||>"><||= fun ||></a></li>
-                                    <|| ] ||>
-                                <||]||>
-                            </ul>
+                                        <||]||>
+                                        </ul>
+                                    </div>
+                                <|| ] ||>
+                            </div>
                         </div>
+                        
                     <|| ] ||>
 
                 </div>
