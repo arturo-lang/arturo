@@ -277,6 +277,7 @@ template fetchParamsBlock() {.dirty.} =
     if hasIndex: params.add(withIndex.s)
     if yKind != Null:
         for item in mitems(y.a):
+            item.requireValue({Literal, Word})
             params.add(item.s)
 
 template prepareIteration(doesAcceptLiterals=true) {.dirty.} =
