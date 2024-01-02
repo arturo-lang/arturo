@@ -106,6 +106,10 @@ proc webview_navigate*(w: Webview, url: cstring) {.importc.}
     ## "data:text/html,<html>...</html>". It is often ok not to url-encode it
     ## properly, webview will re-encode it for you.
 
+proc webview_set_html*(w: Webview, html: cstring) {.importc.}
+    ## Set webview HTML directly.
+    ## Example: webview_set_html(w, "<h1>Hello</h1>");
+
 proc webview_init*(w: Webview, js: cstring) {.importc.}
     ## Injects JavaScript code at the initialization of the new page. Every time
     ## the webview will open a the new page - this initialization code will be
