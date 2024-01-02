@@ -299,7 +299,6 @@ proc defineLibrary*() =
                     initializer = inject,
                     callHandler = proc (call: WebviewCallKind, value: Value): Value =
                         result = VNULL
-                        echo "in callHandler!! with: " & $(call)
                         if call==FunctionCall:
                             if SymExists(value.d["method"].s) and GetSym(value.d["method"].s).kind==Function:
                                 let prevSP = SP
@@ -324,12 +323,8 @@ proc defineLibrary*() =
                             if SP > prevSP:
                                 result = stack.pop()
                         elif call==WebviewEvent:
-                            echo "it's an event!"
                             if (let onEvent = on.getOrDefault(value.s, nil); not onEvent.isNil):
-                                echo "onEvent set"
                                 execUnscoped(onEvent)
-                            else:
-                                echo "no onEvent set"
                         else:
                             discard
                 )
@@ -349,7 +344,6 @@ proc defineLibrary*() =
                         #=======================================================
                         wv.evaluate(x.s)
 
-                echo "showing wv..."
                 wv.show()
                 
 #=======================================
