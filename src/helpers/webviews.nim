@@ -20,6 +20,7 @@ when not defined(NOWEBVIEW):
     when defined(macosx):
         import extras/menubar
     import helpers/jsonobject
+    import helpers/url
     import helpers/windows
     import vm/values/value
 
@@ -142,8 +143,16 @@ proc openChromeWindow*(port: int, flags: seq[string] = @[]) =
 
 when not defined(NOWEBVIEW):
 
+    # proc startWebView*(content: string): Webview =
+    #     result = webview_create(1)
+    #     result.webview_set_title("This is a - successful - test".cstring)
+    #     result.webview_set_size(320.cint, 480.cint, Default)
+    #     result.webview_set_html(content.cstring)
+    #     result.webview_run()
+    #     result.webview_destroy()
+
     proc newWebView*(title       : string                = "Arturo", 
-                     url         : string                = "", 
+                     content     : string                = "", 
                      width       : int                   = 640, 
                      height      : int                   = 480, 
                      resizable   : bool                  = true, 
@@ -155,10 +164,20 @@ when not defined(NOWEBVIEW):
                      initializer : string                = "",
                      callHandler : WebviewCallHandler    = nil): Webview =
 
+        echo "webview_create"
         result = webview_create(debug.cint)
+        echo "webview_set_title"
         webview_set_title(result, title=title.cstring)
+        echo "webview_set_size"
         webview_set_size(result, width.cint, height.cint, if resizable: Constraints.Default else: Constraints.Fixed)
-        webview_navigate(result, url.cstring)
+        if content.isUrl():
+            echo "webview_navigate"
+            webview_navigate(result, content.cstring)
+        else:
+            echo "webview_set_html"
+            webview_set_html(result, content.cstring)
+
+        echo "webview_init"
         webview_init(result,(
             (static readFile(parentDir(currentSourcePath()) & "/webviews.js")) & 
             "\n" & 
@@ -178,11 +197,18 @@ when not defined(NOWEBVIEW):
         if topmost or borderless:
             result.getWindow().topmost()
 
+        echo "setting handler..."
         let handler = proc (seq: ccstring, req: ccstring, arg: pointer) {.cdecl.} =
+            echo "inside handler!"
+            echo "request: " & $(cast[cstring](req))
             var request = parseJson($(cast[cstring](req)))
+
+            echo $(request)
 
             let mode = request.elems[0].str
             let value = valueFromJson(request.elems[1].str)
+
+            echo "MODE: " & mode
 
             var res = 0
             var callKind: WebviewCallKind
@@ -215,23 +241,33 @@ when not defined(NOWEBVIEW):
                         discard
             else:
                 if callKind != UnrecognizedCall:
+                    echo "calling main handler..."
                     returned = jsonFromValue(mainCallHandler(callKind, value), pretty=false).cstring
 
+            echo "webview_return"
             webview_return(mainWebview, cast[cstring](seq), res.cint, returned)
 
+        echo "setting mainWebview"
         mainWebview = result
+        echo "setting mainCallHandler"
         mainCallHandler = callHandler
+        echo "webview_bind"
         result.webview_bind("callback", handler, cast[pointer](0))
 
     proc show*(w: Webview) =
         when defined(macosx):
+            echo "generating default main menu"
             generateDefaultMainMenu()
 
+        echo "webview_run"
         webview_run(w)
+        echo "webview_destroy"
         webview_destroy(w)
 
     proc evaluate*(w: Webview, js: string) =
+        echo "WV:evaluate"
         webview_eval(w, js.cstring)
 
     proc getWindow*(w: Webview): Window =
+        echo "WV:getWindow"
         webview_get_window(w)
