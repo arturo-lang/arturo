@@ -164,20 +164,14 @@ when not defined(NOWEBVIEW):
                      initializer : string                = "",
                      callHandler : WebviewCallHandler    = nil): Webview =
 
-        echo "webview_create"
         result = webview_create(debug.cint)
-        echo "webview_set_title"
         webview_set_title(result, title=title.cstring)
-        echo "webview_set_size"
         webview_set_size(result, width.cint, height.cint, if resizable: Constraints.Default else: Constraints.Fixed)
         if content.isUrl():
-            echo "webview_navigate"
             webview_navigate(result, content.cstring)
         else:
-            echo "webview_set_html"
             webview_set_html(result, content.cstring)
 
-        echo "webview_init"
         webview_init(result,(
             (static readFile(parentDir(currentSourcePath()) & "/webviews.js")) & 
             "\n" & 
@@ -197,18 +191,11 @@ when not defined(NOWEBVIEW):
         if topmost or borderless:
             result.getWindow().topmost()
 
-        echo "setting handler..."
         let handler = proc (seq: ccstring, req: ccstring, arg: pointer) {.cdecl.} =
-            echo "inside handler!"
-            echo "request: " & $(cast[cstring](req))
             var request = parseJson($(cast[cstring](req)))
-
-            echo $(request)
 
             let mode = request.elems[0].str
             let value = valueFromJson(request.elems[1].str)
-
-            echo "MODE: " & mode
 
             var res = 0
             var callKind: WebviewCallKind
@@ -241,33 +228,23 @@ when not defined(NOWEBVIEW):
                         discard
             else:
                 if callKind != UnrecognizedCall:
-                    echo "calling main handler..."
                     returned = jsonFromValue(mainCallHandler(callKind, value), pretty=false).cstring
 
-            echo "webview_return"
             webview_return(mainWebview, cast[cstring](seq), res.cint, returned)
 
-        echo "setting mainWebview"
         mainWebview = result
-        echo "setting mainCallHandler"
         mainCallHandler = callHandler
-        echo "webview_bind"
         result.webview_bind("callback", handler, cast[pointer](0))
 
     proc show*(w: Webview) =
         when defined(macosx):
-            echo "generating default main menu"
             generateDefaultMainMenu()
 
-        echo "webview_run"
         webview_run(w)
-        echo "webview_destroy"
         webview_destroy(w)
 
     proc evaluate*(w: Webview, js: string) =
-        echo "WV:evaluate"
         webview_eval(w, js.cstring)
 
     proc getWindow*(w: Webview): Window =
-        echo "WV:getWindow"
         webview_get_window(w)
