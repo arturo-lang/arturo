@@ -217,9 +217,7 @@ proc valueFromJson*(src: string): Value =
     parseJsonNode(parseJson(src))
 
 proc jsonFromValue*(val: Value, pretty: bool = true): string =
-    echo "in jsonFromValue: " & $(val.kind)
     let node = generateJsonNode(val)
-    echo "all set"
     if pretty: json.pretty(node, indent=4)
     else: $(node)
 
