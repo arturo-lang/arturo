@@ -22,7 +22,7 @@
 import vm/lib
 
 when not defined(NOWEBVIEW):
-    import algorithm, hashes
+    import algorithm, hashes, tables
 
     import helpers/url
     import helpers/webviews
@@ -278,17 +278,16 @@ proc defineLibrary*() =
                 if checkAttr("title"): title = aTitle.s
                 if checkAttr("width"): width = aWidth.i
                 if checkAttr("height"): height = aHeight.i
-                if checkAttr("on"): on = aOn.d
                 if checkAttr("inject"): inject = aInject.s
+                
+                if checkAttr("on"): on = aOn.d
+                else: on = newOrderedTable[string,Value]()
 
-                var targetUrl = x.s
-
-                if not isUrl(x.s):
-                    targetUrl = "data:text/html, " & x.s
+                var content = x.s
 
                 let wv: Webview = newWebview(
                     title       = title, 
-                    url         = targetUrl, 
+                    content     = content, 
                     width       = width, 
                     height      = height, 
                     resizable   = not fixed, 
@@ -300,6 +299,7 @@ proc defineLibrary*() =
                     initializer = inject,
                     callHandler = proc (call: WebviewCallKind, value: Value): Value =
                         result = VNULL
+                        echo "in callHandler!! with: " & $(call)
                         if call==FunctionCall:
                             if SymExists(value.d["method"].s) and GetSym(value.d["method"].s).kind==Function:
                                 let prevSP = SP
@@ -324,8 +324,12 @@ proc defineLibrary*() =
                             if SP > prevSP:
                                 result = stack.pop()
                         elif call==WebviewEvent:
+                            echo "it's an event!"
                             if (let onEvent = on.getOrDefault(value.s, nil); not onEvent.isNil):
+                                echo "onEvent set"
                                 execUnscoped(onEvent)
+                            else:
+                                echo "no onEvent set"
                         else:
                             discard
                 )
@@ -345,6 +349,7 @@ proc defineLibrary*() =
                         #=======================================================
                         wv.evaluate(x.s)
 
+                echo "showing wv..."
                 wv.show()
                 
 #=======================================
