@@ -37,6 +37,8 @@ proc defineLibrary*() =
     # Functions
     #----------------------------
 
+    # TODO(Dates\after) add support for PathLiteral values
+    #  labels: library, enhancement
     builtin "after",
         alias       = unaliased, 
         op          = opNop,
@@ -97,6 +99,8 @@ proc defineLibrary*() =
             else:
                 push(newDate(x.eobj + ti))
 
+    # TODO(Dates\before) add support for PathLiteral values
+    #  labels: library, enhancement
     builtin "before",
         alias       = unaliased, 
         op          = opNop,
