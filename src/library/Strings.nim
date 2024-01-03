@@ -904,7 +904,7 @@ proc defineLibrary*() =
             if xKind==String: push(newString(x.s.toUpper()))
             elif xKind==Char: push(newChar(x.c.toUpper()))
             else: 
-                ensureInPlaceWithPaths()
+                ensureInPlaceAny()
                 if InPlaced.kind==String:
                     InPlaced.s = InPlaced.s.toUpper()
                 else:

@@ -216,13 +216,14 @@ template ensureInPlace*(): untyped =
     except CatchableError:
         showInPlaceError(x.s)
 
-template ensureInPlaceWithPaths*(): untyped =
+template ensureInPlaceAny*(): untyped =
     ## To be used whenever, and always before, 
     ## we want to access an InPlace symbol
     ## In contrast to `ensureInPlace`, this
     ## actually checks whether we have a Literal
     ## or a PathLiteral and treats it accordingly.
     var InPlaceAddr {.inject.}: ptr Value
+    var fetchedPathSym {.inject.}: Value
     if likely(x.kind==Literal):
         try:
             InPlaceAddr = addr Syms[x.s]
@@ -231,7 +232,7 @@ template ensureInPlaceWithPaths*(): untyped =
         except CatchableError:
             showInPlaceError(x.s)
     else:
-        var fetchedPathSym = FetchPathSym(x.p)
+        fetchedPathSym = FetchPathSym(x.p)
         InPlaceAddr = addr fetchedPathSym
 
 template SetInPlace*(v: Value, safe: static bool = false): untyped =
