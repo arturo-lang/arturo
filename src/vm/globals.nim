@@ -136,17 +136,9 @@ proc FetchPathSym*(pl: ValueArray): Value =
             of Block:
                 result = GetArrayIndex(result.a, p.i)
             of Dictionary:
-                case pKind:
-                    of String, Word, Literal, Label:
-                        result = GetKey(result.d, p.s)
-                    else:
-                        result = GetKey(result.d, $(p.i))
+                result = GetKey(result.d, p.s)
             of Object:
-                case pKind:
-                    of String, Word, Literal, Label:
-                        result = GetKey(result.o, p.s)
-                    else:
-                        result = GetKey(result.o, $(p.i))
+                result = GetKey(result.o, p.s)
             of String:
                 result = newChar(result.s.runeAtPos(p.i))
             else: 
