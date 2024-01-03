@@ -146,6 +146,8 @@ proc defineLibrary*() =
             #=======================================================
             generateOperationB("or", `||`, `||=`)
 
+    # TODO(Bitwise\shl) add support for PathLiteral values
+    #  labels: library, enhancement
     builtin "shl",
         alias       = unaliased, 
         op          = opShl,
