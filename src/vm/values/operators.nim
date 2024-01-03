@@ -82,8 +82,8 @@ macro generateOperationB*(name: static[string], op: untyped, inplaceOp: untyped)
     let normalIntegerI = ident("normalInteger" & ($name).capitalizeAscii() & "I")
 
     result = quote do:
-        if xKind==Literal : 
-            ensureInPlace()
+        if xKind in {Literal,PathLiteral}: 
+            ensureInPlaceAny()
             if normalIntegerOperation(inPlace=true):
                 `normalIntegerI`(InPlaced, y.i)
             else:
