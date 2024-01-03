@@ -182,6 +182,7 @@ proc compile*(config: BuildConfig, showFooter: bool = false): int
     proc windowsHostSpecific() =
         if config.isDeveloper and not flags.contains("NOWEBVIEW"):
             discard gorgeEx "src\\extras\\webview\\deps\\build.bat"
+            #discard gorgeEx "src\\extras\\webview\\deps\\build-new.bat"
         --passL:"\"-static-libstdc++ -static-libgcc -Wl,-Bstatic -lstdc++ -Wl,-Bdynamic\""
         --gcc.linkerexe:"g++"
 
