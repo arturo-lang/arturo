@@ -227,7 +227,7 @@ template ensureInPlaceAny*(): untyped =
     ## or a PathLiteral and treats it accordingly.
     var InPlaceAddr {.inject.}: ptr Value
     var fetchedPathSym {.inject.}: Value
-    if likely(x.kind==Literal):
+    if likely(xKind==Literal):
         try:
             InPlaceAddr = addr Syms[x.s]
             if unlikely(InPlaced.readonly):
