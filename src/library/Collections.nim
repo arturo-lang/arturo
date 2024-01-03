@@ -57,6 +57,8 @@ proc defineLibrary*() =
     # Functions
     #----------------------------
 
+    # TODO(Collections\append) add support for PathLiteral values
+    #  labels: library, enhancement
     builtin "append",
         alias       = doubleplus,
         op          = opAppend,
@@ -226,6 +228,8 @@ proc defineLibrary*() =
                     else:
                         push(newBlock(@[x]))
 
+    # TODO(Collections\chop) add support for PathLiteral values
+    #  labels: library, enhancement, easy
     builtin "chop",
         alias       = unaliased,
         op          = opNop,
@@ -368,6 +372,8 @@ proc defineLibrary*() =
             #=======================================================
             push(newBlock(zip(x.a, y.a).map((z)=>newBlock(@[z[0], z[1]]))))
 
+    # TODO(Collections\decouple) add support for PathLiteral values
+    #  labels: library, enhancement, easy
     builtin "decouple",
         alias       = unaliased,
         op          = opNop,
@@ -472,6 +478,8 @@ proc defineLibrary*() =
 
             push(newDictionary(dict))
 
+    # TODO(Collections\drop) add support for PathLiteral values
+    #  labels: library, enhancement, easy
     builtin "drop",
         alias       = unaliased,
         op          = opNop,
@@ -545,6 +553,8 @@ proc defineLibrary*() =
                     else: push(newBlock())
                 else: discard
 
+    # TODO(Collections\empty) add support for PathLiteral values
+    #  labels: library, enhancement, easy
     builtin "empty",
         alias       = unaliased,
         op          = opNop,
@@ -570,6 +580,8 @@ proc defineLibrary*() =
                 of Dictionary: InPlaced.d = initOrderedTable[string, Value]()
                 else: discard
 
+    # TODO(Collections\extend) add support for PathLiteral values
+    #  labels: library, enhancement, easy
     builtin "extend",
         alias       = unaliased,
         op          = opNop,
@@ -640,6 +652,8 @@ proc defineLibrary*() =
                     if x.a.len == 0: push(VNULL)
                     else: push(x.a[0])
 
+    # TODO(Collections\flatten) add support for PathLiteral values
+    #  labels: library, enhancement
     builtin "flatten",
         alias       = unaliased,
         op          = opNop,
@@ -896,6 +910,9 @@ proc defineLibrary*() =
     #  basically, the idea would allow us to do something like:
     #  `insert.many [1 4 5 6] 1 [2 3]` and get back `[1 2 3 4 5 6]`
     #  labels: library, enhancement, open discussion 
+
+    # TODO(Collections\insert) add support for PathLiteral values
+    #  labels: library, enhancement, easy
     builtin "insert",
         alias       = unaliased,
         op          = opNop,
@@ -1198,7 +1215,9 @@ proc defineLibrary*() =
             else:
                 push(newBlock(getPermutations(x.a, sz, doRepeat).map((
                         z)=>newBlock(z))))
-                                       
+
+    # TODO(Collections\pop) add support for PathLiteral values
+    #  labels: library, enhancement, easy
     builtin "pop",
         alias       = unaliased,
         op          = opNop,
@@ -1279,6 +1298,8 @@ proc defineLibrary*() =
                 else: discard
             else: raise newException(ValueError, "Attribute 'n can't be 0 or negative.")
                 
+    # TODO(Collections\prepend) add support for PathLiteral values
+    #  labels: library, enhancement
     builtin "prepend",
         alias       = unaliased,
         op          = opNop,
@@ -1399,6 +1420,9 @@ proc defineLibrary*() =
     # TODO(Collections\remove) is `.index` broken?
     #  Example: `remove.index 3 'a, debug a`
     #  labels: library, bug
+
+    # TODO(Collections\remove) add support for PathLiteral values
+    #  labels: library, enhancement
     builtin "remove",
         alias       = doubleminus,
         op          = opNop,
@@ -1530,6 +1554,8 @@ proc defineLibrary*() =
                         else:
                             push(newObject(x.proto, x.o.removeAll(y, key), x.magic))
 
+    # TODO(Collections\repeat) add support for PathLiteral values
+    #  labels: library, enhancement
     builtin "repeat",
         alias       = unaliased,
         op          = opNop,
@@ -1571,6 +1597,8 @@ proc defineLibrary*() =
                 else:
                     push(newBlock(safeRepeat(x, y.i)))
 
+    # TODO(Collections\reverse) add support for PathLiteral values
+    #  labels: library, enhancement, easy
     builtin "reverse",
         alias       = unaliased,
         op          = opReverse,
@@ -1619,6 +1647,8 @@ proc defineLibrary*() =
                 else:
                     push(newString(reversed(x.s)))
 
+    # TODO(Collections\rotate) add support for PathLiteral values
+    #  labels: library, enhancement, easy
     builtin "rotate",
         alias       = unaliased,
         op          = opNop,
@@ -1779,6 +1809,8 @@ proc defineLibrary*() =
                     x.s = res
                 else: discard
 
+    # TODO(Collections\shuffle) add support for PathLiteral values
+    #  labels: library, enhancement, easy
     builtin "shuffle",
         alias       = unaliased,
         op          = opNop,
@@ -1841,6 +1873,8 @@ proc defineLibrary*() =
             else: # Null
                 push(newInteger(0))
 
+    # TODO(Collections\slice) add support for PathLiteral values
+    #  labels: library, enhancement
     builtin "slice",
         alias       = unaliased,
         op          = opNop,
@@ -1892,6 +1926,9 @@ proc defineLibrary*() =
     # TODO(Collection\sort) make sure all options work as expected for Literal values too
     #  see: https://github.com/arturo-lang/arturo/pull/1045#issuecomment-1458960243
     #  labels: library, bug, critical
+
+    # TODO(Collections\sort) add support for PathLiteral values
+    #  labels: library, enhancement, easy
     builtin "sort",
         alias       = unaliased,
         op          = opNop,
@@ -2081,6 +2118,9 @@ proc defineLibrary*() =
     # TODO(Collections\split) Add better support for unicode strings
     #  Currently, simple split works fine - but using different attributes (at, every, by, etc) doesn't
     #  labels: library,bug
+
+    # TODO(Collections\split) add support for PathLiteral values
+    #  labels: library, enhancement
     builtin "split",
         alias       = unaliased,
         op          = opSplit,
@@ -2236,6 +2276,8 @@ proc defineLibrary*() =
                     push(newBlock(ret))
                 else: push(x)
 
+    # TODO(Collections\squeeze) add support for PathLiteral values
+    #  labels: library, enhancement
     builtin "squeeze",
         alias       = unaliased,
         op          = opNop,
@@ -2298,6 +2340,8 @@ proc defineLibrary*() =
                         i += 1
                     push(newBlock(ret))
 
+    # TODO(Collections\take) add support for PathLiteral values
+    #  labels: library, enhancement, easy
     builtin "take",
         alias       = unaliased,
         op          = opNop,
@@ -2422,6 +2466,8 @@ proc defineLibrary*() =
             
             push(newDictionary(occurences))
 
+    # TODO(Collections\unique) add support for PathLiteral values
+    #  labels: library, enhancement, easy
     builtin "unique",
         alias       = unaliased,
         op          = opNop,

@@ -36,13 +36,15 @@ proc defineLibrary*() =
     # Functions
     #----------------------------
 
+    # TODO(Colors\blend) add support for PathLiteral values
+    #  labels: library, enhancement, easy
     builtin "blend",
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "blend given colors and get result",
         args        = {
-            "colorA"    : {Color},
+            "colorA"    : {Color,Literal},
             "colorB"    : {Color}
         },
         attrs       = {
@@ -66,13 +68,15 @@ proc defineLibrary*() =
             else:
                 push newColor(blendColors(x.l, y.l, balance))
 
+    # TODO(Colors\darken) add support for PathLiteral values
+    #  labels: library, enhancement, easy
     builtin "darken",
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "darken color by given percentage (0.0-1.0)",
         args        = {
-            "color"     : {Color},
+            "color"     : {Color,Literal},
             "percent"   : {Floating}
         },
         attrs       = NoAttrs,
@@ -90,13 +94,15 @@ proc defineLibrary*() =
             else:
                 push newColor(alterColorValue(x.l, y.f * (-1)))
 
+    # TODO(Colors\desaturate) add support for PathLiteral values
+    #  labels: library, enhancement, easy
     builtin "desaturate",
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "desaturate color by given percentage (0.0-1.0)",
         args        = {
-            "color"     : {Color},
+            "color"     : {Color,Literal},
             "percent"   : {Floating}
         },
         attrs       = NoAttrs,
@@ -114,13 +120,15 @@ proc defineLibrary*() =
             else:
                 push newColor(saturateColor(x.l, y.f * (-1)))
 
+    # TODO(Colors\grayscale) add support for PathLiteral values
+    #  labels: library, enhancement, easy
     builtin "grayscale",
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "convert color to grayscale",
         args        = {
-            "color"     : {Color}
+            "color"     : {Color,Literal}
         },
         attrs       = NoAttrs,
         returns     = {Color},
@@ -137,13 +145,15 @@ proc defineLibrary*() =
             else:
                 push newColor(saturateColor(x.l, -1.0))
 
+    # TODO(Colors\invert) add support for PathLiteral values
+    #  labels: library, enhancement, easy
     builtin "invert",
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "get complement for given color",
         args        = {
-            "color"     : {Color}
+            "color"     : {Color,Literal}
         },
         attrs       = NoAttrs,
         returns     = {Color},
@@ -159,13 +169,15 @@ proc defineLibrary*() =
             else:
                 push newColor(invertColor(x.l))
 
+    # TODO(Colors\lighten) add support for PathLiteral values
+    #  labels: library, enhancement, easy
     builtin "lighten",
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "lighten color by given percentage (0.0-1.0)",
         args        = {
-            "color"     : {Color},
+            "color"     : {Color,Literal},
             "percent"   : {Floating}
         },
         attrs       = NoAttrs,
@@ -250,13 +262,15 @@ proc defineLibrary*() =
             else:
                 push newBlock(@[x])
 
+    # TODO(Colors\saturate) add support for PathLiteral values
+    #  labels: library, enhancement, easy
     builtin "saturate",
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "saturate color by given percentage (0.0-1.0)",
         args        = {
-            "color"     : {Color},
+            "color"     : {Color,Literal},
             "percent"   : {Floating}
         },
         attrs       = NoAttrs,
@@ -276,13 +290,15 @@ proc defineLibrary*() =
             else:
                 push newColor(saturateColor(x.l, y.f))
 
+    # TODO(Colors\spin) add support for PathLiteral values
+    #  labels: library, enhancement, easy
     builtin "spin",
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "spin color around the hue wheel by given amount",
         args        = {
-            "color"     : {Color},
+            "color"     : {Color,Literal},
             "amount"    : {Integer}
         },
         attrs       = NoAttrs,
