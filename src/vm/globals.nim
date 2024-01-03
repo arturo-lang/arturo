@@ -231,7 +231,8 @@ template ensureInPlaceWithPaths*(): untyped =
         except CatchableError:
             showInPlaceError(x.s)
     else:
-        InPlaceAddr = FetchPathSym(x.p)
+        var fetchedPathSym = FetchPathSym(x.p)
+        InPlaceAddr = addr fetchPathSym
 
 template SetInPlace*(v: Value, safe: static bool = false): untyped =
     ## Sets InPlace symbol to given value in the symbol table
