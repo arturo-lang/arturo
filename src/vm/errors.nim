@@ -355,6 +355,11 @@ proc RuntimeError_CannotModifyConstant*(sym: string) =
           "value points to a readonly constant: " & sym & ";" &
           "which cannot be modified in-place"
 
+proc RuntimeError_PathLiteralMofifyingString*() =
+    panic RuntimeError,      
+          "in-place modification of strings" & ";" &
+          "through PathLiteral values is not supported"
+
 proc RuntimeError_FileNotFound*(path: string) =
     panic RuntimeError,
           "file not found: " & path
