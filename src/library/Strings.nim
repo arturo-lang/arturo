@@ -115,6 +115,8 @@ proc defineLibrary*() =
 
             push(newBlock(got))
 
+    # TODO(Strings\capitalize) add support for PathLiteral values
+    #  labels: library, enhancement, easy
     builtin "capitalize",
         alias       = unaliased, 
         op          = opNop,
@@ -141,6 +143,8 @@ proc defineLibrary*() =
                 else:
                     InPlaced.c = InPlaced.c.toUpper()
 
+    # TODO(Strings\escape) add support for PathLiteral values
+    #  labels: library, enhancement
     builtin "escape",
         alias       = unaliased, 
         op          = opNop,
@@ -201,6 +205,8 @@ proc defineLibrary*() =
                 else:
                     push(newString(strutils.escape(x.s)))
 
+    # TODO(Strings\indent) add support for PathLiteral values
+    #  labels: library, enhancement
     builtin "indent",
         alias       = unaliased, 
         op          = opNop,
@@ -265,6 +271,8 @@ proc defineLibrary*() =
         """:
             push(newFloating(jaro(x.s,y.s)))    
 
+    # TODO(Strings\join) add support for PathLiteral values
+    #  labels: library, enhancement
     builtin "join",
         alias       = unaliased, 
         op          = opJoin,
@@ -510,6 +518,8 @@ proc defineLibrary*() =
 
                     push(newBlock(res))
 
+    # TODO(Strings\outdent) add support for PathLiteral values
+    #  labels: library, enhancement
     builtin "outdent",
         alias       = unaliased, 
         op          = opNop,
@@ -565,6 +575,8 @@ proc defineLibrary*() =
             else:
                 push(newString(unindent(x.s, count, padding))) 
 
+    # TODO(Strings\pad) add support for PathLiteral values
+    #  labels: library, enhancement, easy
     builtin "pad",
         alias       = unaliased, 
         op          = opNop,
@@ -616,13 +628,16 @@ proc defineLibrary*() =
         # TODO(Strings\render) function should also work for Web/JS builds
         #  the lack of proper RegEx libraries could be handled by using the newly-added JS helper functions
         #  labels: enhancement,library,web
+
+        # TODO(Strings\render) add support for PathLiteral values
+        #  labels: library, enhancement
         builtin "render",
             alias       = tilde, 
             op          = opNop,
             rule        = PrefixPrecedence,
             description = "render template with |string| interpolation",
             args        = {
-                "template"  : {String}
+                "template"  : {String,Literal}
             },
             attrs       = {
                 "once"      : ({Logical},"don't render recursively"),
@@ -713,6 +728,9 @@ proc defineLibrary*() =
     #
     #  see: https://discord.com/channels/765519132186640445/829324913097048065/1078717850270842962
     #  labels: enhancement,library
+
+    # TODO(Strings\replace) add support for PathLiteral values
+    #  labels: library, enhancement, easy
     builtin "replace",
         alias       = unaliased, 
         op          = opReplace,
@@ -769,6 +787,8 @@ proc defineLibrary*() =
                             replaceStrWith(InPlaced.s, y.a[i], z.a[i])
                             inc i
 
+    # TODO(Strings\strip) add support for PathLiteral values
+    #  labels: library, enhancement, easy
     builtin "strip",
         alias       = unaliased, 
         op          = opNop,
@@ -806,6 +826,8 @@ proc defineLibrary*() =
                 ensureInPlace()
                 InPlaced.s = strutils.strip(InPlaced.s, leading, trailing) 
 
+    # TODO(Strings\translate) add support for PathLiteral values
+    #  labels: library, enhancement, easy
     builtin "translate",
         alias       = unaliased, 
         op          = opNop,
@@ -835,6 +857,8 @@ proc defineLibrary*() =
                 ensureInPlace()
                 InPlaced.s = InPlaced.s.multiReplace(replacements)
 
+    # TODO(Strings\truncate) add support for PathLiteral values
+    #  labels: library, enhancement, easy
     builtin "truncate",
         alias       = unaliased, 
         op          = opNop,
@@ -910,6 +934,8 @@ proc defineLibrary*() =
                 else:
                     InPlaced.c = InPlaced.c.toUpper()
 
+    # TODO(Strings\wordwrap) add support for PathLiteral values
+    #  labels: library, enhancement
     builtin "wordwrap",
         alias       = unaliased, 
         op          = opNop,
