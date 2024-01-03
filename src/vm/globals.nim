@@ -232,7 +232,7 @@ template ensureInPlaceWithPaths*(): untyped =
             showInPlaceError(x.s)
     else:
         var fetchedPathSym = FetchPathSym(x.p)
-        InPlaceAddr = addr fetchPathSym
+        InPlaceAddr = addr fetchedPathSym
 
 template SetInPlace*(v: Value, safe: static bool = false): untyped =
     ## Sets InPlace symbol to given value in the symbol table
