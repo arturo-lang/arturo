@@ -24,7 +24,6 @@ import vm/lib
 when not defined(NOWEBVIEW):
     import algorithm, hashes, tables
 
-    import helpers/url
     import helpers/webviews
 
     import vm/[exec, parse]
