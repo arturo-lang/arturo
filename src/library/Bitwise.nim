@@ -43,7 +43,7 @@ proc defineLibrary*() =
         rule        = InfixPrecedence,
         description = "calculate the binary AND for the given values",
         args        = {
-            "valueA": {Integer,Binary,Literal},
+            "valueA": {Integer,Binary,Literal,PathLiteral},
             "valueB": {Integer,Binary}
         },
         attrs       = NoAttrs,
@@ -63,7 +63,7 @@ proc defineLibrary*() =
         rule        = InfixPrecedence,
         description = "calculate the binary NAND for the given values",
         args        = {
-            "valueA": {Integer,Binary,Literal},
+            "valueA": {Integer,Binary,Literal,PathLiteral},
             "valueB": {Integer,Binary}
         },
         attrs       = NoAttrs,
@@ -88,7 +88,7 @@ proc defineLibrary*() =
         rule        = InfixPrecedence,
         description = "calculate the binary NOR for the given values",
         args        = {
-            "valueA": {Integer,Binary,Literal},
+            "valueA": {Integer,Binary,Literal,PathLiteral},
             "valueB": {Integer,Binary}
         },
         attrs       = NoAttrs,
@@ -113,7 +113,7 @@ proc defineLibrary*() =
         rule        = PrefixPrecedence,
         description = "calculate the binary complement the given value",
         args        = {
-            "value" : {Integer,Binary,Literal}
+            "value" : {Integer,Binary,Literal,PathLiteral}
         },
         attrs       = NoAttrs,
         returns     = {Integer,Binary,Nothing},
@@ -132,7 +132,7 @@ proc defineLibrary*() =
         rule        = InfixPrecedence,
         description = "calculate the binary OR for the given values",
         args        = {
-            "valueA": {Integer,Binary,Literal},
+            "valueA": {Integer,Binary,Literal,PathLiteral},
             "valueB": {Integer,Binary}
         },
         attrs       = NoAttrs,
@@ -189,7 +189,7 @@ proc defineLibrary*() =
         rule        = InfixPrecedence,
         description = "shift-right first value bits by second value",
         args        = {
-            "value" : {Integer,Literal},
+            "value" : {Integer,Literal,PathLiteral},
             "bits"  : {Integer}
         },
         attrs       = NoAttrs,
@@ -209,7 +209,7 @@ proc defineLibrary*() =
         rule        = InfixPrecedence,
         description = "calculate the binary XNOR for the given values",
         args        = {
-            "valueA": {Integer,Binary,Literal},
+            "valueA": {Integer,Binary,Literal,PathLiteral},
             "valueB": {Integer,Binary}
         },
         attrs       = NoAttrs,
@@ -234,7 +234,7 @@ proc defineLibrary*() =
         rule        = InfixPrecedence,
         description = "calculate the binary XOR for the given values",
         args        = {
-            "valueA": {Integer,Binary,Literal},
+            "valueA": {Integer,Binary,Literal,PathLiteral},
             "valueB": {Integer,Binary}
         },
         attrs       = NoAttrs,
