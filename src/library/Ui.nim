@@ -22,7 +22,7 @@
 import vm/lib
 
 when not defined(NOWEBVIEW):
-    import algorithm, hashes
+    import algorithm, hashes, tables
 
     import helpers/url
     import helpers/webviews
@@ -278,17 +278,16 @@ proc defineLibrary*() =
                 if checkAttr("title"): title = aTitle.s
                 if checkAttr("width"): width = aWidth.i
                 if checkAttr("height"): height = aHeight.i
-                if checkAttr("on"): on = aOn.d
                 if checkAttr("inject"): inject = aInject.s
+                
+                if checkAttr("on"): on = aOn.d
+                else: on = newOrderedTable[string,Value]()
 
-                var targetUrl = x.s
-
-                if not isUrl(x.s):
-                    targetUrl = "data:text/html, " & x.s
+                var content = x.s
 
                 let wv: Webview = newWebview(
                     title       = title, 
-                    url         = targetUrl, 
+                    content     = content, 
                     width       = width, 
                     height      = height, 
                     resizable   = not fixed, 
