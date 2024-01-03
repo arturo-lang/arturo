@@ -122,7 +122,7 @@ proc FetchSym*(s: string, unsafe: static bool = false): Value {.inline.} =
     else:
         Syms[s]
 
-proc FetchPathSym*(pl: ValueArray): Value =
+proc FetchPathSym*(pl: ValueArray, inplace: static bool = false): Value =
     ## Gets a the `.p` field of a PathLiteral value
     ## looks up all subsequent path fields
     ## and returns the value
@@ -139,7 +139,10 @@ proc FetchPathSym*(pl: ValueArray): Value =
             of Object:
                 result = GetKey(result.o, p.s)
             of String:
-                result = newChar(result.s.runeAtPos(p.i))
+                when inplace:
+                    RuntimeError_PathLiteralMofifyingString()
+                else:
+                    result = newChar(result.s.runeAtPos(p.i))
             else: 
                 discard
 
@@ -232,7 +235,7 @@ template ensureInPlaceAny*(): untyped =
         except CatchableError:
             showInPlaceError(x.s)
     else:
-        fetchedPathSym = FetchPathSym(x.p)
+        fetchedPathSym = FetchPathSym(x.p, inplace=true)
         InPlaceAddr = addr fetchedPathSym
 
 template SetInPlace*(v: Value, safe: static bool = false): untyped =
