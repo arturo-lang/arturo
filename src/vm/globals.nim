@@ -242,6 +242,12 @@ template SetInPlace*(v: Value, safe: static bool = false): untyped =
     ## Sets InPlace symbol to given value in the symbol table
     SetSym(x.s, v, safe)
 
+# TODO(VM/globals) Should implement `SetInPlace` equivalent for PathLiteral's
+#  without this, many of the PathLiteral implementations cannot work
+#  mainly, all of the "add PathLiteral support" TODOs that are *not*
+#  marked as "easy" ;-)
+#  labels: enhancement, library, helpers
+
 #---------------------
 # Global config
 #---------------------
