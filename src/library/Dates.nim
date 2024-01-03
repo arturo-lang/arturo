@@ -43,7 +43,7 @@ proc defineLibrary*() =
         rule        = PrefixPrecedence,
         description = "get date after given one using interval",
         args        = {
-            "date"  : {Literal, Date}
+            "date"  : {Date, Literal}
         },
         attrs       = {
             "nanoseconds"   : ({Integer},"add given number of nanoseconds"),
