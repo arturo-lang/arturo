@@ -886,7 +886,7 @@ proc defineLibrary*() =
         rule        = PrefixPrecedence,
         description = "convert given string to uppercase",
         args        = {
-            "string": {String,Char,Literal}
+            "string": {String,Char,Literal,PathLiteral}
         },
         attrs       = NoAttrs,
         returns     = {String,Char,Nothing},
@@ -904,7 +904,7 @@ proc defineLibrary*() =
             if xKind==String: push(newString(x.s.toUpper()))
             elif xKind==Char: push(newChar(x.c.toUpper()))
             else: 
-                ensureInPlace()
+                ensureInPlaceWithPaths()
                 if InPlaced.kind==String:
                     InPlaced.s = InPlaced.s.toUpper()
                 else:
