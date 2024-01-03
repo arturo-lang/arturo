@@ -350,7 +350,7 @@ proc defineLibrary*() =
         rule        = PrefixPrecedence,
         description = "convert given string to lowercase",
         args        = {
-            "string": {String,Char,Literal}
+            "string": {String,Char,Literal,PathLiteral}
         },
         attrs       = NoAttrs,
         returns     = {String,Char,Nothing},
@@ -368,7 +368,7 @@ proc defineLibrary*() =
             if xKind==String: push(newString(x.s.toLower()))
             elif xKind==Char: push(newChar(x.c.toLower()))
             else: 
-                ensureInPlace()
+                ensureInPlaceAny()
                 if InPlaced.kind==String:
                     InPlaced.s = InPlaced.s.toLower()
                 else:
