@@ -43,7 +43,7 @@ proc defineLibrary*() =
         rule        = InfixPrecedence,
         description = "add given values and return result",
         args        = {
-            "valueA": {Integer,Floating,Complex,Rational,Color,Quantity,Object,Literal},
+            "valueA": {Integer,Floating,Complex,Rational,Color,Quantity,Object,Literal,PathLiteral},
             "valueB": {Integer,Floating,Complex,Rational,Color,Quantity,Object}
         },
         attrs       = NoAttrs,
@@ -64,7 +64,7 @@ proc defineLibrary*() =
         rule        = PrefixPrecedence,
         description = "decrease given value by 1",
         args        = {
-            "value" : {Integer,Floating,Complex,Rational,Quantity,Object,Literal}
+            "value" : {Integer,Floating,Complex,Rational,Quantity,Object,Literal,PathLiteral}
         },
         attrs       = NoAttrs,
         returns     = {Integer,Floating,Complex,Rational,Quantity,Object,Nothing},
@@ -83,7 +83,7 @@ proc defineLibrary*() =
         rule        = InfixPrecedence,
         description = "perform integer division between given values and return result",
         args        = {
-            "valueA": {Integer,Floating,Complex,Rational,Quantity,Object,Literal},
+            "valueA": {Integer,Floating,Complex,Rational,Quantity,Object,Literal,PathLiteral},
             "valueB": {Integer,Floating,Complex,Rational,Quantity,Object}
         },
         attrs       = NoAttrs,
@@ -104,7 +104,7 @@ proc defineLibrary*() =
         rule        = InfixPrecedence,
         description = "perform integer division between given values and return tuple with quotient and remainder",
         args        = {
-            "valueA": {Integer,Floating,Complex,Rational,Quantity,Literal},
+            "valueA": {Integer,Floating,Complex,Rational,Quantity,Literal,PathLiteral},
             "valueB": {Integer,Floating,Complex,Rational,Quantity}
         },
         attrs       = NoAttrs,
@@ -127,7 +127,7 @@ proc defineLibrary*() =
         rule        = InfixPrecedence,
         description = "divide given values and return result",
         args        = {
-            "valueA": {Integer,Floating,Rational,Quantity,Object,Literal},
+            "valueA": {Integer,Floating,Rational,Quantity,Object,Literal,PathLiteral},
             "valueB": {Integer,Floating,Rational,Quantity}
         },
         attrs       = NoAttrs,
@@ -147,7 +147,7 @@ proc defineLibrary*() =
         rule        = PrefixPrecedence,
         description = "increase given value by 1",
         args        = {
-            "value" : {Integer,Floating,Complex,Rational,Quantity,Object,Literal}
+            "value" : {Integer,Floating,Complex,Rational,Quantity,Object,Literal,PathLiteral}
         },
         attrs       = NoAttrs,
         returns     = {Integer,Floating,Complex,Rational,Quantity,Object,Nothing},
@@ -166,7 +166,7 @@ proc defineLibrary*() =
         rule        = InfixPrecedence,
         description = "calculate the modulo of given values and return result",
         args        = {
-            "valueA": {Integer,Floating,Rational,Quantity,Object,Literal},
+            "valueA": {Integer,Floating,Rational,Quantity,Object,Literal,PathLiteral},
             "valueB": {Integer,Floating,Rational,Quantity}
         },
         attrs       = NoAttrs,
@@ -187,7 +187,7 @@ proc defineLibrary*() =
         rule        = InfixPrecedence,
         description = "calculate the product of given values and return result",
         args        = {
-            "valueA": {Integer,Floating,Complex,Rational,Quantity,Object,Literal},
+            "valueA": {Integer,Floating,Complex,Rational,Quantity,Object,Literal,PathLiteral},
             "valueB": {Integer,Floating,Complex,Rational,Quantity,Object}
         },
         attrs       = NoAttrs,
@@ -208,7 +208,7 @@ proc defineLibrary*() =
         rule        = PrefixPrecedence,
         description = "reverse sign of given value and return it",
         args        = {
-            "value" : {Integer,Floating,Complex,Rational,Quantity,Object,Literal}
+            "value" : {Integer,Floating,Complex,Rational,Quantity,Object,Literal,PathLiteral}
         },
         attrs       = NoAttrs,
         returns     = {Integer,Floating,Complex,Rational,Quantity,Object,Nothing},
@@ -227,7 +227,7 @@ proc defineLibrary*() =
         rule        = InfixPrecedence,
         description = "calculate the power of given values and return result",
         args        = {
-            "valueA": {Integer,Floating,Complex,Rational,Quantity,Object,Literal},
+            "valueA": {Integer,Floating,Complex,Rational,Quantity,Object,Literal,PathLiteral},
             "valueB": {Integer,Floating}
         },
         attrs       = NoAttrs,
@@ -248,7 +248,7 @@ proc defineLibrary*() =
         rule        = InfixPrecedence,
         description = "subtract given values and return result",
         args        = {
-            "valueA": {Integer,Floating,Complex,Rational,Color,Quantity,Object,Literal},
+            "valueA": {Integer,Floating,Complex,Rational,Color,Quantity,Object,Literal,PathLiteral},
             "valueB": {Integer,Floating,Complex,Rational,Color,Quantity,Object}
         },
         attrs       = NoAttrs,
