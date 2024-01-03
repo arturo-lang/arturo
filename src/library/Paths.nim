@@ -228,6 +228,8 @@ proc defineLibrary*() =
 
                 push(newStringBlock(contents))
         
+        # TODO(Paths\normalize) add support for PathLiteral values
+        #  labels: library, enhancement, easy
         builtin "normalize",
             alias       = unaliased, 
             op          = opNop,

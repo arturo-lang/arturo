@@ -35,6 +35,8 @@ proc defineLibrary*() =
     # Functions
     #----------------------------
 
+    # TODO(Sets\difference) add support for PathLiteral values
+    #  labels: library, enhancement
     builtin "difference",
         alias       = unaliased, 
         op          = opNop,
@@ -74,6 +76,8 @@ proc defineLibrary*() =
                 else:
                     push(newBlock(toSeq(difference(toOrderedSet(x.a), toOrderedSet(y.a)))))
 
+    # TODO(Sets\intersection) add support for PathLiteral values
+    #  labels: library, enhancement
     builtin "intersection",
         alias       = VSymbol.intersection, 
         op          = opNop,
@@ -101,6 +105,8 @@ proc defineLibrary*() =
             else:
                 push(newBlock(toSeq(intersection(toOrderedSet(x.a), toOrderedSet(y.a)))))
 
+    # TODO(Sets\powerset) add support for PathLiteral values
+    #  labels: library, enhancement
     builtin "powerset",
         alias       = unaliased, 
         op          = opNop,
@@ -122,6 +128,8 @@ proc defineLibrary*() =
             else:
                 push(newBlock(toSeq(powerset(toOrderedSet(x.a)).map((hs) => newBlock(toSeq(hs))))))
 
+    # TODO(Sets\union) add support for PathLiteral values
+    #  labels: library, enhancement
     builtin "union",
         alias       = VSymbol.union, 
         op          = opNop,
