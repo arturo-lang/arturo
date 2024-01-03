@@ -130,7 +130,6 @@ proc FetchPathSym*(pl: ValueArray): Value =
     var pidx = 1
     while pidx < pl.len:
         var p = pl[pidx]
-        let pKind = p.kind
         
         case result.kind:
             of Block:
