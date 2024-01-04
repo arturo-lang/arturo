@@ -36,15 +36,13 @@ proc defineLibrary*() =
     # Functions
     #----------------------------
 
-    # TODO(Colors\blend) add support for PathLiteral values
-    #  labels: library, enhancement, easy
     builtin "blend",
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "blend given colors and get result",
         args        = {
-            "colorA"    : {Color,Literal},
+            "colorA"    : {Color,Literal,PathLiteral},
             "colorB"    : {Color}
         },
         attrs       = {
@@ -62,21 +60,19 @@ proc defineLibrary*() =
             if checkAttr("balance"):
                 balance = aBalance.f
 
-            if xKind == Literal:
-                ensureInPlace()
-                SetInPlace(newColor(blendColors(InPlaced.l, y.l, balance)))
-            else:
+            if xKind == Color:
                 push newColor(blendColors(x.l, y.l, balance))
+            else:
+                ensureInPlaceAny()
+                SetInPlaceAny(newColor(blendColors(InPlaced.l, y.l, balance)))                
 
-    # TODO(Colors\darken) add support for PathLiteral values
-    #  labels: library, enhancement, easy
     builtin "darken",
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "darken color by given percentage (0.0-1.0)",
         args        = {
-            "color"     : {Color,Literal},
+            "color"     : {Color,Literal,PathLiteral},
             "percent"   : {Floating}
         },
         attrs       = NoAttrs,
@@ -88,21 +84,19 @@ proc defineLibrary*() =
             darken #9944CC 0.3      ; => #6B308F
         """:
             #=======================================================
-            if xKind == Literal:
-                ensureInPlace()
-                SetInPlace(newColor(alterColorValue(InPlaced.l, y.f * (-1))))
-            else:
+            if xKind == Color:
                 push newColor(alterColorValue(x.l, y.f * (-1)))
+            else:
+                ensureInPlaceAny()
+                SetInPlaceAny(newColor(alterColorValue(InPlaced.l, y.f * (-1))))                
 
-    # TODO(Colors\desaturate) add support for PathLiteral values
-    #  labels: library, enhancement, easy
     builtin "desaturate",
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "desaturate color by given percentage (0.0-1.0)",
         args        = {
-            "color"     : {Color,Literal},
+            "color"     : {Color,Literal,PathLiteral},
             "percent"   : {Floating}
         },
         attrs       = NoAttrs,
@@ -114,21 +108,19 @@ proc defineLibrary*() =
             desaturate #9944CC 0.3      ; => #9558B8
         """:
             #=======================================================
-            if xKind == Literal:
-                ensureInPlace()
-                SetInPlace(newColor(saturateColor(InPlaced.l, y.f * (-1))))
-            else:
+            if xKind == Color:
                 push newColor(saturateColor(x.l, y.f * (-1)))
+            else:
+                ensureInPlaceAny()
+                SetInPlaceAny(newColor(saturateColor(InPlaced.l, y.f * (-1))))
 
-    # TODO(Colors\grayscale) add support for PathLiteral values
-    #  labels: library, enhancement, easy
     builtin "grayscale",
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "convert color to grayscale",
         args        = {
-            "color"     : {Color,Literal}
+            "color"     : {Color,Literal,PathLiteral}
         },
         attrs       = NoAttrs,
         returns     = {Color},
@@ -139,21 +131,19 @@ proc defineLibrary*() =
             grayscale #FF44CC           ; => #A2A2A2
         """:
             #=======================================================
-            if xKind == Literal:
-                ensureInPlace()
-                SetInPlace(newColor(saturateColor(InPlaced.l, -1.0)))
-            else:
+            if xKind == Color:
                 push newColor(saturateColor(x.l, -1.0))
+            else:
+                ensureInPlaceAny()
+                SetInPlaceAny(newColor(saturateColor(InPlaced.l, -1.0)))
 
-    # TODO(Colors\invert) add support for PathLiteral values
-    #  labels: library, enhancement, easy
     builtin "invert",
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "get complement for given color",
         args        = {
-            "color"     : {Color,Literal}
+            "color"     : {Color,Literal,PathLiteral}
         },
         attrs       = NoAttrs,
         returns     = {Color},
@@ -163,21 +153,19 @@ proc defineLibrary*() =
             invert #orange              ; => #0059FF
         """:
             #=======================================================
-            if xKind == Literal:
-                ensureInPlace()
-                SetInPlace(newColor(invertColor(InPlaced.l)))
-            else:
+            if xKind == Color:
                 push newColor(invertColor(x.l))
+            else:
+                ensureInPlaceAny()
+                SetInPlaceAny(newColor(invertColor(InPlaced.l)))
 
-    # TODO(Colors\lighten) add support for PathLiteral values
-    #  labels: library, enhancement, easy
     builtin "lighten",
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "lighten color by given percentage (0.0-1.0)",
         args        = {
-            "color"     : {Color,Literal},
+            "color"     : {Color,Literal,PathLiteral},
             "percent"   : {Floating}
         },
         attrs       = NoAttrs,
@@ -191,11 +179,11 @@ proc defineLibrary*() =
             lighten #9944CC 0.3         ; => #C758FF
         """:
             #=======================================================
-            if xKind == Literal:
-                ensureInPlace()
-                SetInPlace(newColor(alterColorValue(InPlaced.l, y.f)))
-            else:
+            if xKind == Color:
                 push newColor(alterColorValue(x.l, y.f))
+            else:
+                ensureInPlaceAny()
+                SetInPlaceAny(newColor(alterColorValue(InPlaced.l, y.f)))                
 
     builtin "palette",
         alias       = unaliased, 
@@ -262,15 +250,13 @@ proc defineLibrary*() =
             else:
                 push newBlock(@[x])
 
-    # TODO(Colors\saturate) add support for PathLiteral values
-    #  labels: library, enhancement, easy
     builtin "saturate",
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "saturate color by given percentage (0.0-1.0)",
         args        = {
-            "color"     : {Color,Literal},
+            "color"     : {Color,Literal,PathLiteral},
             "percent"   : {Floating}
         },
         attrs       = NoAttrs,
@@ -284,21 +270,19 @@ proc defineLibrary*() =
             saturate #9944CC 0.3        ; => #A030E0
         """:
             #=======================================================
-            if xKind == Literal:
-                ensureInPlace()
-                SetInPlace(newColor(saturateColor(InPlaced.l, y.f)))
-            else:
+            if xKind == Color:
                 push newColor(saturateColor(x.l, y.f))
+            else:
+                ensureInPlaceAny()
+                SetInPlaceAny(newColor(saturateColor(InPlaced.l, y.f)))
 
-    # TODO(Colors\spin) add support for PathLiteral values
-    #  labels: library, enhancement, easy
     builtin "spin",
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "spin color around the hue wheel by given amount",
         args        = {
-            "color"     : {Color,Literal},
+            "color"     : {Color,Literal,PathLiteral},
             "amount"    : {Integer}
         },
         attrs       = NoAttrs,
@@ -311,11 +295,11 @@ proc defineLibrary*() =
             spin #123456 360        ; => #123456
         """:
             #=======================================================
-            if xKind == Literal:
-                ensureInPlace()
-                SetInPlace(newColor(spinColor(InPlaced.l, y.i)))
-            else:
+            if xKind == Color:
                 push newColor(spinColor(x.l, y.i))
+            else:
+                ensureInPlaceAny()
+                SetInPlaceAny(newColor(spinColor(InPlaced.l, y.i)))
 
 #=======================================
 # Add Library
