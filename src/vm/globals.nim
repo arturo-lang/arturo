@@ -122,7 +122,7 @@ proc FetchSym*(s: string, unsafe: static bool = false): Value {.inline.} =
     else:
         Syms[s]
 
-proc FetchPathSym*(pl: ValueArray): Value =
+proc FetchPathSym*(pl: ValueArray, inplace: static bool = false): Value =
     ## Gets a the `.p` field of a PathLiteral value
     ## looks up all subsequent path fields
     ## and returns the value
@@ -130,25 +130,19 @@ proc FetchPathSym*(pl: ValueArray): Value =
     var pidx = 1
     while pidx < pl.len:
         var p = pl[pidx]
-        let pKind = p.kind
         
         case result.kind:
             of Block:
                 result = GetArrayIndex(result.a, p.i)
             of Dictionary:
-                case pKind:
-                    of String, Word, Literal, Label:
-                        result = GetKey(result.d, p.s)
-                    else:
-                        result = GetKey(result.d, $(p.i))
+                result = GetKey(result.d, p.s)
             of Object:
-                case pKind:
-                    of String, Word, Literal, Label:
-                        result = GetKey(result.o, p.s)
-                    else:
-                        result = GetKey(result.o, $(p.i))
+                result = GetKey(result.o, p.s)
             of String:
-                result = newChar(result.s.runeAtPos(p.i))
+                when inplace:
+                    RuntimeError_PathLiteralMofifyingString()
+                else:
+                    result = newChar(result.s.runeAtPos(p.i))
             else: 
                 discard
 
@@ -225,9 +219,34 @@ template ensureInPlace*(): untyped =
     except CatchableError:
         showInPlaceError(x.s)
 
+template ensureInPlaceAny*(): untyped =
+    ## To be used whenever, and always before, 
+    ## we want to access an InPlace symbol
+    ## In contrast to `ensureInPlace`, this
+    ## actually checks whether we have a Literal
+    ## or a PathLiteral and treats it accordingly.
+    var InPlaceAddr {.inject.}: ptr Value
+    var fetchedPathSym {.inject.}: Value
+    if likely(xKind==Literal):
+        try:
+            InPlaceAddr = addr Syms[x.s]
+            if unlikely(InPlaced.readonly):
+                RuntimeError_CannotModifyConstant(x.s)
+        except CatchableError:
+            showInPlaceError(x.s)
+    else:
+        fetchedPathSym = FetchPathSym(x.p, inplace=true)
+        InPlaceAddr = addr fetchedPathSym
+
 template SetInPlace*(v: Value, safe: static bool = false): untyped =
     ## Sets InPlace symbol to given value in the symbol table
     SetSym(x.s, v, safe)
+
+# TODO(VM/globals) Should implement `SetInPlace` equivalent for PathLiteral's
+#  without this, many of the PathLiteral implementations cannot work
+#  mainly, all of the "add PathLiteral support" TODOs that are *not*
+#  marked as "easy" ;-)
+#  labels: enhancement, library, helpers
 
 #---------------------
 # Global config
