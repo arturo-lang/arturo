@@ -276,15 +276,13 @@ proc defineLibrary*() =
                 ensureInPlaceAny()
                 SetInPlaceAny(newColor(saturateColor(InPlaced.l, y.f)))
 
-    # TODO(Colors\spin) add support for PathLiteral values
-    #  labels: library, enhancement, easy
     builtin "spin",
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "spin color around the hue wheel by given amount",
         args        = {
-            "color"     : {Color,Literal},
+            "color"     : {Color,Literal,PathLiteral},
             "amount"    : {Integer}
         },
         attrs       = NoAttrs,
@@ -297,11 +295,11 @@ proc defineLibrary*() =
             spin #123456 360        ; => #123456
         """:
             #=======================================================
-            if xKind == Literal:
-                ensureInPlace()
-                SetInPlace(newColor(spinColor(InPlaced.l, y.i)))
-            else:
+            if xKind == Color:
                 push newColor(spinColor(x.l, y.i))
+            else:
+                ensureInPlaceAny()
+                SetInPlaceAny(newColor(spinColor(InPlaced.l, y.i)))
 
 #=======================================
 # Add Library
