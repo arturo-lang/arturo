@@ -44,7 +44,7 @@ proc defineLibrary*() =
         rule        = PrefixPrecedence,
         description = "blend given colors and get result",
         args        = {
-            "colorA"    : {Color,Literal},
+            "colorA"    : {Color,Literal,PathLiteral},
             "colorB"    : {Color}
         },
         attrs       = {
@@ -62,11 +62,11 @@ proc defineLibrary*() =
             if checkAttr("balance"):
                 balance = aBalance.f
 
-            if xKind == Literal:
-                ensureInPlace()
-                SetInPlace(newColor(blendColors(InPlaced.l, y.l, balance)))
-            else:
+            if xKind == Color:
                 push newColor(blendColors(x.l, y.l, balance))
+            else:
+                ensureInPlaceAny()
+                SetInPlaceAny(newColor(blendColors(InPlaced.l, y.l, balance)))                
 
     # TODO(Colors\darken) add support for PathLiteral values
     #  labels: library, enhancement, easy
