@@ -137,15 +137,13 @@ proc defineLibrary*() =
                 ensureInPlaceAny()
                 SetInPlaceAny(newColor(saturateColor(InPlaced.l, -1.0)))
 
-    # TODO(Colors\invert) add support for PathLiteral values
-    #  labels: library, enhancement, easy
     builtin "invert",
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "get complement for given color",
         args        = {
-            "color"     : {Color,Literal}
+            "color"     : {Color,Literal,PathLiteral}
         },
         attrs       = NoAttrs,
         returns     = {Color},
@@ -155,11 +153,11 @@ proc defineLibrary*() =
             invert #orange              ; => #0059FF
         """:
             #=======================================================
-            if xKind == Literal:
-                ensureInPlace()
-                SetInPlace(newColor(invertColor(InPlaced.l)))
-            else:
+            if xKind == Color:
                 push newColor(invertColor(x.l))
+            else:
+                ensureInPlaceAny()
+                SetInPlaceAny(newColor(invertColor(InPlaced.l)))
 
     # TODO(Colors\lighten) add support for PathLiteral values
     #  labels: library, enhancement, easy
