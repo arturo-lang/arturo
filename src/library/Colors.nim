@@ -250,15 +250,13 @@ proc defineLibrary*() =
             else:
                 push newBlock(@[x])
 
-    # TODO(Colors\saturate) add support for PathLiteral values
-    #  labels: library, enhancement, easy
     builtin "saturate",
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "saturate color by given percentage (0.0-1.0)",
         args        = {
-            "color"     : {Color,Literal},
+            "color"     : {Color,Literal,PathLiteral},
             "percent"   : {Floating}
         },
         attrs       = NoAttrs,
@@ -272,11 +270,11 @@ proc defineLibrary*() =
             saturate #9944CC 0.3        ; => #A030E0
         """:
             #=======================================================
-            if xKind == Literal:
-                ensureInPlace()
-                SetInPlace(newColor(saturateColor(InPlaced.l, y.f)))
-            else:
+            if xKind == Color:
                 push newColor(saturateColor(x.l, y.f))
+            else:
+                ensureInPlaceAny()
+                SetInPlaceAny(newColor(saturateColor(InPlaced.l, y.f)))
 
     # TODO(Colors\spin) add support for PathLiteral values
     #  labels: library, enhancement, easy
