@@ -114,15 +114,13 @@ proc defineLibrary*() =
                 ensureInPlaceAny()
                 SetInPlaceAny(newColor(saturateColor(InPlaced.l, y.f * (-1))))
 
-    # TODO(Colors\grayscale) add support for PathLiteral values
-    #  labels: library, enhancement, easy
     builtin "grayscale",
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "convert color to grayscale",
         args        = {
-            "color"     : {Color,Literal}
+            "color"     : {Color,Literal,PathLiteral}
         },
         attrs       = NoAttrs,
         returns     = {Color},
@@ -133,11 +131,11 @@ proc defineLibrary*() =
             grayscale #FF44CC           ; => #A2A2A2
         """:
             #=======================================================
-            if xKind == Literal:
-                ensureInPlace()
-                SetInPlace(newColor(saturateColor(InPlaced.l, -1.0)))
-            else:
+            if xKind == Color:
                 push newColor(saturateColor(x.l, -1.0))
+            else:
+                ensureInPlaceAny()
+                SetInPlaceAny(newColor(saturateColor(InPlaced.l, -1.0)))
 
     # TODO(Colors\invert) add support for PathLiteral values
     #  labels: library, enhancement, easy
