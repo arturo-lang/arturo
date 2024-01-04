@@ -47,6 +47,8 @@ proc defineLibrary*() =
     # Functions
     #----------------------------
 
+    # TODO(Crypto\crc) add support for PathLiteral values
+    #  labels: library, enhancement, easy
     builtin "crc",
         alias       = unaliased, 
         op          = opNop,
@@ -68,6 +70,8 @@ proc defineLibrary*() =
             else:
                 push(newString(x.s.crc32()))
 
+    # TODO(Crypto\decode) add support for PathLiteral values
+    #  labels: library, enhancement, easy
     builtin "decode",
         alias       = unaliased, 
         op          = opNop,
@@ -104,6 +108,9 @@ proc defineLibrary*() =
     # TODO(Crypto\encode) Move function to different module?
     #  Function doesn't really correspond to cryptography anymore. Or at least most of it. What should be done?
     #  labels: library, open discussion
+
+    # TODO(Crypto\encode) add support for PathLiteral values
+    #  labels: library, enhancement, easy
     builtin "encode",
         alias       = unaliased, 
         op          = opNop,
@@ -178,6 +185,9 @@ proc defineLibrary*() =
         # TODO(Crypto\digest) could it be used for Web/JS builds too?
         #  would it be that useful to have md5/sha1 encoding capabilities through JavaScript?
         #  labels: library,enhancement,open discussion,web
+
+        # TODO(Crypto\digest) add support for PathLiteral values
+        #  labels: library, enhancement
         builtin "digest",
             alias       = unaliased, 
             op          = opNop,
