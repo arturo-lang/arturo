@@ -159,15 +159,13 @@ proc defineLibrary*() =
                 ensureInPlaceAny()
                 SetInPlaceAny(newColor(invertColor(InPlaced.l)))
 
-    # TODO(Colors\lighten) add support for PathLiteral values
-    #  labels: library, enhancement, easy
     builtin "lighten",
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "lighten color by given percentage (0.0-1.0)",
         args        = {
-            "color"     : {Color,Literal},
+            "color"     : {Color,Literal,PathLiteral},
             "percent"   : {Floating}
         },
         attrs       = NoAttrs,
@@ -181,11 +179,11 @@ proc defineLibrary*() =
             lighten #9944CC 0.3         ; => #C758FF
         """:
             #=======================================================
-            if xKind == Literal:
-                ensureInPlace()
-                SetInPlace(newColor(alterColorValue(InPlaced.l, y.f)))
-            else:
+            if xKind == Color:
                 push newColor(alterColorValue(x.l, y.f))
+            else:
+                ensureInPlaceAny()
+                SetInPlaceAny(newColor(alterColorValue(InPlaced.l, y.f)))                
 
     builtin "palette",
         alias       = unaliased, 
