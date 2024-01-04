@@ -90,15 +90,13 @@ proc defineLibrary*() =
                 ensureInPlaceAny()
                 SetInPlaceAny(newColor(alterColorValue(InPlaced.l, y.f * (-1))))                
 
-    # TODO(Colors\desaturate) add support for PathLiteral values
-    #  labels: library, enhancement, easy
     builtin "desaturate",
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "desaturate color by given percentage (0.0-1.0)",
         args        = {
-            "color"     : {Color,Literal},
+            "color"     : {Color,Literal,PathLiteral},
             "percent"   : {Floating}
         },
         attrs       = NoAttrs,
@@ -110,11 +108,11 @@ proc defineLibrary*() =
             desaturate #9944CC 0.3      ; => #9558B8
         """:
             #=======================================================
-            if xKind == Literal:
-                ensureInPlace()
-                SetInPlace(newColor(saturateColor(InPlaced.l, y.f * (-1))))
-            else:
+            if xKind == Color:
                 push newColor(saturateColor(x.l, y.f * (-1)))
+            else:
+                ensureInPlaceAny()
+                SetInPlaceAny(newColor(saturateColor(InPlaced.l, y.f * (-1))))
 
     # TODO(Colors\grayscale) add support for PathLiteral values
     #  labels: library, enhancement, easy
