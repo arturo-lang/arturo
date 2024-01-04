@@ -66,15 +66,13 @@ proc defineLibrary*() =
                 ensureInPlaceAny()
                 SetInPlaceAny(newColor(blendColors(InPlaced.l, y.l, balance)))                
 
-    # TODO(Colors\darken) add support for PathLiteral values
-    #  labels: library, enhancement, easy
     builtin "darken",
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "darken color by given percentage (0.0-1.0)",
         args        = {
-            "color"     : {Color,Literal},
+            "color"     : {Color,Literal,PathLiteral},
             "percent"   : {Floating}
         },
         attrs       = NoAttrs,
@@ -86,11 +84,11 @@ proc defineLibrary*() =
             darken #9944CC 0.3      ; => #6B308F
         """:
             #=======================================================
-            if xKind == Literal:
-                ensureInPlace()
-                SetInPlace(newColor(alterColorValue(InPlaced.l, y.f * (-1))))
-            else:
+            if xKind == Color:
                 push newColor(alterColorValue(x.l, y.f * (-1)))
+            else:
+                ensureInPlaceAny()
+                SetInPlaceAny(newColor(alterColorValue(InPlaced.l, y.f * (-1))))                
 
     # TODO(Colors\desaturate) add support for PathLiteral values
     #  labels: library, enhancement, easy
