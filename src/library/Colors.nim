@@ -36,8 +36,6 @@ proc defineLibrary*() =
     # Functions
     #----------------------------
 
-    # TODO(Colors\blend) add support for PathLiteral values
-    #  labels: library, enhancement, easy
     builtin "blend",
         alias       = unaliased, 
         op          = opNop,
