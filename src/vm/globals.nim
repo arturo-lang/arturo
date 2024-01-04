@@ -148,6 +148,41 @@ proc FetchPathSym*(pl: ValueArray, inplace: static bool = false): Value =
 
         pidx = pidx + 1
 
+proc SetPathSym*(pl: ValueArray, val: Value) =
+    ## Gets a the `.p` field of a PathLiteral value
+    ## looks up all subsequent path fields
+    ## and set it to given value
+    var current = FetchSym(pl[0].s)
+    var pidx = 1
+    while pidx < pl.len:
+        var p = pl[pidx]
+        
+        case current.kind:
+            of Block:
+                if pidx != pl.len - 1:
+                    current = GetArrayIndex(current.a, p.i)
+                else:
+                    current.a[p.i] = val
+            of Dictionary:
+                if pidx != pl.len - 1:
+                    current = GetKey(current.d, p.s)
+                else:
+                    current.d[p.s] = val
+            of Object:
+                if pidx != pl.len - 1:
+                    current = GetKey(current.o, p.s)
+                else:
+                    current.o[p.s] = val
+            of String:
+                if pidx != pl.len - 1:
+                    current = newChar(current.s.runeAtPos(p.i))
+                else:
+                    RuntimeError_PathLiteralMofifyingString()
+            else: 
+                discard
+
+        pidx = pidx + 1
+
 template GetSym*(s: string): untyped =
     ## Get value for given symbol in table
     ## 
@@ -242,11 +277,12 @@ template SetInPlace*(v: Value, safe: static bool = false): untyped =
     ## Sets InPlace symbol to given value in the symbol table
     SetSym(x.s, v, safe)
 
-# TODO(VM/globals) Should implement `SetInPlace` equivalent for PathLiteral's
-#  without this, many of the PathLiteral implementations cannot work
-#  mainly, all of the "add PathLiteral support" TODOs that are *not*
-#  marked as "easy" ;-)
-#  labels: enhancement, library, helpers
+template SetInPlaceAny*(v: Value, safe: static bool = false): untyped =
+    ## Sets InPlace symbol to given value in the symbol table
+    if likely(xKind == Literal):
+        SetSym(x.s, v, safe)
+    else:
+        SetPathSym(x.p, v)
 
 #---------------------
 # Global config
