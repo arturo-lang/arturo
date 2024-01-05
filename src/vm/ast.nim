@@ -577,85 +577,85 @@ proc processBlock*(
             target.rewindCallBranches(optimize=true)
 
     proc addPath(target: var Node, val: Value, isLabel: static bool=false) =
-        var pathCallV: Value = nil
-        var baseV: Value = nil
-        # TODO(VM/ast) Doesn't correctly recognize nested dictionary/object methods
-        #  for example, let's say `d` is a dictionary or object with a function
-        #  `someFunc` inside. `d\someFunc` *will* be correctly recognized as a function call
-        #  and the appropriate AST will be generated.
-        #  Now, if we have the exact same function inside a `subd` dictionary/object
-        #  that is in turn *inside* another one, then e.g. `d\subd\someFunc` will *not* work!
-        #  labels: vm, ast, bug, critical
-        when not isLabel:
-            if (let curr = Syms.getOrDefault(val.p[0].s, nil); not curr.isNil):
-                let next {.cursor.} = val.p[1]
-                if (next.kind==Literal or next.kind==Word):
-                    if curr.kind==Dictionary:
-                        if (let item = curr.d.getOrDefault(next.s, nil); not item.isNil):
-                            if item.kind == Function:
-                                pathCallV = item
-                    elif curr.kind==Object:
-                        if (let item = curr.o.getOrDefault(next.s, nil); not item.isNil):
-                            if item.kind == Function:
-                                pathCallV = item
-                            elif item.kind == Method:
-                                baseV = val.p[0]
-                                pathCallV = item
+        # var pathCallV: Value = nil
+        # var baseV: Value = nil
+        # # TODO(VM/ast) Doesn't correctly recognize nested dictionary/object methods
+        # #  for example, let's say `d` is a dictionary or object with a function
+        # #  `someFunc` inside. `d\someFunc` *will* be correctly recognized as a function call
+        # #  and the appropriate AST will be generated.
+        # #  Now, if we have the exact same function inside a `subd` dictionary/object
+        # #  that is in turn *inside* another one, then e.g. `d\subd\someFunc` will *not* work!
+        # #  labels: vm, ast, bug, critical
+        # when not isLabel:
+        #     if (let curr = Syms.getOrDefault(val.p[0].s, nil); not curr.isNil):
+        #         let next {.cursor.} = val.p[1]
+        #         if (next.kind==Literal or next.kind==Word):
+        #             if curr.kind==Dictionary:
+        #                 if (let item = curr.d.getOrDefault(next.s, nil); not item.isNil):
+        #                     if item.kind == Function:
+        #                         pathCallV = item
+        #             elif curr.kind==Object:
+        #                 if (let item = curr.o.getOrDefault(next.s, nil); not item.isNil):
+        #                     if item.kind == Function:
+        #                         pathCallV = item
+        #                     elif item.kind == Method:
+        #                         baseV = val.p[0]
+        #                         pathCallV = item
 
-        if not pathCallV.isNil:
-            var arityCut: int
-            if baseV.isNil:
-                arityCut = 0
-                target.addChild(Node(kind: OtherCall, arity: pathCallV.arity, op: opNop, value: pathCallV))
-            else:
-                arityCut = 1
-                let c = Node(kind: MethodCall, arity: pathCallV.arity, op: opNop, value: pathCallV)
-                c.addChild(newVariable(baseV))
-                target.addChild(c)
+        # if not pathCallV.isNil:
+        #     var arityCut: int
+        #     if baseV.isNil:
+        #         arityCut = 0
+        #         target.addChild(Node(kind: OtherCall, arity: pathCallV.arity, op: opNop, value: pathCallV))
+        #     else:
+        #         arityCut = 1
+        #         let c = Node(kind: MethodCall, arity: pathCallV.arity, op: opNop, value: pathCallV)
+        #         c.addChild(newVariable(baseV))
+        #         target.addChild(c)
 
-            if pathCallV.arity != arityCut:
-                target.rollThrough()
+        #     if pathCallV.arity != arityCut:
+        #         target.rollThrough()
+        # else:
+        let basePath {.cursor.} = val.p[0]
+
+        when isLabel:
+            var baseNode = newVariable(basePath)
         else:
-            let basePath {.cursor.} = val.p[0]
+            var baseNode = 
+                if TmpArities.getOrDefault(basePath.s, -1) == 0:
+                    newCallNode(OtherCall, 0, basePath)
+                else:
+                    newVariable(basePath)
 
+        var i = 1
+
+        while i < val.p.len:
             when isLabel:
-                var baseNode = newVariable(basePath)
-            else:
-                var baseNode = 
-                    if TmpArities.getOrDefault(basePath.s, -1) == 0:
-                        newCallNode(OtherCall, 0, basePath)
+                let newNode = 
+                    if i == val.p.len - 1:
+                        newCallNode(BuiltinCall, 3, nil, opSet)
                     else:
-                        newVariable(basePath)
-
-            var i = 1
-
-            while i < val.p.len:
-                when isLabel:
-                    let newNode = 
-                        if i == val.p.len - 1:
-                            newCallNode(BuiltinCall, 3, nil, opSet)
-                        else:
-                            newCallNode(BuiltinCall, 2, nil, opGet)
-                else:
-                    let newNode = newCallNode(BuiltinCall, 2, nil, opGet)
-                
-                newNode.addChild(baseNode)
-                
-                if val.p[i].kind==Block:
-                    var subNode = newRootNode()
-                    discard subNode.processBlock(val.p[i], startingLine=currentLine, asDictionary=false)
-                    newNode.addChildren(subNode.children)
-                else:
-                    newNode.addChild(newConstant(val.p[i]))
-                
-                baseNode = newNode
-                i += 1
-
-            when isLabel:
-                target.addChild(baseNode)
-                target.rollThrough()
+                        newCallNode(BuiltinCall, 2, nil, opGet)
             else:
-                target.addTerminal(baseNode)
+                let newNode = newCallNode(BuiltinCall, 2, nil, opGet)
+            
+            newNode.addChild(baseNode)
+            
+            if val.p[i].kind==Block:
+                var subNode = newRootNode()
+                discard subNode.processBlock(val.p[i], startingLine=currentLine, asDictionary=false)
+                newNode.addChildren(subNode.children)
+            else:
+                newNode.addChild(newConstant(val.p[i]))
+            
+            baseNode = newNode
+            i += 1
+
+        when isLabel:
+            target.addChild(baseNode)
+            target.rollThrough()
+        else:
+            target.addTerminal(baseNode)
 
     # TODO(VM/ast) verify attributes are correctly processed when using pipes
     #  example:
