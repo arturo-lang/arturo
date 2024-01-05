@@ -162,6 +162,12 @@ template callMethodByName(symIndx: string):untyped =
 
 template callByIndex(idx: int):untyped =
     hookProcProfiler("exec/callByIndex"):
+        # TODO(VM/exec) eliminate `==Function` check?
+        #  if the AST doesn't generate calls with a Function value,
+        #  which currently happens *exclusively* when having a function
+        #  inside a dictionary and calling it, we don't need this
+        #  So, perhaps we shouldn't generate them in the first place?
+        #  labels: vm, ast, execution, performance
         if cnst[idx].kind==Function:
             callFunction(cnst[idx])
         else:
