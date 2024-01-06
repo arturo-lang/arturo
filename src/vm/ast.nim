@@ -68,7 +68,6 @@ type
         OtherCall           # Call to a function that is not a builtin
         BuiltinCall         # Call to a builtin function
         SpecialCall         # Call to a special function
-        MethodCall          # Call to an object method
 
     NodeArray* = seq[Node]
 
@@ -114,7 +113,7 @@ const
     NoStartingLine  = 1896618966'u32
 
     TerminalNode*   : set[NodeKind] = {ConstantValue, VariableLoad}
-    CallNode*       : set[NodeKind] = {AttributeNode..MethodCall}
+    CallNode*       : set[NodeKind] = {AttributeNode..SpecialCall}
 
 #=======================================
 # Forward declarations
@@ -480,7 +479,7 @@ proc processBlock*(
                         target.addCall(aliased.name.s, fun=symfunc)
 
     proc getCallNode(name: string, arity: int8 = -1, fun: Value = nil): Node =
-        var callType: OtherCall..MethodCall = OtherCall
+        var callType: OtherCall..SpecialCall = OtherCall
 
         var fn {.cursor.}: Value =
             if fun.isNil:
@@ -616,11 +615,27 @@ proc processBlock*(
         #     if pathCallV.arity != arityCut:
         #         target.rollThrough()
         # else:
+        when not isLabel:
+            if (let actualMethod = FetchPathSym(val.p); actualMethod.kind == Method):
+                let methodInvocation = newCallNode(BuiltinCall, actualMethod.arity + 1, nil, opInvoke)
+                methodInvocation.addChild(newConstant(actualMethod))
+                methodInvocation.addChild(newConstant(FetchPathSym(val.p[0..^2])))
+                if actualMethod.arity > 1:
+                    target.addChild(methodInvocation)
+                    target.rollThrough()
+                else:
+                    target.addTerminal(methodInvocation)
+               
+                return
+
         let basePath {.cursor.} = val.p[0]
 
         when isLabel:
             var baseNode = newVariable(basePath)
         else:
+            # var methodThis: Value = nil
+            # var methodArity: int8 = -1
+
             var baseNode = 
                 if TmpArities.getOrDefault(basePath.s, -1) == 0:
                     newCallNode(OtherCall, 0, basePath)
@@ -628,7 +643,6 @@ proc processBlock*(
                     newVariable(basePath)
 
         var i = 1
-
         while i < val.p.len:
             when isLabel:
                 let newNode = 
@@ -637,7 +651,13 @@ proc processBlock*(
                     else:
                         newCallNode(BuiltinCall, 2, nil, opGet)
             else:
-                let newNode = newCallNode(BuiltinCall, 2, nil, opGet)
+                var newNode: Node
+                
+                # if i == val.p.len - 1 and (let actualMethod = FetchPathSym(val.p); actualMethod.kind == Method):
+                #     methodThis = FetchPathSym(val.p[0..^2])
+                #     methodArity = actualMethod.marity
+                
+                newNode = newCallNode(BuiltinCall, 2, nil, opGet)
             
             newNode.addChild(baseNode)
             
@@ -651,11 +671,22 @@ proc processBlock*(
             baseNode = newNode
             i += 1
 
+        # when not isLabel:
+        #     if not methodThis.isNil:
+        #         let subbie = newCallNode(BuiltinCall, methodArity+1, nil, opInvoke)
+        #         subbie.addChild(baseNode)
+        #         subbie.addChild(newConstant(methodThis))
+        #         baseNode = subbie
+
         when isLabel:
             target.addChild(baseNode)
             target.rollThrough()
         else:
+            #if likely(methodThis.isNil):
             target.addTerminal(baseNode)
+            # else:
+            #     target.addChild(baseNode)
+            #     target.rollThrough()
 
     # TODO(VM/ast) verify attributes are correctly processed when using pipes
     #  example:
@@ -943,7 +974,10 @@ proc dumpNode*(node: Node, level = 0, single: static bool = false, showNewlines:
                     callName.removePrefix("op")
                     result &= callName & " <" & $node.arity & ">\n"
                 else:
-                    result &= node.value.s & " <" & $node.arity & ">\n"
+                    if node.value.kind in {Word,Literal,Label,String}:
+                        result &= node.value.s & " <" & $node.arity & ">\n"
+                    else:
+                        result &= "meth? <" & $node.arity & ">\n"
 
             when not single:
                 for child in node.children:
