@@ -867,4 +867,8 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 of opEnd                :
                     break
 
+                of opInvoke             :
+                    let meth = stack.pop()
+                    callMethod(meth)
+
         i += 1
