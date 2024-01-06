@@ -122,21 +122,48 @@ proc FetchSym*(s: string, unsafe: static bool = false): Value {.inline.} =
     else:
         Syms[s]
 
+proc CheckCallablePath*(pl: ValueArray): Value =
+    result = Syms.getOrDefault(pl[0].s)
+    if result.isNil: return
+
+    var pidx = 1
+
+    while pidx < pl.len:
+        var p = pl[pidx]
+        if p.kind == Block:
+            # it contains\[variable]\parts
+            return nil
+        
+        case result.kind:
+            of Block:       
+                if p.kind != Integer: return nil
+                if unlikely(p.i < 0 or p.i > (result.a.len)-1):
+                    return nil
+                result = result.a[p.i]
+            of Dictionary:  
+                if p.kind notin {String,Literal,Word}: return nil
+                result = result.d.getOrDefault(p.s, nil)
+            of Object:      
+                if p.kind notin {String,Literal,Word}: return nil
+                result = result.o.getOrDefault(p.s, nil)
+            else: 
+                return nil
+
+        if result.isNil:
+            return
+
+        pidx = pidx + 1
+
 proc FetchPathSym*(pl: ValueArray, inplace: static bool = false): Value =
     ## Gets the `.p` field of a Path or PathLiteral value
     ## looks up all subsequent path fields
     ## and returns the value
-    ## 
-    ## Note: when use to resolve the value of a PathLiteral, it assumes
-    ## the path is constant; however, when use in the AST processor,
-    ## the path *may* contain Blocks (= variable arguments), hence
-    ## it return `nil` to make sure we can differentiate between the two
     result = FetchSym(pl[0].s)
+    
     var pidx = 1
+
     while pidx < pl.len:
         var p = pl[pidx]
-        if p.kind == Block:
-            return nil
         
         case result.kind:
             of Block:
