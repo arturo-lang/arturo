@@ -123,13 +123,20 @@ proc FetchSym*(s: string, unsafe: static bool = false): Value {.inline.} =
         Syms[s]
 
 proc FetchPathSym*(pl: ValueArray, inplace: static bool = false): Value =
-    ## Gets a the `.p` field of a PathLiteral value
+    ## Gets the `.p` field of a Path or PathLiteral value
     ## looks up all subsequent path fields
     ## and returns the value
+    ## 
+    ## Note: when use to resolve the value of a PathLiteral, it assumes
+    ## the path is constant; however, when use in the AST processor,
+    ## the path *may* contain Blocks (= variable arguments), hence
+    ## it return `nil` to make sure we can differentiate between the two
     result = FetchSym(pl[0].s)
     var pidx = 1
     while pidx < pl.len:
         var p = pl[pidx]
+        if p.kind == Block:
+            return nil
         
         case result.kind:
             of Block:
