@@ -616,7 +616,7 @@ proc processBlock*(
         #         target.rollThrough()
         # else:
         when not isLabel:
-            if (let actualMethod = FetchPathSym(val.p); (not actualMethod.isNil) and actualMethod.kind == Method):
+            if (let actualMethod = CheckCallablePath(val.p); (not actualMethod.isNil) and actualMethod.kind == Method):
                 let methodInvocation = newCallNode(BuiltinCall, actualMethod.arity + 1, nil, opInvoke)
                 methodInvocation.addChild(newConstant(actualMethod))
                 methodInvocation.addChild(newConstant(FetchPathSym(val.p[0..^2])))
