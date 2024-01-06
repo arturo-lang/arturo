@@ -357,6 +357,7 @@ type
         
         opRet           = 0xE9      # ()                #                   #
         opEnd           = 0xEA      # ()                #                   #
+        opInvoke        = 0xEB
 
 when false:
     #=======================================
