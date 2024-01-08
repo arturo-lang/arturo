@@ -329,21 +329,23 @@ type
         opJmpIfLe       = 0xD3      # (idx)             # cond              #
         opJmpIfLeX      = 0xD4      # (idx,idxB)        # cond              #
 
-        # method calls
-        opInvokeF       = 0xD5      # ()                # method
-        opInvokeM       = 0xD6      # ()                # method
+        # calls
+        opInvokeF       = 0xD5      # ()                # method            #
+        opInvokeM       = 0xD6      # ()                # method            #
+
+        # block execution
+        opExec          = 0xD7      # ()                # block             #
 
         # flow control
-        opGoto          = 0xD7      # (idx)             #                   #
-        opGotoX         = 0xD8      # (idx,idxB)        #                   #
-        opGoup          = 0xD9      # (idx)             #                   #
-        opGoupX         = 0xDA      # (idx,idxB)        #                   #
+        opGoto          = 0xD8      # (idx)             #                   #
+        opGotoX         = 0xD9      # (idx,idxB)        #                   #
+        opGoup          = 0xDA      # (idx)             #                   #
+        opGoupX         = 0xDB      # (idx,idxB)        #                   #
         
-        opRet           = 0xDB      # ()                #                   #
+        opRet           = 0xDC      # ()                #                   #
 
-        RSRV12          = 0xDC      #
-        RSRV13          = 0xDD      #
-        RSRV14          = 0xDE      #
+        RSRV12          = 0xDD      #
+        RSRV13          = 0xDE      #
 
         # the end
         opEnd           = 0xDF      # ()                #                   #
