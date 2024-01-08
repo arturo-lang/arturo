@@ -8,6 +8,7 @@ proc defaultConfig() =
     --verbosity:1
     hint "ProcessingStmt":off 
     hint "XCannotRaiseY":off
+    hint "ConvFromXtoItselfNotNeeded":off
     warning "GcUnsafe":off 
     warning "CastSizes":off 
     warning "ProveInit":off 
