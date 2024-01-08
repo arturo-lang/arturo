@@ -854,6 +854,10 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 of opRet                :
                     discard
 
+                of RSRV12               : discard
+                of RSRV13               : discard
+                of RSRV14               : discard
+
                 of opEnd                :
                     break
 

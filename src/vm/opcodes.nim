@@ -340,7 +340,13 @@ type
         opGoupX         = 0xDA      # (idx,idxB)        #                   #
         
         opRet           = 0xDB      # ()                #                   #
-        opEnd           = 0xDC      # ()                #                   #
+
+        RSRV12          = 0xDC      #
+        RSRV13          = 0xDD      #
+        RSRV14          = 0xDE      #
+
+        # the end
+        opEnd           = 0xDF      # ()                #                   #
 
 when false:
     #=======================================
