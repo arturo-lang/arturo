@@ -618,7 +618,7 @@ proc processBlock*(
         when not isLabel:
             if (let actualMethod = CheckCallablePath(val.p); (not actualMethod.isNil) and actualMethod.kind in {Function,Method}):
                 var methodInvocation: Node
-                var ar: int
+                var ar: int8
                 if actualMethod.kind == Method:
                     ar = actualMethod.marity
                     methodInvocation = newCallNode(BuiltinCall, ar + 1, nil, opInvokeM)
