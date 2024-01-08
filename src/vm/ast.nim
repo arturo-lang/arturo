@@ -68,7 +68,6 @@ type
         OtherCall           # Call to a function that is not a builtin
         BuiltinCall         # Call to a builtin function
         SpecialCall         # Call to a special function
-        MethodCall          # Call to an object method
 
     NodeArray* = seq[Node]
 
@@ -114,7 +113,7 @@ const
     NoStartingLine  = 1896618966'u32
 
     TerminalNode*   : set[NodeKind] = {ConstantValue, VariableLoad}
-    CallNode*       : set[NodeKind] = {AttributeNode..MethodCall}
+    CallNode*       : set[NodeKind] = {AttributeNode..SpecialCall}
 
 #=======================================
 # Forward declarations
@@ -480,7 +479,7 @@ proc processBlock*(
                         target.addCall(aliased.name.s, fun=symfunc)
 
     proc getCallNode(name: string, arity: int8 = -1, fun: Value = nil): Node =
-        var callType: OtherCall..MethodCall = OtherCall
+        var callType: OtherCall..SpecialCall = OtherCall
 
         var fn {.cursor.}: Value =
             if fun.isNil:
@@ -577,121 +576,70 @@ proc processBlock*(
             target.rewindCallBranches(optimize=true)
 
     proc addPath(target: var Node, val: Value, isLabel: static bool=false) =
-        var pathCallV: Value = nil
-        var baseV: Value = nil
-        # TODO(VM/ast) Doesn't correctly recognize nested dictionary/object methods
-        #  for example, let's say `d` is a dictionary or object with a function
-        #  `someFunc` inside. `d\someFunc` *will* be correctly recognized as a function call
-        #  and the appropriate AST will be generated.
-        #  Now, if we have the exact same function inside a `subd` dictionary/object
-        #  that is in turn *inside* another one, then e.g. `d\subd\someFunc` will *not* work!
-        #  labels: vm, ast, bug, critical
         when not isLabel:
-            if (let curr = Syms.getOrDefault(val.p[0].s, nil); not curr.isNil):
-                let next {.cursor.} = val.p[1]
-                if (next.kind==Literal or next.kind==Word):
-                    if curr.kind==Dictionary:
-                        if (let item = curr.d.getOrDefault(next.s, nil); not item.isNil):
-                            if item.kind == Function:
-                                pathCallV = item
-                    elif curr.kind==Object:
-                        if (let item = curr.o.getOrDefault(next.s, nil); not item.isNil):
-                            if item.kind == Function:
-                                pathCallV = item
-                            elif item.kind == Method:
-                                baseV = val.p[0]
-                                pathCallV = item
+            if (let actualMethod = CheckCallablePath(val.p); (not actualMethod.isNil) and actualMethod.kind in {Function,Method}):
+                var methodInvocation: Node
+                var ar: int8
+                var limitArity: int8
+                if actualMethod.kind == Method:
+                    ar = actualMethod.marity
+                    limitArity = 2
+                    methodInvocation = newCallNode(BuiltinCall, ar + 1, nil, opInvokeM)
+                    methodInvocation.addChild(newConstant(actualMethod))
+                    methodInvocation.addChild(newConstant(FetchPathSym(val.p[0..^2])))
+                else:
+                    ar = actualMethod.arity
+                    limitArity = 1
+                    methodInvocation = newCallNode(BuiltinCall, ar + 1, nil, opInvokeF)
+                    methodInvocation.addChild(newConstant(actualMethod))
 
-        if not pathCallV.isNil:
-            var arityCut: int
-            if baseV.isNil:
-                arityCut = 0
-                target.addChild(Node(kind: OtherCall, arity: pathCallV.arity, op: opNop, value: pathCallV))
-            else:
-                # TODO (VM/ast) processing this injection messes up our AST
-                #  Example: 
-                #  ```red
-                #   define :vehicle [wheels :integer]
-                #   define :vehicle [wheels :integer]
-                #   
-                #   define :car is :vehicle [
-                #       init: method [make, model, year][
-                #           super 4
-                #   
-                #           this\make: make
-                #           this\model: model
-                #           this\year: year
-                #       ]
-                #   
-                #       age: method [][
-                #           return now\year - this\year
-                #       ]
-                #   
-                #       string: method [][
-                #           render ~{
-                #               |this\make| |this\model| (|this\year|)
-                #           }
-                #       ]
-                #   ]
-                #   
-                #   myMoto: to :vehicle [2]
-                #   myCar: to :car ["Volvo" "C30" 2009]     ; totally random example lol
-                #   
-                #   do ::
-                #       print myMoto\wheels ; will print 2
-                #       print myCar\age     ; will print 14
-                #       print myCar         ; will print "Volvo C30 (2009)"
-                #  ```
-                #  The above actually print `myCar` *first* and *then* the age!
-                #  labels: oop, ast, bug, critical
-                arityCut = 1
-                let c = Node(kind: MethodCall, arity: pathCallV.arity, op: opNop, value: pathCallV)
-                c.addChild(newVariable(baseV))
-                target.addChild(c)
+                if ar >= limitArity:
+                    target.addChild(methodInvocation)
+                    target.rollThrough()
+                else:
+                    target.addTerminal(methodInvocation)
+               
+                return
 
-            if pathCallV.arity != arityCut:
-                target.rollThrough()
+        let basePath {.cursor.} = val.p[0]
+
+        when isLabel:
+            var baseNode = newVariable(basePath)
         else:
-            let basePath {.cursor.} = val.p[0]
+            var baseNode = 
+                if TmpArities.getOrDefault(basePath.s, -1) == 0:
+                    newCallNode(OtherCall, 0, basePath)
+                else:
+                    newVariable(basePath)
 
+        var i = 1
+        while i < val.p.len:
             when isLabel:
-                var baseNode = newVariable(basePath)
-            else:
-                var baseNode = 
-                    if TmpArities.getOrDefault(basePath.s, -1) == 0:
-                        newCallNode(OtherCall, 0, basePath)
+                let newNode = 
+                    if i == val.p.len - 1:
+                        newCallNode(BuiltinCall, 3, nil, opSet)
                     else:
-                        newVariable(basePath)
-
-            var i = 1
-
-            while i < val.p.len:
-                when isLabel:
-                    let newNode = 
-                        if i == val.p.len - 1:
-                            newCallNode(BuiltinCall, 3, nil, opSet)
-                        else:
-                            newCallNode(BuiltinCall, 2, nil, opGet)
-                else:
-                    let newNode = newCallNode(BuiltinCall, 2, nil, opGet)
-                
-                newNode.addChild(baseNode)
-                
-                if val.p[i].kind==Block:
-                    var subNode = newRootNode()
-                    discard subNode.processBlock(val.p[i], startingLine=currentLine, asDictionary=false)
-                    newNode.addChildren(subNode.children)
-                else:
-                    newNode.addChild(newConstant(val.p[i]))
-                
-                baseNode = newNode
-                i += 1
-
-            when isLabel:
-                target.addChild(baseNode)
-                target.rollThrough()
+                        newCallNode(BuiltinCall, 2, nil, opGet)
             else:
-                target.addTerminal(baseNode)
+                let newNode = newCallNode(BuiltinCall, 2, nil, opGet)
+            
+            newNode.addChild(baseNode)
+            
+            if val.p[i].kind==Block:
+                var subNode = newRootNode()
+                discard subNode.processBlock(val.p[i], startingLine=currentLine, asDictionary=false)
+                newNode.addChildren(subNode.children)
+            else:
+                newNode.addChild(newConstant(val.p[i]))
+            
+            baseNode = newNode
+            i += 1
+
+        when isLabel:
+            target.addChild(baseNode)
+            target.rollThrough()
+        else:
+            target.addTerminal(baseNode)
 
     # TODO(VM/ast) verify attributes are correctly processed when using pipes
     #  example:
@@ -979,7 +927,10 @@ proc dumpNode*(node: Node, level = 0, single: static bool = false, showNewlines:
                     callName.removePrefix("op")
                     result &= callName & " <" & $node.arity & ">\n"
                 else:
-                    result &= node.value.s & " <" & $node.arity & ">\n"
+                    if node.value.kind in {Word,Literal,Label,String}:
+                        result &= node.value.s & " <" & $node.arity & ">\n"
+                    else:
+                        result &= "meth? <" & $node.arity & ">\n"
 
             when not single:
                 for child in node.children:

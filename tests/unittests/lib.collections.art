@@ -898,16 +898,16 @@ topic "get - :bytecode"
 do [
     bt: to :bytecode [print "hello"]
     ensure -> ["hello"] = bt\data
-    ensure -> [32 205 234] = bt\code
+    ensure -> [32 189 223] = bt\code
     passed
     ensure -> ["hello"] = get bt 'data
-    ensure -> [32 205 234] = get bt 'code
+    ensure -> [32 189 223] = get bt 'code
     passed
     ensure -> ["hello"] = get bt "data"
-    ensure -> [32 205 234] = get bt "code"
+    ensure -> [32 189 223] = get bt "code"
     passed
     ensure -> ["hello"] = bt\["data"]
-    ensure -> [32 205 234] = bt\["code"]
+    ensure -> [32 189 223] = bt\["code"]
     passed
 ]
 
