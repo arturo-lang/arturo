@@ -486,7 +486,7 @@ proc `||`*(va: static[ValueKind | IntegerKind], vb: static[ValueKind | IntegerKi
 template fetch*(what: MagicMethods, magicMethodId: MagicMethod): untyped {.dirty.} =
     (let mgk = what.getOrDefault(magicMethodId, nil); not mgk.isNil)
 
-template `in`*(z: ValueKind, typeset: untyped): untyped {.dirty,callsite.} =
+template `in`*(z: ValueKind, typeset: untyped): untyped {.dirty.} =
     contains(system.set[ValueKind](typeset), z)
 
 #=======================================
