@@ -816,7 +816,8 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
 
                 # block execution
                 of opExec               :
-                    discard
+                    let blo = stack.pop()
+                    execUnscoped(doEval(blo, useStored=false))
 
                 # flow control
                 of opGoto               :
