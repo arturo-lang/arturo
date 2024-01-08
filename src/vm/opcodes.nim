@@ -349,15 +349,18 @@ type
         opJmpIfLe       = 0xE3      # (idx)             # cond              #
         opJmpIfLeX      = 0xE4      # (idx,idxB)        # cond              #
 
+        # method calls
+        opInvokeF       = 0xE5      # ()                # method
+        opInvokeM       = 0xE6      # ()                # method
+
         # flow control
-        opGoto          = 0xE5      # (idx)             #                   #
-        opGotoX         = 0xE6      # (idx,idxB)        #                   #
-        opGoup          = 0xE7      # (idx)             #                   #
-        opGoupX         = 0xE8      # (idx,idxB)        #                   #
+        opGoto          = 0xE7      # (idx)             #                   #
+        opGotoX         = 0xE8      # (idx,idxB)        #                   #
+        opGoup          = 0xE9      # (idx)             #                   #
+        opGoupX         = 0xEA      # (idx,idxB)        #                   #
         
-        opRet           = 0xE9      # ()                #                   #
-        opEnd           = 0xEA      # ()                #                   #
-        opInvoke        = 0xEB
+        opRet           = 0xEB      # ()                #                   #
+        opEnd           = 0xEC      # ()                #                   #
 
 when false:
     #=======================================
