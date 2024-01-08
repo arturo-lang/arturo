@@ -626,7 +626,7 @@ proc processBlock*(
                     methodInvocation.addChild(newConstant(FetchPathSym(val.p[0..^2])))
                 else:
                     ar = actualMethod.arity
-                    methodInvocation = newCallNode(BuiltinCall, ar, nil, opInvokeF)
+                    methodInvocation = newCallNode(BuiltinCall, ar + 1, nil, opInvokeF)
                     methodInvocation.addChild(newConstant(actualMethod))
 
                 if ar > 1:
