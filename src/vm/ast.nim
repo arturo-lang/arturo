@@ -616,11 +616,20 @@ proc processBlock*(
         #         target.rollThrough()
         # else:
         when not isLabel:
-            if (let actualMethod = CheckCallablePath(val.p); (not actualMethod.isNil) and actualMethod.kind == Method):
-                let methodInvocation = newCallNode(BuiltinCall, actualMethod.arity + 1, nil, opInvoke)
-                methodInvocation.addChild(newConstant(actualMethod))
-                methodInvocation.addChild(newConstant(FetchPathSym(val.p[0..^2])))
-                if actualMethod.arity > 1:
+            if (let actualMethod = CheckCallablePath(val.p); (not actualMethod.isNil) and actualMethod.kind in {Function,Method}):
+                var methodInvocation: Node
+                var ar: int
+                if actualMethod.kind == Method:
+                    ar = actualMethod.marity
+                    methodInvocation = newCallNode(BuiltinCall, ar + 1, nil, opInvokeM)
+                    methodInvocation.addChild(newConstant(actualMethod))
+                    methodInvocation.addChild(newConstant(FetchPathSym(val.p[0..^2])))
+                else:
+                    ar = actualMethod.arity
+                    methodInvocation = newCallNode(BuiltinCall, ar, nil, opInvokeF)
+                    methodInvocation.addChild(newConstant(actualMethod))
+
+                if ar > 1:
                     target.addChild(methodInvocation)
                     target.rollThrough()
                 else:
