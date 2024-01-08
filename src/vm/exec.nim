@@ -156,10 +156,6 @@ template callByName(symIndx: string):untyped =
     let fun = FetchSym(symIndx)
     callFunction(fun, symIndx)
 
-template callMethodByName(symIndx: string):untyped =
-    let meth = FetchSym(symIndx)
-    callMethod(meth, symIndx)
-
 template callByIndex(idx: int):untyped =
     hookProcProfiler("exec/callByIndex"):
         # TODO(VM/exec) eliminate `==Function` check?
@@ -172,13 +168,6 @@ template callByIndex(idx: int):untyped =
             callFunction(cnst[idx])
         else:
             callByName(cnst[idx].s)
-
-template callMethodByIndex(idx: int):untyped =
-    hookProcProfiler("exec/callMethodByIndex"):
-        if cnst[idx].kind==Method:
-            callMethod(cnst[idx])
-        else:
-            callMethodByName(cnst[idx].s)
 
 template fetchAttributeByIndex(idx: int):untyped =
     stack.pushAttr(cnst[idx].s, stack.pop())
