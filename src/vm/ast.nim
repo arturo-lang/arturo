@@ -847,7 +847,7 @@ proc processBlock*(
                             subblock.add(blok.a[i])
                             inc(i)
 
-                        let doMagic = newCallNode(BuiltinCall, 1, nil, opDo)
+                        let doMagic = newCallNode(BuiltinCall, 1, nil, opExec)
                         doMagic.addChild(newConstant(newBlock(subblock)))
                         
                         current.addChild(doMagic)
