@@ -840,6 +840,18 @@ proc processBlock*(
                     of pipe             :
                         current.addPotentialTrailingPipe()
 
+                    of exclamation      :
+                        inc(i)
+                        var subblock: ValueArray
+                        while i < nLen:
+                            subblock.add(blok.a[i])
+                            inc(i)
+
+                        let doMagic = newCallNode(BuiltinCall, 1, nil, opDo)
+                        doMagic.addChild(newConstant(newBlock(subblock)))
+                        
+                        current.addChild(doMagic)
+
                     else:
                         when processingArrow: ArrowBlock[^1].add(item)
 
