@@ -1,4 +1,3 @@
-
 **************************************************
 *
 * SIMPLE VALUES
@@ -741,11 +740,11 @@
 
         input: [if? x [return true] else [return false]] 
         data: [x] 
-        code: [64 199 4 21 167 215 2 22 167 223] (10 bytes) 
+        code: [64 199 4 21 167 216 2 22 167 223] (10 bytes) 
 
         input: [print "before" if? a <> 1 + 2 [print "here" return true] else [print "there" return false] print "after"] 
         data: [before a here there after] 
-        code: [32 189 4 65 201 6 34 189 21 167 215 4 35 189 22 167 36 189 223] (19 bytes) 
+        code: [32 189 4 65 201 6 34 189 21 167 216 4 35 189 22 167 36 189 223] (19 bytes) 
 
 
         >--------------------------------------------------
@@ -754,11 +753,11 @@
 
         input: [print "before" switch a [1] [2] print "after"] 
         data: [before a after] 
-        code: [32 189 65 199 3 2 215 1 3 34 189 223] (12 bytes) 
+        code: [32 189 65 199 3 2 216 1 3 34 189 223] (12 bytes) 
 
         input: [(x = 1) ? -> 1 -> 2] 
         data: [x] 
-        code: [2 64 203 3 2 215 1 3 223] (9 bytes) 
+        code: [2 64 203 3 2 216 1 3 223] (9 bytes) 
 
         input: [print "before" return (x < 1) ? -> true -> false print "after"] 
         data: [before [false] [true] x after] 
@@ -779,8 +778,8 @@
 
         input: [while [x = 1] [print "hello"]] 
         data: [x hello] 
-        code: [2 64 203 4 33 189 217 6 223] (9 bytes) 
+        code: [2 64 203 4 33 189 218 6 223] (9 bytes) 
 
         input: [while ∅ [print "hello"]] 
         data: [[print hello]] 
-        code: [32 27 166 223] (4 bytes) 
+        code: [32 27 166 223] (4 bytes)
