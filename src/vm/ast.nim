@@ -619,17 +619,20 @@ proc processBlock*(
             if (let actualMethod = CheckCallablePath(val.p); (not actualMethod.isNil) and actualMethod.kind in {Function,Method}):
                 var methodInvocation: Node
                 var ar: int8
+                var limitArity: int8
                 if actualMethod.kind == Method:
                     ar = actualMethod.marity
+                    limitArity = 2
                     methodInvocation = newCallNode(BuiltinCall, ar + 1, nil, opInvokeM)
                     methodInvocation.addChild(newConstant(actualMethod))
                     methodInvocation.addChild(newConstant(FetchPathSym(val.p[0..^2])))
                 else:
                     ar = actualMethod.arity
+                    limitArity = 1
                     methodInvocation = newCallNode(BuiltinCall, ar + 1, nil, opInvokeF)
                     methodInvocation.addChild(newConstant(actualMethod))
 
-                if ar > 1:
+                if ar >= limitArity:
                     target.addChild(methodInvocation)
                     target.rollThrough()
                 else:
