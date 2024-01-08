@@ -805,7 +805,7 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 of opJmpIfLe            : performConditionalJump(`<=`, short=true)
                 of opJmpIfLeX           : performConditionalJump(`<=`)
 
-                # method calls
+                # calls
                 of opInvokeM            :
                     let meth = stack.pop()
                     callMethod(meth)
@@ -813,6 +813,11 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 of opInvokeF            :
                     let fun = stack.pop()
                     callFunction(fun)
+
+                # block execution
+                of opExec               :
+                    let blo = stack.pop()
+                    execUnscoped(doEval(blo, useStored=false))
 
                 # flow control
                 of opGoto               :
@@ -836,7 +841,6 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
 
                 of RSRV12               : discard
                 of RSRV13               : discard
-                of RSRV14               : discard
 
                 of opEnd                :
                     break
