@@ -647,25 +647,6 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 of opCallX              : i += 2; callByIndex(int(uint16(it[i-1]) shl 8 + byte(it[i]))) 
 
                 # [0x70-0x7F]
-                # method calls
-                of opMeth0              : callMethodByIndex(0)  
-                of opMeth1              : callMethodByIndex(1)
-                of opMeth2              : callMethodByIndex(2)
-                of opMeth3              : callMethodByIndex(3)
-                of opMeth4              : callMethodByIndex(4)
-                of opMeth5              : callMethodByIndex(5)
-                of opMeth6              : callMethodByIndex(6)
-                of opMeth7              : callMethodByIndex(7)
-                of opMeth8              : callMethodByIndex(8)
-                of opMeth9              : callMethodByIndex(9)
-                of opMeth10             : callMethodByIndex(10)
-                of opMeth11             : callMethodByIndex(11)
-                of opMeth12             : callMethodByIndex(12)
-                of opMeth13             : callMethodByIndex(13)          
-                of opMeth               : i += 1; callMethodByIndex(int(it[i]))
-                of opMethX              : i += 2; callMethodByIndex(int(uint16(it[i-1]) shl 8 + byte(it[i]))) 
-
-                # [0x80-0x8F]
                 # attributes
                 of opAttr0              : fetchAttributeByIndex(0)
                 of opAttr1              : fetchAttributeByIndex(1)
@@ -689,7 +670,7 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 # OP FUNCTIONS
                 #---------------------------------
 
-                # [0x90-0x9F]
+                # [0x80-0x8F]
                 # arithmetic operators
                 of opAdd                : DoAdd()
                 of opSub                : DoSub()
@@ -715,7 +696,7 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
 
                 of RSRV1                : discard
 
-                # [0xA0-0xAF]
+                # [0x90-0x9F]
                 # logical operators
                 of opNot                : DoNot()
                 of opAnd                : DoAnd()
@@ -739,7 +720,7 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 of RSRV5                : discard
                 of RSRV6                : discard
 
-                # [0xB0-0xBF]
+                # [0xA0-0xAF]
                 # branching
                 of opIf                 : DoIf()
                 of opIfE                : DoIfE()
@@ -766,7 +747,7 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 of RSRV8                : discard
                 of RSRV9                : discard
 
-                # [0xC0-0xCF]
+                # [0xB0-0xBF]
                 # generators          
                 of opArray              : DoArray()
                 of opDict               : DoDict()
@@ -796,7 +777,7 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 # LOW-LEVEL OPERATIONS
                 #---------------------------------
 
-                # [0xD0-0xEF]
+                # [0xC0-0xDF]
                 # no operation
                 of opNop                : discard
 
