@@ -223,6 +223,11 @@ func newRat*(s: string, base: cint = 10): Rat =
 # Value copying
 #=======================================
 
+func copyInt*(x: Int): Int =
+    new(result, finalizeInt)
+    mpz_init(result[])
+    mpz_set(result[], x[])
+
 func copyFloat*(x: Float): Float =
     new(result,finalizeFloat)
     mpfr_init(result[])
