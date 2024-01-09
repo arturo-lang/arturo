@@ -1591,15 +1591,15 @@ do [
     topic « volume - math // conversions
 
     ; Yes, almost everyting went wrong here...
-    ; ensure -> 1`gal   = 231`in3
-    ; ensure -> 1`bbl   = 42`gal
-    ; ensure -> 1`qt    = 1:4`gal
-    ; ensure -> 1`p     = 1:2`qt
-    ; ensure -> 1`cup   = 1:2`p
-    ; ensure -> 1`floz  = 1:8`cup
-    ; ensure -> 1`tbsp  = 1:2`floz
-    ; ensure -> 1`tsp   = 1:3`tbsp
-    ; ensure -> 1`bu    = 2150.42`in3
+    ensure -> 1`gal   = 231`in3
+    ensure -> 1`bbl   = 42`gal
+    ensure -> 1`qt    = 1:4`gal
+    ensure -> 1`p     = 1:2`qt
+    ensure -> 1`cup   = 1:2`p
+    ensure -> 1`floz  = 1:8`cup
+    ensure -> 1`tbsp  = 1:2`floz
+    ensure -> 1`tsp   = 1:3`tbsp
+    ensure -> 1`bu    = 2150.42`in3
     ensure -> 1`cord  = 128`ft3
 
 
