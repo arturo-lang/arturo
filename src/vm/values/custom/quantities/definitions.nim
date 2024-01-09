@@ -617,3 +617,4 @@ static:
     defConstant "vacuumPermeability",           true,               "1.2566370614e-6 N/A2",         "the permeability of free space"
     defConstant "vacuumPermittivity",           false,              "8.854187817e-12 F/m",          "the permittivity of free space"
     defConstant "vonKlitzingConstant",          true,               "25812.8074434 ohm",            "the resistance of a superconductor"
+
