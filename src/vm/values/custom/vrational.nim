@@ -139,6 +139,20 @@ template getDenominator*(x: VRational, big: bool = false): untyped =
 # Constructors
 #=======================================
 
+func copyRational*(rat: VRational): VRational {.inline.} =
+    if rat.rKind == NormalRational:
+        result = VRational(
+            rKind: NormalRational,
+            num: rat.num,
+            den: rat.den
+        )
+    else:
+        when not defined(NOGMP):
+            result = VRational(
+                rKind: BigRational,
+                br: rat.br
+            )
+
 func toRational*(num, den: int): VRational {.inline.} =
     # create VRational from numerator and denominator (both int's)
     result = VRational(
