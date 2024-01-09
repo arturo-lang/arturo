@@ -361,33 +361,16 @@ proc convertTemperature*(v: QuantityValue, fromU: CoreUnit, toU: CoreUnit): Quan
             result = v - 459.67
 
 proc convertTo*(q: Quantity, atoms: Atoms): Quantity =
-    echo "VQuantity: convertTo"
     if q.signature != getSignature(atoms):
         RuntimeError_CannotConvertDifferentDimensions()
 
-    echo "same atoms?"
     if q.atoms == atoms:
-        echo "-> yes"
         return q
-    else:
-        echo "-> no"
 
-    echo "original quantity:"
-    inspect(q)
-
-    echo "q.value: " & $(q.value)
-    echo "getValue: " & $(getValue(atoms))
-    let newVal = q.value/getValue(atoms)
-    echo "newVal: " & $(newVal)
-    result = toQuantity(newVal, atoms)
-    echo "final quantity:"
-    inspect(result)
-    result = (original: q.value/getValue(atoms), value: q.value, signature: q.signature, atoms: atoms, base: false, withUserUnits: false)
-    echo "alternative final quantity:"
+    result = toQuantity(q.value/getValue(atoms), atoms)
     inspect(result)
 
 proc convertQuantity*(q: Quantity, atoms: Atoms): Quantity =
-    echo "VQuantity: convert quantity"
     if unlikely(isTemperature(q)):
         if q.signature != getSignature(atoms):
             RuntimeError_CannotConvertDifferentDimensions()
