@@ -260,6 +260,7 @@ proc toQuantity*(v: QuantityValue, atoms: Atoms): Quantity =
 
     echo "original... original: " & $(result.original)
     echo "original... value: " & $(result.value)
+    echo "and the value: " & $(v)
 
     for atom in atoms:
         let prim = getPrimitive(atom.unit)
@@ -273,6 +274,7 @@ proc toQuantity*(v: QuantityValue, atoms: Atoms): Quantity =
         result.atoms.add(atom)
 
     echo "final... original: " & $(result.original)
+    echo "final... value: " & $(result.value)
     echo "and the value: " & $(v)
 
 when not defined(NOGMP):
