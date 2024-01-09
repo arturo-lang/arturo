@@ -2176,21 +2176,21 @@ do [
     passed
 
     ; 1`oz is being considered as 135624986579`lb
-    ; ensure -> 1`oz  =   1:16`lb
+    ensure -> 1`oz  =   1:16`lb
     ensure -> 1`ct  =   1:5`g
     ensure -> 1`t   =   1000`kg
-    ; 1`ton is being considered as 542499946316000`lb
-    ; ensure -> 1`ton =   2000`lb
-    ; 1`lt is being considered as 607599939873920`lb
-    ; ensure -> 1`lt  =   2240`lb
-    ; 1`st is being considered as 3797499624212`lb
-    ; ensure -> 1`st  =   14`lb
-    ; 1`dwt is being considered as 300814707696`gr
-    ; ensure -> 1`dwt =   24`gr
-    ; 1`ozt is being considered as 1203258830784`dwt
-    ; ensure -> 1`ozt =   20`dwt
-    ; 1`lbt is being considered as 14439105969408`ozt
-    ; ensure -> 1`lbt =   12`ozt
+    ;1`ton is being considered as 542499946316000`lb
+    ensure -> 1`ton =   2000`lb
+    ;1`lt is being considered as 607599939873920`lb
+    ensure -> 1`lt  =   2240`lb
+    ;1`st is being considered as 3797499624212`lb
+    ensure -> 1`st  =   14`lb
+    ;1`dwt is being considered as 300814707696`gr
+    ensure -> 1`dwt =   24`gr
+    ;1`ozt is being considered as 1203258830784`dwt
+    ensure -> 1`ozt =   20`dwt
+    ;1`lbt is being considered as 14439105969408`ozt
+    ensure -> 1`lbt =   12`ozt
     passed
 
 
