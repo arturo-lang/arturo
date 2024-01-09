@@ -623,34 +623,26 @@ when not defined(NOGMP):
         toRational(x) * y
 
 func `*=`*(x: var VRational, y: VRational) =
-    debugEcho "⚠️ in *="
-    debugEcho "X => " & $(x) & " > " & $(x.rKind)
-    debugEcho "Y => " & $(y) & " > " & $(y.rKind)
     # multiply two VRationals, in-place
     if x.rKind == NormalRational:
         if y.rKind == NormalRational:
             overflowGuard:
-                debugEcho "normal"
                 #x.num *= y.num
                 tryOp: mulIntWithOverflow(x.num, y.num, x.num)
                 #x.den *= y.den
                 tryOp: mulIntWithOverflow(x.den, y.den, x.den)
                 reduce(x)
             do:
-                debugEcho "overflown"
                 when not defined(NOGMP):
                     x = toBigRational(x) * y
         else:
-            debugEcho "not normal"
             when not defined(NOGMP):
                 x = toBigRational(x) * y
     else:
         when not defined(NOGMP):
             if y.rKind == NormalRational:
-                debugEcho "not normal 2"
                 x *= toBigRational(y)
             else:
-                debugEcho "not normal 3"
                 x.br *= y.br
 
 func `*=`*(x: var VRational, y: int) =
@@ -677,9 +669,6 @@ when not defined(NOGMP):
         x *= toRational(y)
 
 func `/`*(x, y: VRational): VRational =
-    debugEcho "⚠️ in /"
-    debugEcho "X => " & $(x) & " > " & $(x.rKind)
-    debugEcho "Y => " & $(y) & " > " & $(y.rKind)
     # divide two VRationals
     if x.rKind == NormalRational:
         if y.rKind == NormalRational:
