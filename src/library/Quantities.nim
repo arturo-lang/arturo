@@ -32,6 +32,9 @@ import vm/lib
 #=======================================
 
 template convertQuantity(x, y: Value, xKind, yKind: ValueKind): untyped =
+    echo "in convertQuantity"
+    echo "xKind: " & $(xKind)
+    echo "yKind: " & $(yKind)
     let qs = 
         if x.kind == Unit:
             x.u
@@ -39,6 +42,7 @@ template convertQuantity(x, y: Value, xKind, yKind: ValueKind): untyped =
             parseAtoms(x.s)
 
     if yKind==Quantity:
+        echo "pushing..."
         push newQuantity(y.q.convertQuantity(qs))
     elif yKind==Integer:
         if y.iKind == NormalInteger:
@@ -80,6 +84,9 @@ proc defineLibrary*() =
             ; 0.836127 m²
         """:
             #=======================================================
+            echo "in convert"
+            echo "xKind: " & $(xKind)
+            echo "yKind: " & $(yKind)
             convertQuantity(y, x, yKind, xKind)
 
     builtin "in",
