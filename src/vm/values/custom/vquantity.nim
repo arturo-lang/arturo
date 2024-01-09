@@ -258,24 +258,15 @@ proc toQuantity*(v: QuantityValue, atoms: Atoms): Quantity =
     result.original = v
     result.value = v
 
-    echo "original... original: " & $(result.original)
-    echo "original... value: " & $(result.value)
-    echo "and the value: " & $(v)
-
     for atom in atoms:
         let prim = getPrimitive(atom.unit)
         result.signature += prim.signature * atom.power
         result.value *= prim.value ^ atom.power
-        echo "Four: " & $(result.original)
 
         if unlikely(atom.unit.u.kind == User):
             result.withUserUnits = true
 
         result.atoms.add(atom)
-
-    echo "final... original: " & $(result.original)
-    echo "final... value: " & $(result.value)
-    echo "and the value: " & $(v)
 
 when not defined(NOGMP):
     proc toQuantity*(v: int | float | Int, atoms: Atoms): Quantity {.inline.} =
