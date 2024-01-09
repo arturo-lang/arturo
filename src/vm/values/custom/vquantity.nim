@@ -256,8 +256,8 @@ proc parseAtoms*(str: string): Atoms =
 
 proc toQuantity*(v: QuantityValue, atoms: Atoms): Quantity =
     echo "inside the constructor"
-    result.original = copyRational(v)
-    result.value = copyRational(v)
+    result.original = v
+    result.value = v
 
     echo "original... original: " & $(result.original)
     echo "original... value: " & $(result.value)
