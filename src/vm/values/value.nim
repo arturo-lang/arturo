@@ -907,7 +907,7 @@ proc copyValue*(v: Value): Value {.inline.} =
                 result = newInteger(v.i)
             else:
                 when defined(WEB) or not defined(NOGMP): 
-                    result = newInteger(v.bi)
+                    result = newInteger(copyInt(v.bi))
         of Floating:        result = newFloating(v.f)
         of Complex:         result = newComplex(v.z)
         of Rational:        result = newRational(v.rat)
