@@ -219,6 +219,15 @@ func newRat*(s: string, base: cint = 10): Rat =
         raise newException(ValueError, "String not in correct base")
     canonicalize(result)
 
+#=======================================
+# Value copying
+#=======================================
+
+func copyFloat*(x: Float): Float =
+    new(result,finalizeFloat)
+    mpfr_init(result[])
+    mpfr_set(result[], x[], MPFR_RNDN)
+
 func copyRat*(x: Rat): Rat = 
     new(result,finalizeRat)
     mpq_init(result[])
