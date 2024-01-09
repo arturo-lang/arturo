@@ -256,8 +256,8 @@ proc parseAtoms*(str: string): Atoms =
 
 proc toQuantity*(v: QuantityValue, atoms: Atoms): Quantity =
     echo "inside the constructor"
-    result.original = v
-    result.value = v
+    result.original = copyRational(v)
+    result.value = copyRational(v)
 
     echo "original... original: " & $(result.original)
     echo "original... value: " & $(result.value)
@@ -268,7 +268,7 @@ proc toQuantity*(v: QuantityValue, atoms: Atoms): Quantity =
         echo "Two: " & $(result.original)
         result.signature += prim.signature * atom.power
         echo "Three: " & $(result.original)
-        result.value *= prim.value ^ atom.power
+        result.value = result.value * prim.value ^ atom.power
         echo "Four: " & $(result.original)
 
         if unlikely(atom.unit.u.kind == User):
