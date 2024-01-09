@@ -356,7 +356,6 @@ proc convertTo*(q: Quantity, atoms: Atoms): Quantity =
         return q
 
     result = toQuantity(q.value/getValue(atoms), atoms)
-    inspect(result)
 
 proc convertQuantity*(q: Quantity, atoms: Atoms): Quantity =
     if unlikely(isTemperature(q)):
