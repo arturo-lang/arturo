@@ -910,7 +910,7 @@ proc copyValue*(v: Value): Value {.inline.} =
                     result = newInteger(copyInt(v.bi))
         of Floating:        result = newFloating(v.f)
         of Complex:         result = newComplex(v.z)
-        of Rational:        result = newRational(v.rat)
+        of Rational:        result = newRational(copyRational(v.rat))
         of Version:         result = newVersion(v.version)
         of Type:        
             if likely(v.tpKind==BuiltinType):
