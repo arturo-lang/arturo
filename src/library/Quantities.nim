@@ -80,9 +80,6 @@ proc defineLibrary*() =
             ; 0.836127 m²
         """:
             #=======================================================
-            echo "in convert"
-            echo "xKind: " & $(xKind)
-            echo "yKind: " & $(yKind)
             convertQuantity(y, x, yKind, xKind)
 
     builtin "in",
