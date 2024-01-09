@@ -219,6 +219,11 @@ func newRat*(s: string, base: cint = 10): Rat =
         raise newException(ValueError, "String not in correct base")
     canonicalize(result)
 
+func copyRat*(x: Rat): Rat = 
+    new(result,finalizeRat)
+    mpq_init(result[])
+    mpq_set(result[], x[])
+
 #=======================================
 # Setters
 #=======================================
