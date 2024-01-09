@@ -255,36 +255,25 @@ proc parseAtoms*(str: string): Atoms =
 #=======================================
 
 proc toQuantity*(v: QuantityValue, atoms: Atoms): Quantity =
-    echo "inside the constructor"
-    echo "------> value was:" & $(v)
-    var savedValue: VRational = copyRational(v)
-    var value: VRational = copyRational(v)
     result.original = copyRational(v)
-    #result.value = v
+    result.value = copyRational(v)
 
     echo "original... original: " & $(result.original)
     echo "original... value: " & $(result.value)
 
     for atom in atoms:
-        echo "One: " & $(result.original)
         let prim = getPrimitive(atom.unit)
-        echo "Two: " & $(result.original)
         result.signature += prim.signature * atom.power
-        echo "Three: " & $(result.original)
-        value *= prim.value ^ atom.power
+        result.value *= prim.value ^ atom.power
         echo "Four: " & $(result.original)
 
         if unlikely(atom.unit.u.kind == User):
             result.withUserUnits = true
 
-        echo "Five: " & $(result.original)
-
         result.atoms.add(atom)
 
-    result.value = value
     echo "final... original: " & $(result.original)
-    echo "------> value is:" & $(v)
-    echo "------> saved value is:" & $(savedValue)
+    echo "and the value: " & $(v)
 
 when not defined(NOGMP):
     proc toQuantity*(v: int | float | Int, atoms: Atoms): Quantity {.inline.} =
