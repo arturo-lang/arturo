@@ -256,8 +256,9 @@ proc parseAtoms*(str: string): Atoms =
 
 proc toQuantity*(v: QuantityValue, atoms: Atoms): Quantity =
     echo "inside the constructor"
+    var value: QuantityValue = v
     result.original = v
-    result.value = v
+    #result.value = v
 
     echo "original... original: " & $(result.original)
     echo "original... value: " & $(result.value)
@@ -268,7 +269,7 @@ proc toQuantity*(v: QuantityValue, atoms: Atoms): Quantity =
         echo "Two: " & $(result.original)
         result.signature += prim.signature * atom.power
         echo "Three: " & $(result.original)
-        result.value = result.value * prim.value ^ atom.power
+        value *= prim.value ^ atom.power
         echo "Four: " & $(result.original)
 
         if unlikely(atom.unit.u.kind == User):
@@ -278,6 +279,7 @@ proc toQuantity*(v: QuantityValue, atoms: Atoms): Quantity =
 
         result.atoms.add(atom)
 
+    result.value = value
     echo "final... original: " & $(result.original)
 
 when not defined(NOGMP):
