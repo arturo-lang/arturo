@@ -150,7 +150,7 @@ func copyRational*(rat: VRational): VRational {.inline.} =
         when not defined(NOGMP):
             result = VRational(
                 rKind: BigRational,
-                br: rat.br
+                br: copyRat(rat.br)
             )
 
 func toRational*(num, den: int): VRational {.inline.} =
@@ -623,6 +623,9 @@ when not defined(NOGMP):
         toRational(x) * y
 
 func `*=`*(x: var VRational, y: VRational) =
+    debugEcho "⚠️ in *="
+    debugEcho "X => " & $(x) & " > " & $(x.rKind)
+    debugEcho "Y => " & $(y) & " > " & $(y.rKind)
     # multiply two VRationals, in-place
     if x.rKind == NormalRational:
         if y.rKind == NormalRational:
@@ -674,6 +677,9 @@ when not defined(NOGMP):
         x *= toRational(y)
 
 func `/`*(x, y: VRational): VRational =
+    debugEcho "⚠️ in /"
+    debugEcho "X => " & $(x) & " > " & $(x.rKind)
+    debugEcho "Y => " & $(y) & " > " & $(y.rKind)
     # divide two VRationals
     if x.rKind == NormalRational:
         if y.rKind == NormalRational:
