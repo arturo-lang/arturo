@@ -256,8 +256,10 @@ proc parseAtoms*(str: string): Atoms =
 
 proc toQuantity*(v: QuantityValue, atoms: Atoms): Quantity =
     echo "inside the constructor"
-    var value: QuantityValue = v
-    result.original = v
+    echo "------> value was:" & $(v)
+    var savedValue: VRational = copyRational(v)
+    var value: VRational = copyRational(v)
+    result.original = copyRational(v)
     #result.value = v
 
     echo "original... original: " & $(result.original)
@@ -281,6 +283,8 @@ proc toQuantity*(v: QuantityValue, atoms: Atoms): Quantity =
 
     result.value = value
     echo "final... original: " & $(result.original)
+    echo "------> value is:" & $(v)
+    echo "------> saved value is:" & $(savedValue)
 
 when not defined(NOGMP):
     proc toQuantity*(v: int | float | Int, atoms: Atoms): Quantity {.inline.} =
