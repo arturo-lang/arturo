@@ -387,7 +387,7 @@ func `+=`*(x: var VRational, y: VRational) =
             if y.rKind == NormalRational:
                 x += toBigRational(y)
             else:
-                x.br += y.br
+                x.br = x.br + y.br
 
 func `+=`*(x: var VRational, y: int) =
     # add VRational and int, in-place
@@ -530,7 +530,7 @@ func `-=`*(x: var VRational, y: VRational) =
             if y.rKind == NormalRational:
                 x -= toBigRational(y)
             else:
-                x.br -= y.br
+                x.br = x.br - y.br
     
 func `-=`*(x: var VRational, y: int) =
     # subtract int from VRational, in-place
@@ -643,7 +643,7 @@ func `*=`*(x: var VRational, y: VRational) =
             if y.rKind == NormalRational:
                 x *= toBigRational(y)
             else:
-                x.br *= y.br
+                x.br = x.br * y.br
 
 func `*=`*(x: var VRational, y: int) =
     # multiply VRational by int, in-place
@@ -763,7 +763,7 @@ func `/=`*(x: var VRational, y: VRational) =
             if y.rKind == NormalRational:
                 x /= toBigRational(y)
             else:
-                x.br /= y.br
+                x.br = x.br / y.br
 
 func `/=`*(x: var VRational, y: int) =
     # divide VRational by int, in-place
