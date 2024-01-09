@@ -255,18 +255,30 @@ proc parseAtoms*(str: string): Atoms =
 #=======================================
 
 proc toQuantity*(v: QuantityValue, atoms: Atoms): Quantity =
+    echo "inside the constructor"
     result.original = v
     result.value = v
 
+    echo "original... original: " & $(result.original)
+    echo "original... value: " & $(result.value)
+
     for atom in atoms:
+        echo "One: " & $(result.original)
         let prim = getPrimitive(atom.unit)
+        echo "Two: " & $(result.original)
         result.signature += prim.signature * atom.power
+        echo "Three: " & $(result.original)
         result.value *= prim.value ^ atom.power
+        echo "Four: " & $(result.original)
 
         if unlikely(atom.unit.u.kind == User):
             result.withUserUnits = true
 
+        echo "Five: " & $(result.original)
+
         result.atoms.add(atom)
+
+    echo "final... original: " & $(result.original)
 
 when not defined(NOGMP):
     proc toQuantity*(v: int | float | Int, atoms: Atoms): Quantity {.inline.} =
@@ -349,16 +361,33 @@ proc convertTemperature*(v: QuantityValue, fromU: CoreUnit, toU: CoreUnit): Quan
             result = v - 459.67
 
 proc convertTo*(q: Quantity, atoms: Atoms): Quantity =
+    echo "VQuantity: convertTo"
     if q.signature != getSignature(atoms):
         RuntimeError_CannotConvertDifferentDimensions()
 
+    echo "same atoms?"
     if q.atoms == atoms:
+        echo "-> yes"
         return q
+    else:
+        echo "-> no"
 
+    echo "original quantity:"
+    inspect(q)
+
+    echo "q.value: " & $(q.value)
+    echo "getValue: " & $(getValue(atoms))
     let newVal = q.value/getValue(atoms)
+    echo "newVal: " & $(newVal)
     result = toQuantity(newVal, atoms)
+    echo "final quantity:"
+    inspect(result)
+    result = (original: q.value/getValue(atoms), value: q.value, signature: q.signature, atoms: atoms, base: false, withUserUnits: false)
+    echo "alternative final quantity:"
+    inspect(result)
 
 proc convertQuantity*(q: Quantity, atoms: Atoms): Quantity =
+    echo "VQuantity: convert quantity"
     if unlikely(isTemperature(q)):
         if q.signature != getSignature(atoms):
             RuntimeError_CannotConvertDifferentDimensions()
