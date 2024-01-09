@@ -1,4 +1,3 @@
-
 >> currencies
 
 >> currencies - currency? (hidden)
