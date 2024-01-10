@@ -23,7 +23,7 @@ else:
 # Methods
 #=======================================
 
-func powIntWithOverflow*(a,b:int, res: var int): bool =
+func powIntWithOverflow*(a, b: int, res: var int): bool =
     result = false
     case b:
         of 0: res = 1
@@ -45,3 +45,37 @@ func powIntWithOverflow*(a,b:int, res: var int): bool =
                     break
                 if mulIntWithOverflow(x, x, x):
                     return true
+
+# in-place
+
+func addIntWithOverflowI*(a, b: int, res: var int): bool {.inline, nosideeffect.} =
+    var subres: int
+    if unlikely(addIntWithOverflow(a, b, subres)):
+        return true
+    else:
+        res = subres
+        return false
+
+func subIntWithOverflowI*(a, b: int, res: var int): bool {.inline, nosideeffect.} =
+    var subres: int
+    if unlikely(subIntWithOverflow(a, b, subres)):
+        return true
+    else:
+        res = subres
+        return false
+
+func mulIntWithOverflowI*(a, b: int, res: var int): bool {.inline, nosideeffect.} =
+    var subres: int
+    if unlikely(mulIntWithOverflow(a, b, subres)):
+        return true
+    else:
+        res = subres
+        return false
+
+func powIntWithOverflowI*(a, b: int, res: var int): bool {.inline, nosideeffect.} =
+    var subres: int
+    if unlikely(powIntWithOverflow(a, b, subres)):
+        return true
+    else:
+        res = subres
+        return false
