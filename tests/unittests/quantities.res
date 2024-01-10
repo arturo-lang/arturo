@@ -1,6 +1,7 @@
 >> currencies
 
 >> currencies - currency? (hidden)
+[+] passed!
 
 >> currencies - basic math
 [+] passed!
