@@ -186,7 +186,7 @@ proc getPrimitive(unit: PrefixedUnit): Quantity =
         Quantities[unit.u].value = reciprocal(toRational(xrate))
         result.value = reciprocal(toRational(xrate))
     elif unit.p != No_Prefix:
-        result.value *= Powers[ord(unit.p)]
+        result.value *= Powers[ord(unit.p) + 18]
         # echo "prefixed unit"
         # if ord(unit.p) == -9:
         #     echo "with -9!!"
