@@ -3122,9 +3122,7 @@ do [
     ; Note: DRYing. I'm not testing for every single unit's scale because
     ; I already tested length's, area's, time's and mass' units
 
-
-    ; precision loss
-    ; ensure -> 1`EW  = 1`PW  * (10 ^ 3)
+    ensure -> 1`EW  = 1`PW  * (10 ^ 3)
     ensure -> 1`PW  = 1`TW  * (10 ^ 3)
     ensure -> 1`TW  = 1`GW  * (10 ^ 3)
     ensure -> 1`GW  = 1`MW  * (10 ^ 3)
@@ -3137,10 +3135,9 @@ do [
     ensure -> 1`mW  = 1`cW  /  10
     ensure -> 1`uW  = 1`mW  / (10 ^ 3)
     ensure -> 1`nW  = 1`uW  / (10 ^ 3)
-    ; precision loss
-    ; ensure -> 1`pW  = 1`nW  / (10 ^ 3)
-    ; ensure -> 1`fW  = 1`pW  / (10 ^ 3)
-    ; ensure -> 1`aW  = 1`fW  / (10 ^ 3)
+    ensure -> 1`pW  = 1`nW  / (10 ^ 3)
+    ensure -> 1`fW  = 1`pW  / (10 ^ 3)
+    ensure -> 1`aW  = 1`fW  / (10 ^ 3)
     passed
 
 
@@ -3224,10 +3221,9 @@ do [
     ensure -> 1`mA  = 1`cA  /  10
     ensure -> 1`uA  = 1`mA  / (10 ^ 3)
     ensure -> 1`nA  = 1`uA  / (10 ^ 3)
-    ; precision loss
-    ; ensure -> 1`pA  = 1`nA  / (10 ^ 3)
-    ; ensure -> 1`fA  = 1`pA  / (10 ^ 3)
-    ; ensure -> 1`aA  = 1`fA  / (10 ^ 3)
+    ensure -> 1`pA  = 1`nA  / (10 ^ 3)
+    ensure -> 1`fA  = 1`pA  / (10 ^ 3)
+    ensure -> 1`aA  = 1`fA  / (10 ^ 3)
     passed
 
 
@@ -3305,8 +3301,7 @@ do [
 
     topic « potential - math // scales
 
-    ; precision loss
-    ; ensure -> 1`EV  = 1`PV  * (10 ^ 3)
+    ensure -> 1`EV  = 1`PV  * (10 ^ 3)
     ensure -> 1`PV  = 1`TV  * (10 ^ 3)
     ensure -> 1`TV  = 1`GV  * (10 ^ 3)
     ensure -> 1`GV  = 1`MV  * (10 ^ 3)
@@ -3319,9 +3314,9 @@ do [
     ensure -> 1`mV  = 1`cV  /  10
     ensure -> 1`uV  = 1`mV  / (10 ^ 3)
     ensure -> 1`nV  = 1`uV  / (10 ^ 3)
-    ; ensure -> 1`pV  = 1`nV  / (10 ^ 3)
-    ; ensure -> 1`fV  = 1`pV  / (10 ^ 3)
-    ; ensure -> 1`aV  = 1`fV  / (10 ^ 3)
+    ensure -> 1`pV  = 1`nV  / (10 ^ 3)
+    ensure -> 1`fV  = 1`pV  / (10 ^ 3)
+    ensure -> 1`aV  = 1`fV  / (10 ^ 3)
     passed
 
 
@@ -3398,8 +3393,7 @@ do [
 
     topic « resistance - math // scales
 
-    ; precision loss
-    ; ensure -> 1`EOhm  = 1`POhm  * (10 ^ 3)
+    ensure -> 1`EOhm  = 1`POhm  * (10 ^ 3)
     ensure -> 1`POhm  = 1`TOhm  * (10 ^ 3)
     ensure -> 1`TOhm  = 1`GOhm  * (10 ^ 3)
     ensure -> 1`GOhm  = 1`MOhm  * (10 ^ 3)
@@ -3506,10 +3500,9 @@ do [
     ensure -> 1`mS  = 1`cS  /  10
     ensure -> 1`uS  = 1`mS  / (10 ^ 3)
     ensure -> 1`nS  = 1`uS  / (10 ^ 3)
-    ; precision loss
-    ; ensure -> 1`pS  = 1`nS  / (10 ^ 3)
-    ; ensure -> 1`fS  = 1`pS  / (10 ^ 3)
-    ; ensure -> 1`aS  = 1`fS  / (10 ^ 3)
+    ensure -> 1`pS  = 1`nS  / (10 ^ 3)
+    ensure -> 1`fS  = 1`pS  / (10 ^ 3)
+    ensure -> 1`aS  = 1`fS  / (10 ^ 3)
     passed
 
 
@@ -3579,7 +3572,6 @@ do [
 
     topic « charge - math // scales
 
-    ; precision loss
     ensure -> 1`EC  = 1`PC  * (10 ^ 3)
     ensure -> 1`PC  = 1`TC  * (10 ^ 3)
     ensure -> 1`TC  = 1`GC  * (10 ^ 3)
@@ -3593,9 +3585,9 @@ do [
     ensure -> 1`mC  = 1`cC  /  10
     ensure -> 1`uC  = 1`mC  / (10 ^ 3)
     ensure -> 1`nC  = 1`uC  / (10 ^ 3)
-    ; ensure -> 1`pC  = 1`nC  / (10 ^ 3)
-    ; ensure -> 1`fC  = 1`pC  / (10 ^ 3)
-    ; ensure -> 1`aC  = 1`fC  / (10 ^ 3)
+    ensure -> 1`pC  = 1`nC  / (10 ^ 3)
+    ensure -> 1`fC  = 1`pC  / (10 ^ 3)
+    ensure -> 1`aC  = 1`fC  / (10 ^ 3)
     passed
 
 
@@ -3691,10 +3683,9 @@ do [
     ensure -> 1`mF  = 1`cF  /  10
     ensure -> 1`uF  = 1`mF  / (10 ^ 3)
     ensure -> 1`nF  = 1`uF  / (10 ^ 3)
-    ; precision loss
-    ; ensure -> 1`pF  = 1`nF  / (10 ^ 3)
-    ; ensure -> 1`fF  = 1`pF  / (10 ^ 3)
-    ; ensure -> 1`aF  = 1`fF  / (10 ^ 3)
+    ensure -> 1`pF  = 1`nF  / (10 ^ 3)
+    ensure -> 1`fF  = 1`pF  / (10 ^ 3)
+    ensure -> 1`aF  = 1`fF  / (10 ^ 3)
     passed
 
 
@@ -3763,8 +3754,7 @@ do [
 
     topic « elastance - math // scales
 
-    ; precision loss
-    ; ensure -> 1`EDaraf  = 1`PDaraf  * (10 ^ 3)
+    ensure -> 1`EDaraf  = 1`PDaraf  * (10 ^ 3)
     ensure -> 1`PDaraf  = 1`TDaraf  * (10 ^ 3)
     ensure -> 1`TDaraf  = 1`GDaraf  * (10 ^ 3)
     ensure -> 1`GDaraf  = 1`MDaraf  * (10 ^ 3)
@@ -3777,9 +3767,9 @@ do [
     ensure -> 1`mDaraf  = 1`cDaraf  /  10
     ensure -> 1`uDaraf  = 1`mDaraf  / (10 ^ 3)
     ensure -> 1`nDaraf  = 1`uDaraf  / (10 ^ 3)
-    ; ensure -> 1`pDaraf  = 1`nDaraf  / (10 ^ 3)
-    ; ensure -> 1`fDaraf  = 1`pDaraf  / (10 ^ 3)
-    ; ensure -> 1`aDaraf  = 1`fDaraf  / (10 ^ 3)
+    ensure -> 1`pDaraf  = 1`nDaraf  / (10 ^ 3)
+    ensure -> 1`fDaraf  = 1`pDaraf  / (10 ^ 3)
+    ensure -> 1`aDaraf  = 1`fDaraf  / (10 ^ 3)
     passed
 
 
@@ -3842,8 +3832,7 @@ do [
 
     topic « inductance - math // scales
 
-    ; precision loss
-    ; ensure -> 1`EH  = 1`PH  * (10 ^ 3)
+    ensure -> 1`EH  = 1`PH  * (10 ^ 3)
     ensure -> 1`PH  = 1`TH  * (10 ^ 3)
     ensure -> 1`TH  = 1`GH  * (10 ^ 3)
     ensure -> 1`GH  = 1`MH  * (10 ^ 3)
@@ -3931,8 +3920,7 @@ do [
 
     topic « magneticFlux - math // scales
 
-    ; precision loss
-    ; ensure -> 1`EWb  = 1`PWb  * (10 ^ 3)
+    ensure -> 1`EWb  = 1`PWb  * (10 ^ 3)
     ensure -> 1`PWb  = 1`TWb  * (10 ^ 3)
     ensure -> 1`TWb  = 1`GWb  * (10 ^ 3)
     ensure -> 1`GWb  = 1`MWb  * (10 ^ 3)
@@ -3945,12 +3933,11 @@ do [
     ensure -> 1`mWb  = 1`cWb  /  10
     ensure -> 1`uWb  = 1`mWb  / (10 ^ 3)
     ensure -> 1`nWb  = 1`uWb  / (10 ^ 3)
-    ; ensure -> 1`pWb  = 1`nWb  / (10 ^ 3)
-    ; ensure -> 1`fWb  = 1`pWb  / (10 ^ 3)
-    ; ensure -> 1`aWb  = 1`fWb  / (10 ^ 3)
+    ensure -> 1`pWb  = 1`nWb  / (10 ^ 3)
+    ensure -> 1`fWb  = 1`pWb  / (10 ^ 3)
+    ensure -> 1`aWb  = 1`fWb  / (10 ^ 3)
     passed
 
-    ; precision loss
     ensure -> 1`EMx  = 1`PMx  * (10 ^ 3)
     ensure -> 1`PMx  = 1`TMx  * (10 ^ 3)
     ensure -> 1`TMx  = 1`GMx  * (10 ^ 3)
@@ -3964,9 +3951,9 @@ do [
     ensure -> 1`mMx  = 1`cMx  /  10
     ensure -> 1`uMx  = 1`mMx  / (10 ^ 3)
     ensure -> 1`nMx  = 1`uMx  / (10 ^ 3)
-    ; ensure -> 1`pMx  = 1`nMx  / (10 ^ 3)
-    ; ensure -> 1`fMx  = 1`pMx  / (10 ^ 3)
-    ; ensure -> 1`aMx  = 1`fMx  / (10 ^ 3)
+    ensure -> 1`pMx  = 1`nMx  / (10 ^ 3)
+    ensure -> 1`fMx  = 1`pMx  / (10 ^ 3)
+    ensure -> 1`aMx  = 1`fMx  / (10 ^ 3)
     passed
 
 
