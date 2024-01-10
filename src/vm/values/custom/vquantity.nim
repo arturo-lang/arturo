@@ -156,7 +156,10 @@ proc getExchangeRate(curr: string): float =
         let content = waitFor (newAsyncHttpClient().getContent(url))
         let response = parseJson(content)
         for (k,v) in pairs(response["usd"]):
-            ExchangeRates[k] = v.fnum
+            if likely(v.kind == JFloat):
+                ExchangeRates[k] = v.fnum
+            else:
+                ExchangeRates[k] = float(v.num)
 
     if ExchangeRates.hasKey(s):
         echo "key exists"
