@@ -187,19 +187,7 @@ proc getPrimitive(unit: PrefixedUnit): Quantity =
         result.value = reciprocal(toRational(xrate))
     elif unit.p != No_Prefix:
         result.value *= Powers[ord(unit.p) + 18]
-        # echo "prefixed unit"
-        # if ord(unit.p) == -9:
-        #     echo "with -9!!"
-        #     result.value *= 1 // 1000000000
-        # elif ord(unit.p) == -12:
-        #     echo "with -12!!!"
-        #     result.value *= 1 // 1000000000000
-        # elif ord(unit.p) == -15:
-        #     result.value *= 1 // 1000000000000000
-        # elif ord(unit.p) == -18:
-        #     result.value *= 1 // 1000000000000000000
-        # else:
-        #     result.value *= pow(float(10), float(ord(unit.p)))
+        # result.value *= pow(float(10), float(ord(unit.p)))
 
 proc getSignature*(atoms: Atoms): QuantitySignature =
     for atom in atoms:
