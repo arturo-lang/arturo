@@ -189,9 +189,8 @@ do [
     ensure -> 1`upx  = 1`mpx  / (10 ^ 3)
     ensure -> 1`npx  = 1`upx  / (10 ^ 3)
     ensure -> 1`ppx  = 1`npx  / (10 ^ 3)
-    ; precision loss
-    ;ensure -> 1`fpx  = 1`ppx  / (10 ^ 3)
-    ;ensure -> 1`apx  = 1`fpx  / (10 ^ 3)
+    ensure -> 1`fpx  = 1`ppx  / (10 ^ 3)
+    ensure -> 1`apx  = 1`fpx  / (10 ^ 3)
     passed
 
     ; precision loss
