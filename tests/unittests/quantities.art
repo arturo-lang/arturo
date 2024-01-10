@@ -2669,8 +2669,6 @@ do [
 
     topic « force - math // conversions
 
-    ; poundal is broken due to the use of pounds
-
     ensure -> 1`N       = 1`kg.m/s2
     ensure -> 1`dyn     = 1:100000`N
     ensure -> 1`lbf     = 4.44822`N
