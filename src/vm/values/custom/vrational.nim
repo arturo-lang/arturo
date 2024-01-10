@@ -624,25 +624,37 @@ when not defined(NOGMP):
 
 func `*=`*(x: var VRational, y: VRational) =
     # multiply two VRationals, in-place
+    debugEcho "multiplying (in-place)"
+    debugEcho $(x)
+    debugEcho $(y)
     if x.rKind == NormalRational:
         if y.rKind == NormalRational:
             overflowGuard:
                 #x.num *= y.num
                 tryOp: mulIntWithOverflow(x.num, y.num, x.num)
+                debugEcho "after one"
                 #x.den *= y.den
                 tryOp: mulIntWithOverflow(x.den, y.den, x.den)
+                debugEcho "after two"
                 reduce(x)
             do:
                 when not defined(NOGMP):
+                    debugEcho "overflown"
+                    debugEcho "x was:" & $(x)
+                    debugEcho "big-x will be:" & $(toBigRational(x))
                     x = toBigRational(x) * y
+                    debugEcho "final x = " & $(x)
         else:
             when not defined(NOGMP):
+                debugEcho "else 1"
                 x = toBigRational(x) * y
     else:
         when not defined(NOGMP):
             if y.rKind == NormalRational:
+                debugEcho "else 2 - a"
                 x *= toBigRational(y)
             else:
+                debugEcho "else 2 - b"
                 x.br = x.br * y.br
 
 func `*=`*(x: var VRational, y: int) =
