@@ -359,7 +359,7 @@ template normalIntegerPowI*(x: var Value, y: int): untyped =
     ## get the power of two normal Integer values, checking for overflow
     ## and set result in-place
     if likely(y >= 0):
-        if unlikely(powIntWithOverflow(x.i, y, x.i)):
+        if unlikely(powIntWithOverflowI(x.i, y, x.i)):
             when not defined(NOGMP):
                 when defined(WEB):
                     x = newInteger(big(x.i) ** big(y))
