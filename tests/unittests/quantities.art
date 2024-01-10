@@ -910,11 +910,9 @@ do [
     ensure -> 1`apt2  = 1`fpt2  / (10 ^ 6)
     passed
 
-    ; precision loss
-    ; ensure -> 1`Epc2  = 1`Ppc2  * (10 ^ 6)
+    ensure -> 1`Epc2  = 1`Ppc2  * (10 ^ 6)
     ensure -> 1`Ppc2  = 1`Tpc2  * (10 ^ 6)
-    ; precision loss
-    ; ensure -> 1`Tpc2  = 1`Gpc2  * (10 ^ 6)
+    ensure -> 1`Tpc2  = 1`Gpc2  * (10 ^ 6)
     ensure -> 1`Gpc2  = 1`Mpc2  * (10 ^ 6)
     ensure -> 1`Mpc2  = 1`kpc2  * (10 ^ 6)
     ensure -> 1`kpc2  = 1`hpc2  * (10 ^ 2)
@@ -923,13 +921,11 @@ do [
     ensure -> 1`dpc2  = 1`pc2   / (10 ^ 2)
     ensure -> 1`cpc2  = 1`dpc2  / (10 ^ 2)
     ensure -> 1`mpc2  = 1`cpc2  / (10 ^ 2)
-    ; precision loss
-    ; ensure -> 1`upc2  = 1`mpc2  / (10 ^ 6)
+    ensure -> 1`upc2  = 1`mpc2  / (10 ^ 6)
     ensure -> 1`npc2  = 1`upc2  / (10 ^ 6)
     ensure -> 1`ppc2  = 1`npc2  / (10 ^ 6)
-    ; precision loss
-    ; ensure -> 1`fpc2  = 1`ppc2  / (10 ^ 6)
-    ; ensure -> 1`apc2  = 1`fpc2  / (10 ^ 6)
+    ensure -> 1`fpc2  = 1`ppc2  / (10 ^ 6)
+    ensure -> 1`apc2  = 1`fpc2  / (10 ^ 6)
     passed
 
 
@@ -1475,11 +1471,10 @@ do [
 
     topic « volume - math // scales
 
-    ; precision loss
-    ; ensure -> 1`Em3  = 1`Pm3  * (10 ^ 9)
-    ; ensure -> 1`Pm3  = 1`Tm3  * (10 ^ 9)
-    ; ensure -> 1`Tm3  = 1`Gm3  * (10 ^ 9)
-    ; ensure -> 1`Gm3  = 1`Mm3  * (10 ^ 9)
+    ensure -> 1`Em3  = 1`Pm3  * (10 ^ 9)
+    ensure -> 1`Pm3  = 1`Tm3  * (10 ^ 9)
+    ensure -> 1`Tm3  = 1`Gm3  * (10 ^ 9)
+    ensure -> 1`Gm3  = 1`Mm3  * (10 ^ 9)
     ensure -> 1`Mm3  = 1`km3  * (10 ^ 9)
     ensure -> 1`km3  = 1`hm3  * (10 ^ 3)
     ensure -> 1`hm3  = 1`dam3 * (10 ^ 3)
@@ -1488,11 +1483,10 @@ do [
     ensure -> 1`cm3  = 1`dm3  / (10 ^ 3)
     ensure -> 1`mm3  = 1`cm3  / (10 ^ 3)
     ensure -> 1`um3  = 1`mm3  / (10 ^ 9)
-    ; precision loss
-    ; ensure -> 1`nm3  = 1`um3  / (10 ^ 9)
-    ; ensure -> 1`pm3  = 1`nm3  / (10 ^ 9)
-    ; ensure -> 1`fm3  = 1`pm3  / (10 ^ 9)
-    ; ensure -> 1`am3  = 1`fm3  / (10 ^ 9)
+    ensure -> 1`nm3  = 1`um3  / (10 ^ 9)
+    ensure -> 1`pm3  = 1`nm3  / (10 ^ 9)
+    ensure -> 1`fm3  = 1`pm3  / (10 ^ 9)
+    ensure -> 1`am3  = 1`fm3  / (10 ^ 9)
     passed
 
     ensure -> 1`EL  = 1`PL  * (10 ^ 3)
@@ -1508,70 +1502,63 @@ do [
     ensure -> 1`mL  = 1`cL  / (10 ^ 1)
     ensure -> 1`uL  = 1`mL  / (10 ^ 3)
     ensure -> 1`nL  = 1`uL  / (10 ^ 3)
-    ; precision loss
-    ; ensure -> 1`pL  = 1`nL  / (10 ^ 3)
-    ; ensure -> 1`fL  = 1`pL  / (10 ^ 3)
-    ; ensure -> 1`aL  = 1`fL  / (10 ^ 3)
+    ensure -> 1`pL  = 1`nL  / (10 ^ 3)
+    ensure -> 1`fL  = 1`pL  / (10 ^ 3)
+    ensure -> 1`aL  = 1`fL  / (10 ^ 3)
     passed
 
-    ; precision loss
-    ; ensure -> 1`Epx3  = 1`Ppx3  * (10 ^ 9)
-    ; ensure -> 1`Ppx3  = 1`Tpx3  * (10 ^ 9)
-    ; ensure -> 1`Tpx3  = 1`Gpx3  * (10 ^ 9)
-    ; ensure -> 1`Gpx3  = 1`Mpx3  * (10 ^ 9)
+    ensure -> 1`Epx3  = 1`Ppx3  * (10 ^ 9)
+    ensure -> 1`Ppx3  = 1`Tpx3  * (10 ^ 9)
+    ensure -> 1`Tpx3  = 1`Gpx3  * (10 ^ 9)
+    ensure -> 1`Gpx3  = 1`Mpx3  * (10 ^ 9)
     ensure -> 1`Mpx3  = 1`kpx3  * (10 ^ 9)
     ensure -> 1`kpx3  = 1`hpx3  * (10 ^ 3)
     ensure -> 1`hpx3  = 1`dapx3 * (10 ^ 3)
-    ; precision loss
-    ; ensure -> 1`dapx3 = 1`px3   * (10 ^ 3)
-    ; ensure -> 1`dpx3  = 1`px3   / (10 ^ 3)
-    ; ensure -> 1`cpx3  = 1`dpx3  / (10 ^ 3)
-    ; ensure -> 1`mpx3  = 1`cpx3  / (10 ^ 3)
-    ; ensure -> 1`upx3  = 1`mpx3  / (10 ^ 9)
-    ; ensure -> 1`npx3  = 1`upx3  / (10 ^ 9)
-    ; ensure -> 1`ppx3  = 1`npx3  / (10 ^ 9)
-    ; ensure -> 1`fpx3  = 1`ppx3  / (10 ^ 9)
-    ; ensure -> 1`apx3  = 1`fpx3  / (10 ^ 9)
+    ensure -> 1`dapx3 = 1`px3   * (10 ^ 3)
+    ensure -> 1`dpx3  = 1`px3   / (10 ^ 3)
+    ensure -> 1`cpx3  = 1`dpx3  / (10 ^ 3)
+    ensure -> 1`mpx3  = 1`cpx3  / (10 ^ 3)
+    ensure -> 1`upx3  = 1`mpx3  / (10 ^ 9)
+    ensure -> 1`npx3  = 1`upx3  / (10 ^ 9)
+    ensure -> 1`ppx3  = 1`npx3  / (10 ^ 9)
+    ensure -> 1`fpx3  = 1`ppx3  / (10 ^ 9)
+    ensure -> 1`apx3  = 1`fpx3  / (10 ^ 9)
     passed
 
-    ; precision loss
-    ; ensure -> 1`Ept3  = 1`Ppt3  * (10 ^ 9)
-    ; ensure -> 1`Ppt3  = 1`Tpt3  * (10 ^ 9)
-    ; ensure -> 1`Tpt3  = 1`Gpt3  * (10 ^ 9)
-    ; ensure -> 1`Gpt3  = 1`Mpt3  * (10 ^ 9)
+    ensure -> 1`Ept3  = 1`Ppt3  * (10 ^ 9)
+    ensure -> 1`Ppt3  = 1`Tpt3  * (10 ^ 9)
+    ensure -> 1`Tpt3  = 1`Gpt3  * (10 ^ 9)
+    ensure -> 1`Gpt3  = 1`Mpt3  * (10 ^ 9)
     ensure -> 1`Mpt3  = 1`kpt3  * (10 ^ 9)
     ensure -> 1`kpt3  = 1`hpt3  * (10 ^ 3)
     ensure -> 1`hpt3  = 1`dapt3 * (10 ^ 3)
-    ; precision loss
-    ; ensure -> 1`dapt3 = 1`pt3   * (10 ^ 3)
-    ; ensure -> 1`dpt3  = 1`pt3   / (10 ^ 3)
-    ; ensure -> 1`cpt3  = 1`dpt3  / (10 ^ 3)
-    ; ensure -> 1`mpt3  = 1`cpt3  / (10 ^ 3)
-    ; ensure -> 1`upt3  = 1`mpt3  / (10 ^ 9)
-    ; ensure -> 1`npt3  = 1`upt3  / (10 ^ 9)
-    ; ensure -> 1`ppt3  = 1`npt3  / (10 ^ 9)
-    ; ensure -> 1`fpt3  = 1`ppt3  / (10 ^ 9)
-    ; ensure -> 1`apt3  = 1`fpt3  / (10 ^ 9)
+    ensure -> 1`dapt3 = 1`pt3   * (10 ^ 3)
+    ensure -> 1`dpt3  = 1`pt3   / (10 ^ 3)
+    ensure -> 1`cpt3  = 1`dpt3  / (10 ^ 3)
+    ensure -> 1`mpt3  = 1`cpt3  / (10 ^ 3)
+    ensure -> 1`upt3  = 1`mpt3  / (10 ^ 9)
+    ensure -> 1`npt3  = 1`upt3  / (10 ^ 9)
+    ensure -> 1`ppt3  = 1`npt3  / (10 ^ 9)
+    ensure -> 1`fpt3  = 1`ppt3  / (10 ^ 9)
+    ensure -> 1`apt3  = 1`fpt3  / (10 ^ 9)
     passed
 
-    ; precision loss
-    ; ensure -> 1`Epc3  = 1`Ppc3  * (10 ^ 9)
-    ; ensure -> 1`Ppc3  = 1`Tpc3  * (10 ^ 9)
-    ; ensure -> 1`Tpc3  = 1`Gpc3  * (10 ^ 9)
-    ; ensure -> 1`Gpc3  = 1`Mpc3  * (10 ^ 9)
+    ensure -> 1`Epc3  = 1`Ppc3  * (10 ^ 9)
+    ensure -> 1`Ppc3  = 1`Tpc3  * (10 ^ 9)
+    ensure -> 1`Tpc3  = 1`Gpc3  * (10 ^ 9)
+    ensure -> 1`Gpc3  = 1`Mpc3  * (10 ^ 9)
     ensure -> 1`Mpc3  = 1`kpc3  * (10 ^ 9)
     ensure -> 1`kpc3  = 1`hpc3  * (10 ^ 3)
     ensure -> 1`hpc3  = 1`dapc3 * (10 ^ 3)
     ensure -> 1`dapc3 = 1`pc3   * (10 ^ 3)
-    ; precision loss
-    ; ensure -> 1`dpc3  = 1`pc3   / (10 ^ 3)
-    ; ensure -> 1`cpc3  = 1`dpc3  / (10 ^ 3)
-    ; ensure -> 1`mpc3  = 1`cpc3  / (10 ^ 3)
-    ; ensure -> 1`upc3  = 1`mpc3  / (10 ^ 9)
-    ; ensure -> 1`npc3  = 1`upc3  / (10 ^ 9)
-    ; ensure -> 1`ppc3  = 1`npc3  / (10 ^ 9)
-    ; ensure -> 1`fpc3  = 1`ppc3  / (10 ^ 9)
-    ; ensure -> 1`apc3  = 1`fpc3  / (10 ^ 9)
+    ensure -> 1`dpc3  = 1`pc3   / (10 ^ 3)
+    ensure -> 1`cpc3  = 1`dpc3  / (10 ^ 3)
+    ensure -> 1`mpc3  = 1`cpc3  / (10 ^ 3)
+    ensure -> 1`upc3  = 1`mpc3  / (10 ^ 9)
+    ensure -> 1`npc3  = 1`upc3  / (10 ^ 9)
+    ensure -> 1`ppc3  = 1`npc3  / (10 ^ 9)
+    ensure -> 1`fpc3  = 1`ppc3  / (10 ^ 9)
+    ensure -> 1`apc3  = 1`fpc3  / (10 ^ 9)
     passed
 
 
@@ -1959,10 +1946,9 @@ do [
 
     topic « time - math // scales
 
-    ; precision loss
-    ; ensure -> 1`as  = 1`fs  / (10 ^ 3)
-    ; ensure -> 1`fs  = 1`ps  / (10 ^ 3)
-    ; ensure -> 1`ps  = 1`ns  / (10 ^ 3)
+    ensure -> 1`as  = 1`fs  / (10 ^ 3)
+    ensure -> 1`fs  = 1`ps  / (10 ^ 3)
+    ensure -> 1`ps  = 1`ns  / (10 ^ 3)
     ensure -> 1`ns  = 1`us  / (10 ^ 3)
     ensure -> 1`us  = 1`ms  / (10 ^ 3)
     ensure -> 1`ms  = 1`cs  / 10
@@ -2143,10 +2129,9 @@ do [
     ensure -> 1`mg  = 1`cg  / 10
     ensure -> 1`ug  = 1`mg  / (10 ^ 3)
     ensure -> 1`ng  = 1`ug  / (10 ^ 3)
-    ; precision loss
-    ; ensure -> 1`pg  = 1`ng  / (10 ^ 3)
-    ; ensure -> 1`fg  = 1`pg  / (10 ^ 3)
-    ; ensure -> 1`ag  = 1`fg  / (10 ^ 3)
+    ensure -> 1`pg  = 1`ng  / (10 ^ 3)
+    ensure -> 1`fg  = 1`pg  / (10 ^ 3)
+    ensure -> 1`ag  = 1`fg  / (10 ^ 3)
     passed
 
 
@@ -2333,10 +2318,9 @@ do [
     ensure -> 1`mm/s  = 1`cm/s  /  10
     ensure -> 1`um/s  = 1`mm/s  / (10 ^ 3)
     ensure -> 1`nm/s  = 1`um/s  / (10 ^ 3)
-    ; precision loss
-    ; ensure -> 1`pm/s  = 1`nm/s  / (10 ^ 3)
-    ; ensure -> 1`fm/s  = 1`pm/s  / (10 ^ 3)
-    ; ensure -> 1`am/s  = 1`fm/s  / (10 ^ 3)
+    ensure -> 1`pm/s  = 1`nm/s  / (10 ^ 3)
+    ensure -> 1`fm/s  = 1`pm/s  / (10 ^ 3)
+    ensure -> 1`am/s  = 1`fm/s  / (10 ^ 3)
     passed
 
 
@@ -2502,10 +2486,9 @@ do [
     ensure -> 1`mm/s2  = 1`cm/s2  /  10
     ensure -> 1`um/s2  = 1`mm/s2  / (10 ^ 3)
     ensure -> 1`nm/s2  = 1`um/s2  / (10 ^ 3)
-    ; precision loss
-    ; ensure -> 1`pm/s2  = 1`nm/s2  / (10 ^ 3)
-    ; ensure -> 1`fm/s2  = 1`pm/s2  / (10 ^ 3)
-    ; ensure -> 1`am/s2  = 1`fm/s2  / (10 ^ 3)
+    ensure -> 1`pm/s2  = 1`nm/s2  / (10 ^ 3)
+    ensure -> 1`fm/s2  = 1`pm/s2  / (10 ^ 3)
+    ensure -> 1`am/s2  = 1`fm/s2  / (10 ^ 3)
     passed
 
 
@@ -2650,10 +2633,9 @@ do [
     ensure -> 1`mN  = 1`cN  /  10
     ensure -> 1`uN  = 1`mN  / (10 ^ 3)
     ensure -> 1`nN  = 1`uN  / (10 ^ 3)
-    ; precision loss
-    ; ensure -> 1`pN  = 1`nN  / (10 ^ 3)
-    ; ensure -> 1`fN  = 1`pN  / (10 ^ 3)
-    ; ensure -> 1`aN  = 1`fN  / (10 ^ 3)
+    ensure -> 1`pN  = 1`nN  / (10 ^ 3)
+    ensure -> 1`fN  = 1`pN  / (10 ^ 3)
+    ensure -> 1`aN  = 1`fN  / (10 ^ 3)
     passed
 
 
@@ -2797,8 +2779,7 @@ do [
 
     topic « pressure - math // scales
 
-    ; precision loss
-    ; ensure -> 1`EPa  = 1`PPa  * (10 ^ 3)
+    ensure -> 1`EPa  = 1`PPa  * (10 ^ 3)
     ensure -> 1`PPa  = 1`TPa  * (10 ^ 3)
     ensure -> 1`TPa  = 1`GPa  * (10 ^ 3)
     ensure -> 1`GPa  = 1`MPa  * (10 ^ 3)
@@ -2811,16 +2792,14 @@ do [
     ensure -> 1`mPa  = 1`cPa  /  10
     ensure -> 1`uPa  = 1`mPa  / (10 ^ 3)
     ensure -> 1`nPa  = 1`uPa  / (10 ^ 3)
-    ; precision loss
-    ; ensure -> 1`pPa  = 1`nPa  / (10 ^ 3)
-    ; ensure -> 1`fPa  = 1`pPa  / (10 ^ 3)
-    ; ensure -> 1`aPa  = 1`fPa  / (10 ^ 3)
+    ensure -> 1`pPa  = 1`nPa  / (10 ^ 3)
+    ensure -> 1`fPa  = 1`pPa  / (10 ^ 3)
+    ensure -> 1`aPa  = 1`fPa  / (10 ^ 3)
     passed
 
-    ; precision loss
-    ; ensure -> 1`Ebar  = 1`Pbar  * (10 ^ 3)
-    ; ensure -> 1`Pbar  = 1`Tbar  * (10 ^ 3)
-    ; ensure -> 1`Tbar  = 1`Gbar  * (10 ^ 3)
+    ensure -> 1`Ebar  = 1`Pbar  * (10 ^ 3)
+    ensure -> 1`Pbar  = 1`Tbar  * (10 ^ 3)
+    ensure -> 1`Tbar  = 1`Gbar  * (10 ^ 3)
     ensure -> 1`Gbar  = 1`Mbar  * (10 ^ 3)
     ensure -> 1`Mbar  = 1`kbar  * (10 ^ 3)
     ensure -> 1`kbar  = 1`hbar  *  10
@@ -2831,10 +2810,9 @@ do [
     ensure -> 1`mbar  = 1`cbar  /  10
     ensure -> 1`ubar  = 1`mbar  / (10 ^ 3)
     ensure -> 1`nbar  = 1`ubar  / (10 ^ 3)
-    ; precision loss
-    ; ensure -> 1`pbar  = 1`nbar  / (10 ^ 3)
-    ; ensure -> 1`fbar  = 1`pbar  / (10 ^ 3)
-    ; ensure -> 1`abar  = 1`fbar  / (10 ^ 3)
+    ensure -> 1`pbar  = 1`nbar  / (10 ^ 3)
+    ensure -> 1`fbar  = 1`pbar  / (10 ^ 3)
+    ensure -> 1`abar  = 1`fbar  / (10 ^ 3)
     passed
 
 
@@ -2976,8 +2954,7 @@ do [
 
     topic « energy - math // scales
 
-    ; precision loss
-    ; ensure -> 1`EJ  = 1`PJ  * (10 ^ 3)
+    ensure -> 1`EJ  = 1`PJ  * (10 ^ 3)
     ensure -> 1`PJ  = 1`TJ  * (10 ^ 3)
     ensure -> 1`TJ  = 1`GJ  * (10 ^ 3)
     ensure -> 1`GJ  = 1`MJ  * (10 ^ 3)
@@ -2990,14 +2967,13 @@ do [
     ensure -> 1`mJ  = 1`cJ  /  10
     ensure -> 1`uJ  = 1`mJ  / (10 ^ 3)
     ensure -> 1`nJ  = 1`uJ  / (10 ^ 3)
-    ; ensure -> 1`pJ  = 1`nJ  / (10 ^ 3)
-    ; ensure -> 1`fJ  = 1`pJ  / (10 ^ 3)
-    ; ensure -> 1`aJ  = 1`fJ  / (10 ^ 3)
+    ensure -> 1`pJ  = 1`nJ  / (10 ^ 3)
+    ensure -> 1`fJ  = 1`pJ  / (10 ^ 3)
+    ensure -> 1`aJ  = 1`fJ  / (10 ^ 3)
     passed
 
-    ; precision loss
-    ; ensure -> 1`EWh  = 1`PWh  * (10 ^ 3)
-    ; ensure -> 1`PWh  = 1`TWh  * (10 ^ 3)
+    ensure -> 1`EWh  = 1`PWh  * (10 ^ 3)
+    ensure -> 1`PWh  = 1`TWh  * (10 ^ 3)
     ensure -> 1`TWh  = 1`GWh  * (10 ^ 3)
     ensure -> 1`GWh  = 1`MWh  * (10 ^ 3)
     ensure -> 1`MWh  = 1`kWh  * (10 ^ 3)
@@ -3009,13 +2985,12 @@ do [
     ensure -> 1`mWh  = 1`cWh  /  10
     ensure -> 1`uWh  = 1`mWh  / (10 ^ 3)
     ensure -> 1`nWh  = 1`uWh  / (10 ^ 3)
-    ; ensure -> 1`pWh  = 1`nWh  / (10 ^ 3)
-    ; ensure -> 1`fWh  = 1`pWh  / (10 ^ 3)
-    ; ensure -> 1`aWh  = 1`fWh  / (10 ^ 3)
+    ensure -> 1`pWh  = 1`nWh  / (10 ^ 3)
+    ensure -> 1`fWh  = 1`pWh  / (10 ^ 3)
+    ensure -> 1`aWh  = 1`fWh  / (10 ^ 3)
     passed
 
-    ; precision loss
-    ; ensure -> 1`Ecal  = 1`Pcal  * (10 ^ 3)
+    ensure -> 1`Ecal  = 1`Pcal  * (10 ^ 3)
     ensure -> 1`Pcal  = 1`Tcal  * (10 ^ 3)
     ensure -> 1`Tcal  = 1`Gcal  * (10 ^ 3)
     ensure -> 1`Gcal  = 1`Mcal  * (10 ^ 3)
@@ -3028,9 +3003,9 @@ do [
     ensure -> 1`mcal  = 1`ccal  /  10
     ensure -> 1`ucal  = 1`mcal  / (10 ^ 3)
     ensure -> 1`ncal  = 1`ucal  / (10 ^ 3)
-    ; ensure -> 1`pcal  = 1`ncal  / (10 ^ 3)
-    ; ensure -> 1`fcal  = 1`pcal  / (10 ^ 3)
-    ; ensure -> 1`acal  = 1`fcal  / (10 ^ 3)
+    ensure -> 1`pcal  = 1`ncal  / (10 ^ 3)
+    ensure -> 1`fcal  = 1`pcal  / (10 ^ 3)
+    ensure -> 1`acal  = 1`fcal  / (10 ^ 3)
     passed
 
     ; division by zero?
