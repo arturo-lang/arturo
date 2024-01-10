@@ -279,18 +279,18 @@ proc toQuantity*(v: QuantityValue, atoms: Atoms): Quantity =
     result.original = v
     result.value = v
 
-    echo "converting to quantity: " & $(v)
+    # echo "converting to quantity: " & $(v)
 
     for atom in atoms:
-        echo $(atom)
+        # echo $(atom)
         let prim = getPrimitive(atom.unit)
         result.signature += prim.signature * atom.power
-        echo "- result.value (before): " & $(result.value)
-        echo "- primitive: " & $(prim)
+        # echo "- result.value (before): " & $(result.value)
+        # echo "- primitive: " & $(prim)
         let intermediate = prim.value ^ atom.power
-        echo "- intermediate: " & $(intermediate)
+        # echo "- intermediate: " & $(intermediate)
         result.value *= intermediate
-        echo "- result.value (after): " & $(result.value)
+        # echo "- result.value (after): " & $(result.value)
 
         if unlikely(atom.unit.u.kind == User):
             result.withUserUnits = true
@@ -793,9 +793,9 @@ proc initQuantities*() =
     Properties = generateProperties()
     Quantities = generateQuantities()
 
-    for k,q in Quantities:
-        echo $(k) & " => "
-        echo "\t" & $(q)
+    # for k,q in Quantities:
+    #     echo $(k) & " => "
+    #     echo "\t" & $(q)
 
     when not defined(NOGMP):
         generateConstants()
