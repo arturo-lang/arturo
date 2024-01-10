@@ -56,7 +56,7 @@ func addIntWithOverflowI*(a, b: int, res: var int): bool {.inline, nosideeffect.
         res = subres
         return false
 
-func subtIntWithOverflowI*(a, b: int, res: var int): bool {.inline, nosideeffect.} =
+func subIntWithOverflowI*(a, b: int, res: var int): bool {.inline, nosideeffect.} =
     var subres: int
     if unlikely(subIntWithOverflow(a, b, subres)):
         return true
