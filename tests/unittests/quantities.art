@@ -3181,8 +3181,6 @@ do [
 
     topic « power - math // conversions
 
-    ; poundal is broken due to the use of pounds
-
     ensure -> 1`W   =   1`J/s
     passed
 
