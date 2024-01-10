@@ -895,6 +895,10 @@ func `<=`*(x, y: VRational): bool =
 func `==`*(x, y: VRational): bool =
     # compare two VRationals, and
     # check if `x` is equal to `y`
+    debugEcho "checking equality between rationals"
+    debugEcho "X = " & $(x)
+    debugEcho "Y = " & $(y)
+
     if x.rKind == NormalRational:
         if y.rKind == NormalRational:
             result = (x - y).num == 0
