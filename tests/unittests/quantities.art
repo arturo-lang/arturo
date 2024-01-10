@@ -193,8 +193,7 @@ do [
     ensure -> 1`apx  = 1`fpx  / (10 ^ 3)
     passed
 
-    ; precision loss
-    ; ensure -> 1`Ept  = 1`Ppt  * (10 ^ 3)
+    ensure -> 1`Ept  = 1`Ppt  * (10 ^ 3)
     ensure -> 1`Ppt  = 1`Tpt  * (10 ^ 3)
     ensure -> 1`Tpt  = 1`Gpt  * (10 ^ 3)
     ensure -> 1`Gpt  = 1`Mpt  * (10 ^ 3)
@@ -208,13 +207,11 @@ do [
     ensure -> 1`upt  = 1`mpt  / (10 ^ 3)
     ensure -> 1`npt  = 1`upt  / (10 ^ 3)
     ensure -> 1`ppt  = 1`npt  / (10 ^ 3)
-    ; precision loss
-    ; ensure -> 1`fpt  = 1`ppt  / (10 ^ 3)
-    ; ensure -> 1`apt  = 1`fpt  / (10 ^ 3)
+    ensure -> 1`fpt  = 1`ppt  / (10 ^ 3)
+    ensure -> 1`apt  = 1`fpt  / (10 ^ 3)
     passed
 
-    ; precision loss
-    ; ensure -> 1`Epc  = 1`Ppc  * (10 ^ 3)
+    ensure -> 1`Epc  = 1`Ppc  * (10 ^ 3)
     ensure -> 1`Ppc  = 1`Tpc  * (10 ^ 3)
     ensure -> 1`Tpc  = 1`Gpc  * (10 ^ 3)
     ensure -> 1`Gpc  = 1`Mpc  * (10 ^ 3)
@@ -228,9 +225,8 @@ do [
     ensure -> 1`upc  = 1`mpc  / (10 ^ 3)
     ensure -> 1`npc  = 1`upc  / (10 ^ 3)
     ensure -> 1`ppc  = 1`npc  / (10 ^ 3)
-    ; precision loss
-    ; ensure -> 1`fpc  = 1`ppc  / (10 ^ 3)
-    ; ensure -> 1`apc  = 1`fpc  / (10 ^ 3)
+    ensure -> 1`fpc  = 1`ppc  / (10 ^ 3)
+    ensure -> 1`apc  = 1`fpc  / (10 ^ 3)
     passed
 
 
