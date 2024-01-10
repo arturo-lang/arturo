@@ -127,9 +127,10 @@ proc getDefined(str: string): Quantity =
     result = defs[unit]
 
     if pref != "No":
-        var prefVal = Powers[prefixes[pref].val+18]# toRational(toRational(pow(10.0, abs(float(prefixes[pref].val))))
-        if prefixes[pref].val < 0:
-            prefVal = reciprocal(prefVal)
+        #var prefVal = toRational(pow(10.0, abs(float(prefixes[pref].val)))) # Powers[prefixes[pref].val+18]
+        var prefVal = Powers[prefixes[pref].val+18]
+        # if prefixes[pref].val < 0:
+        #     prefVal = reciprocal(prefVal)
 
         result.value *= prefVal
         result.original *= prefVal
