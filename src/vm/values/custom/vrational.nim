@@ -627,10 +627,13 @@ func `*=`*(x: var VRational, y: VRational) =
     if x.rKind == NormalRational:
         if y.rKind == NormalRational:
             overflowGuard:
+                var num, den: int
                 #x.num *= y.num
-                tryOp: mulIntWithOverflowI(x.num, y.num, x.num)
+                tryOp: mulIntWithOverflow(x.num, y.num, num)
                 #x.den *= y.den
-                tryOp: mulIntWithOverflowI(x.den, y.den, x.den)
+                tryOp: mulIntWithOverflow(x.den, y.den, den)
+                x.num = num
+                x.den = den
 
                 reduce(x)
             do:
@@ -750,8 +753,11 @@ func `/=`*(x: var VRational, y: VRational) =
     if x.rKind == NormalRational:
         if y.rKind == NormalRational:
             overflowGuard:
-                tryOp: mulIntWithOverflowI(x.num, y.den, x.num)
-                tryOp: mulIntWithOverflowI(x.den, y.num, x.den)
+                var num, den: int
+                tryOp: mulIntWithOverflow(x.num, y.den, num)
+                tryOp: mulIntWithOverflow(x.den, y.num, den)
+                x.num = num
+                x.den = den
                 reduce(x)
             do:
                 when not defined(NOGMP):
