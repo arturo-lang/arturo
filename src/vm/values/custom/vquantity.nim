@@ -282,7 +282,7 @@ proc toQuantity*(v: QuantityValue, atoms: Atoms): Quantity =
     # echo "converting to quantity: " & $(v)
 
     for atom in atoms:
-        echo $(atom)
+        # echo $(atom)
         let prim = getPrimitive(atom.unit)
         result.signature += prim.signature * atom.power
         # echo "- result.value (before): " & $(result.value)
