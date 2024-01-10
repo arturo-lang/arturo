@@ -4027,8 +4027,7 @@ do [
 
     topic « magneticFluxDensity - math // scales
 
-    ; precision loss
-    ; ensure -> 1`ET  = 1`PT  * (10 ^ 3)
+    ensure -> 1`ET  = 1`PT  * (10 ^ 3)
     ensure -> 1`PT  = 1`TT  * (10 ^ 3)
     ensure -> 1`TT  = 1`GT  * (10 ^ 3)
     ensure -> 1`GT  = 1`MT  * (10 ^ 3)
@@ -4041,12 +4040,11 @@ do [
     ensure -> 1`mT  = 1`cT  /  10
     ensure -> 1`uT  = 1`mT  / (10 ^ 3)
     ensure -> 1`nT  = 1`uT  / (10 ^ 3)
-    ; ensure -> 1`pT  = 1`nT  / (10 ^ 3)
-    ; ensure -> 1`fT  = 1`pT  / (10 ^ 3)
-    ; ensure -> 1`aT  = 1`fT  / (10 ^ 3)
+    ensure -> 1`pT  = 1`nT  / (10 ^ 3)
+    ensure -> 1`fT  = 1`pT  / (10 ^ 3)
+    ensure -> 1`aT  = 1`fT  / (10 ^ 3)
     passed
 
-    ; precision loss
     ensure -> 1`EG  = 1`PG  * (10 ^ 3)
     ensure -> 1`PG  = 1`TG  * (10 ^ 3)
     ensure -> 1`TG  = 1`GG  * (10 ^ 3)
@@ -4060,9 +4058,9 @@ do [
     ensure -> 1`mG  = 1`cG  /  10
     ensure -> 1`uG  = 1`mG  / (10 ^ 3)
     ensure -> 1`nG  = 1`uG  / (10 ^ 3)
-    ; ensure -> 1`pG  = 1`nG  / (10 ^ 3)
-    ; ensure -> 1`fG  = 1`pG  / (10 ^ 3)
-    ; ensure -> 1`aG  = 1`fG  / (10 ^ 3)
+    ensure -> 1`pG  = 1`nG  / (10 ^ 3)
+    ensure -> 1`fG  = 1`pG  / (10 ^ 3)
+    ensure -> 1`aG  = 1`fG  / (10 ^ 3)
     passed
 
 
@@ -4185,7 +4183,6 @@ do [
 
     topic « information - math // scales
 
-    ; precision loss
     ensure -> 1`Eb  = 1`Pb  * (10 ^ 3)
     ensure -> 1`Pb  = 1`Tb  * (10 ^ 3)
     ensure -> 1`Tb  = 1`Gb  * (10 ^ 3)
@@ -4199,9 +4196,9 @@ do [
     ensure -> 1`mb  = 1`cb  /  10
     ensure -> 1`ub  = 1`mb  / (10 ^ 3)
     ensure -> 1`nb  = 1`ub  / (10 ^ 3)
-    ; ensure -> 1`pb  = 1`nb  / (10 ^ 3)
-    ; ensure -> 1`fb  = 1`pb  / (10 ^ 3)
-    ; ensure -> 1`ab  = 1`fb  / (10 ^ 3)
+    ensure -> 1`pb  = 1`nb  / (10 ^ 3)
+    ensure -> 1`fb  = 1`pb  / (10 ^ 3)
+    ensure -> 1`ab  = 1`fb  / (10 ^ 3)
     passed
 
 
@@ -4370,7 +4367,6 @@ do [
     topic « catalyticActivity - math // scales
 
 
-    ; precision loss
     ensure -> 1`Ekat  = 1`Pkat  * (10 ^ 3)
     ensure -> 1`Pkat  = 1`Tkat  * (10 ^ 3)
     ensure -> 1`Tkat  = 1`Gkat  * (10 ^ 3)
@@ -4384,9 +4380,9 @@ do [
     ensure -> 1`mkat  = 1`ckat  /  10
     ensure -> 1`ukat  = 1`mkat  / (10 ^ 3)
     ensure -> 1`nkat  = 1`ukat  / (10 ^ 3)
-    ; ensure -> 1`pkat  = 1`nkat  / (10 ^ 3)
-    ; ensure -> 1`fkat  = 1`pkat  / (10 ^ 3)
-    ; ensure -> 1`akat  = 1`fkat  / (10 ^ 3)
+    ensure -> 1`pkat  = 1`nkat  / (10 ^ 3)
+    ensure -> 1`fkat  = 1`pkat  / (10 ^ 3)
+    ensure -> 1`akat  = 1`fkat  / (10 ^ 3)
     passed
 
 
@@ -4455,7 +4451,6 @@ do [
 
     topic « frequency - math // scales
 
-    ; precision loss
     ensure -> 1`EHz  = 1`PHz  * (10 ^ 3)
     ensure -> 1`PHz  = 1`THz  * (10 ^ 3)
     ensure -> 1`THz  = 1`GHz  * (10 ^ 3)
@@ -4469,9 +4464,9 @@ do [
     ensure -> 1`mHz  = 1`cHz  /  10
     ensure -> 1`uHz  = 1`mHz  / (10 ^ 3)
     ensure -> 1`nHz  = 1`uHz  / (10 ^ 3)
-    ; ensure -> 1`pHz  = 1`nHz  / (10 ^ 3)
-    ; ensure -> 1`fHz  = 1`pHz  / (10 ^ 3)
-    ; ensure -> 1`aHz  = 1`fHz  / (10 ^ 3)
+    ensure -> 1`pHz  = 1`nHz  / (10 ^ 3)
+    ensure -> 1`fHz  = 1`pHz  / (10 ^ 3)
+    ensure -> 1`aHz  = 1`fHz  / (10 ^ 3)
     passed
 
 
@@ -4534,7 +4529,6 @@ do [
 
     topic « radiation - math // scales
 
-    ; precision loss
     ensure -> 1`EBq  = 1`PBq  * (10 ^ 3)
     ensure -> 1`PBq  = 1`TBq  * (10 ^ 3)
     ensure -> 1`TBq  = 1`GBq  * (10 ^ 3)
@@ -4548,16 +4542,15 @@ do [
     ensure -> 1`mBq  = 1`cBq  /  10
     ensure -> 1`uBq  = 1`mBq  / (10 ^ 3)
     ensure -> 1`nBq  = 1`uBq  / (10 ^ 3)
-    ; ensure -> 1`pBq  = 1`nBq  / (10 ^ 3)
-    ; ensure -> 1`fBq  = 1`pBq  / (10 ^ 3)
-    ; ensure -> 1`aBq  = 1`fBq  / (10 ^ 3)
+    ensure -> 1`pBq  = 1`nBq  / (10 ^ 3)
+    ensure -> 1`fBq  = 1`pBq  / (10 ^ 3)
+    ensure -> 1`aBq  = 1`fBq  / (10 ^ 3)
     passed
 
-    ; precision loss
-    ; ensure -> 1`ECi  = 1`PCi  * (10 ^ 3)
-    ; ensure -> 1`PCi  = 1`TCi  * (10 ^ 3)
-    ; ensure -> 1`TCi  = 1`GCi  * (10 ^ 3)
-    ; ensure -> 1`GCi  = 1`MCi  * (10 ^ 3)
+    ensure -> 1`ECi  = 1`PCi  * (10 ^ 3)
+    ensure -> 1`PCi  = 1`TCi  * (10 ^ 3)
+    ensure -> 1`TCi  = 1`GCi  * (10 ^ 3)
+    ensure -> 1`GCi  = 1`MCi  * (10 ^ 3)
     ensure -> 1`MCi  = 1`kCi  * (10 ^ 3)
     ensure -> 1`kCi  = 1`hCi  *  10
     ensure -> 1`hCi  = 1`daCi *  10
@@ -4567,9 +4560,9 @@ do [
     ensure -> 1`mCi  = 1`cCi  /  10
     ensure -> 1`uCi  = 1`mCi  / (10 ^ 3)
     ensure -> 1`nCi  = 1`uCi  / (10 ^ 3)
-    ; ensure -> 1`pCi  = 1`nCi  / (10 ^ 3)
-    ; ensure -> 1`fCi  = 1`pCi  / (10 ^ 3)
-    ; ensure -> 1`aCi  = 1`fCi  / (10 ^ 3)
+    ensure -> 1`pCi  = 1`nCi  / (10 ^ 3)
+    ensure -> 1`fCi  = 1`pCi  / (10 ^ 3)
+    ensure -> 1`aCi  = 1`fCi  / (10 ^ 3)
     passed
 
 
@@ -4641,7 +4634,6 @@ do [
 
     topic « radiationExposure - math // scales
 
-    ; precision loss
     ensure -> 1`EGy  = 1`PGy  * (10 ^ 3)
     ensure -> 1`PGy  = 1`TGy  * (10 ^ 3)
     ensure -> 1`TGy  = 1`GGy  * (10 ^ 3)
@@ -4655,12 +4647,11 @@ do [
     ensure -> 1`mGy  = 1`cGy  /  10
     ensure -> 1`uGy  = 1`mGy  / (10 ^ 3)
     ensure -> 1`nGy  = 1`uGy  / (10 ^ 3)
-    ; ensure -> 1`pGy  = 1`nGy  / (10 ^ 3)
-    ; ensure -> 1`fGy  = 1`pGy  / (10 ^ 3)
-    ; ensure -> 1`aGy  = 1`fGy  / (10 ^ 3)
+    ensure -> 1`pGy  = 1`nGy  / (10 ^ 3)
+    ensure -> 1`fGy  = 1`pGy  / (10 ^ 3)
+    ensure -> 1`aGy  = 1`fGy  / (10 ^ 3)
     passed
 
-    ; precision loss
     ensure -> 1`ESv  = 1`PSv  * (10 ^ 3)
     ensure -> 1`PSv  = 1`TSv  * (10 ^ 3)
     ensure -> 1`TSv  = 1`GSv  * (10 ^ 3)
@@ -4674,12 +4665,11 @@ do [
     ensure -> 1`mSv  = 1`cSv  /  10
     ensure -> 1`uSv  = 1`mSv  / (10 ^ 3)
     ensure -> 1`nSv  = 1`uSv  / (10 ^ 3)
-    ; ensure -> 1`pSv  = 1`nSv  / (10 ^ 3)
-    ; ensure -> 1`fSv  = 1`pSv  / (10 ^ 3)
-    ; ensure -> 1`aSv  = 1`fSv  / (10 ^ 3)
+    ensure -> 1`pSv  = 1`nSv  / (10 ^ 3)
+    ensure -> 1`fSv  = 1`pSv  / (10 ^ 3)
+    ensure -> 1`aSv  = 1`fSv  / (10 ^ 3)
     passed
 
-    ; precision loss
     ensure -> 1`ER  = 1`PR  * (10 ^ 3)
     ensure -> 1`PR  = 1`TR  * (10 ^ 3)
     ensure -> 1`TR  = 1`GR  * (10 ^ 3)
@@ -4693,9 +4683,9 @@ do [
     ensure -> 1`mR  = 1`cR  /  10
     ensure -> 1`uR  = 1`mR  / (10 ^ 3)
     ensure -> 1`nR  = 1`uR  / (10 ^ 3)
-    ; ensure -> 1`pR  = 1`nR  / (10 ^ 3)
-    ; ensure -> 1`fR  = 1`pR  / (10 ^ 3)
-    ; ensure -> 1`aR  = 1`fR  / (10 ^ 3)
+    ensure -> 1`pR  = 1`nR  / (10 ^ 3)
+    ensure -> 1`fR  = 1`pR  / (10 ^ 3)
+    ensure -> 1`aR  = 1`fR  / (10 ^ 3)
     passed
 
 
@@ -4770,8 +4760,7 @@ do [
 
     topic « viscosity - math // scales
 
-    ; precision loss
-    ; ensure -> 1`EP  = 1`PP  * (10 ^ 3)
+    ensure -> 1`EP  = 1`PP  * (10 ^ 3)
     ensure -> 1`PP  = 1`TP  * (10 ^ 3)
     ensure -> 1`TP  = 1`GP  * (10 ^ 3)
     ensure -> 1`GP  = 1`MP  * (10 ^ 3)
@@ -4855,7 +4844,6 @@ do [
 
     topic « kinematicViscosity - math // scales
 
-    ; precision loss
     ensure -> 1`ESt  = 1`PSt  * (10 ^ 3)
     ensure -> 1`PSt  = 1`TSt  * (10 ^ 3)
     ensure -> 1`TSt  = 1`GSt  * (10 ^ 3)
@@ -4869,9 +4857,9 @@ do [
     ensure -> 1`mSt  = 1`cSt  /  10
     ensure -> 1`uSt  = 1`mSt  / (10 ^ 3)
     ensure -> 1`nSt  = 1`uSt  / (10 ^ 3)
-    ; ensure -> 1`pSt  = 1`nSt  / (10 ^ 3)
-    ; ensure -> 1`fSt  = 1`pSt  / (10 ^ 3)
-    ; ensure -> 1`aSt  = 1`fSt  / (10 ^ 3)
+    ensure -> 1`pSt  = 1`nSt  / (10 ^ 3)
+    ensure -> 1`fSt  = 1`pSt  / (10 ^ 3)
+    ensure -> 1`aSt  = 1`fSt  / (10 ^ 3)
     passed
 
 
@@ -4940,8 +4928,7 @@ do [
 
     topic « angularVelocity - math // scales
 
-    ; precision loss
-    ; ensure -> 1`Erpm  = 1`Prpm  * (10 ^ 3)
+    ensure -> 1`Erpm  = 1`Prpm  * (10 ^ 3)
     ensure -> 1`Prpm  = 1`Trpm  * (10 ^ 3)
     ensure -> 1`Trpm  = 1`Grpm  * (10 ^ 3)
     ensure -> 1`Grpm  = 1`Mrpm  * (10 ^ 3)
@@ -4954,9 +4941,9 @@ do [
     ensure -> 1`mrpm  = 1`crpm  /  10
     ensure -> 1`urpm  = 1`mrpm  / (10 ^ 3)
     ensure -> 1`nrpm  = 1`urpm  / (10 ^ 3)
-    ; ensure -> 1`prpm  = 1`nrpm  / (10 ^ 3)
-    ; ensure -> 1`frpm  = 1`prpm  / (10 ^ 3)
-    ; ensure -> 1`arpm  = 1`frpm  / (10 ^ 3)
+    ensure -> 1`prpm  = 1`nrpm  / (10 ^ 3)
+    ensure -> 1`frpm  = 1`prpm  / (10 ^ 3)
+    ensure -> 1`arpm  = 1`frpm  / (10 ^ 3)
     passed
 
 
@@ -5087,7 +5074,6 @@ do [
 
     topic « dataTransferRate - math // scales
 
-    ; precision loss
     ensure -> 1`Ebps  = 1`Pbps  * (10 ^ 3)
     ensure -> 1`Pbps  = 1`Tbps  * (10 ^ 3)
     ensure -> 1`Tbps  = 1`Gbps  * (10 ^ 3)
@@ -5101,9 +5087,9 @@ do [
     ensure -> 1`mbps  = 1`cbps  /  10
     ensure -> 1`ubps  = 1`mbps  / (10 ^ 3)
     ensure -> 1`nbps  = 1`ubps  / (10 ^ 3)
-    ; ensure -> 1`pbps  = 1`nbps  / (10 ^ 3)
-    ; ensure -> 1`fbps  = 1`pbps  / (10 ^ 3)
-    ; ensure -> 1`abps  = 1`fbps  / (10 ^ 3)
+    ensure -> 1`pbps  = 1`nbps  / (10 ^ 3)
+    ensure -> 1`fbps  = 1`pbps  / (10 ^ 3)
+    ensure -> 1`abps  = 1`fbps  / (10 ^ 3)
     passed
 
 
@@ -5161,7 +5147,6 @@ do [
 
     topic « luminosity - math // scales
 
-    ; precision loss
     ensure -> 1`Ecd  = 1`Pcd  * (10 ^ 3)
     ensure -> 1`Pcd  = 1`Tcd  * (10 ^ 3)
     ensure -> 1`Tcd  = 1`Gcd  * (10 ^ 3)
@@ -5175,9 +5160,9 @@ do [
     ensure -> 1`mcd  = 1`ccd  /  10
     ensure -> 1`ucd  = 1`mcd  / (10 ^ 3)
     ensure -> 1`ncd  = 1`ucd  / (10 ^ 3)
-    ; ensure -> 1`pcd  = 1`ncd  / (10 ^ 3)
-    ; ensure -> 1`fcd  = 1`pcd  / (10 ^ 3)
-    ; ensure -> 1`acd  = 1`fcd  / (10 ^ 3)
+    ensure -> 1`pcd  = 1`ncd  / (10 ^ 3)
+    ensure -> 1`fcd  = 1`pcd  / (10 ^ 3)
+    ensure -> 1`acd  = 1`fcd  / (10 ^ 3)
     passed
 
 
@@ -5227,7 +5212,6 @@ do [
 
     topic « illuminance - math // scales
 
-    ; precision loss
     ensure -> 1`Elx  = 1`Plx  * (10 ^ 3)
     ensure -> 1`Plx  = 1`Tlx  * (10 ^ 3)
     ensure -> 1`Tlx  = 1`Glx  * (10 ^ 3)
@@ -5241,9 +5225,9 @@ do [
     ensure -> 1`mlx  = 1`clx  /  10
     ensure -> 1`ulx  = 1`mlx  / (10 ^ 3)
     ensure -> 1`nlx  = 1`ulx  / (10 ^ 3)
-    ; ensure -> 1`plx  = 1`nlx  / (10 ^ 3)
-    ; ensure -> 1`flx  = 1`plx  / (10 ^ 3)
-    ; ensure -> 1`alx  = 1`flx  / (10 ^ 3)
+    ensure -> 1`plx  = 1`nlx  / (10 ^ 3)
+    ensure -> 1`flx  = 1`plx  / (10 ^ 3)
+    ensure -> 1`alx  = 1`flx  / (10 ^ 3)
     passed
 
 
@@ -5321,7 +5305,6 @@ do [
 
     topic « luminousFlux - math // scales
 
-    ; precision loss
     ensure -> 1`Elm  = 1`Plm  * (10 ^ 3)
     ensure -> 1`Plm  = 1`Tlm  * (10 ^ 3)
     ensure -> 1`Tlm  = 1`Glm  * (10 ^ 3)
@@ -5335,9 +5318,9 @@ do [
     ensure -> 1`mlm  = 1`clm  /  10
     ensure -> 1`ulm  = 1`mlm  / (10 ^ 3)
     ensure -> 1`nlm  = 1`ulm  / (10 ^ 3)
-    ; ensure -> 1`plm  = 1`nlm  / (10 ^ 3)
-    ; ensure -> 1`flm  = 1`plm  / (10 ^ 3)
-    ; ensure -> 1`alm  = 1`flm  / (10 ^ 3)
+    ensure -> 1`plm  = 1`nlm  / (10 ^ 3)
+    ensure -> 1`flm  = 1`plm  / (10 ^ 3)
+    ensure -> 1`alm  = 1`flm  / (10 ^ 3)
     passed
 
 
