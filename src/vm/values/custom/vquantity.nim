@@ -149,9 +149,7 @@ func isTemperature(q: Quantity): bool {.inline.} =
 
 proc getExchangeRate(curr: string): float =
     let s = toLowerAscii(curr)
-    echo "in getExchangeRate: " & curr
     if ExchangeRates.len == 0:
-        echo "downloading rates..."
         let url = "https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies/usd.min.json"
         let content = waitFor (newAsyncHttpClient().getContent(url))
         let response = parseJson(content)
@@ -160,11 +158,6 @@ proc getExchangeRate(curr: string): float =
                 ExchangeRates[k] = v.fnum
             else:
                 ExchangeRates[k] = float(v.num)
-
-    if ExchangeRates.hasKey(s):
-        echo "key exists"
-    else:
-        echo "key DOESN'T exist"
 
     return ExchangeRates[s]
 
