@@ -661,6 +661,7 @@ func `*=`*(x: var VRational, y: int) =
 
 func `*=`*(x: var VRational, y: float) = 
     # multiply VRational by float, in-place
+    # debugEcho "*= with floating: " & $(y)
     x *= toRational(y)
 
 when not defined(NOGMP):
@@ -895,9 +896,9 @@ func `<=`*(x, y: VRational): bool =
 func `==`*(x, y: VRational): bool =
     # compare two VRationals, and
     # check if `x` is equal to `y`
-    debugEcho "checking equality between rationals"
-    debugEcho "X = " & $(x)
-    debugEcho "Y = " & $(y)
+    # debugEcho "checking equality between rationals"
+    # debugEcho "X = " & $(x)
+    # debugEcho "Y = " & $(y)
 
     if x.rKind == NormalRational:
         if y.rKind == NormalRational:
