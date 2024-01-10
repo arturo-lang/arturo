@@ -8,9 +8,6 @@ do [
 
     topic « currencies - currency? (hidden)
 
-    ; This test is hidden since it takes a lot of time to execute
-    ; You can test it manually if you want to
-
     ensure -> every? [
         1`AED 1`ALL 1`ARS 1`AUD 1`BGN 1`BHD 1`BNB 1`BND 1`BOB 1`BRL 1`BTC 1`BWP
         1`CAD 1`CHF 1`CLP 1`CNY 1`COP 1`CRC 1`CZK 1`DKK 1`DOP 1`DZD 1`EGP 1`ETB
