@@ -360,7 +360,7 @@ do [
     ensure -> 4`yd2  = 2`yd  ^ 2
     ensure -> 4`ftm2 = 2`ftm ^ 2
     ensure -> 4`rod2 = 2`rod ^ 2
-    ensure -> 4`mi2  = 2`m i ^ 2
+    ensure -> 4`mi2  = 2`mi ^ 2
     ensure -> 4`fur2 = 2`fur ^ 2
     ensure -> 4`nmi2 = 2`nmi ^ 2
     ensure -> 4`ang2 = 2`ang ^ 2
