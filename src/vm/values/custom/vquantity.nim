@@ -97,6 +97,23 @@ const
     AtomExponents = ["⁻⁵", "⁻⁴", "⁻³", "⁻²", "⁻¹", "", "", "²", "³", "⁴", "⁵"]
     NoUnitFound = getNoUnitFound()
 
+let
+    Powers = [
+        1 // 1000000000000000000, 0 // 1, 0 // 1,
+        1 // 1000000000000000, 0 // 1, 0 // 1,
+        1 // 1000000000000, 0 // 1, 0 // 1,
+        1 // 1000000000, 0 // 1, 0 // 1,
+        1 // 1000000, 0 // 1, 0 // 1,
+        1 // 1000, 1 // 100, 1 // 10, 
+        1 // 1, 10 // 1, 100 // 1, 
+        1000 // 1, 0 // 1, 0 // 1,
+        1000000 // 1, 0 // 1, 0 // 1,
+        1000000000 // 1, 0 // 1, 0 // 1,
+        1000000000000 // 1, 0 // 1, 0 // 1,
+        1000000000000000 // 1, 0 // 1, 0 // 1,
+        1000000000000000000 // 1
+    ]
+
 #=======================================
 # Variables
 #=======================================
@@ -169,7 +186,20 @@ proc getPrimitive(unit: PrefixedUnit): Quantity =
         Quantities[unit.u].value = reciprocal(toRational(xrate))
         result.value = reciprocal(toRational(xrate))
     elif unit.p != No_Prefix:
-        result.value *= pow(float(10), float(ord(unit.p)))
+        result.value *= Powers[ord(unit.p)]
+        # echo "prefixed unit"
+        # if ord(unit.p) == -9:
+        #     echo "with -9!!"
+        #     result.value *= 1 // 1000000000
+        # elif ord(unit.p) == -12:
+        #     echo "with -12!!!"
+        #     result.value *= 1 // 1000000000000
+        # elif ord(unit.p) == -15:
+        #     result.value *= 1 // 1000000000000000
+        # elif ord(unit.p) == -18:
+        #     result.value *= 1 // 1000000000000000000
+        # else:
+        #     result.value *= pow(float(10), float(ord(unit.p)))
 
 proc getSignature*(atoms: Atoms): QuantitySignature =
     for atom in atoms:
@@ -438,8 +468,8 @@ proc `==`*(a, b: Quantity): bool =
 
     let convB = b.convertTo(a.atoms)
 
-    echo "converted B: "
-    inspect(convB)
+    # echo "converted B: "
+    # inspect(convB)
 
     return a.original == convB.original
 
