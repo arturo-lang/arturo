@@ -11,18 +11,18 @@ do [
     ; This test is hidden since it takes a lot of time to execute
     ; You can test it manually if you want to
 
-    ; ensure -> every? [
-    ;     1`AED 1`ALL 1`ARS 1`AUD 1`BGN 1`BHD 1`BNB 1`BND 1`BOB 1`BRL 1`BTC 1`BWP
-    ;     1`CAD 1`CHF 1`CLP 1`CNY 1`COP 1`CRC 1`CZK 1`DKK 1`DOP 1`DZD 1`EGP 1`ETB
-    ;     1`ETH 1`EUR 1`FJD 1`GBP 1`HKD 1`HNL 1`HRK 1`HUF 1`IDR 1`ILS 1`INR 1`IRR
-    ;     1`ISK 1`JMD 1`JOD 1`JPY 1`KES 1`KRW 1`KWD 1`KYD 1`KZT 1`LBP 1`LKR 1`MAD
-    ;     1`MDL 1`MKD 1`MXN 1`MUR 1`MYR 1`NAD 1`NGN 1`NIO 1`NOK 1`NPR 1`NZD 1`OMR
-    ;     1`PAB 1`PEN 1`PGK 1`PHP 1`PKR 1`PLN 1`PYG 1`QAR 1`RON 1`RSD 1`RUB 1`SAR
-    ;     1`SCR 1`SEK 1`SGD 1`SLL 1`SOS 1`SVC 1`THB 1`TND 1`TRY 1`TTD 1`TWD 1`TZS
-    ;     1`UAH 1`UGX 1`UYU 1`UZS 1`VES 1`VND 1`XAF 1`XAG 1`XAU 1`XOF 1`YER 1`ZAR
-    ;     1`ZMW
-    ; ] => currency?
-    ; passed
+    ensure -> every? [
+        1`AED 1`ALL 1`ARS 1`AUD 1`BGN 1`BHD 1`BNB 1`BND 1`BOB 1`BRL 1`BTC 1`BWP
+        1`CAD 1`CHF 1`CLP 1`CNY 1`COP 1`CRC 1`CZK 1`DKK 1`DOP 1`DZD 1`EGP 1`ETB
+        1`ETH 1`EUR 1`FJD 1`GBP 1`HKD 1`HNL 1`HRK 1`HUF 1`IDR 1`ILS 1`INR 1`IRR
+        1`ISK 1`JMD 1`JOD 1`JPY 1`KES 1`KRW 1`KWD 1`KYD 1`KZT 1`LBP 1`LKR 1`MAD
+        1`MDL 1`MKD 1`MXN 1`MUR 1`MYR 1`NAD 1`NGN 1`NIO 1`NOK 1`NPR 1`NZD 1`OMR
+        1`PAB 1`PEN 1`PGK 1`PHP 1`PKR 1`PLN 1`PYG 1`QAR 1`RON 1`RSD 1`RUB 1`SAR
+        1`SCR 1`SEK 1`SGD 1`SLL 1`SOS 1`SVC 1`THB 1`TND 1`TRY 1`TTD 1`TWD 1`TZS
+        1`UAH 1`UGX 1`UYU 1`UZS 1`VES 1`VND 1`XAF 1`XAG 1`XAU 1`XOF 1`YER 1`ZAR
+        1`ZMW
+    ] => currency?
+    passed
 
 
     topic « currencies - basic math
