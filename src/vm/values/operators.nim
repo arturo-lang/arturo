@@ -266,7 +266,7 @@ template normalIntegerMul*(x, y: int): untyped =
 template normalIntegerMulI*(x: var Value, y: int): untyped =
     ## multiply two normal Integer values, checking for overflow
     ## and set result in-place
-    if unlikely(mulIntWithOverflow(x.i, y, x.i)):
+    if unlikely(mulIntWithOverflowI(x.i, y, x.i)):
         when not defined(NOGMP):
             x = newInteger(toNewBig(x.i) * toBig(y))
         else:
@@ -288,7 +288,7 @@ template normalIntegerNeg*(x: int): untyped =
 template normalIntegerNegI*(x: var Value): untyped =
     ## negate a normal Integer value, checking for overflow
     ## and set result in-place
-    if unlikely(mulIntWithOverflow(x.i, -1, x.i)):
+    if unlikely(mulIntWithOverflowI(x.i, -1, x.i)):
         when not defined(NOGMP):
             x = newInteger(toNewBig(x.i) + toBig(-1))
         else:
