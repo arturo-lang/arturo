@@ -2162,8 +2162,6 @@ do [
 
     topic « mass - math // conversions
 
-    ; A lot of conversions are actually broken, mainly when envolving lbs
-
     ensure -> equal? ~"|1`lb   --> `g |" ~"|45359237:100000`g|"
     ensure -> equal? ~"|1`slug --> `kg|" ~"|14.59390`kg|"
     ; Da is being considered as 0 when compared with kg, g or mg...
