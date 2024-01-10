@@ -171,9 +171,6 @@ proc getPrimitive(unit: PrefixedUnit): Quantity =
     elif unit.p != No_Prefix:
         result.value *= pow(float(10), float(ord(unit.p)))
 
-    echo "getting primitive for: " & $(unit)
-    inspect(result)
-
 proc getSignature*(atoms: Atoms): QuantitySignature =
     for atom in atoms:
         let prim = getPrimitive(atom.unit)
