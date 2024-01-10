@@ -266,7 +266,7 @@ do [
     ensure -> 4`yd2  = 2`yd  * 2`yd
     ensure -> 4`ftm2 = 2`ftm * 2`ftm
     ensure -> 4`rod2 = 2`rod * 2`rod
-    ensure -> 4`mi2  = 2`m i * 2`mi
+    ensure -> 4`mi2  = 2`mi * 2`mi
     ensure -> 4`fur2 = 2`fur * 2`fur
     ensure -> 4`nmi2 = 2`nmi * 2`nmi
     ensure -> 4`ang2 = 2`ang * 2`ang
@@ -4341,10 +4341,10 @@ do [
     ;   $> 14964008/857374503
     ;   => 0
 
-    ; ensure -> 1`deg     =   pi:180`rad
-    ; ensure -> 1`grad    =   pi:200`rad
-    ; ensure -> 1`arcmin  =   pi:10800`rad
-    ; ensure -> 1`arcsec  =   pi:648000`rad
+    ; ensure -> 1`deg     =   to :quantity @[to :rational @[pi 180] `rad]
+    ; ensure -> 1`grad    =   to :quantity @[to :rational @[pi 200] `rad]
+    ; ensure -> 1`arcmin  =   to :quantity @[to :rational @[pi 10800] `rad]
+    ; ensure -> 1`arcsec  =   to :quantity @[to :rational @[pi 648000] `rad]
     print "broken"
 
 
