@@ -857,8 +857,7 @@ do [
 
     ensure -> 1`Em2  = 1`Pm2  * (10 ^ 6)
     ensure -> 1`Pm2  = 1`Tm2  * (10 ^ 6)
-    ; precision loss
-    ; ensure -> 1`Tm2  = 1`Gm2  * (10 ^ 6)
+    ensure -> 1`Tm2  = 1`Gm2  * (10 ^ 6)
     ensure -> 1`Gm2  = 1`Mm2  * (10 ^ 6)
     ensure -> 1`Mm2  = 1`km2  * (10 ^ 6)
     ensure -> 1`km2  = 1`hm2  * (10 ^ 2)
@@ -869,15 +868,13 @@ do [
     ensure -> 1`mm2  = 1`cm2  / (10 ^ 2)
     ensure -> 1`um2  = 1`mm2  / (10 ^ 6)
     ensure -> 1`nm2  = 1`um2  / (10 ^ 6)
-    ; precision loss
-    ; ensure -> 1`pm2  = 1`nm2  / (10 ^ 6)
+    ensure -> 1`pm2  = 1`nm2  / (10 ^ 6)
     ensure -> 1`fm2  = 1`pm2  / (10 ^ 6)
     ensure -> 1`am2  = 1`fm2  / (10 ^ 6)
     passed
 
-    ; precision loss
-    ; ensure -> 1`Epx2  = 1`Ppx2  * (10 ^ 6)
-    ; ensure -> 1`Ppx2  = 1`Tpx2  * (10 ^ 6)
+    ensure -> 1`Epx2  = 1`Ppx2  * (10 ^ 6)
+    ensure -> 1`Ppx2  = 1`Tpx2  * (10 ^ 6)
     ensure -> 1`Tpx2  = 1`Gpx2  * (10 ^ 6)
     ensure -> 1`Gpx2  = 1`Mpx2  * (10 ^ 6)
     ensure -> 1`Mpx2  = 1`kpx2  * (10 ^ 6)
@@ -887,20 +884,16 @@ do [
     ensure -> 1`dpx2  = 1`px2   / (10 ^ 2)
     ensure -> 1`cpx2  = 1`dpx2  / (10 ^ 2)
     ensure -> 1`mpx2  = 1`cpx2  / (10 ^ 2)
-    ; precision loss
-    ; ensure -> 1`upx2  = 1`mpx2  / (10 ^ 6)
+    ensure -> 1`upx2  = 1`mpx2  / (10 ^ 6)
     ensure -> 1`npx2  = 1`upx2  / (10 ^ 6)
     ensure -> 1`ppx2  = 1`npx2  / (10 ^ 6)
-    ; precision loss
-    ; ensure -> 1`fpx2  = 1`ppx2  / (10 ^ 6)
-    ; ensure -> 1`apx2  = 1`fpx2  / (10 ^ 6)
+    ensure -> 1`fpx2  = 1`ppx2  / (10 ^ 6)
+    ensure -> 1`apx2  = 1`fpx2  / (10 ^ 6)
     passed
 
-    ; precision loss
-    ; ensure -> 1`Ept2  = 1`Ppt2  * (10 ^ 6)
+    ensure -> 1`Ept2  = 1`Ppt2  * (10 ^ 6)
     ensure -> 1`Ppt2  = 1`Tpt2  * (10 ^ 6)
-    ; precision loss
-    ; ensure -> 1`Tpt2  = 1`Gpt2  * (10 ^ 6)
+    ensure -> 1`Tpt2  = 1`Gpt2  * (10 ^ 6)
     ensure -> 1`Gpt2  = 1`Mpt2  * (10 ^ 6)
     ensure -> 1`Mpt2  = 1`kpt2  * (10 ^ 6)
     ensure -> 1`kpt2  = 1`hpt2  * (10 ^ 2)
@@ -910,13 +903,11 @@ do [
     
     ensure -> 1`cpt2  = 1`dpt2  / (10 ^ 2)
     ensure -> 1`mpt2  = 1`cpt2  / (10 ^ 2)
-    ; precision loss
-    ; ensure -> 1`upt2  = 1`mpt2  / (10 ^ 6)
+    ensure -> 1`upt2  = 1`mpt2  / (10 ^ 6)
     ensure -> 1`npt2  = 1`upt2  / (10 ^ 6)
     ensure -> 1`ppt2  = 1`npt2  / (10 ^ 6)
-    ; precision loss
-    ; ensure -> 1`fpt2  = 1`ppt2  / (10 ^ 6)
-    ; ensure -> 1`apt2  = 1`fpt2  / (10 ^ 6)
+    ensure -> 1`fpt2  = 1`ppt2  / (10 ^ 6)
+    ensure -> 1`apt2  = 1`fpt2  / (10 ^ 6)
     passed
 
     ; precision loss
