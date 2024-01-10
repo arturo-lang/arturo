@@ -373,7 +373,7 @@ func `+=`*(x: var VRational, y: VRational) =
                 #x.num = common div x.den * x.num + common div y.den * y.num
                 let partOne = common div x.den * x.num
                 let partTwo = common div y.den * y.num
-                tryOp: addIntWithOverflow(partOne, partTwo, x.num)
+                tryOp: addIntWithOverflowI(partOne, partTwo, x.num)
                 x.den = common
                 reduce(x)
             do:
@@ -396,7 +396,7 @@ func `+=`*(x: var VRational, y: int) =
             #x.num += y * x.den
             var m: int
             tryOp: mulIntWithOverflow(y, x.den, m)
-            tryOp: addIntWithOverflow(x.num, m, x.num)
+            tryOp: addIntWithOverflowI(x.num, m, x.num)
         do:
             when not defined(NOGMP):
                 x = toBigRational(x) + y
@@ -516,7 +516,7 @@ func `-=`*(x: var VRational, y: VRational) =
                 #x.num = common div x.den * x.num - common div y.den * y.num
                 let partOne = common div x.den * x.num
                 let partTwo = common div y.den * y.num
-                tryOp: subIntWithOverflow(partOne, partTwo, x.num)
+                tryOp: subIntWithOverflowI(partOne, partTwo, x.num)
                 x.den = common
                 reduce(x)
             do:
@@ -539,7 +539,7 @@ func `-=`*(x: var VRational, y: int) =
             # x.num -= y * x.den
             var m: int
             tryOp: mulIntWithOverflow(y, x.den, m)
-            tryOp: subIntWithOverflow(x.num, m, x.num)
+            tryOp: subIntWithOverflowI(x.num, m, x.num)
         do:
             when not defined(NOGMP):
                 x = toBigRational(x) - y
@@ -631,10 +631,10 @@ func `*=`*(x: var VRational, y: VRational) =
         if y.rKind == NormalRational:
             overflowGuard:
                 #x.num *= y.num
-                tryOp: mulIntWithOverflow(x.num, y.num, x.num)
+                tryOp: mulIntWithOverflowI(x.num, y.num, x.num)
                 debugEcho "after one"
                 #x.den *= y.den
-                tryOp: mulIntWithOverflow(x.den, y.den, x.den)
+                tryOp: mulIntWithOverflowI(x.den, y.den, x.den)
                 debugEcho "after two"
                 reduce(x)
             do:
@@ -662,7 +662,7 @@ func `*=`*(x: var VRational, y: int) =
     if x.rKind == NormalRational:
         overflowGuard:
             #x.num *= y
-            tryOp: mulIntWithOverflow(x.num, y, x.num)
+            tryOp: mulIntWithOverflowI(x.num, y, x.num)
             reduce(x)
         do:
             when not defined(NOGMP):
@@ -762,8 +762,8 @@ func `/=`*(x: var VRational, y: VRational) =
     if x.rKind == NormalRational:
         if y.rKind == NormalRational:
             overflowGuard:
-                tryOp: mulIntWithOverflow(x.num, y.den, x.num)
-                tryOp: mulIntWithOverflow(x.den, y.num, x.den)
+                tryOp: mulIntWithOverflowI(x.num, y.den, x.num)
+                tryOp: mulIntWithOverflowI(x.den, y.num, x.den)
                 reduce(x)
             do:
                 when not defined(NOGMP):
