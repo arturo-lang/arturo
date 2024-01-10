@@ -82,7 +82,7 @@ do [
     ensure -> 'arturocrypto = property 1`artc
     ensure -> "1.00 ÁRT" = ~"|1`artc|"
     ensure -> "31:2`ÁRT" = as.code 15.5`artc
-    ; ensure -> 10`EUR = 1`artc --> `EUR
+    ensure -> 10`EUR = 1`artc --> `EUR
     passed
 
 
