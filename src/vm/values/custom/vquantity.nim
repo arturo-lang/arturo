@@ -179,14 +179,20 @@ proc getExchangeRate(curr: string): float =
     return ExchangeRates[s]
 
 proc getPrimitive(unit: PrefixedUnit): Quantity =
+    echo "--------------- in getPrimitive -------------------"
     result = Quantities[unit.u]
-
+    echo "Quantities[unit.u] (before):" & $(Quantities[unit.u])
+    echo "result-primitive: " & $(result)
     if unlikely(result.isCurrency() and isZero(result.value)):
         let xrate = getExchangeRate((symbolName(unit.u.core)).replace("_CoreUnit",""))
         Quantities[unit.u].value = reciprocal(toRational(xrate))
         result.value = reciprocal(toRational(xrate))
     elif unit.p != No_Prefix:
         result.value = result.value * Powers[ord(unit.p) + 18]
+        echo "result-primitive (final): " & $(result)
+
+    echo "Quantities[unit.u] (after):" & $(Quantities[unit.u])
+    echo "--------------- /in getPrimitive -------------------"
         # result.value *= pow(float(10), float(ord(unit.p)))
 
 proc getSignature*(atoms: Atoms): QuantitySignature =
@@ -195,10 +201,14 @@ proc getSignature*(atoms: Atoms): QuantitySignature =
         result += prim.signature * atom.power
 
 proc getValue(atoms: Atoms): QuantityValue =
+    echo "--------------- in getValue -------------------"
     result = 1//1
+    echo "result => " & $(result)
     for atom in atoms:
         let prim = getPrimitive(atom.unit)
         result = result * prim.value ^ atom.power
+        echo "result =---> " & $(result)
+    echo "--------------- /in getValue -------------------"
 
 proc flatten*(atoms: Atoms): Atoms =
     var cnts: OrderedTable[PrefixedUnit, int]
@@ -390,6 +400,11 @@ proc convertTo*(q: Quantity, atoms: Atoms): Quantity =
 
     echo "converting:" & $(q)
     echo "with:" & $(atoms)
+
+    echo "q.value = " & $(q.value)
+    echo "getValue(atoms) = " & $(getValue(atoms))
+
+    echo "result of division: " & $(q.value/getValue(atoms))
 
     result = toQuantity(q.value/getValue(atoms), atoms)
 
