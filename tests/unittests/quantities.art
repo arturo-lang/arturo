@@ -4271,13 +4271,13 @@ do [
     passed
 
 
-    topic « angle - math // conversions
+    ; topic « angle - math // conversions
 
     ; ensure -> 1`deg     =   to :quantity @[to :rational @[pi 180] `rad]
     ; ensure -> 1`grad    =   to :quantity @[to :rational @[pi 200] `rad]
     ; ensure -> 1`arcmin  =   to :quantity @[to :rational @[pi 10800] `rad]
     ; ensure -> 1`arcsec  =   to :quantity @[to :rational @[pi 648000] `rad]
-    print "broken"
+    ; passed
 
 
     topic « angle - conforms?
