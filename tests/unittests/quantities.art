@@ -4766,9 +4766,9 @@ do [
     ensure -> 1`mP  = 1`cP  /  10
     ensure -> 1`uP  = 1`mP  / (10 ^ 3)
     ensure -> 1`nP  = 1`uP  / (10 ^ 3)
-    ; ensure -> 1`pP  = 1`nP  / (10 ^ 3)
-    ; ensure -> 1`fP  = 1`pP  / (10 ^ 3)
-    ; ensure -> 1`aP  = 1`fP  / (10 ^ 3)
+    ensure -> 1`pP  = 1`nP  / (10 ^ 3)
+    ensure -> 1`fP  = 1`pP  / (10 ^ 3)
+    ensure -> 1`aP  = 1`fP  / (10 ^ 3)
     passed
 
 
