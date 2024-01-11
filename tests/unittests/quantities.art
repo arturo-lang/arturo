@@ -4295,11 +4295,10 @@ do [
     ; passed
 
 
-    topic « angle - in
+    ; topic « angle - in
 
     ; ensure -> same? pi:200`rad in `rad 1`grad
     ; passed
-    print "broken"
 
 
     topic « angle - property
