@@ -199,7 +199,7 @@ func newRat*(x, y: int): Rat =
             debugEcho "final numerator --> " & $(nref[])
             debugEcho "final denominator --> " & $(dref[])
 
-            debugEcho "pre-result: " & $(result)
+            #debugEcho "pre-result: " & $(result)
     else:
         mpq_set_si(result[], x.clong, y.culong)
         
