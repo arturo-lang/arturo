@@ -184,16 +184,22 @@ func newRat*(x, y: int): Rat =
         elif x.fitsLLP64ULong:
             mpq_set_ui(result[], x.culong, y.culong)
         else:
+            debugEcho "setting numerator as: " & $(x)
             var nref = mpq_numref(result[])
             mpz_set_ui(nref, (x shr 32).uint32)
             mpz_mul_2exp(nref, nref, 32)
             mpz_add_ui(nref, nref, (x.uint32))
 
+            debugEcho "setting denominator as: " & $(y)
             var dref = mpq_denref(result[])
             mpz_set_ui(dref, (y shr 32).uint32)
             mpz_mul_2exp(dref, dref, 32)
             mpz_add_ui(dref, dref, (y.uint32))
 
+            debugEcho "final numerator --> " & $(nref[])
+            debugEcho "final denominator --> " & $(dref[])
+
+            debugEcho "pre-result: " & $(result)
     else:
         mpq_set_si(result[], x.clong, y.culong)
         
