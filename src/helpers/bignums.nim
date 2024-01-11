@@ -191,7 +191,7 @@ func newRat*(x, y: int): Rat =
             debugEcho "x<else>"
             # needs fix!
             var nref = mpq_numref(result[])
-            mpz_set_ui(nextPowerOfTwo, (x shr 32).uint32)
+            mpz_set_ui(nref, (x shr 32).uint32)
             mpz_mul_2exp(nref, nref, 32)
             mpz_add_ui(nref, nref, (x.uint32))
 
