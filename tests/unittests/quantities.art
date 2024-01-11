@@ -3409,8 +3409,7 @@ do [
     ensure -> 1`Ohm   =   1`V/A
     passed
 
-    ; it should print 8.987551787e11 Ω, instead of 898755178700
-    ; ensure -> (~"|1`statOhm --> `Ohm |") =   "8.987551787e11 Ω"
+    ensure -> (~"|1`statOhm --> `Ohm |") =   "898755178740 Ω"
     ensure -> (~"|1`abOhm   --> `Ohm |") =   "1e-09 Ω"
     passed
 
@@ -5225,7 +5224,7 @@ do [
     ensure -> 1`lx   =   1`cd/m2
     ; once we find a way to support the `pi` value
     ; as part of a quantity value, this can be re-enabled
-    
+
     ; ensure -> 1`Lb   =   1:pi`cd/cm2
     passed
 
