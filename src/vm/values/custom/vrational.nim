@@ -227,7 +227,7 @@ when not defined(NOGMP):
 
     func toRational*(num: Int, den: int): VRational =
         # create VRational from numerator and denominator (big Int - int)
-        debugEcho "toRational with (Int / int): " & $(x) & "/" & $(y)
+        debugEcho "toRational with (Int / int): " & $(num) & "/" & $(den)
         result = VRational(
             rKind: BigRational,
             br: newRat(num, newInt(den))
@@ -236,7 +236,7 @@ when not defined(NOGMP):
 
     func toRational*(num: int, den: Int): VRational =
         # create VRational from numerator and denominator (int - big Int)
-        debugEcho "toRational with (int / Int): " & $(x) & "/" & $(y)
+        debugEcho "toRational with (int / Int): " & $(num) & "/" & $(den)
         result = VRational(
             rKind: BigRational,
             br: newRat(newInt(num), den)
@@ -245,7 +245,7 @@ when not defined(NOGMP):
 
     func toRational*(num: Int, den: Int): VRational =
         # create VRational from numerator and denominator (big Int's)
-        debugEcho "toRational with (Int / Int): " & $(x) & "/" & $(y)
+        debugEcho "toRational with (Int / Int): " & $(num) & "/" & $(den)
         result = VRational(
             rKind: BigRational,
             br: newRat(num, den)
