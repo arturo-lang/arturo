@@ -185,7 +185,7 @@ proc getPrimitive(unit: PrefixedUnit): Quantity =
         Quantities[unit.u].value = reciprocal(toRational(xrate))
         result.value = reciprocal(toRational(xrate))
     elif unit.p != No_Prefix:
-        result.value = result.value * Powers[ord(unit.p) + 18]
+        result.value *= Powers[ord(unit.p) + 18]
 
         # result.value *= pow(float(10), float(ord(unit.p)))
 
@@ -198,7 +198,7 @@ proc getValue(atoms: Atoms): QuantityValue =
     result = 1//1
     for atom in atoms:
         let prim = getPrimitive(atom.unit)
-        result = result * prim.value ^ atom.power
+        result *= prim.value ^ atom.power
 
 proc flatten*(atoms: Atoms): Atoms =
     var cnts: OrderedTable[PrefixedUnit, int]
@@ -550,14 +550,14 @@ proc `+=`*(a: var Quantity, b: Quantity) =
 
     let convB = b.convertTo(a.atoms)
 
-    a.original =  a.original + convB.original
+    a.original += convB.original
 
 proc `+=`*(a: var Quantity, b: int | float | QuantityValue) =
-    a.original = a.original + b
+    a.original += b
 
 when not defined(NOGMP):
     proc `+=`*(a: var Quantity, b: Int) =
-        a.original = a.original + b
+        a.original += b
 
 proc `-`*(a, b: Quantity): Quantity =
     if not (a =~ b):
@@ -580,14 +580,14 @@ proc `-=`*(a: var Quantity, b: Quantity) =
 
     let convB = b.convertTo(a.atoms)
 
-    a.original = a.original - convB.original
+    a.original -= convB.original
 
 proc `-=`*(a: var Quantity, b: int | float | QuantityValue) =
-    a.original = a.original - b
+    a.original -= b
 
 when not defined(NOGMP):
     proc `-=`*(a: var Quantity, b: Int) =
-        a.original = a.original - b
+        a.original -= b
 
 proc `*`*(a, b: Quantity): Quantity =
     if a =~ b:
@@ -610,14 +610,14 @@ when not defined(NOGMP):
         result = toQuantity(a * b.original, b.atoms)
 
 proc `*=`*(a: var Quantity, b: Quantity) =
-    a = a * b
+    a *= b
 
 proc `*=`*(a: var Quantity, b: int | float | QuantityValue) =
-    a.original = a.original * b
+    a.original *= b
 
 when not defined(NOGMP):
     proc `*=`*(a: var Quantity, b: Int) =
-        a.original = a.original * b
+        a.original *= b
 
 proc `/`*(a, b: Quantity): Quantity =
     if a =~ b:
@@ -634,7 +634,7 @@ when not defined(NOGMP):
         result = toQuantity(a.original / b, a.atoms)
 
 proc `/=`*(a: var Quantity, b: Quantity) =
-    a = a / b
+    a /= b
 
 proc `/=`*(a: var Quantity, b: int | float | QuantityValue) =
     a.original /= b
