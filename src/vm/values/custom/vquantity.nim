@@ -276,14 +276,14 @@ proc parseAtoms*(str: string): Atoms =
 #=======================================
 
 proc toQuantity*(v: QuantityValue, atoms: Atoms): Quantity =
-    result.original = copyRational(v)
-    result.value = copyRational(v)
+    result.original = v
+    result.value = v
 
     for atom in atoms:
         let prim = getPrimitive(atom.unit)
         result.signature += prim.signature * atom.power
         let intermediate = prim.value ^ atom.power
-        result.value *= intermediate
+        result.value = result.value * intermediate
 
         if unlikely(atom.unit.u.kind == User):
             result.withUserUnits = true
