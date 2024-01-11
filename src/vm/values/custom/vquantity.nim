@@ -798,10 +798,6 @@ proc initQuantities*() =
 
     addRuntimeQuantities()
 
-    # for k,q in Quantities:
-    #     echo $(k) & " => "
-    #     echo "\t" & $(q)
-
     when not defined(NOGMP):
         generateConstants()
 
