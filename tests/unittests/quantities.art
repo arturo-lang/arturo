@@ -3591,7 +3591,6 @@ do [
     ; ensure -> 1`Fr  =   1`C
     passed
 
-    ; it should print 3.335641e-10 Ω, instead of 0 C
     ensure -> (~"|1`statC --> `C |") =   "3226034023892129/9671406556917033397649408 C"
     passed
 
