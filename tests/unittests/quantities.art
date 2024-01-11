@@ -2620,7 +2620,7 @@ do [
 
     topic « force - math // scales
 
-    ; ensure -> 1`EN  = 1`PN  * (10 ^ 3)
+    ensure -> 1`EN  = 1`PN  * (10 ^ 3)
     ensure -> 1`PN  = 1`TN  * (10 ^ 3)
     ensure -> 1`TN  = 1`GN  * (10 ^ 3)
     ensure -> 1`GN  = 1`MN  * (10 ^ 3)
