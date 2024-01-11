@@ -3406,9 +3406,9 @@ do [
     ensure -> 1`mOhm  = 1`cOhm  /  10
     ensure -> 1`uOhm  = 1`mOhm  / (10 ^ 3)
     ensure -> 1`nOhm  = 1`uOhm  / (10 ^ 3)
-    ; ensure -> 1`pOhm  = 1`nOhm  / (10 ^ 3)
-    ; ensure -> 1`fOhm  = 1`pOhm  / (10 ^ 3)
-    ; ensure -> 1`aOhm  = 1`fOhm  / (10 ^ 3)
+    ensure -> 1`pOhm  = 1`nOhm  / (10 ^ 3)
+    ensure -> 1`fOhm  = 1`pOhm  / (10 ^ 3)
+    ensure -> 1`aOhm  = 1`fOhm  / (10 ^ 3)
     passed
 
 
