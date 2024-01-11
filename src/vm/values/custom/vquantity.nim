@@ -276,19 +276,30 @@ proc parseAtoms*(str: string): Atoms =
 #=======================================
 
 proc toQuantity*(v: QuantityValue, atoms: Atoms): Quantity =
+    echo "--------------- in toQuantity -------------------"
+    echo "V WAS: " & $(v)
     result.original = v
     result.value = v
+
+    echo "result.original (start) = " & $(result.original)
 
     for atom in atoms:
         let prim = getPrimitive(atom.unit)
         result.signature += prim.signature * atom.power
+        echo "result.original (before) = " & $(result.original)
         let intermediate = prim.value ^ atom.power
+        echo "result.original (after) = " & $(result.original)
         result.value = result.value * intermediate
+        echo "result.original (after II) = " & $(result.original)
 
         if unlikely(atom.unit.u.kind == User):
             result.withUserUnits = true
 
         result.atoms.add(atom)
+    
+    echo "result.original (end) = " & $(result.original)
+    echo "V IS: " & $(v)
+    echo "--------------- /in toQuantity -------------------"
 
 when not defined(NOGMP):
     proc toQuantity*(v: int | float | Int, atoms: Atoms): Quantity {.inline.} =
