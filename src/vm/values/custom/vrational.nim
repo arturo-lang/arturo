@@ -213,6 +213,7 @@ func toRational*(x: int, y: float): VRational =
 when not defined(NOGMP):
     func toRational*(x: Int): VRational = 
         # create VRational from big Int
+        debugEcho "toRational (Int)"
         result = VRational(
             rKind: BigRational,
             br: newRat(x)
@@ -220,6 +221,7 @@ when not defined(NOGMP):
 
     func toRational*(x: Rat): VRational =
         # create VRational from Rat
+        debugEcho "toRational (Rat)"
         result = VRational(
             rKind: BigRational,
             br: x
@@ -273,6 +275,7 @@ when not defined(NOGMP):
 
     func toBigRational*(x: VRational): VRational =
         # create an explicitly-big VRational from a VRational
+        debugEcho "toBigRational (VRational)"
         result = VRational(
             rKind: BigRational,
             br: newRat(x.num, x.den)
