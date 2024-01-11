@@ -176,20 +176,14 @@ func newRat*(x: int = 0): Rat =
     canonicalize(result)
 
 func newRat*(x, y: int): Rat =
-    debugEcho "newRat: with " & $(x) & " and " & $(y)
     new(result, finalizeRat)
     mpq_init(result[])
     when isLLP64():
-        debugEcho "isLLP64 mode"
         if x.fitsLLP64Long:
-            debugEcho "x.fitsLLP64Long"
             mpq_set_si(result[], x.clong, y.culong)
         elif x.fitsLLP64ULong:
-            debugEcho "x.fitsLLP64ULong"
             mpq_set_ui(result[], x.culong, y.culong)
         else:
-            debugEcho "x<else>"
-            # needs fix!
             var nref = mpq_numref(result[])
             mpz_set_ui(nref, (x shr 32).uint32)
             mpz_mul_2exp(nref, nref, 32)
@@ -200,12 +194,7 @@ func newRat*(x, y: int): Rat =
             mpz_mul_2exp(dref, dref, 32)
             mpz_add_ui(dref, dref, (y.uint32))
 
-            # mpq_set_ui(result[], (x shr 32).uint32, (y shr 32).uint32)
-            # mpq_mul_2exp(result[], result[], 32)
-            # mpq_add(result[], result[], newRat(x.uint32)[])
-
     else:
-        debugEcho "NOT LLP64"
         mpq_set_si(result[], x.clong, y.culong)
         
     canonicalize(result)
