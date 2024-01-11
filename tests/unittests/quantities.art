@@ -232,8 +232,6 @@ do [
 
     topic « length - math // conversions
 
-    ang: (10 ^ (neg 10)) --> `m
-
     ensure -> 1`inch    = 127:5000`meters
     ensure -> 1`foot    = 12`inches
     ensure -> 1`yard    = 3`feet
@@ -244,7 +242,7 @@ do [
     ensure -> 1`pixel   = 1:96`inch
     ensure -> 1`fathom  = 1`yard
     ensure -> 1`furlong = 1:8`miles
-    ; ensure -> 1`angstrom    = ang
+    ensure -> 1`angstrom = to :quantity [1:10000000000 `m]
     ; SIGFPE: Arithmetic error.
     ensure -> 1`lightYear   = 9460730472580800`m
     ensure -> 1`nauticalMile        = 1852`meters
