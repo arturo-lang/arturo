@@ -243,7 +243,6 @@ do [
     ensure -> 1`fathom  = 1`yard
     ensure -> 1`furlong = 1:8`miles
     ensure -> 1`angstrom = to :quantity [1:10000000000 `m]
-    ; SIGFPE: Arithmetic error.
     ensure -> 1`lightYear   = 9460730472580800`m
     ensure -> 1`nauticalMile        = 1852`meters
     ensure -> 1`astronomicalUnit    = 149597870700`m
