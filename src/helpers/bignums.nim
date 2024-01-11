@@ -189,7 +189,6 @@ func newRat*(x, y: int): Rat =
             mpq_set_ui(result[], x.culong, y.culong)
         else:
             debugEcho "x<else>"
-            debugEcho 
             # needs fix!
             mpq_set_ui(result[], (x shr 32).uint32, 1)
             mpq_mul_2exp(result[], result[], 32)
