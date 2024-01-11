@@ -3587,8 +3587,7 @@ do [
 
     ensure -> 1`C   =   1`A.s
     ensure -> 1`abC =   10`C
-    ; division by 0?
-    ; ensure -> 1`Fr  =   1`C
+    ensure -> 1`Fr  =   1`statC
     passed
 
     ensure -> (~"|1`statC --> `C |") =   "3226034023892129/9671406556917033397649408 C"
