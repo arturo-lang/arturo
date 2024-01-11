@@ -5226,12 +5226,6 @@ do [
 
     topic « illuminance - math // conversions
 
-    ; Lb is broken, try:
-    ; $> 1`Lb --> `cd/cm2
-    ; => 260280919/817696623 cd/cm��
-    ; $> 260280919/817696623
-    ; => 0
-
     ensure -> 1`lx   =   1`cd/m2
     ; ensure -> 1`Lb   =   1:pi`cd/cm2
     passed
