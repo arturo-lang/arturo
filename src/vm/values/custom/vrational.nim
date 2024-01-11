@@ -557,6 +557,7 @@ when not defined(NOGMP):
         x -= toRational(y)
 
 func `*`*(x, y: VRational): VRational =
+    debugEcho "in MUL"
     # multiply two VRationals
     if x.rKind == NormalRational:
         if y.rKind == NormalRational:
@@ -564,12 +565,20 @@ func `*`*(x, y: VRational): VRational =
                 result = VRational()
                 result.rKind = NormalRational
                 #result.num = x.num * y.num
+                debugEcho "before tryOP: x = " & $(x)
+                debugEcho "before tryOP: y = " & $(y)
                 tryOp: mulIntWithOverflow(x.num, y.num, result.num)
                 #result.den = x.den * y.den
+                debugEcho "before tryOP2: x = " & $(x)
+                debugEcho "before tryOP2: y = " & $(y)
                 tryOp: mulIntWithOverflow(x.den, y.den, result.den)
+                debugEcho "after tryOP: x = " & $(x)
+                debugEcho "after tryOP: y = " & $(y)
                 reduce(result)
             do:
                 when not defined(NOGMP):
+                    debugEcho "overflown tryOP: x = " & $(x)
+                    debugEcho "overflown tryOP: y = " & $(y)
                     result = toBigRational(x) * y
         else:
             when not defined(NOGMP):

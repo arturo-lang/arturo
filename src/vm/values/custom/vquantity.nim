@@ -377,6 +377,9 @@ proc convertTo*(q: Quantity, atoms: Atoms): Quantity =
     if q.atoms == atoms:
         return q
 
+    echo "converting:" & $(q)
+    echo "with:" & $(atoms)
+
     result = toQuantity(q.value/getValue(atoms), atoms)
 
 proc convertQuantity*(q: Quantity, atoms: Atoms): Quantity =
@@ -551,14 +554,14 @@ proc `+=`*(a: var Quantity, b: Quantity) =
 
     let convB = b.convertTo(a.atoms)
 
-    a.original += convB.original
+    a.original =  a.original + convB.original
 
 proc `+=`*(a: var Quantity, b: int | float | QuantityValue) =
-    a.original += b
+    a.original = a.original + b
 
 when not defined(NOGMP):
     proc `+=`*(a: var Quantity, b: Int) =
-        a.original += b
+        a.original = a.original + b
 
 proc `-`*(a, b: Quantity): Quantity =
     if not (a =~ b):
@@ -581,14 +584,14 @@ proc `-=`*(a: var Quantity, b: Quantity) =
 
     let convB = b.convertTo(a.atoms)
 
-    a.original -= convB.original
+    a.original = a.original - convB.original
 
 proc `-=`*(a: var Quantity, b: int | float | QuantityValue) =
-    a.original -= b
+    a.original = a.original - b
 
 when not defined(NOGMP):
     proc `-=`*(a: var Quantity, b: Int) =
-        a.original -= b
+        a.original = a.original - b
 
 proc `*`*(a, b: Quantity): Quantity =
     if a =~ b:
