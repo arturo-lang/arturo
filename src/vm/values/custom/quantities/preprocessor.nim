@@ -835,7 +835,3 @@ macro addPropertyPredicates*(): untyped =
 
 #     echo $(constants)
 #     echo $(parsable)
-
-dumpAstGen:
-    Quantities["something"] = 1
-    Quantities["another"] = 2
