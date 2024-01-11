@@ -265,14 +265,11 @@ when not defined(NOGMP):
 
     func toBigRational*(x: VRational): VRational =
         # create an explicitly-big VRational from a VRational
-        debugEcho "in toBigRational - with VRational: " & $(x)
         result = VRational(
             rKind: BigRational,
             br: newRat(x.num, x.den)
         )
-        debugEcho $(result)
-        debugEcho "/in toBigRational - with VRational: " & $(x)
-        
+
         # we don't call `simplifyRational` here,
         # since this could again degrade it to a Normal rational!
         
@@ -560,7 +557,6 @@ when not defined(NOGMP):
         x -= toRational(y)
 
 func `*`*(x, y: VRational): VRational =
-    debugEcho "in MUL"
     # multiply two VRationals
     if x.rKind == NormalRational:
         if y.rKind == NormalRational:
@@ -568,20 +564,12 @@ func `*`*(x, y: VRational): VRational =
                 result = VRational()
                 result.rKind = NormalRational
                 #result.num = x.num * y.num
-                debugEcho "before tryOP: x = " & $(x)
-                debugEcho "before tryOP: y = " & $(y)
                 tryOp: mulIntWithOverflow(x.num, y.num, result.num)
                 #result.den = x.den * y.den
-                debugEcho "before tryOP2: x = " & $(x)
-                debugEcho "before tryOP2: y = " & $(y)
                 tryOp: mulIntWithOverflow(x.den, y.den, result.den)
-                debugEcho "after tryOP: x = " & $(x)
-                debugEcho "after tryOP: y = " & $(y)
                 reduce(result)
             do:
                 when not defined(NOGMP):
-                    debugEcho "overflown tryOP: x = " & $(x)
-                    debugEcho "overflown tryOP: y = " & $(y)
                     result = toBigRational(x) * y
         else:
             when not defined(NOGMP):
@@ -686,51 +674,31 @@ when not defined(NOGMP):
 
 func `/`*(x, y: VRational): VRational =
     # divide two VRationals
-    debugEcho "<IN DIVISION>"
-    debugEcho "DIVISION X: " & $(x)
-    debugEcho "DIVISION Y: " & $(y)
     if x.rKind == NormalRational:
         if y.rKind == NormalRational:
             overflowGuard:
                 result = VRational()
                 result.rKind = NormalRational
                 #result.num = x.num * y.den
-                debugEcho "trying op 1"
                 tryOp: mulIntWithOverflow(x.num, y.den, result.num)
                 #result.den = x.den * y.num
-                debugEcho "trying op 2"
                 tryOp: mulIntWithOverflow(x.den, y.num, result.den)
                 reduce(result)
             do:
                 when not defined(NOGMP):
-                    debugEcho "overflown!"
                     result = toBigRational(x) / y
         else:
             when not defined(NOGMP):
-                debugEcho "case 2"
                 result = toBigRational(x) / y
     else:
         when not defined(NOGMP):
             if y.rKind == NormalRational:
-                debugEcho "case 3-a"
-                debugEcho "before calling toBigRational x: " & $(x)
-                debugEcho "before calling toBigRational y: " & $(y)
-
                 result = x / toBigRational(y)
-
-                debugEcho "after calling toBigRational x: " & $(x)
-                debugEcho "after calling toBigRational y: " & $(y)
             else:
-                debugEcho "case 3-b"
                 result = VRational(
                     rKind: BigRational,
                     br: x.br / y.br
                 )
-
-    debugEcho "final X: " & $(x)
-    debugEcho "final Y: " & $(y)
-    debugEcho "result: " & $(result)
-    debugEcho "</IN DIVISION>"
 
 func `/`*(x: VRational, y: int): VRational =
     # divide VRational by int
