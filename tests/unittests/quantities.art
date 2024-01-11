@@ -3845,9 +3845,9 @@ do [
     ensure -> 1`mH  = 1`cH  /  10
     ensure -> 1`uH  = 1`mH  / (10 ^ 3)
     ensure -> 1`nH  = 1`uH  / (10 ^ 3)
-    ; ensure -> 1`pH  = 1`nH  / (10 ^ 3)
-    ; ensure -> 1`fH  = 1`pH  / (10 ^ 3)
-    ; ensure -> 1`aH  = 1`fH  / (10 ^ 3)
+    ensure -> 1`pH  = 1`nH  / (10 ^ 3)
+    ensure -> 1`fH  = 1`pH  / (10 ^ 3)
+    ensure -> 1`aH  = 1`fH  / (10 ^ 3)
     passed
 
 
