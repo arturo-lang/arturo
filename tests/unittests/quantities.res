@@ -20,20 +20,6 @@
 [+] passed!
 
 >> currencies - specify
-----------------------------------------
-1.00 ÁRT
-----------------------------------------
-.original: 1/1
-.value: 3125000/284657
-.signature: 279936 => arturocrypto
-.base: false
-.atoms: 
-    - (ÁRT) = 
-        .prefix: 
-        .unit: ÁRT
-        .power: 
-.base units: $
-
 [+] passed!
 
 >> currencies - units
@@ -108,20 +94,6 @@
 [+] passed!
 
 >> length - specify
-----------------------------------------
-1 🛣
-----------------------------------------
-.original: 1/1
-.value: 1500/1
-.signature: 1 => high distance
-.base: false
-.atoms: 
-    - (🛣) = 
-        .prefix: 
-        .unit: 🛣
-        .power: 
-.base units: km
-
 [+] passed!
 
 >> length - units
@@ -212,20 +184,6 @@
 [+] passed!
 
 >> area - specify
-----------------------------------------
-1 🏟️
-----------------------------------------
-.original: 1/1
-.value: 4426249212/78125
-.signature: 2 => high area
-.base: false
-.atoms: 
-    - (🏟️) = 
-        .prefix: 
-        .unit: 🏟️
-        .power: 
-.base units: m
-
 [+] passed!
 
 >> area - units
@@ -299,20 +257,6 @@
 [+] passed!
 
 >> volume - specify
-----------------------------------------
-1 =~
-----------------------------------------
-.original: 1/1
-.value: 1300000000/1
-.signature: 3 => huge volume
-.base: false
-.atoms: 
-    - (=~) = 
-        .prefix: 
-        .unit: =~
-        .power: 
-.base units: km³
-
 [+] passed!
 
 >> volume - units
@@ -371,20 +315,6 @@
 [+] passed!
 
 >> time - specify
-----------------------------------------
-1 💀
-----------------------------------------
-.original: 1/1
-.value: 9204111/1
-.signature: 6 => eternity
-.base: false
-.atoms: 
-    - (💀) = 
-        .prefix: 
-        .unit: 💀
-        .power: 
-.base units: s
-
 [+] passed!
 
 >> time - units
@@ -416,104 +346,6 @@
 [+] passed!
 
 >> mass - math // conversions
-----------------------------------------
-453.59237 g
-----------------------------------------
-.original: 45359237/100000
-.value: 45359237/100000
-.signature: 216 => mass
-.base: false
-.atoms: 
-    - (g) = 
-        .prefix: 
-        .unit: g
-        .power: 
-.base units: g
-
-----------------------------------------
-453.59237 g
-----------------------------------------
-.original: 271249973158/598003827
-.value: 271249973158/598003827
-.signature: 216 => mass
-.base: false
-.atoms: 
-    - (g) = 
-        .prefix: 
-        .unit: g
-        .power: 
-.base units: g
-
-----------------------------------------
-14.5939 kg
-----------------------------------------
-.original: 145939/10000
-.value: 145939/10
-.signature: 216 => mass
-.base: false
-.atoms: 
-    - (kg) = 
-        .prefix: k
-        .unit: g
-        .power: 
-.base units: kg
-
-----------------------------------------
-14.5939 kg
-----------------------------------------
-.original: 145939/10000
-.value: 145939/10
-.signature: 216 => mass
-.base: false
-.atoms: 
-    - (kg) = 
-        .prefix: k
-        .unit: g
-        .power: 
-.base units: kg
-
-----------------------------------------
-4628907327056559/2787593149816327892691964784081045188247552 kg
-----------------------------------------
-.original: 4628907327056559/2787593149816327892691964784081045188247552
-.value: 578613415882069875/348449143727040986586495598010130648530944
-.signature: 216 => mass
-.base: false
-.atoms: 
-    - (kg) = 
-        .prefix: k
-        .unit: g
-        .power: 
-.base units: kg
-
-----------------------------------------
-64.79891000000001 mg
-----------------------------------------
-.original: 100271569232/1547426789
-.value: 12533946154/193428348625
-.signature: 216 => mass
-.base: false
-.atoms: 
-    - (mg) = 
-        .prefix: m
-        .unit: g
-        .power: 
-.base units: mg
-
-----------------------------------------
-64.79891000000001 mg
-----------------------------------------
-.original: 100271569232/1547426789
-.value: 12533946154/193428348625
-.signature: 216 => mass
-.base: false
-.atoms: 
-    - (mg) = 
-        .prefix: m
-        .unit: g
-        .power: 
-.base units: mg
-
 [+] passed!
 [+] passed!
 
@@ -537,20 +369,6 @@
 [+] passed!
 
 >> mass - specify
-----------------------------------------
-1 🏋️
-----------------------------------------
-.original: 1/1
-.value: 1043000/1
-.signature: 216 => average coleman's leg press
-.base: false
-.atoms: 
-    - (🏋️) = 
-        .prefix: 
-        .unit: 🏋️
-        .power: 
-.base units: kg
-
 [+] passed!
 
 >> mass - units
@@ -610,20 +428,6 @@
 [+] passed!
 
 >> speed - specify
-----------------------------------------
-1 🏎️
-----------------------------------------
-.original: 1/1
-.value: 3725/36
-.signature: -5 => f1's highest speed
-.base: false
-.atoms: 
-    - (🏎️) = 
-        .prefix: 
-        .unit: 🏎️
-        .power: 
-.base units: m·s⁻¹
-
 [+] passed!
 
 >> speed - units
@@ -676,20 +480,6 @@
 [+] passed!
 
 >> acceleration - specify
-----------------------------------------
-1 🌎
-----------------------------------------
-.original: 1/1
-.value: 981/100
-.signature: -11 => earth's gravity acceleration
-.base: false
-.atoms: 
-    - (🌎) = 
-        .prefix: 
-        .unit: 🌎
-        .power: 
-.base units: m·s⁻²
-
 [+] passed!
 
 >> acceleration - units
@@ -737,20 +527,6 @@
 [+] passed!
 
 >> force - specify
-----------------------------------------
-1 🚀
-----------------------------------------
-.original: 1/1
-.value: 981/100
-.signature: 205 => g-force
-.base: false
-.atoms: 
-    - (🚀) = 
-        .prefix: 
-        .unit: 🚀
-        .power: 
-.base units: m·s⁻²·g
-
 [+] passed!
 
 >> force - units
@@ -782,48 +558,6 @@
 
 >> pressure - math // conversions
 [+] passed!
-----------------------------------------
-133.3223684 Pa
-----------------------------------------
-.original: 235897128799/1769373974
-.value: 117948564399500/884686987
-.signature: 203 => pressure
-.base: false
-.atoms: 
-    - (Pa) = 
-        .prefix: 
-        .unit: Pa
-        .power: 
-.base units: kg·m⁻¹·s⁻²
-
-----------------------------------------
-6894.757293 Pa
-----------------------------------------
-.original: 634592544245/92039867
-.value: 634592544245000/92039867
-.signature: 203 => pressure
-.base: false
-.atoms: 
-    - (Pa) = 
-        .prefix: 
-        .unit: Pa
-        .power: 
-.base units: kg·m⁻¹·s⁻²
-
-----------------------------------------
-133.3223684 Pa
-----------------------------------------
-.original: 235897128799/1769373974
-.value: 117948564399500/884686987
-.signature: 203 => pressure
-.base: false
-.atoms: 
-    - (Pa) = 
-        .prefix: 
-        .unit: Pa
-        .power: 
-.base units: kg·m⁻¹·s⁻²
-
 [+] passed!
 
 >> pressure - math // check auto-conversion
@@ -846,20 +580,6 @@
 [+] passed!
 
 >> pressure - specify
-----------------------------------------
-1 🌊
-----------------------------------------
-.original: 1/1
-.value: 101325000/1
-.signature: 203 => sea level's pressure
-.base: false
-.atoms: 
-    - (🌊) = 
-        .prefix: 
-        .unit: 🌊
-        .power: 
-.base units: kg·m⁻¹·s⁻²
-
 [+] passed!
 
 >> pressure - units
@@ -889,62 +609,6 @@
 
 >> energy - math // conversions
 [+] passed!
-----------------------------------------
-1055.05585262 J
-----------------------------------------
-.original: 1457559159243/1381499525
-.value: 58302366369720/55259981
-.signature: 206 => energy
-.base: false
-.atoms: 
-    - (J) = 
-        .prefix: 
-        .unit: J
-        .power: 
-.base units: kg·m²·s⁻²
-
-----------------------------------------
-6655181076214097/41538374868278621028243970633760768 J
-----------------------------------------
-.original: 6655181076214097/41538374868278621028243970633760768
-.value: 831897634526762125/5192296858534827628530496329220096
-.signature: 206 => energy
-.base: false
-.atoms: 
-    - (J) = 
-        .prefix: 
-        .unit: J
-        .power: 
-.base units: kg·m²·s⁻²
-
-----------------------------------------
-4.1868 MJ
-----------------------------------------
-.original: 10467/2500
-.value: 4186800000/1
-.signature: 206 => energy
-.base: false
-.atoms: 
-    - (MJ) = 
-        .prefix: M
-        .unit: J
-        .power: 
-.base units: kg·m²·s⁻²
-
-----------------------------------------
-105.506 MJ
-----------------------------------------
-.original: 52753/500
-.value: 105506000000/1
-.signature: 206 => energy
-.base: false
-.atoms: 
-    - (MJ) = 
-        .prefix: M
-        .unit: J
-        .power: 
-.base units: kg·m²·s⁻²
-
 [+] passed!
 
 >> energy - conforms?
@@ -980,20 +644,6 @@
 
 >> power - math // conversions
 [+] passed!
-----------------------------------------
-1574415572556/2111326061 W
-----------------------------------------
-.original: 1574415572556/2111326061
-.value: 1574415572556000/2111326061
-.signature: 200 => power
-.base: false
-.atoms: 
-    - (W) = 
-        .prefix: 
-        .unit: W
-        .power: 
-.base units: kg·m²·s⁻³
-
 [+] passed!
 
 >> power - conforms?
@@ -1023,20 +673,6 @@
 
 >> current - math // conversions
 [+] passed!
-----------------------------------------
-3226034023892129/9671406556917033397649408 A
-----------------------------------------
-.original: 3226034023892129/9671406556917033397649408
-.value: 3226034023892129/9671406556917033397649408
-.signature: 1296 => current
-.base: false
-.atoms: 
-    - (A) = 
-        .prefix: 
-        .unit: A
-        .power: 
-.base units: A
-
 [+] passed!
 
 >> current - conforms?
@@ -1067,34 +703,6 @@
 
 >> potential - math // conversions
 [+] passed!
-----------------------------------------
-299.792458 V
-----------------------------------------
-.original: 565516893801/1886361310
-.value: 56551689380100/188636131
-.signature: -1096 => potential
-.base: false
-.atoms: 
-    - (V) = 
-        .prefix: 
-        .unit: V
-        .power: 
-.base units: kg·m²·s⁻³·A⁻¹
-
-----------------------------------------
-1e-08 V
-----------------------------------------
-.original: 1/100000000
-.value: 1/100000
-.signature: -1096 => potential
-.base: false
-.atoms: 
-    - (V) = 
-        .prefix: 
-        .unit: V
-        .power: 
-.base units: kg·m²·s⁻³·A⁻¹
-
 [+] passed!
 
 >> potential - conforms?
@@ -1125,20 +733,6 @@
 
 >> resistance - math // conversions
 [+] passed!
-----------------------------------------
-1e-09 Ω
-----------------------------------------
-.original: 1/1000000000
-.value: 1/1000000
-.signature: -2392 => resistance
-.base: false
-.atoms: 
-    - (Ω) = 
-        .prefix: 
-        .unit: Ω
-        .power: 
-.base units: kg·m²·s⁻³·A⁻²
-
 [+] passed!
 
 >> resistance - conforms?
@@ -1196,20 +790,6 @@
 
 >> charge - math // conversions
 [+] passed!
-----------------------------------------
-3226034023892129/9671406556917033397649408 C
-----------------------------------------
-.original: 3226034023892129/9671406556917033397649408
-.value: 3226034023892129/9671406556917033397649408
-.signature: 1302 => charge
-.base: false
-.atoms: 
-    - (C) = 
-        .prefix: 
-        .unit: C
-        .power: 
-.base units: A·s
-
 [+] passed!
 
 >> charge - conforms?
@@ -1290,20 +870,6 @@
 
 >> inductance - math // conversions
 [+] passed!
-----------------------------------------
-1e-09 H
-----------------------------------------
-.original: 1/1000000000
-.value: 1/1000000
-.signature: -2386 => inductance
-.base: false
-.atoms: 
-    - (H) = 
-        .prefix: 
-        .unit: H
-        .power: 
-.base units: kg·m²·s⁻²·A⁻²
-
 [+] passed!
 
 >> inductance - conforms?
@@ -1334,20 +900,6 @@
 
 >> magneticFlux - math // conversions
 [+] passed!
-----------------------------------------
-1e-08 Wb
-----------------------------------------
-.original: 1/100000000
-.value: 1/100000
-.signature: -1090 => magnetic flux
-.base: false
-.atoms: 
-    - (Wb) = 
-        .prefix: 
-        .unit: Wb
-        .power: 
-.base units: kg·m²·s⁻²·A⁻¹
-
 [+] passed!
 
 >> magneticFlux - conforms?
@@ -1378,20 +930,6 @@
 
 >> magneticFluxDensity - math // conversions
 [+] passed!
-----------------------------------------
-0.0001 T
-----------------------------------------
-.original: 1/10000
-.value: 1/10
-.signature: -1092 => magnetic flux density
-.base: false
-.atoms: 
-    - (T) = 
-        .prefix: 
-        .unit: T
-        .power: 
-.base units: kg·s⁻²·A⁻¹
-
 [+] passed!
 
 >> magneticFluxDensity - conforms?
@@ -1417,48 +955,6 @@
 [+] passed!
 
 >> temperature - math // conversions
-----------------------------------------
-274.1 K
-----------------------------------------
-.original: 5483/20
-.value: 5483/20
-.signature: 36 => temperature
-.base: false
-.atoms: 
-    - (K) = 
-        .prefix: 
-        .unit: K
-        .power: 
-.base units: K
-
-----------------------------------------
-255.9 K
-----------------------------------------
-.original: 46067/180
-.value: 46067/180
-.signature: 36 => temperature
-.base: false
-.atoms: 
-    - (K) = 
-        .prefix: 
-        .unit: K
-        .power: 
-.base units: K
-
-----------------------------------------
-0.6 K
-----------------------------------------
-.original: 5/9
-.value: 5/9
-.signature: 36 => temperature
-.base: false
-.atoms: 
-    - (K) = 
-        .prefix: 
-        .unit: K
-        .power: 
-.base units: K
-
 [+] passed!
 
 >> temperature - conforms?
