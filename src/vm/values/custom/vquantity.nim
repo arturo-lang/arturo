@@ -279,18 +279,11 @@ proc toQuantity*(v: QuantityValue, atoms: Atoms): Quantity =
     result.original = v
     result.value = v
 
-    # echo "converting to quantity: " & $(v)
-
     for atom in atoms:
-        # echo $(atom)
         let prim = getPrimitive(atom.unit)
         result.signature += prim.signature * atom.power
-        # echo "- result.value (before): " & $(result.value)
-        # echo "- primitive: " & $(prim)
         let intermediate = prim.value ^ atom.power
-        # echo "- intermediate: " & $(intermediate)
         result.value *= intermediate
-        # echo "- result.value (after): " & $(result.value)
 
         if unlikely(atom.unit.u.kind == User):
             result.withUserUnits = true
@@ -305,7 +298,6 @@ else:
         result = toQuantity(toRational(v), atoms)
 
 proc parseValue(s: string): QuantityValue =
-    echo "in parseValue"
     if s.contains("."):
         result = toRational(parseFloat(s))
     elif s.contains(":"):
@@ -333,8 +325,6 @@ proc toQuantity*(str: string): Quantity =
 
 proc toQuantity*(vstr: string, atoms: Atoms): Quantity =
     # used mainly for the constants!
-    echo "parsing unit: " & $(vstr)
-    echo "with atoms: " & $(atoms)
     result = toQuantity(parseValue(vstr), atoms)
 
 #=======================================
@@ -466,9 +456,6 @@ proc `==`*(a, b: Quantity): bool =
         return false
 
     let convB = b.convertTo(a.atoms)
-
-    # echo "converted B: "
-    # inspect(convB)
 
     return a.original == convB.original
 
