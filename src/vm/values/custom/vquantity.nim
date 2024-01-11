@@ -276,8 +276,8 @@ proc parseAtoms*(str: string): Atoms =
 #=======================================
 
 proc toQuantity*(v: QuantityValue, atoms: Atoms): Quantity =
-    result.original = v
-    result.value = v
+    result.original = copyRational(v)
+    result.value = copyRational(v)
 
     for atom in atoms:
         let prim = getPrimitive(atom.unit)
