@@ -227,24 +227,30 @@ when not defined(NOGMP):
 
     func toRational*(num: Int, den: int): VRational =
         # create VRational from numerator and denominator (big Int - int)
+        debugEcho "toRational with (Int / int): " & $(x) & "/" & $(y)
         result = VRational(
             rKind: BigRational,
             br: newRat(num, newInt(den))
         )
+        debugEcho "result: " & $(result.br)
 
     func toRational*(num: int, den: Int): VRational =
         # create VRational from numerator and denominator (int - big Int)
+        debugEcho "toRational with (int / Int): " & $(x) & "/" & $(y)
         result = VRational(
             rKind: BigRational,
             br: newRat(newInt(num), den)
         )
+        debugEcho "result: " & $(result.br)
 
     func toRational*(num: Int, den: Int): VRational =
         # create VRational from numerator and denominator (big Int's)
+        debugEcho "toRational with (Int / Int): " & $(x) & "/" & $(y)
         result = VRational(
             rKind: BigRational,
             br: newRat(num, den)
         )
+        debugEcho "result: " & $(result.br)
 
     func toRational*(x: float, y: Int): VRational =
         # create VRational from numerator and denominator (float and big Int)
@@ -256,10 +262,12 @@ when not defined(NOGMP):
 
     func toBigRational*(x: int | Int | float): VRational =
         # create VRational from int, big Int or float
+        debugEcho "toBigRational with (int|int|float): " & $(x)
         result = VRational(
             rKind: BigRational,
             br: newRat(x)
         )
+        debugEcho "result: " & $(result.br)
         
         simplifyRational(result)
 
