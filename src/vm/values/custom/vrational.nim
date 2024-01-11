@@ -713,13 +713,13 @@ func `/`*(x, y: VRational): VRational =
         when not defined(NOGMP):
             if y.rKind == NormalRational:
                 debugEcho "case 3-a"
-                echo "before calling toBigRational x: " & $(x)
-                echo "before calling toBigRational y: " & $(y)
+                debugEcho "before calling toBigRational x: " & $(x)
+                debugEcho "before calling toBigRational y: " & $(y)
 
                 result = x / toBigRational(y)
 
-                echo "after calling toBigRational x: " & $(x)
-                echo "after calling toBigRational y: " & $(y)
+                debugEcho "after calling toBigRational x: " & $(x)
+                debugEcho "after calling toBigRational y: " & $(y)
             else:
                 debugEcho "case 3-b"
                 result = VRational(
