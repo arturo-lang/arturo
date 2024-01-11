@@ -1177,3 +1177,14 @@ func clear*(z: Float) {.inline.} =
 func clear*(z: Rat) {.inline.} =
     GCunref(z)
     finalizeRat(z)
+
+
+#####
+
+var 
+    num1 = 123456789000
+    num2 = 987654321000
+    
+    rat = newRat(num1, num2)
+
+echo $(rat)
