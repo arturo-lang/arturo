@@ -3004,25 +3004,23 @@ do [
     ensure -> 1`acal  = 1`fcal  / (10 ^ 3)
     passed
 
-    ; division by zero?
-
-    ; ensure -> 1`EeV  = 1`PeV  * (10 ^ 3)
-    ; ensure -> 1`PeV  = 1`TeV  * (10 ^ 3)
-    ; ensure -> 1`TeV  = 1`GeV  * (10 ^ 3)
-    ; ensure -> 1`GeV  = 1`MeV  * (10 ^ 3)
-    ; ensure -> 1`MeV  = 1`keV  * (10 ^ 3)
-    ; ensure -> 1`keV  = 1`heV  *  10
-    ; ensure -> 1`heV  = 1`daeV *  10
-    ; ensure -> 1`daeV = 1`eV   *  10
-    ; ensure -> 1`deV  = 1`eV   /  10
-    ; ensure -> 1`ceV  = 1`deV  /  10
-    ; ensure -> 1`meV  = 1`ceV  /  10
-    ; ensure -> 1`ueV  = 1`meV  / (10 ^ 3)
-    ; ensure -> 1`neV  = 1`ueV  / (10 ^ 3)
-    ; ensure -> 1`peV  = 1`neV  / (10 ^ 3)
-    ; ensure -> 1`feV  = 1`peV  / (10 ^ 3)
-    ; ensure -> 1`aeV  = 1`feV  / (10 ^ 3)
-    ; passed
+    ensure -> 1`EeV  = 1`PeV  * (10 ^ 3)
+    ensure -> 1`PeV  = 1`TeV  * (10 ^ 3)
+    ensure -> 1`TeV  = 1`GeV  * (10 ^ 3)
+    ensure -> 1`GeV  = 1`MeV  * (10 ^ 3)
+    ensure -> 1`MeV  = 1`keV  * (10 ^ 3)
+    ensure -> 1`keV  = 1`heV  *  10
+    ensure -> 1`heV  = 1`daeV *  10
+    ensure -> 1`daeV = 1`eV   *  10
+    ensure -> 1`deV  = 1`eV   /  10
+    ensure -> 1`ceV  = 1`deV  /  10
+    ensure -> 1`meV  = 1`ceV  /  10
+    ensure -> 1`ueV  = 1`meV  / (10 ^ 3)
+    ensure -> 1`neV  = 1`ueV  / (10 ^ 3)
+    ensure -> 1`peV  = 1`neV  / (10 ^ 3)
+    ensure -> 1`feV  = 1`peV  / (10 ^ 3)
+    ensure -> 1`aeV  = 1`feV  / (10 ^ 3)
+    passed
 
 
     topic « energy - math // conversions
