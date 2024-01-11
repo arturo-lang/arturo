@@ -3226,8 +3226,7 @@ do [
     ensure -> 1`Bi  =   10`A
     passed
 
-    ; precision loss, it prints 0 A
-    ; ensure -> (~"|1`statA --> `A |") =   "3.335641e-10 A"
+    ensure -> (~"|1`statA --> `A |") =   "3226034023892129/9671406556917033397649408 A"
     passed
 
 
