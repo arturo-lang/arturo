@@ -2,14 +2,6 @@
 topic:  $[topic :string] -> print ~"\n>> |topic|"
 passed: $[] -> print "[+] passed!"
 
-ensure: function [blk][
-    if not? do blk [
-        print ["⚠️ Failed:" blk]
-        print first blk
-    ]
-]
-
-
 topic « currencies
 do [
 
@@ -183,11 +175,6 @@ do [
     passed
 
     ensure -> 1`Epx  = 1`Ppx  * (10 ^ 3)
-    print ["Epx is:" 1`Epx]
-    print ["Ppx is:" 1`Ppx]
-    print ["10^3 is:" 10^3]
-    print ["10^3 * 1`Ppx is: " 1`Ppx  * (10 ^ 3)]
-    print ["Converted:" (1`Ppx * (10^3)) --> `Epx]
     ensure -> 1`Ppx  = 1`Tpx  * (10 ^ 3)
     ensure -> 1`Tpx  = 1`Gpx  * (10 ^ 3)
     ensure -> 1`Gpx  = 1`Mpx  * (10 ^ 3)
