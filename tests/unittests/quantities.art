@@ -2136,7 +2136,6 @@ do [
 
     ensure -> equal? ~"|1`lb   --> `g |" ~"|45359237:100000`g|"
     ensure -> equal? ~"|1`slug --> `kg|" ~"|14.59390`kg|"
-    ; Da is being considered as 0 when compared with kg, g or mg...
     ensure -> equal? ~"|1`Da   --> `kg|" "4628907327056559/2787593149816327892691964784081045188247552 kg"
     ensure -> equal? ~"|1`gr   --> `mg|" ~"|64.79891`mg|"
     passed
