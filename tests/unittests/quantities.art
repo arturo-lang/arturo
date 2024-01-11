@@ -4283,13 +4283,6 @@ do [
 
     topic « angle - math // conversions
 
-    ; Try it:
-    ;   $> 1`deg --> `rad
-    ;   => 14964008/857374503 rad
-    ;
-    ;   $> 14964008/857374503
-    ;   => 0
-
     ; ensure -> 1`deg     =   to :quantity @[to :rational @[pi 180] `rad]
     ; ensure -> 1`grad    =   to :quantity @[to :rational @[pi 200] `rad]
     ; ensure -> 1`arcmin  =   to :quantity @[to :rational @[pi 10800] `rad]
