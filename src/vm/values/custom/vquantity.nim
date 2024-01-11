@@ -305,6 +305,7 @@ else:
         result = toQuantity(toRational(v), atoms)
 
 proc parseValue(s: string): QuantityValue =
+    echo "in parseValue"
     if s.contains("."):
         result = toRational(parseFloat(s))
     elif s.contains(":"):
@@ -332,6 +333,8 @@ proc toQuantity*(str: string): Quantity =
 
 proc toQuantity*(vstr: string, atoms: Atoms): Quantity =
     # used mainly for the constants!
+    echo "parsing unit: " & $(vstr)
+    echo "with atoms: " & $(atoms)
     result = toQuantity(parseValue(vstr), atoms)
 
 #=======================================
@@ -792,6 +795,8 @@ proc inspect*(q: Quantity) =
 proc initQuantities*() =
     Properties = generateProperties()
     Quantities = generateQuantities()
+
+    addRuntimeQuantities()
 
     # for k,q in Quantities:
     #     echo $(k) & " => "
