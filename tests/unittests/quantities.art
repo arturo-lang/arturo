@@ -2,6 +2,11 @@
 topic:  $[topic :string] -> print ~"\n>> |topic|"
 passed: $[] -> print "[+] passed!"
 
+ensure: function [blk][
+    if not? do blk ->
+        print ["⚠️ Failed:" blk]
+]
+
 
 topic « currencies
 do [
