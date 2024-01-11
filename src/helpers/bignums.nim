@@ -190,9 +190,18 @@ func newRat*(x, y: int): Rat =
         else:
             debugEcho "x<else>"
             # needs fix!
-            mpq_set_ui(result[], (x shr 32).uint32, 1)
-            mpq_mul_2exp(result[], result[], 32)
-            mpq_add(result[], result[], newRat(x.uint32)[])
+            mpz_init_set_ui(mpq_numref(result), (x shr 32).uint32)
+            mpz_mul_2exp(mpq_numref(result), result[], 32)
+            mpz_add_ui(mpq_numref(result), result[], (x.uint32))
+
+            mpz_init_set_ui(mpq_denref(result), (y shr 32).uint32)
+            mpz_mul_2exp(mpq_denref(result), result[], 32)
+            mpz_add_ui(mpq_denref(result), result[], (y.uint32))
+
+            # mpq_set_ui(result[], (x shr 32).uint32, (y shr 32).uint32)
+            # mpq_mul_2exp(result[], result[], 32)
+            # mpq_add(result[], result[], newRat(x.uint32)[])
+
     else:
         debugEcho "NOT LLP64"
         mpq_set_si(result[], x.clong, y.culong)
