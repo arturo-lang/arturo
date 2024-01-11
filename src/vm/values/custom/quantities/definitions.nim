@@ -140,7 +140,7 @@ static:
     defUnit "mi",       "mi",       false,      "5280 ft",                  "mile", "miles"
     defUnit "fur",      "fur",      false,      "1:8 mi",                   "furlong", "furlongs"
     defUnit "nmi",      "nmi",      false,      "1852 m",                   "nauticalMile", "nauticalMiles"
-    defUnit "ang",      "Å",        false,      "1:10000000000 m",                  "angstrom", "angstroms"
+    defUnit "ang",      "Å",        false,      "1:10000000000 m",          "angstrom", "angstroms"
     defUnit "au",       "au",       false,      "149597870700 m",           "astronomicalUnit", "astronomicalUnits"
     defUnit "ly",       "ly",       false,      "9460730472580800 m",       "lightYear", "lightYears"
     defUnit "px",       "px",       true,       "1:96 in",                  "pixel", "pixels"
