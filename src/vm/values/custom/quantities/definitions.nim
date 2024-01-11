@@ -297,7 +297,7 @@ static:
     #       name        symbol      prefix?     definition                  aliases
     #---------------------------------------------------------------------------------------------------------------------------
     defUnit "Ohm",      "Ω",        true,       "1 V/A",                    "ohm", "ohms"
-    defUnit "statOhm",  "statΩ",    false,      "8.987551787e11 ohm",       "statohm", "statohms"
+    defUnit "statOhm",  "statΩ",    false,      "898755178740 ohm",         "statohm", "statohms"
     defUnit "abOhm",    "abΩ",      false,      "1e-9 Ohm",                 "abohm", "abohms"
 
     #---------------------------------------------------------------------------------------------------------------------------
