@@ -118,7 +118,6 @@ proc `$`*(v: Value): string {.inline.} =
         of Unit:
             return $(v.u)
         of Quantity:
-            inspect(v.q)
             return $(v.q)
         of Regex:
             return $(v.rx)
