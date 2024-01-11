@@ -186,7 +186,7 @@ proc getPrimitive(unit: PrefixedUnit): Quantity =
         Quantities[unit.u].value = reciprocal(toRational(xrate))
         result.value = reciprocal(toRational(xrate))
     elif unit.p != No_Prefix:
-        result.value *= Powers[ord(unit.p) + 18]
+        result.value = result.value * Powers[ord(unit.p) + 18]
         # result.value *= pow(float(10), float(ord(unit.p)))
 
 proc getSignature*(atoms: Atoms): QuantitySignature =
@@ -198,7 +198,7 @@ proc getValue(atoms: Atoms): QuantityValue =
     result = 1//1
     for atom in atoms:
         let prim = getPrimitive(atom.unit)
-        result *= prim.value ^ atom.power
+        result = result * prim.value ^ atom.power
 
 proc flatten*(atoms: Atoms): Atoms =
     var cnts: OrderedTable[PrefixedUnit, int]
@@ -614,11 +614,11 @@ proc `*=`*(a: var Quantity, b: Quantity) =
     a = a * b
 
 proc `*=`*(a: var Quantity, b: int | float | QuantityValue) =
-    a.original *= b
+    a.original = a.original * b
 
 when not defined(NOGMP):
     proc `*=`*(a: var Quantity, b: Int) =
-        a.original *= b
+        a.original = a.original * b
 
 proc `/`*(a, b: Quantity): Quantity =
     if a =~ b:
@@ -665,7 +665,7 @@ proc `^`*(a: Quantity, b: int): Quantity =
 
     var i = 1
     while i < b:
-        result *= a
+        result = result * a
         inc i
 
 proc `^=`*(a: var Quantity, b: int) =
