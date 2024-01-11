@@ -275,11 +275,13 @@ when not defined(NOGMP):
 
     func toBigRational*(x: VRational): VRational =
         # create an explicitly-big VRational from a VRational
-        debugEcho "toBigRational (VRational)"
+        debugEcho "toBigRational (VRational) : " & $(x.num) & "/" & $(x.den)
+        debugEcho "ratty: " & $(x)
         result = VRational(
             rKind: BigRational,
             br: newRat(x.num, x.den)
         )
+        debugEcho "final:" & $(result.br)
 
         # we don't call `simplifyRational` here,
         # since this could again degrade it to a Normal rational!
