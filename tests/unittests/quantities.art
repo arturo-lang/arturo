@@ -4288,12 +4288,11 @@ do [
     ensure -> every? angleSet -> x -> not? conforms? x `degC
     passed
 
-    topic « angle - convert
+    ; topic « angle - convert
 
     ; ensure -> same? pi:200`rad convert 1`grad `rad
     ; ensure -> same? pi:200`rad 1`grad --> `rad
     ; passed
-    print "broken"
 
 
     topic « angle - in
