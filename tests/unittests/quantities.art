@@ -4271,6 +4271,9 @@ do [
     passed
 
 
+    ; once we find a way to support the `pi` value
+    ; as part of a quantity value, this can be re-enabled
+
     ; topic « angle - math // conversions
 
     ; ensure -> 1`deg     =   to :quantity @[to :rational @[pi 180] `rad]
@@ -4288,12 +4291,17 @@ do [
     ensure -> every? angleSet -> x -> not? conforms? x `degC
     passed
 
+    ; once we find a way to support the `pi` value
+    ; as part of a quantity value, this can be re-enabled
+
     ; topic « angle - convert
 
     ; ensure -> same? pi:200`rad convert 1`grad `rad
     ; ensure -> same? pi:200`rad 1`grad --> `rad
     ; passed
 
+    ; once we find a way to support the `pi` value
+    ; as part of a quantity value, this can be re-enabled
 
     ; topic « angle - in
 
@@ -5215,6 +5223,9 @@ do [
     topic « illuminance - math // conversions
 
     ensure -> 1`lx   =   1`cd/m2
+    ; once we find a way to support the `pi` value
+    ; as part of a quantity value, this can be re-enabled
+    
     ; ensure -> 1`Lb   =   1:pi`cd/cm2
     passed
 
