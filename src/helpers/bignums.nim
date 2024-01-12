@@ -179,17 +179,23 @@ func newRat*(x, y: int): Rat =
     new(result, finalizeRat)
     mpq_init(result[])
     when isLLP64():
-        if x.fitsLLP64Long and y.fitsLLP64Long:
-            mpq_set_si(result[], x.clong, y.culong)
-        elif x.fitsLLP64ULong and y.fitsLLP64ULong:
-            mpq_set_ui(result[], x.culong, y.culong)
+        var nref = mpq_numref(result[])
+        var dref = mpq_denref(result[])
+
+        if x.fitsLLP64Long:
+            mpz_set_si(nref, x.clong)
+        elif x.fitsLLP64ULong:
+            mpz_set_ui(nref, x.culong)
         else:
-            var nref = mpq_numref(result[])
             mpz_set_ui(nref, (x shr 32).uint32)
             mpz_mul_2exp(nref, nref, 32)
             mpz_add_ui(nref, nref, (x.uint32))
 
-            var dref = mpq_denref(result[])
+        if y.fitsLLP64Long:
+            mpz_set_si(dref, y.clong)
+        elif y.fitsLLP64ULong:
+            mpz_set_ui(dref, y.culong)
+        else:
             mpz_set_ui(dref, (y shr 32).uint32)
             mpz_mul_2exp(dref, dref, 32)
             mpz_add_ui(dref, dref, (y.uint32))
