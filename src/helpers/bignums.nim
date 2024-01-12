@@ -179,17 +179,29 @@ func newRat*(x, y: int): Rat =
     new(result, finalizeRat)
     mpq_init(result[])
     when isLLP64():
+        var nref = mpq_numref(result[])
+        var dref = mpq_denref(result[])
+
         if x.fitsLLP64Long:
-            mpq_set_si(result[], x.clong, y.culong)
+            mpz_set_si(nref, x.clong)
         elif x.fitsLLP64ULong:
-            mpq_set_ui(result[], x.culong, y.culong)
+            mpz_set_ui(nref, x.culong)
         else:
-            # needs fix!
-            mpq_set_ui(result[], (x shr 32).uint32, 1)
-            mpq_mul_2exp(result[], result[], 32)
-            mpq_add(result[], result[], newRat(x.uint32)[])
+            mpz_set_ui(nref, (x shr 32).uint32)
+            mpz_mul_2exp(nref, nref, 32)
+            mpz_add_ui(nref, nref, (x.uint32))
+
+        if y.fitsLLP64Long:
+            mpz_set_si(dref, y.clong)
+        elif y.fitsLLP64ULong:
+            mpz_set_ui(dref, y.culong)
+        else:
+            mpz_set_ui(dref, (y shr 32).uint32)
+            mpz_mul_2exp(dref, dref, 32)
+            mpz_add_ui(dref, dref, (y.uint32))
     else:
         mpq_set_si(result[], x.clong, y.culong)
+        
     canonicalize(result)
 
 func newRat*(x, y: Int): Rat =
@@ -218,6 +230,25 @@ func newRat*(s: string, base: cint = 10): Rat =
     if mpq_set_str(result[], s, base) == -1:
         raise newException(ValueError, "String not in correct base")
     canonicalize(result)
+
+#=======================================
+# Value copying
+#=======================================
+
+func copyInt*(x: Int): Int =
+    new(result, finalizeInt)
+    mpz_init(result[])
+    mpz_set(result[], x[])
+
+func copyFloat*(x: Float): Float =
+    new(result,finalizeFloat)
+    mpfr_init(result[])
+    mpfr_set(result[], x[], MPFR_RNDN)
+
+func copyRat*(x: Rat): Rat = 
+    new(result,finalizeRat)
+    mpq_init(result[])
+    mpq_set(result[], x[])
 
 #=======================================
 # Setters
