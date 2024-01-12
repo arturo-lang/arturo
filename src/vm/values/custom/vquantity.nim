@@ -525,18 +525,6 @@ when not defined(NOGMP):
 # Operators
 #=======================================
 
-# TODO(VQuantity) additions not working consistently with different exponents
-#  the problem arises when we are adding together two quantities with different exponents.
-#  the order of the 2 quantities appears to matter too, as well the "size" of the inner values:
-#  ```red
-#   2`km2 + 3`m2      ; => 2.000003 km² (correct)
-#   2`m2 + 3`km2      ; => 3000002 m² (correct)
-#
-#   54`m2 + 3`Em2     ; => 3000000000000000000000000000000000054 m² (correct)
-#   54`Em2 + 3`m2     ; => 57000000000000000000000000000000000000 Em² (total nonsense!!)
-#  ```
-#  labels: values, bug, critical
-
 proc `+`*(a, b: Quantity): Quantity =
     if not (a =~ b):
         RuntimeError_CannotConvertDifferentDimensions()
