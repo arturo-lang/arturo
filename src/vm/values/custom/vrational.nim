@@ -139,6 +139,20 @@ template getDenominator*(x: VRational, big: bool = false): untyped =
 # Constructors
 #=======================================
 
+func copyRational*(rat: VRational): VRational {.inline.} =
+    if rat.rKind == NormalRational:
+        result = VRational(
+            rKind: NormalRational,
+            num: rat.num,
+            den: rat.den
+        )
+    else:
+        when not defined(NOGMP):
+            result = VRational(
+                rKind: BigRational,
+                br: copyRat(rat.br)
+            )
+
 func toRational*(num, den: int): VRational {.inline.} =
     # create VRational from numerator and denominator (both int's)
     result = VRational(
@@ -255,7 +269,7 @@ when not defined(NOGMP):
             rKind: BigRational,
             br: newRat(x.num, x.den)
         )
-        
+
         # we don't call `simplifyRational` here,
         # since this could again degrade it to a Normal rational!
         
@@ -359,7 +373,7 @@ func `+=`*(x: var VRational, y: VRational) =
                 #x.num = common div x.den * x.num + common div y.den * y.num
                 let partOne = common div x.den * x.num
                 let partTwo = common div y.den * y.num
-                tryOp: addIntWithOverflow(partOne, partTwo, x.num)
+                tryOp: addIntWithOverflowI(partOne, partTwo, x.num)
                 x.den = common
                 reduce(x)
             do:
@@ -373,7 +387,7 @@ func `+=`*(x: var VRational, y: VRational) =
             if y.rKind == NormalRational:
                 x += toBigRational(y)
             else:
-                x.br += y.br
+                x.br = x.br + y.br
 
 func `+=`*(x: var VRational, y: int) =
     # add VRational and int, in-place
@@ -382,7 +396,7 @@ func `+=`*(x: var VRational, y: int) =
             #x.num += y * x.den
             var m: int
             tryOp: mulIntWithOverflow(y, x.den, m)
-            tryOp: addIntWithOverflow(x.num, m, x.num)
+            tryOp: addIntWithOverflowI(x.num, m, x.num)
         do:
             when not defined(NOGMP):
                 x = toBigRational(x) + y
@@ -502,7 +516,7 @@ func `-=`*(x: var VRational, y: VRational) =
                 #x.num = common div x.den * x.num - common div y.den * y.num
                 let partOne = common div x.den * x.num
                 let partTwo = common div y.den * y.num
-                tryOp: subIntWithOverflow(partOne, partTwo, x.num)
+                tryOp: subIntWithOverflowI(partOne, partTwo, x.num)
                 x.den = common
                 reduce(x)
             do:
@@ -516,7 +530,7 @@ func `-=`*(x: var VRational, y: VRational) =
             if y.rKind == NormalRational:
                 x -= toBigRational(y)
             else:
-                x.br -= y.br
+                x.br = x.br - y.br
     
 func `-=`*(x: var VRational, y: int) =
     # subtract int from VRational, in-place
@@ -525,7 +539,7 @@ func `-=`*(x: var VRational, y: int) =
             # x.num -= y * x.den
             var m: int
             tryOp: mulIntWithOverflow(y, x.den, m)
-            tryOp: subIntWithOverflow(x.num, m, x.num)
+            tryOp: subIntWithOverflowI(x.num, m, x.num)
         do:
             when not defined(NOGMP):
                 x = toBigRational(x) - y
@@ -613,10 +627,14 @@ func `*=`*(x: var VRational, y: VRational) =
     if x.rKind == NormalRational:
         if y.rKind == NormalRational:
             overflowGuard:
+                var num, den: int
                 #x.num *= y.num
-                tryOp: mulIntWithOverflow(x.num, y.num, x.num)
+                tryOp: mulIntWithOverflow(x.num, y.num, num)
                 #x.den *= y.den
-                tryOp: mulIntWithOverflow(x.den, y.den, x.den)
+                tryOp: mulIntWithOverflow(x.den, y.den, den)
+                x.num = num
+                x.den = den
+
                 reduce(x)
             do:
                 when not defined(NOGMP):
@@ -629,14 +647,14 @@ func `*=`*(x: var VRational, y: VRational) =
             if y.rKind == NormalRational:
                 x *= toBigRational(y)
             else:
-                x.br *= y.br
+                x.br = x.br * y.br
 
 func `*=`*(x: var VRational, y: int) =
     # multiply VRational by int, in-place
     if x.rKind == NormalRational:
         overflowGuard:
             #x.num *= y
-            tryOp: mulIntWithOverflow(x.num, y, x.num)
+            tryOp: mulIntWithOverflowI(x.num, y, x.num)
             reduce(x)
         do:
             when not defined(NOGMP):
@@ -735,8 +753,11 @@ func `/=`*(x: var VRational, y: VRational) =
     if x.rKind == NormalRational:
         if y.rKind == NormalRational:
             overflowGuard:
-                tryOp: mulIntWithOverflow(x.num, y.den, x.num)
-                tryOp: mulIntWithOverflow(x.den, y.num, x.den)
+                var num, den: int
+                tryOp: mulIntWithOverflow(x.num, y.den, num)
+                tryOp: mulIntWithOverflow(x.den, y.num, den)
+                x.num = num
+                x.den = den
                 reduce(x)
             do:
                 when not defined(NOGMP):
@@ -749,7 +770,7 @@ func `/=`*(x: var VRational, y: VRational) =
             if y.rKind == NormalRational:
                 x /= toBigRational(y)
             else:
-                x.br /= y.br
+                x.br = x.br / y.br
 
 func `/=`*(x: var VRational, y: int) =
     # divide VRational by int, in-place
@@ -881,6 +902,7 @@ func `<=`*(x, y: VRational): bool =
 func `==`*(x, y: VRational): bool =
     # compare two VRationals, and
     # check if `x` is equal to `y`
+
     if x.rKind == NormalRational:
         if y.rKind == NormalRational:
             result = (x - y).num == 0
