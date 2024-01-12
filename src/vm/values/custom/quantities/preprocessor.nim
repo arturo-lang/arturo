@@ -84,22 +84,6 @@ const
         "⁵": 5
     }.toTable
 
-    Powers = [
-        1 // 1000000000000000000, 0 // 1, 0 // 1,
-        1 // 1000000000000000, 0 // 1, 0 // 1,
-        1 // 1000000000000, 0 // 1, 0 // 1,
-        1 // 1000000000, 0 // 1, 0 // 1,
-        1 // 1000000, 0 // 1, 0 // 1,
-        1 // 1000, 1 // 100, 1 // 10, 
-        1 // 1, 10 // 1, 100 // 1, 
-        1000 // 1, 0 // 1, 0 // 1,
-        1000000 // 1, 0 // 1, 0 // 1,
-        1000000000 // 1, 0 // 1, 0 // 1,
-        1000000000000.int // 1, 0 // 1, 0 // 1,
-        1000000000000000.int // 1, 0 // 1, 0 // 1,
-        1000000000000000000.int // 1
-    ]
-
 #=======================================
 # Templates
 #=======================================
@@ -128,8 +112,7 @@ proc getDefined(str: string): Quantity =
     result = defs[unit]
 
     if pref != "No":
-        var prefVal = toRational(pow(10.0, abs(float(prefixes[pref].val)))) # Powers[prefixes[pref].val+18]
-        #var prefVal = Powers[prefixes[pref].val+18]
+        var prefVal = toRational(pow(10.0, abs(float(prefixes[pref].val))))
         if prefixes[pref].val < 0:
             prefVal = reciprocal(prefVal)
 
