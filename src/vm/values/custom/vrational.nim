@@ -38,7 +38,7 @@ type
         NormalRational,
         BigRational
 
-    VRational* = object
+    VRational* = ref object
         case rKind*: RationalKind:
             of NormalRational:
                 num*: int
