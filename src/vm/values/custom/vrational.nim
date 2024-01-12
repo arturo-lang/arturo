@@ -213,7 +213,6 @@ func toRational*(x: int, y: float): VRational =
 when not defined(NOGMP):
     func toRational*(x: Int): VRational = 
         # create VRational from big Int
-        debugEcho "toRational (Int)"
         result = VRational(
             rKind: BigRational,
             br: newRat(x)
@@ -221,7 +220,6 @@ when not defined(NOGMP):
 
     func toRational*(x: Rat): VRational =
         # create VRational from Rat
-        debugEcho "toRational (Rat)"
         result = VRational(
             rKind: BigRational,
             br: x
@@ -229,30 +227,24 @@ when not defined(NOGMP):
 
     func toRational*(num: Int, den: int): VRational =
         # create VRational from numerator and denominator (big Int - int)
-        debugEcho "toRational with (Int / int): " & $(num) & "/" & $(den)
         result = VRational(
             rKind: BigRational,
             br: newRat(num, newInt(den))
         )
-        debugEcho "result: " & $(result.br)
 
     func toRational*(num: int, den: Int): VRational =
         # create VRational from numerator and denominator (int - big Int)
-        debugEcho "toRational with (int / Int): " & $(num) & "/" & $(den)
         result = VRational(
             rKind: BigRational,
             br: newRat(newInt(num), den)
         )
-        debugEcho "result: " & $(result.br)
 
     func toRational*(num: Int, den: Int): VRational =
         # create VRational from numerator and denominator (big Int's)
-        debugEcho "toRational with (Int / Int): " & $(num) & "/" & $(den)
         result = VRational(
             rKind: BigRational,
             br: newRat(num, den)
         )
-        debugEcho "result: " & $(result.br)
 
     func toRational*(x: float, y: Int): VRational =
         # create VRational from numerator and denominator (float and big Int)
@@ -264,24 +256,19 @@ when not defined(NOGMP):
 
     func toBigRational*(x: int | Int | float): VRational =
         # create VRational from int, big Int or float
-        debugEcho "toBigRational with (int|int|float): " & $(x)
         result = VRational(
             rKind: BigRational,
             br: newRat(x)
         )
-        debugEcho "result: " & $(result.br)
         
         simplifyRational(result)
 
     func toBigRational*(x: VRational): VRational =
         # create an explicitly-big VRational from a VRational
-        debugEcho "toBigRational (VRational) : " & $(x.num) & "/" & $(x.den)
-        debugEcho "ratty: " & $(x)
         result = VRational(
             rKind: BigRational,
             br: newRat(x.num, x.den)
         )
-        debugEcho "final:" & $(result.br)
 
         # we don't call `simplifyRational` here,
         # since this could again degrade it to a Normal rational!
