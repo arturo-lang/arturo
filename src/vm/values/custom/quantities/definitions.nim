@@ -140,7 +140,7 @@ static:
     defUnit "mi",       "mi",       false,      "5280 ft",                  "mile", "miles"
     defUnit "fur",      "fur",      false,      "1:8 mi",                   "furlong", "furlongs"
     defUnit "nmi",      "nmi",      false,      "1852 m",                   "nauticalMile", "nauticalMiles"
-    defUnit "ang",      "Å",        false,      "1e-10 m",                  "angstrom", "angstroms"
+    defUnit "ang",      "Å",        false,      "1:10000000000 m",          "angstrom", "angstroms"
     defUnit "au",       "au",       false,      "149597870700 m",           "astronomicalUnit", "astronomicalUnits"
     defUnit "ly",       "ly",       false,      "9460730472580800 m",       "lightYear", "lightYears"
     defUnit "px",       "px",       true,       "1:96 in",                  "pixel", "pixels"
@@ -297,7 +297,7 @@ static:
     #       name        symbol      prefix?     definition                  aliases
     #---------------------------------------------------------------------------------------------------------------------------
     defUnit "Ohm",      "Ω",        true,       "1 V/A",                    "ohm", "ohms"
-    defUnit "statOhm",  "statΩ",    false,      "8.987551787e11 ohm",       "statohm", "statohms"
+    defUnit "statOhm",  "statΩ",    false,      "898755178740 ohm",         "statohm", "statohms"
     defUnit "abOhm",    "abΩ",      false,      "1e-9 Ohm",                 "abohm", "abohms"
 
     #---------------------------------------------------------------------------------------------------------------------------

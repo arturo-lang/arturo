@@ -61,6 +61,7 @@ func mpfr_get_version*(): cstring {.importc.}
 
 func mpfr_clear*(a: var mpfr) {.importc.}
 func mpfr_init*(a: var mpfr) {.importc.}
+func mpfr_set*(a: var mpfr, b: mpfr, c: mpfr_rnd_t) {.importc.}
 func mpfr_set_d*(a: var mpfr, b: cdouble, c: mpfr_rnd_t) {.importc.}
 func mpfr_set_si*(a: var mpfr, b: clong, c: mpfr_rnd_t) {.importc.}
 func mpfr_set_ui*(a: var mpfr, b: culong, c: mpfr_rnd_t) {.importc.}

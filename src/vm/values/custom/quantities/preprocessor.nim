@@ -58,6 +58,7 @@ var
     prefixes            {.compileTime.} : OrderedTable[string, tuple[sym: string, val: int]]
     defs                {.compileTime.} : OrderedTable[string, Quantity]
     units               {.compileTime.} : OrderedTable[string, string]
+    unitDefinitions     {.compileTime.} : OrderedTable[string, string]
     constants           {.compileTime.} : OrderedTable[string,Constant]
 
     parsable            {.compileTime.} : OrderedTable[string, (string, string)]
@@ -232,6 +233,7 @@ proc defPrefix*(prefix, symbol: string, value: int) =
 
 proc defUnit*(unit: string, symbol: string, prefixed: bool, definition: string, aliases: varargs[string]) =
     units[unit] = symbol
+    unitDefinitions[unit] = definition
 
     if definition[0] in 'A'..'Z':
         baseUnits.add(unit)
@@ -545,32 +547,65 @@ macro generateQuantities*(): untyped =
     for (unit,quantity) in pairs(defs):
         var atomsSeq = getAtomsSeq(quantity.atoms)
 
-        items.add nnkExprColonExpr.newTree(
-            nnkObjConstr.newTree(
-                newIdentNode("SubUnit"),
-                nnkExprColonExpr.newTree(
-                    newIdentNode("kind"),
-                    newIdentNode("Core")
+        if not (quantity.value == 0 // 1 and quantity.signature != (static parsePropertyFormula("C"))):
+            # if the value is 0 and it's not a currency unit,
+            # it means we should have properly calculated it, but couldn't.
+            # postpone their calculation for `addRuntimeQuantities`
+            items.add nnkExprColonExpr.newTree(
+                nnkObjConstr.newTree(
+                    newIdentNode("SubUnit"),
+                    nnkExprColonExpr.newTree(
+                        newIdentNode("kind"),
+                        newIdentNode("Core")
+                    ),
+                    nnkExprColonExpr.newTree(
+                        newIdentNode("core"),
+                        newIdentNode(unitId(unit))
+                    )
                 ),
-                nnkExprColonExpr.newTree(
-                    newIdentNode("core"),
-                    newIdentNode(unitId(unit))
+                nnkTupleConstr.newTree(
+                    newLit(quantity.original),
+                    newLit(quantity.value),
+                    newLit(quantity.signature),
+                    atomsSeq,
+                    newLit(quantity.base),
+                    newLit(false)
                 )
-            ),
-            nnkTupleConstr.newTree(
-                newLit(quantity.original),
-                newLit(quantity.value),
-                newLit(quantity.signature),
-                atomsSeq,
-                newLit(quantity.base),
-                newLit(false)
             )
-        )
 
     nnkDotExpr.newTree(
         items,
         newIdentNode("toTable")
     )
+
+macro addRuntimeQuantities*(): untyped =
+    let items = nnkStmtList.newTree()
+
+    for (unit,quantity) in pairs(defs):
+        if quantity.value == 0 // 1 and quantity.signature != (static parsePropertyFormula("C")):
+            items.add nnkAsgn.newTree(
+                nnkBracketExpr.newTree(
+                    newIdentNode("Quantities"),
+                    nnkObjConstr.newTree(
+                        newIdentNode("SubUnit"),
+                        nnkExprColonExpr.newTree(
+                            newIdentNode("kind"),
+                            newIdentNode("Core")
+                        ),
+                        nnkExprColonExpr.newTree(
+                            newIdentNode("core"),
+                            newIdentNode(unitId(unit))
+                        )
+                    ),
+                ),
+                nnkCall.newTree(
+                    newIdentNode("toQuantity"),
+                    newLit(unitDefinitions[unit].split(" ")[0]),
+                    getAtomsSeq(parseAtoms(unitDefinitions[unit].split(" ")[1]))
+                )
+            )
+
+    items
 
 macro generateConstants*(): untyped =
     let res = nnkStmtList.newTree()
@@ -713,10 +748,10 @@ macro addPropertyPredicates*(): untyped =
 # template getProperty(q: Quantity): string =
 #     properties.getOrDefault(q.signature, "NOT FOUND!")
 
-# Overloads
+# # Overloads
 
-# * we don't really need them, but they are
-#   useful for debugging, at the compiler level only!
+# # * we don't really need them, but they are
+# #   useful for debugging, at the compiler level only!
 
 # proc `+`(a, b: Quantity): Quantity =
 #     newQuantity(
@@ -757,7 +792,7 @@ macro addPropertyPredicates*(): untyped =
 #     if den.len > 0:
 #         result &= "/" & den.join("·")
 
-# Main debugging routines
+# # Main debugging routines
 
 # proc debugAdd(a,b:string) =
 #     let pA = parseQuantity(a)
@@ -770,6 +805,7 @@ macro addPropertyPredicates*(): untyped =
 #     echo a & " * " & b & " = " & $(pA * pB)
 
 # proc printUnits*() =
+#     echo "in printUnits"
 #     for unit, quantity in defs:
 #         echo unit & " = "
 #         echo "\t.original = " & $(quantity.original)
@@ -781,3 +817,4 @@ macro addPropertyPredicates*(): untyped =
 #         echo ""
 
 #     echo $(constants)
+#     echo $(parsable)
