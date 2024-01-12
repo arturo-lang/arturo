@@ -1,7 +1,7 @@
-
 >> currencies
 
 >> currencies - currency? (hidden)
+[+] passed!
 
 >> currencies - basic math
 [+] passed!
@@ -605,6 +605,7 @@
 [+] passed!
 [+] passed!
 [+] passed!
+[+] passed!
 
 >> energy - math // conversions
 [+] passed!
@@ -1007,18 +1008,9 @@
 >> angle - angle?
 [+] passed!
 
->> angle - math // conversions
-broken
-
 >> angle - conforms?
 [+] passed!
 [+] passed!
-
->> angle - convert
-broken
-
->> angle - in
-broken
 
 >> angle - property
 [+] passed!

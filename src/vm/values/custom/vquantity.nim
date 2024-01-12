@@ -97,6 +97,23 @@ const
     AtomExponents = ["⁻⁵", "⁻⁴", "⁻³", "⁻²", "⁻¹", "", "", "²", "³", "⁴", "⁵"]
     NoUnitFound = getNoUnitFound()
 
+let
+    Powers = [
+        1 // 1000000000000000000, 0 // 1, 0 // 1,
+        1 // 1000000000000000, 0 // 1, 0 // 1,
+        1 // 1000000000000, 0 // 1, 0 // 1,
+        1 // 1000000000, 0 // 1, 0 // 1,
+        1 // 1000000, 0 // 1, 0 // 1,
+        1 // 1000, 1 // 100, 1 // 10, 
+        1 // 1, 10 // 1, 100 // 1, 
+        1000 // 1, 0 // 1, 0 // 1,
+        1000000 // 1, 0 // 1, 0 // 1,
+        1000000000 // 1, 0 // 1, 0 // 1,
+        1000000000000 // 1, 0 // 1, 0 // 1,
+        1000000000000000 // 1, 0 // 1, 0 // 1,
+        1000000000000000000 // 1
+    ]
+
 #=======================================
 # Variables
 #=======================================
@@ -154,19 +171,23 @@ proc getExchangeRate(curr: string): float =
         let content = waitFor (newAsyncHttpClient().getContent(url))
         let response = parseJson(content)
         for (k,v) in pairs(response["usd"]):
-            ExchangeRates[k] = v.fnum
+            if likely(v.kind == JFloat):
+                ExchangeRates[k] = v.fnum
+            else:
+                ExchangeRates[k] = float(v.num)
 
     return ExchangeRates[s]
 
 proc getPrimitive(unit: PrefixedUnit): Quantity =
     result = Quantities[unit.u]
-
     if unlikely(result.isCurrency() and isZero(result.value)):
         let xrate = getExchangeRate((symbolName(unit.u.core)).replace("_CoreUnit",""))
         Quantities[unit.u].value = reciprocal(toRational(xrate))
         result.value = reciprocal(toRational(xrate))
     elif unit.p != No_Prefix:
-        result.value *= pow(float(10), float(ord(unit.p)))
+        result.value *= Powers[ord(unit.p) + 18]
+
+        # result.value *= pow(float(10), float(ord(unit.p)))
 
 proc getSignature*(atoms: Atoms): QuantitySignature =
     for atom in atoms:
@@ -355,8 +376,7 @@ proc convertTo*(q: Quantity, atoms: Atoms): Quantity =
     if q.atoms == atoms:
         return q
 
-    let newVal = q.value/getValue(atoms)
-    result = toQuantity(newVal, atoms)
+    result = toQuantity(q.value/getValue(atoms), atoms)
 
 proc convertQuantity*(q: Quantity, atoms: Atoms): Quantity =
     if unlikely(isTemperature(q)):
@@ -644,7 +664,7 @@ proc `^`*(a: Quantity, b: int): Quantity =
 
     var i = 1
     while i < b:
-        result *= a
+        result = result * a
         inc i
 
 proc `^=`*(a: var Quantity, b: int) =
@@ -761,6 +781,8 @@ proc inspect*(q: Quantity) =
 proc initQuantities*() =
     Properties = generateProperties()
     Quantities = generateQuantities()
+
+    addRuntimeQuantities()
 
     when not defined(NOGMP):
         generateConstants()
