@@ -634,7 +634,7 @@ when not defined(NOGMP):
         result = toQuantity(a.original / b, a.atoms)
 
 proc `/=`*(a: var Quantity, b: Quantity) =
-    a /= b
+    a = a / b
 
 proc `/=`*(a: var Quantity, b: int | float | QuantityValue) =
     a.original /= b
