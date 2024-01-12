@@ -368,16 +368,15 @@ var
     TypeLookup*: OrderedTable[string,Prototype]
 
 #=======================================
-# Benchmarking
+# Compile-Time Warnings
 #=======================================
 
-{.hints: on.} # Apparently we cannot disable just `Name` hints?
-{.hint: "Value's inner type is currently " & $sizeof(ValueObj) & ".".}
-{.hint: "Function's inner type is currently " & $sizeof(FuncObj) & ".".}
-{.hints: off.}
-
-when sizeof(ValueObj) > 72: # At time of writing it was '72', 8 - 64 bit integers seems like a good warning site? Can always go smaller
+when sizeof(ValueObj) > 64: # At time of writing it was '64', 8 - 64 bit integers seems like a good warning site? Can always go smaller
     {.warning: "'Value's inner object is large which will impact performance".}
+    {.hints: on.} # Apparently we cannot disable just `Name` hints?
+    {.hint: "Value's inner type is currently " & $sizeof(ValueObj) & ".".}
+    {.hint: "Function's inner type is currently " & $sizeof(FuncObj) & ".".}
+    {.hints: off.}
 
 #=======================================
 # Accessors
