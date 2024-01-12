@@ -148,6 +148,16 @@ proc inspect*(q: Quantity)
 # Helpers
 #=======================================
 
+func copyQuantity*(q: Quantity): Quantity =
+    (
+        original: copyRational(q.original),
+        value: copyRational(q.value),
+        signature: q.signature,
+        atoms: q.atoms,
+        base: q.base,
+        withUserUnits: q.withUserUnits
+    )
+
 func `==`(a, b: SubUnit): bool =
     if a.kind != b.kind: return false
     return
@@ -179,15 +189,13 @@ proc getExchangeRate(curr: string): float =
     return ExchangeRates[s]
 
 proc getPrimitive(unit: PrefixedUnit): Quantity =
-    result = Quantities[unit.u]
+    result = copyQuantity(Quantities[unit.u])
     if unlikely(result.isCurrency() and isZero(result.value)):
         let xrate = getExchangeRate((symbolName(unit.u.core)).replace("_CoreUnit",""))
         Quantities[unit.u].value = reciprocal(toRational(xrate))
         result.value = reciprocal(toRational(xrate))
     elif unit.p != No_Prefix:
         result.value *= Powers[ord(unit.p) + 18]
-
-        # result.value *= pow(float(10), float(ord(unit.p)))
 
 proc getSignature*(atoms: Atoms): QuantitySignature =
     for atom in atoms:
@@ -276,8 +284,8 @@ proc parseAtoms*(str: string): Atoms =
 #=======================================
 
 proc toQuantity*(v: QuantityValue, atoms: Atoms): Quantity =
-    result.original = v
-    result.value = v
+    result.original = copyRational(v)
+    result.value = copyRational(v)
 
     for atom in atoms:
         let prim = getPrimitive(atom.unit)
@@ -517,18 +525,6 @@ when not defined(NOGMP):
 # Operators
 #=======================================
 
-# TODO(VQuantity) additions not working consistently with different exponents
-#  the problem arises when we are adding together two quantities with different exponents.
-#  the order of the 2 quantities appears to matter too, as well the "size" of the inner values:
-#  ```red
-#   2`km2 + 3`m2      ; => 2.000003 km² (correct)
-#   2`m2 + 3`km2      ; => 3000002 m² (correct)
-#
-#   54`m2 + 3`Em2     ; => 3000000000000000000000000000000000054 m² (correct)
-#   54`Em2 + 3`m2     ; => 57000000000000000000000000000000000000 Em² (total nonsense!!)
-#  ```
-#  labels: values, bug, critical
-
 proc `+`*(a, b: Quantity): Quantity =
     if not (a =~ b):
         RuntimeError_CannotConvertDifferentDimensions()
@@ -643,8 +639,6 @@ when not defined(NOGMP):
     proc `/=`*(a: var Quantity, b: Int) =
         a.original /= b
 
-# TODO(VQuantity) should `/` & `//` implementations be the same?
-#  labels: values, open discussion
 proc `//`*(a: Quantity, b: int | float | Quantity | QuantityValue): Quantity =
     a / b
 
