@@ -100,23 +100,31 @@ proc `==`*(x: Value, y: Value): bool =
             
             of Floating   || Integer   : return x.f             == float(y.i)
             of Floating   || Rational  : return toRational(x.f) == y.rat
-            of Floating   || Quantity  : return x.f             == y.q
+            of Floating   || Quantity  : 
+                when not defined(WEB):
+                    return x.f             == y.q
             
-            of Quantity   || Integer   : return x.q == y.i
-            of Quantity   || Floating  : return x.q == y.f
-            of Quantity   || Rational  : return x.q == y.rat
+            of Quantity   || Integer   : 
+                when not defined(WEB):
+                    return x.q == y.i
+            of Quantity   || Floating  : 
+                when not defined(WEB):
+                    return x.q == y.f
+            of Quantity   || Rational  : 
+                when not defined(WEB):
+                    return x.q == y.rat
             
             of BigInteger || BigInteger: (when GMP: return x.bi == y.bi)
             
             of BigInteger || Integer   : (when GMP: return x.bi == toBig(y.i))
             of BigInteger || Rational  : return false
             of BigInteger || Floating  : (when GMP: return x.bi == toBig(int(y.f)))
-            of BigInteger || Quantity  : (when GMP: return x.bi == y.q)
+            of BigInteger || Quantity  : (when GMP and (not defined(WEB)): return x.bi == y.q)
 
             of Integer    || BigInteger: (when GMP: return toBig(x.i) == y.bi)
             of Rational   || BigInteger: (when GMP: return x.rat == toRational(y.bi))
             of Floating   || BigInteger: (when GMP: return toBig(int(x.f)) == y.bi)
-            of Quantity   || BigInteger: (when GMP: return x.q == y.bi)
+            of Quantity   || BigInteger: (when GMP and not defined(WEB): return x.q == y.bi)
 
             of Error      || ErrorKind : return x.err.kind == y.errkind
             of ErrorKind  || Error     : return x.errkind  == y.err.kind
@@ -303,27 +311,27 @@ proc `<`*(x: Value, y: Value): bool {.inline.}=
         
             of Rational   || Integer   :   return x.rat < toRational(y.i)
             of Rational   || Floating  :   return x.rat < toRational(y.f)
-            of Rational   || Quantity  :   return x.rat < y.q
+            of Rational   || Quantity  :   (when not defined(WEB): return x.rat < y.q)
             
             of Floating   || Integer   :   return x.f             < float(y.i)
             of Floating   || Rational  :   return toRational(x.f) < y.rat
-            of Floating   || Quantity  :   return x.f             < y.q
+            of Floating   || Quantity  :   (when not defined(WEB): return x.f             < y.q)
             
-            of Quantity   || Integer   :   return x.q < y.i
-            of Quantity   || Floating  :   return x.q < y.f
-            of Quantity   || Rational  :   return x.q < y.rat
+            of Quantity   || Integer   :   (when not defined(WEB): return x.q < y.i)
+            of Quantity   || Floating  :   (when not defined(WEB): return x.q < y.f)
+            of Quantity   || Rational  :   (when not defined(WEB): return x.q < y.rat)
             
             of BigInteger || BigInteger:   (when GMP: return x.bi < y.bi)
             
             of BigInteger || Integer   :   (when GMP: return x.bi < toBig(y.i))
             of BigInteger || Rational  :   return false
             of BigInteger || Floating  :   (when GMP: return x.bi < toBig(int(y.f)))
-            of BigInteger || Quantity  :   (when GMP: return x.bi < y.q)
+            of BigInteger || Quantity  :   (when GMP and not defined(WEB): return x.bi < y.q)
 
             of Integer    || BigInteger:   (when GMP: return toBig(x.i)      < y.bi)
             of Rational   || BigInteger:   (when GMP: return x.rat           < toRational(y.bi))
             of Floating   || BigInteger:   (when GMP: return toBig(int(x.f)) < y.bi)
-            of Quantity   || BigInteger:   (when GMP: return x.q             < y.bi)
+            of Quantity   || BigInteger:   (when GMP and not defined(WEB): return x.q             < y.bi)
             else:
                 discard
 
@@ -372,31 +380,31 @@ proc `>`*(x: Value, y: Value): bool {.inline.}=
             
             of Integer    || Floating  :   return float(x.i)      > y.f
             of Integer    || Rational  :   return toRational(x.i) > y.rat
-            of Integer    || Quantity  :   return x.i             > y.q
+            of Integer    || Quantity  :   (when not defined(WEB): return x.i             > y.q)
         
             of Rational   || Integer   :   return x.rat > toRational(y.i)
             of Rational   || Floating  :   return x.rat > toRational(y.f)
-            of Rational   || Quantity  :   return x.rat > y.q
+            of Rational   || Quantity  :   (when not defined(WEB): return x.rat > y.q)
             
             of Floating   || Integer   :   return x.f             > float(y.i)
             of Floating   || Rational  :   return toRational(x.f) > y.rat
-            of Floating   || Quantity  :   return x.f             > y.q
+            of Floating   || Quantity  :   (when not defined(WEB): return x.f             > y.q)
             
-            of Quantity   || Integer   :   return x.q > y.i
-            of Quantity   || Floating  :   return x.q > y.f
-            of Quantity   || Rational  :   return x.q > y.rat
+            of Quantity   || Integer   :   (when not defined(WEB): return x.q > y.i)
+            of Quantity   || Floating  :   (when not defined(WEB): return x.q > y.f)
+            of Quantity   || Rational  :   (when not defined(WEB): return x.q > y.rat)
             
             of BigInteger || BigInteger:   (when GMP: return x.bi > y.bi)
             
             of BigInteger || Integer   :   (when GMP: return x.bi > toBig(y.i))
             of BigInteger || Rational  :   return false
             of BigInteger || Floating  :   (when GMP: return x.bi > toBig(int(y.f)))
-            of BigInteger || Quantity  :   (when GMP: return x.bi > y.q)
+            of BigInteger || Quantity  :   (when GMP and not defined(WEB): return x.bi > y.q)
 
             of Integer    || BigInteger:   (when GMP: return toBig(x.i)      > y.bi)
             of Rational   || BigInteger:   (when GMP: return x.rat           > toRational(y.bi))
             of Floating   || BigInteger:   (when GMP: return toBig(int(x.f)) > y.bi)
-            of Quantity   || BigInteger:   (when GMP: return x.q             > y.bi)
+            of Quantity   || BigInteger:   (when GMP and not defined(WEB): return x.q             > y.bi)
             else:
                 discard
 
@@ -475,7 +483,8 @@ proc identical*(x: Value, y: Value): bool {.inline.} =
 
             return true
         elif x.kind==Quantity:
-            return (x.q.original == y.q.original) and (x.q.atoms == y.q.atoms)
+            when not defined(WEB):
+                return (x.q.original == y.q.original) and (x.q.atoms == y.q.atoms)
         else:
             return true
     else:

@@ -484,11 +484,11 @@ proc `+`*(x: Value, y: Value): Value =
         of Complex    || Complex        :   return newComplex(x.z + y.z)
         
         of Color      || Color          :   return newColor(x.l + y.l)
-        of Quantity   || Integer        :   return newQuantity(x.q + y.i)
-        of Quantity   || BigInteger     :   (when GMP: return newQuantity(x.q + y.bi))
-        of Quantity   || Floating       :   return newQuantity(x.q + y.f)
-        of Quantity   || Rational       :   return newQuantity(x.q + y.rat)
-        of Quantity   || Quantity       :   return newQuantity(x.q + y.q)
+        of Quantity   || Integer        :   (when not defined(WEB): return newQuantity(x.q + y.i))
+        of Quantity   || BigInteger     :   (when GMP and not defined(WEB): return newQuantity(x.q + y.bi))
+        of Quantity   || Floating       :   (when not defined(WEB): return newQuantity(x.q + y.f))
+        of Quantity   || Rational       :   (when not defined(WEB): return newQuantity(x.q + y.rat))
+        of Quantity   || Quantity       :   (when not defined(WEB): return newQuantity(x.q + y.q))
         else:
             objectOperationOrNothing("add", AddM)
 
@@ -527,11 +527,11 @@ proc `+=`*(x: var Value, y: Value) =
         of Complex    || Complex        :   x.z += y.z
         
         of Color      || Color          :   x.l += y.l
-        of Quantity   || Integer        :   x.q += y.i
-        of Quantity   || BigInteger     :   (when GMP: x.q += y.bi)
-        of Quantity   || Floating       :   x.q += y.f
-        of Quantity   || Rational       :   x.q += y.rat
-        of Quantity   || Quantity       :   x.q += y.q
+        of Quantity   || Integer        :   (when not defined(WEB): x.q += y.i)
+        of Quantity   || BigInteger     :   (when GMP and not defined(WEB): x.q += y.bi)
+        of Quantity   || Floating       :   (when not defined(WEB): x.q += y.f)
+        of Quantity   || Rational       :   (when not defined(WEB): x.q += y.rat)
+        of Quantity   || Quantity       :   (when not defined(WEB): x.q += y.q)
         else:
             objectOperationOrNothing("add", AddM, inplace=true)
 
@@ -545,7 +545,7 @@ proc inc*(x: Value): Value =
         of Floating: return newFloating(x.f+1.0)
         of Rational: return newRational(x.rat+1)
         of Complex: return newComplex(x.z+1.0)
-        of Quantity: return newQuantity(x.q + 1)
+        of Quantity: (when not defined(WEB): return newQuantity(x.q + 1))
         else:
             objectOperationOrNothing("inc", IncM, oneparam=true)
 
@@ -562,7 +562,7 @@ proc incI*(x: var Value) =
         of Floating: x.f += 1.0
         of Rational: x.rat += 1
         of Complex: x.z = x.z + 1.0
-        of Quantity: x.q += 1
+        of Quantity: (when not defined(WEB): x.q += 1)
         else:
             objectOperationOrNothing("inc", IncM, oneparam=true, inplace=true)
 
@@ -598,11 +598,11 @@ proc `-`*(x: Value, y: Value): Value =
         of Complex    || Complex        :   return newComplex(x.z - y.z)
         
         of Color      || Color          :   return newColor(x.l - y.l)
-        of Quantity   || Integer        :   return newQuantity(x.q - y.i)
-        of Quantity   || BigInteger     :   (when GMP: return newQuantity(x.q - y.bi))
-        of Quantity   || Floating       :   return newQuantity(x.q - y.f)
-        of Quantity   || Rational       :   return newQuantity(x.q - y.rat)
-        of Quantity   || Quantity       :   return newQuantity(x.q - y.q)
+        of Quantity   || Integer        :   (when not defined(WEB): return newQuantity(x.q - y.i))
+        of Quantity   || BigInteger     :   (when GMP and not defined(WEB): return newQuantity(x.q - y.bi))
+        of Quantity   || Floating       :   (when not defined(WEB): return newQuantity(x.q - y.f))
+        of Quantity   || Rational       :   (when not defined(WEB): return newQuantity(x.q - y.rat))
+        of Quantity   || Quantity       :   (when not defined(WEB): return newQuantity(x.q - y.q))
         else:
             objectOperationOrNothing("sub", SubM)
 
@@ -641,11 +641,11 @@ proc `-=`*(x: var Value, y: Value) =
         of Complex    || Complex        :   x.z -= y.z
         
         of Color      || Color          :   x.l -= y.l
-        of Quantity   || Integer        :   x.q -= y.i
-        of Quantity   || BigInteger     :   (when GMP: x.q -= y.bi)
-        of Quantity   || Floating       :   x.q -= y.f
-        of Quantity   || Rational       :   x.q -= y.rat
-        of Quantity   || Quantity       :   x.q -= y.q
+        of Quantity   || Integer        :   (when not defined(WEB): x.q -= y.i)
+        of Quantity   || BigInteger     :   (when GMP and not defined(WEB): x.q -= y.bi)
+        of Quantity   || Floating       :   (when not defined(WEB): x.q -= y.f)
+        of Quantity   || Rational       :   (when not defined(WEB): x.q -= y.rat)
+        of Quantity   || Quantity       :   (when not defined(WEB): x.q -= y.q)
         else:
             objectOperationOrNothing("sub", SubM, inplace=true)
 
@@ -659,7 +659,7 @@ proc dec*(x: Value): Value =
         of Floating: return newFloating(x.f-1.0)
         of Rational: return newRational(x.rat-1)
         of Complex: return newComplex(x.z-1.0)
-        of Quantity: return newQuantity(x.q - 1)
+        of Quantity: (when not defined(WEB): return newQuantity(x.q - 1))
         else:
             objectOperationOrNothing("dec", DecM, oneparam=true)
 
@@ -676,7 +676,7 @@ proc decI*(x: var Value) =
         of Floating: x.f -= 1.0
         of Rational: x.rat -= 1
         of Complex: x.z = x.z - 1.0
-        of Quantity: x.q -= 1
+        of Quantity: (when not defined(WEB): x.q -= 1)
         else:
             objectOperationOrNothing("dec", DecM, oneparam=true, inplace=true)
 
@@ -694,43 +694,43 @@ proc `*`*(x: Value, y: Value): Value =
         of Integer    || Rational       :   return newRational(x.i * y.rat)
         of BigInteger || Rational       :   (when GMP: return newRational(x.bi * y.rat))
         of Integer    || Complex        :   return newComplex(float(x.i) * y.z)
-        of Integer    || Quantity       :   return newQuantity(x.i * y.q)
-        of BigInteger || Quantity       :   (when GMP: return newQuantity(x.bi * y.q))
-        of Integer    || Unit           :   return newQuantity(x, y.u)
-        of BigInteger || Unit           :   (when GMP: return newQuantity(x, y.u))
+        of Integer    || Quantity       :   (when not defined(WEB): return newQuantity(x.i * y.q))
+        of BigInteger || Quantity       :   (when GMP and not defined(WEB): return newQuantity(x.bi * y.q))
+        of Integer    || Unit           :   (when not defined(WEB): return newQuantity(x, y.u))
+        of BigInteger || Unit           :   (when GMP and not defined(WEB): return newQuantity(x, y.u))
 
         of Floating   || Integer        :   return newFloating(x.f * float(y.i))
         of Floating   || BigInteger     :   (when GMP: return newFloating(x.f * y.bi))
         of Floating   || Floating       :   return newFloating(x.f * y.f)
         of Floating   || Rational       :   return newRational(toRational(x.f) * y.rat)
         of Floating   || Complex        :   return newComplex(x.f * y.z)
-        of Floating   || Quantity       :   return newQuantity(x.f * y.q)
-        of Floating   || Unit           :   return newQuantity(x, y.u)
+        of Floating   || Quantity       :   (when not defined(WEB): return newQuantity(x.f * y.q))
+        of Floating   || Unit           :   (when not defined(WEB): return newQuantity(x, y.u))
 
         of Rational   || Integer        :   return newRational(x.rat * y.i)
         of Rational   || BigInteger     :   (when GMP: return newRational(x.rat * y.bi))
         of Rational   || Floating       :   return newRational(x.rat * toRational(y.f))
         of Rational   || Rational       :   return newRational(x.rat * y.rat)
-        of Rational   || Quantity       :   return newQuantity(x.rat * y.q)
-        of Rational   || Unit           :   return newQuantity(x, y.u)
+        of Rational   || Quantity       :   (when not defined(WEB): return newQuantity(x.rat * y.q))
+        of Rational   || Unit           :   (when not defined(WEB): return newQuantity(x, y.u))
 
         of Complex    || Integer        :   return newComplex(x.z * float(y.i))
         of Complex    || Floating       :   return newComplex(x.z * y.f)
         of Complex    || Rational       :   return newComplex(x.z * toFloat(y.rat))
         of Complex    || Complex        :   return newComplex(x.z * y.z)
         
-        of Quantity   || Integer        :   return newQuantity(x.q * y.i)
-        of Quantity   || BigInteger     :   (when GMP: return newQuantity(x.q * y.bi))
-        of Quantity   || Floating       :   return newQuantity(x.q * y.f)
-        of Quantity   || Rational       :   return newQuantity(x.q * y.rat)
-        of Quantity   || Quantity       :   return newQuantity(x.q * y.q)
+        of Quantity   || Integer        :   (when not defined(WEB): return newQuantity(x.q * y.i))
+        of Quantity   || BigInteger     :   (when GMP and not defined(WEB): return newQuantity(x.q * y.bi))
+        of Quantity   || Floating       :   (when not defined(WEB): return newQuantity(x.q * y.f))
+        of Quantity   || Rational       :   (when not defined(WEB): return newQuantity(x.q * y.rat))
+        of Quantity   || Quantity       :   (when not defined(WEB): return newQuantity(x.q * y.q))
 
-        of Unit       || Integer        :   return newQuantity(y, x.u)
-        of Unit       || BigInteger     :   (when GMP: return newQuantity(y, x.u))
-        of Unit       || Floating       :   return newQuantity(y, x.u)
-        of Unit       || Rational       :   return newQuantity(y, x.u)
-        of Unit       || Quantity       :   return newQuantity(y, x.u)
-        of Unit       || Unit           :   return newUnit(flatten(x.u & y.u))
+        of Unit       || Integer        :   (when not defined(WEB): return newQuantity(y, x.u))
+        of Unit       || BigInteger     :   (when GMP and not defined(WEB): return newQuantity(y, x.u))
+        of Unit       || Floating       :   (when not defined(WEB): return newQuantity(y, x.u))
+        of Unit       || Rational       :   (when not defined(WEB): return newQuantity(y, x.u))
+        of Unit       || Quantity       :   (when not defined(WEB): return newQuantity(y, x.u))
+        of Unit       || Unit           :   (when not defined(WEB): return newUnit(flatten(x.u & y.u)))
 
         else:
             objectOperationOrNothing("mul", MulM)
@@ -752,43 +752,43 @@ proc `*=`*(x: var Value, y: Value) =
         of Integer    || Rational       :   x = newRational(x.i * y.rat)
         of BigInteger || Rational       :   (when GMP: x = newRational(x.bi * y.rat))
         of Integer    || Complex        :   x = newComplex(float(x.i) * y.z)
-        of Integer    || Quantity       :   x = newQuantity(x.i * y.q)
-        of BigInteger || Quantity       :   (when GMP: x = newQuantity(x.bi * y.q))
-        of Integer    || Unit           :   x = newQuantity(x, y.u)
-        of BigInteger || Unit           :   (when GMP: x = newQuantity(x, y.u))
+        of Integer    || Quantity       :   (when not defined(WEB): x = newQuantity(x.i * y.q))
+        of BigInteger || Quantity       :   (when GMP and not defined(WEB): x = newQuantity(x.bi * y.q))
+        of Integer    || Unit           :   (when not defined(WEB): x = newQuantity(x, y.u))
+        of BigInteger || Unit           :   (when GMP and not defined(WEB): x = newQuantity(x, y.u))
 
         of Floating   || Integer        :   x.f *= float(y.i)
         of Floating   || BigInteger     :   (when GMP: x = newFloating(x.f * y.bi))
         of Floating   || Floating       :   x.f *= y.f
         of Floating   || Rational       :   x = newRational(toRational(x.f) * y.rat)
         of Floating   || Complex        :   x = newComplex(x.f * y.z)
-        of Floating   || Quantity       :   x = newQuantity(x.f * y.q)
-        of Floating   || Unit           :   x = newQuantity(x, y.u)
+        of Floating   || Quantity       :   (when not defined(WEB): x = newQuantity(x.f * y.q))
+        of Floating   || Unit           :   (when not defined(WEB): x = newQuantity(x, y.u))
 
         of Rational   || Integer        :   x.rat *= y.i
         of Rational   || BigInteger     :   (when GMP: x.rat *= y.bi)
         of Rational   || Floating       :   x.rat *= toRational(y.f)
         of Rational   || Rational       :   x.rat *= y.rat
-        of Rational   || Quantity       :   x = newQuantity(x.rat * y.q)
-        of Rational   || Unit           :   x = newQuantity(x, y.u)
+        of Rational   || Quantity       :   (when not defined(WEB): x = newQuantity(x.rat * y.q))
+        of Rational   || Unit           :   (when not defined(WEB): x = newQuantity(x, y.u))
 
         of Complex    || Integer        :   x.z *= float(y.i)
         of Complex    || Floating       :   x.z *= y.f
         of Complex    || Rational       :   x.z *= toFloat(y.rat)
         of Complex    || Complex        :   x.z *= y.z
         
-        of Quantity   || Integer        :   x.q *= y.i
-        of Quantity   || BigInteger     :   (when GMP: x.q *= y.bi)
-        of Quantity   || Floating       :   x.q *= y.f
-        of Quantity   || Rational       :   x.q *= y.rat
-        of Quantity   || Quantity       :   x.q *= y.q
+        of Quantity   || Integer        :   (when not defined(WEB): x.q *= y.i)
+        of Quantity   || BigInteger     :   (when GMP and not defined(WEB): x.q *= y.bi)
+        of Quantity   || Floating       :   (when not defined(WEB): x.q *= y.f)
+        of Quantity   || Rational       :   (when not defined(WEB): x.q *= y.rat)
+        of Quantity   || Quantity       :   (when not defined(WEB): x.q *= y.q)
 
-        of Unit       || Integer        :   x = newQuantity(y, x.u)
-        of Unit       || BigInteger     :   (when GMP: x = newQuantity(y, x.u))
-        of Unit       || Floating       :   x = newQuantity(y, x.u)
-        of Unit       || Rational       :   x = newQuantity(y, x.u)
-        of Unit       || Quantity       :   x = newQuantity(y, x.u)
-        of Unit       || Unit           :   x.u = flatten(x.u & y.u)
+        of Unit       || Integer        :   (when not defined(WEB): x = newQuantity(y, x.u))
+        of Unit       || BigInteger     :   (when GMP and not defined(WEB): x = newQuantity(y, x.u))
+        of Unit       || Floating       :   (when not defined(WEB): x = newQuantity(y, x.u))
+        of Unit       || Rational       :   (when not defined(WEB): x = newQuantity(y, x.u))
+        of Unit       || Quantity       :   (when not defined(WEB): x = newQuantity(y, x.u))
+        of Unit       || Unit           :   (when not defined(WEB): x.u = flatten(x.u & y.u))
 
         else:
             objectOperationOrNothing("mul", MulM, inplace=true)
@@ -803,7 +803,7 @@ proc neg*(x: Value): Value =
         of Floating: return newFloating(x.f*(-1.0))
         of Rational: return newRational(neg(x.rat))
         of Complex: return newComplex(x.z*(-1.0))
-        of Quantity: return newQuantity(x.q*(-1))
+        of Quantity: (when not defined(WEB): return newQuantity(x.q*(-1)))
         else:
             objectOperationOrNothing("neg", NegM, oneparam=true)
 
@@ -820,7 +820,7 @@ proc negI*(x: var Value) =
         of Floating: x.f *= -1.0
         of Rational: x.rat *= -1
         of Complex: x.z *= -1.0
-        of Quantity: x.q *= -1
+        of Quantity: (when not defined(WEB): x.q *= -1)
         else:
             objectOperationOrNothing("neg", NegM, oneparam=true, inplace=true)
 
@@ -855,11 +855,11 @@ proc `/`*(x: Value, y: Value): Value =
         of Complex    || Rational       :   return newComplex(x.z / toFloat(notZero(y.rat)))
         of Complex    || Complex        :   return newComplex(x.z / notZero(y.z))
         
-        of Quantity   || Integer        :   return newQuantity(x.q / y.i)
-        of Quantity   || BigInteger     :   (when GMP: return newQuantity(x.q / y.bi))
-        of Quantity   || Floating       :   return newQuantity(x.q / y.f)
-        of Quantity   || Rational       :   return newQuantity(x.q / y.rat)
-        of Quantity   || Quantity       :   return newQuantity(x.q / y.q)
+        of Quantity   || Integer        :   (when not defined(WEB): return newQuantity(x.q / y.i))
+        of Quantity   || BigInteger     :   (when GMP and not defined(WEB): return newQuantity(x.q / y.bi))
+        of Quantity   || Floating       :   (when not defined(WEB): return newQuantity(x.q / y.f))
+        of Quantity   || Rational       :   (when not defined(WEB): return newQuantity(x.q / y.rat))
+        of Quantity   || Quantity       :   (when not defined(WEB): return newQuantity(x.q / y.q))
         else:
             objectOperationOrNothing("div", DivM)
 
@@ -897,11 +897,11 @@ proc `/=`*(x: var Value, y: Value) =
         of Complex    || Rational       :   x.z /= toFloat(notZero(y.rat))
         of Complex    || Complex        :   x.z /= notZero(y.z)
         
-        of Quantity   || Integer        :   x.q /= y.i
-        of Quantity   || BigInteger     :   (when GMP: x.q /= y.bi)
-        of Quantity   || Floating       :   x.q /= y.f
-        of Quantity   || Rational       :   x.q /= y.rat
-        of Quantity   || Quantity       :   x.q /= y.q
+        of Quantity   || Integer        :   (when not defined(WEB): x.q /= y.i)
+        of Quantity   || BigInteger     :   (when GMP and not defined(WEB): x.q /= y.bi)
+        of Quantity   || Floating       :   (when not defined(WEB): x.q /= y.f)
+        of Quantity   || Rational       :   (when not defined(WEB): x.q /= y.rat)
+        of Quantity   || Quantity       :   (when not defined(WEB): x.q /= y.q)
         else:
             objectOperationOrNothing("div", DivM, inplace=true)
 
@@ -927,11 +927,11 @@ proc `//`*(x: Value, y: Value): Value =
         of Rational   || Floating       :   return newRational(x.rat / toRational(notZero(y.f)))
         of Rational   || Rational       :   return newRational(x.rat / notZero(y.rat))
         
-        of Quantity   || Integer        :   return newQuantity(x.q // y.i)
-        of Quantity   || BigInteger     :   (when GMP: return newQuantity(x.q // y.bi))
-        of Quantity   || Floating       :   return newQuantity(x.q // y.f)
-        of Quantity   || Rational       :   return newQuantity(x.q // y.rat)
-        of Quantity   || Quantity       :   return newQuantity(x.q // y.q)
+        of Quantity   || Integer        :   (when not defined(WEB): return newQuantity(x.q // y.i))
+        of Quantity   || BigInteger     :   (when GMP and not defined(WEB): return newQuantity(x.q // y.bi))
+        of Quantity   || Floating       :   (when not defined(WEB): return newQuantity(x.q // y.f))
+        of Quantity   || Rational       :   (when not defined(WEB): return newQuantity(x.q // y.rat))
+        of Quantity   || Quantity       :   (when not defined(WEB): return newQuantity(x.q // y.q))
         else:
             objectOperationOrNothing("fdiv", FDivM)
 
@@ -960,11 +960,11 @@ proc `//=`*(x: var Value, y: Value) =
         of Rational   || Floating       :   x.rat /= toRational(notZero(y.f))
         of Rational   || Rational       :   x.rat /= notZero(y.rat)
         
-        of Quantity   || Integer        :   x.q //= y.i
-        of Quantity   || BigInteger     :   (when GMP: x.q //= y.bi)
-        of Quantity   || Floating       :   x.q //= y.f
-        of Quantity   || Rational       :   x.q //= y.rat
-        of Quantity   || Quantity       :   x.q //= y.q
+        of Quantity   || Integer        :   (when not defined(WEB): x.q //= y.i)
+        of Quantity   || BigInteger     :   (when GMP and not defined(WEB): x.q //= y.bi)
+        of Quantity   || Floating       :   (when not defined(WEB): x.q //= y.f)
+        of Quantity   || Rational       :   (when not defined(WEB): x.q //= y.rat)
+        of Quantity   || Quantity       :   (when not defined(WEB): x.q //= y.q)
         else:
             objectOperationOrNothing("fdiv", FDivM, inplace=true)
 
@@ -1101,7 +1101,7 @@ proc `^`*(x: Value, y: Value): Value =
         of Complex    || Floating       :   return newComplex(pow(x.z, y.f))
         of Complex    || Complex        :   return newComplex(pow(x.z, y.z))
         
-        of Quantity   || Integer        :   return newQuantity(x.q ^ y.i)
+        of Quantity   || Integer        :   (when not defined(WEB): return newQuantity(x.q ^ y.i))
         # of Quantity   || BigInteger     :   return newQuantity(x.q ^ y.bi)
         # of Quantity   || Floating       :   return newQuantity(x.q ^ y.f)
         # of Quantity   || Rational       :   return newQuantity(x.q ^ y.rat)
@@ -1135,7 +1135,7 @@ proc `^=`*(x: var Value, y: Value) =
         of Complex    || Floating       :   x.z = pow(x.z, y.f)
         of Complex    || Complex        :   x.z = pow(x.z, y.z)
         
-        of Quantity   || Integer        :   x.q ^= y.i
+        of Quantity   || Integer        :   (when not defined(WEB): x.q ^= y.i)
         # of Quantity   || BigInteger     :   x.q ^= y.bi
         # of Quantity   || Floating       :   x.q ^= y.f
         # of Quantity   || Rational       :   x.q ^= y.rat

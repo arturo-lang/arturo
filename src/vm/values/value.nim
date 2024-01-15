@@ -405,38 +405,40 @@ func newSymbolLiteral*(m: string): Value {.inline.} =
     ## create SymbolLiteral value from string
     newSymbolLiteral(parseEnum[VSymbol](m))
 
-proc newUnit*(u: VUnit): Value {.inline, enforceNoRaises.} =
-    ## create Unit value from VUnit
-    Value(kind: Unit, u: u)
+when not defined(WEB):
 
-proc newUnit*(u: string): Value {.inline.} =
-    ## create Unit value from string
-    newUnit(parseAtoms(u))
+    proc newUnit*(u: VUnit): Value {.inline, enforceNoRaises.} =
+        ## create Unit value from VUnit
+        Value(kind: Unit, u: u)
 
-proc newQuantity*(v: Value, atoms: VUnit): Value {.inline, enforceNoRaises.} =
-    ## create Quantity value from a numerical value ``v`` (Value) + ``atoms`` (VUnit)
-    result = Value(kind: Quantity)
-    if v.kind == Integer: 
-        if v.iKind == NormalInteger:
-            result.q = toQuantity(v.i, atoms)
+    proc newUnit*(u: string): Value {.inline.} =
+        ## create Unit value from string
+        newUnit(parseAtoms(u))
+
+    proc newQuantity*(v: Value, atoms: VUnit): Value {.inline, enforceNoRaises.} =
+        ## create Quantity value from a numerical value ``v`` (Value) + ``atoms`` (VUnit)
+        result = Value(kind: Quantity)
+        if v.kind == Integer: 
+            if v.iKind == NormalInteger:
+                result.q = toQuantity(v.i, atoms)
+            else:
+                when not defined(NOGMP):
+                    result.q = toQuantity(v.bi, atoms)
+        elif v.kind == Floating:
+            result.q = toQuantity(v.f, atoms)
         else:
-            when not defined(NOGMP):
-                result.q = toQuantity(v.bi, atoms)
-    elif v.kind == Floating:
-        result.q = toQuantity(v.f, atoms)
-    else:
-        result.q = toQuantity(v.rat, atoms)
+            result.q = toQuantity(v.rat, atoms)
 
-proc newQuantity*(v: Value, atoms: string): Value {.inline.} =
-    ## create Quantity value from a numerical value ``v`` (Value) + ``atoms`` (string)
-    newQuantity(v, parseAtoms(atoms))
+    proc newQuantity*(v: Value, atoms: string): Value {.inline.} =
+        ## create Quantity value from a numerical value ``v`` (Value) + ``atoms`` (string)
+        newQuantity(v, parseAtoms(atoms))
 
-proc newQuantity*(q: VQuantity, copy: static bool = false): Value {.inline, enforceNoRaises.} =
-    ## create Quantity value from QuantityValue ``q`` (VQuantity)
-    when copy:
-        Value(kind: Quantity, q: toQuantity(q.original, q.atoms))
-    else:
-        Value(kind: Quantity, q: q)
+    proc newQuantity*(q: VQuantity, copy: static bool = false): Value {.inline, enforceNoRaises.} =
+        ## create Quantity value from QuantityValue ``q`` (VQuantity)
+        when copy:
+            Value(kind: Quantity, q: toQuantity(q.original, q.atoms))
+        else:
+            Value(kind: Quantity, q: q)
 
 proc newErrorKind*(): Value {.inline, enforceNoRaises.} =
     Value(kind: ErrorKind, errKind: VErrorKind(label: "Generic Error"))
@@ -906,7 +908,7 @@ proc copyValue*(v: Value): Value {.inline.} =
             if likely(v.iKind == NormalInteger): 
                 result = newInteger(v.i)
             else:
-                when defined(WEB) or not defined(NOGMP): 
+                when (not defined(WEB)) and (not defined(NOGMP)): 
                     result = newInteger(copyInt(v.bi))
         of Floating:        result = newFloating(v.f)
         of Complex:         result = newComplex(v.z)
@@ -935,8 +937,12 @@ proc copyValue*(v: Value): Value {.inline.} =
         of Symbol:          result = newSymbol(v.m)
         of SymbolLiteral:   result = newSymbolLiteral(v.m)
         of Regex:           result = newRegex(v.rx)
-        of Unit:            result = newUnit(v.u)
-        of Quantity:        result = newQuantity(v.q, copy=true)
+        of Unit:            
+            when not defined(WEB):
+                result = newUnit(v.u)
+        of Quantity:        
+            when not defined(WEB):
+                result = newQuantity(v.q, copy=true)
         of Error:           result = newError(v.err)
         of ErrorKind:       result = newErrorKind(v.errKind)
         of Color:           result = newColor(v.l)
@@ -1097,7 +1103,9 @@ func consideredEqual*(x: Value, y: Value): bool {.inline,enforceNoRaises.} =
         of Symbol,
            SymbolLiteral: return x.m == y.m
         of Unit: return x.u == y.u
-        of Quantity: return x.q.original == y.q.original and x.q.atoms == y.q.atoms
+        of Quantity: 
+            when not defined(WEB):
+                return x.q.original == y.q.original and x.q.atoms == y.q.atoms
         of Regex: return x.rx == y.rx
         of Color: return x.l == y.l
         of Inline:

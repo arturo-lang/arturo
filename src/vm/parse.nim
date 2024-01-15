@@ -898,9 +898,10 @@ proc parseBlock(p: var Parser, level: int, isSubBlock: bool = false, isSubInline
                         AddToken newVersion(p.value)
                     else:
                         if p.buf[p.bufpos]==BackTick:
-                            let pv = newFloating(p.value)
-                            parseUnit(p)
-                            AddToken newQuantity(pv, p.value)
+                            when not defined(WEB):
+                                let pv = newFloating(p.value)
+                                parseUnit(p)
+                                AddToken newQuantity(pv, p.value)
                         elif p.buf[p.bufpos] in ScientificNotation_Start and p.buf[p.bufpos+1] in ScientificNotation:
                             let pv = p.value
                             parseExponent(p)
@@ -909,9 +910,10 @@ proc parseBlock(p: var Parser, level: int, isSubBlock: bool = false, isSubInline
                             AddToken newFloating(p.value)
                 else:
                     if p.buf[p.bufpos]==BackTick:
-                        let pv = newInteger(p.value, p.lineNumber)
-                        parseUnit(p)
-                        AddToken newQuantity(pv, p.value)
+                        when not defined(WEB):
+                            let pv = newInteger(p.value, p.lineNumber)
+                            parseUnit(p)
+                            AddToken newQuantity(pv, p.value)
                     elif p.buf[p.bufpos]==Colon:
                         inc(p.bufpos)
                         let leftValue = newInteger(p.value, p.lineNumber)
@@ -921,9 +923,10 @@ proc parseBlock(p: var Parser, level: int, isSubBlock: bool = false, isSubInline
                             raise newException(ValueError, "Invalid syntax for rationals")
                         else:
                             if p.buf[p.bufpos]==BackTick:
-                                let pv = newRational(leftValue, newInteger(p.value, p.lineNumber))
-                                parseUnit(p)
-                                AddToken newQuantity(pv, p.value)
+                                when not defined(WEB):
+                                    let pv = newRational(leftValue, newInteger(p.value, p.lineNumber))
+                                    parseUnit(p)
+                                    AddToken newQuantity(pv, p.value)
                             else:
                                 AddToken newRational(leftValue, newInteger(p.value, p.lineNumber))
                     elif p.buf[p.bufpos]=='e' and p.buf[p.bufpos+1] in ScientificNotation:
@@ -1000,8 +1003,9 @@ proc parseBlock(p: var Parser, level: int, isSubBlock: bool = false, isSubInline
                     else:
                         AddToken newLiteral(p.value)
             of BackTick:
-                parseUnit(p)
-                AddToken newUnit(p.value)
+                when not defined(WEB):
+                    parseUnit(p)
+                    AddToken newUnit(p.value)
             of Dot:
                 if p.buf[p.bufpos+1] == Dot:
                     inc(p.bufpos, 2)

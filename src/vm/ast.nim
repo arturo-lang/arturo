@@ -870,25 +870,26 @@ proc processBlock*(
                             current.addTerminal(newConstant(item))
 
             of Quantity:
-                when processingArrow: ArrowBlock[^1].add(item)
+                when not defined(WEB):
+                    when processingArrow: ArrowBlock[^1].add(item)
 
-                if unlikely(item.q.withUserUnits):
-                    # if the quantity contains user-defined units,
-                    # they may not be defined yet - remember we are at the AST stage,
-                    # that is: pre-runtime - so the calculations will be wrong
-                    # For that reason, we substitute the quantity literal with:
-                    # `to :quantity [value unit]`
-                    current.addPotentialInfixCall()
-                    current.addBuiltinCall(opTo, 2)
-                    current.addTerminal(newConstant(newType("quantity")))
-                    current.addTerminal(newConstant(newBlock(@[
-                        newRational(item.q.original),
-                        newUnit(item.q.atoms)
-                    ])))
-                else:
-                    # the quantity doesn't contain user-defined units,
-                    # so we can simply push it to the tree
-                    current.addTerminal(newConstant(item))
+                    if unlikely(item.q.withUserUnits):
+                        # if the quantity contains user-defined units,
+                        # they may not be defined yet - remember we are at the AST stage,
+                        # that is: pre-runtime - so the calculations will be wrong
+                        # For that reason, we substitute the quantity literal with:
+                        # `to :quantity [value unit]`
+                        current.addPotentialInfixCall()
+                        current.addBuiltinCall(opTo, 2)
+                        current.addTerminal(newConstant(newType("quantity")))
+                        current.addTerminal(newConstant(newBlock(@[
+                            newRational(item.q.original),
+                            newUnit(item.q.atoms)
+                        ])))
+                    else:
+                        # the quantity doesn't contain user-defined units,
+                        # so we can simply push it to the tree
+                        current.addTerminal(newConstant(item))
 
             else:
                 when processingArrow: ArrowBlock[^1].add(item)

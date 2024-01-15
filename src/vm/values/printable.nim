@@ -566,7 +566,9 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
                 result &= ":"
         of Symbol       :  result &= $(v.m)
         of SymbolLiteral: result &= "'" & $(v.m)
-        of Quantity     : result &= codify(v.q)
+        of Quantity     : 
+            when not defined(WEB):
+                result &= codify(v.q)
         of Regex        : result &= "{/" & $(v.rx) & "/}"
         of Color        : result &= $(v.l)
         of Date         : result &= fmt("to :date \"{v.eobj}\"")
