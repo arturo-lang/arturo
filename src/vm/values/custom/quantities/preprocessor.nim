@@ -33,7 +33,7 @@ type
         kind: string
         expo: int
 
-    CTRational = Rational[int]
+    CTRational = VRational
 
     Quantity = tuple
         original: CTRational
