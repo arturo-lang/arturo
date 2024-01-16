@@ -17,7 +17,7 @@ when not defined(WEB) and not defined(windows):
 when not defined(WEB):
     import nativesockets
 
-when not defined(NOGMP):
+when defined(GMP):
     import extras/gmp
     import extras/mpfr
 
@@ -130,7 +130,7 @@ proc getSystemInfo*(): ValueDict =
         when not defined(WEB):
             result["hostname"] = newString(getHostname())
 
-        when not defined(NOGMP):
+        when defined(GMP):
             result["deps"].d["gmp"] = newVersion($(gmpVersion))
             result["deps"].d["mpfr"] = newVersion($(mpfr_get_version()))
 

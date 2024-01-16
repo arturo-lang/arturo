@@ -17,7 +17,7 @@ import algorithm, std/enumutils, math, parseutils, sequtils, strutils, tables
 when not defined(WEB):
     import asyncdispatch, httpClient, std/json
 
-when not defined(NOGMP):
+when defined(GMP):
     import helpers/bignums as BignumsHelper
 
 import vm/values/custom/vrational
@@ -297,7 +297,7 @@ proc toQuantity*(v: QuantityValue, atoms: Atoms): Quantity =
 
         result.atoms.add(atom)
 
-when not defined(NOGMP):
+when defined(GMP):
     proc toQuantity*(v: int | float | Int, atoms: Atoms): Quantity {.inline.} =
         result = toQuantity(toRational(v), atoms)
 else:
@@ -312,13 +312,13 @@ proc parseValue(s: string): QuantityValue =
         try:
             result = toRational(parseInt(ratparts[0]), parseInt(ratparts[1]))
         except ValueError:
-            when not defined(NOGMP):
+            when defined(GMP):
                 result = toRational(newInt(ratparts[0]), newInt(ratparts[1]))
     else:
         try:
             result = toRational(parseInt(s))
         except ValueError:
-            when not defined(NOGMP):
+            when defined(GMP):
                 result = toRational(newInt(s))
 
 proc toQuantity*(str: string): Quantity =
@@ -472,7 +472,7 @@ func `==`*(a: Quantity, b: int | float | QuantityValue): bool =
 func `==`*(a: int | float | QuantityValue, b: Quantity): bool =
     return a == b.original
 
-when not defined(NOGMP):
+when defined(GMP):
     func `==`*(a: Quantity, b: Int): bool =
         return a.original == b
 
@@ -493,7 +493,7 @@ func `<`*(a: Quantity, b: int | float | QuantityValue): bool =
 func `<`*(a: int | float | QuantityValue, b: Quantity): bool =
     return a < b.original
 
-when not defined(NOGMP):
+when defined(GMP):
     func `<`*(a: Quantity, b: Int): bool =
         return a.original < b
 
@@ -514,7 +514,7 @@ func `>`*(a: Quantity, b: int | float | QuantityValue): bool =
 func `>`*(a: int | float | QuantityValue, b: Quantity): bool =
     return a > b.original
 
-when not defined(NOGMP):
+when defined(GMP):
     func `>`*(a: Quantity, b: Int): bool =
         return a.original > b
 
@@ -536,7 +536,7 @@ proc `+`*(a, b: Quantity): Quantity =
 proc `+`*(a: Quantity, b: int | float | QuantityValue): Quantity =
     result = toQuantity(a.original + b, a.atoms)
 
-when not defined(NOGMP):
+when defined(GMP):
     proc `+`*(a: Quantity, b: Int): Quantity =
         result = toQuantity(a.original + b, a.atoms)
 
@@ -551,7 +551,7 @@ proc `+=`*(a: var Quantity, b: Quantity) =
 proc `+=`*(a: var Quantity, b: int | float | QuantityValue) =
     a.original += b
 
-when not defined(NOGMP):
+when defined(GMP):
     proc `+=`*(a: var Quantity, b: Int) =
         a.original += b
 
@@ -566,7 +566,7 @@ proc `-`*(a, b: Quantity): Quantity =
 proc `-`*(a: Quantity, b: int | float | QuantityValue): Quantity =
     result = toQuantity(a.original - b, a.atoms)
 
-when not defined(NOGMP):
+when defined(GMP):
     proc `-`*(a: Quantity, b: Int): Quantity =
         result = toQuantity(a.original - b, a.atoms)
 
@@ -581,7 +581,7 @@ proc `-=`*(a: var Quantity, b: Quantity) =
 proc `-=`*(a: var Quantity, b: int | float | QuantityValue) =
     a.original -= b
 
-when not defined(NOGMP):
+when defined(GMP):
     proc `-=`*(a: var Quantity, b: Int) =
         a.original -= b
 
@@ -598,7 +598,7 @@ proc `*`*(a: Quantity, b: int | float | QuantityValue): Quantity =
 proc `*`*(a: int | float | QuantityValue, b: Quantity): Quantity =
     result = toQuantity(a * b.original, b.atoms)
 
-when not defined(NOGMP):
+when defined(GMP):
     proc `*`*(a: Quantity, b: Int): Quantity =
         result = toQuantity(a.original * b, a.atoms)
 
@@ -611,7 +611,7 @@ proc `*=`*(a: var Quantity, b: Quantity) =
 proc `*=`*(a: var Quantity, b: int | float | QuantityValue) =
     a.original *= b
 
-when not defined(NOGMP):
+when defined(GMP):
     proc `*=`*(a: var Quantity, b: Int) =
         a.original *= b
 
@@ -625,7 +625,7 @@ proc `/`*(a, b: Quantity): Quantity =
 proc `/`*(a: Quantity, b: int | float | QuantityValue): Quantity =
     result = toQuantity(a.original / b, a.atoms)
 
-when not defined(NOGMP):
+when defined(GMP):
     proc `/`*(a: Quantity, b: Int): Quantity =
         result = toQuantity(a.original / b, a.atoms)
 
@@ -635,21 +635,21 @@ proc `/=`*(a: var Quantity, b: Quantity) =
 proc `/=`*(a: var Quantity, b: int | float | QuantityValue) =
     a.original /= b
 
-when not defined(NOGMP):
+when defined(GMP):
     proc `/=`*(a: var Quantity, b: Int) =
         a.original /= b
 
 proc `//`*(a: Quantity, b: int | float | Quantity | QuantityValue): Quantity =
     a / b
 
-when not defined(NOGMP):
+when defined(GMP):
     proc `//`*(a: Quantity, b: Int): Quantity =
         a / b
 
 proc `//=`*(a: var Quantity, b: int | float | Quantity | QuantityValue) =
     a = a // b
 
-when not defined(NOGMP):
+when defined(GMP):
     proc `//=`*(a: var Quantity, b: Int) =
         a = a // b
 
@@ -778,7 +778,7 @@ proc initQuantities*() =
 
     addRuntimeQuantities()
 
-    when not defined(NOGMP):
+    when defined(GMP):
         generateConstants()
 
 #=======================================

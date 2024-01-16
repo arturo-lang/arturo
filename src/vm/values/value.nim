@@ -26,10 +26,10 @@ when not defined(NOSQLITE):
 when defined(WEB):
     import std/jsbigints
 
-when not defined(NOGMP):
+when defined(GMP):
     import helpers/bignums as BignumsHelper
 
-when defined(NOGMP):
+when not defined(GMP):
    import vm/errors
 
 import vm/opcodes
@@ -190,7 +190,7 @@ when defined(WEB):
     proc newInteger*(bi: JsBigInt): Value {.inline.} =
         result = Value(kind: Integer, iKind: BigInteger, bi: bi)
 
-when not defined(NOGMP):
+when defined(GMP):
     proc newInteger*(bi: Int): Value {.inline.} =
         result = Value(kind: Integer, iKind: BigInteger, bi: bi)
 
@@ -209,7 +209,7 @@ proc newInteger*(i: string, lineno: int = 1): Value {.inline.} =
     except ValueError:
         when defined(WEB):
             return newInteger(big(i.cstring))
-        elif not defined(NOGMP):
+        elif defined(GMP):
             return newInteger(newInt(i))
         else:
             RuntimeError_IntegerParsingOverflow(lineno, i)
@@ -218,7 +218,7 @@ func newBigInteger*(i: int): Value {.inline.} =
     ## create Integer (BigInteger) value from int
     when defined(WEB):
         result = Value(kind: Integer, iKind: BigInteger, bi: big(i))
-    elif not defined(NOGMP):
+    elif defined(GMP):
         result = Value(kind: Integer, iKind: BigInteger, bi: newInt(i))
 
 func newFloating*(f: float): Value {.inline, enforceNoRaises.} =
@@ -258,7 +258,7 @@ func newRational*(rat: VRational): Value {.inline, enforceNoRaises.} =
     ## create Rational value from VRational
     Value(kind: Rational, rat: rat)
 
-when not defined(NOGMP):
+when defined(GMP):
     func newRational*(n: int | float | Int): Value {.inline.} =
         ## create Rational value from int, float or Int
         Value(kind: Rational, rat: toRational(n))
@@ -286,10 +286,10 @@ func newRational*(num: Value, den: Value): Value {.inline, enforceNoRaises.} =
             if den.iKind == NormalInteger:
                 return newRational(num.i, den.i)
             else:
-                when not defined(NOGMP):
+                when defined(GMP):
                     return newRational(num.i, den.bi)
         else:
-            when not defined(NOGMP):
+            when defined(GMP):
                 if den.iKind == NormalInteger:
                     return newRational(num.bi, den.i)
                 else:
@@ -299,14 +299,14 @@ func newRational*(num: Value, den: Value): Value {.inline, enforceNoRaises.} =
             if num.iKind == NormalInteger:
                 return newRational(num.i, den.f)
             else:
-                when not defined(NOGMP):
+                when defined(GMP):
                     return newRational(num.bi, den.f)
         else:
             if den.kind == Integer:
                 if den.iKind == NormalInteger:
                     return newRational(num.f, den.i)
                 else:
-                    when not defined(NOGMP):
+                    when defined(GMP):
                         return newRational(num.f, den.bi)
             else:
                 return newRational(num.f, den.f)
@@ -420,7 +420,7 @@ proc newQuantity*(v: Value, atoms: VUnit): Value {.inline, enforceNoRaises.} =
         if v.iKind == NormalInteger:
             result.q = toQuantity(v.i, atoms)
         else:
-            when not defined(NOGMP):
+            when defined(GMP):
                 result.q = toQuantity(v.bi, atoms)
     elif v.kind == Floating:
         result.q = toQuantity(v.f, atoms)
@@ -906,7 +906,7 @@ proc copyValue*(v: Value): Value {.inline.} =
             if likely(v.iKind == NormalInteger): 
                 result = newInteger(v.i)
             else:
-                when defined(WEB) or not defined(NOGMP): 
+                when defined(WEB) or defined(GMP): 
                     result = newInteger(copyInt(v.bi))
         of Floating:        result = newFloating(v.f)
         of Complex:         result = newComplex(v.z)
@@ -1029,7 +1029,7 @@ func valueAsString*(v: Value): string {.inline,enforceNoRaises.} =
             if likely(v.iKind == NormalInteger): 
                 result = $v.i
             else:
-                when defined(WEB) or not defined(NOGMP): 
+                when defined(WEB) or defined(GMP): 
                     result = $v.bi
         of Floating:
             result = $v.f
@@ -1062,7 +1062,7 @@ func consideredEqual*(x: Value, y: Value): bool {.inline,enforceNoRaises.} =
     case xKind:
         of Integer:
             if x.iKind != y.iKind: return false
-            when not defined(NOGMP):
+            when defined(GMP):
                 if likely(x.iKind == NormalInteger):
                     return x.i == y.i
                 else:
@@ -1151,7 +1151,7 @@ func hash*(v: Value): Hash {.inline.}=
         of Integer      : 
             if likely(v.iKind==NormalInteger): result = result !& cast[Hash](v.i)
             else: 
-                when defined(WEB) or not defined(NOGMP):
+                when defined(WEB) or defined(GMP):
                     result = result !& cast[Hash](v.bi)
         of Floating     : result = result !& cast[Hash](v.f)
         of Complex      : 

@@ -20,7 +20,7 @@ when not defined(NOSQLITE):
 when defined(WEB):
     import std/jsbigints
 
-when not defined(NOGMP):
+when defined(GMP):
     import helpers/bignums
 
 import vm/opcodes
@@ -278,7 +278,7 @@ type
                     of BigInteger:
                         when defined(WEB):
                             bi* : JsBigInt
-                        elif not defined(NOGMP):
+                        elif defined(GMP):
                             bi* : Int
                         else:
                             discard
