@@ -19,10 +19,18 @@
 
 import hashes, math, strformat
 
+import helpers/intrinsics
+
+#=======================================
+# Constants
+#=======================================
+
+const
+    GmpAvailable = (not defined(NOGMP)) and (not defined(nimvm))
+
+
 when not defined(NOGMP):
     import helpers/bignums
-
-import helpers/intrinsics
 
 #=======================================
 # Types
