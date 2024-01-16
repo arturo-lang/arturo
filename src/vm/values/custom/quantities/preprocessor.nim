@@ -21,7 +21,8 @@ import macros, math, sequtils, strscans, strutils, tables
 # yes, we are using the system's rational type, since
 # it's not GMP-based in any case, but only for the values
 # that can be encoded without the help of the GMP library
-import std/rationals
+#import std/rationals
+import vm/values/custom/vrational
 
 #=======================================
 # Types
