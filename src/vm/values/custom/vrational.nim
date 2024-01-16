@@ -26,7 +26,7 @@ import helpers/intrinsics
 #=======================================
 
 const
-    GmpAvailable = (not defined(NOGMP)) and (not defined(nimvm))
+    GmpAvailable = (not defined(NOGMP)) and (not nimvm)
 
 
 when GmpAvailable:
