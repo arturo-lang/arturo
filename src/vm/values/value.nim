@@ -906,8 +906,11 @@ proc copyValue*(v: Value): Value {.inline.} =
             if likely(v.iKind == NormalInteger): 
                 result = newInteger(v.i)
             else:
-                when defined(WEB) or defined(GMP): 
+                when defined(GMP): 
                     result = newInteger(copyInt(v.bi))
+                else:
+                    when defined(WEB):
+                        result = newInteger(v.bi)
         of Floating:        result = newFloating(v.f)
         of Complex:         result = newComplex(v.z)
         of Rational:        result = newRational(copyRational(v.rat))
