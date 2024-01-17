@@ -465,8 +465,7 @@ cmd build, "[default] Build arturo and optionally install the executable":
             safeBuildConfig()
             miniBuild()
         >> ["web"]:
-            config.binary     = config.binary
-                                      .replace(".exe", ".js")
+            config.binary     = config.binary.replace(".exe", "") & ".js"
             config.version    = "@web"
             webBuildConfig()
             miniBuild()
