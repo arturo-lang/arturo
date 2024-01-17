@@ -23,7 +23,10 @@ elif defined(GMP):
 when not defined(GMP):
     import vm/errors
     
-import vm/values/[operators,value]
+import vm/values/value
+
+when defined(WEB):
+    import vm/values/operators
 
 #=======================================
 # Methods
