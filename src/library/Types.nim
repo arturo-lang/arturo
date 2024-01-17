@@ -291,7 +291,11 @@ proc defineLibrary*() =
                 else:
                     definitions[k] = v
 
-            let tmpTid = x.tid & "_" & $(genOid())
+            when not defined(WEB):
+                let tmpTid = x.tid & "_" & $(genOid())
+            else:
+                let tmpTid = x.tid & "_" & "temp"
+                
             setType(tmpTid, newPrototype("_" & x.tid, definitions, inherits, super))
 
             push newUserType(tmpTid)
