@@ -21,32 +21,43 @@ import macros, math, sequtils, strscans, strutils, tables
 # yes, we are using the system's rational type, since
 # it's not GMP-based in any case, but only for the values
 # that can be encoded without the help of the GMP library
-import std/rationals
-#import vm/values/custom/vrational
+when not defined(WEB):
+    import std/rationals
 
 #=======================================
 # Types
 #=======================================
+when defined(WEB):
+    type
+        Atom = tuple
+            kind: string
+            expo: int
 
-type
-    Atom = tuple
-        kind: string
-        expo: int
+        Quantity = int
 
-    CTRational = Rational[int]
+        Constant = tuple
+            definition: string
+            description: string
+else:
+    type
+        Atom = tuple
+            kind: string
+            expo: int
 
-    Quantity = tuple
-        original: CTRational
-        value: CTRational
-        signature: int64
-        atoms: seq[Atom]
-        base: bool
+        CTRational = Rational[int]
 
-    Constant = tuple
-        definition: string
-        value: Quantity
-        precalculated: bool
-        description: string
+        Quantity = tuple
+            original: CTRational
+            value: CTRational
+            signature: int64
+            atoms: seq[Atom]
+            base: bool
+
+        Constant = tuple
+            definition: string
+            value: Quantity
+            precalculated: bool
+            description: string
 
 #=======================================
 # Variables
@@ -61,7 +72,6 @@ var
     units               {.compileTime.} : OrderedTable[string, string]
     unitDefinitions     {.compileTime.} : OrderedTable[string, string]
     constants           {.compileTime.} : OrderedTable[string,Constant]
-
     parsable            {.compileTime.} : OrderedTable[string, (string, string)]
 
 #=======================================
@@ -99,96 +109,98 @@ template unitId(str: string): string =
 # Helpers
 #=======================================
 
-# The std library doesn't support this!
-func `^`(x: CTRational, y: int): CTRational =
-    if y < 0:
-        result.num = x.den ^ -y
-        result.den = x.num ^ -y
-    else:
-        result.num = x.num ^ y
-        result.den = x.den ^ y
+when not defined(WEB):
+    # The std library doesn't support this!
+    func `^`(x: CTRational, y: int): CTRational =
+        if y < 0:
+            result.num = x.den ^ -y
+            result.den = x.num ^ -y
+        else:
+            result.num = x.num ^ y
+            result.den = x.den ^ y
 
-proc getDefined(str: string): Quantity =
-    let (pref, unit) = parsable[str]
-    result = defs[unit]
+    proc getDefined(str: string): Quantity =
+        let (pref, unit) = parsable[str]
+        result = defs[unit]
 
-    if pref != "No":
-        var prefVal = toRational(pow(10.0, abs(float(prefixes[pref].val))))
-        if prefixes[pref].val < 0:
-            prefVal = reciprocal(prefVal)
+        if pref != "No":
+            var prefVal = toRational(pow(10.0, abs(float(prefixes[pref].val))))
+            if prefixes[pref].val < 0:
+                prefVal = reciprocal(prefVal)
 
-        result.value *= prefVal
-        result.original *= prefVal
+            result.value *= prefVal
+            result.original *= prefVal
 
-proc getConverted(q: Quantity): CTRational =
-    result = q.value
-    if not q.base:
-        for atom in q.atoms:
-            let atomUnit = getDefined(atom.kind)
-            result *= atomUnit.value ^ atom.expo
+    proc getConverted(q: Quantity): CTRational =
+        result = q.value
+        if not q.base:
+            for atom in q.atoms:
+                let atomUnit = getDefined(atom.kind)
+                result *= atomUnit.value ^ atom.expo
 
 #=======================================
 # Constructors
 #=======================================
 
-proc newQuantity(v: CTRational, atoms: seq[Atom], base: static bool = false): Quantity =
-    result.original = v
-    result.value = v
-    result.atoms = atoms
+when not defined(WEB):
+    proc newQuantity(v: CTRational, atoms: seq[Atom], base: static bool = false): Quantity =
+        result.original = v
+        result.value = v
+        result.atoms = atoms
 
-    result.signature = 
-        when base:
-            int64(pow(MagicPower, float(baseUnits.find(atoms[0].kind))))
-        else:
-            result.atoms.map(proc (item:Atom): int64 =
-                let got = getDefined(item.kind)
-                got.signature * item.expo
-            ).foldl(a + b, int64(0))
+        result.signature = 
+            when base:
+                int64(pow(MagicPower, float(baseUnits.find(atoms[0].kind))))
+            else:
+                result.atoms.map(proc (item:Atom): int64 =
+                    let got = getDefined(item.kind)
+                    got.signature * item.expo
+                ).foldl(a + b, int64(0))
 
-    when not base:
-        result.value = result.getConverted()
+        when not base:
+            result.value = result.getConverted()
 
-    result.base = base
+        result.base = base
 
-proc parseAtoms(str: string): seq[Atom] =
-    proc parseAtom(atstr: string, denominator: static bool=false): Atom =
-        var i = 0
-        while i < atstr.len and atstr[i] notin '2'..'9':
-            result.kind.add atstr[i]
-            inc i
+    proc parseAtoms(str: string): seq[Atom] =
+        proc parseAtom(atstr: string, denominator: static bool=false): Atom =
+            var i = 0
+            while i < atstr.len and atstr[i] notin '2'..'9':
+                result.kind.add atstr[i]
+                inc i
 
-        if i < atstr.len:
-            result.expo = parseInt(atstr[i..^1])
-        else:
-            result.expo = 1
+            if i < atstr.len:
+                result.expo = parseInt(atstr[i..^1])
+            else:
+                result.expo = 1
 
-        when denominator:
-            result.expo = -result.expo
+            when denominator:
+                result.expo = -result.expo
 
-    let parts = str.split("/")
+        let parts = str.split("/")
 
-    for part in parts[0].split("."):
-        if part != "1":
-            result.add parseAtom(part)
+        for part in parts[0].split("."):
+            if part != "1":
+                result.add parseAtom(part)
 
-    if parts.len > 1:
-        for part in parts[1].split("."):
-            result.add parseAtom(part, denominator=true)
+        if parts.len > 1:
+            for part in parts[1].split("."):
+                result.add parseAtom(part, denominator=true)
 
-proc parseQuantity*(s: string): Quantity =
-    proc parseValue(str: string): CTRational =
-        if str.contains(":"):
-            let parts = str.replace("pi", $(PI)).split(":")
-            return toRational(parseFloat(parts[0]) / parseFloat(parts[1]))
-        else:
-            return toRational(parseFloat(str))
+    proc parseQuantity*(s: string): Quantity =
+        proc parseValue(str: string): CTRational =
+            if str.contains(":"):
+                let parts = str.replace("pi", $(PI)).split(":")
+                return toRational(parseFloat(parts[0]) / parseFloat(parts[1]))
+            else:
+                return toRational(parseFloat(str))
 
-    var components = s.split(" ")
+        var components = s.split(" ")
 
-    return newQuantity(
-        parseValue(components[0]),
-        parseAtoms(components[1])
-    )
+        return newQuantity(
+            parseValue(components[0]),
+            parseAtoms(components[1])
+        )
 
 proc parsePropertyFormula*(str: string):int64 =
     proc getTypeAndExpo(s: string): tuple[tp: string, exp: int] =
@@ -236,11 +248,12 @@ proc defUnit*(unit: string, symbol: string, prefixed: bool, definition: string, 
     units[unit] = symbol
     unitDefinitions[unit] = definition
 
-    if definition[0] in 'A'..'Z':
-        baseUnits.add(unit)
-        defs[unit] = newQuantity(1//1, @[(kind: unit, expo: 1)], base=true)
-    else:
-        defs[unit] = parseQuantity(definition)
+    when not defined(WEB):
+        if definition[0] in 'A'..'Z':
+            baseUnits.add(unit)
+            defs[unit] = newQuantity(1//1, @[(kind: unit, expo: 1)], base=true)
+        else:
+            defs[unit] = parseQuantity(definition)
 
     for alias in aliases:
         if parsable.hasKey(alias):
@@ -260,18 +273,24 @@ proc defUnit*(unit: string, symbol: string, prefixed: bool, definition: string, 
                 parsable[prefixedUnit] = (prefix, unit)
 
 proc defConstant*(name: string, precalculated: bool, definition: string, description: string) =
-    if precalculated:
-        constants[name] = (
-            definition: definition, 
-            value: parseQuantity(definition),
-            precalculated: precalculated,
-            description: description
-        )
+    when not defined(WEB):
+        if precalculated:
+            constants[name] = (
+                definition: definition, 
+                value: parseQuantity(definition),
+                precalculated: precalculated,
+                description: description
+            )
+        else:
+            constants[name] = (
+                definition: definition, 
+                value: newQuantity(1//1, @[(kind: name, expo: 1)], base=true),
+                precalculated: precalculated,
+                description: description
+            )
     else:
         constants[name] = (
-            definition: definition, 
-            value: newQuantity(1//1, @[(kind: name, expo: 1)], base=true),
-            precalculated: precalculated,
+            definition: definition,
             description: description
         )
 
@@ -282,56 +301,58 @@ proc defCurrency*(currency: string, symbol: string) =
 # Macros & Generators
 #=======================================
 
-# Overloads
+when not defined(WEB):
 
-proc newLit(ct: CTRational): NimNode =
-    nnkObjConstr.newTree(
-        newIdentNode("VRational"),
-        nnkExprColonExpr.newTree(
-            newIdentNode("rKind"),
-            newIdentNode("NormalRational")
-        ),
-        nnkExprColonExpr.newTree(
-            newIdentNode("num"),
-            newLit(ct.num)
-        ),
-        nnkExprColonExpr.newTree(
-            newIdentNode("den"),
-            newLit(ct.den)
-        )
-    )
+    # Overloads
 
-# Helpers
-
-proc getAtomsSeq(ats: seq[Atom]): NimNode =
-    var atoms = nnkBracket.newTree()
-    for atom in ats:
-        let (expo, kind) = parsable[atom.kind]
-        atoms.add nnkTupleConstr.newTree(
-            nnkTupleConstr.newTree(
-                newIdentNode(prefixId(expo)),
-                nnkObjConstr.newTree(
-                    newIdentNode("SubUnit"),
-                    nnkExprColonExpr.newTree(
-                        newIdentNode("kind"),
-                        newIdentNode("Core")
-                    ),
-                    nnkExprColonExpr.newTree(
-                        newIdentNode("core"),
-                        newIdentNode(unitId(kind))
-                    )
-                )
+    proc newLit(ct: CTRational): NimNode =
+        nnkObjConstr.newTree(
+            newIdentNode("VRational"),
+            nnkExprColonExpr.newTree(
+                newIdentNode("rKind"),
+                newIdentNode("NormalRational")
             ),
-            nnkCall.newTree(
-                newIdentNode("AtomExponent"),
-                newLit(atom.expo)
+            nnkExprColonExpr.newTree(
+                newIdentNode("num"),
+                newLit(ct.num)
+            ),
+            nnkExprColonExpr.newTree(
+                newIdentNode("den"),
+                newLit(ct.den)
             )
         )
 
-    result = nnkPrefix.newTree(
-        newIdentNode("@"),
-        atoms
-    )
+    # Helpers
+
+    proc getAtomsSeq(ats: seq[Atom]): NimNode =
+        var atoms = nnkBracket.newTree()
+        for atom in ats:
+            let (expo, kind) = parsable[atom.kind]
+            atoms.add nnkTupleConstr.newTree(
+                nnkTupleConstr.newTree(
+                    newIdentNode(prefixId(expo)),
+                    nnkObjConstr.newTree(
+                        newIdentNode("SubUnit"),
+                        nnkExprColonExpr.newTree(
+                            newIdentNode("kind"),
+                            newIdentNode("Core")
+                        ),
+                        nnkExprColonExpr.newTree(
+                            newIdentNode("core"),
+                            newIdentNode(unitId(kind))
+                        )
+                    )
+                ),
+                nnkCall.newTree(
+                    newIdentNode("AtomExponent"),
+                    newLit(atom.expo)
+                )
+            )
+
+        result = nnkPrefix.newTree(
+            newIdentNode("@"),
+            atoms
+        )
 
 # Main
 
@@ -544,49 +565,15 @@ macro getNoUnitFound*(): untyped =
 
 macro generateQuantities*(): untyped =
     let items = nnkTableConstr.newTree()
+    when not defined(WEB):
+        for (unit,quantity) in pairs(defs):
+            var atomsSeq = getAtomsSeq(quantity.atoms)
 
-    for (unit,quantity) in pairs(defs):
-        var atomsSeq = getAtomsSeq(quantity.atoms)
-
-        if not (quantity.value == 0 // 1 and quantity.signature != (static parsePropertyFormula("C"))):
-            # if the value is 0 and it's not a currency unit,
-            # it means we should have properly calculated it, but couldn't.
-            # postpone their calculation for `addRuntimeQuantities`
-            items.add nnkExprColonExpr.newTree(
-                nnkObjConstr.newTree(
-                    newIdentNode("SubUnit"),
-                    nnkExprColonExpr.newTree(
-                        newIdentNode("kind"),
-                        newIdentNode("Core")
-                    ),
-                    nnkExprColonExpr.newTree(
-                        newIdentNode("core"),
-                        newIdentNode(unitId(unit))
-                    )
-                ),
-                nnkTupleConstr.newTree(
-                    newLit(quantity.original),
-                    newLit(quantity.value),
-                    newLit(quantity.signature),
-                    atomsSeq,
-                    newLit(quantity.base),
-                    newLit(false)
-                )
-            )
-
-    nnkDotExpr.newTree(
-        items,
-        newIdentNode("toTable")
-    )
-
-macro addRuntimeQuantities*(): untyped =
-    let items = nnkStmtList.newTree()
-
-    for (unit,quantity) in pairs(defs):
-        if quantity.value == 0 // 1 and quantity.signature != (static parsePropertyFormula("C")):
-            items.add nnkAsgn.newTree(
-                nnkBracketExpr.newTree(
-                    newIdentNode("Quantities"),
+            if not (quantity.value == 0 // 1 and quantity.signature != (static parsePropertyFormula("C"))):
+                # if the value is 0 and it's not a currency unit,
+                # it means we should have properly calculated it, but couldn't.
+                # postpone their calculation for `addRuntimeQuantities`
+                items.add nnkExprColonExpr.newTree(
                     nnkObjConstr.newTree(
                         newIdentNode("SubUnit"),
                         nnkExprColonExpr.newTree(
@@ -598,42 +585,77 @@ macro addRuntimeQuantities*(): untyped =
                             newIdentNode(unitId(unit))
                         )
                     ),
-                ),
-                nnkCall.newTree(
-                    newIdentNode("toQuantity"),
-                    newLit(unitDefinitions[unit].split(" ")[0]),
-                    getAtomsSeq(parseAtoms(unitDefinitions[unit].split(" ")[1]))
+                    nnkTupleConstr.newTree(
+                        newLit(quantity.original),
+                        newLit(quantity.value),
+                        newLit(quantity.signature),
+                        atomsSeq,
+                        newLit(quantity.base),
+                        newLit(false)
+                    )
                 )
-            )
+
+    nnkDotExpr.newTree(
+        items,
+        newIdentNode("toTable")
+    )
+
+macro addRuntimeQuantities*(): untyped =
+    let items = nnkStmtList.newTree()
+    when not defined(WEB):
+        for (unit,quantity) in pairs(defs):
+            if quantity.value == 0 // 1 and quantity.signature != (static parsePropertyFormula("C")):
+                items.add nnkAsgn.newTree(
+                    nnkBracketExpr.newTree(
+                        newIdentNode("Quantities"),
+                        nnkObjConstr.newTree(
+                            newIdentNode("SubUnit"),
+                            nnkExprColonExpr.newTree(
+                                newIdentNode("kind"),
+                                newIdentNode("Core")
+                            ),
+                            nnkExprColonExpr.newTree(
+                                newIdentNode("core"),
+                                newIdentNode(unitId(unit))
+                            )
+                        ),
+                    ),
+                    nnkCall.newTree(
+                        newIdentNode("toQuantity"),
+                        newLit(unitDefinitions[unit].split(" ")[0]),
+                        getAtomsSeq(parseAtoms(unitDefinitions[unit].split(" ")[1]))
+                    )
+                )
 
     items
 
 macro generateConstants*(): untyped =
     let res = nnkStmtList.newTree()
     for (name, content) in pairs(constants):
-        let (definition, quantity, precalculated, _) = content
+        when not defined(WEB):
+            let (definition, quantity, precalculated, _) = content
 
-        if precalculated:
-            res.add nnkAsgn.newTree(
-                newIdentNode(name),
-                nnkTupleConstr.newTree(
-                    newLit(quantity.original),
-                    newLit(quantity.value),
-                    newLit(quantity.signature),
-                    getAtomsSeq(quantity.atoms),
-                    newLit(false),
-                    newLit(false)
+            if precalculated:
+                res.add nnkAsgn.newTree(
+                    newIdentNode(name),
+                    nnkTupleConstr.newTree(
+                        newLit(quantity.original),
+                        newLit(quantity.value),
+                        newLit(quantity.signature),
+                        getAtomsSeq(quantity.atoms),
+                        newLit(false),
+                        newLit(false)
+                    )
                 )
-            )
-        else:
-            res.add nnkAsgn.newTree(
-                newIdentNode(name),
-                nnkCall.newTree(
-                    newIdentNode("toQuantity"),
-                    newLit(definition.split(" ")[0]),
-                    getAtomsSeq(parseAtoms(definition.split(" ")[1]))
+            else:
+                res.add nnkAsgn.newTree(
+                    newIdentNode(name),
+                    nnkCall.newTree(
+                        newIdentNode("toQuantity"),
+                        newLit(definition.split(" ")[0]),
+                        getAtomsSeq(parseAtoms(definition.split(" ")[1]))
+                    )
                 )
-            )
 
     res
 
