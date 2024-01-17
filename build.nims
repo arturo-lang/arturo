@@ -468,6 +468,7 @@ cmd build, "[default] Build arturo and optionally install the executable":
             config.binary     = config.binary
                                       .replace(".exe", ".js")
             config.version    = "@web"
+            webBuildConfig()
             miniBuild()
 
     match args.getOptionValue("os", default=hostOS, into=availableOSes):
