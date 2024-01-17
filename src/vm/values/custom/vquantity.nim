@@ -177,14 +177,15 @@ func isTemperature(q: Quantity): bool {.inline.} =
 proc getExchangeRate(curr: string): float =
     let s = toLowerAscii(curr)
     if ExchangeRates.len == 0:
-        let url = "https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies/usd.min.json"
-        let content = waitFor (newAsyncHttpClient().getContent(url))
-        let response = parseJson(content)
-        for (k,v) in pairs(response["usd"]):
-            if likely(v.kind == JFloat):
-                ExchangeRates[k] = v.fnum
-            else:
-                ExchangeRates[k] = float(v.num)
+        when not defined(WEB):
+            let url = "https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies/usd.min.json"
+            let content = waitFor (newAsyncHttpClient().getContent(url))
+            let response = parseJson(content)
+            for (k,v) in pairs(response["usd"]):
+                if likely(v.kind == JFloat):
+                    ExchangeRates[k] = v.fnum
+                else:
+                    ExchangeRates[k] = float(v.num)
 
     return ExchangeRates[s]
 
@@ -774,7 +775,9 @@ proc inspect*(q: Quantity) =
 
 proc initQuantities*() =
     Properties = generateProperties()
-    Quantities = generateQuantities()
+
+    when not defined(WEB):
+        Quantities = generateQuantities()
 
     addRuntimeQuantities()
 
