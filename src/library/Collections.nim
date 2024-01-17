@@ -45,7 +45,8 @@ import vm/lib
 import vm/[exec, parse]
 import vm/values/custom/[vbinary, vrange]
 
-import vm/errors as err
+when not defined(WEB):
+    import vm/errors as err
 
 #=======================================
 # Definitions
