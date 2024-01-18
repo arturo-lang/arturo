@@ -24,7 +24,7 @@ import math, random, sequtils, sugar
 when defined(WEB):
     import std/jsbigints
 
-when not defined(NOGMP):
+when defined(GMP):
     import helpers/bignums as BignumsHelper
 
 import helpers/maths
@@ -86,7 +86,7 @@ proc defineLibrary*() =
                 if x.iKind==NormalInteger: 
                     push(newInteger(abs(x.i)))
                 else:
-                    when defined(WEB) or not defined(NOGMP):
+                    when defined(WEB) or defined(GMP):
                         push(newInteger(abs(x.bi)))
             elif xKind==Floating:
                 push(newFloating(abs(x.f)))
@@ -663,7 +663,7 @@ proc defineLibrary*() =
             if x.iKind == NormalInteger:
                 push newBlock(getDigits(x.i, base).map((z)=>newInteger(z)))
             else:
-                when defined(WEB) or not defined(NOGMP):
+                when defined(WEB) or defined(GMP):
                     push newBlock(getDigits(x.bi, base).map((z)=>newInteger(z)))
 
     builtin "exp",
@@ -740,7 +740,7 @@ proc defineLibrary*() =
                 else:
                     push(newBlock(factors(x.i).map((x)=>newInteger(x))))
             else:
-                when defined(WEB) or not defined(NOGMP):
+                when defined(WEB) or defined(GMP):
                     # TODO(Numbers\factors) `.prime` not working for Web builds
                     # labels: web,enhancement
                     if prime:
@@ -816,12 +816,12 @@ proc defineLibrary*() =
 
                 if current.iKind==NormalInteger:
                     if elem.iKind==BigInteger:
-                        when not defined(NOGMP):
+                        when defined(GMP):
                             current = newInteger(gcd(current.i, elem.bi))
                     else:
                         current = newInteger(gcd(current.i, elem.i))
                 else:
-                    when not defined(NOGMP):
+                    when defined(GMP):
                         if elem.iKind==BigInteger:
                             current = newInteger(gcd(current.bi, elem.bi))
                         else:
@@ -877,12 +877,12 @@ proc defineLibrary*() =
 
                 if current.iKind==NormalInteger:
                     if elem.iKind==BigInteger:
-                        when not defined(NOGMP):
+                        when defined(GMP):
                             current = newInteger(lcm(current.i, elem.bi))
                     else:
                         current = newInteger(lcm(current.i, elem.i))
                 else:
-                    when not defined(NOGMP):
+                    when defined(GMP):
                         if elem.iKind==BigInteger:
                             current = newInteger(lcm(current.bi, elem.bi))
                         else:
@@ -966,7 +966,7 @@ proc defineLibrary*() =
             else:
                 push(newInteger(getNumerator(rat, big=true)))
 
-    when not defined(NOGMP):
+    when defined(GMP):
         # TODO(Numbers\powmod) not working for Web builds
         # labels: web,enhancement
         builtin "powmod",
@@ -1219,7 +1219,7 @@ proc defineLibrary*() =
         """:
             #=======================================================
             if (hadAttr("integer")):
-                when defined(WEB) or not defined(NOGMP):
+                when defined(WEB) or defined(GMP):
                     if x.iKind == NormalInteger:
                         push(newInteger(isqrt(x.i)))
                     else:
@@ -1369,7 +1369,7 @@ proc defineLibrary*() =
                 if x.iKind==BigInteger:
                     when defined(WEB):
                         push(newLogical(x.bi < big(0)))
-                    elif not defined(NOGMP):
+                    elif defined(GMP):
                         push(newLogical(negative(x.bi)))
                 else:
                     push(newLogical(x < I0))
@@ -1418,7 +1418,7 @@ proc defineLibrary*() =
                 if x.iKind==BigInteger:
                     when defined(WEB):
                         push(newLogical(x.bi > big(0)))
-                    elif not defined(NOGMP):
+                    elif defined(GMP):
                         push(newLogical(positive(x.bi)))
                 else:
                     push(newLogical(x > I0))
@@ -1457,7 +1457,7 @@ proc defineLibrary*() =
             else:
                 # TODO(Numbers\prime?) not working for Web builds
                 # labels: web,enhancement
-                when not defined(NOGMP):
+                when defined(GMP):
                     push(newLogical(probablyPrime(x.bi,25)>0))
 
     #----------------------------

@@ -5,7 +5,6 @@ proc noDepencenciesConfig() =
     --define:NOASCIIDECODE
     --define:NOCLIPBOARD
     --define:NODIALOGS
-    --define:NOGMP
     --define:NOPARSERS
     --define:NOSQLITE
     --define:NOWEBVIEW
@@ -24,6 +23,7 @@ proc webBuildConfig() =
     noDepencenciesConfig()
 
 proc fullBuildConfig() =
+    --define:GMP
     --define:ssl
 
 {. pop .}
