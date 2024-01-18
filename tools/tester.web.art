@@ -39,7 +39,7 @@ runSet: function [ttl,location,minified?].export:[supersuccess,supertotal,supers
         if? canExecute? script [
 
             ;tim: benchmark.get [
-                minify?: (minified?)? -> "--mini" --> ""
+                minify?: (minified?)? -> "--mini" -> ""
                 result: split.lines strip execute ~{./tools/run.js "|script|" |minify?|}
             ;]
             ; indiTimes: indiTimes ++ #[
