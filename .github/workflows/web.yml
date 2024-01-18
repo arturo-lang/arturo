@@ -62,6 +62,10 @@ jobs:
         with:
           nim-version: '2.0.0'
           repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install dependencies
+        run: |
+          npm install -g uglify-js
           
       - name: Verify dependecies
         run: |
