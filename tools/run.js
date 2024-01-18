@@ -1,10 +1,13 @@
+#!/usr/bin/env node
 //----------------------------------------------------
 // Node.js script to be used for executing 
 // Arturo scripts, via the command-line, 
 // using our Web/JS binary
 //
 // Example:
-//    node testjs.js <path-to-arturo-script>
+//    node tools/run.js <path-to-arturo-script>
+// Or:
+//    ./tools/run.js <path-to-arturo-script>
 //----------------------------------------------------
 
 // module imports
