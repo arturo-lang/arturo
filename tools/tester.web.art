@@ -1,0 +1,105 @@
+#!/usr/bin/env arturo
+;==========================================
+; Tester
+;
+; @file: tools/tester.web.art
+; @author: drkameleon
+;==========================================
+
+errorMargin: 0
+if 1 = size arg -> errorMargin: to :integer first arg
+
+supersuccess: 0
+superskipped: 0
+supertotal: 0
+
+canExecute?: function [scri][
+    scr: extract.filename scri
+
+    return true
+]
+
+runSet: function [title,location,minified?].export:[supersuccess,supertotal,superskipped][
+    print "====================================================================="
+    print (color #cyan.bold ~"  |title|") ++ pad "passed?" 65 - size title
+    print "====================================================================="
+    tests: sort select list relative location 'loc -> contains? loc ".res"
+    success: 0
+
+    ;indiTimes: []
+
+    loop tests 'test [
+        script: replace test ".res" ".art"
+        expected: split.lines strip read test
+
+        prints pad.right ((color #magenta "\n- Running: ") ++ truncate.preserve extract.filename script 40) 70
+        if? canExecute? script [
+
+            ;tim: benchmark.get [
+                minify?: (minified?)? -> "--mini" --> ""
+                result: split.lines strip execute ~{./tools/run.js "|script|" |minify?|}
+            ;]
+            ; indiTimes: indiTimes ++ #[
+            ;     tst: test
+            ;     tim: tim
+            ; ]
+
+            if? result=expected [
+
+                prints color #green.bold "[   YES   ]"
+                success: success + 1
+                supersuccess: supersuccess + 1
+            ]
+            else [
+                print "<-------------------"
+                print join.with:"\n" result
+                print "------------------->"
+                prints color #red "[  ERROR  ]"
+            ]
+        ]
+        else [
+            prints color #orange.bold "[ SKIPPED ]"
+            superskipped: superskipped + 1
+            success: success + 1
+            supersuccess: supersuccess + 1
+        ]
+    ]
+
+    print "\n"
+    print pad.left render.template "<||= success ||> of <||= size tests ||> tasks succeeded ◀" 69
+    print ""
+
+    ;inspect sort.by:'tim indiTimes
+
+    ; supersuccess: supersuccess + success
+    supertotal: supertotal + size tests
+]
+
+print color #green.bold "\n  Arturo"
+print color #white.bold "  Unit Tester\n"
+print color #gray ~"  Release: @|sys\release|\n"
+
+supertime: in's benchmark.get [
+    runSet "Web" "../tests/web" false
+    runSet "Web" "../tests/web" true
+]
+
+if supersuccess < supertotal-errorMargin [
+    panic.code: 1 "Some unit-tests failed!"
+]
+
+print ""
+print color #cyan "====================================================================="
+
+print [color #cyan "|" color #white.bold "ANALYSIS                                                         " color #cyan "|"]
+print color #cyan "====================================================================="
+print [color #cyan "|" "Tests executed:" supertotal "( skipped:" superskipped ")" color #cyan pad "|" 36 - (size to :string supertotal)+size to :string superskipped]
+print [color #cyan "|" "Tests succeeded:" supersuccess color #cyan pad "|" 49 - size to :string supertotal]
+rate: to :string .format:".1f" 100 * supersuccess//supertotal
+print color #cyan "====================================================================="
+if? supersuccess=supertotal -> print [color #cyan "|" "Success rate:" color #green append rate "%" color #cyan pad "|" 51 - size rate]
+else -> print [color #cyan "|" "Success rate:" append rate "%" color #cyan pad "|" 51 - size rate]
+print [color #cyan "|" "Total time:" supertime color #cyan pad "|" 54 - size to :string supertime]
+print color #cyan "====================================================================="
+
+exit
