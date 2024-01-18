@@ -72,8 +72,14 @@ jobs:
           echo "$HOME/.arturo/bin" >> $GITHUB_PATH
           ./build.nims build --mode ${{ matrix.platform }} --log
 
+      - name: Create artifact
+        run: |
+          mkdir webartifacts
+          cp bin/arturo.js webartifacts
+          cp bin/arturo.min.js webartifacts
+
       - name: Upload Artifacts
         uses: 'actions/upload-artifact@v2'
         with:
           name: "arturo-${{matrix.version}}"
-          path: bin/arturo.js
+          path: webartifacts
