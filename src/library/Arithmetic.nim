@@ -21,7 +21,7 @@
 
 import vm/lib
 
-when not defined(NOGMP):
+when defined(GMP):
     import helpers/bignums as BignumsHelper
 
 #=======================================

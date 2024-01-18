@@ -22,7 +22,7 @@
 import vm/values/custom/vquantity
 import vm/values/custom/quantities/preprocessor
 
-when not defined(NOGMP):
+when defined(GMP):
     import helpers/bignums as BignumsHelper
 
 import vm/lib
@@ -44,7 +44,7 @@ template convertQuantity(x, y: Value, xKind, yKind: ValueKind): untyped =
         if y.iKind == NormalInteger:
             push newQuantity(toQuantity(y.i, qs))
         else:
-            when not defined(NOGMP):
+            when defined(GMP):
                 push newQuantity(toQuantity(y.bi, qs))
     elif yKind==Floating:
         push newQuantity(toQuantity(y.f, qs))
@@ -166,7 +166,7 @@ proc defineLibrary*() =
                 else:
                     push(newRational(r))
             else:
-                when not defined(NOGMP):
+                when defined(GMP):
                     if r.br.denominator() == 1:
                         push(newInteger(r.br.numerator()))
                     elif r.canBeCoerced():
@@ -329,7 +329,7 @@ proc defineLibrary*() =
     # Constants
     #----------------------------
 
-    when not defined(NOGMP):
+    when defined(GMP):
         addPhysicalConstants()
 
 #=======================================

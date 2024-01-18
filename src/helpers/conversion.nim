@@ -12,7 +12,7 @@
 
 import algorithm, parseutils, sequtils, strformat, strutils, sugar, tables, times, unicode
 
-when not defined(NOGMP):
+when defined(GMP):
     import helpers/bignums
 
 import helpers/objects
@@ -90,7 +90,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat:Value = nil): Val
                         if y.iKind == NormalInteger:
                             return newRational(y.i)
                         else:
-                            when not defined(NOGMP):
+                            when defined(GMP):
                                 return newRational(y.bi)
                     of Char: return newChar(toUTF8(Rune(y.i)))
                     of String:
@@ -105,7 +105,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat:Value = nil): Val
                             else:
                                 return newString($(y.i))
                         else:
-                            when not defined(NOGMP):
+                            when defined(GMP):
                                 return newString($(y.bi))
                     of Quantity:
                         return newQuantity(y, @[])

@@ -17,13 +17,16 @@ import algorithm, bitops, std/math, sequtils, sugar
 
 when defined(WEB):
     import std/jsbigints
-elif not defined(NOGMP):
+elif defined(GMP):
     import helpers/bignums as BignumsHelper
 
-when defined(NOGMP):
+when not defined(GMP):
     import vm/errors
     
 import vm/values/value
+
+when defined(WEB):
+    import vm/values/operators
 
 #=======================================
 # Methods
@@ -100,7 +103,7 @@ func isPrime*[T: SomeInteger](n: T): bool =
     let witnesses = selectWitnesses(n)
     miller_rabin_test(n, witnesses)
 
-when not defined(NOGMP):
+when defined(GMP):
     func pollardG*(n: var Int, m: Int) {.inline.} =
         discard mul(n,n,n)
         discard add(n,n,1)
@@ -266,7 +269,7 @@ when defined(WEB):
         tail.reverse()
         result &= tail
 
-elif not defined(NOGMP):
+elif defined(GMP):
     func getDigits*(n: Int, base: int = 10): seq[int] =
         if n == 0: return @[0]
 
@@ -414,7 +417,7 @@ proc factorial*(x: int): Value =
             var res = newInteger(1)
             for item in items:
                 res = res * item
-        elif defined(NOGMP):
+        elif not defined(GMP):
             RuntimeError_NumberOutOfPermittedRange("factorial",$x, "")
         else:
             return newInteger(BignumsHelper.fac(x))
