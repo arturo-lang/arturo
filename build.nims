@@ -101,26 +101,28 @@ template unless(condition: bool, body: untyped) =
 
 # TODO(build.nims) JavaScript compression not working correctly
 #  labels: web,bug
-proc recompressJS*(jsFile: string) =
-    let outputFile = jsFile #.replace(".min.js", ".final.min.js")
-    var js = readFile(jsFile)
-        #     # replace Field0, Field1, etc with F0, F1, etc
-        #    .replaceWord("Field0", "F0")
-        #    .replaceWord("Field1", "F1")
-        #    .replaceWord("Field2", "F2")
-        #    .replaceWord("Field3", "F3")
-        #     # replace redundant error messages
-        #    .multiReplace(
-        #         ("field '", ""),
-        #         ("' is not accessible for type '", ""),
-        #         ("' using ", ""),
-        #         ("'kind = ", ""),
-        #         ("'iKind = ", ""),
-        #         ("'tpKind = ", ""),
-        #         ("'fnKind = ", "")
-        #     )
+proc recompressJS*(jsFile: string, config: BuildConfig) =
+    var js: string
+    "testsed.txt".writeFile("""
+        s/Field([0-5])/F\1/g
+        s/field '\w+' is not accessible for type '\w+' using '\w+ =//g
+    """)
 
-    outputFile.writeFile js
+    let CompressionResult =
+        gorgeEx fmt"""
+            sed -E -f testsed.txt {jsFile}
+        """
+
+    if CompressionResult.exitCode != QuitSuccess:
+        js = readFile(jsFile)
+            .replaceWord("Field0", "F0")
+            .replaceWord("Field1", "F1")
+            .replaceWord("Field2", "F2")
+            .replaceWord("Field3", "F3")
+    else:
+        js = CompressionResult.output
+
+    jsFile.writeFile js
 
 proc miniBuild*() =
     # all the necessary "modes" for mini builds
@@ -139,13 +141,15 @@ proc compressBinary(config: BuildConfig) =
 
     log "compressing binary..."
     let minBin = config.binary.replace(".js",".min.js")
-    let CompressionRessult =
+
+    let CompressionResult =
         gorgeEx fmt"uglifyjs {config.binary} -c -m ""toplevel,reserved=['A$']"" -c -o {minBin}"
 
-    if CompressionRessult.exitCode != QuitSuccess:
+    if CompressionResult.exitCode != QuitSuccess:
         warn "uglifyjs: 3rd-party tool not available"
-    else:
-        recompressJS(minBin)
+        minBin.writeFile readFile(config.binary)
+    
+    recompressJS(minBin, config)
 
 proc verifyDirectories*() =
     ## Create target dirs recursively, if they don't exist
