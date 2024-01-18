@@ -105,7 +105,7 @@ proc recompressJS*(jsFile: string, config: BuildConfig) =
     var js: string
     "testsed.txt".writeFile("""
         s/Field([0-5])/F\1/g
-        s/field '\w+' is not accessible for type '\w+' using '\w+ =//g
+        s/field [^\"]+ is not accessible [^\"]+//g
     """)
 
     let CompressionResult =
