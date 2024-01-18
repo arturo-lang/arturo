@@ -62,6 +62,12 @@ jobs:
         with:
           nim-version: '2.0.0'
           repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install dependencies
+        run: |
+          npm install -g uglify-js
+          sudo apt-get update
+          sudo apt-get install libgtk-3-dev libwebkit2gtk-4.0-dev libmpfr-dev
           
       - name: Verify dependecies
         run: |
@@ -72,8 +78,24 @@ jobs:
           echo "$HOME/.arturo/bin" >> $GITHUB_PATH
           ./build.nims build --mode ${{ matrix.platform }} --log
 
+      - name: Build Arturo (Normal binary)
+        run: |
+          echo "$HOME/.arturo/bin" >> $GITHUB_PATH
+          ./build.nims build --log
+
+      - name: Create artifact
+        run: |
+          mkdir webartifacts
+          cp bin/arturo.js webartifacts
+          cp bin/arturo.min.js webartifacts
+
       - name: Upload Artifacts
         uses: 'actions/upload-artifact@v2'
         with:
           name: "arturo-${{matrix.version}}"
-          path: bin/arturo.js
+          path: webartifacts
+
+      - name: Run unit tests
+        run: |
+          echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
+          ./bin/arturo tools/tester.web.art
