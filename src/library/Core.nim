@@ -23,11 +23,10 @@
 #=======================================
 
 import algorithm, hashes, options
-import sequtils, sugar
 
 import helpers/datasource
 when not defined(WEB):
-    import os
+    import os, sequtils, sugar
     import helpers/ffi
     when not defined(MINI):
         import helpers/packager

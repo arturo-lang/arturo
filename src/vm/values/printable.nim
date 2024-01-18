@@ -18,7 +18,7 @@ import sugar, tables, times, unicode
 when defined(WEB):
     import std/jsbigints
 
-when not defined(NOGMP):
+when defined(GMP):
     import helpers/bignums as BignumsHelper
 
 import helpers/terminal as TerminalHelper
@@ -84,7 +84,7 @@ proc `$`*(v: Value): string {.inline.} =
         of Integer      : 
             if likely(v.iKind==NormalInteger): return $(v.i)
             else:
-                when defined(WEB) or not defined(NOGMP): 
+                when defined(WEB) or defined(GMP): 
                     return $(v.bi)
         of Floating     : 
             #if v.fKind==NormalFloating: 
@@ -92,7 +92,7 @@ proc `$`*(v: Value): string {.inline.} =
             elif v.f==NegInf: return "-∞"
             else: return $(v.f)
             # else:
-            #     when not defined(WEB) and not defined(NOGMP): 
+            #     when not defined(WEB) and defined(GMP): 
             #         return "BIG:" & $(v.bf)
         of Complex      : 
             return $(v.z.re) & (if v.z.im >= 0: "+" else: "") & $(v.z.im) & "i"
@@ -253,7 +253,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
         of Integer      : 
             if likely(v.iKind==NormalInteger): dumpPrimitive($(v.i), v)
             else: 
-                when defined(WEB) or not defined(NOGMP):
+                when defined(WEB) or defined(GMP):
                     dumpPrimitive($(v.bi), v)
         of Floating     :
             #if v.fKind==NormalFloating:
@@ -261,7 +261,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
             elif v.f==NegInf: dumpPrimitive("-∞", v)
             else: dumpPrimitive($(v.f), v)
             # else:
-            #     when not defined(WEB) and not defined(NOGMP): 
+            #     when not defined(WEB) and defined(GMP): 
             #         dumpPrimitive($(v.bf), v)
         of Complex      : dumpPrimitive($(v.z.re) & (if v.z.im >= 0: "+" else: "") & $(v.z.im) & "i", v)
         of Rational     : dumpPrimitive($(v.rat), v)
@@ -520,7 +520,7 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
         of Integer      :
             if likely(v.iKind==NormalInteger): result &= $(v.i)
             else: 
-                when defined(WEB) or not defined(NOGMP):
+                when defined(WEB) or defined(GMP):
                     result &= $(v.bi)
         of Floating     : result &= $(v.f)
         of Complex      : 

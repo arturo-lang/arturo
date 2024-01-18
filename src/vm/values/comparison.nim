@@ -17,7 +17,7 @@ import tables, times, unicode
 when defined(WEB):
     import std/jsbigints
     
-when not defined(NOGMP):
+when defined(GMP):
     import helpers/bignums as BignumsHelper
 
 import vm/stack
@@ -31,7 +31,7 @@ import vm/values/custom/[vcolor, vcomplex, vlogical, vquantity, vrange, vrationa
 #=======================================
 
 const
-    GMP = not defined(NOGMP)
+    GMP = defined(GMP)
 
 #=======================================
 # Forward declarations
