@@ -77,8 +77,9 @@ ui:
   - src/library/Ui.nim
 
 unit-test:
-  - tests/benchmarks/*
+  - tests/errors/*
   - tests/unittests/*
+  - tests/web/*
 
 values:
   - src/vm/values/*
