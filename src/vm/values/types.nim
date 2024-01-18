@@ -20,7 +20,7 @@ when not defined(NOSQLITE):
 when defined(WEB):
     import std/jsbigints
 
-when not defined(NOGMP):
+when defined(GMP):
     import helpers/bignums
 
 import vm/opcodes
@@ -278,7 +278,7 @@ type
                     of BigInteger:
                         when defined(WEB):
                             bi* : JsBigInt
-                        elif not defined(NOGMP):
+                        elif defined(GMP):
                             bi* : Int
                         else:
                             discard
@@ -348,14 +348,10 @@ type
                 trans*: Translation
 
     ValueObj = typeof(Value()[])
-    FuncObj = typeof(VFunction()[])
 
 #=======================================
 # Constants
 #=======================================
-
-const
-    RootObjectName = "object"
 
 let 
     NoPrototypeFound* = Prototype(name: "prototype-error")
@@ -372,6 +368,9 @@ var
 #=======================================
 
 when sizeof(ValueObj) > 64: # At time of writing it was '64', 8 - 64 bit integers seems like a good warning site? Can always go smaller
+    type
+        FuncObj = typeof(VFunction()[])
+
     {.warning: "'Value's inner object is large which will impact performance".}
     {.hints: on.} # Apparently we cannot disable just `Name` hints?
     {.hint: "Value's inner type is currently " & $sizeof(ValueObj) & ".".}

@@ -166,7 +166,7 @@ when defined(WEB):
                     result[cstring(k)] = generateJsObject(v)
             of Object       :
                 result = newJsObject()
-                for k,v in n.objectPairs:
+                for k,v in n.o.objectPairs:
                     result[cstring(k)] = generateJsObject(v)
             of Store        :
                 result = newJsObject()
@@ -176,6 +176,10 @@ when defined(WEB):
                Rational,
                Function,
                Database,
+               PathLiteral, 
+               Error, 
+               ErrorKind, 
+               Method,
                Socket,
                Bytecode,
                Nothing,
