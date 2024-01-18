@@ -80,7 +80,7 @@ runSet: function [ttl,location,minified?].export:[supersuccess,supertotal,supers
 
 print color #green.bold "\n  Arturo"
 print color #white.bold "  Unit Tester\n"
-print color #gray ~"  Release: @|sys\release|\n"
+print color #gray ~"  Release: @web\n"
 
 supertime: in's benchmark.get [
     runSet "Web" "../tests/web" false
