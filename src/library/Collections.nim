@@ -24,7 +24,7 @@ when not defined(WEB):
 else:
     import std/jsbigints
 
-when not defined(NOGMP):
+when defined(GMP):
     import helpers/bignums as BignumsHelper
 
 import algorithm, os, random, sequtils
@@ -2880,7 +2880,7 @@ proc defineLibrary*() =
                     if x.iKind == BigInteger:
                         when defined(WEB):
                             push(newLogical(x.bi==big(1)))
-                        elif not defined(NOGMP):
+                        elif defined(GMP):
                             push(newLogical(x.bi==newInt(1)))
                     else:
                         push(newLogical(x.i == 1))
@@ -2960,7 +2960,7 @@ proc defineLibrary*() =
                     if x.iKind == BigInteger:
                         when defined(WEB):
                             push(newLogical(x.bi==big(0)))
-                        elif not defined(NOGMP):
+                        elif defined(GMP):
                             push(newLogical(isZero(x.bi)))
                     else:
                         push(newLogical(x.i == 0))

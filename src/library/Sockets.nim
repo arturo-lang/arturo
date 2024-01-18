@@ -23,7 +23,7 @@ when not defined(WEB):
     import std/net as netsock except Socket
     import nativesockets
 
-import vm/values/custom/[vsocket]
+    import vm/values/custom/[vsocket]
 
 import vm/lib
 
