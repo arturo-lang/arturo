@@ -19,7 +19,10 @@ canExecute?: function [scri][
     return true
 ]
 
-runSet: function [title,location,minified?].export:[supersuccess,supertotal,superskipped][
+runSet: function [ttl,location,minified?].export:[supersuccess,supertotal,superskipped][
+    title: ttl
+    if minified? ->
+        title: title ++ " (minified)"
     print "====================================================================="
     print (color #cyan.bold ~"  |title|") ++ pad "passed?" 65 - size title
     print "====================================================================="
