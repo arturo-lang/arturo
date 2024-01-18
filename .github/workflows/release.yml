@@ -518,7 +518,8 @@ jobs:
       - name: Create artifact
         run: |
           install -m 0755 ./bin/${{ env.app-name }}.js .
-          tar czf ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.version}}-js-web.tar.gz ${{ env.app-name }}.js README.md LICENSE
+          install -m 0755 ./bin/${{ env.app-name }}.min.js .
+          tar czf ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.version}}-js-web.tar.gz ${{ env.app-name }}.js ${{ env.app-name }}.min.js README.md LICENSE
 
       - name: Upload Artifact
         uses: 'actions/upload-artifact@v1'
