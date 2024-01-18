@@ -14,7 +14,10 @@
 const fs = require('fs');
 
 // the path to our Web-mode Arturo "binary"
-const arturoBinary = './bin/arturo.js';
+var arturoBinary = './bin/arturo.js';
+if (process.argv.length == 4 && process.argv[3] == "--mini") {
+    arturoBinary = "./bin/arturo.min.js"
+}
 
 // the path to the Arturo script we want to execute
 // e.g. the unit-test file
