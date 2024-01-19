@@ -29,7 +29,7 @@ when defined(WEB):
 when defined(GMP):
     import helpers/bignums as BignumsHelper
 
-when not defined(GMP):
+when (not defined(GMP)) and (not defined(WEB)):
    import vm/errors
 
 import vm/opcodes
