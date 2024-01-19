@@ -27,15 +27,15 @@ else:
         
         func addIntWithOverflow*(a, b: int, res: var int): bool =
             res = a + b
-            return isSafeInteger(res)
+            return not isSafeInteger(res)
 
         func subIntWithOverflow*(a, b: int, res: var int): bool =
             res = a - b
-            return isSafeInteger(res)
+            return not isSafeInteger(res)
 
         func mulIntWithOverflow*(a, b: int, res: var int): bool =
             res = a * b
-            return isSafeInteger(res)
+            return not isSafeInteger(res)
 
 #=======================================
 # Methods
