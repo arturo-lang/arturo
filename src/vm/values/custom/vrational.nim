@@ -124,13 +124,13 @@ func isPositive*(x: VRational): bool =
 #=======================================
 
 template getNumerator*(x: VRational, big: bool = false): untyped =
-    when big and GmpAvailable:
+    when big and not defined(NOGMP):
         numerator(x.br)
     else:
         x.num
 
 template getDenominator*(x: VRational, big: bool = false): untyped =
-    when big and GmpAvailable:
+    when big and not defined(NOGMP):
         denominator(x.br)
     else:
         x.den
