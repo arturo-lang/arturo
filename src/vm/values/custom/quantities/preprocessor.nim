@@ -30,8 +30,6 @@ when not defined(WEB):
 #=======================================
 when defined(WEB):
     type
-        Quantity = int
-
         Constant = tuple
             definition: string
             description: string
