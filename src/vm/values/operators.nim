@@ -245,7 +245,7 @@ template normalIntegerDecI*(x: var Value): untyped =
     ## decrement a normal Integer value by 1, checking for overflow
     ## and set result in-place
     if unlikely(subIntWithOverflowI(x.i, 1, x.i)):
-        when defined(GMP):
+        when defined(GMP) or defined(WEB):
             x = newInteger(toNewBig(x.i) - toBig(1))
         else:
             RuntimeError_IntegerOperationOverflow("dec", $x.i, "")
