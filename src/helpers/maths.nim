@@ -20,7 +20,7 @@ when defined(WEB):
 elif defined(GMP):
     import helpers/bignums as BignumsHelper
 
-when not defined(GMP):
+when (not defined(GMP)) and (not defined(WEB)):
     import vm/errors
     
 import vm/values/value
