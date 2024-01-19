@@ -211,7 +211,7 @@ template normalIntegerSub*(x, y: int): untyped =
     ## and return result
     var res: int
     if unlikely(subIntWithOverflow(x, y, res)):
-        when defined(GMP):
+        when defined(GMP) or defined(WEB):
             newInteger(toNewBig(x) - toBig(y))
         else:
             RuntimeError_IntegerOperationOverflow("sub", $x, $y)
@@ -223,7 +223,7 @@ template normalIntegerSubI*(x: var Value, y: int): untyped =
     ## subtract two normal Integer values, checking for overflow
     ## and set result in-place
     if unlikely(subIntWithOverflowI(x.i, y, x.i)):
-        when defined(GMP):
+        when defined(GMP) or defined(WEB):
             x = newInteger(toNewBig(x.i) - toBig(y))
         else:
             RuntimeError_IntegerOperationOverflow("sub", $x.i, $y)
@@ -233,7 +233,7 @@ template normalIntegerDec*(x: int): untyped =
     ## and return result
     var res: int
     if unlikely(subIntWithOverflow(x, 1, res)):
-        when defined(GMP):
+        when defined(GMP) or defined(WEB):
             newInteger(toNewBig(x) - toBig(1))
         else:
             RuntimeError_IntegerOperationOverflow("dec", $x, "")
