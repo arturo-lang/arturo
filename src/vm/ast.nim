@@ -408,7 +408,7 @@ proc processBlock*(
     proc updateAritiesFromStore(target: var Node) {.enforceNoRaises.} =
         var child = target.children[0]
 
-        if child.op == opFunc:
+        if child.kind in CallNode and child.op == opFunc:
             var startIndex = 0
             while child.children[startIndex].kind == NewlineNode:
                 startIndex += 1
