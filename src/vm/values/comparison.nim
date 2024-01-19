@@ -13,9 +13,6 @@
 #=======================================
 
 import tables, times, unicode
-
-when defined(WEB):
-    import std/jsbigints
     
 when defined(GMP):
     import helpers/bignums as BignumsHelper
