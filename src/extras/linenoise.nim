@@ -3,7 +3,7 @@
 # Wrapper for Steve Bennett's fork of LineNoise
 # for Nim
 #
-# (c) 2023 Yanis Zafirópulos
+# (c) 2024 Yanis Zafirópulos
 # 
 # @license: see LICENSE file
 # @file: extras/linenoise.nim
