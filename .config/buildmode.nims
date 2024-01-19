@@ -19,7 +19,6 @@ proc safeBuildConfig() =
 
 proc webBuildConfig() =
     --define:WEB
-    hint "XDeclaredButNotUsed":on
     noDepencenciesConfig()
 
 proc fullBuildConfig() =
