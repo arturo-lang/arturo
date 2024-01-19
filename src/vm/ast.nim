@@ -88,10 +88,15 @@ type
 
     NodeObj = typeof(Node()[])
 
-# Benchmarking
-{.hints: on.}
-{.hint: "Node's inner type is currently " & $sizeof(NodeObj) & ".".}
-{.hints: off.}
+#=======================================
+# Compile-Time Warnings
+#=======================================
+
+when sizeof(NodeObj) > 40:
+    {.warning: "Node's inner object is large which will impact performance".}
+    {.hints: on.}
+    {.hint: "Node's inner type is currently " & $sizeof(NodeObj) & ".".}
+    {.hints: off.}
 
 #=======================================
 # Variables
