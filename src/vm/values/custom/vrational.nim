@@ -181,8 +181,11 @@ func toRational*(x: float): VRational =
         m11, m22 = 1
         m12, m21 = 0
         ai = int(x)
-        initial = x
         x = x
+    
+    when defined(GMP):
+        var initial = x
+        
     while m21 * ai + m22 <= n:
         swap m12, m11
         swap m22, m21
