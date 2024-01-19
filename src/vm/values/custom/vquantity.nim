@@ -84,10 +84,15 @@ type
     VUnit* = Atoms
     VQuantity* = Quantity
 
-# Benchmarking
-{.hints: on.}
-{.hint: "Quantity's inner type is currently " & $sizeof(Quantity) & ".".}
-{.hints: off.}
+#=======================================
+# Compile-Time Warnings
+#=======================================
+
+when sizeof(Quantity) > 48:
+    {.warning: "Quantity's inner object is large which will impact performance".}
+    {.hints: on.}
+    {.hint: "Quantity's inner type is currently " & $sizeof(Quantity) & ".".}
+    {.hints: off.}
 
 #=======================================
 # Constants
@@ -95,7 +100,7 @@ type
 
 const
     AtomExponents = ["⁻⁵", "⁻⁴", "⁻³", "⁻²", "⁻¹", "", "", "²", "³", "⁴", "⁵"]
-    NoUnitFound = getNoUnitFound()
+    NoUnitFound {.used.} = getNoUnitFound() 
 
 let
     Powers = [
@@ -165,8 +170,10 @@ func `==`(a, b: SubUnit): bool =
             of Core: a.core == b.core
             of User: a.name == b.name
 
-func isUnitless(q: Quantity): bool {.inline.} =
-    return q.signature == 0
+# NOT USED
+
+# func isUnitless(q: Quantity): bool {.inline.} =
+#     return q.signature == 0
 
 func isCurrency(q: Quantity): bool {.inline.} =
     return q.signature == (static parsePropertyFormula("C"))

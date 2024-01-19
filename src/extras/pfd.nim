@@ -3,7 +3,7 @@
 # Sam Hocevar's Portable File Dialogs wrapper
 # for Nim
 #
-# (c) 2023 Yanis Zafirópulos
+# (c) 2024 Yanis Zafirópulos
 # 
 # @license: see LICENSE file
 # @file: extras/pfd.nim
