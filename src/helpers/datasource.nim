@@ -41,6 +41,10 @@ type
 
 proc getSource*(src: string): DataSource {.inline.} =
     when not defined(WEB):
+        # TODO(Helpers/datasource) could we "download" files in Web mode?
+        #  perhaps using Fetch?
+        #  see: https://nim-lang.org/docs/jsfetch.html
+        #  labels: library, enhancement, web
         when defined(PORTABLE):
             if SymExists("_portable") and GetSym("_portable").d.hasKey("embed") and GetSym("_portable").d["embed"].d.hasKey(src):
                 return (GetSym("_portable").d["embed"].d[src].s, FileData)
