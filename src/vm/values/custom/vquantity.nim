@@ -88,11 +88,11 @@ type
 # Compile-Time Warnings
 #=======================================
 
-when sizeof(Quantity) > 48:
-    {.warning: "Quantity's inner object is large which will impact performance".}
-    {.hints: on.}
-    {.hint: "Quantity's inner type is currently " & $sizeof(Quantity) & ".".}
-    {.hints: off.}
+# when sizeof(Quantity) > 48:
+#     {.warning: "Quantity's inner object is large which will impact performance".}
+#     {.hints: on.}
+#     {.hint: "Quantity's inner type is currently " & $sizeof(Quantity) & ".".}
+#     {.hints: off.}
 
 #=======================================
 # Constants
