@@ -343,10 +343,9 @@ template normalIntegerPow*(x, y: int): untyped =
         var res: int
         if unlikely(powIntWithOverflow(x, y, res)):
             when defined(GMP):
-                when defined(WEB):
-                    newInteger(big(x) ** big(y))
-                else:
-                    newInteger(pow(x, culong(y)))
+                newInteger(pow(x, culong(y)))
+            elif defined(WEB):
+                newInteger(big(x) ** big(y))
             else:
                 RuntimeError_IntegerOperationOverflow("pow", $x, $y)
                 VNULL
@@ -361,10 +360,9 @@ template normalIntegerPowI*(x: var Value, y: int): untyped =
     if likely(y >= 0):
         if unlikely(powIntWithOverflowI(x.i, y, x.i)):
             when defined(GMP):
-                when defined(WEB):
-                    x = newInteger(big(x.i) ** big(y))
-                else:
-                    x = newInteger(pow(x.i, culong(y)))
+                x = newInteger(pow(x.i, culong(y)))
+            elif defined(WEB):
+                x = newInteger(big(x.i) ** big(y))  
             else:
                 RuntimeError_IntegerOperationOverflow("pow", $x.i, $y)
     else:
