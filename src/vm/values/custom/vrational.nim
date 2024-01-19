@@ -21,15 +21,7 @@ import hashes, math, strformat
 
 import helpers/intrinsics
 
-#=======================================
-# Constants
-#=======================================
-
-const
-    GmpAvailable = defined(GMP)
-
-
-when GmpAvailable:
+when not defined(NOGMP):
     import helpers/bignums
 
 #=======================================
@@ -52,7 +44,7 @@ type
                 num*: int
                 den*: int
             of BigRational:
-                when GmpAvailable:
+                when not defined(NOGMP):
                     br*: Rat
 
 #=======================================
@@ -60,7 +52,7 @@ type
 #=======================================
 
 func toRational*(num, den: int): VRational {.inline.}
-when GmpAvailable:
+when not defined(NOGMP):
     func toBigRational*(x: int | Int | float): VRational
 
 func `/`*(x, y: VRational): VRational
@@ -91,7 +83,7 @@ func reduce(x: var VRational) =
         raise newException(DivByZeroDefect, "division by zero")
 
 func simplifyRational(x: var VRational) =
-    when GmpAvailable:
+    when not defined(NOGMP):
         if x.rKind == BigRational and canBeSimplified(x.br):
             x = toRational(getInt(numerator(x.br)), getInt(denominator(x.br)))
 
@@ -100,7 +92,7 @@ func canBeCoerced*(x: VRational): bool =
         let quotient = x.num / x.den
         return quotient == round(quotient, 10)
     else:
-        when GmpAvailable:
+        when not defined(NOGMP):
             let quotient = float64(float(toCDouble(numerator(x.br)) / toCDouble(denominator(x.br))))
             return quotient == round(quotient, 10)
 
@@ -110,21 +102,21 @@ func isZero*(x: VRational): bool =
     if x.rKind == NormalRational:
         result = x.num == 0
     else:
-        when GmpAvailable:
+        when not defined(NOGMP):
             result = numerator(x.br) == 0
 
 func isNegative*(x: VRational): bool =
     if x.rKind == NormalRational:
         result = x.num < 0
     else:
-        when GmpAvailable:
+        when not defined(NOGMP):
             result = numerator(x.br) < 0
 
 func isPositive*(x: VRational): bool =
     if x.rKind == NormalRational:
         result = x.num > 0
     else:
-        when GmpAvailable:
+        when not defined(NOGMP):
             result = numerator(x.br) > 0
 
 #=======================================
@@ -155,7 +147,7 @@ func copyRational*(rat: VRational): VRational {.inline.} =
             den: rat.den
         )
     else:
-        when GmpAvailable:
+        when not defined(NOGMP):
             result = VRational(
                 rKind: BigRational,
                 br: copyRat(rat.br)
@@ -200,7 +192,7 @@ func toRational*(x: float): VRational =
             break # division by zero
         x = 1 / (x - float(ai))
         if x > float(high(int32)): 
-            when GmpAvailable:
+            when not defined(NOGMP):
                 if m11 == 0 or m21 == 0: 
                     return toBigRational(initial)
                 else: 
@@ -218,7 +210,7 @@ func toRational*(x: int, y: float): VRational =
     # create VRational from numerator and denominator (int and float)
     result = toRational(x) / toRational(y)
 
-when GmpAvailable:
+when not defined(NOGMP):
     func toRational*(x: Int): VRational = 
         # create VRational from big Int
         result = VRational(
@@ -289,14 +281,14 @@ func toFloat*(x: VRational): float =
     if x.rKind == NormalRational:
         result = x.num / x.den
     else:
-        when GmpAvailable:
+        when not defined(NOGMP):
             result = toCDouble(x.br)
 
 func toInt*(x: VRational): int =
     if x.rKind == NormalRational:
         result = x.num div x.den
     else:
-        when GmpAvailable:
+        when not defined(NOGMP):
             if canBeSimplified(x.br):
                 result = getInt(numerator(x.br)) div getInt(denominator(x.br))
             else:
@@ -321,13 +313,13 @@ func `+`*(x, y: VRational): VRational =
                 result.den = common
                 reduce(result)
             do:
-                when GmpAvailable:
+                when not defined(NOGMP):
                     result = toBigRational(x) + y
         else:
-            when GmpAvailable:
+            when not defined(NOGMP):
                 result = toBigRational(x) + y
     else:
-        when GmpAvailable:
+        when not defined(NOGMP):
             if y.rKind == NormalRational:
                 result = x + toBigRational(y)
             else:
@@ -349,10 +341,10 @@ func `+`*(x: VRational, y: int): VRational =
             result.den = x.den
             reduce(result)
         do:
-            when GmpAvailable:
+            when not defined(NOGMP):
                 result = toBigRational(x) + y
     else:
-        when GmpAvailable:
+        when not defined(NOGMP):
             result = x + toBigRational(y)
 
 func `+`*(x: VRational, y: float): VRational = 
@@ -363,7 +355,7 @@ func `+`*(x: int, y: VRational): VRational {.inline.} =
     # add int and VRational
     y + x
 
-when GmpAvailable:
+when not defined(NOGMP):
     func `+`*(x: VRational, y: Int): VRational =
         # add VRational and Int
         x + toRational(y)
@@ -385,13 +377,13 @@ func `+=`*(x: var VRational, y: VRational) =
                 x.den = common
                 reduce(x)
             do:
-                when GmpAvailable:
+                when not defined(NOGMP):
                     x = toBigRational(x) + y
         else:
-            when GmpAvailable:
+            when not defined(NOGMP):
                 x = toBigRational(x) + y
     else:
-        when GmpAvailable:
+        when not defined(NOGMP):
             if y.rKind == NormalRational:
                 x += toBigRational(y)
             else:
@@ -406,17 +398,17 @@ func `+=`*(x: var VRational, y: int) =
             tryOp: mulIntWithOverflow(y, x.den, m)
             tryOp: addIntWithOverflowI(x.num, m, x.num)
         do:
-            when GmpAvailable:
+            when not defined(NOGMP):
                 x = toBigRational(x) + y
     else:
-        when GmpAvailable:
+        when not defined(NOGMP):
             x += toBigRational(y)
 
 func `+=`*(x: var VRational, y: float) =
     # add VRational and float, in-place
     x += toRational(y)
 
-when GmpAvailable:
+when not defined(NOGMP):
     func `+=`*(x: var VRational, y: Int) =
         # add VRational and Int, in-place
         x += toRational(y)
@@ -430,7 +422,7 @@ func `-`*(x: VRational): VRational =
             den: x.den
         )
     else:
-        when GmpAvailable:
+        when not defined(NOGMP):
             result = VRational(
                 rKind: BigRational,
                 br: neg(x.br)
@@ -451,13 +443,13 @@ func `-`*(x, y: VRational): VRational =
                 result.den = common
                 reduce(result)
             do:
-                when GmpAvailable:
+                when not defined(NOGMP):
                     result = toBigRational(x) - y
         else:
-            when GmpAvailable:
+            when not defined(NOGMP):
                 result = toBigRational(x) - y
     else:
-        when GmpAvailable:
+        when not defined(NOGMP):
             if y.rKind == NormalRational:
                 result = x - toBigRational(y)
             else:
@@ -478,10 +470,10 @@ func `-`*(x: VRational, y: int): VRational =
             tryOp: subIntWithOverflow(x.num, m, result.num)
             result.den = x.den
         do:
-            when GmpAvailable:
+            when not defined(NOGMP):
                 result = toBigRational(x) - y
     else:
-        when GmpAvailable:
+        when not defined(NOGMP):
             result = x - toBigRational(y)
 
 func `-`*(x: VRational, y: float): VRational = 
@@ -500,13 +492,13 @@ func `-`*(x: int, y: VRational): VRational =
             tryOp: subIntWithOverflow(m, y.num, result.num)
             result.den = y.den
         do:
-            when GmpAvailable:
+            when not defined(NOGMP):
                 result = x - toBigRational(y)
     else:
-        when GmpAvailable:
+        when not defined(NOGMP):
             result = toBigRational(x) - y
 
-when GmpAvailable:
+when not defined(NOGMP):
     func `-`*(x: VRational, y: Int): VRational =
         # subtract Int from VRational
         x - toRational(y)
@@ -528,13 +520,13 @@ func `-=`*(x: var VRational, y: VRational) =
                 x.den = common
                 reduce(x)
             do:
-                when GmpAvailable:
+                when not defined(NOGMP):
                     x = toBigRational(x) - y
         else:
-            when GmpAvailable:
+            when not defined(NOGMP):
                 x = toBigRational(x) - y
     else:
-        when GmpAvailable:
+        when not defined(NOGMP):
             if y.rKind == NormalRational:
                 x -= toBigRational(y)
             else:
@@ -549,17 +541,17 @@ func `-=`*(x: var VRational, y: int) =
             tryOp: mulIntWithOverflow(y, x.den, m)
             tryOp: subIntWithOverflowI(x.num, m, x.num)
         do:
-            when GmpAvailable:
+            when not defined(NOGMP):
                 x = toBigRational(x) - y
     else:
-        when GmpAvailable:
+        when not defined(NOGMP):
             x -= toBigRational(y)
 
 func `-=`*(x: var VRational, y: float) =
     # subtract float from VRational, in-place
     x -= toRational(y)
 
-when GmpAvailable:
+when not defined(NOGMP):
     func `-=`*(x: var VRational, y: Int) =
         # subtract Int from VRational, in-place
         x -= toRational(y)
@@ -577,13 +569,13 @@ func `*`*(x, y: VRational): VRational =
                 tryOp: mulIntWithOverflow(x.den, y.den, result.den)
                 reduce(result)
             do:
-                when GmpAvailable:
+                when not defined(NOGMP):
                     result = toBigRational(x) * y
         else:
-            when GmpAvailable:
+            when not defined(NOGMP):
                 result = toBigRational(x) * y
     else:
-        when GmpAvailable:
+        when not defined(NOGMP):
             if y.rKind == NormalRational:
                 result = x * toBigRational(y)
             else:
@@ -603,10 +595,10 @@ func `*`*(x: VRational, y: int): VRational =
             result.den = x.den
             reduce(result)
         do:
-            when GmpAvailable:
+            when not defined(NOGMP):
                 result = toBigRational(x) * y
     else:
-        when GmpAvailable:
+        when not defined(NOGMP):
             result = x * toBigRational(y)
 
 func `*`*(x: VRational, y: float): VRational = 
@@ -621,7 +613,7 @@ func `*`*(x: int, y: VRational): VRational {.inline.} =
     # multiply int by VRational
     y * x
 
-when GmpAvailable:
+when not defined(NOGMP):
     func `*`*(x: VRational, y: Int): VRational =
         # multiply VRational by Int
         x * toRational(y)
@@ -645,13 +637,13 @@ func `*=`*(x: var VRational, y: VRational) =
 
                 reduce(x)
             do:
-                when GmpAvailable:
+                when not defined(NOGMP):
                     x = toBigRational(x) * y
         else:
-            when GmpAvailable:
+            when not defined(NOGMP):
                 x = toBigRational(x) * y
     else:
-        when GmpAvailable:
+        when not defined(NOGMP):
             if y.rKind == NormalRational:
                 x *= toBigRational(y)
             else:
@@ -665,17 +657,17 @@ func `*=`*(x: var VRational, y: int) =
             tryOp: mulIntWithOverflowI(x.num, y, x.num)
             reduce(x)
         do:
-            when GmpAvailable:
+            when not defined(NOGMP):
                 x = toBigRational(x) * y
     else:
-        when GmpAvailable:
+        when not defined(NOGMP):
             x *= toBigRational(y)
 
 func `*=`*(x: var VRational, y: float) = 
     # multiply VRational by float, in-place
     x *= toRational(y)
 
-when GmpAvailable:
+when not defined(NOGMP):
     func `*=`*(x: var VRational, y: Int) =
         # multiply VRational by Int, in-place
         x *= toRational(y)
@@ -693,13 +685,13 @@ func `/`*(x, y: VRational): VRational =
                 tryOp: mulIntWithOverflow(x.den, y.num, result.den)
                 reduce(result)
             do:
-                when GmpAvailable:
+                when not defined(NOGMP):
                     result = toBigRational(x) / y
         else:
-            when GmpAvailable:
+            when not defined(NOGMP):
                 result = toBigRational(x) / y
     else:
-        when GmpAvailable:
+        when not defined(NOGMP):
             if y.rKind == NormalRational:
                 result = x / toBigRational(y)
             else:
@@ -719,10 +711,10 @@ func `/`*(x: VRational, y: int): VRational =
             tryOp: mulIntWithOverflow(x.den, y, result.den)
             reduce(result)
         do:
-            when GmpAvailable:
+            when not defined(NOGMP):
                 result = toBigRational(x) / y
     else:
-        when GmpAvailable:
+        when not defined(NOGMP):
             result = x / toBigRational(y)
 
 func `/`*(x: int, y: VRational): VRational =
@@ -736,17 +728,17 @@ func `/`*(x: int, y: VRational): VRational =
             result.den = y.num
             reduce(result)
         do:
-            when GmpAvailable:
+            when not defined(NOGMP):
                 result = toBigRational(x) / y
     else:
-        when GmpAvailable:
+        when not defined(NOGMP):
             result = toBigRational(x) / y
 
 func `/`*(x: VRational, y: float): VRational = 
     # divide VRational by float
     x / toRational(y)
 
-when GmpAvailable:
+when not defined(NOGMP):
     func `/`*(x: VRational, y: Int): VRational =
         # divide VRational by Int
         x / toRational(y)
@@ -768,13 +760,13 @@ func `/=`*(x: var VRational, y: VRational) =
                 x.den = den
                 reduce(x)
             do:
-                when GmpAvailable:
+                when not defined(NOGMP):
                     x = toBigRational(x) / y
         else:
-            when GmpAvailable:
+            when not defined(NOGMP):
                 x = toBigRational(x) / y
     else:
-        when GmpAvailable:
+        when not defined(NOGMP):
             if y.rKind == NormalRational:
                 x /= toBigRational(y)
             else:
@@ -786,14 +778,14 @@ func `/=`*(x: var VRational, y: int) =
         x.den *= y
         reduce(x)
     else:
-        when GmpAvailable:
+        when not defined(NOGMP):
             x /= toBigRational(y)
 
 func `/=`*(x: var VRational, y: float) = 
     # divide VRational by float, in-place
     x /= toRational(y)
 
-when GmpAvailable:
+when not defined(NOGMP):
     func `/=`*(x: var VRational, y: Int) =
         # divide VRational by Int, in-place
         x /= toRational(y)
@@ -835,10 +827,10 @@ func `^`*(x: VRational, y: int): VRational =
                 tryOp: powIntWithOverflow(x.num, y, result.num)
                 tryOp: powIntWithOverflow(x.den, y, result.den)
         do:
-            when GmpAvailable:
+            when not defined(NOGMP):
                 result = toBigRational(x) ^ y
     else:
-        when GmpAvailable:
+        when not defined(NOGMP):
             result = VRational(
                 rKind: BigRational,
                 br: x.br ^ y
@@ -850,7 +842,7 @@ func `^`*(x: VRational, y: float): VRational =
         let res = pow(toFloat(x), y)
         result = toRational(res)
     else:
-        when GmpAvailable:
+        when not defined(NOGMP):
             result = VRational(
                 rKind: BigRational,
                 br: x.br ^ y
@@ -866,10 +858,10 @@ func cmp*(x, y: VRational): int =
         if y.rKind == NormalRational:
             result = (x - y).num
         else:
-            when GmpAvailable:
+            when not defined(NOGMP):
                 result = cmp(toBigRational(x), y)
     else:
-        when GmpAvailable:
+        when not defined(NOGMP):
             if y.rKind == NormalRational:
                 result = cmp(x, toBigRational(y))
             else:
@@ -882,10 +874,10 @@ func `<`*(x, y: VRational): bool =
         if y.rKind == NormalRational:
             result = (x - y).num < 0
         else:
-            when GmpAvailable:
+            when not defined(NOGMP):
                 result = toBigRational(x) < y
     else:
-        when GmpAvailable:
+        when not defined(NOGMP):
             if y.rKind == NormalRational:
                 result = x < toBigRational(y)
             else:
@@ -898,10 +890,10 @@ func `<=`*(x, y: VRational): bool =
         if y.rKind == NormalRational:
             result = (x - y).num <= 0
         else:
-            when GmpAvailable:
+            when not defined(NOGMP):
                 result = toBigRational(x) <= y
     else:
-        when GmpAvailable:
+        when not defined(NOGMP):
             if y.rKind == NormalRational:
                 result = x <= toBigRational(y)
             else:
@@ -915,10 +907,10 @@ func `==`*(x, y: VRational): bool =
         if y.rKind == NormalRational:
             result = (x - y).num == 0
         else:
-            when GmpAvailable:
+            when not defined(NOGMP):
                 result = toBigRational(x) == y
     else:
-        when GmpAvailable:
+        when not defined(NOGMP):
             if y.rKind == NormalRational:
                 result = x == toBigRational(y)
             else:
@@ -928,7 +920,7 @@ func `==`*(x: VRational, y: int): bool =
     if x.rKind == NormalRational:
         return (x.den == 1) and (x.num == y)
     else:
-        when GmpAvailable:
+        when not defined(NOGMP):
             return (denominator(x.br)==1) and (numerator(x.br)==y)
 
 func `==`*(x: int, y: VRational): bool {.inline.} =
@@ -940,7 +932,7 @@ func `==`*(x: VRational, y: float): bool =
 func `==`*(x: float, y: VRational): bool {.inline.} =
     y == x
 
-when GmpAvailable:
+when not defined(NOGMP):
     func `==`*(x: VRational, y: Int): bool =
         if x.rKind == NormalRational:
             return (x.den == 1) and (x.num == y)
@@ -962,7 +954,7 @@ func `<`*(x: VRational, y: float): bool =
 func `<`*(x: float, y: VRational): bool =
     return x < toFloat(y)
 
-when GmpAvailable:
+when not defined(NOGMP):
     func `<`*(x: VRational, y: Int): bool =
         return toFloat(x) < toCDouble(y)
 
@@ -981,7 +973,7 @@ func `>`*(x: VRational, y: float): bool =
 func `>`*(x: float, y: VRational): bool =
     return x > toFloat(y)
 
-when GmpAvailable:
+when not defined(NOGMP):
     func `>`*(x: VRational, y: Int): bool =
         return toFloat(x) > toCDouble(y)
 
@@ -1010,7 +1002,7 @@ func reciprocal*(x: VRational): VRational =
         else:
             raise newException(DivByZeroDefect, "division by zero")
     else:
-        when GmpAvailable:
+        when not defined(NOGMP):
             result.rKind = BigRational
             result.br = inv(x.br)
 
@@ -1023,7 +1015,7 @@ func abs*(x: VRational): VRational =
             den: abs(x.den)
         )
     else:
-        when GmpAvailable:
+        when not defined(NOGMP):
             result = VRational(
                 rKind: BigRational,
                 br: abs(x.br)
@@ -1038,7 +1030,7 @@ func neg*(x: VRational): VRational =
             den: x.den
         )
     else:
-        when GmpAvailable:
+        when not defined(NOGMP):
             result = VRational(
                 rKind: BigRational,
                 br: neg(x.br)
@@ -1084,7 +1076,7 @@ func hash*(x: VRational): Hash =
         h = h !& hash(copy.den)
         result = !$h
     else:
-        when GmpAvailable:
+        when not defined(NOGMP):
             result = hash(x.br[])
 
 #=======================================
@@ -1099,7 +1091,7 @@ func codify*(x: VRational): string =
         else:
             result = fmt("to :rational [{x.num} {x.den}]")
     else:
-        when GmpAvailable:
+        when not defined(NOGMP):
             let num = numerator(x.br)
             let den = denominator(x.br)
             if num < 0:
@@ -1112,7 +1104,7 @@ func `$`*(x: VRational): string =
     if x.rKind == NormalRational:
         result = $x.num & "/" & $x.den
     else:
-        when GmpAvailable:
+        when not defined(NOGMP):
             result = $x.br
 
 func stringify*(x: VRational, mode: static RationalMode = RegularRational): string =
@@ -1126,7 +1118,7 @@ func stringify*(x: VRational, mode: static RationalMode = RegularRational): stri
             else:
                 result = (toFloat(x)).formatFloat(ffDecimal, 1)
         else:
-            when GmpAvailable:
+            when not defined(NOGMP):
                 result = (toFloat(x)).formatFloat(ffDecimal, 1)
     else:
         if x.rKind == NormalRational:
@@ -1138,7 +1130,7 @@ func stringify*(x: VRational, mode: static RationalMode = RegularRational): stri
                 else:
                     result = $x.num & "/" & $x.den
         else:
-            when GmpAvailable:
+            when not defined(NOGMP):
                 if x.br.denominator == 1:
                     result = $x.br.numerator
                 else:
