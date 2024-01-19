@@ -82,8 +82,8 @@ func reduce(x: var VRational) =
     else:
         raise newException(DivByZeroDefect, "division by zero")
 
-func simplifyRational(x: var VRational) =
-    when defined(GMP):
+when defined(GMP):
+    func simplifyRational(x: var VRational) =
         if x.rKind == BigRational and canBeSimplified(x.br):
             x = toRational(getInt(numerator(x.br)), getInt(denominator(x.br)))
 
