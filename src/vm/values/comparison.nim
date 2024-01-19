@@ -49,11 +49,12 @@ proc `==`*(x: ValueArray, y: ValueArray): bool {.inline, enforceNoRaises.} =
         if not (child==y[i]): return false
     return true
 
-template toBig(v: untyped): untyped =
-    when defined(WEB):
-        big(v)
-    else:
-        v
+when defined(GMP):
+    template toBig(v: untyped): untyped =
+        when defined(WEB):
+            big(v)
+        else:
+            v
 
 #=======================================
 # Methods
