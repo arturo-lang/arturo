@@ -87,8 +87,10 @@ proc `$`*(v: Value): string {.inline.} =
         of Integer      : 
             if likely(v.iKind==NormalInteger): return $(v.i)
             else:
-                when defined(WEB) or defined(GMP): 
+                when defined(GMP): 
                     return $(v.bi)
+                elif defined(WEB):
+                    return ($(v.bi)).replace("n","")
         of Floating     : 
             #if v.fKind==NormalFloating: 
             if v.f==Inf: return "∞"
