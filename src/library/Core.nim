@@ -26,9 +26,9 @@ import algorithm, hashes, options
 
 import helpers/datasource
 when not defined(WEB):
-    import os, sequtils, sugar
     import helpers/ffi
     when not defined(MINI):
+        import os, sequtils, sugar
         import helpers/packager
 
 import vm/lib
