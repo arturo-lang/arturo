@@ -31,8 +31,11 @@ import os, strutils, tables, times, system
 import helpers/system
 import helpers/terminal
 
-import vm/[parse,values/value]
-import vm/values/custom/[vlogical]
+import vm/values/value
+
+when not defined(WEB):
+    import vm/parse
+    import vm/values/custom/[vlogical]
 
 #=======================================
 # Globals
