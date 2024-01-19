@@ -255,7 +255,7 @@ template normalIntegerMul*(x, y: int): untyped =
     ## and return result
     var res: int
     if unlikely(mulIntWithOverflow(x, y, res)):
-        when defined(GMP):
+        when defined(GMP) or defined(WEB):
             newInteger(toNewBig(x) * toBig(y))
         else:
             RuntimeError_IntegerOperationOverflow("mul", $x, $y)
@@ -267,7 +267,7 @@ template normalIntegerMulI*(x: var Value, y: int): untyped =
     ## multiply two normal Integer values, checking for overflow
     ## and set result in-place
     if unlikely(mulIntWithOverflowI(x.i, y, x.i)):
-        when defined(GMP):
+        when defined(GMP) or defined(WEB):
             x = newInteger(toNewBig(x.i) * toBig(y))
         else:
             RuntimeError_IntegerOperationOverflow("mul", $x.i, $y)
@@ -277,7 +277,7 @@ template normalIntegerNeg*(x: int): untyped =
     ## and return result
     var res: int
     if unlikely(mulIntWithOverflow(x, -1, res)):
-        when defined(GMP):
+        when defined(GMP) or defined(WEB):
             newInteger(toNewBig(x) * toBig(-1))
         else:
             RuntimeError_IntegerOperationOverflow("neg", $x, "")
@@ -289,7 +289,7 @@ template normalIntegerNegI*(x: var Value): untyped =
     ## negate a normal Integer value, checking for overflow
     ## and set result in-place
     if unlikely(mulIntWithOverflowI(x.i, -1, x.i)):
-        when defined(GMP):
+        when defined(GMP) or defined(WEB):
             x = newInteger(toNewBig(x.i) + toBig(-1))
         else:
             RuntimeError_IntegerOperationOverflow("neg", $x.i, "")
