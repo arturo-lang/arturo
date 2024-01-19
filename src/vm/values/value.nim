@@ -1148,9 +1148,15 @@ func consideredEqual*(x: Value, y: Value): bool {.inline,enforceNoRaises.} =
         else:
             return false
 
-func hash*(v: Value): Hash {.inline.}=
+func hash*(v: Value): Hash {.inline.} =
     ## calculate the hash for given value
+    # TODO(VM/values/value) update when Nim bug is resolved
+    #  see: https://github.com/nim-lang/Nim/issues/23236
+    when defined(WEB):
+        var v = v
+    
     result = hash(v.kind)
+    
     case v.kind:
         of Null         : discard
         of Logical      : result = result !& cast[Hash](v.b)
