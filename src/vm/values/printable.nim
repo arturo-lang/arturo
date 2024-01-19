@@ -87,8 +87,10 @@ proc `$`*(v: Value): string {.inline.} =
         of Integer      : 
             if likely(v.iKind==NormalInteger): return $(v.i)
             else:
-                when defined(WEB) or defined(GMP): 
+                when defined(GMP): 
                     return $(v.bi)
+                elif defined(WEB):
+                    return ($(v.bi)).replace("n","")
         of Floating     : 
             #if v.fKind==NormalFloating: 
             if v.f==Inf: return "∞"
@@ -574,6 +576,10 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
         of Color        : result &= $(v.l)
         of Date         : result &= fmt("to :date \"{v.eobj}\"")
 
+        # TODO(VM/values/printable) `codify` doesn't produce correct output for Inline blocks
+        #  we can check this via `as.code [(1 2)[3 4]]`
+        #  Block values work fine; Inline values show up as blocks
+        #  labels: vm, bug
         of Inline, Block:
             if not (pretty and unwrapped and level==0):
                 if v.kind==Inline: result &= "("
