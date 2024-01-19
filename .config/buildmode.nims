@@ -19,7 +19,6 @@ proc safeBuildConfig() =
 
 proc webBuildConfig() =
     --define:WEB
-    --verbosity:3
     noDepencenciesConfig()
 
 proc fullBuildConfig() =

@@ -31,8 +31,11 @@ import os, strutils, tables, times, system
 import helpers/system
 import helpers/terminal
 
-import vm/[parse,values/value]
-import vm/values/custom/[vlogical]
+import vm/values/value
+
+when not defined(WEB):
+    import vm/parse
+    import vm/values/custom/[vlogical]
 
 #=======================================
 # Globals
@@ -61,15 +64,16 @@ proc getCmdlineArgumentArray*(): Value =
     ## a Block value
     Arguments
 
-proc parseCmdlineValue(v: string): Value =
-    if v=="" or v=="true" or v=="on": return newLogical(True)
-    elif v=="false" or v=="off": return newLogical(False)
-    else:
-        try:
-            discard parseFloat(v)
-            return doParse(v, isFile=false).a[0]
-        except CatchableError:
-            return newString(v)
+when not defined(WEB):
+    proc parseCmdlineValue(v: string): Value =
+        if v=="" or v=="true" or v=="on": return newLogical(True)
+        elif v=="false" or v=="off": return newLogical(False)
+        else:
+            try:
+                discard parseFloat(v)
+                return doParse(v, isFile=false).a[0]
+            except CatchableError:
+                return newString(v)
 
 # TODO(Env\parseCmdlineArguments) verify it's working right
 #  labels: vm,library,language,unit-test

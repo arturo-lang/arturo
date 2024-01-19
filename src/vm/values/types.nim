@@ -24,8 +24,11 @@ when defined(GMP):
     import helpers/bignums
 
 import vm/opcodes
-import vm/values/custom/[vbinary, vcolor, vcomplex, verror, vlogical, vquantity, vrange, vrational, vregex, vsocket, vsymbol, vversion]
+import vm/values/custom/[vbinary, vcolor, vcomplex, verror, vlogical, vquantity, vrange, vrational, vregex, vsymbol, vversion]
 import vm/values/flags
+
+when not defined(WEB):
+    import vm/values/custom/[vsocket]
 
 #=======================================
 # Types
@@ -367,11 +370,11 @@ var
 # Compile-Time Warnings
 #=======================================
 
-when sizeof(ValueObj) > 64: # At time of writing it was '64', 8 - 64 bit integers seems like a good warning site? Can always go smaller
+when sizeof(ValueObj) > 64:
     type
         FuncObj = typeof(VFunction()[])
 
-    {.warning: "'Value's inner object is large which will impact performance".}
+    {.warning: "Value's inner object is large which will impact performance".}
     {.hints: on.} # Apparently we cannot disable just `Name` hints?
     {.hint: "Value's inner type is currently " & $sizeof(ValueObj) & ".".}
     {.hint: "Function's inner type is currently " & $sizeof(FuncObj) & ".".}

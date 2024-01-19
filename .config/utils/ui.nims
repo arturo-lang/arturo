@@ -69,7 +69,7 @@ proc getLogo*(): seq[string] =
         r"                    \__,_|_|   \__|\__,_|_|  \___/                   ",
         r"{styles.clear}{styles.bold}                                          ".fmt,
         r"                     Arturo Programming Language{styles.clear}       ".fmt,
-        r"                      (c)2023 Yanis Zafirópulos                      ",
+        r"                      (c)2024 Yanis Zafirópulos                      ",
         r"                                                                     ",
     ]
 
