@@ -35,7 +35,7 @@ import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vquantity, vrange,
 #=======================================
 
 const
-    GMP = defined(GMP)
+    BignumSupport = defined(GMP) or defined(WEB)
 
 #=======================================
 # Pragmas
@@ -167,7 +167,7 @@ template normalIntegerAdd*(x, y: int): untyped =
     ## and return result
     var res: int
     if unlikely(addIntWithOverflow(x, y, res)):
-        when defined(GMP) or defined(WEB):
+        when BignumSupport:
             newInteger(toNewBig(x) + toBig(y))
         else:
             RuntimeError_IntegerOperationOverflow("add", $x, $y)
@@ -179,7 +179,7 @@ template normalIntegerAddI*(x: var Value, y: int): untyped =
     ## add two normal Integer values, checking for overflow
     ## and set result in-place
     if unlikely(addIntWithOverflowI(x.i, y, x.i)):
-        when defined(GMP) or defined(WEB):
+        when BignumSupport:
             x = newInteger(toNewBig(x.i) + toBig(y))
         else:
             RuntimeError_IntegerOperationOverflow("add", $x.i, $y)
@@ -189,7 +189,7 @@ template normalIntegerInc*(x: int): untyped =
     ## and return result
     var res: int
     if unlikely(addIntWithOverflow(x, 1, res)):
-        when defined(GMP) or defined(WEB):
+        when BignumSupport:
             newInteger(toNewBig(x) + toBig(1))
         else:
             RuntimeError_IntegerOperationOverflow("inc", $x, "")
@@ -201,7 +201,7 @@ template normalIntegerIncI*(x: var Value): untyped =
     ## increment a normal Integer value by 1, checking for overflow
     ## and set result in-place
     if unlikely(addIntWithOverflowI(x.i, 1, x.i)):
-        when defined(GMP) or defined(WEB):
+        when BignumSupport:
             x = newInteger(toNewBig(x.i) + toBig(1))
         else:
             RuntimeError_IntegerOperationOverflow("inc", $x.i, "")
@@ -211,7 +211,7 @@ template normalIntegerSub*(x, y: int): untyped =
     ## and return result
     var res: int
     if unlikely(subIntWithOverflow(x, y, res)):
-        when defined(GMP) or defined(WEB):
+        when BignumSupport:
             newInteger(toNewBig(x) - toBig(y))
         else:
             RuntimeError_IntegerOperationOverflow("sub", $x, $y)
@@ -223,7 +223,7 @@ template normalIntegerSubI*(x: var Value, y: int): untyped =
     ## subtract two normal Integer values, checking for overflow
     ## and set result in-place
     if unlikely(subIntWithOverflowI(x.i, y, x.i)):
-        when defined(GMP) or defined(WEB):
+        when BignumSupport:
             x = newInteger(toNewBig(x.i) - toBig(y))
         else:
             RuntimeError_IntegerOperationOverflow("sub", $x.i, $y)
@@ -233,7 +233,7 @@ template normalIntegerDec*(x: int): untyped =
     ## and return result
     var res: int
     if unlikely(subIntWithOverflow(x, 1, res)):
-        when defined(GMP) or defined(WEB):
+        when BignumSupport:
             newInteger(toNewBig(x) - toBig(1))
         else:
             RuntimeError_IntegerOperationOverflow("dec", $x, "")
@@ -245,7 +245,7 @@ template normalIntegerDecI*(x: var Value): untyped =
     ## decrement a normal Integer value by 1, checking for overflow
     ## and set result in-place
     if unlikely(subIntWithOverflowI(x.i, 1, x.i)):
-        when defined(GMP) or defined(WEB):
+        when BignumSupport:
             x = newInteger(toNewBig(x.i) - toBig(1))
         else:
             RuntimeError_IntegerOperationOverflow("dec", $x.i, "")
@@ -255,7 +255,7 @@ template normalIntegerMul*(x, y: int): untyped =
     ## and return result
     var res: int
     if unlikely(mulIntWithOverflow(x, y, res)):
-        when defined(GMP) or defined(WEB):
+        when BignumSupport:
             newInteger(toNewBig(x) * toBig(y))
         else:
             RuntimeError_IntegerOperationOverflow("mul", $x, $y)
@@ -267,7 +267,7 @@ template normalIntegerMulI*(x: var Value, y: int): untyped =
     ## multiply two normal Integer values, checking for overflow
     ## and set result in-place
     if unlikely(mulIntWithOverflowI(x.i, y, x.i)):
-        when defined(GMP) or defined(WEB):
+        when BignumSupport:
             x = newInteger(toNewBig(x.i) * toBig(y))
         else:
             RuntimeError_IntegerOperationOverflow("mul", $x.i, $y)
@@ -277,7 +277,7 @@ template normalIntegerNeg*(x: int): untyped =
     ## and return result
     var res: int
     if unlikely(mulIntWithOverflow(x, -1, res)):
-        when defined(GMP) or defined(WEB):
+        when BignumSupport:
             newInteger(toNewBig(x) * toBig(-1))
         else:
             RuntimeError_IntegerOperationOverflow("neg", $x, "")
@@ -289,7 +289,7 @@ template normalIntegerNegI*(x: var Value): untyped =
     ## negate a normal Integer value, checking for overflow
     ## and set result in-place
     if unlikely(mulIntWithOverflowI(x.i, -1, x.i)):
-        when defined(GMP) or defined(WEB):
+        when BignumSupport:
             x = newInteger(toNewBig(x.i) + toBig(-1))
         else:
             RuntimeError_IntegerOperationOverflow("neg", $x.i, "")
