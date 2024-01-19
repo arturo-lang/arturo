@@ -16,23 +16,20 @@
 # Libraries
 #=======================================
 
-import macros, math, sequtils, strscans, strutils, tables
+import macros, math, strscans, strutils, tables
 
 # yes, we are using the system's rational type, since
 # it's not GMP-based in any case, but only for the values
 # that can be encoded without the help of the GMP library
 when not defined(WEB):
     import std/rationals
+    import sequtils
 
 #=======================================
 # Types
 #=======================================
 when defined(WEB):
     type
-        Atom = tuple
-            kind: string
-            expo: int
-
         Quantity = int
 
         Constant = tuple
@@ -64,15 +61,19 @@ else:
 #=======================================
 
 var
-    baseUnits           {.compileTime.} : seq[string]
     properties          {.compileTime.} : OrderedTable[int64,string]
     propertyExamples    {.compileTime.} : OrderedTable[string,string]
     prefixes            {.compileTime.} : OrderedTable[string, tuple[sym: string, val: int]]
-    defs                {.compileTime.} : OrderedTable[string, Quantity]
+    
     units               {.compileTime.} : OrderedTable[string, string]
     unitDefinitions     {.compileTime.} : OrderedTable[string, string]
     constants           {.compileTime.} : OrderedTable[string,Constant]
     parsable            {.compileTime.} : OrderedTable[string, (string, string)]
+
+when not defined(WEB):
+    var
+        baseUnits           {.compileTime.} : seq[string]
+        defs                {.compileTime.} : OrderedTable[string, Quantity]
 
 #=======================================
 # Constants
