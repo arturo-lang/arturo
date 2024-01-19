@@ -167,7 +167,7 @@ template normalIntegerAdd*(x, y: int): untyped =
     ## and return result
     var res: int
     if unlikely(addIntWithOverflow(x, y, res)):
-        when defined(GMP):
+        when defined(GMP) or defined(WEB):
             newInteger(toNewBig(x) + toBig(y))
         else:
             RuntimeError_IntegerOperationOverflow("add", $x, $y)
@@ -179,7 +179,7 @@ template normalIntegerAddI*(x: var Value, y: int): untyped =
     ## add two normal Integer values, checking for overflow
     ## and set result in-place
     if unlikely(addIntWithOverflowI(x.i, y, x.i)):
-        when defined(GMP):
+        when defined(GMP) or defined(WEB):
             x = newInteger(toNewBig(x.i) + toBig(y))
         else:
             RuntimeError_IntegerOperationOverflow("add", $x.i, $y)
@@ -189,7 +189,7 @@ template normalIntegerInc*(x: int): untyped =
     ## and return result
     var res: int
     if unlikely(addIntWithOverflow(x, 1, res)):
-        when defined(GMP):
+        when defined(GMP) or defined(WEB):
             newInteger(toNewBig(x) + toBig(1))
         else:
             RuntimeError_IntegerOperationOverflow("inc", $x, "")
@@ -201,7 +201,7 @@ template normalIntegerIncI*(x: var Value): untyped =
     ## increment a normal Integer value by 1, checking for overflow
     ## and set result in-place
     if unlikely(addIntWithOverflowI(x.i, 1, x.i)):
-        when defined(GMP):
+        when defined(GMP) or defined(WEB):
             x = newInteger(toNewBig(x.i) + toBig(1))
         else:
             RuntimeError_IntegerOperationOverflow("inc", $x.i, "")
