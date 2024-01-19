@@ -88,10 +88,15 @@ type
 
     NodeObj = typeof(Node()[])
 
-# Benchmarking
-{.hints: on.}
-{.hint: "Node's inner type is currently " & $sizeof(NodeObj) & ".".}
-{.hints: off.}
+#=======================================
+# Compile-Time Warnings
+#=======================================
+
+when sizeof(NodeObj) > 40:
+    {.warning: "Node's inner object is large which will impact performance".}
+    {.hints: on.}
+    {.hint: "Node's inner type is currently " & $sizeof(NodeObj) & ".".}
+    {.hints: off.}
 
 #=======================================
 # Variables
@@ -100,8 +105,6 @@ type
 var
     TmpArities : Table[string,int8]
     ArrowBlock : seq[ValueArray]
-    OldChild  : Node
-    OldParent : Node
 
     PipeParent : Node
 
@@ -154,18 +157,22 @@ func addChildren*(node: Node, children: openArray[Node]) {.enforceNoRaises.} =
     for child in children:
         node.addChild(child)
 
-func deleteNode(node: Node) =
-    if not node.parent.isNil:
-        node.parent.children.delete(node.parent.children.find(node))
-        node.parent = nil
+# NOT USED
+
+# func deleteNode(node: Node) =
+#     if not node.parent.isNil:
+#         node.parent.children.delete(node.parent.children.find(node))
+#         node.parent = nil
 
 proc replaceNode(node: Node, newNode: Node) =
     newNode.parent = node.parent
     node.parent.children[node.parent.children.find(node)] = newNode
 
-proc addSibling(node: Node, newNode: Node) =
-    newNode.parent = node.parent
-    node.parent.children.insert(newNode, node.parent.children.find(node)+1)
+# NOT USED
+
+# proc addSibling(node: Node, newNode: Node) =
+#     newNode.parent = node.parent
+#     node.parent.children.insert(newNode, node.parent.children.find(node)+1)
 
 proc isLastChild(node: Node): bool =
     var j = node.parent.children.len-1
@@ -408,7 +415,7 @@ proc processBlock*(
     proc updateAritiesFromStore(target: var Node) {.enforceNoRaises.} =
         var child = target.children[0]
 
-        if child.op == opFunc:
+        if child.kind in CallNode and child.op == opFunc:
             var startIndex = 0
             while child.children[startIndex].kind == NewlineNode:
                 startIndex += 1
