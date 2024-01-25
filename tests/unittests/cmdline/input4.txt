@@ -1,0 +1,1 @@
+|relative "cmdline/inspectArgs.art"| one 2 three 4.0
