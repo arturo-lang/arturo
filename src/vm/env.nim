@@ -11,7 +11,7 @@
 #=======================================
 # Libraries
 #=======================================
-when not defined(WEB) and not defined(windows):
+when not defined(WEB):
     import parseopt, sequtils, sugar
 
 when not defined(WEB):
