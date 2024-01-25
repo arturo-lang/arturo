@@ -105,10 +105,6 @@ template requireBlockSize*(v: Value, expected: int, maxExpected: int = 0) =
 
 template requireValue*(v: Value, expected: set[ValueKind], position: int = 1, message: set[ValueKind] | string = {}) = 
     when not defined(PORTABLE):
-        # TODO(VM/lib) is `pre` throwing an error?
-        #  on one run of Nimlint this has trigger an error - supposedly:
-        #  https://github.com/arturo-lang/arturo/pull/1316#discussion_r1409652412
-        #  labels: vm, bug
         template pre(): untyped {.redefine.} = 
             when position == 2:
                 valueKind(x) & " "
