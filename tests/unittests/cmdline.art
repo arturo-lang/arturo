@@ -1,4 +1,4 @@
-loop select list relative "cmdline" 'loc -> contains? loc ".txt" 'test [
+loop sort select list relative "cmdline" 'loc -> contains? loc ".txt" 'test [
     inputArgs: read test
     print repeat "-" 70
     print [" test:" extract.filename test]
