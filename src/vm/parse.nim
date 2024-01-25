@@ -512,29 +512,28 @@ template parseNumber(p: var Parser) =
 
     var hasDot{.inject.} = false
 
-    if p.buf[pos] == Dot:
-        if p.buf[pos+1] != Dot:
-            hasDot = true
+    if p.buf[pos] == Dot and p.buf[pos+1] in Digits:
+        hasDot = true
 
-            add(p.value, Dot)
+        add(p.value, Dot)
+        inc(pos)
+
+        while p.buf[pos] in Digits:
+            add(p.value, p.buf[pos])
             inc(pos)
-    
-            while p.buf[pos] in Digits:
-                add(p.value, p.buf[pos])
-                inc(pos)
 
-            if p.buf[pos] == Dot:
-                if p.buf[pos+1] in Digits:
-                    add(p.value, Dot)
+        if p.buf[pos] == Dot:
+            if p.buf[pos+1] in Digits:
+                add(p.value, Dot)
+                inc(pos)
+                while p.buf[pos] in Digits:
+                    add(p.value, p.buf[pos])
                     inc(pos)
-                    while p.buf[pos] in Digits:
+                
+                if p.buf[pos] in {'+','-'}:
+                    while p.buf[pos] in SemVerExtra:
                         add(p.value, p.buf[pos])
                         inc(pos)
-                    
-                    if p.buf[pos] in {'+','-'}:
-                        while p.buf[pos] in SemVerExtra:
-                            add(p.value, p.buf[pos])
-                            inc(pos)
 
     p.bufpos = pos
 
