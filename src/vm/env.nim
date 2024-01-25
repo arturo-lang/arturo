@@ -84,7 +84,7 @@ proc parseCmdlineArguments*(): ValueDict =
     result = initOrderedTable[string,Value]()
     var values: ValueArray
 
-    when not defined(windows) and not defined(WEB):
+    when and not defined(WEB):
         if Arguments.a.len > 0:
             var p = initOptParser(Arguments.a.map((x)=>x.s))
             for kind, key, val in p.getopt():
