@@ -194,7 +194,16 @@ proc getOptionsForFunction(value: Value): seq[string] =
             leftSide = fmt"{fg(cyanColor)}.{attr[0]}"
             myLen += len(fmt"{fg(cyanColor)}")
         
-        result.add fmt"{alignLeft(leftSide, myLen)} {resetColor}-> {attr[1][1]}"
+        let lines = getShortData(attr[1][1])
+        result.add fmt"{alignLeft(leftSide, myLen)} {resetColor}-> {lines[0]}"
+
+        var spaceBefore: string
+        for _ in 0..((fmt"{alignLeft(leftSide, myLen)} -> ").len - 8):
+            spaceBefore &= " "
+
+        if lines.len > 1:
+            for line in lines[1..^1]:
+                result.add fmt"{spaceBefore}{line}"
 
 proc getReturnsForFunction(obj: ValueObj): seq[string] =
     let lines = getShortData(getTypeString(obj.val.info.returns))
