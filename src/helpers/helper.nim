@@ -105,9 +105,9 @@ proc printMultiData(
         printOneData("", item, resetColor, colorb)
 
 
-func getShortData(initial: string): seq[string] =
+func getShortData(initial: string, cutoff=50): seq[string] =
     result = @[initial]
-    if result[0].len > 50:
+    if result[0].len > cutoff:
         let parts  = result[0].splitWhitespace()
         let middle = (parts.len div 2)
         result = @[
@@ -129,7 +129,7 @@ proc getUsageForFunction(obj: ValueObj): seq[string] =
     let 
         args = toSeq(obj.val.info.args.pairs)
         templateName = fmt"{bold()}{obj.name}{resetColor}"
-        templateType = fmt"{fg(grayColor)}{getTypeString(args[0][1])}"
+        templateType = getShortData(getTypeString(args[0][1]))
         
     var 
         spaceBefore: string
@@ -139,15 +139,28 @@ proc getUsageForFunction(obj: ValueObj): seq[string] =
 
     if args[0][0] != "":
         let templateArg = fmt"{args[0][0]}" 
-        result.add fmt"{templateName} {templateArg} {templateType}"
+        result.add fmt "{templateName} {templateArg} {fg(grayColor)}{templateType[0]}{resetColor}"
+        if templateType.len > 1:
+            var extraSpaceBefore: string
+            for _ in 0..templateArg.len:
+                extraSpaceBefore &= " "
+            for tt in templateType[1..^1]:
+                result.add fmt"{spaceBefore}{extraSpaceBefore}{fg(grayColor)}{tt}{resetColor}"
     else:   
         result.add fmt"{templateName} {templateType}"
 
     for arg in args[1..^1]:
         let
             templateArg  = fmt"{arg[0]}"
-            templateType = fmt"{fg(grayColor)}{getTypeString(arg[1])}"
-        result.add fmt"{spaceBefore}{templateArg} {templateType}"
+            templateType = getShortData(getTypeString(arg[1]))
+        
+        result.add fmt "{spaceBefore}{templateArg} {fg(grayColor)}{templateType[0]}{resetColor}"
+        if templateType.len > 1:
+            var extraSpaceBefore: string
+            for _ in 0..templateArg.len:
+                extraSpaceBefore &= " "
+            for tt in templateType[1..^1]:
+                result.add fmt"{spaceBefore}{extraSpaceBefore}{fg(grayColor)}{tt}{resetColor}"
 
 
 proc getOptionsForFunction(value: Value): seq[string] =
