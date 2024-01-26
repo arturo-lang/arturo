@@ -196,6 +196,11 @@ proc getOptionsForFunction(value: Value): seq[string] =
         
         result.add fmt"{alignLeft(leftSide, myLen)} {resetColor}-> {attr[1][1]}"
 
+proc getReturnsForFunction(obj: ValueObj): seq[string] =
+    let lines = getShortData(getTypeString(obj.val.info.returns))
+
+    for line in lines:
+        result.add fmt"{fg(grayColor)}{line}{resetColor}"
 
 when defined(DOCGEN):
     
@@ -363,8 +368,8 @@ proc printFunction(obj: ValueObj) {. inline .} =
         printMultiData("options", opts, bold(greenColor))
         
     printEmptyLine()
-    printOneData("returns", getTypeString(obj.val.info.returns), 
-                 bold(greenColor), fg(grayColor))
+    printMultiData("returns", obj.getReturnsForFunction(), 
+                   bold(greenColor))
     printLine()
 
 
