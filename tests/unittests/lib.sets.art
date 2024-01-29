@@ -4,6 +4,20 @@
 topic: $[topic :string] -> print ~"\n>> |topic|"
 passed: $[] -> print "[+] passed!"
 
+topic « powerset
+do [
+    set: [1 2 3 4] 
+
+    a: new set
+    b: #[ b: new set ]
+
+    powerset 'a
+    powerset 'b\b
+    ensure -> a = b\b
+    passed
+
+]
+
 topic « union
 do [
     set: [1 2 3 4] 
