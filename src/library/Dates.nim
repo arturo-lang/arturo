@@ -107,7 +107,7 @@ proc defineLibrary*() =
         rule        = PrefixPrecedence,
         description = "get date before given one using interval",
         args        = {
-            "date"  : {Date}
+            "date"  : {Date, Literal, PathLiteral}
         },
         attrs       = {
             "nanoseconds"   : ({Integer},"subtract given number of nanoseconds"),
@@ -158,9 +158,9 @@ proc defineLibrary*() =
                 years=years
             )
             
-            if xKind==Literal:
-                ensureInPlace()
-                SetInPlace(newDate(InPlaced.eobj - ti))
+            if xKind in {Literal, PathLiteral}:
+                ensureInPlaceAny()
+                SetInPlaceAny(newDate(InPlaced.eobj - ti))
             else:
                 push(newDate(x.eobj - ti))
 
