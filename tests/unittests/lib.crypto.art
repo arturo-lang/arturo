@@ -10,6 +10,36 @@ print hash "Hello world"
 print hash "hello world"
 print hash [1 2 3]
 
+topic « decode
+do [
+    str: "TnVtcXVhbSBmdWdpZW5zIHJlc3BleGVyaXM="
+    
+    a: new str
+    b: #[ b: new str ]
+
+    decode 'a
+    decode 'b\b
+
+    ensure -> a = b\b
+    passed
+
+]
+
+topic « decode.url
+do [
+    str: "http%3A%2F%2Ffoo+bar%2F"
+    
+    a: new str
+    b: #[ b: new str ]
+
+    decode.url 'a
+    decode.url 'b\b
+
+    ensure -> a = b\b
+    passed
+
+]
+
 topic « encode
 do [
     str: "Numquam fugiens respexeris"
