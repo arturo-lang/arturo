@@ -4,6 +4,62 @@
 topic: $[topic :string] -> print ~"\n>> |topic|"
 passed: $[] -> print "[+] passed!"
 
+topic « strip
+do [
+
+    str: "     Hello World     "
+    
+    sample1: new str
+    sample2: #[sample: new str]
+    
+    strip 'sample1
+    strip 'sample2\sample
+    ensure -> sample1 = sample2\sample
+    passed
+]
+
+topic « strip.start
+do [
+
+    str: "     Hello World     "
+    
+    sample1: new str
+    sample2: #[sample: new str]
+    
+    strip.start 'sample1
+    strip.start 'sample2\sample
+    ensure -> sample1 = sample2\sample
+    passed
+]
+
+topic « strip.end
+do [
+
+    str: "     Hello World     "
+    
+    sample1: new str
+    sample2: #[sample: new str]
+    
+    strip.end 'sample1
+    strip.end 'sample2\sample
+    ensure -> sample1 = sample2\sample
+    passed
+]
+
+topic « strip.start.end
+do [
+
+    str: "     Hello World     "
+    
+    sample1: new str
+    sample2: #[sample: new str]
+    
+    strip.start.end 'sample1
+    strip.start.end 'sample2\sample
+    ensure -> sample1 = sample2\sample
+    passed
+]
+
 topic « translate
 do [
 
