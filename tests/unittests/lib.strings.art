@@ -5,6 +5,20 @@ topic: $[topic :string] -> print ~"\n>> |topic|"
 passed: $[] -> print "[+] passed!"
 
 
+topic « capitalize
+do [
+    str: "hello World"
+    
+    sample1: new str
+    sample2: #[sample: new str]
+    
+    capitalize 'sample1
+    capitalize 'sample2\sample
+    ensure -> sample1 = sample2\sample
+    passed
+]
+
+
 topic « escape
 do [
     str: {a long "string" + with \diffe\rent symbols.}
