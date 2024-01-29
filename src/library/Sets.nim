@@ -105,15 +105,13 @@ proc defineLibrary*() =
             else:
                 push(newBlock(toSeq(intersection(toOrderedSet(x.a), toOrderedSet(y.a)))))
 
-    # TODO(Sets\powerset) add support for PathLiteral values
-    #  labels: library, enhancement
     builtin "powerset",
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "return the powerset of given set",
         args        = {
-            "set"   : {Block,Literal}
+            "set"   : {Block,Literal, PathLiteral}
         },
         attrs       = NoAttrs,
         returns     = {Block,Nothing},
@@ -122,9 +120,9 @@ proc defineLibrary*() =
             ;  [[] [1] [2] [1 3] [3] [1 2] [2 3] [1 2 3]]
         """:
             #=======================================================
-            if xKind==Literal:
-                ensureInPlace()
-                SetInPlace(newBlock(toSeq(powerset(toOrderedSet(InPlaced.a))).map((hs) => newBlock(toSeq(hs)))))
+            if xKind in {Literal,PathLiteral}:
+                ensureInPlaceAny()
+                SetInPlaceAny(newBlock(toSeq(powerset(toOrderedSet(InPlaced.a))).map((hs) => newBlock(toSeq(hs)))))
             else:
                 push(newBlock(toSeq(powerset(toOrderedSet(x.a)).map((hs) => newBlock(toSeq(hs))))))
 
