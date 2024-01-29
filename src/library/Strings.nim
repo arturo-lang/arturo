@@ -205,15 +205,13 @@ proc defineLibrary*() =
                 else:
                     push(newString(strutils.escape(x.s)))
 
-    # TODO(Strings\indent) add support for PathLiteral values
-    #  labels: library, enhancement
     builtin "indent",
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "indent each line of given text",
         args        = {
-            "text"  : {String,Literal}
+            "text"  : {String,Literal,PathLiteral}
         },
         attrs       = {
             "n"     : ({Integer},"pad by given number of spaces (default: 4)"),
@@ -243,9 +241,9 @@ proc defineLibrary*() =
             if checkAttr("with"):
                 padding = aWith.s
 
-            if xKind==Literal:
-                ensureInPlace()
-                SetInPlace(newString(indent(InPlaced.s, count, padding)))
+            if xKind in {Literal, PathLiteral}:
+                ensureInPlaceAny()
+                SetInPlaceAny(newString(indent(InPlaced.s, count, padding)))
             else:
                 push(newString(indent(x.s, count, padding)))      
 
