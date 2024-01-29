@@ -729,15 +729,13 @@ proc defineLibrary*() =
     #  see: https://discord.com/channels/765519132186640445/829324913097048065/1078717850270842962
     #  labels: enhancement,library
 
-    # TODO(Strings\replace) add support for PathLiteral values
-    #  labels: library, enhancement, easy
     builtin "replace",
         alias       = unaliased, 
         op          = opReplace,
         rule        = PrefixPrecedence,
         description = "replace every matched substring/s by given replacement string and return result",
         args        = {
-            "string"        : {String, Literal},
+            "string"        : {String, Literal,PathLiteral},
             "match"         : {String, Regex, Block},
             "replacement"   : {String, Block}
         },
@@ -771,7 +769,7 @@ proc defineLibrary*() =
                             inc i
                     push(newString(final))
             else:
-                ensureInPlace()
+                ensureInPlaceAny()
                 if yKind==String:
                     InPlaced.s = InPlaced.s.replaceAll(y.s, z.s)
                 elif yKind==Regex:
