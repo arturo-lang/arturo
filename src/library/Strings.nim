@@ -271,15 +271,13 @@ proc defineLibrary*() =
         """:
             push(newFloating(jaro(x.s,y.s)))    
 
-    # TODO(Strings\join) add support for PathLiteral values
-    #  labels: library, enhancement
     builtin "join",
         alias       = unaliased, 
         op          = opJoin,
         rule        = PrefixPrecedence,
         description = "join collection of values into string",
         args        = {
-            "collection"    : {Block,Literal}
+            "collection"    : {Block,Literal,PathLiteral}
         },
         attrs       = {
             "with"  : ({String},"use given separator"),
@@ -305,9 +303,9 @@ proc defineLibrary*() =
         """:
             #=======================================================
             if (hadAttr("path")):
-                if xKind==Literal:
-                    ensureInPlace()
-                    SetInPlace(newString(joinPath(InPlaced.a.map(proc (v:Value):string = $(v)))))
+                if xKind in {Literal, PathLiteral}:
+                    ensureInPlaceAny()
+                    SetInPlaceAny(newString(joinPath(InPlaced.a.map(proc (v:Value):string = $(v)))))
                 else:
                     push(newString(joinPath(x.a.map(proc (v:Value):string = $(v)))))
             else:
@@ -315,9 +313,9 @@ proc defineLibrary*() =
                 if checkAttr("with"):
                     sep = aWith.s
 
-                if xKind==Literal:
-                    ensureInPlace()
-                    SetInPlace(newString(InPlaced.a.map(proc (v:Value):string = $(v)).join(sep)))
+                if xKind in {Literal, PathLiteral}:
+                    ensureInPlaceAny()
+                    SetInPlaceAny(newString(InPlaced.a.map(proc (v:Value):string = $(v)).join(sep)))
                 else:
                     push(newString(x.a.map(proc (v:Value):string = $(v)).join(sep)))
 
