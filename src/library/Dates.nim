@@ -37,15 +37,13 @@ proc defineLibrary*() =
     # Functions
     #----------------------------
 
-    # TODO(Dates\after) add support for PathLiteral values
-    #  labels: library, enhancement
     builtin "after",
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "get date after given one using interval",
         args        = {
-            "date"  : {Date, Literal}
+            "date"  : {Date, Literal, PathLiteral}
         },
         attrs       = {
             "nanoseconds"   : ({Integer},"add given number of nanoseconds"),
@@ -93,9 +91,9 @@ proc defineLibrary*() =
                 years=years
             )
             
-            if xKind==Literal:
-                ensureInPlace()
-                SetInPlace(newDate(InPlaced.eobj + ti))
+            if xKind in {Literal, PathLiteral}:
+                ensureInPlaceAny()
+                SetInPlaceAny(newDate(InPlaced.eobj + ti))
             else:
                 push(newDate(x.eobj + ti))
 
