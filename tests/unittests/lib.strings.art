@@ -4,6 +4,51 @@
 topic: $[topic :string] -> print ~"\n>> |topic|"
 passed: $[] -> print "[+] passed!"
 
+topic « truncate
+
+do [
+    sample1: {Lorem ipsum dolor sit amet, consectetur adipiscing elit. In eget mauris non justo mattis dignissim. Cras in lobortis felis, id ultricies ligula. Curabitur egestas tortor sed purus vestibulum auctor. Cras dui metus, euismod sit amet suscipit et, cursus ullamcorper felis. Integer elementum condimentum neque, et sagittis arcu rhoncus sed. In luctus congue eros, viverra dapibus mi rhoncus non. Pellentesque nisl diam, auctor quis sapien nec, suscipit aliquam velit. Nam ac nisi justo.}
+    sample2: #[sample: new sample1]
+    truncate 'sample1 30
+    truncate 'sample2\sample 30
+    ensure -> sample1 = sample2\sample
+    passed
+]
+
+topic « truncate.preserve
+
+do [
+    sample1: {Lorem ipsum dolor sit amet, consectetur adipiscing elit. In eget mauris non justo mattis dignissim. Cras in lobortis felis, id ultricies ligula. Curabitur egestas tortor sed purus vestibulum auctor. Cras dui metus, euismod sit amet suscipit et, cursus ullamcorper felis. Integer elementum condimentum neque, et sagittis arcu rhoncus sed. In luctus congue eros, viverra dapibus mi rhoncus non. Pellentesque nisl diam, auctor quis sapien nec, suscipit aliquam velit. Nam ac nisi justo.}
+    sample2: #[sample: new sample1]
+    truncate.preserve 'sample1 30
+    truncate.preserve 'sample2\sample 30
+    ensure -> sample1 = sample2\sample
+    passed
+]
+
+topic « truncate.with: "---"
+
+do [
+    sample1: {Lorem ipsum dolor sit amet, consectetur adipiscing elit. In eget mauris non justo mattis dignissim. Cras in lobortis felis, id ultricies ligula. Curabitur egestas tortor sed purus vestibulum auctor. Cras dui metus, euismod sit amet suscipit et, cursus ullamcorper felis. Integer elementum condimentum neque, et sagittis arcu rhoncus sed. In luctus congue eros, viverra dapibus mi rhoncus non. Pellentesque nisl diam, auctor quis sapien nec, suscipit aliquam velit. Nam ac nisi justo.}
+    sample2: #[sample: new sample1]
+    truncate.with: "---" 'sample1 30
+    truncate.with: "---" 'sample2\sample 30
+    ensure -> sample1 = sample2\sample
+    passed
+]
+
+topic « truncate.preserve.with: "---"
+
+do [
+    sample1: {Lorem ipsum dolor sit amet, consectetur adipiscing elit. In eget mauris non justo mattis dignissim. Cras in lobortis felis, id ultricies ligula. Curabitur egestas tortor sed purus vestibulum auctor. Cras dui metus, euismod sit amet suscipit et, cursus ullamcorper felis. Integer elementum condimentum neque, et sagittis arcu rhoncus sed. In luctus congue eros, viverra dapibus mi rhoncus non. Pellentesque nisl diam, auctor quis sapien nec, suscipit aliquam velit. Nam ac nisi justo.}
+    sample2: #[sample: new sample1]
+    truncate.preserve.with: "---" 'sample1 30
+    truncate.preserve.with: "---" 'sample2\sample 30
+    ensure -> sample1 = sample2\sample
+    passed
+]
+
+
 topic « wordwrap
 
 do [
