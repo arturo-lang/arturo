@@ -575,15 +575,13 @@ proc defineLibrary*() =
             else:
                 push(newString(unindent(x.s, count, padding))) 
 
-    # TODO(Strings\pad) add support for PathLiteral values
-    #  labels: library, enhancement, easy
     builtin "pad",
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "align string by adding given padding",
         args        = {
-            "string"    : {String,Literal},
+            "string"    : {String,Literal,PathLiteral},
             "padding"   : {Integer}
         },
         attrs       = {
@@ -611,17 +609,17 @@ proc defineLibrary*() =
             if (hadAttr("right")):
                 if xKind==String: push(newString(unicode.alignLeft(x.s, y.i, padding=padding)))
                 else: 
-                    ensureInPlace()
+                    ensureInPlaceAny()
                     InPlaced.s = unicode.alignLeft(InPlaced.s, y.i, padding=padding)
             elif (hadAttr("center")):
                 if xKind==String: push(newString(centerUnicode(x.s, y.i, padding=padding)))
                 else: 
-                    ensureInPlace()
+                    ensureInPlaceAny()
                     InPlaced.s = centerUnicode(InPlaced.s, y.i, padding=padding)
             else:
                 if xKind==String: push(newString(unicode.align(x.s, y.i, padding=padding)))
                 else: 
-                    ensureInPlace()
+                    ensureInPlaceAny()
                     InPlaced.s = unicode.align(InPlaced.s, y.i, padding=padding)
 
     when not defined(WEB):
