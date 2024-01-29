@@ -1,3 +1,6 @@
+topic: $[topic :string] -> print ~"\n>> |topic|"
+passed: $[] -> print "[+] passed!"
+
 print decode "TnVtcXVhbSBmdWdpZW5zIHJlc3BleGVyaXM="
 print encode "Numquam fugiens respexeris"
 print digest "Hello world"
@@ -6,3 +9,17 @@ print hash "Hello world"
 print hash "Hello world"
 print hash "hello world"
 print hash [1 2 3]
+
+topic « digest
+do [
+    str: "Hello world"
+    
+    a: new str
+    b: #[ b: new str ]
+
+    digest 'a
+    digest 'b\b
+
+    ensure -> a = b\b
+
+]
