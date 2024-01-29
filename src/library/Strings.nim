@@ -934,8 +934,6 @@ proc defineLibrary*() =
                 else:
                     InPlaced.c = InPlaced.c.toUpper()
 
-    # TODO(Strings\wordwrap) add support for PathLiteral values
-    #  labels: library, enhancement
     builtin "wordwrap",
         alias       = unaliased, 
         op          = opNop,
