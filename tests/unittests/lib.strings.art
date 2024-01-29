@@ -4,6 +4,21 @@
 topic: $[topic :string] -> print ~"\n>> |topic|"
 passed: $[] -> print "[+] passed!"
 
+topic « translate
+do [
+
+    table: #[brown: "green" fox: "wolf" jumped:"flew" dog:"cat"]
+    
+    sample1: "the brown fox jumped over the lazy dog" 
+    sample2: #[sample: new sample1]
+    
+    translate 'sample1 table
+    translate 'sample2\sample table
+    ensure -> sample1 = sample2\sample
+    passed
+]
+
+
 topic « truncate
 
 do [
