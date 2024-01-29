@@ -5,6 +5,60 @@ topic: $[topic :string] -> print ~"\n>> |topic|"
 passed: $[] -> print "[+] passed!"
 
 
+topic « outdent
+do [
+    str: {:
+        one
+            two
+            three
+    :}
+    
+    sample1: new str
+    sample2: #[sample: new str]
+
+    info 'outdent
+    
+    outdent 'sample1
+    outdent 'sample2\sample
+    ensure -> sample1 = sample2\sample
+    passed
+]
+
+topic « outdent.n
+do [
+    str: {:
+        one
+            two
+            three
+    :}
+    
+    sample1: new str
+    sample2: #[sample: new str]
+    
+    outdent.n: 10 'sample1
+    outdent.n: 10 'sample2\sample
+    ensure -> sample1 = sample2\sample
+    passed
+]
+
+topic « outdent.with
+do [
+    str: {:
+        one
+            two
+            three
+    :}
+    
+    sample1: new str
+    sample2: #[sample: new str]
+    
+    outdent.with: "~" 'sample1
+    outdent.with: "~" 'sample2\sample
+    ensure -> sample1 = sample2\sample
+    passed
+]
+
+
 topic « pad
 do [
     str: "good"
