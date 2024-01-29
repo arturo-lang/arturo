@@ -3,3 +3,18 @@
 
 topic: $[topic :string] -> print ~"\n>> |topic|"
 passed: $[] -> print "[+] passed!"
+
+topic « union
+do [
+    set: [1 2 3 4] 
+    set2: [3 4 5 6]
+
+    a: new set
+    b: #[ b: new set ]
+
+    union 'a set2
+    union 'b\b set2
+    ensure -> a = b\b
+    passed
+
+]
