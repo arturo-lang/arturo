@@ -629,15 +629,13 @@ proc defineLibrary*() =
         #  the lack of proper RegEx libraries could be handled by using the newly-added JS helper functions
         #  labels: enhancement,library,web
 
-        # TODO(Strings\render) add support for PathLiteral values
-        #  labels: library, enhancement
         builtin "render",
             alias       = tilde, 
             op          = opNop,
             rule        = PrefixPrecedence,
             description = "render template with |string| interpolation",
             args        = {
-                "template"  : {String,Literal}
+                "template"  : {String,Literal,PathLiteral}
             },
             attrs       = {
                 "once"      : ({Logical},"don't render recursively"),
@@ -653,8 +651,8 @@ proc defineLibrary*() =
                 let recursive = not (hadAttr("once"))
                 let templated = (hadAttr("template"))
                 var res: string
-                if xKind == Literal:
-                    ensureInPlace()
+                if xKind in {Literal,PathLiteral}:
+                    ensureInPlaceAny()
                     res = InPlaced.s
                 else:
                     res = x.s
@@ -716,9 +714,9 @@ proc defineLibrary*() =
                         if recursive: keepGoing = res.find(Interpolated).isSome
                         else: keepGoing = false
 
-                if xKind == Literal:
-                    ensureInPlace()
-                    SetInPlace(newString(res))
+                if xKind in {Literal,PathLiteral}:
+                    ensureInPlaceAny()
+                    SetInPlaceAny(newString(res))
                 else:
                     push(newString(res))
 
