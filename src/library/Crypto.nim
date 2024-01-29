@@ -186,15 +186,13 @@ proc defineLibrary*() =
         #  would it be that useful to have md5/sha1 encoding capabilities through JavaScript?
         #  labels: library,enhancement,open discussion,web
 
-        # TODO(Crypto\digest) add support for PathLiteral values
-        #  labels: library, enhancement
         builtin "digest",
             alias       = unaliased, 
             op          = opNop,
             rule        = PrefixPrecedence,
             description = "get digest for given value (default: MD5)",
             args        = {
-                "value" : {String,Literal}
+                "value" : {String, Literal, PathLiteral}
             },
             attrs       = {
                 "sha"   : ({Logical},"use SHA1")
@@ -209,15 +207,15 @@ proc defineLibrary*() =
             """:
                 #=======================================================
                 if (hadAttr("sha")):
-                    if xKind==Literal:
-                        ensureInPlace()
-                        SetInPlace(newString(($(secureHash(InPlaced.s))).toLowerAscii()))
+                    if xKind in {Literal, PathLiteral}:
+                        ensureInPlaceAny()
+                        SetInPlaceAny(newString(($(secureHash(InPlaced.s))).toLowerAscii()))
                     else:
                         push(newString(($(secureHash(x.s))).toLowerAscii()))
                 else:
-                    if xKind==Literal:
-                        ensureInPlace()
-                        SetInPlace(newString(($(toMD5(InPlaced.s))).toLowerAscii()))
+                    if xKind in {Literal, PathLiteral}:
+                        ensureInPlaceAny()
+                        SetInPlaceAny(newString(($(toMD5(InPlaced.s))).toLowerAscii()))
                     else:
                         push(newString(($(toMD5(x.s))).toLowerAscii()))
 
