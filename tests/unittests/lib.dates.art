@@ -4,6 +4,22 @@
 topic: $[topic :string] -> print ~"\n>> |topic|"
 passed: $[] -> print "[+] passed!"
 
+topic « after
+do [
+
+    date: now
+
+    a: new date
+    b: #[ b: new date ]
+
+    after.weeks:2 'a
+    after.weeks:2 'b\b
+
+    ensure -> a = b\b
+    passed
+
+]
+
 topic « before
 do [
 
