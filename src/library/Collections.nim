@@ -2340,15 +2340,13 @@ proc defineLibrary*() =
                         i += 1
                     push(newBlock(ret))
 
-    # TODO(Collections\take) add support for PathLiteral values
-    #  labels: library, enhancement, easy
     builtin "take",
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "keep first <number> of elements from given collection and return the remaining ones",
         args        = {
-            "collection": {String, Block, Range, Literal},
+            "collection": {String, Block, Range, Literal, PathLiteral},
             "number"    : {Integer}
         },
         attrs       = NoAttrs,
@@ -2380,8 +2378,8 @@ proc defineLibrary*() =
                 else:
                     container[container.high - upperLimit..^1]
             
-            if x.kind == Literal:
-                ensureInPlace()
+            if x.kind in {Literal, PathLiteral}:
+                ensureInPlaceAny()
                 case InPlaced.kind
                 of String:
                     if x.s.len > 0:
