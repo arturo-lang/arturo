@@ -942,7 +942,7 @@ proc defineLibrary*() =
         rule        = PrefixPrecedence,
         description = "word wrap a given string",
         args        = {
-            "string": {String,Literal}
+            "string": {String,Literal,PathLiteral}
         },
         attrs       = {
             "at"    : ({Integer},"use given max line width (default: 80)")
@@ -971,9 +971,9 @@ proc defineLibrary*() =
             if checkAttr("at"):
                 cutoff = aAt.i
             
-            if xKind==Literal:
-                ensureInPlace()
-                SetInPlace(newString(wrapWords(InPlaced.s, maxLineWidth=cutoff)))
+            if xKind in {Literal, PathLiteral}:
+                ensureInPlaceAny()
+                SetInPlaceAny(newString(wrapWords(InPlaced.s, maxLineWidth=cutoff)))
             else:
                 push newString(wrapWords(x.s, maxLineWidth=cutoff))
 
