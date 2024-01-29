@@ -115,15 +115,13 @@ proc defineLibrary*() =
 
             push(newBlock(got))
 
-    # TODO(Strings\capitalize) add support for PathLiteral values
-    #  labels: library, enhancement, easy
     builtin "capitalize",
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "convert given string to capitalized",
         args        = {
-            "string": {String,Char,Literal}
+            "string": {String,Char,Literal,PathLiteral}
         },
         attrs       = NoAttrs,
         returns     = {String,Char,Nothing},
@@ -137,7 +135,7 @@ proc defineLibrary*() =
             if xKind==String: push(newString(x.s.capitalize()))
             elif xKind==Char: push(newChar(x.c.toUpper()))
             else: 
-                ensureInPlace()
+                ensureInPlaceAny()
                 if InPlaced.kind==String:
                     InPlaced.s = InPlaced.s.capitalize()
                 else:
