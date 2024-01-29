@@ -800,6 +800,9 @@
 [+] passed!
 [+] passed!
 
+>> take - :string < :string (pathLiteral) :string
+[+] passed!
+
 >> take - :block < :block :block
 [+] passed!
 [+] passed!
@@ -814,6 +817,9 @@
 [+] passed!
 [+] passed!
 [+] passed!
+[+] passed!
+
+>> take - :block < :block (pathLiteral) :block
 [+] passed!
 
 >> take - :range < :range :integer
@@ -832,6 +838,8 @@
 [+] passed!
 [+] passed!
 
+>> take - :block < :range (pathLiteral) :integer
+
 >> tally
 [+] passed!
 [+] passed!
@@ -843,6 +851,12 @@
 
 >> unique - literal
 [+] passed!
+[+] passed!
+[+] passed!
+
+>> unique - pathLiteral
+1 2 4 3 
+1 2 4 3 
 [+] passed!
 [+] passed!
 
