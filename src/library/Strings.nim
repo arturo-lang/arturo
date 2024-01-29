@@ -143,15 +143,13 @@ proc defineLibrary*() =
                 else:
                     InPlaced.c = InPlaced.c.toUpper()
 
-    # TODO(Strings\escape) add support for PathLiteral values
-    #  labels: library, enhancement
     builtin "escape",
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "escape given string",
         args        = {
-            "string": {String,Literal}
+            "string": {String,Literal,PathLiteral}
         },
         attrs       = {
             "json"  : ({Logical},"for literal use in JSON strings"),
@@ -179,19 +177,19 @@ proc defineLibrary*() =
             ; a long &quot;string&quot; + with \diffe\rent symbols.
         """:
             #=======================================================
-            if xKind==Literal:
-                ensureInPlace()
+            if xKind in {Literal, PathLiteral}:
+                ensureInPlaceAny()
                 if (hadAttr("json")):
-                    SetInPlace(newString(escapeJsonUnquoted(InPlaced.s)))
+                    SetInPlaceAny(newString(escapeJsonUnquoted(InPlaced.s)))
                 elif (hadAttr("regex")):
-                    SetInPlace(newString(escapeForRegex(InPlaced.s)))
+                    SetInPlaceAny(newString(escapeForRegex(InPlaced.s)))
                 elif (hadAttr("shell")):
                     when not defined(WEB):
-                        SetInPlace(newString(quoteShell(InPlaced.s)))
+                        SetInPlaceAny(newString(quoteShell(InPlaced.s)))
                 elif (hadAttr("xml")):
-                    SetInPlace(newString(xmltree.escape(InPlaced.s)))
+                    SetInPlaceAny(newString(xmltree.escape(InPlaced.s)))
                 else:
-                    SetInPlace(newString(strutils.escape(InPlaced.s)))
+                    SetInPlaceAny(newString(strutils.escape(InPlaced.s)))
             else:
                 if (hadAttr("json")):
                     push(newString(escapeJsonUnquoted(x.s)))
