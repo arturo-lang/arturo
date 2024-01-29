@@ -109,15 +109,13 @@ proc defineLibrary*() =
     #  Function doesn't really correspond to cryptography anymore. Or at least most of it. What should be done?
     #  labels: library, open discussion
 
-    # TODO(Crypto\encode) add support for PathLiteral values
-    #  labels: library, enhancement, easy
     builtin "encode",
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "decode given value (default: base-64)",
         args        = {
-            "value" : {String,Literal}
+            "value" : {String,Literal, PathLiteral}
         },
         attrs       = {
             "url"       : ({Logical},"encode URL based on RFC3986"),
@@ -138,8 +136,8 @@ proc defineLibrary*() =
             if (hadAttr("url")):
                 let spaces = (hadAttr("spaces"))
                 let slashes = (hadAttr("slashes"))
-                if xKind==Literal:
-                    ensureInPlace()
+                if xKind in {Literal, PathLiteral}:
+                    ensureInPlaceAny()
                     InPlaced.s = InPlaced.s.urlencode(encodeSpaces=spaces, encodeSlashes=slashes)
                 else:
                     push(newString(x.s.urlencode(encodeSpaces=spaces, encodeSlashes=slashes)))
@@ -151,8 +149,8 @@ proc defineLibrary*() =
                     if checkAttr("to"):
                         dest = aTo.s
 
-                    if xKind==Literal:
-                        ensureInPlace()
+                    if xKind in {Literal, PathLiteral}:
+                        ensureInPlaceAny()
                         InPlaced.s = convert(InPlaced.s, srcEncoding=src, destEncoding=dest)
                     else:
                         push(newString(convert(x.s, srcEncoding=src, destEncoding=dest)))
@@ -165,8 +163,8 @@ proc defineLibrary*() =
                     var src = "CP1252"
                     var dest = aTo.s
 
-                    if xKind==Literal:
-                        ensureInPlace()
+                    if xKind in {Literal, PathLiteral}:
+                        ensureInPlaceAny()
                         InPlaced.s = convert(InPlaced.s, srcEncoding=src, destEncoding=dest)
                     else:
                         push(newString(convert(x.s, srcEncoding=src, destEncoding=dest)))
@@ -175,8 +173,8 @@ proc defineLibrary*() =
                         push(newString(x.s))
 
             else:
-                if xKind==Literal:
-                    ensureInPlace()
+                if xKind in {Literal, PathLiteral}:
+                    ensureInPlaceAny()
                     InPlaced.s = InPlaced.s.encode()
                 else:
                     push(newString(x.s.encode()))
