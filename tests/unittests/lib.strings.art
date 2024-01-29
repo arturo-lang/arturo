@@ -5,6 +5,58 @@ topic: $[topic :string] -> print ~"\n>> |topic|"
 passed: $[] -> print "[+] passed!"
 
 
+topic « indent
+do [
+    str: "one\ntwo\nthree"
+    
+    sample1: new str
+    sample2: #[sample: new str]
+    
+    indent 'sample1
+    indent 'sample2\sample
+    ensure -> sample1 = sample2\sample
+    passed
+]
+
+topic « indent.n
+do [
+    str: "one\ntwo\nthree"
+    
+    sample1: new str
+    sample2: #[sample: new str]
+    
+    indent.n: 10 'sample1
+    indent.n: 10 'sample2\sample
+    ensure -> sample1 = sample2\sample
+    passed
+]
+
+topic « indent.with
+do [
+    str: "one\ntwo\nthree"
+    
+    sample1: new str
+    sample2: #[sample: new str]
+    
+    indent.with: "#" 'sample1
+    indent.with: "#" 'sample2\sample
+    ensure -> sample1 = sample2\sample
+    passed
+]
+
+topic « indent.with.n
+do [
+    str: "one\ntwo\nthree"
+    
+    sample1: new str
+    sample2: #[sample: new str]
+    
+    indent.with: "#" .n: 10 'sample1
+    indent.with: "#" .n: 10 'sample2\sample
+    ensure -> sample1 = sample2\sample
+    passed
+]
+
 topic « join
 do [
     blk: ["one" "two" "three"]
