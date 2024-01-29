@@ -35,15 +35,13 @@ proc defineLibrary*() =
     # Functions
     #----------------------------
 
-    # TODO(Sets\difference) add support for PathLiteral values
-    #  labels: library, enhancement
     builtin "difference",
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "return the difference of given sets",
         args        = {
-            "setA"  : {Block,Literal},
+            "setA"  : {Block,Literal, PathLiteral},
             "setB"  : {Block}
         },
         attrs       = {
@@ -64,15 +62,15 @@ proc defineLibrary*() =
         """:
             #=======================================================
             if (hadAttr("symmetric")):
-                if xKind==Literal:
-                    ensureInPlace()
-                    SetInPlace(newBlock(toSeq(symmetricDifference(toOrderedSet(InPlaced.a), toOrderedSet(y.a)))))
+                if xKind in {Literal,PathLiteral}:
+                    ensureInPlaceAny()
+                    SetInPlaceAny(newBlock(toSeq(symmetricDifference(toOrderedSet(InPlaced.a), toOrderedSet(y.a)))))
                 else:
                     push(newBlock(toSeq(symmetricDifference(toOrderedSet(x.a), toOrderedSet(y.a)))))
             else:
-                if xKind==Literal:
-                    ensureInPlace()
-                    SetInPlace(newBlock(toSeq(difference(toOrderedSet(InPlaced.a), toOrderedSet(y.a)))))
+                if xKind in {Literal,PathLiteral}:
+                    ensureInPlaceAny()
+                    SetInPlaceAny(newBlock(toSeq(difference(toOrderedSet(InPlaced.a), toOrderedSet(y.a)))))
                 else:
                     push(newBlock(toSeq(difference(toOrderedSet(x.a), toOrderedSet(y.a)))))
 
