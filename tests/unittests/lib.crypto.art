@@ -10,6 +10,66 @@ print hash "Hello world"
 print hash "hello world"
 print hash [1 2 3]
 
+topic « encode
+do [
+    str: "Numquam fugiens respexeris"
+    
+    a: new str
+    b: #[ b: new str ]
+
+    encode 'a
+    encode 'b\b
+
+    ensure -> a = b\b
+    passed
+
+]
+
+topic « encode.url
+do [
+    str: "http://foo bar/"
+    
+    a: new str
+    b: #[ b: new str ]
+
+    encode.url 'a
+    encode.url 'b\b
+
+    ensure -> a = b\b
+    passed
+
+]
+
+topic « encode.spaces
+do [
+    str: "Numquam fugiens respexeris"
+    
+    a: new str
+    b: #[ b: new str ]
+
+    encode.spaces 'a
+    encode.spaces 'b\b
+
+    ensure -> a = b\b
+    passed
+
+]
+
+topic « encode.slashes
+do [
+    str: "Numquam-fugiens respexeris"
+    
+    a: new str
+    b: #[ b: new str ]
+
+    encode.slashes 'a
+    encode.slashes 'b\b
+
+    ensure -> a = b\b
+    passed
+
+]
+
 topic « digest
 do [
     str: "Hello world"
