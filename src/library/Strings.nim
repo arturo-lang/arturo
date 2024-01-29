@@ -857,8 +857,6 @@ proc defineLibrary*() =
                 ensureInPlace()
                 InPlaced.s = InPlaced.s.multiReplace(replacements)
 
-    # TODO(Strings\truncate) add support for PathLiteral values
-    #  labels: library, enhancement, easy
     builtin "truncate",
         alias       = unaliased, 
         op          = opNop,
