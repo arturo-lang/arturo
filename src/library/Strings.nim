@@ -834,7 +834,7 @@ proc defineLibrary*() =
         rule        = PrefixPrecedence,
         description = "takes a dictionary of translations and replaces each instance sequentially",
         args        = {
-            "string"        : {String, Literal},
+            "string"        : {String, Literal, PathLiteral},
             "translations"  : {Dictionary}
         },
         attrs       = NoAttrs,
@@ -854,7 +854,7 @@ proc defineLibrary*() =
             if xKind==String:
                 push(newString(x.s.multiReplace(replacements)))
             else:
-                ensureInPlace()
+                ensureInPlaceAny()
                 InPlaced.s = InPlaced.s.multiReplace(replacements)
 
     builtin "truncate",
