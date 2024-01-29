@@ -2466,15 +2466,13 @@ proc defineLibrary*() =
             
             push(newDictionary(occurences))
 
-    # TODO(Collections\unique) add support for PathLiteral values
-    #  labels: library, enhancement, easy
     builtin "unique",
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "get given collection without duplicates",
         args        = {
-            "collection": {String, Block, Literal}
+            "collection": {String, Block, Literal, PathLiteral}
         },
         attrs       = {
             "id"    : ({Logical}, "generate unique id using given prefix"),
@@ -2500,7 +2498,7 @@ proc defineLibrary*() =
                 elif xKind == String:
                     push newString(toSeq(runes(x.s)).deduplicate.map((w) => $(w)).join(""))
                 else: 
-                    ensureInPlace()
+                    ensureInPlaceAny()
                     if InPlaced.kind == Block:
                         InPlaced.a = InPlaced.a.deduplicated()
                     else:
