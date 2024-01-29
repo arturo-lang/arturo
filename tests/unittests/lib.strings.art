@@ -15,8 +15,6 @@ do [
     
     render 'sample1
     render 'sample2\sample
-    print sample1
-    print sample2
     ensure -> sample1 = sample2\sample
     passed
 ]
