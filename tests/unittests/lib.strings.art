@@ -1,0 +1,28 @@
+; I'm temporarialy creating this to just ensure the working of strings for pathLiteral
+; This should be moved soon to unitt.
+
+topic: $[topic :string] -> print ~"\n>> |topic|"
+passed: $[] -> print "[+] passed!"
+
+topic « wordwrap
+
+do [
+    sample1: {Lorem ipsum dolor sit amet, consectetur adipiscing elit. In eget mauris non justo mattis dignissim. Cras in lobortis felis, id ultricies ligula. Curabitur egestas tortor sed purus vestibulum auctor. Cras dui metus, euismod sit amet suscipit et, cursus ullamcorper felis. Integer elementum condimentum neque, et sagittis arcu rhoncus sed. In luctus congue eros, viverra dapibus mi rhoncus non. Pellentesque nisl diam, auctor quis sapien nec, suscipit aliquam velit. Nam ac nisi justo.}
+    sample2: #[sample: new sample1]
+    wordwrap 'sample1
+    wordwrap 'sample2\sample
+    ensure -> sample1 = sample2\sample
+    passed
+]
+
+topic « wordwrap.at
+do [
+    sample1: {Lorem ipsum dolor sit amet, consectetur adipiscing elit. In eget mauris non justo mattis dignissim. Cras in lobortis felis, id ultricies ligula. Curabitur egestas tortor sed purus vestibulum auctor. Cras dui metus, euismod sit amet suscipit et, cursus ullamcorper felis. Integer elementum condimentum neque, et sagittis arcu rhoncus sed. In luctus congue eros, viverra dapibus mi rhoncus non. Pellentesque nisl diam, auctor quis sapien nec, suscipit aliquam velit. Nam ac nisi justo.}
+    sample2: #[sample: new sample1]
+    wordwrap.at: 40 'sample1
+    wordwrap.at: 40 'sample2\sample
+
+    ensure -> sample1 = sample2\sample
+    passed
+]
+
