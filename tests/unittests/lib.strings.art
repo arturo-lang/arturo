@@ -4,6 +4,30 @@
 topic: $[topic :string] -> print ~"\n>> |topic|"
 passed: $[] -> print "[+] passed!"
 
+topic « replace
+do [
+    str: "hello"
+    sample1: new str
+    sample2: #[sample: new str]
+    
+    replace 'sample1 "l" "x"
+    replace 'sample2\sample "l" "x"
+    ensure -> sample1 = sample2\sample
+    passed
+]
+
+do [
+    str: "hello"
+    sample1: new str
+    sample2: #[sample: new str]
+    
+    replace 'sample1 ["h" "o"] ["x" "z"]
+    replace 'sample2\sample ["h" "o"] ["x" "z"]
+    ensure -> sample1 = sample2\sample
+    passed
+]
+
+
 topic « strip
 do [
 
