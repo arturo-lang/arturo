@@ -5,6 +5,71 @@ topic: $[topic :string] -> print ~"\n>> |topic|"
 passed: $[] -> print "[+] passed!"
 
 
+topic « escape
+do [
+    str: {a long "string" + with \diffe\rent symbols.}
+    
+    sample1: new str
+    sample2: #[sample: new str]
+    
+    escape 'sample1
+    escape 'sample2\sample
+    ensure -> sample1 = sample2\sample
+    passed
+]
+
+topic « escape.json
+do [
+    str: {a long "string" + with \diffe\rent symbols.}
+    
+    sample1: new str
+    sample2: #[sample: new str]
+    
+    escape.json 'sample1
+    escape.json 'sample2\sample
+    ensure -> sample1 = sample2\sample
+    passed
+]
+
+topic « escape.regex
+do [
+    str: {a long "string" + with \diffe\rent symbols.}
+    
+    sample1: new str
+    sample2: #[sample: new str]
+    
+    escape.regex 'sample1
+    escape.regex 'sample2\sample
+    ensure -> sample1 = sample2\sample
+    passed
+]
+
+topic « escape.shell
+do [
+    str: {a long "string" + with \diffe\rent symbols.}
+    
+    sample1: new str
+    sample2: #[sample: new str]
+    
+    escape.shell 'sample1
+    escape.shell 'sample2\sample
+    ensure -> sample1 = sample2\sample
+    passed
+]
+
+topic « escape.xml
+do [
+    str: {a long "string" + with \diffe\rent symbols.}
+    
+    sample1: new str
+    sample2: #[sample: new str]
+    
+    escape.xml 'sample1
+    escape.xml 'sample2\sample
+    ensure -> sample1 = sample2\sample
+    passed
+]
+
 topic « indent
 do [
     str: "one\ntwo\nthree"
