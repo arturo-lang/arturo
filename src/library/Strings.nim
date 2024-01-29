@@ -826,8 +826,6 @@ proc defineLibrary*() =
                 ensureInPlace()
                 InPlaced.s = strutils.strip(InPlaced.s, leading, trailing) 
 
-    # TODO(Strings\translate) add support for PathLiteral values
-    #  labels: library, enhancement, easy
     builtin "translate",
         alias       = unaliased, 
         op          = opNop,
