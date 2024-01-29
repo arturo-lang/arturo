@@ -787,15 +787,13 @@ proc defineLibrary*() =
                             replaceStrWith(InPlaced.s, y.a[i], z.a[i])
                             inc i
 
-    # TODO(Strings\strip) add support for PathLiteral values
-    #  labels: library, enhancement, easy
     builtin "strip",
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "strip whitespace from given string",
         args        = {
-            "string": {String,Literal}
+            "string": {String,Literal,PathLiteral}
         },
         attrs       = {
             "start" : ({Logical},"strip leading whitespace"),
@@ -823,7 +821,7 @@ proc defineLibrary*() =
 
             if xKind==String: push(newString(strutils.strip(x.s, leading, trailing)))
             else: 
-                ensureInPlace()
+                ensureInPlaceAny()
                 InPlaced.s = strutils.strip(InPlaced.s, leading, trailing) 
 
     builtin "translate",
