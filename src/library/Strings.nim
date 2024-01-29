@@ -518,15 +518,13 @@ proc defineLibrary*() =
 
                     push(newBlock(res))
 
-    # TODO(Strings\outdent) add support for PathLiteral values
-    #  labels: library, enhancement
     builtin "outdent",
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "outdent each line of given text, by using minimum shared indentation",
         args        = {
-            "text"  : {String,Literal}
+            "text"  : {String,Literal,PathLiteral}
         },
         attrs       = {
             "n"     : ({Integer},"unpad by given number of spaces"),
@@ -555,8 +553,8 @@ proc defineLibrary*() =
         """:
             #=======================================================
             var count = 0
-            if xKind==Literal:
-                ensureInPlace()
+            if xKind in {Literal,PathLiteral}:
+                ensureInPlaceAny()
                 count = indentation(InPlaced.s)
             else:
                 count = indentation(x.s)
@@ -569,9 +567,9 @@ proc defineLibrary*() =
             if checkAttr("with"):
                 padding = aWith.s
 
-            if xKind==Literal:
-                ensureInPlace()
-                SetInPlace(newString(unindent(InPlaced.s, count, padding)))
+            if xKind in {Literal, PathLiteral}:
+                ensureInPlaceAny()
+                SetInPlaceAny(newString(unindent(InPlaced.s, count, padding)))
             else:
                 push(newString(unindent(x.s, count, padding))) 
 
