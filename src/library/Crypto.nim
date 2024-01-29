@@ -70,15 +70,13 @@ proc defineLibrary*() =
             else:
                 push(newString(x.s.crc32()))
 
-    # TODO(Crypto\decode) add support for PathLiteral values
-    #  labels: library, enhancement, easy
     builtin "decode",
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "encode given value (default: base-64)",
         args        = {
-            "value" : {String,Literal}
+            "value" : {String,Literal, PathLiteral}
         },
         attrs       = {
             "url"   : ({Logical},"decode URL based on RFC3986")
@@ -93,14 +91,14 @@ proc defineLibrary*() =
         """:
             #=======================================================
             if (hadAttr("url")):
-                if xKind==Literal:
-                    ensureInPlace()
+                if xKind in {Literal, PathLiteral}:
+                    ensureInPlaceAny()
                     InPlaced.s = InPlaced.s.decodeUrl()
                 else:
                     push(newString(x.s.decodeUrl()))
             else:
-                if xKind==Literal:
-                    ensureInPlace()
+                if xKind in {Literal, PathLiteral}:
+                    ensureInPlaceAny()
                     InPlaced.s = InPlaced.s.decode()
                 else:
                     push(newString(x.s.decode()))
