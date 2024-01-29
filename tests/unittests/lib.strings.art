@@ -5,6 +5,33 @@ topic: $[topic :string] -> print ~"\n>> |topic|"
 passed: $[] -> print "[+] passed!"
 
 
+topic « join
+do [
+    blk: ["one" "two" "three"]
+    
+    sample1: new blk
+    sample2: #[sample: new blk]
+    
+    join 'sample1
+    join 'sample2\sample
+    ensure -> sample1 = sample2\sample
+    passed
+]
+
+topic « join.path
+do [
+    blk: ["one" "two" "three"]
+    
+    sample1: new blk
+    sample2: #[sample: new blk]
+    
+    join.path 'sample1
+    join.path 'sample2\sample
+    ensure -> sample1 = sample2\sample
+    passed
+]
+
+
 topic « outdent
 do [
     str: {:
