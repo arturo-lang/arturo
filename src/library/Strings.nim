@@ -865,7 +865,7 @@ proc defineLibrary*() =
         rule        = PrefixPrecedence,
         description = "truncate string at given length",
         args        = {
-            "string": {String,Literal},
+            "string": {String,Literal,PathLiteral},
             "cutoff": {Integer}
         },
         attrs       = {
@@ -896,12 +896,12 @@ proc defineLibrary*() =
             if (hadAttr("preserve")):
                 if xKind==String: push(newString(truncatePreserving(x.s, y.i, with)))
                 else: 
-                    ensureInPlace()
+                    ensureInPlaceAny()
                     InPlaced.s = truncatePreserving(InPlaced.s, y.i, with)
             else:
                 if xKind==String: push(newString(truncate(x.s, y.i, with)))
                 else: 
-                    ensureInPlace()
+                    ensureInPlaceAny()
                     InPlaced.s = truncate(InPlaced.s, y.i, with)
 
     builtin "upper",
