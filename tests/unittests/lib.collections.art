@@ -3075,6 +3075,22 @@ do [
 
 ]
 
+
+topic "take - :string < :string (pathLiteral) :string"
+do [
+
+    str: "art"
+
+    a: new str
+    b: #[b: new str] 
+    
+    take 'a 0
+    take 'b\b 0
+    ensure -> a = b\b
+    passed
+
+]
+
 topic "take - :block < :block :block"
 do [
 
@@ -3135,6 +3151,21 @@ do [
     ensure -> [a b c] = a
     a: [a b c], take 'a neg 4
     ensure -> [a b c] = a
+    passed
+
+]
+
+topic "take - :block < :block (pathLiteral) :block"
+do [
+
+    blk: [a b c] 
+    
+    a: new blk 
+    b: #[b: new blk] 
+    
+    take 'a 0
+    take 'b\b 0
+    ensure -> a = b\b
     passed
 
 ]
@@ -3200,6 +3231,24 @@ do [
     a: 1..3, take 'a neg 4
     ensure -> [1 2 3] = a
     passed
+
+]
+
+topic "take - :block < :range (pathLiteral) :integer"
+do [
+
+    ; TODO: not working well
+    
+    rng: 1..3
+
+    a: new rng
+    b: #[b: new rng]
+
+    take 'a 0
+    take 'b\b 0
+    
+    ; ensure -> a = b\b
+    ; passed
 
 ]
 
