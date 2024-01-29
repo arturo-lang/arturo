@@ -4,6 +4,59 @@
 topic: $[topic :string] -> print ~"\n>> |topic|"
 passed: $[] -> print "[+] passed!"
 
+
+topic « pad
+do [
+    str: "good"
+    
+    sample1: new str
+    sample2: #[sample: new str]
+    
+    pad 'sample1 10
+    pad 'sample2\sample 10
+    ensure -> sample1 = sample2\sample
+    passed
+]
+
+topic « pad.right
+do [
+    str: "good"
+    
+    sample1: new str
+    sample2: #[sample: new str]
+    
+    pad.right 'sample1 10
+    pad.right 'sample2\sample 10
+    ensure -> sample1 = sample2\sample
+    passed
+]
+
+topic « pad.center
+do [
+    str: "good"
+    
+    sample1: new str
+    sample2: #[sample: new str]
+    
+    pad.center 'sample1 10
+    pad.center 'sample2\sample 10
+    ensure -> sample1 = sample2\sample
+    passed
+]
+
+topic « pad.with
+do [
+    str: "good"
+    
+    sample1: new str
+    sample2: #[sample: new str]
+    
+    pad.with: 'a' 'sample1 10
+    pad.with: 'a' 'sample2\sample 10
+    ensure -> sample1 = sample2\sample
+    passed
+]
+
 topic « render
 do [
     x: 2
