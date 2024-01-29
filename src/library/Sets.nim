@@ -76,15 +76,13 @@ proc defineLibrary*() =
                 else:
                     push(newBlock(toSeq(difference(toOrderedSet(x.a), toOrderedSet(y.a)))))
 
-    # TODO(Sets\intersection) add support for PathLiteral values
-    #  labels: library, enhancement
     builtin "intersection",
         alias       = VSymbol.intersection, 
         op          = opNop,
         rule        = InfixPrecedence,
         description = "return the intersection of given sets",
         args        = {
-            "setA"  : {Block,Literal},
+            "setA"  : {Block,Literal, PathLiteral},
             "setB"  : {Block}
         },
         attrs       = NoAttrs,
@@ -99,9 +97,9 @@ proc defineLibrary*() =
             ; a: [3 4]
         """:
             #=======================================================
-            if xKind==Literal:
-                ensureInPlace()
-                SetInPlace(newBlock(toSeq(intersection(toOrderedSet(InPlaced.a), toOrderedSet(y.a)))))
+            if xKind in {Literal,PathLiteral}:
+                ensureInPlaceAny()
+                SetInPlaceAny(newBlock(toSeq(intersection(toOrderedSet(InPlaced.a), toOrderedSet(y.a)))))
             else:
                 push(newBlock(toSeq(intersection(toOrderedSet(x.a), toOrderedSet(y.a)))))
 
