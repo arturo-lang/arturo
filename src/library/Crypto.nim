@@ -47,15 +47,13 @@ proc defineLibrary*() =
     # Functions
     #----------------------------
 
-    # TODO(Crypto\crc) add support for PathLiteral values
-    #  labels: library, enhancement, easy
     builtin "crc",
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "calculate the CRC32 polynomial of given string",
         args        = {
-            "value" : {String,Literal}
+            "value" : {String,Literal, PathLiteral}
         },
         attrs       = NoAttrs,
         returns     = {String,Nothing},
@@ -64,8 +62,8 @@ proc defineLibrary*() =
             ; 414FA339
         """:
             #=======================================================
-            if xKind==Literal:
-                ensureInPlace()
+            if xKind in {Literal, PathLiteral}:
+                ensureInPlaceAny()
                 InPlaced.s = InPlaced.s.crc32()
             else:
                 push(newString(x.s.crc32()))
