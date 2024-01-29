@@ -15,8 +15,6 @@ do [
     
     sample1: new str
     sample2: #[sample: new str]
-
-    info 'outdent
     
     outdent 'sample1
     outdent 'sample2\sample
