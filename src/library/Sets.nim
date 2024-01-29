@@ -128,15 +128,13 @@ proc defineLibrary*() =
             else:
                 push(newBlock(toSeq(powerset(toOrderedSet(x.a)).map((hs) => newBlock(toSeq(hs))))))
 
-    # TODO(Sets\union) add support for PathLiteral values
-    #  labels: library, enhancement
     builtin "union",
         alias       = VSymbol.union, 
         op          = opNop,
         rule        = InfixPrecedence,
         description = "return the union of given sets",
         args        = {
-            "setA"  : {Block,Literal},
+            "setA"  : {Block,Literal, PathLiteral},
             "setB"  : {Block}
         },
         attrs       = NoAttrs,
@@ -151,9 +149,9 @@ proc defineLibrary*() =
             ; a: [1 2 3 4 5 6]
         """:
             #=======================================================
-            if xKind==Literal:
-                ensureInPlace()
-                SetInPlace(newBlock(toSeq(union(toOrderedSet(InPlaced.a), toOrderedSet(y.a)))))
+            if xKind in {Literal,PathLiteral}:
+                ensureInPlaceAny()
+                SetInPlaceAny(newBlock(toSeq(union(toOrderedSet(InPlaced.a), toOrderedSet(y.a)))))
             else:
                 push(newBlock(toSeq(union(toOrderedSet(x.a), toOrderedSet(y.a)))))
 
