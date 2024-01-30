@@ -1647,15 +1647,13 @@ proc defineLibrary*() =
                 else:
                     push(newString(reversed(x.s)))
 
-    # TODO(Collections\rotate) add support for PathLiteral values
-    #  labels: library, enhancement, easy
     builtin "rotate",
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "right-rotate collection by given distance",
         args        = {
-            "collection": {String, Block, Literal},
+            "collection": {String, Block, Literal, PathLiteral},
             "distance"  : {Integer}
         },
         attrs       = {
@@ -1671,8 +1669,8 @@ proc defineLibrary*() =
             #=======================================================
             let distance = if (not hadAttr("left")): -y.i else: y.i
 
-            if xKind == Literal:
-                ensureInPlace()
+            if xKind in {Literal, PathLiteral}:
+                ensureInPlaceAny()
                 if InPlaced.kind == String:
                     InPlaced.s = toSeq(runes(InPlaced.s)).map((w) => $(w))
                                  .rotatedLeft(distance).join("")
