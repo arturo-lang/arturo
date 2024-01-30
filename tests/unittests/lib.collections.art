@@ -474,6 +474,16 @@ do [
     decouple 'a
     ensure -> [["one" "two" "three"] [1 2 3]] = a
     passed
+   
+    blk:  [["one" 1] ["two" 2] ["three" 3]]
+    
+    a: new blk
+    b: #[b: new blk]
+    
+    decouple 'a
+    decouple 'b\b
+    ensure -> a = b\b
+    passed
 ]
 
 topic "drop - :string < :string :string"
