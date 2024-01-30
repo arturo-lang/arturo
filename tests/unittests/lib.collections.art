@@ -1157,6 +1157,22 @@ do [
 
 ]
 
+topic "insert - :string (pathLiteral)"
+do [
+
+    blk: "Python", 
+    
+    a: new blk
+    b: #[b: new blk]
+    
+    insert 'a 0 'C'
+    insert 'b\b 0 'C'
+
+    ensure -> a = b\b
+    passed
+
+]
+
 
 topic "get - :dictionary"
 do [
