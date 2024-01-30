@@ -652,15 +652,13 @@ proc defineLibrary*() =
                     if x.a.len == 0: push(VNULL)
                     else: push(x.a[0])
 
-    # TODO(Collections\flatten) add support for PathLiteral values
-    #  labels: library, enhancement
     builtin "flatten",
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "flatten given collection by eliminating nested blocks",
         args        = {
-            "collection": {Block, Literal},
+            "collection": {Block, Literal, PathLiteral},
         },
         attrs       = {
             "once"  : ({Logical}, "do not perform recursive flattening")
@@ -682,9 +680,9 @@ proc defineLibrary*() =
             ; => [1 2 3 4 [5 6]]
         """:
             #=======================================================
-            if xKind == Literal:
-                ensureInPlace()
-                SetInPlace(InPlaced.flattened(once = hadAttr("once")))
+            if xKind in {Literal, PathLiteral}:
+                ensureInPlaceAny()
+                SetInPlaceAny(InPlaced.flattened(once = hadAttr("once")))
             else:
                 push(newBlock(x.a).flattened(once = hadAttr("once")))
 
