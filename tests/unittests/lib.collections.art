@@ -1973,6 +1973,20 @@ do [
 
 ]
 
+topic "reverse (pathLiteral)"
+do [
+
+    blk: [1 2 3 4]
+    a: new blk
+    b: #[b: new blk]
+    
+    reverse 'a
+    reverse 'b\b
+    ensure -> a = b\b
+    passed
+
+]
+
 topic "rotate"
 do [
 
