@@ -1298,15 +1298,13 @@ proc defineLibrary*() =
                 else: discard
             else: raise newException(ValueError, "Attribute 'n can't be 0 or negative.")
                 
-    # TODO(Collections\prepend) add support for PathLiteral values
-    #  labels: library, enhancement
     builtin "prepend",
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "prepend value to given collection",
         args        = {
-            "collection": {String, Char, Block, Binary, Literal},
+            "collection": {String, Char, Block, Binary, Literal, PathLiteral},
             "value"     : {Any}
         },
         attrs       = NoAttrs,
@@ -1321,8 +1319,8 @@ proc defineLibrary*() =
             print a                 ; prepend
         """:
             #=======================================================
-            if xKind == Literal:
-                ensureInPlace()
+            if xKind in {Literal, PathLiteral}:
+                ensureInPlaceAny()
                 if InPlaced.kind == String:
                     if yKind == String:
                         InPlaced.s.insert(y.s, 0)
@@ -1330,9 +1328,9 @@ proc defineLibrary*() =
                         InPlaced.s.insert($(y.c), 0)
                 elif InPlaced.kind == Char:
                     if yKind == String:
-                        SetInPlace(newString(y.s & $(InPlaced.c)))
+                        SetInPlaceAny(newString(y.s & $(InPlaced.c)))
                     elif yKind == Char:
-                        SetInPlace(newString($(y.c) & $(InPlaced.c)))
+                        SetInPlaceAny(newString($(y.c) & $(InPlaced.c)))
                 elif InPlaced.kind == Binary:
                     if yKind == Binary:
                         InPlaced.n.insert(y.n, 0)
