@@ -1421,15 +1421,13 @@ proc defineLibrary*() =
     #  Example: `remove.index 3 'a, debug a`
     #  labels: library, bug
 
-    # TODO(Collections\remove) add support for PathLiteral values
-    #  labels: library, enhancement
     builtin "remove",
         alias       = doubleminus,
         op          = opNop,
         rule        = InfixPrecedence,
         description = "remove value from given collection",
         args        = {
-            "collection": {String, Block, Dictionary, Object, Literal},
+            "collection": {String, Block, Dictionary, Object, Literal, PathLiteral},
             "value"     : {Any}
         },
         attrs       = {
@@ -1462,20 +1460,20 @@ proc defineLibrary*() =
             remove.instance.once [1 [6 2] 5 3 [6 2] 4 5 6] [6 2]  ; => [1 5 3 [6 2] 4 5 6]
         """:
             #=======================================================
-            if xKind == Literal:
-                ensureInPlace()
+            if xKind in {Literal, PathLiteral}:
+                ensureInPlaceAny()
                 if InPlaced.kind == String:
                     if (hadAttr("once")):
                         if yKind == String:
-                            SetInPlace(newString(InPlaced.s.removeFirst(y.s)))
+                            SetInPlaceAny(newString(InPlaced.s.removeFirst(y.s)))
                         else:
-                            SetInPlace(newString(InPlaced.s.removeFirst($(y.c))))
+                            SetInPlaceAny(newString(InPlaced.s.removeFirst($(y.c))))
                     elif (hadAttr("prefix")):
                         InPlaced.s.removePrefix(y.s)
                     elif (hadAttr("suffix")):
                         InPlaced.s.removeSuffix(y.s)
                     else:
-                        SetInPlace(newString(InPlaced.s.removeAll(y)))
+                        SetInPlaceAny(newString(InPlaced.s.removeAll(y)))
                 elif InPlaced.kind == Block:
                     if yKind == Block and hadAttr("instance"):
                         if hadAttr("once"):
@@ -1483,7 +1481,7 @@ proc defineLibrary*() =
                         else:
                             InPlaced.a = Inplaced.a.removeAllInstances(y)
                     elif (hadAttr("once")):
-                        SetInPlace(newBlock(InPlaced.a.removeFirst(y)))
+                        SetInPlaceAny(newBlock(InPlaced.a.removeFirst(y)))
                     elif (hadAttr("index")):
                         # TODO(General) All `SetInPlace` or `InPlace=` that change the type of object should be changed
                         #  It doesn't work when in-place changing passed parameters to a function
@@ -1492,13 +1490,13 @@ proc defineLibrary*() =
                         InPlaced.a = InPlaced.a.removeByIndex(y.i)
                         #SetInPlace(newBlock(InPlaced.a.removeByIndex(y.i)))
                     else:
-                        SetInPlace(newBlock(InPlaced.a.removeAll(y)))
+                        SetInPlaceAny(newBlock(InPlaced.a.removeAll(y)))
                 elif InPlaced.kind == Dictionary:
                     let key = (hadAttr("key"))
                     if (hadAttr("once")):
-                        SetInPlace(newDictionary(InPlaced.d.removeFirst(y, key)))
+                        SetInPlaceAny(newDictionary(InPlaced.d.removeFirst(y, key)))
                     else:
-                        SetInPlace(newDictionary(InPlaced.d.removeAll(y, key)))
+                        SetInPlaceAny(newDictionary(InPlaced.d.removeAll(y, key)))
                 elif InPlaced.kind == Object:
                     if InPlaced.magic.fetch(RemoveM):
                         pushAttr("inplace", VTRUE)
@@ -1506,9 +1504,9 @@ proc defineLibrary*() =
                     else:
                         let key = (hadAttr("key"))
                         if (hadAttr("once")):
-                            SetInPlace(newObject(InPlaced.proto, InPlaced.o.removeFirst(y, key), InPlaced.magic))
+                            SetInPlaceAny(newObject(InPlaced.proto, InPlaced.o.removeFirst(y, key), InPlaced.magic))
                         else:
-                            SetInPlace(newObject(InPlaced.proto, InPlaced.o.removeAll(y, key), InPlaced.magic))
+                            SetInPlaceAny(newObject(InPlaced.proto, InPlaced.o.removeAll(y, key), InPlaced.magic))
             else:
                 if xKind == String:
                     if (hadAttr("once")):
