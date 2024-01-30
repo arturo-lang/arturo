@@ -584,12 +584,18 @@
 [+] passed!
 [+] passed!
 
+>> reverse (pathLiteral)
+[+] passed!
+
 >> rotate
 [+] passed!
 [+] passed!
 
 >> rotate
 [+] passed!
+[+] passed!
+
+>> rotate - pathLiteral
 [+] passed!
 
 >> sample
@@ -658,6 +664,9 @@
 
 >> slice - (literal)
 [+] passed!
+[+] passed!
+
+>> slice - (pathLiteral)
 [+] passed!
 
 >> sort - + .descending
