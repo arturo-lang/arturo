@@ -227,6 +227,7 @@
 >> flatten
 [+] passed!
 [+] passed!
+[+] passed!
 
 >> flatten.once
 [+] passed!
@@ -363,6 +364,9 @@
 [+] passed!
 [+] passed!
 
+>> insert - :string (pathLiteral)
+[+] passed!
+
 >> get - :dictionary
 [+] passed!
 
@@ -469,6 +473,9 @@
 
 >> pop - :string .n
 [+] passed!
+[+] passed!
+
+>> pop - pathLiteral
 [+] passed!
 
 >> prepend
