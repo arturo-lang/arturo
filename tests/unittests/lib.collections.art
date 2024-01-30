@@ -1658,6 +1658,19 @@ do [
         passed
     ]
 
+    topic "prepend - [:string] < [:string] (pathLiteral) + :string"
+    do [
+        blk: ["u" "r" "o"]
+
+        a: new blk
+        b: #[b: new blk]
+
+        prepend 'a "Art"
+        prepend 'b\b "Art"
+        ensure -> a = b\b
+        passed
+    ]
+
     topic "prepend - [:string] < [:string] + :string - testing precedence"
     do [
 
