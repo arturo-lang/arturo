@@ -178,6 +178,11 @@
 [+] passed!
 [+] passed!
 
+>> drop - :string < :string (pathLiteral) :string
+rt
+rt
+[+] passed!
+
 >> drop - :block < :block :block
 [+] passed!
 [+] passed!
@@ -200,11 +205,15 @@
 [+] passed!
 [+] passed!
 [+] passed!
+[+] passed!
 
 >> extend
 [+] passed!
 
 >> extend (literal)
+[+] passed!
+
+>> extend (pathLiteral)
 [+] passed!
 
 >> first - .n
