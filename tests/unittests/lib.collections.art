@@ -1769,6 +1769,20 @@ do [
     passed
 
 ]
+topic "remove - :string (pathLiteral)"
+do [
+
+    str: "Arturo", 
+    
+    a: new str
+    b: #[b: new str]
+    
+    remove 'a "uro"
+    remove 'b\b "uro"
+    ensure -> a = b\b
+    passed
+
+]
 
 topic "remove - :dictionary"
 do [
@@ -1808,6 +1822,21 @@ do [
     u: #[name: "John" surname: "Doe"], 'u --.key 'surname
     ensure -> (#[name: "John"]) = u
 
+    passed
+
+]
+
+topic "remove - :dictionary (pathLiteral)"
+do [
+
+    u: #[name: "John" surname: "Doe"]
+    
+    a: new u
+    b: #[b: new u]
+    
+    remove 'a "Doe"
+    remove 'b\b "Doe"
+    ensure -> a = b\b
     passed
 
 ]
@@ -1907,6 +1936,21 @@ do [
 
     passed
 
+]
+
+topic "remove - :block (pathLiteral)"
+do [
+
+    blk: [1 2 [1 2] 3 4 1 2 [1 2] 3 4], 
+    
+    a: new blk
+    b: #[b: new blk]
+
+    remove 'a [1 2]
+    remove 'b\b [1 2]
+    ensure -> a = b\b
+
+    passed
 ]
 
 topic "repeat"
