@@ -648,6 +648,20 @@ do [
     passed
 ]
 
+topic "extend (pathLiteral)"
+do [
+
+    person: #[ name: "john" surname: "doe" ]
+    
+    a: new person
+    b: #[b: new person]
+
+    extend 'a #[ age: 35 ]
+    extend 'b\b #[ age: 35 ]
+    ensure -> a = b\b
+    passed
+]
+
 topic "first - .n"
 do [
 
