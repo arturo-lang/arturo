@@ -2119,15 +2119,13 @@ proc defineLibrary*() =
     #  Currently, simple split works fine - but using different attributes (at, every, by, etc) doesn't
     #  labels: library,bug
 
-    # TODO(Collections\split) add support for PathLiteral values
-    #  labels: library, enhancement
     builtin "split",
         alias       = unaliased,
         op          = opSplit,
         rule        = PrefixPrecedence,
         description = "split collection to components",
         args        = {
-            "collection": {String, Block, Literal}
+            "collection": {String, Block, Literal, PathLiteral}
         },
         attrs       = {
             "words" : ({Logical}, "split string by whitespace"),
@@ -2154,13 +2152,13 @@ proc defineLibrary*() =
             ; => [ [1 2 3 4] [5 6 7 8 9] ]
         """:
             #=======================================================
-            if xKind == Literal:
-                ensureInPlace()
+            if xKind in {Literal, PathLiteral}:
+                ensureInPlaceAny()
                 if InPlaced.kind == String:
                     if (hadAttr("words")):
-                        SetInPlace(newStringBlock(strutils.splitWhitespace(InPlaced.s)))
+                        SetInPlaceAny(newStringBlock(strutils.splitWhitespace(InPlaced.s)))
                     elif (hadAttr("lines")):
-                        SetInPlace(newStringBlock(InPlaced.s.splitLines()))
+                        SetInPlaceAny(newStringBlock(InPlaced.s.splitLines()))
                     elif (hadAttr("path")):
                         var strStart = 0
                         var strEnd = 1
@@ -2168,17 +2166,17 @@ proc defineLibrary*() =
                             strStart = 1
                         if InPlaced.s.endsWith(DirSep) or InPlaced.s.endsWith(AltSep):
                             strEnd = 2
-                        SetInPlace(newStringBlock(InPlaced.s[strStart..^strEnd].split({DirSep,AltSep})))
+                        SetInPlaceAny(newStringBlock(InPlaced.s[strStart..^strEnd].split({DirSep,AltSep})))
                     elif checkAttr("by"):
                         if aBy.kind == String:
-                            SetInPlace(newStringBlock(InPlaced.s.split(aBy.s)))
+                            SetInPlaceAny(newStringBlock(InPlaced.s.split(aBy.s)))
                         elif aBy.kind == Regex:
-                            SetInPlace(newStringBlock(InPlaced.s.split(aBy.rx)))
+                            SetInPlaceAny(newStringBlock(InPlaced.s.split(aBy.rx)))
                         else:
-                            SetInPlace(newStringBlock(toSeq(
+                            SetInPlaceAny(newStringBlock(toSeq(
                                     InPlaced.s.tokenize(aBy.a.map((k)=>(requireAttrValue("by",k,{String});k.s))))))
                     elif checkAttr("at"):
-                        SetInPlace(newStringBlock(@[InPlaced.s[0..aAt.i-1],
+                        SetInPlaceAny(newStringBlock(@[InPlaced.s[0..aAt.i-1],
                                 InPlaced.s[aAt.i..^1]]))
                     elif checkAttr("every"):
                         var ret: seq[string]
@@ -2193,14 +2191,14 @@ proc defineLibrary*() =
                                 ret.add(InPlaced.s[i..^1])
                                 i += aEvery.i
 
-                        SetInPlace(newStringBlock(ret))
+                        SetInPlaceAny(newStringBlock(ret))
 
                     else:
-                        SetInPlace(newStringBlock(toSeq(runes(InPlaced.s)).map((w) =>
+                        SetInPlaceAny(newStringBlock(toSeq(runes(InPlaced.s)).map((w) =>
                                 $(w))))
                 else:
                     if checkAttr("at"):
-                        SetInPlace(newBlock(@[newBlock(InPlaced.a[0..aAt.i-1]),
+                        SetInPlaceAny(newBlock(@[newBlock(InPlaced.a[0..aAt.i-1]),
                                 newBlock(InPlaced.a[aAt.i..^1])]))
                     elif checkAttr("every"):
                         var ret: ValueArray
@@ -2214,7 +2212,7 @@ proc defineLibrary*() =
                                 ret.add(newBlock(InPlaced.a[i..i+aEvery.i-1]))
                             i += aEvery.i
 
-                        SetInPlace(newBlock(ret))
+                        SetInPlaceAny(newBlock(ret))
                     else: discard
 
             elif xKind == String:
