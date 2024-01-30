@@ -228,15 +228,13 @@ proc defineLibrary*() =
                     else:
                         push(newBlock(@[x]))
 
-    # TODO(Collections\chop) add support for PathLiteral values
-    #  labels: library, enhancement, easy
     builtin "chop",
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "remove last item from given collection",
         args        = {
-            "collection": {String, Block, Literal}
+            "collection": {String, Block, Literal, PathLiteral}
         },
         attrs       = {
             "times"     : ({Integer}, "remove multiple items")
@@ -279,8 +277,8 @@ proc defineLibrary*() =
                 else:
                     container[0.. container.high - abs(times)]
                 
-            if x.kind == Literal:
-                ensureInPlace()
+            if x.kind in {Literal, PathLiteral}:
+                ensureInPlaceAny()
                 case InPlaced.kind
                 of String:
                     if numberInRange(InPlaced.s):
