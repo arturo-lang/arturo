@@ -2276,15 +2276,13 @@ proc defineLibrary*() =
                     push(newBlock(ret))
                 else: push(x)
 
-    # TODO(Collections\squeeze) add support for PathLiteral values
-    #  labels: library, enhancement
     builtin "squeeze",
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "reduce adjacent elements in given collection",
         args        = {
-            "collection": {String, Block, Literal}
+            "collection": {String, Block, Literal, PathLiteral}
         },
         attrs       = NoAttrs,
         returns     = {String, Block, Nothing},
@@ -2299,8 +2297,8 @@ proc defineLibrary*() =
             ; helo world
         """:
             #=======================================================
-            if xKind == Literal:
-                ensureInPlace()
+            if xKind in {Literal, PathLiteral}:
+                ensureInPlaceAny()
                 if InPlaced.kind == String:
                     var i = 0
                     var ret: string
@@ -2309,7 +2307,7 @@ proc defineLibrary*() =
                         while (i+1 < InPlaced.s.len and InPlaced.s[i+1] == InPlaced.s[i]):
                             i += 1
                         i += 1
-                    SetInPlace(newString(ret))
+                    SetInPlaceAny(newString(ret))
                 elif InPlaced.kind == Block:
                     var i = 0
                     var ret: ValueArray
@@ -2319,7 +2317,7 @@ proc defineLibrary*() =
                                 InPlaced.a[i]):
                             i += 1
                         i += 1
-                    SetInPlace(newBlock(ret))
+                    SetInPlaceAny(newBlock(ret))
             else:
                 if xKind == String:
                     var i = 0
