@@ -25,6 +25,9 @@
 [+] passed!
 [+] passed!
 
+>> append - :string < :string (pathLiteral) + :string
+[+] passed!
+
 >> append - :string < :string + :char
 [+] passed!
 [+] passed!
@@ -82,6 +85,9 @@
 
 >> chop - :string < :string (literal) :string
 [+] passed!
+[+] passed!
+
+>> chop - :string < :string (pathLiteral) :string
 [+] passed!
 
 >> chop.times - :string < :string (literal) :string
@@ -159,6 +165,7 @@
 [+] passed!
 
 >> decouple
+[+] passed!
 [+] passed!
 [+] passed!
 
