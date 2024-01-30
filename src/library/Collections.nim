@@ -1927,15 +1927,13 @@ proc defineLibrary*() =
     #  see: https://github.com/arturo-lang/arturo/pull/1045#issuecomment-1458960243
     #  labels: library, bug, critical
 
-    # TODO(Collections\sort) add support for PathLiteral values
-    #  labels: library, enhancement, easy
     builtin "sort",
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "sort given block in ascending order",
         args        = {
-            "collection": {Block, Dictionary, Literal}
+            "collection": {Block, Dictionary, Literal, PathLiteral}
         },
         attrs       = {
             "as"        : ({Literal}, "localized by ISO 639-1 language code"),
@@ -2050,7 +2048,7 @@ proc defineLibrary*() =
                             push(newDictionary(res))
 
             else:
-                ensureInPlace()
+                ensureInPlaceAny()
                 if InPlaced.kind == Block:
                     if InPlaced.a.len > 0:
                         if checkAttr("by"):
