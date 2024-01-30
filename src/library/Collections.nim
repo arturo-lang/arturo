@@ -578,15 +578,13 @@ proc defineLibrary*() =
                 of Dictionary: InPlaced.d = initOrderedTable[string, Value]()
                 else: discard
 
-    # TODO(Collections\extend) add support for PathLiteral values
-    #  labels: library, enhancement, easy
     builtin "extend",
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "get new dictionary by merging given ones",
         args        = {
-            "parent"    : {Dictionary, Literal},
+            "parent"    : {Dictionary, Literal, PathLiteral},
             "additional": {Dictionary}
         },
         attrs       = NoAttrs,
@@ -598,8 +596,8 @@ proc defineLibrary*() =
             ; [name:john surname:doe age:35]
         """:
             #=======================================================
-            if xKind == Literal:
-                ensureInPlace()
+            if xKind in {Literal, PathLiteral}:
+                ensureInPlaceAny()
                 for k, v in pairs(y.d):
                     InPlaced.d[k] = v
             else:
