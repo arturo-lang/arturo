@@ -517,6 +517,9 @@
 [+] passed!
 [+] passed!
 
+>> prepend - [:string] < [:string] (pathLiteral) + :string
+[+] passed!
+
 >> prepend - [:string] < [:string] + :string - testing precedence
 [+] passed!
 
@@ -540,12 +543,18 @@
 [+] passed!
 [+] passed!
 
+>> remove - :string (pathLiteral)
+[+] passed!
+
 >> remove - :dictionary
 [+] passed!
 [+] passed!
 
 >> remove - :dictionary (literal)
 [+] passed!
+[+] passed!
+
+>> remove - :dictionary (pathLiteral)
 [+] passed!
 
 >> remove - :block
@@ -562,6 +571,9 @@
 [+] passed!
 [+] passed!
 
+>> remove - :block (pathLiteral)
+[+] passed!
+
 >> repeat
 [+] passed!
 [+] passed!
@@ -570,6 +582,9 @@
 >> repeat (literal)
 [+] passed!
 [+] passed!
+[+] passed!
+
+>> repeat (pathLiteral)
 [+] passed!
 
 >> reverse
