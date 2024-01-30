@@ -1936,7 +1936,7 @@ do [
 
 ]
 
-topic "repeat (literal)"
+topic "repeat (pathLiteral)"
 do [
 
     string: "hello"
