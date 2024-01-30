@@ -729,6 +729,16 @@ do [
     a: [[1 2 3] [4 5 6]], flatten 'a
     ensure -> [1 2 3 4 5 6] = a
     passed
+    
+    blk: [[1 2 3] [4 5 6]], 
+    
+    a: new blk
+    b: #[b: new blk]
+    
+    flatten 'a
+    flatten 'b\b
+    ensure -> a = b\b
+    passed
 
 ]
 
