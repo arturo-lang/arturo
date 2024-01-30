@@ -57,15 +57,13 @@ proc defineLibrary*() =
     # Functions
     #----------------------------
 
-    # TODO(Collections\append) add support for PathLiteral values
-    #  labels: library, enhancement
     builtin "append",
         alias       = doubleplus,
         op          = opAppend,
         rule        = InfixPrecedence,
         description = "append value to given collection",
         args        = {
-            "collection": {String, Char, Block, Object, Binary, Literal},
+            "collection": {String, Char, Block, Object, Binary, Literal, PathLiteral},
             "value"     : {Any}
         },
         attrs       = NoAttrs,
@@ -87,8 +85,8 @@ proc defineLibrary*() =
             print b                   ; [1 2 3 4]
         """:
             #=======================================================
-            if xKind == Literal:
-                ensureInPlace()
+            if xKind in {Literal, PathLiteral}:
+                ensureInPlaceAny()
                 if InPlaced.kind == String:
                     if yKind == String:
                         InPlaced.s &= y.s
@@ -96,9 +94,9 @@ proc defineLibrary*() =
                         InPlaced.s &= $(y.c)
                 elif InPlaced.kind == Char:
                     if yKind == String:
-                        SetInPlace(newString($(InPlaced.c) & y.s))
+                        SetInPlaceAny(newString($(InPlaced.c) & y.s))
                     elif yKind == Char:
-                        SetInPlace(newString($(InPlaced.c) & $(y.c)))
+                        SetInPlaceAny(newString($(InPlaced.c) & $(y.c)))
                 elif InPlaced.kind == Binary:
                     if yKind == Binary:
                         InPlaced.n &= y.n
