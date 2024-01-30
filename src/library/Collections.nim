@@ -1554,15 +1554,13 @@ proc defineLibrary*() =
                         else:
                             push(newObject(x.proto, x.o.removeAll(y, key), x.magic))
 
-    # TODO(Collections\repeat) add support for PathLiteral values
-    #  labels: library, enhancement
     builtin "repeat",
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "repeat value the given number of times and return new one",
         args        = {
-            "value" : {Any, Literal},
+            "value" : {Any, Literal, PathLiteral},
             "times" : {Integer}
         },
         attrs       = NoAttrs,
@@ -1581,14 +1579,14 @@ proc defineLibrary*() =
             ; => [[1 2 3] [1 2 3] [1 2 3]]
         """:
             #=======================================================
-            if xKind == Literal:
-                ensureInPlace()
+            if xKind in {Literal, PathLiteral}:
+                ensureInPlaceAny()
                 if InPlaced.kind == String:
-                    SetInPlace(newString(InPlaced.s.repeat(y.i)))
+                    SetInPlaceAny(newString(InPlaced.s.repeat(y.i)))
                 elif InPlaced.kind == Block:
-                    SetInPlace(newBlock(InPlaced.a.cycle(y.i)))
+                    SetInPlaceAny(newBlock(InPlaced.a.cycle(y.i)))
                 else:
-                    SetInPlace(newBlock(InPlaced.repeat(y.i)))
+                    SetInPlaceAny(newBlock(InPlaced.repeat(y.i)))
             else:
                 if xKind == String:
                     push(newString(x.s.repeat(y.i)))
