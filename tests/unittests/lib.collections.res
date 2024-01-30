@@ -712,6 +712,17 @@
 [+] passed!
 [+] passed!
 
+>> sort - .values (pathLiteral)
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+
 >> sort - .by
 
 >> sorted?
@@ -732,6 +743,9 @@
 [+] passed!
 [+] passed!
 
+>> split - + .every (pathLiteral)
+[+] passed!
+
 >> split - .words
 [+] passed!
 [+] passed!
@@ -740,12 +754,18 @@
 [+] passed!
 [+] passed!
 
+>> split - .words (pathLiteral)
+[+] passed!
+
 >> split - .lines
 [+] passed!
 [+] passed!
 
 >> split - .lines (literal)
 [+] passed!
+[+] passed!
+
+>> split - .lines (pathLiteral)
 [+] passed!
 
 >> split - .by
@@ -758,12 +778,18 @@
 [+] passed!
 [+] passed!
 
+>> split - .by (literal)
+[+] passed!
+
 >> split - .at
 [+] passed!
 [+] passed!
 
 >> split - .at (literal)
 [+] passed!
+[+] passed!
+
+>> split - .at (pathLiteral)
 [+] passed!
 
 >> split - .path
@@ -774,12 +800,19 @@
 [+] passed!
 [+] passed!
 
+>> split - .path (pathLiteral)
+
 >> squeeze
 [+] passed!
 [+] passed!
 [+] passed!
 
 >> squeeze - (literal)
+[+] passed!
+[+] passed!
+[+] passed!
+
+>> squeeze - (pathLiteral)
 [+] passed!
 [+] passed!
 [+] passed!
