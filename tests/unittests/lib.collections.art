@@ -611,12 +611,14 @@ do [
     b3: @['north 'south 'east 'west]
     s: "Arturo"
     d: #[ name: "John" surname: "Doe"]
+    p: #[p: #[ name: "John" surname: "Doe"]]
 
     empty 'b1
     empty 'b2
     empty 'b3
     empty 's
     empty 'd
+    empty 'p\p
 
     ensure -> empty? b1
     passed
@@ -627,6 +629,8 @@ do [
     ensure -> empty? s
     passed
     ensure -> empty? d
+    passed
+    ensure -> empty? p\p
     passed
 ]
 
