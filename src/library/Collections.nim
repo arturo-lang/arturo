@@ -372,15 +372,13 @@ proc defineLibrary*() =
             #=======================================================
             push(newBlock(zip(x.a, y.a).map((z)=>newBlock(@[z[0], z[1]]))))
 
-    # TODO(Collections\decouple) add support for PathLiteral values
-    #  labels: library, enhancement, easy
     builtin "decouple",
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "get tuple of collections from a coupled collection of tuples",
         args        = {
-            "collection": {Block, Literal}
+            "collection": {Block, Literal, PathLiteral}
         },
         attrs       = NoAttrs,
         returns     = {Block},
@@ -392,8 +390,8 @@ proc defineLibrary*() =
             ; => ["one" "two" "three"] [1 2 3]
         """:
             #=======================================================
-            if xKind == Literal:
-                ensureInPlace()
+            if xKind in {Literal, PathLiteral}:
+                ensureInPlaceAny()
                 let res = unzip(InPlaced.a.map((w)=>(requireValue(w,{Block,Inline});(w.a[0], w.a[1]))))
                 InPlaced.a = @[newBlock(res[0]), newBlock(res[1])]
             else:
