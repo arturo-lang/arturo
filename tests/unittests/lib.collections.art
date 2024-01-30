@@ -78,7 +78,7 @@ do [
 
     ]
 
-        topic "append - :string < :string (literal) + :string"
+    topic "append - :string < :string (literal) + :string"
     do [
 
         s: "Art"
