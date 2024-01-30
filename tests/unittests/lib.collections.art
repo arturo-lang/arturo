@@ -271,6 +271,18 @@ do [
     if throws? -> chop chop chop 'b -> passed
 ]
 
+topic "chop - :string < :string (pathLiteral) :string"
+do [
+    str: "Arturo"
+    a: new str
+    b: #[b: new str] 
+    chop 'a
+    chop 'b\b
+
+    ensure -> a = b\b
+    passed
+]
+
 topic "chop.times - :string < :string (literal) :string"
 do [
     a: "Arturo", chop.times: 3 'a
