@@ -539,6 +539,22 @@ do [
     passed
 
 ]
+topic "drop - :string < :string (pathLiteral) :string"
+do [
+
+    str: "art", 
+    
+    a: new str
+    b: #[b: new str]
+
+    drop 'a
+    drop 'b\b
+    print a
+    print b\b
+    ensure -> a = b\b
+    passed
+
+]
 
 topic "drop - :block < :block :block"
 do [
