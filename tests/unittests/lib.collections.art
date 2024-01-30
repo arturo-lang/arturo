@@ -2278,6 +2278,22 @@ do [
 
 ]
 
+topic "slice - (pathLiteral)"
+do [
+
+    str: "Arturo", 
+    
+    a: new str
+    b: #[b: new str]
+
+    slice 'a 0 2
+    slice 'b\b 0 2
+    
+    ensure -> a = b\b
+    passed
+
+]
+
 
 topic "sort - + .descending"
 do [
