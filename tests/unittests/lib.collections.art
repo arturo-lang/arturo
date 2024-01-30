@@ -2007,6 +2007,22 @@ do [
 
 ]
 
+topic "rotate - pathLiteral"
+do [
+
+    blk: [a b c d e], 
+    
+    a: new blk
+    b: #[b: new blk]
+
+    rotate 'a 2
+    rotate 'b\b 2
+
+    ensure -> a = b\b
+    passed
+
+]
+
 topic "sample"
 do [
 
