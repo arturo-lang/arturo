@@ -1936,6 +1936,21 @@ do [
 
 ]
 
+topic "repeat (literal)"
+do [
+
+    string: "hello"
+    
+    a: new string
+    b: #[b: new string]
+
+    repeat 'a 3
+    repeat 'b\b 3
+    ensure -> a = b\b
+    passed
+
+]
+
 topic "reverse"
 do [
     ensure -> [4 3 2 1] = reverse [1 2 3 4]
