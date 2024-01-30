@@ -911,15 +911,13 @@ proc defineLibrary*() =
     #  `insert.many [1 4 5 6] 1 [2 3]` and get back `[1 2 3 4 5 6]`
     #  labels: library, enhancement, open discussion 
 
-    # TODO(Collections\insert) add support for PathLiteral values
-    #  labels: library, enhancement, easy
     builtin "insert",
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "insert value in collection at given index",
         args        = {
-            "collection": {String, Block, Dictionary, Literal},
+            "collection": {String, Block, Dictionary, Literal, PathLiteral},
             "index"     : {Integer, String},
             "value"     : {Any}
         },
@@ -940,8 +938,8 @@ proc defineLibrary*() =
             ; dict: [name: "Jane"]
         """:
             #=======================================================
-            if xKind == Literal:
-                ensureInPlace()
+            if xKind in {Literal, PathLiteral}:
+                ensureInPlaceAny()
                 case InPlaced.kind:
                     of String: 
                         if zKind==String: 
