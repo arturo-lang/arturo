@@ -93,6 +93,21 @@ do [
 
     ]
 
+    topic "append - :string < :string (pathLiteral) + :string"
+    do [
+
+        str: "Art"
+
+        a: new str
+        b: #[b: new str]
+
+        append 'a "uro"
+        append 'b\b "uro"
+        ensure -> a = b\b
+        passed
+
+    ]
+
     topic "append - :string < :string + :char"
     do [
 
