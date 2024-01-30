@@ -2565,6 +2565,110 @@ do [
 
 ]
 
+topic "sort - .values (pathLiteral)"
+do [
+
+    user: #[ name: "John" surname: "Doe" age: 35 income: 5000]
+    
+    a: new user
+    b: #[b: new user]
+    
+    sort.values 'a
+    sort.values 'b\b
+    ensure -> a = b\b
+    passed
+
+
+    ; .sensitive
+
+    dict: #[b: "c" a: "A"  c: "a" e: "b" d:"C" g: "B" ]
+
+    a: new dict
+    b: #[b: new dict]
+    
+    sort.sensitive 'a
+    sort.sensitive 'b\b
+    ensure -> a = b\b
+    passed
+
+    dict: #[b: "c" a: "A"  c: "a" e: "b" d:"C" g: "B" ]
+    
+    a: new dict
+    b: #[b: new dict]
+
+    sort.sensitive.descending 'a
+    sort.sensitive.descending 'b\b
+    ensure -> a = b\b
+    passed
+
+    dict: #[b: "c" a: "A"  c: "a" e: "b" d:"C" g: "B" ]
+    
+    a: new dict
+    b: #[b: new dict]
+    
+    sort.sensitive.values 'a
+    sort.sensitive.values 'b\b
+    ensure -> a = b\b
+    passed
+
+    dict: #[b: "c" a: "A"  c: "a" e: "b" d:"C" g: "B" ]
+    
+    a: new dict
+    b: #[b: new dict]
+    
+    sort.sensitive.descending.values 'a
+    sort.sensitive.descending.values 'b\b
+    ensure -> a = b\b
+    passed
+
+
+    ; .as
+
+    dict: #[a: "uno", b:"dos",c:"tres",d:"Uno",e:"perversión",f:"ábaco",g:"abismo", h:"aberración"]
+    
+    a: new dict
+    b: #[b: new dict]
+    
+    sort.values.as: 'es 'a
+    sort.values.as: 'es 'b\b
+    ensure -> a = b\b
+    passed
+
+    dict: #[a: "uno", b:"dos",c:"tres",d:"Uno",e:"perversión",f:"ábaco",g:"abismo", h:"aberración"]
+    
+    a: new dict
+    b: #[b: new dict]
+
+    sort.values.descending.as: 'es 'a
+    sort.values.descending.as: 'es 'b\b
+    ensure -> a = b\b
+    passed
+
+
+    ; .ascii
+
+    dict: #[a: "uno", b:"dos",c:"tres",d:"Uno",e:"perversión",f:"ábaco",g:"abismo", h:"aberración"]
+    
+    a: new dict
+    b: #[b: new dict]
+
+    sort.values.ascii 'a
+    sort.values.ascii 'b\b
+    ensure -> a = b\b
+    passed
+
+    dict: #[a: "uno", b:"dos",c:"tres",d:"Uno",e:"perversión",f:"ábaco",g:"abismo", h:"aberración"]
+    
+    a: new dict
+    b: #[b: new dict]
+
+    sort.values.descending.ascii 'a
+    sort.values.descending.ascii 'b\b
+    ensure -> a = b\b
+    passed
+
+]
+
 topic "sort - .by"
 do [
 
