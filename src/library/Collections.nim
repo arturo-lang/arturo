@@ -1216,15 +1216,13 @@ proc defineLibrary*() =
                 push(newBlock(getPermutations(x.a, sz, doRepeat).map((
                         z)=>newBlock(z))))
 
-    # TODO(Collections\pop) add support for PathLiteral values
-    #  labels: library, enhancement, easy
     builtin "pop",
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "remove and return the last item from given collection",
         args        = {
-            "collection": {Literal}
+            "collection": {Literal, PathLiteral}
         },
         attrs       = {
             "n"     : ({Integer}, "remove multiple items. (Must be greater than 0.)")
@@ -1275,7 +1273,7 @@ proc defineLibrary*() =
                 if checkAttr("n"): aN.i
                 else: 1
             
-            ensureInPlace()
+            ensureInPlaceAny()
             if n == 1:
                 case InPlaced.kind:
                 of String: 
