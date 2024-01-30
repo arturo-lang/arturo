@@ -1597,15 +1597,13 @@ proc defineLibrary*() =
                 else:
                     push(newBlock(safeRepeat(x, y.i)))
 
-    # TODO(Collections\reverse) add support for PathLiteral values
-    #  labels: library, enhancement, easy
     builtin "reverse",
         alias       = unaliased,
         op          = opReverse,
         rule        = PrefixPrecedence,
         description = "reverse given collection",
         args        = {
-            "collection": {String, Block, Range, Literal}
+            "collection": {String, Block, Range, Literal, PathLiteral}
         },
         attrs       = {
             "exact" : ({Logical}, "make sure the reverse range contains the same elements")
@@ -1631,8 +1629,8 @@ proc defineLibrary*() =
 
             let exact = hadAttr("exact")
 
-            if xKind == Literal:
-                ensureInPlace()
+            if xKind in {Literal, PathLiteral}:
+                ensureInPlaceAny()
                 if InPlaced.kind == String:
                     InPlaced.s.reverse()
                 elif InPlaced.kind == Range:
