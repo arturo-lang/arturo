@@ -1873,15 +1873,13 @@ proc defineLibrary*() =
             else: # Null
                 push(newInteger(0))
 
-    # TODO(Collections\slice) add support for PathLiteral values
-    #  labels: library, enhancement
     builtin "slice",
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "get a slice of collection between given indices",
         args        = {
-            "collection": {String, Block, Literal},
+            "collection": {String, Block, Literal, PathLiteral},
             "from"      : {Integer},
             "to"        : {Integer}
         },
@@ -1893,14 +1891,14 @@ proc defineLibrary*() =
             print slice 1..10 3 4         ; 4 5
         """:
             #=======================================================
-            if xKind == Literal:
-                ensureInPlace()
+            if xKind in {Literal, PathLiteral}:
+                ensureInPlaceAny()
                 if InPlaced.kind == String:
                     if InPlaced.s.len == 0:
-                        SetInPlace newString("")
+                        SetInPlaceAny newString("")
                     else:
                         if y.i >= 0 and z.i <= InPlaced.s.runeLen:
-                            SetInPlace newString Inplaced.s.runeSubStr(y.i, z.i - y.i + 1)
+                            SetInPlaceAny newString Inplaced.s.runeSubStr(y.i, z.i - y.i + 1)
                 else:
                     if y.i >= 0 and z.i <= InPlaced.a.len-1:
                         InPlaced.a = InPlaced.a[y.i..z.i]
