@@ -2746,6 +2746,22 @@ do [
 
 ]
 
+topic "split - + .every (pathLiteral)"
+do [
+
+    str: "Arturo"
+    
+    a: new str
+    b: #[b: new str]
+
+    split 'a
+    split 'b\b
+
+    ensure -> a = b\b
+    passed
+
+]
+
 topic "split - .words"
 do [
 
@@ -2768,6 +2784,22 @@ do [
     ; Don't change behavior
     a: "Arturo Programming Language", split.words.every:2 'a
     ensure -> ["Arturo" "Programming" "Language"] = a
+    passed
+
+]
+
+topic "split - .words (pathLiteral)"
+do [
+
+    str: "Arturo Programming Language", 
+
+    a: new str
+    b: #[b: new str]
+
+    split.words 'a
+    split.words 'b\b
+
+    ensure -> a = b\b
     passed
 
 ]
@@ -2821,6 +2853,27 @@ do [
     ; Don't change behavior
     split.lines.every: 2 'string
     ensure -> expected = string
+    passed
+
+]
+
+topic "split - .lines (pathLiteral)"
+do [
+
+    string: {
+        {
+            "object": "value",
+            "array": ["value", "value"],
+        }
+    }
+
+    a: new string
+    b: #[b: new string]
+
+    split.lines 'a
+    split.lines 'b\b
+
+    ensure -> a = b\b
     passed
 
 ]
@@ -2895,6 +2948,27 @@ do [
 
 ]
 
+topic "split - .by (literal)"
+do [
+
+    sample: {
+        Arturo is an independently-developed,
+        modern programming language,
+        vaguely related to various other ones
+        - including but not limited to:
+        Logo, Rebol, Forth, Ruby, Haskell, D, Smalltalk, Tcl,
+        and Lisp.
+    }
+
+    a: new sample
+    b: #[b: new sample]
+    split.by: ["," "-" ":" "\n" "."] 'a
+    split.by: ["," "-" ":" "\n" "."] 'b\b
+    ensure -> a = b\b
+    passed
+
+]
+
 topic "split - .at"
 do [
 
@@ -2916,6 +2990,21 @@ do [
 
     a: ["Arturo" " Nim" " Ruby" " Python", " C", " CoffeeScript"], split.at: 4 'a
     ensure -> [["Arturo" " Nim" " Ruby" " Python"] [" C" " CoffeeScript"]] = a
+    passed
+
+]
+
+topic "split - .at (pathLiteral)"
+do [
+
+    str: "helloworld"
+
+    a: new str
+    b: #[b: new str] 
+    split.at: 4 'a
+    split.at: 4 'b\b
+
+    ensure -> a = b\b
     passed
 
 ]
@@ -2971,6 +3060,37 @@ do [
             p: "/usr/bin", split.path 'p
             ensure -> ["usr" "bin"] =  p
             passed
+
+    ]
+
+]
+
+topic "split - .path (pathLiteral)"
+do [
+
+    (sys\os = "windows")? [
+            ; Accepts \\ and / paths
+            str: "directory\\wofilerld", 
+            
+            a: new str
+            b: #[ b: new str ]
+
+            split.path 'a 
+            split.path 'b\b
+            
+            ensure -> a = b\b
+
+        ][
+            ; Accepts / paths
+            str: "directory\\wofilerld", 
+            
+            a: new str
+            b: #[ b: new str ]
+
+            split.path 'a 
+            split.path 'b\b
+            
+            ensure -> a = b\b
 
     ]
 
