@@ -1543,6 +1543,18 @@ do [
 
 ]
 
+topic "pop - pathLiteral"
+do [
+    blk: [0 1 2 3 4]
+    a: new blk
+    b: #[b: new blk]
+
+    pop 'a
+    pop 'b\b
+    ensure -> a = b\b
+    passed
+]
+
 
 topic "prepend"
 do [
