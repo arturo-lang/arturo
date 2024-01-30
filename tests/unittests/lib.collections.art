@@ -3011,6 +3011,43 @@ do [
 
 ]
 
+topic "squeeze - (pathLiteral)"
+do [
+
+    blk: [1 1 2 3 4 2 3 4 4 5 5 6 7]
+    a: new blk
+    b: #[b: new blk]
+    
+    squeeze 'a
+    squeeze 'b\b
+
+    ensure -> a = b\b
+    passed
+
+    blk: [1 [4 2 3] 1 2 3 [4 2 3] 4 4 5 5 [6 7] [6 7]]
+
+    a: new blk
+    b: #[b: new blk]
+    
+    squeeze 'a
+    squeeze 'b\b
+
+    ensure -> a = b\b
+    passed
+
+    str: "hellllo wooooorrrrld"
+
+    a: new str
+    b: #[b: new str]
+    
+    squeeze 'a
+    squeeze 'b\b
+
+    ensure -> a = b\b
+    passed
+
+]
+
 topic "take - :string < :string :string"
 do [
 
@@ -3238,7 +3275,7 @@ topic "take - :block < :range (pathLiteral) :integer"
 do [
 
     ; TODO: not working well
-    
+
     rng: 1..3
 
     a: new rng
