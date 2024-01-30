@@ -146,15 +146,13 @@ proc defineLibrary*() =
             #=======================================================
             generateOperationB("or", `||`, `||=`)
 
-    # TODO(Bitwise\shl) add support for PathLiteral values
-    #  labels: library, enhancement
     builtin "shl",
         alias       = unaliased, 
         op          = opShl,
         rule        = InfixPrecedence,
         description = "shift-left first value bits by second value",
         args        = {
-            "value" : {Integer,Literal},
+            "value" : {Integer,Literal,PathLiteral},
             "bits"  : {Integer}
         },
         attrs       = {
@@ -168,12 +166,12 @@ proc defineLibrary*() =
             shl 'a 3           ; a: 16
         """:
             #=======================================================
-            if xKind==Literal : 
-                ensureInPlace(); 
+            if xKind in {Literal, PathLiteral}: 
+                ensureInPlaceAny(); 
                 let valBefore = InPlaced
                 InPlaced <<= y
                 if InPlaced < valBefore and (hadAttr("safe")):
-                    SetInPlace(newBigInteger(valBefore.i) << y)
+                    SetInPlaceAny(newBigInteger(valBefore.i) << y)
             elif normalIntegerOperation():
                 var res = normalIntegerShl(x.i, y.i)
                 if res < x and (hadAttr("safe")):
