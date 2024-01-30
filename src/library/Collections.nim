@@ -1809,15 +1809,13 @@ proc defineLibrary*() =
                     x.s = res
                 else: discard
 
-    # TODO(Collections\shuffle) add support for PathLiteral values
-    #  labels: library, enhancement, easy
     builtin "shuffle",
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "get given collection shuffled",
         args        = {
-            "collection": {Block, Literal}
+            "collection": {Block, Literal, PathLiteral}
         },
         attrs       = NoAttrs,
         returns     = {Block, Nothing},
@@ -1829,8 +1827,8 @@ proc defineLibrary*() =
             print arr                     ; 5 9 2
         """:
             #=======================================================
-            if xKind == Literal:
-                ensureInPlace()
+            if xKind in {Literal, PathLiteral}:
+                ensureInPlaceAny()
                 InPlaced.a.shuffle()
             else:
                 push(newBlock(x.a.dup(shuffle)))
