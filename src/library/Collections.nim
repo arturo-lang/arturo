@@ -553,15 +553,13 @@ proc defineLibrary*() =
                     else: push(newBlock())
                 else: discard
 
-    # TODO(Collections\empty) add support for PathLiteral values
-    #  labels: library, enhancement, easy
     builtin "empty",
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "empty given collection",
         args        = {
-            "collection": {Literal}
+            "collection": {Literal, PathLiteral}
         },
         attrs       = NoAttrs,
         returns     = {Nothing},
@@ -573,7 +571,7 @@ proc defineLibrary*() =
             empty 'str            ; str: ""
         """:
             #=======================================================
-            ensureInPlace()
+            ensureInPlaceAny()
             case InPlaced.kind:
                 of String: InPlaced.s = ""
                 of Block: InPlaced.a = @[]
