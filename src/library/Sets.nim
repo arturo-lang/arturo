@@ -35,15 +35,13 @@ proc defineLibrary*() =
     # Functions
     #----------------------------
 
-    # TODO(Sets\difference) add support for PathLiteral values
-    #  labels: library, enhancement
     builtin "difference",
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "return the difference of given sets",
         args        = {
-            "setA"  : {Block,Literal},
+            "setA"  : {Block,Literal, PathLiteral},
             "setB"  : {Block}
         },
         attrs       = {
@@ -64,27 +62,25 @@ proc defineLibrary*() =
         """:
             #=======================================================
             if (hadAttr("symmetric")):
-                if xKind==Literal:
-                    ensureInPlace()
-                    SetInPlace(newBlock(toSeq(symmetricDifference(toOrderedSet(InPlaced.a), toOrderedSet(y.a)))))
+                if xKind in {Literal,PathLiteral}:
+                    ensureInPlaceAny()
+                    SetInPlaceAny(newBlock(toSeq(symmetricDifference(toOrderedSet(InPlaced.a), toOrderedSet(y.a)))))
                 else:
                     push(newBlock(toSeq(symmetricDifference(toOrderedSet(x.a), toOrderedSet(y.a)))))
             else:
-                if xKind==Literal:
-                    ensureInPlace()
-                    SetInPlace(newBlock(toSeq(difference(toOrderedSet(InPlaced.a), toOrderedSet(y.a)))))
+                if xKind in {Literal,PathLiteral}:
+                    ensureInPlaceAny()
+                    SetInPlaceAny(newBlock(toSeq(difference(toOrderedSet(InPlaced.a), toOrderedSet(y.a)))))
                 else:
                     push(newBlock(toSeq(difference(toOrderedSet(x.a), toOrderedSet(y.a)))))
 
-    # TODO(Sets\intersection) add support for PathLiteral values
-    #  labels: library, enhancement
     builtin "intersection",
         alias       = VSymbol.intersection, 
         op          = opNop,
         rule        = InfixPrecedence,
         description = "return the intersection of given sets",
         args        = {
-            "setA"  : {Block,Literal},
+            "setA"  : {Block,Literal, PathLiteral},
             "setB"  : {Block}
         },
         attrs       = NoAttrs,
@@ -99,21 +95,19 @@ proc defineLibrary*() =
             ; a: [3 4]
         """:
             #=======================================================
-            if xKind==Literal:
-                ensureInPlace()
-                SetInPlace(newBlock(toSeq(intersection(toOrderedSet(InPlaced.a), toOrderedSet(y.a)))))
+            if xKind in {Literal,PathLiteral}:
+                ensureInPlaceAny()
+                SetInPlaceAny(newBlock(toSeq(intersection(toOrderedSet(InPlaced.a), toOrderedSet(y.a)))))
             else:
                 push(newBlock(toSeq(intersection(toOrderedSet(x.a), toOrderedSet(y.a)))))
 
-    # TODO(Sets\powerset) add support for PathLiteral values
-    #  labels: library, enhancement
     builtin "powerset",
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "return the powerset of given set",
         args        = {
-            "set"   : {Block,Literal}
+            "set"   : {Block,Literal, PathLiteral}
         },
         attrs       = NoAttrs,
         returns     = {Block,Nothing},
@@ -122,21 +116,19 @@ proc defineLibrary*() =
             ;  [[] [1] [2] [1 3] [3] [1 2] [2 3] [1 2 3]]
         """:
             #=======================================================
-            if xKind==Literal:
-                ensureInPlace()
-                SetInPlace(newBlock(toSeq(powerset(toOrderedSet(InPlaced.a))).map((hs) => newBlock(toSeq(hs)))))
+            if xKind in {Literal,PathLiteral}:
+                ensureInPlaceAny()
+                SetInPlaceAny(newBlock(toSeq(powerset(toOrderedSet(InPlaced.a))).map((hs) => newBlock(toSeq(hs)))))
             else:
                 push(newBlock(toSeq(powerset(toOrderedSet(x.a)).map((hs) => newBlock(toSeq(hs))))))
 
-    # TODO(Sets\union) add support for PathLiteral values
-    #  labels: library, enhancement
     builtin "union",
         alias       = VSymbol.union, 
         op          = opNop,
         rule        = InfixPrecedence,
         description = "return the union of given sets",
         args        = {
-            "setA"  : {Block,Literal},
+            "setA"  : {Block,Literal, PathLiteral},
             "setB"  : {Block}
         },
         attrs       = NoAttrs,
@@ -151,9 +143,9 @@ proc defineLibrary*() =
             ; a: [1 2 3 4 5 6]
         """:
             #=======================================================
-            if xKind==Literal:
-                ensureInPlace()
-                SetInPlace(newBlock(toSeq(union(toOrderedSet(InPlaced.a), toOrderedSet(y.a)))))
+            if xKind in {Literal,PathLiteral}:
+                ensureInPlaceAny()
+                SetInPlaceAny(newBlock(toSeq(union(toOrderedSet(InPlaced.a), toOrderedSet(y.a)))))
             else:
                 push(newBlock(toSeq(union(toOrderedSet(x.a), toOrderedSet(y.a)))))
 
