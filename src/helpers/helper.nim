@@ -406,7 +406,7 @@ proc getInfo*(objName: string, objValue: Value, aliases: SymbolDict): ValueDict 
     if obj.val.info.descr  != "":  result["description"] = newString(obj.val.info.descr) 
     if obj.val.info.module != "": result["module"]       = newString(obj.val.info.module)
 
-    if obj.val.info.kind == Function:
+    if obj.val.info.kind in {Function,Method}:
         result.insertFunctionInfo(obj, aliases)
         
     when defined(DOCGEN):
@@ -437,5 +437,5 @@ proc printInfo*(objName: string, objValue: Value, aliases: SymbolDict) =
 
     # If it's a function,
     # print more details
-    if obj.val.info.kind == Function:
+    if obj.val.info.kind in {Function,Method}:
         obj.printFunction()
