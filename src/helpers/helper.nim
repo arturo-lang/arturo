@@ -147,7 +147,7 @@ proc getUsageForFunction(obj: ValueObj): seq[string] =
             for tt in templateType[1..^1]:
                 result.add fmt"{spaceBefore}{extraSpaceBefore}{fg(grayColor)}{tt}{resetColor}"
     else:   
-        result.add fmt"{templateName} {templateType}"
+        result.add fmt"{templateName} {templateType[0]}"
 
     for arg in args[1..^1]:
         let
