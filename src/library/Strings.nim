@@ -115,15 +115,13 @@ proc defineLibrary*() =
 
             push(newBlock(got))
 
-    # TODO(Strings\capitalize) add support for PathLiteral values
-    #  labels: library, enhancement, easy
     builtin "capitalize",
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "convert given string to capitalized",
         args        = {
-            "string": {String,Char,Literal}
+            "string": {String,Char,Literal,PathLiteral}
         },
         attrs       = NoAttrs,
         returns     = {String,Char,Nothing},
@@ -137,21 +135,19 @@ proc defineLibrary*() =
             if xKind==String: push(newString(x.s.capitalize()))
             elif xKind==Char: push(newChar(x.c.toUpper()))
             else: 
-                ensureInPlace()
+                ensureInPlaceAny()
                 if InPlaced.kind==String:
                     InPlaced.s = InPlaced.s.capitalize()
                 else:
                     InPlaced.c = InPlaced.c.toUpper()
 
-    # TODO(Strings\escape) add support for PathLiteral values
-    #  labels: library, enhancement
     builtin "escape",
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "escape given string",
         args        = {
-            "string": {String,Literal}
+            "string": {String,Literal,PathLiteral}
         },
         attrs       = {
             "json"  : ({Logical},"for literal use in JSON strings"),
@@ -179,19 +175,19 @@ proc defineLibrary*() =
             ; a long &quot;string&quot; + with \diffe\rent symbols.
         """:
             #=======================================================
-            if xKind==Literal:
-                ensureInPlace()
+            if xKind in {Literal, PathLiteral}:
+                ensureInPlaceAny()
                 if (hadAttr("json")):
-                    SetInPlace(newString(escapeJsonUnquoted(InPlaced.s)))
+                    SetInPlaceAny(newString(escapeJsonUnquoted(InPlaced.s)))
                 elif (hadAttr("regex")):
-                    SetInPlace(newString(escapeForRegex(InPlaced.s)))
+                    SetInPlaceAny(newString(escapeForRegex(InPlaced.s)))
                 elif (hadAttr("shell")):
                     when not defined(WEB):
-                        SetInPlace(newString(quoteShell(InPlaced.s)))
+                        SetInPlaceAny(newString(quoteShell(InPlaced.s)))
                 elif (hadAttr("xml")):
-                    SetInPlace(newString(xmltree.escape(InPlaced.s)))
+                    SetInPlaceAny(newString(xmltree.escape(InPlaced.s)))
                 else:
-                    SetInPlace(newString(strutils.escape(InPlaced.s)))
+                    SetInPlaceAny(newString(strutils.escape(InPlaced.s)))
             else:
                 if (hadAttr("json")):
                     push(newString(escapeJsonUnquoted(x.s)))
@@ -205,15 +201,13 @@ proc defineLibrary*() =
                 else:
                     push(newString(strutils.escape(x.s)))
 
-    # TODO(Strings\indent) add support for PathLiteral values
-    #  labels: library, enhancement
     builtin "indent",
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "indent each line of given text",
         args        = {
-            "text"  : {String,Literal}
+            "text"  : {String,Literal,PathLiteral}
         },
         attrs       = {
             "n"     : ({Integer},"pad by given number of spaces (default: 4)"),
@@ -243,9 +237,9 @@ proc defineLibrary*() =
             if checkAttr("with"):
                 padding = aWith.s
 
-            if xKind==Literal:
-                ensureInPlace()
-                SetInPlace(newString(indent(InPlaced.s, count, padding)))
+            if xKind in {Literal, PathLiteral}:
+                ensureInPlaceAny()
+                SetInPlaceAny(newString(indent(InPlaced.s, count, padding)))
             else:
                 push(newString(indent(x.s, count, padding)))      
 
@@ -271,15 +265,13 @@ proc defineLibrary*() =
         """:
             push(newFloating(jaro(x.s,y.s)))    
 
-    # TODO(Strings\join) add support for PathLiteral values
-    #  labels: library, enhancement
     builtin "join",
         alias       = unaliased, 
         op          = opJoin,
         rule        = PrefixPrecedence,
         description = "join collection of values into string",
         args        = {
-            "collection"    : {Block,Literal}
+            "collection"    : {Block,Literal,PathLiteral}
         },
         attrs       = {
             "with"  : ({String},"use given separator"),
@@ -305,9 +297,9 @@ proc defineLibrary*() =
         """:
             #=======================================================
             if (hadAttr("path")):
-                if xKind==Literal:
-                    ensureInPlace()
-                    SetInPlace(newString(joinPath(InPlaced.a.map(proc (v:Value):string = $(v)))))
+                if xKind in {Literal, PathLiteral}:
+                    ensureInPlaceAny()
+                    SetInPlaceAny(newString(joinPath(InPlaced.a.map(proc (v:Value):string = $(v)))))
                 else:
                     push(newString(joinPath(x.a.map(proc (v:Value):string = $(v)))))
             else:
@@ -315,9 +307,9 @@ proc defineLibrary*() =
                 if checkAttr("with"):
                     sep = aWith.s
 
-                if xKind==Literal:
-                    ensureInPlace()
-                    SetInPlace(newString(InPlaced.a.map(proc (v:Value):string = $(v)).join(sep)))
+                if xKind in {Literal, PathLiteral}:
+                    ensureInPlaceAny()
+                    SetInPlaceAny(newString(InPlaced.a.map(proc (v:Value):string = $(v)).join(sep)))
                 else:
                     push(newString(x.a.map(proc (v:Value):string = $(v)).join(sep)))
 
@@ -518,15 +510,13 @@ proc defineLibrary*() =
 
                     push(newBlock(res))
 
-    # TODO(Strings\outdent) add support for PathLiteral values
-    #  labels: library, enhancement
     builtin "outdent",
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "outdent each line of given text, by using minimum shared indentation",
         args        = {
-            "text"  : {String,Literal}
+            "text"  : {String,Literal,PathLiteral}
         },
         attrs       = {
             "n"     : ({Integer},"unpad by given number of spaces"),
@@ -555,8 +545,8 @@ proc defineLibrary*() =
         """:
             #=======================================================
             var count = 0
-            if xKind==Literal:
-                ensureInPlace()
+            if xKind in {Literal,PathLiteral}:
+                ensureInPlaceAny()
                 count = indentation(InPlaced.s)
             else:
                 count = indentation(x.s)
@@ -569,21 +559,19 @@ proc defineLibrary*() =
             if checkAttr("with"):
                 padding = aWith.s
 
-            if xKind==Literal:
-                ensureInPlace()
-                SetInPlace(newString(unindent(InPlaced.s, count, padding)))
+            if xKind in {Literal, PathLiteral}:
+                ensureInPlaceAny()
+                SetInPlaceAny(newString(unindent(InPlaced.s, count, padding)))
             else:
                 push(newString(unindent(x.s, count, padding))) 
 
-    # TODO(Strings\pad) add support for PathLiteral values
-    #  labels: library, enhancement, easy
     builtin "pad",
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "align string by adding given padding",
         args        = {
-            "string"    : {String,Literal},
+            "string"    : {String,Literal,PathLiteral},
             "padding"   : {Integer}
         },
         attrs       = {
@@ -611,17 +599,17 @@ proc defineLibrary*() =
             if (hadAttr("right")):
                 if xKind==String: push(newString(unicode.alignLeft(x.s, y.i, padding=padding)))
                 else: 
-                    ensureInPlace()
+                    ensureInPlaceAny()
                     InPlaced.s = unicode.alignLeft(InPlaced.s, y.i, padding=padding)
             elif (hadAttr("center")):
                 if xKind==String: push(newString(centerUnicode(x.s, y.i, padding=padding)))
                 else: 
-                    ensureInPlace()
+                    ensureInPlaceAny()
                     InPlaced.s = centerUnicode(InPlaced.s, y.i, padding=padding)
             else:
                 if xKind==String: push(newString(unicode.align(x.s, y.i, padding=padding)))
                 else: 
-                    ensureInPlace()
+                    ensureInPlaceAny()
                     InPlaced.s = unicode.align(InPlaced.s, y.i, padding=padding)
 
     when not defined(WEB):
@@ -629,15 +617,13 @@ proc defineLibrary*() =
         #  the lack of proper RegEx libraries could be handled by using the newly-added JS helper functions
         #  labels: enhancement,library,web
 
-        # TODO(Strings\render) add support for PathLiteral values
-        #  labels: library, enhancement
         builtin "render",
             alias       = tilde, 
             op          = opNop,
             rule        = PrefixPrecedence,
             description = "render template with |string| interpolation",
             args        = {
-                "template"  : {String,Literal}
+                "template"  : {String,Literal,PathLiteral}
             },
             attrs       = {
                 "once"      : ({Logical},"don't render recursively"),
@@ -653,8 +639,8 @@ proc defineLibrary*() =
                 let recursive = not (hadAttr("once"))
                 let templated = (hadAttr("template"))
                 var res: string
-                if xKind == Literal:
-                    ensureInPlace()
+                if xKind in {Literal,PathLiteral}:
+                    ensureInPlaceAny()
                     res = InPlaced.s
                 else:
                     res = x.s
@@ -716,9 +702,9 @@ proc defineLibrary*() =
                         if recursive: keepGoing = res.find(Interpolated).isSome
                         else: keepGoing = false
 
-                if xKind == Literal:
-                    ensureInPlace()
-                    SetInPlace(newString(res))
+                if xKind in {Literal,PathLiteral}:
+                    ensureInPlaceAny()
+                    SetInPlaceAny(newString(res))
                 else:
                     push(newString(res))
 
@@ -729,15 +715,13 @@ proc defineLibrary*() =
     #  see: https://discord.com/channels/765519132186640445/829324913097048065/1078717850270842962
     #  labels: enhancement,library
 
-    # TODO(Strings\replace) add support for PathLiteral values
-    #  labels: library, enhancement, easy
     builtin "replace",
         alias       = unaliased, 
         op          = opReplace,
         rule        = PrefixPrecedence,
         description = "replace every matched substring/s by given replacement string and return result",
         args        = {
-            "string"        : {String, Literal},
+            "string"        : {String, Literal,PathLiteral},
             "match"         : {String, Regex, Block},
             "replacement"   : {String, Block}
         },
@@ -771,7 +755,7 @@ proc defineLibrary*() =
                             inc i
                     push(newString(final))
             else:
-                ensureInPlace()
+                ensureInPlaceAny()
                 if yKind==String:
                     InPlaced.s = InPlaced.s.replaceAll(y.s, z.s)
                 elif yKind==Regex:
@@ -787,15 +771,13 @@ proc defineLibrary*() =
                             replaceStrWith(InPlaced.s, y.a[i], z.a[i])
                             inc i
 
-    # TODO(Strings\strip) add support for PathLiteral values
-    #  labels: library, enhancement, easy
     builtin "strip",
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "strip whitespace from given string",
         args        = {
-            "string": {String,Literal}
+            "string": {String,Literal,PathLiteral}
         },
         attrs       = {
             "start" : ({Logical},"strip leading whitespace"),
@@ -823,18 +805,16 @@ proc defineLibrary*() =
 
             if xKind==String: push(newString(strutils.strip(x.s, leading, trailing)))
             else: 
-                ensureInPlace()
+                ensureInPlaceAny()
                 InPlaced.s = strutils.strip(InPlaced.s, leading, trailing) 
 
-    # TODO(Strings\translate) add support for PathLiteral values
-    #  labels: library, enhancement, easy
     builtin "translate",
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "takes a dictionary of translations and replaces each instance sequentially",
         args        = {
-            "string"        : {String, Literal},
+            "string"        : {String, Literal, PathLiteral},
             "translations"  : {Dictionary}
         },
         attrs       = NoAttrs,
@@ -854,18 +834,16 @@ proc defineLibrary*() =
             if xKind==String:
                 push(newString(x.s.multiReplace(replacements)))
             else:
-                ensureInPlace()
+                ensureInPlaceAny()
                 InPlaced.s = InPlaced.s.multiReplace(replacements)
 
-    # TODO(Strings\truncate) add support for PathLiteral values
-    #  labels: library, enhancement, easy
     builtin "truncate",
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "truncate string at given length",
         args        = {
-            "string": {String,Literal},
+            "string": {String,Literal,PathLiteral},
             "cutoff": {Integer}
         },
         attrs       = {
@@ -896,12 +874,12 @@ proc defineLibrary*() =
             if (hadAttr("preserve")):
                 if xKind==String: push(newString(truncatePreserving(x.s, y.i, with)))
                 else: 
-                    ensureInPlace()
+                    ensureInPlaceAny()
                     InPlaced.s = truncatePreserving(InPlaced.s, y.i, with)
             else:
                 if xKind==String: push(newString(truncate(x.s, y.i, with)))
                 else: 
-                    ensureInPlace()
+                    ensureInPlaceAny()
                     InPlaced.s = truncate(InPlaced.s, y.i, with)
 
     builtin "upper",
@@ -934,15 +912,13 @@ proc defineLibrary*() =
                 else:
                     InPlaced.c = InPlaced.c.toUpper()
 
-    # TODO(Strings\wordwrap) add support for PathLiteral values
-    #  labels: library, enhancement
     builtin "wordwrap",
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "word wrap a given string",
         args        = {
-            "string": {String,Literal}
+            "string": {String,Literal,PathLiteral}
         },
         attrs       = {
             "at"    : ({Integer},"use given max line width (default: 80)")
@@ -971,9 +947,9 @@ proc defineLibrary*() =
             if checkAttr("at"):
                 cutoff = aAt.i
             
-            if xKind==Literal:
-                ensureInPlace()
-                SetInPlace(newString(wrapWords(InPlaced.s, maxLineWidth=cutoff)))
+            if xKind in {Literal, PathLiteral}:
+                ensureInPlaceAny()
+                SetInPlaceAny(newString(wrapWords(InPlaced.s, maxLineWidth=cutoff)))
             else:
                 push newString(wrapWords(x.s, maxLineWidth=cutoff))
 

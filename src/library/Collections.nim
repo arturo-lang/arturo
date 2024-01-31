@@ -57,15 +57,13 @@ proc defineLibrary*() =
     # Functions
     #----------------------------
 
-    # TODO(Collections\append) add support for PathLiteral values
-    #  labels: library, enhancement
     builtin "append",
         alias       = doubleplus,
         op          = opAppend,
         rule        = InfixPrecedence,
         description = "append value to given collection",
         args        = {
-            "collection": {String, Char, Block, Object, Binary, Literal},
+            "collection": {String, Char, Block, Object, Binary, Literal, PathLiteral},
             "value"     : {Any}
         },
         attrs       = NoAttrs,
@@ -87,8 +85,8 @@ proc defineLibrary*() =
             print b                   ; [1 2 3 4]
         """:
             #=======================================================
-            if xKind == Literal:
-                ensureInPlace()
+            if xKind in {Literal, PathLiteral}:
+                ensureInPlaceAny()
                 if InPlaced.kind == String:
                     if yKind == String:
                         InPlaced.s &= y.s
@@ -96,9 +94,9 @@ proc defineLibrary*() =
                         InPlaced.s &= $(y.c)
                 elif InPlaced.kind == Char:
                     if yKind == String:
-                        SetInPlace(newString($(InPlaced.c) & y.s))
+                        SetInPlaceAny(newString($(InPlaced.c) & y.s))
                     elif yKind == Char:
-                        SetInPlace(newString($(InPlaced.c) & $(y.c)))
+                        SetInPlaceAny(newString($(InPlaced.c) & $(y.c)))
                 elif InPlaced.kind == Binary:
                     if yKind == Binary:
                         InPlaced.n &= y.n
@@ -228,15 +226,13 @@ proc defineLibrary*() =
                     else:
                         push(newBlock(@[x]))
 
-    # TODO(Collections\chop) add support for PathLiteral values
-    #  labels: library, enhancement, easy
     builtin "chop",
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "remove last item from given collection",
         args        = {
-            "collection": {String, Block, Literal}
+            "collection": {String, Block, Literal, PathLiteral}
         },
         attrs       = {
             "times"     : ({Integer}, "remove multiple items")
@@ -279,8 +275,8 @@ proc defineLibrary*() =
                 else:
                     container[0.. container.high - abs(times)]
                 
-            if x.kind == Literal:
-                ensureInPlace()
+            if x.kind in {Literal, PathLiteral}:
+                ensureInPlaceAny()
                 case InPlaced.kind
                 of String:
                     if numberInRange(InPlaced.s):
@@ -372,15 +368,13 @@ proc defineLibrary*() =
             #=======================================================
             push(newBlock(zip(x.a, y.a).map((z)=>newBlock(@[z[0], z[1]]))))
 
-    # TODO(Collections\decouple) add support for PathLiteral values
-    #  labels: library, enhancement, easy
     builtin "decouple",
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "get tuple of collections from a coupled collection of tuples",
         args        = {
-            "collection": {Block, Literal}
+            "collection": {Block, Literal, PathLiteral}
         },
         attrs       = NoAttrs,
         returns     = {Block},
@@ -392,8 +386,8 @@ proc defineLibrary*() =
             ; => ["one" "two" "three"] [1 2 3]
         """:
             #=======================================================
-            if xKind == Literal:
-                ensureInPlace()
+            if xKind in {Literal, PathLiteral}:
+                ensureInPlaceAny()
                 let res = unzip(InPlaced.a.map((w)=>(requireValue(w,{Block,Inline});(w.a[0], w.a[1]))))
                 InPlaced.a = @[newBlock(res[0]), newBlock(res[1])]
             else:
@@ -478,15 +472,13 @@ proc defineLibrary*() =
 
             push(newDictionary(dict))
 
-    # TODO(Collections\drop) add support for PathLiteral values
-    #  labels: library, enhancement, easy
     builtin "drop",
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "remove first item from given collection",
         args        = {
-            "collection": {String, Block, Literal}
+            "collection": {String, Block, Literal, PathLiteral}
         },
         attrs       = {
             "times"     : ({Integer}, "remove multiple items")
@@ -529,8 +521,8 @@ proc defineLibrary*() =
                 else:
                     container[0.. container.high - abs(times)]
                 
-            if x.kind == Literal:
-                ensureInPlace()
+            if x.kind in {Literal, PathLiteral}:
+                ensureInPlaceAny()
                 case InPlaced.kind
                 of String:
                     if numberInRange(InPlaced.s):
@@ -553,15 +545,13 @@ proc defineLibrary*() =
                     else: push(newBlock())
                 else: discard
 
-    # TODO(Collections\empty) add support for PathLiteral values
-    #  labels: library, enhancement, easy
     builtin "empty",
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "empty given collection",
         args        = {
-            "collection": {Literal}
+            "collection": {Literal, PathLiteral}
         },
         attrs       = NoAttrs,
         returns     = {Nothing},
@@ -573,22 +563,20 @@ proc defineLibrary*() =
             empty 'str            ; str: ""
         """:
             #=======================================================
-            ensureInPlace()
+            ensureInPlaceAny()
             case InPlaced.kind:
                 of String: InPlaced.s = ""
                 of Block: InPlaced.a = @[]
                 of Dictionary: InPlaced.d = initOrderedTable[string, Value]()
                 else: discard
 
-    # TODO(Collections\extend) add support for PathLiteral values
-    #  labels: library, enhancement, easy
     builtin "extend",
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "get new dictionary by merging given ones",
         args        = {
-            "parent"    : {Dictionary, Literal},
+            "parent"    : {Dictionary, Literal, PathLiteral},
             "additional": {Dictionary}
         },
         attrs       = NoAttrs,
@@ -600,8 +588,8 @@ proc defineLibrary*() =
             ; [name:john surname:doe age:35]
         """:
             #=======================================================
-            if xKind == Literal:
-                ensureInPlace()
+            if xKind in {Literal, PathLiteral}:
+                ensureInPlaceAny()
                 for k, v in pairs(y.d):
                     InPlaced.d[k] = v
             else:
@@ -652,15 +640,13 @@ proc defineLibrary*() =
                     if x.a.len == 0: push(VNULL)
                     else: push(x.a[0])
 
-    # TODO(Collections\flatten) add support for PathLiteral values
-    #  labels: library, enhancement
     builtin "flatten",
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "flatten given collection by eliminating nested blocks",
         args        = {
-            "collection": {Block, Literal},
+            "collection": {Block, Literal, PathLiteral},
         },
         attrs       = {
             "once"  : ({Logical}, "do not perform recursive flattening")
@@ -682,9 +668,9 @@ proc defineLibrary*() =
             ; => [1 2 3 4 [5 6]]
         """:
             #=======================================================
-            if xKind == Literal:
-                ensureInPlace()
-                SetInPlace(InPlaced.flattened(once = hadAttr("once")))
+            if xKind in {Literal, PathLiteral}:
+                ensureInPlaceAny()
+                SetInPlaceAny(InPlaced.flattened(once = hadAttr("once")))
             else:
                 push(newBlock(x.a).flattened(once = hadAttr("once")))
 
@@ -911,15 +897,13 @@ proc defineLibrary*() =
     #  `insert.many [1 4 5 6] 1 [2 3]` and get back `[1 2 3 4 5 6]`
     #  labels: library, enhancement, open discussion 
 
-    # TODO(Collections\insert) add support for PathLiteral values
-    #  labels: library, enhancement, easy
     builtin "insert",
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "insert value in collection at given index",
         args        = {
-            "collection": {String, Block, Dictionary, Literal},
+            "collection": {String, Block, Dictionary, Literal, PathLiteral},
             "index"     : {Integer, String},
             "value"     : {Any}
         },
@@ -940,8 +924,8 @@ proc defineLibrary*() =
             ; dict: [name: "Jane"]
         """:
             #=======================================================
-            if xKind == Literal:
-                ensureInPlace()
+            if xKind in {Literal, PathLiteral}:
+                ensureInPlaceAny()
                 case InPlaced.kind:
                     of String: 
                         if zKind==String: 
@@ -1216,15 +1200,13 @@ proc defineLibrary*() =
                 push(newBlock(getPermutations(x.a, sz, doRepeat).map((
                         z)=>newBlock(z))))
 
-    # TODO(Collections\pop) add support for PathLiteral values
-    #  labels: library, enhancement, easy
     builtin "pop",
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "remove and return the last item from given collection",
         args        = {
-            "collection": {Literal}
+            "collection": {Literal, PathLiteral}
         },
         attrs       = {
             "n"     : ({Integer}, "remove multiple items. (Must be greater than 0.)")
@@ -1275,7 +1257,7 @@ proc defineLibrary*() =
                 if checkAttr("n"): aN.i
                 else: 1
             
-            ensureInPlace()
+            ensureInPlaceAny()
             if n == 1:
                 case InPlaced.kind:
                 of String: 
@@ -1298,15 +1280,13 @@ proc defineLibrary*() =
                 else: discard
             else: raise newException(ValueError, "Attribute 'n can't be 0 or negative.")
                 
-    # TODO(Collections\prepend) add support for PathLiteral values
-    #  labels: library, enhancement
     builtin "prepend",
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "prepend value to given collection",
         args        = {
-            "collection": {String, Char, Block, Binary, Literal},
+            "collection": {String, Char, Block, Binary, Literal, PathLiteral},
             "value"     : {Any}
         },
         attrs       = NoAttrs,
@@ -1321,8 +1301,8 @@ proc defineLibrary*() =
             print a                 ; prepend
         """:
             #=======================================================
-            if xKind == Literal:
-                ensureInPlace()
+            if xKind in {Literal, PathLiteral}:
+                ensureInPlaceAny()
                 if InPlaced.kind == String:
                     if yKind == String:
                         InPlaced.s.insert(y.s, 0)
@@ -1330,9 +1310,9 @@ proc defineLibrary*() =
                         InPlaced.s.insert($(y.c), 0)
                 elif InPlaced.kind == Char:
                     if yKind == String:
-                        SetInPlace(newString(y.s & $(InPlaced.c)))
+                        SetInPlaceAny(newString(y.s & $(InPlaced.c)))
                     elif yKind == Char:
-                        SetInPlace(newString($(y.c) & $(InPlaced.c)))
+                        SetInPlaceAny(newString($(y.c) & $(InPlaced.c)))
                 elif InPlaced.kind == Binary:
                     if yKind == Binary:
                         InPlaced.n.insert(y.n, 0)
@@ -1421,15 +1401,13 @@ proc defineLibrary*() =
     #  Example: `remove.index 3 'a, debug a`
     #  labels: library, bug
 
-    # TODO(Collections\remove) add support for PathLiteral values
-    #  labels: library, enhancement
     builtin "remove",
         alias       = doubleminus,
         op          = opNop,
         rule        = InfixPrecedence,
         description = "remove value from given collection",
         args        = {
-            "collection": {String, Block, Dictionary, Object, Literal},
+            "collection": {String, Block, Dictionary, Object, Literal, PathLiteral},
             "value"     : {Any}
         },
         attrs       = {
@@ -1462,20 +1440,20 @@ proc defineLibrary*() =
             remove.instance.once [1 [6 2] 5 3 [6 2] 4 5 6] [6 2]  ; => [1 5 3 [6 2] 4 5 6]
         """:
             #=======================================================
-            if xKind == Literal:
-                ensureInPlace()
+            if xKind in {Literal, PathLiteral}:
+                ensureInPlaceAny()
                 if InPlaced.kind == String:
                     if (hadAttr("once")):
                         if yKind == String:
-                            SetInPlace(newString(InPlaced.s.removeFirst(y.s)))
+                            SetInPlaceAny(newString(InPlaced.s.removeFirst(y.s)))
                         else:
-                            SetInPlace(newString(InPlaced.s.removeFirst($(y.c))))
+                            SetInPlaceAny(newString(InPlaced.s.removeFirst($(y.c))))
                     elif (hadAttr("prefix")):
                         InPlaced.s.removePrefix(y.s)
                     elif (hadAttr("suffix")):
                         InPlaced.s.removeSuffix(y.s)
                     else:
-                        SetInPlace(newString(InPlaced.s.removeAll(y)))
+                        SetInPlaceAny(newString(InPlaced.s.removeAll(y)))
                 elif InPlaced.kind == Block:
                     if yKind == Block and hadAttr("instance"):
                         if hadAttr("once"):
@@ -1483,7 +1461,7 @@ proc defineLibrary*() =
                         else:
                             InPlaced.a = Inplaced.a.removeAllInstances(y)
                     elif (hadAttr("once")):
-                        SetInPlace(newBlock(InPlaced.a.removeFirst(y)))
+                        SetInPlaceAny(newBlock(InPlaced.a.removeFirst(y)))
                     elif (hadAttr("index")):
                         # TODO(General) All `SetInPlace` or `InPlace=` that change the type of object should be changed
                         #  It doesn't work when in-place changing passed parameters to a function
@@ -1492,13 +1470,13 @@ proc defineLibrary*() =
                         InPlaced.a = InPlaced.a.removeByIndex(y.i)
                         #SetInPlace(newBlock(InPlaced.a.removeByIndex(y.i)))
                     else:
-                        SetInPlace(newBlock(InPlaced.a.removeAll(y)))
+                        SetInPlaceAny(newBlock(InPlaced.a.removeAll(y)))
                 elif InPlaced.kind == Dictionary:
                     let key = (hadAttr("key"))
                     if (hadAttr("once")):
-                        SetInPlace(newDictionary(InPlaced.d.removeFirst(y, key)))
+                        SetInPlaceAny(newDictionary(InPlaced.d.removeFirst(y, key)))
                     else:
-                        SetInPlace(newDictionary(InPlaced.d.removeAll(y, key)))
+                        SetInPlaceAny(newDictionary(InPlaced.d.removeAll(y, key)))
                 elif InPlaced.kind == Object:
                     if InPlaced.magic.fetch(RemoveM):
                         pushAttr("inplace", VTRUE)
@@ -1506,9 +1484,9 @@ proc defineLibrary*() =
                     else:
                         let key = (hadAttr("key"))
                         if (hadAttr("once")):
-                            SetInPlace(newObject(InPlaced.proto, InPlaced.o.removeFirst(y, key), InPlaced.magic))
+                            SetInPlaceAny(newObject(InPlaced.proto, InPlaced.o.removeFirst(y, key), InPlaced.magic))
                         else:
-                            SetInPlace(newObject(InPlaced.proto, InPlaced.o.removeAll(y, key), InPlaced.magic))
+                            SetInPlaceAny(newObject(InPlaced.proto, InPlaced.o.removeAll(y, key), InPlaced.magic))
             else:
                 if xKind == String:
                     if (hadAttr("once")):
@@ -1554,15 +1532,13 @@ proc defineLibrary*() =
                         else:
                             push(newObject(x.proto, x.o.removeAll(y, key), x.magic))
 
-    # TODO(Collections\repeat) add support for PathLiteral values
-    #  labels: library, enhancement
     builtin "repeat",
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "repeat value the given number of times and return new one",
         args        = {
-            "value" : {Any, Literal},
+            "value" : {Any, Literal, PathLiteral},
             "times" : {Integer}
         },
         attrs       = NoAttrs,
@@ -1581,14 +1557,14 @@ proc defineLibrary*() =
             ; => [[1 2 3] [1 2 3] [1 2 3]]
         """:
             #=======================================================
-            if xKind == Literal:
-                ensureInPlace()
+            if xKind in {Literal, PathLiteral}:
+                ensureInPlaceAny()
                 if InPlaced.kind == String:
-                    SetInPlace(newString(InPlaced.s.repeat(y.i)))
+                    SetInPlaceAny(newString(InPlaced.s.repeat(y.i)))
                 elif InPlaced.kind == Block:
-                    SetInPlace(newBlock(InPlaced.a.cycle(y.i)))
+                    SetInPlaceAny(newBlock(InPlaced.a.cycle(y.i)))
                 else:
-                    SetInPlace(newBlock(InPlaced.repeat(y.i)))
+                    SetInPlaceAny(newBlock(InPlaced.repeat(y.i)))
             else:
                 if xKind == String:
                     push(newString(x.s.repeat(y.i)))
@@ -1597,15 +1573,13 @@ proc defineLibrary*() =
                 else:
                     push(newBlock(safeRepeat(x, y.i)))
 
-    # TODO(Collections\reverse) add support for PathLiteral values
-    #  labels: library, enhancement, easy
     builtin "reverse",
         alias       = unaliased,
         op          = opReverse,
         rule        = PrefixPrecedence,
         description = "reverse given collection",
         args        = {
-            "collection": {String, Block, Range, Literal}
+            "collection": {String, Block, Range, Literal, PathLiteral}
         },
         attrs       = {
             "exact" : ({Logical}, "make sure the reverse range contains the same elements")
@@ -1631,8 +1605,8 @@ proc defineLibrary*() =
 
             let exact = hadAttr("exact")
 
-            if xKind == Literal:
-                ensureInPlace()
+            if xKind in {Literal, PathLiteral}:
+                ensureInPlaceAny()
                 if InPlaced.kind == String:
                     InPlaced.s.reverse()
                 elif InPlaced.kind == Range:
@@ -1647,15 +1621,13 @@ proc defineLibrary*() =
                 else:
                     push(newString(reversed(x.s)))
 
-    # TODO(Collections\rotate) add support for PathLiteral values
-    #  labels: library, enhancement, easy
     builtin "rotate",
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "right-rotate collection by given distance",
         args        = {
-            "collection": {String, Block, Literal},
+            "collection": {String, Block, Literal, PathLiteral},
             "distance"  : {Integer}
         },
         attrs       = {
@@ -1671,8 +1643,8 @@ proc defineLibrary*() =
             #=======================================================
             let distance = if (not hadAttr("left")): -y.i else: y.i
 
-            if xKind == Literal:
-                ensureInPlace()
+            if xKind in {Literal, PathLiteral}:
+                ensureInPlaceAny()
                 if InPlaced.kind == String:
                     InPlaced.s = toSeq(runes(InPlaced.s)).map((w) => $(w))
                                  .rotatedLeft(distance).join("")
@@ -1809,15 +1781,13 @@ proc defineLibrary*() =
                     x.s = res
                 else: discard
 
-    # TODO(Collections\shuffle) add support for PathLiteral values
-    #  labels: library, enhancement, easy
     builtin "shuffle",
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "get given collection shuffled",
         args        = {
-            "collection": {Block, Literal}
+            "collection": {Block, Literal, PathLiteral}
         },
         attrs       = NoAttrs,
         returns     = {Block, Nothing},
@@ -1829,8 +1799,8 @@ proc defineLibrary*() =
             print arr                     ; 5 9 2
         """:
             #=======================================================
-            if xKind == Literal:
-                ensureInPlace()
+            if xKind in {Literal, PathLiteral}:
+                ensureInPlaceAny()
                 InPlaced.a.shuffle()
             else:
                 push(newBlock(x.a.dup(shuffle)))
@@ -1873,15 +1843,13 @@ proc defineLibrary*() =
             else: # Null
                 push(newInteger(0))
 
-    # TODO(Collections\slice) add support for PathLiteral values
-    #  labels: library, enhancement
     builtin "slice",
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "get a slice of collection between given indices",
         args        = {
-            "collection": {String, Block, Literal},
+            "collection": {String, Block, Literal, PathLiteral},
             "from"      : {Integer},
             "to"        : {Integer}
         },
@@ -1893,14 +1861,14 @@ proc defineLibrary*() =
             print slice 1..10 3 4         ; 4 5
         """:
             #=======================================================
-            if xKind == Literal:
-                ensureInPlace()
+            if xKind in {Literal, PathLiteral}:
+                ensureInPlaceAny()
                 if InPlaced.kind == String:
                     if InPlaced.s.len == 0:
-                        SetInPlace newString("")
+                        SetInPlaceAny newString("")
                     else:
                         if y.i >= 0 and z.i <= InPlaced.s.runeLen:
-                            SetInPlace newString Inplaced.s.runeSubStr(y.i, z.i - y.i + 1)
+                            SetInPlaceAny newString Inplaced.s.runeSubStr(y.i, z.i - y.i + 1)
                 else:
                     if y.i >= 0 and z.i <= InPlaced.a.len-1:
                         InPlaced.a = InPlaced.a[y.i..z.i]
@@ -1927,15 +1895,13 @@ proc defineLibrary*() =
     #  see: https://github.com/arturo-lang/arturo/pull/1045#issuecomment-1458960243
     #  labels: library, bug, critical
 
-    # TODO(Collections\sort) add support for PathLiteral values
-    #  labels: library, enhancement, easy
     builtin "sort",
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "sort given block in ascending order",
         args        = {
-            "collection": {Block, Dictionary, Literal}
+            "collection": {Block, Dictionary, Literal, PathLiteral}
         },
         attrs       = {
             "as"        : ({Literal}, "localized by ISO 639-1 language code"),
@@ -2050,7 +2016,7 @@ proc defineLibrary*() =
                             push(newDictionary(res))
 
             else:
-                ensureInPlace()
+                ensureInPlaceAny()
                 if InPlaced.kind == Block:
                     if InPlaced.a.len > 0:
                         if checkAttr("by"):
@@ -2119,15 +2085,13 @@ proc defineLibrary*() =
     #  Currently, simple split works fine - but using different attributes (at, every, by, etc) doesn't
     #  labels: library,bug
 
-    # TODO(Collections\split) add support for PathLiteral values
-    #  labels: library, enhancement
     builtin "split",
         alias       = unaliased,
         op          = opSplit,
         rule        = PrefixPrecedence,
         description = "split collection to components",
         args        = {
-            "collection": {String, Block, Literal}
+            "collection": {String, Block, Literal, PathLiteral}
         },
         attrs       = {
             "words" : ({Logical}, "split string by whitespace"),
@@ -2154,13 +2118,13 @@ proc defineLibrary*() =
             ; => [ [1 2 3 4] [5 6 7 8 9] ]
         """:
             #=======================================================
-            if xKind == Literal:
-                ensureInPlace()
+            if xKind in {Literal, PathLiteral}:
+                ensureInPlaceAny()
                 if InPlaced.kind == String:
                     if (hadAttr("words")):
-                        SetInPlace(newStringBlock(strutils.splitWhitespace(InPlaced.s)))
+                        SetInPlaceAny(newStringBlock(strutils.splitWhitespace(InPlaced.s)))
                     elif (hadAttr("lines")):
-                        SetInPlace(newStringBlock(InPlaced.s.splitLines()))
+                        SetInPlaceAny(newStringBlock(InPlaced.s.splitLines()))
                     elif (hadAttr("path")):
                         var strStart = 0
                         var strEnd = 1
@@ -2168,17 +2132,17 @@ proc defineLibrary*() =
                             strStart = 1
                         if InPlaced.s.endsWith(DirSep) or InPlaced.s.endsWith(AltSep):
                             strEnd = 2
-                        SetInPlace(newStringBlock(InPlaced.s[strStart..^strEnd].split({DirSep,AltSep})))
+                        SetInPlaceAny(newStringBlock(InPlaced.s[strStart..^strEnd].split({DirSep,AltSep})))
                     elif checkAttr("by"):
                         if aBy.kind == String:
-                            SetInPlace(newStringBlock(InPlaced.s.split(aBy.s)))
+                            SetInPlaceAny(newStringBlock(InPlaced.s.split(aBy.s)))
                         elif aBy.kind == Regex:
-                            SetInPlace(newStringBlock(InPlaced.s.split(aBy.rx)))
+                            SetInPlaceAny(newStringBlock(InPlaced.s.split(aBy.rx)))
                         else:
-                            SetInPlace(newStringBlock(toSeq(
+                            SetInPlaceAny(newStringBlock(toSeq(
                                     InPlaced.s.tokenize(aBy.a.map((k)=>(requireAttrValue("by",k,{String});k.s))))))
                     elif checkAttr("at"):
-                        SetInPlace(newStringBlock(@[InPlaced.s[0..aAt.i-1],
+                        SetInPlaceAny(newStringBlock(@[InPlaced.s[0..aAt.i-1],
                                 InPlaced.s[aAt.i..^1]]))
                     elif checkAttr("every"):
                         var ret: seq[string]
@@ -2193,14 +2157,14 @@ proc defineLibrary*() =
                                 ret.add(InPlaced.s[i..^1])
                                 i += aEvery.i
 
-                        SetInPlace(newStringBlock(ret))
+                        SetInPlaceAny(newStringBlock(ret))
 
                     else:
-                        SetInPlace(newStringBlock(toSeq(runes(InPlaced.s)).map((w) =>
+                        SetInPlaceAny(newStringBlock(toSeq(runes(InPlaced.s)).map((w) =>
                                 $(w))))
                 else:
                     if checkAttr("at"):
-                        SetInPlace(newBlock(@[newBlock(InPlaced.a[0..aAt.i-1]),
+                        SetInPlaceAny(newBlock(@[newBlock(InPlaced.a[0..aAt.i-1]),
                                 newBlock(InPlaced.a[aAt.i..^1])]))
                     elif checkAttr("every"):
                         var ret: ValueArray
@@ -2214,7 +2178,7 @@ proc defineLibrary*() =
                                 ret.add(newBlock(InPlaced.a[i..i+aEvery.i-1]))
                             i += aEvery.i
 
-                        SetInPlace(newBlock(ret))
+                        SetInPlaceAny(newBlock(ret))
                     else: discard
 
             elif xKind == String:
@@ -2276,15 +2240,13 @@ proc defineLibrary*() =
                     push(newBlock(ret))
                 else: push(x)
 
-    # TODO(Collections\squeeze) add support for PathLiteral values
-    #  labels: library, enhancement
     builtin "squeeze",
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "reduce adjacent elements in given collection",
         args        = {
-            "collection": {String, Block, Literal}
+            "collection": {String, Block, Literal, PathLiteral}
         },
         attrs       = NoAttrs,
         returns     = {String, Block, Nothing},
@@ -2299,8 +2261,8 @@ proc defineLibrary*() =
             ; helo world
         """:
             #=======================================================
-            if xKind == Literal:
-                ensureInPlace()
+            if xKind in {Literal, PathLiteral}:
+                ensureInPlaceAny()
                 if InPlaced.kind == String:
                     var i = 0
                     var ret: string
@@ -2309,7 +2271,7 @@ proc defineLibrary*() =
                         while (i+1 < InPlaced.s.len and InPlaced.s[i+1] == InPlaced.s[i]):
                             i += 1
                         i += 1
-                    SetInPlace(newString(ret))
+                    SetInPlaceAny(newString(ret))
                 elif InPlaced.kind == Block:
                     var i = 0
                     var ret: ValueArray
@@ -2319,7 +2281,7 @@ proc defineLibrary*() =
                                 InPlaced.a[i]):
                             i += 1
                         i += 1
-                    SetInPlace(newBlock(ret))
+                    SetInPlaceAny(newBlock(ret))
             else:
                 if xKind == String:
                     var i = 0
@@ -2340,15 +2302,13 @@ proc defineLibrary*() =
                         i += 1
                     push(newBlock(ret))
 
-    # TODO(Collections\take) add support for PathLiteral values
-    #  labels: library, enhancement, easy
     builtin "take",
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "keep first <number> of elements from given collection and return the remaining ones",
         args        = {
-            "collection": {String, Block, Range, Literal},
+            "collection": {String, Block, Range, Literal, PathLiteral},
             "number"    : {Integer}
         },
         attrs       = NoAttrs,
@@ -2380,8 +2340,8 @@ proc defineLibrary*() =
                 else:
                     container[container.high - upperLimit..^1]
             
-            if x.kind == Literal:
-                ensureInPlace()
+            if x.kind in {Literal, PathLiteral}:
+                ensureInPlaceAny()
                 case InPlaced.kind
                 of String:
                     if x.s.len > 0:
@@ -2466,15 +2426,13 @@ proc defineLibrary*() =
             
             push(newDictionary(occurences))
 
-    # TODO(Collections\unique) add support for PathLiteral values
-    #  labels: library, enhancement, easy
     builtin "unique",
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "get given collection without duplicates",
         args        = {
-            "collection": {String, Block, Literal}
+            "collection": {String, Block, Literal, PathLiteral}
         },
         attrs       = {
             "id"    : ({Logical}, "generate unique id using given prefix"),
@@ -2500,7 +2458,7 @@ proc defineLibrary*() =
                 elif xKind == String:
                     push newString(toSeq(runes(x.s)).deduplicate.map((w) => $(w)).join(""))
                 else: 
-                    ensureInPlace()
+                    ensureInPlaceAny()
                     if InPlaced.kind == Block:
                         InPlaced.a = InPlaced.a.deduplicated()
                     else:

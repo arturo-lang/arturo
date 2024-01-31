@@ -227,16 +227,14 @@ proc defineLibrary*() =
                     contents = toSeq(walkDir(path, relative = relative)).map((x) => x[1])
 
                 push(newStringBlock(contents))
-        
-        # TODO(Paths\normalize) add support for PathLiteral values
-        #  labels: library, enhancement, easy
+
         builtin "normalize",
             alias       = unaliased, 
             op          = opNop,
             rule        = PrefixPrecedence,
             description = "get normalized version of given path",
             args        = {
-                "path"  : {String,Literal}
+                "path"  : {String,Literal,PathLiteral}
             },
             attrs       = {
                 "executable"    : ({Logical},"treat path as executable"),
@@ -261,8 +259,8 @@ proc defineLibrary*() =
             """:
                 #=======================================================
                 if (hadAttr("executable")):
-                    if xKind==Literal:
-                        ensureInPlace()
+                    if xKind in {Literal,PathLiteral}:
+                        ensureInPlaceAny()
                         if (hadAttr("tilde")):
                             InPlaced.s = InPlaced.s.expandTilde()
                         InPlaced.s.normalizeExe()
@@ -275,8 +273,8 @@ proc defineLibrary*() =
                         ret.normalizeExe()
                         push(newString(ret))
                 else:
-                    if xKind==Literal:
-                        ensureInPlace()
+                    if xKind in {Literal,PathLiteral}:
+                        ensureInPlaceAny()
                         if (hadAttr("tilde")):
                             InPlaced.s = InPlaced.s.expandTilde()
                         InPlaced.s.normalizePath()
