@@ -25,6 +25,9 @@
 [+] passed!
 [+] passed!
 
+>> append - :string < :string (pathLiteral) + :string
+[+] passed!
+
 >> append - :string < :string + :char
 [+] passed!
 [+] passed!
@@ -82,6 +85,9 @@
 
 >> chop - :string < :string (literal) :string
 [+] passed!
+[+] passed!
+
+>> chop - :string < :string (pathLiteral) :string
 [+] passed!
 
 >> chop.times - :string < :string (literal) :string
@@ -161,6 +167,7 @@
 >> decouple
 [+] passed!
 [+] passed!
+[+] passed!
 
 >> drop - :string < :string :string
 [+] passed!
@@ -176,6 +183,11 @@
 [+] passed!
 [+] passed!
 [+] passed!
+[+] passed!
+
+>> drop - :string < :string (pathLiteral) :string
+rt
+rt
 [+] passed!
 
 >> drop - :block < :block :block
@@ -200,11 +212,15 @@
 [+] passed!
 [+] passed!
 [+] passed!
+[+] passed!
 
 >> extend
 [+] passed!
 
 >> extend (literal)
+[+] passed!
+
+>> extend (pathLiteral)
 [+] passed!
 
 >> first - .n
@@ -225,6 +241,7 @@
 [+] passed!
 
 >> flatten
+[+] passed!
 [+] passed!
 [+] passed!
 
@@ -363,6 +380,9 @@
 [+] passed!
 [+] passed!
 
+>> insert - :string (pathLiteral)
+[+] passed!
+
 >> get - :dictionary
 [+] passed!
 
@@ -471,6 +491,9 @@
 [+] passed!
 [+] passed!
 
+>> pop - pathLiteral
+[+] passed!
+
 >> prepend
 
 >> prepend - :binary < :binary :binary
@@ -517,6 +540,9 @@
 [+] passed!
 [+] passed!
 
+>> prepend - [:string] < [:string] (pathLiteral) + :string
+[+] passed!
+
 >> prepend - [:string] < [:string] + :string - testing precedence
 [+] passed!
 
@@ -540,12 +566,18 @@
 [+] passed!
 [+] passed!
 
+>> remove - :string (pathLiteral)
+[+] passed!
+
 >> remove - :dictionary
 [+] passed!
 [+] passed!
 
 >> remove - :dictionary (literal)
 [+] passed!
+[+] passed!
+
+>> remove - :dictionary (pathLiteral)
 [+] passed!
 
 >> remove - :block
@@ -562,6 +594,9 @@
 [+] passed!
 [+] passed!
 
+>> remove - :block (pathLiteral)
+[+] passed!
+
 >> repeat
 [+] passed!
 [+] passed!
@@ -570,6 +605,9 @@
 >> repeat (literal)
 [+] passed!
 [+] passed!
+[+] passed!
+
+>> repeat (pathLiteral)
 [+] passed!
 
 >> reverse
@@ -584,12 +622,18 @@
 [+] passed!
 [+] passed!
 
+>> reverse (pathLiteral)
+[+] passed!
+
 >> rotate
 [+] passed!
 [+] passed!
 
 >> rotate
 [+] passed!
+[+] passed!
+
+>> rotate - pathLiteral
 [+] passed!
 
 >> sample
@@ -660,6 +704,9 @@
 [+] passed!
 [+] passed!
 
+>> slice - (pathLiteral)
+[+] passed!
+
 >> sort - + .descending
 [+] passed!
 [+] passed!
@@ -712,6 +759,17 @@
 [+] passed!
 [+] passed!
 
+>> sort - .values (pathLiteral)
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+
 >> sort - .by
 
 >> sorted?
@@ -732,6 +790,9 @@
 [+] passed!
 [+] passed!
 
+>> split - + .every (pathLiteral)
+[+] passed!
+
 >> split - .words
 [+] passed!
 [+] passed!
@@ -740,12 +801,18 @@
 [+] passed!
 [+] passed!
 
+>> split - .words (pathLiteral)
+[+] passed!
+
 >> split - .lines
 [+] passed!
 [+] passed!
 
 >> split - .lines (literal)
 [+] passed!
+[+] passed!
+
+>> split - .lines (pathLiteral)
 [+] passed!
 
 >> split - .by
@@ -758,12 +825,18 @@
 [+] passed!
 [+] passed!
 
+>> split - .by (literal)
+[+] passed!
+
 >> split - .at
 [+] passed!
 [+] passed!
 
 >> split - .at (literal)
 [+] passed!
+[+] passed!
+
+>> split - .at (pathLiteral)
 [+] passed!
 
 >> split - .path
@@ -774,12 +847,19 @@
 [+] passed!
 [+] passed!
 
+>> split - .path (pathLiteral)
+
 >> squeeze
 [+] passed!
 [+] passed!
 [+] passed!
 
 >> squeeze - (literal)
+[+] passed!
+[+] passed!
+[+] passed!
+
+>> squeeze - (pathLiteral)
 [+] passed!
 [+] passed!
 [+] passed!
@@ -800,6 +880,9 @@
 [+] passed!
 [+] passed!
 
+>> take - :string < :string (pathLiteral) :string
+[+] passed!
+
 >> take - :block < :block :block
 [+] passed!
 [+] passed!
@@ -814,6 +897,9 @@
 [+] passed!
 [+] passed!
 [+] passed!
+[+] passed!
+
+>> take - :block < :block (pathLiteral) :block
 [+] passed!
 
 >> take - :range < :range :integer
@@ -832,6 +918,8 @@
 [+] passed!
 [+] passed!
 
+>> take - :block < :range (pathLiteral) :integer
+
 >> tally
 [+] passed!
 [+] passed!
@@ -843,6 +931,12 @@
 
 >> unique - literal
 [+] passed!
+[+] passed!
+[+] passed!
+
+>> unique - pathLiteral
+1 2 4 3 
+1 2 4 3 
 [+] passed!
 [+] passed!
 
