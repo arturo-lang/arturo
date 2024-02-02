@@ -161,7 +161,7 @@ proc getUsageForFunction(obj: ValueObj): seq[string] =
     if args[0][0] != "":
         let 
             templateArg = fmt"{args[0][0]}" 
-            templateType = wrapLines(getTypeString(args[0][1]), lineLength - labelAlignment - initialPadding.len - templateName.len - templateArg.len - 3)
+            templateType = wrapLines(getTypeString(args[0][1]), lineLength - labelAlignment - initialPadding.len - templateName.len - templateArg.len)
 
         echo "cutoff => " & $(lineLength - labelAlignment - initialPadding.len - templateName.len - templateArg.len - 3)
         result.add fmt "{templateName} {templateArg} {fg(grayColor)}{templateType[0]}{resetColor}"
