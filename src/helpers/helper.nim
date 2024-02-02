@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import sequtils, strformat
+import math, sequtils, strformat
 import strutils, tables
 import sugar
 
@@ -105,9 +105,9 @@ proc printMultiData(
         printOneData("", item, resetColor, colorb)
 
 
-func getShortData(initial: string): seq[string] =
+func getShortData(initial: string, cutoff=50): seq[string] =
     result = @[initial]
-    if result[0].len > 50:
+    if result[0].len > cutoff:
         let parts  = result[0].splitWhitespace()
         let middle = (parts.len div 2)
         result = @[
@@ -115,6 +115,28 @@ func getShortData(initial: string): seq[string] =
             parts[(middle + 1)..^1].join(" ")
         ]
 
+func wrapLines(initial: string, limit=50): seq[string] =
+    if initial.len <= limit:
+        return @[initial]
+    else:
+        let words = initial.splitWhitespace()
+        var lineOne: seq[string]
+        var lineTwo: seq[string]
+        var cnt = 0
+        while ((lineOne.map((x) => x.len)).sum + lineOne.len-1) < limit and cnt < words.len:
+            lineOne.add(words[cnt])
+            cnt += 1
+
+        lineTwo.add(lineOne.pop())
+
+        while cnt < words.len:
+            lineTwo.add(words[cnt])
+            cnt += 1
+
+        return @[
+            lineOne.join(" "),
+            lineTwo.join(" ")
+        ]
 
 func getTypeString(valueSpec: ValueSpec): string =
     ## Returns the representation of a type into a string
@@ -129,7 +151,6 @@ proc getUsageForFunction(obj: ValueObj): seq[string] =
     let 
         args = toSeq(obj.val.info.args.pairs)
         templateName = fmt"{bold()}{obj.name}{resetColor}"
-        templateType = fmt"{fg(grayColor)}{getTypeString(args[0][1])}"
         
     var 
         spaceBefore: string
@@ -138,16 +159,32 @@ proc getUsageForFunction(obj: ValueObj): seq[string] =
         spaceBefore &= " "
 
     if args[0][0] != "":
-        let templateArg = fmt"{args[0][0]}" 
-        result.add fmt"{templateName} {templateArg} {templateType}"
+        let 
+            templateArg = fmt"{args[0][0]}" 
+            templateType = wrapLines(getTypeString(args[0][1]), lineLength - labelAlignment - initialPadding.len - templateName.len - templateArg.len)
+
+        result.add fmt "{templateName} {templateArg} {fg(grayColor)}{templateType[0]}{resetColor}"
+        if templateType.len > 1:
+            var extraSpaceBefore: string
+            for _ in 0..templateArg.len:
+                extraSpaceBefore &= " "
+            for tt in templateType[1..^1]:
+                result.add fmt"{spaceBefore}{extraSpaceBefore}{fg(grayColor)}{tt}{resetColor}"
     else:   
-        result.add fmt"{templateName} {templateType}"
+        result.add fmt"{templateName} {getTypeString(args[0][1])}"
 
     for arg in args[1..^1]:
         let
             templateArg  = fmt"{arg[0]}"
-            templateType = fmt"{fg(grayColor)}{getTypeString(arg[1])}"
-        result.add fmt"{spaceBefore}{templateArg} {templateType}"
+            templateType = wrapLines(getTypeString(arg[1]), lineLength - labelAlignment - initialPadding.len - templateName.len - templateArg.len - spaceBefore.len)
+        
+        result.add fmt "{spaceBefore}{templateArg} {fg(grayColor)}{templateType[0]}{resetColor}"
+        if templateType.len > 1:
+            var extraSpaceBefore: string
+            for _ in 0..templateArg.len:
+                extraSpaceBefore &= " "
+            for tt in templateType[1..^1]:
+                result.add fmt"{spaceBefore}{extraSpaceBefore}{fg(grayColor)}{tt}{resetColor}"
 
 
 proc getOptionsForFunction(value: Value): seq[string] =
@@ -181,8 +218,22 @@ proc getOptionsForFunction(value: Value): seq[string] =
             leftSide = fmt"{fg(cyanColor)}.{attr[0]}"
             myLen += len(fmt"{fg(cyanColor)}")
         
-        result.add fmt"{alignLeft(leftSide, myLen)} {resetColor}-> {attr[1][1]}"
+        let lines = getShortData(attr[1][1])
+        result.add fmt"{alignLeft(leftSide, myLen)} {resetColor}-> {lines[0]}"
 
+        var spaceBefore: string
+        for _ in 0..((fmt"{alignLeft(leftSide, myLen)} -> ").len - 8):
+            spaceBefore &= " "
+
+        if lines.len > 1:
+            for line in lines[1..^1]:
+                result.add fmt"{spaceBefore}{line}"
+
+proc getReturnsForFunction(obj: ValueObj): seq[string] =
+    let lines = getShortData(getTypeString(obj.val.info.returns))
+
+    for line in lines:
+        result.add fmt"{fg(grayColor)}{line}{resetColor}"
 
 when defined(DOCGEN):
     
@@ -350,8 +401,8 @@ proc printFunction(obj: ValueObj) {. inline .} =
         printMultiData("options", opts, bold(greenColor))
         
     printEmptyLine()
-    printOneData("returns", getTypeString(obj.val.info.returns), 
-                 bold(greenColor), fg(grayColor))
+    printMultiData("returns", obj.getReturnsForFunction(), 
+                   bold(greenColor))
     printLine()
 
 
@@ -379,7 +430,7 @@ proc getInfo*(objName: string, objValue: Value, aliases: SymbolDict): ValueDict 
     if obj.val.info.descr  != "":  result["description"] = newString(obj.val.info.descr) 
     if obj.val.info.module != "": result["module"]       = newString(obj.val.info.module)
 
-    if obj.val.info.kind == Function:
+    if obj.val.info.kind in {Function,Method}:
         result.insertFunctionInfo(obj, aliases)
         
     when defined(DOCGEN):
@@ -410,5 +461,5 @@ proc printInfo*(objName: string, objValue: Value, aliases: SymbolDict) =
 
     # If it's a function,
     # print more details
-    if obj.val.info.kind == Function:
+    if obj.val.info.kind in {Function,Method}:
         obj.printFunction()
