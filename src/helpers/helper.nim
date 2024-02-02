@@ -129,7 +129,6 @@ proc getUsageForFunction(obj: ValueObj): seq[string] =
     let 
         args = toSeq(obj.val.info.args.pairs)
         templateName = fmt"{bold()}{obj.name}{resetColor}"
-        templateType = getShortData(getTypeString(args[0][1]))
         
     var 
         spaceBefore: string
@@ -138,7 +137,10 @@ proc getUsageForFunction(obj: ValueObj): seq[string] =
         spaceBefore &= " "
 
     if args[0][0] != "":
-        let templateArg = fmt"{args[0][0]}" 
+        let 
+            templateArg = fmt"{args[0][0]}" 
+            templateType = getShortData(getTypeString(args[0][1]), lineLength - labelAlignment - initialPadding.len - templateArg.len)
+
         result.add fmt "{templateName} {templateArg} {fg(grayColor)}{templateType[0]}{resetColor}"
         if templateType.len > 1:
             var extraSpaceBefore: string
