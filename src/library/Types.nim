@@ -100,10 +100,6 @@ proc defineLibrary*() =
         },
         attrs       = NoAttrs,
         returns     = {Nothing},
-        # TODO(Types\define) update documentation example
-        #  to reflect changes to OOP aspects of Arturo in general
-        #  and the `define` function in particular
-        #  labels: library, documentation, easy
         example     = """
             ; define a simple type
             define :person [name surname]
