@@ -163,7 +163,6 @@ proc getUsageForFunction(obj: ValueObj): seq[string] =
             templateArg = fmt"{args[0][0]}" 
             templateType = wrapLines(getTypeString(args[0][1]), lineLength - labelAlignment - initialPadding.len - templateName.len - templateArg.len)
 
-        echo "cutoff => " & $(lineLength - labelAlignment - initialPadding.len - templateName.len - templateArg.len - 3)
         result.add fmt "{templateName} {templateArg} {fg(grayColor)}{templateType[0]}{resetColor}"
         if templateType.len > 1:
             var extraSpaceBefore: string
@@ -177,7 +176,8 @@ proc getUsageForFunction(obj: ValueObj): seq[string] =
     for arg in args[1..^1]:
         let
             templateArg  = fmt"{arg[0]}"
-            templateType = getShortData(getTypeString(arg[1]))
+            templateType = wrapLines(getTypeString(arg[1]), lineLength - labelAlignment - initialPadding.len - templateName.len - templateArg.len - spaceBefore.len)
+            #getShortData(getTypeString(arg[1]))
         
         result.add fmt "{spaceBefore}{templateArg} {fg(grayColor)}{templateType[0]}{resetColor}"
         if templateType.len > 1:
