@@ -105,55 +105,58 @@ proc defineLibrary*() =
         #  and the `define` function in particular
         #  labels: library, documentation, easy
         example     = """
-            define :person [name surname age][
+            ; define a simple type
+            define :person [name surname]
 
-                ; magic method to be executed
-                ; after a new object has been created
-                init: [
-                    this\name: capitalize this\name
-                ]
+            ; and create an object
+            someone: to :person ["John" "Doe"]
+            print someone       ; [name:John surname:Doe]
+            ..........
+            ; define a simple type
+            define :person [name surname]
 
-                ; magic method to be executed
-                ; when the object is about to be printed
-                print: [
-                    render "NAME: |this\name|, SURNAME: |this\surname|, AGE: |this\age|"
-                ]
+            ; and create an object
+            ; using a dictionary with field values
+            someone: to :person #[surname: "Doe", name: "John"]
+            print someone       ; [name:John surname:Doe]
+            ..........
+            ; define a new type
+            ; with custom constructor
 
-                ; magic method to be used
-                ; when comparing objects (e.g. when sorting)
-                compare: [
-                    if this\age = that\age -> return 0
-                    if this\age < that\age -> return neg 1
-                    if this\age > that\age -> return 1
+            define :person [
+                init: method [name, surname, age][
+                    this\name: name
+                    this\surname: surname
+                    this\dob: now\year - age
                 ]
             ]
 
-            sayHello: function [this][
-                ensure -> is? :person this
-                print ["Hello" this\name]
+            ; create an object
+            jd: to :person ["John" "Doe" 38]
+            print jd            ; [name:John surname:Doe dob:1986]
+            ..........
+            ; define type with overloaded
+            ; magic methods
+            define :natural [
+                init: constructor [value]
+
+                ; custom `+` overload
+                add: method [x :integer :natural][
+                    (integer? x)? -> this\value + x
+                                -> to :natural @[this\value + x\value]
+                ]
+
+                ; custom `to :string` overload
+                string: method [][
+                    to :string this\value
+                ]
             ]
 
-            a: to :person ["John" "Doe" 35]
-            b: to :person ["jane" "Doe" 33]
+            ; create two new 'natural' numbers
+            n1: to :natural @[3]
+            n2: to :natural @[5]
 
-            print a
-            ; NAME: John, SURNAME: Doe, AGE: 35
-            print b
-            ; NAME: Jane, SURNAME: Doe, AGE: 33
-
-            sayHello a
-            ; Hello John
-
-            a > b
-            ; => true (a\age > b\age)
-
-            print join.with:"\n" sort @[a b]
-            ; NAME: Jane, SURNAME: Doe, AGE: 33
-            ; NAME: John, SURNAME: Doe, AGE: 35
-
-            print join.with:"\n" sort.descending @[a b]
-            ; NAME: John, SURNAME: Doe, AGE: 35
-            ; NAME: Jane, SURNAME: Doe, AGE: 33
+            print n1 + n2           ; 8
         """:
             #=======================================================
             var definitions: ValueDict = newOrderedTable[string,Value]()
