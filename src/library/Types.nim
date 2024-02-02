@@ -132,7 +132,7 @@ proc defineLibrary*() =
                 ; custom `+` overload
                 add: method [x :integer :natural][
                     (integer? x)? -> this\value + x
-                                -> to :natural @[this\value + x\value]
+                                  -> to :natural @[this\value + x\value]
                 ]
 
                 ; custom `to :string` overload
