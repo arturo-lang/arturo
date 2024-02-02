@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import sequtils, strformat
+import math, sequtils, strformat
 import strutils, tables
 import sugar
 
@@ -115,6 +115,28 @@ func getShortData(initial: string, cutoff=50): seq[string] =
             parts[(middle + 1)..^1].join(" ")
         ]
 
+func wrapLines(initial: string, limit=50): seq[string] =
+    if initial.len <= limit:
+        return @[initial]
+    else:
+        let words = initial.splitWhitespace()
+        var lineOne: seq[string]
+        var lineTwo: seq[string]
+        var cnt = 0
+        while ((lineOne.map((x) => x.len)).sum + lineOne.len-1) < limit and cnt < words.len:
+            lineOne.add(words[cnt])
+            cnt += 1
+
+        lineTwo.add(lineOne.pop())
+
+        while cnt < words.len:
+            lineTwo.add(words[cnt])
+            cnt += 1
+
+        return @[
+            lineOne.join(" "),
+            lineTwo.join(" ")
+        ]
 
 func getTypeString(valueSpec: ValueSpec): string =
     ## Returns the representation of a type into a string
@@ -139,8 +161,9 @@ proc getUsageForFunction(obj: ValueObj): seq[string] =
     if args[0][0] != "":
         let 
             templateArg = fmt"{args[0][0]}" 
-            templateType = getShortData(getTypeString(args[0][1]), lineLength - labelAlignment - initialPadding.len - templateArg.len)
+            templateType = wrapLines(getTypeString(args[0][1]), lineLength - labelAlignment - initialPadding.len - templateName.len - templateArg.len - 3)
 
+        echo "cutoff => " & $(lineLength - labelAlignment - initialPadding.len - templateName.len - templateArg.len - 3)
         result.add fmt "{templateName} {templateArg} {fg(grayColor)}{templateType[0]}{resetColor}"
         if templateType.len > 1:
             var extraSpaceBefore: string
