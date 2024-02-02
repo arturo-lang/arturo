@@ -968,6 +968,9 @@ proc copyValue*(v: Value): Value {.inline.} =
         of Function:    
             if v.fnKind == UserFunction:
                 result = newFunction(v.params, v.main, v.imports, v.exports, v.memoize, v.inline)
+                if not v.info.isNil:
+                    result.info = ValueInfo()
+                    result.info[] = v.info[]
             else:
                 when defined(DOCGEN):
                     result = newBuiltin(v.info.descr, v.info.module, v.info.line, v.arity, v.info.args, v.info.attrs, v.info.returns, v.info.example, v.op, v.action)
@@ -975,6 +978,9 @@ proc copyValue*(v: Value): Value {.inline.} =
                     result = newBuiltin(v.info.descr, v.info.module, 0, v.arity, v.info.args, v.info.attrs, v.info.returns, "", v.op, v.action)
         of Method:
             result = newMethod(v.mparams, v.mmain, v.mdistinct, injectThis=false)
+            if not v.info.isNil:
+                result.info = ValueInfo()
+                result.info[] = v.info[]
 
         of Database:    
             when not defined(NOSQLITE):

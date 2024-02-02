@@ -206,7 +206,7 @@ type
             line*       : int
 
         case kind*: ValueKind:
-            of Function:
+            of Function, Method:
                 args*       : OrderedTable[string,ValueSpec]
                 attrs*      : OrderedTable[string,(ValueSpec,string)]
                 returns*    : ValueSpec
