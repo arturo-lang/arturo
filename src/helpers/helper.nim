@@ -177,7 +177,6 @@ proc getUsageForFunction(obj: ValueObj): seq[string] =
         let
             templateArg  = fmt"{arg[0]}"
             templateType = wrapLines(getTypeString(arg[1]), lineLength - labelAlignment - initialPadding.len - templateName.len - templateArg.len - spaceBefore.len)
-            #getShortData(getTypeString(arg[1]))
         
         result.add fmt "{spaceBefore}{templateArg} {fg(grayColor)}{templateType[0]}{resetColor}"
         if templateType.len > 1:
