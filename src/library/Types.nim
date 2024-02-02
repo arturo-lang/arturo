@@ -82,13 +82,6 @@ proc defineLibrary*() =
                 #  labels: library, oop, error handling
                 discard
 
-    # TODO(Types\define) add options for automated functions?
-    #  Initially, I had thought of adding a `.having:` option that would
-    #  automatically create an `init` method, simply assigning all arguments
-    #  to `this` - but this is achievable, for simple functions, through the main
-    #  block. That's what we're doing sort-of with `.sortable`, albeit I'm not
-    #  even sure I like this one, or that it's that practical. Let's see...
-    #  labels: library, enhancement, open discussion
     builtin "define",
         alias       = unaliased,
         op          = opNop,
