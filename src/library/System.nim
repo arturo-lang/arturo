@@ -313,6 +313,8 @@ proc defineLibrary*() =
         attrs       = NoAttrs,
         returns     = {Dictionary},
         example     = """
+        path
+        ; => [current:C:\Users\me\my-proj home:C:\Users\me\ temp:C:\Users\me\AppData\Local\Temp\
         """:
             #=======================================================
             push(newDictionary(getPathInfo()))
