@@ -2,11 +2,19 @@
 import std/strformat
 
 type
-    VError* = ref object of CatchableError
-        kind*: VErrorKind
+    VErrorClass* = enum
+        RuntimeError    = "Runtime"
+        SyntaxError     = "Syntax"
+        CompilerError   = "Compiler"
+
+        UndefinedError  = "Undefined"
         
     VErrorKind* = ref object
+        class*: VErrorClass
         label*: string
+
+    VError* = ref object of CatchableError
+        kind*: VErrorKind
 
 proc newDefaultError*(): VErrorKind =
     result = VErrorKind(label: "Generic Error")
