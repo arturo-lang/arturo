@@ -50,6 +50,7 @@ type
 
 const
     Alternative     = "perhaps you meant"
+    MaxIntSupported = sizeof(int) * 8
 
 #=======================================
 # Variables
@@ -189,55 +190,71 @@ proc CompilerError_NotEnoughParameters*(name: string) =
 
 proc SyntaxError_MissingClosingSquareBracket*(lineno: int, context: string) =
     CurrentLine = lineno
-    panic SyntaxError,
-          "missing closing square bracket: `]`" & ";;" & 
-          "near: " & context
+    panic SyntaxError, """
+        missing closing square bracket: `]`
+
+        near: {context}
+    """.fmt
 
 proc SyntaxError_MissingClosingParenthesis*(lineno: int, context: string) =
     CurrentLine = lineno
-    panic SyntaxError,
-          "missing closing square bracket: `)`" & ";;" & 
-          "near: " & context
+    panic SyntaxError, """
+        missing closing square bracket: `)`
+
+        near: {context}
+    """.fmt
 
 proc SyntaxError_StrayClosingSquareBracket*(lineno: int, context: string) =
     CurrentLine = lineno
-    panic SyntaxError,
-          "stray closing square bracket: `]`" & ";;" & 
-          "near: " & context
+    panic SyntaxError, """
+        stray closing square bracket: `]`
+
+        near: {context}
+    """.fmt
 
 proc SyntaxError_StrayClosingCurlyBracket*(lineno: int, context: string) =
     CurrentLine = lineno
-    panic SyntaxError,
-          "stray closing curly bracket: `}`" & ";;" & 
-          "near: " & context
+    panic SyntaxError, """
+        stray closing curly bracket: `}`
+
+        near: $#
+    """ % [context]
 
 proc SyntaxError_StrayClosingParenthesis*(lineno: int, context: string) =
     CurrentLine = lineno
-    panic SyntaxError,
-          "stray closing parenthesis: `)`" & ";;" & 
-          "near: " & context
+    panic SyntaxError, """
+        stray closing parenthesis: `)`
+
+        near: {context}
+    """.fmt
 
 proc SyntaxError_UnterminatedString*(strtype: string, lineno: int, context: string) =
     var strt = strtype
     if strt!="": strt &= " "
     CurrentLine = lineno
-    panic SyntaxError,
-          "unterminated " & strt & "string;;" & 
-          "near: " & context
+    panic SyntaxError, """
+        unterminated {strt}string
+
+        near: {context}
+    """.fmt
 
 proc SyntaxError_NewlineInQuotedString*(lineno: int, context: string) =
     CurrentLine = lineno
-    panic SyntaxError,
-          "newline in quoted string;" & 
-          "for multiline strings, you could use either:;" &
-          "curly blocks _{..}_ or _triple \"-\"_ templates;;" &
-          "near: " & context
+    panic SyntaxError, """
+        newline in quoted string
+        for multiline strings, you could use either:
+        curly blocks _{..}_ or _triple "-"_ templates
+
+        near: $#
+    """ % [context]
 
 proc SyntaxError_EmptyLiteral*(lineno: int, context: string) =
     CurrentLine = lineno
-    panic SyntaxError,
-          "empty literal value;;" & 
-          "near: " & context
+    panic SyntaxError, """
+        empty literal value
+
+        near: {context}
+    """.fmt
 
 # Assertion errors
 
@@ -246,258 +263,303 @@ proc AssertionError_AssertionFailed*(context: string) =
           context
           
 proc AssertionError_AssertionFailed*(context: string, message: string) =
-    panic AssertionError, 
-          message & ":;" & 
-          "for: " & context
+    panic AssertionError, """
+        {message}:
+        for: {context}
+    """.fmt
 
 # Runtime errors
 
 proc RuntimeError_IntegerParsingOverflow*(lineno: int, number: string) =
     CurrentLine = lineno
-    panic RuntimeError,
-          "number parsing overflow - up to " & $(sizeof(int) * 8) & "-bit integers supported" & ";" &
-          "given: " & truncate(number, 20)
+    panic RuntimeError, """
+        number parsing overflow - up to {MaxIntSupported}-bit integers supported
+        given: {truncate(number, 20)}
+    """.fmt
 
 proc RuntimeError_IntegerOperationOverflow*(operation: string, argA, argB: string) =
-    panic RuntimeError,
-            "number operation overflow - up to " & $(sizeof(int) * 8) & "-bit integers supported" & ";" &
-            "attempted: " & operation & ";" &
-            "with: " & truncate(argA & " " & argB, 30)
+    panic RuntimeError, """
+        number operation overflow - up to {MaxIntSupported}-bit integers supported
+        attempted: {operation}
+        with: {truncate(argA & " " & argB, 30)}
+    """.fmt
 
 proc RuntimeError_NumberOutOfPermittedRange*(operation: string, argA, argB: string) =
-    panic RuntimeError,
-            "number operator out of range - up to " & $(sizeof(int) * 8) & "-bit integers supported" & ";" &
-            "attempted: " & operation & ";" &
-            "with: " & truncate(argA & " " & argB, 30)
+    panic RuntimeError, """
+        number operator out of range - up to {MaxIntSupported}-bit integers supported
+        attempted: {operation}
+        with: {truncate(argA & " " & argB, 30)}
+    """.fmt
 
 proc RuntimeError_IncompatibleQuantityOperation*(operation: string, argA, argB, kindA, kindB: string) =
-    panic RuntimeError,
-            "incompatible operation between quantities" & ";" &
-            "attempted: " & operation & ";" &
-            "with: " & truncate(argA & " (" & kindA & ") " & argB & " (" & kindB & ")", 60)
+    panic RuntimeError, """
+        incompatible operation between quantities
+        attempted: {operation}
+        with: """.fmt & truncate(argA & " (" & kindA & ") " & argB & " (" & kindB & ")", 60)
             
 proc RuntimeError_IncompatibleValueType*(functionName: string, tp: string, expected: string) =
-    panic RuntimeError,
-          "cannot perform _" & (functionName) & "_;" &
-          "incompatible value type for " & tp & ";" &
-          "expected " & expected
+    panic RuntimeError, """
+        cannot perform _{functionName}_
+        incompatible value type for {tp}
+        expected {expected}
+    """.fmt
 
 proc RuntimeError_IncompatibleBlockValue*(functionName: string, val: string, expected: string) =
-    panic RuntimeError,
-          "cannot perform _" & (functionName) & "_ -> " & val & ";" &
-          "incompatible value inside block parameter" & ";" &
-          "expected " & expected
+    panic RuntimeError, """
+        cannot perform _{functionName}_ -> {val}
+        incompatible value inside block parameter
+        expected {expected}
+    """.fmt
 
 proc RuntimeError_IncompatibleBlockValueAttribute*(functionName: string, attributeName: string, val: string, expected: string) =
-    panic RuntimeError, 
-          "cannot perform _" & (functionName) & "_;" &
-          "incompatible value inside block for _" & (attributeName) & "_ -> " & val & ";" &
-          "accepts " & expected
+    panic RuntimeError, """
+        cannot perform _{functionName}_
+        incompatible value inside block for _{attributeName}_ -> {val}
+        accepts {expected}
+    """.fmt
 
 proc RuntimeError_IncompatibleBlockSize*(functionName: string, got: int, expected: string) =
-    panic RuntimeError,
-          "cannot perform _" & (functionName) & ";" &
-          "incompatible block size: " & $(got) & ";" &
-          "expected: " & $(expected)
+    panic RuntimeError, """
+        cannot perform _{functionName}_
+        incompatible block size: {$(got)}
+        expected: {$(expected)}
+    """.fmt
 
 proc RuntimeError_UsingUndefinedType*(typeName: string) =
-    panic RuntimeError,
-          "undefined or unknown type _:" & (typeName) & "_;" &
-          "you should make sure it has been properly" & ";" &
-          "initialized using `define`"
+    panic RuntimeError, """
+        undefined or unknown type _:{typeName}_
+        you should make sure it has been properly
+        initialized using `define`
+    """.fmt
 
 proc RuntimeError_IncorrectNumberOfArgumentsForInitializer*(typeName: string, got: int, expected: seq[string]) =
-    panic RuntimeError,
-          "cannot initialize object of type _:" & (typeName) & "_;" &
-          "wrong number of parameters: " & $(got) & ";" &
-          "expected: " & $(expected.len) & " (" & expected.join(", ") & ")"
+    panic RuntimeError, """
+        cannot initialize object of type _:{typeName}_
+        wrong number of parameters: {$(got)}
+        expected: {$(expected.len)} ({expected.join(", ")})
+    """.fmt
 
 proc RuntimeError_MissingArgumentForInitializer*(typeName: string, missing: string) =
-    panic RuntimeError,
-          "cannot initialize object of type _:" & (typeName) & "_;" &
-          "missing field: " & $(missing)
+    panic RuntimeError, """
+        cannot initialize object of type _:{typeName}_
+        missing field: {$(missing)}
+    """.fmt
 
 proc RuntimeError_UnsupportedParentType*(typeName: string) =
-    panic RuntimeError,
-          "subtyping built-in type _:" & (typeName) & "_;" &
-          "is not supported"
+    panic RuntimeError, """
+        subtyping built-in type _:{typeName}_
+        is not supported
+    """.fmt
 
 proc RuntimeError_InvalidOperation*(operation: string, argA, argB: string) =
-    panic RuntimeError,
-            "invalid operation _" & operation & "_;" &
-            (if argB!="": "between: " else: "with: ") & argA & (if argB!="": ";" & "and: " & argB else: "")
+    panic RuntimeError, """
+        invalid operation _{operation}_
+    """ & (if argB!="": "between: " else: "with: ") & argA & (if argB!="": ";" & "and: " & argB else: "")
 
 proc RuntimeError_CannotConvertQuantity*(val, argA, kindA, argB, kindB: string) =
-    panic RuntimeError,
-          "cannot convert quantity: " & val & ";" &
-          "from: " & argA & " (" & kindA & ") " & ";" &
-          "to: " & argB & " (" & kindB & ")"
+    panic RuntimeError, """
+        cannot convert quantity: {val}
+        from: {argA} ({kindA})
+        to: {argB} ({kindB})
+    """.fmt
           
 proc RuntimeError_CannotConvertDifferentDimensions*() =
-    panic RuntimeError,
-          "cannot convert quantities with different dimensions."
+    panic RuntimeError, """
+        cannot convert quantities with different dimensions
+    """
 
 proc RuntimeError_DivisionByZero*() =
-    panic RuntimeError,
-            "division by zero"
+    panic RuntimeError, """
+        division by zero
+    """
 
 proc RuntimeError_OutOfBounds*(indx: int, maxRange: int) =
-    panic RuntimeError,
-          "array index out of bounds: " & $(indx) & ";" & 
-          "valid range: 0.." & $(maxRange)
+    panic RuntimeError, """
+        array index out of bounds: {$(indx)}
+        valid range: 0.." {$(maxRange)}
+    """.fmt
 
 proc RuntimeError_SymbolNotFound*(sym: string, alter: seq[string]) =
     let sep = ";" & repeat("~%",Alternative.len - 2) & "or... "
-    panic RuntimeError,
-          "symbol not found: " & sym & ";" & 
-          "perhaps you meant... " & alter.map((x) => "_" & x & "_ ?").join(sep)
+    panic RuntimeError, """
+        symbol not found: {sym}
+        perhaps you meant... {alter.map((x) => "_" & x & "_ ?").join(sep)}
+    """.fmt
 
 proc RuntimeError_CannotModifyConstant*(sym: string) =
-    panic RuntimeError,
-          "value points to a readonly constant: " & sym & ";" &
-          "which cannot be modified in-place"
+    panic RuntimeError, """
+        value points to a readonly constant: {sym}
+        which cannot be modified in-place
+    """.fmt
 
 proc RuntimeError_PathLiteralMofifyingString*() =
-    panic RuntimeError,      
-          "in-place modification of strings" & ";" &
-          "through PathLiteral values is not supported"
+    panic RuntimeError, """ 
+        in-place modification of strings
+        through PathLiteral values is not supported
+    """
 
 proc RuntimeError_FileNotFound*(path: string) =
-    panic RuntimeError,
-          "file not found: " & path
+    panic RuntimeError, """
+        file not found: {path}
+    """.fmt
 
 proc RuntimeError_AliasNotFound*(sym: string) =
-    panic RuntimeError,
-          "alias not found: " & sym
+    panic RuntimeError, """
+        alias not found: {sym}
+    """.fmt
 
 proc RuntimeError_KeyNotFound*(sym: string, alter: seq[string]) =
     let sep = ";" & repeat("~%",Alternative.len - 2) & "or... "
-    panic RuntimeError,
-          "dictionary key not found: " & sym & ";" & 
-          "perhaps you meant... " & alter.map((x) => "_" & x & "_ ?").join(sep)
+    panic RuntimeError, """
+        dictionary key not found: {sym}
+        perhaps you meant... {alter.map((x) => "_" & x & "_ ?").join(sep)}
+    """.fmt
 
 proc RuntimeError_CannotStoreKey*(key: string, valueKind: string, storeKind: string) =
-    panic RuntimeError,
-          "unsupported value type: " & valueKind & ";" &
-          "for store of type: " & storeKind & ";" &
-          "when storing key: " & key
+    panic RuntimeError, """
+        unsupported value type: {valueKind}
+        for store of type: {storeKind}
+        when storing key: {key}
+    """
 
 proc RuntimeError_SqliteDisabled*() =
-    panic RuntimeError,
-          "SQLite not available in MINI builds;" &
-          "if you want to have access to SQLite-related functionality,;" &
-          "please, install Arturo's full version"
+    panic RuntimeError, """
+        SQLite not available in MINI builds
+        if you want to have access to SQLite-related functionality,
+        please, install Arturo's full version
+    """
 
 proc RuntimeError_NotEnoughArguments*(functionName:string, functionArity: int) =
-    panic RuntimeError,
-          "cannot perform _" & (functionName) & "_;" & 
-          "not enough parameters: " & $(functionArity) & " required"
+    panic RuntimeError, """
+        cannot perform _{functionName}_
+        not enough parameters: {$(functionArity)} required
+    """.fmt
 
 proc RuntimeError_WrongArgumentType*(functionName: string, actual: string, paramPos: string, accepted: string) =
-    panic RuntimeError, 
-          "cannot perform _" & (functionName) & "_ -> " & actual & ";" &
-          "incorrect argument type for " & paramPos & " parameter;" &
-          "accepts " & accepted
+    panic RuntimeError, """
+        cannot perform _{functionName}_ -> {actual}
+        incorrect argument type for {paramPos} parameter
+        accepts {accepted}
+    """.fmt
 
 proc RuntimeError_WrongAttributeType*(functionName: string, attributeName: string, actual: string, accepted: string) =
-    panic RuntimeError, 
-          "cannot perform _" & (functionName) & "_;" &
-          "incorrect attribute type for _" & (attributeName) & "_ -> " & actual & ";" &
-          "accepts " & accepted
+    panic RuntimeError, """
+        cannot perform _{functionName}_
+        incorrect attribute type for _{attributeName}_ -> {actual}
+        accepts {accepted}
+    """.fmt
 
 proc RuntimeError_CannotConvert*(arg,fromType,toType: string) =
-    panic RuntimeError,
-          "cannot convert argument: " & truncate(arg,20) & ";" &
-          "from :" & (fromType).toLowerAscii() & ";" &
-          "to   :" & (toType).toLowerAscii()
+    panic RuntimeError, """
+        cannot convert argument: {truncate(arg,20)}
+        from :{(fromType).toLowerAscii()}
+        to   :{(toType).toLowerAscii()}
+    """.fmt
 
 proc RuntimeError_ConversionFailed*(arg,fromType,toType: string) =
-    panic RuntimeError,
-          "conversion failed: " & truncate(arg,20) & ";" &
-          "from :" & (fromType).toLowerAscii() & ";" &
-          "to   :" & (toType).toLowerAscii()
+    panic RuntimeError, """
+        conversion failed: {truncate(arg,20)}
+        from :{(fromType).toLowerAscii()}
+        to   :{(toType).toLowerAscii()}
+    """.fmt
 
 proc RuntimeError_LibraryNotLoaded*(path: string) =
-    panic RuntimeError,
-          "dynamic library could not be loaded:" & ";" &
-          path
+    panic RuntimeError, """
+        dynamic library could not be loaded:
+        {path}
+    """.fmt
 
 proc RuntimeError_LibrarySymbolNotFound*(path: string, sym: string) =
-    panic RuntimeError,
-          "symbol not found: " & sym & ";" & 
-          "in library: " & path
+    panic RuntimeError, """
+        symbol not found: {sym}
+        in library: {path}
+    """.fmt
 
 proc RuntimeError_ErrorLoadingLibrarySymbol*(path: string, sym: string) =
-    panic RuntimeError,
-          "error loading symbol: " & sym & ";" & 
-          "from library: " & path
+    panic RuntimeError, """
+        error loading symbol: {sym}
+        from library: {path}
+    """.fmt
 
 proc RuntimeError_OperationNotPermitted*(operation: string) =
-    panic RuntimeError,
-          "unsafe operation: " & operation & ";" &
-          "not permitted in online playground"
+    panic RuntimeError, """
+        unsafe operation: {operation}
+        not permitted in online playground
+    """.fmt
           
 proc RuntimeError_StackUnderflow*() =
-    panic RuntimeError,
-        "stack underflow"
+    panic RuntimeError, """
+        stack underflow
+    """
 
 proc RuntimeError_ConfigNotFound*(gkey: string, akey: string) =
-    panic RuntimeError,
-          "configuration not found for: " & gkey & ";" &
-          "you can either supply it globally via `config`;" &
-          "or using the option: ." & akey
+    panic RuntimeError, """
+        configuration not found for: {gkey}
+        you can either supply it globally via `config`
+        or using the option: .{akey}
+    """.fmt
 
 proc RuntimeError_RangeWithZeroStep*() =
-    panic RuntimeError,
-          "attribute step can't be 0"
+    panic RuntimeError, """
+        attribute step can't be 0
+    """
           
 proc RuntimeError_CompatibleBrowserNotFound*() =
-    panic RuntimeError,
-          "could not find any Chrome-compatible browser installed"
+    panic RuntimeError, """
+        could not find any Chrome-compatible browser installed
+    """
           
 proc RuntimeError_CompatibleBrowserCouldNotOpenWindow*() =
-    panic RuntimeError,
-          "could not open a Chrome-compatible browser window"
+    panic RuntimeError, """
+        could not open a Chrome-compatible browser window
+    """
 
 proc RuntimeError_PackageNotFound*(pkg: string) =
-    panic RuntimeError,
-          "package not found: ;" &
-          "_" & pkg & "_"
+    panic RuntimeError, """
+        package not found:
+        _{pkg}_
+    """.fmt
 
 proc RuntimeError_PackageRepoNotCorrect*(repo: string) =
-    panic RuntimeError,
-          "package repository url not correct: ;" &
-          repo
+    panic RuntimeError, """
+        package repository url not correct:
+        {repo}
+    """.fmt
 
 proc RuntimeError_PackageRepoNotFound*(repo: string) =
-    panic RuntimeError,
-          "package repository not found: ;" &
-          repo
+    panic RuntimeError, """
+        package repository not found:
+        {repo}
+    """.fmt
 
 proc RuntimeError_CorruptRemoteSpec*(pkg: string) =
-    panic RuntimeError,
-          "corrupt spec file for remote package: ;" &
-          "_" & pkg & "_"
+    panic RuntimeError, """
+        corrupt spec file for remote package:
+        _{pkg}_
+    """.fmt
 
 proc RuntimeError_PackageNotValid*(pkg: string) =
-    panic RuntimeError,
-          "invalid package: ;" &
-          "_" & pkg & "_" 
+    panic RuntimeError, """
+        invalid package:
+        _{pkg}_
+    """.fmt
 
 proc RuntimeError_PackageUnknownError*(pkg: string) =
-    panic RuntimeError,
-          "unexpected error while installing package: ;" &
-          "_" & pkg & "_"
+    panic RuntimeError, """
+        unexpected error while installing package:
+        _{pkg}_
+    """.fmt
 
 proc RuntimeError_PackageInvalidVersion*(vers: string) =
-    panic RuntimeError,
-          "error parsing package version: ;" &
-          "_" & vers & "_"
+    panic RuntimeError, """
+        error parsing package version:
+        _{vers}_
+    """.fmt
 
 # Program errors
 
 proc ProgramError_panic*(message: string, code: int) =
-    panic ProgramError,
+    panic ProgramError, 
           $(code) & "<:>" & message
 
 # TODO Re-establish stack trace debug reports
