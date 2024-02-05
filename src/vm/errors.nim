@@ -32,7 +32,7 @@ type
     ReturnTriggered* = ref object of Defect
     BreakTriggered* = ref object of Defect
     ContinueTriggered* = ref object of Defect
-    
+
     VMError* = ref object of CatchableError
 
     VMErrorKind* = enum
@@ -134,7 +134,7 @@ proc showVMErrors*(e: ref Exception) =
     else:
         var message = "MESSAGE"
 
-    let errMsgParts = message.split(";").map((x)=>(strutils.strip(x)).replace("~%"," ").replace("%&",";").replace("T@B","\t"))
+    let errMsgParts = message.strip().splitLines().map((x)=>(strutils.strip(x)).replace("~%"," ").replace("%&",";").replace("T@B","\t"))
     let alignedError = align("error", header.len)
     
     var errMsg = errMsgParts[0] & fmt("\n{bold(redColor)}{repeat(' ',marker.len)} {alignedError} {separator}{resetColor} ")
@@ -150,39 +150,40 @@ proc showVMErrors*(e: ref Exception) =
 # Compiler errors
 
 proc CompilerError_ScriptNotExists*(name: string) =
-    panic CompilerError,
-          "given script path doesn't exist:" & ";" &
-          "_" & name & "_"
+    panic CompilerError, """
+        given script path doesn't exist:
+        _{name}_
+    """.fmt
 
 proc CompilerError_UnrecognizedOption*(name: string) =
-    panic CompilerError,
-          "unrecognized command-line option:" & ";" &
-          "_" & name & "_",
-          throw=false
+    panic CompilerError, """
+        unrecognized command-line option:
+        _{name}_
+    """.fmt, throw=false
 
 proc CompilerError_UnrecognizedPackageCommand*(name: string) =
-    panic CompilerError,
-          "unrecognized _package_ command:" & ";" &
-          "_" & name & "_",
-          throw=false
+    panic CompilerError, """
+        unrecognized _package_ command:
+        _{name}_
+    """.fmt, throw=false
 
 proc CompilerError_NoPackageCommand*() =
-    panic CompilerError,
-          "no _package_ command command given -;" &
-          "have a look at the options below",
-          throw=false
+    panic CompilerError, """
+        no _package_ command command given -
+        have a look at the options below
+    """.fmt, throw=false
 
 proc CompilerError_ExtraneousParameter*(subcmd: string, name: string) =
-    panic CompilerError,
-          "extraneous parameter for " & "_" & subcmd & "_:;" &
-          name,
-          throw=false
+    panic CompilerError, """
+        extraneous parameter for _{subcmd}_:
+        {name}
+    """.fmt, throw=false
 
 proc CompilerError_NotEnoughParameters*(name: string) =
-    panic CompilerError,
-          "not enough parameters for " & "_" & name & "_ -;" &
-          "consult the help screen below",
-          throw=false
+    panic CompilerError, """
+        not enough parameters for _{name}_ -
+        consult the help screen below
+    """.fmt, throw=false
 
 # Syntax errors
 
