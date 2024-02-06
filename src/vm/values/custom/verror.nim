@@ -31,6 +31,7 @@ proc newRuntimeError*(lbl: string): VErrorKind =
 
 let 
     ArithmeticErr*      = newRuntimeError("Arithmetic Error")
+    AssertionErr*       = newRuntimeError("Assertion Error")
     ConversionErr*      = newRuntimeError("Conversion Error")
 
 #=======================================
