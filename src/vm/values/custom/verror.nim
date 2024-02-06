@@ -20,7 +20,11 @@ type
 # Constants
 #=======================================
 
-let RuntimeErr*   = VErrorKind(label: "Runtime Error", parent: nil)
+let 
+    RuntimeErr*     = VErrorKind(label: "Runtime Error", parent: nil)
+    SyntaxErr*      = VErrorKind(label: "Syntax Error", parent: nil)
+    CompilerErr*    = VErrorKind(label: "Compiler Error", parent: nil)
+    ProgramErr*     = VErrorKind(label: "Program Error", parent: nil)
 
 proc newRuntimeError*(lbl: string): VErrorKind =
     result = VErrorKind(label: lbl, parent: RuntimeErr)
