@@ -37,14 +37,14 @@ type
 
     VMError* = ref object of CatchableError
 
-    VMErrorKind* = enum
-        RuntimeError   = "Runtime"
-        AssertionError = "Assertion"
-        SyntaxError    = "Syntax"
-        ProgramError   = "Program"
-        CompilerError  = "Compiler"
+    # VMErrorKind* = enum
+    #     RuntimeError   = "Runtime"
+    #     AssertionError = "Assertion"
+    #     SyntaxError    = "Syntax"
+    #     ProgramError   = "Program"
+    #     CompilerError  = "Compiler"
 
-        UndefinedError = "Undefined"
+    #     UndefinedError = "Undefined"
 
 #=======================================
 # Constants
