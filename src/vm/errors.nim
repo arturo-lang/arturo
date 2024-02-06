@@ -600,7 +600,7 @@ proc RuntimeError_PackageInvalidVersion*(vers: string) =
 # Program errors
 
 proc ProgramError_panic*(message: string, code: int) =
-    panic ProgramError, 
+    panic ProgramErr, 
           $(code) & "<:>" & message
 
 # TODO Re-establish stack trace debug reports
