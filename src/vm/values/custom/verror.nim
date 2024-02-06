@@ -10,17 +10,20 @@ type
         UndefinedError  = "Undefined"
         
     VErrorKind* = ref object
-        class*: VErrorClass
+        parent*: VErrorKind
         label*: string
 
     VError* = ref object of CatchableError
         kind*: VErrorKind
 
-proc newDefaultError*(): VErrorKind =
-    result = VErrorKind(label: "Generic Error")
+let runtimeErrorKind*   = VErrorKind(label: "Runtime Error", parent: nil)
+
+proc newRuntimeError*(lbl: string): VErrorKind =
+    result = VErrorKind(label: lbl, parent: runtimeErrorKind)
 
 let 
-    genericErrorKind*: VErrorKind = newDefaultError()
+    arithmeticErrorKind*        = newRuntimeError("Arithmetic Error")
+    
 
 func `$`*(kind: VErrorKind): string {.inline,enforceNoRaises.} =
     kind.label
