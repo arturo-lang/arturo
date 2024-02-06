@@ -1,5 +1,12 @@
+#=======================================
+# Libraries
+#=======================================
 
 import std/strformat
+
+#=======================================
+# Types
+#=======================================
 
 type        
     VErrorKind* = ref object
@@ -9,6 +16,10 @@ type
     VError* = ref object of CatchableError
         kind*: VErrorKind
 
+#=======================================
+# Constants
+#=======================================
+
 let RuntimeError*   = VErrorKind(label: "Runtime Error", parent: nil)
 
 proc newRuntimeError*(lbl: string): VErrorKind =
@@ -16,6 +27,10 @@ proc newRuntimeError*(lbl: string): VErrorKind =
 
 let 
     ArithmeticError*        = newRuntimeError("Arithmetic Error")
+
+#=======================================
+# Overloads
+#=======================================
 
 func `$`*(kind: VErrorKind): string {.inline,enforceNoRaises.} =
     kind.label
