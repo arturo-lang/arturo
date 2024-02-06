@@ -447,14 +447,14 @@ proc newErrorKind*(): Value {.inline, enforceNoRaises.} =
 proc newErrorKind*(label: string): Value {.inline, enforceNoRaises.} =
     Value(kind: ErrorKind, errKind: VErrorKind(label: label))
 
-proc newErrorKind*(errKind: VErrorKind = verror.RuntimeError): Value {.inline, enforceNoRaises.} =
+proc newErrorKind*(errKind: VErrorKind = RuntimeErr): Value {.inline, enforceNoRaises.} =
     Value(kind: ErrorKind, errKind: errKind)
 
 proc newError*(error: ref Exception | CatchableError | Defect): Value {.inline, enforceNoRaises.} =
-    result = Value(kind: Error, err: VError(kind: RuntimeError))
+    result = Value(kind: Error, err: VError(kind: RuntimeErr))
     result.err.msg = error.msg
 
-proc newError*(kind: VErrorKind = verror.RuntimeError, msg: string = ""): Value {.inline, enforceNoRaises.} =
+proc newError*(kind: VErrorKind = RuntimeErr, msg: string = ""): Value {.inline, enforceNoRaises.} =
     result = Value(kind: Error, err: VError(kind: kind))
     result.err.msg = msg
 
