@@ -451,7 +451,7 @@ proc newErrorKind*(errKind: VErrorKind): Value {.inline, enforceNoRaises.} =
     Value(kind: ErrorKind, errKind: errKind)
 
 proc newError*(error: ref Exception | CatchableError | Defect): Value {.inline, enforceNoRaises.} =
-    result = Value(kind: Error, err: VError(kind: verror.genericErrorKind))
+    result = Value(kind: Error, err: VError(kind: runtimeErrorKind))
     result.err.msg = error.msg
 
 proc newError*(kind: VErrorKind, msg: string = ""): Value {.inline, enforceNoRaises.} =
@@ -462,7 +462,7 @@ proc newError*(err: VError): Value {.inline, enforceNoRaises.} =
     Value(kind: Error, err: err)
 
 proc newGenericError*(): Value {.inline, enforceNoRaises.} =
-    Value(kind: Error, err: VError(kind: genericErrorKind))
+    Value(kind: Error, err: VError(kind: runtimeErrorKind))
 
 func newRegex*(rx: sink VRegex): Value {.inline, enforceNoRaises.} =
     ## create Regex value from VRegex
