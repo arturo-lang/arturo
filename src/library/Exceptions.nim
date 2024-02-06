@@ -78,7 +78,7 @@ proc defineSymbols*() =
             elif xkind == ErrorKind:
                 x.errKind
             else:
-                verror.RuntimeError
+                RuntimeErr
 
             var error = verror.VError(kind: kind)
             if xkind == String:
@@ -173,6 +173,6 @@ proc defineSymbols*() =
     constant "genericError",
         alias       = unaliased,
         description = "a generic error":
-            newErrorKind(verror.RuntimeError)
+            newErrorKind(RuntimeErr)
 
 Libraries.add(defineSymbols)
