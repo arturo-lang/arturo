@@ -20,13 +20,14 @@ type
 # Constants
 #=======================================
 
-let RuntimeError*   = VErrorKind(label: "Runtime Error", parent: nil)
+let RuntimeErr*   = VErrorKind(label: "Runtime Error", parent: nil)
 
 proc newRuntimeError*(lbl: string): VErrorKind =
-    result = VErrorKind(label: lbl, parent: RuntimeError)
+    result = VErrorKind(label: lbl, parent: RuntimeErr)
 
 let 
-    ArithmeticError*        = newRuntimeError("Arithmetic Error")
+    ArithmeticErr*      = newRuntimeError("Arithmetic Error")
+    ConversionErr*      = newRuntimeError("Conversion Error")
 
 #=======================================
 # Overloads
@@ -37,4 +38,3 @@ func `$`*(kind: VErrorKind): string {.inline,enforceNoRaises.} =
 
 func `$`*(error: VError): string {.inline,enforceNoRaises.} =
     fmt"{error.kind}: {error.msg}"
-
