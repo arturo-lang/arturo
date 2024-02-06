@@ -77,7 +77,7 @@ proc getLineError(): string =
         if CurrentLine==0: CurrentLine = 1
         if ExecStack.len > 1:
             ExecStack.add(CurrentLine)
-        result &= (bold(grayColor)).replace(";","%&") & "File: " & resetColor & (fg(grayColor)).replace(";","%&") & CurrentFile & ";" & (bold(grayColor)).replace(";","%&") & "Line: " & resetColor & (fg(grayColor)).replace(";","%&") & $(CurrentLine) & resetColor & ";;"
+        result &= (bold(grayColor)).replace(";","%&") & "File: " & resetColor & (fg(grayColor)).replace(";","%&") & CurrentFile & "\n" & (bold(grayColor)).replace(";","%&") & "Line: " & resetColor & (fg(grayColor)).replace(";","%&") & $(CurrentLine) & resetColor & "\n\n"
 
 proc panic*(context: VMErrorKind, error: string, throw=true) =
     ## throw error, using given context and error message
@@ -127,9 +127,9 @@ proc showVMErrors*(e: ref Exception) =
         var message: string
         
         if errorKind==ProgramError:
-            let liner = e.msg.split("<:>")[0].split(";;")[0]
+            let liner = e.msg.split("<:>")[0].split("\n\n")[0]
             let msg = e.msg.split("<:>")[1]
-            message = liner & ";;" & msg.replacef(re"_([^_]+)_",fmt("{bold()}$1{resetColor}"))
+            message = liner & "\n\n" & msg.replacef(re"_([^_]+)_",fmt("{bold()}$1{resetColor}"))
         else:
             message = e.msg.replacef(re"_([^_]+)_",fmt("{bold()}$1{resetColor}"))
     else:
@@ -354,7 +354,7 @@ proc RuntimeError_UnsupportedParentType*(typeName: string) =
 proc RuntimeError_InvalidOperation*(operation: string, argA, argB: string) =
     panic RuntimeError, """
         invalid operation _{operation}_
-    """ & (if argB!="": "between: " else: "with: ") & argA & (if argB!="": ";" & "and: " & argB else: "")
+    """.fmt & (if argB!="": "between: " else: "with: ") & argA & (if argB!="": "\n" & "and: " & argB else: "")
 
 proc RuntimeError_CannotConvertQuantity*(val, argA, kindA, argB, kindB: string) =
     panic RuntimeError, """
@@ -376,11 +376,11 @@ proc RuntimeError_DivisionByZero*() =
 proc RuntimeError_OutOfBounds*(indx: int, maxRange: int) =
     panic RuntimeError, """
         array index out of bounds: {$(indx)}
-        valid range: 0.." {$(maxRange)}
+        valid range: 0..{$(maxRange)}
     """.fmt
 
 proc RuntimeError_SymbolNotFound*(sym: string, alter: seq[string]) =
-    let sep = ";" & repeat("~%",Alternative.len - 2) & "or... "
+    let sep = "\n" & repeat("~%",Alternative.len - 2) & "or... "
     panic RuntimeError, """
         symbol not found: {sym}
         perhaps you meant... {alter.map((x) => "_" & x & "_ ?").join(sep)}
@@ -409,7 +409,7 @@ proc RuntimeError_AliasNotFound*(sym: string) =
     """.fmt
 
 proc RuntimeError_KeyNotFound*(sym: string, alter: seq[string]) =
-    let sep = ";" & repeat("~%",Alternative.len - 2) & "or... "
+    let sep = "\n" & repeat("~%",Alternative.len - 2) & "or... "
     panic RuntimeError, """
         dictionary key not found: {sym}
         perhaps you meant... {alter.map((x) => "_" & x & "_ ?").join(sep)}

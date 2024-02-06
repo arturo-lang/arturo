@@ -130,7 +130,7 @@ func getContext(p: var Parser, curPos: int): string =
         result.add(p.buf[i])
         inc(i)
 
-    result &= ";" & repeat("~%",6 + curPos-initial) & "_^_"
+    result &= "\n" & repeat("~%",6 + curPos-initial) & "_^_"
 
 # Lexer/parser
 
