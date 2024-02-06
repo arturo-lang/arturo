@@ -24,6 +24,8 @@ import sequtils, strformat, strutils, sugar
 import helpers/strings
 import helpers/terminal
 
+import vm/values/custom/verror
+
 #=======================================
 # Types
 #=======================================
@@ -79,19 +81,54 @@ proc getLineError(): string =
             ExecStack.add(CurrentLine)
         result &= (bold(grayColor)).replace(";","%&") & "File: " & resetColor & (fg(grayColor)).replace(";","%&") & CurrentFile & "\n" & (bold(grayColor)).replace(";","%&") & "Line: " & resetColor & (fg(grayColor)).replace(";","%&") & $(CurrentLine) & resetColor & "\n\n"
 
-proc panic*(context: VMErrorKind, error: string, throw=true) =
-    ## throw error, using given context and error message
-    var errorMsg = error
-    if context != CompilerError:
-        when not defined(NOERRORLINES):
-            errorMsg = getLineError() & errorMsg
-        else:
-            discard 
-    let err = VMError(name: cstring($(context)), msg:move errorMsg)
+# proc panik*(errorKind: VErrorKind, msg: string, throw=true) =
+#     ## create VError of given type and with given error message
+#     ## and either throw it or show it directly
+    
+#     let err = VError(
+#         kind: errorKind,
+#         msg: 
+#             when not defined(NOERRORLINES):
+#                 getLineError() & msg
+#             else:
+#                 msg
+#     )
+
+#     if throw:
+#         raise err
+#     else:
+#         showVMErrors(err)
+
+proc panic*(errorKind: VErrorKind, msg: string, throw=true) =
+    ## create VError of given type and with given error message
+    ## and either throw it or show it directly
+    
+    let err = VError(
+        name: cstring(errorKind.label),
+        kind: errorKind,
+        msg: 
+            when not defined(NOERRORLINES):
+                getLineError() & msg
+            else:
+                msg
+    )
+
     if throw:
         raise err
     else:
         showVMErrors(err)
+    # ## throw error, using given context and error message
+    # var errorMsg = error
+    # if context != CompilerError:
+    #     when not defined(NOERRORLINES):
+    #         errorMsg = getLineError() & errorMsg
+    #     else:
+    #         discard 
+    # let err = VMError(name: cstring($(context)), msg:move errorMsg)
+    # if throw:
+    #     raise err
+    # else:
+    #     showVMErrors(err)
 
 #=======================================
 # Helpers
@@ -367,6 +404,10 @@ proc RuntimeError_CannotConvertDifferentDimensions*() =
     panic RuntimeError, """
         cannot convert quantities with different dimensions
     """
+
+# proc error_DivisionByZero*() =
+#     panik ArithmeticErr:
+#         """division by zero"""
 
 proc RuntimeError_DivisionByZero*() =
     panic RuntimeError, """
