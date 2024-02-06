@@ -196,7 +196,7 @@ template handleVMErrors(blk: untyped): untyped =
             savePendingStores()
 
         if e.name == $(ProgramError):
-            let code = parseInt(e.msg.split(";;")[1].split("<:>")[0])
+            let code = parseInt(e.msg.split("\n\n")[1].split("<:>")[0])
             quit(code)
         else:
             quit(1)
