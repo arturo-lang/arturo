@@ -503,6 +503,12 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
     if not isLast:
         stdoutWrite "\n"
 
+proc dumped*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepend=""): string = 
+    var ss: ref string = new(string)
+    ss[] = ""
+    dump(v,target=ss)
+    return ss[]
+
 # TODO Fix pretty-printing for unwrapped blocks
 #  Indentation is not working right for inner dictionaries and blocks
 #  Check: `print as.pretty.code.unwrapped info.get 'get`
