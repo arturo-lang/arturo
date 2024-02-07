@@ -588,18 +588,6 @@ proc RuntimeError_WrongAttributeType*(functionName: string, attributeName: strin
 #         Of type     : :{(fromType).toLowerAscii()}
 
 proc RuntimeError_CannotConvert*(arg,fromType,toType: string) =
-    echo "Normal "
-    echo arg
-    echo "-----"
-    echo "Indented "
-    echo indent(arg, 4)
-    echo "-----"
-    echo "Stripped"
-    echo strip(arg)
-    echo "-----"
-    echo "Indented-Stripped"
-    echo strip(indent(strip(arg), 4))
-    echo "-----"
     panic ConversionErr, """
         Got value:
             {strip(indent(strip(arg),12))}
