@@ -43,13 +43,10 @@ proc parseFL(s: string): float =
         raise newException(ValueError, "invalid float: " & s)
 
 template throwCannotConvert(): untyped =
-    var ss: ref string = new(string)
-    ss[] = ""
-    dump(y,target=ss)
-    RuntimeError_CannotConvert(ss[], $(y.kind), (if x.tpKind==UserType: x.tid else: $(x.t)))
+    RuntimeError_CannotConvert(dumped(y), $(y.kind), (if x.tpKind==UserType: x.tid else: $(x.t)))
 
 template throwConversionFailed(): untyped =
-    RuntimeError_ConversionFailed(codify(y), $(y.kind), (if x.tpKind==UserType: x.tid else: $(x.t)))
+    RuntimeError_ConversionFailed(dumped(y), $(y.kind), (if x.tpKind==UserType: x.tid else: $(x.t)))
 
 #=======================================
 # Methods
