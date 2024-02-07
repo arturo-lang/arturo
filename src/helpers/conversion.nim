@@ -45,8 +45,8 @@ proc parseFL(s: string): float =
 template throwCannotConvert(): untyped =
     RuntimeError_CannotConvert(dumped(y), $(y.kind), (if x.tpKind==UserType: x.tid else: $(x.t)))
 
-template throwConversionFailed(): untyped =
-    RuntimeError_ConversionFailed(dumped(y), $(y.kind), (if x.tpKind==UserType: x.tid else: $(x.t)))
+template throwConversionFailed(hnt: string = ""): untyped =
+    RuntimeError_ConversionFailed(dumped(y), $(y.kind), (if x.tpKind==UserType: x.tid else: $(x.t)), hnt)
 
 #=======================================
 # Methods
@@ -101,7 +101,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat:Value = nil): Val
                                     formatValue(ret, y.i, aFormat.s)
                                     return newString(ret)
                                 except CatchableError:
-                                    throwConversionFailed()
+                                    throwConversionFailed("Make sure the number format specified via `.format:` is valid.")
                             else:
                                 return newString($(y.i))
                         else:
@@ -115,7 +115,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat:Value = nil): Val
                         if y.iKind==NormalInteger:
                             return newBinary(numberToBinary(y.i))
                         else:
-                            throwConversionFailed()
+                            throwConversionFailed("Cannot convert big integer values to binary.")
                     else: throwCannotConvert()
 
             of Floating:
@@ -131,7 +131,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat:Value = nil): Val
                                 formatValue(ret, y.f, aFormat.s)
                                 return newString(ret)
                             except CatchableError:
-                                throwConversionFailed()
+                                throwConversionFailed("Make sure the number format specified via `.format:` is valid.")
                         else:
                             return newString($(y.f))
                     of Quantity:
@@ -152,7 +152,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat:Value = nil): Val
 
                                 return newString($(ret) & (if y.z.im >= 0: "+" else: "") & $(ret2) & "i")
                             except CatchableError:
-                                throwConversionFailed()
+                                throwConversionFailed("Make sure the floating-number format specified via `.format:` is valid.")
                         else:
                             return newString($(y))
                     of Block:
@@ -206,32 +206,30 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat:Value = nil): Val
                     of Logical:
                         if y.s=="true": return VTRUE
                         elif y.s=="false": return VFALSE
-                        else: throwConversionFailed()
+                        elif y.s=="maybe": return VMAYBE
+                        else: throwConversionFailed("Make sure the passed string contains one of the supported values: `true`, `false`, or `maybe`.")
                     of Integer:
                         try:
                             return newInteger(y.s)
                         except ValueError:
-                            throwConversionFailed()
+                            throwConversionFailed("Make sure the string contains a valid/parseable integer value.")
                     of Floating:
                         try:
                             return newFloating(parseFL(y.s))
                         except ValueError:
-                            throwConversionFailed()
+                            throwConversionFailed("Make sure the string contains a valid/parseable floating-point value.")
                     of Version:
                         try:
                             return newVersion(y.s)
                         except ValueError:
-                            throwConversionFailed()
+                            throwConversionFailed("Make sure the string contains a valid/parseable SemVer-compatible value; see also: <https://semver.org/>.")
                     of Type:
-                        try:
-                            return newType(y.s)
-                        except ValueError:
-                            throwConversionFailed()
+                        return newType(y.s)
                     of Char:
                         if y.s.runeLen() == 1:
                             return newChar(y.s)
                         else:
-                            throwConversionFailed()
+                            throwConversionFailed("Make sure the string contains exactly one character.")
                     of Word:
                         return newWord(y.s)
                     of Literal:
@@ -246,7 +244,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat:Value = nil): Val
                         try:
                             return newSymbol(y.s)
                         except ValueError:
-                            throwConversionFailed()
+                            throwConversionFailed("Make sure the string contains one of the supported symbols; see also: <https://github.com/arturo-lang/arturo/blob/564d547378d3897c1853e5466dd1b202f583245a/src/vm/values/custom/vsymbol.nim#L21-L124>.")
                     of ErrorKind:
                         return newErrorKind(y.s)
                     of Regex:
@@ -262,7 +260,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat:Value = nil): Val
                         try:
                             return newColor(y.s)
                         except CatchableError:
-                            throwConversionFailed()
+                            throwConversionFailed("Make sure the string contains a parseable color value, either an RGB/A hex value or a valid color name; see also: <https://github.com/arturo-lang/arturo/blob/564d547378d3897c1853e5466dd1b202f583245a/src/vm/values/custom/vcolor.nim#L615-L1191>.")
                     of Date:
                         var dateFormat = "yyyy-MM-dd'T'HH:mm:sszzz"
                         if (not aFormat.isNil):
@@ -272,7 +270,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat:Value = nil): Val
                         try:
                             return newDate(parse(y.s, timeFormat))
                         except CatchableError:
-                            throwConversionFailed()
+                            throwConversionFailed("Make sure the string contains a parseable date value, that follows the format: `" & dateFormat & "`. You may also set an alternative format, by using the option: `.format:`.")
                     else:
                         throwCannotConvert()
 
@@ -612,7 +610,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat:Value = nil): Val
                         try:
                             return newString(format(y.eobj, dateFormat))
                         except CatchableError:
-                            throwConversionFailed()
+                            throwConversionFailed("Make sure the date format specified via `.format:` is valid. The current format is: `" & dateFormat & "`.")
                     else:
                         throwCannotConvert()
 
