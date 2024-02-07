@@ -10,11 +10,13 @@ import std/strformat
 
 type        
     VErrorKind* = ref object
-        parent*: VErrorKind
-        label*: string
+        parent*         : VErrorKind
+        label*          : string
+        description*    : string
 
     VError* = ref object of CatchableError
-        kind*: VErrorKind
+        kind*       : VErrorKind
+        hint*       : string
 
 #=======================================
 # Constants
@@ -26,14 +28,17 @@ let
     CompilerErr*    = VErrorKind(label: "Compiler Error", parent: nil)
     ProgramErr*     = VErrorKind(label: "Program Error", parent: nil)
 
-proc newRuntimeError*(lbl: string): VErrorKind =
-    result = VErrorKind(label: lbl, parent: RuntimeErr)
+proc newRuntimeError*(lbl: string, desc: string = ""): VErrorKind =
+    result = VErrorKind(label: lbl, description: desc, parent: RuntimeErr)
 
 let 
     ArithmeticErr*      = newRuntimeError("Arithmetic Error")
     AssertionErr*       = newRuntimeError("Assertion Error")
-    ConversionErr*      = newRuntimeError("Conversion Error")
+    ConversionErr*      = newRuntimeError("Conversion Error", "Conversion of value to given type is not supported")
+    IndexErr*           = newRuntimeError("Index Error")
+    PackageErr*         = newRuntimeError("Package Error")
 
+#TypeErr, ArgumentErr, ValueErr, AttributeErr
 #=======================================
 # Overloads
 #=======================================
