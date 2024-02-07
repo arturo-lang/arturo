@@ -35,6 +35,7 @@ import vm/[
     parse, 
     stack, 
     values/value, 
+    values/custom/verror,
     version
 ]
 
@@ -189,8 +190,8 @@ template handleVMErrors(blk: untyped): untyped =
     try:
         blk
     except CatchableError, Defect:
-        let e = getCurrentException()        
-        showVMErrors(e)
+        let e = getCurrentException()   
+        newShowVMErrors(VError(e))
 
         when not defined(WEB):
             savePendingStores()
