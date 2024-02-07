@@ -18,7 +18,6 @@
 
 when not defined(WEB):
     import math, os, re, terminal
-    
 import sequtils, strformat, strutils, sugar
 
 import helpers/strings
@@ -207,7 +206,7 @@ proc newShowVMErrors*(e: VError) =
 
     if e.kind.description != "":
         echo ""
-        echo indent(e.kind.description, 2)
+        echo indent(e.kind.description, 2) & resetColor
 
     echo ""
     echo indent(dedent(formatMessage(e.msg)), 2)
@@ -592,22 +591,18 @@ proc RuntimeError_CannotConvert*(arg,fromType,toType: string) =
         Got value:
             {strip(indent(strip(arg),12))}
 
-        Attempted to convert it to:
+        Conversion to given type is not supported:
             :{(toType).toLowerAscii()}
-
-        Converting from {fromType} to {toType} is not supported!
     """.fmt, "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam odio eros, luctus eu justo nec, condimentum porttitor quam. In diam erat, vestibulum sit amet sem vel, rutrum sodales turpis. Donec nec massa lobortis, egestas ex a, finibus augue. Nulla fermentum scelerisque fermentum. Vestibulum laoreet tincidunt porta. Morbi maximus commodo faucibus. Vestibulum euismod nunc quis nunc iaculis ultrices. Duis arcu tellus, commodo nec magna id, rhoncus faucibus massa. "
 
-proc RuntimeError_ConversionFailed*(arg,fromType,toType: string) =
+proc RuntimeError_ConversionFailed*(arg,fromType,toType: string, hint: string="") =
     panic ConversionErr, """
         Got value:
             {strip(indent(strip(arg),12))}
 
-        Attempted to convert it to:
+        Failed while trying to convert to:
             :{(toType).toLowerAscii()}
-
-        The conversion failed.
-    """.fmt
+    """.fmt, hint
 
 proc RuntimeError_LibraryNotLoaded*(path: string) =
     panic RuntimeErr, """
