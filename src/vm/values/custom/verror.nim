@@ -34,7 +34,7 @@ proc newRuntimeError*(lbl: string, desc: string = ""): VErrorKind =
 let 
     ArithmeticErr*      = newRuntimeError("Arithmetic Error")
     AssertionErr*       = newRuntimeError("Assertion Error")
-    ConversionErr*      = newRuntimeError("Conversion Error", "Conversion of value to given type is not supported")
+    ConversionErr*      = newRuntimeError("Conversion Error", "Problem when converting value to given type")
     IndexErr*           = newRuntimeError("Index Error")
     PackageErr*         = newRuntimeError("Package Error")
 
