@@ -17,7 +17,7 @@
 #=======================================
 
 when not defined(WEB):
-    import re
+    import math, os, re, terminal
     
 import sequtils, strformat, strutils, sugar
 
@@ -69,6 +69,7 @@ var
 #=======================================
 
 proc showVMErrors*(e: ref Exception)
+proc newShowVMErrors*(e: VError)
 
 #=======================================
 # Main
@@ -99,24 +100,22 @@ proc getLineError(): string =
 #     else:
 #         showVMErrors(err)
 
-proc panic*(errorKind: VErrorKind, msg: string, throw=true) =
+proc panic*(errorKind: VErrorKind, msg: string, hint: string = "", throw=true) =
     ## create VError of given type and with given error message
     ## and either throw it or show it directly
     
     let err = VError(
         name: cstring(errorKind.label),
         kind: errorKind,
-        msg: 
-            when not defined(NOERRORLINES):
-                getLineError() & msg
-            else:
-                msg
+        msg: msg,
+        hint: hint
     )
 
     if throw:
         raise err
     else:
-        showVMErrors(err)
+        #showVMErrors(err)
+        newShowVMErrors(err)
     # ## throw error, using given context and error message
     # var errorMsg = error
     # if context != CompilerErr:
@@ -134,20 +133,105 @@ proc panic*(errorKind: VErrorKind, msg: string, throw=true) =
 # Helpers
 #=======================================
 
+template errorPreHeader(colored: static bool = false): string =
+    (when colored: fg(redColor) else: "") & 
+    (when colored: "\u2550\u2550 " else: "== ") & 
+    (when colored: bold(redColor) else: "") &
+    (e.kind.label) &
+    (when colored: fg(redColor) else: "") & 
+    " "
+
+template errorPostHeader(colored: static bool = false): string =
+    " " & CurrentFile & 
+    (when colored: " \u2550\u2550" else: " ==") & 
+    (when colored: resetColor() else: "")
+
+proc formatMessage(s: string): string =
+    var ret = s.replacef(re"_([^_]+)_",fmt("{bold()}$1{resetColor}"))
+               #.replacef(re":([a-z]+)",fmt("{fg(magentaColor)}:$1{resetColor}"))
+
+    ret = indent(strip(dedent(ret)), 2)
+
+    return ret
+
+proc codePreview() =
+    when not defined(NOERRORLINES):
+        let codeLines = readFile(CurrentPath).splitLines()
+        const linesBeforeAfter = 2
+        let lineFrom = max(0, CurrentLine - (linesBeforeAfter+1))
+        let lineTo = min(len(codeLines)-1, CurrentLine + (linesBeforeAfter-1))
+        let alignmentSize = max(($lineTo).len, 3)
+        let alignmentPadding = repeat(" ", alignmentSize)
+        echo ""
+        echo "  " & fg(grayColor) & "\u2503 " & bold(grayColor) & "File: " & fg(grayColor) & CurrentPath
+        echo "  " & fg(grayColor) & "\u2503 " & bold(grayColor) & "Line: " & fg(grayColor) & $(CurrentLine)
+        echo "  " & fg(grayColor) & "\u2503 " & resetColor
+        for lineNo in lineFrom..lineTo:
+            var line = codeLines[lineNo]
+            var pointerArrow = "\u2551 "
+            var lineNum = $(lineNo+1)
+            if lineNo == CurrentLine-1: 
+                pointerArrow = "\u2551" & fg(redColor) & "\u25ba" & fg(grayColor)
+                line = bold(grayColor) & line & fg(grayColor)
+                lineNum = bold(grayColor) & lineNum & fg(grayColor)
+            echo "  " & fg(grayColor) & "\u2503 " & alignmentPadding & lineNum & " {pointerArrow} ".fmt & line
+        echo resetColor
+
+func wrapped(initial: string, limit=50, delim="\n"): string =
+    if initial.len < limit:
+        return initial
+    else:
+        let words = initial.splitWhitespace()
+        var lines: seq[seq[string]] = @[@[]]
+
+        var i = 0
+
+        while i < len(words):
+            let newWord = words[i]
+            if (sum(map(lines[^1], (x) => x.len)) + lines[^1].len + newWord.len) >= limit:
+                lines.add(@[])
+            lines[^1].add(newWord)
+            i += 1
+
+        return (lines.map((l) => l.join(" "))).join(delim)
+
+proc printHint*(hint: string) =
+    let wrappingWidth = int(0.8 * float(terminalWidth() - 2 - 6))
+    echo "  " & "\e[4;97m" & "Hint" & resetColor() & ": " & wrapped(hint, wrappingWidth, delim="\n        ")
+
+proc newShowVMErrors*(e: VError) =
+    let middleSize = terminalWidth() - errorPreHeader().len - errorPostHeader().len
+
+    echo ""
+    echo errorPreHeader(colored=true) & repeat("\u2550", middleSize) & errorPostHeader(colored=true)
+
+    if e.kind.description != "":
+        echo ""
+        echo indent(e.kind.description, 2)
+
+    echo ""
+    echo indent(dedent(formatMessage(e.msg)), 2)
+    
+    codePreview()
+
+    if e.hint != "":
+        printHint(e.hint)
+        echo ""
+
 proc showVMErrors*(e: ref Exception) =
     ## show error message
     var header: string
-    var errorKind: VMErrorKind = UndefinedError
+    var errorKind: VErrorKind = RuntimeErr
     try:
         header = $(e.name)
 
-        try:
-            # try checking if it's a valid error context
-            errorKind = parseEnum[VMErrorKind](header)
-        except ValueError:
-            # if not, show it as an uncaught runtime exception
-            e.msg = getLineError() & "uncaught system exception:;" & e.msg
-            header = $(RuntimeError)
+        # try:
+        #     # try checking if it's a valid error context
+        #     errorKind = parseEnum[VMErrorKind](header)
+        # except ValueError:
+        #     # if not, show it as an uncaught runtime exception
+        #     e.msg = getLineError() & "uncaught system exception:;" & e.msg
+        #     header = $(RuntimeError)
 
             
         # if $(header) notin [RuntimeErr, AssertionErr, SyntaxErr, ProgramError, CompilerErr]:
@@ -163,7 +247,7 @@ proc showVMErrors*(e: ref Exception) =
     when not defined(WEB):
         var message: string
         
-        if errorKind==ProgramError:
+        if errorKind==ProgramErr:
             let liner = e.msg.split("<:>")[0].split("\n\n")[0]
             let msg = e.msg.split("<:>")[1]
             message = liner & "\n\n" & msg.replacef(re"_([^_]+)_",fmt("{bold()}$1{resetColor}"))
@@ -389,9 +473,20 @@ proc RuntimeError_UnsupportedParentType*(typeName: string) =
     """.fmt
 
 proc RuntimeError_InvalidOperation*(operation: string, argA, argB: string) =
-    panic RuntimeErr, """
-        invalid operation _{operation}_
-    """.fmt & (if argB!="": "between: " else: "with: ") & argA & (if argB!="": "\n" & "and: " & argB else: "")
+    if argB != "":
+        panic RuntimeErr, """
+            invalid operation _{operation}_
+            between: {argA}
+                and: {argB}
+        """.fmt
+    else:
+        panic RuntimeErr, """
+            invalid operation _{operation}_
+            with: {argA}
+        """.fmt
+    # panic RuntimeErr, """
+    #     invalid operation _{operation}_
+    # """.fmt & (if argB!="": "between: " else: "with: ") & argA & (if argB!="": "\n" & "and: " & argB else: "")
 
 proc RuntimeError_CannotConvertQuantity*(val, argA, kindA, argB, kindB: string) =
     panic RuntimeErr, """
@@ -410,7 +505,7 @@ proc RuntimeError_CannotConvertDifferentDimensions*() =
 #         """division by zero"""
 
 proc RuntimeError_DivisionByZero*() =
-    panic RuntimeErr, """
+    panic ArithmeticErr, """
         division by zero
     """
 
@@ -490,12 +585,28 @@ proc RuntimeError_WrongAttributeType*(functionName: string, attributeName: strin
         accepts {accepted}
     """.fmt
 
+#         Of type     : :{(fromType).toLowerAscii()}
+
 proc RuntimeError_CannotConvert*(arg,fromType,toType: string) =
-    panic RuntimeErr, """
-        cannot convert argument: {truncate(arg,20)}
-        from :{(fromType).toLowerAscii()}
-        to   :{(toType).toLowerAscii()}
-    """.fmt
+    echo "Normal "
+    echo arg
+    echo "-----"
+    echo "Indented "
+    echo indent(arg, 4)
+    echo "-----"
+    echo "Stripped"
+    echo strip(arg)
+    echo "-----"
+    echo "Indented-Stripped"
+    echo strip(indent(strip(arg), 4))
+    echo "-----"
+    panic ConversionErr, """
+        Got value:
+            {strip(indent(strip(arg),12))}
+
+        Attempted to convert it to:
+            :{(toType).toLowerAscii()}
+    """.fmt, "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam odio eros, luctus eu justo nec, condimentum porttitor quam. In diam erat, vestibulum sit amet sem vel, rutrum sodales turpis. Donec nec massa lobortis, egestas ex a, finibus augue. Nulla fermentum scelerisque fermentum. Vestibulum laoreet tincidunt porta. Morbi maximus commodo faucibus. Vestibulum euismod nunc quis nunc iaculis ultrices. Duis arcu tellus, commodo nec magna id, rhoncus faucibus massa. "
 
 proc RuntimeError_ConversionFailed*(arg,fromType,toType: string) =
     panic RuntimeErr, """
