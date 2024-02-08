@@ -107,8 +107,6 @@ proc panic*(errorKind: VErrorKind, msg: string, hint: string = "", id:string="",
     ## create VError of given type and with given error message
     ## and either throw it or show it directly
     
-    echo "creating new error with hint: " & hint
-    
     let err = VError(
         name: id,
         kind: errorKind,
@@ -117,7 +115,6 @@ proc panic*(errorKind: VErrorKind, msg: string, hint: string = "", id:string="",
     )
 
     if throw:
-        echo "and raising it"
         raise err
     else:
         newShowVMErrors(err)
