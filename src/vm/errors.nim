@@ -99,12 +99,13 @@ proc getLineError(): string =
 #     else:
 #         showVMErrors(err)
 
-proc panic*(errorKind: VErrorKind, msg: string, hint: string = "", throw=true) =
+proc panic*(errorKind: VErrorKind, msg: string, hint: string = "", id:string="", throw=true) =
     ## create VError of given type and with given error message
     ## and either throw it or show it directly
     
     let err = VError(
         name: cstring(errorKind.label),
+        id: id,
         kind: errorKind,
         msg: msg,
         hint: hint
@@ -140,8 +141,8 @@ template errorPreHeader(colored: static bool = false): string =
     (when colored: fg(redColor) else: "") & 
     " "
 
-template errorPostHeader(colored: static bool = false): string =
-    " " & CurrentFile & 
+template errorPostHeader(eid: string, colored: static bool = false): string =
+    " " & eid & 
     (when colored: " \u2550\u2550" else: " ==") & 
     (when colored: resetColor() else: "")
 
@@ -195,14 +196,14 @@ func wrapped(initial: string, limit=50, delim="\n"): string =
         return (lines.map((l) => l.join(" "))).join(delim)
 
 proc printHint*(hint: string) =
-    let wrappingWidth = int(0.8 * float(terminalWidth() - 2 - 6))
+    let wrappingWidth = min(100, int(0.8 * float(terminalWidth() - 2 - 6)))
     echo "  " & "\e[4;97m" & "Hint" & resetColor() & ": " & wrapped(hint, wrappingWidth, delim="\n        ")
 
 proc newShowVMErrors*(e: VError) =
-    let middleSize = terminalWidth() - errorPreHeader().len - errorPostHeader().len
+    let middleSize = terminalWidth() - errorPreHeader().len - errorPostHeader(e.id).len
 
     echo ""
-    echo errorPreHeader(colored=true) & repeat("\u2550", middleSize) & errorPostHeader(colored=true)
+    echo errorPreHeader(colored=true) & repeat("\u2550", middleSize) & errorPostHeader(e.id, colored=true)
 
     if e.kind.description != "":
         echo ""
@@ -593,7 +594,7 @@ proc RuntimeError_CannotConvert*(arg,fromType,toType: string) =
 
         Conversion to given type is not supported:
             :{(toType).toLowerAscii()}
-    """.fmt, "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam odio eros, luctus eu justo nec, condimentum porttitor quam. In diam erat, vestibulum sit amet sem vel, rutrum sodales turpis. Donec nec massa lobortis, egestas ex a, finibus augue. Nulla fermentum scelerisque fermentum. Vestibulum laoreet tincidunt porta. Morbi maximus commodo faucibus. Vestibulum euismod nunc quis nunc iaculis ultrices. Duis arcu tellus, commodo nec magna id, rhoncus faucibus massa. "
+    """.fmt, "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam odio eros, luctus eu justo nec, condimentum porttitor quam. In diam erat, vestibulum sit amet sem vel, rutrum sodales turpis. Donec nec massa lobortis, egestas ex a, finibus augue. Nulla fermentum scelerisque fermentum. Vestibulum laoreet tincidunt porta. Morbi maximus commodo faucibus. Vestibulum euismod nunc quis nunc iaculis ultrices. Duis arcu tellus, commodo nec magna id, rhoncus faucibus massa. ",id="#ECONV001"
 
 proc RuntimeError_ConversionFailed*(arg,fromType,toType: string, hint: string="") =
     panic ConversionErr, """
@@ -602,7 +603,7 @@ proc RuntimeError_ConversionFailed*(arg,fromType,toType: string, hint: string=""
 
         Failed while trying to convert to:
             :{(toType).toLowerAscii()}
-    """.fmt, hint
+    """.fmt, hint, id="#ECONV002"
 
 proc RuntimeError_LibraryNotLoaded*(path: string) =
     panic RuntimeErr, """
