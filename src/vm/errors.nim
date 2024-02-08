@@ -218,6 +218,7 @@ proc newShowVMErrors*(e: VError) =
     
     if not isRepl():
         codePreview()
+        echo ""
     else:
         if e.hint != "":
             echo ""
@@ -603,10 +604,9 @@ proc RuntimeError_CannotConvert*(arg,fromType,toType: string) =
 
         Conversion to given type is not supported:
             :{(toType).toLowerAscii()}
-    """.fmt, "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam odio eros, luctus eu justo nec, condimentum porttitor quam. In diam erat, vestibulum sit amet sem vel, rutrum sodales turpis. Donec nec massa lobortis, egestas ex a, finibus augue. Nulla fermentum scelerisque fermentum. Vestibulum laoreet tincidunt porta. Morbi maximus commodo faucibus. Vestibulum euismod nunc quis nunc iaculis ultrices. Duis arcu tellus, commodo nec magna id, rhoncus faucibus massa. ",id="#ECONV001"
+    """.fmt
 
 proc RuntimeError_ConversionFailed*(arg,fromType,toType: string, hint: string="") =
-    echo "IN conversionFailed with hint = " & hint
     panic ConversionErr, """
         Got value:
             {strip(indent(strip(arg),12))}
