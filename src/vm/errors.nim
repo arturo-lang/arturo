@@ -74,6 +74,10 @@ proc newShowVMErrors*(e: VError)
 # Main
 #=======================================
 
+proc getCurrentContext(): string =
+    if CurrentFile == "<repl>": return CurrentFile
+    return "<script>"
+
 proc getLineError(): string =
     if CurrentFile != "<repl>":
         if CurrentLine==0: CurrentLine = 1
@@ -103,18 +107,19 @@ proc panic*(errorKind: VErrorKind, msg: string, hint: string = "", id:string="",
     ## create VError of given type and with given error message
     ## and either throw it or show it directly
     
+    echo "creating new error with hint: " & hint
+    
     let err = VError(
-        name: cstring(errorKind.label),
-        id: id,
+        name: id,
         kind: errorKind,
         msg: msg,
         hint: hint
     )
 
     if throw:
+        echo "and raising it"
         raise err
     else:
-        #showVMErrors(err)
         newShowVMErrors(err)
     # ## throw error, using given context and error message
     # var errorMsg = error
@@ -135,11 +140,10 @@ proc panic*(errorKind: VErrorKind, msg: string, hint: string = "", id:string="",
 
 template errorPreHeader(colored: static bool = false): string =
     (when colored: fg(redColor) else: "") & 
-    (when colored: "\u2550\u2550 " else: "== ") & 
+    (when colored: "\u2550\u2550\u2561 " else: "==[ ") & 
     (when colored: bold(redColor) else: "") &
     (e.kind.label) &
-    (when colored: fg(redColor) else: "") & 
-    " "
+    (when colored: fg(redColor) & " \u255E" else: " ]")
 
 template errorPostHeader(eid: string, colored: static bool = false): string =
     " " & eid & 
@@ -200,10 +204,10 @@ proc printHint*(hint: string) =
     echo "  " & "\e[4;97m" & "Hint" & resetColor() & ": " & wrapped(hint, wrappingWidth, delim="\n        ")
 
 proc newShowVMErrors*(e: VError) =
-    let middleSize = terminalWidth() - errorPreHeader().len - errorPostHeader(e.id).len
+    let middleSize = terminalWidth() - errorPreHeader().len - errorPostHeader(getCurrentContext()).len
 
     echo ""
-    echo errorPreHeader(colored=true) & repeat("\u2550", middleSize) & errorPostHeader(e.id, colored=true)
+    echo errorPreHeader(colored=true) & repeat("\u2550", middleSize) & errorPostHeader(getCurrentContext(), colored=true)
 
     if e.kind.description != "":
         echo ""
@@ -212,7 +216,10 @@ proc newShowVMErrors*(e: VError) =
     echo ""
     echo indent(dedent(formatMessage(e.msg)), 2)
     
-    codePreview()
+    if CurrentFile != "<repl>":
+        codePreview()
+    else:
+        echo ""
 
     if e.hint != "":
         printHint(e.hint)
@@ -597,6 +604,7 @@ proc RuntimeError_CannotConvert*(arg,fromType,toType: string) =
     """.fmt, "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam odio eros, luctus eu justo nec, condimentum porttitor quam. In diam erat, vestibulum sit amet sem vel, rutrum sodales turpis. Donec nec massa lobortis, egestas ex a, finibus augue. Nulla fermentum scelerisque fermentum. Vestibulum laoreet tincidunt porta. Morbi maximus commodo faucibus. Vestibulum euismod nunc quis nunc iaculis ultrices. Duis arcu tellus, commodo nec magna id, rhoncus faucibus massa. ",id="#ECONV001"
 
 proc RuntimeError_ConversionFailed*(arg,fromType,toType: string, hint: string="") =
+    echo "IN conversionFailed with hint = " & hint
     panic ConversionErr, """
         Got value:
             {strip(indent(strip(arg),12))}

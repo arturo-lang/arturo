@@ -164,7 +164,7 @@ proc defineSymbols*() =
                 let e = getCurrentException()
                 push newError(e)
                 if verbose:
-                    showVMErrors(e)
+                    newShowVMErrors(VError(e))
 
     #----------------------------
     # Constants
