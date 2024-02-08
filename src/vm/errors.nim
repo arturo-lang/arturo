@@ -52,13 +52,14 @@ type
 const
     Alternative     = "perhaps you meant"
     MaxIntSupported = sizeof(int) * 8
+    ReplContext = "<repl>"
 
 #=======================================
 # Variables
 #=======================================
 
 var
-    CurrentFile* = "<repl>"
+    CurrentFile* = ReplContext
     CurrentPath* = ""
     CurrentLine* = 0
     ExecStack*: seq[int] = @[]
@@ -73,6 +74,9 @@ proc newShowVMErrors*(e: VError)
 #=======================================
 # Main
 #=======================================
+
+proc isRepl(): bool =
+    return CurrentFile == ReplContext
 
 proc getCurrentContext(): string =
     if CurrentFile == "<repl>": return CurrentFile
@@ -175,8 +179,7 @@ proc codePreview() =
                 pointerArrow = "\u2551" & fg(redColor) & "\u25ba" & fg(grayColor)
                 line = bold(grayColor) & line & fg(grayColor)
                 lineNum = bold(grayColor) & lineNum & fg(grayColor)
-            echo "  " & fg(grayColor) & "\u2503 " & alignmentPadding & lineNum & " {pointerArrow} ".fmt & line
-        echo resetColor
+            echo "  " & fg(grayColor) & "\u2503 " & alignmentPadding & lineNum & " {pointerArrow} ".fmt & line & resetColor
 
 func wrapped(initial: string, limit=50, delim="\n"): string =
     if initial.len < limit:
@@ -213,14 +216,16 @@ proc newShowVMErrors*(e: VError) =
     echo ""
     echo indent(dedent(formatMessage(e.msg)), 2)
     
-    if CurrentFile != "<repl>":
+    if not isRepl():
         codePreview()
     else:
-        echo ""
+        if e.hint != "":
+            echo ""
 
     if e.hint != "":
         printHint(e.hint)
-        echo ""
+        if not isRepl():
+            echo ""
 
 proc showVMErrors*(e: ref Exception) =
     ## show error message
