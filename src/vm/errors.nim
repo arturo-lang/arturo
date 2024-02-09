@@ -74,17 +74,6 @@ proc getCurrentContext(e: VError): string =
     if CurrentContext == ReplContext: return CurrentContext
     return " <script> "
 
-proc panic*(error: VError) =
-    if error.kind == CmdlineErr:
-        showError(error)
-        quit(1)
-    else:
-        raise error
-
-#=======================================
-# Helpers
-#=======================================
-
 proc formatMessage(s: string): string =
     var ret = s.replacef(re"_([^_]+)_",fmt("{bold()}$1{resetColor}"))
                #.replacef(re":([a-z]+)",fmt("{fg(magentaColor)}:$1{resetColor}"))
@@ -165,6 +154,17 @@ proc printHint(e: VError) =
         let wrappingWidth = min(100, int(0.8 * float(terminalWidth() - 2 - 6)))
         echo "  " & "\e[4;97m" & "Hint" & resetColor() & ": " & wrapped(strip(dedent(e.hint)).splitLines().join(" "), wrappingWidth, delim="\n        ")
 
+proc panic(error: VError) =
+    if error.kind == CmdlineErr:
+        showError(error)
+        quit(1)
+    else:
+        raise error
+
+#=======================================
+# Methods
+#=======================================
+
 proc showError*(e: VError) =
     with e:
         printErrorHeader()
@@ -177,10 +177,12 @@ proc showError*(e: VError) =
         echo ""
 
 #=======================================
-# Methods
+# Constructors
 #=======================================
 
-# Compiler errors
+#------------------------
+# Command-line Errors
+#------------------------
 
 proc Error_ScriptNotExists*(name: string) =
     panic:
@@ -193,14 +195,14 @@ proc Error_UnrecognizedOption*(name: string) =
     panic:
         toError CmdlineErr, """
             unrecognized command-line option:
-            _{name}_
+                _{name}_
         """.fmt
 
 proc Error_UnrecognizedPackageCommand*(name: string) =
     panic:
         toError CmdlineErr, """
             unrecognized _package_ command:
-            _{name}_
+                _{name}_
         """.fmt
 
 proc Error_NoPackageCommand*() =
@@ -214,7 +216,7 @@ proc Error_ExtraneousParameter*(subcmd: string, name: string) =
     panic: 
         toError CmdlineErr, """
             extraneous parameter for _{subcmd}_:
-            {name}
+                {name}
         """.fmt
 
 proc Error_NotEnoughParameters*(name: string) =
@@ -223,6 +225,30 @@ proc Error_NotEnoughParameters*(name: string) =
             not enough parameters for _{name}_ -
             consult the help screen below
         """.fmt
+
+#------------------------
+# Conversion Errors
+#------------------------
+
+proc Error_CannotConvert*(arg,fromType,toType: string) =
+    panic:
+        toError ConversionErr, """
+            Got value:
+                {strip(indent(strip(arg),12))}
+
+            Conversion to given type is not supported:
+                :{(toType).toLowerAscii()}
+        """.fmt
+
+proc Error_ConversionFailed*(arg,fromType,toType: string, hint: string="") =
+    panic:
+        toError ConversionErr, """
+            Got value:
+                {strip(indent(strip(arg),12))}
+
+            Failed while trying to convert to:
+                :{(toType).toLowerAscii()}
+        """.fmt, hint
 
 # Syntax errors
 
@@ -239,7 +265,7 @@ proc SyntaxError_MissingClosingParenthesis*(lineno: int, context: string) =
     CurrentLine = lineno
     panic:
         toError SyntaxErr, """
-            missing closing square bracket: `)`
+            missing closing parenthesis: `)`
 
             near: {context}
         """.fmt
@@ -535,30 +561,6 @@ proc RuntimeError_WrongAttributeType*(functionName: string, attributeName: strin
         """.fmt
 
 #         Of type     : :{(fromType).toLowerAscii()}
-
-#------------------------
-# Conversion Errors
-#------------------------
-
-proc Error_CannotConvert*(arg,fromType,toType: string) =
-    panic:
-        toError ConversionErr, """
-            Got value:
-                {strip(indent(strip(arg),12))}
-
-            Conversion to given type is not supported:
-                :{(toType).toLowerAscii()}
-        """.fmt
-
-proc Error_ConversionFailed*(arg,fromType,toType: string, hint: string="") =
-    panic:
-        toError ConversionErr, """
-            Got value:
-                {strip(indent(strip(arg),12))}
-
-            Failed while trying to convert to:
-                :{(toType).toLowerAscii()}
-        """.fmt, hint
 
 proc RuntimeError_LibraryNotLoaded*(path: string) =
     panic:
