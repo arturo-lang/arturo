@@ -444,8 +444,8 @@ proc newQuantity*(q: VQuantity, copy: static bool = false): Value {.inline, enfo
 proc newErrorKind*(): Value {.inline, enforceNoRaises.} =
     Value(kind: ErrorKind, errKind: VErrorKind(label: "Generic Error"))
 
-proc newErrorKind*(label: string): Value {.inline, enforceNoRaises.} =
-    Value(kind: ErrorKind, errKind: VErrorKind(label: label))
+proc newErrorKind*(label: string, description: string = ""): Value {.inline, enforceNoRaises.} =
+    Value(kind: ErrorKind, errKind: VErrorKind(label: label, description: description))
 
 proc newErrorKind*(errKind: VErrorKind = RuntimeErr): Value {.inline, enforceNoRaises.} =
     Value(kind: ErrorKind, errKind: errKind)
