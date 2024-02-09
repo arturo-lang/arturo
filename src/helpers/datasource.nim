@@ -50,11 +50,11 @@ proc getSource*(src: string): DataSource {.inline.} =
                 return (GetSym("_portable").d["embed"].d[src].s, FileData)
                             
         if src.isUrl():
-            when defined(SAFE): RuntimeError_OperationNotPermitted("read")
+            when defined(SAFE): Error_OperationNotPermitted("read")
             let content = waitFor (newAsyncHttpClient().getContent(src))
             result = (content, WebData)
         elif src.fileExists():
-            when defined(SAFE): RuntimeError_OperationNotPermitted("read")
+            when defined(SAFE): Error_OperationNotPermitted("read")
             result = (readFile(src), FileData)
         else:
             result = (src, TextData)
