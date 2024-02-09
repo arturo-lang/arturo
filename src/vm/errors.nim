@@ -82,24 +82,6 @@ proc formatMessage(s: string): string =
 
     return ret
 
-func wrapped(initial: string, limit=50, delim="\n"): string =
-    if initial.len < limit:
-        return initial
-    else:
-        let words = initial.splitWhitespace()
-        var lines: seq[seq[string]] = @[@[]]
-
-        var i = 0
-
-        while i < len(words):
-            let newWord = words[i]
-            if (sum(map(lines[^1], (x) => x.len)) + lines[^1].len + newWord.len) >= limit:
-                lines.add(@[])
-            lines[^1].add(newWord)
-            i += 1
-
-        return (lines.map((l) => l.join(" "))).join(delim)
-
 proc printErrorHeader(e: VError) =
     let preHeader = 
         fg(redColor) & "{HorizLine}{HorizLine}{LeftBracket} ".fmt & 
