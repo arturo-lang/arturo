@@ -32,10 +32,10 @@ type
 
 let 
     # The core error types
-    RuntimeErr*     = VErrorKind(label: "Runtime Error" , parent: nil)
-    SyntaxErr*      = VErrorKind(label: "Syntax Error"  , parent: nil)
-    CompilerErr*    = VErrorKind(label: "Compiler Error", parent: nil)
-    ProgramErr*     = VErrorKind(label: "Program Error" , parent: nil)
+    RuntimeErr*     = VErrorKind(label: "Runtime Error"     , parent: nil)
+    SyntaxErr*      = VErrorKind(label: "Syntax Error"      , parent: nil)
+    CmdlineErr*     = VErrorKind(label: "Command-line Error", parent: nil,  description: "Something went wrong while processing given command-line arguments")
+    ProgramErr*     = VErrorKind(label: "Program Error"     , parent: nil)
 
 proc toRuntimeErrorKind*(lbl: string, desc: string = ""): VErrorKind =
     result = VErrorKind(label: lbl, description: desc, parent: RuntimeErr)

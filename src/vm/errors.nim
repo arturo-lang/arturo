@@ -30,28 +30,28 @@ import vm/values/custom/verror
 #=======================================
 
 type
-    ReturnTriggered* = ref object of Defect
-    BreakTriggered* = ref object of Defect
-    ContinueTriggered* = ref object of Defect
+    ReturnTriggered*    = ref object of Defect
+    BreakTriggered*     = ref object of Defect
+    ContinueTriggered*  = ref object of Defect
 
 #=======================================
 # Constants
 #=======================================
 
 const
-    Alternative     = "perhaps you meant"
-    MaxIntSupported = sizeof(int) * 8
-    ReplContext = "<repl>"
+    Alternative         = "perhaps you meant"
+    MaxIntSupported     = sizeof(int) * 8
+    ReplContext         = "<repl>"
 
 #=======================================
 # Variables
 #=======================================
 
 var
-    CurrentContext* = ReplContext
-    CurrentPath* = ""
-    CurrentLine* = 0
-    ExecStack*: seq[int] = @[]
+    CurrentContext* : string    = ReplContext
+    CurrentPath*    : string    = ""
+    CurrentLine*    : int       = 0
+    ExecStack*      : seq[int]  = @[]
 
 #=======================================
 # Forward declarations
@@ -61,19 +61,22 @@ var
 proc newShowVMErrors*(e: VError)
 
 #=======================================
-# Main
+# Helpers
 #=======================================
 
 proc isRepl(): bool =
     return CurrentContext == ReplContext
 
-proc getCurrentContext(): string =
+proc getCurrentContext(e: VError): string =
+    if e.kind == CmdlineErr: return ""
+
     if CurrentContext == "<repl>": return CurrentContext
     return "<script>"
 
 proc panic*(error: VError) =
-    if error.kind == CompilerErr:
+    if error.kind == CmdlineErr:
         newShowVMErrors(error)
+        quit(1)
     else:
         raise error
 
@@ -171,13 +174,30 @@ func wrapped(initial: string, limit=50, delim="\n"): string =
 
 proc printHint*(hint: string) =
     let wrappingWidth = min(100, int(0.8 * float(terminalWidth() - 2 - 6)))
-    echo "  " & "\e[4;97m" & "Hint" & resetColor() & ": " & wrapped(hint, wrappingWidth, delim="\n        ")
+    echo "  " & "\e[4;97m" & "Hint" & resetColor() & ": " & wrapped(strip(dedent(hint)).splitLines().join(" "), wrappingWidth, delim="\n        ")
 
-proc newShowVMErrors*(e: VError) =
-    let middleSize = terminalWidth() - errorPreHeader().len - errorPostHeader(getCurrentContext()).len
+proc printErrorHeader*(e: VError) =
+    let preHeader = 
+        fg(redColor) & "\u2550\u2550\u2561 " & 
+        bold(redColor) & (e.kind.label) & 
+        fg(redColor) & " \u255E"
+
+    let postHeader = 
+        " " & getCurrentContext(e) & 
+        " \u2550\u2550" & 
+        resetColor()
+
+    let middleStretch = terminalWidth() - preHeader.realLen() - postHeader.realLen()
 
     echo ""
-    echo errorPreHeader(colored=true) & repeat("\u2550", middleSize) & errorPostHeader(getCurrentContext(), colored=true)
+    echo preHeader & repeat("\u2550", middleStretch) & postHeader
+
+proc newShowVMErrors*(e: VError) =
+    printErrorHeader(e)
+    # let middleSize = terminalWidth() - errorPreHeader().len - errorPostHeader(getCurrentContext(e)).len
+
+    # echo ""
+    # echo errorPreHeader(colored=true) & repeat("\u2550", middleSize) & errorPostHeader(getCurrentContext(e), colored=true)
 
     if e.kind.description != "":
         echo ""
@@ -186,7 +206,7 @@ proc newShowVMErrors*(e: VError) =
     echo ""
     echo indent(dedent(formatMessage(e.msg)), 2)
     
-    if not isRepl():
+    if (not isRepl()) and e.kind != CmdlineErr:
         codePreview()
         echo ""
     else:
@@ -196,6 +216,9 @@ proc newShowVMErrors*(e: VError) =
     if e.hint != "":
         printHint(e.hint)
         if not isRepl():
+            echo ""
+    else:
+        if e.kind == CmdlineErr:
             echo ""
 
 # proc showVMErrors*(e: ref Exception) =
@@ -251,41 +274,47 @@ proc newShowVMErrors*(e: VError) =
 
 # Compiler errors
 
-proc CompilerError_ScriptNotExists*(name: string) =
-    panic CompilerErr, """
-        given script path doesn't exist:
-        _{name}_
-    """.fmt
+proc Error_ScriptNotExists*(name: string) =
+    panic:
+        toError CmdlineErr, """
+            Given script doesn't exist:
+                _{name}_
+        """.fmt
 
-proc CompilerError_UnrecognizedOption*(name: string) =
-    panic CompilerErr, """
-        unrecognized command-line option:
-        _{name}_
-    """.fmt, throw=false
+proc Error_UnrecognizedOption*(name: string) =
+    panic:
+        toError CmdlineErr, """
+            unrecognized command-line option:
+            _{name}_
+        """.fmt
 
-proc CompilerError_UnrecognizedPackageCommand*(name: string) =
-    panic CompilerErr, """
-        unrecognized _package_ command:
-        _{name}_
-    """.fmt, throw=false
+proc Error_UnrecognizedPackageCommand*(name: string) =
+    panic:
+        toError CmdlineErr, """
+            unrecognized _package_ command:
+            _{name}_
+        """.fmt
 
-proc CompilerError_NoPackageCommand*() =
-    panic CompilerErr, """
-        no _package_ command command given -
-        have a look at the options below
-    """.fmt, throw=false
+proc Error_NoPackageCommand*() =
+    panic:
+        toError CmdlineErr, """
+            no _package_ command command given -
+            have a look at the options below
+        """.fmt
 
-proc CompilerError_ExtraneousParameter*(subcmd: string, name: string) =
-    panic CompilerErr, """
-        extraneous parameter for _{subcmd}_:
-        {name}
-    """.fmt, throw=false
+proc Error_ExtraneousParameter*(subcmd: string, name: string) =
+    panic: 
+        toError CmdlineErr, """
+            extraneous parameter for _{subcmd}_:
+            {name}
+        """.fmt
 
-proc CompilerError_NotEnoughParameters*(name: string) =
-    panic CompilerErr, """
-        not enough parameters for _{name}_ -
-        consult the help screen below
-    """.fmt, throw=false
+proc Error_NotEnoughParameters*(name: string) =
+    panic:
+        toError CmdlineErr, """
+            not enough parameters for _{name}_ -
+            consult the help screen below
+        """.fmt
 
 # Syntax errors
 
