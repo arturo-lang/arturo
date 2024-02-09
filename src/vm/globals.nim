@@ -87,21 +87,21 @@ template GetKey*(dict: ValueDict, key: string, withError: static bool = true): u
     let toRet = dict.getOrDefault(key, nil)
     when withError:
         if unlikely(toRet.isNil):
-            RuntimeError_KeyNotFound(key, suggestAlternative(key, reference=dict))
+            Error_KeyNotFound(key, suggestAlternative(key, reference=dict))
     toRet
 
 template GetArrayIndex*(arr: ValueArray, indx: int): untyped =
     ## Get element by index in given ValueArray
     ## with bounds checking
     if unlikely(indx < 0 or indx > (arr.len)-1):
-        RuntimeError_OutOfBounds(indx, arr.len-1)
+        Error_OutOfBounds(indx, arr.len-1)
     arr[indx]
 
 template SetArrayIndex*(arr: ValueArray, indx: int, v: Value): untyped =
     ## Set element at index in given ValueArray
     ## with bounds checking
     if unlikely(indx < 0 or indx > (arr.len)-1):
-        RuntimeError_OutOfBounds(indx, arr.len-1)
+        Error_OutOfBounds(indx, arr.len-1)
     arr[indx] = v
 
 #---------------------
@@ -118,7 +118,7 @@ proc FetchSym*(s: string, unsafe: static bool = false): Value {.inline.} =
     ## - otherwise, return its value
     when not unsafe:
         if (result = Syms.getOrDefault(s, nil); unlikely(result.isNil)):
-            RuntimeError_SymbolNotFound(s, suggestAlternative(s))
+            Error_SymbolNotFound(s, suggestAlternative(s))
     else:
         Syms[s]
 
@@ -174,7 +174,7 @@ proc FetchPathSym*(pl: ValueArray, inplace: static bool = false): Value =
                 result = GetKey(result.o, p.s)
             of String:
                 when inplace:
-                    RuntimeError_PathLiteralMofifyingString()
+                    Error_PathLiteralMofifyingString()
                 else:
                     result = newChar(result.s.runeAtPos(p.i))
             else: 
@@ -211,7 +211,7 @@ proc SetPathSym*(pl: ValueArray, val: Value) =
                 if pidx != pl.len - 1:
                     current = newChar(current.s.runeAtPos(p.i))
                 else:
-                    RuntimeError_PathLiteralMofifyingString()
+                    Error_PathLiteralMofifyingString()
             else: 
                 discard
 
@@ -273,9 +273,9 @@ template InPlaced*(): untyped =
 proc showInPlaceError*(varname: string) =
     ## Show error in case `ensureInPlace` fails
     if SymExists(varname):
-        RuntimeError_CannotModifyConstant(varname)
+        Error_CannotModifyConstant(varname)
     else:
-        RuntimeError_SymbolNotFound(varname, suggestAlternative(varname))
+        Error_SymbolNotFound(varname, suggestAlternative(varname))
 
 template ensureInPlace*(): untyped = 
     ## To be used whenever, and always before, 
@@ -284,7 +284,7 @@ template ensureInPlace*(): untyped =
     try:
         InPlaceAddr = addr Syms[x.s]
         if unlikely(InPlaced.readonly):
-            RuntimeError_CannotModifyConstant(x.s)
+            Error_CannotModifyConstant(x.s)
     except CatchableError:
         showInPlaceError(x.s)
 
@@ -300,7 +300,7 @@ template ensureInPlaceAny*(): untyped =
         try:
             InPlaceAddr = addr Syms[x.s]
             if unlikely(InPlaced.readonly):
-                RuntimeError_CannotModifyConstant(x.s)
+                Error_CannotModifyConstant(x.s)
         except CatchableError:
             showInPlaceError(x.s)
     else:
@@ -335,4 +335,4 @@ template retrieveConfig*(globalKey: string, attrKey: string): untyped =
         config = attrConfig.d
 
     if not configFound:
-        RuntimeError_ConfigNotFound(globalKey, attrKey)
+        Error_ConfigNotFound(globalKey, attrKey)

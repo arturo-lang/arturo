@@ -48,6 +48,7 @@ let
                             "")
     AssertionErr*       = toRuntimeErrorKind(
                             "Assertion Error",
+                            "Runtime check failed"
                             "")
     ConversionErr*      = toRuntimeErrorKind(
                             "Conversion Error", 

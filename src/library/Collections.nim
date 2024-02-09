@@ -218,7 +218,7 @@ proc defineLibrary*() =
                         if tp!=TextData:
                             execUnscoped(doParse(x.s, isFile=false))
                         else:
-                            RuntimeError_FileNotFound(x.s)
+                            Error_FileNotFound(x.s)
                         let arr: ValueArray = sTopsFrom(stop)
                         SP = stop
 
@@ -457,7 +457,7 @@ proc defineLibrary*() =
                 if tp!=TextData:
                     dict = execDictionary(doParse(src, isFile=false))#, isIsolated=true)
                 else:
-                    RuntimeError_FileNotFound(x.s)
+                    Error_FileNotFound(x.s)
 
             if checkAttr("with"):
                 for x in aWith.a:
@@ -810,7 +810,7 @@ proc defineLibrary*() =
                             push(newFloating(x.z.im))
                         else:
                             const keys: seq[string] = @["real", "re", "image", "img", "im"]
-                            err.RuntimeError_KeyNotFound(y.s, keys)
+                            err.Error_KeyNotFound(y.s, keys)
                     of Integer:
                         case y.i
                         of 0:
@@ -818,7 +818,7 @@ proc defineLibrary*() =
                         of 1:
                             push(newFloating(x.z.im))
                         else:
-                            err.RuntimeError_OutOfBounds(y.i, 1)
+                            err.Error_OutOfBounds(y.i, 1)
                     else:
                         discard
                 of Error:
@@ -1390,7 +1390,7 @@ proc defineLibrary*() =
                 if step < 0:
                     step = -step
                 elif step == 0:
-                    RuntimeError_RangeWithZeroStep()
+                    Error_RangeWithZeroStep()
 
             if not infinite:
                 forward = limX < limY

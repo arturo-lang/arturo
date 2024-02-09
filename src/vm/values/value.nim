@@ -215,7 +215,7 @@ proc newInteger*(i: string, lineno: int = 1): Value {.inline.} =
         elif defined(GMP):
             return newInteger(newInt(i))
         else:
-            RuntimeError_IntegerParsingOverflow(lineno, i)
+            Error_IntegerParsingOverflow(lineno, i)
 
 func newBigInteger*(i: int): Value {.inline.} =
     ## create Integer (BigInteger) value from int

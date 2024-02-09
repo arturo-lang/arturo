@@ -66,7 +66,7 @@ proc defineLibrary*() =
             print ["accepted incoming connection from:" client]
             """:
                 #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("accept")
+                when defined(SAFE): Error_OperationNotPermitted("accept")
 
                 var client: netsock.Socket
                 x.sock.socket.accept(client)
@@ -100,7 +100,7 @@ proc defineLibrary*() =
             server: connect.to:"123.456.789.123" 18966
             """:
                 #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("connect")
+                when defined(SAFE): Error_OperationNotPermitted("connect")
 
                 let isUDP = hadAttr("udp")
 
@@ -142,7 +142,7 @@ proc defineLibrary*() =
             server: listen 18966
             """:
                 #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("listen")
+                when defined(SAFE): Error_OperationNotPermitted("listen")
 
                 let blocking = hadAttr("blocking")
                 let protocol = 
@@ -196,7 +196,7 @@ proc defineLibrary*() =
             unplug server
             """:
                 #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("receive")
+                when defined(SAFE): Error_OperationNotPermitted("receive")
 
                 var size = MaxLineLength
                 if checkAttr("size"):
@@ -229,7 +229,7 @@ proc defineLibrary*() =
             send socket "Hello Socket World"
             """:
                 #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("send")
+                when defined(SAFE): Error_OperationNotPermitted("send")
 
                 let asChunk = hadAttr("chunk")
 
@@ -260,7 +260,7 @@ proc defineLibrary*() =
             unplug socket
             """:
                 #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("unplug")
+                when defined(SAFE): Error_OperationNotPermitted("unplug")
 
                 x.sock.socket.close()
 
@@ -292,7 +292,7 @@ proc defineLibrary*() =
             print ["Message was sent successfully:" sent?]
             """:
                 #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("send?")
+                when defined(SAFE): Error_OperationNotPermitted("send?")
 
                 push newLogical(x.sock.socket.trySend(y.s))
 

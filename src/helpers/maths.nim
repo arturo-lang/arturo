@@ -418,6 +418,6 @@ proc factorial*(x: int): Value =
             for item in items:
                 res = res * item
         elif not defined(GMP):
-            RuntimeError_NumberOutOfPermittedRange("factorial",$x, "")
+            Error_NumberOutOfPermittedRange("factorial",$x, "")
         else:
             return newInteger(BignumsHelper.fac(x))

@@ -432,7 +432,7 @@ proc defineLibrary*() =
             case y.kind
             of Range:
                 if not y.rng.numeric:
-                    RuntimeError_IncompatibleValueType("clamp", valueKind(y), "numeric range")
+                    Error_IncompatibleValueType("clamp", valueKind(y), "numeric range")
                 
                 if (let minElem = y.rng.min()[1]; x.asFloat < float(minElem.i)): push(minElem)
                 elif (let maxElem = y.rng.max()[1]; x.asFloat > float(maxElem.i)): push(maxElem)
@@ -705,7 +705,7 @@ proc defineLibrary*() =
         """:
             #=======================================================
             if unlikely(x.iKind == BigInteger):
-                RuntimeError_InvalidOperation("factorial", valueKind(x, withBigInfo=true), "")
+                Error_InvalidOperation("factorial", valueKind(x, withBigInfo=true), "")
             else:
                 push(factorial(x.i))
 
