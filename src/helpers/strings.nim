@@ -14,6 +14,8 @@ import lenientops, sequtils, strutils, unicode
 
 when defined(WEB):
     import jsre
+else:
+    import re
 
 when not defined(NOASCIIDECODE):
     import unidecode
@@ -164,3 +166,7 @@ func replaceOnce*(s, sub: string, by = ""): string =
             i = j + subLen
 
         add result, substr(s, i)
+
+proc realLen*(s: string): int =
+    let cleanString = s.replacef(re"\e[^m]+m","")
+    return cleanString.runeLen()
