@@ -225,9 +225,9 @@ when not defined(WEB):
 
             if isFile:
                 when defined(SAFE):
-                    CurrentFile = "main.art"
+                    CurrentContext = "main.art"
                 else:
-                    CurrentFile = lastPathPart(code)
+                    CurrentContext = lastPathPart(code)
                     CurrentPath = code
 
             initProfiler()

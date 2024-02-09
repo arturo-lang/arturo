@@ -48,7 +48,7 @@ const
 #=======================================
 
 var
-    CurrentFile* = ReplContext
+    CurrentContext* = ReplContext
     CurrentPath* = ""
     CurrentLine* = 0
     ExecStack*: seq[int] = @[]
@@ -57,7 +57,7 @@ var
 # Forward declarations
 #=======================================
 
-proc showVMErrors*(e: ref Exception)
+#proc showVMErrors*(e: ref Exception)
 proc newShowVMErrors*(e: VError)
 
 #=======================================
@@ -65,10 +65,10 @@ proc newShowVMErrors*(e: VError)
 #=======================================
 
 proc isRepl(): bool =
-    return CurrentFile == ReplContext
+    return CurrentContext == ReplContext
 
 proc getCurrentContext(): string =
-    if CurrentFile == "<repl>": return CurrentFile
+    if CurrentContext == "<repl>": return CurrentContext
     return "<script>"
 
 proc panic*(error: VError) =
@@ -198,52 +198,52 @@ proc newShowVMErrors*(e: VError) =
         if not isRepl():
             echo ""
 
-proc showVMErrors*(e: ref Exception) =
-    ## show error message
-    var header: string
-    var errorKind: VErrorKind = RuntimeErr
-    try:
-        header = $(e.name)
+# proc showVMErrors*(e: ref Exception) =
+#     ## show error message
+#     var header: string
+#     var errorKind: VErrorKind = RuntimeErr
+#     try:
+#         header = $(e.name)
 
-        # try:
-        #     # try checking if it's a valid error context
-        #     errorKind = parseEnum[VMErrorKind](header)
-        # except ValueError:
-        #     # if not, show it as an uncaught runtime exception
-        #     e.msg = getLineError() & "uncaught system exception:;" & e.msg
-        #     header = $(RuntimeError)
+#         # try:
+#         #     # try checking if it's a valid error context
+#         #     errorKind = parseEnum[VMErrorKind](header)
+#         # except ValueError:
+#         #     # if not, show it as an uncaught runtime exception
+#         #     e.msg = getLineError() & "uncaught system exception:;" & e.msg
+#         #     header = $(RuntimeError)
 
             
-        # if $(header) notin [RuntimeErr, AssertionErr, SyntaxErr, ProgramError, CompilerErr]:
-        #     e.msg = getLineError() & "uncaught system exception:;" & e.msg
-        #     header = RuntimeErr
-    except CatchableError:
-        header = "HEADER"
+#         # if $(header) notin [RuntimeErr, AssertionErr, SyntaxErr, ProgramError, CompilerErr]:
+#         #     e.msg = getLineError() & "uncaught system exception:;" & e.msg
+#         #     header = RuntimeErr
+#     except CatchableError:
+#         header = "HEADER"
 
-    let marker = ">>"
-    let separator = "|"
-    let indent = repeat(" ", header.len + marker.len + 2)
+#     let marker = ">>"
+#     let separator = "|"
+#     let indent = repeat(" ", header.len + marker.len + 2)
 
-    when not defined(WEB):
-        var message: string
+#     when not defined(WEB):
+#         var message: string
         
-        if errorKind==ProgramErr:
-            let liner = e.msg.split("<:>")[0].split("\n\n")[0]
-            let msg = e.msg.split("<:>")[1]
-            message = liner & "\n\n" & msg.replacef(re"_([^_]+)_",fmt("{bold()}$1{resetColor}"))
-        else:
-            message = e.msg.replacef(re"_([^_]+)_",fmt("{bold()}$1{resetColor}"))
-    else:
-        var message = "MESSAGE"
+#         if errorKind==ProgramErr:
+#             let liner = e.msg.split("<:>")[0].split("\n\n")[0]
+#             let msg = e.msg.split("<:>")[1]
+#             message = liner & "\n\n" & msg.replacef(re"_([^_]+)_",fmt("{bold()}$1{resetColor}"))
+#         else:
+#             message = e.msg.replacef(re"_([^_]+)_",fmt("{bold()}$1{resetColor}"))
+#     else:
+#         var message = "MESSAGE"
 
-    let errMsgParts = message.strip().splitLines().map((x)=>(strutils.strip(x)).replace("~%"," ").replace("%&",";").replace("T@B","\t"))
-    let alignedError = align("error", header.len)
+#     let errMsgParts = message.strip().splitLines().map((x)=>(strutils.strip(x)).replace("~%"," ").replace("%&",";").replace("T@B","\t"))
+#     let alignedError = align("error", header.len)
     
-    var errMsg = errMsgParts[0] & fmt("\n{bold(redColor)}{repeat(' ',marker.len)} {alignedError} {separator}{resetColor} ")
+#     var errMsg = errMsgParts[0] & fmt("\n{bold(redColor)}{repeat(' ',marker.len)} {alignedError} {separator}{resetColor} ")
 
-    if errMsgParts.len > 1:
-        errMsg &= errMsgParts[1..^1].join(fmt("\n{indent}{bold(redColor)}{separator}{resetColor} "))
-    echo fmt("{bold(redColor)}{marker} {header} {separator}{resetColor} {errMsg}")
+#     if errMsgParts.len > 1:
+#         errMsg &= errMsgParts[1..^1].join(fmt("\n{indent}{bold(redColor)}{separator}{resetColor} "))
+#     echo fmt("{bold(redColor)}{marker} {header} {separator}{resetColor} {errMsg}")
 
 #=======================================
 # Methods
