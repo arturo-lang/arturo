@@ -159,12 +159,12 @@ proc defineSymbols*() =
             except VError as e:
                 push newError(e)
                 if verbose:
-                    newShowVMErrors(e)
+                    showError(e)
             except CatchableError, Defect:
                 let e = getCurrentException()
                 push newError(e)
                 if verbose:
-                    newShowVMErrors(VError(e))
+                    showError(VError(e))
 
     #----------------------------
     # Constants

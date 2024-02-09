@@ -191,7 +191,7 @@ template handleVMErrors(blk: untyped): untyped =
         blk
     except CatchableError, Defect:
         let e = getCurrentException()   
-        newShowVMErrors(VError(e))
+        showError(VError(e))
 
         when not defined(WEB):
             savePendingStores()
