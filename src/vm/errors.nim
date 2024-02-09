@@ -18,7 +18,7 @@
 
 when not defined(WEB):
     import math, os, re, terminal
-import sequtils, strformat, strutils, sugar
+import sequtils, strformat, strutils, sugar, std/with
 
 import helpers/strings
 import helpers/terminal
@@ -41,7 +41,13 @@ type
 const
     Alternative         = "perhaps you meant"
     MaxIntSupported     = sizeof(int) * 8
-    ReplContext         = "<repl>"
+    ReplContext         = " <repl> "
+
+    UseUnicodeChars     = true
+
+    HorizLine           = when UseUnicodeChars: "\u2550" else: "="
+    LeftBracket         = when UseUnicodeChars: "\u2561" else: "["
+    RightBracket        = when UseUnicodeChars: "\u255E" else: "]"
 
 #=======================================
 # Variables
@@ -70,8 +76,8 @@ proc isRepl(): bool =
 proc getCurrentContext(e: VError): string =
     if e.kind == CmdlineErr: return ""
 
-    if CurrentContext == "<repl>": return CurrentContext
-    return "<script>"
+    if CurrentContext == ReplContext: return CurrentContext
+    return " <script> "
 
 proc panic*(error: VError) =
     if error.kind == CmdlineErr:
@@ -112,18 +118,6 @@ proc panic*(errorKind: VErrorKind, msg: string, hint: string = "", id:string="",
 # Helpers
 #=======================================
 
-template errorPreHeader(colored: static bool = false): string =
-    (when colored: fg(redColor) else: "") & 
-    (when colored: "\u2550\u2550\u2561 " else: "==[ ") & 
-    (when colored: bold(redColor) else: "") &
-    (e.kind.label) &
-    (when colored: fg(redColor) & " \u255E" else: " ]")
-
-template errorPostHeader(eid: string, colored: static bool = false): string =
-    " " & eid & 
-    (when colored: " \u2550\u2550" else: " ==") & 
-    (when colored: resetColor() else: "")
-
 proc formatMessage(s: string): string =
     var ret = s.replacef(re"_([^_]+)_",fmt("{bold()}$1{resetColor}"))
                #.replacef(re":([a-z]+)",fmt("{fg(magentaColor)}:$1{resetColor}"))
@@ -131,28 +125,6 @@ proc formatMessage(s: string): string =
     ret = indent(strip(dedent(ret)), 2)
 
     return ret
-
-proc codePreview() =
-    when not defined(NOERRORLINES):
-        let codeLines = readFile(CurrentPath).splitLines()
-        const linesBeforeAfter = 2
-        let lineFrom = max(0, CurrentLine - (linesBeforeAfter+1))
-        let lineTo = min(len(codeLines)-1, CurrentLine + (linesBeforeAfter-1))
-        let alignmentSize = max(($lineTo).len, 3)
-        let alignmentPadding = repeat(" ", alignmentSize)
-        echo ""
-        echo "  " & fg(grayColor) & "\u2503 " & bold(grayColor) & "File: " & fg(grayColor) & CurrentPath
-        echo "  " & fg(grayColor) & "\u2503 " & bold(grayColor) & "Line: " & fg(grayColor) & $(CurrentLine)
-        echo "  " & fg(grayColor) & "\u2503 " & resetColor
-        for lineNo in lineFrom..lineTo:
-            var line = codeLines[lineNo]
-            var pointerArrow = "\u2551 "
-            var lineNum = $(lineNo+1)
-            if lineNo == CurrentLine-1: 
-                pointerArrow = "\u2551" & fg(redColor) & "\u25ba" & fg(grayColor)
-                line = bold(grayColor) & line & fg(grayColor)
-                lineNum = bold(grayColor) & lineNum & fg(grayColor)
-            echo "  " & fg(grayColor) & "\u2503 " & alignmentPadding & lineNum & " {pointerArrow} ".fmt & line & resetColor
 
 func wrapped(initial: string, limit=50, delim="\n"): string =
     if initial.len < limit:
@@ -172,101 +144,70 @@ func wrapped(initial: string, limit=50, delim="\n"): string =
 
         return (lines.map((l) => l.join(" "))).join(delim)
 
-proc printHint*(hint: string) =
-    let wrappingWidth = min(100, int(0.8 * float(terminalWidth() - 2 - 6)))
-    echo "  " & "\e[4;97m" & "Hint" & resetColor() & ": " & wrapped(strip(dedent(hint)).splitLines().join(" "), wrappingWidth, delim="\n        ")
-
-proc printErrorHeader*(e: VError) =
+proc printErrorHeader(e: VError) =
     let preHeader = 
-        fg(redColor) & "\u2550\u2550\u2561 " & 
+        fg(redColor) & "{HorizLine}{HorizLine}{LeftBracket} ".fmt & 
         bold(redColor) & (e.kind.label) & 
-        fg(redColor) & " \u255E"
+        fg(redColor) & " {RightBracket}".fmt
 
     let postHeader = 
-        " " & getCurrentContext(e) & 
-        " \u2550\u2550" & 
+        getCurrentContext(e) & 
+        "{HorizLine}{HorizLine}".fmt & 
         resetColor()
 
     let middleStretch = terminalWidth() - preHeader.realLen() - postHeader.realLen()
 
     echo ""
-    echo preHeader & repeat("\u2550", middleStretch) & postHeader
+    echo preHeader & repeat(HorizLine, middleStretch) & postHeader
 
-proc newShowVMErrors*(e: VError) =
-    printErrorHeader(e)
-    # let middleSize = terminalWidth() - errorPreHeader().len - errorPostHeader(getCurrentContext(e)).len
-
-    # echo ""
-    # echo errorPreHeader(colored=true) & repeat("\u2550", middleSize) & errorPostHeader(getCurrentContext(e), colored=true)
-
+proc printErrorKindDescription(e: VError) =
     if e.kind.description != "":
         echo ""
         echo indent(e.kind.description, 2) & resetColor
 
+proc printErrorMessage(e: VError) =
     echo ""
-    echo indent(dedent(formatMessage(e.msg)), 2)
-    
-    if (not isRepl()) and e.kind != CmdlineErr:
-        codePreview()
-        echo ""
-    else:
-        if e.hint != "":
-            echo ""
+    echo strip(indent(dedent(formatMessage(e.msg)), 2), chars={'\n'})
 
+proc printCodePreview(e: VError) =
+    when not defined(NOERRORLINES):
+        if (not isRepl()) and e.kind != CmdlineErr:
+            echo ""
+            let codeLines = readFile(CurrentPath).splitLines()
+            const linesBeforeAfter = 2
+            let lineFrom = max(0, CurrentLine - (linesBeforeAfter+1))
+            let lineTo = min(len(codeLines)-1, CurrentLine + (linesBeforeAfter-1))
+            let alignmentSize = max(($lineTo).len, 3)
+            let alignmentPadding = repeat(" ", alignmentSize)
+            echo "  " & fg(grayColor) & "\u2503 " & bold(grayColor) & "File: " & fg(grayColor) & CurrentPath
+            echo "  " & fg(grayColor) & "\u2503 " & bold(grayColor) & "Line: " & fg(grayColor) & $(CurrentLine)
+            echo "  " & fg(grayColor) & "\u2503 " & resetColor
+            for lineNo in lineFrom..lineTo:
+                var line = codeLines[lineNo]
+                var pointerArrow = "\u2551 "
+                var lineNum = $(lineNo+1)
+                if lineNo == CurrentLine-1: 
+                    pointerArrow = "\u2551" & fg(redColor) & "\u25ba" & fg(grayColor)
+                    line = bold(grayColor) & line & fg(grayColor)
+                    lineNum = bold(grayColor) & lineNum & fg(grayColor)
+                echo "  " & fg(grayColor) & "\u2503 " & alignmentPadding & lineNum & " {pointerArrow} ".fmt & line & resetColor
+
+proc printHint(e: VError) =
     if e.hint != "":
-        printHint(e.hint)
-        if not isRepl():
-            echo ""
-    else:
-        if e.kind == CmdlineErr:
-            echo ""
+        echo ""
+        let wrappingWidth = min(100, int(0.8 * float(terminalWidth() - 2 - 6)))
+        echo "  " & "\e[4;97m" & "Hint" & resetColor() & ": " & wrapped(strip(dedent(e.hint)).splitLines().join(" "), wrappingWidth, delim="\n        ")
 
-# proc showVMErrors*(e: ref Exception) =
-#     ## show error message
-#     var header: string
-#     var errorKind: VErrorKind = RuntimeErr
-#     try:
-#         header = $(e.name)
-
-#         # try:
-#         #     # try checking if it's a valid error context
-#         #     errorKind = parseEnum[VMErrorKind](header)
-#         # except ValueError:
-#         #     # if not, show it as an uncaught runtime exception
-#         #     e.msg = getLineError() & "uncaught system exception:;" & e.msg
-#         #     header = $(RuntimeError)
-
-            
-#         # if $(header) notin [RuntimeErr, AssertionErr, SyntaxErr, ProgramError, CompilerErr]:
-#         #     e.msg = getLineError() & "uncaught system exception:;" & e.msg
-#         #     header = RuntimeErr
-#     except CatchableError:
-#         header = "HEADER"
-
-#     let marker = ">>"
-#     let separator = "|"
-#     let indent = repeat(" ", header.len + marker.len + 2)
-
-#     when not defined(WEB):
-#         var message: string
-        
-#         if errorKind==ProgramErr:
-#             let liner = e.msg.split("<:>")[0].split("\n\n")[0]
-#             let msg = e.msg.split("<:>")[1]
-#             message = liner & "\n\n" & msg.replacef(re"_([^_]+)_",fmt("{bold()}$1{resetColor}"))
-#         else:
-#             message = e.msg.replacef(re"_([^_]+)_",fmt("{bold()}$1{resetColor}"))
-#     else:
-#         var message = "MESSAGE"
-
-#     let errMsgParts = message.strip().splitLines().map((x)=>(strutils.strip(x)).replace("~%"," ").replace("%&",";").replace("T@B","\t"))
-#     let alignedError = align("error", header.len)
+proc newShowVMErrors*(e: VError) =
+    with e:
+        printErrorHeader()
+        printErrorKindDescription()
+        printErrorMessage()
+        printCodePreview()
+        printHint()
     
-#     var errMsg = errMsgParts[0] & fmt("\n{bold(redColor)}{repeat(' ',marker.len)} {alignedError} {separator}{resetColor} ")
-
-#     if errMsgParts.len > 1:
-#         errMsg &= errMsgParts[1..^1].join(fmt("\n{indent}{bold(redColor)}{separator}{resetColor} "))
-#     echo fmt("{bold(redColor)}{marker} {header} {separator}{resetColor} {errMsg}")
+    if (not isRepl()) or e.hint=="":
+        echo ""
 
 #=======================================
 # Methods
@@ -767,3 +708,51 @@ proc ProgramError_panic*(message: string, code: int) =
 #         ret
 #     except CatchableError:
 #         ""
+
+
+# proc showVMErrors*(e: ref Exception) =
+#     ## show error message
+#     var header: string
+#     var errorKind: VErrorKind = RuntimeErr
+#     try:
+#         header = $(e.name)
+
+#         # try:
+#         #     # try checking if it's a valid error context
+#         #     errorKind = parseEnum[VMErrorKind](header)
+#         # except ValueError:
+#         #     # if not, show it as an uncaught runtime exception
+#         #     e.msg = getLineError() & "uncaught system exception:;" & e.msg
+#         #     header = $(RuntimeError)
+
+            
+#         # if $(header) notin [RuntimeErr, AssertionErr, SyntaxErr, ProgramError, CompilerErr]:
+#         #     e.msg = getLineError() & "uncaught system exception:;" & e.msg
+#         #     header = RuntimeErr
+#     except CatchableError:
+#         header = "HEADER"
+
+#     let marker = ">>"
+#     let separator = "|"
+#     let indent = repeat(" ", header.len + marker.len + 2)
+
+#     when not defined(WEB):
+#         var message: string
+        
+#         if errorKind==ProgramErr:
+#             let liner = e.msg.split("<:>")[0].split("\n\n")[0]
+#             let msg = e.msg.split("<:>")[1]
+#             message = liner & "\n\n" & msg.replacef(re"_([^_]+)_",fmt("{bold()}$1{resetColor}"))
+#         else:
+#             message = e.msg.replacef(re"_([^_]+)_",fmt("{bold()}$1{resetColor}"))
+#     else:
+#         var message = "MESSAGE"
+
+#     let errMsgParts = message.strip().splitLines().map((x)=>(strutils.strip(x)).replace("~%"," ").replace("%&",";").replace("T@B","\t"))
+#     let alignedError = align("error", header.len)
+    
+#     var errMsg = errMsgParts[0] & fmt("\n{bold(redColor)}{repeat(' ',marker.len)} {alignedError} {separator}{resetColor} ")
+
+#     if errMsgParts.len > 1:
+#         errMsg &= errMsgParts[1..^1].join(fmt("\n{indent}{bold(redColor)}{separator}{resetColor} "))
+#     echo fmt("{bold(redColor)}{marker} {header} {separator}{resetColor} {errMsg}")
