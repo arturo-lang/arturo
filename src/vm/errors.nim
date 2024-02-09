@@ -82,31 +82,6 @@ proc getCurrentContext(): string =
     if CurrentFile == "<repl>": return CurrentFile
     return "<script>"
 
-proc getLineError(): string =
-    if CurrentFile != "<repl>":
-        if CurrentLine==0: CurrentLine = 1
-        if ExecStack.len > 1:
-            ExecStack.add(CurrentLine)
-        result &= (bold(grayColor)).replace(";","%&") & "File: " & resetColor & (fg(grayColor)).replace(";","%&") & CurrentFile & "\n" & (bold(grayColor)).replace(";","%&") & "Line: " & resetColor & (fg(grayColor)).replace(";","%&") & $(CurrentLine) & resetColor & "\n\n"
-
-# proc panik*(errorKind: VErrorKind, msg: string, throw=true) =
-#     ## create VError of given type and with given error message
-#     ## and either throw it or show it directly
-    
-#     let err = VError(
-#         kind: errorKind,
-#         msg: 
-#             when not defined(NOERRORLINES):
-#                 getLineError() & msg
-#             else:
-#                 msg
-#     )
-
-#     if throw:
-#         raise err
-#     else:
-#         showVMErrors(err)
-
 proc panic*(error: VError) =
     if error.kind == CompilerErr:
         newShowVMErrors(error)
