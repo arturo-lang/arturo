@@ -30,7 +30,7 @@ proc showWrongArgumentTypeError*(name: string, pos: int, params: openArray[Value
     let actualStr = params.map(proc(x:Value):string = valueKind(x)).join(" ")
     var ordinalPos: string = ["first","second","third"][pos]
 
-    RuntimeError_WrongArgumentType(name, actualStr, ordinalPos, acceptedStr)
+    Error_WrongArgumentType(name, actualStr, ordinalPos, acceptedStr)
 
 proc showWrongAttributeTypeError*(fName: string, aName: string, actual:ValueKind, expected: set[ValueKind]): bool =
     ## show relevant error message in case an attribute
@@ -38,7 +38,7 @@ proc showWrongAttributeTypeError*(fName: string, aName: string, actual:ValueKind
     var expectedValues = toSeq(expected.items)
     let acceptedStr = expectedValues.map(proc(x:ValueKind):string = stringify(x)).join(" ")
     let actualStr = stringify(actual)
-    RuntimeError_WrongAttributeType(fName, aName, actualStr, acceptedStr)
+    Error_WrongAttributeType(fName, aName, actualStr, acceptedStr)
 
 proc showWrongValueTypeError*(fName: string, actual: Value, pre: string, expected: set[ValueKind] | string) =
     let actualStr = pre & "[" & valueKind(actual) & "...]"
@@ -48,7 +48,7 @@ proc showWrongValueTypeError*(fName: string, actual: Value, pre: string, expecte
         else:
             expected
 
-    RuntimeError_IncompatibleBlockValue(fName, actualStr, acceptedStr)
+    Error_IncompatibleBlockValue(fName, actualStr, acceptedStr)
 
 proc showWrongValueAttrTypeError*(fName: string, attr: string, actual: Value, expected: set[ValueKind] | string) =
     let actualStr = "[" & valueKind(actual) & "...]"
@@ -58,7 +58,7 @@ proc showWrongValueAttrTypeError*(fName: string, attr: string, actual: Value, ex
         else:
             expected
 
-    RuntimeError_IncompatibleBlockValueAttribute(fName, "." & attr, actualStr, acceptedStr)
+    Error_IncompatibleBlockValueAttribute(fName, "." & attr, actualStr, acceptedStr)
 
 #=======================================
 # Methods
@@ -71,7 +71,7 @@ template require*(name: string, spec: untyped): untyped =
         const currentBuiltinName {.inject.} = name
 
         if unlikely(SP<(static spec.len)):
-            RuntimeError_NotEnoughArguments(currentBuiltinName, spec.len)
+            Error_NotEnoughArguments(currentBuiltinName, spec.len)
 
     when (static spec.len)>=1 and spec!=NoArgs:
         let x {.inject.} = stack.pop()
@@ -98,10 +98,10 @@ template requireBlockSize*(v: Value, expected: int, maxExpected: int = 0) =
     when not defined(PORTABLE):
         when maxExpected == 0:
             if unlikely(v.a.len != expected):
-                RuntimeError_IncompatibleBlockSize(currentBuiltinName, v.a.len, $(expected))
+                Error_IncompatibleBlockSize(currentBuiltinName, v.a.len, $(expected))
         else:
             if unlikely(v.a.len < expected or v.a.len > maxExpected):
-                RuntimeError_IncompatibleBlockSize(currentBuiltinName, v.a.len, $(expected) & ".." & $(maxExpected))
+                Error_IncompatibleBlockSize(currentBuiltinName, v.a.len, $(expected) & ".." & $(maxExpected))
 
 template requireValue*(v: Value, expected: set[ValueKind], position: int = 1, message: set[ValueKind] | string = {}) = 
     when not defined(PORTABLE):

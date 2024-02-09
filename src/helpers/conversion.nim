@@ -364,7 +364,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat:Value = nil): Val
                             if (let xProto = getType(x.tid); not xProto.isNil):
                                 return generateNewObject(xProto, arr)
                             else:
-                                RuntimeError_UsingUndefinedType(x.tid)
+                                Error_UsingUndefinedType(x.tid)
                         else:
                             throwCannotConvert()
 
@@ -443,7 +443,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat:Value = nil): Val
                             if (let xProto = getType(x.tid); not xProto.isNil):
                                 return generateNewObject(xProto, y.d)
                             else:
-                                RuntimeError_UsingUndefinedType(x.tid)
+                                Error_UsingUndefinedType(x.tid)
                         else:
                             throwCannotConvert()
                     of Bytecode:

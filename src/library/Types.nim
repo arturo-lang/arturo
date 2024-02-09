@@ -169,7 +169,7 @@ proc defineLibrary*() =
                         for k,v in yproto.content:
                             definitions[k] = copyValue(v)
                     else:
-                        RuntimeError_UsingUndefinedType(y.tid)
+                        Error_UsingUndefinedType(y.tid)
                 else:
                     # TODO(Types\define) check if inherited type is a BuiltinType
                     #  how do we handle this?
@@ -252,7 +252,7 @@ proc defineLibrary*() =
 
                         definitions[k] = copyValue(v)
                 else:
-                    RuntimeError_UsingUndefinedType(x.tid)
+                    Error_UsingUndefinedType(x.tid)
             else:
                 # DRAFT:
                 # if x.t in {Integer, Floating, Rational, Complex, Quantity}:
@@ -260,7 +260,7 @@ proc defineLibrary*() =
                 #         super[k] = v.uninjectingThis()
                 #         definitions[k] = copyValue(v)
                 # else:
-                RuntimeError_UnsupportedParentType(($(x.t)).toLowerAscii())
+                Error_UnsupportedParentType(($(x.t)).toLowerAscii())
 
             if y.kind == Block:
                 if (let constructorMethod = generatedConstructor(y.a); not constructorMethod.isNil):
