@@ -13,7 +13,7 @@
 #=======================================
 
 when not defined(WEB):
-    import math, os, re, terminal
+    import math, re, terminal
 import sequtils, strformat, strutils, sugar, std/with
 
 import helpers/strings
