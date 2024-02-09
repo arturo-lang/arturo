@@ -66,7 +66,7 @@ let
 #=======================================
 
 func toError*(kind: VErrorKind, msg: string, hint: string = ""): VError =
-    VError(kind: kind, msg: msg, hint: hint)
+    VError(kind: kind, name: cstring(kind.label), msg: msg, hint: hint)
 
 #=======================================
 # Overloads
