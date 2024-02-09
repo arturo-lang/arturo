@@ -59,8 +59,7 @@ var
 # Forward declarations
 #=======================================
 
-#proc showVMErrors*(e: ref Exception)
-proc newShowVMErrors*(e: VError)
+proc showError*(e: VError)
 
 #=======================================
 # Helpers
@@ -77,38 +76,10 @@ proc getCurrentContext(e: VError): string =
 
 proc panic*(error: VError) =
     if error.kind == CmdlineErr:
-        newShowVMErrors(error)
+        showError(error)
         quit(1)
     else:
         raise error
-
-proc panic*(errorKind: VErrorKind, msg: string, hint: string = "", id:string="", throw=true) =
-    ## create VError of given type and with given error message
-    ## and either throw it or show it directly
-    
-    let err = VError(
-        name: id,
-        kind: errorKind,
-        msg: msg,
-        hint: hint
-    )
-
-    if throw:
-        raise err
-    else:
-        newShowVMErrors(err)
-    # ## throw error, using given context and error message
-    # var errorMsg = error
-    # if context != CompilerErr:
-    #     when not defined(NOERRORLINES):
-    #         errorMsg = getLineError() & errorMsg
-    #     else:
-    #         discard 
-    # let err = VMError(name: cstring($(context)), msg:move errorMsg)
-    # if throw:
-    #     raise err
-    # else:
-    #     showVMErrors(err)
 
 #=======================================
 # Helpers
