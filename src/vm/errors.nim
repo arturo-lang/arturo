@@ -107,6 +107,12 @@ proc getLineError(): string =
 #     else:
 #         showVMErrors(err)
 
+proc panic*(error: VError) =
+    if error.kind == CompilerErr:
+        newShowVMErrors(error)
+    else:
+        raise error
+
 proc panic*(errorKind: VErrorKind, msg: string, hint: string = "", id:string="", throw=true) =
     ## create VError of given type and with given error message
     ## and either throw it or show it directly
@@ -597,23 +603,29 @@ proc RuntimeError_WrongAttributeType*(functionName: string, attributeName: strin
 
 #         Of type     : :{(fromType).toLowerAscii()}
 
-proc RuntimeError_CannotConvert*(arg,fromType,toType: string) =
-    panic ConversionErr, """
-        Got value:
-            {strip(indent(strip(arg),12))}
+#------------------------
+# Conversion Errors
+#------------------------
 
-        Conversion to given type is not supported:
-            :{(toType).toLowerAscii()}
-    """.fmt
+proc Error_CannotConvert*(arg,fromType,toType: string) =
+    panic:
+        toError ConversionErr, """
+            Got value:
+                {strip(indent(strip(arg),12))}
 
-proc RuntimeError_ConversionFailed*(arg,fromType,toType: string, hint: string="") =
-    panic ConversionErr, """
-        Got value:
-            {strip(indent(strip(arg),12))}
+            Conversion to given type is not supported:
+                :{(toType).toLowerAscii()}
+        """.fmt
 
-        Failed while trying to convert to:
-            :{(toType).toLowerAscii()}
-    """.fmt, hint, id="#ECONV002"
+proc Error_ConversionFailed*(arg,fromType,toType: string, hint: string="") =
+    panic:
+        toError ConversionErr, """
+            Got value:
+                {strip(indent(strip(arg),12))}
+
+            Failed while trying to convert to:
+                :{(toType).toLowerAscii()}
+        """.fmt, hint
 
 proc RuntimeError_LibraryNotLoaded*(path: string) =
     panic RuntimeErr, """

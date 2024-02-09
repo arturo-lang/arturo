@@ -31,22 +31,43 @@ type
 #=======================================
 
 let 
-    RuntimeErr*     = VErrorKind(label: "Runtime Error", parent: nil)
-    SyntaxErr*      = VErrorKind(label: "Syntax Error", parent: nil)
+    # The core error types
+    RuntimeErr*     = VErrorKind(label: "Runtime Error" , parent: nil)
+    SyntaxErr*      = VErrorKind(label: "Syntax Error"  , parent: nil)
     CompilerErr*    = VErrorKind(label: "Compiler Error", parent: nil)
-    ProgramErr*     = VErrorKind(label: "Program Error", parent: nil)
+    ProgramErr*     = VErrorKind(label: "Program Error" , parent: nil)
 
-proc newRuntimeError*(lbl: string, desc: string = ""): VErrorKind =
+proc toRuntimeErrorKind*(lbl: string, desc: string = ""): VErrorKind =
     result = VErrorKind(label: lbl, description: desc, parent: RuntimeErr)
 
 let 
-    ArithmeticErr*      = newRuntimeError("Arithmetic Error")
-    AssertionErr*       = newRuntimeError("Assertion Error")
-    ConversionErr*      = newRuntimeError("Conversion Error", "Problem when converting value to given type")
-    IndexErr*           = newRuntimeError("Index Error")
-    PackageErr*         = newRuntimeError("Package Error")
+    # Derived error types to be used
+    # by our error templates
+    ArithmeticErr*      = toRuntimeErrorKind(
+                            "Arithmetic Error",
+                            "")
+    AssertionErr*       = toRuntimeErrorKind(
+                            "Assertion Error",
+                            "")
+    ConversionErr*      = toRuntimeErrorKind(
+                            "Conversion Error", 
+                            "Problem when converting value to given type")
+    IndexErr*           = toRuntimeErrorKind(
+                            "Index Error",
+                            "")
+    PackageErr*         = toRuntimeErrorKind(
+                            "Package Error",
+                            "")
 
 #TypeErr, ArgumentErr, ValueErr, AttributeErr
+
+#=======================================
+# Constructors
+#=======================================
+
+func toError*(kind: VErrorKind, msg: string, hint: string = ""): VError =
+    VError(kind: kind, msg: msg, hint: hint)
+
 #=======================================
 # Overloads
 #=======================================
