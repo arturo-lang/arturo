@@ -34,17 +34,6 @@ type
     BreakTriggered* = ref object of Defect
     ContinueTriggered* = ref object of Defect
 
-    VMError* = ref object of CatchableError
-
-    VMErrorKind* = enum
-        RuntimeError   = "Runtime"
-        AssertionError = "Assertion"
-        SyntaxError    = "Syntax"
-        ProgramError   = "Program"
-        CompilerError  = "Compiler"
-
-        UndefinedError = "Undefined"
-
 #=======================================
 # Constants
 #=======================================

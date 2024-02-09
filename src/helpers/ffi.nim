@@ -18,6 +18,7 @@ when not defined(WEB):
     import dynlib, os, strutils
 
     import vm/[errors, values/value]
+    import vm/values/custom/verror
 
     #import vm/values/custom/[vlogical]
 
@@ -169,7 +170,7 @@ when not defined(WEB):
             # unload the library
             unloadLibrary(lib)
 
-        except VMError as e:
+        except VError as e:
             raise e
 
         except CatchableError:
