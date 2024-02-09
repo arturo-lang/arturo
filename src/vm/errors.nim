@@ -165,7 +165,7 @@ proc printHint(e: VError) =
         let wrappingWidth = min(100, int(0.8 * float(terminalWidth() - 2 - 6)))
         echo "  " & "\e[4;97m" & "Hint" & resetColor() & ": " & wrapped(strip(dedent(e.hint)).splitLines().join(" "), wrappingWidth, delim="\n        ")
 
-proc newShowVMErrors*(e: VError) =
+proc showError*(e: VError) =
     with e:
         printErrorHeader()
         printErrorKindDescription()
