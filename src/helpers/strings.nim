@@ -10,7 +10,8 @@
 # Libraries
 #=======================================
 
-import lenientops, sequtils, strutils, unicode
+import lenientops, math, sequtils
+import strutils, sugar, unicode
 
 when defined(WEB):
     import jsre
@@ -170,3 +171,21 @@ func replaceOnce*(s, sub: string, by = ""): string =
 proc realLen*(s: string): int =
     let cleanString = s.replacef(re"\e[^m]+m","")
     return cleanString.runeLen()
+
+func wrapped*(initial: string, limit=50, delim="\n"): string =
+    if initial.len < limit:
+        return initial
+    else:
+        let words = initial.splitWhitespace()
+        var lines: seq[seq[string]] = @[@[]]
+
+        var i = 0
+
+        while i < len(words):
+            let newWord = words[i]
+            if (sum(map(lines[^1], (x) => x.len)) + lines[^1].len + newWord.len) >= limit:
+                lines.add(@[])
+            lines[^1].add(newWord)
+            i += 1
+
+        return (lines.map((l) => l.join(" "))).join(delim)
