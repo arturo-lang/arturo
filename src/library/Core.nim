@@ -201,16 +201,19 @@ proc defineLibrary*() =
                 for v in y.a.reversed:
                     push(v)
 
-                if fun.fnKind==UserFunction:
-                    var fid: Hash
-                    if xKind in {Literal,String}:
-                        fid = hash(x.s)
-                    else:
-                        fid = hash(fun)
+                if fun.kind == Function:
+                    if fun.fnKind==UserFunction:
+                        var fid: Hash
+                        if xKind in {Literal,String}:
+                            fid = hash(x.s)
+                        else:
+                            fid = hash(fun)
 
-                    execFunction(fun, fid)
+                        execFunction(fun, fid)
+                    else:
+                        fun.action()()
                 else:
-                    fun.action()()
+                    execMethod(fun)
         
     builtin "case",
         alias       = unaliased,
