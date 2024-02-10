@@ -36,7 +36,7 @@ type
 
 const
     Alternative         = "perhaps you meant"
-    MaxIntSupported     = sizeof(int) * 8
+    MaxIntSupported     = $(sizeof(int) * 8)
     ReplContext         = " <repl> "
 
     UseUnicodeChars     = true
@@ -187,43 +187,43 @@ proc Error_ScriptNotExists*(name: string) =
     panic:
         toError CmdlineErr, """
             Given script doesn't exist:
-                _{name}_
-        """.fmt
+                _$#_
+        """ ~~ @[name]
 
 proc Error_UnrecognizedOption*(name: string) =
     panic:
         toError CmdlineErr, """
             unrecognized command-line option:
-                _{name}_
-        """.fmt
+                _$#_
+        """ ~~ @[name]
 
 proc Error_UnrecognizedPackageCommand*(name: string) =
     panic:
         toError CmdlineErr, """
             unrecognized _package_ command:
-                _{name}_
-        """.fmt
+                _$#_
+        """ ~~ @[name]
 
 proc Error_NoPackageCommand*() =
     panic:
         toError CmdlineErr, """
             no _package_ command command given -
             have a look at the options below
-        """.fmt
+        """
 
 proc Error_ExtraneousParameter*(subcmd: string, name: string) =
     panic: 
         toError CmdlineErr, """
-            extraneous parameter for _{subcmd}_:
-                {name}
-        """.fmt
+            extraneous parameter for _$#_:
+                $#
+        """ ~~ @[subcmd, name]
 
 proc Error_NotEnoughParameters*(name: string) =
     panic:
         toError CmdlineErr, """
-            not enough parameters for _{name}_ -
+            not enough parameters for _$#_ -
             consult the help screen below
-        """.fmt
+        """ ~~ @[name]
 
 #------------------------
 # Conversion Errors
@@ -259,8 +259,8 @@ proc Error_MissingClosingSquareBracket*(lineno: int, context: string) =
         toError SyntaxErr, """
             missing closing square bracket: `]`
 
-            near: {context}
-        """.fmt
+            near: $#
+        """ ~~ @[context]
 
 proc Error_MissingClosingParenthesis*(lineno: int, context: string) =
     CurrentLine = lineno
@@ -268,8 +268,8 @@ proc Error_MissingClosingParenthesis*(lineno: int, context: string) =
         toError SyntaxErr, """
             missing closing parenthesis: `)`
 
-            near: {context}
-        """.fmt
+            near: $#
+        """ ~~ @[context]
 
 proc Error_StrayClosingSquareBracket*(lineno: int, context: string) =
     CurrentLine = lineno
@@ -277,8 +277,8 @@ proc Error_StrayClosingSquareBracket*(lineno: int, context: string) =
         toError SyntaxErr, """
             stray closing square bracket: `]`
 
-            near: {context}
-        """.fmt
+            near: $#
+        """ ~~ @[context]
 
 proc Error_StrayClosingCurlyBracket*(lineno: int, context: string) =
     CurrentLine = lineno
@@ -287,7 +287,7 @@ proc Error_StrayClosingCurlyBracket*(lineno: int, context: string) =
             stray closing curly bracket: `}`
 
             near: $#
-        """ % [context]
+        """ ~~ @[context]
 
 proc Error_StrayClosingParenthesis*(lineno: int, context: string) =
     CurrentLine = lineno
@@ -295,8 +295,8 @@ proc Error_StrayClosingParenthesis*(lineno: int, context: string) =
         toError SyntaxErr, """
             stray closing parenthesis: `)`
 
-            near: {context}
-        """.fmt
+            near: $#
+        """ ~~ @[context]
 
 proc Error_UnterminatedString*(strtype: string, lineno: int, context: string) =
     var strt = strtype
@@ -304,10 +304,10 @@ proc Error_UnterminatedString*(strtype: string, lineno: int, context: string) =
     CurrentLine = lineno
     panic:
         toError SyntaxErr, """
-            unterminated {strt}string
+            unterminated $#string
 
-            near: {context}
-        """.fmt
+            near: $#
+        """ ~~ @[context]
 
 proc Error_NewlineInQuotedString*(lineno: int, context: string) =
     CurrentLine = lineno
@@ -318,7 +318,7 @@ proc Error_NewlineInQuotedString*(lineno: int, context: string) =
             curly blocks _{..}_ or _triple "-"_ templates
 
             near: $#
-        """ % [context]
+        """ ~~ @[context]
 
 proc Error_EmptyLiteral*(lineno: int, context: string) =
     CurrentLine = lineno
@@ -326,8 +326,8 @@ proc Error_EmptyLiteral*(lineno: int, context: string) =
         toError SyntaxErr, """
             empty literal value
 
-            near: {context}
-        """.fmt
+            near: $#
+        """ ~~ @[context]
 
 # Assertion errors
 
@@ -339,9 +339,9 @@ proc Error_AssertionFailed*(context: string) =
 proc Error_AssertionFailed*(context: string, message: string) =
     panic: 
         toError AssertionErr, """
-            {message}:
-            for: {context}
-        """.fmt
+            $#:
+            for: $#
+        """ ~~ @[message, context]
 
 # Runtime errors
 
@@ -349,117 +349,118 @@ proc Error_IntegerParsingOverflow*(lineno: int, number: string) =
     CurrentLine = lineno
     panic: 
         toError RuntimeErr, """
-            number parsing overflow - up to {MaxIntSupported}-bit integers supported
-            given: {truncate(number, 20)}
-        """.fmt
+            number parsing overflow - up to $#-bit integers supported
+            given: $#
+        """ ~~ @[MaxIntSupported, truncate(number, 20)]
 
 proc Error_IntegerOperationOverflow*(operation: string, argA, argB: string) =
     panic: 
         toError RuntimeErr, """
-            number operation overflow - up to {MaxIntSupported}-bit integers supported
-            attempted: {operation}
-            with: {truncate(argA & " " & argB, 30)}
-        """.fmt
+            number operation overflow - up to $#-bit integers supported
+            attempted: $#
+            with: $#
+        """ ~~ @[MaxIntSupported, operation, truncate(argA & " " & argB, 30)]
 
 proc Error_NumberOutOfPermittedRange*(operation: string, argA, argB: string) =
     panic: 
         toError RuntimeErr, """
-            number operator out of range - up to {MaxIntSupported}-bit integers supported
-            attempted: {operation}
-            with: {truncate(argA & " " & argB, 30)}
-        """.fmt
+            number operator out of range - up to $#-bit integers supported
+            attempted: $#
+            with: $#
+        """ ~~ @[MaxIntSupported, operation, truncate(argA & " " & argB, 30)]
 
 proc Error_IncompatibleQuantityOperation*(operation: string, argA, argB, kindA, kindB: string) =
     panic: 
         toError RuntimeErr, """
             incompatible operation between quantities
-            attempted: {operation}
-            with: """.fmt & truncate(argA & " (" & kindA & ") " & argB & " (" & kindB & ")", 60)
+            attempted: $#
+            with: $#
+        """ ~~ @[operation, truncate(argA & " (" & kindA & ") " & argB & " (" & kindB & ")", 60)]
             
 proc Error_IncompatibleValueType*(functionName: string, tp: string, expected: string) =
     panic: 
         toError RuntimeErr, """
-            cannot perform _{functionName}_
-            incompatible value type for {tp}
-            expected {expected}
-        """.fmt
+            cannot perform _$#_
+            incompatible value type for $#
+            expected $#
+        """ ~~ @[functionName, tp, expected]
 
 proc Error_IncompatibleBlockValue*(functionName: string, val: string, expected: string) =
     panic: 
         toError RuntimeErr, """
-            cannot perform _{functionName}_ -> {val}
+            cannot perform _$#_ -> $#
             incompatible value inside block parameter
-            expected {expected}
-        """.fmt
+            expected $#
+        """ ~~ @[functionName, val, expected]
 
 proc Error_IncompatibleBlockValueAttribute*(functionName: string, attributeName: string, val: string, expected: string) =
     panic: 
         toError RuntimeErr, """
-            cannot perform _{functionName}_
-            incompatible value inside block for _{attributeName}_ -> {val}
-            accepts {expected}
-        """.fmt
+            cannot perform _$#_
+            incompatible value inside block for _$#_ -> $#
+            accepts $#
+        """ ~~ @[functionName, attributeName, val, expected]
 
 proc Error_IncompatibleBlockSize*(functionName: string, got: int, expected: string) =
     panic: 
         toError RuntimeErr, """
-            cannot perform _{functionName}_
-            incompatible block size: {$(got)}
-            expected: {$(expected)}
-        """.fmt
+            cannot perform _$#_
+            incompatible block size: $#
+            expected: $#
+        """ ~~ @[functionName, $got, expected]
 
 proc Error_UsingUndefinedType*(typeName: string) =
     panic: 
         toError RuntimeErr, """
-            undefined or unknown type _:{typeName}_
+            undefined or unknown type _:$#_
             you should make sure it has been properly
             initialized using `define`
-        """.fmt
+        """ ~~ @[typeName]
 
 proc Error_IncorrectNumberOfArgumentsForInitializer*(typeName: string, got: int, expected: seq[string]) =
     panic:
         toError RuntimeErr, """
-            cannot initialize object of type _:{typeName}_
-            wrong number of parameters: {$(got)}
-            expected: {$(expected.len)} ({expected.join(", ")})
-        """.fmt
+            cannot initialize object of type _:$#_
+            wrong number of parameters: $#
+            expected: $# $#
+        """ ~~ @[typeName, $got, $(expected.len), expected.join(", ")]
 
 proc Error_MissingArgumentForInitializer*(typeName: string, missing: string) =
     panic:
         toError RuntimeErr, """
-            cannot initialize object of type _:{typeName}_
-            missing field: {$(missing)}
-        """.fmt
+            cannot initialize object of type _:$#_
+            missing field: $#
+        """ ~~ @[typeName, missing]
 
 proc Error_UnsupportedParentType*(typeName: string) =
     panic:
         toError RuntimeErr, """
-            subtyping built-in type _:{typeName}_
+            subtyping built-in type _:$#_
             is not supported
-        """.fmt
+        """ ~~ @[typeName]
 
 proc Error_InvalidOperation*(operation: string, argA, argB: string) =
     if argB != "":
         panic:
             toError RuntimeErr, """
-                invalid operation _{operation}_
-                between: {argA}
-                    and: {argB}
-            """.fmt
+                invalid operation _$#_
+                between: $#
+                    and: $#
+            """ ~~ @[operation, argA, argB]
     else:
         panic:
             toError RuntimeErr, """
-                invalid operation _{operation}_
-                with: {argA}
-            """.fmt
+                invalid operation _$#_
+                with: $#
+            """ ~~ @[operation, argA, argB]
 
 proc Error_CannotConvertQuantity*(val, argA, kindA, argB, kindB: string) =
     panic:
         toError RuntimeErr, """
-            cannot convert quantity: {val}
-            from: {argA} ({kindA})
-            to: {argB} ({kindB})
-        """.fmt
+            cannot convert quantity: $#
+            from: $# ($#)
+            to: $# ($#)
+        """ ~~ @[val, argA, kindA, argB, kindB]
           
 proc Error_CannotConvertDifferentDimensions*() =
     panic:
@@ -476,24 +477,24 @@ proc Error_DivisionByZero*() =
 proc Error_OutOfBounds*(indx: int, maxRange: int) =
     panic:
         toError RuntimeErr, """
-            array index out of bounds: {$(indx)}
-            valid range: 0..{$(maxRange)}
-        """.fmt
+            array index out of bounds: $#
+            valid range: 0..$#
+        """ ~~ @[$indx, $maxRange]
 
 proc Error_SymbolNotFound*(sym: string, alter: seq[string]) =
     let sep = "\n" & repeat("~%",Alternative.len - 2) & "or... "
     panic:
         toError RuntimeErr, """
-            symbol not found: {sym}
-            perhaps you meant... {alter.map((x) => "_" & x & "_ ?").join(sep)}
-        """.fmt
+            symbol not found: $#
+            perhaps you meant... $#
+        """ ~~ @[sym, alter.map((x) => "_" & x & "_ ?").join(sep)]
 
 proc Error_CannotModifyConstant*(sym: string) =
     panic:
         toError RuntimeErr, """
-            value points to a readonly constant: {sym}
+            value points to a readonly constant: $#
             which cannot be modified in-place
-        """.fmt
+        """ ~~ @[sym]
 
 proc Error_PathLiteralMofifyingString*() =
     panic:
@@ -505,30 +506,30 @@ proc Error_PathLiteralMofifyingString*() =
 proc Error_FileNotFound*(path: string) =
     panic:
         toError RuntimeErr, """
-            file not found: {path}
-        """.fmt
+            file not found: $#
+        """ ~~ @[path]
 
 proc Error_AliasNotFound*(sym: string) =
     panic: 
         toError RuntimeErr, """
-            alias not found: {sym}
-        """.fmt
+            alias not found: $#
+        """ ~~ @[sym]
 
 proc Error_KeyNotFound*(sym: string, alter: seq[string]) =
     let sep = "\n" & repeat("~%",Alternative.len - 2) & "or... "
     panic:
         toError RuntimeErr, """
-            dictionary key not found: {sym}
-            perhaps you meant... {alter.map((x) => "_" & x & "_ ?").join(sep)}
-        """.fmt
+            dictionary key not found: $#
+            perhaps you meant... $#
+        """ ~~ @[sym, alter.map((x) => "_" & x & "_ ?").join(sep)]
 
 proc Error_CannotStoreKey*(key: string, valueKind: string, storeKind: string) =
     panic:
         toError RuntimeErr, """
-            unsupported value type: {valueKind}
-            for store of type: {storeKind}
-            when storing key: {key}
-        """
+            unsupported value type: $#
+            for store of type: $#
+            when storing key: $#
+        """ ~~ @[valueKind, storeKind, key]
 
 proc Error_SqliteDisabled*() =
     panic:
@@ -541,25 +542,25 @@ proc Error_SqliteDisabled*() =
 proc Error_NotEnoughArguments*(functionName:string, functionArity: int) =
     panic:
         toError RuntimeErr, """
-            cannot perform _{functionName}_
-            not enough parameters: {$(functionArity)} required
-        """.fmt
+            cannot perform _$#_
+            not enough parameters: $# required
+        """ ~~ @[functionName, $functionArity]
 
 proc Error_WrongArgumentType*(functionName: string, actual: string, paramPos: string, accepted: string) =
     panic:
         toError RuntimeErr, """
-            cannot perform _{functionName}_ -> {actual}
-            incorrect argument type for {paramPos} parameter
-            accepts {accepted}
-        """.fmt
+            cannot perform _$#_ -> $#
+            incorrect argument type for $# parameter
+            accepts $#
+        """ ~~ @[functionName, actual, paramPos, accepted]
 
 proc Error_WrongAttributeType*(functionName: string, attributeName: string, actual: string, accepted: string) =
     panic:
         toError RuntimeErr, """
-            cannot perform _{functionName}_
-            incorrect attribute type for _{attributeName}_ -> {actual}
-            accepts {accepted}
-        """.fmt
+            cannot perform _$#_
+            incorrect attribute type for _$#_ -> $#
+            accepts $#
+        """ ~~ @[functionName, attributeName, actual, accepted]
 
 #         Of type     : :{(fromType).toLowerAscii()}
 
@@ -567,29 +568,29 @@ proc Error_LibraryNotLoaded*(path: string) =
     panic:
         toError RuntimeErr, """
             dynamic library could not be loaded:
-            {path}
-        """.fmt
+            $#
+        """ ~~ @[path]
 
 proc Error_LibrarySymbolNotFound*(path: string, sym: string) =
     panic:
         toError RuntimeErr, """
-            symbol not found: {sym}
-            in library: {path}
-        """.fmt
+            symbol not found: $#
+            in library: $#
+        """ ~~ @[sym, path]
 
 proc Error_ErrorLoadingLibrarySymbol*(path: string, sym: string) =
     panic:
         toError RuntimeErr, """
-            error loading symbol: {sym}
-            from library: {path}
-        """.fmt
+            error loading symbol: $#
+            from library: $#
+        """ ~~ @[sym, path]
 
 proc Error_OperationNotPermitted*(operation: string) =
     panic:
         toError RuntimeErr, """
-            unsafe operation: {operation}
+            unsafe operation: $#
             not permitted in online playground
-        """.fmt
+        """ ~~ @[operation]
           
 proc Error_StackUnderflow*() =
     panic:
@@ -600,10 +601,10 @@ proc Error_StackUnderflow*() =
 proc Error_ConfigNotFound*(gkey: string, akey: string) =
     panic:
         toError RuntimeErr, """
-            configuration not found for: {gkey}
+            configuration not found for: $#
             you can either supply it globally via `config`
-            or using the option: .{akey}
-        """.fmt
+            or using the option: .$#
+        """ ~~ @[gkey, akey]
 
 proc Error_RangeWithZeroStep*() =
     panic:
@@ -627,50 +628,50 @@ proc Error_PackageNotFound*(pkg: string) =
     panic:
         toError RuntimeErr, """
             package not found:
-            _{pkg}_
-        """.fmt
+            _$#_
+        """ ~~ @[pkg]
 
 proc Error_PackageRepoNotCorrect*(repo: string) =
     panic:
         toError RuntimeErr, """
             package repository url not correct:
-            {repo}
-        """.fmt
+            $#
+        """ ~~ @[repo]
 
 proc Error_PackageRepoNotFound*(repo: string) =
     panic:
         toError RuntimeErr, """
             package repository not found:
-            {repo}
-        """.fmt
+            $#
+        """ ~~ @[repo]
 
 proc Error_CorruptRemoteSpec*(pkg: string) =
     panic:
         toError RuntimeErr, """
             corrupt spec file for remote package:
-            _{pkg}_
-        """.fmt
+            _$#_
+        """ ~~ @[pkg]
 
 proc Error_PackageNotValid*(pkg: string) =
     panic:
         toError RuntimeErr, """
             invalid package:
-            _{pkg}_
-        """.fmt
+            _$#_
+        """ ~~ @[pkg]
 
 proc Error_PackageUnknownError*(pkg: string) =
     panic:
         toError RuntimeErr, """
             unexpected error while installing package:
-            _{pkg}_
-        """.fmt
+            _$#_
+        """ ~~ @[pkg]
 
 proc Error_PackageInvalidVersion*(vers: string) =
     panic:
         toError RuntimeErr, """
             error parsing package version:
-            _{vers}_
-        """.fmt
+            _$#_
+        """ ~~ @[vers]
 
 # Program errors
 
