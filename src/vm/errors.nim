@@ -82,6 +82,16 @@ proc formatMessage(s: string): string =
 
     return ret
 
+proc inliner*(s: string, inputs: seq[string]): string =
+    var replacements: seq[string]
+
+    for line in s.splitLines():
+        let ind = s.find("$#")
+        if ind != -1:
+            replacements.add(strip(indent(strip(inputs[replacements.len]),ind)))
+
+    return s % replacements
+
 proc printErrorHeader(e: VError) =
     let preHeader = 
         fg(redColor) & "{HorizLine}{HorizLine}{LeftBracket} ".fmt & 
@@ -216,11 +226,11 @@ proc Error_CannotConvert*(arg,fromType,toType: string) =
     panic:
         toError ConversionErr, """
             Got value:
-                {strip(indent(strip(arg),12))}
+                $#
 
             Conversion to given type is not supported:
                 :{(toType).toLowerAscii()}
-        """.fmt
+        """.fmt#.inliner(@[arg])
 
 proc Error_ConversionFailed*(arg,fromType,toType: string, hint: string="") =
     panic:
