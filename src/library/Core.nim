@@ -125,7 +125,7 @@ proc defineLibrary*() =
         rule        = PrefixPrecedence,
         description = "call function with given list of parameters",
         args        = {
-            "function"  : {String,Word,Literal,PathLiteral,Function},
+            "function"  : {String,Word,Literal,PathLiteral,Function,Method},
             "params"    : {Block}
         },
         attrs       = {
