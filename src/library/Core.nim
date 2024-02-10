@@ -208,12 +208,18 @@ proc defineLibrary*() =
                             fid = hash(x.s)
                         else:
                             fid = hash(fun)
-
+                            
                         execFunction(fun, fid)
                     else:
                         fun.action()()
                 else:
-                    execMethod(fun)
+                    var fid: Hash
+                    if xKind in {Literal,String}:
+                        fid = hash(x.s)
+                    else:
+                        fid = hash(fun)
+
+                    execMethod(fun, fid)
         
     builtin "case",
         alias       = unaliased,
