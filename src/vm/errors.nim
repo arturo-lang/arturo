@@ -56,14 +56,10 @@ var
     ExecStack*      : seq[int]  = @[]
 
 #=======================================
-# Forward declarations
-#=======================================
-
-proc showError*(e: VError)
-
-#=======================================
 # Helpers
 #=======================================
+
+# Check environment
 
 proc isRepl(): bool =
     return CurrentContext == ReplContext
@@ -73,6 +69,8 @@ proc getCurrentContext(e: VError): string =
 
     if CurrentContext == ReplContext: return CurrentContext
     return " <script> "
+
+# General formatting
 
 proc formatMessage(s: string): string =
     var ret = s.replacef(re"_([^_]+)_",fmt("{bold()}$1{resetColor}"))
@@ -95,6 +93,8 @@ proc `~~`*(s: string, inputs: seq[string]): string =
     
     finalS = finalS.replace("$$", "$#")
     return finalS % replacements    
+
+# Error messages
 
 proc printErrorHeader(e: VError) =
     let preHeader = 
@@ -150,13 +150,6 @@ proc printHint(e: VError) =
         let wrappingWidth = min(100, int(0.8 * float(terminalWidth() - 2 - 6)))
         echo "  " & "\e[4;97m" & "Hint" & resetColor() & ": " & wrapped(strip(dedent(e.hint)).splitLines().join(" "), wrappingWidth, delim="\n        ")
 
-proc panic(error: VError) =
-    if error.kind == CmdlineErr:
-        showError(error)
-        quit(1)
-    else:
-        raise error
-
 #=======================================
 # Methods
 #=======================================
@@ -171,6 +164,13 @@ proc showError*(e: VError) =
     
     if (not isRepl()) or e.hint=="":
         echo ""
+
+proc panic(error: VError) =
+    if error.kind == CmdlineErr:
+        showError(error)
+        quit(1)
+    else:
+        raise error
 
 #=======================================
 # Constructors
