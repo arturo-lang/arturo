@@ -82,15 +82,19 @@ proc formatMessage(s: string): string =
 
     return ret
 
-proc inliner*(s: string, inputs: seq[string]): string =
+proc `~~`*(s: string, inputs: seq[string]): string =
     var replacements: seq[string]
-
+    var finalS = s
     for line in s.splitLines():
-        let ind = s.find("$#")
-        if ind != -1:
-            replacements.add(strip(indent(strip(inputs[replacements.len]),ind)))
-
-    return s % replacements
+        for found in line.findAll(re"\$[\$#]"):
+            if found=="$$":
+                let ind = line.find("$$")
+                replacements.add(strip(indent(strip(inputs[replacements.len]),ind)))
+            else:
+                replacements.add(inputs[replacements.len])
+    
+    finalS = finalS.replace("$$", "$#")
+    return finalS % replacements    
 
 proc printErrorHeader(e: VError) =
     let preHeader = 
@@ -226,21 +230,21 @@ proc Error_CannotConvert*(arg,fromType,toType: string) =
     panic:
         toError ConversionErr, """
             Got value:
-                $#
+                $$
 
             Conversion to given type is not supported:
-                :{(toType).toLowerAscii()}
-        """.fmt#.inliner(@[arg])
+                :$#
+        """ ~~ @[arg, toType.toLowerAscii()]
 
 proc Error_ConversionFailed*(arg,fromType,toType: string, hint: string="") =
     panic:
         toError ConversionErr, """
             Got value:
-                {strip(indent(strip(arg),12))}
+                $$
 
             Failed while trying to convert to:
-                :{(toType).toLowerAscii()}
-        """.fmt, hint
+                :$#
+        """ ~~ @[arg, toType.toLowerAscii()], hint
 
 #------------------------
 # Syntax Errors
