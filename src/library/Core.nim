@@ -125,7 +125,7 @@ proc defineLibrary*() =
         rule        = PrefixPrecedence,
         description = "call function with given list of parameters",
         args        = {
-            "function"  : {String,Word,Literal,PathLiteral,Function},
+            "function"  : {String,Word,Literal,PathLiteral,Function,Method},
             "params"    : {Block}
         },
         attrs       = {
@@ -201,16 +201,25 @@ proc defineLibrary*() =
                 for v in y.a.reversed:
                     push(v)
 
-                if fun.fnKind==UserFunction:
+                if fun.kind == Function:
+                    if fun.fnKind==UserFunction:
+                        var fid: Hash
+                        if xKind in {Literal,String}:
+                            fid = hash(x.s)
+                        else:
+                            fid = hash(fun)
+                            
+                        execFunction(fun, fid)
+                    else:
+                        fun.action()()
+                else:
                     var fid: Hash
                     if xKind in {Literal,String}:
                         fid = hash(x.s)
                     else:
                         fid = hash(fun)
 
-                    execFunction(fun, fid)
-                else:
-                    fun.action()()
+                    execMethod(fun, fid)
         
     builtin "case",
         alias       = unaliased,
