@@ -176,7 +176,7 @@ func wrapped*(initial: string, limit=50, delim="\n"): string =
     if initial.len < limit:
         return initial
     else:
-        let words = initial.splitWhitespace()
+        let words = unicode.splitWhitespace(initial)
         var lines: seq[seq[string]] = @[@[]]
 
         var i = 0
