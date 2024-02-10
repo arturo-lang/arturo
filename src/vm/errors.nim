@@ -42,6 +42,9 @@ const
     UseUnicodeChars     = true
 
     HorizLine           = when UseUnicodeChars: "\u2550" else: "="
+    VertLine            = when UseUnicodeChars: "\u2503" else: "|"
+    VertLineD           = when UseUnicodeChars: "\u2551" else: "|"
+    ArrowRight          = when UseUnicodeChars: "\u25ba" else: ">"
     LeftBracket         = when UseUnicodeChars: "\u2561" else: "["
     RightBracket        = when UseUnicodeChars: "\u255E" else: "]"
 
@@ -131,18 +134,18 @@ proc printCodePreview(e: VError) =
             let lineTo = min(len(codeLines)-1, CurrentLine + (linesBeforeAfter-1))
             let alignmentSize = max(($lineTo).len, 3)
             let alignmentPadding = repeat(" ", alignmentSize)
-            echo "  " & fg(grayColor) & "\u2503 " & bold(grayColor) & "File: " & fg(grayColor) & CurrentPath
-            echo "  " & fg(grayColor) & "\u2503 " & bold(grayColor) & "Line: " & fg(grayColor) & $(CurrentLine)
-            echo "  " & fg(grayColor) & "\u2503 " & resetColor
+            echo "  " & fg(grayColor) & "{VertLine} ".fmt & bold(grayColor) & "File: " & fg(grayColor) & CurrentPath
+            echo "  " & fg(grayColor) & "{VertLine} ".fmt & bold(grayColor) & "Line: " & fg(grayColor) & $(CurrentLine)
+            echo "  " & fg(grayColor) & "{VertLine} ".fmt & resetColor
             for lineNo in lineFrom..lineTo:
                 var line = codeLines[lineNo]
-                var pointerArrow = "\u2551 "
+                var pointerArrow = "{VertLineD} ".fmt
                 var lineNum = $(lineNo+1)
                 if lineNo == CurrentLine-1: 
-                    pointerArrow = "\u2551" & fg(redColor) & "\u25ba" & fg(grayColor)
+                    pointerArrow = "{VertLineD}".fmt & fg(redColor) & "{ArrowRight}".fmt & fg(grayColor)
                     line = bold(grayColor) & line & fg(grayColor)
                     lineNum = bold(grayColor) & lineNum & fg(grayColor)
-                echo "  " & fg(grayColor) & "\u2503 " & alignmentPadding & lineNum & " {pointerArrow} ".fmt & line & resetColor
+                echo "  " & fg(grayColor) & "{VertLine} ".fmt & alignmentPadding & lineNum & " {pointerArrow} ".fmt & line & resetColor
 
 proc printHint(e: VError) =
     if e.hint != "":
