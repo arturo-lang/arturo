@@ -36,8 +36,7 @@ type
         charset: seq[Rune], 
         transformable: HashSet[Rune], 
         ngraphset: seq[string],
-        sensitive: bool, 
-        ascii:bool = false
+        sensitive: bool
     ): int {.closure.}
 
 #=======================================
@@ -203,10 +202,9 @@ proc unimerge(a, b: var openArray[Value], lo, m, hi: int, lang: string,
               transformable: HashSet[Rune],
               ngraphset: seq[string],
               sensitive:bool = false,
-              order: SortOrder,
-              ascii:bool = false) =
+              order: SortOrder) =
 
-    if cmp(a[m], a[m+1], charset, transformable, ngraphset, sensitive, ascii) * order <= 0: return
+    if cmp(a[m], a[m+1], charset, transformable, ngraphset, sensitive) * order <= 0: return
     var j = lo
 
     assert j <= m
@@ -224,7 +222,7 @@ proc unimerge(a, b: var openArray[Value], lo, m, hi: int, lang: string,
     var k = lo
 
     while k < j and j <= hi:
-        if cmp(b[i], a[j], charset, transformable, ngraphset, sensitive, ascii) * order <= 0:
+        if cmp(b[i], a[j], charset, transformable, ngraphset, sensitive) * order <= 0:
             a[k] <- b[i]
             inc(i)
         else:
@@ -243,8 +241,7 @@ proc unimerge(a, b: var openArray[Value], lo, m, hi: int, lang: string,
 proc unisort*(a: var openArray[Value], lang: string, 
               cmp: CompProc,
               sensitive:bool = false,
-              order = SortOrder.Ascending,
-              ascii:bool = false) =
+              order = SortOrder.Ascending) =
     let charset = getCharsetForSorting(lang)
     let extraCharset = getExtraCharsetForSorting(lang)
     let transformable = intersection(toHashSet(toSeq(keys(transformations))),toHashSet(extraCharset))
@@ -259,7 +256,7 @@ proc unisort*(a: var openArray[Value], lang: string,
     while s < n:
         var m = n-1-s
         while m >= 0:
-            unimerge(a, b, max(m-s+1, 0), m, m+s, lang, cmp, charset, transformable, ngraphset, sensitive, order, ascii)
+            unimerge(a, b, max(m-s+1, 0), m, m+s, lang, cmp, charset, transformable, ngraphset, sensitive, order)
             dec(m, s*2)
         s = s*2
 
