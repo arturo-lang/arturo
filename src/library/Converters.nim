@@ -72,39 +72,21 @@ proc defineLibrary*() =
         args        = {
             "value" : {Any}
         },
-        attrs       =
-        when not defined(NOASCIIDECODE):
-            {
-                "binary"    : ({Logical},"format integer as binary"),
-                "hex"       : ({Logical},"format integer as hexadecimal"),
-                "octal"     : ({Logical},"format integer as octal"),
-                "ascii"     : ({Logical},"transliterate string to ASCII"),
-                "agnostic"  : ({Logical},"convert words in block to literals, if not in context"),
-                "data"      : ({Logical},"parse input as Arturo data block"),
-                "code"      : ({Logical},"convert value to valid Arturo code"),
-                "pretty"    : ({Logical},"prettify generated code"),
-                "unwrapped" : ({Logical},"omit external block notation")
-            }
-        else:
-            {
-                "binary"    : ({Logical},"format integer as binary"),
-                "hex"       : ({Logical},"format integer as hexadecimal"),
-                "octal"     : ({Logical},"format integer as octal"),
-                "agnostic"  : ({Logical},"convert words in block to literals, if not in context"),
-                "data"      : ({Logical},"parse input as Arturo data block"),
-                "code"      : ({Logical},"convert value to valid Arturo code"),
-                "pretty"    : ({Logical},"prettify generated code"),
-                "unwrapped" : ({Logical},"omit external block notation")
-            }
-        ,
+        attrs       = {
+            "binary"    : ({Logical},"format integer as binary"),
+            "hex"       : ({Logical},"format integer as hexadecimal"),
+            "octal"     : ({Logical},"format integer as octal"),
+            "agnostic"  : ({Logical},"convert words in block to literals, if not in context"),
+            "data"      : ({Logical},"parse input as Arturo data block"),
+            "code"      : ({Logical},"convert value to valid Arturo code"),
+            "pretty"    : ({Logical},"prettify generated code"),
+            "unwrapped" : ({Logical},"omit external block notation")
+        },
         returns     = {Any},
         example     = """
             print as.binary 123           ; 1111011
             print as.octal 123            ; 173
             print as.hex 123              ; 7b
-            ..........
-            print as.ascii "thís ìß ñot à tést"
-            ; this iss not a test
         """:
             #=======================================================
             if (hadAttr("binary")):
@@ -128,13 +110,7 @@ proc defineLibrary*() =
             elif (hadAttr("code")):
                 push(newString(codify(x,pretty = (hadAttr("pretty")), unwrapped = (hadAttr("unwrapped")), safeStrings = (hadAttr("safe")))))
             else:
-                when not defined(NOASCIIDECODE):
-                    if (hadAttr("ascii")):
-                        push(newString(convertToAscii(x.s)))
-                    else:
-                        push(x)
-                else:
-                    push(x)
+                push(x)
 
     # TODO(Converters\from) Do we really need this?
     #  We can definitely support hex/binary literals, but how would we support string to number conversion? Perhaps, with `.to` and option?
