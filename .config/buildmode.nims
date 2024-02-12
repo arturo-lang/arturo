@@ -2,7 +2,6 @@
 {. push used .}
 
 proc noDepencenciesConfig() =
-    --define:NOASCIIDECODE
     --define:NOCLIPBOARD
     --define:NODIALOGS
     --define:NOPARSERS
