@@ -1907,7 +1907,6 @@ proc defineLibrary*() =
             "as"        : ({Literal}, "localized by ISO 639-1 language code"),
             "sensitive" : ({Logical}, "case-sensitive sorting"),
             "descending": ({Logical}, "sort in descending order"),
-            "ascii"     : ({Logical}, "sort by ASCII transliterations"),
             "values"    : ({Logical}, "sort dictionary by values"),
             "by"        : ({String, Literal}, "sort array of dictionaries by given key")
         },
@@ -1950,42 +1949,35 @@ proc defineLibrary*() =
                         else:
                             push(newDictionary())
                     else:
-                        var sortAscii = (hadAttr("ascii"))
-
                         if checkAttr("as"):
                             push(newBlock(x.a.unisorted(aAs.s,
                                     sensitive = hadAttr("sensitive"),
-                                    order = sortOrdering, ascii = sortAscii)))
+                                    order = sortOrdering)))
                         else:
                             if (hadAttr("sensitive")):
                                 push(newBlock(x.a.unisorted("en",
-                                        sensitive = true, order = sortOrdering,
-                                        ascii = sortAscii)))
+                                        sensitive = true, order = sortOrdering)))
                             else:
                                 if x.a[0].kind == String:
                                     push(newBlock(x.a.unisorted("en",
-                                            order = sortOrdering,
-                                            ascii = sortAscii)))
+                                            order = sortOrdering)))
                                 else:
                                     push(newBlock(x.a.sorted(
                                             order = sortOrdering)))
 
             elif xKind == Dictionary:
                 var sorted = x.d
-                var sortAscii = (hadAttr("ascii"))
 
                 if checkAttr("as"):
                     push(newDictionary(sorted.unisorted(aAs.s, 
                         sensitive = hadAttr("sensitive"),
                         order = sortOrdering, 
-                        ascii = sortAscii,
                         byValue = hadAttr("values"))))
                 else:
                     if (hadAttr("sensitive")):
                         push(newDictionary(sorted.unisorted("en", 
                             sensitive = true,
                             order = sortOrdering, 
-                            ascii = sortAscii,
                             byValue = hadAttr("values"))))
                     else:
                         var isString = false
@@ -1997,7 +1989,6 @@ proc defineLibrary*() =
                         if isString:
                             push(newDictionary(sorted.unisorted("en",
                                 order = sortOrdering,
-                                ascii = sortAscii,
                                 byValue = hadAttr("values"))))
                         else:
                             var res = newOrderedTable[string, Value]()
@@ -2025,39 +2016,30 @@ proc defineLibrary*() =
                                 cmp(v1.d[aBy.s], v2.d[aBy.s]),
                                         order = sortOrdering)
                         else:               
-                            var sortAscii = (hadAttr("ascii"))
-                            
                             if checkAttr("as"):
                                 InPlaced.a.unisort(aAs.s, sensitive = hadAttr(
-                                        "sensitive"), order = sortOrdering, 
-                                        ascii = sortAscii)
+                                        "sensitive"), order = sortOrdering)
                             else:
                                 if (hadAttr("sensitive")):
                                     InPlaced.a.unisort("en", sensitive = true,
-                                            order = sortOrdering, 
-                                            ascii = sortAscii)
+                                            order = sortOrdering)
                                 else:
                                     if InPlaced.a[0].kind == String:
                                         InPlaced.a.unisort("en",
-                                                order = sortOrdering, 
-                                                ascii = sortAscii)
+                                                order = sortOrdering)
                                     else:
                                         InPlaced.a.sort(order = sortOrdering)
                 else:
-                    var sortAscii = (hadAttr("ascii"))
-
                     if checkAttr("as"):
                         InPlaced.d.unisort(aAs.s, 
                             sensitive = hadAttr("sensitive"),
                             order = sortOrdering, 
-                            ascii = sortAscii,
                             byValue = hadAttr("values"))
                     else:
                         if (hadAttr("sensitive")):
                             InPlaced.d.unisort("en", 
                                 sensitive = true,
                                 order = sortOrdering, 
-                                ascii = sortAscii,
                                 byValue = hadAttr("values"))
                         else:
                             var isString = false
@@ -2069,7 +2051,6 @@ proc defineLibrary*() =
                             if isString:
                                 InPlaced.d.unisort("en",
                                     order = sortOrdering,
-                                    ascii = sortAscii,
                                     byValue = hadAttr("values"))
                             else:
                                 if hadAttr("values"):
