@@ -333,8 +333,10 @@ proc Error_EmptyLiteral*(lineno: int, context: string) =
 
 proc Error_AssertionFailed*(context: string) =
     panic:
-        toError AssertionErr,
-            context
+        toError AssertionErr, """
+            Trying:
+                $$
+        """ ~~ @[context]
           
 proc Error_AssertionFailed*(context: string, message: string) =
     panic: 
