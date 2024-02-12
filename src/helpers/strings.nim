@@ -18,16 +18,9 @@ when defined(WEB):
 else:
     import re
 
-when not defined(NOASCIIDECODE):
-    import unidecode
-
 #=======================================
 # Methods
 #=======================================
-
-when not defined(NOASCIIDECODE):
-    func convertToAscii*(input: string): string =
-        return unidecode(input)
 
 func truncatePreserving*(s: string, at: int, with: string = "..."): string =
     result = s
