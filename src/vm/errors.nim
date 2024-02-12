@@ -334,15 +334,18 @@ proc Error_EmptyLiteral*(lineno: int, context: string) =
 proc Error_AssertionFailed*(context: string) =
     panic:
         toError AssertionErr, """
-            Trying:
+            Tried:
                 $$
         """ ~~ @[context]
           
 proc Error_AssertionFailed*(context: string, message: string) =
     panic: 
         toError AssertionErr, """
-            $#:
-            for: $#
+            Unable to ensure:
+                $$
+
+            Tried: 
+                $$
         """ ~~ @[message, context]
 
 # Runtime errors
