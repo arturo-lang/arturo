@@ -23,9 +23,6 @@ import sequtils, strformat
 
 import helpers/datasource
 
-when not defined(NOASCIIDECODE):
-    import helpers/strings
-
 import vm/lib
 import vm/[bytecode, errors, opcodes, parse]
 
