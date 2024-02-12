@@ -1,4 +1,3 @@
-
 >> append
 
 >> append - :binary < :binary :binary
@@ -718,12 +717,8 @@ rt
 [+] passed!
 [+] passed!
 [+] passed!
-[+] passed!
-[+] passed!
 
 >> sort - + .descending (literal)
-[+] passed!
-[+] passed!
 [+] passed!
 [+] passed!
 [+] passed!
@@ -744,8 +739,6 @@ rt
 [+] passed!
 [+] passed!
 [+] passed!
-[+] passed!
-[+] passed!
 
 >> sort - .values (literal)
 [+] passed!
@@ -756,12 +749,8 @@ rt
 [+] passed!
 [+] passed!
 [+] passed!
-[+] passed!
-[+] passed!
 
 >> sort - .values (pathLiteral)
-[+] passed!
-[+] passed!
 [+] passed!
 [+] passed!
 [+] passed!

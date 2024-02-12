@@ -12,9 +12,6 @@
 
 import algorithm, sequtils, tables, unicode
 
-when not defined(NOASCIIDECODE):
-    import unidecode
-
 import helpers/sets
 import helpers/charsets as CharsetsHelper
 
@@ -39,8 +36,7 @@ type
         charset: seq[Rune], 
         transformable: HashSet[Rune], 
         ngraphset: seq[string],
-        sensitive: bool, 
-        ascii:bool = false
+        sensitive: bool
     ): int {.closure.}
 
 #=======================================
@@ -109,7 +105,7 @@ iterator getNextSymbol*(str: string, ngraphset: seq[string]): string =
 
         i += 1
 
-func unicmp(x,y: Value, charset: seq[Rune], transformable: HashSet[Rune], ngraphset: seq[string], sensitive:bool = false, ascii:bool = false):int =
+func unicmp(x,y: Value, charset: seq[Rune], transformable: HashSet[Rune], ngraphset: seq[string], sensitive:bool = false):int =
     func transformRune(ru: var Rune) =
         if transformable.contains(ru):
             ru = transformations[ru]
@@ -117,12 +113,6 @@ func unicmp(x,y: Value, charset: seq[Rune], transformable: HashSet[Rune], ngraph
     var i = 0
     var j = 0
     var xr, yr: Rune
-    when not defined(NOASCIIDECODE):
-        if ascii or charset.len==0:
-            if sensitive:
-                return cmp(unidecode(x.s), unidecode(y.s))
-            else:
-                return cmp(unidecode(toLower(x.s)), unidecode(toLower(y.s)))
         
     if ngraphset.len == 0:
         # TODO(Helpers/unisort) Re-visit & test digraph/trigraph sorting
@@ -212,10 +202,9 @@ proc unimerge(a, b: var openArray[Value], lo, m, hi: int, lang: string,
               transformable: HashSet[Rune],
               ngraphset: seq[string],
               sensitive:bool = false,
-              order: SortOrder,
-              ascii:bool = false) =
+              order: SortOrder) =
 
-    if cmp(a[m], a[m+1], charset, transformable, ngraphset, sensitive, ascii) * order <= 0: return
+    if cmp(a[m], a[m+1], charset, transformable, ngraphset, sensitive) * order <= 0: return
     var j = lo
 
     assert j <= m
@@ -233,7 +222,7 @@ proc unimerge(a, b: var openArray[Value], lo, m, hi: int, lang: string,
     var k = lo
 
     while k < j and j <= hi:
-        if cmp(b[i], a[j], charset, transformable, ngraphset, sensitive, ascii) * order <= 0:
+        if cmp(b[i], a[j], charset, transformable, ngraphset, sensitive) * order <= 0:
             a[k] <- b[i]
             inc(i)
         else:
@@ -252,8 +241,7 @@ proc unimerge(a, b: var openArray[Value], lo, m, hi: int, lang: string,
 proc unisort*(a: var openArray[Value], lang: string, 
               cmp: CompProc,
               sensitive:bool = false,
-              order = SortOrder.Ascending,
-              ascii:bool = false) =
+              order = SortOrder.Ascending) =
     let charset = getCharsetForSorting(lang)
     let extraCharset = getExtraCharsetForSorting(lang)
     let transformable = intersection(toHashSet(toSeq(keys(transformations))),toHashSet(extraCharset))
@@ -268,14 +256,14 @@ proc unisort*(a: var openArray[Value], lang: string,
     while s < n:
         var m = n-1-s
         while m >= 0:
-            unimerge(a, b, max(m-s+1, 0), m, m+s, lang, cmp, charset, transformable, ngraphset, sensitive, order, ascii)
+            unimerge(a, b, max(m-s+1, 0), m, m+s, lang, cmp, charset, transformable, ngraphset, sensitive, order)
             dec(m, s*2)
         s = s*2
 
-proc unisort*(a: var openArray[Value], lang: string, sensitive:bool = false, order = SortOrder.Ascending, ascii:bool = false) = 
-    unisort(a, lang, unicmp, sensitive, order, ascii)
+proc unisort*(a: var openArray[Value], lang: string, sensitive:bool = false, order = SortOrder.Ascending) = 
+    unisort(a, lang, unicmp, sensitive, order)
 
-proc unisort*(a: var ValueDict, lang: string, sensitive:bool = false, order = SortOrder.Ascending, ascii:bool = false, byValue:bool = false) =
+proc unisort*(a: var ValueDict, lang: string, sensitive:bool = false, order = SortOrder.Ascending, byValue:bool = false) =
     let charset = getCharsetForSorting(lang)
     let extraCharset = getExtraCharsetForSorting(lang)
     let transformable = intersection(toHashSet(toSeq(keys(transformations))),toHashSet(extraCharset))
@@ -285,27 +273,26 @@ proc unisort*(a: var ValueDict, lang: string, sensitive:bool = false, order = So
 
     if byValue:
         a.sort(proc (x, y: (string, Value)): int = 
-            unicmp(x[1], y[1], charset, transformable, ngraphset, sensitive, ascii)
+            unicmp(x[1], y[1], charset, transformable, ngraphset, sensitive)
         , order = order)
     else:
         a.sort(proc (x, y: (string, Value)): int = 
-            unicmp(newString(x[0]), newString(y[0]), charset, transformable, ngraphset, sensitive, ascii)
+            unicmp(newString(x[0]), newString(y[0]), charset, transformable, ngraphset, sensitive)
         , order = order)
 
 proc unisorted*(a: openArray[Value], lang: string, cmp: CompProc,
                 sensitive:bool = false,
-                order = SortOrder.Ascending,
-                ascii:bool = false): ValueArray =
+                order = SortOrder.Ascending): ValueArray =
     result = newSeq[Value](a.len)
     for i in 0 .. a.high:
         result[i] = a[i]
-    unisort(result, lang, cmp, sensitive, order, ascii)
+    unisort(result, lang, cmp, sensitive, order)
 
-proc unisorted*(a: openArray[Value], lang: string, sensitive:bool = false, order = SortOrder.Ascending, ascii:bool = false): ValueArray =
-    unisorted(a, lang, unicmp, sensitive, order, ascii)
+proc unisorted*(a: openArray[Value], lang: string, sensitive:bool = false, order = SortOrder.Ascending): ValueArray =
+    unisorted(a, lang, unicmp, sensitive, order)
 
-proc unisorted*(a: ValueDict, lang: string, sensitive:bool = false, order = SortOrder.Ascending, ascii:bool = false, byValue:bool = false): ValueDict =
+proc unisorted*(a: ValueDict, lang: string, sensitive:bool = false, order = SortOrder.Ascending, byValue:bool = false): ValueDict =
     result = newOrderedTable[string, Value]()
     for k, v in a.pairs:
         result[k] = v
-    unisort(result, lang, sensitive, order, ascii, byValue)
+    unisort(result, lang, sensitive, order, byValue)

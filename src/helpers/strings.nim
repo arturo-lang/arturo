@@ -15,16 +15,9 @@ import lenientops, sequtils, strutils, unicode
 when defined(WEB):
     import jsre
 
-when not defined(NOASCIIDECODE):
-    import unidecode
-
 #=======================================
 # Methods
 #=======================================
-
-when not defined(NOASCIIDECODE):
-    func convertToAscii*(input: string): string =
-        return unidecode(input)
 
 func truncatePreserving*(s: string, at: int, with: string = "..."): string =
     result = s
