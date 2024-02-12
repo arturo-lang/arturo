@@ -12,9 +12,6 @@
 
 import algorithm, sequtils, tables, unicode
 
-when not defined(NOASCIIDECODE):
-    import unidecode
-
 import helpers/sets
 import helpers/charsets as CharsetsHelper
 
@@ -109,7 +106,7 @@ iterator getNextSymbol*(str: string, ngraphset: seq[string]): string =
 
         i += 1
 
-func unicmp(x,y: Value, charset: seq[Rune], transformable: HashSet[Rune], ngraphset: seq[string], sensitive:bool = false, ascii:bool = false):int =
+func unicmp(x,y: Value, charset: seq[Rune], transformable: HashSet[Rune], ngraphset: seq[string], sensitive:bool = false):int =
     func transformRune(ru: var Rune) =
         if transformable.contains(ru):
             ru = transformations[ru]
@@ -117,12 +114,6 @@ func unicmp(x,y: Value, charset: seq[Rune], transformable: HashSet[Rune], ngraph
     var i = 0
     var j = 0
     var xr, yr: Rune
-    when not defined(NOASCIIDECODE):
-        if ascii or charset.len==0:
-            if sensitive:
-                return cmp(unidecode(x.s), unidecode(y.s))
-            else:
-                return cmp(unidecode(toLower(x.s)), unidecode(toLower(y.s)))
         
     if ngraphset.len == 0:
         # TODO(Helpers/unisort) Re-visit & test digraph/trigraph sorting
