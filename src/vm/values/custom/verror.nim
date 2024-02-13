@@ -167,6 +167,8 @@ let
     SyntaxErr*      = VErrorKind(label: "Syntax Error"      , parent: nil)
     CmdlineErr*     = VErrorKind(label: "Command-line Error", parent: nil,  description: "Something went wrong while processing given command-line arguments")
     ProgramErr*     = VErrorKind(label: "Program Error"     , parent: nil)
+    SystemErr*      = VErrorKind(label: "System Error"      , parent: nil)
+    VMErr*          = VErrorKind(label: "VM Error"          , parent: nil)
 
 proc toRuntimeErrorKind*(lbl: string, desc: string = ""): VErrorKind =
     result = VErrorKind(label: lbl, description: desc, parent: RuntimeErr)
@@ -188,6 +190,21 @@ let
                             "")
     PackageErr*         = toRuntimeErrorKind(
                             "Package Error",
+                            "")
+    LibraryErr*         = toRuntimeErrorKind(
+                            "Library Error",
+                            "")
+    NameErr*            = toRuntimeErrorKind(
+                            "Name Error",
+                            "")
+    ValueErr*           = toRuntimeErrorKind(
+                            "Value Error",
+                            "")
+    TypeErr*            = toRuntimeErrorKind(
+                            "Type Error",
+                            "")
+    UIErr*              = toRuntimeErrorKind(
+                            "UI Error",
                             "")
 
 #TypeErr, ArgumentErr, ValueErr, AttributeErr
