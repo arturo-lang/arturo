@@ -382,7 +382,9 @@ proc Error_EmptyLiteral*(lineno: int, context: string) =
             Near: $#
         """ ~~ @[context]
 
-# Assertion errors
+#------------------------
+# Assertion Errors
+#------------------------
 
 proc Error_AssertionFailed*(context: string) =
     panic:
@@ -401,19 +403,21 @@ proc Error_AssertionFailed*(context: string, message: string) =
                 $$
         """ ~~ @[message, context]
 
-# Runtime errors
+#------------------------
+# Arithmetic Errors
+#------------------------
 
 proc Error_IntegerParsingOverflow*(lineno: int, number: string) =
     CurrentLine = lineno
     panic: 
-        toError RuntimeErr, """
+        toError ArithmeticErr, """
             Number parsing overflow - up to $#-bit integers supported
             Given: $#
         """ ~~ @[MaxIntSupported, truncate(number, 20)]
 
 proc Error_IntegerOperationOverflow*(operation: string, argA, argB: string) =
     panic: 
-        toError RuntimeErr, """
+        toError ArithmeticErr, """
             Number operation overflow - up to $#-bit integers supported
             Attempted: $#
             with: $#
@@ -421,11 +425,19 @@ proc Error_IntegerOperationOverflow*(operation: string, argA, argB: string) =
 
 proc Error_NumberOutOfPermittedRange*(operation: string, argA, argB: string) =
     panic: 
-        toError RuntimeErr, """
+        toError ArithmeticErr, """
             Number operator out of range - up to $#-bit integers supported
             Attempted: $#
             With: $#
         """ ~~ @[MaxIntSupported, operation, truncate(argA & " " & argB, 30)]
+
+proc Error_DivisionByZero*() =
+    panic:
+        toError ArithmeticErr, """
+            Division by zero
+        """
+
+#----------------------
 
 proc Error_IncompatibleQuantityOperation*(operation: string, argA, argB, kindA, kindB: string) =
     panic: 
@@ -524,12 +536,6 @@ proc Error_CannotConvertDifferentDimensions*() =
     panic:
         toError RuntimeErr, """
             Cannot convert quantities with different dimensions
-        """
-
-proc Error_DivisionByZero*() =
-    panic:
-        toError ArithmeticErr, """
-            Division by zero
         """
 
 proc Error_OutOfBounds*(indx: int, maxRange: int) =
