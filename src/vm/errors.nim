@@ -499,7 +499,7 @@ proc Error_ConfigNotFound*(gkey: string, akey: string) =
 
 proc Error_OperationNotPermitted*(operation: string) =
     panic:
-        toError RuntimeErr, """
+        toError VMErr, """
             Unsafe operation: $#
             not permitted in online playground
         """ ~~ @[operation]
