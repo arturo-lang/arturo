@@ -193,35 +193,35 @@ proc Error_ScriptNotExists*(name: string) =
 proc Error_UnrecognizedOption*(name: string) =
     panic:
         toError CmdlineErr, """
-            unrecognized command-line option:
+            Unrecognized command-line option:
                 _$#_
         """ ~~ @[name]
 
 proc Error_UnrecognizedPackageCommand*(name: string) =
     panic:
         toError CmdlineErr, """
-            unrecognized _package_ command:
+            Unrecognized _package_ command:
                 _$#_
         """ ~~ @[name]
 
 proc Error_NoPackageCommand*() =
     panic:
         toError CmdlineErr, """
-            no _package_ command command given -
+            No _package_ command command given -
             have a look at the options below
         """
 
 proc Error_ExtraneousParameter*(subcmd: string, name: string) =
     panic: 
         toError CmdlineErr, """
-            extraneous parameter for _$#_:
+            Extraneous parameter for _$#_:
                 $#
         """ ~~ @[subcmd, name]
 
 proc Error_NotEnoughParameters*(name: string) =
     panic:
         toError CmdlineErr, """
-            not enough parameters for _$#_ -
+            Not enough parameters for _$#_ -
             consult the help screen below
         """ ~~ @[name]
 
@@ -257,43 +257,43 @@ proc Error_MissingClosingSquareBracket*(lineno: int, context: string) =
     CurrentLine = lineno
     panic:
         toError SyntaxErr, """
-            missing closing square bracket: `]`
+            Missing closing square bracket: `]`
 
-            near: $#
+            Near: $#
         """ ~~ @[context]
 
 proc Error_MissingClosingParenthesis*(lineno: int, context: string) =
     CurrentLine = lineno
     panic:
         toError SyntaxErr, """
-            missing closing parenthesis: `)`
+            Missing closing parenthesis: `)`
 
-            near: $#
+            Near: $#
         """ ~~ @[context]
 
 proc Error_StrayClosingSquareBracket*(lineno: int, context: string) =
     CurrentLine = lineno
     panic:
         toError SyntaxErr, """
-            stray closing square bracket: `]`
+            Stray closing square bracket: `]`
 
-            near: $#
+            Near: $#
         """ ~~ @[context]
 
 proc Error_StrayClosingCurlyBracket*(lineno: int, context: string) =
     CurrentLine = lineno
     panic: 
         toError SyntaxErr, """
-            stray closing curly bracket: `}`
+            Stray closing curly bracket: `}`
 
-            near: $#
+            Near: $#
         """ ~~ @[context]
 
 proc Error_StrayClosingParenthesis*(lineno: int, context: string) =
     CurrentLine = lineno
     panic:
         toError SyntaxErr, """
-            stray closing parenthesis: `)`
+            Stray closing parenthesis: `)`
 
             near: $#
         """ ~~ @[context]
@@ -304,29 +304,29 @@ proc Error_UnterminatedString*(strtype: string, lineno: int, context: string) =
     CurrentLine = lineno
     panic:
         toError SyntaxErr, """
-            unterminated $#string
+            Unterminated $#string
 
-            near: $#
+            Near: $#
         """ ~~ @[context]
 
 proc Error_NewlineInQuotedString*(lineno: int, context: string) =
     CurrentLine = lineno
     panic:
         toError SyntaxErr, """
-            newline in quoted string
+            Newline in quoted string
             for multiline strings, you could use either:
             curly blocks _{..}_ or _triple "-"_ templates
 
-            near: $#
+            Near: $#
         """ ~~ @[context]
 
 proc Error_EmptyLiteral*(lineno: int, context: string) =
     CurrentLine = lineno
     panic: 
         toError SyntaxErr, """
-            empty literal value
+            Empty literal value
 
-            near: $#
+            Near: $#
         """ ~~ @[context]
 
 # Assertion errors
@@ -354,70 +354,70 @@ proc Error_IntegerParsingOverflow*(lineno: int, number: string) =
     CurrentLine = lineno
     panic: 
         toError RuntimeErr, """
-            number parsing overflow - up to $#-bit integers supported
-            given: $#
+            Number parsing overflow - up to $#-bit integers supported
+            Given: $#
         """ ~~ @[MaxIntSupported, truncate(number, 20)]
 
 proc Error_IntegerOperationOverflow*(operation: string, argA, argB: string) =
     panic: 
         toError RuntimeErr, """
-            number operation overflow - up to $#-bit integers supported
-            attempted: $#
+            Number operation overflow - up to $#-bit integers supported
+            Attempted: $#
             with: $#
         """ ~~ @[MaxIntSupported, operation, truncate(argA & " " & argB, 30)]
 
 proc Error_NumberOutOfPermittedRange*(operation: string, argA, argB: string) =
     panic: 
         toError RuntimeErr, """
-            number operator out of range - up to $#-bit integers supported
-            attempted: $#
-            with: $#
+            Number operator out of range - up to $#-bit integers supported
+            Attempted: $#
+            With: $#
         """ ~~ @[MaxIntSupported, operation, truncate(argA & " " & argB, 30)]
 
 proc Error_IncompatibleQuantityOperation*(operation: string, argA, argB, kindA, kindB: string) =
     panic: 
         toError RuntimeErr, """
-            incompatible operation between quantities
-            attempted: $#
-            with: $#
+            Incompatible operation between quantities
+            Attempted: $#
+            With: $#
         """ ~~ @[operation, truncate(argA & " (" & kindA & ") " & argB & " (" & kindB & ")", 60)]
             
 proc Error_IncompatibleValueType*(functionName: string, tp: string, expected: string) =
     panic: 
         toError RuntimeErr, """
-            cannot perform _$#_
-            incompatible value type for $#
-            expected $#
+            Cannot perform _$#_
+            Incompatible value type for $#
+            Expected $#
         """ ~~ @[functionName, tp, expected]
 
 proc Error_IncompatibleBlockValue*(functionName: string, val: string, expected: string) =
     panic: 
         toError RuntimeErr, """
-            cannot perform _$#_ -> $#
-            incompatible value inside block parameter
-            expected $#
+            Cannot perform _$#_ -> $#
+            Incompatible value inside block parameter
+            Expected $#
         """ ~~ @[functionName, val, expected]
 
 proc Error_IncompatibleBlockValueAttribute*(functionName: string, attributeName: string, val: string, expected: string) =
     panic: 
         toError RuntimeErr, """
-            cannot perform _$#_
-            incompatible value inside block for _$#_ -> $#
-            accepts $#
+            Cannot perform _$#_
+            Incompatible value inside block for _$#_ -> $#
+            Accepts $#
         """ ~~ @[functionName, attributeName, val, expected]
 
 proc Error_IncompatibleBlockSize*(functionName: string, got: int, expected: string) =
     panic: 
         toError RuntimeErr, """
-            cannot perform _$#_
-            incompatible block size: $#
-            expected: $#
+            Cannot perform _$#_
+            Incompatible block size: $#
+            Expected: $#
         """ ~~ @[functionName, $got, expected]
 
 proc Error_UsingUndefinedType*(typeName: string) =
     panic: 
         toError RuntimeErr, """
-            undefined or unknown type _:$#_
+            Undefined or unknown type _:$#_
             you should make sure it has been properly
             initialized using `define`
         """ ~~ @[typeName]
@@ -425,22 +425,22 @@ proc Error_UsingUndefinedType*(typeName: string) =
 proc Error_IncorrectNumberOfArgumentsForInitializer*(typeName: string, got: int, expected: seq[string]) =
     panic:
         toError RuntimeErr, """
-            cannot initialize object of type _:$#_
-            wrong number of parameters: $#
-            expected: $# $#
+            Cannot initialize object of type _:$#_
+            Wrong number of parameters: $#
+            Expected: $# $#
         """ ~~ @[typeName, $got, $(expected.len), expected.join(", ")]
 
 proc Error_MissingArgumentForInitializer*(typeName: string, missing: string) =
     panic:
         toError RuntimeErr, """
-            cannot initialize object of type _:$#_
+            Cannot initialize object of type _:$#_
             missing field: $#
         """ ~~ @[typeName, missing]
 
 proc Error_UnsupportedParentType*(typeName: string) =
     panic:
         toError RuntimeErr, """
-            subtyping built-in type _:$#_
+            Subtyping built-in type _:$#_
             is not supported
         """ ~~ @[typeName]
 
@@ -448,29 +448,29 @@ proc Error_InvalidOperation*(operation: string, argA, argB: string) =
     if argB != "":
         panic:
             toError RuntimeErr, """
-                invalid operation _$#_
-                between: $#
+                Invalid operation _$#_
+                Between: $#
                     and: $#
             """ ~~ @[operation, argA, argB]
     else:
         panic:
             toError RuntimeErr, """
-                invalid operation _$#_
-                with: $#
+                Invalid operation _$#_
+                With: $#
             """ ~~ @[operation, argA, argB]
 
 proc Error_CannotConvertQuantity*(val, argA, kindA, argB, kindB: string) =
     panic:
         toError RuntimeErr, """
-            cannot convert quantity: $#
-            from: $# ($#)
-            to: $# ($#)
+            Cannot convert quantity: $#
+            From: $# ($#)
+            To: $# ($#)
         """ ~~ @[val, argA, kindA, argB, kindB]
           
 proc Error_CannotConvertDifferentDimensions*() =
     panic:
         toError RuntimeErr, """
-            cannot convert quantities with different dimensions
+            Cannot convert quantities with different dimensions
         """
 
 proc Error_DivisionByZero*() =
@@ -482,58 +482,58 @@ proc Error_DivisionByZero*() =
 proc Error_OutOfBounds*(indx: int, maxRange: int) =
     panic:
         toError RuntimeErr, """
-            array index out of bounds: $#
-            valid range: 0..$#
+            Array index out of bounds: $#
+            Valid range: 0..$#
         """ ~~ @[$indx, $maxRange]
 
 proc Error_SymbolNotFound*(sym: string, alter: seq[string]) =
     let sep = "\n" & repeat("~%",Alternative.len - 2) & "or... "
     panic:
         toError RuntimeErr, """
-            symbol not found: $#
-            perhaps you meant... $#
+            Symbol not found: $#
+            Perhaps you meant... $#
         """ ~~ @[sym, alter.map((x) => "_" & x & "_ ?").join(sep)]
 
 proc Error_CannotModifyConstant*(sym: string) =
     panic:
         toError RuntimeErr, """
-            value points to a readonly constant: $#
+            Value points to a readonly constant: $#
             which cannot be modified in-place
         """ ~~ @[sym]
 
 proc Error_PathLiteralMofifyingString*() =
     panic:
         toError RuntimeErr, """ 
-            in-place modification of strings
+            In-place modification of strings
             through PathLiteral values is not supported
         """
 
 proc Error_FileNotFound*(path: string) =
     panic:
         toError RuntimeErr, """
-            file not found: $#
+            File not found: $#
         """ ~~ @[path]
 
 proc Error_AliasNotFound*(sym: string) =
     panic: 
         toError RuntimeErr, """
-            alias not found: $#
+            Alias not found: $#
         """ ~~ @[sym]
 
 proc Error_KeyNotFound*(sym: string, alter: seq[string]) =
     let sep = "\n" & repeat("~%",Alternative.len - 2) & "or... "
     panic:
         toError RuntimeErr, """
-            dictionary key not found: $#
-            perhaps you meant... $#
+            Dictionary key not found: $#
+            Perhaps you meant... $#
         """ ~~ @[sym, alter.map((x) => "_" & x & "_ ?").join(sep)]
 
 proc Error_CannotStoreKey*(key: string, valueKind: string, storeKind: string) =
     panic:
         toError RuntimeErr, """
-            unsupported value type: $#
-            for store of type: $#
-            when storing key: $#
+            Unsupported value type: $#
+            For store of type: $#
+            When storing key: $#
         """ ~~ @[valueKind, storeKind, key]
 
 proc Error_SqliteDisabled*() =
@@ -547,24 +547,24 @@ proc Error_SqliteDisabled*() =
 proc Error_NotEnoughArguments*(functionName:string, functionArity: int) =
     panic:
         toError RuntimeErr, """
-            cannot perform _$#_
+            Cannot perform _$#_
             not enough parameters: $# required
         """ ~~ @[functionName, $functionArity]
 
 proc Error_WrongArgumentType*(functionName: string, actual: string, paramPos: string, accepted: string) =
     panic:
         toError RuntimeErr, """
-            cannot perform _$#_ -> $#
-            incorrect argument type for $# parameter
-            accepts $#
+            Cannot perform _$#_ -> $#
+            Incorrect argument type for $# parameter
+            Accepts $#
         """ ~~ @[functionName, actual, paramPos, accepted]
 
 proc Error_WrongAttributeType*(functionName: string, attributeName: string, actual: string, accepted: string) =
     panic:
         toError RuntimeErr, """
-            cannot perform _$#_
-            incorrect attribute type for _$#_ -> $#
-            accepts $#
+            Cannot perform _$#_
+            Incorrect attribute type for _$#_ -> $#
+            Accepts $#
         """ ~~ @[functionName, attributeName, actual, accepted]
 
 #         Of type     : :{(fromType).toLowerAscii()}
@@ -572,41 +572,41 @@ proc Error_WrongAttributeType*(functionName: string, attributeName: string, actu
 proc Error_LibraryNotLoaded*(path: string) =
     panic:
         toError RuntimeErr, """
-            dynamic library could not be loaded:
+            Dynamic library could not be loaded:
             $#
         """ ~~ @[path]
 
 proc Error_LibrarySymbolNotFound*(path: string, sym: string) =
     panic:
         toError RuntimeErr, """
-            symbol not found: $#
+            Symbol not found: $#
             in library: $#
         """ ~~ @[sym, path]
 
 proc Error_ErrorLoadingLibrarySymbol*(path: string, sym: string) =
     panic:
         toError RuntimeErr, """
-            error loading symbol: $#
-            from library: $#
+            Srror loading symbol: $#
+            From library: $#
         """ ~~ @[sym, path]
 
 proc Error_OperationNotPermitted*(operation: string) =
     panic:
         toError RuntimeErr, """
-            unsafe operation: $#
+            Unsafe operation: $#
             not permitted in online playground
         """ ~~ @[operation]
           
 proc Error_StackUnderflow*() =
     panic:
         toError RuntimeErr, """
-            stack underflow
+            Stack underflow
         """
 
 proc Error_ConfigNotFound*(gkey: string, akey: string) =
     panic:
         toError RuntimeErr, """
-            configuration not found for: $#
+            Configuration not found for: $#
             you can either supply it globally via `config`
             or using the option: .$#
         """ ~~ @[gkey, akey]
@@ -614,67 +614,67 @@ proc Error_ConfigNotFound*(gkey: string, akey: string) =
 proc Error_RangeWithZeroStep*() =
     panic:
         toError RuntimeErr, """
-            attribute step can't be 0
+            Attribute step can't be 0
         """
           
 proc Error_CompatibleBrowserNotFound*() =
     panic:
         toError RuntimeErr, """
-            could not find any Chrome-compatible browser installed
+            Could not find any Chrome-compatible browser installed
         """
           
 proc Error_CompatibleBrowserCouldNotOpenWindow*() =
     panic:
         toError RuntimeErr, """
-            could not open a Chrome-compatible browser window
+            Could not open a Chrome-compatible browser window
         """
 
 proc Error_PackageNotFound*(pkg: string) =
     panic:
         toError RuntimeErr, """
-            package not found:
+            Package not found:
             _$#_
         """ ~~ @[pkg]
 
 proc Error_PackageRepoNotCorrect*(repo: string) =
     panic:
         toError RuntimeErr, """
-            package repository url not correct:
+            Package repository url not correct:
             $#
         """ ~~ @[repo]
 
 proc Error_PackageRepoNotFound*(repo: string) =
     panic:
         toError RuntimeErr, """
-            package repository not found:
+            Package repository not found:
             $#
         """ ~~ @[repo]
 
 proc Error_CorruptRemoteSpec*(pkg: string) =
     panic:
         toError RuntimeErr, """
-            corrupt spec file for remote package:
+            Corrupt spec file for remote package:
             _$#_
         """ ~~ @[pkg]
 
 proc Error_PackageNotValid*(pkg: string) =
     panic:
         toError RuntimeErr, """
-            invalid package:
+            Invalid package:
             _$#_
         """ ~~ @[pkg]
 
 proc Error_PackageUnknownError*(pkg: string) =
     panic:
         toError RuntimeErr, """
-            unexpected error while installing package:
+            Unexpected error while installing package:
             _$#_
         """ ~~ @[pkg]
 
 proc Error_PackageInvalidVersion*(vers: string) =
     panic:
         toError RuntimeErr, """
-            error parsing package version:
+            Error parsing package version:
             _$#_
         """ ~~ @[vers]
 
