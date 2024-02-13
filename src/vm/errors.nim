@@ -39,7 +39,7 @@ const
     MaxIntSupported     = $(sizeof(int) * 8)
     ReplContext         = " <repl> "
 
-    UseUnicodeChars     = true
+    UseUnicodeChars     = false
 
     HorizLine           = when UseUnicodeChars: "\u2550" else: "="
     VertLine            = when UseUnicodeChars: "\u2503" else: "|"
@@ -450,7 +450,6 @@ proc Error_DivisionByZero*() =
         toError ArithmeticErr, """
             Division by zero
         """
-
 #------------------------
 # Index Errors
 #------------------------
@@ -470,8 +469,128 @@ proc Error_KeyNotFound*(sym: string, alter: seq[string]) =
             Perhaps you meant... $#
         """ ~~ @[sym, alter.map((x) => "_" & x & "_ ?").join(sep)]
 
+#------------------------
+# System Errors
+#------------------------
+
+proc Error_FileNotFound*(path: string) =
+    panic:
+        toError SystemErr, """
+            File not found: $#
+        """ ~~ @[path]
+
+#------------------------
+# VM Errors
+#------------------------
+
+proc Error_StackUnderflow*() =
+    panic:
+        toError VMErr, """
+            Stack underflow
+        """
+
+proc Error_ConfigNotFound*(gkey: string, akey: string) =
+    panic:
+        toError VMErr, """
+            Configuration not found for: $#
+            you can either supply it globally via `config`
+            or using the option: .$#
+        """ ~~ @[gkey, akey]
+
+proc Error_OperationNotPermitted*(operation: string) =
+    panic:
+        toError RuntimeErr, """
+            Unsafe operation: $#
+            not permitted in online playground
+        """ ~~ @[operation]
+
+#------------------------
+# UI Errors
+#------------------------
+
+proc Error_CompatibleBrowserNotFound*() =
+    panic:
+        toError UIErr, """
+            Could not find any Chrome-compatible browser installed
+        """
           
-#----------------------
+proc Error_CompatibleBrowserCouldNotOpenWindow*() =
+    panic:
+        toError UIErr, """
+            Could not open a Chrome-compatible browser window
+        """
+
+#------------------------
+# Name Errors
+#------------------------
+
+proc Error_SymbolNotFound*(sym: string, alter: seq[string]) =
+    let sep = "\n" & repeat("~%",Alternative.len - 2) & "or... "
+    panic:
+        toError NameErr, """
+            Symbol not found: $#
+            Perhaps you meant... $#
+        """ ~~ @[sym, alter.map((x) => "_" & x & "_ ?").join(sep)]
+
+proc Error_AliasNotFound*(sym: string) =
+    panic: 
+        toError NameErr, """
+            Alias not found: $#
+        """ ~~ @[sym]
+
+#------------------------
+# Value Errors
+#------------------------
+
+proc Error_CannotModifyConstant*(sym: string) =
+    panic:
+        toError RuntimeErr, """
+            Value points to a readonly constant: $#
+            which cannot be modified in-place
+        """ ~~ @[sym]
+
+proc Error_PathLiteralMofifyingString*() =
+    panic:
+        toError RuntimeErr, """ 
+            In-place modification of strings
+            through PathLiteral values is not supported
+        """
+
+proc Error_IncompatibleBlockSize*(functionName: string, got: int, expected: string) =
+    panic: 
+        toError RuntimeErr, """
+            Cannot perform _$#_
+            Incompatible block size: $#
+            Expected: $#
+        """ ~~ @[functionName, $got, expected]
+
+proc Error_NotEnoughArguments*(functionName:string, functionArity: int) =
+    panic:
+        toError RuntimeErr, """
+            Cannot perform _$#_
+            not enough parameters: $# required
+        """ ~~ @[functionName, $functionArity]
+
+proc Error_RangeWithZeroStep*() =
+    panic:
+        toError RuntimeErr, """
+            Attribute step can't be 0
+        """
+
+proc Error_IncorrectNumberOfArgumentsForInitializer*(typeName: string, got: int, expected: seq[string]) =
+    panic:
+        toError RuntimeErr, """
+            Cannot initialize object of type _:$#_
+            Wrong number of parameters: $#
+            Expected: $# $#
+        """ ~~ @[typeName, $got, $(expected.len), expected.join(", ")]
+
+proc Error_MissingArgumentForInitializer*(typeName: string, missing: string) =
+    panic:
+        toError RuntimeErr, """
+            Cannot initialize object of type _:$#_
+            missing field: $#
+        """ ~~ @[typeName, missing]
 
 proc Error_IncompatibleQuantityOperation*(operation: string, argA, argB, kindA, kindB: string) =
     panic: 
@@ -480,7 +599,11 @@ proc Error_IncompatibleQuantityOperation*(operation: string, argA, argB, kindA, 
             Attempted: $#
             With: $#
         """ ~~ @[operation, truncate(argA & " (" & kindA & ") " & argB & " (" & kindB & ")", 60)]
-            
+
+#------------------------
+# Type Errors
+#------------------------
+
 proc Error_IncompatibleValueType*(functionName: string, tp: string, expected: string) =
     panic: 
         toError RuntimeErr, """
@@ -505,14 +628,6 @@ proc Error_IncompatibleBlockValueAttribute*(functionName: string, attributeName:
             Accepts $#
         """ ~~ @[functionName, attributeName, val, expected]
 
-proc Error_IncompatibleBlockSize*(functionName: string, got: int, expected: string) =
-    panic: 
-        toError RuntimeErr, """
-            Cannot perform _$#_
-            Incompatible block size: $#
-            Expected: $#
-        """ ~~ @[functionName, $got, expected]
-
 proc Error_UsingUndefinedType*(typeName: string) =
     panic: 
         toError RuntimeErr, """
@@ -521,99 +636,12 @@ proc Error_UsingUndefinedType*(typeName: string) =
             initialized using `define`
         """ ~~ @[typeName]
 
-proc Error_IncorrectNumberOfArgumentsForInitializer*(typeName: string, got: int, expected: seq[string]) =
-    panic:
-        toError RuntimeErr, """
-            Cannot initialize object of type _:$#_
-            Wrong number of parameters: $#
-            Expected: $# $#
-        """ ~~ @[typeName, $got, $(expected.len), expected.join(", ")]
-
-proc Error_MissingArgumentForInitializer*(typeName: string, missing: string) =
-    panic:
-        toError RuntimeErr, """
-            Cannot initialize object of type _:$#_
-            missing field: $#
-        """ ~~ @[typeName, missing]
-
 proc Error_UnsupportedParentType*(typeName: string) =
     panic:
         toError RuntimeErr, """
             Subtyping built-in type _:$#_
             is not supported
         """ ~~ @[typeName]
-
-proc Error_InvalidOperation*(operation: string, argA, argB: string) =
-    if argB != "":
-        panic:
-            toError RuntimeErr, """
-                Invalid operation _$#_
-                Between: $#
-                    and: $#
-            """ ~~ @[operation, argA, argB]
-    else:
-        panic:
-            toError RuntimeErr, """
-                Invalid operation _$#_
-                With: $#
-            """ ~~ @[operation, argA, argB]
-
-proc Error_SymbolNotFound*(sym: string, alter: seq[string]) =
-    let sep = "\n" & repeat("~%",Alternative.len - 2) & "or... "
-    panic:
-        toError RuntimeErr, """
-            Symbol not found: $#
-            Perhaps you meant... $#
-        """ ~~ @[sym, alter.map((x) => "_" & x & "_ ?").join(sep)]
-
-proc Error_CannotModifyConstant*(sym: string) =
-    panic:
-        toError RuntimeErr, """
-            Value points to a readonly constant: $#
-            which cannot be modified in-place
-        """ ~~ @[sym]
-
-proc Error_PathLiteralMofifyingString*() =
-    panic:
-        toError RuntimeErr, """ 
-            In-place modification of strings
-            through PathLiteral values is not supported
-        """
-
-proc Error_FileNotFound*(path: string) =
-    panic:
-        toError RuntimeErr, """
-            File not found: $#
-        """ ~~ @[path]
-
-proc Error_AliasNotFound*(sym: string) =
-    panic: 
-        toError RuntimeErr, """
-            Alias not found: $#
-        """ ~~ @[sym]
-
-proc Error_CannotStoreKey*(key: string, valueKind: string, storeKind: string) =
-    panic:
-        toError RuntimeErr, """
-            Unsupported value type: $#
-            For store of type: $#
-            When storing key: $#
-        """ ~~ @[valueKind, storeKind, key]
-
-proc Error_SqliteDisabled*() =
-    panic:
-        toError RuntimeErr, """
-            SQLite not available in MINI builds
-            if you want to have access to SQLite-related functionality,
-            please, install Arturo's full version
-        """
-
-proc Error_NotEnoughArguments*(functionName:string, functionArity: int) =
-    panic:
-        toError RuntimeErr, """
-            Cannot perform _$#_
-            not enough parameters: $# required
-        """ ~~ @[functionName, $functionArity]
 
 proc Error_WrongArgumentType*(functionName: string, actual: string, paramPos: string, accepted: string) =
     panic:
@@ -631,7 +659,40 @@ proc Error_WrongAttributeType*(functionName: string, attributeName: string, actu
             Accepts $#
         """ ~~ @[functionName, attributeName, actual, accepted]
 
-#         Of type     : :{(fromType).toLowerAscii()}
+proc Error_CannotStoreKey*(key: string, valueKind: string, storeKind: string) =
+    panic:
+        toError RuntimeErr, """
+            Unsupported value type: $#
+            For store of type: $#
+            When storing key: $#
+        """ ~~ @[valueKind, storeKind, key]
+
+proc Error_InvalidOperation*(operation: string, argA, argB: string) =
+    if argB != "":
+        panic:
+            toError RuntimeErr, """
+                Invalid operation _$#_
+                Between: $#
+                    and: $#
+            """ ~~ @[operation, argA, argB]
+    else:
+        panic:
+            toError RuntimeErr, """
+                Invalid operation _$#_
+                With: $#
+            """ ~~ @[operation, argA, argB]
+
+#------------------------
+# Library Errors
+#------------------------
+
+proc Error_SqliteDisabled*() =
+    panic:
+        toError RuntimeErr, """
+            SQLite not available in MINI builds
+            if you want to have access to SQLite-related functionality,
+            please, install Arturo's full version
+        """
 
 proc Error_LibraryNotLoaded*(path: string) =
     panic:
@@ -653,45 +714,6 @@ proc Error_ErrorLoadingLibrarySymbol*(path: string, sym: string) =
             Error loading symbol: $#
             From library: $#
         """ ~~ @[sym, path]
-
-proc Error_OperationNotPermitted*(operation: string) =
-    panic:
-        toError RuntimeErr, """
-            Unsafe operation: $#
-            not permitted in online playground
-        """ ~~ @[operation]
-          
-proc Error_StackUnderflow*() =
-    panic:
-        toError RuntimeErr, """
-            Stack underflow
-        """
-
-proc Error_ConfigNotFound*(gkey: string, akey: string) =
-    panic:
-        toError RuntimeErr, """
-            Configuration not found for: $#
-            you can either supply it globally via `config`
-            or using the option: .$#
-        """ ~~ @[gkey, akey]
-
-proc Error_CompatibleBrowserNotFound*() =
-    panic:
-        toError RuntimeErr, """
-            Could not find any Chrome-compatible browser installed
-        """
-          
-proc Error_CompatibleBrowserCouldNotOpenWindow*() =
-    panic:
-        toError RuntimeErr, """
-            Could not open a Chrome-compatible browser window
-        """
-
-proc Error_RangeWithZeroStep*() =
-    panic:
-        toError RuntimeErr, """
-            Attribute step can't be 0
-        """
 
 # Program errors
 
