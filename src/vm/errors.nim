@@ -226,6 +226,59 @@ proc Error_NotEnoughParameters*(name: string) =
         """ ~~ @[name]
 
 #------------------------
+# Package Errors
+#------------------------
+
+proc Error_PackageNotFound*(pkg: string) =
+    panic:
+        toError PackageErr, """
+            Package not found:
+                _$#_
+        """ ~~ @[pkg]
+
+proc Error_PackageRepoNotCorrect*(repo: string) =
+    panic:
+        toError PackageErr, """
+            Package repository url not correct:
+                $#
+        """ ~~ @[repo]
+
+proc Error_PackageRepoNotFound*(repo: string) =
+    panic:
+        toError PackageErr, """
+            Package repository not found:
+                $#
+        """ ~~ @[repo]
+
+proc Error_CorruptRemoteSpec*(pkg: string) =
+    panic:
+        toError PackageErr, """
+            Corrupt spec file for remote package:
+                _$#_
+        """ ~~ @[pkg]
+
+proc Error_PackageNotValid*(pkg: string) =
+    panic:
+        toError PackageErr, """
+            Invalid package:
+                _$#_
+        """ ~~ @[pkg]
+
+proc Error_PackageUnknownError*(pkg: string) =
+    panic:
+        toError PackageErr, """
+            Unexpected error while installing package:
+                _$#_
+        """ ~~ @[pkg]
+
+proc Error_PackageInvalidVersion*(vers: string) =
+    panic:
+        toError PackageErr, """
+            Error parsing package version:
+                _$#_
+        """ ~~ @[vers]
+
+#------------------------
 # Conversion Errors
 #------------------------
 
@@ -628,55 +681,6 @@ proc Error_CompatibleBrowserCouldNotOpenWindow*() =
         toError RuntimeErr, """
             Could not open a Chrome-compatible browser window
         """
-
-proc Error_PackageNotFound*(pkg: string) =
-    panic:
-        toError RuntimeErr, """
-            Package not found:
-            _$#_
-        """ ~~ @[pkg]
-
-proc Error_PackageRepoNotCorrect*(repo: string) =
-    panic:
-        toError RuntimeErr, """
-            Package repository url not correct:
-            $#
-        """ ~~ @[repo]
-
-proc Error_PackageRepoNotFound*(repo: string) =
-    panic:
-        toError RuntimeErr, """
-            Package repository not found:
-            $#
-        """ ~~ @[repo]
-
-proc Error_CorruptRemoteSpec*(pkg: string) =
-    panic:
-        toError RuntimeErr, """
-            Corrupt spec file for remote package:
-            _$#_
-        """ ~~ @[pkg]
-
-proc Error_PackageNotValid*(pkg: string) =
-    panic:
-        toError RuntimeErr, """
-            Invalid package:
-            _$#_
-        """ ~~ @[pkg]
-
-proc Error_PackageUnknownError*(pkg: string) =
-    panic:
-        toError RuntimeErr, """
-            Unexpected error while installing package:
-            _$#_
-        """ ~~ @[pkg]
-
-proc Error_PackageInvalidVersion*(vers: string) =
-    panic:
-        toError RuntimeErr, """
-            Error parsing package version:
-            _$#_
-        """ ~~ @[vers]
 
 # Program errors
 
