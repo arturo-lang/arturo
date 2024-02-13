@@ -544,21 +544,21 @@ proc Error_AliasNotFound*(sym: string) =
 
 proc Error_CannotModifyConstant*(sym: string) =
     panic:
-        toError RuntimeErr, """
+        toError ValueErr, """
             Value points to a readonly constant: $#
             which cannot be modified in-place
         """ ~~ @[sym]
 
 proc Error_PathLiteralMofifyingString*() =
     panic:
-        toError RuntimeErr, """ 
+        toError ValueErr, """ 
             In-place modification of strings
             through PathLiteral values is not supported
         """
 
 proc Error_IncompatibleBlockSize*(functionName: string, got: int, expected: string) =
     panic: 
-        toError RuntimeErr, """
+        toError ValueErr, """
             Cannot perform _$#_
             Incompatible block size: $#
             Expected: $#
@@ -566,20 +566,20 @@ proc Error_IncompatibleBlockSize*(functionName: string, got: int, expected: stri
 
 proc Error_NotEnoughArguments*(functionName:string, functionArity: int) =
     panic:
-        toError RuntimeErr, """
+        toError ValueErr, """
             Cannot perform _$#_
             not enough parameters: $# required
         """ ~~ @[functionName, $functionArity]
 
 proc Error_RangeWithZeroStep*() =
     panic:
-        toError RuntimeErr, """
+        toError ValueErr, """
             Attribute step can't be 0
         """
 
 proc Error_IncorrectNumberOfArgumentsForInitializer*(typeName: string, got: int, expected: seq[string]) =
     panic:
-        toError RuntimeErr, """
+        toError ValueErr, """
             Cannot initialize object of type _:$#_
             Wrong number of parameters: $#
             Expected: $# $#
@@ -587,14 +587,14 @@ proc Error_IncorrectNumberOfArgumentsForInitializer*(typeName: string, got: int,
 
 proc Error_MissingArgumentForInitializer*(typeName: string, missing: string) =
     panic:
-        toError RuntimeErr, """
+        toError ValueErr, """
             Cannot initialize object of type _:$#_
             missing field: $#
         """ ~~ @[typeName, missing]
 
 proc Error_IncompatibleQuantityOperation*(operation: string, argA, argB, kindA, kindB: string) =
     panic: 
-        toError RuntimeErr, """
+        toError ValueErr, """
             Incompatible operation between quantities
             Attempted: $#
             With: $#
@@ -606,7 +606,7 @@ proc Error_IncompatibleQuantityOperation*(operation: string, argA, argB, kindA, 
 
 proc Error_IncompatibleValueType*(functionName: string, tp: string, expected: string) =
     panic: 
-        toError RuntimeErr, """
+        toError TypeErr, """
             Cannot perform _$#_
             Incompatible value type for $#
             Expected $#
@@ -614,7 +614,7 @@ proc Error_IncompatibleValueType*(functionName: string, tp: string, expected: st
 
 proc Error_IncompatibleBlockValue*(functionName: string, val: string, expected: string) =
     panic: 
-        toError RuntimeErr, """
+        toError TypeErr, """
             Cannot perform _$#_ -> $#
             Incompatible value inside block parameter
             Expected $#
@@ -622,7 +622,7 @@ proc Error_IncompatibleBlockValue*(functionName: string, val: string, expected: 
 
 proc Error_IncompatibleBlockValueAttribute*(functionName: string, attributeName: string, val: string, expected: string) =
     panic: 
-        toError RuntimeErr, """
+        toError TypeErr, """
             Cannot perform _$#_
             Incompatible value inside block for _$#_ -> $#
             Accepts $#
@@ -630,7 +630,7 @@ proc Error_IncompatibleBlockValueAttribute*(functionName: string, attributeName:
 
 proc Error_UsingUndefinedType*(typeName: string) =
     panic: 
-        toError RuntimeErr, """
+        toError TypeErr, """
             Undefined or unknown type _:$#_
             you should make sure it has been properly
             initialized using `define`
@@ -638,14 +638,14 @@ proc Error_UsingUndefinedType*(typeName: string) =
 
 proc Error_UnsupportedParentType*(typeName: string) =
     panic:
-        toError RuntimeErr, """
+        toError TypeErr, """
             Subtyping built-in type _:$#_
             is not supported
         """ ~~ @[typeName]
 
 proc Error_WrongArgumentType*(functionName: string, actual: string, paramPos: string, accepted: string) =
     panic:
-        toError RuntimeErr, """
+        toError TypeErr, """
             Cannot perform _$#_ -> $#
             Incorrect argument type for $# parameter
             Accepts $#
@@ -653,7 +653,7 @@ proc Error_WrongArgumentType*(functionName: string, actual: string, paramPos: st
 
 proc Error_WrongAttributeType*(functionName: string, attributeName: string, actual: string, accepted: string) =
     panic:
-        toError RuntimeErr, """
+        toError TypeErr, """
             Cannot perform _$#_
             Incorrect attribute type for _$#_ -> $#
             Accepts $#
@@ -661,7 +661,7 @@ proc Error_WrongAttributeType*(functionName: string, attributeName: string, actu
 
 proc Error_CannotStoreKey*(key: string, valueKind: string, storeKind: string) =
     panic:
-        toError RuntimeErr, """
+        toError TypeErr, """
             Unsupported value type: $#
             For store of type: $#
             When storing key: $#
@@ -670,14 +670,14 @@ proc Error_CannotStoreKey*(key: string, valueKind: string, storeKind: string) =
 proc Error_InvalidOperation*(operation: string, argA, argB: string) =
     if argB != "":
         panic:
-            toError RuntimeErr, """
+            toError TypeErr, """
                 Invalid operation _$#_
                 Between: $#
                     and: $#
             """ ~~ @[operation, argA, argB]
     else:
         panic:
-            toError RuntimeErr, """
+            toError TypeErr, """
                 Invalid operation _$#_
                 With: $#
             """ ~~ @[operation, argA, argB]
