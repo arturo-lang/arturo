@@ -688,7 +688,7 @@ proc Error_InvalidOperation*(operation: string, argA, argB: string) =
 
 proc Error_SqliteDisabled*() =
     panic:
-        toError RuntimeErr, """
+        toError LibraryErr, """
             SQLite not available in MINI builds
             if you want to have access to SQLite-related functionality,
             please, install Arturo's full version
@@ -696,21 +696,21 @@ proc Error_SqliteDisabled*() =
 
 proc Error_LibraryNotLoaded*(path: string) =
     panic:
-        toError RuntimeErr, """
+        toError LibraryErr, """
             Dynamic library could not be loaded:
             $#
         """ ~~ @[path]
 
 proc Error_LibrarySymbolNotFound*(path: string, sym: string) =
     panic:
-        toError RuntimeErr, """
+        toError LibraryErr, """
             Symbol not found: $#
             in library: $#
         """ ~~ @[sym, path]
 
 proc Error_ErrorLoadingLibrarySymbol*(path: string, sym: string) =
     panic:
-        toError RuntimeErr, """
+        toError LibraryErr, """
             Error loading symbol: $#
             From library: $#
         """ ~~ @[sym, path]
