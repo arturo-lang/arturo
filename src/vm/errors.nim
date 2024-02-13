@@ -437,6 +437,26 @@ proc Error_DivisionByZero*() =
             Division by zero
         """
 
+#------------------------
+# Index Errors
+#------------------------
+
+proc Error_OutOfBounds*(indx: int, maxRange: int) =
+    panic:
+        toError IndexErr, """
+            Array index out of bounds: $#
+            Valid range: 0..$#
+        """ ~~ @[$indx, $maxRange]
+
+proc Error_KeyNotFound*(sym: string, alter: seq[string]) =
+    let sep = "\n" & repeat("~%",Alternative.len - 2) & "or... "
+    panic:
+        toError IndexErr, """
+            Dictionary key not found: $#
+            Perhaps you meant... $#
+        """ ~~ @[sym, alter.map((x) => "_" & x & "_ ?").join(sep)]
+
+          
 #----------------------
 
 proc Error_IncompatibleQuantityOperation*(operation: string, argA, argB, kindA, kindB: string) =
@@ -538,13 +558,6 @@ proc Error_CannotConvertDifferentDimensions*() =
             Cannot convert quantities with different dimensions
         """
 
-proc Error_OutOfBounds*(indx: int, maxRange: int) =
-    panic:
-        toError RuntimeErr, """
-            Array index out of bounds: $#
-            Valid range: 0..$#
-        """ ~~ @[$indx, $maxRange]
-
 proc Error_SymbolNotFound*(sym: string, alter: seq[string]) =
     let sep = "\n" & repeat("~%",Alternative.len - 2) & "or... "
     panic:
@@ -578,14 +591,6 @@ proc Error_AliasNotFound*(sym: string) =
         toError RuntimeErr, """
             Alias not found: $#
         """ ~~ @[sym]
-
-proc Error_KeyNotFound*(sym: string, alter: seq[string]) =
-    let sep = "\n" & repeat("~%",Alternative.len - 2) & "or... "
-    panic:
-        toError RuntimeErr, """
-            Dictionary key not found: $#
-            Perhaps you meant... $#
-        """ ~~ @[sym, alter.map((x) => "_" & x & "_ ?").join(sep)]
 
 proc Error_CannotStoreKey*(key: string, valueKind: string, storeKind: string) =
     panic:
@@ -645,7 +650,7 @@ proc Error_LibrarySymbolNotFound*(path: string, sym: string) =
 proc Error_ErrorLoadingLibrarySymbol*(path: string, sym: string) =
     panic:
         toError RuntimeErr, """
-            Srror loading symbol: $#
+            Error loading symbol: $#
             From library: $#
         """ ~~ @[sym, path]
 
@@ -670,12 +675,6 @@ proc Error_ConfigNotFound*(gkey: string, akey: string) =
             or using the option: .$#
         """ ~~ @[gkey, akey]
 
-proc Error_RangeWithZeroStep*() =
-    panic:
-        toError RuntimeErr, """
-            Attribute step can't be 0
-        """
-          
 proc Error_CompatibleBrowserNotFound*() =
     panic:
         toError RuntimeErr, """
@@ -686,6 +685,12 @@ proc Error_CompatibleBrowserCouldNotOpenWindow*() =
     panic:
         toError RuntimeErr, """
             Could not open a Chrome-compatible browser window
+        """
+
+proc Error_RangeWithZeroStep*() =
+    panic:
+        toError RuntimeErr, """
+            Attribute step can't be 0
         """
 
 # Program errors
