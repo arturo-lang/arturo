@@ -302,6 +302,20 @@ proc Error_ConversionFailed*(arg,fromType,toType: string, hint: string="") =
                 :$#
         """ ~~ @[arg, toType.toLowerAscii()], hint
 
+proc Error_CannotConvertQuantity*(val, argA, kindA, argB, kindB: string) =
+    panic:
+        toError ConversionErr, """
+            Cannot convert quantity: $#
+            From: $# ($#)
+            To: $# ($#)
+        """ ~~ @[val, argA, kindA, argB, kindB]
+          
+proc Error_CannotConvertDifferentDimensions*() =
+    panic:
+        toError ConversionErr, """
+            Cannot convert quantities with different dimensions
+        """
+
 #------------------------
 # Syntax Errors
 #------------------------
@@ -543,20 +557,6 @@ proc Error_InvalidOperation*(operation: string, argA, argB: string) =
                 Invalid operation _$#_
                 With: $#
             """ ~~ @[operation, argA, argB]
-
-proc Error_CannotConvertQuantity*(val, argA, kindA, argB, kindB: string) =
-    panic:
-        toError RuntimeErr, """
-            Cannot convert quantity: $#
-            From: $# ($#)
-            To: $# ($#)
-        """ ~~ @[val, argA, kindA, argB, kindB]
-          
-proc Error_CannotConvertDifferentDimensions*() =
-    panic:
-        toError RuntimeErr, """
-            Cannot convert quantities with different dimensions
-        """
 
 proc Error_SymbolNotFound*(sym: string, alter: seq[string]) =
     let sep = "\n" & repeat("~%",Alternative.len - 2) & "or... "
