@@ -476,7 +476,7 @@ proc Error_CannotConvertDifferentDimensions*() =
 proc Error_DivisionByZero*() =
     panic:
         toError ArithmeticErr, """
-            division by zero
+            Division by zero
         """
 
 proc Error_OutOfBounds*(indx: int, maxRange: int) =
