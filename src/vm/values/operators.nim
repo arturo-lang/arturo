@@ -109,24 +109,42 @@ template toNewBig(v: untyped): untyped =
     else:
         newInt(v)
 
+template throwDivisionByZeroError(v: untyped): untyped =
+    when v is int:
+        Error_DivisionByZero(Dumper(newInteger(v)))
+    elif v is float:
+        Error_DivisionByZero(Dumper(newFloating(v)))
+    elif v is VRational:
+        Error_DivisionByZero(Dumper(newRational(v)))
+    elif v is VComplex:
+        Error_DivisionByZero(Dumper(newComplex(v)))
+    else:
+        when BignumSupport:
+            when v is Int:
+                Error_DivisionByZero(Dumper(newInteger(v)))
+            else:
+                Error_DivisionByZero(Dumper(v))
+        else:
+            Error_DivisionByZero(Dumper(v))
+
 template notZero(v: untyped): untyped =
     when v is VRational:
         if unlikely(isZero(v)):
-            Error_DivisionByZero()
+            throwDivisionByZeroError(v)
     elif v is VComplex:
         if unlikely(v.re==0 and v.im==0):
-            Error_DivisionByZero()
+            throwDivisionByZeroError(v)
     else:
         when defined(WEB):
             when v is JsBigInt:
                 if unlikely(v==big(0)):
-                    Error_DivisionByZero()
+                    throwDivisionByZeroError(v)
             else:
                 if unlikely(v==0):
-                    Error_DivisionByZero()
+                    throwDivisionByZeroError(v)
         else:
             if unlikely(v==0):
-                Error_DivisionByZero()
+                throwDivisionByZeroError(v)
     v
 
 proc invalidOperation(op: string, x: Value, y: Value = nil): Value =

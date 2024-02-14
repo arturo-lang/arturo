@@ -492,11 +492,14 @@ proc Error_NumberOutOfSupportedRange*(operation: string, arg: string) =
                 $$
         """ ~~ @[operation, arg], hint
 
-proc Error_DivisionByZero*() =
+proc Error_DivisionByZero*(arg: string) =
     panic:
         toError ArithmeticErr, """
             Division by zero
-        """
+
+            With value:
+                $$
+        """ ~~ @[arg]
 #------------------------
 # Index Errors
 #------------------------
