@@ -196,7 +196,7 @@ let
                             "")
     NameErr*            = toRuntimeErrorKind(
                             "Name Error",
-                            "")
+                            "Cannot resolve requested value")
     ValueErr*           = toRuntimeErrorKind(
                             "Value Error",
                             "")
