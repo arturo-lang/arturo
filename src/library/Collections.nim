@@ -813,8 +813,6 @@ proc defineLibrary*() =
                             i += 1
                         push(newString($(res)))
                 of Date:
-                    # TODO(Collections/get) Key errors for Date values not showing right
-                    #  labels: library, error handling
                     let got = x.e.getOrDefault(y.s, nil)
                     if got.isNil:
                         let allowedKeys = (toSeq(x.e.keys())).map((dk) => "`" & dk & "`")
