@@ -35,6 +35,7 @@ import vm/[
     parse, 
     stack, 
     values/value, 
+    values/printable,
     values/custom/verror,
     version
 ]
@@ -182,6 +183,10 @@ template initialize(args: seq[string], filename: string, isFile:bool, scriptData
 
     # library
     setupLibrary()
+
+    # dumper
+    Dumper = proc (v:Value):string =
+        v.dumped()
 
     # set VM as initialized
     initialized = true

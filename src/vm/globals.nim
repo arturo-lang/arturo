@@ -52,6 +52,9 @@ var
     # global configuration
     Config* {.global.}      : Value                 ## The global configuration store
 
+    # dump values (from anywhere!)
+    Dumper* {.global.}      : proc (v:Value):string
+
 #=======================================
 # Helpers
 #=======================================
@@ -87,7 +90,27 @@ template GetKey*(dict: ValueDict, key: string, withError: static bool = true): u
     let toRet = dict.getOrDefault(key, nil)
     when withError:
         if unlikely(toRet.isNil):
-            Error_KeyNotFound(key, suggestAlternative(key, reference=dict))
+            Error_KeyNotFound(key, Dumper(newDictionary(dict)), suggestAlternative(key, reference=dict))
+    toRet
+
+template GetDictionaryKey*(dict: Value, key: string, withError: static bool = true): untyped =
+    ## Checks if a symbol name exists in given dictionary
+    ## - if it doesn't, raise a SymbolNotFound error
+    ## - otherwise, return its value
+    let toRet = dict.d.getOrDefault(key, nil)
+    when withError:
+        if unlikely(toRet.isNil):
+            Error_KeyNotFound(key, Dumper(dict), suggestAlternative(key, reference=dict.d))
+    toRet
+
+template GetObjectKey*(obj: Value, key: string, withError: static bool = true): untyped =
+    ## Checks if a symbol name exists in given dictionary
+    ## - if it doesn't, raise a SymbolNotFound error
+    ## - otherwise, return its value
+    let toRet = obj.o.getOrDefault(key, nil)
+    when withError:
+        if unlikely(toRet.isNil):
+            Error_KeyNotFound(key, Dumper(obj), suggestAlternative(key, reference=obj.o))
     toRet
 
 template GetArrayIndex*(arr: ValueArray, indx: int): untyped =
@@ -169,7 +192,7 @@ proc FetchPathSym*(pl: ValueArray, inplace: static bool = false): Value =
             of Block:
                 result = GetArrayIndex(result.a, p.i)
             of Dictionary:
-                result = GetKey(result.d, p.s)
+                result = GetDictionaryKey(result, p.s)
             of Object:
                 result = GetKey(result.o, p.s)
             of String:
@@ -199,7 +222,7 @@ proc SetPathSym*(pl: ValueArray, val: Value) =
                     current.a[p.i] = val
             of Dictionary:
                 if pidx != pl.len - 1:
-                    current = GetKey(current.d, p.s)
+                    current = GetDictionaryKey(current, p.s)
                 else:
                     current.d[p.s] = val
             of Object:
