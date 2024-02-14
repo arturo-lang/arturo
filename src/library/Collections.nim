@@ -811,7 +811,7 @@ proc defineLibrary*() =
                         elif ("imaginary" == y.s or "im" == y.s):
                             push(newFloating(x.z.im))
                         else:
-                            Error_InvalidKey(y.i, Dumper(x), "You may use `real` or `re` to get the real part of a Complex value, and `imaginary` or `im` to get the imaginary part; every other value is not accepted.")
+                            Error_InvalidKey(y.s, Dumper(x), "You may use `real` or `re` to get the real part of a Complex value, and `imaginary` or `im` to get the imaginary part; every other value is not accepted.")
                     of Integer:
                         case y.i
                         of 0:
