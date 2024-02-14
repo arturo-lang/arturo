@@ -715,15 +715,8 @@ proc defineLibrary*() =
             ..........
             a: to :complex [1 2]
             print a\real                  ; 1.0
-            print a\image                 ; 2.0
+            print a\imaginary             ; 2.0
             print a\1                     ; 2.0
-
-            ; available keys are:
-            ;   * 're and 'real
-            ;   * 'im, 'img and 'image
-            ; 
-            ; available indexes:
-            ;   * 0..1
         """:
             #=======================================================
             case xKind:
