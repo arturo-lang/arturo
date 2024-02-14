@@ -39,7 +39,7 @@ const
     MaxIntSupported     = $(sizeof(int) * 8)
     ReplContext         = " <repl> "
 
-    UseUnicodeChars     = false
+    UseUnicodeChars     = true
 
     HorizLine           = when UseUnicodeChars: "\u2550" else: "="
     VertLine            = when UseUnicodeChars: "\u2503" else: "|"
@@ -83,6 +83,17 @@ proc formatMessage(s: string): string =
 
     return ret
 
+proc lineTrunc(s: string, padding: int): string =
+    let lines = s.splitLines()
+    if lines.len > 5:
+        result = lines[0..4].join("\n")
+        result &= "\n" & fg(grayColor) & "..." & resetColor()
+        result = strip(result)
+    else:
+        result = s
+    
+    result = indent(result, padding)
+
 proc `~~`*(s: string, inputs: seq[string]): string =
     var replacements: seq[string]
     var finalS = s
@@ -90,7 +101,7 @@ proc `~~`*(s: string, inputs: seq[string]): string =
         for found in line.findAll(re"\$[\$#]"):
             if found=="$$":
                 let ind = line.find("$$")
-                replacements.add(strip(indent(strip(inputs[replacements.len]),ind)))
+                replacements.add(strip(lineTrunc(strip(inputs[replacements.len]),ind)))
             else:
                 replacements.add(inputs[replacements.len])
     
