@@ -75,8 +75,11 @@ proc getCurrentContext(e: VError): string =
 
 # General formatting
 
+proc processPseudomarkdown(s: string): string =
+    result = s.replacef(re"_([^_]+)_",fmt("{bold()}$1{resetColor}"))
+
 proc formatMessage(s: string): string =
-    var ret = s.replacef(re"_([^_]+)_",fmt("{bold()}$1{resetColor}"))
+    var ret = s.processPseudomarkdown()
                #.replacef(re":([a-z]+)",fmt("{fg(magentaColor)}:$1{resetColor}"))
 
     ret = indent(strip(dedent(ret)), 2)
@@ -100,7 +103,7 @@ proc `~~`*(s: string, inputs: seq[string]): string =
     for line in s.splitLines():
         for found in line.findAll(re"\$[\$#]"):
             if found=="$$":
-                let ind = line.find("$$")
+                let ind = line.realFind("$$")
                 replacements.add(strip(lineTrunc(strip(inputs[replacements.len]),ind)))
             else:
                 replacements.add(inputs[replacements.len])
@@ -161,9 +164,13 @@ proc printCodePreview(e: VError) =
 
 proc printHint(e: VError) =
     if e.hint != "":
-        echo ""
         let wrappingWidth = min(100, int(0.8 * float(terminalWidth() - 2 - 6)))
-        echo "  " & "\e[4;97m" & "Hint" & resetColor() & ": " & wrapped(strip(dedent(e.hint)).splitLines().join(" "), wrappingWidth, delim="\n        ")
+        let hinter = "  " & "\e[4;97m" & "Hint" & resetColor() & ": "
+        echo ""
+        if e.hint.contains("\n"):
+            echo (hinter & "$$") ~~ @[e.hint.processPseudomarkdown()]
+        else:
+            echo hinter & wrapped(strip(dedent(e.hint)).splitLines().join(" "), wrappingWidth, delim="\n        ")
 
 #=======================================
 # Methods
@@ -474,12 +481,13 @@ proc Error_OutOfBounds*(indx: int, maxRange: int) =
         """ ~~ @[$indx, $maxRange]
 
 proc Error_KeyNotFound*(sym: string, alter: seq[string]) =
-    let sep = "\n" & repeat("~%",Alternative.len - 2) & "or... "
+    let sep = "\n" & "\b\b\b\b\b\bor... "
+    let hint = "Perhaps you meant... $$" ~~ @[alter.map((x) => "_" & x & "_ ?").join(sep)]
     panic:
-        toError IndexErr, """
-            Dictionary key not found: $#
-            Perhaps you meant... $#
-        """ ~~ @[sym, alter.map((x) => "_" & x & "_ ?").join(sep)]
+        toError NameErr, """
+            Key not found: 
+                $#
+        """ ~~ @[sym], hint
 
 #------------------------
 # System Errors
@@ -537,12 +545,13 @@ proc Error_CompatibleBrowserCouldNotOpenWindow*() =
 #------------------------
 
 proc Error_SymbolNotFound*(sym: string, alter: seq[string]) =
-    let sep = "\n" & repeat("~%",Alternative.len - 2) & "or... "
+    let sep = "\n" & "\b\b\b\b\b\bor... "
+    let hint = "Perhaps you meant... $$" ~~ @[alter.map((x) => "_" & x & "_ ?").join(sep)]
     panic:
         toError NameErr, """
-            Symbol not found: $#
-            Perhaps you meant... $#
-        """ ~~ @[sym, alter.map((x) => "_" & x & "_ ?").join(sep)]
+            Identifier not found: 
+                $#
+        """ ~~ @[sym], hint
 
 proc Error_AliasNotFound*(sym: string) =
     panic: 
