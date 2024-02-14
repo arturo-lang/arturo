@@ -187,7 +187,7 @@ let
                             "Problem when converting value to given type")
     IndexErr*           = toRuntimeErrorKind(
                             "Index Error",
-                            "")
+                            "Cannot resolve requested index")
     PackageErr*         = toRuntimeErrorKind(
                             "Package Error",
                             "")

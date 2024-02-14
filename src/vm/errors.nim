@@ -35,7 +35,6 @@ type
 #=======================================
 
 const
-    Alternative         = "perhaps you meant"
     MaxIntSupported     = $(sizeof(int) * 8)
     ReplContext         = " <repl> "
 
@@ -476,18 +475,22 @@ proc Error_DivisionByZero*() =
 proc Error_OutOfBounds*(indx: int, maxRange: int) =
     panic:
         toError IndexErr, """
-            Array index out of bounds: $#
+            Array index out of bounds: 
+                $$
             Valid range: 0..$#
         """ ~~ @[$indx, $maxRange]
 
-proc Error_KeyNotFound*(sym: string, alter: seq[string]) =
+proc Error_KeyNotFound*(sym: string, collection: string, alter: seq[string]) =
     let sep = "\n" & "\b\b\b\b\b\bor... "
     let hint = "Perhaps you meant... $$" ~~ @[alter.map((x) => "_" & x & "_ ?").join(sep)]
     panic:
-        toError NameErr, """
+        toError IndexErr, """
             Key not found: 
                 $#
-        """ ~~ @[sym], hint
+
+            In value:
+                $$
+        """ ~~ @[sym, collection], hint
 
 #------------------------
 # System Errors

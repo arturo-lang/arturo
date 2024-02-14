@@ -762,25 +762,25 @@ proc defineLibrary*() =
                 of Dictionary:
                     case yKind:
                         of String, Word, Literal, Label:
-                            push(GetKey(x.d, y.s))
+                            push(GetDictionaryKey(x, y.s))
                         else:
-                            push(GetKey(x.d, $(y)))
+                            push(GetDictionaryKey(x, $(y)))
                 of Object:
                     case yKind:
                         of String, Word, Literal, Label:
-                            if (let got = GetKey(x.o, y.s, withError=false); not got.isNil):
+                            if (let got = GetObjectKey(x, y.s, withError=false); not got.isNil):
                                 push(got)
                             elif x.magic.fetch(GetM):
                                 mgk(@[x, y]) # value already pushed
                             else:
-                                discard GetKey(x.o, y.s) # Merely to trigger the error
+                                discard GetObjectKey(x, y.s) # Merely to trigger the error
                         else:
-                            if (let got = GetKey(x.o, $(y), withError=false); not got.isNil):
+                            if (let got = GetObjectKey(x, $(y), withError=false); not got.isNil):
                                 push(got)
                             elif x.magic.fetch(GetM):
                                 mgk(@[x, y]) # value already pushed
                             else:
-                                discard GetKey(x.o, $(y)) # Merely to trigger the error
+                                discard GetObjectKey(x, $(y)) # Merely to trigger the error
                 of Store:
                     when not defined(WEB):
                         case yKind:
@@ -810,7 +810,7 @@ proc defineLibrary*() =
                             push(newFloating(x.z.im))
                         else:
                             const keys: seq[string] = @["real", "re", "image", "img", "im"]
-                            err.Error_KeyNotFound(y.s, keys)
+                            err.Error_KeyNotFound(y.s, Dumper(x), keys)
                     of Integer:
                         case y.i
                         of 0:
