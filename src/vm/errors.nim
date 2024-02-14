@@ -459,7 +459,7 @@ proc Error_IntegerOperationOverflow*(operation: string, argA, argB: string) =
             Attempted operation: 
                 _$#_
             
-            With: 
+            Between: 
                 $$
 
             And:
@@ -479,11 +479,11 @@ proc Error_IntegerSingleOperationOverflow*(operation: string, arg: string) =
                 $$
         """ ~~ @[operation, arg], hint
 
-proc Error_NumberOutOfPermittedRange*(operation: string, arg: string) =
+proc Error_NumberOutOfSupportedRange*(operation: string, arg: string) =
     let hint = "Up to $#-bit integers supported" ~~ @[MaxIntSupported]
     panic: 
         toError ArithmeticErr, """
-            Number operator out of range
+            Number operator out of valid range
 
             Attempted operation: 
                 _$#_
