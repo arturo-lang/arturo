@@ -752,13 +752,26 @@ proc defineLibrary*() =
                 of Binary:
                     push(newInteger(int(x.n[y.i])))
                 of Bytecode:
-                    if y.s == "data":
-                        push(newBlock(x.trans.constants))
-                    elif y.s == "code":
-                        push(newBlock(x.trans.instructions.map((w) =>
+                    case yKind
+                        of String, Word, Literal, Label:
+                            if ("data" == y.s):
+                                push(newBlock(x.trans.constants))
+                            elif ("code" == y.s):
+                                push(newBlock(x.trans.instructions.map((w) =>
                                 newInteger(int(w)))))
-                    else:
-                        push(VNULL)
+                            else:
+                                Error_InvalidKey(y.s, Dumper(x), "You may use `data` to get the data of a Bytecode value, and `code` to get the code block; every other value is not accepted.")
+                        of Integer:
+                            case y.i
+                            of 0:
+                                push(newBlock(x.trans.constants))
+                            of 1:
+                                push(newBlock(x.trans.instructions.map((w) =>
+                                newInteger(int(w)))))
+                            else:
+                                Error_InvalidIndex(y.i, Dumper(x), "You may use `0` to get the data of a Bytecode value, and `1` to get the code block; every other value is not accepted.")
+                        else:
+                            discard
                 of Dictionary:
                     case yKind:
                         of String, Word, Literal, Label:
@@ -805,23 +818,23 @@ proc defineLibrary*() =
                     push(GetKey(x.e, y.s))
                 of Complex:
                     case yKind
-                    of String, Word, Literal, Label:
-                        if ("real" == y.s or "re" == y.s):
-                            push(newFloating(x.z.re))
-                        elif ("imaginary" == y.s or "im" == y.s):
-                            push(newFloating(x.z.im))
+                        of String, Word, Literal, Label:
+                            if ("real" == y.s or "re" == y.s):
+                                push(newFloating(x.z.re))
+                            elif ("imaginary" == y.s or "im" == y.s):
+                                push(newFloating(x.z.im))
+                            else:
+                                Error_InvalidKey(y.s, Dumper(x), "You may use `real` or `re` to get the real part of a Complex value, and `imaginary` or `im` to get the imaginary part; every other value is not accepted.")
+                        of Integer:
+                            case y.i
+                            of 0:
+                                push(newFloating(x.z.re))
+                            of 1:
+                                push(newFloating(x.z.im))
+                            else:
+                                Error_InvalidIndex(y.i, Dumper(x), "You may use `0` to get the real part of a Complex value, or `1` to get the imaginary part; every other value is not accepted.")
                         else:
-                            Error_InvalidKey(y.s, Dumper(x), "You may use `real` or `re` to get the real part of a Complex value, and `imaginary` or `im` to get the imaginary part; every other value is not accepted.")
-                    of Integer:
-                        case y.i
-                        of 0:
-                            push(newFloating(x.z.re))
-                        of 1:
-                            push(newFloating(x.z.im))
-                        else:
-                            Error_InvalidIndex(y.i, Dumper(x), "You may use `0` to get the real part of a Complex value, or `1` to get the imaginary part; every other value is not accepted.")
-                    else:
-                        discard
+                            discard
                 of Error:
                     if yKind in {String, Word, Literal, Label}:
                         case y.s
