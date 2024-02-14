@@ -828,8 +828,12 @@ proc defineLibrary*() =
                         let rLen = y.rng.len
                         var res: seq[Rune] = newSeq[Rune](rLen)
                         var i = 0
+                        let xStrLen = x.s.runeLen()
                         for item in items(y.rng):
-                            res[i] = x.s.runeAtPos(item.i)
+                            if likely(item.i >= 0 and item.i < xStrLen):
+                                res[i] = x.s.runeAtPos(item.i)
+                            else:
+                                Error_OutOfBounds(item.i, Dumper(x), xStrLen-1, "String")
                             i += 1
                         push(newString($(res)))
                     else:
