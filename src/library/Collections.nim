@@ -815,7 +815,11 @@ proc defineLibrary*() =
                 of Date:
                     # TODO(Collections/get) Key errors for Date values not showing right
                     #  labels: library, error handling
-                    push(GetKey(x.e, y.s))
+                    let got = x.e.getOrDefault(y.s, nil)
+                    if got.isNil:
+                        let allowedKeys = (toSeq(x.e.keys())).map((dk) => "`" & dk & "`")
+                        Error_InvalidKey(y.s, x, "To extract a specific component of a Date value, you may use any of the following: " & allowedKeys)
+
                 of Complex:
                     case yKind
                         of String, Word, Literal, Label:
