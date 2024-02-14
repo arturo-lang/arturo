@@ -21,6 +21,7 @@ elif defined(GMP):
     import helpers/bignums as BignumsHelper
 
 when (not defined(GMP)) and (not defined(WEB)):
+    import vm/globals
     import vm/errors
     
 import vm/values/value
@@ -418,6 +419,6 @@ proc factorial*(x: int): Value =
             for item in items:
                 res = res * item
         elif not defined(GMP):
-            Error_NumberOutOfPermittedRange("factorial",$x, "")
+            Error_NumberOutOfPermittedRange("factorial", Dumper(newInteger(x)))
         else:
             return newInteger(BignumsHelper.fac(x))

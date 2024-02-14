@@ -441,27 +441,56 @@ proc Error_AssertionFailed*(context: string, message: string) =
 
 proc Error_IntegerParsingOverflow*(lineno: int, number: string) =
     CurrentLine = lineno
+    let hint = "Up to $#-bit integers supported" ~~ @[MaxIntSupported]
     panic: 
         toError ArithmeticErr, """
-            Number parsing overflow - up to $#-bit integers supported
-            Given: $#
-        """ ~~ @[MaxIntSupported, truncate(number, 20)]
+            Couldn't parse Integer value
+
+            From value: 
+                $$
+        """ ~~ @[number], hint
 
 proc Error_IntegerOperationOverflow*(operation: string, argA, argB: string) =
+    let hint = "Up to $#-bit integers supported" ~~ @[MaxIntSupported]
     panic: 
         toError ArithmeticErr, """
-            Number operation overflow - up to $#-bit integers supported
-            Attempted: $#
-            with: $#
-        """ ~~ @[MaxIntSupported, operation, truncate(argA & " " & argB, 30)]
+            Number operation overflow
+            
+            Attempted operation: 
+                _$#_
+            
+            With: 
+                $$
 
-proc Error_NumberOutOfPermittedRange*(operation: string, argA, argB: string) =
+            And:
+                $$
+        """ ~~ @[operation, argA, argB], hint
+
+proc Error_IntegerSingleOperationOverflow*(operation: string, arg: string) =
+    let hint = "Up to $#-bit integers supported" ~~ @[MaxIntSupported]
     panic: 
         toError ArithmeticErr, """
-            Number operator out of range - up to $#-bit integers supported
-            Attempted: $#
-            With: $#
-        """ ~~ @[MaxIntSupported, operation, truncate(argA & " " & argB, 30)]
+            Number operation overflow
+            
+            Attempted operation: 
+                _$#_
+            
+            With: 
+                $$
+        """ ~~ @[operation, arg], hint
+
+proc Error_NumberOutOfPermittedRange*(operation: string, arg: string) =
+    let hint = "Up to $#-bit integers supported" ~~ @[MaxIntSupported]
+    panic: 
+        toError ArithmeticErr, """
+            Number operator out of range
+
+            Attempted operation: 
+                _$#_
+            
+            With: 
+                $$
+        """ ~~ @[operation, arg], hint
 
 proc Error_DivisionByZero*() =
     panic:

@@ -22,7 +22,7 @@ when defined(GMP):
 
 import helpers/intrinsics
 
-import vm/[errors, stack]
+import vm/[globals, errors, stack]
 
 import vm/values/types
 import vm/values/value
@@ -178,7 +178,7 @@ template normalIntegerAdd*(x, y: int): untyped =
         when BignumSupport:
             newInteger(toNewBig(x) + toBig(y))
         else:
-            Error_IntegerOperationOverflow("add", $x, $y)
+            Error_IntegerOperationOverflow("add", Dumper(newInteger(x)), Dumper(newInteger(y)))
             VNULL
     else:
         newInteger(res)
@@ -190,7 +190,7 @@ template normalIntegerAddI*(x: var Value, y: int): untyped =
         when BignumSupport:
             x = newInteger(toNewBig(x.i) + toBig(y))
         else:
-            Error_IntegerOperationOverflow("add", $x.i, $y)
+            Error_IntegerOperationOverflow("add", Dumper(x), Dumper(newInteger(y)))
 
 template normalIntegerInc*(x: int): untyped =
     ## increment a normal Integer value by 1, checking for overflow
@@ -200,7 +200,7 @@ template normalIntegerInc*(x: int): untyped =
         when BignumSupport:
             newInteger(toNewBig(x) + toBig(1))
         else:
-            Error_IntegerOperationOverflow("inc", $x, "")
+            Error_IntegerSingleOperationOverflow("inc", Dumper(newInteger(x)))
             VNULL
     else:
         newInteger(res)
@@ -212,7 +212,7 @@ template normalIntegerIncI*(x: var Value): untyped =
         when BignumSupport:
             x = newInteger(toNewBig(x.i) + toBig(1))
         else:
-            Error_IntegerOperationOverflow("inc", $x.i, "")
+            Error_IntegerSingleOperationOverflow("inc", Dumper(x))
 
 template normalIntegerSub*(x, y: int): untyped =
     ## subtract two normal Integer values, checking for overflow
@@ -222,7 +222,7 @@ template normalIntegerSub*(x, y: int): untyped =
         when BignumSupport:
             newInteger(toNewBig(x) - toBig(y))
         else:
-            Error_IntegerOperationOverflow("sub", $x, $y)
+            Error_IntegerOperationOverflow("sub", Dumper(newInteger(x)), Dumper(newInteger(y)))
             VNULL
     else:
         newInteger(res)
@@ -234,7 +234,7 @@ template normalIntegerSubI*(x: var Value, y: int): untyped =
         when BignumSupport:
             x = newInteger(toNewBig(x.i) - toBig(y))
         else:
-            Error_IntegerOperationOverflow("sub", $x.i, $y)
+            Error_IntegerOperationOverflow("sub", Dumper(x), Dumper(newInteger(y)))
 
 template normalIntegerDec*(x: int): untyped =
     ## decrement a normal Integer value by 1, checking for overflow
@@ -244,7 +244,7 @@ template normalIntegerDec*(x: int): untyped =
         when BignumSupport:
             newInteger(toNewBig(x) - toBig(1))
         else:
-            Error_IntegerOperationOverflow("dec", $x, "")
+            Error_IntegerSingleOperationOverflow("dec", Dumper(newInteger(x)))
             VNULL
     else:
         newInteger(res)
@@ -256,7 +256,7 @@ template normalIntegerDecI*(x: var Value): untyped =
         when BignumSupport:
             x = newInteger(toNewBig(x.i) - toBig(1))
         else:
-            Error_IntegerOperationOverflow("dec", $x.i, "")
+            Error_IntegerSingleOperationOverflow("dec", Dumper(x))
 
 template normalIntegerMul*(x, y: int): untyped =
     ## multiply two normal Integer values, checking for overflow
@@ -266,7 +266,7 @@ template normalIntegerMul*(x, y: int): untyped =
         when BignumSupport:
             newInteger(toNewBig(x) * toBig(y))
         else:
-            Error_IntegerOperationOverflow("mul", $x, $y)
+            Error_IntegerOperationOverflow("mul", Dumper(newInteger(x)), Dumper(newInteger(y)))
             VNULL
     else:
         newInteger(res)
@@ -278,7 +278,7 @@ template normalIntegerMulI*(x: var Value, y: int): untyped =
         when BignumSupport:
             x = newInteger(toNewBig(x.i) * toBig(y))
         else:
-            Error_IntegerOperationOverflow("mul", $x.i, $y)
+            Error_IntegerOperationOverflow("mul", Dumper(x), Dumper(newInteger(y)))
 
 template normalIntegerNeg*(x: int): untyped =
     ## negate a normal Integer value, checking for overflow
@@ -288,7 +288,7 @@ template normalIntegerNeg*(x: int): untyped =
         when BignumSupport:
             newInteger(toNewBig(x) * toBig(-1))
         else:
-            Error_IntegerOperationOverflow("neg", $x, "")
+            Error_IntegerSingleOperationOverflow("neg", Dumper(newInteger(x)))
             VNULL
     else:
         newInteger(res)
@@ -300,7 +300,7 @@ template normalIntegerNegI*(x: var Value): untyped =
         when BignumSupport:
             x = newInteger(toNewBig(x.i) + toBig(-1))
         else:
-            Error_IntegerOperationOverflow("neg", $x.i, "")
+            Error_IntegerSingleOperationOverflow("neg", Dumper(x))
 
 template normalIntegerDiv*(x, y: int): untyped =
     ## divide (integer division) two normal Integer values, checking for DivisionByZero
@@ -355,7 +355,7 @@ template normalIntegerPow*(x, y: int): untyped =
             elif defined(WEB):
                 newInteger(big(x) ** big(y))
             else:
-                Error_IntegerOperationOverflow("pow", $x, $y)
+                Error_IntegerOperationOverflow("pow", Dumper(newInteger(x)), Dumper(newInteger(y)))
                 VNULL
         else:
             newInteger(res)
@@ -372,7 +372,7 @@ template normalIntegerPowI*(x: var Value, y: int): untyped =
             elif defined(WEB):
                 x = newInteger(big(x.i) ** big(y))  
             else:
-                Error_IntegerOperationOverflow("pow", $x.i, $y)
+                Error_IntegerOperationOverflow("pow", Dumper(x), Dumper(newInteger(y)))
     else:
         x = newFloating(pow(float(x.i), float(y)))
 
