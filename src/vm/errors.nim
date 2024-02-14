@@ -473,10 +473,10 @@ proc Error_DivisionByZero*() =
 #------------------------
 
 proc Error_OutOfBounds*(indx: int, maxRange: int) =
-    let hint = """The block in question has $# items, so a valid index would be within 0..$#""" ~~ @[$(maxRange+1), $(maxRange)]
+    let hint = """Given Block contains $# items, so a valid index should fall within 0..$#""" ~~ @[$(maxRange+1), $(maxRange)]
     panic:
         toError IndexErr, """
-            Array index out of bounds: 
+            Index out of bounds: 
                 $$
         """ ~~ @[$indx], hint
 
