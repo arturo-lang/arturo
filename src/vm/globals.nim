@@ -113,19 +113,19 @@ template GetObjectKey*(obj: Value, key: string, withError: static bool = true): 
             Error_KeyNotFound(key, Dumper(obj), suggestAlternative(key, reference=obj.o))
     toRet
 
-template GetArrayIndex*(arr: ValueArray, indx: int): untyped =
+template GetArrayIndex*(arr: Value, indx: int): untyped =
     ## Get element by index in given ValueArray
     ## with bounds checking
-    if unlikely(indx < 0 or indx > (arr.len)-1):
-        Error_OutOfBounds(indx, arr.len-1)
-    arr[indx]
+    if unlikely(indx < 0 or indx > (arr.a.len)-1):
+        Error_BlockOutOfBounds(indx, Dumper(arr), arr.a.len-1)
+    arr.a[indx]
 
-template SetArrayIndex*(arr: ValueArray, indx: int, v: Value): untyped =
+template SetArrayIndex*(arr: Value, indx: int, v: Value): untyped =
     ## Set element at index in given ValueArray
     ## with bounds checking
-    if unlikely(indx < 0 or indx > (arr.len)-1):
-        Error_OutOfBounds(indx, arr.len-1)
-    arr[indx] = v
+    if unlikely(indx < 0 or indx > (arr.a.len)-1):
+        Error_BlockOutOfBounds(indx, Dumper(arr), arr.a.len-1)
+    arr.a[indx] = v
 
 #---------------------
 # Symbol table
@@ -190,7 +190,7 @@ proc FetchPathSym*(pl: ValueArray, inplace: static bool = false): Value =
         
         case result.kind:
             of Block:
-                result = GetArrayIndex(result.a, p.i)
+                result = GetArrayIndex(result, p.i)
             of Dictionary:
                 result = GetDictionaryKey(result, p.s)
             of Object:
@@ -217,7 +217,7 @@ proc SetPathSym*(pl: ValueArray, val: Value) =
         case current.kind:
             of Block:
                 if pidx != pl.len - 1:
-                    current = GetArrayIndex(current.a, p.i)
+                    current = GetArrayIndex(current, p.i)
                 else:
                     current.a[p.i] = val
             of Dictionary:
