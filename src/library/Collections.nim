@@ -730,7 +730,7 @@ proc defineLibrary*() =
                 of Block:
                     if likely(yKind==Integer):
                         push(GetArrayIndex(x, y.i))
-                    else:
+                    elif yKind==Range:
                         let rLen = y.rng.len
                         var res: ValueArray = newSeq[Value](rLen)
                         var i = 0
@@ -738,10 +738,12 @@ proc defineLibrary*() =
                             res[i] = GetArrayIndex(x, item.i)
                             i += 1
                         push(newBlock(res))
+                    else:
+                        Error_UnsupportedKeyType(Dumper(y), Dumper(x), @[stringify(Integer), stringify(Range)])
                 of Range:
                     if likely(yKind==Integer):
                         push(x.rng[y.i])
-                    else:
+                    elif yKind==Range:
                         let rLen = y.rng.len
                         var res: ValueArray = newSeq[Value](rLen)
                         var i = 0
@@ -749,11 +751,16 @@ proc defineLibrary*() =
                             res[i] = x.rng[item.i]
                             i += 1
                         push(newBlock(res))
+                    else:
+                        Error_UnsupportedKeyType(Dumper(y), Dumper(x), @[stringify(Integer), stringify(Range)])
                 of Binary:
-                    push(newInteger(int(x.n[y.i])))
+                    if likely(yKind==Integer):
+                        push(newInteger(int(x.n[y.i])))
+                    else:
+                        Error_UnsupportedKeyType(Dumper(y), Dumper(x), @[stringify(Integer)])
                 of Bytecode:
                     case yKind
-                        of String, Word, Literal, Label:
+                        of String, Word, Literal:
                             if ("data" == y.s):
                                 push(newBlock(x.trans.constants))
                             elif ("code" == y.s):
@@ -771,16 +778,16 @@ proc defineLibrary*() =
                             else:
                                 Error_InvalidIndex(y.i, Dumper(x), "You may use `0` to get the data of a Bytecode value, and `1` to get the code block; every other value is not accepted.")
                         else:
-                            discard
+                            Error_UnsupportedKeyType(Dumper(y), Dumper(x), @[stringify(String), stringify(Word), stringify(Literal), stringstringify(Integer)])
                 of Dictionary:
                     case yKind:
-                        of String, Word, Literal, Label:
+                        of String, Word, Literal:
                             push(GetDictionaryKey(x, y.s))
                         else:
                             push(GetDictionaryKey(x, $(y)))
                 of Object:
                     case yKind:
-                        of String, Word, Literal, Label:
+                        of String, Word, Literal:
                             if (let got = GetObjectKey(x, y.s, withError=false); not got.isNil):
                                 push(got)
                             elif x.magic.fetch(GetM):
@@ -797,7 +804,7 @@ proc defineLibrary*() =
                 of Store:
                     when not defined(WEB):
                         case yKind:
-                            of String, Word, Literal, Label:
+                            of String, Word, Literal:
                                 push(getStoreKey(x.sto, y.s))
                             else:
                                 push(getStoreKey(x.sto, $(y)))
@@ -815,16 +822,19 @@ proc defineLibrary*() =
                     else:
                         Error_UnsupportedKeyType(Dumper(y), Dumper(x), @[stringify(Integer), stringify(Range)])
                 of Date:
-                    let got = x.e.getOrDefault(y.s, nil)
-                    if got.isNil:
-                        let allowedKeys = ((toSeq(x.e.keys())).map((dk) => "`" & dk & "`")).join(", ")
-                        Error_InvalidKey(y.s, Dumper(x), "To extract a specific component of a Date value, you may use any of the following: " & allowedKeys)
-                    
-                    push(got)
+                    if likely(yKind in {String, Word, Literal}):
+                        let got = x.e.getOrDefault(y.s, nil)
+                        if got.isNil:
+                            let allowedKeys = ((toSeq(x.e.keys())).map((dk) => "`" & dk & "`")).join(", ")
+                            Error_InvalidKey(y.s, Dumper(x), "To extract a specific component of a Date value, you may use any of the following: " & allowedKeys)
+                        
+                        push(got)
+                    else:
+                        Error_UnsupportedKeyType(Dumper(y), Dumper(x), @[stringify(String), stringify(Word), stringify(Literal)])
 
                 of Complex:
                     case yKind
-                        of String, Word, Literal, Label:
+                        of String, Word, Literal:
                             if ("real" == y.s or "re" == y.s):
                                 push(newFloating(x.z.re))
                             elif ("imaginary" == y.s or "im" == y.s):
@@ -840,21 +850,28 @@ proc defineLibrary*() =
                             else:
                                 Error_InvalidIndex(y.i, Dumper(x), "You may use `0` to get the real part of a Complex value, or `1` to get the imaginary part; every other value is not accepted.")
                         else:
-                            discard
+                            Error_UnsupportedKeyType(Dumper(y), Dumper(x), @[stringify(String), stringify(Word), stringify(Literal), stringify(Integer)])
                 of Error:
-                    if yKind in {String, Word, Literal, Label}:
+                    if yKind in {String, Word, Literal}:
                         case y.s
                         of "message":
                             push(newString(x.err.msg))
                         of "kind":
                             push(newErrorKind(x.err.kind))
                         else:
-                            discard
+                            Error_InvalidKey(y.s, Dumper(x), "You may use `message` to get the message of an Error value, and `kind` to get its ErrorKind; every other value is not accepted.")
                     else:
-                        discard
+                        Error_UnsupportedKeyType(Dumper(y), Dumper(x), @[stringify(String), stringify(Word), stringify(Literal)])
                 of ErrorKind:
-                    if yKind in {String, Word, Literal, Label} and y.s == "label":
-                        push(newString(x.errkind.label))
+                    if yKind in {String, Word, Literal}:
+                        if y.s == "label":
+                            push(newString(x.errkind.label))
+                        elif y.s == "description":
+                            push(newString(x.errkind.description))
+                        else:
+                            Error_InvalidKey(y.s, Dumper(x), "You may use `label` to get the main label of an ErrorKind value, and `description` to get its description; every other value is not accepted.")
+                    else:
+                        Error_UnsupportedKeyType(Dumper(y), Dumper(x), @[stringify(String), stringify(Word), stringify(Literal)])
                 else: 
                     discard
 
