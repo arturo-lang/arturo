@@ -729,13 +729,13 @@ proc defineLibrary*() =
             case xKind:
                 of Block:
                     if likely(yKind==Integer):
-                        push(GetArrayIndex(x.a, y.i))
+                        push(GetArrayIndex(x, y.i))
                     else:
                         let rLen = y.rng.len
                         var res: ValueArray = newSeq[Value](rLen)
                         var i = 0
                         for item in items(y.rng):
-                            res[i] = GetArrayIndex(x.a, item.i)
+                            res[i] = GetArrayIndex(x, item.i)
                             i += 1
                         push(newBlock(res))
                 of Range:
@@ -820,7 +820,7 @@ proc defineLibrary*() =
                         of 1:
                             push(newFloating(x.z.im))
                         else:
-                            err.Error_OutOfBounds(y.i, 1)
+                            Error_InvalidIndex(y.i, Dumper(x), "You may use `0` to get the real part of the Complex value, or `1` to get the imaginary part; every other value is not accepted.")
                     else:
                         discard
                 of Error:
@@ -1725,7 +1725,7 @@ proc defineLibrary*() =
             #=======================================================
             case xKind:
                 of Block:
-                    SetArrayIndex(x.a, y.i, z)
+                    SetArrayIndex(x, y.i, z)
                 of Binary:
                     let bn = numberToBinary(z.i)
                     if bn.len == 1:

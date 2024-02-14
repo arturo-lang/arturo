@@ -472,13 +472,26 @@ proc Error_DivisionByZero*() =
 # Index Errors
 #------------------------
 
-proc Error_OutOfBounds*(indx: int, maxRange: int) =
+proc Error_InvalidIndex*(indx: int, value: string, hint: string = "") =
+    panic:
+        toError IndexErr, """
+            Invalid index: 
+                $$
+
+            For value:
+                $$
+        """ ~~ @[$indx, value], hint
+
+proc Error_BlockOutOfBounds*(indx: int, value: string, maxRange: int) =
     let hint = """Given Block contains $# items, so a valid index should fall within 0..$#""" ~~ @[$(maxRange+1), $(maxRange)]
     panic:
         toError IndexErr, """
             Index out of bounds: 
                 $$
-        """ ~~ @[$indx], hint
+
+            For value:
+                $$
+        """ ~~ @[$indx, value], hint
 
 proc Error_KeyNotFound*(sym: string, collection: string, alter: seq[string]) =
     let sep = "\n" & "\b\b\b\b\b\bor... "
