@@ -742,20 +742,30 @@ proc defineLibrary*() =
                         Error_UnsupportedKeyType(Dumper(y), Dumper(x), @[stringify(Integer), stringify(Range)])
                 of Range:
                     if likely(yKind==Integer):
-                        push(x.rng[y.i])
+                        if likely(y.i >= 0 and y.i < x.rng.len()):
+                            push(x.rng[y.i])
+                        else:
+                            Error_OutOfBounds(y.i, Dumper(x), x.rng.len()-1, "Range")
                     elif yKind==Range:
                         let rLen = y.rng.len
                         var res: ValueArray = newSeq[Value](rLen)
                         var i = 0
+                        let xRngLen = x.rng.len()
                         for item in items(y.rng):
-                            res[i] = x.rng[item.i]
+                            if likely(item.i >= 0 and item.i < xRngLen):
+                                res[i] = x.rng[item.i]
+                            else:
+                                Error_OutOfBounds(item.i, Dumper(x), xRngLen-1, "Range")
                             i += 1
                         push(newBlock(res))
                     else:
                         Error_UnsupportedKeyType(Dumper(y), Dumper(x), @[stringify(Integer), stringify(Range)])
                 of Binary:
                     if likely(yKind==Integer):
-                        push(newInteger(int(x.n[y.i])))
+                        if likely(y.i >= 0 and y.i < x.n.len):
+                            push(newInteger(int(x.n[y.i])))
+                        else:
+                            Error_OutOfBounds(y.i, Dumper(x), x.n.len-1, "Binary")
                     else:
                         Error_UnsupportedKeyType(Dumper(y), Dumper(x), @[stringify(Integer)])
                 of Bytecode:
@@ -810,7 +820,7 @@ proc defineLibrary*() =
                                 push(getStoreKey(x.sto, $(y)))
                 of String:
                     if likely(yKind==Integer):
-                        if likely(y.i >= 0 and y.i <= x.s.runeLen()):
+                        if likely(y.i >= 0 and y.i < x.s.runeLen()):
                             push(newChar(x.s.runeAtPos(y.i)))
                         else:
                             Error_OutOfBounds(y.i, Dumper(x), x.s.runeLen()-1, "String")
