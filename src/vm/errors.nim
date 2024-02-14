@@ -488,7 +488,7 @@ proc Error_KeyNotFound*(sym: string, collection: string, alter: seq[string]) =
             Key not found: 
                 $#
 
-            In value:
+            For value:
                 $$
         """ ~~ @[sym, collection], hint
 
