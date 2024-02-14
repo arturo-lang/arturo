@@ -419,6 +419,6 @@ proc factorial*(x: int): Value =
             for item in items:
                 res = res * item
         elif not defined(GMP):
-            Error_NumberOutOfPermittedRange("factorial", Dumper(newInteger(x)))
+            Error_NumberOutOfSupportedRange("factorial", Dumper(newInteger(x)))
         else:
             return newInteger(BignumsHelper.fac(x))
