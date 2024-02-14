@@ -778,7 +778,7 @@ proc defineLibrary*() =
                             else:
                                 Error_InvalidIndex(y.i, Dumper(x), "You may use `0` to get the data of a Bytecode value, and `1` to get the code block; every other value is not accepted.")
                         else:
-                            Error_UnsupportedKeyType(Dumper(y), Dumper(x), @[stringify(String), stringify(Word), stringify(Literal), stringstringify(Integer)])
+                            Error_UnsupportedKeyType(Dumper(y), Dumper(x), @[stringify(String), stringify(Word), stringify(Literal), stringify(Integer)])
                 of Dictionary:
                     case yKind:
                         of String, Word, Literal:
