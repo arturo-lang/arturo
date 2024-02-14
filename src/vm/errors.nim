@@ -515,6 +515,19 @@ proc Error_KeyNotFound*(sym: string, collection: string, alter: seq[string]) =
                 $$
         """ ~~ @[sym, collection], hint
 
+proc Error_UnsupportedKeyType*(keyType: string, value: string, expectedTypes: seq[string]) =
+    let expected = expectedTypes.join(", ")
+    panic:
+        toError IndexErr, """
+            Unsupported key: 
+                $$
+
+            For value:
+                $$
+
+            Expected types:
+                $$
+        """ ~~ @[keyType, value, expected]
 #------------------------
 # System Errors
 #------------------------
