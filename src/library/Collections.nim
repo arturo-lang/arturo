@@ -804,7 +804,7 @@ proc defineLibrary*() =
                 of String:
                     if likely(yKind==Integer):
                         push(newChar(x.s.runeAtPos(y.i)))
-                    else:
+                    elif yKind==Range:
                         let rLen = y.rng.len
                         var res: seq[Rune] = newSeq[Rune](rLen)
                         var i = 0
@@ -812,6 +812,8 @@ proc defineLibrary*() =
                             res[i] = x.s.runeAtPos(item.i)
                             i += 1
                         push(newString($(res)))
+                    else:
+                        Error_UnsupportedKeyType(Dumper(y), Dumper(x), @[stringify(Integer), stringify(Range)])
                 of Date:
                     let got = x.e.getOrDefault(y.s, nil)
                     if got.isNil:
