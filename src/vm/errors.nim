@@ -473,12 +473,12 @@ proc Error_DivisionByZero*() =
 #------------------------
 
 proc Error_OutOfBounds*(indx: int, maxRange: int) =
+    let hint = """The block in question has $# items, so a valid index would be within 0..$#""" ~~ @[$(maxRange+1), $(maxRange)]
     panic:
         toError IndexErr, """
             Array index out of bounds: 
                 $$
-            Valid range: 0..$#
-        """ ~~ @[$indx, $maxRange]
+        """ ~~ @[$indx], hint
 
 proc Error_KeyNotFound*(sym: string, collection: string, alter: seq[string]) =
     let sep = "\n" & "\b\b\b\b\b\bor... "
