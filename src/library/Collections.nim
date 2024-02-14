@@ -1770,7 +1770,10 @@ proc defineLibrary*() =
             #=======================================================
             case xKind:
                 of Block:
-                    SetArrayIndex(x, y.i, z)
+                    if likely(yKind == Integer):
+                        SetArrayIndex(x, y.i, z)
+                    else:
+                        Error_UnsupportedKeyType(Dumper(y), Dumper(x), @[stringify(Integer)])
                 of Binary:
                     let bn = numberToBinary(z.i)
                     if bn.len == 1:
