@@ -492,8 +492,12 @@ proc Error_InvalidKey*(key: string, value: string, hint: string = "") =
                 $$
         """ ~~ @[key, value], hint
 
-proc Error_BlockOutOfBounds*(indx: int, value: string, maxRange: int) =
-    let hint = """Given Block contains $# items, so a valid index should fall within 0..$#""" ~~ @[$(maxRange+1), $(maxRange)]
+proc Error_OutOfBounds*(indx: int, value: string, maxRange: int, what: string = "Block") =
+    var items = 
+        if what=="Block": "items" 
+        else: "characters"
+
+    let hint = """Given $# contains $# $#; so, a valid index should fall within 0..$#""" ~~ @[what, $(maxRange+1), items, $(maxRange)]
     panic:
         toError IndexErr, """
             Index out of bounds: 
