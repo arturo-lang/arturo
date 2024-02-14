@@ -800,6 +800,8 @@ proc defineLibrary*() =
                             i += 1
                         push(newString($(res)))
                 of Date:
+                    # TODO(Collections/get) Key errors for Date values not showing right
+                    #  labels: library, error handling
                     push(GetKey(x.e, y.s))
                 of Complex:
                     case yKind
