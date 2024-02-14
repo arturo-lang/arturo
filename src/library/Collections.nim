@@ -815,8 +815,10 @@ proc defineLibrary*() =
                 of Date:
                     let got = x.e.getOrDefault(y.s, nil)
                     if got.isNil:
-                        let allowedKeys = (toSeq(x.e.keys())).map((dk) => "`" & dk & "`")
-                        Error_InvalidKey(y.s, x, "To extract a specific component of a Date value, you may use any of the following: " & allowedKeys)
+                        let allowedKeys = ((toSeq(x.e.keys())).map((dk) => "`" & dk & "`")).join(", ")
+                        Error_InvalidKey(y.s, Dumper(x), "To extract a specific component of a Date value, you may use any of the following: " & allowedKeys)
+                    
+                    push(got)
 
                 of Complex:
                     case yKind
