@@ -808,11 +808,10 @@ proc defineLibrary*() =
                     of String, Word, Literal, Label:
                         if ("real" == y.s or "re" == y.s):
                             push(newFloating(x.z.re))
-                        elif ("image" == y.s or "im" == y.s or "img" == y.s):
+                        elif ("imaginary" == y.s or "im" == y.s):
                             push(newFloating(x.z.im))
                         else:
-                            const keys: seq[string] = @["real", "re", "image", "img", "im"]
-                            err.Error_KeyNotFound(y.s, Dumper(x), keys)
+                            Error_InvalidKey(y.i, Dumper(x), "You may use `real` or `re` to get the real part of a Complex value, and `imaginary` or `im` to get the imaginary part; every other value is not accepted.")
                     of Integer:
                         case y.i
                         of 0:
@@ -820,7 +819,7 @@ proc defineLibrary*() =
                         of 1:
                             push(newFloating(x.z.im))
                         else:
-                            Error_InvalidIndex(y.i, Dumper(x), "You may use `0` to get the real part of the Complex value, or `1` to get the imaginary part; every other value is not accepted.")
+                            Error_InvalidIndex(y.i, Dumper(x), "You may use `0` to get the real part of a Complex value, or `1` to get the imaginary part; every other value is not accepted.")
                     else:
                         discard
                 of Error:
