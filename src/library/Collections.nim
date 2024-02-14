@@ -1775,25 +1775,43 @@ proc defineLibrary*() =
                     else:
                         Error_UnsupportedKeyType(Dumper(y), Dumper(x), @[stringify(Integer)])
                 of Binary:
-                    let bn = numberToBinary(z.i)
-                    if bn.len == 1:
-                        x.n[y.i] = bn[0]
-                    else:
-                        for bi, bt in bn:
-                            if not (bi+y.i < x.n.len):
-                                x.n.add(byte(0))
+                    if likely(yKind == Integer):
+                        if likely(y.i >= 0 and y.i < x.n.len):
+                            let bn = numberToBinary(z.i)
+                            if bn.len == 1:
+                                x.n[y.i] = bn[0]
+                            else:
+                                for bi, bt in bn:
+                                    if not (bi+y.i < x.n.len):
+                                        x.n.add(byte(0))
 
-                            x.n[bi + y.i] = bt
+                                    x.n[bi + y.i] = bt
+                        else:
+                            Error_OutOfBounds(y.i, Dumper(x), x.n.len-1, "Binary")
+                    else: 
+                        Error_UnsupportedKeyType(Dumper(y), Dumper(x), @[stringify(Integer)])
                 of Bytecode:
-                    if y.s == "data":
-                        x.trans.constants = y.a
-                    elif y.s == "code":
-                        x.trans.instructions = y.a.map((w) => byte(w.i))
-                    else:
-                        discard
+                    case yKind
+                        of String, Word, Literal:
+                            if ("data" == y.s):
+                                x.trans.constants = z.a
+                            elif ("code" == y.s):
+                                x.trans.instructions = z.a.map((w) => byte(w.i))
+                            else:
+                                Error_InvalidKey(y.s, Dumper(x), "You may use `data` to set the data of a Bytecode value, and `code` to set the code block; every other value is not accepted.")
+                        of Integer:
+                            case y.i
+                            of 0:
+                                x.trans.constants = z.a
+                            of 1:
+                                x.trans.instructions = z.a.map((w) => byte(w.i))
+                            else:
+                                Error_InvalidIndex(y.i, Dumper(x), "You may use `0` to set the data of a Bytecode value, and `1` to set the code block; every other value is not accepted.")
+                        else:
+                            Error_UnsupportedKeyType(Dumper(y), Dumper(x), @[stringify(String), stringify(Word), stringify(Literal), stringify(Integer)])
                 of Dictionary:
                     case yKind:
-                        of String, Word, Literal, Label:
+                        of String, Word, Literal:
                             x.d[y.s] = z
                         else:
                             x.d[$(y)] = z
@@ -1804,7 +1822,7 @@ proc defineLibrary*() =
                         mgk(@[x, y, z])
                     else:
                         case yKind:
-                            of String, Word, Literal, Label:
+                            of String, Word, Literal:
                                 x.o[y.s] = z
                             else:
                                 x.o[$(y)] = z
@@ -1813,22 +1831,28 @@ proc defineLibrary*() =
                 of Store:
                     when not defined(WEB):
                         case yKind:
-                            of String, Word, Literal, Label:
+                            of String, Word, Literal:
                                 setStoreKey(x.sto, y.s, z)
                             else:
                                 setStoreKey(x.sto, $(y), z)
                 
                 of String:
-                    var res: string
-                    var idx = 0
-                    for r in x.s.runes:
-                        if idx != y.i: res.add r
-                        else: 
-                            if zKind == String: res.add $(z.s[0])
-                            else: res.add z.c
-                        idx += 1
+                    if likely(yKind == Integer):
+                        if likely(y.i >= 0 and y.i < x.s.runeLen()):
+                            var res: string
+                            var idx = 0
+                            for r in x.s.runes:
+                                if idx != y.i: res.add r
+                                else: 
+                                    if zKind == String: res.add $(z.s[0])
+                                    else: res.add z.c
+                                idx += 1
 
-                    x.s = res
+                            x.s = res
+                        else:
+                            Error_OutOfBounds(y.i, Dumper(x), x.s.runeLen()-1, "String")
+                    else:
+                        Error_UnsupportedKeyType(Dumper(y), Dumper(x), @[stringify(Integer)])
                 else: discard
 
     builtin "shuffle",
