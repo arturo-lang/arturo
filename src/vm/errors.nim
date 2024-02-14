@@ -494,8 +494,8 @@ proc Error_InvalidKey*(key: string, value: string, hint: string = "") =
 
 proc Error_OutOfBounds*(indx: int, value: string, maxRange: int, what: string = "Block") =
     var items = 
-        if what=="Block": "items" 
-        else: "characters"
+        if what=="String": "characters" 
+        else: "items"
 
     let hint = """Given $# contains $# $#; so, a valid index should fall within 0..$#""" ~~ @[what, $(maxRange+1), items, $(maxRange)]
     panic:
