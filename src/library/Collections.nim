@@ -1727,13 +1727,6 @@ proc defineLibrary*() =
                 if x.a.len == 0: push(VNULL)
                 else: push(sample(x.a))
 
-    # TODO(Collections\set) not working with Bytecode values
-    #  example:
-    #  ```
-    #      bt: to :bytecode [print "hello"]
-    #      bt\data\0: "world" ; this has no effect
-    #  ```
-    #  labels: library, bug
     builtin "set",
         alias       = unaliased,
         op          = opSet,
