@@ -810,7 +810,10 @@ proc defineLibrary*() =
                                 push(getStoreKey(x.sto, $(y)))
                 of String:
                     if likely(yKind==Integer):
-                        push(newChar(x.s.runeAtPos(y.i)))
+                        if likely(y.i >= 0 and y.i <= x.s.runeLen()):
+                            push(newChar(x.s.runeAtPos(y.i)))
+                        else:
+                            Error_OutOfBounds(y.i, Dumper(x), x.s.runeLen()-1, "String")
                     elif yKind==Range:
                         let rLen = y.rng.len
                         var res: seq[Rune] = newSeq[Rune](rLen)

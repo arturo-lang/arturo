@@ -117,14 +117,14 @@ template GetArrayIndex*(arr: Value, indx: int): untyped =
     ## Get element by index in given ValueArray
     ## with bounds checking
     if unlikely(indx < 0 or indx > (arr.a.len)-1):
-        Error_BlockOutOfBounds(indx, Dumper(arr), arr.a.len-1)
+        Error_OutOfBounds(indx, Dumper(arr), arr.a.len-1)
     arr.a[indx]
 
 template SetArrayIndex*(arr: Value, indx: int, v: Value): untyped =
     ## Set element at index in given ValueArray
     ## with bounds checking
     if unlikely(indx < 0 or indx > (arr.a.len)-1):
-        Error_BlockOutOfBounds(indx, Dumper(arr), arr.a.len-1)
+        Error_OutOfBounds(indx, Dumper(arr), arr.a.len-1)
     arr.a[indx] = v
 
 #---------------------
