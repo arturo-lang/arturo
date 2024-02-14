@@ -143,8 +143,6 @@ proc printCodePreview(e: VError) =
             const linesBeforeAfter = 2
             let lineFrom = max(0, CurrentLine - (linesBeforeAfter+1))
             let lineTo = min(len(codeLines)-1, CurrentLine + (linesBeforeAfter-1))
-            let alignmentSize = max(($lineTo).len, 3)
-            let alignmentPadding = repeat(" ", alignmentSize)
             echo "  " & fg(grayColor) & "{VertLine} ".fmt & bold(grayColor) & "File: " & fg(grayColor) & CurrentPath
             echo "  " & fg(grayColor) & "{VertLine} ".fmt & bold(grayColor) & "Line: " & fg(grayColor) & $(CurrentLine)
             echo "  " & fg(grayColor) & "{VertLine} ".fmt & resetColor
@@ -152,11 +150,14 @@ proc printCodePreview(e: VError) =
                 var line = codeLines[lineNo]
                 var pointerArrow = "{VertLineD} ".fmt
                 var lineNum = $(lineNo+1)
+                var lineNumPre = ""
+                var lineNumPost = ""
                 if lineNo == CurrentLine-1: 
                     pointerArrow = "{VertLineD}".fmt & fg(redColor) & "{ArrowRight}".fmt & fg(grayColor)
                     line = bold(grayColor) & line & fg(grayColor)
-                    lineNum = bold(grayColor) & lineNum & fg(grayColor)
-                echo "  " & fg(grayColor) & "{VertLine} ".fmt & alignmentPadding & lineNum & " {pointerArrow} ".fmt & line & resetColor
+                    lineNumPre = bold(grayColor)
+                    lineNumPost = fg(grayColor)
+                echo "  " & fg(grayColor) & "{VertLine} ".fmt & lineNumPre & align(lineNum,4) & lineNumPost & " {pointerArrow} ".fmt & line & resetColor
 
 proc printHint(e: VError) =
     if e.hint != "":
