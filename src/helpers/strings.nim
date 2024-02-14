@@ -165,6 +165,19 @@ proc realLen*(s: string): int =
     let cleanString = s.replacef(re"\e[^m]+m","")
     return cleanString.runeLen()
 
+proc realFind*(s: string, subs: string): int =
+    let cleanString = s.replacef(re"\e[^m]+m","")
+    let subsLen = subs.len
+    let runeLen = cleanString.runeLen()
+    var i: int = 0
+
+    while i < runeLen:
+        if (i + subsLen <= runeLen) and (cleanString.runeSubStr(i, subsLen) == subs):
+            return i
+        i += 1
+
+    return -1
+
 func wrapped*(initial: string, limit=50, delim="\n"): string =
     if initial.len < limit:
         return initial
