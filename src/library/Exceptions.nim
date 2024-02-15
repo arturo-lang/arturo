@@ -170,9 +170,74 @@ proc defineSymbols*() =
     # Constants
     #----------------------------
 
-    constant "genericError",
+    constant "arithmeticError",
         alias       = unaliased,
-        description = "a generic error":
+        description = "an arithmetic error":
+            newErrorKind(ArithmeticErr)
+
+    constant "assertionError",
+        alias       = unaliased,
+        description = "an assertion error":
+            newErrorKind(AssertionErr)
+
+    constant "conversionError",
+        alias       = unaliased,
+        description = "a conversion error":
+            newErrorKind(ConversionErr)
+    
+    constant "indexError",
+        alias       = unaliased,
+        description = "an index error":
+            newErrorKind(IndexErr)
+
+    constant "libraryError",
+        alias       = unaliased,
+        description = "a library error":
+            newErrorKind(LibraryErr)
+
+    constant "nameError",
+        alias       = unaliased,
+        description = "a name error":
+            newErrorKind(NameErr)
+
+    constant "packageError",
+        alias       = unaliased,
+        description = "a package error":
+            newErrorKind(PackageErr)
+    
+    constant "runtimeError",
+        alias       = unaliased,
+        description = "a generic runtime error":
             newErrorKind(RuntimeErr)
+
+    constant "syntaxError",
+        alias       = unaliased,
+        description = "a syntax error":
+            newErrorKind(SyntaxErr)
+
+    constant "systemError",
+        alias       = unaliased,
+        description = "a system error":
+            newErrorKind(SystemErr)
+
+    constant "typeError",
+        alias       = unaliased,
+        description = "a type error":
+            newErrorKind(TypeErr)
+
+    constant "uiError",
+        alias       = unaliased,
+        description = "a UI error":
+            newErrorKind(UIErr)
+    
+    constant "valueError",
+        alias       = unaliased,
+        description = "a value error":
+            newErrorKind(ValueErr)
+
+    constant "vmError",
+        alias       = unaliased,
+        description = "a VM error":
+            newErrorKind(VMErr)
 
 Libraries.add(defineSymbols)
