@@ -386,6 +386,8 @@ proc Error_UnterminatedString*(strtype: string, lineno: int) =
     var missing: string
     if strt=="":
         missing = "closing double quote (`\"`)"
+    elif strt=="verbatim":
+        missing = "closing color-bracket (`:}`)"
     else:
         missing = "closing curly bracket (`}`)"
     CurrentLine = lineno

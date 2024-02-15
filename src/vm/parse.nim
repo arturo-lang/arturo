@@ -347,7 +347,10 @@ template parseCurlyString(p: var Parser) =
     while true:
         case p.buf[pos]:
             of EOF: 
-                Error_UnterminatedString("curly", initialLine)
+                if verbatimString:
+                    Error_UnterminatedString("verbatim", initialLine)
+                else:
+                    Error_UnterminatedString("curly", initialLine)
             of LCurly:
                 curliesExpected += 1
                 add(p.value, p.buf[pos])
