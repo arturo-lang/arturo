@@ -214,7 +214,6 @@ template parseString(p: var Parser, stopper: char = Quote) =
     var pos = p.bufpos + 1
     var inCode = false
     let initialLine = p.lineNumber
-    let initialPoint = p.bufpos
     while true:
         case p.buf[pos]:
             of EOF: 
@@ -282,11 +281,9 @@ template parseString(p: var Parser, stopper: char = Quote) =
                     add(p.value, p.buf[pos])
                     inc(pos)
             of CR:
-                var prepos = pos-1
                 pos = lexbase.handleCR(p, pos)
                 Error_NewlineInQuotedString(p.lineNumber-1)
             of LF:
-                var prepos = pos-1
                 pos = lexbase.handleLF(p, pos)
                 Error_NewlineInQuotedString(p.lineNumber-1)
             else:
@@ -343,7 +340,6 @@ template parseCurlyString(p: var Parser) =
         regexString = true
 
     let initialLine = p.lineNumber
-    let initialPoint = p.bufpos
     while true:
         case p.buf[pos]:
             of EOF: 
