@@ -1,7 +1,21 @@
 3
->> Runtime | File: runtime.WrongArgumentType.2.art
-     error | Line: 5
-           | 
-           | cannot perform add -> :integer :string
-           | incorrect argument type for second parameter
-           | accepts :integer :floating :complex :rational :quantity :color :object
+
+══╡ Type Error ╞══════════════════════════════════════════════════════════════════════════════════════════ <script> ══
+
+  Erroneous type found
+
+  Cannot call function:
+      add valueA valueB ◄
+  
+  Wrong argument (at position 2): 
+      done :string
+  
+  Expected: 
+      :integer, :floating, :complex, :rational, :quantity, :color, :object
+
+  ┃ File: tests/errors/runtime.WrongArgumentType.2.art
+  ┃ Line: 5
+  ┃ 
+  ┃    3 ║  
+  ┃    4 ║  ; adding something else
+  ┃    5 ║► print add 1 "done"

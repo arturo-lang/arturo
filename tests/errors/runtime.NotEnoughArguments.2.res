@@ -1,5 +1,14 @@
->> Runtime | File: runtime.NotEnoughArguments.2.art
-     error | Line: 1
-           | 
-           | cannot perform map
-           | not enough parameters: 3 required
+══╡ Value Error ╞═════════════════════════════════════════════════════════════════════════════════════════ <script> ══
+
+  Not enough parameters
+  
+  Cannot perform:
+      map
+  
+  Required: 
+      3
+
+  ┃ File: tests/errors/runtime.NotEnoughArguments.2.art
+  ┃ Line: 0
+  ┃ 
+  ┃    1 ║  print map 1..10 'x
