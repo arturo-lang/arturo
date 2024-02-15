@@ -352,7 +352,7 @@ proc Error_MissingClosingSquareBracket*(lineno: int, context: string) =
 
             Missing:
                 closing square bracket (`]`)
-        """ ~~ @[context]
+        """ ~~ @[]
 
 proc Error_MissingClosingParenthesis*(lineno: int, context: string) =
     CurrentLine = lineno
@@ -363,7 +363,7 @@ proc Error_MissingClosingParenthesis*(lineno: int, context: string) =
 
             Missing:
                 closing parenthesis (`)`)
-        """ ~~ @[context]
+        """ ~~ @[]
 
 proc Error_StrayClosingSquareBracket*(lineno: int, context: string) =
     CurrentLine = lineno
@@ -371,7 +371,7 @@ proc Error_StrayClosingSquareBracket*(lineno: int, context: string) =
         toError SyntaxErr, """
             Found extraneous block symbol:
                 closing square bracket (`]`)
-        """ ~~ @[context]
+        """ ~~ @[]
 
 proc Error_StrayClosingCurlyBracket*(lineno: int, context: string) =
     CurrentLine = lineno
@@ -379,7 +379,7 @@ proc Error_StrayClosingCurlyBracket*(lineno: int, context: string) =
         toError SyntaxErr, """
             Found extraneous block symbol:
                 closing curly bracket (`}`)
-        """ ~~ @[context]
+        """ ~~ @[]
 
 proc Error_StrayClosingParenthesis*(lineno: int, context: string) =
     CurrentLine = lineno
@@ -387,19 +387,25 @@ proc Error_StrayClosingParenthesis*(lineno: int, context: string) =
         toError SyntaxErr, """
             Found extraneous block symbol:
                 closing parenthesis (`)`)
-        """ ~~ @[context]
+        """ ~~ @[]
 
 proc Error_UnterminatedString*(strtype: string, lineno: int, context: string) =
     var strt = strtype
     if strt!="": strt &= " "
+    var missing: string
+    if strt=="":
+        missing = "closing double quote (`\"`)"
+    else:
+        missing = "closing curly bracket (`}`)"
     CurrentLine = lineno
     panic:
         toError SyntaxErr, """
             Issue found when trying to parse:
                 String
 
-            Given $#string is unterminated
-        """ ~~ @[strt, context]
+            Missing:
+                $$
+        """ ~~ @[missing]
 
 proc Error_NewlineInQuotedString*(lineno: int, context: string) =
     CurrentLine = lineno
@@ -408,12 +414,9 @@ proc Error_NewlineInQuotedString*(lineno: int, context: string) =
             Issue found when trying to parse:
                 String
             
-            Quote string contains:
+            Quoted string contains:
                 newline (`\n`)
-        """ ~~ @[context], """
-            For multiline strings, you could use either:
-            curly blocks `{..}` or triple `-` templates
-        """
+        """ ~~ @[], "For multiline strings, you could use either: curly blocks `{..}` or triple `-` templates"
 
 proc Error_EmptyLiteral*(lineno: int, context: string) =
     CurrentLine = lineno
@@ -424,7 +427,7 @@ proc Error_EmptyLiteral*(lineno: int, context: string) =
 
             Found: 
                 empty value
-        """ ~~ @[context]
+        """ ~~ @[]
 
 #------------------------
 # Assertion Errors
