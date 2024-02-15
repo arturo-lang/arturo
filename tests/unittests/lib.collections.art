@@ -1002,8 +1002,7 @@ do [
     passed
 
     ensure -> 2 = a\im
-    ensure -> 2 = a\img
-    ensure -> 2 = a\image
+    ensure -> 2 = a\imaginary
     passed
 
     ensure -> 1 = a\["re"]
@@ -1011,8 +1010,7 @@ do [
     passed
 
     ensure -> 2 = a\["im"]
-    ensure -> 2 = a\["img"]
-    ensure -> 2 = a\["image"]
+    ensure -> 2 = a\["imaginary"]
     passed
 
     ensure -> 1 = get a 're
@@ -1020,8 +1018,7 @@ do [
     passed
 
     ensure -> 2 = get a 'im
-    ensure -> 2 = get a 'img
-    ensure -> 2 = get a 'image
+    ensure -> 2 = get a 'imaginary
     passed
 
     ensure -> 1 = a\0
