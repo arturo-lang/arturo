@@ -756,10 +756,9 @@ proc Error_IncompatibleBlockValueAttribute*(functionName: string, attributeName:
 proc Error_UsingUndefinedType*(typeName: string) =
     panic: 
         toError TypeErr, """
-            Undefined or unknown type _:$#_
-            you should make sure it has been properly
-            initialized using `define`
-        """ ~~ @[typeName]
+            Undefined or unknown type:
+                _:$#_
+        """ ~~ @[typeName], "Before using it, you should make sure it has been properly initialized using `define`"
 
 proc Error_UnsupportedParentType*(typeName: string) =
     panic:
