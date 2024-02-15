@@ -334,7 +334,7 @@ proc Error_CannotConvertDifferentDimensions*(convFrom, convTo: string) =
 # Syntax Errors
 #------------------------
 
-proc Error_MissingClosingSquareBracket*(lineno: int, context: string) =
+proc Error_MissingClosingSquareBracket*(lineno: int) =
     CurrentLine = lineno
     panic:
         toError SyntaxErr, """
@@ -345,7 +345,7 @@ proc Error_MissingClosingSquareBracket*(lineno: int, context: string) =
                 closing square bracket (`]`)
         """ ~~ @[]
 
-proc Error_MissingClosingParenthesis*(lineno: int, context: string) =
+proc Error_MissingClosingParenthesis*(lineno: int) =
     CurrentLine = lineno
     panic:
         toError SyntaxErr, """
@@ -356,7 +356,7 @@ proc Error_MissingClosingParenthesis*(lineno: int, context: string) =
                 closing parenthesis (`)`)
         """ ~~ @[]
 
-proc Error_StrayClosingSquareBracket*(lineno: int, context: string) =
+proc Error_StrayClosingSquareBracket*(lineno: int) =
     CurrentLine = lineno
     panic:
         toError SyntaxErr, """
@@ -364,7 +364,7 @@ proc Error_StrayClosingSquareBracket*(lineno: int, context: string) =
                 closing square bracket (`]`)
         """ ~~ @[]
 
-proc Error_StrayClosingCurlyBracket*(lineno: int, context: string) =
+proc Error_StrayClosingCurlyBracket*(lineno: int) =
     CurrentLine = lineno
     panic: 
         toError SyntaxErr, """
@@ -372,7 +372,7 @@ proc Error_StrayClosingCurlyBracket*(lineno: int, context: string) =
                 closing curly bracket (`}`)
         """ ~~ @[]
 
-proc Error_StrayClosingParenthesis*(lineno: int, context: string) =
+proc Error_StrayClosingParenthesis*(lineno: int) =
     CurrentLine = lineno
     panic:
         toError SyntaxErr, """
@@ -380,7 +380,7 @@ proc Error_StrayClosingParenthesis*(lineno: int, context: string) =
                 closing parenthesis (`)`)
         """ ~~ @[]
 
-proc Error_UnterminatedString*(strtype: string, lineno: int, context: string) =
+proc Error_UnterminatedString*(strtype: string, lineno: int) =
     var strt = strtype
     if strt!="": strt &= " "
     var missing: string
@@ -398,7 +398,7 @@ proc Error_UnterminatedString*(strtype: string, lineno: int, context: string) =
                 $$
         """ ~~ @[missing]
 
-proc Error_NewlineInQuotedString*(lineno: int, context: string) =
+proc Error_NewlineInQuotedString*(lineno: int) =
     CurrentLine = lineno
     panic:
         toError SyntaxErr, """
@@ -569,7 +569,8 @@ proc Error_UnsupportedKeyType*(keyType: string, value: string, expectedTypes: se
 proc Error_FileNotFound*(path: string) =
     panic:
         toError SystemErr, """
-            File not found: $#
+            File not found: 
+                $#
         """ ~~ @[path]
 
 #------------------------
