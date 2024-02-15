@@ -166,7 +166,7 @@ macro checkAttrImpl*(name: untyped): untyped =
     let attrTName = ident('t' & ($name).capitalizeAscii())
     let attrField = newStrLitNode('.' & ($name))
     result = quote do:
-        (let `attrName` = popAttr(`name`); (not `attrName`.isNil) and (`attrName`.kind in `attrTName` or showWrongAttributeTypeError(currentBuiltinName, `attrField`,`attrName`.kind,`attrTName`)))
+        (let `attrName` = popAttr(`name`); (not `attrName`.isNil) and (`attrName`.kind in `attrTName` or showWrongAttributeTypeError(currentBuiltinName, `attrField`,`attrName`,`attrTName`)))
 
 template checkAttr*(name: untyped, doValidate=true): untyped =
     when doValidate:
