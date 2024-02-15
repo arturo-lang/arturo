@@ -643,8 +643,11 @@ proc Error_AliasNotFound*(sym: string) =
 proc Error_CannotModifyConstant*(sym: string) =
     panic:
         toError ValueErr, """
-            Value points to a readonly constant: $#
-            which cannot be modified in-place
+            Readonly constants cannot be modified in-place
+
+            Received: 
+                $#
+            
         """ ~~ @[sym]
 
 proc Error_PathLiteralMofifyingString*() =
@@ -657,45 +660,69 @@ proc Error_PathLiteralMofifyingString*() =
 proc Error_IncompatibleBlockSize*(functionName: string, got: int, expected: string) =
     panic: 
         toError ValueErr, """
-            Cannot perform _$#_
-            Incompatible block size: $#
-            Expected: $#
+            Cannot perform:
+                _$#_
+
+            Incompatible block size: 
+                $#
+
+            Expected: 
+                $#
         """ ~~ @[functionName, $got, expected]
 
 proc Error_NotEnoughArguments*(functionName:string, functionArity: int) =
     panic:
         toError ValueErr, """
-            Cannot perform _$#_
-            not enough parameters: $# required
+            Not enough parameters
+
+            Cannot perform:
+                _$#_
+            
+            Required: 
+                $#
         """ ~~ @[functionName, $functionArity]
 
 proc Error_RangeWithZeroStep*() =
     panic:
         toError ValueErr, """
-            Attribute step can't be 0
+            Problem when creating Range
+
+            Attribute step can't be 0!
         """
 
 proc Error_IncorrectNumberOfArgumentsForInitializer*(typeName: string, got: int, expected: seq[string]) =
     panic:
         toError ValueErr, """
-            Cannot initialize object of type _:$#_
-            Wrong number of parameters: $#
-            Expected: $# $#
+            Cannot initialize object of type: 
+                _:$#_
+            
+            Wrong number of parameters: 
+                $#
+            
+            Expected: 
+                $# $#
         """ ~~ @[typeName, $got, $(expected.len), expected.join(", ")]
 
 proc Error_MissingArgumentForInitializer*(typeName: string, missing: string) =
     panic:
         toError ValueErr, """
-            Cannot initialize object of type _:$#_
-            missing field: $#
+            Cannot initialize object of type:
+                _:$#_
+            
+            Missing field: 
+                $#
         """ ~~ @[typeName, missing]
 
 proc Error_IncompatibleQuantityOperation*(operation: string, argA, argB, kindA, kindB: string) =
     panic: 
         toError ValueErr, """
             Incompatible operation between quantities
-            Attempted: $#
-            With: $#
+
+            Attempted: 
+                $#
+            
+            With: 
+                $#
         """ ~~ @[operation, truncate(argA & " (" & kindA & ") " & argB & " (" & kindB & ")", 60)]
 
 #------------------------
@@ -766,9 +793,6 @@ proc Error_WrongAttributeType*(functionName: string, attributeName: string, val:
             Expected: 
                 $#
         """ ~~ @[functionName, attributeName, val, accepted]
-            # Cannot perform _$#_
-            # Incorrect attribute type for _$#_ -> $#
-            # Accepts $#
 
 proc Error_CannotStoreKey*(key: string, valueKind: string, storeKind: string) =
     panic:
