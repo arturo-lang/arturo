@@ -319,15 +319,6 @@ proc Error_ConversionFailed*(arg,fromType,toType: string, hint: string="") =
             Failed while trying to convert to:
                 :$#
         """ ~~ @[arg, toType.toLowerAscii()], hint
-
-# not used
-proc Error_CannotConvertQuantity*(val, argA, kindA, argB, kindB: string) =
-    panic:
-        toError ConversionErr, """
-            Cannot convert quantity: $#
-            From: $# ($#)
-            To: $# ($#)
-        """ ~~ @[val, argA, kindA, argB, kindB]
           
 proc Error_CannotConvertDifferentDimensions*(convFrom, convTo: string) =
     panic:
@@ -417,17 +408,6 @@ proc Error_NewlineInQuotedString*(lineno: int, context: string) =
             Quoted string contains:
                 newline (`\n`)
         """ ~~ @[], "For multiline strings, you could use either: curly blocks `{..}` or triple `-` templates"
-
-proc Error_EmptyLiteral*(lineno: int, context: string) =
-    CurrentLine = lineno
-    panic: 
-        toError SyntaxErr, """
-            Issue found when trying to parse:
-                Literal
-
-            Found: 
-                empty value
-        """ ~~ @[]
 
 #------------------------
 # Assertion Errors
