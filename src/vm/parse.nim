@@ -115,22 +115,22 @@ template ReplaceLastToken(with: untyped): untyped =
 
 # Error reporting
 
-func getContext(p: var Parser, curPos: int): string =
-    var i = curPos
+# func getContext(p: var Parser, curPos: int): string =
+#     var i = curPos
 
-    while i > 0 and p.buf[i] notin {CR,LF,'\n'}:
-        result.add(p.buf[i])
-        dec(i)
+#     while i > 0 and p.buf[i] notin {CR,LF,'\n'}:
+#         result.add(p.buf[i])
+#         dec(i)
 
-    result = reversed(result)
-    let initial = i
-    i = curPos+1
+#     result = reversed(result)
+#     let initial = i
+#     i = curPos+1
 
-    while p.buf[i]!=EOF and p.buf[i] notin {CR,LF,'\n'}:
-        result.add(p.buf[i])
-        inc(i)
+#     while p.buf[i]!=EOF and p.buf[i] notin {CR,LF,'\n'}:
+#         result.add(p.buf[i])
+#         inc(i)
 
-    result &= "\n" & repeat("~%",6 + curPos-initial) & "_^_"
+#     result &= "\n" & repeat("~%",6 + curPos-initial) & "_^_"
 
 # Lexer/parser
 
@@ -218,7 +218,7 @@ template parseString(p: var Parser, stopper: char = Quote) =
     while true:
         case p.buf[pos]:
             of EOF: 
-                Error_UnterminatedString("", initialLine, getContext(p, initialPoint))
+                Error_UnterminatedString("", initialLine)
             of stopper:
                 inc(pos)
                 break
@@ -284,11 +284,11 @@ template parseString(p: var Parser, stopper: char = Quote) =
             of CR:
                 var prepos = pos-1
                 pos = lexbase.handleCR(p, pos)
-                Error_NewlineInQuotedString(p.lineNumber-1, getContext(p, prepos))
+                Error_NewlineInQuotedString(p.lineNumber-1)
             of LF:
                 var prepos = pos-1
                 pos = lexbase.handleLF(p, pos)
-                Error_NewlineInQuotedString(p.lineNumber-1, getContext(p, prepos))
+                Error_NewlineInQuotedString(p.lineNumber-1)
             else:
                 add(p.value, p.buf[pos])
                 inc(pos)
@@ -347,7 +347,7 @@ template parseCurlyString(p: var Parser) =
     while true:
         case p.buf[pos]:
             of EOF: 
-                Error_UnterminatedString("curly", initialLine, getContext(p, initialPoint))
+                Error_UnterminatedString("curly", initialLine)
             of LCurly:
                 curliesExpected += 1
                 add(p.value, p.buf[pos])
@@ -411,7 +411,7 @@ template parseCurlyString(p: var Parser) =
                             add(regexFlags, p.buf[pos])
                             inc(pos)
                         if p.buf[pos] != RCurly:
-                            Error_UnterminatedString("regex", initialLine, getContext(p, initialPoint))
+                            Error_UnterminatedString("regex", initialLine)
                         else:
                             inc(pos)
                             break
@@ -460,7 +460,7 @@ template parseSafeString(p: var Parser) =
     while true:
         case p.buf[pos]:
             of EOF: 
-                Error_UnterminatedString("", p.lineNumber, getContext(p, p.bufpos-2))
+                Error_UnterminatedString("", p.lineNumber)
                 break
             of CR:
                 pos = lexbase.handleCR(p, pos)
@@ -863,9 +863,9 @@ proc parseBlock(p: var Parser, level: int, isSubBlock: bool = false, isSubInline
             of EOF:
                 if unlikely(level!=0): 
                     if isSubBlock:
-                        Error_MissingClosingSquareBracket(initialLine, getContext(p, initial))
+                        Error_MissingClosingSquareBracket(initialLine)
                     else:
-                        Error_MissingClosingParenthesis(initialLine, getContext(p, initial))
+                        Error_MissingClosingParenthesis(initialLine)
                 break
             of Quote:
                 parseString(p)
@@ -1029,9 +1029,9 @@ proc parseBlock(p: var Parser, level: int, isSubBlock: bool = false, isSubInline
                     break
                 else:
                     if isSubInline:
-                        Error_MissingClosingParenthesis(initialLine, getContext(p, initial))
+                        Error_MissingClosingParenthesis(initialLine)
                     else:
-                        Error_StrayClosingSquareBracket(p.lineNumber, getContext(p, p.bufpos))
+                        Error_StrayClosingSquareBracket(p.lineNumber)
             of LParen:
                 inc(p.bufpos)
                 var subblock = parseBlock(p, level+1, isSubInline=true)
@@ -1042,13 +1042,13 @@ proc parseBlock(p: var Parser, level: int, isSubBlock: bool = false, isSubInline
                     break
                 else:
                     if isSubBlock:
-                        Error_MissingClosingSquareBracket(initialLine, getContext(p, initial))
+                        Error_MissingClosingSquareBracket(initialLine)
                     else:
-                        Error_StrayClosingParenthesis(p.lineNumber, getContext(p, p.bufpos))
+                        Error_StrayClosingParenthesis(p.lineNumber)
             of LCurly:
                 parseCurlyString(p)
             of RCurly:
-                Error_StrayClosingCurlyBracket(p.lineNumber, getContext(p, p.bufpos))
+                Error_StrayClosingCurlyBracket(p.lineNumber)
             of '\194':
                 if p.buf[p.bufpos+1]=='\171': # got «
                     if p.buf[p.bufpos+2]=='\194' and p.buf[p.bufpos+3]=='\171':
