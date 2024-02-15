@@ -320,6 +320,7 @@ proc Error_ConversionFailed*(arg,fromType,toType: string, hint: string="") =
                 :$#
         """ ~~ @[arg, toType.toLowerAscii()], hint
 
+# not used
 proc Error_CannotConvertQuantity*(val, argA, kindA, argB, kindB: string) =
     panic:
         toError ConversionErr, """
@@ -328,11 +329,15 @@ proc Error_CannotConvertQuantity*(val, argA, kindA, argB, kindB: string) =
             To: $# ($#)
         """ ~~ @[val, argA, kindA, argB, kindB]
           
-proc Error_CannotConvertDifferentDimensions*() =
+proc Error_CannotConvertDifferentDimensions*(convFrom, convTo: string) =
     panic:
         toError ConversionErr, """
-            Cannot convert quantities with different dimensions
-        """
+            Trying to convert quantity with property:
+                $#
+
+            To:
+                $#
+        """ ~~ @[convFrom, convTo]
 
 #------------------------
 # Syntax Errors
@@ -342,45 +347,46 @@ proc Error_MissingClosingSquareBracket*(lineno: int, context: string) =
     CurrentLine = lineno
     panic:
         toError SyntaxErr, """
-            Missing closing square bracket: `]`
+            Issue found when trying to parse:
+                Block
 
-            Near: $#
+            Missing:
+                closing square bracket (`]`)
         """ ~~ @[context]
 
 proc Error_MissingClosingParenthesis*(lineno: int, context: string) =
     CurrentLine = lineno
     panic:
         toError SyntaxErr, """
-            Missing closing parenthesis: `)`
+            Issue found when trying to parse:
+                Inline
 
-            Near: $#
+            Missing:
+                closing parenthesis (`)`)
         """ ~~ @[context]
 
 proc Error_StrayClosingSquareBracket*(lineno: int, context: string) =
     CurrentLine = lineno
     panic:
         toError SyntaxErr, """
-            Stray closing square bracket: `]`
-
-            Near: $#
+            Found extraneous block symbol:
+                closing square bracket (`]`)
         """ ~~ @[context]
 
 proc Error_StrayClosingCurlyBracket*(lineno: int, context: string) =
     CurrentLine = lineno
     panic: 
         toError SyntaxErr, """
-            Stray closing curly bracket: `}`
-
-            Near: $#
+            Found extraneous block symbol:
+                closing curly bracket (`}`)
         """ ~~ @[context]
 
 proc Error_StrayClosingParenthesis*(lineno: int, context: string) =
     CurrentLine = lineno
     panic:
         toError SyntaxErr, """
-            Stray closing parenthesis: `)`
-
-            near: $#
+            Found extraneous block symbol:
+                closing parenthesis (`)`)
         """ ~~ @[context]
 
 proc Error_UnterminatedString*(strtype: string, lineno: int, context: string) =
@@ -389,29 +395,35 @@ proc Error_UnterminatedString*(strtype: string, lineno: int, context: string) =
     CurrentLine = lineno
     panic:
         toError SyntaxErr, """
-            Unterminated $#string
+            Issue found when trying to parse:
+                String
 
-            Near: $#
-        """ ~~ @[context]
+            Given $#string is unterminated
+        """ ~~ @[strt, context]
 
 proc Error_NewlineInQuotedString*(lineno: int, context: string) =
     CurrentLine = lineno
     panic:
         toError SyntaxErr, """
-            Newline in quoted string
-            for multiline strings, you could use either:
-            curly blocks _{..}_ or _triple "-"_ templates
-
-            Near: $#
-        """ ~~ @[context]
+            Issue found when trying to parse:
+                String
+            
+            Quote string contains:
+                newline (`\n`)
+        """ ~~ @[context], """
+            For multiline strings, you could use either:
+            curly blocks `{..}` or triple `-` templates
+        """
 
 proc Error_EmptyLiteral*(lineno: int, context: string) =
     CurrentLine = lineno
     panic: 
         toError SyntaxErr, """
-            Empty literal value
+            Issue found when trying to parse:
+                Literal
 
-            Near: $#
+            Found: 
+                empty value
         """ ~~ @[context]
 
 #------------------------
