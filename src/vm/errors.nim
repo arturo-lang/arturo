@@ -626,13 +626,14 @@ proc Error_SymbolNotFound*(sym: string, alter: seq[string]) =
     panic:
         toError NameErr, """
             Identifier not found: 
-                $#
+                _$#_
         """ ~~ @[sym], hint
 
 proc Error_AliasNotFound*(sym: string) =
     panic: 
         toError NameErr, """
-            Alias not found: $#
+            Alias not found: 
+                _$#_
         """ ~~ @[sym]
 
 #------------------------
@@ -740,21 +741,34 @@ proc Error_UnsupportedParentType*(typeName: string) =
             is not supported
         """ ~~ @[typeName]
 
-proc Error_WrongArgumentType*(functionName: string, actual: string, paramPos: string, accepted: string) =
+proc Error_WrongArgumentType*(functionName: string, actual: string, val: string, paramPos: string, accepted: string) =
     panic:
         toError TypeErr, """
-            Cannot perform _$#_ -> $#
-            Incorrect argument type for $# parameter
-            Accepts $#
-        """ ~~ @[functionName, actual, paramPos, accepted]
+            Cannot call function:
+                _$#_ $$
 
-proc Error_WrongAttributeType*(functionName: string, attributeName: string, actual: string, accepted: string) =
+            Wrong argument (at position $#): 
+                $$
+
+            Expected: 
+                $#
+        """ ~~ @[functionName, actual, paramPos, val, accepted]
+
+proc Error_WrongAttributeType*(functionName: string, attributeName: string, val: string, accepted: string) =
     panic:
         toError TypeErr, """
-            Cannot perform _$#_
-            Incorrect attribute type for _$#_ -> $#
-            Accepts $#
-        """ ~~ @[functionName, attributeName, actual, accepted]
+            Cannot call function:
+                _$#_ $$
+
+            Wrong attribute value: 
+                $$
+
+            Expected: 
+                $#
+        """ ~~ @[functionName, attributeName, val, accepted]
+            # Cannot perform _$#_
+            # Incorrect attribute type for _$#_ -> $#
+            # Accepts $#
 
 proc Error_CannotStoreKey*(key: string, valueKind: string, storeKind: string) =
     panic:
@@ -795,21 +809,27 @@ proc Error_LibraryNotLoaded*(path: string) =
     panic:
         toError LibraryErr, """
             Dynamic library could not be loaded:
-            $#
+                $#
         """ ~~ @[path]
 
 proc Error_LibrarySymbolNotFound*(path: string, sym: string) =
     panic:
         toError LibraryErr, """
-            Symbol not found: $#
-            in library: $#
+            Symbol not found: 
+                $#
+            
+            In library: 
+                $#
         """ ~~ @[sym, path]
 
 proc Error_ErrorLoadingLibrarySymbol*(path: string, sym: string) =
     panic:
         toError LibraryErr, """
-            Error loading symbol: $#
-            From library: $#
+            Error loading symbol: 
+                $#
+            
+            From library: 
+                $#
         """ ~~ @[sym, path]
 
 # Program errors
