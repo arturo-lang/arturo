@@ -164,7 +164,7 @@ const
 let 
     # The core error types
     RuntimeErr*     = VErrorKind(label: "Runtime Error"     , parent: nil)
-    SyntaxErr*      = VErrorKind(label: "Syntax Error"      , parent: nil)
+    SyntaxErr*      = VErrorKind(label: "Syntax Error"      , parent: nil,  description: "Unable to parse input code")
     CmdlineErr*     = VErrorKind(label: "Command-line Error", parent: nil,  description: "Something went wrong while processing given command-line arguments")
     ProgramErr*     = VErrorKind(label: "Program Error"     , parent: nil)
     SystemErr*      = VErrorKind(label: "System Error"      , parent: nil)
