@@ -14,31 +14,46 @@
 
 import sequtils, strutils
 
-import vm/[stack, errors]
+import helpers/terminal
+
+import vm/[globals, stack, errors]
 import vm/values/[value, printable]
 
 #=======================================
 # Helpers
 #=======================================
 
+# proc showWrongArgumentTypeError*(name: string, pos: int, params: openArray[Value], expected: openArray[(string, set[ValueKind])]) =
+#     ## show relevant error message in case ``require`` 
+#     ## fails to validate the arguments passed to the 
+#     ## function
+#     var expectedValues = toSeq((expected[pos][1]).items)
+#     let acceptedStr = expectedValues.map(proc(x:ValueKind):string = stringify(x)).join(" ")
+#     let actualStr = params.map(proc(x:Value):string = valueKind(x)).join(" ")
+#     var ordinalPos: string = ["first","second","third"][pos]
+
+#     Error_WrongArgumentType(name, actualStr, ordinalPos, acceptedStr)
+
 proc showWrongArgumentTypeError*(name: string, pos: int, params: openArray[Value], expected: openArray[(string, set[ValueKind])]) =
     ## show relevant error message in case ``require`` 
     ## fails to validate the arguments passed to the 
     ## function
     var expectedValues = toSeq((expected[pos][1]).items)
-    let acceptedStr = expectedValues.map(proc(x:ValueKind):string = stringify(x)).join(" ")
-    let actualStr = params.map(proc(x:Value):string = valueKind(x)).join(" ")
-    var ordinalPos: string = ["first","second","third"][pos]
+    let acceptedStr = expectedValues.map(proc(x:ValueKind):string = stringify(x)).join(", ")
+    #let actualStr = params.map(proc(x:Value):string = valueKind(x)).join(",\n\b") & 
+    let actualStr = expected.map(proc(aa:(string,set[ValueKind])):string = aa[0]).join(" ") &
+        fg(redColor) & " \u25c4" & resetColor()
+    #var ordinalPos: string = ["first","second","third"][pos]
 
-    Error_WrongArgumentType(name, actualStr, ordinalPos, acceptedStr)
+    Error_WrongArgumentType(name, actualStr, Dumper(params[^1]), $(pos+1), acceptedStr)
 
-proc showWrongAttributeTypeError*(fName: string, aName: string, actual:ValueKind, expected: set[ValueKind]): bool =
+proc showWrongAttributeTypeError*(fName: string, aName: string, actual:Value, expected: set[ValueKind]): bool =
     ## show relevant error message in case an attribute
     ## fails to validate its argument
     var expectedValues = toSeq(expected.items)
     let acceptedStr = expectedValues.map(proc(x:ValueKind):string = stringify(x)).join(" ")
-    let actualStr = stringify(actual)
-    Error_WrongAttributeType(fName, aName, actualStr, acceptedStr)
+   #let actualStr = stringify(actual)
+    Error_WrongAttributeType(fName, aName & ":" & fg(redColor) & " \u25c4" & resetColor(), Dumper(actual), acceptedStr)
 
 proc showWrongValueTypeError*(fName: string, actual: Value, pre: string, expected: set[ValueKind] | string) =
     let actualStr = pre & "[" & valueKind(actual) & "...]"
