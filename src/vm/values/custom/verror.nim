@@ -202,7 +202,7 @@ let
                             "")
     TypeErr*            = toRuntimeErrorKind(
                             "Type Error",
-                            "")
+                            "Erroneous type found")
     UIErr*              = toRuntimeErrorKind(
                             "UI Error",
                             "")
