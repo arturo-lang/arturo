@@ -43,9 +43,6 @@ import vm/[
 when not defined(WEB):
     import vm/profiler
 
-when defined(WEB):
-    import vm/values/printable
-
 #=======================================
 # Packaging setup
 #=======================================
