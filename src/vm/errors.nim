@@ -762,25 +762,40 @@ func Error_IncompatibleQuantityOperation*(operation: string, argA, argB, kindA, 
 func Error_IncompatibleValueType*(functionName: string, tp: string, expected: string) =
     panic: 
         toError TypeErr, """
-            Cannot perform _$#_
-            Incompatible value type for $#
-            Expected $#
+            Cannot perform: 
+                _$#_
+            
+            Incompatible value type for:
+                $#
+
+            Expected: 
+                $#
         """ ~~ @[functionName, tp, expected]
 
 func Error_IncompatibleBlockValue*(functionName: string, val: string, expected: string) =
     panic: 
         toError TypeErr, """
-            Cannot perform _$#_ -> $#
-            Incompatible value inside block parameter
-            Expected $#
+            Cannot perform:
+                _$#_
+                
+            Incompatible value inside block parameter:
+                $#
+
+            Expected: 
+                $#
         """ ~~ @[functionName, val, expected]
 
 func Error_IncompatibleBlockValueAttribute*(functionName: string, attributeName: string, val: string, expected: string) =
     panic: 
         toError TypeErr, """
-            Cannot perform _$#_
-            Incompatible value inside block for _$#_ -> $#
-            Accepts $#
+            Cannot perform: 
+                _$#_ _$#_
+
+            Incompatible value inside block:
+                $#
+
+            Expected: 
+                $#
         """ ~~ @[functionName, attributeName, val, expected]
 
 func Error_UsingUndefinedType*(typeName: string) =
@@ -793,8 +808,10 @@ func Error_UsingUndefinedType*(typeName: string) =
 func Error_UnsupportedParentType*(typeName: string) =
     panic:
         toError TypeErr, """
-            Subtyping built-in type _:$#_
-            is not supported
+            Encountered type:
+                _:$#_
+
+            Subtyping is not supported!
         """ ~~ @[typeName]
 
 func Error_WrongArgumentType*(functionName: string, actual: string, val: string, paramPos: string, accepted: string) =
