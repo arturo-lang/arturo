@@ -139,7 +139,7 @@ proc printErrorMessage(e: VError) =
 
 proc printCodePreview(e: VError) =
     when not defined(NOERRORLINES):
-        if (not isRepl()) and e.kind != CmdlineErr:
+        if (not isRepl()) and (e.kind != CmdlineErr) and (e.kind != ProgramErr) :
             echo ""
             let codeLines = readFile(CurrentPath).splitLines()
             const linesBeforeAfter = 2
@@ -573,7 +573,7 @@ proc Error_FileNotFound*(path: string) =
         toError SystemErr, """
             File not found: 
                 $#
-        """ ~~ @[path]
+        """ ~~ @[path], errCode=ENOENT
 
 #------------------------
 # VM Errors
