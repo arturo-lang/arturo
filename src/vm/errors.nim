@@ -203,22 +203,15 @@ proc showError*(e: VError) =
     if (not isRepl()) or e.hint=="":
         echo ""
 
-func panic(error: VError, line: int = -1, cmdline: static bool = false) =
-    # error.context = ErrorContext(
-    #     line: 
-    #         if line == -1: CurrentLine
-    #         else: line,
-    #     file: CurrentPath
-    # )
-    when cmdline:
-   # if error.kind == CmdlineErr:
+func panic(error: VError) =
+    raise error
+
+proc panic(throw: bool, error: VError) =
+    if throw:
+        panic(error)
+    else:
         showError(error)
         quit(1)
-    else:
-        raise error
-
-proc panic(line: int, error: VError) =
-    panic(error, line)
 
 #=======================================
 # Constructors
@@ -229,42 +222,42 @@ proc panic(line: int, error: VError) =
 #------------------------
 
 proc Error_ScriptNotExists*(name: string) =
-    panic:
+    panic(false):
         toError CmdlineErr, """
             Given script doesn't exist:
                 _$#_
         """ ~~ @[name]
 
 proc Error_UnrecognizedOption*(name: string) =
-    panic:
+    panic(false):
         toError CmdlineErr, """
             Unrecognized command-line option:
                 _$#_
         """ ~~ @[name]
 
 proc Error_UnrecognizedPackageCommand*(name: string) =
-    panic:
+    panic(false):
         toError CmdlineErr, """
             Unrecognized _package_ command:
                 _$#_
         """ ~~ @[name]
 
 proc Error_NoPackageCommand*() =
-    panic:
+    panic(false):
         toError CmdlineErr, """
             No _package_ command command given -
             have a look at the options below
         """
 
 proc Error_ExtraneousParameter*(subcmd: string, name: string) =
-    panic: 
+    panic(false): 
         toError CmdlineErr, """
             Extraneous parameter for _$#_:
                 $#
         """ ~~ @[subcmd, name]
 
 proc Error_NotEnoughParameters*(name: string) =
-    panic:
+    panic(false):
         toError CmdlineErr, """
             Not enough parameters for _$#_ -
             consult the help screen below
@@ -274,49 +267,49 @@ proc Error_NotEnoughParameters*(name: string) =
 # Package Errors
 #------------------------
 
-proc Error_PackageNotFound*(pkg: string) =
+func Error_PackageNotFound*(pkg: string) =
     panic:
         toError PackageErr, """
             Package not found:
                 _$#_
         """ ~~ @[pkg]
 
-proc Error_PackageRepoNotCorrect*(repo: string) =
+func Error_PackageRepoNotCorrect*(repo: string) =
     panic:
         toError PackageErr, """
             Package repository url not correct:
                 $#
         """ ~~ @[repo]
 
-proc Error_PackageRepoNotFound*(repo: string) =
+func Error_PackageRepoNotFound*(repo: string) =
     panic:
         toError PackageErr, """
             Package repository not found:
                 $#
         """ ~~ @[repo]
 
-proc Error_CorruptRemoteSpec*(pkg: string) =
+func Error_CorruptRemoteSpec*(pkg: string) =
     panic:
         toError PackageErr, """
             Corrupt spec file for remote package:
                 _$#_
         """ ~~ @[pkg]
 
-proc Error_PackageNotValid*(pkg: string) =
+func Error_PackageNotValid*(pkg: string) =
     panic:
         toError PackageErr, """
             Invalid package:
                 _$#_
         """ ~~ @[pkg]
 
-proc Error_PackageUnknownError*(pkg: string) =
+func Error_PackageUnknownError*(pkg: string) =
     panic:
         toError PackageErr, """
             Unexpected error while installing package:
                 _$#_
         """ ~~ @[pkg]
 
-proc Error_PackageInvalidVersion*(vers: string) =
+func Error_PackageInvalidVersion*(vers: string) =
     panic:
         toError PackageErr, """
             Error parsing package version:
@@ -327,7 +320,7 @@ proc Error_PackageInvalidVersion*(vers: string) =
 # Conversion Errors
 #------------------------
 
-proc Error_CannotConvert*(arg,fromType,toType: string) =
+func Error_CannotConvert*(arg,fromType,toType: string) =
     panic:
         toError ConversionErr, """
             Got value:
@@ -337,7 +330,7 @@ proc Error_CannotConvert*(arg,fromType,toType: string) =
                 :$#
         """ ~~ @[arg, toType.toLowerAscii()]
 
-proc Error_ConversionFailed*(arg,fromType,toType: string, hint: string="") =
+func Error_ConversionFailed*(arg,fromType,toType: string, hint: string="") =
     panic:
         toError ConversionErr, """
             Got value:
@@ -347,7 +340,7 @@ proc Error_ConversionFailed*(arg,fromType,toType: string, hint: string="") =
                 :$#
         """ ~~ @[arg, toType.toLowerAscii()], hint
           
-proc Error_CannotConvertDifferentDimensions*(convFrom, convTo: string) =
+func Error_CannotConvertDifferentDimensions*(convFrom, convTo: string) =
     panic:
         toError ConversionErr, """
             Trying to convert quantity with property:
@@ -361,8 +354,8 @@ proc Error_CannotConvertDifferentDimensions*(convFrom, convTo: string) =
 # Syntax Errors
 #------------------------
 
-proc Error_MissingClosingSquareBracket*(lineno: int) =
-    panic(lineno):
+func Error_MissingClosingSquareBracket*() =
+    panic:
         toError SyntaxErr, """
             Issue found when trying to parse:
                 Block
@@ -371,8 +364,8 @@ proc Error_MissingClosingSquareBracket*(lineno: int) =
                 closing square bracket (`]`)
         """ ~~ @[]
 
-proc Error_MissingClosingParenthesis*(lineno: int) =
-    panic(lineno):
+func Error_MissingClosingParenthesis*() =
+    panic:
         toError SyntaxErr, """
             Issue found when trying to parse:
                 Inline
@@ -381,28 +374,28 @@ proc Error_MissingClosingParenthesis*(lineno: int) =
                 closing parenthesis (`)`)
         """ ~~ @[]
 
-proc Error_StrayClosingSquareBracket*(lineno: int) =
-    panic(lineno):
+func Error_StrayClosingSquareBracket*() =
+    panic:
         toError SyntaxErr, """
             Found extraneous block symbol:
                 closing square bracket (`]`)
         """ ~~ @[]
 
-proc Error_StrayClosingCurlyBracket*(lineno: int) =
-    panic(lineno): 
+func Error_StrayClosingCurlyBracket*() =
+    panic: 
         toError SyntaxErr, """
             Found extraneous block symbol:
                 closing curly bracket (`}`)
         """ ~~ @[]
 
-proc Error_StrayClosingParenthesis*(lineno: int) =
-    panic(lineno):
+func Error_StrayClosingParenthesis*() =
+    panic:
         toError SyntaxErr, """
             Found extraneous block symbol:
                 closing parenthesis (`)`)
         """ ~~ @[]
 
-proc Error_UnterminatedString*(strtype: string, lineno: int) =
+func Error_UnterminatedString*(strtype: string) =
     var strt = strtype
     if strt!="": strt &= " "
     var missing: string
@@ -412,7 +405,7 @@ proc Error_UnterminatedString*(strtype: string, lineno: int) =
         missing = "closing color-bracket (`:}`)"
     else:
         missing = "closing curly bracket (`}`)"
-    panic(lineno):
+    panic:
         toError SyntaxErr, """
             Issue found when trying to parse:
                 String
@@ -421,8 +414,8 @@ proc Error_UnterminatedString*(strtype: string, lineno: int) =
                 $$
         """ ~~ @[missing]
 
-proc Error_NewlineInQuotedString*(lineno: int) =
-    panic(lineno):
+func Error_NewlineInQuotedString*() =
+    panic:
         toError SyntaxErr, """
             Issue found when trying to parse:
                 String
@@ -435,14 +428,14 @@ proc Error_NewlineInQuotedString*(lineno: int) =
 # Assertion Errors
 #------------------------
 
-proc Error_AssertionFailed*(context: string) =
+func Error_AssertionFailed*(context: string) =
     panic:
         toError AssertionErr, """
             Tried:
                 $$
         """ ~~ @[context]
           
-proc Error_AssertionFailed*(context: string, message: string) =
+func Error_AssertionFailed*(context: string, message: string) =
     panic: 
         toError AssertionErr, """
             Unable to ensure:
@@ -456,9 +449,9 @@ proc Error_AssertionFailed*(context: string, message: string) =
 # Arithmetic Errors
 #------------------------
 
-proc Error_IntegerParsingOverflow*(lineno: int, number: string) =
+func Error_IntegerParsingOverflow*(number: string) =
     let hint = "Up to $#-bit integers supported" ~~ @[MaxIntSupported]
-    panic(lineno): 
+    panic: 
         toError ArithmeticErr, """
             Couldn't parse Integer value
 
@@ -466,7 +459,7 @@ proc Error_IntegerParsingOverflow*(lineno: int, number: string) =
                 $$
         """ ~~ @[number], hint
 
-proc Error_IntegerOperationOverflow*(operation: string, argA, argB: string) =
+func Error_IntegerOperationOverflow*(operation: string, argA, argB: string) =
     let hint = "Up to $#-bit integers supported" ~~ @[MaxIntSupported]
     panic: 
         toError ArithmeticErr, """
@@ -482,7 +475,7 @@ proc Error_IntegerOperationOverflow*(operation: string, argA, argB: string) =
                 $$
         """ ~~ @[operation, argA, argB], hint
 
-proc Error_IntegerSingleOperationOverflow*(operation: string, arg: string) =
+func Error_IntegerSingleOperationOverflow*(operation: string, arg: string) =
     let hint = "Up to $#-bit integers supported" ~~ @[MaxIntSupported]
     panic: 
         toError ArithmeticErr, """
@@ -495,7 +488,7 @@ proc Error_IntegerSingleOperationOverflow*(operation: string, arg: string) =
                 $$
         """ ~~ @[operation, arg], hint
 
-proc Error_NumberOutOfSupportedRange*(operation: string, arg: string) =
+func Error_NumberOutOfSupportedRange*(operation: string, arg: string) =
     let hint = "Up to $#-bit integers supported" ~~ @[MaxIntSupported]
     panic: 
         toError ArithmeticErr, """
@@ -508,7 +501,7 @@ proc Error_NumberOutOfSupportedRange*(operation: string, arg: string) =
                 $$
         """ ~~ @[operation, arg], hint
 
-proc Error_DivisionByZero*(arg: string) =
+func Error_DivisionByZero*(arg: string) =
     panic:
         toError ArithmeticErr, """
             Division by zero
@@ -529,7 +522,7 @@ func Error_ZeroDenominator*() =
 # Index Errors
 #------------------------
 
-proc Error_InvalidIndex*(indx: int, value: string, hint: string = "") =
+func Error_InvalidIndex*(indx: int, value: string, hint: string = "") =
     panic:
         toError IndexErr, """
             Invalid index: 
@@ -539,7 +532,7 @@ proc Error_InvalidIndex*(indx: int, value: string, hint: string = "") =
                 $$
         """ ~~ @[$indx, value], hint
 
-proc Error_InvalidKey*(key: string, value: string, hint: string = "") =
+func Error_InvalidKey*(key: string, value: string, hint: string = "") =
     panic:
         toError IndexErr, """
             Invalid key: 
@@ -549,7 +542,7 @@ proc Error_InvalidKey*(key: string, value: string, hint: string = "") =
                 $$
         """ ~~ @[key, value], hint
 
-proc Error_OutOfBounds*(indx: int, value: string, maxRange: int, what: string = "Block") =
+func Error_OutOfBounds*(indx: int, value: string, maxRange: int, what: string = "Block") =
     var items = 
         if what=="String": "characters" 
         else: "items"
@@ -564,7 +557,7 @@ proc Error_OutOfBounds*(indx: int, value: string, maxRange: int, what: string = 
                 $$
         """ ~~ @[$indx, value], hint
 
-proc Error_KeyNotFound*(sym: string, collection: string, alter: seq[string]) =
+func Error_KeyNotFound*(sym: string, collection: string, alter: seq[string]) =
     let sep = "\n" & "\b\b\b\b\b\bor... "
     let hint = "Perhaps you meant... $$" ~~ @[alter.map((x) => "_" & x & "_ ?").join(sep)]
     panic:
@@ -576,7 +569,7 @@ proc Error_KeyNotFound*(sym: string, collection: string, alter: seq[string]) =
                 $$
         """ ~~ @[sym, collection], hint
 
-proc Error_UnsupportedKeyType*(keyType: string, value: string, expectedTypes: seq[string]) =
+func Error_UnsupportedKeyType*(keyType: string, value: string, expectedTypes: seq[string]) =
     let expected = expectedTypes.join(", ")
     let plural = 
         if expectedTypes.len > 1: "s"
@@ -596,7 +589,7 @@ proc Error_UnsupportedKeyType*(keyType: string, value: string, expectedTypes: se
 # System Errors
 #------------------------
 
-proc Error_FileNotFound*(path: string) =
+func Error_FileNotFound*(path: string) =
     panic:
         toError SystemErr, """
             File not found: 
@@ -607,13 +600,13 @@ proc Error_FileNotFound*(path: string) =
 # VM Errors
 #------------------------
 
-proc Error_StackUnderflow*() =
+func Error_StackUnderflow*() =
     panic:
         toError VMErr, """
             Stack underflow
         """
 
-proc Error_ConfigNotFound*(gkey: string, akey: string) =
+func Error_ConfigNotFound*(gkey: string, akey: string) =
     panic:
         toError VMErr, """
             Configuration not found for: $#
@@ -621,7 +614,7 @@ proc Error_ConfigNotFound*(gkey: string, akey: string) =
             or using the option: .$#
         """ ~~ @[gkey, akey]
 
-proc Error_OperationNotPermitted*(operation: string) =
+func Error_OperationNotPermitted*(operation: string) =
     panic:
         toError VMErr, """
             Unsafe operation: $#
@@ -632,13 +625,13 @@ proc Error_OperationNotPermitted*(operation: string) =
 # UI Errors
 #------------------------
 
-proc Error_CompatibleBrowserNotFound*() =
+func Error_CompatibleBrowserNotFound*() =
     panic:
         toError UIErr, """
             Could not find any Chrome-compatible browser installed
         """
           
-proc Error_CompatibleBrowserCouldNotOpenWindow*() =
+func Error_CompatibleBrowserCouldNotOpenWindow*() =
     panic:
         toError UIErr, """
             Could not open a Chrome-compatible browser window
@@ -648,7 +641,7 @@ proc Error_CompatibleBrowserCouldNotOpenWindow*() =
 # Name Errors
 #------------------------
 
-proc Error_SymbolNotFound*(sym: string, alter: seq[string]) =
+func Error_SymbolNotFound*(sym: string, alter: seq[string]) =
     let sep = "\n" & "\b\b\b\b\b\bor... "
     let hint = "Perhaps you meant... $$" ~~ @[alter.map((x) => "_" & x & "_ ?").join(sep)]
     panic:
@@ -657,7 +650,7 @@ proc Error_SymbolNotFound*(sym: string, alter: seq[string]) =
                 _$#_
         """ ~~ @[sym], hint
 
-proc Error_AliasNotFound*(sym: string) =
+func Error_AliasNotFound*(sym: string) =
     panic: 
         toError NameErr, """
             Alias not found: 
@@ -668,7 +661,7 @@ proc Error_AliasNotFound*(sym: string) =
 # Value Errors
 #------------------------
 
-proc Error_CannotModifyConstant*(sym: string) =
+func Error_CannotModifyConstant*(sym: string) =
     panic:
         toError ValueErr, """
             Readonly constants cannot be modified in-place
@@ -678,14 +671,14 @@ proc Error_CannotModifyConstant*(sym: string) =
             
         """ ~~ @[sym]
 
-proc Error_PathLiteralMofifyingString*() =
+func Error_PathLiteralMofifyingString*() =
     panic:
         toError ValueErr, """ 
             In-place modification of strings
             through PathLiteral values is not supported
         """
 
-proc Error_IncompatibleBlockSize*(functionName: string, got: int, expected: string) =
+func Error_IncompatibleBlockSize*(functionName: string, got: int, expected: string) =
     panic: 
         toError ValueErr, """
             Cannot perform:
@@ -698,7 +691,7 @@ proc Error_IncompatibleBlockSize*(functionName: string, got: int, expected: stri
                 $#
         """ ~~ @[functionName, $got, expected]
 
-proc Error_NotEnoughArguments*(functionName:string, functionArity: int) =
+func Error_NotEnoughArguments*(functionName:string, functionArity: int) =
     panic:
         toError ValueErr, """
             Not enough parameters
@@ -710,7 +703,7 @@ proc Error_NotEnoughArguments*(functionName:string, functionArity: int) =
                 $#
         """ ~~ @[functionName, $functionArity]
 
-proc Error_RangeWithZeroStep*() =
+func Error_RangeWithZeroStep*() =
     panic:
         toError ValueErr, """
             Problem when creating Range
@@ -718,7 +711,7 @@ proc Error_RangeWithZeroStep*() =
             Attribute step can't be 0!
         """
 
-proc Error_IncorrectNumberOfArgumentsForInitializer*(typeName: string, got: int, expected: seq[string]) =
+func Error_IncorrectNumberOfArgumentsForInitializer*(typeName: string, got: int, expected: seq[string]) =
     panic:
         toError ValueErr, """
             Cannot initialize object of type: 
@@ -731,7 +724,7 @@ proc Error_IncorrectNumberOfArgumentsForInitializer*(typeName: string, got: int,
                 $# $#
         """ ~~ @[typeName, $got, $(expected.len), expected.join(", ")]
 
-proc Error_MissingArgumentForInitializer*(typeName: string, missing: string) =
+func Error_MissingArgumentForInitializer*(typeName: string, missing: string) =
     panic:
         toError ValueErr, """
             Cannot initialize object of type:
@@ -741,7 +734,7 @@ proc Error_MissingArgumentForInitializer*(typeName: string, missing: string) =
                 $#
         """ ~~ @[typeName, missing]
 
-proc Error_IncompatibleQuantityOperation*(operation: string, argA, argB, kindA, kindB: string) =
+func Error_IncompatibleQuantityOperation*(operation: string, argA, argB, kindA, kindB: string) =
     panic: 
         toError ValueErr, """
             Incompatible operation between quantities
@@ -757,7 +750,7 @@ proc Error_IncompatibleQuantityOperation*(operation: string, argA, argB, kindA, 
 # Type Errors
 #------------------------
 
-proc Error_IncompatibleValueType*(functionName: string, tp: string, expected: string) =
+func Error_IncompatibleValueType*(functionName: string, tp: string, expected: string) =
     panic: 
         toError TypeErr, """
             Cannot perform _$#_
@@ -765,7 +758,7 @@ proc Error_IncompatibleValueType*(functionName: string, tp: string, expected: st
             Expected $#
         """ ~~ @[functionName, tp, expected]
 
-proc Error_IncompatibleBlockValue*(functionName: string, val: string, expected: string) =
+func Error_IncompatibleBlockValue*(functionName: string, val: string, expected: string) =
     panic: 
         toError TypeErr, """
             Cannot perform _$#_ -> $#
@@ -773,7 +766,7 @@ proc Error_IncompatibleBlockValue*(functionName: string, val: string, expected: 
             Expected $#
         """ ~~ @[functionName, val, expected]
 
-proc Error_IncompatibleBlockValueAttribute*(functionName: string, attributeName: string, val: string, expected: string) =
+func Error_IncompatibleBlockValueAttribute*(functionName: string, attributeName: string, val: string, expected: string) =
     panic: 
         toError TypeErr, """
             Cannot perform _$#_
@@ -781,21 +774,21 @@ proc Error_IncompatibleBlockValueAttribute*(functionName: string, attributeName:
             Accepts $#
         """ ~~ @[functionName, attributeName, val, expected]
 
-proc Error_UsingUndefinedType*(typeName: string) =
+func Error_UsingUndefinedType*(typeName: string) =
     panic: 
         toError TypeErr, """
             Undefined or unknown type:
                 _:$#_
         """ ~~ @[typeName], "Before using it, you should make sure it has been properly initialized using `define`"
 
-proc Error_UnsupportedParentType*(typeName: string) =
+func Error_UnsupportedParentType*(typeName: string) =
     panic:
         toError TypeErr, """
             Subtyping built-in type _:$#_
             is not supported
         """ ~~ @[typeName]
 
-proc Error_WrongArgumentType*(functionName: string, actual: string, val: string, paramPos: string, accepted: string) =
+func Error_WrongArgumentType*(functionName: string, actual: string, val: string, paramPos: string, accepted: string) =
     panic:
         toError TypeErr, """
             Cannot call function:
@@ -808,7 +801,7 @@ proc Error_WrongArgumentType*(functionName: string, actual: string, val: string,
                 $#
         """ ~~ @[functionName, actual, paramPos, val, accepted]
 
-proc Error_WrongAttributeType*(functionName: string, attributeName: string, val: string, accepted: string) =
+func Error_WrongAttributeType*(functionName: string, attributeName: string, val: string, accepted: string) =
     panic:
         toError TypeErr, """
             Cannot call function:
@@ -821,7 +814,7 @@ proc Error_WrongAttributeType*(functionName: string, attributeName: string, val:
                 $#
         """ ~~ @[functionName, attributeName, val, accepted]
 
-proc Error_CannotStoreKey*(key: string, valueKind: string, storeKind: string) =
+func Error_CannotStoreKey*(key: string, valueKind: string, storeKind: string) =
     panic:
         toError TypeErr, """
             Unsupported value type: $#
@@ -829,7 +822,7 @@ proc Error_CannotStoreKey*(key: string, valueKind: string, storeKind: string) =
             When storing key: $#
         """ ~~ @[valueKind, storeKind, key]
 
-proc Error_InvalidOperation*(operation: string, argA, argB: string) =
+func Error_InvalidOperation*(operation: string, argA, argB: string) =
     if argB != "":
         panic:
             toError TypeErr, """
@@ -848,7 +841,7 @@ proc Error_InvalidOperation*(operation: string, argA, argB: string) =
 # Library Errors
 #------------------------
 
-proc Error_SqliteDisabled*() =
+func Error_SqliteDisabled*() =
     panic:
         toError LibraryErr, """
             SQLite not available in MINI builds
@@ -856,14 +849,14 @@ proc Error_SqliteDisabled*() =
             please, install Arturo's full version
         """
 
-proc Error_LibraryNotLoaded*(path: string) =
+func Error_LibraryNotLoaded*(path: string) =
     panic:
         toError LibraryErr, """
             Dynamic library could not be loaded:
                 $#
         """ ~~ @[path]
 
-proc Error_LibrarySymbolNotFound*(path: string, sym: string) =
+func Error_LibrarySymbolNotFound*(path: string, sym: string) =
     panic:
         toError LibraryErr, """
             Symbol not found: 
@@ -873,7 +866,7 @@ proc Error_LibrarySymbolNotFound*(path: string, sym: string) =
                 $#
         """ ~~ @[sym, path]
 
-proc Error_ErrorLoadingLibrarySymbol*(path: string, sym: string) =
+func Error_ErrorLoadingLibrarySymbol*(path: string, sym: string) =
     panic:
         toError LibraryErr, """
             Error loading symbol: 
@@ -885,7 +878,7 @@ proc Error_ErrorLoadingLibrarySymbol*(path: string, sym: string) =
 
 # Program errors
 
-proc ProgramError_panic*(message: string, code: int) =
+func ProgramError_panic*(message: string, code: int) =
     panic:
         toError ProgramErr, message, errCode=code
 
