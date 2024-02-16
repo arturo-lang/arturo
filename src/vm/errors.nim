@@ -141,12 +141,12 @@ proc printCodePreview(e: VError) =
     when not defined(NOERRORLINES):
         if (not isRepl()) and (e.kind != CmdlineErr) and (e.kind != ProgramErr) :
             echo ""
-            let codeLines = readFile(CurrentPath).splitLines()
+            let codeLines = readFile(e.context.file).splitLines()
             const linesBeforeAfter = 2
-            let lineFrom = max(0, CurrentLine - (linesBeforeAfter+1))
-            let lineTo = min(len(codeLines)-1, CurrentLine + (linesBeforeAfter-1))
-            echo "  " & fg(grayColor) & "{VertLine} ".fmt & bold(grayColor) & "File: " & fg(grayColor) & CurrentPath
-            echo "  " & fg(grayColor) & "{VertLine} ".fmt & bold(grayColor) & "Line: " & fg(grayColor) & $(CurrentLine)
+            let lineFrom = max(0, e.context.line - (linesBeforeAfter+1))
+            let lineTo = min(len(codeLines)-1, e.context.line + (linesBeforeAfter-1))
+            echo "  " & fg(grayColor) & "{VertLine} ".fmt & bold(grayColor) & "File: " & fg(grayColor) & e.context.file
+            echo "  " & fg(grayColor) & "{VertLine} ".fmt & bold(grayColor) & "Line: " & fg(grayColor) & $(e.context.line)
             echo "  " & fg(grayColor) & "{VertLine} ".fmt & resetColor
             for lineNo in lineFrom..lineTo:
                 var line = codeLines[lineNo]
@@ -154,7 +154,7 @@ proc printCodePreview(e: VError) =
                 var lineNum = $(lineNo+1)
                 var lineNumPre = ""
                 var lineNumPost = ""
-                if lineNo == CurrentLine-1: 
+                if lineNo == e.context.line-1: 
                     pointerArrow = "{VertLineD}".fmt & fg(redColor) & "{ArrowRight}".fmt & fg(grayColor)
                     line = bold(grayColor) & line & fg(grayColor)
                     lineNumPre = bold(grayColor)
@@ -186,12 +186,22 @@ proc showError*(e: VError) =
     if (not isRepl()) or e.hint=="":
         echo ""
 
-proc panic(error: VError) =
+proc panic(error: VError, line: int = -1) =
+    error.context = ErrorContext(
+        line: 
+            if line == -1: CurrentLine
+            else: line,
+        file: CurrentPath
+    )
+
     if error.kind == CmdlineErr:
         showError(error)
         quit(1)
     else:
         raise error
+
+proc panic(line: int, error: VError) =
+    panic(error, line)
 
 #=======================================
 # Constructors
@@ -335,8 +345,7 @@ proc Error_CannotConvertDifferentDimensions*(convFrom, convTo: string) =
 #------------------------
 
 proc Error_MissingClosingSquareBracket*(lineno: int) =
-    CurrentLine = lineno
-    panic:
+    panic(lineno):
         toError SyntaxErr, """
             Issue found when trying to parse:
                 Block
@@ -346,8 +355,7 @@ proc Error_MissingClosingSquareBracket*(lineno: int) =
         """ ~~ @[]
 
 proc Error_MissingClosingParenthesis*(lineno: int) =
-    CurrentLine = lineno
-    panic:
+    panic(lineno):
         toError SyntaxErr, """
             Issue found when trying to parse:
                 Inline
@@ -357,24 +365,21 @@ proc Error_MissingClosingParenthesis*(lineno: int) =
         """ ~~ @[]
 
 proc Error_StrayClosingSquareBracket*(lineno: int) =
-    CurrentLine = lineno
-    panic:
+    panic(lineno):
         toError SyntaxErr, """
             Found extraneous block symbol:
                 closing square bracket (`]`)
         """ ~~ @[]
 
 proc Error_StrayClosingCurlyBracket*(lineno: int) =
-    CurrentLine = lineno
-    panic: 
+    panic(lineno): 
         toError SyntaxErr, """
             Found extraneous block symbol:
                 closing curly bracket (`}`)
         """ ~~ @[]
 
 proc Error_StrayClosingParenthesis*(lineno: int) =
-    CurrentLine = lineno
-    panic:
+    panic(lineno):
         toError SyntaxErr, """
             Found extraneous block symbol:
                 closing parenthesis (`)`)
@@ -390,8 +395,7 @@ proc Error_UnterminatedString*(strtype: string, lineno: int) =
         missing = "closing color-bracket (`:}`)"
     else:
         missing = "closing curly bracket (`}`)"
-    CurrentLine = lineno
-    panic:
+    panic(lineno):
         toError SyntaxErr, """
             Issue found when trying to parse:
                 String
@@ -401,8 +405,7 @@ proc Error_UnterminatedString*(strtype: string, lineno: int) =
         """ ~~ @[missing]
 
 proc Error_NewlineInQuotedString*(lineno: int) =
-    CurrentLine = lineno
-    panic:
+    panic(lineno):
         toError SyntaxErr, """
             Issue found when trying to parse:
                 String
@@ -437,9 +440,8 @@ proc Error_AssertionFailed*(context: string, message: string) =
 #------------------------
 
 proc Error_IntegerParsingOverflow*(lineno: int, number: string) =
-    CurrentLine = lineno
     let hint = "Up to $#-bit integers supported" ~~ @[MaxIntSupported]
-    panic: 
+    panic(lineno): 
         toError ArithmeticErr, """
             Couldn't parse Integer value
 
