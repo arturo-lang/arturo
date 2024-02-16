@@ -210,13 +210,11 @@ func panic(error: VError, line: int = -1, cmdline: static bool = false) =
     #         else: line,
     #     file: CurrentPath
     # )
-    debugEcho "about to panic!"
     when cmdline:
    # if error.kind == CmdlineErr:
         showError(error)
         quit(1)
     else:
-        debugEcho "raising error"
         raise error
 
 proc panic(line: int, error: VError) =
@@ -520,7 +518,6 @@ proc Error_DivisionByZero*(arg: string) =
         """ ~~ @[arg]
 
 func Error_ZeroDenominator*() =
-    debugEcho "in ZeroDenominator"
     panic: 
         toError(ArithmeticErr, """
             Cannot create Rational value
