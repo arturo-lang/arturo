@@ -1233,12 +1233,12 @@ proc doParse*(input: string, isFile: bool = true): Value =
             var stream = newStringStream(input)
 
             lexbase.open(p, stream)
-
-        # do parse    
-        let rootBlock = parseBlock(p, 0)
+        try:
+            # do parse    
+            result = parseBlock(p, 0)
+        except CatchableError as e:
+            CurrentLine = p.lineNumber
+            raise e
 
         # close lexer
         lexbase.close(p)
-
-    # if everything went fine, return result     
-    return rootBlock
