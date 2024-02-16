@@ -21,8 +21,7 @@ type
         line*: int
         file*: string
 
-    VErrorKind* = ref object
-        parent*         : VErrorKind
+    VErrorKind* = object
         label*          : string
         description*    : string
 
@@ -172,53 +171,26 @@ const
     EOWNERDEAD*      =   int(130)    ## Owner died
     ENOTRECOVERABLE* =   int(131)    ## State not recoverable
 
-let 
+const
     # The core error types
-    RuntimeErr*     = VErrorKind(label: "Runtime Error"     , parent: nil)
-    SyntaxErr*      = VErrorKind(label: "Syntax Error"      , parent: nil,  description: "Unable to parse input code")
-    CmdlineErr*     = VErrorKind(label: "Command-line Error", parent: nil,  description: "Something went wrong while processing given command-line arguments")
-    ProgramErr*     = VErrorKind(label: "Program Error"     , parent: nil)
-    SystemErr*      = VErrorKind(label: "System Error"      , parent: nil)
-    VMErr*          = VErrorKind(label: "VM Error"          , parent: nil)
+    RuntimeErr*     = VErrorKind(label: "Runtime Error"         , description: "")
+    SyntaxErr*      = VErrorKind(label: "Syntax Error"          , description: "Unable to parse input code")
+    CmdlineErr*     = VErrorKind(label: "Command-line Error"    , description: "Something went wrong while processing given command-line arguments")
+    ProgramErr*     = VErrorKind(label: "Program Error"         , description: "")
+    SystemErr*      = VErrorKind(label: "System Error"          , description: "")
+    VMErr*          = VErrorKind(label: "VM Error"              , description: "")
 
-proc toRuntimeErrorKind*(lbl: string, desc: string = ""): VErrorKind =
-    result = VErrorKind(label: lbl, description: desc, parent: RuntimeErr)
-
-let 
-    # Derived error types to be used
-    # by our error templates
-    ArithmeticErr*      = toRuntimeErrorKind(
-                            "Arithmetic Error",
-                            "")
-    AssertionErr*       = toRuntimeErrorKind(
-                            "Assertion Error",
-                            "Runtime check failed")
-    ConversionErr*      = toRuntimeErrorKind(
-                            "Conversion Error", 
-                            "Problem when converting value to given type")
-    IndexErr*           = toRuntimeErrorKind(
-                            "Index Error",
-                            "Cannot resolve requested index")
-    PackageErr*         = toRuntimeErrorKind(
-                            "Package Error",
-                            "")
-    LibraryErr*         = toRuntimeErrorKind(
-                            "Library Error",
-                            "")
-    NameErr*            = toRuntimeErrorKind(
-                            "Name Error",
-                            "Cannot resolve requested value")
-    ValueErr*           = toRuntimeErrorKind(
-                            "Value Error",
-                            "")
-    TypeErr*            = toRuntimeErrorKind(
-                            "Type Error",
-                            "Erroneous type found")
-    UIErr*              = toRuntimeErrorKind(
-                            "UI Error",
-                            "")
-
-#TypeErr, ArgumentErr, ValueErr, AttributeErr
+    # Derived error types
+    ArithmeticErr*  = VErrorKind(label: "Arithmetic Error"      , description: "")
+    AssertionErr*   = VErrorKind(label: "Assertion Error"       , description: "Runtime check failed")
+    ConversionErr*  = VErrorKind(label: "Conversion Error"      , description: "Problem when converting value to given type")
+    IndexErr*       = VErrorKind(label: "Index Error"           , description: "Cannot resolve requested index")
+    PackageErr*     = VErrorKind(label: "Package Error"         , description: "")
+    LibraryErr*     = VErrorKind(label: "Library Error"         , description: "")
+    NameErr*        = VErrorKind(label: "Name Error"            , description: "Cannot resolve requested value")
+    ValueErr*       = VErrorKind(label: "Value Error"           , description: "")
+    TypeErr*        = VErrorKind(label: "Type Error"            , description: "Erroneous type found")
+    UIErr*          = VErrorKind(label: "UI Error"              , description: "")
 
 #=======================================
 # Constructors
