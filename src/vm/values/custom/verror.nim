@@ -23,6 +23,12 @@ type
         description*    : string
 
     VError* = ref object of CatchableError
+        # errors also have a .name and .msg field
+        # that come from CatchableError
+        # - .msg is supposed to hold the error message itself
+        # - .name holds a string version of the OS error code
+        #   that will be returned, in case the exception is not
+        #   caught
         kind*       : VErrorKind
         hint*       : string
 
