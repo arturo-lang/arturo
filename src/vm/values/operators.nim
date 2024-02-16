@@ -120,10 +120,16 @@ template throwDivisionByZeroError(v: untyped): untyped =
         Error_DivisionByZero(Dumper(newComplex(v)))
     else:
         when BignumSupport:
-            when v is Int:
-                Error_DivisionByZero(Dumper(newInteger(v)))
+            when not defined(WEB):
+                when v is Int:
+                    Error_DivisionByZero(Dumper(newInteger(v)))
+                else:
+                    Error_DivisionByZero(Dumper(v))
             else:
-                Error_DivisionByZero(Dumper(v))
+                when v is JsBigInt:
+                    Error_DivisionByZero(Dumper(newInteger(v)))
+                else:
+                    Error_DivisionByZero(Dumper(v))
         else:
             Error_DivisionByZero(Dumper(v))
 
