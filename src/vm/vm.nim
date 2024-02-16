@@ -201,10 +201,10 @@ template handleVMErrors(blk: untyped): untyped =
         when not defined(WEB):
             savePendingStores()
 
-        if $(e.name) == ProgramErr.label:
-            let code = parseInt(e.msg.split("\n\n")[1].split("<:>")[0])
+        try:
+            let code = parseInt(e.name)
             quit(code)
-        else:
+        except ValueError:
             quit(1)
 
 #=======================================

@@ -213,8 +213,8 @@ let
 # Constructors
 #=======================================
 
-func toError*(kind: VErrorKind, msg: string, hint: string = ""): VError =
-    VError(kind: kind, name: cstring(kind.label), msg: msg, hint: hint)
+func toError*(kind: VErrorKind, msg: string, hint: string = "", errCode: int = EPERM): VError =
+    VError(kind: kind, name: cstring($errCode), msg: msg, hint: hint)
 
 #=======================================
 # Overloads
