@@ -852,7 +852,6 @@ proc parseBlock(p: var Parser, level: int, isSubBlock: bool = false, isSubInline
             newBlock()
     # if isSubBlock: topBlock = newBlock()
     # else: topBlock = newInline()
-    let initial = p.bufpos - 1
     let initialLine = p.lineNumber
     while true:
         setLen(p.value, 0)
