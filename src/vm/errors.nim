@@ -657,6 +657,15 @@ func Error_AliasNotFound*(sym: string) =
                 _$#_
         """ ~~ @[sym]
 
+func Error_ColorNameNotFound*(color: string, alter: seq[string]) =
+    let sep = "\n" & "\b\b\b\b\b\bor... "
+    let hint = "Perhaps you meant... $$" ~~ @[alter.map((x) => "_" & x & "_ ?").join(sep)]
+    panic:
+        toError NameErr, """
+            Color name not recognized: 
+                _$#_
+        """ ~~ @[color], hint
+
 #------------------------
 # Value Errors
 #------------------------
