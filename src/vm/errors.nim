@@ -72,10 +72,20 @@ proc getCurrentContext(e: VError): string =
     if CurrentContext == ReplContext: return CurrentContext
     return " <script> "
 
+proc getMaxWidth(): int =
+    when not defined(WEB):
+        terminalWidth()
+    else:
+        80
+
 # General formatting
 
 proc processPseudomarkdown(s: string): string =
-    result = s.replacef(re"_([^_]+)_",fmt("{bold()}$1{resetColor}"))
+    result = 
+        when not defined(WEB):
+            s.replacef(re"_([^_]+)_",fmt("{bold()}$1{resetColor}"))
+        else:
+            s
 
 proc formatMessage(s: string): string =
     var ret = s.processPseudomarkdown()
@@ -99,13 +109,16 @@ proc lineTrunc(s: string, padding: int): string =
 proc `~~`*(s: string, inputs: seq[string]): string =
     var replacements: seq[string]
     var finalS = s
-    for line in s.splitLines():
-        for found in line.findAll(re"\$[\$#]"):
-            if found=="$$":
-                let ind = line.realFind("$$")
-                replacements.add(strip(lineTrunc(strip(inputs[replacements.len]),ind)))
-            else:
-                replacements.add(inputs[replacements.len])
+    when not defined(WEB):
+        for line in s.splitLines():
+            for found in line.findAll(re"\$[\$#]"):
+                if found=="$$":
+                    let ind = line.realFind("$$")
+                    replacements.add(strip(lineTrunc(strip(inputs[replacements.len]),ind)))
+                else:
+                    replacements.add(inputs[replacements.len])
+    else:
+        replacements = inputs
     
     finalS = finalS.replace("$$", "$#")
     return finalS % replacements    
@@ -123,7 +136,7 @@ proc printErrorHeader(e: VError) =
         "{HorizLine}{HorizLine}".fmt & 
         resetColor()
 
-    let middleStretch = terminalWidth() - preHeader.realLen() - postHeader.realLen()
+    let middleStretch = getMaxWidth() - preHeader.realLen() - postHeader.realLen()
 
     echo ""
     echo preHeader & repeat(HorizLine, middleStretch) & postHeader
@@ -163,7 +176,7 @@ proc printCodePreview(e: VError) =
 
 proc printHint(e: VError) =
     if e.hint != "":
-        let wrappingWidth = min(100, int(0.8 * float(terminalWidth() - 2 - 6)))
+        let wrappingWidth = min(100, int(0.8 * float(getMaxWidth() - 2 - 6)))
         let hinter = "  " & "\e[4;97m" & "Hint" & resetColor() & ": "
         echo ""
         if e.hint.contains("\n"):

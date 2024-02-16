@@ -162,11 +162,19 @@ func replaceOnce*(s, sub: string, by = ""): string =
         add result, substr(s, i)
 
 proc realLen*(s: string): int =
-    let cleanString = s.replacef(re"\e[^m]+m","")
+    let cleanString = 
+        when not defined(WEB):
+            s.replacef(re"\e[^m]+m","")
+        else:
+            s
     return cleanString.runeLen()
 
 proc realFind*(s: string, subs: string): int =
-    let cleanString = s.replacef(re"\e[^m]+m","")
+    let cleanString = 
+        when not defined(WEB):
+            s.replacef(re"\e[^m]+m","")
+        else:
+            s
     let subsLen = subs.len
     let runeLen = cleanString.runeLen()
     var i: int = 0
