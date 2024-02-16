@@ -71,7 +71,7 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary)
 template pushByIndex(idx: int):untyped =
     stack.push(cnst[idx])
 
-proc storeByIndex(cnst: ValueArray, idx: int, doPop: static bool = true) {.inline,enforceNoRaises.}=
+proc storeByIndex(cnst: ValueArray, idx: int, doPop: static bool = true) {.inline.}=
     hookProcProfiler("exec/storeByIndex"):
         var stackTop {.cursor.} = stack.peek(0)
 
@@ -79,7 +79,7 @@ proc storeByIndex(cnst: ValueArray, idx: int, doPop: static bool = true) {.inlin
         when doPop:
             stack.popN(1)
 
-proc dStoreByIndex(cnst: ValueArray, idx: int, doPop: static bool = true) {.inline,enforceNoRaises.}=
+proc dStoreByIndex(cnst: ValueArray, idx: int, doPop: static bool = true) {.inline.}=
     hookProcProfiler("exec/storeByIndex"):
         var stackTop {.cursor.} = stack.peek(0)
 

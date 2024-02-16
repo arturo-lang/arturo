@@ -144,10 +144,10 @@ func `[]`*(rng: VRange, idx: HSlice, returnValue: bool): VRange =
         )
 
 
-proc contains*(rng: VRange, v: Value): bool {.inline,enforceNoRaises.} =
+proc contains*(rng: VRange, v: Value): bool {.inline.} =
     rng.find(v) >= 0
 
-func min*(rng: VRange): (int,Value) {.inline,enforceNoRaises.} =
+func min*(rng: VRange): (int,Value) {.inline.} =
     if rng.forward: 
         return (0, getValueForRangeItem(rng, rng.start))
     else:
@@ -157,7 +157,7 @@ func min*(rng: VRange): (int,Value) {.inline,enforceNoRaises.} =
         let lastItem = rng.start - rng.step * rHigh
         return (rHigh, getValueForRangeItem(rng, lastItem))
 
-func max*(rng: VRange): (int,Value) {.inline,enforceNoRaises.} =
+func max*(rng: VRange): (int,Value) {.inline.} =
     if rng.forward: 
         if rng.infinite: return (0, newFloating(Inf))
 
