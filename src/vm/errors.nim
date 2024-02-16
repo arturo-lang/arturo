@@ -859,8 +859,7 @@ proc Error_ErrorLoadingLibrarySymbol*(path: string, sym: string) =
 
 proc ProgramError_panic*(message: string, code: int) =
     panic:
-        toError ProgramErr, 
-            $(code) & "<:>" & message
+        toError ProgramErr, message, errCode=code
 
 # TODO Re-establish stack trace debug reports
 #  labels: vm, error handling
