@@ -202,7 +202,7 @@ template handleVMErrors(blk: untyped): untyped =
             savePendingStores()
 
         try:
-            let code = parseInt(e.name)
+            let code = parseInt($(e.name))
             quit(code)
         except ValueError:
             quit(1)
