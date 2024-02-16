@@ -95,18 +95,18 @@ proc formatMessage(s: string): string =
 
     return ret
 
-proc lineTrunc(s: string, padding: int): string =
+func lineTrunc(s: string, padding: int): string =
     let lines = s.splitLines()
     if lines.len > 5:
         result = lines[0..4].join("\n")
-        result &= "\n" & fg(grayColor) & "..." & resetColor()
+        result &= "\n" & "..."
         result = strip(result)
     else:
         result = s
     
     result = indent(result, padding)
 
-proc `~~`*(s: string, inputs: seq[string]): string =
+func `~~`*(s: string, inputs: seq[string]): string =
     var replacements: seq[string]
     var finalS = s
     when not defined(WEB):
@@ -152,6 +152,10 @@ proc printErrorMessage(e: VError) =
 
 proc printCodePreview(e: VError) =
     when not defined(NOERRORLINES):
+        if e.context.file == "":
+            e.context.line = CurrentLine
+            e.context.file = CurrentPath
+
         if (not isRepl()) and (e.kind != CmdlineErr) and (e.kind != ProgramErr) :
             echo ""
             let codeLines = readFile(e.context.file).splitLines()
@@ -199,18 +203,20 @@ proc showError*(e: VError) =
     if (not isRepl()) or e.hint=="":
         echo ""
 
-proc panic(error: VError, line: int = -1) =
-    error.context = ErrorContext(
-        line: 
-            if line == -1: CurrentLine
-            else: line,
-        file: CurrentPath
-    )
-
-    if error.kind == CmdlineErr:
+func panic(error: VError, line: int = -1, cmdline: static bool = false) =
+    # error.context = ErrorContext(
+    #     line: 
+    #         if line == -1: CurrentLine
+    #         else: line,
+    #     file: CurrentPath
+    # )
+    debugEcho "about to panic!"
+    when cmdline:
+   # if error.kind == CmdlineErr:
         showError(error)
         quit(1)
     else:
+        debugEcho "raising error"
         raise error
 
 proc panic(line: int, error: VError) =
@@ -512,6 +518,16 @@ proc Error_DivisionByZero*(arg: string) =
             With value:
                 $$
         """ ~~ @[arg]
+
+func Error_ZeroDenominator*() =
+    debugEcho "in ZeroDenominator"
+    panic: 
+        toError(ArithmeticErr, """
+            Cannot create Rational value
+
+            Denominator is zero!
+        """ ~~ @[])
+
 #------------------------
 # Index Errors
 #------------------------
