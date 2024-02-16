@@ -17,6 +17,10 @@ import std/strformat
 #=======================================
 
 type        
+    ErrorContext* = object
+        line*: int
+        file*: string
+
     VErrorKind* = ref object
         parent*         : VErrorKind
         label*          : string
@@ -31,6 +35,7 @@ type
         #   caught
         kind*       : VErrorKind
         hint*       : string
+        context*    : ErrorContext
 
 #=======================================
 # Constants
