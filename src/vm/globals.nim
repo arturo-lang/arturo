@@ -60,20 +60,7 @@ var
 #=======================================
 
 func suggestAlternative(s: string, reference: SymTable | ValueDict = Syms): seq[string] {.inline.} =
-    var levs = initOrderedTable[string,float]()
-
-    for k,v in pairs(reference):
-        levs[k] = 1 - jaro(s,k)
-
-    proc cmper (x, y: (string, float)): int {.closure.} = 
-        let pts = cmp(x[1], y[1])
-        if pts == 0: return cmp(x[0], y[0])
-        else: return pts
-
-    levs.sort(cmper)
-
-    if levs.len > 3: result = toSeq(levs.keys)[0..2]
-    else: result = toSeq(levs.keys)
+    return s.getSimilar(toSeq(reference.keys()))
 
 #=======================================
 # Methods

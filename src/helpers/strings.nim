@@ -11,7 +11,7 @@
 #=======================================
 
 import lenientops, math, sequtils
-import strutils, sugar, unicode
+import strutils, sugar, tables, unicode
 
 when defined(WEB):
     import jsre
@@ -203,3 +203,19 @@ func wrapped*(initial: string, limit=50, delim="\n"): string =
             i += 1
 
         return (lines.map((l) => l.join(" "))).join(delim)
+
+func getSimilar*(s: string, options: seq[string]): seq[string] =
+    var levs = initOrderedTable[string,float]()
+
+    for k in options:
+        levs[k] = 1 - jaro(s,k)
+
+    proc cmper (x, y: (string, float)): int {.closure.} = 
+        let pts = cmp(x[1], y[1])
+        if pts == 0: return cmp(x[0], y[0])
+        else: return pts
+
+    levs.sort(cmper)
+
+    if levs.len > 3: result = toSeq(levs.keys)[0..2]
+    else: result = toSeq(levs.keys)
