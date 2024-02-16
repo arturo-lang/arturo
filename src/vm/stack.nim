@@ -134,13 +134,13 @@ template createAttrsStack*() =
     ## initialize the attributes table
     emptyAttrs()
 
-proc getAttr*(attr: string): Value {.inline,enforceNoRaises.} =
+proc getAttr*(attr: string): Value {.inline.} =
     ## get attribute ``attr`` from the attributes table
     ## 
     ## **Hint:** Returns ``VNULL`` if attribute doesn't exist
     Attrs.getOrDefault(attr, VNULL)
 
-proc popAttr*(attr: string): Value {.inline,enforceNoRaises.} =
+proc popAttr*(attr: string): Value {.inline.} =
     ## pop attribute ``attr`` from the attributes table
     ## 
     ## **Hint:** Returns ``nil`` if attribute doesn't exist

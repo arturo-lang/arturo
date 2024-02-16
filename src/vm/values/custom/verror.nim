@@ -203,8 +203,8 @@ func toError*(kind: VErrorKind, msg: string, hint: string = "", errCode: int = E
 # Overloads
 #=======================================
 
-func `$`*(kind: VErrorKind): string {.inline,enforceNoRaises.} =
+func `$`*(kind: VErrorKind): string {.inline.} =
     kind.label
 
-func `$`*(error: VError): string {.inline,enforceNoRaises.} =
+func `$`*(error: VError): string {.inline.} =
     fmt"{error.kind}: {error.msg}"

@@ -73,7 +73,7 @@ proc checkStorePath*(
 
     return (existing, actualPath, actualKind)
 
-func canStoreKey*(storeKind: StoreKind, valueKind: ValueKind): bool {.inline,enforceNoRaises.} =
+func canStoreKey*(storeKind: StoreKind, valueKind: ValueKind): bool {.inline.} =
     if storeKind == NativeStore: return true
 
     return valueKind in {Integer, Floating, String, Logical, Block, Dictionary, Null}
