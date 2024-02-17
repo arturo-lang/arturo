@@ -638,6 +638,26 @@ proc defineLibrary*() =
 
                 push newLogical(isHidden(x.s))
 
+        builtin "symlink?",
+            alias       = unaliased, 
+            op          = opNop,
+            rule        = PrefixPrecedence,
+            description = "check if given path exists and corresponds to a symlink",
+            args        = {
+                "path"  : {String}
+            },
+            attrs       = NoAttrs,
+            returns     = {Logical},
+            example     = """
+            if symlink? "somefile" [ 
+                print "symlink exists!" 
+            ]
+            """:
+                #=======================================================
+                when defined(SAFE): RuntimeError_OperationNotPermitted("symlink?")
+
+                push newLogical(symlinkExists(x.s))
+
 #=======================================
 # Add Library
 #=======================================
