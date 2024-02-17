@@ -563,13 +563,11 @@ proc defineLibrary*() =
             alias       = unaliased, 
             op          = opNop,
             rule        = PrefixPrecedence,
-            description = "check if given file exists",
+            description = "check if file/directory at given path exists",
             args        = {
-                "file"  : {String}
+                "path"  : {String}
             },
-            attrs       = {
-                "directory" : ({Logical},"check for directory")
-            },
+            attrs       = NoAttrs,
             returns     = {Logical},
             example     = """
             if exists? "somefile.txt" [ 
