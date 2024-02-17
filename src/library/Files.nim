@@ -571,13 +571,33 @@ proc defineLibrary*() =
             returns     = {Logical},
             example     = """
             if exists? "somefile.txt" [ 
-                print "file exists!" 
+                print "path exists!" 
             ]
             """:
                 #=======================================================
                 when defined(SAFE): RuntimeError_OperationNotPermitted("exists?")
 
                 push newLogical(fileExists(x.s) or dirExists(x.s) or symlinkExists(x.s))
+
+        builtin "file?",
+            alias       = unaliased, 
+            op          = opNop,
+            rule        = PrefixPrecedence,
+            description = "check if given path exists and corresponds to a file",
+            args        = {
+                "path"  : {String}
+            },
+            attrs       = NoAttrs,
+            returns     = {Logical},
+            example     = """
+            if exists? "somefile.txt" [ 
+                print "file exists!" 
+            ]
+            """:
+                #=======================================================
+                when defined(SAFE): RuntimeError_OperationNotPermitted("file?")
+
+                push newLogical(fileExists(x.s))
 
         builtin "hidden?",
             alias       = unaliased, 
