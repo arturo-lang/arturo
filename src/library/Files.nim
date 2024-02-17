@@ -579,10 +579,12 @@ proc defineLibrary*() =
                 #=======================================================
                 when defined(SAFE): RuntimeError_OperationNotPermitted("exists?")
 
-                if (hadAttr("directory")): 
-                    push(newLogical(dirExists(x.s)))
-                else: 
-                    push(newLogical(fileExists(x.s)))
+                push newLogical(fileExists(x.s) or dirExists(x.s) or symlinkExists(x.s))
+
+                # if (hadAttr("directory")): 
+                #     push(newLogical(dirExists(x.s)))
+                # else: 
+                #     push(newLogical(fileExists(x.s)))
 
         builtin "hidden?",
             alias       = unaliased, 
