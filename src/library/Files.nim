@@ -559,6 +559,26 @@ proc defineLibrary*() =
     # Predicates
     #----------------------------
 
+        builtin "directory?",
+            alias       = unaliased, 
+            op          = opNop,
+            rule        = PrefixPrecedence,
+            description = "check if given path exists and corresponds to a directory",
+            args        = {
+                "path"  : {String}
+            },
+            attrs       = NoAttrs,
+            returns     = {Logical},
+            example     = """
+            if directory? "src" [ 
+                print "directory exists!" 
+            ]
+            """:
+                #=======================================================
+                when defined(SAFE): RuntimeError_OperationNotPermitted("file?")
+
+                push newLogical(dirExists(x.s))
+
         builtin "exists?",
             alias       = unaliased, 
             op          = opNop,
@@ -590,7 +610,7 @@ proc defineLibrary*() =
             attrs       = NoAttrs,
             returns     = {Logical},
             example     = """
-            if exists? "somefile.txt" [ 
+            if file? "somefile.txt" [ 
                 print "file exists!" 
             ]
             """:
