@@ -559,30 +559,65 @@ proc defineLibrary*() =
     # Predicates
     #----------------------------
 
+        builtin "directory?",
+            alias       = unaliased, 
+            op          = opNop,
+            rule        = PrefixPrecedence,
+            description = "check if given path exists and corresponds to a directory",
+            args        = {
+                "path"  : {String}
+            },
+            attrs       = NoAttrs,
+            returns     = {Logical},
+            example     = """
+            if directory? "src" [ 
+                print "directory exists!" 
+            ]
+            """:
+                #=======================================================
+                when defined(SAFE): RuntimeError_OperationNotPermitted("file?")
+
+                push newLogical(dirExists(x.s))
+
         builtin "exists?",
             alias       = unaliased, 
             op          = opNop,
             rule        = PrefixPrecedence,
-            description = "check if given file exists",
+            description = "check if file/directory at given path exists",
             args        = {
-                "file"  : {String}
+                "path"  : {String}
             },
-            attrs       = {
-                "directory" : ({Logical},"check for directory")
-            },
+            attrs       = NoAttrs,
             returns     = {Logical},
             example     = """
             if exists? "somefile.txt" [ 
-                print "file exists!" 
+                print "path exists!" 
             ]
             """:
                 #=======================================================
                 when defined(SAFE): RuntimeError_OperationNotPermitted("exists?")
 
-                if (hadAttr("directory")): 
-                    push(newLogical(dirExists(x.s)))
-                else: 
-                    push(newLogical(fileExists(x.s)))
+                push newLogical(fileExists(x.s) or dirExists(x.s) or symlinkExists(x.s))
+
+        builtin "file?",
+            alias       = unaliased, 
+            op          = opNop,
+            rule        = PrefixPrecedence,
+            description = "check if given path exists and corresponds to a file",
+            args        = {
+                "path"  : {String}
+            },
+            attrs       = NoAttrs,
+            returns     = {Logical},
+            example     = """
+            if file? "somefile.txt" [ 
+                print "file exists!" 
+            ]
+            """:
+                #=======================================================
+                when defined(SAFE): RuntimeError_OperationNotPermitted("file?")
+
+                push newLogical(fileExists(x.s))
 
         builtin "hidden?",
             alias       = unaliased, 
@@ -602,6 +637,26 @@ proc defineLibrary*() =
                 when defined(SAFE): RuntimeError_OperationNotPermitted("hidden?")
 
                 push newLogical(isHidden(x.s))
+
+        builtin "symlink?",
+            alias       = unaliased, 
+            op          = opNop,
+            rule        = PrefixPrecedence,
+            description = "check if given path exists and corresponds to a symlink",
+            args        = {
+                "path"  : {String}
+            },
+            attrs       = NoAttrs,
+            returns     = {Logical},
+            example     = """
+            if symlink? "somefile" [ 
+                print "symlink exists!" 
+            ]
+            """:
+                #=======================================================
+                when defined(SAFE): RuntimeError_OperationNotPermitted("symlink?")
+
+                push newLogical(symlinkExists(x.s))
 
 #=======================================
 # Add Library
