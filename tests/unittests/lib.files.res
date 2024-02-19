@@ -392,7 +392,7 @@ Hello, world!
 file does not exist
 file exists
 
->> exists?.directory
+>> directory?
 
 directory does not exist
 directory exists
