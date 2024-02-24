@@ -29,6 +29,7 @@ jobs:
       matrix:
         os:
           - macos-latest
+          - macos-14
         version:
           - mini
           - full
