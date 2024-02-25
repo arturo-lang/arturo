@@ -13,18 +13,17 @@ suite "Test generic assertions" [
         assert -> between? "c" "a" "d"
     ]
 
-    test "middle is not between start..end, if start > middle" [
-        start: 8
-        middle: 5
-        end: 10
-        assert -> not? between? middle start end
+    test "value is between if it's equal to one of the bounds" [
+        assert -> between? 1 1 0
+        assert -> between? 1 0 1
+    ] 
+
+    test "middle is not between start..end, if middle < start" [
+        assert -> not? between? 5 8 10
     ]
 
-    test "middle is not between start..end, if end < middle" [
-        start: 1
-        middle: 6
-        end: 5
-        assert -> not? between? middle start end
+    test "middle is not between start..end, if middle > end" [
+        assert -> not? between? 6 1 5
     ]
 
     test "works on reverse order" [
