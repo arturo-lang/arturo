@@ -3,6 +3,38 @@ import.version: 1.0.0 {unitt}!
 numericTypes: [:integer :floating :rational]
 
 
+suite "Test generic assertions" [
+
+    test "between recorgnizes numeric order" [
+        assert -> between? 1 0 2
+    ]
+
+    test "between recorgnizes alphabetic order" [
+        assert -> between? "c" "a" "d"
+    ]
+
+    test "middle is not between start..end, if start > middle" [
+        start: 8
+        middle: 5
+        end: 10
+        assert -> not? between? middle start end
+    ]
+
+    test "middle is not between start..end, if end < middle" [
+        start: 1
+        middle: 6
+        end: 5
+        assert -> not? between? middle start end
+    ]
+
+    test "works on reverse order" [
+        assert -> between? 5 10 0
+        assert -> between? "g" "z" "a"
+    ]
+
+]
+
+
 suite "Test numeric-like values" [
 
     test.prop "start < middle < end, for deterministic operations"  [
