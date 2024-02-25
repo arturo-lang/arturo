@@ -1,0 +1,149 @@
+import.version: 1.0.0 {unitt}!
+
+numericTypes: [:integer :floating :rational]
+
+
+suite "Test numeric-like values" [
+
+    test.prop "start < middle < end, for deterministic operations"  [
+        limit: 100000000
+        loop permutate.repeated.by:3 numericTypes 'numericType [
+            middle: to numericType\[1] (random neg limit limit)
+            start:  to numericType\[0] (random neg limit (dec middle))
+            end:    to numericType\[2] (random (inc middle) limit)
+            
+            candidates: @[middle start end]
+            impreciseOperation: or?  ; skips floating-rational and rational-rational
+                and? (some? candidates => rational?) (some? candidates => floating?)
+                (every? candidates => rational?)
+
+            if impreciseOperation
+                -> continue
+            
+            assert -> between? middle start end
+        ]
+    ]
+
+    test "start < middle < end, for :rational and :floating" [
+        assert -> between? 3:2 1:1 2:1 ; :rational :rational :rational
+        assert -> between? 1.5 1:1 2:1 ; :floating :rational :rational
+        assert -> between? 3:2 1:1 2.0 ; :rational :rational :floating
+        assert -> between? 3:2 1.0 2:1 ; :rational :floating :rational
+        assert -> between? 3:2 1.0 2.0 ; :rational :floating :floating
+        assert -> between? 1.5 1.0 2:1 ; :floating :floating :rational
+    ]
+
+    test "start < middle < end, for :currency" [
+        bounds: [[1 2] [1.0 2.0] [1:1 2:1] [1`usd 2`usd]]
+
+        loop bounds 'bound [
+            start: first bound
+            end: last bound
+            assert -> between? 1.5`usd start end
+        ]
+    ]
+
+    test "start < middle < end, for :complex's real" [
+        assert -> between? to :complex [1 2] to :complex [0 2] to :complex [2 2]
+        assert -> between? to :complex [1 2] to :complex [1 2] to :complex [2 2]
+
+        assert -> not? between? to :complex [0 2] to :complex [1 2] to :complex [2 2]
+        assert -> not? between? to :complex [3 2] to :complex [0 2] to :complex [1 2]
+    ]
+
+    test "start < middle < end, for :complex's imaginary" [
+        assert -> between? to :complex [1 1] to :complex [1 0] to :complex [1 2]
+        assert -> between? to :complex [1 1] to :complex [1 1] to :complex [1 2]
+
+        assert -> not? between? to :complex [1 0] to :complex [1 1] to :complex [1 2]
+        assert -> not? between? to :complex [1 3] to :complex [1 0] to :complex [1 2]
+    ]
+
+]
+
+
+suite "Test :version values" [
+
+    test "first < current < final, for :version" [
+        assert -> between? 1.0.0 0.5.0 2.1.5
+        assert -> between? 1.1.0 1.0.0 1.2.0 
+        assert -> between? 1.1.1 1.1.0 1.1.2
+    ]
+
+    test ":version suffix affects the comparison" [
+        assert -> between? 1.1.1-pre 1.1.0-pre 1.1.1-pre 
+        assert -> between? 1.1.1-pre 1.1.0 1.1.1-pre 
+        assert -> not? between? 1.1.1-pre 1.1.0 1.1.1 
+        assert -> not? between? 1.1.1-pre 1.1.0-pre 1.1.1 
+    ]
+
+]
+
+
+suite "Test :string-like values" [
+
+    test "between works with alphabetic order" [
+        languages: ["arturo" "c" "ruby"]
+        stringLikeTypes: [:string :word :label :literal :attribute :attributeLabel]
+
+        loop stringLikeTypes 'kind [
+            lower:  to kind languages\0
+            middle: to kind languages\1
+            higher: to kind languages\2
+
+            assert -> between? middle lower higher
+        ]
+
+    ]
+
+]
+
+
+suite "Test :date values" [
+
+    test "15th is between 1st .. 30th for the same month" [
+        date: $[day] -> to :date .format: "MMM dd" ~"Jan |day|"
+
+        firstDay:  date "01"
+        fifithDay: date "15"
+        thirdDay:  date "30"
+
+        assert -> between? fifithDay firstDay thirdDay
+    ]
+
+    test "June is between January and December" [
+        date: $[month] -> to :date .format: "MMM" month
+
+        january:  date "Jan"
+        june:     date "Jun"
+        december: date "Dec"
+    
+        assert -> between? june january december
+    ]
+
+    test "XX century is between XIX and XXI" [
+        date: $[year] -> to :date .format: "YYYY" year
+
+        xixCentury: date "1801"
+        xxCentury:  date "1901"
+        xxiCentury: date "2001"
+
+        assert -> between? xxCentury xixCentury xxiCentury
+
+    ]
+
+    test "father is between grandmother and son" [
+        birth: $[date][
+            to :date .format: "YYYY/mm/dd" date
+        ]
+
+        grandmother: birth "1943/11/18"
+        father: birth "1980/05/17"
+        son: birth "2006/03/19"
+
+        assert -> between? father grandmother son
+
+    ]
+
+]
+
