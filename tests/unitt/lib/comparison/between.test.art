@@ -129,7 +129,7 @@ suite "Test :string-like values" [
     ]
 
     test "between works for :char" [
-        assert -> between? `c` `b` `d`
+        assert -> between? 'c' 'b' 'd'
     ]
 
 ]
