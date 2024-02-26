@@ -26,9 +26,6 @@ testBlank: function [lst][
     print ["Ruby:NONE               :" runWithRuby lst {puts %ARR.sort_by { |x| x.downcase }}]
     print ["Arturo:NONE             :" join.with:" " sort lst]
     print ""
-    print ["Arturo:ASCII            :" join.with:" " sort.ascii lst]
-    print ["Arturo:ASCII+Sensitive  :" join.with:" " sort.ascii.sensitive lst]
-    print ""
     print ["Ruby:Sensitive          :" runWithRuby lst {puts %ARR.sort}]
     print ["Arturo:Sensitive        :" join.with:" " sort.sensitive lst]
     print ""

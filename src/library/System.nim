@@ -304,11 +304,6 @@ proc defineLibrary*() =
             else:
                 ProgramError_panic(x.s.replace("\n",";"), code)
 
-    # TODO(Paths\path) shouldn't be considered a constant
-    #  let's say constants are exactly that: constants.
-    #  if the exact same "constant" returns different results based on
-    #  the system it's running on, then it's not a constant.
-    #  labels: library, enhancement
     builtin "path",
         alias       = unaliased, 
         op          = opNop,
@@ -318,6 +313,8 @@ proc defineLibrary*() =
         attrs       = NoAttrs,
         returns     = {Dictionary},
         example     = """
+        path
+        ; => [current:C:\Users\me\my-proj home:C:\Users\me\ temp:C:\Users\me\AppData\Local\Temp\
         """:
             #=======================================================
             push(newDictionary(getPathInfo()))

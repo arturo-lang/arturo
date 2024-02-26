@@ -16,6 +16,9 @@
 # Compilation & Linking
 #=======================================
 
+when defined(macosx) and defined(arm64):
+    {.passL: "-L/opt/homebrew/lib".}
+    
 {.passL: "-lmpfr -lgmp".}
 
 {.push header: "<gmp.h>", cdecl.}

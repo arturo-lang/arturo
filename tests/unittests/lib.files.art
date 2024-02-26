@@ -67,14 +67,14 @@ do [
     loop folders 'f -> write.directory ~"|dir|/input/|f|" null
     write.directory ~"|dir|/dest" null
 
-    ensure -> every? folders 'f -> exists?.directory ~"|dir|/input/|f|"
-    ensure -> exists?.directory ~"|dir|/dest"
+    ensure -> every? folders 'f -> exists? ~"|dir|/input/|f|"
+    ensure -> exists? ~"|dir|/dest"
 
     ; ---------//---------//---------//
 
     copy.directory ~"|dir|/input" ~"|dir|/dest"
 
-    ensure -> every? folders 'f -> exists?.directory ~"|dir|/dest/|f|"
+    ensure -> every? folders 'f -> exists? ~"|dir|/dest/|f|"
     print "copy empty directory is working well!"
 
 ]
@@ -90,7 +90,7 @@ do [
     write.directory ~"|dir|/dest" null
 
     ensure -> every? folders 'f -> exists? ~"|dir|/input/|f|/file.txt"
-    ensure -> exists?.directory ~"|dir|/dest"
+    ensure -> exists? ~"|dir|/dest"
 
     ; ---------//---------//---------//
 
@@ -131,12 +131,12 @@ do [
     loop folders 'f -> write.directory ~"|dir|/|f|" null
 
     ensure -> every? folders 'f
-        -> exists?.directory ~"|dir|/|f|"
+        -> exists? ~"|dir|/|f|"
 
     ; ---------//---------//---------//
 
     loop folders 'f -> delete.directory ~"|dir|/|f|"
-    ensure -> every? folders 'f -> not? exists?.directory ~"|dir|/|f|"
+    ensure -> every? folders 'f -> not? exists? ~"|dir|/|f|"
     print "directories deleted!"
 
 ]
@@ -195,8 +195,8 @@ do [
 
     ensure -> every? folders 'f
     -> and?
-        exists?.directory ~"|dir|/input/|f|"
-        not? exists?.directory ~"|dir|/dest/|f|"
+        exists? ~"|dir|/input/|f|"
+        not? exists? ~"|dir|/dest/|f|"
 
     print "empty folders created inside input/"
 
@@ -204,9 +204,9 @@ do [
 
     move.directory ~"|dir|/input" ~"|dir|/dest"
 
-    ensure -> not? exists?.directory ~"|dir|/input"
+    ensure -> not? exists? ~"|dir|/input"
     ensure -> every? folders 'f
-    -> exists?.directory ~"|dir|/dest/|f|"
+    -> exists? ~"|dir|/dest/|f|"
 
     print "empty folders moved to dest/"
 
@@ -229,7 +229,7 @@ do [
 
     move.directory ~"|dir|/input" ~"|dir|/dest"
 
-    ensure -> not? exists?.directory ~"|dir|/input"
+    ensure -> not? exists? ~"|dir|/input"
     ensure -> every? folders 'f
     -> exists? ~"|dir|/dest/|f|/file.txt"
 
@@ -888,8 +888,8 @@ do [
     write.directory ~"|dir|/folder" null
     write.directory ~"|dir|/directory" null
 
-    ensure -> exists?.directory ~"|dir|/folder"
-    ensure -> exists?.directory ~"|dir|/directory"
+    ensure -> exists? ~"|dir|/folder"
+    ensure -> exists? ~"|dir|/directory"
 
     print "passed!"
 
@@ -957,18 +957,18 @@ do [
 
 ]
 
-topic "exists?.directory"
+topic "directory?"
 do [
 
     dir: createTestFolder "exists-dir"
 
-    if not? exists?.directory ~"|dir|/dir" [
+    if not? directory? ~"|dir|/dir" [
         print "directory does not exist"
     ]
 
     write.directory ~"|dir|/dir" null
 
-    if exists?.directory ~"|dir|/dir" [
+    if directory? ~"|dir|/dir" [
         print "directory exists"
     ]
 

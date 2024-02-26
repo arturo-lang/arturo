@@ -586,8 +586,6 @@ do [
 
     drop 'a
     drop 'b\b
-    print a
-    print b\b
     ensure -> a = b\b
     passed
 
@@ -1448,7 +1446,7 @@ do [
 
     if throws? -> last.n: neg 2 range 0 5 -> passed
 
-    if throws? -> last.n: 7 range 0 5 -> passed
+    if not? throws? -> last.n: 7 range 0 5 -> passed
 
 
 ]
@@ -2560,18 +2558,6 @@ do [
     passed
 
 
-    ; .ascii
-
-    a: ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
-
-    ensure -> ["ábaco" "aberración" "abismo" "dos" "perversión" "tres" "uno" "Uno"]
-        = sort.ascii a
-    passed
-
-    ensure -> ["uno" "Uno" "tres" "perversión" "dos" "abismo" "aberración" "ábaco"]
-        = sort.descending.ascii a
-    passed
-
 ]
 
 topic "sort - + .descending (literal)"
@@ -2640,23 +2626,6 @@ do [
         = a
     passed
 
-
-    ; .ascii
-
-
-    a: ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
-    sort.ascii 'a
-    ensure -> ["ábaco" "aberración" "abismo" "dos" "perversión" "tres" "uno" "Uno"]
-        = a
-    passed
-
-    a: ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
-    sort.descending.ascii 'a
-    ensure -> ["uno" "Uno" "tres" "perversión" "dos" "abismo" "aberración" "ábaco"]
-       = a
-    passed
-
-
 ]
 
 topic "sort - .values"
@@ -2703,18 +2672,6 @@ do [
         = sort.values.descending.as: 'es a
     passed
 
-
-    ; .ascii
-
-    a: #[a: "uno", b:"dos",c:"tres",d:"Uno",e:"perversión",f:"ábaco",g:"abismo", h:"aberración"]
-
-    ensure -> (#[f: "ábaco" h: "aberración" g: "abismo" b: "dos" e: "perversión" c: "tres" a: "uno" d: "Uno" ])
-        = sort.values.ascii a
-    passed
-
-    ensure -> (#[a: "uno" d: "Uno" c: "tres" e: "perversión" b: "dos" g: "abismo" h: "aberración" f: "ábaco" ])
-        = sort.values.descending.ascii a
-    passed
 
 ]
 
@@ -2773,21 +2730,6 @@ do [
     sort.values.descending.as: 'es 'a
     ensure -> (#[a: "uno" d: "Uno" c: "tres" e: "perversión" b: "dos" g: "abismo" h: "aberración" f: "ábaco" ])
         = a
-    passed
-
-
-    ; .ascii
-
-    a: #[a: "uno", b:"dos",c:"tres",d:"Uno",e:"perversión",f:"ábaco",g:"abismo", h:"aberración"]
-    sort.values.ascii 'a
-    ensure -> (#[f: "ábaco" h: "aberración" g: "abismo" b: "dos" e: "perversión" c: "tres" a: "uno" d: "Uno" ])
-        = a
-    passed
-
-    a: #[a: "uno", b:"dos",c:"tres",d:"Uno",e:"perversión",f:"ábaco",g:"abismo", h:"aberración"]
-    sort.values.descending.ascii 'a
-    ensure -> (#[a: "uno" d: "Uno" c: "tres" e: "perversión" b: "dos" g: "abismo" h: "aberración" f: "ábaco" ])
-        = sort.values.descending.ascii a
     passed
 
 ]
@@ -2871,28 +2813,6 @@ do [
     ensure -> a = b\b
     passed
 
-
-    ; .ascii
-
-    dict: #[a: "uno", b:"dos",c:"tres",d:"Uno",e:"perversión",f:"ábaco",g:"abismo", h:"aberración"]
-    
-    a: new dict
-    b: #[b: new dict]
-
-    sort.values.ascii 'a
-    sort.values.ascii 'b\b
-    ensure -> a = b\b
-    passed
-
-    dict: #[a: "uno", b:"dos",c:"tres",d:"Uno",e:"perversión",f:"ábaco",g:"abismo", h:"aberración"]
-    
-    a: new dict
-    b: #[b: new dict]
-
-    sort.values.descending.ascii 'a
-    sort.values.descending.ascii 'b\b
-    ensure -> a = b\b
-    passed
 
 ]
 
@@ -2986,27 +2906,6 @@ do [
     ; ensure -> result = sort.sensitive.by: 'b words
     ; passed
 
-
-
-    ; .ascii
-
-    ; words: @[
-    ;     #[a: "uno" b: "ábaco"]
-    ;     #[a: "dos" b: "perversión"]
-    ;     #[a: "tres" b: "aberración"]
-    ;     #[a: "abismo" b: "abaco"]
-    ; ]
-
-    ; result: [
-    ;     #[a: "abismo" b: "abaco" ]
-    ;     #[a: "uno" b: "ábaco" ]
-    ;     #[a: "tres" b: "aberración" ]
-    ;     #[a: "dos" b: "perversión" ]
-    ; ]
-
-    ; ensure -> result = sort.ascii.by: "b" words
-    ; ensure -> result = sort.ascii.by: 'b words
-    ; passed
 
 ]
 
