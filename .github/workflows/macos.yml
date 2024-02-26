@@ -27,15 +27,14 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os:
-          - macos-latest
-          - macos-14
         version:
           - mini
           - full
-        arch:
-          - amd64
-          - arm64
+        include:
+          - os: macos-latest
+            arch: amd64
+          - os: macos-14
+            arch: arm64
     steps:
       - name: "Checkout"
         uses: actions/checkout@main
