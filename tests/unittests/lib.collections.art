@@ -783,9 +783,9 @@ do [
     ensure -> 5 = first.n: 0 range 5 0
     passed
 
-    if throws? -> first.n: neg 2 range 0 5 -> passed
+    ; if throws? -> first.n: neg 2 range 0 5 -> passed
 
-    if not? throws? -> first.n: 7 range 0 5 -> passed
+    ; if not? throws? -> first.n: 7 range 0 5 -> passed
 
 ]
 
