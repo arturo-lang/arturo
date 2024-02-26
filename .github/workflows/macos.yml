@@ -88,16 +88,16 @@ jobs:
         run: |
           nim --version
           
-      - name: Build Arturo
-        run: |
-          echo "./bin" >> $GITHUB_PATH
-          ./build.nims build --mode ${{ matrix.version }} --arch ${{ matrix.arch }} --log
+      # - name: Build Arturo
+      #   run: |
+      #     echo "./bin" >> $GITHUB_PATH
+      #     ./build.nims build --mode ${{ matrix.version }} --arch ${{ matrix.arch }} --log
           
       - name: Upload Artifacts
         uses: 'actions/upload-artifact@v2'
         with:
           name: "arturo-${{matrix.version}}-${{matrix.arch}}-macos"
-          path: bin/arturo
+          path: /opt/homebrew/Cellar/pcre/8.45/lib/libpcre.a
 
       - name: Run unit tests (full)
         if: matrix.version == 'full'
