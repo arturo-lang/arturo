@@ -1015,6 +1015,9 @@ proc defineLibrary*() =
                         if aN.i == 1 or aN.i == 0:
                             push(x.rng[x.rng.len, true])
                         elif aN.i < 0:
+                            # TODO(Collections\last) Better handling of errors related to the value of `n`
+                            #  to be handled in: https://github.com/arturo-lang/arturo/pull/1432
+                            #  labels: error handling, library
                             raise newException(ValueError, "negative number of elements")
                         else:
                             push(newRange(x.rng[max(x.rng.len-aN.i, 0)..x.rng.len, true]))
