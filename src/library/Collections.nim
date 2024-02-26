@@ -625,6 +625,11 @@ proc defineLibrary*() =
                 elif xKind == Range:
                     if aN.i == 1 or aN.i == 0:
                         push(x.rng[1, true])
+                    elif aN.i < 0:
+                        # TODO(Collections\first) Better handling of errors related to the value of `n`
+                        #  to be handled in: https://github.com/arturo-lang/arturo/pull/1432
+                        #  labels: error handling, library
+                        raise newException(ValueError, "negative number of elements")
                     else:
                         push(newRange(x.rng[0..min(aN.i, x.rng.len), true]))
                 else:
@@ -1012,8 +1017,13 @@ proc defineLibrary*() =
                     else:
                         if aN.i == 1 or aN.i == 0:
                             push(x.rng[x.rng.len, true])
+                        elif aN.i < 0:
+                            # TODO(Collections\last) Better handling of errors related to the value of `n`
+                            #  to be handled in: https://github.com/arturo-lang/arturo/pull/1432
+                            #  labels: error handling, library
+                            raise newException(ValueError, "negative number of elements")
                         else:
-                            push(newRange(x.rng[x.rng.len-aN.i..x.rng.len, true]))
+                            push(newRange(x.rng[max(x.rng.len-aN.i, 0)..x.rng.len, true]))
                 else:
                     if x.a.len == 0: push(newBlock())
                     else: push(newBlock(x.a[x.a.len-aN.i..^1]))

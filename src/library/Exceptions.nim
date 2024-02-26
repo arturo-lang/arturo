@@ -110,7 +110,6 @@ proc defineSymbols*() =
             #=======================================================
             try:
                 execUnscoped(x)
-
                 push(VFALSE)
             except CatchableError, Defect, VError:
                 push(VTRUE)
