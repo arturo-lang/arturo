@@ -102,8 +102,7 @@ jobs:
         if: matrix.version == 'full'
         run: |
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
-          arturo tests/unittests/lib.collections.art 
-        # tools/tester.art
+          arturo tools/tester.art
 
       - name: Run unit tests (mini)
         if: matrix.version == 'mini'
