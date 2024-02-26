@@ -1015,8 +1015,10 @@ proc defineLibrary*() =
                         if aN.i == 1 or aN.i == 0:
                             push(x.rng[x.rng.len, true])
                         elif aN.i < 0:
+                            echo "n is negative"
                             raise newException(ValueError, "negative number of elements")
                         else:
+                            echo "n is non-negative"
                             push(newRange(x.rng[x.rng.len-aN.i..x.rng.len, true]))
                 else:
                     if x.a.len == 0: push(newBlock())
