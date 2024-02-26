@@ -586,8 +586,6 @@ do [
 
     drop 'a
     drop 'b\b
-    print a
-    print b\b
     ensure -> a = b\b
     passed
 
@@ -1448,7 +1446,7 @@ do [
 
     if throws? -> last.n: neg 2 range 0 5 -> passed
 
-    if throws? -> last.n: 7 range 0 5 -> passed
+    if not? throws? -> last.n: 7 range 0 5 -> passed
 
 
 ]

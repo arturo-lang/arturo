@@ -22,6 +22,9 @@ proc webBuildConfig() =
 
 proc fullBuildConfig() =
     --define:GMP
+    when defined(arm64):
+        if hostOS == "macosx": 
+            --define:useOpenssl3
     --define:ssl
 
 {. pop .}
