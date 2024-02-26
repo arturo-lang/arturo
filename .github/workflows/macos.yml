@@ -67,13 +67,15 @@ jobs:
           path: ~/.nimble
           key: ${{ matrix.os }}-nimble-${{ hashFiles('*.nimble') }}
 
-      - name: Install dependencies (M1)
+      - name: Setup nim (M1)
         if: matrix.arch == 'arm64'
         run: |
+          brew install nim@2.0.0
           ls -la /opt/homebrew/include
           ls -la /opt/homebrew/opt/gmp/include
 
-      - name: Setup nim
+      - name: Setup nim (amd64)
+        if: matrix.arch == 'amd64'
         uses: jiro4989/setup-nim-action@v1
         with:
           nim-version: '2.0.0'
