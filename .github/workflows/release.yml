@@ -22,6 +22,7 @@ jobs:
         os:
           - ubuntu-20.04
           - macos-latest
+          - macos-14
         version:
           - mini
           - full
@@ -43,6 +44,12 @@ jobs:
             arch: arm
           - os: macos-latest
             arch: arm64
+          - os: macos-14
+            arch: amd64
+          - os: macos-14
+            arch: arm
+          - os: macos-14
+            arch: x86
 
     steps:
       - name: "Cancel similar actions in progress"
@@ -85,6 +92,12 @@ jobs:
         run: |
           sudo apt-get install libwebkit2gtk-4.0-dev libmpfr-dev
 
+      - name: Install dependencies (MacOS / full / arm64)
+        if: matrix.os == 'macos-14' && matrix.arch == 'arm64'
+        run: |
+          brew install pcre
+          brew install mpfr
+
       - name: Verify dependecies
         run: |
           nim --version
@@ -115,7 +128,7 @@ jobs:
           path: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.version}}-${{matrix.arch}}-linux.tar.gz
 
       - name: Upload Artifact (macOS)
-        if: matrix.os == 'macos-latest'
+        if: matrix.os == 'macos-latest' || matrix.os == 'macos-14'
         uses: 'actions/upload-artifact@v1'
         with:
           name: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.version}}-${{matrix.arch}}-macos.tar.gz
