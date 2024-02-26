@@ -19,6 +19,9 @@ import extras/gmp
 # Compilation & Linking
 #=======================================
 
+when defined(macosx) and defined(arm64):
+    {.passL: "-L/opt/homebrew/lib".}
+
 {.push header: "<mpfr.h>", cdecl.}
 
 #=======================================
