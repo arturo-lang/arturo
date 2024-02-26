@@ -586,8 +586,6 @@ do [
 
     drop 'a
     drop 'b\b
-    print a
-    print b\b
     ensure -> a = b\b
     passed
 
