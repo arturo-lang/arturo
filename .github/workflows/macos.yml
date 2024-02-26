@@ -71,7 +71,9 @@ jobs:
         if: matrix.arch == 'arm64'
         run: |
           brew install nim
+          brew install pcre
           ls -la /opt/homebrew/lib
+          ls -la /usr/local/lib
           ls -la /opt/homebrew/include
           ls -la /opt/homebrew/opt/gmp/include
 
