@@ -1446,7 +1446,7 @@ do [
 
     if throws? -> last.n: neg 2 range 0 5 -> passed
 
-    if throws? -> last.n: 7 range 0 5 -> passed
+    if not? throws? -> last.n: 7 range 0 5 -> passed
 
 
 ]
