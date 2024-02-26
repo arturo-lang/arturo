@@ -73,7 +73,7 @@ jobs:
           brew install nim
           brew install pcre
           brew install mpfr
-          brew install openssl@1.1
+          brew reinstall openssl@1.1
           ls -la /opt/homebrew/lib
 
  
