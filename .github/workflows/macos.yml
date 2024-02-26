@@ -27,14 +27,21 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
+        os:
+          - macos-latest
+          - macos-14
         version:
           - mini
           - full
-        include:
+        arch:
+          - amd64
+          - arm64
+        exclude:
           - os: macos-latest
-            arch: amd64
-          - os: macos-14
             arch: arm64
+          - os: macos-14
+            arch: amd64
+
     steps:
       - name: "Checkout"
         uses: actions/checkout@main
@@ -66,10 +73,10 @@ jobs:
           nim-version: '2.0.0'
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Install dependencies (M1)
-        if: matrix.arch == 'arm64'
-        run: |
-          brew install gmp
+      # - name: Install dependencies (M1)
+      #   if: matrix.arch == 'arm64'
+      #   run: |
+      #     brew install gmp
 
       - name: Verify dependecies
         run: |
