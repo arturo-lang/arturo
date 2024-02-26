@@ -620,6 +620,8 @@ proc defineLibrary*() =
             #=======================================================            
             echo "In `first`"
             if checkAttr("n"):
+                echo "n is set"
+                echo "xKind is " & $(xKind)
                 if xKind == String:
                     if x.s.len == 0: push(newString(""))
                     else: push(newString(x.s[0..min(aN.i-1, x.s.high)]))
@@ -634,6 +636,8 @@ proc defineLibrary*() =
                     else: push(newBlock(x.a[0..min(aN.i-1, x.a.high)]))
                     echo "Done."
             else:
+                echo "n is not set"
+                echo "xKind is " & $(xKind)
                 if xKind == String:
                     if x.s.len == 0: push(VNULL)
                     else: push(newChar(x.s.runeAt(0)))
