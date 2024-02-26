@@ -67,18 +67,17 @@ jobs:
           path: ~/.nimble
           key: ${{ matrix.os }}-nimble-${{ hashFiles('*.nimble') }}
 
+      - name: Install dependencies (M1)
+        if: matrix.arch == 'arm64'
+        run: |
+          ls -la /opt/homebrew/include
+          ls -la /opt/homebrew/opt/gmp/include
+
       - name: Setup nim
         uses: jiro4989/setup-nim-action@v1
         with:
           nim-version: '2.0.0'
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Install dependencies (M1)
-        if: matrix.arch == 'arm64'
-        run: |
-          brew install gmp
-          ls -la /opt/homebrew/include
-          ls -la /opt/homebrew/opt/gmp/include
 
       - name: Verify dependecies
         run: |

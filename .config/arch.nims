@@ -10,6 +10,8 @@ proc arm64Config() =
         --gcc.path:"/usr/bin" 
         --gcc.exe:"aarch64-linux-gnu-gcc" 
         --gcc.linkerexe:"aarch64-linux-gnu-gcc"
+    else:
+        --passC:"-I/opt/homebrew/include"
     
 proc x86Config() =
     --cpu:i386 
