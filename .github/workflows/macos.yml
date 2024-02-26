@@ -71,6 +71,7 @@ jobs:
         if: matrix.arch == 'arm64'
         run: |
           brew install nim
+          ls -la /opt/homebrew/lib
           ls -la /opt/homebrew/include
           ls -la /opt/homebrew/opt/gmp/include
 
