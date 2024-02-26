@@ -1444,9 +1444,9 @@ do [
     ensure -> 0 = last.n: 0 range 5 0
     passed
 
-    ; if throws? -> last.n: neg 2 range 0 5 -> passed
+    if throws? -> last.n: neg 2 range 0 5 -> passed
 
-    ; if throws? -> last.n: 7 range 0 5 -> passed
+    if throws? -> last.n: 7 range 0 5 -> passed
 
 
 ]
