@@ -111,7 +111,7 @@ proc defineSymbols*() =
             try:
                 echo "in throws?"
                 execUnscoped(x)
-
+                echo "after throws?"
                 push(VFALSE)
             except CatchableError, Defect, VError:
                 echo "caught one of the errors"
