@@ -70,7 +70,7 @@ jobs:
       - name: Setup nim (M1)
         if: matrix.arch == 'arm64'
         run: |
-          brew install nim@2.0.0
+          brew install nim
           ls -la /opt/homebrew/include
           ls -la /opt/homebrew/opt/gmp/include
 
