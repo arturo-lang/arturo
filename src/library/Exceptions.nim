@@ -109,11 +109,15 @@ proc defineSymbols*() =
         """:
             #=======================================================
             try:
+                echo "in throws?"
                 execUnscoped(x)
 
                 push(VFALSE)
             except CatchableError, Defect, VError:
+                echo "caught one of the errors"
                 push(VTRUE)
+            except:
+                echo "some other error?!"
 
     builtin "try",
         alias       = unaliased, 
