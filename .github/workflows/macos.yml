@@ -98,7 +98,7 @@ jobs:
         uses: 'actions/upload-artifact@v2'
         with:
           name: "arturo-${{matrix.version}}-${{matrix.arch}}-macos"
-          path: arturo
+          path: /opt/homebrew/opt/openssl@1.1/lib/libssl.a
 
       - name: Run unit tests (full)
         if: matrix.version == 'full'
