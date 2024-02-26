@@ -73,7 +73,7 @@ jobs:
           brew install nim
           brew install pcre
           brew install mpfr
-
+ 
       - name: Setup nim (amd64)
         if: matrix.arch == 'amd64'
         uses: jiro4989/setup-nim-action@v1
