@@ -628,6 +628,8 @@ proc defineLibrary*() =
                 elif xKind == Range:
                     if aN.i == 1 or aN.i == 0:
                         push(x.rng[1, true])
+                    elif aN.i < 0:
+                        raise newException(ValueError, "negative number of elements")
                     else:
                         push(newRange(x.rng[0..min(aN.i, x.rng.len), true]))
                 else:
@@ -1019,6 +1021,8 @@ proc defineLibrary*() =
                     else:
                         if aN.i == 1 or aN.i == 0:
                             push(x.rng[x.rng.len, true])
+                        elif aN.i < 0:
+                            raise newException(ValueError, "negative number of elements")
                         else:
                             push(newRange(x.rng[x.rng.len-aN.i..x.rng.len, true]))
                 else:
