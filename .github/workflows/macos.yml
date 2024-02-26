@@ -73,6 +73,8 @@ jobs:
           brew install nim
           brew install pcre
           brew install mpfr
+          ls -la /opt/homebrew/lib
+          
  
       - name: Setup nim (amd64)
         if: matrix.arch == 'amd64'
