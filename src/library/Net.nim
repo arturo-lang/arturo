@@ -26,7 +26,10 @@ when defined(ssl):
     elif defined(linux):
         {.passL: "-Bstatic -Lsrc/extras/openssl/deps/linux -lssl -lcrypto -Bdynamic".}
     elif defined(macosx):
-        {.passL: "-Bstatic -Lsrc/extras/openssl/deps/macos -lssl -lcrypto -Bdynamic".}
+        when defined(arm64):
+            {.passL: "-Bstatic -Lsrc/extras/openssl/deps/macos/m1 -lssl -lcrypto -Bdynamic".}
+        else:
+            {.passL: "-Bstatic -Lsrc/extras/openssl/deps/macos -lssl -lcrypto -Bdynamic".}
 
 #=======================================
 # Libraries
