@@ -72,10 +72,6 @@ jobs:
         run: |
           brew install nim
           brew install pcre
-          ls -la /opt/homebrew/lib
-          ls -la /usr/local/lib
-          ls -la /opt/homebrew/include
-          ls -la /opt/homebrew/opt/gmp/include
 
       - name: Setup nim (amd64)
         if: matrix.arch == 'amd64'
@@ -88,16 +84,16 @@ jobs:
         run: |
           nim --version
           
-      # - name: Build Arturo
-      #   run: |
-      #     echo "./bin" >> $GITHUB_PATH
-      #     ./build.nims build --mode ${{ matrix.version }} --arch ${{ matrix.arch }} --log
+      - name: Build Arturo
+        run: |
+          echo "./bin" >> $GITHUB_PATH
+          ./build.nims build --mode ${{ matrix.version }} --arch ${{ matrix.arch }} --log
           
       - name: Upload Artifacts
         uses: 'actions/upload-artifact@v2'
         with:
           name: "arturo-${{matrix.version}}-${{matrix.arch}}-macos"
-          path: /opt/homebrew/Cellar/openssl@3/3.2.0_1/lib/libssl.a
+          path: arturo
 
       - name: Run unit tests (full)
         if: matrix.version == 'full'
