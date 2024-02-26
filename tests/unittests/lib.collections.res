@@ -185,8 +185,6 @@
 [+] passed!
 
 >> drop - :string < :string (pathLiteral) :string
-rt
-rt
 [+] passed!
 
 >> drop - :block < :block :block
