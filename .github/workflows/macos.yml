@@ -87,10 +87,10 @@ jobs:
         run: |
           nim --version
           
-      # - name: Build Arturo
-      #   run: |
-      #     echo "./bin" >> $GITHUB_PATH
-      #     ./build.nims build --mode ${{ matrix.version }} --arch ${{ matrix.arch }} --log
+      - name: Build Arturo
+        run: |
+          echo "./bin" >> $GITHUB_PATH
+          ./build.nims build --mode ${{ matrix.version }} --arch ${{ matrix.arch }} --log
           
       - name: Upload Artifacts
         uses: 'actions/upload-artifact@v2'
