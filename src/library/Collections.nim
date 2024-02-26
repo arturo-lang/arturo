@@ -618,6 +618,7 @@ proc defineLibrary*() =
             print first.n:2 ["one" "two" "three"] ; one two
         """:
             #=======================================================            
+            echo "In `first`"
             if checkAttr("n"):
                 if xKind == String:
                     if x.s.len == 0: push(newString(""))
@@ -628,8 +629,10 @@ proc defineLibrary*() =
                     else:
                         push(newRange(x.rng[0..min(aN.i, x.rng.len), true]))
                 else:
+                    echo "... with an Integer counter"
                     if x.a.len == 0: push(newBlock())
                     else: push(newBlock(x.a[0..min(aN.i-1, x.a.high)]))
+                    echo "Done."
             else:
                 if xKind == String:
                     if x.s.len == 0: push(VNULL)
