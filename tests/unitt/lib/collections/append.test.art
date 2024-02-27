@@ -16,10 +16,23 @@ returnInplaced: $[value :any func :literal params :block][
 
 suite "Test :binary operations" [
 
-    binaries: map [0 1] 'x -> to :binary x
+    integers: [0 1]
+    binaries: map integers 'x -> to :binary x
 
     test.prop ":binary ++ :binary results in :binary" [
         loop permutate.repeated new binaries 'entries [
+            a: first entries
+            b: last entries
+            assert -> binary? append a b
+        ]
+    ]
+    
+    test.prop ":binary ++ :integer results in :binary" [
+        sample: $[x] -> flatten permutate.repeated x 
+        binaries: sample binaries
+        integers: sample integers
+        
+        loop couple binaries integers 'entries [
             a: first entries
             b: last entries
             assert -> binary? append a b
