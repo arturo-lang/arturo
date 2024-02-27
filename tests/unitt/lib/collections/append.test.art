@@ -128,3 +128,62 @@ suite "Test :string operations" [
     ]
 
 ]
+
+
+suite "Test :block operations" [
+
+    interpreted: ["Arturo" "Ruby" "Python" "Wren"]
+    compiled: ["C" "C++" "Nim" "Rust" "Smalltalk"]
+    languages: shuffle (append interpreted compiled)
+
+    ; ===== ===== Property-based ===== =====
+
+    test.prop ":block appending results in :block" [
+        assert -> block? [] ++ []
+        assert -> block? interpreted ++ compiled
+    ]
+    
+    test.prop "appending between :blocks does not nest it" [
+        a: @[sample languages]
+        b: @[sample languages]
+        res: @[first a first b]
+
+        assert -> res = append a b
+        assert -> [] = append [] []
+        assert -> all? map (append a b) 'x -> not? block? x
+    ]
+
+    test.prop "appending :blocks of :T results in :blocks of :T" [
+        assert -> all? map ["Arturo"] ++ ["Python"] => string?
+        assert -> all? map [1] ++ [2] => integer?
+        assert -> all? map [1:2] ++ [2:3] => rational?
+    ]
+
+    test.prop "append empty block with 'x results into [x]" [
+        number: random 0 85
+        res: @[number] 
+        assert -> res = [] ++ number
+    ]
+
+    test.prop "append empty blocks results on empty block" [
+        assert -> empty? [] ++ []
+        assert -> [] = [] ++ []
+    ]
+
+    ; ===== ===== Examples ===== =====
+    
+    test {["A" "r" "t"] = ["A" "r"] ++ ["t"]} [
+        assert -> ["A" "r" "t"] = ["A" "r"] ++ ["t"]
+    ]
+
+    ; ===== ===== Testing in-place equivalence ===== =====
+
+    test.prop ":block ++ :any | in-place has the same behavior" [
+        [reference inplaced]: inplaceEquivalence [a b c] 'append -> [d e f]
+        assert -> reference = inplaced
+
+        [reference inplaced]: inplaceEquivalence [a b c] 'append [5]
+        assert -> reference = inplaced
+    ]
+
+]
