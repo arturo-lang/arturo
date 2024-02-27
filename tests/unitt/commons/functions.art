@@ -1,5 +1,18 @@
 inplaceEquivalence: $[value :any func :literal params :block][
-    ;; returns: [reference, inplaced]
+    ;; description: « do default and inplaced operations and returns its results
+    ;;
+    ;; arguments: [
+    ;;      value:  « first value to of the parameters
+    ;;      func:   « function name
+    ;;      params: « rest of the function parameters
+    ;; ]
+    ;;
+    ;; retuns: :block [reference inplaced]
+    ;;
+    ;; example: {
+    ;;      [reference inplaced]: inplaceEquivalence "Art" 'append ["uro"]
+    ;;      assert -> reference = inplaced
+    ;; }
     @[
         call func append @[value] params
         _inplaceOperation value func params
@@ -7,7 +20,22 @@ inplaceEquivalence: $[value :any func :literal params :block][
 ] 
 
 inplacePathEquivalence: $[value :any func :literal params :block][
-    ;; returns: [reference, inplaced]
+    ;; description: {
+    ;;      do default and path-inplaced operations and returns its results
+    ;; }
+    ;;
+    ;; arguments: [
+    ;;      value:  « first value to of the parameters
+    ;;      func:   « function name
+    ;;      params: « rest of the function parameters
+    ;; ]
+    ;;
+    ;; retuns: :block [reference inplaced]
+    ;;
+    ;; example: {
+    ;;      [reference inplaced]: inplaceEquivalence "Art" 'append ["uro"]
+    ;;      assert -> reference = inplaced
+    ;; }
     @[
         call func append @[value] params
         _inplacedPathOperation value func params
@@ -15,7 +43,23 @@ inplacePathEquivalence: $[value :any func :literal params :block][
 ]
 
 fullInplaceEquivalence: $[value :any func :literal params :block][
-    ;; returns: [reference, inplaced, inplaced-path]
+    ;; description: {
+    ;;      do default, inplaced and inplaced-path operations 
+    ;;      returning its results
+    ;; }
+    ;; 
+    ;; arguments: [
+    ;;      value:  « first value to of the parameters
+    ;;      func:   « function name
+    ;;      params: « rest of the function parameters
+    ;; ]
+    ;;
+    ;; retuns: :block [reference inplaced inplacedPath]
+    ;;
+    ;; example: {
+    ;;      [reference inplaced]: inplaceEquivalence "Art" 'append ["uro"]
+    ;;      assert -> reference = inplaced
+    ;; }
     @[
         call func append @[value] params
         _inplaceOperation value func params
@@ -24,12 +68,14 @@ fullInplaceEquivalence: $[value :any func :literal params :block][
 ]
 
 _inplaceOperation: $[value :any func :literal params :block][
+    ;; description: « do an inplaced operation
     inplaced: new value
     call func ['inplaced] ++ params
     return inplaced
 ]
 
 _inplacedPathOperation: $[value :any func :literal params :block][
+    ;; description: « do a path-inplaced operation
     inplaced: #[value: new value]
     call func ['inplaced\value] ++ params
     return inplaced\value
