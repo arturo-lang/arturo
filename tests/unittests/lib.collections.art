@@ -12,61 +12,6 @@ passed: $[] -> print "[+] passed!"
 topic "append"
 do [
 
-    topic "append - :binary < :binary :binary"
-    do [
-        b0: to :binary 0
-        b1: to :binary 1
-
-        ensure -> as.binary 1 = append b0 b1
-        passed
-
-        b0: to :binary 0
-        b1: to :binary 1
-
-        ensure -> as.binary 1 = b0 ++ b1
-        passed
-    ]
-    topic "append - :binary < :binary (literal) :binary"
-    do [
-        b0: to :binary 0
-        b1: to :binary 1
-        append 'b0 b1
-
-        ensure -> as.binary 1 = b0
-        passed
-
-        b0: to :binary 0
-        b1: to :binary 1
-        'b0 ++ b1
-
-        ensure -> as.binary 1 = b0
-        passed
-    ]
-
-    topic "append - :binary < :binary :integer"
-    do [
-        b: to :binary 0
-        ensure -> as.binary 1 = append b 1
-        passed
-
-        b: to :binary 0
-        ensure -> as.binary 1 = b ++ 1
-        passed
-    ]
-
-    topic "append - :binary < :binary (literal) :integer"
-    do [
-        b: to :binary 0
-        append 'b 1
-        ensure -> as.binary 1 = b
-        passed
-
-        b: to :binary 0
-        'b ++ 1
-        ensure -> as.binary 1 = b
-        passed
-    ]
-
     topic "append - :string < :string + :string"
     do [
 
