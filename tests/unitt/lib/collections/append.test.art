@@ -14,10 +14,14 @@ returnInplaced: $[value :any func :literal params :block][
     return inplaced
 ]
 
+
+
 suite "Test :binary operations" [
 
     integers: [0 1]
     binaries: map integers 'x -> to :binary x
+
+    ; ===== ===== Property-based ===== =====
 
     test.prop ":binary ++ :binary results in :binary" [
         loop permutate.repeated new binaries 'entries [
@@ -45,6 +49,8 @@ suite "Test :binary operations" [
         assert -> binary? append a b
     ]
 
+    ; ===== ===== Exaples ===== =====
+
     test ":binary ++ :binary | 00 ++ 01 = 00 01" [
         [a b]: new binaries
         correct: to :binary [0 1]
@@ -57,6 +63,8 @@ suite "Test :binary operations" [
         correct: to :binary [0 1]
         assert -> correct = a ++ b
     ]
+
+    ; ===== ===== Testing in-place equivalence ===== =====
 
     test ":binary ++ :binary | in-place has the same behavior" [
         [a b]: new binaries
