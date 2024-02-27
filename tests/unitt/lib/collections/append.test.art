@@ -49,7 +49,7 @@ suite "Test :binary operations" [
         assert -> binary? append a b
     ]
 
-    ; ===== ===== Exaples ===== =====
+    ; ===== ===== Examples ===== =====
 
     test ":binary ++ :binary | 00 ++ 01 = 00 01" [
         [a b]: new binaries
@@ -100,7 +100,7 @@ suite "Test :string operations" [
         assert -> equal? "Artur" ++ "o" "Artur" ++ 'o' 
     ]
 
-    ; ===== ===== Exaples ===== =====
+    ; ===== ===== Examples ===== =====
     
     test {"Art" ++ "uro" = "Arturo"} [
         assert -> "Arturo" = "Art" ++ "uro"
