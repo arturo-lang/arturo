@@ -1,4 +1,4 @@
-import.version: 1.0.0 {unitt}!
+import {unitt}!
 
 numericTypes: [:integer :floating :rational]
 
