@@ -79,8 +79,10 @@ suite "Test :binary operations" [
         [a]: first new binaries
         b: 1
 
-        [ref inp]: inplaceEquivalence (a) 'append @[b]
-        assert -> ref = inp
+        [reference inplaced pathInplaced]: fullInplaceEquivalence (a) 'append @[b]
+        assert -> reference = inplaced
+        assert -> inplaced  = pathInplaced
+
     ]
 
 ]
@@ -115,18 +117,21 @@ suite "Test :string operations" [
     ; ===== ===== Testing in-place equivalence ===== =====
 
     test.prop ":string ++ :string | in-place has the same behavior" [
-        [reference inplaced]: inplaceEquivalence "Art" 'append ["uro"]
+        [reference inplaced pathInplaced]: fullInplaceEquivalence "Art" 'append ["uro"]
         assert -> reference = inplaced
+        assert -> inplaced = pathInplaced
     ]
     
     test.prop ":string ++ :char | in-place has the same behavior" [
-        [reference inplaced]: inplaceEquivalence "Artur" 'append ['o']
+        [reference inplaced pathInplaced]: fullInplaceEquivalence "Artur" 'append ['o']
         assert -> reference = inplaced
+        assert -> inplaced  = pathInplaced
     ]
     
     test.prop ":char ++ :char | in-place has the same behavior" [
-        [reference inplaced]: inplaceEquivalence 'H' 'append ['i']
+        [reference inplaced pathInplaced]: fullInplaceEquivalence 'H' 'append ['i']
         assert -> reference = inplaced
+        assert -> inplaced  = pathInplaced
     ]
 
 ]
@@ -181,11 +186,13 @@ suite "Test :block operations" [
     ; ===== ===== Testing in-place equivalence ===== =====
 
     test.prop ":block ++ :any | in-place has the same behavior" [
-        [reference inplaced]: inplaceEquivalence [a b c] 'append -> [d e f]
+        [reference inplaced pathInplaced]: fullInplaceEquivalence [a b c] 'append -> [d e f]
         assert -> reference = inplaced
+        assert -> inplaced  = pathInplaced
 
-        [reference inplaced]: inplaceEquivalence [a b c] 'append [5]
+        [reference inplaced pathInplaced]: fullInplaceEquivalence [a b c] 'append [5]
         assert -> reference = inplaced
+        assert -> inplaced  = pathInplaced
     ]
 
 ]
