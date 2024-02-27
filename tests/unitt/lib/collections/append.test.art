@@ -2,8 +2,8 @@ import {unitt}!
 
 inplaceEquivalence: $[value :any func :literal params :block][
     ;; returns: [reference, inplaced]
-    @ [
-        call func (@[value]) ++ params
+    @[
+        call func append @[value] params
         returnInplaced value func params
     ]
 ] 
