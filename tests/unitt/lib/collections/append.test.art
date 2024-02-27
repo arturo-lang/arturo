@@ -1,18 +1,5 @@
 import {unitt}!
-
-inplaceEquivalence: $[value :any func :literal params :block][
-    ;; returns: [reference, inplaced]
-    @[
-        call func append @[value] params
-        returnInplaced value func params
-    ]
-] 
-
-returnInplaced: $[value :any func :literal params :block][
-    inplaced: new value
-    call func ['inplaced] ++ params
-    return inplaced
-]
+import relative {../../commons/functions}!
 
 
 suite "Generic testing" [
