@@ -82,3 +82,49 @@ suite "Test :binary operations" [
     ]
 
 ]
+
+
+suite "Test :string operations" [
+
+    ; ===== ===== Property-based ===== =====
+
+    test.prop ":string concatenation results in :string" [
+        assert -> string? "Art" ++ "uro" 
+    ]
+   
+    test.prop ":char concatenation results in :string" [
+        assert -> string? 'H' ++ 'i' 
+    ]
+
+    test.prop ":string and :char concatenation are seamless" [
+        assert -> equal? "Artur" ++ "o" "Artur" ++ 'o' 
+    ]
+
+    ; ===== ===== Exaples ===== =====
+    
+    test {"Art" ++ "uro" = "Arturo"} [
+        assert -> "Arturo" = "Art" ++ "uro"
+    ]
+
+    test {"Artur" ++ 'o' = "Arturo"} [
+        assert -> "Arturo" = "Artur" ++ 'o'
+    ]
+
+    ; ===== ===== Testing in-place equivalence ===== =====
+
+    test ":string ++ :string | in-place has the same behavior" [
+        [reference inplaced]: inplaceEquivalence "Art" 'append ["uro"]
+        assert -> reference = inplaced
+    ]
+    
+    test ":string ++ :char | in-place has the same behavior" [
+        [reference inplaced]: inplaceEquivalence "Artur" 'append ['o']
+        assert -> reference = inplaced
+    ]
+    
+    test ":char ++ :char | in-place has the same behavior" [
+        [reference inplaced]: inplaceEquivalence 'H' 'append ['i']
+        assert -> reference = inplaced
+    ]
+
+]
