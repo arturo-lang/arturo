@@ -9,11 +9,6 @@ passed: $[] -> print "[+] passed!"
 
 ; ==> Tests
 
-topic "append"
-do [
-
-]
-
 topic "chop - :string < :string :string"
 do [
     ensure -> "Artur" = chop "Arturo"

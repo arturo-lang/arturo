@@ -15,6 +15,20 @@ returnInplaced: $[value :any func :literal params :block][
 ]
 
 
+suite "Generic testing" [
+
+    test.prop "appending keeps the order" [
+        assert -> [a b c d] = [a] ++ [b c d]
+        assert -> [b c d a] = [b c d] ++ [a]
+        assert -> [a b c d] <> [b c d] ++ [a]
+    ]
+
+    test.prop "alias works seamlessly" [
+        assert -> equal? append [] [] [] ++ [] 
+        assert -> equal? append [a b c] [a b] [a b c] ++ [a b] 
+    ]
+
+]
 
 suite "Test :binary operations" [
 
