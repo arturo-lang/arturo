@@ -66,14 +66,14 @@ suite "Test :binary operations" [
 
     ; ===== ===== Testing in-place equivalence ===== =====
 
-    test ":binary ++ :binary | in-place has the same behavior" [
+    test.prop ":binary ++ :binary | in-place has the same behavior" [
         [a b]: new binaries
 
         [ref inp]: inplaceEquivalence (a) 'append @[b]
         assert -> ref = inp
     ]
    
-    test ":binary ++ :integer | in-place has the same behavior" [
+    test.prop ":binary ++ :integer | in-place has the same behavior" [
         [a]: first new binaries
         b: 1
 
@@ -88,15 +88,15 @@ suite "Test :string operations" [
 
     ; ===== ===== Property-based ===== =====
 
-    test.prop ":string concatenation results in :string" [
+    test.prop ":string appending results in :string" [
         assert -> string? "Art" ++ "uro" 
     ]
    
-    test.prop ":char concatenation results in :string" [
+    test.prop ":char appending results in :string" [
         assert -> string? 'H' ++ 'i' 
     ]
 
-    test.prop ":string and :char concatenation are seamless" [
+    test.prop ":string and :char appending are seamless" [
         assert -> equal? "Artur" ++ "o" "Artur" ++ 'o' 
     ]
 
@@ -112,17 +112,17 @@ suite "Test :string operations" [
 
     ; ===== ===== Testing in-place equivalence ===== =====
 
-    test ":string ++ :string | in-place has the same behavior" [
+    test.prop ":string ++ :string | in-place has the same behavior" [
         [reference inplaced]: inplaceEquivalence "Art" 'append ["uro"]
         assert -> reference = inplaced
     ]
     
-    test ":string ++ :char | in-place has the same behavior" [
+    test.prop ":string ++ :char | in-place has the same behavior" [
         [reference inplaced]: inplaceEquivalence "Artur" 'append ['o']
         assert -> reference = inplaced
     ]
     
-    test ":char ++ :char | in-place has the same behavior" [
+    test.prop ":char ++ :char | in-place has the same behavior" [
         [reference inplaced]: inplaceEquivalence 'H' 'append ['i']
         assert -> reference = inplaced
     ]
