@@ -6,7 +6,9 @@ numericTypes: [:integer :floating :rational]
 suite "Test generic assertions" [
 
     test.prop "Alias has the same behavior" [
-        assert -> (between? 1 0 2) = (1 <=> 0 2)
+        assert -> equal? 
+            between? 1 0 2 
+            1 <=> 0 2
     ]
 
     test "between recorgnizes numeric order" [
