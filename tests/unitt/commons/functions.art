@@ -2,7 +2,7 @@ inplaceEquivalence: $[value :any func :literal params :block][
     ;; returns: [reference, inplaced]
     @[
         call func append @[value] params
-        returnInplaced value func params
+        _inplaceOperation value func params
     ]
 ] 
 
@@ -10,7 +10,7 @@ inplacePathEquivalence: $[value :any func :literal params :block][
     ;; returns: [reference, inplaced]
     @[
         call func append @[value] params
-        returnInplacedPath value func params
+        _inplacedPathOperation value func params
     ]
 ]
 
@@ -18,18 +18,18 @@ fullInplaceEquivalence: $[value :any func :literal params :block][
     ;; returns: [reference, inplaced, inplaced-path]
     @[
         call func append @[value] params
-        returnInplaced value func params
-        returnInplacedPath value func params
+        _inplaceOperation value func params
+        _inplacedPathOperation value func params
     ]
 ]
 
-returnInplaced: $[value :any func :literal params :block][
+_inplaceOperation: $[value :any func :literal params :block][
     inplaced: new value
     call func ['inplaced] ++ params
     return inplaced
 ]
 
-returnInplacedPath: $[value :any func :literal params :block][
+_inplacedPathOperation: $[value :any func :literal params :block][
     inplaced: #[value: new value]
     call func ['inplaced\value] ++ params
     return inplaced\value
