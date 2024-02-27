@@ -30,6 +30,7 @@ suite "Generic testing" [
 
 ]
 
+
 suite "Test :binary operations" [
 
     integers: [0 1]
