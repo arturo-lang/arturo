@@ -196,3 +196,6 @@ suite "Test :block operations" [
     ]
 
 ]
+
+; TODO(test\append): Test object's `append` magic-methods
+; TODO(test\append): Test error handling when there is no magic-method
