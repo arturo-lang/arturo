@@ -197,5 +197,23 @@ suite "Test :block operations" [
 
 ]
 
-; TODO(test\append): Test object's `append` magic-methods
+
+suite "Test magic-methods" [
+
+    define :container [
+        init:   method [ initial ][ this\_block: [] ++ initial ]
+        append: method [  value  ][ append this\_block value ]
+    ]
+
+    test "append works for magic-methods" [
+        container: to :container [[]]!
+        
+        assert -> empty? do -> container\copy
+        assert -> equal? [1 2] do [container\append [1 2]]
+        assert -> equal? [3 4] do [append container [3 4]]
+        assert -> equal? [5 6] do [container ++ [5 6]]
+    ]
+
+]
+
 ; TODO(test\append): Test error handling when there is no magic-method
