@@ -208,7 +208,7 @@ suite "Test magic-methods" [
     test "append works for magic-methods" [
         container: to :container [[]]!
         
-        assert -> empty? do -> container\copy
+        assert -> empty? do -> container\_block
         assert -> equal? [1 2] do [container\append [1 2]]
         assert -> equal? [3 4] do [append container [3 4]]
         assert -> equal? [5 6] do [container ++ [5 6]]
