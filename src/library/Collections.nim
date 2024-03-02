@@ -301,6 +301,17 @@ proc defineLibrary*() =
 
     # TODO(Collections\combine) should also work with in-place Literals?
     #  labels: library, enhancement, open discussion
+
+    # TODO(Collections\combine) should follow the rule: C[n:k] = 0, for k > n
+    #  being k the attribute by, n the size of the collection and 
+    #  C the amount of possible combinations:
+    #
+    #  ```art
+    #  ensure -> empty? combine.by: 4 [a b c] 
+    #  ensure -> empty? combine.by: 5 [a b c] 
+    #  ensure -> empty? combine.by: 6 [a b c] 
+    #  ``` 
+    # labels: library, open-discussion
     builtin "combine",
         alias       = unaliased,
         op          = opNop,
