@@ -2,6 +2,14 @@ import {unitt}!
 import relative {../../commons/functions}!
 
 
+kCombinations: $[n k] -> 
+    div (factorial n) 
+        ((factorial k) * (factorial (n - k)))
+
+kMulticombination: $[n k] ->
+    kCombinations (dec n + k) (k)
+
+
 suite "General Tests" [
 
     someBlock: [A B C]
@@ -43,6 +51,7 @@ suite "General Tests" [
 
 ]
 
+
 suite "Matematical Properties" [
 
     someBlock: [A B C D E F]
@@ -63,13 +72,6 @@ suite "Matematical Properties" [
     test.prop "C[n:k] = n! / (k! * (n - k)!)" [
         sample: [[A B C] [I J K L] [D E F G H] [D E F G H I J]]
 
-        kCombinations: $[n k] -> 
-            div (factorial n) 
-                ((factorial k) * (factorial (n - k)))
-
-        kMulticombination: $[n k] ->
-            kCombinations (n + k - 1) (k)
-
         loop [1 2 3] 'k -> loop sample 'Set [
             default: kCombinations size Set k
             repeating: kMulticombination size Set k
@@ -80,6 +82,7 @@ suite "Matematical Properties" [
     ]
 
 ]
+
 
 suite "Specific Tests" [
 
