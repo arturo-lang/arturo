@@ -97,7 +97,9 @@ suite "Test :string operations" [
     ]
    
     test.prop ":char appending results in :string" [
-        assert -> string? 'H' ++ 'i' 
+        assert -> string? 'H' ++ 'i'
+        assert -> string? 'H' ++ "igh" 
+        assert -> string? "Ph" ++ 'i' 
     ]
 
     test.prop ":string and :char appending are seamless" [
@@ -106,12 +108,10 @@ suite "Test :string operations" [
 
     ; ===== ===== Examples ===== =====
     
-    test {"Art" ++ "uro" = "Arturo"} [
+    test "Arturo can be generated from :string and :char appending" [
         assert -> "Arturo" = "Art" ++ "uro"
-    ]
-
-    test {"Artur" ++ 'o' = "Arturo"} [
         assert -> "Arturo" = "Artur" ++ 'o'
+        assert -> "Arturo" = 'A' ++ "rturo"
     ]
 
     ; ===== ===== Testing in-place equivalence ===== =====
