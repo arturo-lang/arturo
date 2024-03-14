@@ -1,4 +1,4 @@
-do.import relative {getfuncsinscript.art}
+import relative {getfuncsinscript.art}
 lookup: arg\0
 do [
     lines: new 0
