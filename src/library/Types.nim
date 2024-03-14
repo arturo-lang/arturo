@@ -38,6 +38,14 @@ import vm/[errors, exec]
 
 proc defineLibrary*() =
 
+    # TODO(Types) Add new `extend` function?
+    #  This would replace Collections\extend (see relevant comment there)
+    #  and could be used for extending an existing user type. 
+    #  In a few words: let's say we have `define`d a type, with its methods
+    #  and everything. Or if that type has been defined in an external package.
+    #  How could we add extra methods to it? By "extending" it ;-)
+    #  labels: library, enhancement, open discussion
+
     #----------------------------
     # Functions
     #----------------------------
