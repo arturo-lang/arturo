@@ -654,7 +654,7 @@ proc defineLibrary*() =
             ]
             """:
                 #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("symlink?")
+                when defined(SAFE): Error_OperationNotPermitted("symlink?")
 
                 push newLogical(symlinkExists(x.s))
 
