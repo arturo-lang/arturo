@@ -185,7 +185,7 @@ proc getExchangeRate(curr: string): float =
     let s = toLowerAscii(curr)
     if ExchangeRates.len == 0:
         when not defined(WEB):
-            let url = "https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies/usd.min.json"
+            let url = "https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/usd.min.json"
             let content = waitFor (newAsyncHttpClient().getContent(url))
             let response = parseJson(content)
             for (k,v) in pairs(response["usd"]):
