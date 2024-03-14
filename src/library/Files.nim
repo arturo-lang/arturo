@@ -575,7 +575,7 @@ proc defineLibrary*() =
             ]
             """:
                 #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("file?")
+                when defined(SAFE): Error_OperationNotPermitted("file?")
 
                 push newLogical(dirExists(x.s))
 
