@@ -570,6 +570,10 @@ proc defineLibrary*() =
                 of Dictionary: InPlaced.d = initOrderedTable[string, Value]()
                 else: discard
 
+    # TODO(Collections\extend) Consider renaming?
+    #  we could actually rename it to `merge`? - which is what it does
+    #  actually, and keep `extend` for extending existing types
+    #  labels: library, enhancement, open discussion
     builtin "extend",
         alias       = unaliased,
         op          = opNop,
