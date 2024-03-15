@@ -19,6 +19,14 @@
 #  message, etc ;-)
 #  labels: error handling, enhancement
 
+# TODO(VM/errors) add support for VM "warnings"?
+#  provided that they could be turned off by default (or not?), 
+#  we could have warnings alongside errors: like errors, just not
+#  killing the execution, etc. One such warning could be a "deprecated"
+#  warning, for features that are to be eliminated + suggestions on
+#  how to deal with it
+#  labels: error handling, enhancement, open discussion
+
 # TODO(VM/errors) general cleanup needed
 #  labels: error handling,cleanup
 
