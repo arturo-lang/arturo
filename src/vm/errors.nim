@@ -8,6 +8,10 @@
 
 ## Error handling for the VM.
 
+# TODO(VM/errors) cleanup & re-enable error-related unittests
+#  they have all been temporarily disabled due to the error system rewrite
+#  labels: error handling, unit-test, critical
+
 # TODO(VM/errors) general cleanup needed
 #  labels: error handling,cleanup
 
