@@ -88,6 +88,14 @@ proc defineSymbols*() =
 
             raise error 
 
+    # TODO(Exceptions/throws?) rename function?
+    #  if not though it appears a natural name, every time I look
+    #  at this function I think it does sth different than what it 
+    #  actually does, and - in connection with `throw` - in the end
+    #  there may be something confusing... No real suggestion from me
+    #  here, just stating it - so that I don't end up forgetting about
+    #  it myself... lol
+    #  labels: open discussion, error handling, library
     builtin "throws?",
         alias       = unaliased, 
         op          = opNop,
