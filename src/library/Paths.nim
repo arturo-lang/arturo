@@ -214,7 +214,7 @@ proc defineLibrary*() =
             ; data.txt
             """:
                 #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("list")
+                when defined(SAFE): Error_OperationNotPermitted("list")
                 let recursive = (hadAttr("recursive"))
                 let relative = (hadAttr("relative"))
                 let path = x.s

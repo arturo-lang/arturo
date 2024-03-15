@@ -91,7 +91,7 @@ proc defineLibrary*() =
             ; opens Arturo's official website in a new browser window
             """:
                 #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("browse")
+                when defined(SAFE): Error_OperationNotPermitted("browse")
                 openDefaultBrowser(x.s)
         
         builtin "download",
@@ -116,7 +116,7 @@ proc defineLibrary*() =
             ; (downloads file with a different name)
             """:
                 #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("download")
+                when defined(SAFE): Error_OperationNotPermitted("download")
                 let path = x.s
 
                 var target: string
@@ -153,7 +153,7 @@ proc defineLibrary*() =
                     "recipient@somemail.com" "Hello from Arturo" "Arturo rocks!"                
                 """:
                     #=======================================================
-                    when defined(SAFE): RuntimeError_OperationNotPermitted("mail")
+                    when defined(SAFE): Error_OperationNotPermitted("mail")
                     let recipient = x.s
                     let title = y.s
                     let message = z.s
@@ -234,7 +234,7 @@ proc defineLibrary*() =
             ; ...same as above...
             """:
                 #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("request")
+                when defined(SAFE): Error_OperationNotPermitted("request")
 
                 var url = x.s
                 var meth: HttpMethod = HttpGet 
@@ -394,7 +394,7 @@ proc defineLibrary*() =
             ; and also POST requests to "/getinfo" with an 'id' parameter
             """:
                 #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("serve")
+                when defined(SAFE): Error_OperationNotPermitted("serve")
 
                 # get parameters
                 let routes = x

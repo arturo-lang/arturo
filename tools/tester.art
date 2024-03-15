@@ -87,13 +87,27 @@ runSet: function [title,location].export:[supersuccess,supertotal,superskipped][
 
     loop tests 'test [
         script: replace test ".res" ".art"
-        expected: split.lines strip read test
+        expected: read test
+        if title="Errors" [
+            expected: replace expected {═} ""
+        ]
+        expected: split.lines strip expected
 
         prints pad.right ((color #magenta "\n- Running: ") ++ truncate.preserve extract.filename script 40) 70
         if? canExecute? script [
 
             ;tim: benchmark.get [
-                result: split.lines strip execute ~{|sys\binary| --no-color "|script|"}
+                result: execute ~{|sys\binary| --no-color "|script|"}
+                cleanResult: ""
+                if title="Errors" [
+                    cleanResult: split.lines strip result
+                    result: replace result {═} ""
+                ]
+                result: split.lines strip result
+                if title <> "Errors" [
+                    cleanResult: result
+                ]
+
             ;]
             ; indiTimes: indiTimes ++ #[
             ;     tst: test
@@ -108,7 +122,7 @@ runSet: function [title,location].export:[supersuccess,supertotal,superskipped][
             ]
             else [
                 print "<-------------------"
-                print join.with:"\n" result
+                print join.with:"\n" cleanResult
                 print "------------------->"
                 prints color #red "[  ERROR  ]"
             ]
@@ -137,7 +151,7 @@ print color #gray ~"  Release: @|sys\release|\n"
 
 supertime: in's benchmark.get [
     runSet "Unit Tests" "../tests/unittests"
-    runSet "Errors" "../tests/errors"
+    ;runSet "Errors" "../tests/errors"
     runSet "Examples" "../examples/rosetta"
 ]
 

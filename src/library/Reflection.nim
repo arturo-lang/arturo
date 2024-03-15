@@ -210,7 +210,7 @@ proc defineLibrary*() =
                             break
 
                     if value.isNil:
-                        RuntimeError_AliasNotFound($(x.m))
+                        Error_AliasNotFound($(x.m))
                 elif xKind == PathLiteral:
                     searchable = $(x.p[^1])
                     value = FetchPathSym(x.p)

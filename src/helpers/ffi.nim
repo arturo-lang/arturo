@@ -18,6 +18,7 @@ when not defined(WEB):
     import dynlib, os, strutils
 
     import vm/[errors, values/value]
+    import vm/values/custom/verror
 
     #import vm/values/custom/[vlogical]
 
@@ -51,14 +52,14 @@ when not defined(WEB):
         result = loadLib(path)
 
         if result == nil:
-            RuntimeError_LibraryNotLoaded(path)
+            Error_LibraryNotLoaded(path)
 
     proc unloadLibrary*(lib: LibHandle) =
         unloadLib(lib)
 
     template checkRunner*(r: pointer):untyped =
         if r == nil:
-            RuntimeError_LibrarySymbolNotFound(resolvedPath, meth)
+            Error_LibrarySymbolNotFound(resolvedPath, meth)
 
     template callFunc0(t:untyped):untyped =
         let runner = cast[t](lib.symAddr(meth))
@@ -169,8 +170,8 @@ when not defined(WEB):
             # unload the library
             unloadLibrary(lib)
 
-        except VMError as e:
+        except VError as e:
             raise e
 
         except CatchableError:
-            RuntimeError_ErrorLoadingLibrarySymbol(path, meth)
+            Error_ErrorLoadingLibrarySymbol(path, meth)
