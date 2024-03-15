@@ -31,6 +31,13 @@ import vm/values/custom/verror
 
 proc defineSymbols*() =
 
+    # TODO(Exceptions) revisit and review the whole module
+    #  also: we have an "Exceptions" module but the values we are talking
+    #  about here are... Errors. Another thing I don't particularly 
+    #  like is the `ErrorKind` type - perhaps the naming? its very existence?
+    #  the fact that it sounds as if it was taken directly from the Nim source?
+    #  labels: error handling, :error, :errorKind, library, enhancement, open discussion
+
     #----------------------------
     # Functions
     #----------------------------
