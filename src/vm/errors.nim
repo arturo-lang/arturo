@@ -8,6 +8,9 @@
 
 ## Error handling for the VM.
 
+# TODO(VM/errors) general cleanup needed
+#  labels: error handling,cleanup
+
 #=======================================
 # Libraries
 #=======================================
