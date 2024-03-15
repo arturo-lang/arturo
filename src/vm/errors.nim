@@ -12,6 +12,13 @@
 #  they have all been temporarily disabled due to the error system rewrite
 #  labels: error handling, unit-test, critical
 
+# TODO(VM/errors) make sure we catch/template all system errors
+#  for example, there are regex-related errors or other that
+#  can trigger uncatchable errors (but I don't remember right now
+#  how to reproduce). We should treat them all uniformly and with a nice
+#  message, etc ;-)
+#  labels: error handling, enhancement
+
 # TODO(VM/errors) general cleanup needed
 #  labels: error handling,cleanup
 
