@@ -17,6 +17,8 @@ import std/strformat
 #=======================================
 
 type        
+    # TODO(VError) revisit and review our Error & ErrorKind types
+    #  labels: error handling, :error, :errorKind
     ErrorContext* = object
         line*: int
         file*: string
