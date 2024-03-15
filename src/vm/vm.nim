@@ -77,6 +77,22 @@ macro importLib(name: static[string]): untyped =
 # Standard library setup
 #=======================================
 
+# TODO(VM/vm) don't completely eliminate unsupported functions
+#  right now, if we have e.g. a MINI build, some - albeit few -
+#  features are disabled. As a consequence, some functions cannot
+#  work. For example, mysqlite is not available in MINI builds.
+#  However, totally removing e.g. `open` - leads to confusing
+#  situations, such as me using the function and all I can see
+#  is that the identifier... "open" wasn't found.
+#  Not very helpful at all, given that we could simply let people
+#  know what is going on. That would obviously mean *not* completely
+#  eliminating the function, only having it throw an error in case
+#  some - or all - of its features are not supported.
+#  Also, it would be a good idea to create sth like a macro(?) which
+#  could combine the logic of `when defined(MINI)` (or whatever) +
+#  the error handling part. Food for thought! ;-)
+#  labels: vm, library, error handling, enhancement
+
 importLib "Arithmetic"
 importLib "Bitwise"
 importLib "Collections"
