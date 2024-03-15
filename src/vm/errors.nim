@@ -27,6 +27,13 @@
 #  how to deal with it
 #  labels: error handling, enhancement, open discussion
 
+# TODO(VM/errors) add proper color "coding" in error templates
+#  for example, types could be annotated in a specific way.
+#  pretty much like function names (in calls) are shown in white-bold,
+#  but I'm not even sure this works consistently. So, that has to be
+#  fixed too...
+#  labels: error handling, enhancement
+
 # TODO(VM/errors) general cleanup needed
 #  labels: error handling,cleanup
 
