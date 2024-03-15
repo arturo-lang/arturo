@@ -9,11 +9,11 @@ passed: $[] -> print "[+] passed!"
 ; tests
 
 
-topic "genericError"
+topic "runtimeError"
 do [
 
-    ensure -> :errorKind = type genericError
-    ensure -> "Generic Error" = genericError\label
+    ensure -> :errorKind = type runtimeError
+    ensure -> "Runtime Error" = runtimeError\label
     passed
 
 ]
@@ -57,7 +57,7 @@ do [
         ensure -> :string = type err\message
         passed
 
-        ensure -> genericError = err\kind
+        ensure -> runtimeError = err\kind
         ensure -> "Some error" = err\message
         passed
 

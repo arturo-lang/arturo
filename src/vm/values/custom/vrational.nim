@@ -24,6 +24,8 @@ import helpers/intrinsics
 when defined(GMP):
     import helpers/bignums
 
+import vm/errors
+
 #=======================================
 # Types
 #=======================================
@@ -80,7 +82,8 @@ func reduce(x: var VRational) =
         x.num = -x.num div common
         x.den = -x.den div common
     else:
-        raise newException(DivByZeroDefect, "division by zero")
+        Error_ZeroDenominator()
+        #raise newException(DivByZeroDefect, "division by zero")
 
 when defined(GMP):
     func simplifyRational(x: var VRational) =

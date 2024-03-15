@@ -35,14 +35,13 @@ import vm/[
     parse, 
     stack, 
     values/value, 
+    values/printable,
+    values/custom/verror,
     version
 ]
 
 when not defined(WEB):
     import vm/profiler
-
-when defined(WEB):
-    import vm/values/printable
 
 #=======================================
 # Packaging setup
@@ -182,6 +181,10 @@ template initialize(args: seq[string], filename: string, isFile:bool, scriptData
     # library
     setupLibrary()
 
+    # dumper
+    Dumper = proc (v:Value):string =
+        v.dumped()
+
     # set VM as initialized
     initialized = true
 
@@ -189,16 +192,16 @@ template handleVMErrors(blk: untyped): untyped =
     try:
         blk
     except CatchableError, Defect:
-        let e = getCurrentException()        
-        showVMErrors(e)
+        let e = getCurrentException()   
+        showError(VError(e))
 
         when not defined(WEB):
             savePendingStores()
 
-        if e.name == $(ProgramError):
-            let code = parseInt(e.msg.split(";;")[1].split("<:>")[0])
+        try:
+            let code = parseInt($(e.name))
             quit(code)
-        else:
+        except ValueError:
             quit(1)
 
 #=======================================
@@ -224,9 +227,9 @@ when not defined(WEB):
 
             if isFile:
                 when defined(SAFE):
-                    CurrentFile = "main.art"
+                    CurrentContext = "main.art"
                 else:
-                    CurrentFile = lastPathPart(code)
+                    CurrentContext = lastPathPart(code)
                     CurrentPath = code
 
             initProfiler()

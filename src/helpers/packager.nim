@@ -348,7 +348,7 @@ proc getVersionSpecFromString(vers: string): VersionSpec =
         try:
             let ps = doParse(vers, isFile=false)
             if ps.kind != Block or ps.a.len != 1 or ps.a[0].kind != Version:
-                RuntimeError_PackageInvalidVersion(vers)
+                Error_PackageInvalidVersion(vers)
             return (false, ps.a[0].version)
         except Exception as ex:
             let message = ex.msg.replacef(re"_([^_]+)_",fmt("{bold()}$1{resetColor}"))
@@ -383,14 +383,14 @@ proc updatePackage(pkg: string, path: string): bool =
     try:
         specContent = waitFor (newAsyncHttpClient().getContent(packageSpecUrl))
     except Exception:
-        RuntimeError_PackageNotFound(pkg)
+        Error_PackageNotFound(pkg)
 
     let spec = readSpec(specContent)
     var version: VVersion
     if (let vv = spec.hasVersion(); vv.isSome):
         version = vv.get()
     else:
-        RuntimeError_CorruptRemoteSpec(pkg)
+        Error_CorruptRemoteSpec(pkg)
 
     if version > maxLocalVersion:
         discard processRemotePackage(pkg, (true, NoPackageVersion), doLoad=false)
@@ -435,7 +435,7 @@ proc processRemoteRepo(pkg: string, branch: string = "main", latest: bool = fals
         var matches: array[2, string]
         if not pkg.match(re"https://github.com/([\w\-]+)/([\w\-]+)", matches):
             WillShowError()
-            RuntimeError_PackageRepoNotCorrect(pkg)
+            Error_PackageRepoNotCorrect(pkg)
 
         ShowSuccess()
 
@@ -451,9 +451,9 @@ proc processRemoteRepo(pkg: string, branch: string = "main", latest: bool = fals
             except Exception as e:
                 WillShowError()
                 if e.msg.contains("404"):
-                    RuntimeError_PackageRepoNotFound(pkg)
+                    Error_PackageRepoNotFound(pkg)
                 else:
-                    RuntimeError_PackageUnknownError(pkg)
+                    Error_PackageUnknownError(pkg)
 
         return getEntryPointFromSourceFolder(repoFolder)
 
@@ -494,7 +494,7 @@ proc processRemotePackage(pkg: string, verspec: VersionSpec, doLoad: bool = true
     try:
         specContent = waitFor (newAsyncHttpClient().getContent(packageSpecUrl))
     except Exception:
-        RuntimeError_PackageNotFound(pkg)
+        Error_PackageNotFound(pkg)
 
     ShowMessage "Downloading spec: {pkg}.pkgr.art".fmt
 
@@ -503,7 +503,7 @@ proc processRemotePackage(pkg: string, verspec: VersionSpec, doLoad: bool = true
     if (let vv = spec.hasVersion(); vv.isSome):
         version = vv.get()
     else:
-        RuntimeError_CorruptRemoteSpec(pkg)
+        Error_CorruptRemoteSpec(pkg)
 
     let specFolder = SpecPackage.fmt
     createDir(specFolder)
@@ -515,7 +515,7 @@ proc processRemotePackage(pkg: string, verspec: VersionSpec, doLoad: bool = true
     if (let uu = spec.hasUrl(); uu.isSome):
         pkgUrl = uu.get()
     else:
-        RuntimeError_CorruptRemoteSpec(pkg)
+        Error_CorruptRemoteSpec(pkg)
     
     pkgUrl.downloadPackageSourceInto(CacheFiles.fmt)
 

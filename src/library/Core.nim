@@ -467,11 +467,11 @@ proc defineLibrary*() =
             if checkAttr("that"):
                 execUnscoped(x)
                 if isFalse(stack.pop()):
-                    AssertionError_AssertionFailed(x.codify(), aThat.s)
+                    Error_AssertionFailed(x.codify(), aThat.s)
             else:
                 execUnscoped(x)
                 if isFalse(stack.pop()):
-                    AssertionError_AssertionFailed(x.codify())
+                    Error_AssertionFailed(x.codify())
 
     builtin "function",
         alias       = dollar,
@@ -753,7 +753,7 @@ proc defineLibrary*() =
                         let src = res.get()
 
                         if not src.fileExists():
-                            RuntimeError_PackageNotValid(pkg)
+                            Error_PackageNotValid(pkg)
 
                         addPath(src)
 
@@ -770,7 +770,7 @@ proc defineLibrary*() =
 
                         discard popPath()              
                     else:
-                        RuntimeError_PackageNotFound(pkg)
+                        Error_PackageNotFound(pkg)
 
                 VerbosePackager = verboseBefore
 
@@ -1010,7 +1010,7 @@ proc defineLibrary*() =
             unstack.discard 1   ; popped 3 from the stack
         """:
             #=======================================================
-            if Stack[0..SP-1].len < x.i: RuntimeError_StackUnderflow()
+            if Stack[0..SP-1].len < x.i: Error_StackUnderflow()
             
             let doDiscard = (hadAttr("discard"))
             
@@ -1234,68 +1234,6 @@ proc defineLibrary*() =
                 execUnscoped(y)
 
             push(newLogical(condition))
-
-    # builtin "throws?",
-    #     alias       = unaliased, 
-    #     op          = opNop,
-    #     rule        = PrefixPrecedence,
-    #     description = "perform action, and return true if errors were thrown",
-    #     args        = {
-    #         "action": {Block,Bytecode}
-    #     },
-    #     attrs       = NoAttrs,
-    #     returns     = {Logical},
-    #     example     = """
-    #         throws? [
-    #             1 + 2
-    #         ] 
-    #         ; => false
-
-    #         throws? -> 1/0
-    #         ; => true
-    #     """:
-    #         #=======================================================
-    #         try:
-    #             execUnscoped(x)
-
-    #             push(VFALSE)
-    #         except CatchableError, Defect:
-    #             push(VTRUE)
-
-    # builtin "try?",
-    #     alias       = unaliased, 
-    #     op          = opNop,
-    #     rule        = PrefixPrecedence,
-    #     description = "perform action, catch possible errors and return status",
-    #     args        = {
-    #         "action": {Block,Bytecode}
-    #     },
-    #     attrs       = {
-    #         "verbose"   : ({Logical},"print all error messages as usual")
-    #     },
-    #     returns     = {Logical},
-    #     example     = """
-    #         try? [
-    #             ; let's try something dangerous
-    #             print 10 / 0
-    #         ]
-    #         else [
-    #             print "something went terribly wrong..."
-    #         ]
-            
-    #         ; something went terribly wrong...
-    #     """:
-    #         #=======================================================
-    #         let verbose = (hadAttr("verbose"))
-    #         try:
-    #             execUnscoped(x)
-
-    #             push(VTRUE)
-    #         except CatchableError, Defect:
-    #             let e = getCurrentException()
-    #             if verbose:
-    #                 showVMErrors(e)
-    #             push(VFALSE)
 
     builtin "unless?",
         alias       = unaliased, 
