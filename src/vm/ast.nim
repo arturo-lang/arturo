@@ -132,18 +132,18 @@ proc dumpNode*(node: Node, level = 0, single: static bool=false, showNewlines: s
 # Tree manipulation
 #------------------------
 
-func setOnlyChild(node: Node, child: Node) {.enforceNoRaises.} =
+func setOnlyChild(node: Node, child: Node)  =
     child.parent = node
     node.children.setLen(1)
     node.children[0] = child
 
-func addChild*(node: Node, child: Node) {.enforceNoRaises.} =
+func addChild*(node: Node, child: Node)  =
     child.parent = node
     node.children.add(child)
     if node.kind in CallNode and child.kind notin {NewlineNode, AttributeNode}:
         node.params += 1
 
-func addChildToFront*(node: Node, child: Node): int {.enforceNoRaises.} =
+func addChildToFront*(node: Node, child: Node): int  =
     result = 0
     while node.children[result].kind==AttributeNode:
         result += 1
@@ -153,7 +153,7 @@ func addChildToFront*(node: Node, child: Node): int {.enforceNoRaises.} =
     if node.kind in CallNode and child.kind notin {NewlineNode, AttributeNode}:
         node.params += 1
 
-func addChildren*(node: Node, children: openArray[Node]) {.enforceNoRaises.} =
+func addChildren*(node: Node, children: openArray[Node])  =
     for child in children:
         node.addChild(child)
 
@@ -287,7 +287,7 @@ proc processBlock*(
     # Optimization
     #------------------------
 
-    proc optimizeAdd(target: var Node) {.enforceNoRaises.} =
+    proc optimizeAdd(target: var Node)  =
         var left = target.children[0]
         var right = target.children[1]
 
@@ -354,7 +354,7 @@ proc processBlock*(
                     left.children[1].kind = ConstantValue
                     left.children[1].value = newInteger(1)
 
-    proc optimizeSub(target: var Node) {.enforceNoRaises.} =
+    proc optimizeSub(target: var Node)  =
         var left = target.children[0]
         var right = target.children[1]
 
@@ -378,7 +378,7 @@ proc processBlock*(
             hookOptimProfiler("other (CF)")
             target.replaceNode(newConstant(op(left.value,right.value)))
 
-    proc optimizeAppend(target: var Node) {.enforceNoRaises.} =
+    proc optimizeAppend(target: var Node)  =
         var left = target.children[0]
         var right = target.children[1]
 
@@ -388,7 +388,7 @@ proc processBlock*(
                 hookOptimProfiler("append (CF)")
                 target.replaceNode(newConstant(newString(left.value.s & right.value.s)))
 
-    proc optimizeTo(target: var Node) {.enforceNoRaises.} =
+    proc optimizeTo(target: var Node)  =
         var left = target.children[0]
 
         if left.kind == ConstantValue and left.value.kind==Type:
@@ -405,14 +405,14 @@ proc processBlock*(
                 target.arity = 1
                 target.children.delete(0)
 
-    proc optimizeReturn(target: var Node) {.enforceNoRaises.} =
+    proc optimizeReturn(target: var Node)  =
         if isLastChild(target):
             hookOptimProfiler("return (eliminate last)")
             # Replace last return
             var left = target.children[0]
             target.replaceNode(left)
 
-    proc updateAritiesFromStore(target: var Node) {.enforceNoRaises.} =
+    proc updateAritiesFromStore(target: var Node)  =
         var child = target.children[0]
 
         if child.kind in CallNode and child.op == opFunc:
@@ -535,12 +535,12 @@ proc processBlock*(
         target.addChild(newCallNode(BuiltinCall, arity, nil, op))
         target.rollThrough()
 
-    func addStore(target: var Node, val: Value) {.enforceNoRaises.} =
+    func addStore(target: var Node, val: Value)  =
         target.addChild(newCallNode(VariableStore, 1, val))
 
         target.rollThrough()
 
-    proc addAttribute(target: var Node, val: Value, isLabel: static bool = false) {.enforceNoRaises.} =
+    proc addAttribute(target: var Node, val: Value, isLabel: static bool = false)  =
         let attrNode = newCallNode(AttributeNode, 1, val)
 
         when not isLabel:

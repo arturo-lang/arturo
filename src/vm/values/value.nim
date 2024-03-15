@@ -132,9 +132,9 @@ var
 # Forward Declarations
 #=======================================
 
-func newBlock*(a: sink ValueArray = @[], data: sink Value = nil): Value {.inline, enforceNoRaises.}
+func newBlock*(a: sink ValueArray = @[], data: sink Value = nil): Value {.inline.}
 func newDictionary*(d: sink ValueDict = newOrderedTable[string,Value]()): Value {.inline.}
-func valueAsString*(v: Value): string {.inline,enforceNoRaises.}
+func valueAsString*(v: Value): string {.inline.}
 func hash*(v: Value): Hash {.inline.}
 
 #=======================================
@@ -155,7 +155,7 @@ template isFalse*(val: Value): bool = IsFalse in val.flags
 template isMaybe*(val: Value): bool = IsMaybe in val.flags
 template isTrue*(val: Value): bool  = IsTrue in val.flags
 
-func canBeInlined(v: Value): bool {.enforceNoRaises.} =
+func canBeInlined(v: Value): bool  =
     for item in v.a:
         if item.kind == Label:
             return false
@@ -168,22 +168,22 @@ func canBeInlined(v: Value): bool {.enforceNoRaises.} =
 # Constructors
 #=======================================
 
-proc newLogical*(b: VLogical): Value {.inline, enforceNoRaises.} =
+proc newLogical*(b: VLogical): Value {.inline.} =
     if b==True: VTRUE
     elif b==False: VFALSE
     else: VMAYBE
 
-proc newLogical*(b: bool): Value {.inline, enforceNoRaises.} =
+proc newLogical*(b: bool): Value {.inline.} =
     if b: VTRUE
     else: VFALSE
 
-proc newLogical*(s: string): Value {.inline, enforceNoRaises.} =
+proc newLogical*(s: string): Value {.inline.} =
     ## create Logical value from string
     if s=="true": newLogical(True)
     elif s=="false": newLogical(False)
     else: newLogical(Maybe)
 
-proc newLogical*(i: int): Value {.inline, enforceNoRaises.} =
+proc newLogical*(i: int): Value {.inline.} =
     ## create Logical value from int
     if i==1: newLogical(True)
     elif i==0: newLogical(False)
@@ -197,11 +197,11 @@ when defined(GMP):
     proc newInteger*(bi: Int): Value {.inline.} =
         result = Value(kind: Integer, iKind: BigInteger, bi: bi)
 
-func newInteger*(i: int): Value {.inline, enforceNoRaises.} =
+func newInteger*(i: int): Value {.inline.} =
     ## create Integer value from int
     result = Value(kind: Integer, iKind: NormalInteger, i: i)
 
-func newInteger*(i: int64): Value {.inline, enforceNoRaises.} =
+func newInteger*(i: int64): Value {.inline.} =
     ## create Integer value from int64
     newInteger(int(i))
 
@@ -215,7 +215,7 @@ proc newInteger*(i: string, lineno: int = 1): Value {.inline.} =
         elif defined(GMP):
             return newInteger(newInt(i))
         else:
-            RuntimeError_IntegerParsingOverflow(lineno, i)
+            Error_IntegerParsingOverflow(i)
 
 func newBigInteger*(i: int): Value {.inline.} =
     ## create Integer (BigInteger) value from int
@@ -224,11 +224,11 @@ func newBigInteger*(i: int): Value {.inline.} =
     elif defined(GMP):
         result = Value(kind: Integer, iKind: BigInteger, bi: newInt(i))
 
-func newFloating*(f: float): Value {.inline, enforceNoRaises.} =
+func newFloating*(f: float): Value {.inline.} =
     ## create Floating value from float
     Value(kind: Floating, f: f)
 
-func newFloating*(f: int): Value {.inline, enforceNoRaises.} =
+func newFloating*(f: int): Value {.inline.} =
     ## create Floating value from int
     Value(kind: Floating, f: float(f))
 
@@ -257,7 +257,7 @@ func newComplex*(fre: Value, fim: Value): Value {.inline.} =
 
     newComplex(r,i)
 
-func newRational*(rat: VRational): Value {.inline, enforceNoRaises.} =
+func newRational*(rat: VRational): Value {.inline.} =
     ## create Rational value from VRational
     Value(kind: Rational, rat: rat)
 
@@ -282,7 +282,7 @@ else:
         ## create Rational value from numerator + denominator (int or float)
         Value(kind: Rational, rat: toRational(num, den))
 
-func newRational*(num: Value, den: Value): Value {.inline, enforceNoRaises.} =
+func newRational*(num: Value, den: Value): Value {.inline.} =
     ## create Rational value from numerator + denominator (Value)
     if num.kind == Integer and den.kind == Integer:
         if num.iKind == NormalInteger:
@@ -318,11 +318,11 @@ func newVersion*(v: string): Value {.inline.} =
     ## create Version value from string
     Value(kind: Version, version: newVVersion(v))
 
-func newVersion*(v: VVersion): Value {.inline, enforceNoRaises.} =
+func newVersion*(v: VVersion): Value {.inline.} =
     ## create Version value from VVersion
     Value(kind: Version, version: v)
 
-func newType*(t: ValueKind): Value {.inline, enforceNoRaises.} =
+func newType*(t: ValueKind): Value {.inline.} =
     ## create Type (BuiltinType) value from ValueKind
     Value(kind: Type, tpKind: BuiltinType, t: t)
 
@@ -337,7 +337,7 @@ proc newType*(t: string): Value {.inline.} =
     except ValueError:
         newUserType(t)
 
-func newChar*(c: Rune): Value {.inline, enforceNoRaises.} =
+func newChar*(c: Rune): Value {.inline.} =
     ## create Char value from Rune
     Value(kind: Char, c: c)
 
@@ -349,50 +349,50 @@ func newChar*(c: string): Value {.inline.} =
     ## create Char value from string
     Value(kind: Char, c: c.runeAt(0))
 
-func newString*(s: sink string, dedented: static bool = false): Value {.inline, enforceNoRaises.} =
+func newString*(s: sink string, dedented: static bool = false): Value {.inline.} =
     ## create String value from string
     when not dedented: 
         Value(kind: String, s: s)
     else: 
         Value(kind: String, s: unicode.strip(dedent(s)))
 
-func newString*(s: cstring, dedented: static bool = false): Value {.inline, enforceNoRaises.} =
+func newString*(s: cstring, dedented: static bool = false): Value {.inline.} =
     ## create String value from cstring
     newString($(s), dedented)
 
-func newWord*(w: sink string): Value {.inline, enforceNoRaises.} =
+func newWord*(w: sink string): Value {.inline.} =
     ## create Word value from string
     Value(kind: Word, s: w)
 
-func newLiteral*(l: sink string): Value {.inline, enforceNoRaises.} =
+func newLiteral*(l: sink string): Value {.inline.} =
     ## create Literal value from string
     Value(kind: Literal, s: l)
 
-func newLabel*(l: sink string): Value {.inline, enforceNoRaises.} =
+func newLabel*(l: sink string): Value {.inline.} =
     ## create Label value from string
     Value(kind: Label, s: l)
 
-func newAttribute*(a: sink string): Value {.inline, enforceNoRaises.} =
+func newAttribute*(a: sink string): Value {.inline.} =
     ## create Attribute value from string
     Value(kind: Attribute, s: a)
 
-func newAttributeLabel*(a: sink string): Value {.inline, enforceNoRaises.} =
+func newAttributeLabel*(a: sink string): Value {.inline.} =
     ## create AttributeLabel value from string
     Value(kind: AttributeLabel, s: a)
 
-func newPath*(p: sink ValueArray): Value {.inline, enforceNoRaises.} =
+func newPath*(p: sink ValueArray): Value {.inline.} =
     ## create Path value from ValueArray
     Value(kind: Path, p: p)
 
-func newPathLabel*(p: sink ValueArray): Value {.inline, enforceNoRaises.} =
+func newPathLabel*(p: sink ValueArray): Value {.inline.} =
     ## create PathLabel value from ValueArray
     Value(kind: PathLabel, p: p)
 
-func newPathLiteral*(p: sink ValueArray): Value {.inline, enforceNoRaises.} =
+func newPathLiteral*(p: sink ValueArray): Value {.inline.} =
     ## create PathLiteral value from ValueArray
     Value(kind: PathLiteral, p: p)
 
-func newSymbol*(m: VSymbol): Value {.inline, enforceNoRaises.} =
+func newSymbol*(m: VSymbol): Value {.inline.} =
     ## create Symbol value from VSymbol
     Value(kind: Symbol, m: m)
 
@@ -400,7 +400,7 @@ func newSymbol*(m: sink string): Value {.inline.} =
     ## create Symbol value from string
     newSymbol(parseEnum[VSymbol](m))
 
-func newSymbolLiteral*(m: VSymbol): Value {.inline, enforceNoRaises.} =
+func newSymbolLiteral*(m: VSymbol): Value {.inline.} =
     ## create SymbolLiteral value from VSymbol
     Value(kind: SymbolLiteral, m: m)
 
@@ -408,7 +408,7 @@ func newSymbolLiteral*(m: string): Value {.inline.} =
     ## create SymbolLiteral value from string
     newSymbolLiteral(parseEnum[VSymbol](m))
 
-proc newUnit*(u: VUnit): Value {.inline, enforceNoRaises.} =
+proc newUnit*(u: VUnit): Value {.inline.} =
     ## create Unit value from VUnit
     Value(kind: Unit, u: u)
 
@@ -416,7 +416,7 @@ proc newUnit*(u: string): Value {.inline.} =
     ## create Unit value from string
     newUnit(parseAtoms(u))
 
-proc newQuantity*(v: Value, atoms: VUnit): Value {.inline, enforceNoRaises.} =
+proc newQuantity*(v: Value, atoms: VUnit): Value {.inline.} =
     ## create Quantity value from a numerical value ``v`` (Value) + ``atoms`` (VUnit)
     result = Value(kind: Quantity)
     if v.kind == Integer: 
@@ -434,37 +434,34 @@ proc newQuantity*(v: Value, atoms: string): Value {.inline.} =
     ## create Quantity value from a numerical value ``v`` (Value) + ``atoms`` (string)
     newQuantity(v, parseAtoms(atoms))
 
-proc newQuantity*(q: VQuantity, copy: static bool = false): Value {.inline, enforceNoRaises.} =
+proc newQuantity*(q: VQuantity, copy: static bool = false): Value {.inline.} =
     ## create Quantity value from QuantityValue ``q`` (VQuantity)
     when copy:
         Value(kind: Quantity, q: toQuantity(q.original, q.atoms))
     else:
         Value(kind: Quantity, q: q)
 
-proc newErrorKind*(): Value {.inline, enforceNoRaises.} =
+proc newErrorKind*(): Value {.inline.} =
     Value(kind: ErrorKind, errKind: VErrorKind(label: "Generic Error"))
 
-proc newErrorKind*(label: string): Value {.inline, enforceNoRaises.} =
-    Value(kind: ErrorKind, errKind: VErrorKind(label: label))
+proc newErrorKind*(label: string, description: string = ""): Value {.inline.} =
+    Value(kind: ErrorKind, errKind: VErrorKind(label: label, description: description))
 
-proc newErrorKind*(errKind: VErrorKind): Value {.inline, enforceNoRaises.} =
+proc newErrorKind*(errKind: VErrorKind = RuntimeErr): Value {.inline.} =
     Value(kind: ErrorKind, errKind: errKind)
 
-proc newError*(error: ref Exception | CatchableError | Defect): Value {.inline, enforceNoRaises.} =
-    result = Value(kind: Error, err: VError(kind: verror.genericErrorKind))
+proc newError*(error: ref Exception | CatchableError | Defect): Value {.inline.} =
+    result = Value(kind: Error, err: VError(kind: RuntimeErr))
     result.err.msg = error.msg
 
-proc newError*(kind: VErrorKind, msg: string = ""): Value {.inline, enforceNoRaises.} =
+proc newError*(kind: VErrorKind = RuntimeErr, msg: string = ""): Value {.inline.} =
     result = Value(kind: Error, err: VError(kind: kind))
     result.err.msg = msg
 
-proc newError*(err: VError): Value {.inline, enforceNoRaises.} =
+proc newError*(err: VError): Value {.inline.} =
     Value(kind: Error, err: err)
 
-proc newGenericError*(): Value {.inline, enforceNoRaises.} =
-    Value(kind: Error, err: VError(kind: genericErrorKind))
-
-func newRegex*(rx: sink VRegex): Value {.inline, enforceNoRaises.} =
+func newRegex*(rx: sink VRegex): Value {.inline.} =
     ## create Regex value from VRegex
     Value(kind: Regex, rx: rx)
 
@@ -472,7 +469,7 @@ func newRegex*(rx: string, rflags: string = ""): Value {.inline.} =
     ## create Regex value from string
     newRegex(newRegexObj(rx, rflags))
 
-func newColor*(l: VColor): Value {.inline, enforceNoRaises.} =
+func newColor*(l: VColor): Value {.inline.} =
     ## create Color value from VColor
     Value(kind: Color, l: l)
 
@@ -484,7 +481,7 @@ func newColor*(l: string): Value {.inline.} =
     ## create Color value from string
     newColor(parseColor(l))
 
-func newDate*(dt: sink DateTime): Value {.inline, enforceNoRaises.} =
+func newDate*(dt: sink DateTime): Value {.inline.} =
     ## create Date value from DateTime
     let edict = {
         "hour"      : newInteger(dt.hour),
@@ -503,19 +500,19 @@ func newDate*(dt: sink DateTime): Value {.inline, enforceNoRaises.} =
     newTime[] = dt
     Value(kind: Date, e: edict, eobj: newTime)
 
-func newBinary*(n: VBinary = @[]): Value {.inline, enforceNoRaises.} =
+func newBinary*(n: VBinary = @[]): Value {.inline.} =
     ## create Binary value from VBinary
     Value(kind: Binary, n: n)
 
-func newDictionary*(d: sink ValueDict = newOrderedTable[string,Value]()): Value {.inline, enforceNoRaises.} =
+func newDictionary*(d: sink ValueDict = newOrderedTable[string,Value]()): Value {.inline.} =
     ## create Dictionary value from ValueDict
     Value(kind: Dictionary, d: d)
 
-func newDictionary*(d: sink SymTable): Value {.inline, enforceNoRaises.} =
+func newDictionary*(d: sink SymTable): Value {.inline.} =
     ## create Dictionary value from SymTable
     newDictionary(toSeq(d.pairs).toOrderedTable)
 
-func newObject*(proto: sink Prototype, o: sink ValueDict = newOrderedTable[string,Value](), magic: MagicMethods = MagicMethods()): Value {.inline, enforceNoRaises.} =
+func newObject*(proto: sink Prototype, o: sink ValueDict = newOrderedTable[string,Value](), magic: MagicMethods = MagicMethods()): Value {.inline.} =
     ## create Object value from ValueDict with given prototype
     Value(kind: Object, proto: proto, o: o, magic: magic)
 
@@ -548,11 +545,11 @@ func newObject*(proto: sink Prototype, o: sink ValueDict = newOrderedTable[strin
     
 #     initializer(result, prot)
 
-proc newStore*(sto: VStore): Value {.inline, enforceNoRaises.} =
+proc newStore*(sto: VStore): Value {.inline.} =
     ## create Store value from VStore
     Value(kind: Store, sto: sto)
 
-func newFunction*(params: seq[string], main: Value, imports: Value = nil, exports: Value = nil, memoize: bool = false, inline: bool = false): Value {.inline, enforceNoRaises.} =
+func newFunction*(params: seq[string], main: Value, imports: Value = nil, exports: Value = nil, memoize: bool = false, inline: bool = false): Value {.inline.} =
     ## create Function (UserFunction) value with given parameters, ``main`` body, etc
     Value(
         kind: Function,
@@ -570,7 +567,7 @@ func newFunction*(params: seq[string], main: Value, imports: Value = nil, export
         )
     )
 
-func newMethod*(params: seq[string], main: Value, isDistinct: bool = false, injectThis: static bool = true): Value {.inline, enforceNoRaises.} =
+func newMethod*(params: seq[string], main: Value, isDistinct: bool = false, injectThis: static bool = true): Value {.inline.} =
     Value(
         kind: Method,
         info: nil,
@@ -583,7 +580,7 @@ func newMethod*(params: seq[string], main: Value, isDistinct: bool = false, inje
         )
     )
 
-func newFunctionFromDefinition*(params: ValueArray, main: Value, imports: Value = nil, exports: Value = nil, memoize: bool = false, forceInline: bool = false): Value {.inline, enforceNoRaises.} =
+func newFunctionFromDefinition*(params: ValueArray, main: Value, imports: Value = nil, exports: Value = nil, memoize: bool = false, forceInline: bool = false): Value {.inline.} =
     ## create Function value with given parameters,
     ## generate type checkers, and process info if necessary
     
@@ -688,7 +685,7 @@ func newFunctionFromDefinition*(params: ValueArray, main: Value, imports: Value 
 #  could we possibly "merge" it with `newFunctionFromDefinition` or 
 #  at least create e.g. a template?
 #  labels: values, enhancement, cleanup
-func newMethodFromDefinition*(params: ValueArray, main: Value, isDistinct: bool = false): Value {.inline, enforceNoRaises.} =
+func newMethodFromDefinition*(params: ValueArray, main: Value, isDistinct: bool = false): Value {.inline.} =
     ## create Method value with given parameters,
     ## generate type checkers, and process info if necessary
 
@@ -782,7 +779,7 @@ func newMethodFromDefinition*(params: ValueArray, main: Value, isDistinct: bool 
 
     result.info.args = argTypes
 
-func newBuiltin*(desc: sink string, modl: sink string, line: int, ar: int8, ag: sink OrderedTable[string,ValueSpec], at: sink OrderedTable[string,(ValueSpec,string)], ret: ValueSpec, exa: sink string, opc: OpCode, act: BuiltinAction): Value {.inline, enforceNoRaises.} =
+func newBuiltin*(desc: sink string, modl: sink string, line: int, ar: int8, ag: sink OrderedTable[string,ValueSpec], at: sink OrderedTable[string,(ValueSpec,string)], ret: ValueSpec, exa: sink string, opc: OpCode, act: BuiltinAction): Value {.inline.} =
     ## create Function (BuiltinFunction) value with given details
     result = Value(
         kind: Function,
@@ -818,39 +815,39 @@ when not defined(WEB):
 # proc newDatabase*(db: mysql.DbConn): Value {.inline.} =
 #     Value(kind: Database, dbKind: MysqlDatabase, mysqldb: db)
 
-func newBytecode*(t: sink Translation): Value {.inline, enforceNoRaises.} =
+func newBytecode*(t: sink Translation): Value {.inline.} =
     ## create Bytecode value from Translation
     Value(kind: Bytecode, trans: t)
 
-func newInline*(a: sink ValueArray = @[]): Value {.inline, enforceNoRaises.} =
+func newInline*(a: sink ValueArray = @[]): Value {.inline.} =
     ## create Inline value from ValueArray
     Value(kind: Inline, a: a)
 
-func newBlock*(a: sink ValueArray = @[], data: sink Value = nil): Value {.inline, enforceNoRaises.} =
+func newBlock*(a: sink ValueArray = @[], data: sink Value = nil): Value {.inline.} =
     ## create Block value from ValueArray
     Value(kind: Block, a: a, data: data)
 
-func newBlock*(a: (Value, Value)): Value {.inline, enforceNoRaises.} =
+func newBlock*(a: (Value, Value)): Value {.inline.} =
     ## create Block value from tuple of two values
     newBlock(@[a[0], a[1]])
 
-func newIntegerBlock*[T](a: sink seq[T]): Value {.inline, enforceNoRaises.} =
+func newIntegerBlock*[T](a: sink seq[T]): Value {.inline.} =
     ## create Block value from an array of ints
     newBlock(a.map(proc (x:T):Value = newInteger(int(x))))
 
-proc newStringBlock*(a: sink seq[string]): Value {.inline, enforceNoRaises.} =
+proc newStringBlock*(a: sink seq[string]): Value {.inline.} =
     ## create Block value from an array of strings
     newBlock(a.map(proc (x:string):Value = newString($x)))
 
-proc newStringBlock*(a: sink seq[cstring]): Value {.inline, enforceNoRaises.} =
+proc newStringBlock*(a: sink seq[cstring]): Value {.inline.} =
     ## create Block value from an array of cstrings
     newBlock(a.map(proc (x:cstring):Value = newString(x)))
 
-proc newWordBlock*(a: sink seq[string]): Value {.inline, enforceNoRaises.} =
+proc newWordBlock*(a: sink seq[string]): Value {.inline.} =
     ## create Block value from an array of strings
     newBlock(a.map(proc (x:string):Value = newWord(x)))
 
-proc newRange*(start: int, stop: int, step: int, infinite: bool, numeric: bool, forward: bool): Value {.inline,enforceNoRaises.} =
+proc newRange*(start: int, stop: int, step: int, infinite: bool, numeric: bool, forward: bool): Value {.inline.} =
     Value(kind: Range, rng: 
         VRange(
             start: start, 
@@ -862,7 +859,7 @@ proc newRange*(start: int, stop: int, step: int, infinite: bool, numeric: bool, 
         )
     )
 
-proc newRange*(rng: VRange): Value {.inline, enforceNoRaises.} =
+proc newRange*(rng: VRange): Value {.inline.} =
     Value(kind: Range, rng: rng)
 
 proc newStringDictionary*(a: Table[string, string]): Value =
@@ -1001,7 +998,7 @@ proc copyValue*(v: Value): Value {.inline.} =
 # Helpers
 #=======================================
 
-func asFloat*(v: Value): float {.enforceNoRaises.} = 
+func asFloat*(v: Value): float  = 
     ## get numeric value forcefully as a float
     ## 
     ## **Hint:** We have to make sure the value is 
@@ -1017,7 +1014,7 @@ func asFloat*(v: Value): float {.enforceNoRaises.} =
         discard
 
 
-func asInt*(v: Value): int {.enforceNoRaises.} = 
+func asInt*(v: Value): int  = 
     ## get numeric value forcefully as an int
     ## 
     ## **Hint:** We have to make sure the value is 
@@ -1027,7 +1024,7 @@ func asInt*(v: Value): int {.enforceNoRaises.} =
     else:
         result = int(v.f)
 
-func valueAsString*(v: Value): string {.inline,enforceNoRaises.} =
+func valueAsString*(v: Value): string {.inline.} =
     ## get numeric value forcefully as a string
     ## 
     ## **Hint:** We have to make sure the value is 
@@ -1058,7 +1055,7 @@ template ensureStoreIsLoaded*(sto: VStore) =
     else:
         sto.forceLoad(sto)
 
-func consideredEqual*(x: Value, y: Value): bool {.inline,enforceNoRaises.} =
+func consideredEqual*(x: Value, y: Value): bool {.inline.} =
     ## check whether given values are to be considered equal
     ## 
     ## **Hint:** This is a helper function *solely* for the

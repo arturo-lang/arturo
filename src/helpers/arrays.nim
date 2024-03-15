@@ -170,7 +170,7 @@ proc deduplicated*[T](s: openArray[T], isSorted: bool = false): seq[T] =
       for itm in items(s):
         if not result.contains(itm): result.add(itm)
 
-func prepend*(s: Value, t: Value, singleValue: static bool = false): ValueArray {.inline,enforceNoRaises.} =
+func prepend*(s: Value, t: Value, singleValue: static bool = false): ValueArray {.inline.} =
     ## Prepends `t` to `s`, and returning a `ValueArray`
     ##
     ## Note:
@@ -199,7 +199,7 @@ func prepend*(s: Value, t: Value, singleValue: static bool = false): ValueArray 
 
     setLen(result, cnt)
 
-proc prependInPlace*(s: var Value, t: Value) {.inline,enforceNoRaises.} =
+proc prependInPlace*(s: var Value, t: Value) {.inline.} =
     ## Prepends `t` to `s`, and changing `s` in-place
     ##
     ## Note:

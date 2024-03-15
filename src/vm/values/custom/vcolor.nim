@@ -17,6 +17,10 @@ from algorithm import binarySearch
 import math, random, sequtils
 import strutils, sugar
 
+import helpers/strings
+
+import vm/errors
+
 #=======================================
 # Types
 #=======================================
@@ -1420,7 +1424,7 @@ func colorFromHexWithAlpha*(s: string): VColor =
 
 func colorByName*(name: string): VColor =
     var idx = binarySearch(colorNames, name, colorNameCmp)
-    if idx < 0: raise newException(ValueError, "unknown color: " & name)
+    if idx < 0: Error_ColorNameNotFound(name, name.getSimilar(colorNames.map((z) => z[0])))
     result = colorNames[idx][1]
 
 func parseColor*(str: string): VColor =

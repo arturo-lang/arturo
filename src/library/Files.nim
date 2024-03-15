@@ -81,7 +81,7 @@ proc defineLibrary*() =
             ; copied whole folder
             """:
                 #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("copy")
+                when defined(SAFE): Error_OperationNotPermitted("copy")
 
                 var target = y.s
                 if (hadAttr("directory")): 
@@ -112,7 +112,7 @@ proc defineLibrary*() =
             ; file deleted
             """:
                 #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("delete")
+                when defined(SAFE): Error_OperationNotPermitted("delete")
                 
                 if (hadAttr("directory")): 
                     try:
@@ -143,7 +143,7 @@ proc defineLibrary*() =
             ; moved whole folder
             """:
                 #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("move")
+                when defined(SAFE): Error_OperationNotPermitted("move")
 
                 var target = y.s
                 if (hadAttr("directory")): 
@@ -193,7 +193,7 @@ proc defineLibrary*() =
             ; gave write permission to 'others'
             """:
                 #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("permissions")
+                when defined(SAFE): Error_OperationNotPermitted("permissions")
 
                 try:
                     if (checkAttr("set")):
@@ -315,7 +315,7 @@ proc defineLibrary*() =
                     let (src, tp) = getSource(x.s)
 
                     if (hadAttr("file") and tp != FileData):
-                        RuntimeError_FileNotFound(src)
+                        Error_FileNotFound(src)
 
                     if (hadAttr("lines")):
                         push(newStringBlock(src.splitLines()))
@@ -367,7 +367,7 @@ proc defineLibrary*() =
             ; file renamed
             """:
                 #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("rename")
+                when defined(SAFE): Error_OperationNotPermitted("rename")
 
                 var source = x.s
                 var target = y.s
@@ -407,7 +407,7 @@ proc defineLibrary*() =
             ; to our desktop
             """:
                 #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("symlink")
+                when defined(SAFE): Error_OperationNotPermitted("symlink")
 
                 var source = x.s
                 var target = y.s
@@ -461,7 +461,7 @@ proc defineLibrary*() =
             unzip "folder" "archive.zip"
             """:
                 #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("unzip")
+                when defined(SAFE): Error_OperationNotPermitted("unzip")
 
                 miniz.unzip(y.s, x.s)
 
@@ -481,7 +481,7 @@ proc defineLibrary*() =
             ; (size in bytes)
             """:
                 #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("volume")
+                when defined(SAFE): Error_OperationNotPermitted("volume")
 
                 push newQuantity(toQuantity(int(getFileSize(x.s)), parseAtoms("B")))
 
@@ -513,7 +513,7 @@ proc defineLibrary*() =
             write.append "somefile.txt" "Yes, Hello again!"
             """:
                 #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("write")
+                when defined(SAFE): Error_OperationNotPermitted("write")
 
                 if yKind==Bytecode:
                     let dataS = codify(newBlock(y.trans.constants), unwrapped=true, safeStrings=true)
@@ -550,7 +550,7 @@ proc defineLibrary*() =
             zip "dest.zip" ["file1.txt" "img.png"]
             """:
                 #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("zip")
+                when defined(SAFE): Error_OperationNotPermitted("zip")
 
                 let files: seq[string] = y.a.map((z)=>z.s)
                 miniz.zip(files, x.s)
@@ -575,7 +575,7 @@ proc defineLibrary*() =
             ]
             """:
                 #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("file?")
+                when defined(SAFE): Error_OperationNotPermitted("file?")
 
                 push newLogical(dirExists(x.s))
 
@@ -595,7 +595,7 @@ proc defineLibrary*() =
             ]
             """:
                 #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("exists?")
+                when defined(SAFE): Error_OperationNotPermitted("exists?")
 
                 push newLogical(fileExists(x.s) or dirExists(x.s) or symlinkExists(x.s))
 
@@ -615,7 +615,7 @@ proc defineLibrary*() =
             ]
             """:
                 #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("file?")
+                when defined(SAFE): Error_OperationNotPermitted("file?")
 
                 push newLogical(fileExists(x.s))
 
@@ -634,7 +634,7 @@ proc defineLibrary*() =
             hidden? ".git"          ; => true
             """:
                 #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("hidden?")
+                when defined(SAFE): Error_OperationNotPermitted("hidden?")
 
                 push newLogical(isHidden(x.s))
 
@@ -654,7 +654,7 @@ proc defineLibrary*() =
             ]
             """:
                 #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("symlink?")
+                when defined(SAFE): Error_OperationNotPermitted("symlink?")
 
                 push newLogical(symlinkExists(x.s))
 

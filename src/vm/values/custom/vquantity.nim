@@ -185,7 +185,7 @@ proc getExchangeRate(curr: string): float =
     let s = toLowerAscii(curr)
     if ExchangeRates.len == 0:
         when not defined(WEB):
-            let url = "https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies/usd.min.json"
+            let url = "https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/usd.min.json"
             let content = waitFor (newAsyncHttpClient().getContent(url))
             let response = parseJson(content)
             for (k,v) in pairs(response["usd"]):
@@ -387,7 +387,7 @@ proc convertTemperature*(v: QuantityValue, fromU: CoreUnit, toU: CoreUnit): Quan
 
 proc convertTo*(q: Quantity, atoms: Atoms): Quantity =
     if q.signature != getSignature(atoms):
-        RuntimeError_CannotConvertDifferentDimensions()
+        Error_CannotConvertDifferentDimensions(getProperty(q), getProperty(atoms))
 
     if q.atoms == atoms:
         return q
@@ -397,7 +397,7 @@ proc convertTo*(q: Quantity, atoms: Atoms): Quantity =
 proc convertQuantity*(q: Quantity, atoms: Atoms): Quantity =
     if unlikely(isTemperature(q)):
         if q.signature != getSignature(atoms):
-            RuntimeError_CannotConvertDifferentDimensions()
+            Error_CannotConvertDifferentDimensions(getProperty(q), getProperty(atoms))
         
         result = toQuantity(convertTemperature(q.original, q.atoms[0].unit.u.core, atoms[0].unit.u.core), atoms)
     else:
@@ -535,7 +535,7 @@ when defined(GMP):
 
 proc `+`*(a, b: Quantity): Quantity =
     if not (a =~ b):
-        RuntimeError_CannotConvertDifferentDimensions()
+        Error_CannotConvertDifferentDimensions(getProperty(a), getProperty(b))
 
     let convB = b.convertTo(a.atoms)
 
@@ -550,7 +550,7 @@ when defined(GMP):
 
 proc `+=`*(a: var Quantity, b: Quantity) =
     if not (a =~ b):
-        RuntimeError_CannotConvertDifferentDimensions()
+        Error_CannotConvertDifferentDimensions(getProperty(a), getProperty(b))
 
     let convB = b.convertTo(a.atoms)
 
@@ -565,7 +565,7 @@ when defined(GMP):
 
 proc `-`*(a, b: Quantity): Quantity =
     if not (a =~ b):
-        RuntimeError_CannotConvertDifferentDimensions()
+        Error_CannotConvertDifferentDimensions(getProperty(a), getProperty(b))
 
     let convB = b.convertTo(a.atoms)
 
@@ -580,7 +580,7 @@ when defined(GMP):
 
 proc `-=`*(a: var Quantity, b: Quantity) =
     if not (a =~ b):
-        RuntimeError_CannotConvertDifferentDimensions()
+        Error_CannotConvertDifferentDimensions(getProperty(a), getProperty(b))
 
     let convB = b.convertTo(a.atoms)
 

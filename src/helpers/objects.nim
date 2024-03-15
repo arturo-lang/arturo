@@ -113,10 +113,10 @@ const
 template checkArguments(pr: Prototype, values: ValueArray | ValueDict) =
     when values is ValueArray:
         if pr.fields.len != values.len:
-            RuntimeError_IncorrectNumberOfArgumentsForInitializer(pr.name, values.len, toSeq(pr.fields.keys))
+            Error_IncorrectNumberOfArgumentsForInitializer(pr.name, values.len, toSeq(pr.fields.keys))
     else:
         if (pr.fields.len != 0 or (pr.fields.len == 0 and pr.content.hasKey($ConstructorM))) and pr.fields.len != values.len:
-            RuntimeError_IncorrectNumberOfArgumentsForInitializer(pr.name, values.len, toSeq(pr.fields.keys))
+            Error_IncorrectNumberOfArgumentsForInitializer(pr.name, values.len, toSeq(pr.fields.keys))
 
 proc fetchConstructorArguments(pr: Prototype, values: ValueArray | ValueDict, args: var ValueArray): bool =
     result = true
@@ -133,7 +133,7 @@ proc fetchConstructorArguments(pr: Prototype, values: ValueArray | ValueDict, ar
                     if (let vv = values.getOrDefault(k, nil); not vv.isNil):
                         args.add(vv)
                     else:
-                        RuntimeError_MissingArgumentForInitializer(pr.name, k)
+                        Error_MissingArgumentForInitializer(pr.name, k)
 
 # TODO(Helpers/objects) Should check defined magic methods for validity
 #  obviously, we cannot check everything beforehand (if the parems are correct

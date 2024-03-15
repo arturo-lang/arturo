@@ -96,7 +96,7 @@ proc parseDataBlock*(blk: Value): Value
 template Empty(s: var string): bool =
     s.len == 0
 
-func addAnnotatedTokenToBlock(blok: var Value, token: Value, p: var Parser) {.enforceNoRaises.} =
+func addAnnotatedTokenToBlock(blok: var Value, token: Value, p: var Parser)  =
     token.ln = uint32(p.lineNumber)
     blok.a.add(token)
 
@@ -115,22 +115,22 @@ template ReplaceLastToken(with: untyped): untyped =
 
 # Error reporting
 
-func getContext(p: var Parser, curPos: int): string =
-    var i = curPos
+# func getContext(p: var Parser, curPos: int): string =
+#     var i = curPos
 
-    while i > 0 and p.buf[i] notin {CR,LF,'\n'}:
-        result.add(p.buf[i])
-        dec(i)
+#     while i > 0 and p.buf[i] notin {CR,LF,'\n'}:
+#         result.add(p.buf[i])
+#         dec(i)
 
-    result = reversed(result)
-    let initial = i
-    i = curPos+1
+#     result = reversed(result)
+#     let initial = i
+#     i = curPos+1
 
-    while p.buf[i]!=EOF and p.buf[i] notin {CR,LF,'\n'}:
-        result.add(p.buf[i])
-        inc(i)
+#     while p.buf[i]!=EOF and p.buf[i] notin {CR,LF,'\n'}:
+#         result.add(p.buf[i])
+#         inc(i)
 
-    result &= ";" & repeat("~%",6 + curPos-initial) & "_^_"
+#     result &= "\n" & repeat("~%",6 + curPos-initial) & "_^_"
 
 # Lexer/parser
 
@@ -214,11 +214,11 @@ template parseString(p: var Parser, stopper: char = Quote) =
     var pos = p.bufpos + 1
     var inCode = false
     let initialLine = p.lineNumber
-    let initialPoint = p.bufpos
     while true:
         case p.buf[pos]:
             of EOF: 
-                SyntaxError_UnterminatedString("", initialLine, getContext(p, initialPoint))
+                p.lineNumber = initialLine
+                Error_UnterminatedString("")
             of stopper:
                 inc(pos)
                 break
@@ -282,13 +282,13 @@ template parseString(p: var Parser, stopper: char = Quote) =
                     add(p.value, p.buf[pos])
                     inc(pos)
             of CR:
-                var prepos = pos-1
                 pos = lexbase.handleCR(p, pos)
-                SyntaxError_NewlineInQuotedString(p.lineNumber-1, getContext(p, prepos))
+                p.lineNumber -= 1
+                Error_NewlineInQuotedString()
             of LF:
-                var prepos = pos-1
                 pos = lexbase.handleLF(p, pos)
-                SyntaxError_NewlineInQuotedString(p.lineNumber-1, getContext(p, prepos))
+                p.lineNumber -= 1
+                Error_NewlineInQuotedString()
             else:
                 add(p.value, p.buf[pos])
                 inc(pos)
@@ -343,11 +343,14 @@ template parseCurlyString(p: var Parser) =
         regexString = true
 
     let initialLine = p.lineNumber
-    let initialPoint = p.bufpos
     while true:
         case p.buf[pos]:
             of EOF: 
-                SyntaxError_UnterminatedString("curly", initialLine, getContext(p, initialPoint))
+                p.lineNumber = initialLine
+                if verbatimString:
+                    Error_UnterminatedString("verbatim")
+                else:
+                    Error_UnterminatedString("curly")
             of LCurly:
                 curliesExpected += 1
                 add(p.value, p.buf[pos])
@@ -411,7 +414,8 @@ template parseCurlyString(p: var Parser) =
                             add(regexFlags, p.buf[pos])
                             inc(pos)
                         if p.buf[pos] != RCurly:
-                            SyntaxError_UnterminatedString("regex", initialLine, getContext(p, initialPoint))
+                            p.lineNumber = initialLine
+                            Error_UnterminatedString("regex")
                         else:
                             inc(pos)
                             break
@@ -460,7 +464,7 @@ template parseSafeString(p: var Parser) =
     while true:
         case p.buf[pos]:
             of EOF: 
-                SyntaxError_UnterminatedString("", p.lineNumber, getContext(p, p.bufpos-2))
+                Error_UnterminatedString("")
                 break
             of CR:
                 pos = lexbase.handleCR(p, pos)
@@ -853,7 +857,6 @@ proc parseBlock(p: var Parser, level: int, isSubBlock: bool = false, isSubInline
             newBlock()
     # if isSubBlock: topBlock = newBlock()
     # else: topBlock = newInline()
-    let initial = p.bufpos - 1
     let initialLine = p.lineNumber
     while true:
         setLen(p.value, 0)
@@ -862,10 +865,11 @@ proc parseBlock(p: var Parser, level: int, isSubBlock: bool = false, isSubInline
         case p.buf[p.bufpos]
             of EOF:
                 if unlikely(level!=0): 
+                    p.lineNumber = initialLine
                     if isSubBlock:
-                        SyntaxError_MissingClosingSquareBracket(initialLine, getContext(p, initial))
+                        Error_MissingClosingSquareBracket()
                     else:
-                        SyntaxError_MissingClosingParenthesis(initialLine, getContext(p, initial))
+                        Error_MissingClosingParenthesis()
                 break
             of Quote:
                 parseString(p)
@@ -977,7 +981,7 @@ proc parseBlock(p: var Parser, level: int, isSubBlock: bool = false, isSubInline
                         parseString(p, stopper=Tick)
                         AddToken newChar(p.value)
                     # else:
-                    #     SyntaxError_EmptyLiteral(p.lineNumber, getContext(p, p.bufpos-1))
+                    #     Error_EmptyLiteral(p.lineNumber, getContext(p, p.bufpos-1))
                 else:
                     if p.buf[p.bufpos] == Backslash:
                         if (p.buf[p.bufpos+1] in PermittedIdentifiers_Start) or 
@@ -1029,9 +1033,10 @@ proc parseBlock(p: var Parser, level: int, isSubBlock: bool = false, isSubInline
                     break
                 else:
                     if isSubInline:
-                        SyntaxError_MissingClosingParenthesis(initialLine, getContext(p, initial))
+                        p.lineNumber = initialLine
+                        Error_MissingClosingParenthesis()
                     else:
-                        SyntaxError_StrayClosingSquareBracket(p.lineNumber, getContext(p, p.bufpos))
+                        Error_StrayClosingSquareBracket()
             of LParen:
                 inc(p.bufpos)
                 var subblock = parseBlock(p, level+1, isSubInline=true)
@@ -1042,13 +1047,14 @@ proc parseBlock(p: var Parser, level: int, isSubBlock: bool = false, isSubInline
                     break
                 else:
                     if isSubBlock:
-                        SyntaxError_MissingClosingSquareBracket(initialLine, getContext(p, initial))
+                        p.lineNumber = initialLine
+                        Error_MissingClosingSquareBracket()
                     else:
-                        SyntaxError_StrayClosingParenthesis(p.lineNumber, getContext(p, p.bufpos))
+                        Error_StrayClosingParenthesis()
             of LCurly:
                 parseCurlyString(p)
             of RCurly:
-                SyntaxError_StrayClosingCurlyBracket(p.lineNumber, getContext(p, p.bufpos))
+                Error_StrayClosingCurlyBracket()
             of '\194':
                 if p.buf[p.bufpos+1]=='\171': # got «
                     if p.buf[p.bufpos+2]=='\194' and p.buf[p.bufpos+3]=='\171':
@@ -1227,7 +1233,7 @@ proc doParse*(input: string, isFile: bool = true): Value =
             var filePath = input
             when not defined(WEB):
                 if unlikely(not fileExists(filePath)):
-                    CompilerError_ScriptNotExists(input)
+                    Error_ScriptNotExists(input)
 
             var stream = newFileStream(filePath)
             lexbase.open(p, stream)
@@ -1235,12 +1241,12 @@ proc doParse*(input: string, isFile: bool = true): Value =
             var stream = newStringStream(input)
 
             lexbase.open(p, stream)
-
-        # do parse    
-        let rootBlock = parseBlock(p, 0)
+        try:
+            # do parse    
+            result = parseBlock(p, 0)
+        except CatchableError as e:
+            CurrentLine = p.lineNumber
+            raise e
 
         # close lexer
         lexbase.close(p)
-
-    # if everything went fine, return result     
-    return rootBlock
