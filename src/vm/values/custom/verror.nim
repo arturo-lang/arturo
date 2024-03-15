@@ -40,6 +40,10 @@ type
 # Constants
 #=======================================
 
+# TODO(VError) can we really use the system exit codes?
+#  and is the list reliable for *every* OS?
+#  labels: enhancement, error handling, :error
+
 const
     EPERM*           =   int(1)      ## Operation not permitted
     ENOENT*          =   int(2)      ## No such file or directory
