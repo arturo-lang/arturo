@@ -614,6 +614,17 @@ func Error_ConfigNotFound*(gkey: string, akey: string) =
             or using the option: .$#
         """ ~~ @[gkey, akey]
 
+# TODO(VM/errors) unify all unsafe/MINI errors
+#  there are different errors that are thrown when e.g.
+#  the build is a MINI build, and a given feature is not
+#  available, or it's the "safe"-playground version
+#  and a different set of features is disabled.
+#  An example of that would also be the `SqliteDisabled`
+#  error; all of these should be mirror in ONE error
+#  template with instructions on how to solve it, e.g.
+#  install the full build
+#  labels: enhancement, error handling
+
 func Error_OperationNotPermitted*(operation: string) =
     panic:
         toError VMErr, """
