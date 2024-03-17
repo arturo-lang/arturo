@@ -34,13 +34,13 @@ const
 # Forward declarations
 #=======================================
 
-proc `==`*(x: Value, y: Value): bool {.inline, enforceNoRaises.}
+proc `==`*(x: Value, y: Value): bool {.inline.}
 
 #=======================================
 # Helpers
 #=======================================
 
-proc `==`*(x: ValueArray, y: ValueArray): bool {.inline, enforceNoRaises.} =
+proc `==`*(x: ValueArray, y: ValueArray): bool {.inline.} =
     if x.len != y.len: return false
     for i,child in x:
         if not (child==y[i]): return false

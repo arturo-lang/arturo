@@ -202,55 +202,58 @@ proc `$`*(v: Value): string {.inline.} =
         of Nothing: discard
         of ANY: discard
 
+template stdoutWrite(sss: string): untyped = 
+    if target.isNil: stdout.write sss
+    else: target[] &= sss
 
-proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepend="") {.exportc.} = 
+proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepend="", target: ref string = nil) {.exportc.} = 
     
     proc dumpPrimitive(str: string, v: Value) =
-        if not muted:   stdout.write fmt("{bold(greenColor)}{str}{fg(grayColor)} :{($(v.kind)).toLowerAscii()}{resetColor}")
-        else:           stdout.write fmt("{str} :{($(v.kind)).toLowerAscii()}")
+        if not muted:   stdoutWrite fmt("{bold(greenColor)}{str}{fg(grayColor)} :{($(v.kind)).toLowerAscii()}{resetColor}")
+        else:           stdoutWrite fmt("{str} :{($(v.kind)).toLowerAscii()}")
 
     proc dumpIdentifier(v: Value) =
-        if not muted:   stdout.write fmt("{resetColor}{v.s}{fg(grayColor)} :{($(v.kind)).toLowerAscii()}{resetColor}")
-        else:           stdout.write fmt("{v.s} :{($(v.kind)).toLowerAscii()}")
+        if not muted:   stdoutWrite fmt("{resetColor}{v.s}{fg(grayColor)} :{($(v.kind)).toLowerAscii()}{resetColor}")
+        else:           stdoutWrite fmt("{v.s} :{($(v.kind)).toLowerAscii()}")
 
     proc dumpAttribute(v: Value) =
-        if not muted:   stdout.write fmt("{resetColor}{v.s}{fg(grayColor)} :{($(v.kind)).toLowerAscii()}{resetColor}")
-        else:           stdout.write fmt("{v.s} :{($(v.kind)).toLowerAscii()}")
+        if not muted:   stdoutWrite fmt("{resetColor}{v.s}{fg(grayColor)} :{($(v.kind)).toLowerAscii()}{resetColor}")
+        else:           stdoutWrite fmt("{v.s} :{($(v.kind)).toLowerAscii()}")
 
     proc dumpSymbol(v: Value) =
-        if not muted:   stdout.write fmt("{resetColor}{v.m}{fg(grayColor)} :{($(v.kind)).toLowerAscii()}{resetColor}")
-        else:           stdout.write fmt("{v.m} :{($(v.kind)).toLowerAscii()}")
+        if not muted:   stdoutWrite fmt("{resetColor}{v.m}{fg(grayColor)} :{($(v.kind)).toLowerAscii()}{resetColor}")
+        else:           stdoutWrite fmt("{v.m} :{($(v.kind)).toLowerAscii()}")
 
     proc dumpBinary(b: Byte) =
-        if not muted:   stdout.write fmt("{resetColor}{fg(grayColor)}{b:02X} {resetColor}")
-        else:           stdout.write fmt("{b:02X} ")
+        if not muted:   stdoutWrite fmt("{resetColor}{fg(grayColor)}{b:02X} {resetColor}")
+        else:           stdoutWrite fmt("{b:02X} ")
 
     proc dumpBlockStart(v: Value) =
         var tp = ($(v.kind)).toLowerAscii()
         if v.kind==Object: tp = v.proto.name
-        if not muted:   stdout.write fmt("{bold(magentaColor)}[{fg(grayColor)} :{tp}{resetColor}\n")
-        else:           stdout.write fmt("[ :{tp}\n")
+        if not muted:   stdoutWrite fmt("{bold(magentaColor)}[{fg(grayColor)} :{tp}{resetColor}\n")
+        else:           stdoutWrite fmt("[ :{tp}\n")
 
     proc dumpBlockEnd() =
-        for i in 0..level-1: stdout.write "        "
-        if not muted:   stdout.write fmt("{bold(magentaColor)}]{resetColor}")
-        else:           stdout.write fmt("]")
+        for i in 0..level-1: stdoutWrite "        "
+        if not muted:   stdoutWrite fmt("{bold(magentaColor)}]{resetColor}")
+        else:           stdoutWrite fmt("]")
 
     proc dumpHeader(str: string) =
-        if not muted: stdout.write fmt("{resetColor}{fg(cyanColor)}")
+        if not muted: stdoutWrite fmt("{resetColor}{fg(cyanColor)}")
         let lln = "================================\n"
-        for i in 0..level: stdout.write "        "
-        stdout.write lln
-        for i in 0..level: stdout.write "        "
-        stdout.write " " & str & "\n"
-        for i in 0..level: stdout.write "        "
-        stdout.write lln
-        if not muted: stdout.write fmt("{resetColor}")
+        for i in 0..level: stdoutWrite "        "
+        stdoutWrite lln
+        for i in 0..level: stdoutWrite "        "
+        stdoutWrite " " & str & "\n"
+        for i in 0..level: stdoutWrite "        "
+        stdoutWrite lln
+        if not muted: stdoutWrite fmt("{resetColor}")
 
-    for i in 0..level-1: stdout.write "        "
+    for i in 0..level-1: stdoutWrite "        "
 
     if prepend!="":
-        stdout.write prepend
+        stdoutWrite prepend
 
     case v.kind:
         of Null         : dumpPrimitive("null",v)
@@ -292,9 +295,9 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
             dumpBlockStart(v)
 
             for i,child in v.p:
-                dump(child, level+1, i==(v.a.len-1), muted=muted)
+                dump(child, level+1, i==(v.a.len-1), muted=muted, target=target)
 
-            stdout.write "\n"
+            stdoutWrite "\n"
 
             dumpBlockEnd()
 
@@ -320,25 +323,25 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
                 let maxLen = (keys.map(proc (x: string):int = x.len)).max + 2
 
                 for key,value in v.e:
-                    for i in 0..level: stdout.write "        "
+                    for i in 0..level: stdoutWrite "        "
 
-                    stdout.write unicode.alignLeft(key & " ", maxLen) & ":"
+                    stdoutWrite unicode.alignLeft(key & " ", maxLen) & ":"
 
-                    dump(value, level+1, false, muted=muted)
+                    dump(value, level+1, false, muted=muted, target=target)
 
             dumpBlockEnd()
 
         of Binary       : 
             dumpBlockStart(v)
 
-            for i in 0..level: stdout.write "        "
+            for i in 0..level: stdoutWrite "        "
             for i,child in v.n:
                 dumpBinary(child)
                 if (i+1) mod 20 == 0:
-                    stdout.write "\n"
-                    for i in 0..level: stdout.write "        "
+                    stdoutWrite "\n"
+                    for i in 0..level: stdoutWrite "        "
             
-            stdout.write "\n"
+            stdoutWrite "\n"
 
             dumpBlockEnd()
 
@@ -349,9 +352,9 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
             Block        :
             dumpBlockStart(v)
             for i,child in v.a:
-                dump(child, level+1, i==(v.a.len-1), muted=muted)
+                dump(child, level+1, i==(v.a.len-1), muted=muted, target=target)
 
-            stdout.write "\n"
+            stdoutWrite "\n"
 
             dumpBlockEnd()
 
@@ -366,11 +369,11 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
                 let maxLen = (keys.map(proc (x: string):int = x.len)).max + 2
 
                 for key,value in v.d:
-                    for i in 0..level: stdout.write "        "
+                    for i in 0..level: stdoutWrite "        "
 
-                    stdout.write unicode.alignLeft(key & " ", maxLen) & ":"
+                    stdoutWrite unicode.alignLeft(key & " ", maxLen) & ":"
 
-                    dump(value, level+1, false, muted=muted)
+                    dump(value, level+1, false, muted=muted, target=target)
 
             dumpBlockEnd()
 
@@ -385,11 +388,11 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
                 let maxLen = (keys.map(proc (x: string):int = x.len)).max + 2
 
                 for key,value in v.sto.data:
-                    for i in 0..level: stdout.write "        "
+                    for i in 0..level: stdoutWrite "        "
 
-                    stdout.write unicode.alignLeft(key & " ", maxLen) & ":"
+                    stdoutWrite unicode.alignLeft(key & " ", maxLen) & ":"
 
-                    dump(value, level+1, false, muted=muted)
+                    dump(value, level+1, false, muted=muted, target=target)
 
             dumpBlockEnd()
         
@@ -402,11 +405,11 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
                 let maxLen = (keys.map(proc (x: string):int = x.len)).max + 2
 
                 for key,value in v.o.objectPairs:
-                    for i in 0..level: stdout.write "        "
+                    for i in 0..level: stdoutWrite "        "
 
-                    stdout.write unicode.alignLeft(key & " ", maxLen) & ":"
+                    stdoutWrite unicode.alignLeft(key & " ", maxLen) & ":"
 
-                    dump(value, level+1, false, muted=muted)
+                    dump(value, level+1, false, muted=muted, target=target)
 
             dumpBlockEnd()
 
@@ -414,29 +417,29 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
             dumpBlockStart(v)
 
             if v.fnKind==UserFunction:
-                dump(newWordBlock(v.params), level+1, false, muted=muted)
-                dump(v.main, level+1, true, muted=muted)
+                dump(newWordBlock(v.params), level+1, false, muted=muted, target=target)
+                dump(v.main, level+1, true, muted=muted, target=target)
             else:
-                for i in 0..level: stdout.write "        "
-                stdout.write "(builtin)"
+                for i in 0..level: stdoutWrite "        "
+                stdoutWrite "(builtin)"
 
-            stdout.write "\n"
+            stdoutWrite "\n"
 
             dumpBlockEnd()
 
         of Method       :
             dumpBlockStart(v)
 
-            dump(newWordBlock(v.mparams), level+1, false, muted=muted)
-            dump(v.mmain, level+1, true, muted=muted)
+            dump(newWordBlock(v.mparams), level+1, false, muted=muted, target=target)
+            dump(v.mmain, level+1, true, muted=muted, target=target)
 
-            stdout.write "\n"
+            stdoutWrite "\n"
 
             dumpBlockEnd()
 
         of Database     :
             when not defined(NOSQLITE):
-                if v.dbKind==SqliteDatabase: stdout.write fmt("[sqlite db] {cast[uint](v.sqlitedb):#X}")
+                if v.dbKind==SqliteDatabase: stdoutWrite fmt("[sqlite db] {cast[uint](v.sqlitedb):#X}")
                 #elif v.dbKind==MysqlDatabase: stdout.write fmt("[mysql db] {cast[uint](v.mysqldb):#X}")
 
         of Socket       : 
@@ -467,9 +470,9 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
                 if not muted:   prep=fmt("{resetColor}{bold(whiteColor)}{i}: {resetColor}")
                 else:           prep=fmt("{i}: ")
 
-                dump(child, level+1, false, muted=muted, prepend=prep)
+                dump(child, level+1, false, muted=muted, prepend=prep, target=target)
 
-            stdout.write "\n"
+            stdoutWrite "\n"
 
             dumpHeader("CODE")
 
@@ -477,20 +480,20 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
             while i < instrs.len:
                 for i in 0..level: stdout.write "        "
                 let preop = instrs[i].s
-                stdout.write preop
+                stdoutWrite preop
                 i += 1
                 if i < instrs.len and instrs[i].kind==Integer:
-                    stdout.write " ".repeat(20 - preop.len)
+                    stdoutWrite " ".repeat(20 - preop.len)
                     while i < instrs.len and instrs[i].kind==Integer:
                         var numstr = $(instrs[i].i)
                         if preop.contains("jmp") or preop.contains("go"):
                             numstr = "@" & numstr
                         else:
                             numstr = "#" & numstr
-                        if not muted: stdout.write fmt("{resetColor}{fg(grayColor)} {numstr}{resetColor}")
-                        else: stdout.write numstr
+                        if not muted: stdoutWrite fmt("{resetColor}{fg(grayColor)} {numstr}{resetColor}")
+                        else: stdoutWrite numstr
                         i += 1
-                stdout.write "\n"
+                stdoutWrite "\n"
 
             dumpBlockEnd()
 
@@ -498,7 +501,13 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
         of ANY          : discard
 
     if not isLast:
-        stdout.write "\n"
+        stdoutWrite "\n"
+
+proc dumped*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepend=""): string = 
+    var ss: ref string = new(string)
+    ss[] = ""
+    dump(v,target=ss)
+    return ss[]
 
 # TODO Fix pretty-printing for unwrapped blocks
 #  Indentation is not working right for inner dictionaries and blocks

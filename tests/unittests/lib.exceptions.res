@@ -1,5 +1,5 @@
 
->> genericError
+>> runtimeError
 [+] passed!
 
 >> throws? (& throw)

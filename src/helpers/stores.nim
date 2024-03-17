@@ -73,7 +73,7 @@ proc checkStorePath*(
 
     return (existing, actualPath, actualKind)
 
-func canStoreKey*(storeKind: StoreKind, valueKind: ValueKind): bool {.inline,enforceNoRaises.} =
+func canStoreKey*(storeKind: StoreKind, valueKind: ValueKind): bool {.inline.} =
     if storeKind == NativeStore: return true
 
     return valueKind in {Integer, Floating, String, Logical, Block, Dictionary, Null}
@@ -92,7 +92,7 @@ template savePendingStores*(): untyped =
                     when not defined(NOSQLITE):
                         closeSqliteDb(store.db)
                     else:
-                        RuntimeError_SqliteDisabled()
+                        Error_SqliteDisabled()
 
 template ensureLoaded*(store: VStore): untyped =
     if not store.loaded:
@@ -126,7 +126,7 @@ proc saveStore*(store: VStore, one = false, key: string = "") =
                     discard
                 discard
             else:
-                RuntimeError_SqliteDisabled()
+                Error_SqliteDisabled()
         else:
             discard
 
@@ -145,7 +145,7 @@ proc loadStore*(store: VStore, justCreated=false) =
                     for row in store.db.rows(sql("SELECT * FROM store;"), @[]):
                         store.data[row[0]] = valueFromJson(row[2])
                 else:
-                    RuntimeError_SqliteDisabled()
+                    Error_SqliteDisabled()
             else:
                 discard
 
@@ -171,7 +171,7 @@ proc createEmptyStoreOnDisk*(store: VStore) =
                     "CREATE INDEX IF NOT EXISTS store_kind_index ON store(kind);"
                 ])
             else:
-                RuntimeError_SqliteDisabled()
+                Error_SqliteDisabled()
         else:
             discard
 
@@ -187,7 +187,7 @@ proc getStoreKey*(store: VStore, key: string, unsafe: static bool=false): Value 
 
 proc setStoreKey*(store: VStore, key: string, value: Value) =
     if unlikely(not canStoreKey(store.kind, value.kind)):
-        RuntimeError_CannotStoreKey(key, ":" & ($(value.kind)).toLowerAscii(), ($(store.kind)).replace("Store",""))
+        Error_CannotStoreKey(key, ":" & ($(value.kind)).toLowerAscii(), ($(store.kind)).replace("Store",""))
 
     ensureStoreIsLoaded(store)
     
@@ -231,7 +231,7 @@ proc initStore*(
         when not defined(NOSQLITE):
             result.db = openSqliteDb(storePath)
         else:
-            RuntimeError_SqliteDisabled()
+            Error_SqliteDisabled()
 
     if forceCreate or (createIfNotExists and (not storeExists)):
         result.createEmptyStoreOnDisk()

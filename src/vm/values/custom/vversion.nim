@@ -29,16 +29,16 @@ type
 # Overloads
 #=======================================
 
-func `==`*(a, b: VVersion): bool {.inline,enforceNoRaises.} =
+func `==`*(a, b: VVersion): bool {.inline.} =
     a[] == b[]
 
-func `<`*(a, b: VVersion): bool {.inline,enforceNoRaises.} =
+func `<`*(a, b: VVersion): bool {.inline.} =
     a.major < b.major or (a.major == b.major and (
         a.minor < b.minor or
         (a.minor == b.minor and a.patch < b.patch)
     ))
 
-func `>`*(a, b: VVersion): bool {.inline,enforceNoRaises.} =
+func `>`*(a, b: VVersion): bool {.inline.} =
     a.major > b.major or (a.major == b.major and (
         a.minor > b.minor or
         (a.minor == b.minor and a.patch > b.patch)
@@ -52,7 +52,7 @@ proc cmp*(x: VVersion, y: VVersion): int {.inline.}=
     else:
         return 0
 
-func `$`*(v: VVersion): string {.inline,enforceNoRaises.} =
+func `$`*(v: VVersion): string {.inline.} =
     fmt("{v.major}.{v.minor}.{v.patch}{v.extra}")
     
 func newVVersion*(v: string): VVersion =

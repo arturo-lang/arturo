@@ -37,7 +37,7 @@ var
 # Helpers
 #=======================================
 
-func indexOfValue(a: ValueArray, item: Value): int {.inline,enforceNoRaises.}=
+func indexOfValue(a: ValueArray, item: Value): int {.inline.}=
     result = 0
     for i in items(a):
         if consideredEqual(item, i): return
@@ -104,7 +104,7 @@ proc getNextNonNewlineNode(blok: Node, i: var int, nLen: int): Node =
     else:
         i = j
 
-proc addConst(consts: var ValueArray, instructions: var VBinary, v: Value, op: OpCode, hasShortcut: static bool=true) {.inline,enforceNoRaises.} =
+proc addConst(consts: var ValueArray, instructions: var VBinary, v: Value, op: OpCode, hasShortcut: static bool=true) {.inline.} =
     var indx = consts.indexOfValue(v)
     if indx == -1:
         let newv = v
@@ -114,7 +114,7 @@ proc addConst(consts: var ValueArray, instructions: var VBinary, v: Value, op: O
 
     instructions.addOpWithNumber(op, indx, hasShortcut)
 
-proc addConstAndGetIndex(consts: var ValueArray, instructions: var VBinary, v: Value, op: OpCode, hasShortcut: static bool=true): int {.inline,enforceNoRaises.} =
+proc addConstAndGetIndex(consts: var ValueArray, instructions: var VBinary, v: Value, op: OpCode, hasShortcut: static bool=true): int {.inline.} =
     result = consts.indexOfValue(v)
     if result == -1:
         let newv = v
@@ -124,7 +124,7 @@ proc addConstAndGetIndex(consts: var ValueArray, instructions: var VBinary, v: V
 
     instructions.addOpWithNumber(op, result, hasShortcut)
 
-proc addVariableLoad(consts: var ValueArray, instructions: var VBinary, nd: Node, v: Value, previousStore: int, previousStorePos: int) {.inline,enforceNoRaises.} =
+proc addVariableLoad(consts: var ValueArray, instructions: var VBinary, nd: Node, v: Value, previousStore: int, previousStorePos: int) {.inline.} =
     var indx = consts.indexOfValue(v)
     if indx == -1:
         let newv = v
@@ -169,7 +169,7 @@ proc getOperand*(node: Node, inverted: static bool=false): (OpCode, bool) =
 # TODO(VM/eval) better `while` optimization?
 #  what if the user has actually re-defined `continue` or `break`?
 #  labels: vm, evaluator, enhancement
-func doesNotContainBranching(blok: Value): bool {.enforceNoRaises.} =
+func doesNotContainBranching(blok: Value): bool  =
     for subvalue in blok.a:
         if subvalue.kind == Word and subvalue.s in ["continue", "break"]:
             return false
@@ -178,7 +178,7 @@ func doesNotContainBranching(blok: Value): bool {.enforceNoRaises.} =
                 return false
     return true
 
-func doesNotContainBranching(node: Node): bool {.enforceNoRaises.} =
+func doesNotContainBranching(node: Node): bool  =
     for subnode in node.children:
         if subnode.kind == BuiltinCall and subnode.op in {opContinue, opBreak}:
             return false

@@ -86,10 +86,10 @@ func reversed*(self: VRange, safe: bool = false): VRange =
 # Overloads
 #=======================================
 
-func `==`*(a, b: VRange): bool {.inline,enforceNoRaises.} =
+func `==`*(a, b: VRange): bool {.inline.} =
     a[] == b[]
 
-func `$`*(v: VRange): string {.inline,enforceNoRaises.} =
+func `$`*(v: VRange): string {.inline.} =
     var start: string
     var stop: string
 

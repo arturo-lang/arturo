@@ -8,495 +8,945 @@
 
 ## Error handling for the VM.
 
-# TODO(VM/errors) General cleanup needed
-#  Do we need all these different errors? Could it be done in a more organized function by, at least, using some template? Are there other errors - mostly coming from built-in functions - that are not reported, which we could add?
-#  labels: vm, error handling, enhancement, cleanup
+# TODO(VM/errors) cleanup & re-enable error-related unittests
+#  they have all been temporarily disabled due to the error system rewrite
+#  labels: error handling, unit-test, critical
+
+# TODO(VM/errors) make sure we catch/template all system errors
+#  for example, there are regex-related errors or other that
+#  can trigger uncatchable errors (but I don't remember right now
+#  how to reproduce). We should treat them all uniformly and with a nice
+#  message, etc ;-)
+#  labels: error handling, enhancement
+
+# TODO(VM/errors) add support for VM "warnings"?
+#  provided that they could be turned off by default (or not?), 
+#  we could have warnings alongside errors: like errors, just not
+#  killing the execution, etc. One such warning could be a "deprecated"
+#  warning, for features that are to be eliminated + suggestions on
+#  how to deal with it
+#  labels: error handling, enhancement, open discussion
+
+# TODO(VM/errors) add proper color "coding" in error templates
+#  for example, types could be annotated in a specific way.
+#  pretty much like function names (in calls) are shown in white-bold,
+#  but I'm not even sure this works consistently. So, that has to be
+#  fixed too...
+#  labels: error handling, enhancement
+
+# TODO(VM/errors) general cleanup needed
+#  labels: error handling,cleanup
 
 #=======================================
 # Libraries
 #=======================================
 
 when not defined(WEB):
-    import re
-    
-import sequtils, strformat, strutils, sugar
+    import re, terminal
+import sequtils, strformat, strutils, sugar, std/with
 
 import helpers/strings
 import helpers/terminal
+
+import vm/values/custom/verror
 
 #=======================================
 # Types
 #=======================================
 
 type
-    ReturnTriggered* = ref object of Defect
-    BreakTriggered* = ref object of Defect
-    ContinueTriggered* = ref object of Defect
-    VMError* = ref object of CatchableError
-
-    VMErrorKind* = enum
-        RuntimeError   = "Runtime"
-        AssertionError = "Assertion"
-        SyntaxError    = "Syntax"
-        ProgramError   = "Program"
-        CompilerError  = "Compiler"
-
-        UndefinedError = "Undefined"
+    ReturnTriggered*    = ref object of Defect
+    BreakTriggered*     = ref object of Defect
+    ContinueTriggered*  = ref object of Defect
 
 #=======================================
 # Constants
 #=======================================
 
 const
-    Alternative     = "perhaps you meant"
+    MaxIntSupported     = $(sizeof(int) * 8)
+    ReplContext         = " <repl> "
+
+    UseUnicodeChars     = true
+
+    HorizLine           = when UseUnicodeChars: "\u2550" else: "="
+    VertLine            = when UseUnicodeChars: "\u2503" else: "|"
+    VertLineD           = when UseUnicodeChars: "\u2551" else: "|"
+    ArrowRight          = when UseUnicodeChars: "\u25ba" else: ">"
+    LeftBracket         = when UseUnicodeChars: "\u2561" else: "["
+    RightBracket        = when UseUnicodeChars: "\u255E" else: "]"
 
 #=======================================
 # Variables
 #=======================================
 
 var
-    CurrentFile* = "<repl>"
-    CurrentPath* = ""
-    CurrentLine* = 0
-    ExecStack*: seq[int] = @[]
-
-#=======================================
-# Forward declarations
-#=======================================
-
-proc showVMErrors*(e: ref Exception)
-
-#=======================================
-# Main
-#=======================================
-
-proc getLineError(): string =
-    if CurrentFile != "<repl>":
-        if CurrentLine==0: CurrentLine = 1
-        if ExecStack.len > 1:
-            ExecStack.add(CurrentLine)
-        result &= (bold(grayColor)).replace(";","%&") & "File: " & resetColor & (fg(grayColor)).replace(";","%&") & CurrentFile & ";" & (bold(grayColor)).replace(";","%&") & "Line: " & resetColor & (fg(grayColor)).replace(";","%&") & $(CurrentLine) & resetColor & ";;"
-
-proc panic*(context: VMErrorKind, error: string, throw=true) =
-    ## throw error, using given context and error message
-    var errorMsg = error
-    if context != CompilerError:
-        when not defined(NOERRORLINES):
-            errorMsg = getLineError() & errorMsg
-        else:
-            discard 
-    let err = VMError(name: cstring($(context)), msg:move errorMsg)
-    if throw:
-        raise err
-    else:
-        showVMErrors(err)
+    CurrentContext* : string    = ReplContext
+    CurrentPath*    : string    = ""
+    CurrentLine*    : int       = 0
+    ExecStack*      : seq[int]  = @[]
 
 #=======================================
 # Helpers
 #=======================================
 
-proc showVMErrors*(e: ref Exception) =
-    ## show error message
-    var header: string
-    var errorKind: VMErrorKind = UndefinedError
-    try:
-        header = $(e.name)
+# Check environment
 
-        try:
-            # try checking if it's a valid error context
-            errorKind = parseEnum[VMErrorKind](header)
-        except ValueError:
-            # if not, show it as an uncaught runtime exception
-            e.msg = getLineError() & "uncaught system exception:;" & e.msg
-            header = $(RuntimeError)
+proc isRepl(): bool =
+    return CurrentContext == ReplContext
 
-            
-        # if $(header) notin [RuntimeError, AssertionError, SyntaxError, ProgramError, CompilerError]:
-        #     e.msg = getLineError() & "uncaught system exception:;" & e.msg
-        #     header = RuntimeError
-    except CatchableError:
-        header = "HEADER"
+proc getCurrentContext(e: VError): string =
+    if e.kind == CmdlineErr: return ""
 
-    let marker = ">>"
-    let separator = "|"
-    let indent = repeat(" ", header.len + marker.len + 2)
+    if CurrentContext == ReplContext: return CurrentContext
+    return " <script> "
 
+proc getMaxWidth(): int =
     when not defined(WEB):
-        var message: string
-        
-        if errorKind==ProgramError:
-            let liner = e.msg.split("<:>")[0].split(";;")[0]
-            let msg = e.msg.split("<:>")[1]
-            message = liner & ";;" & msg.replacef(re"_([^_]+)_",fmt("{bold()}$1{resetColor}"))
-        else:
-            message = e.msg.replacef(re"_([^_]+)_",fmt("{bold()}$1{resetColor}"))
+        terminalWidth()
     else:
-        var message = "MESSAGE"
+        80
 
-    let errMsgParts = message.split(";").map((x)=>(strutils.strip(x)).replace("~%"," ").replace("%&",";").replace("T@B","\t"))
-    let alignedError = align("error", header.len)
+# General formatting
+
+proc processPseudomarkdown(s: string): string =
+    result = 
+        when not defined(WEB):
+            s.replacef(re"_([^_]+)_",fmt("{bold()}$1{resetColor}"))
+        else:
+            s
+
+proc formatMessage(s: string): string =
+    var ret = s.processPseudomarkdown()
+               #.replacef(re":([a-z]+)",fmt("{fg(magentaColor)}:$1{resetColor}"))
+
+    ret = indent(strip(dedent(ret)), 2)
+
+    return ret
+
+func lineTrunc(s: string, padding: int): string =
+    let lines = s.splitLines()
+    if lines.len > 5:
+        result = lines[0..4].join("\n")
+        result &= "\n" & "..."
+        result = strip(result)
+    else:
+        result = s
     
-    var errMsg = errMsgParts[0] & fmt("\n{bold(redColor)}{repeat(' ',marker.len)} {alignedError} {separator}{resetColor} ")
+    result = indent(result, padding)
 
-    if errMsgParts.len > 1:
-        errMsg &= errMsgParts[1..^1].join(fmt("\n{indent}{bold(redColor)}{separator}{resetColor} "))
-    echo fmt("{bold(redColor)}{marker} {header} {separator}{resetColor} {errMsg}")
+func `~~`*(s: string, inputs: seq[string]): string =
+    var replacements: seq[string]
+    var finalS = s
+    when not defined(WEB):
+        for line in s.splitLines():
+            for found in line.findAll(re"\$[\$#]"):
+                if found=="$$":
+                    let ind = line.realFind("$$")
+                    replacements.add(strip(lineTrunc(strip(inputs[replacements.len]),ind)))
+                else:
+                    replacements.add(inputs[replacements.len])
+    else:
+        replacements = inputs
+    
+    finalS = finalS.replace("$$", "$#")
+    return finalS % replacements    
+
+# Error messages
+
+proc printErrorHeader(e: VError) =
+    let preHeader = 
+        fg(redColor) & "{HorizLine}{HorizLine}{LeftBracket} ".fmt & 
+        bold(redColor) & (e.kind.label) & 
+        fg(redColor) & " {RightBracket}".fmt
+
+    let postHeader = 
+        getCurrentContext(e) & 
+        "{HorizLine}{HorizLine}".fmt & 
+        resetColor()
+
+    let middleStretch = getMaxWidth() - preHeader.realLen() - postHeader.realLen()
+
+    echo ""
+    echo preHeader & repeat(HorizLine, middleStretch) & postHeader
+
+proc printErrorKindDescription(e: VError) =
+    if e.kind.description != "":
+        echo ""
+        echo indent(e.kind.description, 2) & resetColor
+
+proc printErrorMessage(e: VError) =
+    echo ""
+    echo strip(indent(dedent(formatMessage(e.msg)), 2), chars={'\n'})
+
+proc printCodePreview(e: VError) =
+    when not defined(NOERRORLINES):
+        if e.context.file == "":
+            e.context.line = CurrentLine
+            e.context.file = CurrentPath
+
+        if (not isRepl()) and (e.kind != CmdlineErr) and (e.kind != ProgramErr) :
+            echo ""
+            let codeLines = readFile(e.context.file).splitLines()
+            const linesBeforeAfter = 2
+            let lineFrom = max(0, e.context.line - (linesBeforeAfter+1))
+            let lineTo = min(len(codeLines)-1, e.context.line + (linesBeforeAfter-1))
+            echo "  " & fg(grayColor) & "{VertLine} ".fmt & bold(grayColor) & "File: " & fg(grayColor) & e.context.file
+            echo "  " & fg(grayColor) & "{VertLine} ".fmt & bold(grayColor) & "Line: " & fg(grayColor) & $(e.context.line)
+            echo "  " & fg(grayColor) & "{VertLine} ".fmt & resetColor
+            for lineNo in lineFrom..lineTo:
+                var line = codeLines[lineNo]
+                var pointerArrow = "{VertLineD} ".fmt
+                var lineNum = $(lineNo+1)
+                var lineNumPre = ""
+                var lineNumPost = ""
+                if lineNo == e.context.line-1: 
+                    pointerArrow = "{VertLineD}".fmt & fg(redColor) & "{ArrowRight}".fmt & fg(grayColor)
+                    line = bold(grayColor) & line & fg(grayColor)
+                    lineNumPre = bold(grayColor)
+                    lineNumPost = fg(grayColor)
+                echo "  " & fg(grayColor) & "{VertLine} ".fmt & lineNumPre & align(lineNum,4) & lineNumPost & " {pointerArrow} ".fmt & line & resetColor
+
+proc printHint(e: VError) =
+    if e.hint != "":
+        let wrappingWidth = min(100, int(0.8 * float(getMaxWidth() - 2 - 6)))
+        let hinter = "  " & "\e[4;97m" & "Hint" & resetColor() & ": "
+        echo ""
+        if e.hint.contains("\n"):
+            echo (hinter & "$$") ~~ @[e.hint.processPseudomarkdown()]
+        else:
+            echo hinter & wrapped(strip(dedent(e.hint)).splitLines().join(" "), wrappingWidth, delim="\n        ")
 
 #=======================================
 # Methods
 #=======================================
 
-# Compiler errors
+proc showError*(e: VError) =
+    with e:
+        printErrorHeader()
+        printErrorKindDescription()
+        printErrorMessage()
+        printCodePreview()
+        printHint()
+    
+    if (not isRepl()) or e.hint=="":
+        echo ""
 
-proc CompilerError_ScriptNotExists*(name: string) =
-    panic CompilerError,
-          "given script path doesn't exist:" & ";" &
-          "_" & name & "_"
+func panic(error: VError) =
+    raise error
 
-proc CompilerError_UnrecognizedOption*(name: string) =
-    panic CompilerError,
-          "unrecognized command-line option:" & ";" &
-          "_" & name & "_",
-          throw=false
+proc panic(throw: bool, error: VError) =
+    if throw:
+        panic(error)
+    else:
+        showError(error)
+        quit(1)
 
-proc CompilerError_UnrecognizedPackageCommand*(name: string) =
-    panic CompilerError,
-          "unrecognized _package_ command:" & ";" &
-          "_" & name & "_",
-          throw=false
+#=======================================
+# Constructors
+#=======================================
 
-proc CompilerError_NoPackageCommand*() =
-    panic CompilerError,
-          "no _package_ command command given -;" &
-          "have a look at the options below",
-          throw=false
+#------------------------
+# Command-line Errors
+#------------------------
 
-proc CompilerError_ExtraneousParameter*(subcmd: string, name: string) =
-    panic CompilerError,
-          "extraneous parameter for " & "_" & subcmd & "_:;" &
-          name,
-          throw=false
+proc Error_ScriptNotExists*(name: string) =
+    panic(false):
+        toError CmdlineErr, """
+            Given script doesn't exist:
+                _$#_
+        """ ~~ @[name]
 
-proc CompilerError_NotEnoughParameters*(name: string) =
-    panic CompilerError,
-          "not enough parameters for " & "_" & name & "_ -;" &
-          "consult the help screen below",
-          throw=false
+proc Error_UnrecognizedOption*(name: string) =
+    panic(false):
+        toError CmdlineErr, """
+            Unrecognized command-line option:
+                _$#_
+        """ ~~ @[name]
 
-# Syntax errors
+proc Error_UnrecognizedPackageCommand*(name: string) =
+    panic(false):
+        toError CmdlineErr, """
+            Unrecognized _package_ command:
+                _$#_
+        """ ~~ @[name]
 
-proc SyntaxError_MissingClosingSquareBracket*(lineno: int, context: string) =
-    CurrentLine = lineno
-    panic SyntaxError,
-          "missing closing square bracket: `]`" & ";;" & 
-          "near: " & context
+proc Error_NoPackageCommand*() =
+    panic(false):
+        toError CmdlineErr, """
+            No _package_ command command given -
+            have a look at the options below
+        """
 
-proc SyntaxError_MissingClosingParenthesis*(lineno: int, context: string) =
-    CurrentLine = lineno
-    panic SyntaxError,
-          "missing closing square bracket: `)`" & ";;" & 
-          "near: " & context
+proc Error_ExtraneousParameter*(subcmd: string, name: string) =
+    panic(false): 
+        toError CmdlineErr, """
+            Extraneous parameter for _$#_:
+                $#
+        """ ~~ @[subcmd, name]
 
-proc SyntaxError_StrayClosingSquareBracket*(lineno: int, context: string) =
-    CurrentLine = lineno
-    panic SyntaxError,
-          "stray closing square bracket: `]`" & ";;" & 
-          "near: " & context
+proc Error_NotEnoughParameters*(name: string) =
+    panic(false):
+        toError CmdlineErr, """
+            Not enough parameters for _$#_ -
+            consult the help screen below
+        """ ~~ @[name]
 
-proc SyntaxError_StrayClosingCurlyBracket*(lineno: int, context: string) =
-    CurrentLine = lineno
-    panic SyntaxError,
-          "stray closing curly bracket: `}`" & ";;" & 
-          "near: " & context
+#------------------------
+# Package Errors
+#------------------------
 
-proc SyntaxError_StrayClosingParenthesis*(lineno: int, context: string) =
-    CurrentLine = lineno
-    panic SyntaxError,
-          "stray closing parenthesis: `)`" & ";;" & 
-          "near: " & context
+func Error_PackageNotFound*(pkg: string) =
+    panic:
+        toError PackageErr, """
+            Package not found:
+                _$#_
+        """ ~~ @[pkg]
 
-proc SyntaxError_UnterminatedString*(strtype: string, lineno: int, context: string) =
+func Error_PackageRepoNotCorrect*(repo: string) =
+    panic:
+        toError PackageErr, """
+            Package repository url not correct:
+                $#
+        """ ~~ @[repo]
+
+func Error_PackageRepoNotFound*(repo: string) =
+    panic:
+        toError PackageErr, """
+            Package repository not found:
+                $#
+        """ ~~ @[repo]
+
+func Error_CorruptRemoteSpec*(pkg: string) =
+    panic:
+        toError PackageErr, """
+            Corrupt spec file for remote package:
+                _$#_
+        """ ~~ @[pkg]
+
+func Error_PackageNotValid*(pkg: string) =
+    panic:
+        toError PackageErr, """
+            Invalid package:
+                _$#_
+        """ ~~ @[pkg]
+
+func Error_PackageUnknownError*(pkg: string) =
+    panic:
+        toError PackageErr, """
+            Unexpected error while installing package:
+                _$#_
+        """ ~~ @[pkg]
+
+func Error_PackageInvalidVersion*(vers: string) =
+    panic:
+        toError PackageErr, """
+            Error parsing package version:
+                _$#_
+        """ ~~ @[vers]
+
+#------------------------
+# Conversion Errors
+#------------------------
+
+func Error_CannotConvert*(arg,fromType,toType: string) =
+    panic:
+        toError ConversionErr, """
+            Got value:
+                $$
+
+            Conversion to given type is not supported:
+                :$#
+        """ ~~ @[arg, toType.toLowerAscii()]
+
+func Error_ConversionFailed*(arg,fromType,toType: string, hint: string="") =
+    panic:
+        toError ConversionErr, """
+            Got value:
+                $$
+
+            Failed while trying to convert to:
+                :$#
+        """ ~~ @[arg, toType.toLowerAscii()], hint
+          
+func Error_CannotConvertDifferentDimensions*(convFrom, convTo: string) =
+    panic:
+        toError ConversionErr, """
+            Trying to convert quantity with property:
+                $#
+
+            To:
+                $#
+        """ ~~ @[convFrom, convTo]
+
+#------------------------
+# Syntax Errors
+#------------------------
+
+func Error_MissingClosingSquareBracket*() =
+    panic:
+        toError SyntaxErr, """
+            Issue found when trying to parse:
+                Block
+
+            Missing:
+                closing square bracket (`]`)
+        """ ~~ @[]
+
+func Error_MissingClosingParenthesis*() =
+    panic:
+        toError SyntaxErr, """
+            Issue found when trying to parse:
+                Inline
+
+            Missing:
+                closing parenthesis (`)`)
+        """ ~~ @[]
+
+func Error_StrayClosingSquareBracket*() =
+    panic:
+        toError SyntaxErr, """
+            Found extraneous block symbol:
+                closing square bracket (`]`)
+        """ ~~ @[]
+
+func Error_StrayClosingCurlyBracket*() =
+    panic: 
+        toError SyntaxErr, """
+            Found extraneous block symbol:
+                closing curly bracket (`}`)
+        """ ~~ @[]
+
+func Error_StrayClosingParenthesis*() =
+    panic:
+        toError SyntaxErr, """
+            Found extraneous block symbol:
+                closing parenthesis (`)`)
+        """ ~~ @[]
+
+func Error_UnterminatedString*(strtype: string) =
     var strt = strtype
     if strt!="": strt &= " "
-    CurrentLine = lineno
-    panic SyntaxError,
-          "unterminated " & strt & "string;;" & 
-          "near: " & context
+    var missing: string
+    if strt=="":
+        missing = "closing double quote (`\"`)"
+    elif strt=="verbatim":
+        missing = "closing color-bracket (`:}`)"
+    else:
+        missing = "closing curly bracket (`}`)"
+    panic:
+        toError SyntaxErr, """
+            Issue found when trying to parse:
+                String
 
-proc SyntaxError_NewlineInQuotedString*(lineno: int, context: string) =
-    CurrentLine = lineno
-    panic SyntaxError,
-          "newline in quoted string;" & 
-          "for multiline strings, you could use either:;" &
-          "curly blocks _{..}_ or _triple \"-\"_ templates;;" &
-          "near: " & context
+            Missing:
+                $$
+        """ ~~ @[missing]
 
-proc SyntaxError_EmptyLiteral*(lineno: int, context: string) =
-    CurrentLine = lineno
-    panic SyntaxError,
-          "empty literal value;;" & 
-          "near: " & context
-
-# Assertion errors
-
-proc AssertionError_AssertionFailed*(context: string) =
-    panic AssertionError,
-          context
-          
-proc AssertionError_AssertionFailed*(context: string, message: string) =
-    panic AssertionError, 
-          message & ":;" & 
-          "for: " & context
-
-# Runtime errors
-
-proc RuntimeError_IntegerParsingOverflow*(lineno: int, number: string) =
-    CurrentLine = lineno
-    panic RuntimeError,
-          "number parsing overflow - up to " & $(sizeof(int) * 8) & "-bit integers supported" & ";" &
-          "given: " & truncate(number, 20)
-
-proc RuntimeError_IntegerOperationOverflow*(operation: string, argA, argB: string) =
-    panic RuntimeError,
-            "number operation overflow - up to " & $(sizeof(int) * 8) & "-bit integers supported" & ";" &
-            "attempted: " & operation & ";" &
-            "with: " & truncate(argA & " " & argB, 30)
-
-proc RuntimeError_NumberOutOfPermittedRange*(operation: string, argA, argB: string) =
-    panic RuntimeError,
-            "number operator out of range - up to " & $(sizeof(int) * 8) & "-bit integers supported" & ";" &
-            "attempted: " & operation & ";" &
-            "with: " & truncate(argA & " " & argB, 30)
-
-proc RuntimeError_IncompatibleQuantityOperation*(operation: string, argA, argB, kindA, kindB: string) =
-    panic RuntimeError,
-            "incompatible operation between quantities" & ";" &
-            "attempted: " & operation & ";" &
-            "with: " & truncate(argA & " (" & kindA & ") " & argB & " (" & kindB & ")", 60)
+func Error_NewlineInQuotedString*() =
+    panic:
+        toError SyntaxErr, """
+            Issue found when trying to parse:
+                String
             
-proc RuntimeError_IncompatibleValueType*(functionName: string, tp: string, expected: string) =
-    panic RuntimeError,
-          "cannot perform _" & (functionName) & "_;" &
-          "incompatible value type for " & tp & ";" &
-          "expected " & expected
+            Quoted string contains:
+                newline (`\n`)
+        """ ~~ @[], "For multiline strings, you could use either: curly blocks `{..}` or triple `-` templates"
 
-proc RuntimeError_IncompatibleBlockValue*(functionName: string, val: string, expected: string) =
-    panic RuntimeError,
-          "cannot perform _" & (functionName) & "_ -> " & val & ";" &
-          "incompatible value inside block parameter" & ";" &
-          "expected " & expected
+#------------------------
+# Assertion Errors
+#------------------------
 
-proc RuntimeError_IncompatibleBlockValueAttribute*(functionName: string, attributeName: string, val: string, expected: string) =
-    panic RuntimeError, 
-          "cannot perform _" & (functionName) & "_;" &
-          "incompatible value inside block for _" & (attributeName) & "_ -> " & val & ";" &
-          "accepts " & expected
-
-proc RuntimeError_IncompatibleBlockSize*(functionName: string, got: int, expected: string) =
-    panic RuntimeError,
-          "cannot perform _" & (functionName) & ";" &
-          "incompatible block size: " & $(got) & ";" &
-          "expected: " & $(expected)
-
-proc RuntimeError_UsingUndefinedType*(typeName: string) =
-    panic RuntimeError,
-          "undefined or unknown type _:" & (typeName) & "_;" &
-          "you should make sure it has been properly" & ";" &
-          "initialized using `define`"
-
-proc RuntimeError_IncorrectNumberOfArgumentsForInitializer*(typeName: string, got: int, expected: seq[string]) =
-    panic RuntimeError,
-          "cannot initialize object of type _:" & (typeName) & "_;" &
-          "wrong number of parameters: " & $(got) & ";" &
-          "expected: " & $(expected.len) & " (" & expected.join(", ") & ")"
-
-proc RuntimeError_MissingArgumentForInitializer*(typeName: string, missing: string) =
-    panic RuntimeError,
-          "cannot initialize object of type _:" & (typeName) & "_;" &
-          "missing field: " & $(missing)
-
-proc RuntimeError_UnsupportedParentType*(typeName: string) =
-    panic RuntimeError,
-          "subtyping built-in type _:" & (typeName) & "_;" &
-          "is not supported"
-
-proc RuntimeError_InvalidOperation*(operation: string, argA, argB: string) =
-    panic RuntimeError,
-            "invalid operation _" & operation & "_;" &
-            (if argB!="": "between: " else: "with: ") & argA & (if argB!="": ";" & "and: " & argB else: "")
-
-proc RuntimeError_CannotConvertQuantity*(val, argA, kindA, argB, kindB: string) =
-    panic RuntimeError,
-          "cannot convert quantity: " & val & ";" &
-          "from: " & argA & " (" & kindA & ") " & ";" &
-          "to: " & argB & " (" & kindB & ")"
+func Error_AssertionFailed*(context: string) =
+    panic:
+        toError AssertionErr, """
+            Tried:
+                $$
+        """ ~~ @[context]
           
-proc RuntimeError_CannotConvertDifferentDimensions*() =
-    panic RuntimeError,
-          "cannot convert quantities with different dimensions."
+func Error_AssertionFailed*(context: string, message: string) =
+    panic: 
+        toError AssertionErr, """
+            Unable to ensure:
+                $$
 
-proc RuntimeError_DivisionByZero*() =
-    panic RuntimeError,
-            "division by zero"
+            Tried: 
+                $$
+        """ ~~ @[message, context]
 
-proc RuntimeError_OutOfBounds*(indx: int, maxRange: int) =
-    panic RuntimeError,
-          "array index out of bounds: " & $(indx) & ";" & 
-          "valid range: 0.." & $(maxRange)
+#------------------------
+# Arithmetic Errors
+#------------------------
 
-proc RuntimeError_SymbolNotFound*(sym: string, alter: seq[string]) =
-    let sep = ";" & repeat("~%",Alternative.len - 2) & "or... "
-    panic RuntimeError,
-          "symbol not found: " & sym & ";" & 
-          "perhaps you meant... " & alter.map((x) => "_" & x & "_ ?").join(sep)
+func Error_IntegerParsingOverflow*(number: string) =
+    let hint = "Up to $#-bit integers supported" ~~ @[MaxIntSupported]
+    panic: 
+        toError ArithmeticErr, """
+            Couldn't parse Integer value
 
-proc RuntimeError_CannotModifyConstant*(sym: string) =
-    panic RuntimeError,
-          "value points to a readonly constant: " & sym & ";" &
-          "which cannot be modified in-place"
+            From value: 
+                $$
+        """ ~~ @[number], hint
 
-proc RuntimeError_PathLiteralMofifyingString*() =
-    panic RuntimeError,      
-          "in-place modification of strings" & ";" &
-          "through PathLiteral values is not supported"
+func Error_IntegerOperationOverflow*(operation: string, argA, argB: string) =
+    let hint = "Up to $#-bit integers supported" ~~ @[MaxIntSupported]
+    panic: 
+        toError ArithmeticErr, """
+            Number operation overflow
+            
+            Attempted operation: 
+                _$#_
+            
+            Between: 
+                $$
 
-proc RuntimeError_FileNotFound*(path: string) =
-    panic RuntimeError,
-          "file not found: " & path
+            And:
+                $$
+        """ ~~ @[operation, argA, argB], hint
 
-proc RuntimeError_AliasNotFound*(sym: string) =
-    panic RuntimeError,
-          "alias not found: " & sym
+func Error_IntegerSingleOperationOverflow*(operation: string, arg: string) =
+    let hint = "Up to $#-bit integers supported" ~~ @[MaxIntSupported]
+    panic: 
+        toError ArithmeticErr, """
+            Number operation overflow
+            
+            Attempted operation: 
+                _$#_
+            
+            With: 
+                $$
+        """ ~~ @[operation, arg], hint
 
-proc RuntimeError_KeyNotFound*(sym: string, alter: seq[string]) =
-    let sep = ";" & repeat("~%",Alternative.len - 2) & "or... "
-    panic RuntimeError,
-          "dictionary key not found: " & sym & ";" & 
-          "perhaps you meant... " & alter.map((x) => "_" & x & "_ ?").join(sep)
+func Error_NumberOutOfSupportedRange*(operation: string, arg: string) =
+    let hint = "Up to $#-bit integers supported" ~~ @[MaxIntSupported]
+    panic: 
+        toError ArithmeticErr, """
+            Number operator out of valid range
 
-proc RuntimeError_CannotStoreKey*(key: string, valueKind: string, storeKind: string) =
-    panic RuntimeError,
-          "unsupported value type: " & valueKind & ";" &
-          "for store of type: " & storeKind & ";" &
-          "when storing key: " & key
+            Attempted operation: 
+                _$#_
+            
+            With: 
+                $$
+        """ ~~ @[operation, arg], hint
 
-proc RuntimeError_SqliteDisabled*() =
-    panic RuntimeError,
-          "SQLite not available in MINI builds;" &
-          "if you want to have access to SQLite-related functionality,;" &
-          "please, install Arturo's full version"
+func Error_DivisionByZero*(arg: string) =
+    panic:
+        toError ArithmeticErr, """
+            Division by zero
 
-proc RuntimeError_NotEnoughArguments*(functionName:string, functionArity: int) =
-    panic RuntimeError,
-          "cannot perform _" & (functionName) & "_;" & 
-          "not enough parameters: " & $(functionArity) & " required"
+            With value:
+                $$
+        """ ~~ @[arg]
 
-proc RuntimeError_WrongArgumentType*(functionName: string, actual: string, paramPos: string, accepted: string) =
-    panic RuntimeError, 
-          "cannot perform _" & (functionName) & "_ -> " & actual & ";" &
-          "incorrect argument type for " & paramPos & " parameter;" &
-          "accepts " & accepted
+func Error_ZeroDenominator*() =
+    panic: 
+        toError(ArithmeticErr, """
+            Cannot create Rational value
 
-proc RuntimeError_WrongAttributeType*(functionName: string, attributeName: string, actual: string, accepted: string) =
-    panic RuntimeError, 
-          "cannot perform _" & (functionName) & "_;" &
-          "incorrect attribute type for _" & (attributeName) & "_ -> " & actual & ";" &
-          "accepts " & accepted
+            Denominator is zero!
+        """ ~~ @[])
 
-proc RuntimeError_CannotConvert*(arg,fromType,toType: string) =
-    panic RuntimeError,
-          "cannot convert argument: " & truncate(arg,20) & ";" &
-          "from :" & (fromType).toLowerAscii() & ";" &
-          "to   :" & (toType).toLowerAscii()
+#------------------------
+# Index Errors
+#------------------------
 
-proc RuntimeError_ConversionFailed*(arg,fromType,toType: string) =
-    panic RuntimeError,
-          "conversion failed: " & truncate(arg,20) & ";" &
-          "from :" & (fromType).toLowerAscii() & ";" &
-          "to   :" & (toType).toLowerAscii()
+func Error_InvalidIndex*(indx: int, value: string, hint: string = "") =
+    panic:
+        toError IndexErr, """
+            Invalid index: 
+                $$
 
-proc RuntimeError_LibraryNotLoaded*(path: string) =
-    panic RuntimeError,
-          "dynamic library could not be loaded:" & ";" &
-          path
+            For value:
+                $$
+        """ ~~ @[$indx, value], hint
 
-proc RuntimeError_LibrarySymbolNotFound*(path: string, sym: string) =
-    panic RuntimeError,
-          "symbol not found: " & sym & ";" & 
-          "in library: " & path
+func Error_InvalidKey*(key: string, value: string, hint: string = "") =
+    panic:
+        toError IndexErr, """
+            Invalid key: 
+                $$
 
-proc RuntimeError_ErrorLoadingLibrarySymbol*(path: string, sym: string) =
-    panic RuntimeError,
-          "error loading symbol: " & sym & ";" & 
-          "from library: " & path
+            For value:
+                $$
+        """ ~~ @[key, value], hint
 
-proc RuntimeError_OperationNotPermitted*(operation: string) =
-    panic RuntimeError,
-          "unsafe operation: " & operation & ";" &
-          "not permitted in online playground"
+func Error_OutOfBounds*(indx: int, value: string, maxRange: int, what: string = "Block") =
+    var items = 
+        if what=="String": "characters" 
+        else: "items"
+
+    let hint = """Given $# contains $# $#; so, a valid index should fall within 0..$#""" ~~ @[what, $(maxRange+1), items, $(maxRange)]
+    panic:
+        toError IndexErr, """
+            Index out of bounds: 
+                $$
+
+            For value:
+                $$
+        """ ~~ @[$indx, value], hint
+
+func Error_KeyNotFound*(sym: string, collection: string, alter: seq[string]) =
+    let sep = "\n" & "\b\b\b\b\b\bor... "
+    let hint = "Perhaps you meant... $$" ~~ @[alter.map((x) => "_" & x & "_ ?").join(sep)]
+    panic:
+        toError IndexErr, """
+            Key not found: 
+                $#
+
+            For value:
+                $$
+        """ ~~ @[sym, collection], hint
+
+func Error_UnsupportedKeyType*(keyType: string, value: string, expectedTypes: seq[string]) =
+    let expected = expectedTypes.join(", ")
+    let plural = 
+        if expectedTypes.len > 1: "s"
+        else: ""
+    panic:
+        toError IndexErr, """
+            Unsupported key: 
+                $$
+
+            For value:
+                $$
+
+            Expected type$#:
+                $$
+        """ ~~ @[keyType, value, plural, expected]
+#------------------------
+# System Errors
+#------------------------
+
+func Error_FileNotFound*(path: string) =
+    panic:
+        toError SystemErr, """
+            File not found: 
+                $#
+        """ ~~ @[path], errCode=ENOENT
+
+#------------------------
+# VM Errors
+#------------------------
+
+func Error_StackUnderflow*() =
+    panic:
+        toError VMErr, """
+            Stack underflow
+        """
+
+func Error_ConfigNotFound*(gkey: string, akey: string) =
+    panic:
+        toError VMErr, """
+            Configuration not found for: $#
+            you can either supply it globally via `config`
+            or using the option: .$#
+        """ ~~ @[gkey, akey]
+
+# TODO(VM/errors) unify all unsafe/MINI errors
+#  there are different errors that are thrown when e.g.
+#  the build is a MINI build, and a given feature is not
+#  available, or it's the "safe"-playground version
+#  and a different set of features is disabled.
+#  An example of that would also be the `SqliteDisabled`
+#  error; all of these should be mirror in ONE error
+#  template with instructions on how to solve it, e.g.
+#  install the full build
+#  labels: enhancement, error handling
+
+func Error_OperationNotPermitted*(operation: string) =
+    panic:
+        toError VMErr, """
+            Unsafe operation: $#
+            not permitted in online playground
+        """ ~~ @[operation]
+
+#------------------------
+# UI Errors
+#------------------------
+
+func Error_CompatibleBrowserNotFound*() =
+    panic:
+        toError UIErr, """
+            Could not find any Chrome-compatible browser installed
+        """
           
-proc RuntimeError_StackUnderflow*() =
-    panic RuntimeError,
-        "stack underflow"
+func Error_CompatibleBrowserCouldNotOpenWindow*() =
+    panic:
+        toError UIErr, """
+            Could not open a Chrome-compatible browser window
+        """
 
-proc RuntimeError_ConfigNotFound*(gkey: string, akey: string) =
-    panic RuntimeError,
-          "configuration not found for: " & gkey & ";" &
-          "you can either supply it globally via `config`;" &
-          "or using the option: ." & akey
+#------------------------
+# Name Errors
+#------------------------
 
-proc RuntimeError_RangeWithZeroStep*() =
-    panic RuntimeError,
-          "attribute step can't be 0"
-          
-proc RuntimeError_CompatibleBrowserNotFound*() =
-    panic RuntimeError,
-          "could not find any Chrome-compatible browser installed"
-          
-proc RuntimeError_CompatibleBrowserCouldNotOpenWindow*() =
-    panic RuntimeError,
-          "could not open a Chrome-compatible browser window"
+func Error_SymbolNotFound*(sym: string, alter: seq[string]) =
+    let sep = "\n" & "\b\b\b\b\b\bor... "
+    let hint = "Perhaps you meant... $$" ~~ @[alter.map((x) => "_" & x & "_ ?").join(sep)]
+    panic:
+        toError NameErr, """
+            Identifier not found: 
+                _$#_
+        """ ~~ @[sym], hint
 
-proc RuntimeError_PackageNotFound*(pkg: string) =
-    panic RuntimeError,
-          "package not found: ;" &
-          "_" & pkg & "_"
+func Error_AliasNotFound*(sym: string) =
+    panic: 
+        toError NameErr, """
+            Alias not found: 
+                _$#_
+        """ ~~ @[sym]
 
-proc RuntimeError_PackageRepoNotCorrect*(repo: string) =
-    panic RuntimeError,
-          "package repository url not correct: ;" &
-          repo
+func Error_ColorNameNotFound*(color: string, alter: seq[string]) =
+    let sep = "\n" & "\b\b\b\b\b\bor... "
+    let hint = "Perhaps you meant... $$" ~~ @[alter.map((x) => "_" & x & "_ ?").join(sep)]
+    panic:
+        toError NameErr, """
+            Color name not recognized: 
+                _$#_
+        """ ~~ @[color], hint
 
-proc RuntimeError_PackageRepoNotFound*(repo: string) =
-    panic RuntimeError,
-          "package repository not found: ;" &
-          repo
+#------------------------
+# Value Errors
+#------------------------
 
-proc RuntimeError_CorruptRemoteSpec*(pkg: string) =
-    panic RuntimeError,
-          "corrupt spec file for remote package: ;" &
-          "_" & pkg & "_"
+func Error_CannotModifyConstant*(sym: string) =
+    panic:
+        toError ValueErr, """
+            Readonly constants cannot be modified in-place
 
-proc RuntimeError_PackageNotValid*(pkg: string) =
-    panic RuntimeError,
-          "invalid package: ;" &
-          "_" & pkg & "_" 
+            Received: 
+                $#
+            
+        """ ~~ @[sym]
 
-proc RuntimeError_PackageUnknownError*(pkg: string) =
-    panic RuntimeError,
-          "unexpected error while installing package: ;" &
-          "_" & pkg & "_"
+func Error_PathLiteralMofifyingString*() =
+    panic:
+        toError ValueErr, """ 
+            In-place modification of strings
+            through PathLiteral values is not supported
+        """
 
-proc RuntimeError_PackageInvalidVersion*(vers: string) =
-    panic RuntimeError,
-          "error parsing package version: ;" &
-          "_" & vers & "_"
+func Error_IncompatibleBlockSize*(functionName: string, got: int, expected: string) =
+    panic: 
+        toError ValueErr, """
+            Cannot perform:
+                _$#_
+
+            Incompatible block size: 
+                $#
+
+            Expected: 
+                $#
+        """ ~~ @[functionName, $got, expected]
+
+func Error_NotEnoughArguments*(functionName:string, functionArity: int) =
+    panic:
+        toError ValueErr, """
+            Not enough parameters
+
+            Cannot perform:
+                _$#_
+            
+            Required: 
+                $#
+        """ ~~ @[functionName, $functionArity]
+
+func Error_RangeWithZeroStep*() =
+    panic:
+        toError ValueErr, """
+            Problem when creating Range
+
+            Attribute step can't be 0!
+        """
+
+func Error_IncorrectNumberOfArgumentsForInitializer*(typeName: string, got: int, expected: seq[string]) =
+    panic:
+        toError ValueErr, """
+            Cannot initialize object of type: 
+                _:$#_
+            
+            Wrong number of parameters: 
+                $#
+            
+            Expected: 
+                $# $#
+        """ ~~ @[typeName, $got, $(expected.len), expected.join(", ")]
+
+func Error_MissingArgumentForInitializer*(typeName: string, missing: string) =
+    panic:
+        toError ValueErr, """
+            Cannot initialize object of type:
+                _:$#_
+            
+            Missing field: 
+                $#
+        """ ~~ @[typeName, missing]
+
+func Error_IncompatibleQuantityOperation*(operation: string, argA, argB, kindA, kindB: string) =
+    panic: 
+        toError ValueErr, """
+            Incompatible operation between quantities
+
+            Attempted: 
+                $#
+            
+            With: 
+                $#
+        """ ~~ @[operation, truncate(argA & " (" & kindA & ") " & argB & " (" & kindB & ")", 60)]
+
+#------------------------
+# Type Errors
+#------------------------
+
+func Error_IncompatibleValueType*(functionName: string, tp: string, expected: string) =
+    panic: 
+        toError TypeErr, """
+            Cannot perform: 
+                _$#_
+            
+            Incompatible value type for:
+                $#
+
+            Expected: 
+                $#
+        """ ~~ @[functionName, tp, expected]
+
+func Error_IncompatibleBlockValue*(functionName: string, val: string, expected: string) =
+    panic: 
+        toError TypeErr, """
+            Cannot perform:
+                _$#_
+                
+            Incompatible value inside block parameter:
+                $#
+
+            Expected: 
+                $#
+        """ ~~ @[functionName, val, expected]
+
+func Error_IncompatibleBlockValueAttribute*(functionName: string, attributeName: string, val: string, expected: string) =
+    panic: 
+        toError TypeErr, """
+            Cannot perform: 
+                _$#_ _$#_
+
+            Incompatible value inside block:
+                $#
+
+            Expected: 
+                $#
+        """ ~~ @[functionName, attributeName, val, expected]
+
+func Error_UsingUndefinedType*(typeName: string) =
+    panic: 
+        toError TypeErr, """
+            Undefined or unknown type:
+                _:$#_
+        """ ~~ @[typeName], "Before using it, you should make sure it has been properly initialized using `define`"
+
+func Error_UnsupportedParentType*(typeName: string) =
+    panic:
+        toError TypeErr, """
+            Encountered type:
+                _:$#_
+
+            Subtyping is not supported!
+        """ ~~ @[typeName]
+
+func Error_WrongArgumentType*(functionName: string, actual: string, val: string, paramPos: string, accepted: string) =
+    panic:
+        toError TypeErr, """
+            Cannot call function:
+                _$#_ $$
+
+            Wrong argument (at position $#): 
+                $$
+
+            Expected: 
+                $#
+        """ ~~ @[functionName, actual, paramPos, val, accepted]
+
+func Error_WrongAttributeType*(functionName: string, attributeName: string, val: string, accepted: string) =
+    panic:
+        toError TypeErr, """
+            Cannot call function:
+                _$#_ $$
+
+            Wrong attribute value: 
+                $$
+
+            Expected: 
+                $#
+        """ ~~ @[functionName, attributeName, val, accepted]
+
+func Error_CannotStoreKey*(key: string, valueKind: string, storeKind: string) =
+    panic:
+        toError TypeErr, """
+            Unsupported value type: $#
+            For store of type: $#
+            When storing key: $#
+        """ ~~ @[valueKind, storeKind, key]
+
+func Error_InvalidOperation*(operation: string, argA, argB: string) =
+    if argB != "":
+        panic:
+            toError TypeErr, """
+                Invalid operation _$#_
+                Between: $#
+                    and: $#
+            """ ~~ @[operation, argA, argB]
+    else:
+        panic:
+            toError TypeErr, """
+                Invalid operation _$#_
+                With: $#
+            """ ~~ @[operation, argA, argB]
+
+#------------------------
+# Library Errors
+#------------------------
+
+func Error_SqliteDisabled*() =
+    panic:
+        toError LibraryErr, """
+            SQLite not available in MINI builds
+            if you want to have access to SQLite-related functionality,
+            please, install Arturo's full version
+        """
+
+func Error_LibraryNotLoaded*(path: string) =
+    panic:
+        toError LibraryErr, """
+            Dynamic library could not be loaded:
+                $#
+        """ ~~ @[path]
+
+func Error_LibrarySymbolNotFound*(path: string, sym: string) =
+    panic:
+        toError LibraryErr, """
+            Symbol not found: 
+                $#
+            
+            In library: 
+                $#
+        """ ~~ @[sym, path]
+
+func Error_ErrorLoadingLibrarySymbol*(path: string, sym: string) =
+    panic:
+        toError LibraryErr, """
+            Error loading symbol: 
+                $#
+            
+            From library: 
+                $#
+        """ ~~ @[sym, path]
 
 # Program errors
 
-proc ProgramError_panic*(message: string, code: int) =
-    panic ProgramError,
-          $(code) & "<:>" & message
+func ProgramError_panic*(message: string, code: int) =
+    panic:
+        toError ProgramErr, message, errCode=code
 
 # TODO Re-establish stack trace debug reports
 #  labels: vm, error handling
@@ -546,3 +996,51 @@ proc ProgramError_panic*(message: string, code: int) =
 #         ret
 #     except CatchableError:
 #         ""
+
+
+# proc showVMErrors*(e: ref Exception) =
+#     ## show error message
+#     var header: string
+#     var errorKind: VErrorKind = RuntimeErr
+#     try:
+#         header = $(e.name)
+
+#         # try:
+#         #     # try checking if it's a valid error context
+#         #     errorKind = parseEnum[VMErrorKind](header)
+#         # except ValueError:
+#         #     # if not, show it as an uncaught runtime exception
+#         #     e.msg = getLineError() & "uncaught system exception:;" & e.msg
+#         #     header = $(RuntimeError)
+
+            
+#         # if $(header) notin [RuntimeErr, AssertionErr, SyntaxErr, ProgramError, CompilerErr]:
+#         #     e.msg = getLineError() & "uncaught system exception:;" & e.msg
+#         #     header = RuntimeErr
+#     except CatchableError:
+#         header = "HEADER"
+
+#     let marker = ">>"
+#     let separator = "|"
+#     let indent = repeat(" ", header.len + marker.len + 2)
+
+#     when not defined(WEB):
+#         var message: string
+        
+#         if errorKind==ProgramErr:
+#             let liner = e.msg.split("<:>")[0].split("\n\n")[0]
+#             let msg = e.msg.split("<:>")[1]
+#             message = liner & "\n\n" & msg.replacef(re"_([^_]+)_",fmt("{bold()}$1{resetColor}"))
+#         else:
+#             message = e.msg.replacef(re"_([^_]+)_",fmt("{bold()}$1{resetColor}"))
+#     else:
+#         var message = "MESSAGE"
+
+#     let errMsgParts = message.strip().splitLines().map((x)=>(strutils.strip(x)).replace("~%"," ").replace("%&",";").replace("T@B","\t"))
+#     let alignedError = align("error", header.len)
+    
+#     var errMsg = errMsgParts[0] & fmt("\n{bold(redColor)}{repeat(' ',marker.len)} {alignedError} {separator}{resetColor} ")
+
+#     if errMsgParts.len > 1:
+#         errMsg &= errMsgParts[1..^1].join(fmt("\n{indent}{bold(redColor)}{separator}{resetColor} "))
+#     echo fmt("{bold(redColor)}{marker} {header} {separator}{resetColor} {errMsg}")

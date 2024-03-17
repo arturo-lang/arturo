@@ -166,7 +166,7 @@ proc defineLibrary*() =
             ; /Users/drkameleon/.arturo/bin:/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
             """:
                 #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("env")
+                when defined(SAFE): Error_OperationNotPermitted("env")
                 var res: ValueDict = initOrderedTable[string,Value]()
 
                 for k,v in envPairs():
@@ -201,7 +201,7 @@ proc defineLibrary*() =
             ; => ["tests" "var" "data.txt"]
             """:
                 #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("execute")
+                when defined(SAFE): Error_OperationNotPermitted("execute")
 
                 # get arguments & options
                 var cmd = x.s

@@ -26,7 +26,18 @@ when defined(ssl):
     elif defined(linux):
         {.passL: "-Bstatic -Lsrc/extras/openssl/deps/linux -lssl -lcrypto -Bdynamic".}
     elif defined(macosx):
-        {.passL: "-Bstatic -Lsrc/extras/openssl/deps/macos -lssl -lcrypto -Bdynamic".}
+        # TODO(Net) Use OpenSSL 1.1 in all cases
+        #  right now, every OS/architecture statically links OpenSSL 1.1.
+        #  except for Mac/arm64 (M1). This - most likely - leads to the aforementioned
+        #  binaries being largest, without any reason. This has to be fixed (by finding the correct
+        #  libraries to link against and making sure they are found during compilation). Once this is
+        #  done, we'll also have to remove the definition of `--define:useOpenssl3` in 
+        #  .config/buildmode.nims
+        #  labels: enhancement, 3rd-party, macos
+        when defined(arm64):
+            {.passL: "-Bstatic -Lsrc/extras/openssl/deps/macos/m1 -lssl -lcrypto -Bdynamic".}
+        else:
+            {.passL: "-Bstatic -Lsrc/extras/openssl/deps/macos -lssl -lcrypto -Bdynamic".}
 
 #=======================================
 # Libraries
@@ -80,7 +91,7 @@ proc defineLibrary*() =
             ; opens Arturo's official website in a new browser window
             """:
                 #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("browse")
+                when defined(SAFE): Error_OperationNotPermitted("browse")
                 openDefaultBrowser(x.s)
         
         builtin "download",
@@ -105,7 +116,7 @@ proc defineLibrary*() =
             ; (downloads file with a different name)
             """:
                 #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("download")
+                when defined(SAFE): Error_OperationNotPermitted("download")
                 let path = x.s
 
                 var target: string
@@ -142,7 +153,7 @@ proc defineLibrary*() =
                     "recipient@somemail.com" "Hello from Arturo" "Arturo rocks!"                
                 """:
                     #=======================================================
-                    when defined(SAFE): RuntimeError_OperationNotPermitted("mail")
+                    when defined(SAFE): Error_OperationNotPermitted("mail")
                     let recipient = x.s
                     let title = y.s
                     let message = z.s
@@ -223,7 +234,7 @@ proc defineLibrary*() =
             ; ...same as above...
             """:
                 #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("request")
+                when defined(SAFE): Error_OperationNotPermitted("request")
 
                 var url = x.s
                 var meth: HttpMethod = HttpGet 
@@ -383,7 +394,7 @@ proc defineLibrary*() =
             ; and also POST requests to "/getinfo" with an 'id' parameter
             """:
                 #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("serve")
+                when defined(SAFE): Error_OperationNotPermitted("serve")
 
                 # get parameters
                 let routes = x
