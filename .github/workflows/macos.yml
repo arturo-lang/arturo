@@ -29,11 +29,19 @@ jobs:
       matrix:
         os:
           - macos-latest
+          - macos-14
         version:
           - mini
           - full
         arch:
           - amd64
+          - arm64
+        exclude:
+          - os: macos-latest
+            arch: arm64
+          - os: macos-14
+            arch: amd64
+
     steps:
       - name: "Checkout"
         uses: actions/checkout@main
@@ -59,7 +67,15 @@ jobs:
           path: ~/.nimble
           key: ${{ matrix.os }}-nimble-${{ hashFiles('*.nimble') }}
 
-      - name: Setup nim
+      - name: Setup nim (M1)
+        if: matrix.arch == 'arm64'
+        run: |
+          brew install nim
+          brew install pcre
+          brew install mpfr
+ 
+      - name: Setup nim (amd64)
+        if: matrix.arch == 'amd64'
         uses: jiro4989/setup-nim-action@v1
         with:
           nim-version: '2.0.0'
@@ -72,7 +88,7 @@ jobs:
       - name: Build Arturo
         run: |
           echo "./bin" >> $GITHUB_PATH
-          ./build.nims build --mode ${{ matrix.version }} --log
+          ./build.nims build --mode ${{ matrix.version }} --arch ${{ matrix.arch }} --log
           
       - name: Upload Artifacts
         uses: 'actions/upload-artifact@v2'
@@ -83,7 +99,6 @@ jobs:
       - name: Run unit tests (full)
         if: matrix.version == 'full'
         run: |
-          echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
           arturo tools/tester.art
 
       - name: Run unit tests (mini)

@@ -218,7 +218,7 @@ proc defineLibrary*() =
                         if tp!=TextData:
                             execUnscoped(doParse(x.s, isFile=false))
                         else:
-                            RuntimeError_FileNotFound(x.s)
+                            Error_FileNotFound(x.s)
                         let arr: ValueArray = sTopsFrom(stop)
                         SP = stop
 
@@ -468,7 +468,7 @@ proc defineLibrary*() =
                 if tp!=TextData:
                     dict = execDictionary(doParse(src, isFile=false))#, isIsolated=true)
                 else:
-                    RuntimeError_FileNotFound(x.s)
+                    Error_FileNotFound(x.s)
 
             if checkAttr("with"):
                 for x in aWith.a:
@@ -581,6 +581,10 @@ proc defineLibrary*() =
                 of Dictionary: InPlaced.d = initOrderedTable[string, Value]()
                 else: discard
 
+    # TODO(Collections\extend) Consider renaming?
+    #  we could actually rename it to `merge`? - which is what it does
+    #  actually, and keep `extend` for extending existing types
+    #  labels: library, enhancement, open discussion
     builtin "extend",
         alias       = unaliased,
         op          = opNop,
@@ -636,6 +640,11 @@ proc defineLibrary*() =
                 elif xKind == Range:
                     if aN.i == 1 or aN.i == 0:
                         push(x.rng[1, true])
+                    elif aN.i < 0:
+                        # TODO(Collections\first) Better handling of errors related to the value of `n`
+                        #  to be handled in: https://github.com/arturo-lang/arturo/pull/1432
+                        #  labels: error handling, library
+                        raise newException(ValueError, "negative number of elements")
                     else:
                         push(newRange(x.rng[0..min(aN.i, x.rng.len), true]))
                 else:
@@ -726,126 +735,173 @@ proc defineLibrary*() =
             ..........
             a: to :complex [1 2]
             print a\real                  ; 1.0
-            print a\image                 ; 2.0
+            print a\imaginary             ; 2.0
             print a\1                     ; 2.0
-
-            ; available keys are:
-            ;   * 're and 'real
-            ;   * 'im, 'img and 'image
-            ; 
-            ; available indexes:
-            ;   * 0..1
         """:
             #=======================================================
             case xKind:
                 of Block:
                     if likely(yKind==Integer):
-                        push(GetArrayIndex(x.a, y.i))
-                    else:
+                        push(GetArrayIndex(x, y.i))
+                    elif yKind==Range:
                         let rLen = y.rng.len
                         var res: ValueArray = newSeq[Value](rLen)
                         var i = 0
                         for item in items(y.rng):
-                            res[i] = GetArrayIndex(x.a, item.i)
+                            res[i] = GetArrayIndex(x, item.i)
                             i += 1
                         push(newBlock(res))
+                    else:
+                        Error_UnsupportedKeyType(Dumper(y), Dumper(x), @[stringify(Integer), stringify(Range)])
                 of Range:
                     if likely(yKind==Integer):
-                        push(x.rng[y.i])
-                    else:
+                        if likely(y.i >= 0 and y.i < x.rng.len()):
+                            push(x.rng[y.i])
+                        else:
+                            Error_OutOfBounds(y.i, Dumper(x), x.rng.len()-1, "Range")
+                    elif yKind==Range:
                         let rLen = y.rng.len
                         var res: ValueArray = newSeq[Value](rLen)
                         var i = 0
+                        let xRngLen = x.rng.len()
                         for item in items(y.rng):
-                            res[i] = x.rng[item.i]
+                            if likely(item.i >= 0 and item.i < xRngLen):
+                                res[i] = x.rng[item.i]
+                            else:
+                                Error_OutOfBounds(item.i, Dumper(x), xRngLen-1, "Range")
                             i += 1
                         push(newBlock(res))
-                of Binary:
-                    push(newInteger(int(x.n[y.i])))
-                of Bytecode:
-                    if y.s == "data":
-                        push(newBlock(x.trans.constants))
-                    elif y.s == "code":
-                        push(newBlock(x.trans.instructions.map((w) =>
-                                newInteger(int(w)))))
                     else:
-                        push(VNULL)
+                        Error_UnsupportedKeyType(Dumper(y), Dumper(x), @[stringify(Integer), stringify(Range)])
+                of Binary:
+                    if likely(yKind==Integer):
+                        if likely(y.i >= 0 and y.i < x.n.len):
+                            push(newInteger(int(x.n[y.i])))
+                        else:
+                            Error_OutOfBounds(y.i, Dumper(x), x.n.len-1, "Binary")
+                    else:
+                        Error_UnsupportedKeyType(Dumper(y), Dumper(x), @[stringify(Integer)])
+                of Bytecode:
+                    case yKind
+                        of String, Word, Literal:
+                            if ("data" == y.s):
+                                push(newBlock(x.trans.constants))
+                            elif ("code" == y.s):
+                                push(newBlock(x.trans.instructions.map((w) =>
+                                newInteger(int(w)))))
+                            else:
+                                Error_InvalidKey(y.s, Dumper(x), "You may use `data` to get the data of a Bytecode value, and `code` to get the code block; every other value is not accepted.")
+                        of Integer:
+                            case y.i
+                            of 0:
+                                push(newBlock(x.trans.constants))
+                            of 1:
+                                push(newBlock(x.trans.instructions.map((w) =>
+                                newInteger(int(w)))))
+                            else:
+                                Error_InvalidIndex(y.i, Dumper(x), "You may use `0` to get the data of a Bytecode value, and `1` to get the code block; every other value is not accepted.")
+                        else:
+                            Error_UnsupportedKeyType(Dumper(y), Dumper(x), @[stringify(String), stringify(Word), stringify(Literal), stringify(Integer)])
                 of Dictionary:
                     case yKind:
-                        of String, Word, Literal, Label:
-                            push(GetKey(x.d, y.s))
+                        of String, Word, Literal:
+                            push(GetDictionaryKey(x, y.s))
                         else:
-                            push(GetKey(x.d, $(y)))
+                            push(GetDictionaryKey(x, $(y)))
                 of Object:
                     case yKind:
-                        of String, Word, Literal, Label:
-                            if (let got = GetKey(x.o, y.s, withError=false); not got.isNil):
+                        of String, Word, Literal:
+                            if (let got = GetObjectKey(x, y.s, withError=false); not got.isNil):
                                 push(got)
                             elif x.magic.fetch(GetM):
                                 mgk(@[x, y]) # value already pushed
                             else:
-                                discard GetKey(x.o, y.s) # Merely to trigger the error
+                                discard GetObjectKey(x, y.s) # Merely to trigger the error
                         else:
-                            if (let got = GetKey(x.o, $(y), withError=false); not got.isNil):
+                            if (let got = GetObjectKey(x, $(y), withError=false); not got.isNil):
                                 push(got)
                             elif x.magic.fetch(GetM):
                                 mgk(@[x, y]) # value already pushed
                             else:
-                                discard GetKey(x.o, $(y)) # Merely to trigger the error
+                                discard GetObjectKey(x, $(y)) # Merely to trigger the error
                 of Store:
                     when not defined(WEB):
                         case yKind:
-                            of String, Word, Literal, Label:
+                            of String, Word, Literal:
                                 push(getStoreKey(x.sto, y.s))
                             else:
                                 push(getStoreKey(x.sto, $(y)))
                 of String:
                     if likely(yKind==Integer):
-                        push(newChar(x.s.runeAtPos(y.i)))
-                    else:
+                        if likely(y.i >= 0 and y.i < x.s.runeLen()):
+                            push(newChar(x.s.runeAtPos(y.i)))
+                        else:
+                            Error_OutOfBounds(y.i, Dumper(x), x.s.runeLen()-1, "String")
+                    elif yKind==Range:
                         let rLen = y.rng.len
                         var res: seq[Rune] = newSeq[Rune](rLen)
                         var i = 0
+                        let xStrLen = x.s.runeLen()
                         for item in items(y.rng):
-                            res[i] = x.s.runeAtPos(item.i)
+                            if likely(item.i >= 0 and item.i < xStrLen):
+                                res[i] = x.s.runeAtPos(item.i)
+                            else:
+                                Error_OutOfBounds(item.i, Dumper(x), xStrLen-1, "String")
                             i += 1
                         push(newString($(res)))
+                    else:
+                        Error_UnsupportedKeyType(Dumper(y), Dumper(x), @[stringify(Integer), stringify(Range)])
                 of Date:
-                    push(GetKey(x.e, y.s))
+                    if likely(yKind in {String, Word, Literal}):
+                        let got = x.e.getOrDefault(y.s, nil)
+                        if got.isNil:
+                            let allowedKeys = ((toSeq(x.e.keys())).map((dk) => "`" & dk & "`")).join(", ")
+                            Error_InvalidKey(y.s, Dumper(x), "To extract a specific component of a Date value, you may use any of the following: " & allowedKeys)
+                        
+                        push(got)
+                    else:
+                        Error_UnsupportedKeyType(Dumper(y), Dumper(x), @[stringify(String), stringify(Word), stringify(Literal)])
+
                 of Complex:
                     case yKind
-                    of String, Word, Literal, Label:
-                        if ("real" == y.s or "re" == y.s):
-                            push(newFloating(x.z.re))
-                        elif ("image" == y.s or "im" == y.s or "img" == y.s):
-                            push(newFloating(x.z.im))
+                        of String, Word, Literal:
+                            if ("real" == y.s or "re" == y.s):
+                                push(newFloating(x.z.re))
+                            elif ("imaginary" == y.s or "im" == y.s):
+                                push(newFloating(x.z.im))
+                            else:
+                                Error_InvalidKey(y.s, Dumper(x), "You may use `real` or `re` to get the real part of a Complex value, and `imaginary` or `im` to get the imaginary part; every other value is not accepted.")
+                        of Integer:
+                            case y.i
+                            of 0:
+                                push(newFloating(x.z.re))
+                            of 1:
+                                push(newFloating(x.z.im))
+                            else:
+                                Error_InvalidIndex(y.i, Dumper(x), "You may use `0` to get the real part of a Complex value, or `1` to get the imaginary part; every other value is not accepted.")
                         else:
-                            const keys: seq[string] = @["real", "re", "image", "img", "im"]
-                            err.RuntimeError_KeyNotFound(y.s, keys)
-                    of Integer:
-                        case y.i
-                        of 0:
-                            push(newFloating(x.z.re))
-                        of 1:
-                            push(newFloating(x.z.im))
-                        else:
-                            err.RuntimeError_OutOfBounds(y.i, 1)
-                    else:
-                        discard
+                            Error_UnsupportedKeyType(Dumper(y), Dumper(x), @[stringify(String), stringify(Word), stringify(Literal), stringify(Integer)])
                 of Error:
-                    if yKind in {String, Word, Literal, Label}:
+                    if yKind in {String, Word, Literal}:
                         case y.s
                         of "message":
                             push(newString(x.err.msg))
                         of "kind":
                             push(newErrorKind(x.err.kind))
                         else:
-                            discard
+                            Error_InvalidKey(y.s, Dumper(x), "You may use `message` to get the message of an Error value, and `kind` to get its ErrorKind; every other value is not accepted.")
                     else:
-                        discard
+                        Error_UnsupportedKeyType(Dumper(y), Dumper(x), @[stringify(String), stringify(Word), stringify(Literal)])
                 of ErrorKind:
-                    if yKind in {String, Word, Literal, Label} and y.s == "label":
-                        push(newString(x.errkind.label))
+                    if yKind in {String, Word, Literal}:
+                        if y.s == "label":
+                            push(newString(x.errkind.label))
+                        elif y.s == "description":
+                            push(newString(x.errkind.description))
+                        else:
+                            Error_InvalidKey(y.s, Dumper(x), "You may use `label` to get the main label of an ErrorKind value, and `description` to get its description; every other value is not accepted.")
+                    else:
+                        Error_UnsupportedKeyType(Dumper(y), Dumper(x), @[stringify(String), stringify(Word), stringify(Literal)])
                 else: 
                     discard
 
@@ -1023,8 +1079,13 @@ proc defineLibrary*() =
                     else:
                         if aN.i == 1 or aN.i == 0:
                             push(x.rng[x.rng.len, true])
+                        elif aN.i < 0:
+                            # TODO(Collections\last) Better handling of errors related to the value of `n`
+                            #  to be handled in: https://github.com/arturo-lang/arturo/pull/1432
+                            #  labels: error handling, library
+                            raise newException(ValueError, "negative number of elements")
                         else:
-                            push(newRange(x.rng[x.rng.len-aN.i..x.rng.len, true]))
+                            push(newRange(x.rng[max(x.rng.len-aN.i, 0)..x.rng.len, true]))
                 else:
                     if x.a.len == 0: push(newBlock())
                     else: push(newBlock(x.a[x.a.len-aN.i..^1]))
@@ -1401,7 +1462,7 @@ proc defineLibrary*() =
                 if step < 0:
                     step = -step
                 elif step == 0:
-                    RuntimeError_RangeWithZeroStep()
+                    Error_RangeWithZeroStep()
 
             if not infinite:
                 forward = limX < limY
@@ -1691,13 +1752,6 @@ proc defineLibrary*() =
                 if x.a.len == 0: push(VNULL)
                 else: push(sample(x.a))
 
-    # TODO(Collections\set) not working with Bytecode values
-    #  example:
-    #  ```
-    #      bt: to :bytecode [print "hello"]
-    #      bt\data\0: "world" ; this has no effect
-    #  ```
-    #  labels: library, bug
     builtin "set",
         alias       = unaliased,
         op          = opSet,
@@ -1734,27 +1788,48 @@ proc defineLibrary*() =
             #=======================================================
             case xKind:
                 of Block:
-                    SetArrayIndex(x.a, y.i, z)
+                    if likely(yKind == Integer):
+                        SetArrayIndex(x, y.i, z)
+                    else:
+                        Error_UnsupportedKeyType(Dumper(y), Dumper(x), @[stringify(Integer)])
                 of Binary:
-                    let bn = numberToBinary(z.i)
-                    if bn.len == 1:
-                        x.n[y.i] = bn[0]
-                    else:
-                        for bi, bt in bn:
-                            if not (bi+y.i < x.n.len):
-                                x.n.add(byte(0))
+                    if likely(yKind == Integer):
+                        if likely(y.i >= 0 and y.i < x.n.len):
+                            let bn = numberToBinary(z.i)
+                            if bn.len == 1:
+                                x.n[y.i] = bn[0]
+                            else:
+                                for bi, bt in bn:
+                                    if not (bi+y.i < x.n.len):
+                                        x.n.add(byte(0))
 
-                            x.n[bi + y.i] = bt
+                                    x.n[bi + y.i] = bt
+                        else:
+                            Error_OutOfBounds(y.i, Dumper(x), x.n.len-1, "Binary")
+                    else: 
+                        Error_UnsupportedKeyType(Dumper(y), Dumper(x), @[stringify(Integer)])
                 of Bytecode:
-                    if y.s == "data":
-                        x.trans.constants = y.a
-                    elif y.s == "code":
-                        x.trans.instructions = y.a.map((w) => byte(w.i))
-                    else:
-                        discard
+                    case yKind
+                        of String, Word, Literal:
+                            if ("data" == y.s):
+                                x.trans.constants = z.a
+                            elif ("code" == y.s):
+                                x.trans.instructions = z.a.map((w) => byte(w.i))
+                            else:
+                                Error_InvalidKey(y.s, Dumper(x), "You may use `data` to set the data of a Bytecode value, and `code` to set the code block; every other value is not accepted.")
+                        of Integer:
+                            case y.i
+                            of 0:
+                                x.trans.constants = z.a
+                            of 1:
+                                x.trans.instructions = z.a.map((w) => byte(w.i))
+                            else:
+                                Error_InvalidIndex(y.i, Dumper(x), "You may use `0` to set the data of a Bytecode value, and `1` to set the code block; every other value is not accepted.")
+                        else:
+                            Error_UnsupportedKeyType(Dumper(y), Dumper(x), @[stringify(String), stringify(Word), stringify(Literal), stringify(Integer)])
                 of Dictionary:
                     case yKind:
-                        of String, Word, Literal, Label:
+                        of String, Word, Literal:
                             x.d[y.s] = z
                         else:
                             x.d[$(y)] = z
@@ -1765,7 +1840,7 @@ proc defineLibrary*() =
                         mgk(@[x, y, z])
                     else:
                         case yKind:
-                            of String, Word, Literal, Label:
+                            of String, Word, Literal:
                                 x.o[y.s] = z
                             else:
                                 x.o[$(y)] = z
@@ -1774,22 +1849,28 @@ proc defineLibrary*() =
                 of Store:
                     when not defined(WEB):
                         case yKind:
-                            of String, Word, Literal, Label:
+                            of String, Word, Literal:
                                 setStoreKey(x.sto, y.s, z)
                             else:
                                 setStoreKey(x.sto, $(y), z)
                 
                 of String:
-                    var res: string
-                    var idx = 0
-                    for r in x.s.runes:
-                        if idx != y.i: res.add r
-                        else: 
-                            if zKind == String: res.add $(z.s[0])
-                            else: res.add z.c
-                        idx += 1
+                    if likely(yKind == Integer):
+                        if likely(y.i >= 0 and y.i < x.s.runeLen()):
+                            var res: string
+                            var idx = 0
+                            for r in x.s.runes:
+                                if idx != y.i: res.add r
+                                else: 
+                                    if zKind == String: res.add $(z.s[0])
+                                    else: res.add z.c
+                                idx += 1
 
-                    x.s = res
+                            x.s = res
+                        else:
+                            Error_OutOfBounds(y.i, Dumper(x), x.s.runeLen()-1, "String")
+                    else:
+                        Error_UnsupportedKeyType(Dumper(y), Dumper(x), @[stringify(Integer)])
                 else: discard
 
     builtin "shuffle",

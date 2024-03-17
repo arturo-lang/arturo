@@ -71,7 +71,7 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary)
 template pushByIndex(idx: int):untyped =
     stack.push(cnst[idx])
 
-proc storeByIndex(cnst: ValueArray, idx: int, doPop: static bool = true) {.inline,enforceNoRaises.}=
+proc storeByIndex(cnst: ValueArray, idx: int, doPop: static bool = true) {.inline.}=
     hookProcProfiler("exec/storeByIndex"):
         var stackTop {.cursor.} = stack.peek(0)
 
@@ -79,7 +79,7 @@ proc storeByIndex(cnst: ValueArray, idx: int, doPop: static bool = true) {.inlin
         when doPop:
             stack.popN(1)
 
-proc dStoreByIndex(cnst: ValueArray, idx: int, doPop: static bool = true) {.inline,enforceNoRaises.}=
+proc dStoreByIndex(cnst: ValueArray, idx: int, doPop: static bool = true) {.inline.}=
     hookProcProfiler("exec/storeByIndex"):
         var stackTop {.cursor.} = stack.peek(0)
 
@@ -103,7 +103,7 @@ proc callFunction*(f: Value, fnName: string, args: ValueArray) =
                     safeToProceed = false
 
             if unlikely(SP < f.arity):
-                RuntimeError_NotEnoughArguments(fnName, f.arity)
+                Error_NotEnoughArguments(fnName, f.arity)
 
             if f.inline: 
                 if safeToProceed: execFunctionInline(f, hash(fnName))
@@ -118,7 +118,7 @@ template callFunction*(f: Value, fnName: string = "<closure>"):untyped =
     if f.fnKind==UserFunction:
         hookProcProfiler("exec/callFunction:user"):
             if unlikely(SP < f.arity):
-                RuntimeError_NotEnoughArguments(fnName, f.arity)
+                Error_NotEnoughArguments(fnName, f.arity)
 
             if f.inline: 
                 var safeToProceed = true
@@ -139,7 +139,7 @@ proc callMethod*(f: Value, methName: string, args: ValueArray) =
         for arg in args.reversed:
             push arg
         if unlikely(SP < f.marity):
-            RuntimeError_NotEnoughArguments(methName, f.marity)
+            Error_NotEnoughArguments(methName, f.marity)
 
         execMethod(f, hash(methName))
 
@@ -148,7 +148,7 @@ template callMethod*(f: Value, methName: string = "<closure>"):untyped =
     ## and execute it
     hookProcProfiler("exec/callMethod"):
         if unlikely(SP < f.marity):
-            RuntimeError_NotEnoughArguments(methName, f.marity)
+            Error_NotEnoughArguments(methName, f.marity)
 
         execMethod(f, hash(methName))
 

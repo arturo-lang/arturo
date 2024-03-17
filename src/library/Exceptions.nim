@@ -31,6 +31,13 @@ import vm/values/custom/verror
 
 proc defineSymbols*() =
 
+    # TODO(Exceptions) revisit and review the whole module
+    #  also: we have an "Exceptions" module but the values we are talking
+    #  about here are... Errors. Another thing I don't particularly 
+    #  like is the `ErrorKind` type - perhaps the naming? its very existence?
+    #  the fact that it sounds as if it was taken directly from the Nim source?
+    #  labels: error handling, :error, :errorKind, library, enhancement, open discussion
+
     #----------------------------
     # Functions
     #----------------------------
@@ -78,7 +85,7 @@ proc defineSymbols*() =
             elif xkind == ErrorKind:
                 x.errKind
             else:
-                verror.genericErrorKind
+                RuntimeErr
 
             var error = verror.VError(kind: kind)
             if xkind == String:
@@ -88,6 +95,14 @@ proc defineSymbols*() =
 
             raise error 
 
+    # TODO(Exceptions/throws?) rename function?
+    #  if not though it appears a natural name, every time I look
+    #  at this function I think it does sth different than what it 
+    #  actually does, and - in connection with `throw` - in the end
+    #  there may be something confusing... No real suggestion from me
+    #  here, just stating it - so that I don't end up forgetting about
+    #  it myself... lol
+    #  labels: open discussion, error handling, library
     builtin "throws?",
         alias       = unaliased, 
         op          = opNop,
@@ -110,7 +125,6 @@ proc defineSymbols*() =
             #=======================================================
             try:
                 execUnscoped(x)
-
                 push(VFALSE)
             except CatchableError, Defect, VError:
                 push(VTRUE)
@@ -159,20 +173,85 @@ proc defineSymbols*() =
             except VError as e:
                 push newError(e)
                 if verbose:
-                    showVMErrors(e)
+                    showError(e)
             except CatchableError, Defect:
                 let e = getCurrentException()
                 push newError(e)
                 if verbose:
-                    showVMErrors(e)
+                    showError(VError(e))
 
     #----------------------------
     # Constants
     #----------------------------
 
-    constant "genericError",
+    constant "arithmeticError",
         alias       = unaliased,
-        description = "a generic error":
-            newErrorKind(verror.genericErrorKind)
+        description = "an arithmetic error":
+            newErrorKind(ArithmeticErr)
+
+    constant "assertionError",
+        alias       = unaliased,
+        description = "an assertion error":
+            newErrorKind(AssertionErr)
+
+    constant "conversionError",
+        alias       = unaliased,
+        description = "a conversion error":
+            newErrorKind(ConversionErr)
+    
+    constant "indexError",
+        alias       = unaliased,
+        description = "an index error":
+            newErrorKind(IndexErr)
+
+    constant "libraryError",
+        alias       = unaliased,
+        description = "a library error":
+            newErrorKind(LibraryErr)
+
+    constant "nameError",
+        alias       = unaliased,
+        description = "a name error":
+            newErrorKind(NameErr)
+
+    constant "packageError",
+        alias       = unaliased,
+        description = "a package error":
+            newErrorKind(PackageErr)
+    
+    constant "runtimeError",
+        alias       = unaliased,
+        description = "a generic runtime error":
+            newErrorKind(RuntimeErr)
+
+    constant "syntaxError",
+        alias       = unaliased,
+        description = "a syntax error":
+            newErrorKind(SyntaxErr)
+
+    constant "systemError",
+        alias       = unaliased,
+        description = "a system error":
+            newErrorKind(SystemErr)
+
+    constant "typeError",
+        alias       = unaliased,
+        description = "a type error":
+            newErrorKind(TypeErr)
+
+    constant "uiError",
+        alias       = unaliased,
+        description = "a UI error":
+            newErrorKind(UIErr)
+    
+    constant "valueError",
+        alias       = unaliased,
+        description = "a value error":
+            newErrorKind(ValueErr)
+
+    constant "vmError",
+        alias       = unaliased,
+        description = "a VM error":
+            newErrorKind(VMErr)
 
 Libraries.add(defineSymbols)

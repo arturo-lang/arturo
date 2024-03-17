@@ -38,6 +38,14 @@ import vm/[errors, exec]
 
 proc defineLibrary*() =
 
+    # TODO(Types) Add new `extend` function?
+    #  This would replace Collections\extend (see relevant comment there)
+    #  and could be used for extending an existing user type. 
+    #  In a few words: let's say we have `define`d a type, with its methods
+    #  and everything. Or if that type has been defined in an external package.
+    #  How could we add extra methods to it? By "extending" it ;-)
+    #  labels: library, enhancement, open discussion
+
     #----------------------------
     # Functions
     #----------------------------
@@ -169,7 +177,7 @@ proc defineLibrary*() =
                         for k,v in yproto.content:
                             definitions[k] = copyValue(v)
                     else:
-                        RuntimeError_UsingUndefinedType(y.tid)
+                        Error_UsingUndefinedType(y.tid)
                 else:
                     # TODO(Types\define) check if inherited type is a BuiltinType
                     #  how do we handle this?
@@ -252,7 +260,7 @@ proc defineLibrary*() =
 
                         definitions[k] = copyValue(v)
                 else:
-                    RuntimeError_UsingUndefinedType(x.tid)
+                    Error_UsingUndefinedType(x.tid)
             else:
                 # DRAFT:
                 # if x.t in {Integer, Floating, Rational, Complex, Quantity}:
@@ -260,7 +268,7 @@ proc defineLibrary*() =
                 #         super[k] = v.uninjectingThis()
                 #         definitions[k] = copyValue(v)
                 # else:
-                RuntimeError_UnsupportedParentType(($(x.t)).toLowerAscii())
+                Error_UnsupportedParentType(($(x.t)).toLowerAscii())
 
             if y.kind == Block:
                 if (let constructorMethod = generatedConstructor(y.a); not constructorMethod.isNil):

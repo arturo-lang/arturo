@@ -52,25 +52,15 @@ var
     # global configuration
     Config* {.global.}      : Value                 ## The global configuration store
 
+    # dump values (from anywhere!)
+    Dumper* {.global.}      : proc (v:Value):string
+
 #=======================================
 # Helpers
 #=======================================
 
 func suggestAlternative(s: string, reference: SymTable | ValueDict = Syms): seq[string] {.inline.} =
-    var levs = initOrderedTable[string,float]()
-
-    for k,v in pairs(reference):
-        levs[k] = 1 - jaro(s,k)
-
-    proc cmper (x, y: (string, float)): int {.closure.} = 
-        let pts = cmp(x[1], y[1])
-        if pts == 0: return cmp(x[0], y[0])
-        else: return pts
-
-    levs.sort(cmper)
-
-    if levs.len > 3: result = toSeq(levs.keys)[0..2]
-    else: result = toSeq(levs.keys)
+    return s.getSimilar(toSeq(reference.keys()))
 
 #=======================================
 # Methods
@@ -87,22 +77,42 @@ template GetKey*(dict: ValueDict, key: string, withError: static bool = true): u
     let toRet = dict.getOrDefault(key, nil)
     when withError:
         if unlikely(toRet.isNil):
-            RuntimeError_KeyNotFound(key, suggestAlternative(key, reference=dict))
+            Error_KeyNotFound(key, Dumper(newDictionary(dict)), suggestAlternative(key, reference=dict))
     toRet
 
-template GetArrayIndex*(arr: ValueArray, indx: int): untyped =
+template GetDictionaryKey*(dict: Value, key: string, withError: static bool = true): untyped =
+    ## Checks if a symbol name exists in given dictionary
+    ## - if it doesn't, raise a SymbolNotFound error
+    ## - otherwise, return its value
+    let toRet = dict.d.getOrDefault(key, nil)
+    when withError:
+        if unlikely(toRet.isNil):
+            Error_KeyNotFound(key, Dumper(dict), suggestAlternative(key, reference=dict.d))
+    toRet
+
+template GetObjectKey*(obj: Value, key: string, withError: static bool = true): untyped =
+    ## Checks if a symbol name exists in given dictionary
+    ## - if it doesn't, raise a SymbolNotFound error
+    ## - otherwise, return its value
+    let toRet = obj.o.getOrDefault(key, nil)
+    when withError:
+        if unlikely(toRet.isNil):
+            Error_KeyNotFound(key, Dumper(obj), suggestAlternative(key, reference=obj.o))
+    toRet
+
+template GetArrayIndex*(arr: Value, indx: int): untyped =
     ## Get element by index in given ValueArray
     ## with bounds checking
-    if unlikely(indx < 0 or indx > (arr.len)-1):
-        RuntimeError_OutOfBounds(indx, arr.len-1)
-    arr[indx]
+    if unlikely(indx < 0 or indx > (arr.a.len)-1):
+        Error_OutOfBounds(indx, Dumper(arr), arr.a.len-1)
+    arr.a[indx]
 
-template SetArrayIndex*(arr: ValueArray, indx: int, v: Value): untyped =
+template SetArrayIndex*(arr: Value, indx: int, v: Value): untyped =
     ## Set element at index in given ValueArray
     ## with bounds checking
-    if unlikely(indx < 0 or indx > (arr.len)-1):
-        RuntimeError_OutOfBounds(indx, arr.len-1)
-    arr[indx] = v
+    if unlikely(indx < 0 or indx > (arr.a.len)-1):
+        Error_OutOfBounds(indx, Dumper(arr), arr.a.len-1)
+    arr.a[indx] = v
 
 #---------------------
 # Symbol table
@@ -118,7 +128,7 @@ proc FetchSym*(s: string, unsafe: static bool = false): Value {.inline.} =
     ## - otherwise, return its value
     when not unsafe:
         if (result = Syms.getOrDefault(s, nil); unlikely(result.isNil)):
-            RuntimeError_SymbolNotFound(s, suggestAlternative(s))
+            Error_SymbolNotFound(s, suggestAlternative(s))
     else:
         Syms[s]
 
@@ -167,14 +177,14 @@ proc FetchPathSym*(pl: ValueArray, inplace: static bool = false): Value =
         
         case result.kind:
             of Block:
-                result = GetArrayIndex(result.a, p.i)
+                result = GetArrayIndex(result, p.i)
             of Dictionary:
-                result = GetKey(result.d, p.s)
+                result = GetDictionaryKey(result, p.s)
             of Object:
                 result = GetKey(result.o, p.s)
             of String:
                 when inplace:
-                    RuntimeError_PathLiteralMofifyingString()
+                    Error_PathLiteralMofifyingString()
                 else:
                     result = newChar(result.s.runeAtPos(p.i))
             else: 
@@ -194,12 +204,12 @@ proc SetPathSym*(pl: ValueArray, val: Value) =
         case current.kind:
             of Block:
                 if pidx != pl.len - 1:
-                    current = GetArrayIndex(current.a, p.i)
+                    current = GetArrayIndex(current, p.i)
                 else:
                     current.a[p.i] = val
             of Dictionary:
                 if pidx != pl.len - 1:
-                    current = GetKey(current.d, p.s)
+                    current = GetDictionaryKey(current, p.s)
                 else:
                     current.d[p.s] = val
             of Object:
@@ -211,7 +221,7 @@ proc SetPathSym*(pl: ValueArray, val: Value) =
                 if pidx != pl.len - 1:
                     current = newChar(current.s.runeAtPos(p.i))
                 else:
-                    RuntimeError_PathLiteralMofifyingString()
+                    Error_PathLiteralMofifyingString()
             else: 
                 discard
 
@@ -273,9 +283,9 @@ template InPlaced*(): untyped =
 proc showInPlaceError*(varname: string) =
     ## Show error in case `ensureInPlace` fails
     if SymExists(varname):
-        RuntimeError_CannotModifyConstant(varname)
+        Error_CannotModifyConstant(varname)
     else:
-        RuntimeError_SymbolNotFound(varname, suggestAlternative(varname))
+        Error_SymbolNotFound(varname, suggestAlternative(varname))
 
 template ensureInPlace*(): untyped = 
     ## To be used whenever, and always before, 
@@ -284,7 +294,7 @@ template ensureInPlace*(): untyped =
     try:
         InPlaceAddr = addr Syms[x.s]
         if unlikely(InPlaced.readonly):
-            RuntimeError_CannotModifyConstant(x.s)
+            Error_CannotModifyConstant(x.s)
     except CatchableError:
         showInPlaceError(x.s)
 
@@ -300,7 +310,7 @@ template ensureInPlaceAny*(): untyped =
         try:
             InPlaceAddr = addr Syms[x.s]
             if unlikely(InPlaced.readonly):
-                RuntimeError_CannotModifyConstant(x.s)
+                Error_CannotModifyConstant(x.s)
         except CatchableError:
             showInPlaceError(x.s)
     else:
@@ -335,4 +345,4 @@ template retrieveConfig*(globalKey: string, attrKey: string): untyped =
         config = attrConfig.d
 
     if not configFound:
-        RuntimeError_ConfigNotFound(globalKey, attrKey)
+        Error_ConfigNotFound(globalKey, attrKey)

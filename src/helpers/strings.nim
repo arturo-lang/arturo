@@ -10,10 +10,13 @@
 # Libraries
 #=======================================
 
-import lenientops, sequtils, strutils, unicode
+import lenientops, math, sequtils
+import strutils, sugar, tables, unicode
 
 when defined(WEB):
     import jsre
+else:
+    import re
 
 #=======================================
 # Methods
@@ -157,3 +160,62 @@ func replaceOnce*(s, sub: string, by = ""): string =
             i = j + subLen
 
         add result, substr(s, i)
+
+proc realLen*(s: string): int =
+    let cleanString = 
+        when not defined(WEB):
+            s.replacef(re"\e[^m]+m","")
+        else:
+            s
+    return cleanString.runeLen()
+
+proc realFind*(s: string, subs: string): int =
+    let cleanString = 
+        when not defined(WEB):
+            s.replacef(re"\e[^m]+m","")
+        else:
+            s
+    let subsLen = subs.len
+    let runeLen = cleanString.runeLen()
+    var i: int = 0
+
+    while i < runeLen:
+        if (i + subsLen <= runeLen) and (cleanString.runeSubStr(i, subsLen) == subs):
+            return i
+        i += 1
+
+    return -1
+
+func wrapped*(initial: string, limit=50, delim="\n"): string =
+    if initial.len < limit:
+        return initial
+    else:
+        let words = unicode.splitWhitespace(initial)
+        var lines: seq[seq[string]] = @[@[]]
+
+        var i = 0
+
+        while i < len(words):
+            let newWord = words[i]
+            if (sum(map(lines[^1], (x) => x.len)) + lines[^1].len + newWord.len) >= limit:
+                lines.add(@[])
+            lines[^1].add(newWord)
+            i += 1
+
+        return (lines.map((l) => l.join(" "))).join(delim)
+
+func getSimilar*(s: string, options: seq[string]): seq[string] =
+    var levs = initOrderedTable[string,float]()
+
+    for k in options:
+        levs[k] = 1 - jaro(s,k)
+
+    proc cmper (x, y: (string, float)): int {.closure.} = 
+        let pts = cmp(x[1], y[1])
+        if pts == 0: return cmp(x[0], y[0])
+        else: return pts
+
+    levs.sort(cmper)
+
+    if levs.len > 3: result = toSeq(levs.keys)[0..2]
+    else: result = toSeq(levs.keys)

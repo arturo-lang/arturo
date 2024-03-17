@@ -35,14 +35,13 @@ import vm/[
     parse, 
     stack, 
     values/value, 
+    values/printable,
+    values/custom/verror,
     version
 ]
 
 when not defined(WEB):
     import vm/profiler
-
-when defined(WEB):
-    import vm/values/printable
 
 #=======================================
 # Packaging setup
@@ -77,6 +76,22 @@ macro importLib(name: static[string]): untyped =
 #=======================================
 # Standard library setup
 #=======================================
+
+# TODO(VM/vm) don't completely eliminate unsupported functions
+#  right now, if we have e.g. a MINI build, some - albeit few -
+#  features are disabled. As a consequence, some functions cannot
+#  work. For example, mysqlite is not available in MINI builds.
+#  However, totally removing e.g. `open` - leads to confusing
+#  situations, such as me using the function and all I can see
+#  is that the identifier... "open" wasn't found.
+#  Not very helpful at all, given that we could simply let people
+#  know what is going on. That would obviously mean *not* completely
+#  eliminating the function, only having it throw an error in case
+#  some - or all - of its features are not supported.
+#  Also, it would be a good idea to create sth like a macro(?) which
+#  could combine the logic of `when defined(MINI)` (or whatever) +
+#  the error handling part. Food for thought! ;-)
+#  labels: vm, library, error handling, enhancement
 
 importLib "Arithmetic"
 importLib "Bitwise"
@@ -182,6 +197,10 @@ template initialize(args: seq[string], filename: string, isFile:bool, scriptData
     # library
     setupLibrary()
 
+    # dumper
+    Dumper = proc (v:Value):string =
+        v.dumped()
+
     # set VM as initialized
     initialized = true
 
@@ -189,16 +208,16 @@ template handleVMErrors(blk: untyped): untyped =
     try:
         blk
     except CatchableError, Defect:
-        let e = getCurrentException()        
-        showVMErrors(e)
+        let e = getCurrentException()   
+        showError(VError(e))
 
         when not defined(WEB):
             savePendingStores()
 
-        if e.name == $(ProgramError):
-            let code = parseInt(e.msg.split(";;")[1].split("<:>")[0])
+        try:
+            let code = parseInt($(e.name))
             quit(code)
-        else:
+        except ValueError:
             quit(1)
 
 #=======================================
@@ -224,9 +243,9 @@ when not defined(WEB):
 
             if isFile:
                 when defined(SAFE):
-                    CurrentFile = "main.art"
+                    CurrentContext = "main.art"
                 else:
-                    CurrentFile = lastPathPart(code)
+                    CurrentContext = lastPathPart(code)
                     CurrentPath = code
 
             initProfiler()
