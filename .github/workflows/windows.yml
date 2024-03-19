@@ -92,7 +92,8 @@ jobs:
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
           ./bin/arturo tools/tester.art
 
-          ./bin/arturo --package install unitt 1.0.0
+          # ./bin/arturo --package install unitt 1.0.0
+          # ./bin/arturo --help
           ./bin/arturo tools/unitt-tester.art
 
       # curl -L https://arturo-lang.s3.amazonaws.com/libcrypto-1_1-x64.dll -o libcrypto-1_1-x64.dll
