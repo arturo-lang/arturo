@@ -114,8 +114,15 @@ jobs:
           name: "arturo-${{matrix.version}}-${{matrix.arch}}-linux"
           path: bin/arturo
 
-      - name: Run unit tests
-        if: matrix.arch == 'amd64' && (matrix.version == 'full' || matrix.version == 'mini')
+      - name: Run unit tests (mini)
+        if: matrix.arch == 'amd64' && (matrix.version == 'mini')
         run: |
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
           arturo tools/tester.art
+      
+      - name: Run unit tests (full)
+        if: matrix.arch == 'amd64' && (matrix.version == 'full')
+        run: |
+          echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
+          ./bin/arturo --package install unitt 1.0.0
+          ./bin/arturo tools/unitt-tester.art
