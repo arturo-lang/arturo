@@ -1,6 +1,13 @@
 import {unitt}!
 import relative {../../commons/functions}!
 
+suite "Fail-Fast" [
+
+    test "this breaks and the CI is working fine :)" [
+        assert -> false
+    ]
+
+]
 
 suite "Generic testing" [
 
