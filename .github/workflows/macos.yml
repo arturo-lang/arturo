@@ -100,6 +100,8 @@ jobs:
         if: matrix.version == 'full'
         run: |
           arturo tools/tester.art
+          ./bin/arturo --package install unitt 1.0.0
+          ./bin/arturo tools/unitt-tester.art
 
       - name: Run unit tests (mini)
         if: matrix.version == 'mini'
