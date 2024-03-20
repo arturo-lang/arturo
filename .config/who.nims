@@ -3,7 +3,6 @@
 
 proc releaseConfig() =
     --define:OPTIMIZED
-    --define:NOERRORLINES
     
     if hostOS=="windows": 
         --define:strip 
