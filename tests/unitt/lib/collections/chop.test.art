@@ -1,0 +1,91 @@
+import {unitt}!
+import relative {../../commons/functions}!
+
+
+suite "General testing" [
+
+    test.prop "chop removes the last item from given collection" [
+        assert -> [a b c] = chop [a b c d]
+        assert -> [5 6 7] = chop [5 6 7 8]
+    ]
+    
+    test.prop "chop.times: 1 is the same as chop" [
+        assert -> equal? chop [a b c d] chop.times: 1 [a b c d]
+    ]
+
+    test.prop "chop n times is the same as chop.times: n" [
+        a: [a b c d e f g]
+        assert -> equal? 
+                    chop chop chop a 
+                    chop.times: 3 a
+
+        assert -> equal? 
+                    chop chop a 
+                    chop.times: 2 a
+    ]
+    
+    test.prop "chop removes the n last items from given collection" [
+        assert -> [a b c] = chop.times: 4 [a b c d e f g]
+        assert -> [5 6 7] = chop.times: 2 [5 6 7 8 9]
+    ]
+    
+    test.prop "chop empty collection gives an empty block" [
+        assert -> empty? chop []
+        assert -> empty? chop.times: random 0 1000 []
+    ]
+
+]
+
+suite "Test .times's properties" [
+    
+    a: [a b c]
+
+    test.prop "times = size collections gives an empty block" [
+        assert -> empty? chop.times: neg size a a
+        assert -> empty? chop.times: size a a
+    ]
+
+    test.prop "times > size collection gives an empty block" [
+        assert -> empty? chop.times: neg inc size a a
+        assert -> empty? chop.times: inc size a a
+    ]
+
+    test.prop "negative times chops the first n items" [
+        assert -> [b c] = chop.times: neg 1 a
+        assert -> [ c ] = chop.times: neg 2 a
+    ]
+
+]
+
+suite "Test :block operations" [
+
+    test.prop "chop :block returns :block" [
+        assert -> block? chop [a b c d e f g]
+        assert -> block? chop [a b]
+        assert -> block? chop [a]
+    ]
+    
+    test.prop "chop :block | in-place has the same behavior" [
+        [reference inplaced pathInplaced]: fullInplaceEquivalence [a b c d] 'chop []
+        assert -> reference = inplaced
+        assert -> reference = pathInplaced
+    ]
+
+]
+
+
+suite "Test :string operations" [
+
+    test.prop "chop :string returns :string" [
+        assert -> string? chop "High"
+        assert -> string? chop "Hi"
+        assert -> string? chop "H"
+    ]
+    
+    test.prop "chop :string | in-place has the same behavior" [
+        [reference inplaced pathInplaced]: fullInplaceEquivalence "Arturo" 'chop []
+        assert -> reference = inplaced
+        assert -> reference = pathInplaced
+    ]
+
+]

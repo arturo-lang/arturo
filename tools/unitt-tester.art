@@ -1,0 +1,3 @@
+import {unitt}!
+
+runTests findTests.thatMatches: "*.test.art" "tests/unitt/"
