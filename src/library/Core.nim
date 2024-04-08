@@ -32,7 +32,7 @@ when not defined(WEB):
         import helpers/packager
 
 import vm/lib
-import vm/[env, errors, eval, exec, parse]
+import vm/[errors, eval, exec, parse]
 
 #=======================================
 # Definitions
