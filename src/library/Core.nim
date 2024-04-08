@@ -594,7 +594,6 @@ proc defineLibrary*() =
 
             var inPath: ref string = nil
             if (let currentP = currentPath(); currentP != entryPath()):
-                echo "!! There is subpath for this function, set it properly"
                 new(inPath)
                 inPath[] = currentP
 
@@ -896,7 +895,6 @@ proc defineLibrary*() =
 
             var inPath: ref string = nil
             if (let currentP = currentPath(); currentP != entryPath()):
-                echo "!! There is subpath for this function, set it properly"
                 new(inPath)
                 inPath[] = currentP
 
