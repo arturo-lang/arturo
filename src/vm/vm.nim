@@ -186,8 +186,8 @@ template initialize(args: seq[string], filename: string, isFile:bool, scriptData
 
     when not defined(WEB):
         # paths
-        if isFile: addPath(filename)
-        else: addPath(getCurrentDir())
+        if isFile: pushPath(filename)
+        else: pushPath(getCurrentDir())
 
     Syms = initTable[string,Value]()
 
