@@ -362,7 +362,7 @@ proc currentPath*(): string =
     ## get current path
     PathStack[^1]
 
-proc addPath*(newPath: string) =
+proc pushPath*(newPath: string) =
     ## add given path to path stack
     var (dir, _, _) = splitFile(newPath)
     PathStack.add(dir)
