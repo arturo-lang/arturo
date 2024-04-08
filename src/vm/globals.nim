@@ -362,10 +362,13 @@ proc currentPath*(): string =
     ## get current path
     PathStack[^1]
 
-proc pushPath*(newPath: string) =
+proc pushPath*(newPath: string, fromFile: static bool = false) =
     ## add given path to path stack
-    var (dir, _, _) = splitFile(newPath)
-    PathStack.add(dir)
+    when fromFile:
+        var (dir, _, _) = splitFile(newPath)
+        PathStack.add(dir)
+    else:
+        PathStack.add(newPath)
 
 proc popPath*(): string =
     ## pop last path from path stack
