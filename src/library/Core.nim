@@ -376,7 +376,7 @@ proc defineLibrary*() =
                     let (src, tp) = getSource(x.s)
 
                     if tp==FileData:
-                        pushPath(x.s)
+                        pushPath(x.s, fromFile=true)
 
                     let parsed = doParse(src, isFile=false)
                     if not parsed.isNil:
@@ -594,6 +594,7 @@ proc defineLibrary*() =
 
             var inPath: ref string = nil
             if (let currentP = currentPath(); currentP != entryPath()):
+                echo "!! There is subpath for this function, set it properly"
                 new(inPath)
                 inPath[] = currentP
 
@@ -760,7 +761,7 @@ proc defineLibrary*() =
                         if not src.fileExists():
                             Error_PackageNotValid(pkg)
 
-                        pushPath(src)
+                        pushPath(src, fromFile=true)
 
                         if not lean:
                             let parsed = doParse(src, isFile=true)
@@ -893,7 +894,13 @@ proc defineLibrary*() =
                     x.a
                 else: @[x]
 
-            push(newMethodFromDefinition(argBlock, y, isDistinct))
+            var inPath: ref string = nil
+            if (let currentP = currentPath(); currentP != entryPath()):
+                echo "!! There is subpath for this function, set it properly"
+                new(inPath)
+                inPath[] = currentP
+
+            push(newMethodFromDefinition(argBlock, y, isDistinct, inPath))
 
     builtin "new",
         alias       = unaliased, 
