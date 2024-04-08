@@ -27,7 +27,7 @@ when not defined(WEB):
 import helpers/terminal as TerminalHelper
 
 import vm/lib
-import vm/[env, errors, eval, exec]
+import vm/[errors, eval, exec]
 
 #=======================================
 # Definitions
