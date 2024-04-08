@@ -450,6 +450,9 @@ proc execMethod*(meth: Value, fid: Hash) =
 
     savedSyms = Syms
 
+    if not meth.info.path.isNil():
+        pushPath(meth.info.path[])
+
     for arg in meth.mparams:
         # pop argument and set it
         SetSym(arg, stack.pop())
@@ -465,6 +468,9 @@ proc execMethod*(meth: Value, fid: Hash) =
 
     finally:
         Syms = savedSyms
+
+        if not meth.info.path.isNil():
+            discard popPath()
 
 proc ExecLoop*(cnst: ValueArray, it: VBinary) =
     ## The main execution loop.
