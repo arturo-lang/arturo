@@ -376,7 +376,7 @@ proc defineLibrary*() =
                     let (src, tp) = getSource(x.s)
 
                     if tp==FileData:
-                        addPath(x.s)
+                        pushPath(x.s)
 
                     let parsed = doParse(src, isFile=false)
                     if not parsed.isNil:
@@ -592,7 +592,12 @@ proc defineLibrary*() =
                     x.a
                 else: @[x]
 
-            push(newFunctionFromDefinition(argBlock, y, imports, exports, memoize, inline))
+            var inPath: ref string = nil
+            if (let currentP = currentPath(); currentP != entryPath()):
+                new(inPath)
+                inPath[] = currentP
+
+            push(newFunctionFromDefinition(argBlock, y, imports, exports, memoize, inline, inPath))
 
     builtin "if",
         alias       = unaliased, 
@@ -755,7 +760,7 @@ proc defineLibrary*() =
                         if not src.fileExists():
                             Error_PackageNotValid(pkg)
 
-                        addPath(src)
+                        pushPath(src)
 
                         if not lean:
                             let parsed = doParse(src, isFile=true)

@@ -331,6 +331,9 @@ proc execFunction*(fun: Value, fid: Hash) =
 
     let argsL = len(fun.params)
 
+    if not fun.info.inPath.isNil():
+        pushPath(fun.info.inPath[])
+
     if fun.memoize:
         memoizedParams = newBlock()
 
@@ -365,6 +368,9 @@ proc execFunction*(fun: Value, fid: Hash) =
         discard
 
     finally:
+        if not fun.info.inPath.isNil():
+            discard popPath()
+
         if fun.memoize:
             setMemoized(fid, memoizedParams, stack.peek(0))
 
