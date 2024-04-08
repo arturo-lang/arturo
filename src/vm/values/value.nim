@@ -580,7 +580,7 @@ func newMethod*(params: seq[string], main: Value, isDistinct: bool = false, inje
         )
     )
 
-func newFunctionFromDefinition*(params: ValueArray, main: Value, imports: Value = nil, exports: Value = nil, memoize: bool = false, forceInline: bool = false): Value {.inline.} =
+func newFunctionFromDefinition*(params: ValueArray, main: Value, imports: Value = nil, exports: Value = nil, memoize: bool = false, forceInline: bool = false, inPath: ref string = nil): Value {.inline.} =
     ## create Function value with given parameters,
     ## generate type checkers, and process info if necessary
     
@@ -680,6 +680,7 @@ func newFunctionFromDefinition*(params: ValueArray, main: Value, imports: Value 
                     result.info.example = exampleData.s
 
     result.info.args = argTypes
+    result.info.path = inPath
 
 # TODO(VM/values/value) `newMethodFromDefinition` redundant?
 #  could we possibly "merge" it with `newFunctionFromDefinition` or 
