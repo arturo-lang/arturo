@@ -331,8 +331,9 @@ proc execFunction*(fun: Value, fid: Hash) =
 
     let argsL = len(fun.params)
 
-    if not fun.info.path.isNil():
-        pushPath(fun.info.path[])
+    when not defined(WEB):
+        if not fun.info.path.isNil():
+            pushPath(fun.info.path[])
 
     if fun.memoize:
         memoizedParams = newBlock()
@@ -368,8 +369,9 @@ proc execFunction*(fun: Value, fid: Hash) =
         discard
 
     finally:
-        if not fun.info.path.isNil():
-            discard popPath()
+        when not defined(WEB):
+            if not fun.info.path.isNil():
+                discard popPath()
 
         if fun.memoize:
             setMemoized(fid, memoizedParams, stack.peek(0))
@@ -395,8 +397,9 @@ proc execFunctionInline*(fun: Value, fid: Hash) =
  
     let argsL = len(fun.params)
 
-    if not fun.info.path.isNil():
-        pushPath(fun.info.path[])
+    when not defined(WEB):
+        if not fun.info.path.isNil():
+            pushPath(fun.info.path[])
 
     if fun.memoize:
         memoizedParams = newBlock()
@@ -429,8 +432,9 @@ proc execFunctionInline*(fun: Value, fid: Hash) =
         discard
 
     finally:
-        if not fun.info.path.isNil():
-            discard popPath()
+        when not defined(WEB):
+            if not fun.info.path.isNil():
+                discard popPath()
 
         if fun.memoize:
             setMemoized(fid, memoizedParams, stack.peek(0))
@@ -450,8 +454,9 @@ proc execMethod*(meth: Value, fid: Hash) =
 
     savedSyms = Syms
 
-    if not meth.info.path.isNil():
-        pushPath(meth.info.path[])
+    when not defined(WEB):
+        if not meth.info.path.isNil():
+            pushPath(meth.info.path[])
 
     for arg in meth.mparams:
         # pop argument and set it
@@ -469,8 +474,9 @@ proc execMethod*(meth: Value, fid: Hash) =
     finally:
         Syms = savedSyms
 
-        if not meth.info.path.isNil():
-            discard popPath()
+        when not defined(WEB):
+            if not meth.info.path.isNil():
+                discard popPath()
 
 proc ExecLoop*(cnst: ValueArray, it: VBinary) =
     ## The main execution loop.
