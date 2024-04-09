@@ -333,8 +333,9 @@ proc execFunction*(fun: Value, fid: Hash) =
     let argsL = len(fun.params)
 
     when not defined(WEB):
-        if not fun.info.path.isNil():
-            pushFrame(fun.info.path[], fromFile=true)
+        var fpath: ref string
+        if (fpath = fun.info.path; not fpath.isNil()):
+            pushFrame(fpath[], fromFile=true)
 
     if fun.memoize:
         memoizedParams = newBlock()
@@ -371,7 +372,7 @@ proc execFunction*(fun: Value, fid: Hash) =
 
     finally:
         when not defined(WEB):
-            if not fun.info.path.isNil():
+            if not fpath.isNil():
                 discardFrame()
 
         if fun.memoize:
@@ -399,8 +400,9 @@ proc execFunctionInline*(fun: Value, fid: Hash) =
     let argsL = len(fun.params)
 
     when not defined(WEB):
-        if not fun.info.path.isNil():
-            pushFrame(fun.info.path[], fromFile=true)
+        var fpath: ref string
+        if (fpath = fun.info.path; not fpath.isNil()):
+            pushFrame(fpath[], fromFile=true)
 
     if fun.memoize:
         memoizedParams = newBlock()
@@ -434,7 +436,7 @@ proc execFunctionInline*(fun: Value, fid: Hash) =
 
     finally:
         when not defined(WEB):
-            if not fun.info.path.isNil():
+            if not fpath.isNil():
                 discardFrame()
 
         if fun.memoize:
@@ -456,8 +458,9 @@ proc execMethod*(meth: Value, fid: Hash) =
     savedSyms = Syms
 
     when not defined(WEB):
-        if not meth.info.path.isNil():
-            pushFrame(meth.info.path[], fromFile=true)
+        var fpath: ref string
+        if (fpath = meth.info.path; not fpath.isNil()):
+            pushFrame(fpath[], fromFile=true)
 
     for arg in meth.mparams:
         # pop argument and set it
@@ -476,7 +479,7 @@ proc execMethod*(meth: Value, fid: Hash) =
         Syms = savedSyms
 
         when not defined(WEB):
-            if not meth.info.path.isNil():
+            if not fpath.isNil():
                 discardFrame()
 
 proc ExecLoop*(cnst: ValueArray, it: VBinary) =
