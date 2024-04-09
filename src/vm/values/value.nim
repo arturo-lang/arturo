@@ -32,8 +32,6 @@ when defined(GMP):
 when (not defined(GMP)) and (not defined(WEB)):
    import vm/errors
 
-import vm/runtime
-
 import vm/opcodes
 
 import vm/values/custom/[vbinary, vcolor, vcomplex, verror, vlogical, vquantity, vrange, vrational, vregex, vsymbol, vversion]
