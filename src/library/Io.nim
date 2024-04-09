@@ -31,7 +31,7 @@ when not defined(WEB):
 import helpers/terminal as terminalHelper
 
 import vm/lib
-import vm/[eval, exec]
+import vm/[errors, eval, exec]
 import vm/values/printable
 
 when defined(WEB):
@@ -239,6 +239,7 @@ proc defineLibrary*() =
                     if checkAttr("hint"):
                         hintsTable = aHint.d
 
+                    IsRepl = true
                     let (str, hasToKill) = replInput(x.s, historyPath, completionsArray, hintsTable)
                     if hasToKill:
                         when not defined(WEB):

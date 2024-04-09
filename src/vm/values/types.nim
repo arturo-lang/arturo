@@ -212,6 +212,7 @@ type
                 returns*    : ValueSpec
                 when defined(DOCGEN):
                     example*    : string
+                path*       : ref string
             else:
                 discard
 
@@ -411,6 +412,7 @@ makeAccessor(info, attrs)
 makeAccessor(info, returns)
 when defined(DOCGEN):
     makeAccessor(info, example)
+makeAccessor(info, path)
 
 # Version
 
