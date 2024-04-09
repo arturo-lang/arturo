@@ -26,6 +26,7 @@ when not defined(WEB):
     import helpers/url
 
 import vm/lib
+import vm/runtime
 
 when defined(SAFE):
     import vm/errors
