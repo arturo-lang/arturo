@@ -31,6 +31,7 @@ import vm/[
     globals, 
     parse, 
     profiler, 
+    runtime,
     stack, 
     values/value
 ]
