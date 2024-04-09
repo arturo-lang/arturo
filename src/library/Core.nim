@@ -592,7 +592,7 @@ proc defineLibrary*() =
                     x.a
                 else: @[x]
 
-            var inPath: ref string = nil
+            var inPath: ref PathStackEntry = nil
             if (let currentP = currentPath(); currentP != entryPath()):
                 new(inPath)
                 inPath[] = currentP
@@ -893,7 +893,7 @@ proc defineLibrary*() =
                     x.a
                 else: @[x]
 
-            var inPath: ref string = nil
+            var inPath: ref PathStackEntry = nil
             if (let currentP = currentPath(); currentP != entryPath()):
                 new(inPath)
                 inPath[] = currentP

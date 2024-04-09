@@ -27,6 +27,8 @@ import vm/opcodes
 import vm/values/custom/[vbinary, vcolor, vcomplex, verror, vlogical, vquantity, vrange, vrational, vregex, vsymbol, vversion]
 import vm/values/flags
 
+import vm/runtime
+
 when not defined(WEB):
     import vm/values/custom/[vsocket]
 
@@ -212,7 +214,7 @@ type
                 returns*    : ValueSpec
                 when defined(DOCGEN):
                     example*    : string
-                path*       : ref string
+                path*       : ref PathStackEntry
             else:
                 discard
 
