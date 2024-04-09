@@ -144,8 +144,8 @@ template initialize(args: seq[string], filename: string, isFile:bool, scriptData
     # attributes
     createAttrsStack()
 
-    # path stack
-    createPathStack()
+    # frame stack
+    createFrameStack()
     
     # random number generator
     randomize()
@@ -190,8 +190,8 @@ template initialize(args: seq[string], filename: string, isFile:bool, scriptData
 
     when not defined(WEB):
         # paths
-        if isFile: pushPath(filename, fromFile=true)
-        else: pushPath(getCurrentDir())
+        if isFile: pushFrame(filename, fromFile=true)
+        else: pushFrame(getCurrentDir())
 
     Syms = initTable[string,Value]()
 
@@ -244,13 +244,6 @@ when not defined(WEB):
             # TODO(VM/vm) Would it make sense to `GC_disableMarkAndSweep`?
             #  will it even matter at all?
             #  labels: vm, open discussion, benchmark, performance
-
-            # if isFile:
-            #     when defined(SAFE):
-            #         CurrentContext = "main.art"
-            #     else:
-            #         CurrentContext = lastPathPart(code)
-            #         CurrentPath = code
 
             initProfiler()
             

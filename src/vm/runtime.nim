@@ -47,6 +47,9 @@ template createFrameStack*() =
     newSeq(FrameStack, FrameStackSize)
     FSP = 0
 
+template emptyFrameStack*(): bool =
+    FSP == 1
+
 template entryFrame*(): Frame =
     ## get initial script path
     FrameStack[0]
@@ -66,9 +69,9 @@ template pushFrame*(newPath: string, fromFile: static bool = false) =
     ## add given frame to the stack
     when fromFile:
         var (dir, _, _) = splitFile(newPath)
-        FrameStack[FSP] = (dir, newPath)
+        FrameStack[FSP] = Frame(folder: dir, path: newPath)
     else:
-        FrameStack[FSP] = (newPath, "")
+        FrameStack[FSP] = Frame(folder: newPath, path: "")
     FSP += 1
 
 template pushFrame*(newFrame: Frame) =

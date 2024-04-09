@@ -334,7 +334,7 @@ proc execFunction*(fun: Value, fid: Hash) =
 
     when not defined(WEB):
         if not fun.info.path.isNil():
-            pushPath(fun.info.path[])
+            pushFrame(fun.info.path[], fromFile=true)
 
     if fun.memoize:
         memoizedParams = newBlock()
@@ -372,7 +372,7 @@ proc execFunction*(fun: Value, fid: Hash) =
     finally:
         when not defined(WEB):
             if not fun.info.path.isNil():
-                discard popPath()
+                discardFrame()
 
         if fun.memoize:
             setMemoized(fid, memoizedParams, stack.peek(0))
@@ -400,7 +400,7 @@ proc execFunctionInline*(fun: Value, fid: Hash) =
 
     when not defined(WEB):
         if not fun.info.path.isNil():
-            pushPath(fun.info.path[])
+            pushFrame(fun.info.path[], fromFile=true)
 
     if fun.memoize:
         memoizedParams = newBlock()
@@ -435,7 +435,7 @@ proc execFunctionInline*(fun: Value, fid: Hash) =
     finally:
         when not defined(WEB):
             if not fun.info.path.isNil():
-                discard popPath()
+                discardFrame()
 
         if fun.memoize:
             setMemoized(fid, memoizedParams, stack.peek(0))
@@ -457,7 +457,7 @@ proc execMethod*(meth: Value, fid: Hash) =
 
     when not defined(WEB):
         if not meth.info.path.isNil():
-            pushPath(meth.info.path[])
+            pushFrame(meth.info.path[], fromFile=true)
 
     for arg in meth.mparams:
         # pop argument and set it
@@ -477,7 +477,7 @@ proc execMethod*(meth: Value, fid: Hash) =
 
         when not defined(WEB):
             if not meth.info.path.isNil():
-                discard popPath()
+                discardFrame()
 
 proc ExecLoop*(cnst: ValueArray, it: VBinary) =
     ## The main execution loop.
