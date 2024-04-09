@@ -143,6 +143,9 @@ template initialize(args: seq[string], filename: string, isFile:bool, scriptData
 
     # attributes
     createAttrsStack()
+
+    # path stack
+    createPathStack()
     
     # random number generator
     randomize()
@@ -242,12 +245,12 @@ when not defined(WEB):
             #  will it even matter at all?
             #  labels: vm, open discussion, benchmark, performance
 
-            if isFile:
-                when defined(SAFE):
-                    CurrentContext = "main.art"
-                else:
-                    CurrentContext = lastPathPart(code)
-                    CurrentPath = code
+            # if isFile:
+            #     when defined(SAFE):
+            #         CurrentContext = "main.art"
+            #     else:
+            #         CurrentContext = lastPathPart(code)
+            #         CurrentPath = code
 
             initProfiler()
             

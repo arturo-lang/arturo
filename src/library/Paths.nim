@@ -301,7 +301,7 @@ proc defineLibrary*() =
             ; /Users/admin/Desktop/test.txt
             """:
                 #=======================================================
-                push(newString(joinPath(currentPath(),x.s)))
+                push(newString(joinPath(currentPath()[0],x.s)))
 
     #----------------------------
     # Predicates

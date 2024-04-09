@@ -15,33 +15,73 @@
 import os
 
 #=======================================
+# Types
+#=======================================
+
+type
+    Frame* = ref object
+        folder*: string
+        path*: string
+
+#=======================================
+# Constants
+#=======================================
+
+const FrameStackSize* = 100000   ## The initial stack size
+
+#=======================================
 # Globals
 #=======================================
 
 var
     # the path stack
-    PathStack*  {.global.}  : seq[string]           ## The main path stack
+    FrameStack*     {.global.}  : seq[Frame]       ## The main frame stack
+    FSP*            {.global.}  : int
 
 #---------------------
-# Path stack
+# Methods
 #---------------------
 
-proc entryPath*(): string =
+template createFrameStack*() =
+    ## initialize the main stack
+    newSeq(FrameStack, FrameStackSize)
+    FSP = 0
+
+template entryFrame*(): Frame =
     ## get initial script path
-    PathStack[0]
+    FrameStack[0]
 
-proc currentPath*(): string =
-    ## get current path
-    PathStack[^1]
+template currentFrame*(): Frame =
+    ## get current frame
+    FrameStack[FSP-1]
 
-proc pushPath*(newPath: string, fromFile: static bool = false) =
-    ## add given path to path stack
+template postCurrentFrame*(): Frame =
+    ## get frame at error point
+    ## Warning: Don't use that, unless we *know*
+    ## there is an extra frame (and that's normally 
+    ## only when an error was thrown)
+    FrameStack[FSP]
+
+template pushFrame*(newPath: string, fromFile: static bool = false) =
+    ## add given frame to the stack
     when fromFile:
         var (dir, _, _) = splitFile(newPath)
-        PathStack.add(dir)
+        FrameStack[FSP] = (dir, newPath)
     else:
-        PathStack.add(newPath)
+        FrameStack[FSP] = (newPath, "")
+    FSP += 1
 
-proc popPath*(): string =
-    ## pop last path from path stack
-    PathStack.pop()
+template pushFrame*(newFrame: Frame) =
+    ## add given frame to the stack
+    FrameStack[FSP] = newFrame
+    FSP += 1
+
+proc popFrame*(): Frame =
+    ## pop last frame from the stack
+    FSP -= 1
+    return FrameStack[FSP]
+
+template discardFrame*() =
+    ## pop last frame from the stack
+    ## without returning it
+    FSP -= 1
