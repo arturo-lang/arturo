@@ -12,7 +12,7 @@
 # Libraries
 #=======================================
 
-import os, sequtils, tables, unicode
+import sequtils, tables, unicode
 
 import helpers/strings
 
@@ -51,9 +51,6 @@ var
 
     # global configuration
     Config* {.global.}      : Value                 ## The global configuration store
-
-    # the path stack
-    PathStack*  {.global.}  : seq[string]           ## The main path stack
 
     # dump values (from anywhere!)
     Dumper* {.global.}      : proc (v:Value):string
@@ -349,27 +346,3 @@ template retrieveConfig*(globalKey: string, attrKey: string): untyped =
 
     if not configFound:
         Error_ConfigNotFound(globalKey, attrKey)
-
-#---------------------
-# Path stack
-#---------------------
-
-proc entryPath*(): string =
-    ## get initial script path
-    PathStack[0]
-
-proc currentPath*(): string =
-    ## get current path
-    PathStack[^1]
-
-proc pushPath*(newPath: string, fromFile: static bool = false) =
-    ## add given path to path stack
-    when fromFile:
-        var (dir, _, _) = splitFile(newPath)
-        PathStack.add(dir)
-    else:
-        PathStack.add(newPath)
-
-proc popPath*(): string =
-    ## pop last path from path stack
-    PathStack.pop()
