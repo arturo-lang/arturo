@@ -582,7 +582,7 @@ func newMethod*(params: seq[string], main: Value, isDistinct: bool = false, inje
         )
     )
 
-func newFunctionFromDefinition*(params: ValueArray, main: Value, imports: Value = nil, exports: Value = nil, memoize: bool = false, forceInline: bool = false, inPath: ref PathStackEntry = nil): Value {.inline.} =
+func newFunctionFromDefinition*(params: ValueArray, main: Value, imports: Value = nil, exports: Value = nil, memoize: bool = false, forceInline: bool = false, inPath: ref string = nil): Value {.inline.} =
     ## create Function value with given parameters,
     ## generate type checkers, and process info if necessary
     
@@ -688,7 +688,7 @@ func newFunctionFromDefinition*(params: ValueArray, main: Value, imports: Value 
 #  could we possibly "merge" it with `newFunctionFromDefinition` or 
 #  at least create e.g. a template?
 #  labels: values, enhancement, cleanup
-func newMethodFromDefinition*(params: ValueArray, main: Value, isDistinct: bool = false, inPath: ref PathStackEntry = nil): Value {.inline.} =
+func newMethodFromDefinition*(params: ValueArray, main: Value, isDistinct: bool = false, inPath: ref string = nil): Value {.inline.} =
     ## create Method value with given parameters,
     ## generate type checkers, and process info if necessary
 

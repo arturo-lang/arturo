@@ -376,14 +376,14 @@ proc defineLibrary*() =
                     let (src, tp) = getSource(x.s)
 
                     if tp==FileData:
-                        pushPath(x.s, fromFile=true)
+                        pushFrame(x.s, fromFile=true)
 
                     let parsed = doParse(src, isFile=false)
                     if not parsed.isNil:
                         execUnscoped(parsed)
 
                     if tp==FileData:
-                        discard popPath()
+                        discardFrame()
                 
                 currentTime += 1
 
@@ -592,10 +592,10 @@ proc defineLibrary*() =
                     x.a
                 else: @[x]
 
-            var inPath: ref PathStackEntry = nil
-            if (let currentP = currentPath(); currentP != entryPath()):
+            var inPath: ref string = nil
+            if (let currentF = currentFrame(); currentF != entryFrame()):
                 new(inPath)
-                inPath[] = currentP
+                inPath[] = currentF.path
 
             push(newFunctionFromDefinition(argBlock, y, imports, exports, memoize, inline, inPath))
 
@@ -760,7 +760,7 @@ proc defineLibrary*() =
                         if not src.fileExists():
                             Error_PackageNotValid(pkg)
 
-                        pushPath(src, fromFile=true)
+                        pushFrame(src, fromFile=true)
 
                         if not lean:
                             let parsed = doParse(src, isFile=true)
@@ -773,7 +773,7 @@ proc defineLibrary*() =
                             else:
                                 push(newDictionary(got))
 
-                        discard popPath()              
+                        discardFrame()              
                     else:
                         Error_PackageNotFound(pkg)
 
@@ -893,10 +893,10 @@ proc defineLibrary*() =
                     x.a
                 else: @[x]
 
-            var inPath: ref PathStackEntry = nil
-            if (let currentP = currentPath(); currentP != entryPath()):
+            var inPath: ref string = nil
+            if (let currentF = currentFrame(); currentF != entryFrame()):
                 new(inPath)
-                inPath[] = currentP
+                inPath[] = currentF.path
 
             push(newMethodFromDefinition(argBlock, y, isDistinct, inPath))
 

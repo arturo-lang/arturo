@@ -343,7 +343,7 @@ proc defineLibrary*() =
             ]
         """:
             #=======================================================
-            push(newLogical(PathStack.len == 1))
+            push(newLogical(emptyFrameStack()))
 
 #=======================================
 # Add Library

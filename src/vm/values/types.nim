@@ -214,7 +214,7 @@ type
                 returns*    : ValueSpec
                 when defined(DOCGEN):
                     example*    : string
-                path*       : ref PathStackEntry
+                path*       : ref string
             else:
                 discard
 

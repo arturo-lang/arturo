@@ -87,20 +87,17 @@ var
     CurrentLine*    : int       = 0
     ExecStack*      : seq[int]  = @[]
 
+    IsRepl*         : bool = false
+
 #=======================================
 # Helpers
 #=======================================
 
 # Check environment
 
-proc isRepl(): bool =
-    return false
-    #return CurrentContext == ReplContext
-
 proc getCurrentContext(e: VError): string =
     if e.kind == CmdlineErr: return ""
-
-    #if CurrentContext == ReplContext: return CurrentContext
+    if IsRepl: return " <repl> "
     return " <script> "
 
 proc getMaxWidth(): int =
@@ -185,9 +182,9 @@ proc printCodePreview(e: VError) =
     when not defined(NOERRORLINES):
         if e.context.file == "":
             e.context.line = CurrentLine
-            e.context.file = postCurrentPath()[1]# CurrentPath
+            e.context.file = postCurrentFrame().path
 
-        if (not isRepl()) and (e.kind != CmdlineErr) and (e.kind != ProgramErr) :
+        if (not IsRepl) and (e.kind != CmdlineErr) and (e.kind != ProgramErr) :
             echo ""
             let codeLines = readFile(e.context.file).splitLines()
             const linesBeforeAfter = 2
@@ -231,7 +228,7 @@ proc showError*(e: VError) =
         printCodePreview()
         printHint()
     
-    if (not isRepl()) or e.hint=="":
+    if (not IsRepl) or e.hint=="":
         echo ""
 
 func panic(error: VError) =
