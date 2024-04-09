@@ -33,6 +33,7 @@ import vm/[
     exec, 
     globals, 
     parse, 
+    runtime,
     stack, 
     values/value, 
     values/printable,
