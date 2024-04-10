@@ -541,7 +541,7 @@ proc processRemotePackage(pkg: string, verspec: VersionSpec, doLoad: bool = true
                 createDir(BinFolder.fmt)
                 let executableDest = BinFolder.fmt / pkg
                 copyFile(executableFile, executableDest)
-                setFilePermissions(executableDest, {fpUserExec, fpGroupExec, fpOthersExec})
+                setFilePermissions(executableDest, {fpUserRead, fpUserWrite, fpUserExec, fpGroupRead, fpGroupWrite, fpGroupExec, fpOthersRead, fpOthersWrite, fpOthersExec})
 
     try:
         discard waitFor (newAsyncHttpClient().getContent("https://pkgr.art/download.php?pkg={pkg}&ver={version}&mgk=18966".fmt))
