@@ -531,16 +531,18 @@ proc processRemotePackage(pkg: string, verspec: VersionSpec, doLoad: bool = true
     if (let deps = spec.hasDependencies(); deps.isSome):
         verifyDependencies(deps.get())
 
+    ShowMessage "Installing package: {pkg} {version}".fmt
+
     if (let executable = spec.hasExecutable(); executable.isSome):
         if (let localPackage = lookupLocalPackageVersion(pkg, verspec); localPackage.isSome):
             let (packageLocation, _) = localPackage.get()
             if (let executableFile = packageLocation / executable.get(); executableFile.fileExists()):
+                ShowMessage "Installing executable".fmt
                 createDir(BinFolder.fmt)
                 let executableDest = BinFolder.fmt / pkg
                 copyFile(executableFile, executableDest)
                 setFilePermissions(executableDest, {fpUserExec, fpGroupExec, fpOthersExec})
 
-    ShowMessage "Installing package: {pkg} {version}".fmt
     try:
         discard waitFor (newAsyncHttpClient().getContent("https://pkgr.art/download.php?pkg={pkg}&ver={version}&mgk=18966".fmt))
     except Exception:
