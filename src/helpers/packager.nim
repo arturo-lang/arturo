@@ -245,6 +245,9 @@ proc removeLocalPackage(pkg: string, version: VVersion): bool =
 
         let specPath = SpecPackage.fmt
         removeDir(specPath)
+
+        let executableDest = BinFolder.fmt / pkg
+        removeFile(executableDest)
     ShowSuccess()
 
     return true
@@ -257,6 +260,9 @@ proc removeAllLocalPackageVersions(pkg: string): bool =
     for found in localVersions:
         if not removeLocalPackage(pkg, found.ver):
             return false
+
+    let executableDest = BinFolder.fmt / pkg
+    removeFile(executableDest)
 
     return true
 
