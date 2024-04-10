@@ -66,7 +66,6 @@ type
 
 const
     MaxIntSupported     = $(sizeof(int) * 8)
-    ReplContext         = " <repl> "
 
     UseUnicodeChars     = true
 
