@@ -536,7 +536,7 @@ proc processRemotePackage(pkg: string, verspec: VersionSpec, doLoad: bool = true
             let (packageLocation, _) = localPackage.get()
             if (let executableFile = packageLocation / executable.get(); executableFile.fileExists()):
                 createDir(BinFolder.fmt)
-                let executableDest = (BinFolder / pkg).fmt
+                let executableDest = BinFolder.fmt / pkg
                 copyFile(executableFile, executableDest)
                 setFilePermissions(executableDest, {fpUserExec, fpGroupExec, fpOthersExec})
 
