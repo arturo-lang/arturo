@@ -247,7 +247,8 @@ proc removeLocalPackage(pkg: string, version: VVersion): bool =
         removeDir(specPath)
 
         let executableDest = BinFolder.fmt / pkg
-        removeFile(executableDest)
+        discard tryRemoveFile(executableDest)
+    
     ShowSuccess()
 
     return true
