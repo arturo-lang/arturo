@@ -261,9 +261,6 @@ proc removeAllLocalPackageVersions(pkg: string): bool =
         if not removeLocalPackage(pkg, found.ver):
             return false
 
-    let executableDest = BinFolder.fmt / pkg
-    removeFile(executableDest)
-
     return true
 
 proc getLocalVersionsInPath(path: string): seq[VersionLocation] =
