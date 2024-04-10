@@ -116,19 +116,26 @@ template WillShowError(): untyped =
 # Helpers
 #=======================================
 
-proc hasDependencies(item: ValueDict): Option[ValueArray] {.inline.} =
-    ## Check if there is a .depends field in the spec
-    ## and return its content if it's properly set
-
-    if (item.hasKey("depends") and item["depends"].kind == Block):
-        return some(item["depends"].a)
-
 proc hasEntry(item: ValueDict): Option[string] {.inline.} =
     ## Check if there is an .entry field in the spec
     ## and return it if it's properly set
 
     if (item.hasKey("entry") and item["entry"].kind in {String,Literal}):
         return some(item["entry"].s)
+
+proc hasExecutable(item: ValueDict): Option[string] {.inline.} =
+    ## Check if there is an .executable field in the spec
+    ## and return it if it's properly set
+
+    if (item.hasKey("executable") and item["executable"].kind in {String,Literal}):
+        return some(item["executable"].s)
+
+proc hasDependencies(item: ValueDict): Option[ValueArray] {.inline.} =
+    ## Check if there is a .depends field in the spec
+    ## and return its content if it's properly set
+
+    if (item.hasKey("depends") and item["depends"].kind == Block):
+        return some(item["depends"].a)
 
 proc hasVersion(item: ValueDict): Option[VVersion] {.inline.} =
     ## Check if there is an .version field in the spec
