@@ -539,7 +539,9 @@ proc processRemotePackage(pkg: string, verspec: VersionSpec, doLoad: bool = true
             if (let executableFile = packageLocation / executable.get(); executableFile.fileExists()):
                 createDir(BinFolder.fmt)
                 let executableDest = BinFolder.fmt / pkg
-                copyFile(executableFile, executableDest)
+                writeToFile(executableDest, """#!/usr/bin/env bash
+    arturo {executableFile}
+""".fmt)
                 setFilePermissions(executableDest, {fpUserRead, fpUserWrite, fpUserExec, fpGroupRead, fpGroupWrite, fpGroupExec, fpOthersRead, fpOthersWrite, fpOthersExec})
 
     try:
