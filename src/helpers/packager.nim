@@ -51,6 +51,8 @@ const
     SpecLatestUrl       = "https://{pkg}.pkgr.art/spec"
     SpecVersionUrl      = "https://{pkg}.pkgr.art/{version}/spec"
 
+    BinFolder           = PackageFolder / "bin"
+
     SpecFolder          = PackageFolder / "specs"
     SpecPackage         = SpecFolder / "{pkg}"
     SpecFile            = SpecPackage / "{version}.art"
@@ -528,6 +530,15 @@ proc processRemotePackage(pkg: string, verspec: VersionSpec, doLoad: bool = true
 
     if (let deps = spec.hasDependencies(); deps.isSome):
         verifyDependencies(deps.get())
+
+    if (let executable = spec.hasExecutable(); executable.isSome):
+        if (let localPackage = lookupLocalPackageVersion(pkg, verspec); localPackage.isSome):
+            let (packageLocation, _) = localPackage.get()
+            if (let executableFile = packageLocation / executable.get(); executableFile.fileExists()):
+                createDir(BinFolder.fmt)
+                let executableDest = (BinFolder / pkg).fmt
+                copyFile(executableFile, executableDest)
+                setFilePermissions(executableDest, {fpUserExec, fpGroupExec, fpOthersExec})
 
     ShowMessage "Installing package: {pkg} {version}".fmt
     try:
