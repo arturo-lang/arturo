@@ -537,7 +537,6 @@ proc processRemotePackage(pkg: string, verspec: VersionSpec, doLoad: bool = true
         if (let localPackage = lookupLocalPackageVersion(pkg, verspec); localPackage.isSome):
             let (packageLocation, _) = localPackage.get()
             if (let executableFile = packageLocation / executable.get(); executableFile.fileExists()):
-                ShowMessage "Installing executable".fmt
                 createDir(BinFolder.fmt)
                 let executableDest = BinFolder.fmt / pkg
                 copyFile(executableFile, executableDest)
