@@ -857,7 +857,6 @@ proc defineLibrary*() =
                     let unpackedBuffer = y.a[(leftItems)..(leftItems + diff)]
                     
                     let symbol = x.a[leftItems].a[0]
-                    echo unpackedBuffer
                     SetSym(symbol.s, newBlock(unpackedBuffer), safe=true)
 
                     # Right side
