@@ -22,7 +22,7 @@
 # Libraries
 #=======================================
 
-import algorithm, hashes, options
+import std/[algorithm, hashes, options, sequtils]
 
 import helpers/datasource
 when not defined(WEB):
@@ -30,6 +30,8 @@ when not defined(WEB):
     when not defined(MINI):
         import os, sequtils, sugar
         import helpers/packager
+
+import vm/values/printable
 
 import vm/lib
 import vm/[env, errors, eval, exec, parse]
@@ -817,12 +819,52 @@ proc defineLibrary*() =
         """:
             #=======================================================
             if xKind==Block:
-                if yKind==Block:
-                    for i,w in pairs(x.a):
-                        SetSym(w.s, y.a[i], safe=true)
+
+                if x.a.len > y.a.len:
+                    Error_OperationNotPermitted("You can't assign more values than available.")
+
+                let diff = y.a.len - x.a.len
+                var leftItems = 0
+                var blockFound = false
+                
+                for idx, el in x.a.pairs:
+                    if el.kind == Block:
+                        if el.a.len != 1:
+                            Error_OperationNotPermitted(
+                                "Unpacking slice supports only one assignment")
+                        blockFound = true
+                        leftItems = idx
+                        break
+
+                if not blockFound:
+                    if x.a.len > y.a.len:
+                        Error_OperationNotPermitted(
+                                "Missing values to unpack")
+                    if x.a.len < y.a.len:
+                        Error_OperationNotPermitted(
+                                "Missing assign variables to unpack")
+
+                    for idx, symbol in x.a.pairs:
+                        SetSym(symbol.s, y.a[idx], safe=true)
                 else:
-                    for w in items(x.a):
-                        SetSym(w.s, y, safe=true)
+
+                    # Left side
+                    for idx in 0..<leftItems:
+                        let symbol = x.a[idx]
+                        SetSym(symbol.s, y.a[idx], safe=true)
+
+                    # Unpack
+                    let unpackedBuffer = y.a[(leftItems)..(leftItems + diff)]
+                    
+                    let symbol = x.a[leftItems].a[0]
+                    echo unpackedBuffer
+                    SetSym(symbol.s, newBlock(unpackedBuffer), safe=true)
+
+                    # Right side
+                    for idx in leftItems..(x.a.high):
+                        let symbol = x.a[idx]
+                        SetSym(symbol.s, y.a[idx + diff], safe=true)
+
             else:
                 SetInPlace(y, safe=true)
 
