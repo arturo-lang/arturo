@@ -34,7 +34,7 @@ when not defined(WEB):
 import vm/values/printable
 
 import vm/lib
-import vm/[env, errors, eval, exec, parse]
+import vm/[errors, eval, exec, parse, runtime]
 
 #=======================================
 # Definitions
@@ -378,14 +378,14 @@ proc defineLibrary*() =
                     let (src, tp) = getSource(x.s)
 
                     if tp==FileData:
-                        addPath(x.s)
+                        pushFrame(x.s, fromFile=true)
 
                     let parsed = doParse(src, isFile=false)
                     if not parsed.isNil:
                         execUnscoped(parsed)
 
                     if tp==FileData:
-                        discard popPath()
+                        discardFrame()
                 
                 currentTime += 1
 
@@ -594,7 +594,12 @@ proc defineLibrary*() =
                     x.a
                 else: @[x]
 
-            push(newFunctionFromDefinition(argBlock, y, imports, exports, memoize, inline))
+            var inPath: ref string = nil
+            if (let currentF = currentFrame(); currentF != entryFrame()):
+                new(inPath)
+                inPath[] = currentF.path
+
+            push(newFunctionFromDefinition(argBlock, y, imports, exports, memoize, inline, inPath))
 
     builtin "if",
         alias       = unaliased, 
@@ -757,7 +762,7 @@ proc defineLibrary*() =
                         if not src.fileExists():
                             Error_PackageNotValid(pkg)
 
-                        addPath(src)
+                        pushFrame(src, fromFile=true)
 
                         if not lean:
                             let parsed = doParse(src, isFile=true)
@@ -770,7 +775,7 @@ proc defineLibrary*() =
                             else:
                                 push(newDictionary(got))
 
-                        discard popPath()              
+                        discardFrame()              
                     else:
                         Error_PackageNotFound(pkg)
 
@@ -929,7 +934,12 @@ proc defineLibrary*() =
                     x.a
                 else: @[x]
 
-            push(newMethodFromDefinition(argBlock, y, isDistinct))
+            var inPath: ref string = nil
+            if (let currentF = currentFrame(); currentF != entryFrame()):
+                new(inPath)
+                inPath[] = currentF.path
+
+            push(newMethodFromDefinition(argBlock, y, isDistinct, inPath))
 
     builtin "new",
         alias       = unaliased, 

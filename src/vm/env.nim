@@ -42,7 +42,6 @@ when not defined(WEB):
 #=======================================
 
 var 
-    PathStack*  {.threadvar.}: seq[string]      ## The main path stack
     HomeDir*    : string                        ## User's home directory
     TmpDir*     : string                        ## User's temp directory
 
@@ -163,23 +162,6 @@ proc getScriptInfo*(): Value =
 # Methods
 #=======================================
 
-proc entryPath*(): string =
-    ## get initial script path
-    PathStack[0]
-
-proc currentPath*(): string =
-    ## get current path
-    PathStack[^1]
-
-proc addPath*(newPath: string) =
-    ## add given path to path stack
-    var (dir, _, _) = splitFile(newPath)
-    PathStack.add(dir)
-
-proc popPath*(): string =
-    ## pop last path from path stack
-    PathStack.pop()
-
 proc initEnv*(arguments: seq[string], version: string, build: string, script: Value) =
     ## initialize environment with given arguments
     Arguments = newStringBlock(arguments)
@@ -191,7 +173,7 @@ proc initEnv*(arguments: seq[string], version: string, build: string, script: Va
     else:
         ScriptInfo = newDictionary()
 
-    PathStack = @[]
+    # PathStack = @[]
     when not defined(WEB):
         HomeDir = getHomeDir()
         TmpDir  = getTempDir()
