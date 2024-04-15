@@ -51,6 +51,8 @@ const
     SpecLatestUrl       = "https://{pkg}.pkgr.art/spec"
     SpecVersionUrl      = "https://{pkg}.pkgr.art/{version}/spec"
 
+    BinFolder           = PackageFolder / "bin"
+
     SpecFolder          = PackageFolder / "specs"
     SpecPackage         = SpecFolder / "{pkg}"
     SpecFile            = SpecPackage / "{version}.art"
@@ -116,19 +118,26 @@ template WillShowError(): untyped =
 # Helpers
 #=======================================
 
-proc hasDependencies(item: ValueDict): Option[ValueArray] {.inline.} =
-    ## Check if there is a .depends field in the spec
-    ## and return its content if it's properly set
-
-    if (item.hasKey("depends") and item["depends"].kind == Block):
-        return some(item["depends"].a)
-
 proc hasEntry(item: ValueDict): Option[string] {.inline.} =
     ## Check if there is an .entry field in the spec
     ## and return it if it's properly set
 
     if (item.hasKey("entry") and item["entry"].kind in {String,Literal}):
         return some(item["entry"].s)
+
+proc hasExecutable(item: ValueDict): Option[string] {.inline.} =
+    ## Check if there is an .executable field in the spec
+    ## and return it if it's properly set
+
+    if (item.hasKey("executable") and item["executable"].kind in {String,Literal}):
+        return some(item["executable"].s)
+
+proc hasDependencies(item: ValueDict): Option[ValueArray] {.inline.} =
+    ## Check if there is a .depends field in the spec
+    ## and return its content if it's properly set
+
+    if (item.hasKey("depends") and item["depends"].kind == Block):
+        return some(item["depends"].a)
 
 proc hasVersion(item: ValueDict): Option[VVersion] {.inline.} =
     ## Check if there is an .version field in the spec
@@ -236,6 +245,10 @@ proc removeLocalPackage(pkg: string, version: VVersion): bool =
 
         let specPath = SpecPackage.fmt
         removeDir(specPath)
+
+        let executableDest = BinFolder.fmt / pkg
+        discard tryRemoveFile(executableDest)
+    
     ShowSuccess()
 
     return true
@@ -523,6 +536,16 @@ proc processRemotePackage(pkg: string, verspec: VersionSpec, doLoad: bool = true
         verifyDependencies(deps.get())
 
     ShowMessage "Installing package: {pkg} {version}".fmt
+
+    if (let executable = spec.hasExecutable(); executable.isSome):
+        if (let localPackage = lookupLocalPackageVersion(pkg, verspec); localPackage.isSome):
+            let (packageLocation, _) = localPackage.get()
+            if (let executableFile = packageLocation / executable.get(); executableFile.fileExists()):
+                createDir(BinFolder.fmt)
+                let executableDest = BinFolder.fmt / pkg
+                writeToFile(executableDest, "#!/usr/bin/env bash\narturo {executableFile}".fmt)
+                setFilePermissions(executableDest, {fpUserRead, fpUserWrite, fpUserExec, fpGroupRead, fpGroupWrite, fpGroupExec, fpOthersRead, fpOthersWrite, fpOthersExec})
+
     try:
         discard waitFor (newAsyncHttpClient().getContent("https://pkgr.art/download.php?pkg={pkg}&ver={version}&mgk=18966".fmt))
     except Exception:

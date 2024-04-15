@@ -48,6 +48,7 @@ import sequtils, strformat, strutils, sugar, std/with
 import helpers/strings
 import helpers/terminal
 
+import vm/runtime
 import vm/values/custom/verror
 
 #=======================================
@@ -65,7 +66,6 @@ type
 
 const
     MaxIntSupported     = $(sizeof(int) * 8)
-    ReplContext         = " <repl> "
 
     UseUnicodeChars     = true
 
@@ -81,10 +81,12 @@ const
 #=======================================
 
 var
-    CurrentContext* : string    = ReplContext
-    CurrentPath*    : string    = ""
+    # CurrentContext* : string    = ReplContext
+    # CurrentPath*    : string    = ""
     CurrentLine*    : int       = 0
     ExecStack*      : seq[int]  = @[]
+
+    IsRepl*         : bool = false
 
 #=======================================
 # Helpers
@@ -92,13 +94,9 @@ var
 
 # Check environment
 
-proc isRepl(): bool =
-    return CurrentContext == ReplContext
-
 proc getCurrentContext(e: VError): string =
     if e.kind == CmdlineErr: return ""
-
-    if CurrentContext == ReplContext: return CurrentContext
+    if IsRepl: return " <repl> "
     return " <script> "
 
 proc getMaxWidth(): int =
@@ -183,9 +181,9 @@ proc printCodePreview(e: VError) =
     when not defined(NOERRORLINES):
         if e.context.file == "":
             e.context.line = CurrentLine
-            e.context.file = CurrentPath
+            e.context.file = postCurrentFrame().path
 
-        if (not isRepl()) and (e.kind != CmdlineErr) and (e.kind != ProgramErr) :
+        if (not IsRepl) and (e.kind != CmdlineErr) and (e.kind != ProgramErr) :
             echo ""
             let codeLines = readFile(e.context.file).splitLines()
             const linesBeforeAfter = 2
@@ -229,7 +227,7 @@ proc showError*(e: VError) =
         printCodePreview()
         printHint()
     
-    if (not isRepl()) or e.hint=="":
+    if (not IsRepl) or e.hint=="":
         echo ""
 
 func panic(error: VError) =
