@@ -27,7 +27,7 @@ when not defined(WEB):
 import helpers/terminal as TerminalHelper
 
 import vm/lib
-import vm/[env, errors, eval, exec]
+import vm/[errors, eval, exec, runtime]
 
 #=======================================
 # Definitions
@@ -343,7 +343,7 @@ proc defineLibrary*() =
             ]
         """:
             #=======================================================
-            push(newLogical(PathStack.len == 1))
+            push(newLogical(emptyFrameStack()))
 
 #=======================================
 # Add Library
