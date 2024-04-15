@@ -26,8 +26,8 @@ when not defined(WEB):
     import helpers/url
 
 import vm/lib
-when not defined(WEB):
-    import vm/env
+import vm/runtime
+
 when defined(SAFE):
     import vm/errors
 
@@ -301,7 +301,7 @@ proc defineLibrary*() =
             ; /Users/admin/Desktop/test.txt
             """:
                 #=======================================================
-                push(newString(joinPath(env.currentPath(),x.s)))
+                push(newString(joinPath(currentFrame().folder, x.s)))
 
     #----------------------------
     # Predicates

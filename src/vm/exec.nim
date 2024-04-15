@@ -31,6 +31,7 @@ import vm/[
     globals, 
     parse, 
     profiler, 
+    runtime,
     stack, 
     values/value
 ]
@@ -331,6 +332,11 @@ proc execFunction*(fun: Value, fid: Hash) =
 
     let argsL = len(fun.params)
 
+    when not defined(WEB):
+        var fpath: ref string
+        if (fpath = fun.info.path; not fpath.isNil()):
+            pushFrame(fpath[], fromFile=true)
+
     if fun.memoize:
         memoizedParams = newBlock()
 
@@ -365,6 +371,10 @@ proc execFunction*(fun: Value, fid: Hash) =
         discard
 
     finally:
+        when not defined(WEB):
+            if not fpath.isNil():
+                discardFrame()
+
         if fun.memoize:
             setMemoized(fid, memoizedParams, stack.peek(0))
 
@@ -388,6 +398,11 @@ proc execFunctionInline*(fun: Value, fid: Hash) =
     var memoizedParams: Value = nil
  
     let argsL = len(fun.params)
+
+    when not defined(WEB):
+        var fpath: ref string
+        if (fpath = fun.info.path; not fpath.isNil()):
+            pushFrame(fpath[], fromFile=true)
 
     if fun.memoize:
         memoizedParams = newBlock()
@@ -420,6 +435,10 @@ proc execFunctionInline*(fun: Value, fid: Hash) =
         discard
 
     finally:
+        when not defined(WEB):
+            if not fpath.isNil():
+                discardFrame()
+
         if fun.memoize:
             setMemoized(fid, memoizedParams, stack.peek(0))
 
@@ -438,6 +457,11 @@ proc execMethod*(meth: Value, fid: Hash) =
 
     savedSyms = Syms
 
+    when not defined(WEB):
+        var fpath: ref string
+        if (fpath = meth.info.path; not fpath.isNil()):
+            pushFrame(fpath[], fromFile=true)
+
     for arg in meth.mparams:
         # pop argument and set it
         SetSym(arg, stack.pop())
@@ -453,6 +477,10 @@ proc execMethod*(meth: Value, fid: Hash) =
 
     finally:
         Syms = savedSyms
+
+        when not defined(WEB):
+            if not fpath.isNil():
+                discardFrame()
 
 proc ExecLoop*(cnst: ValueArray, it: VBinary) =
     ## The main execution loop.
