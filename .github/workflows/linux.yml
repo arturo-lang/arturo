@@ -124,5 +124,5 @@ jobs:
         if: matrix.arch == 'amd64' && (matrix.version == 'full')
         run: |
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
-          ./bin/arturo --package install unitt 1.0.0
+          ./bin/arturo --package install unitt 1.1.2
           ./bin/arturo tools/unitt-tester.art
