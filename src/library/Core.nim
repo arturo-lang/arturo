@@ -834,12 +834,14 @@ proc defineLibrary*() =
                 
                 for idx, el in x.a.pairs:
                     if el.kind == Block:
+                        if blockFound:
+                            Error_OperationNotPermitted(
+                                "Can't unpack multiple slices.")
                         if el.a.len != 1:
                             Error_OperationNotPermitted(
                                 "Unpacking slice supports only one assignment")
                         blockFound = true
                         leftItems = idx
-                        break
 
                 if not blockFound:
                     if x.a.len > y.a.len:
