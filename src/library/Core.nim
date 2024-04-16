@@ -826,6 +826,8 @@ proc defineLibrary*() =
             if xKind==Block:
 
                 if x.a.len > y.a.len:
+                    # Example: [a b]: [1]
+                    # Example: [a [b]]: [1]
                     Error_OperationNotPermitted("You can't assign more values than available.")
 
                 let diff = y.a.len - x.a.len
@@ -835,9 +837,11 @@ proc defineLibrary*() =
                 for idx, el in x.a.pairs:
                     if el.kind == Block:
                         if blockFound:
+                            # Example: [[a] [b]]: [1 2]
                             Error_OperationNotPermitted(
                                 "Can't unpack multiple slices.")
                         if el.a.len != 1:
+                            # Example: [[a b]]: [1 2]
                             Error_OperationNotPermitted(
                                 "Unpacking slice supports only one assignment")
                         blockFound = true
@@ -845,9 +849,11 @@ proc defineLibrary*() =
 
                 if not blockFound:
                     if x.a.len > y.a.len:
+                        # Example: [a b]: [1]
                         Error_OperationNotPermitted(
                                 "Missing values to unpack")
                     if x.a.len < y.a.len:
+                        # Example: [a]: [1 2]
                         Error_OperationNotPermitted(
                                 "Missing assign variables to unpack")
 
