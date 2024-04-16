@@ -784,6 +784,10 @@ proc defineLibrary*() =
                 if multiple:
                     push(newBlock(ret))
 
+
+    # TOOD(Core\let) Update thrown errors
+    # Basically those errors are placeholders, and need to be replaced very soon.
+    # Related: https://github.com/arturo-lang/arturo/pull/1601#issuecomment-2059027876
     builtin "let",
         alias       = colon, 
         op          = opNop,
@@ -815,6 +819,13 @@ proc defineLibrary*() =
             print a                 ; 5
             print b                 ; 5
             print c                 ; 5
+            ..........
+            ; unpacking slices and multiple assignment
+            [a [b] d c]: [1 2 3 4 5]
+            print a                 ; 1
+            print b                 ; [2 3]
+            print c                 ; 4
+            print d                 ; 5
             ..........
             ; tuple unpacking
             divmod: function [x,y][
