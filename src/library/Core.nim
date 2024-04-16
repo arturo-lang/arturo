@@ -834,7 +834,7 @@ proc defineLibrary*() =
             [d,m]: divmod 10 3      ; d: 3, m: 1
         """:
             #=======================================================
-            if xKind==Block:
+            if xKind==Block and yKind==Block:
 
                 if x.a.len > y.a.len:
                     # Example: [a b]: [1]
