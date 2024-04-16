@@ -828,7 +828,7 @@ proc defineLibrary*() =
                 if x.a.len > y.a.len:
                     # Example: [a b]: [1]
                     # Example: [a [b]]: [1]
-                    Error_OperationNotPermitted("You can't assign more values than available.")
+                    Error_OperationNotPermitted("Missing values to unpack")
 
                 let diff = y.a.len - x.a.len
                 var leftItems = 0
@@ -848,10 +848,6 @@ proc defineLibrary*() =
                         leftItems = idx
 
                 if not blockFound:
-                    if x.a.len > y.a.len:
-                        # Example: [a b]: [1]
-                        Error_OperationNotPermitted(
-                                "Missing values to unpack")
                     if x.a.len < y.a.len:
                         # Example: [a]: [1 2]
                         Error_OperationNotPermitted(
