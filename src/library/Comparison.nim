@@ -69,6 +69,16 @@ proc defineLibrary*() =
     # Predicates
     #----------------------------
 
+    # TODO(Comparison\between?): deprecate the support for some types
+    # Right now this uses a generic algorithm and :any as entry, but does it even makes sense?
+    #
+    # ```art
+    # between? #[user: "Rick"] #[user: "Rick"] #[user: "Rick"]
+    # ``` 
+    #
+    # The above code returns true, but what is the sense of seeing if a dictionary is between other two.
+    # I think this should be good to limit what types can be between other ones.
+    # labels: library, open-discussion
     builtin "between?",
         alias       = thickarrowboth, 
         op          = opNop,
