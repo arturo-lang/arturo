@@ -84,6 +84,8 @@ jobs:
         run: |
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
           ./bin/arturo tools/tester.art
+          ./bin/arturo tools/unitt-tester.art
+
 
       - name: Run unit tests (mini)
         if: matrix.version == 'mini'
@@ -91,6 +93,7 @@ jobs:
         run: |
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
           ./bin/arturo tools/tester.art
+
 
       # curl -L https://arturo-lang.s3.amazonaws.com/libcrypto-1_1-x64.dll -o libcrypto-1_1-x64.dll
       # curl -L https://arturo-lang.s3.amazonaws.com/libssl-1_1-x64.dll -o libssl-1_1-x64.dll
