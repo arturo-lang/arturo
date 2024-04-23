@@ -179,10 +179,14 @@ proc printErrorMessage(e: VError) =
 
 proc printCodePreview(e: VError) =
     when not defined(NOERRORLINES):
+        debugEcho "in printCodePreview"
         if (not IsRepl) and (e.kind != CmdlineErr) and (e.kind != ProgramErr) :
             if e.context.file == "":
                 e.context.line = CurrentLine
-                e.context.file = postCurrentFrame().path
+                if (let pcf = postCurrentFrame(); not pcf.isNil):
+                    e.context.file = pcf.path
+                else:
+                    e.context.file = CurrentFrame().path
                 
             echo ""
             let codeLines = readFile(e.context.file).splitLines()
