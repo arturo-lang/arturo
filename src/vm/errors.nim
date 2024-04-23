@@ -186,7 +186,7 @@ proc printCodePreview(e: VError) =
                 if (let pcf = postCurrentFrame(); not pcf.isNil):
                     e.context.file = pcf.path
                 else:
-                    e.context.file = CurrentFrame().path
+                    e.context.file = currentFrame().path
                 
             echo ""
             let codeLines = readFile(e.context.file).splitLines()
