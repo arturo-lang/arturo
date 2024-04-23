@@ -401,6 +401,18 @@ proc evaluateBlock*(blok: Node, consts: var ValueArray, it: var VBinary, isDicti
         lastOpStore = -1
         it.addByte(op)
 
+    # TODO(Errors) Line number messed up at start of block
+    #  let's say we do 
+    #  ```
+    #  do [
+    #      print 3/0
+    #
+    #  ]
+    #  ```
+    #  The line of the error will be messed up. This wouldn't happen if it was
+    #  the second command within that block. (And I have no idea / don't remember)
+    #  why this could be happening... (Nor is it necessarily related to the evaluator)
+    #  labels: error handling, bug, evaluation, ast
     template addEol(n: untyped): untyped =
         it.addOpWithNumber(opEol, n, hasShortcut=false)
 
