@@ -182,12 +182,6 @@ proc printCodePreview(e: VError) =
         if (not IsRepl) and (e.kind != CmdlineErr) and (e.kind != ProgramErr) :
             if e.context.file == "":
                 e.context.line = CurrentLine
-                for i in 0..<FSP:
-                    debugEcho "fsp = " & $(i)
-                    if FrameStack[i].isNil:
-                        debugEcho "\t! is nil"
-                    else:
-                        debugEcho "\t" & $(FrameStack[i][])
                 if (let pcf = postCurrentFrame(); not pcf.isNil):
                     e.context.file = pcf.path
                 else:
