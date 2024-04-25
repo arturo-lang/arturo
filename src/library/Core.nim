@@ -997,6 +997,21 @@ proc defineLibrary*() =
             if condition: 
                 execUnscoped(y)
 
+    builtin "unset",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "undefine given symbol, if already defined",
+        args        = {
+            "symbol"    : {String,Literal}
+        },
+        attrs       = NoAttrs,
+        returns     = {Nothing},
+        example     = """
+        """:
+            #=======================================================
+            discard
+
     builtin "unstack",
         alias       = unaliased, 
         op          = opNop,
