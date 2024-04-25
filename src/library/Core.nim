@@ -1010,7 +1010,7 @@ proc defineLibrary*() =
         example     = """
         """:
             #=======================================================
-            discard
+            UnsetSym(x.s)
 
     builtin "unstack",
         alias       = unaliased, 
