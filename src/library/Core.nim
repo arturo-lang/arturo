@@ -1267,6 +1267,25 @@ proc defineLibrary*() =
 
             push(newLogical(condition))
 
+    builtin "set?",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "check if given variable is defined",
+        args        = {
+            "symbol"    : {String,Literal}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            boom: 12
+            print set? 'boom          ; true
+            
+            print set? 'zoom          ; false
+        """:
+            #=======================================================
+            push(newLogical(SymExists(x.s)))
+
     builtin "unless?",
         alias       = unaliased, 
         op          = opUnlessE,

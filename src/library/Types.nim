@@ -1174,25 +1174,6 @@ proc defineLibrary*() =
             #=======================================================
             push(newLogical(xKind==Regex))
 
-    builtin "set?",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "check if given variable is defined",
-        args        = {
-            "symbol"    : {String,Literal}
-        },
-        attrs       = NoAttrs,
-        returns     = {Logical},
-        example     = """
-            boom: 12
-            print set? 'boom          ; true
-            
-            print set? 'zoom          ; false
-        """:
-            #=======================================================
-            push(newLogical(SymExists(x.s)))
-
     builtin "socket?",
         alias       = unaliased, 
         op          = opNop,
