@@ -1008,6 +1008,13 @@ proc defineLibrary*() =
         attrs       = NoAttrs,
         returns     = {Nothing},
         example     = """
+            a: 2
+            print a
+            ; 2
+
+            unset 'a
+            print a
+            ; will throw an error
         """:
             #=======================================================
             UnsetSym(x.s)
