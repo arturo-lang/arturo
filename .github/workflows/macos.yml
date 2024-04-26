@@ -89,7 +89,7 @@ jobs:
         run: |
           echo "./bin" >> $GITHUB_PATH
           ./build.nims build --mode ${{ matrix.version }} --arch ${{ matrix.arch }} --log
-          
+           
       - name: Upload Artifacts
         uses: 'actions/upload-artifact@v2'
         with:
