@@ -977,7 +977,7 @@ proc copyValue*(v: Value): Value {.inline.} =
                 else:
                     result = newBuiltin(v.info.descr, v.info.module, 0, v.arity, v.info.args, v.info.attrs, v.info.returns, "", v.op, v.action)
         of Method:
-            result = newMethod(v.mparams, v.mmain, v.mdistinct, injectThis=false)
+            result = newMethod(v.mparams, v.mmain, v.mdistinct, v.mpublic, injectThis=false)
             if not v.info.isNil:
                 result.info = ValueInfo()
                 result.info[] = v.info[]
