@@ -67,19 +67,19 @@ jobs:
           path: ~/.nimble
           key: ${{ matrix.os }}-nimble-${{ hashFiles('*.nimble') }}
 
-      - name: Setup nim (M1)
-        if: matrix.arch == 'arm64'
+      - name: Setup nim
+        #if: matrix.arch == 'arm64'
         run: |
           brew install nim
           brew install pcre
-          brew install mpfr
+        #  brew install mpfr
  
-      - name: Setup nim (amd64)
-        if: matrix.arch == 'amd64'
-        uses: jiro4989/setup-nim-action@v1
-        with:
-          nim-version: '2.0.0'
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+      # - name: Setup nim (amd64)
+      #   if: matrix.arch == 'amd64'
+      #   uses: jiro4989/setup-nim-action@v1
+      #   with:
+      #     nim-version: '2.0.0'
+      #     repo-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Verify dependecies
         run: |
