@@ -1261,6 +1261,7 @@ func hash*(v: Value): Hash {.inline.} =
             result = result !& hash(v.mparams)
             result = result !& hash(v.mmain)
             result = result !& hash(v.mdistinct)
+            result = result !& hash(v.mpublic)
 
         of Database:
             when not defined(NOSQLITE):
