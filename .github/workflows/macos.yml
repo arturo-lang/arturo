@@ -80,7 +80,7 @@ jobs:
         #if: matrix.arch == 'amd64'
         uses: jiro4989/setup-nim-action@v1
         with:
-          nim-version: '2.x'
+          nim-version: '2.0.0'
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Verify dependecies
