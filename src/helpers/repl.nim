@@ -53,7 +53,7 @@ when not defined(WEB):
         completions = completionsArray
         hints = hintsTable
 
-        proc completionsCback(buf: constChar; lc: ptr LinenoiseCompletions, userdata: pointer) {.cdecl,nimcall.} =
+        proc completionsCback(buf: constChar; lc: ptr LinenoiseCompletions, userdata: pointer) {.cdecl.} =
             var token = $(buf)
             var copied = strip($(buf))
             let tokenParts = splitWhitespace(token)
