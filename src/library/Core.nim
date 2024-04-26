@@ -997,6 +997,28 @@ proc defineLibrary*() =
             if condition: 
                 execUnscoped(y)
 
+    builtin "unset",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "undefine given symbol, if already defined",
+        args        = {
+            "symbol"    : {String,Literal}
+        },
+        attrs       = NoAttrs,
+        returns     = {Nothing},
+        example     = """
+            a: 2
+            print a
+            ; 2
+
+            unset 'a
+            print a
+            ; will throw an error
+        """:
+            #=======================================================
+            UnsetSym(x.s)
+
     builtin "unstack",
         alias       = unaliased, 
         op          = opNop,
@@ -1244,6 +1266,25 @@ proc defineLibrary*() =
                 execUnscoped(y)
 
             push(newLogical(condition))
+
+    builtin "set?",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "check if given variable is defined",
+        args        = {
+            "symbol"    : {String,Literal}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            boom: 12
+            print set? 'boom          ; true
+            
+            print set? 'zoom          ; false
+        """:
+            #=======================================================
+            push(newLogical(SymExists(x.s)))
 
     builtin "unless?",
         alias       = unaliased, 
