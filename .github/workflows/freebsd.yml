@@ -46,6 +46,7 @@ jobs:
           prepare: |
             pkg update
             pkg install -y wget nim bash 
+            pkg info --list-file nim
           #gmp mpfr databases/sqlite3
           run: |
             ./build.nims --mode ${{ matrix.version }} --log
