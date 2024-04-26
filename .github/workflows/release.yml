@@ -21,7 +21,7 @@ jobs:
       matrix:
         os:
           - ubuntu-20.04
-          - macos-latest
+          - macos-12
           - macos-14
         version:
           - mini
@@ -38,11 +38,11 @@ jobs:
             arch: arm
           - version: full
             arch: arm64
-          - os: macos-latest
+          - os: macos-12
             arch: x86
-          - os: macos-latest
+          - os: macos-12
             arch: arm
-          - os: macos-latest
+          - os: macos-12
             arch: arm64
           - os: macos-14
             arch: amd64
@@ -115,7 +115,7 @@ jobs:
           tar czf ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.version}}-${{matrix.arch}}-linux.tar.gz ${{ env.app-name }} README.md LICENSE
 
       - name: Create artifact (macOS)
-        if: matrix.os == 'macos-latest'
+        if: matrix.os == 'macos-12'
         run: |
           install -m 0755 ./bin/${{ env.app-name }} .
           tar czf ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.version}}-${{matrix.arch}}-macos.tar.gz ${{ env.app-name }} README.md LICENSE
@@ -128,7 +128,7 @@ jobs:
           path: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.version}}-${{matrix.arch}}-linux.tar.gz
 
       - name: Upload Artifact (macOS)
-        if: matrix.os == 'macos-latest' || matrix.os == 'macos-14'
+        if: matrix.os == 'macos-12' || matrix.os == 'macos-14'
         uses: 'actions/upload-artifact@v1'
         with:
           name: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.version}}-${{matrix.arch}}-macos.tar.gz
