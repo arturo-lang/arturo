@@ -71,6 +71,11 @@ jobs:
         run: |
           brew install nim
           brew install pcre
+
+      - name: Install dependencies
+        if: matrix.version == 'full'
+        run: |
+          brew install gmp
           brew install mpfr
  
       # - name: Setup nim (amd64)
