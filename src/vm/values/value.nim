@@ -567,7 +567,7 @@ func newFunction*(params: seq[string], main: Value, imports: Value = nil, export
         )
     )
 
-func newMethod*(params: seq[string], main: Value, isDistinct: bool = false, injectThis: static bool = true): Value {.inline.} =
+func newMethod*(params: seq[string], main: Value, isDistinct: bool = false, isPublic: bool = false, injectThis: static bool = true): Value {.inline.} =
     Value(
         kind: Method,
         info: nil,
@@ -576,7 +576,8 @@ func newMethod*(params: seq[string], main: Value, isDistinct: bool = false, inje
             mparams: (when injectThis: "this" & params else: params),
             mmain: main,
             mbcode: nil,
-            mdistinct: isDistinct
+            mdistinct: isDistinct,
+            mpublic: isPublic
         )
     )
 
@@ -686,7 +687,7 @@ func newFunctionFromDefinition*(params: ValueArray, main: Value, imports: Value 
 #  could we possibly "merge" it with `newFunctionFromDefinition` or 
 #  at least create e.g. a template?
 #  labels: values, enhancement, cleanup
-func newMethodFromDefinition*(params: ValueArray, main: Value, isDistinct: bool = false, inPath: ref string = nil): Value {.inline.} =
+func newMethodFromDefinition*(params: ValueArray, main: Value, isDistinct: bool = false, isPublic: bool = false, inPath: ref string = nil): Value {.inline.} =
     ## create Method value with given parameters,
     ## generate type checkers, and process info if necessary
 
@@ -727,14 +728,14 @@ func newMethodFromDefinition*(params: ValueArray, main: Value, isDistinct: bool 
         var mainBody: ValueArray = main.a
         mainBody.insert(body)
 
-        result = newMethod(args,newBlock(mainBody),isDistinct)
+        result = newMethod(args,newBlock(mainBody),isDistinct,isPublic)
     else:
         if params.len > 0:
             for arg in params:
                 argTypes[arg.s] = {Any}
         else:
             argTypes[""] = {Nothing}
-        result = newMethod(params.map((w)=>w.s),main,isDistinct)
+        result = newMethod(params.map((w)=>w.s),main,isDistinct,isPublic)
 
     result.info = ValueInfo(kind: Method)
 
@@ -976,7 +977,7 @@ proc copyValue*(v: Value): Value {.inline.} =
                 else:
                     result = newBuiltin(v.info.descr, v.info.module, 0, v.arity, v.info.args, v.info.attrs, v.info.returns, "", v.op, v.action)
         of Method:
-            result = newMethod(v.mparams, v.mmain, v.mdistinct, injectThis=false)
+            result = newMethod(v.mparams, v.mmain, v.mdistinct, v.mpublic, injectThis=false)
             if not v.info.isNil:
                 result.info = ValueInfo()
                 result.info[] = v.info[]
@@ -1260,6 +1261,7 @@ func hash*(v: Value): Hash {.inline.} =
             result = result !& hash(v.mparams)
             result = result !& hash(v.mmain)
             result = result !& hash(v.mdistinct)
+            result = result !& hash(v.mpublic)
 
         of Database:
             when not defined(NOSQLITE):
