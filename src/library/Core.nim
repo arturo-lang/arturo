@@ -841,7 +841,8 @@ proc defineLibrary*() =
             "body"      : {Block}
         },
         attrs       = {
-            "distinct"  : ({Logical},"shouldn't be treated as a magic method")
+            "distinct"  : ({Logical},"shouldn't be treated as a magic method"),
+            "public"    : ({Logical},"make method public (relevant only in modules!)")
         },
         returns     = {Method},
         example     = """
