@@ -23,7 +23,7 @@ defaults:
 jobs:  
   build:
     name: Build & Test
-    runs-on: macos-12
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         os:
