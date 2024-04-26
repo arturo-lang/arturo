@@ -49,6 +49,7 @@ jobs:
             pkg info --list-file nim
           #gmp mpfr databases/sqlite3
           run: |
+            export PATH="/usr/local/nim/bin/:$PATH"
             ./build.nims --mode ${{ matrix.version }} --log
             export PATH="$HOME/.arturo/bin:$PATH"
             arturo tools/tester.art
