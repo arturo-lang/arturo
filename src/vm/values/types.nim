@@ -238,6 +238,7 @@ type
         mmain*      : Value
         mbcode*     : Value
         mdistinct*  : bool
+        mpublic*    : bool
 
     VStore* = ref object
         data*       : ValueDict     # the actual data
@@ -442,6 +443,7 @@ makeAccessor(methType, mparams)
 makeAccessor(methType, mmain)
 makeAccessor(methType, mbcode)
 makeAccessor(methType, mdistinct)
+makeAccessor(methType, mpublic)
 
 #=======================================
 # Helpers
