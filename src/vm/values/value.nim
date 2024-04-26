@@ -687,7 +687,7 @@ func newFunctionFromDefinition*(params: ValueArray, main: Value, imports: Value 
 #  could we possibly "merge" it with `newFunctionFromDefinition` or 
 #  at least create e.g. a template?
 #  labels: values, enhancement, cleanup
-func newMethodFromDefinition*(params: ValueArray, main: Value, isDistinct: bool = false, inPath: ref string = nil): Value {.inline.} =
+func newMethodFromDefinition*(params: ValueArray, main: Value, isDistinct: bool = false, isPublic: bool = false, inPath: ref string = nil): Value {.inline.} =
     ## create Method value with given parameters,
     ## generate type checkers, and process info if necessary
 
