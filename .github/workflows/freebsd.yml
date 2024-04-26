@@ -45,7 +45,8 @@ jobs:
           usesh: true
           prepare: |
             pkg update
-            pkg install -y wget nim gmp mpfr bash databases/sqlite3
+            pkg install -y wget nim bash 
+          #gmp mpfr databases/sqlite3
           run: |
             ./build.nims --mode ${{ matrix.version }} --log
             export PATH="$HOME/.arturo/bin:$PATH"
