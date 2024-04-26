@@ -67,17 +67,16 @@ jobs:
           path: ~/.nimble
           key: ${{ matrix.os }}-nimble-${{ hashFiles('*.nimble') }}
 
-      # - name: Setup nim
-      #   #if: matrix.arch == 'arm64'
-      #   run: |
-      #     brew install nim
-      #     brew install gmp
-      #     brew install pcre
-      #     EXPORT "CFLAGS=-I/usr/local/include -L/usr/local/lib" 
-      #   #  brew install mpfr
+      - name: Setup nim
+        if: matrix.arch == 'arm64'
+        run: |
+          brew install nim
+          brew install gmp
+          brew install pcre
+          brew install mpfr
  
       - name: Setup nim (amd64)
-        #if: matrix.arch == 'amd64'
+        if: matrix.arch == 'amd64'
         uses: jiro4989/setup-nim-action@v1
         with:
           nim-version: '2.0.4'
