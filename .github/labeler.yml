@@ -12,6 +12,8 @@ ci:
   - .github/workflows/freebsd.yml
   - .github/workflows/linux.yml
   - .github/workflows/macos.yml
+  - .github/workflows/netbsd.yml
+  - .github/workflows/openbsd.yml
   - .github/workflows/web.yml
   - .github/workflows/windows.yml
 
@@ -33,6 +35,9 @@ evaluator:
 execution:
   - src/vm/exec.nim
 
+freebsd:
+  - .github/workflows/freebsd.yml
+
 helpers:
   - src/helpers/*
   
@@ -42,6 +47,12 @@ installer:
 
 library:
   - src/library/*
+
+netbsd:
+  - .github/workflows/netbsd.yml
+
+openbsd:
+  - .github/workflows/openbsd.yml
 
 package manager:
   - src/vm/packager.nim
