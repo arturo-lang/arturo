@@ -567,7 +567,7 @@ func newFunction*(params: seq[string], main: Value, imports: Value = nil, export
         )
     )
 
-func newMethod*(params: seq[string], main: Value, isDistinct: bool = false, injectThis: static bool = true): Value {.inline.} =
+func newMethod*(params: seq[string], main: Value, isDistinct: bool = false, isPublic: bool = false, injectThis: static bool = true): Value {.inline.} =
     Value(
         kind: Method,
         info: nil,
@@ -576,7 +576,8 @@ func newMethod*(params: seq[string], main: Value, isDistinct: bool = false, inje
             mparams: (when injectThis: "this" & params else: params),
             mmain: main,
             mbcode: nil,
-            mdistinct: isDistinct
+            mdistinct: isDistinct,
+            mpublic: isPublic
         )
     )
 
