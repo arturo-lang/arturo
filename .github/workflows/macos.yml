@@ -71,7 +71,9 @@ jobs:
         #if: matrix.arch == 'arm64'
         run: |
           brew install nim
+          brew install gmp
           brew install pcre
+          EXPORT "CFLAGS=-I/usr/local/include -L/usr/local/lib" 
         #  brew install mpfr
  
       # - name: Setup nim (amd64)
