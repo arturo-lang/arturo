@@ -728,14 +728,14 @@ func newMethodFromDefinition*(params: ValueArray, main: Value, isDistinct: bool 
         var mainBody: ValueArray = main.a
         mainBody.insert(body)
 
-        result = newMethod(args,newBlock(mainBody),isDistinct)
+        result = newMethod(args,newBlock(mainBody),isDistinct,isPublic)
     else:
         if params.len > 0:
             for arg in params:
                 argTypes[arg.s] = {Any}
         else:
             argTypes[""] = {Nothing}
-        result = newMethod(params.map((w)=>w.s),main,isDistinct)
+        result = newMethod(params.map((w)=>w.s),main,isDistinct,isPublic)
 
     result.info = ValueInfo(kind: Method)
 
