@@ -887,6 +887,7 @@ proc defineLibrary*() =
         """:
             #=======================================================
             let isDistinct = hadAttr("distinct")
+            let isPublic = hadAttr("public")
             
             let argBlock {.cursor.} =
                 if xKind == Block: 
@@ -899,7 +900,7 @@ proc defineLibrary*() =
                 new(inPath)
                 inPath[] = currentF.path
 
-            push(newMethodFromDefinition(argBlock, y, isDistinct, inPath))
+            push(newMethodFromDefinition(argBlock, y, isDistinct, isPublic, inPath))
 
     builtin "new",
         alias       = unaliased, 
