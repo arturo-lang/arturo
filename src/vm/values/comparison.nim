@@ -198,7 +198,7 @@ proc `==`*(x: Value, y: Value): bool =
             else:
                 return x.action == y.action
         of Method:
-            return x.mparams == y.mparams and x.mmain == y.mmain and x.mdistinct == y.mdistinct
+            return x.mparams == y.mparams and x.mmain == y.mmain and x.mdistinct == y.mdistinct and x.mpublic == y.mpublic
         of Database:
             if x.dbKind != y.dbKind: 
                 return false

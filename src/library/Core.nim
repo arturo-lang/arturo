@@ -841,7 +841,8 @@ proc defineLibrary*() =
             "body"      : {Block}
         },
         attrs       = {
-            "distinct"  : ({Logical},"shouldn't be treated as a magic method")
+            "distinct"  : ({Logical},"shouldn't be treated as a magic method"),
+            "public"    : ({Logical},"make method public (relevant only in modules!)")
         },
         returns     = {Method},
         example     = """
@@ -886,6 +887,7 @@ proc defineLibrary*() =
         """:
             #=======================================================
             let isDistinct = hadAttr("distinct")
+            let isPublic = hadAttr("public")
             
             let argBlock {.cursor.} =
                 if xKind == Block: 
@@ -898,7 +900,7 @@ proc defineLibrary*() =
                 new(inPath)
                 inPath[] = currentF.path
 
-            push(newMethodFromDefinition(argBlock, y, isDistinct, inPath))
+            push(newMethodFromDefinition(argBlock, y, isDistinct, isPublic, inPath))
 
     builtin "new",
         alias       = unaliased, 
