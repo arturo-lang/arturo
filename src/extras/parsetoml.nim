@@ -721,7 +721,7 @@ proc parseDateOrTime(state: var ParserState, digits: int, yearOrHour: int): Toml
       of strutils.Whitespace:
         raise newTomlError(state, "leading zero not allowed")
       else: raise newTomlError(state, "illegal character")
-    break
+    ##break # should uncomment?
 
 proc parseFloat(state: var ParserState, intPart: int, forcedSign: Sign): TomlValueRef =
   var
@@ -833,7 +833,7 @@ proc parseNumOrDate(state: var ParserState): TomlValueRef =
             else:
               state.pushBackChar(nextChar)
               return TomlValueRef(kind: TomlValueKind.Int, intVal: if forcedSign != Neg: -curSum else: curSum)
-          break
+          ##break # should uncomment?
       of '+', '-':
         forcedSign = if nextChar == '+': Pos else: Neg
         continue
