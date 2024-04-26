@@ -250,6 +250,9 @@ template SetSym*(s: string, v: Value, safe: static bool = false, forceReadOnly: 
     else:
         Syms[s] = v
 
+template UnsetSym*(s: string): untyped =
+    Syms.del(s)
+
 template SetDictSym*(s: string, v: Value, safe: static bool = false): untyped =
     ## Sets symbol to topmost Dictionary symbol table
     when safe:
