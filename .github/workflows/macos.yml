@@ -28,7 +28,7 @@ jobs:
     strategy:
       matrix:
         os:
-          - macos-latest
+          - macos-13
           - macos-14
         version:
           - mini
@@ -37,7 +37,7 @@ jobs:
           - amd64
           - arm64
         exclude:
-          - os: macos-latest
+          - os: macos-13
             arch: arm64
           - os: macos-14
             arch: amd64
@@ -80,7 +80,7 @@ jobs:
         #if: matrix.arch == 'amd64'
         uses: jiro4989/setup-nim-action@v1
         with:
-          nim-version: '2.0.0'
+          nim-version: '2.0.4'
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Verify dependecies
