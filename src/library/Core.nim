@@ -939,6 +939,10 @@ proc defineLibrary*() =
             elif xKind == Dictionary:
                 for k,v in x.d:
                     definitions[k] = copyValue(v)
+
+            # TODO(Core\module) should show error in case magic methods are included
+            #  magic methods are of no use in that case
+            #  labels: vm, error handling
             
             # Get fields
             let fieldTable = getFieldTable(definitions)
