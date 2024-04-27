@@ -51,7 +51,7 @@ jobs:
             ./build.nims --install --mode ${{ matrix.version }} --log
             export PATH="$HOME/.arturo/bin:$PATH"
             arturo tools/tester.art
-       
+     
       - name: Upload Artifacts
         uses: 'actions/upload-artifact@v2'
         with:
