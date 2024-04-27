@@ -493,7 +493,26 @@ proc defineLibrary*() =
         example     = """
         """:
             #=======================================================
-            discard
+            let exportAll = hadAttr("all")
+            
+            let internalObj = "__" & x.singleton.proto.name
+            SetSym(internalObj, x.singleton)
+
+            for k,v in x.singleton.o.pairs:
+                if v.kind == Method and (exportAll or v.mpublic):
+                    let newParams = v.mparams.filter((prm) => prm != "this")
+                    var newBody = copyValue(v.mmain)
+                    newBody.a.insert(@[
+                        newLabel("this"),
+                        newWord(internalObj)
+                    ])
+
+                    let fnc = newFunction(
+                        newParams,
+                        newBody
+                    )
+
+                    SetSym(k, fnc)
 
     builtin "function",
         alias       = dollar,
