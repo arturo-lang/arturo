@@ -327,8 +327,11 @@ type
                Block:
                    a*       : ValueArray
                    data*    : Value
+            of Module:
+                def*        : Value
+                singleton*  : Value
             of Range:
-                    rng*    : VRange
+                rng*    : VRange
             of Dictionary:  d*  : ValueDict
             of Object:
                 proto*  : Prototype 
