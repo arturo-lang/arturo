@@ -476,6 +476,23 @@ proc defineLibrary*() =
                 if isFalse(stack.pop()):
                     Error_AssertionFailed(x.codify())
 
+    builtin "export",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "export given module to current scope",
+        args        = {
+            "module"     : {Module}
+        },
+        attrs       = {
+            "all"   : ({Logical},"export everything, regardless of whether it's been marked as public")
+        },
+        returns     = {Nothing},
+        example     = """
+        """:
+            #=======================================================
+            discard
+
     builtin "function",
         alias       = dollar,
         op          = opFunc,
