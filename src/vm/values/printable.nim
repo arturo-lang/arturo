@@ -360,6 +360,23 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
 
             dumpBlockEnd()
 
+        of Module       :
+            dumpBlockStart(v)
+
+            let keys = toSeq(v.singleton.o.objectKeys)
+
+            if keys.len > 0:
+                let maxLen = (keys.map(proc (x: string):int = x.len)).max + 2
+
+                for key,value in v.singleton.o.objectPairs:
+                    for i in 0..level: stdoutWrite "        "
+
+                    stdoutWrite unicode.alignLeft(key & " ", maxLen) & ":"
+
+                    dump(value, level+1, false, muted=muted, target=target)
+
+            dumpBlockEnd()
+
         of Range        : dumpPrimitive($(v.rng), v)
 
         of Dictionary   : 
