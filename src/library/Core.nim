@@ -921,10 +921,10 @@ proc defineLibrary*() =
             var super: ValueDict = newOrderedTable[string,Value]()
 
             if xKind == Block:
-                if (let constructorMethod = generatedConstructor(y.a); not constructorMethod.isNil):
+                if (let constructorMethod = generatedConstructor(x.a); not constructorMethod.isNil):
                     definitions[$ConstructorM] = constructorMethod
                 else:
-                    for k,v in newDictionary(execDictionary(y)).d:
+                    for k,v in newDictionary(execDictionary(x)).d:
                         definitions[k] = v
             elif xKind == Dictionary:
                 for k,v in x.d:
