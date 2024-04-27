@@ -251,9 +251,9 @@ proc defineLibrary*() =
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "get list of methods for given object",
+        description = "get list of methods for given object or module",
         args        = {
-            "object": {Object}
+            "object": {Object,Module}
         },
         attrs       = NoAttrs,
         returns     = {Block},
@@ -274,9 +274,14 @@ proc defineLibrary*() =
         """:
             #=======================================================
             var s: seq[string]
-            for k,v in x.o:
-                if v.kind == Method:
-                    s.add(k)
+            if xkind == Object:
+                for k,v in x.o:
+                    if v.kind == Method:
+                        s.add(k)
+            else:
+                for k,v in x.singleton.o:
+                    if v.kind == Method:
+                        s.add(k)
 
             push(newStringBlock(s))
 
