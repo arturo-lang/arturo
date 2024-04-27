@@ -499,6 +499,8 @@ proc defineLibrary*() =
 
             let internalObj = "__" & x.singleton.proto.name
             SetSym(internalObj, x.singleton)
+            echo Dumper(x.singleton)
+            echo Dumper(GetSym(internalObj))
 
             for k,v in x.singleton.o.pairs:
                 if v.kind == Method and (exportAll or v.mpublic):
