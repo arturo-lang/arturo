@@ -925,6 +925,10 @@ proc defineLibrary*() =
             var definitions: ValueDict = newOrderedTable[string,Value]()
             var inherits: Value = VNULL
             var super: ValueDict = newOrderedTable[string,Value]()
+            var initUsing: ValueArray = @[]
+
+            if checkAttr("using"):
+                initUsing = aUsing.a
 
             if xKind == Block:
                 if (let constructorMethod = generatedConstructor(x.a); not constructorMethod.isNil):
@@ -947,7 +951,7 @@ proc defineLibrary*() =
                 let moduleId = "module" & "_" & $(rand(1_000_000_000..2_000_000_000))
 
             let proto = newPrototype(moduleId, definitions, inherits, fieldTable, super)
-            let singleton = generateNewObject(proto, @[])
+            let singleton = generateNewObject(proto, initUsing)
 
             push(newModule(singleton))
 
