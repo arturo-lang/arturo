@@ -1122,7 +1122,7 @@ func consideredEqual*(x: Value, y: Value): bool {.inline.} =
             for i in 0..x.a.high:
                 if not consideredEqual(x.a[i], y.a[i]): return false
             return true
-        of Module: return consideredEqual(x.def, y.def) and consideredEqual(x.singleton, y.singleton)
+        of Module: return consideredEqual(x.singleton, y.singleton)
         of Range: return x.rng == y.rng
         of Dictionary:
             if x.d.len != y.d.len: return false
