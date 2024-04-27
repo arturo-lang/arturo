@@ -920,13 +920,13 @@ proc defineLibrary*() =
             var inherits: Value = VNULL
             var super: ValueDict = newOrderedTable[string,Value]()
 
-            if x.kind == Block:
+            if xKind == Block:
                 if (let constructorMethod = generatedConstructor(y.a); not constructorMethod.isNil):
                     definitions[$ConstructorM] = constructorMethod
                 else:
                     for k,v in newDictionary(execDictionary(y)).d:
                         definitions[k] = v
-            elif x.kind == Dictionary:
+            elif xKind == Dictionary:
                 for k,v in x.d:
                     definitions[k] = copyValue(v)
             
