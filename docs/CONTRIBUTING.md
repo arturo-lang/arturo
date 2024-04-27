@@ -216,4 +216,4 @@ We have different options for you:
 
 You may also donate [via Bitcoin](https://blockchain.info/address/bc1qpjlmktrz79muz4yksm8aadz3d3srh0rmnn3hhd):
 
-<img src="images/bitc.png"/>
+<img width="150" src="images/bitc.png"/>
