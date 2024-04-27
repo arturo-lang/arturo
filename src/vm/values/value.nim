@@ -958,7 +958,7 @@ proc copyValue*(v: Value): Value {.inline.} =
             else:
                 result = newBlock(v.a.map((vv)=>copyValue(vv)), copyValue(v.data))
         of Module:
-            result = newModule(v.def, copyValue(v.singleton))
+            result = newModule(copyValue(v.singleton))
         of Range:
             result = newRange(v.rng.start, v.rng.stop, v.rng.step, v.rng.infinite, v.rng.numeric, v.rng.forward)
 
