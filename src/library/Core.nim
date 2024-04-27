@@ -30,6 +30,7 @@ when not defined(WEB):
     when not defined(MINI):
         import os, sequtils, sugar
         import helpers/packager
+import helpers/objects
 
 import vm/lib
 import vm/[errors, eval, exec, parse, runtime]
@@ -902,6 +903,45 @@ proc defineLibrary*() =
 
             push(newMethodFromDefinition(argBlock, y, isDistinct, isPublic, inPath))
 
+    builtin "module",
+        alias       = unaliased,
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "create new module with given contents",
+        args        = {
+            "contents"  : {Block, Dictionary}
+        },
+        attrs       = NoAttrs,
+        returns     = {Module},
+        example     = """
+        """:
+            #=======================================================
+            var definitions: ValueDict = newOrderedTable[string,Value]()
+            var inherits: Value = VNULL
+            var super: ValueDict = newOrderedTable[string,Value]()
+
+            if y.kind == Block:
+                if (let constructorMethod = generatedConstructor(y.a); not constructorMethod.isNil):
+                    definitions[$ConstructorM] = constructorMethod
+                else:
+                    for k,v in newDictionary(execDictionary(y)).d:
+                        definitions[k] = v
+            elif y.kind == Dictionary:
+                for k,v in y.d:
+                    definitions[k] = copyValue(v)
+            
+            # Get fields
+            let fieldTable = getFieldTable(definitions)
+
+            # Generate internal module identifier
+            when not defined(WEB):
+                let moduleId = "module" & "_" & $(genOid())
+            else:
+                let moduleId = "module" & "_" & $(rand(1_000_000_000..2_000_000_000))
+
+            let def = newPrototype(moduleId, definitions, inherits, fieldTable, super)
+
+            generateNewObject(xProto, arr)
     builtin "new",
         alias       = unaliased, 
         op          = opNop,
