@@ -488,6 +488,8 @@ proc defineLibrary*() =
             "all"   : ({Logical},"export everything, regardless of whether it's been marked as public")
         },
         returns     = {Nothing},
+        # TODO(Core\export) add documentation example
+        #  labels: library, documentation, easy
         example     = """
         """:
             #=======================================================
