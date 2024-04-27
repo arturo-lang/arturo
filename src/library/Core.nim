@@ -913,7 +913,9 @@ proc defineLibrary*() =
         args        = {
             "contents"  : {Block, Dictionary}
         },
-        attrs       = NoAttrs,
+        attrs       = {
+            "using"     : ({Block},"use given initialization parameters"),
+        },
         returns     = {Module},
         example     = """
         """:
