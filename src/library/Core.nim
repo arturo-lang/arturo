@@ -518,6 +518,8 @@ proc defineLibrary*() =
                         newBody
                     )
 
+                    echo Dumper(fnc)
+
                     SetSym(k, fnc)
 
     builtin "function",
