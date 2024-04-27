@@ -942,9 +942,11 @@ proc defineLibrary*() =
             else:
                 let moduleId = "module" & "_" & $(rand(1_000_000_000..2_000_000_000))
 
-            let def = newPrototype(moduleId, definitions, inherits, fieldTable, super)
 
-            generateNewObject(xProto, arr)
+            let proto = newPrototype(moduleId, definitions, inherits, fieldTable, super)
+            let singleton = generateNewObject(proto, [])
+
+        
     builtin "new",
         alias       = unaliased, 
         op          = opNop,
