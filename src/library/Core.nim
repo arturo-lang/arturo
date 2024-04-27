@@ -22,7 +22,7 @@
 # Libraries
 #=======================================
 
-import algorithm, hashes, options
+import algorithm, hashes, options, random
 
 when not defined(WEB):
     import oids
