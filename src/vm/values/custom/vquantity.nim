@@ -676,7 +676,7 @@ proc `^=`*(a: var Quantity, b: int) =
 # String converters
 #=======================================
 
-func `$`*(expo: AtomExponent): string =
+func `$`(expo: AtomExponent): string =
     AtomExponents[expo + 5]
 
 proc `$`*(unit: SubUnit): string =
