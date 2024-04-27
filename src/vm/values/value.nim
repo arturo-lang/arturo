@@ -850,8 +850,8 @@ proc newWordBlock*(a: sink seq[string]): Value {.inline.} =
     ## create Block value from an array of strings
     newBlock(a.map(proc (x:string):Value = newWord(x)))
 
-proc newModule*(def: Prototype, singleton: Value): Value {.inline.} =
-    Value(kind: Module, def: def, singleton: singleton)
+proc newModule*(singleton: Value): Value {.inline.} =
+    Value(kind: Module, singleton: singleton)
 
 proc newRange*(start: int, stop: int, step: int, infinite: bool, numeric: bool, forward: bool): Value {.inline.} =
     Value(kind: Range, rng: 
