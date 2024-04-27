@@ -933,7 +933,6 @@ proc defineLibrary*() =
             if xKind == Block:
                 if (let constructorMethod = generatedConstructor(x.a); not constructorMethod.isNil):
                     definitions[$ConstructorM] = constructorMethod
-                    # we have to show an error if constructor takes params
                 else:
                     for k,v in newDictionary(execDictionary(x)).d:
                         definitions[k] = v
