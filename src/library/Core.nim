@@ -946,6 +946,7 @@ proc defineLibrary*() =
             let proto = newPrototype(moduleId, definitions, inherits, fieldTable, super)
             let singleton = generateNewObject(proto, @[])
 
+            push(newModule(singleton))
 
     builtin "new",
         alias       = unaliased, 
