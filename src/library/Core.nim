@@ -24,12 +24,14 @@
 
 import algorithm, hashes, options
 
-import helpers/datasource
 when not defined(WEB):
+    import oids
     import helpers/ffi
     when not defined(MINI):
         import os, sequtils, sugar
         import helpers/packager
+
+import helpers/datasource
 import helpers/objects
 
 import vm/lib
