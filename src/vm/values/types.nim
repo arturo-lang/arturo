@@ -328,7 +328,6 @@ type
                    a*       : ValueArray
                    data*    : Value
             of Module:
-                def*        : Prototype
                 singleton*  : Value
             of Range:
                 rng*    : VRange
