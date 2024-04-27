@@ -270,7 +270,7 @@ proc defineLibrary*() =
                 # else:
                 Error_UnsupportedParentType(($(x.t)).toLowerAscii())
 
-            if y.kind == Block:
+            if yKind == Block:
                 if (let constructorMethod = generatedConstructor(y.a); not constructorMethod.isNil):
                     extra[$ConstructorM] = constructorMethod
                 else:
