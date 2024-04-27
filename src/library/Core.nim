@@ -920,14 +920,14 @@ proc defineLibrary*() =
             var inherits: Value = VNULL
             var super: ValueDict = newOrderedTable[string,Value]()
 
-            if y.kind == Block:
+            if x.kind == Block:
                 if (let constructorMethod = generatedConstructor(y.a); not constructorMethod.isNil):
                     definitions[$ConstructorM] = constructorMethod
                 else:
                     for k,v in newDictionary(execDictionary(y)).d:
                         definitions[k] = v
-            elif y.kind == Dictionary:
-                for k,v in y.d:
+            elif x.kind == Dictionary:
+                for k,v in x.d:
                     definitions[k] = copyValue(v)
             
             # Get fields
