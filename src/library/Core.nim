@@ -504,9 +504,11 @@ proc defineLibrary*() =
                 if v.kind == Method and (exportAll or v.mpublic):
                     let newParams = v.mparams.filter((prm) => prm != "this")
                     var newBody = copyValue(v.mmain)
-                    newBody.a.insert(@[
+                    newBody = newBlock(@[
                         newLabel("this"),
-                        newWord(internalObj)
+                        newWord(internalObj),
+                        newWord("do"),
+                        newBody
                     ])
 
                     let fnc = newFunction(
