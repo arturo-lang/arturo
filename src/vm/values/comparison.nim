@@ -161,7 +161,7 @@ proc `==`*(x: Value, y: Value): bool =
                     return false
             return true
         of Module:
-            return x.def == y.def and x.singleton == y.singleton
+            return x.singleton == y.singleton
         of Range:   
             return x.rng == y.rng
         of Dictionary:
