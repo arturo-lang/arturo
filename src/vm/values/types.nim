@@ -100,13 +100,14 @@ type
         Method          = 32
         Inline          = 33
         Block           = 34
-        Range           = 35
-        Database        = 36
-        Socket          = 37    
-        Bytecode        = 38
+        Module          = 35
+        Range           = 36
+        Database        = 37
+        Socket          = 38    
+        Bytecode        = 39
 
-        Nothing         = 39
-        Any             = 40
+        Nothing         = 40
+        Any             = 41
 
     ValueSpec* = set[ValueKind]
 
