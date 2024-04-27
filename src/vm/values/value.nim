@@ -1232,7 +1232,6 @@ func hash*(v: Value): Hash {.inline.} =
                 result = result !& hash(i)
 
         of Module       :
-            result = result !& hash(v.def)
             result = result !& hash(v.singleton)
 
         of Range        :
