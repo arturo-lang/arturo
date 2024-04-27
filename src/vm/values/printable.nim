@@ -137,13 +137,15 @@ proc `$`*(v: Value): string {.inline.} =
         of Binary   : 
             result = $(v.n)
         of Inline,
-           Block     :
+           Block    :
             # result = "["
             # for i,child in v.a:
             #     result &= $(child) & " "
             # result &= "]"
             result = "[" & v.a.map((child) => $(child)).join(" ") & "]"
 
+        of Module   :
+            result = "<module>" & "(" & fmt("{cast[uint](v):#X}") & ")"
         of Range     : 
             result = $(v.rng)
 
