@@ -247,6 +247,39 @@ proc defineLibrary*() =
             let mutedOutput = (hadAttr("muted")) or NoColors
             x.dump(0, false, muted=mutedOutput)
 
+    builtin "methods",
+        alias       = unaliased,
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "get list of methods for given object",
+        args        = {
+            "object": {Object}
+        },
+        attrs       = NoAttrs,
+        returns     = {Block},
+        example     = """
+        define :cat [
+            init: method [nick][
+                this\nick: join.with: " " @["Mr." capitalize nick]
+            ]
+
+            meow: method [][
+                print [this\nick ":" "'meow!'"]
+            ]
+        ]
+
+        snowflake: to :cat ["snowflake"]
+        methods snowflake
+        ; => [init meow]
+        """:
+            #=======================================================
+            var s: seq[string]
+            for k,v in x.o:
+                if v.kind == Method:
+                    s.add(k)
+
+            push(newStringBlock(s))
+
     builtin "stack",
         alias       = unaliased, 
         op          = opNop,
