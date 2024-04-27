@@ -363,12 +363,12 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
         of Module       :
             dumpBlockStart(v)
 
-            let keys = toSeq(v.singleton.o.objectKeys)
+            let keys = toSeq(v.singleton.o.keys)
 
             if keys.len > 0:
                 let maxLen = (keys.map(proc (x: string):int = x.len)).max + 2
 
-                for key,value in v.singleton.o.objectPairs:
+                for key,value in v.singleton.o.pairs:
                     for i in 0..level: stdoutWrite "        "
 
                     stdoutWrite unicode.alignLeft(key & " ", maxLen) & ":"
