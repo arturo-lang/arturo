@@ -10,6 +10,7 @@ This project is a lovechild of mine. So, if you want to contribute, I would be e
 - Fixing my - possibly tons of - typos or grammar errors
 - Proposing new features
 - Becoming a maintainer
+- Donations
 
 **In a few words:** all contributions (even if they are just ideas or suggestions) are 100% welcome!
 
@@ -28,7 +29,9 @@ This project is a lovechild of mine. So, if you want to contribute, I would be e
       * [Notes for great bug reports](#notes-for-great-bug-reports)
    * [Editing the documentation](#editing-the-documentation)
       * [Library reference](#library-reference)
-      * [Miscellaneous pages](#miscellaneous-pages)  
+      * [Miscellaneous pages](#miscellaneous-pages)
+   * [Donations](#donations)
+      * [How can I donate?](#how-can-i-donate)
 <!--te-->
 
 ---
@@ -196,3 +199,21 @@ For all other pages in the official website (e.g. [this one](https://arturo-lang
 So, if you want to edit one of these pages, just edit the corresponding template and your changes will be reflected at the very-next generation of the website (that part is up to me).
 
 Here's where you can find all documentation template - all mostly written in a combination of Arturo itself and Markdown: [Documentation](../docs/website)
+
+## Donations
+
+Given that Arturo is written and maintained by people for free, in their own free time, that also have their daily jobs, any donation would give the project the help it needs to get to the next level. And for that, we'd also need you help.
+
+So...
+
+### How can I donate?
+
+We have different options for you:
+
+- [GitHub Sponsors](https://github.com/sponsors/drkameleon)
+- [Patreon](https://patreon.com/arturolang)
+- [OpenCollective](https://opencollective.com/arturo-lang)
+
+You may also donate [via Bitcoin](https://blockchain.info/address/bc1qpjlmktrz79muz4yksm8aadz3d3srh0rmnn3hhd):
+
+<img src="images/bitc.png"/>
