@@ -22,7 +22,7 @@
 # Libraries
 #=======================================
 
-import algorithm, hashes, options, random
+import algorithm, hashes, options
 
 when not defined(WEB):
     import oids
@@ -30,6 +30,8 @@ when not defined(WEB):
     when not defined(MINI):
         import os, sequtils, sugar
         import helpers/packager
+else:
+    import random
 
 import helpers/datasource
 import helpers/objects
@@ -494,7 +496,7 @@ proc defineLibrary*() =
         """:
             #=======================================================
             let exportAll = hadAttr("all")
-            
+
             let internalObj = "__" & x.singleton.proto.name
             SetSym(internalObj, x.singleton)
 
