@@ -507,8 +507,8 @@ proc defineLibrary*() =
                     let newParams = v.mparams.filter((prm) => prm != "this")
                     var newBody = copyValue(v.mmain)
                     newBody = newBlock(@[
-                        newLabel("this"),
-                        newWord(internalObj),
+                        #newLabel("this"),
+                        #newWord(internalObj),
                         newWord("do"),
                         newBody
                     ])
