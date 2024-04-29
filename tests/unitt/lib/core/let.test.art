@@ -43,6 +43,13 @@ suite "Allowed Operations" [
         assert -> b = 2
         assert -> c = [3 4 5]
     ]
+    
+    test "let can skip values to be unpacked if the unpacker is empty" [
+        [a [] c]: [1 2 3 4 5]
+
+        assert -> a = 1
+        assert -> c = 5
+    ]
 ]
 
 
