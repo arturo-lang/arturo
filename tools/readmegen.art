@@ -1,0 +1,36 @@
+module: arg\0
+functions: split.by:"," arg\1
+
+import module!
+
+loop functions 'fnc [
+    i: info.get fnc
+    print ~"### |fnc|\n"
+    print ~"#### Description\n"
+    print i\description
+    print ""
+    print ~"#### Usage\n"
+    print "<pre>"
+    prints ~"<b>|fnc|</b> "
+    print join.with:("\n"++repeat " " inc size fnc) map i\args [ar,vs][
+        ~"<ins>|ar|</ins> " ++ join.with:"," map vs 'v -> "<i>:" ++ (to :string v) ++ "</i>"
+    ]
+    print "</pre>"
+    print ""
+    print ~"#### Attributes\n"
+    print "| Option | Type(s) | Description |"
+    print "|----|----|----|"
+    loop i\attrs [att,conts][
+        prints "| " ++ att ++ " | "
+        if conts\types <> [:logical] ->
+            prints join.with:"," map conts\types 'v -> "<i>:" ++ (to :string v) ++ "</i>"
+        prints " | "
+        prints conts\description ++ " | "
+        print ""
+    ]
+    print ""
+    print ~"#### Returns\n"
+    print join.with:"\n" map i\returns 'ret [
+        "- *:" ++ (to :string ret) ++ "*"
+    ]
+]

@@ -64,6 +64,7 @@ else:
 
 macro importLib(name: static[string]): untyped =
     let id = ident(name & "Lib")
+    let libpath = ident("library/" & name)
     let libname = name.toUpperAscii()
     result = quote do:
         when not defined(PORTABLE) or not compact or mods.contains(`name`):
@@ -72,7 +73,7 @@ macro importLib(name: static[string]): untyped =
                     echo "-------------------------"
                     echo " ## " & `libname`
                     echo "-------------------------"
-            import library/`name` as `id`
+            import `libpath` as `id`
 
 #=======================================
 # Standard library setup
