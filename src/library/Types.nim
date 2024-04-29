@@ -160,13 +160,13 @@ proc defineLibrary*() =
             var inherits: Value = VNULL
             var super: ValueDict = newOrderedTable[string,Value]()
 
-            if y.kind == Block:
+            if yKind == Block:
                 if (let constructorMethod = generatedConstructor(y.a); not constructorMethod.isNil):
                     definitions[$ConstructorM] = constructorMethod
                 else:
                     for k,v in newDictionary(execDictionary(y)).d:
                         definitions[k] = v
-            elif y.kind == Dictionary:
+            elif yKind == Dictionary:
                 for k,v in y.d:
                     definitions[k] = copyValue(v)
             else:
@@ -270,7 +270,7 @@ proc defineLibrary*() =
                 # else:
                 Error_UnsupportedParentType(($(x.t)).toLowerAscii())
 
-            if y.kind == Block:
+            if yKind == Block:
                 if (let constructorMethod = generatedConstructor(y.a); not constructorMethod.isNil):
                     extra[$ConstructorM] = constructorMethod
                 else:

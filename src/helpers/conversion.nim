@@ -623,6 +623,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat:Value = nil): Val
 
             of Function,
                Method,
+               Module,
                Database,
                Socket,
                Nothing,
