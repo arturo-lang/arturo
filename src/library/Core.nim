@@ -23,12 +23,13 @@
 #=======================================
 
 import algorithm, hashes, options
+import sequtils, sugar
 
 when not defined(WEB):
     import oids
     import helpers/ffi
     when not defined(MINI):
-        import os, sequtils, sugar
+        import os
         import helpers/packager
 else:
     import random
