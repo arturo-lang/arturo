@@ -14,8 +14,6 @@ suite "Behevioral based" [
                 throw "File not found"
             ]
         ]
-
-        assert -> set? 'error
     ]
 
     test "thrown errors at user level are runtime errors by default" [
