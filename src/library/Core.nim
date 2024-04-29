@@ -23,13 +23,19 @@
 #=======================================
 
 import algorithm, hashes, options
+import sequtils, sugar
 
-import helpers/datasource
 when not defined(WEB):
+    import oids
     import helpers/ffi
     when not defined(MINI):
-        import os, sequtils, sugar
+        import os
         import helpers/packager
+else:
+    import random
+
+import helpers/datasource
+import helpers/objects
 
 import vm/lib
 import vm/[errors, eval, exec, parse, runtime]
@@ -473,6 +479,67 @@ proc defineLibrary*() =
                 if isFalse(stack.pop()):
                     Error_AssertionFailed(x.codify())
 
+    builtin "export",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "export given container children to current scope",
+        args        = {
+            "module"     : {Module, Dictionary, Object}
+        },
+        attrs       = {
+            "all"   : ({Logical},"export everything, regardless of whether it's been marked as public (makes sense only for modules)")
+        },
+        returns     = {Nothing},
+        # TODO(Core\export) add documentation example
+        #  labels: library, documentation, easy
+        example     = """
+        """:
+            #=======================================================
+            let exportAll = hadAttr("all")
+
+            if xKind in {Module, Object}:
+
+                var internalObjName = 
+                    if xKind == Module:
+                        "__" & x.singleton.proto.name
+                    else:
+                        when not defined(WEB):
+                            "__omodule" & "_" & $(genOid())
+                        else:
+                            "__omodule" & "_" & $(rand(1_000_000_000..2_000_000_000))
+
+                SetSym(internalObjName, x.singleton)
+
+                var valuePairs = 
+                    if xKind == Module:
+                        x.singleton.o
+                    else:
+                        x.o
+
+                for k,v in valuePairs.pairs:
+                    if v.kind == Method and (exportAll or v.mpublic):
+                        let newParams = v.mparams.filter((prm) => prm != "this").map((prm) => newString(prm))
+                        var newBody = copyValue(v.mmain)
+                        newBody = newBlock(@[
+                            newLabel("this"),
+                            newWord(internalObjName),
+                            newWord("do"),
+                            newBody
+                        ])
+
+                        var inPath: ref string = nil
+                        if (let methodPath = v.info.path; not methodPath.isNil):
+                            new(inPath)
+                            inPath[] = methodPath[]
+
+                        let fnc = newFunctionFromDefinition(newParams,newBody, inPath=inPath)
+
+                        SetSym(k, fnc)
+            else:
+                for k,v in x.d.pairs:
+                    SetSym(k, v)
+
     builtin "function",
         alias       = dollar,
         op          = opFunc,
@@ -692,6 +759,7 @@ proc defineLibrary*() =
                 "branch"    : ({String,Literal},"use specific branch for repository url (default: main)"),
                 "latest"    : ({Logical},"always check for the latest version available"),
                 "lean"      : ({Logical},"return as a dictionary, instead of importing in main namespace"),
+                "only"      : ({Block},"import only selected symbols, if available"),
                 "verbose"   : ({Logical},"output extra information")
             },
             returns     = {Nothing,Dictionary,Block},
@@ -732,6 +800,7 @@ proc defineLibrary*() =
                 let latest = hadAttr("latest")
                 let verbose = hadAttr("verbose")
                 let lean = hadAttr("lean")
+                var importOnly: seq[string] = @[]
                 
                 var pkgs: seq[string]
                 if xKind in {String, Literal}:
@@ -746,6 +815,9 @@ proc defineLibrary*() =
 
                 if checkAttr("branch"):
                     branch = aBranch.s
+
+                if checkAttr("only"):
+                    importOnly = aOnly.a.map((w) =>  w.s)
 
                 let verboseBefore = VerbosePackager
                 if verbose:
@@ -765,13 +837,21 @@ proc defineLibrary*() =
                         if not lean:
                             let parsed = doParse(src, isFile=true)
                             if not parsed.isNil:
-                                execUnscoped(parsed)
+                                if importOnly.len > 0:
+                                    let got = execScopedModule(parsed, importOnly)
+                                    for k,v in got.pairs:
+                                        if importOnly.contains(k) or k.startsWith("__module"):
+                                            SetSym(k, v)
+                                else:
+                                    execUnscoped(parsed)
                         else:
-                            let got = execDictionary(doParse(src, isFile=true))
-                            if multiple:
-                                ret.add(newDictionary(got))
-                            else:
-                                push(newDictionary(got))
+                            let parsed = doParse(src, isFile=true)
+                            if not parsed.isNil:
+                                let got = execScopedModule(parsed, importOnly)
+                                if multiple:
+                                    ret.add(newDictionary(got))
+                                else:
+                                    push(newDictionary(got))
 
                         discardFrame()              
                     else:
@@ -901,6 +981,59 @@ proc defineLibrary*() =
                 inPath[] = currentF.path
 
             push(newMethodFromDefinition(argBlock, y, isDistinct, isPublic, inPath))
+
+    builtin "module",
+        alias       = unaliased,
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "create new module with given contents",
+        args        = {
+            "contents"  : {Block, Dictionary}
+        },
+        attrs       = {
+            "with"  : ({Block},"use given initialization parameters"),
+        },
+        returns     = {Module},
+        # TODO(Core\module) add documentation example
+        #  labels: library, documentation, easy
+        example     = """
+        """:
+            #=======================================================
+            var definitions: ValueDict = newOrderedTable[string,Value]()
+            var inherits: Value = VNULL
+            var super: ValueDict = newOrderedTable[string,Value]()
+            var initUsing: ValueArray = @[]
+
+            if checkAttr("with"):
+                initUsing = aWith.a
+
+            if xKind == Block:
+                if (let constructorMethod = generatedConstructor(x.a); not constructorMethod.isNil):
+                    definitions[$ConstructorM] = constructorMethod
+                else:
+                    for k,v in newDictionary(execDictionary(x)).d:
+                        definitions[k] = v
+            elif xKind == Dictionary:
+                for k,v in x.d:
+                    definitions[k] = copyValue(v)
+
+            # TODO(Core\module) should show error in case magic methods are included
+            #  magic methods are of no use in that case
+            #  labels: vm, error handling
+            
+            # Get fields
+            let fieldTable = getFieldTable(definitions)
+
+            # Generate internal module identifier
+            when not defined(WEB):
+                let moduleId = "module" & "_" & $(genOid())
+            else:
+                let moduleId = "module" & "_" & $(rand(1_000_000_000..2_000_000_000))
+
+            let proto = newPrototype(moduleId, definitions, inherits, fieldTable, super)
+            let singleton = generateNewObject(proto, initUsing)
+
+            push(newModule(singleton))
 
     builtin "new",
         alias       = unaliased, 
@@ -1198,7 +1331,7 @@ proc defineLibrary*() =
         rule        = PrefixPrecedence,
         description = "create closure-style block by embedding given words",
         args        = {
-            "embed" : {Literal, Block},
+            "embed" : {String, Literal, Word, Block, Dictionary},
             "body"  : {Block}
         },
         attrs       = NoAttrs,
@@ -1217,9 +1350,13 @@ proc defineLibrary*() =
         """:
             #=======================================================
             var blk: ValueArray = y.a
-            if xKind == Literal:
+            if xKind in {String,Literal,Word}:
                 blk.insert(FetchSym(x.s))
                 blk.insert(newLabel(x.s))
+            elif xKind == Dictionary:
+                for k,v in x.d.pairs:
+                    blk.insert(v)
+                    blk.insert(newLabel(k))
             else:
                 for item in x.a:
                     requireValue(item, {Word,Literal})

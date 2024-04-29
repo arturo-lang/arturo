@@ -850,6 +850,9 @@ proc newWordBlock*(a: sink seq[string]): Value {.inline.} =
     ## create Block value from an array of strings
     newBlock(a.map(proc (x:string):Value = newWord(x)))
 
+proc newModule*(singleton: Value): Value {.inline.} =
+    Value(kind: Module, singleton: singleton)
+
 proc newRange*(start: int, stop: int, step: int, infinite: bool, numeric: bool, forward: bool): Value {.inline.} =
     Value(kind: Range, rng: 
         VRange(
@@ -954,6 +957,8 @@ proc copyValue*(v: Value): Value {.inline.} =
                 result = newBlock(v.a.map((vv)=>copyValue(vv)))
             else:
                 result = newBlock(v.a.map((vv)=>copyValue(vv)), copyValue(v.data))
+        of Module:
+            result = newModule(copyValue(v.singleton))
         of Range:
             result = newRange(v.rng.start, v.rng.stop, v.rng.step, v.rng.infinite, v.rng.numeric, v.rng.forward)
 
@@ -1117,6 +1122,7 @@ func consideredEqual*(x: Value, y: Value): bool {.inline.} =
             for i in 0..x.a.high:
                 if not consideredEqual(x.a[i], y.a[i]): return false
             return true
+        of Module: return consideredEqual(x.singleton, y.singleton)
         of Range: return x.rng == y.rng
         of Dictionary:
             if x.d.len != y.d.len: return false
@@ -1224,6 +1230,9 @@ func hash*(v: Value): Hash {.inline.} =
             result = 1
             for i in v.a:
                 result = result !& hash(i)
+
+        of Module       :
+            result = result !& hash(v.singleton)
 
         of Range        :
             result = result !& hash(v.rng[])
