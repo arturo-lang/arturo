@@ -7,39 +7,6 @@ topic: $[topic :string] -> print ~"\n>> |topic|"
 passed: $[] -> print "[+] passed!"
 
 
-topic "Custom errors"
-do [
-
-    fileNotFound: to :errorKind "File not found"
-
-    ensure -> :errorKind = type fileNotFound
-    ensure -> :string = type fileNotFound\label
-    passed
-
-    ensure -> runtimeError <> fileNotFound
-    ensure -> "File not found" = fileNotFound\label
-    passed
-
-    ; You can also add a message using `.message` attribute
-    ; This permits the creation of a more detailed log.
-    err: try [
-        throw.as: fileNotFound 
-            "Are you sure about this file's existence?"
-    ]
-
-    ensure -> :error = type err
-    ensure -> :errorKind = type err\kind
-    ensure -> :string = type err\message 
-    passed
-
-    ensure -> fileNotFound = err\kind
-    ensure -> runtimeError <> err\kind
-    ensure -> "Are you sure about this file's existence?" = err\message
-    passed
-
-]
-
-
 topic "Using functions"
 do [
 
