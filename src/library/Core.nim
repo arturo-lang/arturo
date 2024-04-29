@@ -867,7 +867,7 @@ proc defineLibrary*() =
                             if el.a[0].kind notin {Word, String, Literal}:
                                 Error_OperationNotPermitted(
                                     "Can't assign unknown type.")
-                        if el.a.len != 1:
+                        if el.a.len > 1:
                             # Example: [[a b]]: [1 2]
                             Error_OperationNotPermitted(
                                 "Unpacking slice supports only one assignment")
@@ -890,10 +890,12 @@ proc defineLibrary*() =
                         SetSym(symbol.s, y.a[idx], safe=true)
 
                     # Unpack
-                    let unpackedBuffer = y.a[(leftItems)..(leftItems + diff)]
-                    
-                    let symbol = x.a[leftItems].a[0]
-                    SetSym(symbol.s, newBlock(unpackedBuffer), safe=true)
+                    if x.a[leftItems].a.len != 0:
+                        let 
+                            symbol = x.a[leftItems].a[0]
+                            unpackedBuffer = y.a[(leftItems)..(leftItems + diff)]
+
+                        SetSym(symbol.s, newBlock(unpackedBuffer), safe=true)
 
                     # Right side
                     for idx in leftItems..(x.a.high):
