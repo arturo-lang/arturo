@@ -959,7 +959,7 @@ proc defineLibrary*() =
             "contents"  : {Block, Dictionary}
         },
         attrs       = {
-            "using"     : ({Block},"use given initialization parameters"),
+            "with"  : ({Block},"use given initialization parameters"),
         },
         returns     = {Module},
         # TODO(Core\module) add documentation example
@@ -972,8 +972,8 @@ proc defineLibrary*() =
             var super: ValueDict = newOrderedTable[string,Value]()
             var initUsing: ValueArray = @[]
 
-            if checkAttr("using"):
-                initUsing = aUsing.a
+            if checkAttr("with"):
+                initUsing = aWith.a
 
             if xKind == Block:
                 if (let constructorMethod = generatedConstructor(x.a); not constructorMethod.isNil):
