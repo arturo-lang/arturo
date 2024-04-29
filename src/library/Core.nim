@@ -483,12 +483,12 @@ proc defineLibrary*() =
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "export given module to current scope",
+        description = "export given module or dictionary to current scope",
         args        = {
-            "module"     : {Module}
+            "module"     : {Module, Dictionary}
         },
         attrs       = {
-            "all"   : ({Logical},"export everything, regardless of whether it's been marked as public")
+            "all"   : ({Logical},"export everything, regardless of whether it's been marked as public (makes sense only for modules)")
         },
         returns     = {Nothing},
         # TODO(Core\export) add documentation example
@@ -498,28 +498,33 @@ proc defineLibrary*() =
             #=======================================================
             let exportAll = hadAttr("all")
 
-            let internalObj = "__" & x.singleton.proto.name
-            SetSym(internalObj, x.singleton)
+            if xKind == Module:
 
-            for k,v in x.singleton.o.pairs:
-                if v.kind == Method and (exportAll or v.mpublic):
-                    let newParams = v.mparams.filter((prm) => prm != "this").map((prm) => newString(prm))
-                    var newBody = copyValue(v.mmain)
-                    newBody = newBlock(@[
-                        newLabel("this"),
-                        newWord(internalObj),
-                        newWord("do"),
-                        newBody
-                    ])
+                let internalObj = "__" & x.singleton.proto.name
+                SetSym(internalObj, x.singleton)
 
-                    var inPath: ref string = nil
-                    if (let methodPath = v.info.path; not methodPath.isNil):
-                        new(inPath)
-                        inPath[] = methodPath[]
+                for k,v in x.singleton.o.pairs:
+                    if v.kind == Method and (exportAll or v.mpublic):
+                        let newParams = v.mparams.filter((prm) => prm != "this").map((prm) => newString(prm))
+                        var newBody = copyValue(v.mmain)
+                        newBody = newBlock(@[
+                            newLabel("this"),
+                            newWord(internalObj),
+                            newWord("do"),
+                            newBody
+                        ])
 
-                    let fnc = newFunctionFromDefinition(newParams,newBody, inPath=inPath)
+                        var inPath: ref string = nil
+                        if (let methodPath = v.info.path; not methodPath.isNil):
+                            new(inPath)
+                            inPath[] = methodPath[]
 
-                    SetSym(k, fnc)
+                        let fnc = newFunctionFromDefinition(newParams,newBody, inPath=inPath)
+
+                        SetSym(k, fnc)
+            else:
+                for k,v in x.d.pairs:
+                    SetSym(k, v)
 
     builtin "function",
         alias       = dollar,
