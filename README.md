@@ -1,9 +1,12 @@
-<img align="left" width="190" src="docs/images/logo.png#gh-light-mode-only"/>
-<img align="left" width="190" src="docs/images/logo-lightgray.png#gh-dark-mode-only"/>
+<div align="center">
+
+<img align="center" width="150" src="docs/images/logo.png#gh-light-mode-only"/>
+<img align="center" width="150" src="docs/images/logo-lightgray.png#gh-dark-mode-only"/>
 
 <h1>Arturo</h1> 
- 
+
 ### Simple, expressive & portable<br>programming language for efficient scripting<br><br>![License](https://img.shields.io/github/license/arturo-lang/arturo?style=for-the-badge) ![Language](https://img.shields.io/badge/language-Nim-6A7FC8.svg?style=for-the-badge)   [![Build Status](https://img.shields.io/github/actions/workflow/status/arturo-lang/arturo/linux.yml?branch=master&style=for-the-badge)](https://github.com/arturo-lang/arturo/actions) <a href="https://discord.gg/YdVK2CB" target="_blank">![Chat on Discord](https://img.shields.io/discord/765519132186640445?color=orange&label=@Discord&style=for-the-badge)</a>
+</div>
 
 ---
  
@@ -18,9 +21,11 @@
         * [Docker](#docker)
         * [Homebrew](#homebrew)
    * [Showcase](#showcase)
-   * [Contributing](#contributing)
    * [Community](#community)
    * [FAQ](#faq)
+   * [Contributing](#contributing)
+   * [Donations](#donations)
+      * [How can I donate?](#how-can-i-donate)
    * [License](#license)
 <!--te-->
 
@@ -136,11 +141,6 @@ Showcase
 	<a href="https://github.com/arturo-lang/aguila"><b>Modern cross-platform webview-based desktop apps<br>without HTML/CSS/JS</b></a>
 </p>
 
-Contributing
-------------------------------
-
-Please read [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) for more details and the process for submitting pull requests.
-
 Community
 ------------------------------
 
@@ -162,6 +162,30 @@ In case you're wondering why I went for a programming language with a... Spanish
 Despite being seemingly intimidating - as most scorpions do to those who don't know about the species - he was a very quiet, totally docile, easy-going and noble creature. 
 
 So, the name is a subtle hommage to him; and also a hint as to what this programming language aspires to be.
+
+Contributing
+------------------------------
+
+Please read [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) for more details and the process for submitting pull requests.
+
+Donations
+------------------------------
+
+Given that Arturo is written and maintained by people for free, in their own free time, that also have their daily jobs, any donation would give the project the help it needs to get to the next level. And for that, we'd also need you help.
+
+So...
+
+### How can I donate?
+
+We have different options for you:
+
+- [GitHub Sponsors](https://github.com/sponsors/drkameleon)
+- [Patreon](https://patreon.com/arturolang)
+- [OpenCollective](https://opencollective.com/arturo-lang)
+
+You may also donate [via Bitcoin](https://blockchain.info/address/bc1qpjlmktrz79muz4yksm8aadz3d3srh0rmnn3hhd):
+
+<img width="150" src="docs/images/bitc.png"/>
 
 License
 ------------------------------

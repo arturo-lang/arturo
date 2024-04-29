@@ -80,8 +80,11 @@ when not defined(WEB):
                 createDir(parentDir(path))
             discard linenoiseHistoryLoad(path)
 
-            discard linenoiseSetCompletionCallback(cast[ptr LinenoiseCompletionCallback](completionsCback), nil)
-            linenoiseSetHintsCallback(cast[ptr LinenoiseHintsCallback](hintsCback), nil)
+            var completionCallback: ptr LinenoiseCompletionCallback = cast[ptr LinenoiseCompletionCallback](completionsCback)
+            discard linenoiseSetCompletionCallback(completionCallback, nil)
+
+            var hintCallback: ptr LinenoiseHintsCallback = cast[ptr LinenoiseHintsCallback](hintsCback)
+            linenoiseSetHintsCallback(hintCallback, nil)
 
             ReplInitialized = true
 

@@ -901,7 +901,8 @@ proc defineLibrary*() =
             "body"      : {Block}
         },
         attrs       = {
-            "distinct"  : ({Logical},"shouldn't be treated as a magic method")
+            "distinct"  : ({Logical},"shouldn't be treated as a magic method"),
+            "public"    : ({Logical},"make method public (relevant only in modules!)")
         },
         returns     = {Method},
         example     = """
@@ -946,6 +947,7 @@ proc defineLibrary*() =
         """:
             #=======================================================
             let isDistinct = hadAttr("distinct")
+            let isPublic = hadAttr("public")
             
             let argBlock {.cursor.} =
                 if xKind == Block: 
@@ -958,7 +960,7 @@ proc defineLibrary*() =
                 new(inPath)
                 inPath[] = currentF.path
 
-            push(newMethodFromDefinition(argBlock, y, isDistinct, inPath))
+            push(newMethodFromDefinition(argBlock, y, isDistinct, isPublic, inPath))
 
     builtin "new",
         alias       = unaliased, 
@@ -1056,6 +1058,28 @@ proc defineLibrary*() =
             let condition = xKind==Null or isFalse(x)
             if condition: 
                 execUnscoped(y)
+
+    builtin "unset",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "undefine given symbol, if already defined",
+        args        = {
+            "symbol"    : {String,Literal}
+        },
+        attrs       = NoAttrs,
+        returns     = {Nothing},
+        example     = """
+            a: 2
+            print a
+            ; 2
+
+            unset 'a
+            print a
+            ; will throw an error
+        """:
+            #=======================================================
+            UnsetSym(x.s)
 
     builtin "unstack",
         alias       = unaliased, 
@@ -1304,6 +1328,25 @@ proc defineLibrary*() =
                 execUnscoped(y)
 
             push(newLogical(condition))
+
+    builtin "set?",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "check if given variable is defined",
+        args        = {
+            "symbol"    : {String,Literal}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            boom: 12
+            print set? 'boom          ; true
+            
+            print set? 'zoom          ; false
+        """:
+            #=======================================================
+            push(newLogical(SymExists(x.s)))
 
     builtin "unless?",
         alias       = unaliased, 

@@ -28,7 +28,7 @@ jobs:
     strategy:
       matrix:
         os:
-          - macos-latest
+          - macos-12
           - macos-14
         version:
           - mini
@@ -37,7 +37,7 @@ jobs:
           - amd64
           - arm64
         exclude:
-          - os: macos-latest
+          - os: macos-12
             arch: arm64
           - os: macos-14
             arch: amd64
@@ -67,10 +67,11 @@ jobs:
           path: ~/.nimble
           key: ${{ matrix.os }}-nimble-${{ hashFiles('*.nimble') }}
 
-      - name: Setup nim (M1)
+      - name: Setup nim
         if: matrix.arch == 'arm64'
         run: |
           brew install nim
+          brew install gmp
           brew install pcre
           brew install mpfr
  
@@ -78,7 +79,7 @@ jobs:
         if: matrix.arch == 'amd64'
         uses: jiro4989/setup-nim-action@v1
         with:
-          nim-version: '2.0.0'
+          nim-version: '2.0.4'
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Verify dependecies
@@ -89,7 +90,7 @@ jobs:
         run: |
           echo "./bin" >> $GITHUB_PATH
           ./build.nims build --mode ${{ matrix.version }} --arch ${{ matrix.arch }} --log
-          
+           
       - name: Upload Artifacts
         uses: 'actions/upload-artifact@v2'
         with:
@@ -100,6 +101,7 @@ jobs:
         if: matrix.version == 'full'
         run: |
           arturo tools/tester.art
+          ./bin/arturo tools/unitt-tester.art
 
       - name: Run unit tests (mini)
         if: matrix.version == 'mini'
