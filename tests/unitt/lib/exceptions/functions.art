@@ -6,7 +6,7 @@ import {unitt}!
 fileNotFound: try [ throw "File not found" ]
 
 
-suite "Behevioral based" [
+suite "Tests the internal functions" [
 
     test.prop "thrown error is catched by 'try" [
         assert -> not? throws? [
