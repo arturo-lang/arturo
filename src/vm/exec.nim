@@ -22,7 +22,8 @@
 # Libraries
 #=======================================
 
-import algorithm, hashes, macros, sugar, tables
+import algorithm, hashes, macros
+import strutils, sugar, tables
 
 import vm/[
     bytecode, 
@@ -315,6 +316,28 @@ proc execDictionary*(blk: Value): ValueDict =
     ExecLoop(preevaled.constants, preevaled.instructions)
 
     result = DictSyms.pop()
+
+proc execScopedModule*(blk: Value, exporting: seq[string] = @[]): ValueDict =
+    let olderSyms: SymTable = Syms
+
+    let exportAll = exporting.len == 0
+    let preevaled = doEval(blk)
+
+    ExecLoop(preevaled.constants, preevaled.instructions)
+
+    result = 
+        collect(initOrderedTable()):
+            for i,d in Syms.pairs:
+                let hasK = olderSyms.hasKey(i)
+                if (exportAll or exporting.contains(i) or i.startsWith("__module")) and ((hasK and olderSyms[i] != d) or not hasK):
+                    {i: d}
+
+    Syms = olderSyms
+
+    for i,d in result.pairs:
+        if i.startsWith("__module"):
+            Syms[i] = d
+            result.del(i)
 
 proc execFunction*(fun: Value, fid: Hash) =
     ## Execute given Function value with scoping
