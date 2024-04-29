@@ -34,3 +34,21 @@ suite "Test types and its properties" [
     ]
 
 ]
+
+
+suite "Test types for :errorKind and custom ones" [
+
+    test "custom :errorKinds can be created from :strings" [
+        fileNotFound: to :errorKind "File not found"
+        ensure -> errorKind? fileNotFound
+        ensure -> "File not found" = fileNotFound\label
+    ]
+    
+    test "custom :errorKinds can't be created from :string-like values" [
+        label: 'FileNotFound
+        loop @[label to :word label] 'customLabel [
+            assert -> throws? [fileNotFound: to :errorKind customLabel]
+        ]
+    ]
+
+]
