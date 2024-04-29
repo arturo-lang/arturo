@@ -73,7 +73,7 @@ const
     PermittedNumbers_Start      = Numbers
     ScientificNotation          = PermittedNumbers_Start + {'+', '-'}
     ScientificNotation_Start    = {'e', 'E'}
-    Symbols                     = {'~', '!', '@', '#', '$', '%', '^', '&', '*', '-', '=', '+', '<', '>', '/', '\\', '|', '?'}
+    Symbols                     = {'~', '!', '@', '#', '$', '%', '^', '&', '*', '-', '=', '+', '<', '>', '/', '|', '?'}
     Letters                     = {'a'..'z', 'A'..'Z'}
     PermittedIdentifiers_Start  = Letters + {'_'}
     PermittedColorChars         = Letters + Numbers
@@ -634,15 +634,6 @@ template parseAndAddSymbol(p: var Parser, topBlock: var Value) =
                 p.symbol = logicaland
             else: 
                 p.symbol = slash
-        of '\\' : 
-            if p.buf[pos+1]=='\\': 
-                inc(pos)
-                p.symbol = doublebackslash
-            elif p.buf[pos+1] == '/':
-                inc(pos)
-                p.symbol = logicalor
-            else: 
-                p.symbol = backslash
         of '+'  : 
             if p.buf[pos+1]=='+': inc(pos); p.symbol = doubleplus
             else: p.symbol = plus
@@ -937,6 +928,25 @@ proc parseBlock(p: var Parser, level: int, isSubBlock: bool = false, isSubInline
                         AddToken newInteger(p.value, p.lineNumber)
             of Symbols:
                 parseAndAddSymbol(p,topBlock)
+            of Backslash:
+                if (p.buf[p.bufpos+1] in PermittedIdentifiers_Start) or
+                   (p.buf[p.bufpos+1] == LBracket):
+                    parsePath(p, newWord("this"), level)
+                    if p.buf[p.bufpos]==Colon:
+                        inc(p.bufpos)
+                        AddToken newPathLabel(p.values[^1])
+                    else:
+                        AddToken newPath(p.values[^1])
+                    discard p.values.pop()
+                elif p.buf[p.bufpos+1]==Backslash: 
+                    inc(p.bufpos)
+                    AddToken newSymbol(doublebackslash)
+                elif p.buf[p.bufpos+1] == '/':
+                    inc(p.bufpos)
+                    AddToken newSymbol(logicalor)
+                else: 
+                    AddToken newSymbol(backslash)
+                    
             of PermittedIdentifiers_Start:
                 parseIdentifier(p, alsoAddCurrent=true)
                 if p.buf[p.bufpos] == Colon:
