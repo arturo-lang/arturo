@@ -821,7 +821,7 @@ proc defineLibrary*() =
                                 if importOnly.len > 0:
                                     let got = execScopedModule(parsed, importOnly)
                                     for k,v in got.pairs:
-                                        if importOnly.contains(k):
+                                        if importOnly.contains(k) or k.startsWith("__module"):
                                             SetSym(k, v)
                                 else:
                                     execUnscoped(parsed)
