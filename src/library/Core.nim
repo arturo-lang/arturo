@@ -483,7 +483,7 @@ proc defineLibrary*() =
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "export given module or dictionary to current scope",
+        description = "export given container children to current scope",
         args        = {
             "module"     : {Module, Dictionary, Object}
         },
@@ -1331,7 +1331,7 @@ proc defineLibrary*() =
         rule        = PrefixPrecedence,
         description = "create closure-style block by embedding given words",
         args        = {
-            "embed" : {Literal, Block},
+            "embed" : {String, Literal, Word, Block, Dictionary},
             "body"  : {Block}
         },
         attrs       = NoAttrs,
@@ -1350,9 +1350,13 @@ proc defineLibrary*() =
         """:
             #=======================================================
             var blk: ValueArray = y.a
-            if xKind == Literal:
+            if xKind in {String,Literal,Word}:
                 blk.insert(FetchSym(x.s))
                 blk.insert(newLabel(x.s))
+            elif xKind == Dictionary:
+                for k,v in x.d.pairs:
+                    blk.insert(v)
+                    blk.insert(newLabel(k))
             else:
                 for item in x.a:
                     requireValue(item, {Word,Literal})
