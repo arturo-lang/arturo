@@ -137,13 +137,15 @@ proc `$`*(v: Value): string {.inline.} =
         of Binary   : 
             result = $(v.n)
         of Inline,
-           Block     :
+           Block    :
             # result = "["
             # for i,child in v.a:
             #     result &= $(child) & " "
             # result &= "]"
             result = "[" & v.a.map((child) => $(child)).join(" ") & "]"
 
+        of Module   :
+            result = "<module>" & "(" & fmt("{cast[uint](v):#X}") & ")"
         of Range     : 
             result = $(v.rng)
 
@@ -355,6 +357,23 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
                 dump(child, level+1, i==(v.a.len-1), muted=muted, target=target)
 
             stdoutWrite "\n"
+
+            dumpBlockEnd()
+
+        of Module       :
+            dumpBlockStart(v)
+
+            let keys = toSeq(v.singleton.o.keys)
+
+            if keys.len > 0:
+                let maxLen = (keys.map(proc (x: string):int = x.len)).max + 2
+
+                for key,value in v.singleton.o.pairs:
+                    for i in 0..level: stdoutWrite "        "
+
+                    stdoutWrite unicode.alignLeft(key & " ", maxLen) & ":"
+
+                    dump(value, level+1, false, muted=muted, target=target)
 
             dumpBlockEnd()
 

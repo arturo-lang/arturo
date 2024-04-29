@@ -160,6 +160,8 @@ proc `==`*(x: Value, y: Value): bool =
                 if child != y.a[i]: 
                     return false
             return true
+        of Module:
+            return x.singleton == y.singleton
         of Range:   
             return x.rng == y.rng
         of Dictionary:
