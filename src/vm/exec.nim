@@ -329,7 +329,7 @@ proc execScopedModule*(blk: Value, exporting: seq[string] = @[]): ValueDict =
         collect(initOrderedTable()):
             for i,d in Syms.pairs:
                 let hasK = olderSyms.hasKey(i)
-                if (exportAll or exporting.contains(i)) and ((hasK and olderSyms[i] != d) or not hasK):
+                if (exportAll or exporting.contains(i) or i.startsWith("__module")) and ((hasK and olderSyms[i] != d) or not hasK):
                     {i: d}
 
     Syms = olderSyms
