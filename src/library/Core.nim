@@ -815,11 +815,13 @@ proc defineLibrary*() =
                             if not parsed.isNil:
                                 execUnscoped(parsed)
                         else:
-                            let got = execDictionary(doParse(src, isFile=true))
-                            if multiple:
-                                ret.add(newDictionary(got))
-                            else:
-                                push(newDictionary(got))
+                            let parsed = doParse(src, isFile=true)
+                            if not parsed.isNil:
+                                let got = execScopedModule(parsed)
+                                if multiple:
+                                    ret.add(newDictionary(got))
+                                else:
+                                    push(newDictionary(got))
 
                         discardFrame()              
                     else:
