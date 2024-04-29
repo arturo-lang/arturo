@@ -499,12 +499,10 @@ proc defineLibrary*() =
 
             let internalObj = "__" & x.singleton.proto.name
             SetSym(internalObj, x.singleton)
-            echo Dumper(x.singleton)
-            echo Dumper(GetSym(internalObj))
 
             for k,v in x.singleton.o.pairs:
                 if v.kind == Method and (exportAll or v.mpublic):
-                    let newParams = v.mparams.filter((prm) => prm != "this")
+                    let newParams = v.mparams.filter((prm) => prm != "this").map((prm) => newString(prm))
                     var newBody = copyValue(v.mmain)
                     newBody = newBlock(@[
                         newLabel("this"),
@@ -513,12 +511,12 @@ proc defineLibrary*() =
                         newBody
                     ])
 
-                    let fnc = newFunction(
-                        newParams,
-                        newBody
-                    )
+                    var inPath: ref string = nil
+                    if (let methodPath = v.info.path; not methodPath.isNil):
+                        new(inPath)
+                        inPath[] = methodPath[]
 
-                    echo Dumper(fnc)
+                    let fnc = newFunctionFromDefinition(newParams,newBody, inPath=inPath)
 
                     SetSym(k, fnc)
 
