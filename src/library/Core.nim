@@ -850,11 +850,18 @@ proc defineLibrary*() =
                 var blockFound = false
                 
                 for idx, el in x.a.pairs:
+                    if el.kind notin {Block, Word, String, Literal}:
+                        Error_OperationNotPermitted(
+                                "Can't assign unknown type.")
                     if el.kind == Block:
                         if blockFound:
                             # Example: [[a] [b]]: [1 2]
                             Error_OperationNotPermitted(
                                 "Can't unpack multiple slices.")
+                        if el.a.len == 1:
+                            if el.a[0].kind notin {Word, String, Literal}:
+                                Error_OperationNotPermitted(
+                                    "Can't assign unknown type.")
                         if el.a.len != 1:
                             # Example: [[a b]]: [1 2]
                             Error_OperationNotPermitted(
