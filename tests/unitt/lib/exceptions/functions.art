@@ -16,6 +16,12 @@ suite "Behevioral based" [
         ]
     ]
 
+    test.prop "thrown error is catched by 'throws?" [
+        assert -> not? throws? [
+            throws? [ throw "File not found" ]
+        ]
+    ]
+
     test "thrown errors at user level are runtime errors by default" [
         fileNotFound: try [ throw "File not found" ]
         assert -> runtimeError = fileNotFound
