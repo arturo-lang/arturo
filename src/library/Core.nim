@@ -740,6 +740,7 @@ proc defineLibrary*() =
                 "branch"    : ({String,Literal},"use specific branch for repository url (default: main)"),
                 "latest"    : ({Logical},"always check for the latest version available"),
                 "lean"      : ({Logical},"return as a dictionary, instead of importing in main namespace"),
+                "only"      : ({Block},"import only selected symbols, if available"),
                 "verbose"   : ({Logical},"output extra information")
             },
             returns     = {Nothing,Dictionary,Block},
@@ -780,6 +781,7 @@ proc defineLibrary*() =
                 let latest = hadAttr("latest")
                 let verbose = hadAttr("verbose")
                 let lean = hadAttr("lean")
+                var importOnly: seq[string] = @[]
                 
                 var pkgs: seq[string]
                 if xKind in {String, Literal}:
@@ -794,6 +796,9 @@ proc defineLibrary*() =
 
                 if checkAttr("branch"):
                     branch = aBranch.s
+
+                if checkAttr("only"):
+                    importOnly = aOnly.a.map((w) =>  w.s)
 
                 let verboseBefore = VerbosePackager
                 if verbose:
@@ -813,13 +818,21 @@ proc defineLibrary*() =
                         if not lean:
                             let parsed = doParse(src, isFile=true)
                             if not parsed.isNil:
-                                execUnscoped(parsed)
+                                if importOnly.len > 0:
+                                    let got = execScopedModule(parsed, importOnly)
+                                    for k,v in got.pairs:
+                                        if importOnly.contains(k) or k.startsWith("__module"):
+                                            SetSym(k, v)
+                                else:
+                                    execUnscoped(parsed)
                         else:
-                            let got = execDictionary(doParse(src, isFile=true))
-                            if multiple:
-                                ret.add(newDictionary(got))
-                            else:
-                                push(newDictionary(got))
+                            let parsed = doParse(src, isFile=true)
+                            if not parsed.isNil:
+                                let got = execScopedModule(parsed, importOnly)
+                                if multiple:
+                                    ret.add(newDictionary(got))
+                                else:
+                                    push(newDictionary(got))
 
                         discardFrame()              
                     else:
