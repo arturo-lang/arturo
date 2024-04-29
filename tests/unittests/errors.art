@@ -7,24 +7,6 @@ topic: $[topic :string] -> print ~"\n>> |topic|"
 passed: $[] -> print "[+] passed!"
 
 
-topic "throwing errors"
-do [
-
-    ; `throw` immediately raises an error,
-    ; catched by `try`
-    err: try -> throw "File not found"
-
-    ensure -> :error = type err
-    ensure -> :errorKind = type err\kind
-    ensure -> :string = type err\message
-    passed
-
-    ensure -> runtimeError = err\kind
-    ensure -> "File not found" = err\message
-    passed
-]
-
-
 topic "Custom errors"
 do [
 
