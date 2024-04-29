@@ -836,6 +836,11 @@ proc defineLibrary*() =
             #=======================================================
             if xKind==Block and yKind!=Block:
                 for symbol in x.a:
+                    if symbol.kind != Word:
+                        Error_OperationNotPermitted(
+                                "Can't assign unknown type.")
+
+                for symbol in x.a:
                     SetSym(symbol.s, y, safe=true)
             
             elif xKind==Block:

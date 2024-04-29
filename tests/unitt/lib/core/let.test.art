@@ -13,14 +13,11 @@ suite "Allowed Operations" [
     ]
 
     test "unpacked value always returns a :block" [
-        loop [[1], 1] 'value [
-            [[unpacker]]: value
+        value: [1]
+        [[unpacker]]: value
 
-            assert -> block? unpacker
-            assert -> unpacker = value
-            
-            unset 'unpacker
-        ]
+        assert -> block? unpacker
+        assert -> unpacker = value
     ]
 
     test "let can unpack values when the unpacker is on middle" [
@@ -50,6 +47,13 @@ suite "Allowed Operations" [
 
 
 suite "Unallowed Operations" [
+
+    test "let can't unpack non- :block s" [
+        assert -> throws? [
+            value: 1
+            [[unpacker]]: value
+        ]
+    ]
 
     test "let can't unpack more than once" [
         assert -> throws? [
