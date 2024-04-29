@@ -485,7 +485,7 @@ proc defineLibrary*() =
         rule        = PrefixPrecedence,
         description = "export given module or dictionary to current scope",
         args        = {
-            "module"     : {Module, Dictionary}
+            "module"     : {Module, Dictionary, Object}
         },
         attrs       = {
             "all"   : ({Logical},"export everything, regardless of whether it's been marked as public (makes sense only for modules)")
@@ -498,18 +498,32 @@ proc defineLibrary*() =
             #=======================================================
             let exportAll = hadAttr("all")
 
-            if xKind == Module:
+            if xKind in {Module, Object}:
 
-                let internalObj = "__" & x.singleton.proto.name
-                SetSym(internalObj, x.singleton)
+                var internalObjName = 
+                    if xKind == Module:
+                        "__" & x.singleton.proto.name
+                    else:
+                        when not defined(WEB):
+                            "__omodule" & "_" & $(genOid())
+                        else:
+                            "__omodule" & "_" & $(rand(1_000_000_000..2_000_000_000))
 
-                for k,v in x.singleton.o.pairs:
+                SetSym(internalObjName, x.singleton)
+
+                var valuePairs = 
+                    if xKind == Module:
+                        x.singleton.o
+                    else:
+                        x.o
+
+                for k,v in valuePairs.pairs:
                     if v.kind == Method and (exportAll or v.mpublic):
                         let newParams = v.mparams.filter((prm) => prm != "this").map((prm) => newString(prm))
                         var newBody = copyValue(v.mmain)
                         newBody = newBlock(@[
                             newLabel("this"),
-                            newWord(internalObj),
+                            newWord(internalObjName),
                             newWord("do"),
                             newBody
                         ])
