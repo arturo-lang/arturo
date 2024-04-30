@@ -37,6 +37,8 @@ else:
 import helpers/datasource
 import helpers/objects
 
+import vm/values/printable
+
 import vm/lib
 import vm/[errors, eval, exec, parse, runtime]
 
@@ -862,6 +864,10 @@ proc defineLibrary*() =
                 if multiple:
                     push(newBlock(ret))
 
+
+    # TOOD(Core\let) Update thrown errors
+    # Basically those errors are placeholders, and need to be replaced very soon.
+    # Related: https://github.com/arturo-lang/arturo/pull/1601#issuecomment-2059027876
     builtin "let",
         alias       = colon, 
         op          = opNop,
@@ -894,6 +900,13 @@ proc defineLibrary*() =
             print b                 ; 5
             print c                 ; 5
             ..........
+            ; unpacking slices and multiple assignment
+            [a [b] d c]: [1 2 3 4 5]
+            print a                 ; 1
+            print b                 ; [2 3]
+            print c                 ; 4
+            print d                 ; 5
+            ..........
             ; tuple unpacking
             divmod: function [x,y][
                 @[x/y x%y]
@@ -901,13 +914,74 @@ proc defineLibrary*() =
             [d,m]: divmod 10 3      ; d: 3, m: 1
         """:
             #=======================================================
-            if xKind==Block:
-                if yKind==Block:
-                    for i,w in pairs(x.a):
-                        SetSym(w.s, y.a[i], safe=true)
+            if xKind==Block and yKind!=Block:
+                for symbol in x.a:
+                    if symbol.kind != Word:
+                        Error_OperationNotPermitted(
+                                "Can't assign unknown type.")
+
+                for symbol in x.a:
+                    SetSym(symbol.s, y, safe=true)
+            
+            elif xKind==Block:
+
+                if x.a.len > y.a.len:
+                    # Example: [a b]: [1]
+                    # Example: [a [b]]: [1]
+                    Error_OperationNotPermitted("Missing values to unpack")
+
+                let diff = y.a.len - x.a.len
+                var leftItems = 0
+                var blockFound = false
+                
+                for idx, el in x.a.pairs:
+                    if el.kind notin {Block, Word, String, Literal}:
+                        Error_OperationNotPermitted(
+                                "Can't assign unknown type.")
+                    if el.kind == Block:
+                        if blockFound:
+                            # Example: [[a] [b]]: [1 2]
+                            Error_OperationNotPermitted(
+                                "Can't unpack multiple slices.")
+                        if el.a.len == 1:
+                            if el.a[0].kind notin {Word, String, Literal}:
+                                Error_OperationNotPermitted(
+                                    "Can't assign unknown type.")
+                        if el.a.len > 1:
+                            # Example: [[a b]]: [1 2]
+                            Error_OperationNotPermitted(
+                                "Unpacking slice supports only one assignment")
+                        blockFound = true
+                        leftItems = idx
+
+                if not blockFound:
+                    if x.a.len < y.a.len:
+                        # Example: [a]: [1 2]
+                        Error_OperationNotPermitted(
+                                "Missing assign variables to unpack")
+
+                    for idx, symbol in x.a.pairs:
+                        SetSym(symbol.s, y.a[idx], safe=true)
                 else:
-                    for w in items(x.a):
-                        SetSym(w.s, y, safe=true)
+
+                    # Left side
+                    for idx in 0..<leftItems:
+                        let symbol = x.a[idx]
+                        SetSym(symbol.s, y.a[idx], safe=true)
+
+                    # Unpack
+                    if x.a[leftItems].a.len != 0:
+                        let 
+                            symbol = x.a[leftItems].a[0]
+                            unpackedBuffer = y.a[(leftItems)..(leftItems + diff)]
+
+                        SetSym(symbol.s, newBlock(unpackedBuffer), safe=true)
+
+                    # Right side
+                    for idx in leftItems..(x.a.high):
+                        let symbol = x.a[idx]
+                        SetSym(symbol.s, y.a[idx + diff], safe=true)
+
             else:
                 SetInPlace(y, safe=true)
 

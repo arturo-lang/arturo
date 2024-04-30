@@ -1,0 +1,94 @@
+import {unitt}!
+
+
+suite "Allowed Operations" [
+
+    test "multiple assignment to a single value when this is not a :block" [
+        value: 5
+        [a b c]: value
+
+        assert -> a = value
+        assert -> b = value
+        assert -> c = value
+    ]
+
+    test "unpacked value always returns a :block" [
+        value: [1]
+        [[unpacker]]: value
+
+        assert -> block? unpacker
+        assert -> unpacker = value
+    ]
+
+    test "let can unpack values when the unpacker is on middle" [
+        [a [b] c]: [1 2 3 4 5]
+
+        assert -> a = 1
+        assert -> b = [2 3 4]
+        assert -> c = 5
+    ]
+
+    test "let can unpack values when the unpacker is on the left" [
+        [[a] b c]: [1 2 3 4 5]
+
+        assert -> a = [1 2 3]
+        assert -> b = 4
+        assert -> c = 5
+    ]
+
+    test "let can unpack values when the unpacker is on the right" [
+        [a b [c]]: [1 2 3 4 5]
+
+        assert -> a = 1
+        assert -> b = 2
+        assert -> c = [3 4 5]
+    ]
+    
+    test "let can skip values to be unpacked if the unpacker is empty" [
+        [a [] c]: [1 2 3 4 5]
+
+        assert -> a = 1
+        assert -> c = 5
+    ]
+]
+
+
+suite "Unallowed Operations" [
+
+    test "let can't unpack non- :block s" [
+        assert -> throws? [
+            value: 1
+            [[unpacker]]: value
+        ]
+    ]
+
+    test "let can't unpack more than once" [
+        assert -> throws? [
+            [[a] [b]]: [1 2 3 4]
+        ]
+    ]
+
+    test "let can't assign to unknown types" [
+        assert -> throws? [
+            [*b]: [1 2 3 4]
+        ]
+        
+        assert -> throws? [
+            [a [*] c]: [1 2 3 4]
+        ]
+    ]
+
+    test "let can't assign when values are missing" [
+        assert -> throws? [
+            [a b c]: [1 2]
+        ]
+    ]
+
+    test "let can't assign when values are missing" [
+        assert -> throws? [
+            [a b c]: [1 2]
+        ]
+    ]
+
+]
+
