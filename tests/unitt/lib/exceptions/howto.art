@@ -1,0 +1,44 @@
+;; This file is descriptive and isn't functional, so don't try to run it.
+;; But instead, this is a reference about how to properly catch errors or values that may or not exist.
+;;
+;; The syntax of this descriptions is inspired by RSpec and Bacon
+;; References: https://github.com/leahneukirchen/bacon
+
+if standalone? [
+    throw "This code must not be run or imported"
+]
+
+
+describe "Catching errors and returnnig values for perfect functions" [
+
+    before "A perfect function" [
+        neverFails: $[][
+            "I never fail!"
+        ]
+    ]
+
+    it "error should be null and the value be available" [
+        if err: <= try [value: neverFails] [
+            assert -> null? err
+            assert -> "I never fail!" = value
+        ]
+    ]
+
+]
+
+describe "Catching errors and returnnig values for defective functions" [
+
+    before "A defective function" [
+        alwaysFails: $[][
+            throw "I've failed!"
+        ]
+    ]
+
+    it "error should exists and the value be unavailable" [
+        if err: <= try [value: alwaysFails] [
+            assert -> error? err
+            assert -> not? set? 'value
+        ]
+    ]
+
+]
