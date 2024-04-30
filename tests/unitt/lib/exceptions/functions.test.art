@@ -22,6 +22,16 @@ suite "Tests the internal functions" [
         ]
     ]
 
+    test.prop "try returns the thown error" [
+        err: try [throw "error"]
+        assert -> error? err
+    ]
+    
+    test.prop "try returns null is none error is thrown" [
+        err: try [someLabel: "some value"]
+        assert -> null? err 
+    ]
+
     test "thrown errors at user level are runtime errors by default" [
         fileNotFound: try [ throw "File not found" ]
         assert -> runtimeError = fileNotFound
