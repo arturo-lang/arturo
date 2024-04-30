@@ -18,7 +18,7 @@ suite "Tests the internal functions" [
 
     test.prop "thrown error is catched by 'throws?" [
         assert -> not? throws? [
-            throws? [ throw "File not found" ]
+            a: throws? [ throw "File not found" ]
         ]
     ]
 
