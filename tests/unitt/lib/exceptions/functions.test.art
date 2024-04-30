@@ -1,0 +1,45 @@
+;; Tests for the Exceptions's Internal Library
+
+import {unitt}!
+
+
+fileNotFound: try [ throw "File not found" ]
+
+
+suite "Tests the internal functions" [
+
+    test.prop "thrown error is catched by 'try" [
+        assert -> not? throws? [
+            error: try [
+                throw "File not found"
+            ]
+        ]
+    ]
+
+    test.prop "thrown error is catched by 'throws?" [
+        assert -> not? throws? [
+            a: throws? [ throw "File not found" ]
+        ]
+    ]
+
+    test.prop "try returns the thown error" [
+        err: try [throw "error"]
+        assert -> error? err
+    ]
+    
+    test.prop "try returns null is none error is thrown" [
+        err: try [someLabel: "some value"]
+        assert -> null? err 
+    ]
+
+    test "thrown errors at user level are runtime errors by default" [
+        fileNotFound: try [ throw "File not found" ]
+        assert -> runtimeError = fileNotFound
+    ]
+    
+    test "throw's message parameter goes to :error's message member" [
+        fileNotFound: try [ throw "File not found" ]
+        assert -> "File not found" = fileNotFound\message
+    ]
+
+]
