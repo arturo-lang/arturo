@@ -384,11 +384,14 @@ proc execFunction*(fun: Value, fid: Hash) =
         # pop argument and set it
         SetSym(arg, stack.pop())
 
-    if fun.bcode.isNil:
-        fun.bcode = newBytecode(doEval(fun.main, isFunctionBlock=true))
-
     try:
-        ExecLoop(fun.bcode().trans.constants, fun.bcode().trans.instructions)
+        if not fun.bcode.isNil:
+            ExecLoop(fun.bcode().trans.constants, fun.bcode().trans.instructions)
+        else:
+            let (trans, storable) = doEvalAndCheckSafety(fun.main, isFunctionBlock)
+            if storable:
+                fun.bcode = newBytecode(trans)
+            ExecLoop(trans.constants, trans.instructions)
 
     except ReturnTriggered:
         discard
@@ -448,11 +451,14 @@ proc execFunctionInline*(fun: Value, fid: Hash) =
         # pop argument and set it
         SetSym(arg, stack.pop())
 
-    if fun.bcode.isNil:
-        fun.bcode = newBytecode(doEval(fun.main, isFunctionBlock=true))
-
     try:
-        ExecLoop(fun.bcode().trans.constants, fun.bcode().trans.instructions)
+        if not fun.bcode.isNil:
+            ExecLoop(fun.bcode().trans.constants, fun.bcode().trans.instructions)
+        else:
+            let (trans, storable) = doEvalAndCheckSafety(fun.main, isFunctionBlock)
+            if storable:
+                fun.bcode = newBytecode(trans)
+            ExecLoop(trans.constants, trans.instructions)
 
     except ReturnTriggered:
         discard
@@ -489,11 +495,14 @@ proc execMethod*(meth: Value, fid: Hash) =
         # pop argument and set it
         SetSym(arg, stack.pop())
 
-    if meth.mbcode.isNil:
-        meth.mbcode = newBytecode(doEval(meth.mmain, isFunctionBlock=true))
-
     try:
-        ExecLoop(meth.mbcode().trans.constants, meth.mbcode().trans.instructions)
+        if not meth.mbcode.isNil:
+            ExecLoop(meth.mbcode().trans.constants, fun.mbcode().trans.instructions)
+        else:
+            let (trans, storable) = doEvalAndCheckSafety(meth.mmain, isFunctionBlock)
+            if storable:
+                meth.mbcode = newBytecode(trans)
+            ExecLoop(trans.constants, trans.instructions)
 
     except ReturnTriggered:
         discard
