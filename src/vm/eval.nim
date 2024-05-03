@@ -294,11 +294,11 @@ template optimizeConditional(
             canWeOptimize = right.kind == ConstantValue and right.value.kind == Block
 
     if canWeOptimize:
-        let rightNode = generateAst(right.value, reuseArities=true)
+        let (rightNode,_) = generateAst(right.value, reuseArities=true)
 
         when withLoop:
             var leftIt: VBinary
-            let leftNode = generateAst(left.value, reuseArities=true)
+            let (leftNode,_) = generateAst(left.value, reuseArities=true)
 
         let stillProceed =
             when withLoop:
@@ -323,7 +323,8 @@ template optimizeConditional(
             when withPotentialElse:
                 # separately ast+evaluate else child block     
                 var elseIt: VBinary
-                evaluateBlock(generateAst(elseChild.value, reuseArities=true), consts, elseIt)
+                let (elseAstNode,_) = generateAst(elseChild.value, reuseArities=true)
+                evaluateBlock(elseAstNode, consts, elseIt)
 
             # get operand & added to the instructions
             let (newOp, replaceOp) = 
@@ -579,7 +580,8 @@ proc doEval*(root: Value, isDictionary=false, isFunctionBlock=false, omitNewline
     var consts: ValueArray
     var it: VBinary
 
-    evaluateBlock(generateAst(root, asDictionary=isDictionary, asFunction=isFunctionBlock), consts, it, isDictionary=isDictionary, omitNewlines=omitNewlines)
+    let (astNode, canStore) = generateAst(root, asDictionary=isDictionary, asFunction=isFunctionBlock)
+    evaluateBlock(astNode, consts, it, isDictionary=isDictionary, omitNewlines=omitNewlines)
     it.add(byte(opEnd))
 
     result = Translation(constants: consts, instructions: it)
@@ -587,7 +589,7 @@ proc doEval*(root: Value, isDictionary=false, isFunctionBlock=false, omitNewline
     #dump(newBytecode(result))
 
     when useStored:
-        if vhash != -1:
+        if vhash != -1 and canStore:
             StoredTranslations[vhash] = result
 
 template evalOrGet*(item: Value, isFunction=false): untyped =
