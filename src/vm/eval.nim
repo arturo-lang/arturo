@@ -589,7 +589,7 @@ proc doEval*(root: Value, isDictionary=false, isFunctionBlock=false, omitNewline
     #dump(newBytecode(result))
 
     when useStored:
-        if vhash != -1 and canStore:
+        if canStore and vhash != -1:
             StoredTranslations[vhash] = result
 
 template evalOrGet*(item: Value, isFunction=false): untyped =
