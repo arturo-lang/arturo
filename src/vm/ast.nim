@@ -967,7 +967,7 @@ proc generateAst*(parsed: Value, asDictionary=false, asFunction=false, reuseArit
     var res = newRootNode()
 
     PipeParent = nil
-    CanStore = false
+    CanStore = true
 
     when not reuseArities:
         TmpArities = collect:
