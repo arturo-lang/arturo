@@ -107,6 +107,7 @@ var
     ArrowBlock : seq[ValueArray]
 
     PipeParent : Node
+    CanStore   : bool
 
 #=======================================
 # Constants
@@ -588,6 +589,7 @@ proc processBlock*(
                 var methodInvocation: Node
                 var ar: int8
                 var limitArity: int8
+                CanStore = false
                 if actualMethod.kind == Method:
                     ar = actualMethod.marity
                     limitArity = 2
@@ -961,10 +963,11 @@ proc dumpNode*(node: Node, level = 0, single: static bool = false, showNewlines:
 # Main
 #=======================================
 
-proc generateAst*(parsed: Value, asDictionary=false, asFunction=false, reuseArities: static bool=false): Node =
-    result = newRootNode()
+proc generateAst*(parsed: Value, asDictionary=false, asFunction=false, reuseArities: static bool=false): (Node, bool) =
+    var res = newRootNode()
 
     PipeParent = nil
+    CanStore = true
 
     when not reuseArities:
         TmpArities = collect:
@@ -972,6 +975,7 @@ proc generateAst*(parsed: Value, asDictionary=false, asFunction=false, reuseArit
                 if v.kind == Function:
                     {k: v.arity}
 
-    discard result.processBlock(parsed, asDictionary=asDictionary, asFunction=asFunction)
+    discard res.processBlock(parsed, asDictionary=asDictionary, asFunction=asFunction)
+    return (res, CanStore)
 
     #echo dumpNode(result)
