@@ -388,7 +388,7 @@ proc execFunction*(fun: Value, fid: Hash) =
         if not fun.bcode.isNil:
             ExecLoop(fun.bcode().trans.constants, fun.bcode().trans.instructions)
         else:
-            let (trans, storable) = doEvalAndCheckSafety(fun.main, isFunctionBlock)
+            let (trans, storable) = doEvalAndCheckSafety(fun.main, isFunctionBlock=true)
             if storable:
                 fun.bcode = newBytecode(trans)
             ExecLoop(trans.constants, trans.instructions)
@@ -455,7 +455,7 @@ proc execFunctionInline*(fun: Value, fid: Hash) =
         if not fun.bcode.isNil:
             ExecLoop(fun.bcode().trans.constants, fun.bcode().trans.instructions)
         else:
-            let (trans, storable) = doEvalAndCheckSafety(fun.main, isFunctionBlock)
+            let (trans, storable) = doEvalAndCheckSafety(fun.main, isFunctionBlock=true)
             if storable:
                 fun.bcode = newBytecode(trans)
             ExecLoop(trans.constants, trans.instructions)
@@ -499,7 +499,7 @@ proc execMethod*(meth: Value, fid: Hash) =
         if not meth.mbcode.isNil:
             ExecLoop(meth.mbcode().trans.constants, fun.mbcode().trans.instructions)
         else:
-            let (trans, storable) = doEvalAndCheckSafety(meth.mmain, isFunctionBlock)
+            let (trans, storable) = doEvalAndCheckSafety(meth.mmain, isFunctionBlock=true)
             if storable:
                 meth.mbcode = newBytecode(trans)
             ExecLoop(trans.constants, trans.instructions)
