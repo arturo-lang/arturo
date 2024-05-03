@@ -294,11 +294,11 @@ template optimizeConditional(
             canWeOptimize = right.kind == ConstantValue and right.value.kind == Block
 
     if canWeOptimize:
-        let rightNode = generateAst(right.value, reuseArities=true)
+        let (rightNode,_) = generateAst(right.value, reuseArities=true)
 
         when withLoop:
             var leftIt: VBinary
-            let leftNode = generateAst(left.value, reuseArities=true)
+            let (leftNode,_) = generateAst(left.value, reuseArities=true)
 
         let stillProceed =
             when withLoop:
@@ -323,7 +323,8 @@ template optimizeConditional(
             when withPotentialElse:
                 # separately ast+evaluate else child block     
                 var elseIt: VBinary
-                evaluateBlock(generateAst(elseChild.value, reuseArities=true), consts, elseIt)
+                let (elseAstNode,_) = generateAst(elseChild.value, reuseArities=true)
+                evaluateBlock(elseAstNode, consts, elseIt)
 
             # get operand & added to the instructions
             let (newOp, replaceOp) = 
@@ -564,7 +565,7 @@ proc evaluateBlock*(blok: Node, consts: var ValueArray, it: var VBinary, isDicti
 # Main
 #=======================================
 
-proc doEval*(root: Value, isDictionary=false, isFunctionBlock=false, omitNewlines=false, useStored: static bool = true): Translation {.inline.} = 
+proc doEvalAndCheckSafety*(root: Value, isDictionary=false, isFunctionBlock=false, omitNewlines=false, useStored: static bool = true): (Translation, bool) {.inline.} = 
     ## Take a parsed Block of values and return its Translation - 
     ## that is: the constants found + the list of bytecode instructions
     
@@ -574,21 +575,27 @@ proc doEval*(root: Value, isDictionary=false, isFunctionBlock=false, omitNewline
         if not root.dynamic:
             vhash = hash(root)
             if (let storedTranslation = StoredTranslations.getOrDefault(vhash, nil); not storedTranslation.isNil):
-                return storedTranslation
+                return (storedTranslation, true)
 
     var consts: ValueArray
     var it: VBinary
 
-    evaluateBlock(generateAst(root, asDictionary=isDictionary, asFunction=isFunctionBlock), consts, it, isDictionary=isDictionary, omitNewlines=omitNewlines)
+    let (astNode, canStore {.used.})  = generateAst(root, asDictionary=isDictionary, asFunction=isFunctionBlock)
+    evaluateBlock(astNode, consts, it, isDictionary=isDictionary, omitNewlines=omitNewlines)
     it.add(byte(opEnd))
 
-    result = Translation(constants: consts, instructions: it)
+    var res = Translation(constants: consts, instructions: it)
 
     #dump(newBytecode(result))
-
     when useStored:
-        if vhash != -1:
-            StoredTranslations[vhash] = result
+        if canStore and (vhash != -1):
+            StoredTranslations[vhash] = res
+        return (res, canStore)
+    else:
+        return (res, false)
+
+proc doEval*(root: Value, isDictionary=false, isFunctionBlock=false, omitNewlines=false, useStored: static bool = true): Translation {.inline.} =
+    return doEvalAndCheckSafety(root, isDictionary, isFunctionBlock, omitNewlines, useStored)[0]
 
 template evalOrGet*(item: Value, isFunction=false): untyped =
     if item.kind==Bytecode: item.trans
