@@ -580,7 +580,7 @@ proc doEvalAndCheckSafety*(root: Value, isDictionary=false, isFunctionBlock=fals
     var consts: ValueArray
     var it: VBinary
 
-    let (astNode, canStore) = generateAst(root, asDictionary=isDictionary, asFunction=isFunctionBlock)
+    let (astNode, canStore {.used.})  = generateAst(root, asDictionary=isDictionary, asFunction=isFunctionBlock)
     evaluateBlock(astNode, consts, it, isDictionary=isDictionary, omitNewlines=omitNewlines)
     it.add(byte(opEnd))
 
