@@ -575,7 +575,7 @@ proc doEvalAndCheckSafety*(root: Value, isDictionary=false, isFunctionBlock=fals
         if not root.dynamic:
             vhash = hash(root)
             if (let storedTranslation = StoredTranslations.getOrDefault(vhash, nil); not storedTranslation.isNil):
-                return storedTranslation
+                return (storedTranslation, true)
 
     var consts: ValueArray
     var it: VBinary
@@ -589,7 +589,7 @@ proc doEvalAndCheckSafety*(root: Value, isDictionary=false, isFunctionBlock=fals
     #dump(newBytecode(result))
     when useStored:
         if canStore and (vhash != -1):
-            StoredTranslations[vhash] = result
+            StoredTranslations[vhash] = res
         return (res, canStore)
     else:
         return (res, false)
