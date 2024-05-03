@@ -595,7 +595,7 @@ proc doEvalAndCheckSafety*(root: Value, isDictionary=false, isFunctionBlock=fals
         return (res, false)
 
 proc doEval*(root: Value, isDictionary=false, isFunctionBlock=false, omitNewlines=false, useStored: static bool = true): Translation {.inline.} =
-    (result, _) = doEvalAndCheckSafety(root, isDictionary, isFunctionBlock, omitNewlines, useStored)
+    return doEvalAndCheckSafety(root, isDictionary, isFunctionBlock, omitNewlines, useStored)[0]
 
 template evalOrGet*(item: Value, isFunction=false): untyped =
     if item.kind==Bytecode: item.trans
