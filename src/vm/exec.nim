@@ -497,7 +497,7 @@ proc execMethod*(meth: Value, fid: Hash) =
 
     try:
         if not meth.mbcode.isNil:
-            ExecLoop(meth.mbcode().trans.constants, fun.mbcode().trans.instructions)
+            ExecLoop(meth.mbcode().trans.constants, meth.mbcode().trans.instructions)
         else:
             let (trans, storable) = doEvalAndCheckSafety(meth.mmain, isFunctionBlock=true)
             if storable:
