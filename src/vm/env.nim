@@ -12,10 +12,8 @@
 # Libraries
 #=======================================
 when not defined(WEB):
+    import cpuinfo, nativesockets
     import parseopt, sequtils, sugar
-
-when not defined(WEB):
-    import nativesockets
 
 when defined(GMP):
     import extras/gmp
@@ -129,6 +127,9 @@ proc getSystemInfo*(): ValueDict =
                 newLiteral("little")
             else:
                 newLiteral("big")
+
+        when not defined(WEB):
+            result["cpu"].d["cores"] = newInteger(countProcessors())
 
         when not defined(WEB):
             result["hostname"] = newString(getHostname())
