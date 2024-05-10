@@ -26,7 +26,7 @@ when not defined(NOSQLITE):
 
 import pcre
 
-import os, strutils, tables, times, system
+import cpuinfo, os, strutils, tables, times, system
 
 import helpers/system
 import helpers/terminal
@@ -129,6 +129,8 @@ proc getSystemInfo*(): ValueDict =
                 newLiteral("little")
             else:
                 newLiteral("big")
+
+        result["cpu"].d["cores"] = newInteger(countProcessors())
 
         when not defined(WEB):
             result["hostname"] = newString(getHostname())
