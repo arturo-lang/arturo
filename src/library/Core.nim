@@ -466,7 +466,7 @@ proc defineLibrary*() =
 
             print "good, the number is positive indeed. let's continue..."
             ..........
-            ensure.message: "Wrong calc" ->  0 = 1 + 1
+            ensure.that: "Wrong calc" ->  0 = 1 + 1
             ; >> Assertion | "Wrong calc": [0 = 1 + 1]
             ;        error |
         """:
