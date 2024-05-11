@@ -1329,7 +1329,7 @@ proc defineLibrary*() =
         returns     = {Any},
         example     = """
             a: 2
-            print var 'a            ; a
+            print var 'a            ; 2
 
             f: function [x][x+2]
             print f 10              ; 12
