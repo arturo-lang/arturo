@@ -33,7 +33,7 @@ when not defined(WEB):
 
 when not defined(WEB) and not defined(PORTABLE):
     import parseopt, re
-    import vm/[bytecode, env, errors, package, version]
+    import vm/[bytecode, env, errors, version]
 
 import vm/vm
 
