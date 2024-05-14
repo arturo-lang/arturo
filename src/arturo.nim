@@ -54,7 +54,6 @@ when not defined(WEB) and not defined(PORTABLE):
             evalCode
             readBcode
             writeBcode
-            showPInfo
             packagerMode
             showHelp
             showVersion
