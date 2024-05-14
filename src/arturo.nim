@@ -54,6 +54,7 @@ when not defined(WEB) and not defined(PORTABLE):
             evalCode
             readBcode
             writeBcode
+            generateBundle
             packagerMode
             showHelp
             showVersion
@@ -92,6 +93,8 @@ Commands:
 
     -c, --compile <script>                  Compile script and write bytecode
     -x, --execute <bytecode>                Execute script from bytecode
+
+    -b, --bundle <path>                     Bundle file as an executable
 
     -r, --repl                              Show repl / interactive console
     
@@ -208,6 +211,9 @@ when isMainModule and not defined(WEB):
                             code = token.val
                         of "x","execute":
                             action = readBcode
+                            code = token.val
+                        of "b","bundle":
+                            action = generateBundle
                             code = token.val
                         # of "u","update":
                         #     action = evalCode
