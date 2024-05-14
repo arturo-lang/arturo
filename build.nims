@@ -13,7 +13,7 @@
 # Libraries
 #=======================================
 
-import os
+import std/json, os
 import strformat, strutils
 
 import ".config/utils/ui.nims"
@@ -292,7 +292,9 @@ proc buildArturo*(config: BuildConfig, targetFile: string) =
 
     proc setBundlemodeUp() =
         bundleConfig()
-        putEnv "BUNDLESRC", config.bundle
+        let bundleInfo = parseJson(readFile(config.bundle))
+        putEnv "BUNDLE_ENTRY", bundleInfo["entry"].str
+        putEnv "BUNDLE_DATA", ""
 
     proc tryCompilation(config: BuildConfig) =
         ## Panics if can't compile.
