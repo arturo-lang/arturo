@@ -96,7 +96,7 @@ template require*(name: string, spec: untyped): untyped =
                         showWrongArgumentTypeError(currentBuiltinName, 2, [x,y,z], spec)
 
 template requireBlockSize*(v: Value, expected: int, maxExpected: int = 0) =
-    when not defined(PORTABLE):
+    when not defined(BUNDLE):
         when maxExpected == 0:
             if unlikely(v.a.len != expected):
                 Error_IncompatibleBlockSize(currentBuiltinName, v.a.len, $(expected))
@@ -105,7 +105,7 @@ template requireBlockSize*(v: Value, expected: int, maxExpected: int = 0) =
                 Error_IncompatibleBlockSize(currentBuiltinName, v.a.len, $(expected) & ".." & $(maxExpected))
 
 template requireValue*(v: Value, expected: set[ValueKind], position: int = 1, message: set[ValueKind] | string = {}) = 
-    when not defined(PORTABLE):
+    when not defined(BUNDLE):
         template pre(): untyped {.redefine.} = 
             when position == 2:
                 valueKind(x) & " "
@@ -125,7 +125,7 @@ template requireValueBlock*(v: Value, expected: set[ValueKind], position: int = 
         requireValue(item, expected, position, message)
 
 template requireAttrValue*(attr: string, v: Value, expected: set[ValueKind], message: set[ValueKind] | string = {}) =
-    when not defined(PORTABLE):
+    when not defined(BUNDLE):
         if unlikely(v.kind notin expected):
             when message is string:
                 showWrongValueAttrTypeError(currentBuiltinName, attr, v, message)

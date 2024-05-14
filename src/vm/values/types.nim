@@ -263,8 +263,7 @@ type
     #  Quantity + Rational values specifically
     #  labels: vm, values, enhancement
     Value* {.final,acyclic.} = ref object
-        when not defined(PORTABLE):
-            info*   : ValueInfo
+        info*   : ValueInfo
 
         ln*     : uint32
         flags*  : ValueFlags

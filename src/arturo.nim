@@ -31,7 +31,7 @@ when defined(BUNDLE):
 when not defined(WEB):
     import helpers/terminal
 
-when not defined(WEB) and not defined(PORTABLE):
+when not defined(WEB) and not defined(BUNDLE):
     import parseopt, re
     import vm/[bytecode, env, errors, version]
 
@@ -42,7 +42,7 @@ when not defined(WEB):
     when not defined(MINI):
         import vm/[packager]
 
-when not defined(WEB) and not defined(PORTABLE):
+when not defined(WEB) and not defined(BUNDLE):
 
     #=======================================
     # Types

@@ -37,12 +37,10 @@ const
 when defined(PORTABLE):
     import algorithm, json, os, sugar
 
-    let js {.compileTime.} = parseJson(static readFile(getEnv("PORTABLE_DATA")))
-    let funcs {.compileTime.} = toSeq(js["uses"]["functions"]).map((x) => x.getStr())
-    let compact {.compileTime.} = js["compact"].getStr() == "true"
+    let js {.compileTime.} = parseJson(static getEnv("BUNDLE_FUNCTIONS"))
+    let bundledFuncs {.compileTime.} = toSeq(js).map((x) => x.getStr())
 else:
-    let funcs {.compileTime.}: seq[string] = @[]
-    let compact {.compileTime.} = false
+    let bundledFuncs {.compileTime.}: seq[string] = @[]
 
 # template expandTypesets*(args: untyped): untyped =
 #     when (static args.len)==1 and args!=NoArgs:
@@ -78,7 +76,7 @@ template builtin*(n: string, alias: VSymbol, op: OpCode, rule: PrecedenceKind, d
     ## rule, etc - followed by the code block to be 
     ## executed when the function is called
     
-    when not defined(PORTABLE) or not compact or funcs.contains(n):
+    when not defined(BUNDLE) or bundledFuncs.contains(n):
         
         when defined(DEV):
             static: echo " -> " & n
