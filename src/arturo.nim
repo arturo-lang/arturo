@@ -267,6 +267,9 @@ when isMainModule and not defined(WEB):
                 let bcode = readBytecode(code)
                 let parsed = doParse(bcode[0], isFile=false).a[0]
                 runBytecode(Translation(constants: parsed.a, instructions: bcode[1]), filename, arguments)
+            
+            of generateBundle:
+                generateBundle(filename)
 
             of packagerMode:
                 packagerMode(code, arguments)
