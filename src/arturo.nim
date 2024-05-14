@@ -269,7 +269,7 @@ when isMainModule and not defined(WEB):
                 runBytecode(Translation(constants: parsed.a, instructions: bcode[1]), filename, arguments)
             
             of generateBundle:
-                generateBundle(filename)
+                generateBundle(code)
 
             of packagerMode:
                 packagerMode(code, arguments)
