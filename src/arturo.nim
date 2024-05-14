@@ -207,9 +207,6 @@ when isMainModule and not defined(WEB):
                         of "c","compile":
                             action = writeBcode
                             code = token.val
-                        of "package-info":
-                            action = showPInfo
-                            code = token.val
                         of "x","execute":
                             action = readBcode
                             code = token.val
@@ -268,9 +265,6 @@ when isMainModule and not defined(WEB):
 
             of packagerMode:
                 packagerMode(code, arguments)
-
-            of showPInfo:
-                showPackageInfo(code)
 
             of showHelp:
                 printHelp()
