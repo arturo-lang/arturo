@@ -30,7 +30,7 @@ when not defined(WEB):
     import helpers/ffi
     when not defined(MINI):
         import os
-        import helpers/packager
+        import vm/[packager]
 else:
     import random
 

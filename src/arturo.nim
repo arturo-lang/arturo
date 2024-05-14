@@ -29,8 +29,6 @@ when defined(BUNDLE):
     import os
 
 when not defined(WEB):
-    when not defined(MINI):
-        import helpers/packager
     import helpers/terminal
 
 when not defined(WEB) and not defined(PORTABLE):
@@ -41,6 +39,8 @@ import vm/vm
 
 when not defined(WEB):
     import vm/[bundle, parse, values/value, values/printable]
+    when not defined(MINI):
+        import vm/[packager]
 
 when not defined(WEB) and not defined(PORTABLE):
 
