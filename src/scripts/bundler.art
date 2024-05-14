@@ -1,0 +1,9 @@
+tmpFolder: arg\0
+entryName: arg\1
+
+target: extract.filename entryName
+
+write "|tmpFolder|/|target|._entry" read entryName
+write.json "|tmpFolder|/|target|._data" #[]
+write.json "|tmpFolder|/|target|._modules" #[]
+print color #green "Done."
