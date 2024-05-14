@@ -25,7 +25,7 @@ else:
 when defined(PROFILE):
     import nimprof
 
-when defined(PORTABLE):
+when defined(BUNDLE):
     import os
 
 when not defined(WEB):
@@ -175,7 +175,7 @@ when isMainModule and not defined(WEB):
     var code: string
     var arguments: seq[string]
 
-    when not defined(PORTABLE):
+    when not defined(BUNDLE):
         var token = initOptParser()
 
         var action: CmdAction = evalCode
@@ -277,9 +277,9 @@ when isMainModule and not defined(WEB):
             of showVersion:
                 echo ArturoVersionTxt
     else:
-        arguments = commandLineParams()
-        code = static readFile(getEnv("PORTABLE_INPUT"))
-        let portable = static readFile(getEnv("PORTABLE_DATA"))
+        arguments = @[]#commandLineParams()
+        code = static getEnv("BUNDLE_ENTRY")
+        let portable = static getEnv("BUNDLE_DATA")
 
         discard run(code, arguments, isFile=false, withData=portable)
 else:
