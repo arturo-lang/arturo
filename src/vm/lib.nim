@@ -77,8 +77,6 @@ template builtin*(n: string, alias: VSymbol, op: OpCode, rule: PrecedenceKind, d
     ## executed when the function is called
     
     when not defined(BUNDLE) or bundledFuncs.contains(n):
-        static: echo "Adding support for " & n
-        
         when defined(DEV):
             static: echo " -> " & n
 
