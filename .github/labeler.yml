@@ -4,6 +4,10 @@
 ast:
   - src/vm/ast.nim
 
+bundler:
+  - src/scripts/bundler.art
+  - src/vm/bundle.nim
+
 bytecode:
   - src/vm/bytecode.nim
   - src/vm/opcodes.nim
@@ -56,7 +60,6 @@ openbsd:
 
 package manager:
   - src/vm/packager.nim
-  - src/scripts/module.art
 
 parser:
   - src/vm/parse.nim
