@@ -79,9 +79,11 @@ func buildConfig(): BuildConfig =
     (
         binary:             "bin/arturo".toExe,
         version:            "@full",
+        bundle:             "",
         shouldCompress:     true,
         shouldInstall:      false,
         shouldLog:          false,
+        generateBundle:     false,
         isDeveloper:        false,
     )
 
@@ -261,7 +263,10 @@ proc showBuildInfo*(config: BuildConfig) =
         version = "version/version".staticRead()
         build = "version/build".staticRead()
 
-    section "Building..."
+    if config.generateBundle:
+        section "Bundling..."
+    else:
+        section "Building..."
     log fmt"version: {version}/{build}"
     log fmt"config: {config.version}"
 
