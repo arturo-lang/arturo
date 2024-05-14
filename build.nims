@@ -292,9 +292,9 @@ proc buildArturo*(config: BuildConfig, targetFile: string) =
 
     proc setBundlemodeUp() =
         bundleConfig()
-        let bundleInfo = parseJson(readFile(config.bundle))
-        putEnv "BUNDLE_ENTRY", bundleInfo["entry"].str
-        putEnv "BUNDLE_DATA", ""
+        putEnv "BUNDLE_ENTRY", readFile(config.bundle & "._entry")
+        putEnv "BUNDLE_DATA", readFile(config.bundle & "._data")
+        putEnv "BUNDLE_MODULES", readFile(config.bundle & "._modules")
 
     proc tryCompilation(config: BuildConfig) =
         ## Panics if can't compile.
