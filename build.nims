@@ -295,6 +295,7 @@ proc buildArturo*(config: BuildConfig, targetFile: string) =
         putEnv "BUNDLE_ENTRY", readFile(config.bundle & "._entry")
         putEnv "BUNDLE_DATA", readFile(config.bundle & "._data")
         putEnv "BUNDLE_MODULES", readFile(config.bundle & "._modules")
+        putEnv "BUNDLE_FUNCTIONS", readFile(config.bundle & "._functions")
 
     proc tryCompilation(config: BuildConfig) =
         ## Panics if can't compile.

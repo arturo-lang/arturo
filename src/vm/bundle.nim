@@ -69,7 +69,7 @@ else:
         let fileDetails = parsePathComponents(filename)
         let binName = fileDetails["filename"].s
 
-        let (_, res) = execCmdEx("./build.nims build " & binName & " --bundle --as " & binName)
+        let (_, res) = execCmdEx("./build.nims build " & binName & " --bundle --mode mini --as " & binName)
         if res != 0:
             echo "Something went wrong went building the project..."
             quit(1)
@@ -91,9 +91,9 @@ else:
         echo "- Analyzing code..."
         discard run(runBundler, @[tmpFolder, filename], isFile=false)
         
-        # echo "- Building..."
-        # buildExecutable(filename)
+        echo "- Building..."
+        buildExecutable(filename)
         
         echo "- Cleaning up..."
-        #cleanUp()
+        cleanUp()
     

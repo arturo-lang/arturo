@@ -48,15 +48,13 @@ when not defined(WEB):
 # Packaging setup
 #=======================================
 
-when defined(PORTABLE):
-    import json, sequtils
+when defined(BUNDLE):
+    import json, sequtils, sugar
 
-    let js {.compileTime.} = parseJson(static readFile(getEnv("PORTABLE_DATA")))
-    let mods {.compileTime.} = toSeq(js["uses"]["modules"]).map((x) => x.getStr())
-    let compact {.compileTime.} = js["compact"].getStr() == "true"
+    let js {.compileTime.} = parseJson(static getEnv("BUNDLE_MODULES"))
+    let bundledModules {.compileTime.} = toSeq(js).map((x) => x.getStr())
 else:
-    let mods {.compileTime.}: seq[string] = @[]
-    let compact {.compileTime.} = false
+    let bundledModules {.compileTime.}: seq[string] = @[]
 
 #=======================================
 # Macros
@@ -67,7 +65,7 @@ macro importLib(name: static[string]): untyped =
     let libpath = ident("library/" & name)
     let libname = name.toUpperAscii()
     result = quote do:
-        when not defined(PORTABLE) or not compact or mods.contains(`name`):
+        when not defined(BUNDLE) or bundledModules.contains(`name`):
             when defined(DEV):
                 static: 
                     echo "-------------------------"

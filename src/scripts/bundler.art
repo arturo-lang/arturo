@@ -1,9 +1,72 @@
+stdLib: couple keys symbols values symbols
+
+;---------------------------------------
 tmpFolder: arg\0
 entryName: arg\1
-
 target: extract.filename entryName
+
+;---------------------------------------
+
+stdLib: map select stdLib 'entry [
+    result: false
+    if function?.builtin entry\1 -> result: true
+    result
+] 'entry -> to :word entry\0
+stdLib: sort unique stdLib
+
+symAliases: #[]
+loop keys symbols 'ss [
+    inf: info.get ss
+    if key? inf 'alias ->
+        symAliases\[inf\alias]: ss
+]
+
+getAliasedFunction: function [s][
+    loop keys symbols 'declared [
+        if throws? [
+            inf: info.get declared
+            if and? [key? inf 'alias][inf\alias = to :string s] -> return declared
+        ] -> return null
+    ]
+    return null
+]
+
+getFunctionsInBlock: function [code][
+    'result ++ select to :block code => word?
+    'result ++ select to :block code => symbol?
+    loop select to :block code 'item -> or? inline? item block? item 'bl ->
+        getFunctionsInBlock bl
+]
+
+getFunctions: function [scr][
+    code: to :block read scr
+    result: new []
+
+    getFunctionsInBlock code
+
+    if zero? size result -> return [[][]]
+
+    funcs: select sort unique result => word?
+
+    syms: select sort unique result => symbol?
+    syms: select syms 'sym -> key? symAliases to :string sym
+    syms: map syms 'sym -> to :word symAliases\[to :string sym]
+
+    ffs: select sort unique funcs ++ syms 'ss ->
+        and? [contains? keys symbols to :string ss][function?.builtin var to :literal ss]
+    non: (sort unique funcs ++ syms)--ffs
+
+    return ffs
+]
+
+funcs: to [:string] getFunctions entryName
+modules: unique ["Core", "Exceptions", "Logic", "Numbers"] ++ map funcs 'ff [
+    i: info.get ff
+    i\module
+]
 
 write ~"|tmpFolder|/|target|._entry" read entryName
 write.json ~"|tmpFolder|/|target|._data" #[]
-write.json ~"|tmpFolder|/|target|._modules" #[]
+write.json ~"|tmpFolder|/|target|._modules" modules
+write.json ~"|tmpFolder|/|target|._functions" funcs
 print color #green "Done."
