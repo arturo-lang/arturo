@@ -27,4 +27,7 @@ proc fullBuildConfig() =
             --define:useOpenssl3
     --define:ssl
 
+proc bundleConfig() =
+    --define:BUNDLE
+
 {. pop .}
