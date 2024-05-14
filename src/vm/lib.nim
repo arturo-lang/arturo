@@ -34,8 +34,8 @@ const
 #=======================================
 # Templates
 #=======================================
-when defined(PORTABLE):
-    import algorithm, json, os, sugar
+when defined(BUNDLE):
+    import algorithm, json, os, sequtils, sugar
 
     let js {.compileTime.} = parseJson(static getEnv("BUNDLE_FUNCTIONS"))
     let bundledFuncs {.compileTime.} = toSeq(js).map((x) => x.getStr())
@@ -77,6 +77,7 @@ template builtin*(n: string, alias: VSymbol, op: OpCode, rule: PrecedenceKind, d
     ## executed when the function is called
     
     when not defined(BUNDLE) or bundledFuncs.contains(n):
+        static: echo "Adding support for " & n
         
         when defined(DEV):
             static: echo " -> " & n
