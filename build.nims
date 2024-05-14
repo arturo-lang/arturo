@@ -56,8 +56,8 @@ let
 #=======================================
 
 type BuildConfig = tuple
-    binary, version: string
-    shouldCompress, shouldInstall, shouldLog, isDeveloper: bool
+    binary, version, bundle: string
+    shouldCompress, shouldInstall, shouldLog, generateBundle, isDeveloper: bool
 
 func webVersion(config: BuildConfig): bool
 
@@ -285,6 +285,10 @@ proc buildArturo*(config: BuildConfig, targetFile: string) =
         updateBuild()
         devConfig()
 
+    proc setBundlemodeUp() =
+        bundleConfig()
+        putEnv "BUNDLESRC", config.bundle
+
     proc tryCompilation(config: BuildConfig) =
         ## Panics if can't compile.
         if (let cd = config.compile(showFooter=true); cd != 0):
@@ -295,6 +299,9 @@ proc buildArturo*(config: BuildConfig, targetFile: string) =
 
         if config.isDeveloper:
             setDevmodeUp()
+
+        if config.generateBundle:
+            setBundlemodeUp()
 
         config.showInfo()
         config.tryCompilation()
@@ -500,6 +507,10 @@ cmd build, "[default] Build arturo and optionally install the executable":
         >> ["dev"]:
             config.isDeveloper = true
             devConfig()
+
+    if args.hasFlag("bundle", "b"):
+        config.generateBundle = true
+        config.bundle = args.getPositionalArg(2)
 
     if args.hasFlag("debug", "d"):
         config.shouldCompress = false
