@@ -40,7 +40,7 @@ when not defined(WEB) and not defined(PORTABLE):
 import vm/vm
 
 when not defined(WEB):
-    import vm/[parse, values/value, values/printable]
+    import vm/[bundle, parse, values/value, values/printable]
 
 when not defined(WEB) and not defined(PORTABLE):
 
