@@ -240,7 +240,7 @@ else:
 
         result.symbols = deduplicate(result.symbols)
         result.modules = deduplicate(result.symbols.map(
-            proc (z: Value): string =
+            proc (z: string): string =
                 Syms[z].info.module
         ))
 
