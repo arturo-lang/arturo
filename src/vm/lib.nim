@@ -21,6 +21,10 @@ export checks, comparison, globals, opcodes, operators, printable, stack, value
 import vm/values/custom/[vcolor, vcomplex, vlogical, vquantity, vrational, vregex, vsymbol]
 export vcolor, vcomplex, vlogical, vquantity, vrational, vregex, vsymbol
 
+when defined(BUNDLE):
+    import vm/bundle
+    export bundle
+
 import vm/profiler
 
 #=======================================
@@ -34,13 +38,13 @@ const
 #=======================================
 # Templates
 #=======================================
-when defined(BUNDLE):
-    import algorithm, json, os, sequtils, sugar
+# when defined(BUNDLE):
+#     import algorithm, json, os, sequtils, sugar
 
-    let js {.compileTime.} = parseJson(static getEnv("BUNDLE_FUNCTIONS"))
-    let bundledFuncs {.compileTime.} = toSeq(js).map((x) => x.getStr())
-else:
-    let bundledFuncs {.compileTime.}: seq[string] = @[]
+#     let js {.compileTime.} = parseJson(static getEnv("BUNDLE_FUNCTIONS"))
+#     let bundledFuncs {.compileTime.} = toSeq(js).map((x) => x.getStr())
+# else:
+#     let bundledFuncs {.compileTime.}: seq[string] = @[]
 
 # template expandTypesets*(args: untyped): untyped =
 #     when (static args.len)==1 and args!=NoArgs:
@@ -76,7 +80,7 @@ template builtin*(n: string, alias: VSymbol, op: OpCode, rule: PrecedenceKind, d
     ## rule, etc - followed by the code block to be 
     ## executed when the function is called
     
-    when not defined(BUNDLE) or bundledFuncs.contains(n):
+    when not defined(BUNDLE) or BundleSymbols.contains(n):
         when defined(DEV):
             static: echo " -> " & n
 
@@ -189,28 +193,30 @@ template constant*(n: string, alias: VSymbol, description: string, v: Value): un
     ## add new constant with given name, alias, description - 
     ## followed by the value it's assigned to
     
-    when defined(DEV):
-        static: echo " -> " & n
+    when not defined(BUNDLE) or BundleSymbols.contains(n):
+    
+        when defined(DEV):
+            static: echo " -> " & n
 
-    SetSym(n, v)
-    let moduleName = 
-        when ((static (instantiationInfo().filename).replace(".nim")) != "macros"):
-            (static (instantiationInfo().filename.replace(".nim")))
-        else:
-            "Quantities"
-    var vInfo = ValueInfo(
-        descr: description,
-        module: moduleName,
-        kind: v.kind
-    )
-
-    when defined(DOCGEN):
-        vInfo.line = static (instantiationInfo().line)
-
-    GetSym(n).info = vInfo
-
-    when alias != unaliased:
-        Aliases[alias] = AliasBinding(
-            precedence: PrefixPrecedence,
-            name: newWord(n)
+        SetSym(n, v)
+        let moduleName = 
+            when ((static (instantiationInfo().filename).replace(".nim")) != "macros"):
+                (static (instantiationInfo().filename.replace(".nim")))
+            else:
+                "Quantities"
+        var vInfo = ValueInfo(
+            descr: description,
+            module: moduleName,
+            kind: v.kind
         )
+
+        when defined(DOCGEN):
+            vInfo.line = static (instantiationInfo().line)
+
+        GetSym(n).info = vInfo
+
+        when alias != unaliased:
+            Aliases[alias] = AliasBinding(
+                precedence: PrefixPrecedence,
+                name: newWord(n)
+            )
