@@ -66,7 +66,7 @@ macro importLib(name: static[string]): untyped =
     let libpath = ident("library/" & name)
     let libname = name.toUpperAscii()
     result = quote do:
-        when not defined(BUNDLE) or BundleSymbols.contains(`name`):
+        when not defined(BUNDLE) or BundleModules.contains(`name`):
             when defined(DEV):
                 static: 
                     echo "-------------------------"
