@@ -260,7 +260,7 @@ proc saveConfiguration(conf: BundleConfig) =
         "modules"   : newStringBlock(conf.modules)
     }.toOrderedTable
 
-    writeToFile(conf.configFile(), jsonFromValueDict(output))
+    writeToFile(joinPath(@[TmpFolder, conf.configFile()]), jsonFromValueDict(output))
 
 proc debug(conf: BundleConfig) =
     echo "\tFound " & $(conf.symbols.len) & " stdlib symbols:"
@@ -334,8 +334,8 @@ proc generateBundle*(filename: string) =
     when defined(DEV):
         conf.debug()
     
-    # section "Building executable":
-    #     conf.buildExecutable(filename)
+    section "Building executable":
+        conf.buildExecutable(filename)
     
     section "Cleaning up":
         cleanUp()

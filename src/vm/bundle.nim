@@ -12,8 +12,9 @@
 # Libraries
 #=======================================
 
-import algorithm, json, sugar, tables
-import vm/[values/value]
+when defined(BUNDLE):
+    import algorithm, json, sugar, tables
+    import vm/[values/value]
 
 #=======================================
 # Compile-time
@@ -35,15 +36,14 @@ else:
 # Variables
 #=======================================
 
-var
-    Bundle*: ValueDict
-
-when defined(WEB):
-    var stdout: string = ""
+when defined(BUNDLE):
+    var
+        Bundled*: ValueDict
 
 #=======================================
 # Methods
 #=======================================
 
-proc getBundledResource*(identifier: string): Value =
-    Bundled[identifier]
+when defined(BUNDLE):
+    proc getBundledResource*(identifier: string): Value =
+        Bundled[identifier]
