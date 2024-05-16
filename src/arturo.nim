@@ -280,10 +280,10 @@ when isMainModule and not defined(WEB):
                 echo ArturoVersionTxt
     else:
         arguments = @[]#commandLineParams()
-        code = static getEnv("BUNDLE_ENTRY")
-        let portable = static getEnv("BUNDLE_DATA")
+        # code = static getEnv("BUNDLE_ENTRY")
+        # let portable = static getEnv("BUNDLE_DATA")
 
-        discard run(code, arguments, isFile=false, withData=portable)
+        discard run(BundleMain, arguments, isFile=false, withData=portable)
 else:
     proc main*(txt: cstring, params: JsObject = jsUndefined): JsObject {.exportc:"A$", varargs.}=
         var str = $(txt)

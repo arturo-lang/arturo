@@ -27,6 +27,7 @@ when not defined(WEB):
     import helpers/stores
 
 import vm/[
+    bundle,
     env, 
     errors, 
     eval, 
@@ -51,13 +52,13 @@ when not defined(WEB):
 # Packaging setup
 #=======================================
 
-when defined(BUNDLE):
-    import json, sequtils, sugar
+# when defined(BUNDLE):
+#     import json, sequtils, sugar
 
-    let js {.compileTime.} = parseJson(static getEnv("BUNDLE_MODULES"))
-    let bundledModules {.compileTime.} = toSeq(js).map((x) => x.getStr())
-else:
-    let bundledModules {.compileTime.}: seq[string] = @[]
+#     let js {.compileTime.} = parseJson(static getEnv("BUNDLE_MODULES"))
+#     let bundledModules {.compileTime.} = toSeq(js).map((x) => x.getStr())
+# else:
+#     let bundledModules {.compileTime.}: seq[string] = @[]
 
 #=======================================
 # Macros
@@ -68,7 +69,7 @@ macro importLib(name: static[string]): untyped =
     let libpath = ident("library/" & name)
     let libname = name.toUpperAscii()
     result = quote do:
-        when not defined(BUNDLE) or bundledModules.contains(`name`):
+        when not defined(BUNDLE) or BundleSymbols.contains(`name`):
             when defined(DEV):
                 static: 
                     echo "-------------------------"
