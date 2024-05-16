@@ -26,8 +26,8 @@ when defined(BUNDLE):
     let BundleJson {.compileTime.} = parseJson(static readFile(getEnv("BUNDLE_CONFIG")))
 
     let BundleMain*     {.compileTime.} = BundleJson["main"].getStr()
-    let BundleImports*  {.compileTime.} = toDictionary((toSeq(BundleJson["imports"].pairs)).map((z) => (z[0], z[1].getStr())))
-    let BundlePackages* {.compileTime.} = toDictionary((toSeq(BundleJson["packages"].pairs)).map((z) => (z[0], z[1].getStr())))
+    let BundleImports*  {.compileTime.} = toTable((toSeq(BundleJson["imports"].pairs)).map((z) => (z[0], z[1].getStr())))
+    let BundlePackages* {.compileTime.} = toTable((toSeq(BundleJson["packages"].pairs)).map((z) => (z[0], z[1].getStr())))
     let BundleSymbols*  {.compileTime.} = BundleJson["symbols"].getElems().map((z) => z.getStr())
     let BundleModules*  {.compileTime.} = BundleJson["modules"].getElems().map((z) => z.getStr())
 else:
