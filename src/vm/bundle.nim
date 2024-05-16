@@ -184,7 +184,7 @@ when not defined(BUNDLE):
                                 conf.imports[cleanedPath(fname)] = readFile(fname)
             
                 of Symbol:
-                    if (let aliased = Aliases.getOrDefault(item.m, nil); not aliased.isNil):
+                    if (let aliased = Aliases.getOrDefault(item.m, NoAliasBinding); aliased != NoAliasBinding):
                         if (let symv = Syms.getOrDefault(aliased.name.s, nil); not symv.isNil):
                             if symv.isStdlibSymbol():
                                 conf.symbols.add(aliased.name.s)
