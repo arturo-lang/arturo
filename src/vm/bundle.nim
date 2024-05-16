@@ -22,6 +22,8 @@ when not defined(BUNDLE):
     when defined(DEV):
         import std/private/osdirs
 
+    import helpers/io
+    import helpers/jsonobject
     import helpers/path
 
     import vm/values/[types, custom/vsymbol]
@@ -33,15 +35,20 @@ when not defined(BUNDLE):
 
 type
     BundleConfig = ref object
-        imports:        OrderedTable[string,string]
-        packages:       OrderedTable[string,string]
+        name:           string
+        main:           string
+        imports:        Table[string,string]
+        packages:       Table[string,string]
         symbols:        seq[string]
         modules:        seq[string]
-        miniPossible:   bool
+        noMini:         bool
 
 #=======================================
 # Constants
 #=======================================
+
+const 
+    BundleSuffix = "_bundle.json"
 
 when not defined(BUNDLE):
     const 
@@ -54,6 +61,12 @@ when not defined(BUNDLE):
         ImportCall      = "import"
         RelativeCall    = "relative"
         ReadCall        = "read"
+
+        MiniKillers     = @[
+            "close", "open", "query",                       # Database
+            "mail",                                         # Net
+            "alert", "clip", "dialog", "unclip", "webview"  # Ui
+        ]
 
 #=======================================
 # Variables
@@ -112,7 +125,7 @@ when not defined(BUNDLE):
     proc commandExists(cmd: string) =
         let (_, exitCode) = execCmdEx("[ -x \"$(command -v " & cmd & ")\" ]")
         if exitCode != 0:
-            echo "`" & cmd & "` command required; cannot proceed!"
+            echo "\t`" & cmd & "` command required; cannot proceed!"
             quit(1)
 
     proc startVM() =
@@ -139,6 +152,9 @@ when not defined(BUNDLE):
         v.kind == Function or 
         ((not v.info.isNil) and (v.info.module != ""))
 
+    proc configFile(conf: BundleConfig): string =
+        conf.name & BundleSuffix
+
     proc analyzeBlock(conf: BundleConfig, filename: string, bl: ValueArray) =
         let prefix = if filename == "": "" else: filename & "/"
         var i = 0
@@ -151,6 +167,9 @@ when not defined(BUNDLE):
                     if (let symv = Syms.getOrDefault(item.s, nil); not symv.isNil):
                         if symv.isStdlibSymbol():
                             conf.symbols.add(item.s)
+
+                    if MiniKillers.contains(item.s):
+                        conf.noMini = true
 
                     if i+1 < bl.len:
                         let nextItem = bl[i+1]
@@ -228,35 +247,78 @@ else:
         else:
             let (_, res) = execCmdEx("git clone https://github.com/arturo-lang/arturo.git " & TmpFolder)
             if res != 0:
-                echo "something went wrong when cloning Arturo sources..."
+                echo "\tsomething went wrong when cloning Arturo sources..."
                 quit(1)
 
     proc analyzeSources(filename: string): BundleConfig =
         result = BundleConfig()
 
+        result.name = 
+        result.main = readFile(filename)
+        result.imports = initTable[string,string]()
+        result.packages = initTable[string,string]()
+
         let (dir, _, _) = splitFile(filename)
         pushpopPath dir:
             result.analyzeBlock("", doParse(filename, isFile=true).a)
 
-        result.symbols = deduplicate(result.symbols)
-        result.modules = deduplicate(result.symbols.map(
+        result.symbols = sorted(deduplicate(result.symbols))
+        result.modules = sorted(deduplicate(result.symbols.map(
             proc (z: string): string =
                 Syms[z].info.module
-        ))
+        )))
+
+    proc saveConfiguration(conf: BundleConfig) =
+        let output = {
+            "name"      : newString(conf.name),
+            "main"      : newString(conf.main),
+            "imports"   : newStringDictionary(conf.imports),
+            "packages"  : newStringDictionary(conf.packages),
+            "symbols"   : newStringBlock(conf.symbols),
+            "modules"   : newStringBlock(conf.modules)
+        }.toOrderedTable
+
+        writeToFile(conf.configFile(), jsonFromValueDict(output))
+
+    proc debug(conf: BundleConfig) =
+        echo "\tFound " & $(conf.symbols.len) & " stdlib symbols:"
+        for s in conf.symbols:
+            echo "\t\t- " & s
+
+        echo ""
+        echo "\tFrom " & $(conf.modules.len) & " stdlib modules:"
+        for m in conf.modules:
+            echo "\t\t- " & m
+
+        echo ""
+        echo "\tBuild can be mini?"
+        echo "\t\t- " & $(not conf.nomini)
+
+        echo ""
+        echo "\tFound " & $(conf.imports.len) & " imports:"
+        for k,v in conf.imports.pairs():
+            echo "\t\t- " & k
+
+        echo ""
+        echo "\tOf them, " & $(conf.packages.len) & " being packages:"
+        for k,v in conf.packages.pairs():
+            echo "\t\t- " & k & " -> " & v
+            
 
     proc buildExecutable(conf: BundleConfig, filename: string) =
         let currentFolder = getCurrentDir()
         setCurrentDir(TmpFolder)
 
-        let fileDetails = parsePathComponents(filename)
-        let binName = fileDetails["filename"].s
+        let mode = 
+            if conf.nomini: ""
+            else: "--mode mini"
 
-        let (_, res) = execCmdEx("./build.nims build " & binName & " --bundle --mode mini --as " & binName)
+        let (_, res) = execCmdEx("./build.nims build " & conf.configFile() & " --bundle " & mode & " --as " & conf.name)
         if res != 0:
-            echo "Something went wrong went building the project..."
+            echo "\tSomething went wrong went building the project..."
             quit(1)
 
-        copyFile(TmpFolder / "bin" / binName, currentFolder / binName)
+        copyFile(TmpFolder / "bin" / conf.name, currentFolder / conf.name)
 
         setCurrentDir(currentFolder)
 
@@ -285,38 +347,14 @@ else:
             conf = analyzeSources(filename)
 
         section "Saving configuration":
-            #conf.saveConfiguration()
-            discard
-
-        
-        for k,v in conf.imports.pairs():
-            echo "----------------------------------"
-            echo "|" & k & "|"
-            echo "----------------------------------"
-
-        echo "PACKAGES!"
-
-        for k,v in conf.packages.pairs():
-            echo "----------------------------------"
-            echo " " & k & " -> " & v
-            echo "----------------------------------"
-
-
-        echo "\n$$ SYMBOLS"
-        for f in conf.symbols:
-            echo "-> " & f
-
-        echo "\n>> MODULES"
-        for m in conf.modules:
-            echo "-> " & m
-            #echo v
-            #echo "\n"
-        # for k in keys(Syms):
-        #     echo $(k)
+            conf.saveConfiguration()
+            
+        when defined(DEV):
+            conf.debug()
         
         # section "Building executable":
         #     conf.buildExecutable(filename)
         
-        # section "Cleaning up":
-        #     cleanUp()
+        section "Cleaning up":
+            cleanUp()
     
