@@ -13,7 +13,9 @@
 #=======================================
 
 when defined(BUNDLE):
-    import algorithm, json, sugar, tables
+    import algorithm, json, os
+    import sugar, tables
+    
     import vm/[values/value]
 
 #=======================================
