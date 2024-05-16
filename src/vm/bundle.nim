@@ -58,7 +58,7 @@ when defined(BUNDLE):
 else:
     var
         pathStack: seq[string]
-        
+
 when defined(WEB):
     var stdout: string = ""
 
@@ -240,7 +240,7 @@ else:
 
         
         
-        conf.symbols = deduplicate(bundleConfig.symbols)
+        conf.symbols = deduplicate(conf.symbols)
 
         for k,v in conf.imports.pairs():
             echo "----------------------------------"
