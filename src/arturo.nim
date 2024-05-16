@@ -287,8 +287,8 @@ when isMainModule and not defined(WEB):
         arguments = @[]#commandLineParams()
         # code = static getEnv("BUNDLE_ENTRY")
         # let portable = static getEnv("BUNDLE_DATA")
-
-        discard run(BundleMain, arguments, isFile=false, withData=portable)
+        var bundleMain = static BundleMain
+        discard run(bundleMain, arguments, isFile=false)#, withData=portable)
 else:
     proc main*(txt: cstring, params: JsObject = jsUndefined): JsObject {.exportc:"A$", varargs.}=
         var str = $(txt)
