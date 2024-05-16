@@ -292,7 +292,7 @@ proc buildArturo*(config: BuildConfig, targetFile: string) =
 
     proc setBundlemodeUp() =
         bundleConfig()
-        putEnv "BUNDLE_CONFIG", readFile(config.bundle)
+        putEnv "BUNDLE_CONFIG", config.bundle
 
     proc tryCompilation(config: BuildConfig) =
         ## Panics if can't compile.
