@@ -58,20 +58,38 @@ when defined(BUNDLE):
 else:
     var
         pathStack: seq[string]
-        bundleConfig: BundleConfig
+        
+when defined(WEB):
+    var stdout: string = ""
 
 #=======================================
-# Methods
+# Forward declarations
 #=======================================
 
-when defined(BUNDLE):
-    
-    proc getBundledResource*(identifier: string): Value =
-        Bundled[identifier]
+when not defined(BUNDLE):
+    proc analyzeFile(conf: BundleConfig, filename: string, isFirst: bool = false)
 
-else:
+#=======================================
+# Helpers
+#=======================================
 
-    proc analyzeFile*(filename: string, isFirst: bool = false)
+when not defined(BUNDLE):
+
+    when defined(WEB):
+        proc write(buffer: var string, str: string) =
+            buffer &= str
+        
+        proc flushFile(buffer: var string) =
+            echo buffer
+
+    template section(msg: string, blk: untyped): untyped =
+        stdout.write "- " & msg & "..."
+        stdout.flushFile()
+
+        blk
+
+        stdout.write " OK\n"
+        stdout.flushFile()
 
     proc copyDirRecursively(source: string, dest: string) =
         createDir(dest)
@@ -89,48 +107,22 @@ else:
             echo "`" & cmd & "` command required; cannot proceed!"
             quit(1)
 
-    proc cleanUp() =
-        removeDir(tmpFolder)
+    proc startVM() =
+        var str = ""
+        discard run(str, @[], isFile=false)
 
-    proc checkNim() = commandExists("nim")
-    proc checkGit() = commandExists("git")
-
-    proc cloneArturo() =
-        when defined(DEV):
-            copyDirRecursively(getCurrentDir(), tmpFolder)
-        else:
-            let (_, res) = execCmdEx("git clone https://github.com/arturo-lang/arturo.git " & tmpFolder)
-            if res != 0:
-                echo "something went wrong when cloning Arturo sources..."
-                quit(1)
-
-    proc buildExecutable(filename: string) =
-        let currentFolder = getCurrentDir()
-        setCurrentDir(tmpFolder)
-
-        let fileDetails = parsePathComponents(filename)
-        let binName = fileDetails["filename"].s
-
-        let (_, res) = execCmdEx("./build.nims build " & binName & " --bundle --mode mini --as " & binName)
-        if res != 0:
-            echo "Something went wrong went building the project..."
-            quit(1)
-
-        copyFile(tmpFolder / "bin" / binName, currentFolder / binName)
-
-        setCurrentDir(currentFolder)
-
-    proc analyzeBlock*(filename: string, bl: ValueArray) =
+    proc analyzeBlock(conf: BundleConfig, filename: string, bl: ValueArray) =
         let prefix = if filename == "": "" else: filename & "/"
         let (dir, name, ext) = splitFile(filename)
         var i = 0
         while i < bl.len:
+            
             let item = bl[i]
 
             if item.kind == Word:
                 if (let symv = Syms.getOrDefault(item.s, nil); not symv.isNil):
                     if symv.kind == Function or ((not symv.info.isNil) and (symv.info.module != "")):
-                        bundleConfig.functions.add(item.s)
+                        conf.symbols.add(item.s)
 
                 if i+1 < bl.len:
                     let nextItem = bl[i+1]
@@ -146,11 +138,11 @@ else:
                                 #echo "Found package import: " & src
                                 let content = readFile(src)
                                 if src.contains("packages/cache"):
-                                    bundleConfig.packages[nextItem.s] = ":" & src.split("packages/cache/")[^1]
-                                    bundleConfig.imports[":" & src.split("packages/cache/")[^1]] = content
+                                    conf.packages[nextItem.s] = ":" & src.split("packages/cache/")[^1]
+                                    conf.imports[":" & src.split("packages/cache/")[^1]] = content
                                 else:
-                                    bundleConfig.imports[src] = content
-                                analyzeFile(src)
+                                    conf.imports[src] = content
+                                conf.analyzeFile(src)
                             
                         elif afterNextItem.kind != Null and ((nextItem.kind == Symbol and nextItem.m == dotslash) or (nextItem.kind == Word and nextItem.s == "relative")):
                             let fname = joinPath(pathStack[^1], afterNextItem.s)
@@ -160,72 +152,112 @@ else:
                                 #echo "Found file import: " & fname
                                 let content = readFile(src)
                                 if src.contains("packages/cache"):
-                                    bundleConfig.imports[":" & src.split("packages/cache/")[^1]] = content
+                                    conf.imports[":" & src.split("packages/cache/")[^1]] = content
                                 else:
-                                    bundleConfig.imports[src] = content
+                                    conf.imports[src] = content
                                 #result[fname] = content
-                                analyzeFile(src)
+                                conf.analyzeFile(src)
                     elif item.s == "read":
                         if afterNextItem.kind != Null and ((nextItem.kind == Symbol and nextItem.m == dotslash) or (nextItem.kind == Word and nextItem.s == "relative")):
                             let fname = joinPath(pathStack[^1], afterNextItem.s)
 
                             let content = readFile(fname)
                             if fname.contains("packages/cache"):
-                                bundleConfig.imports[":" & fname.split("packages/cache/")[^1]] = content
+                                conf.imports[":" & fname.split("packages/cache/")[^1]] = content
                             else:
-                                bundleConfig.imports[fname] = content
+                                conf.imports[fname] = content
             elif item.kind in {Inline, Block}:
-                analyzeBlock(filename, item.a)
+                conf.analyzeBlock(filename, item.a)
 
             i += 1
 
-    proc analyzeFile*(filename: string, isFirst: bool = false) =
+#=======================================
+# Methods
+#=======================================
+
+when defined(BUNDLE):
+    
+    proc getBundledResource*(identifier: string): Value =
+        Bundled[identifier]
+
+else:
+
+    proc checkNim() = commandExists("nim")
+    proc checkGit() = commandExists("git")
+
+    proc cloneArturo() =
+        when defined(DEV):
+            copyDirRecursively(getCurrentDir(), tmpFolder)
+        else:
+            let (_, res) = execCmdEx("git clone https://github.com/arturo-lang/arturo.git " & tmpFolder)
+            if res != 0:
+                echo "something went wrong when cloning Arturo sources..."
+                quit(1)
+
+    proc analyzeFile(conf: BundleConfig, filename: string, isFirst: bool = false) =
         let (dir, name, ext) = splitFile(filename)
         pathStack.add(dir)
         let parsed = doParse(filename, isFile=true)
-        analyzeBlock((if isFirst: "" else: filename), parsed.a)
+        conf.analyzeBlock((if isFirst: "" else: filename), parsed.a)
         pathStack.delete((pathStack.len-1)..(pathStack.len-1))
-        #echo Dumper(parsed)
+    
+    proc buildExecutable(conf: BundleConfig, filename: string) =
+        let currentFolder = getCurrentDir()
+        setCurrentDir(tmpFolder)
+
+        let fileDetails = parsePathComponents(filename)
+        let binName = fileDetails["filename"].s
+
+        let (_, res) = execCmdEx("./build.nims build " & binName & " --bundle --mode mini --as " & binName)
+        if res != 0:
+            echo "Something went wrong went building the project..."
+            quit(1)
+
+        copyFile(tmpFolder / "bin" / binName, currentFolder / binName)
+
+        setCurrentDir(currentFolder)
+
+    proc cleanUp() =
+        removeDir(tmpFolder)
 
     proc generateBundle*(filename: string) =
-        echo "- Checking Nim..."
-        checkNim()
-        
-        echo "- Checking Git..."
-        checkGit()
-        
-        # echo "- Cloning sources..."
-        # cloneArturo()
-        
-        echo "- Analyzing code..."
-        #discard run(runBundler, @[tmpFolder, filename], isFile=false)
-        var str = ""
-        discard run(str, @[], isFile=false)
+        section "Firing up the VM":
+            startVM()
 
-        bundleConfig = BundleConfig()
+        section "Checking Nim":
+            checkNim()
 
-        # var res = newOrderedTable[string,string]()
-        # var pkgs = newOrderedTable[string,string]()
-        # var funs: seq[string]
-        analyzeFile(filename, isFirst=true)
-        bundleConfig.functions = deduplicate(bundleConfig.functions)
+        section "Checking Git":
+            checkGit()
+        
+        section "Cloning Arturo":
+            cloneArturo()
+        
+        var conf = BundleConfig()
+        section "Analyzing source code":
+            conf.analyzeFile(filename, isFirst=true)
+        
 
-        for k,v in bundleConfig.imports.pairs():
+        
+        
+        conf.symbols = deduplicate(bundleConfig.symbols)
+
+        for k,v in conf.imports.pairs():
             echo "----------------------------------"
             echo "|" & k & "|"
             echo "----------------------------------"
 
         echo "PACKAGES!"
 
-        for k,v in bundleConfig.packages.pairs():
+        for k,v in conf.packages.pairs():
             echo "----------------------------------"
             echo " " & k & " -> " & v
             echo "----------------------------------"
 
 
-        echo "$$ FUNCTIONS"
+        echo "$$ SYMBOLS"
         var modules: seq[string]
-        for f in funs:
+        for f in conf.symbols:
             echo "-> " & f
 
             let symv = Syms[f]
@@ -242,9 +274,9 @@ else:
         # for k in keys(Syms):
         #     echo $(k)
         
-        # echo "- Building..."
-        # buildExecutable(filename)
+        # section "Building executable":
+        #     conf.buildExecutable(filename)
         
-        # echo "- Cleaning up..."
-        # cleanUp()
+        # section "Cleaning up":
+        #     cleanUp()
     
