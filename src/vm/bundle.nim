@@ -48,7 +48,7 @@ when not defined(BUNDLE):
             when defined(DEV): "../_tmpart"
             else:              "_tmpart"
         
-        PackageCache    = "packages/cache"
+        PackageCache    = "packages/cache/"
 
         ImportCall      = "import"
         RelativeCall    = "relative"
@@ -145,45 +145,55 @@ when not defined(BUNDLE):
             
             let item = bl[i]
 
-            if item.kind == Word:
-                if (let symv = Syms.getOrDefault(item.s, nil); not symv.isNil):
-                    if symv.isStdlibSymbol():
-                        conf.symbols.add(item.s)
+            case item.kind:
+                of Word:
+                    if (let symv = Syms.getOrDefault(item.s, nil); not symv.isNil):
+                        if symv.isStdlibSymbol():
+                            conf.symbols.add(item.s)
 
-                if i+1 < bl.len:
-                    let nextItem = bl[i+1]
-                    var afterNextItem = VNULL
-                    if i+2 < bl.len:
-                        afterNextItem = bl[i+2]
+                    if i+1 < bl.len:
+                        let nextItem = bl[i+1]
+                        var afterNextItem = VNULL
+                        if i+2 < bl.len:
+                            afterNextItem = bl[i+2]
 
-                    if item.s == ImportCall:
-                        if nextItem.kind in {Literal, String}:
-                            if (let res = getEntryForPackage(nextItem.s, (true, NoPackageVersion), "main", false); res.isSome):
-                                let src = res.get()
+                        if item.s == ImportCall:
+                            if nextItem.kind in {Literal, String}:
+                                if (let res = getEntryForPackage(nextItem.s, (true, NoPackageVersion), "main", false); res.isSome):
+                                    let src = res.get()
 
-                                let clean = cleanedPath(src)
-                                conf.imports[clean] = readFile(src)
+                                    let clean = cleanedPath(src)
+                                    conf.imports[clean] = readFile(src)
 
-                                if src.isPackageFile():
-                                    conf.packages[nextItem.s] = clean
+                                    if src.isPackageFile():
+                                        conf.packages[nextItem.s] = clean
 
-                                conf.analyzeFile(src)
-                            
-                        elif afterNextItem.kind != Null and nextItem.isRelativeCall():
-                            let fname = relativePathTo(afterNextItem.s)
-                            if (let res = getEntryForPackage(fname, (true, NoPackageVersion), "main", false); res.isSome):
-                                let src = res.get()
-
-                                conf.imports[cleanedPath(src)] = readFile(src)
-                                conf.analyzeFile(src)
+                                    conf.analyzeFile(src)
                                 
-                    elif item.s == ReadCall:
-                        if afterNextItem.kind != Null and nextItem.isRelativeCall():
-                            let fname = relativePathTo(afterNextItem.s)
-                            conf.imports[cleanedPath(fname)] = readFile(fname)
+                            elif afterNextItem.kind != Null and nextItem.isRelativeCall():
+                                let fname = relativePathTo(afterNextItem.s)
+                                if (let res = getEntryForPackage(fname, (true, NoPackageVersion), "main", false); res.isSome):
+                                    let src = res.get()
+
+                                    conf.imports[cleanedPath(src)] = readFile(src)
+                                    conf.analyzeFile(src)
+
+                        elif item.s == ReadCall:
+                            if afterNextItem.kind != Null and nextItem.isRelativeCall():
+                                let fname = relativePathTo(afterNextItem.s)
+                                conf.imports[cleanedPath(fname)] = readFile(fname)
             
-            elif item.kind in {Inline, Block}:
-                conf.analyzeBlock(filename, item.a)
+                of Symbol:
+                    if (let aliased = Aliases.getOrDefault(item.m, nil); not aliased.isNil):
+                        if (let symv = Syms.getOrDefault(aliased.name.s, nil); not symv.isNil):
+                            if symv.isStdlibSymbol():
+                                conf.symbols.add(aliased.name.s)
+
+                of Inline, Block:
+                    conf.analyzeBlock(filename, item.a)
+
+                else:
+                    discard
 
             i += 1
     
@@ -213,9 +223,9 @@ else:
 
     proc cloneArturo() =
         when defined(DEV):
-            copyDirRecursively(getCurrentDir(), tmpFolder)
+            copyDirRecursively(getCurrentDir(), TmpFolder)
         else:
-            let (_, res) = execCmdEx("git clone https://github.com/arturo-lang/arturo.git " & tmpFolder)
+            let (_, res) = execCmdEx("git clone https://github.com/arturo-lang/arturo.git " & TmpFolder)
             if res != 0:
                 echo "something went wrong when cloning Arturo sources..."
                 quit(1)
@@ -229,7 +239,7 @@ else:
 
     proc buildExecutable(conf: BundleConfig, filename: string) =
         let currentFolder = getCurrentDir()
-        setCurrentDir(tmpFolder)
+        setCurrentDir(TmpFolder)
 
         let fileDetails = parsePathComponents(filename)
         let binName = fileDetails["filename"].s
@@ -239,12 +249,12 @@ else:
             echo "Something went wrong went building the project..."
             quit(1)
 
-        copyFile(tmpFolder / "bin" / binName, currentFolder / binName)
+        copyFile(TmpFolder / "bin" / binName, currentFolder / binName)
 
         setCurrentDir(currentFolder)
 
     proc cleanUp() =
-        removeDir(tmpFolder)
+        removeDir(TmpFolder)
 
     proc generateBundle*(filename: string) =
         section "Firing up the VM":
