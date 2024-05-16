@@ -38,9 +38,14 @@ when not defined(WEB) and not defined(BUNDLE):
 import vm/vm
 
 when not defined(WEB):
-    import vm/[bundle, parse, values/value, values/printable]
+    import vm/[parse, values/value, values/printable]
     when not defined(MINI):
         import vm/[packager]
+
+when defined(BUNDLE):
+    import vm/bundle
+else:
+    import vm/bundler
 
 when not defined(WEB) and not defined(BUNDLE):
 

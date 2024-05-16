@@ -44,8 +44,7 @@ import vm/[errors, eval, exec, parse, runtime]
 
 when defined(BUNDLE):
     import std/private/ospaths2
-
-    import vm/[bundle]
+    import vm/bundle
 
 #=======================================
 # Definitions
