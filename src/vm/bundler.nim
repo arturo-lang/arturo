@@ -295,9 +295,10 @@ proc buildExecutable(conf: BundleConfig, filename: string) =
         if conf.nomini: ""
         else: "--mode mini"
 
-    let (_, res) = execCmdEx("./build.nims build " & conf.configFile() & " --bundle " & mode & " --as " & conf.name)
+    let (outp, res) = execCmdEx("./build.nims build " & conf.configFile() & " --bundle " & mode & " --as " & conf.name)
     if res != 0:
         echo "\tSomething went wrong went building the project..."
+        echo outp
         quit(1)
 
     copyFile(TmpFolder / "bin" / conf.name, currentFolder / conf.name)
@@ -337,5 +338,5 @@ proc generateBundle*(filename: string) =
     section "Building executable":
         conf.buildExecutable(filename)
     
-    section "Cleaning up":
-        cleanUp()
+    # section "Cleaning up":
+    #     cleanUp()
