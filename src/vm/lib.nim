@@ -21,9 +21,7 @@ export checks, comparison, globals, opcodes, operators, printable, stack, value
 import vm/values/custom/[vcolor, vcomplex, vlogical, vquantity, vrational, vregex, vsymbol]
 export vcolor, vcomplex, vlogical, vquantity, vrational, vregex, vsymbol
 
-when defined(BUNDLE):
-    import vm/bundle
-    export bundle
+import vm/bundle
 
 import vm/profiler
 

@@ -42,9 +42,6 @@ import vm/[
     version
 ]
 
-when defined(BUNDLE):
-    import vm/[bundle]
-
 when not defined(WEB):
     import vm/profiler
 
