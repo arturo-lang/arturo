@@ -15,7 +15,7 @@
 when defined(BUNDLE):
     import algorithm, json, os
     import sugar, tables
-    
+
     import vm/[values/value]
 
 #=======================================
@@ -25,7 +25,7 @@ when defined(BUNDLE):
 when defined(BUNDLE):
     let BundleJson {.compileTime.} = parseJson(static readFile(getEnv("BUNDLE_CONFIG")))
 
-    let BundleMain*     {.compileTime.} = BundleJson["main"].readStr()
+    let BundleMain*     {.compileTime.} = BundleJson["main"].getStr()
     let BundleImports*  {.compileTime.} = toDictionary((toSeq(BundleJson["imports"].pairs)).map((z) => (z[0], z[1].getStr())))
     let BundlePackages* {.compileTime.} = toDictionary((toSeq(BundleJson["packages"].pairs)).map((z) => (z[0], z[1].getStr())))
     let BundleSymbols*  {.compileTime.} = BundleJson["symbols"].getElems().map((z) => z.getStr())
