@@ -43,9 +43,16 @@ type
 #=======================================
 
 when not defined(BUNDLE):
-    const tmpFolder = 
-        when defined(DEV): "../_tmpart"
-        else:              "_tmpart"
+    const 
+        TmpFolder       = 
+            when defined(DEV): "../_tmpart"
+            else:              "_tmpart"
+        
+        PackageCache    = "packages/cache"
+
+        ImportCall      = "import"
+        RelativeCall    = "relative"
+        ReadCall        = "read"
 
 #=======================================
 # Variables
@@ -67,7 +74,7 @@ when defined(WEB):
 #=======================================
 
 when not defined(BUNDLE):
-    proc analyzeFile(conf: BundleConfig, filename: string, isFirst: bool = false)
+    proc analyzeFile(conf: BundleConfig, filename: string)
 
 #=======================================
 # Helpers
@@ -111,9 +118,28 @@ when not defined(BUNDLE):
         var str = ""
         discard run(str, @[], isFile=false)
 
+    proc isPackageFile(p: string): bool =
+        return p.contains(PackageCache)
+
+    proc cleanedPath(p: string): string =
+        if not p.isPackageFile():
+            return p
+
+        return ":" & p.split(PackageCache)[^1]
+
+    proc relativePathTo(p: string): string =
+        joinPath(pathStack[^1], p)
+
+    proc isRelativeCall(v: Value): bool =
+        (v.kind == Symbol and v.m == dotslash) or 
+        (v.kind == Word and v.s == RelativeCall)
+
+    proc isStdlibSymbol(v: Value): bool =
+        v.kind == Function or 
+        ((not v.info.isNil) and (v.info.module != ""))
+
     proc analyzeBlock(conf: BundleConfig, filename: string, bl: ValueArray) =
         let prefix = if filename == "": "" else: filename & "/"
-        let (dir, name, ext) = splitFile(filename)
         var i = 0
         while i < bl.len:
             
@@ -121,7 +147,7 @@ when not defined(BUNDLE):
 
             if item.kind == Word:
                 if (let symv = Syms.getOrDefault(item.s, nil); not symv.isNil):
-                    if symv.kind == Function or ((not symv.info.isNil) and (symv.info.module != "")):
+                    if symv.isStdlibSymbol():
                         conf.symbols.add(item.s)
 
                 if i+1 < bl.len:
@@ -130,46 +156,46 @@ when not defined(BUNDLE):
                     if i+2 < bl.len:
                         afterNextItem = bl[i+2]
 
-                    if item.s == "import":
-                        #echo "importing @ " & pathStack[^1]
+                    if item.s == ImportCall:
                         if nextItem.kind in {Literal, String}:
                             if (let res = getEntryForPackage(nextItem.s, (true, NoPackageVersion), "main", false); res.isSome):
                                 let src = res.get()
-                                #echo "Found package import: " & src
-                                let content = readFile(src)
-                                if src.contains("packages/cache"):
-                                    conf.packages[nextItem.s] = ":" & src.split("packages/cache/")[^1]
-                                    conf.imports[":" & src.split("packages/cache/")[^1]] = content
-                                else:
-                                    conf.imports[src] = content
+
+                                let clean = cleanedPath(src)
+                                conf.imports[clean] = readFile(src)
+
+                                if src.isPackageFile():
+                                    conf.packages[nextItem.s] = clean
+
                                 conf.analyzeFile(src)
                             
-                        elif afterNextItem.kind != Null and ((nextItem.kind == Symbol and nextItem.m == dotslash) or (nextItem.kind == Word and nextItem.s == "relative")):
-                            let fname = joinPath(pathStack[^1], afterNextItem.s)
-                            #echo "looking for: " & fname
+                        elif afterNextItem.kind != Null and nextItem.isRelativeCall():
+                            let fname = relativePathTo(afterNextItem.s)
                             if (let res = getEntryForPackage(fname, (true, NoPackageVersion), "main", false); res.isSome):
                                 let src = res.get()
-                                #echo "Found file import: " & fname
-                                let content = readFile(src)
-                                if src.contains("packages/cache"):
-                                    conf.imports[":" & src.split("packages/cache/")[^1]] = content
-                                else:
-                                    conf.imports[src] = content
-                                #result[fname] = content
-                                conf.analyzeFile(src)
-                    elif item.s == "read":
-                        if afterNextItem.kind != Null and ((nextItem.kind == Symbol and nextItem.m == dotslash) or (nextItem.kind == Word and nextItem.s == "relative")):
-                            let fname = joinPath(pathStack[^1], afterNextItem.s)
 
-                            let content = readFile(fname)
-                            if fname.contains("packages/cache"):
-                                conf.imports[":" & fname.split("packages/cache/")[^1]] = content
-                            else:
-                                conf.imports[fname] = content
+                                conf.imports[cleanedPath(src)] = readFile(src)
+                                conf.analyzeFile(src)
+                                
+                    elif item.s == ReadCall:
+                        if afterNextItem.kind != Null and nextItem.isRelativeCall():
+                            let fname = relativePathTo(afterNextItem.s)
+                            conf.imports[cleanedPath(fname)] = readFile(fname)
+            
             elif item.kind in {Inline, Block}:
                 conf.analyzeBlock(filename, item.a)
 
             i += 1
+    
+    template pushpopPath(newPath: string, action: untyped): untyped =
+        pathStack.add(newPath)
+        action
+        pathStack.delete((pathStack.len-1)..(pathStack.len-1))
+
+    proc analyzeFile(conf: BundleConfig, filename: string) =
+        let (dir, _, _) = splitFile(filename)
+        pushpopPath dir:
+            conf.analyzeBlock(filename, doParse(filename, isFile=true).a)
 
 #=======================================
 # Methods
@@ -194,13 +220,13 @@ else:
                 echo "something went wrong when cloning Arturo sources..."
                 quit(1)
 
-    proc analyzeFile(conf: BundleConfig, filename: string, isFirst: bool = false) =
-        let (dir, name, ext) = splitFile(filename)
-        pathStack.add(dir)
-        let parsed = doParse(filename, isFile=true)
-        conf.analyzeBlock((if isFirst: "" else: filename), parsed.a)
-        pathStack.delete((pathStack.len-1)..(pathStack.len-1))
-    
+    proc analyzeSources(filename: string): BundleConfig =
+        result = BundleConfig()
+
+        let (dir, _, _) = splitFile(filename)
+        pushpopPath dir:
+            result.analyzeBlock("", doParse(filename, isFile=true).a)
+
     proc buildExecutable(conf: BundleConfig, filename: string) =
         let currentFolder = getCurrentDir()
         setCurrentDir(tmpFolder)
@@ -233,12 +259,10 @@ else:
         section "Cloning Arturo":
             cloneArturo()
         
-        var conf = BundleConfig()
+        var conf: BundleConfig
         section "Analyzing source code":
-            conf.analyzeFile(filename, isFirst=true)
-        
+            conf = analyzeSources(filename)
 
-        
         
         conf.symbols = deduplicate(conf.symbols)
 
