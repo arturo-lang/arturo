@@ -41,6 +41,9 @@ import vm/[
     version
 ]
 
+when defined(BUNDLE):
+    import vm/[bundle]
+
 when not defined(WEB):
     import vm/profiler
 
@@ -190,12 +193,13 @@ template initialize(args: seq[string], filename: string, isFile:bool, scriptData
     when not defined(WEB):
         # paths
         if isFile: pushFrame(filename, fromFile=true)
-        else: pushFrame(getCurrentDir())
+        else: 
+            when defined(BUNDLE):
+                pushFrame("")
+            else:
+                pushFrame(getCurrentDir())
 
     Syms = initTable[string,Value]()
-
-    if portableData != "":
-        SetSym("_portable", valueFromJson(portableData))
 
     # library
     setupLibrary()
@@ -203,6 +207,14 @@ template initialize(args: seq[string], filename: string, isFile:bool, scriptData
     # dumper
     Dumper = proc (v:Value):string =
         v.dumped()
+
+    if portableData != "":
+        when defined(BUNDLE):
+            let bres = valueFromJson(portableData)
+
+            echo "setting bundled resources"
+            Bundled = bres.d
+            echo Dumper(bres)
 
     # set VM as initialized
     initialized = true
