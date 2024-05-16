@@ -24,7 +24,6 @@ when not defined(BUNDLE):
 
     import helpers/io
     import helpers/jsonobject
-    import helpers/path
 
     import vm/values/[types, custom/vsymbol]
     import vm/[globals, vm, parse, packager]
@@ -251,14 +250,15 @@ else:
                 quit(1)
 
     proc analyzeSources(filename: string): BundleConfig =
+        let (dir, name, _) = splitFile(filename)
+
         result = BundleConfig()
 
-        result.name = 
+        result.name = name
         result.main = readFile(filename)
         result.imports = initTable[string,string]()
         result.packages = initTable[string,string]()
 
-        let (dir, _, _) = splitFile(filename)
         pushpopPath dir:
             result.analyzeBlock("", doParse(filename, isFile=true).a)
 
