@@ -16,8 +16,8 @@ import tables
 import vm/[values/value]
 
 when not defined(BUNDLE):
-    import options, os, osproc
-    import sequtils, strutils
+    import algorithm, options, os
+    import osproc, sequtils, strutils
 
     when defined(DEV):
         import std/private/osdirs
@@ -36,6 +36,7 @@ type
         imports:        OrderedTable[string,string]
         packages:       OrderedTable[string,string]
         symbols:        seq[string]
+        modules:        seq[string]
         miniPossible:   bool
 
 #=======================================
@@ -237,6 +238,12 @@ else:
         pushpopPath dir:
             result.analyzeBlock("", doParse(filename, isFile=true).a)
 
+        result.symbols = deduplicate(result.symbols)
+        result.modules = deduplicate(result.symbols.map(
+            proc (z: Value): string =
+                Syms[z].info.module
+        ))
+
     proc buildExecutable(conf: BundleConfig, filename: string) =
         let currentFolder = getCurrentDir()
         setCurrentDir(TmpFolder)
@@ -256,6 +263,10 @@ else:
     proc cleanUp() =
         removeDir(TmpFolder)
 
+    #---------------------------------------
+    # Main entry point
+    #---------------------------------------
+
     proc generateBundle*(filename: string) =
         section "Firing up the VM":
             startVM()
@@ -273,9 +284,11 @@ else:
         section "Analyzing source code":
             conf = analyzeSources(filename)
 
-        
-        conf.symbols = deduplicate(conf.symbols)
+        section "Saving configuration":
+            #conf.saveConfiguration()
+            discard
 
+        
         for k,v in conf.imports.pairs():
             echo "----------------------------------"
             echo "|" & k & "|"
@@ -289,19 +302,12 @@ else:
             echo "----------------------------------"
 
 
-        echo "$$ SYMBOLS"
-        var modules: seq[string]
+        echo "\n$$ SYMBOLS"
         for f in conf.symbols:
             echo "-> " & f
 
-            let symv = Syms[f]
-            if not symv.info.isNil:
-                modules.add(symv.info.module)
-
-        modules = deduplicate(modules)
-
-        echo ">> MODULES"
-        for m in modules:
+        echo "\n>> MODULES"
+        for m in conf.modules:
             echo "-> " & m
             #echo v
             #echo "\n"
