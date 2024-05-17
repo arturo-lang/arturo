@@ -242,12 +242,13 @@ proc cloneArturo() =
             echo "\tsomething went wrong when cloning Arturo sources..."
             quit(1)
 
-proc analyzeSources(filename: string): BundleConfig =
+proc analyzeSources(filename: string, target: string): BundleConfig =
     let (dir, name, _) = splitFile(filename)
 
     result = BundleConfig()
-
-    result.name = name
+    result.name = 
+        if target == "": name
+        else: target
     result.curpath = dir
     result.main = readFile(filename)
     result.files = initTable[string,string]()
@@ -325,7 +326,7 @@ proc cleanUp() =
 # Main entry point
 #=======================================
 
-proc generateBundle*(filename: string) =
+proc generateBundle*(filename: string, target: string) =
     section "Firing up the VM":
         startVM()
 
@@ -340,7 +341,7 @@ proc generateBundle*(filename: string) =
     
     var conf: BundleConfig
     section "Analyzing source code":
-        conf = analyzeSources(filename)
+        conf = analyzeSources(filename, target)
 
     section "Saving configuration":
         conf.saveConfiguration()
