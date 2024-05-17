@@ -27,7 +27,7 @@ import helpers/io
 import helpers/jsonobject
 
 import vm/values/[types, custom/vsymbol]
-import vm/[globals, vm, parse, packager]
+import vm/[globals, vm, exec, parse, packager]
 
 #=======================================
 # Types
@@ -230,8 +230,24 @@ proc analyzeFile(conf: BundleConfig, filename: string) =
 # Methods
 #=======================================
 
-proc checkNim() = commandExists("nim")
-proc checkGit() = commandExists("git")
+proc checkInfo(filepath: string): string =
+    if not dirExists(filepath):
+        return filepath
+
+    var entryFile: string = filepath
+    let possibleInfoFile = joinPath(@[filepath, "info.art"])
+    if fileExists(possibleInfoFile):
+        let info = execDictionary(doParse(possibleInfoFile, isFile=true))
+        if (var execPath = info.getOrDefault("executable", nil); not execPath.isNil):
+            entryFile = execPath.s
+            let (_, _, ext) = splitPath(entryFile)
+            if ext == "":
+                entryFile &= ".art"
+
+    return entryFile
+
+proc lookForNim() = commandExists("nim")
+proc lookForGit() = commandExists("git")
 
 proc cloneArturo() =
     when defined(DEV):
@@ -301,7 +317,7 @@ proc debug(conf: BundleConfig) =
     for k,v in conf.aliases.pairs():
         echo "\t\t- " & k & " -> " & v
         
-proc buildExecutable(conf: BundleConfig, filename: string) =
+proc buildExecutable(conf: BundleConfig) =
     let currentFolder = getCurrentDir()
     setCurrentDir(TmpFolder)
 
@@ -326,22 +342,26 @@ proc cleanUp() =
 # Main entry point
 #=======================================
 
-proc generateBundle*(filename: string, target: string) =
+proc generateBundle*(filepath: string, target: string) =
     section "Firing up the VM":
         startVM()
 
-    section "Checking Nim":
-        checkNim()
+    var entryFile: string
+    section "Checking information":
+        entryFile = checkInfo()
 
-    section "Checking Git":
-        checkGit()
+    section "Looking for Nim":
+        lookForNim()
+
+    section "Looking for Git":
+        lookForGit()
     
     section "Cloning Arturo":
         cloneArturo()
     
     var conf: BundleConfig
     section "Analyzing source code":
-        conf = analyzeSources(filename, target)
+        conf = analyzeSources(entryFile, target)
 
     section "Saving configuration":
         conf.saveConfiguration()
@@ -350,7 +370,7 @@ proc generateBundle*(filename: string, target: string) =
         conf.debug()
     
     section "Building executable":
-        conf.buildExecutable(filename)
+        conf.buildExecutable()
     
     # section "Cleaning up":
     #     cleanUp()
