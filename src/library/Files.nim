@@ -41,6 +41,9 @@ import vm/lib
 when not defined(WEB):
     import vm/[bytecode, errors, parse]
 
+when defined(BUNDLE):
+    import vm/bundle
+
 #=======================================
 # Definitions
 #=======================================
