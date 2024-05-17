@@ -65,7 +65,7 @@ const
     Implicit        = @[
         "any?", "array", "ensure", "is?",
         "get", "set", "let",  
-        "sys", "script"              
+        "sys", "script", "terminal"              
     
     ]
 
