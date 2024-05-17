@@ -71,7 +71,7 @@ when defined(BUNDLE):
 #=======================================
 
 when defined(BUNDLE):
-    proc getBundledResource*(identifier: string): string =
+    proc getBundledResource*(identifier: string): BundleResource =
         let bundledResource = checkImports(identifier)
         if bundledResource != NoResourceFound:
             return bundledResource
