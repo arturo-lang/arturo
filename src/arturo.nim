@@ -45,7 +45,8 @@ when not defined(WEB):
 when defined(BUNDLE):
     import vm/bundle/resources
 else:
-    import vm/bundle/generator
+    when not defined(WEB):
+        import vm/bundle/generator
 
 when not defined(WEB) and not defined(BUNDLE):
 
