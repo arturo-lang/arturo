@@ -313,7 +313,10 @@ proc defineLibrary*() =
                     push(newBinary(b))
                 else:
                     echo "! in READ, asked for: " & x.s
-                    let (src, tp) = getSource(x.s)
+                    when defined(BUNDLE):
+                        let (src, tp) = (getBundledResource(x.s)[0], FileData)
+                    else:
+                        let (src, tp) = getSource(x.s)
 
                     if (hadAttr("file") and tp != FileData):
                         Error_FileNotFound(src)
