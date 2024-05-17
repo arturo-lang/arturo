@@ -61,8 +61,7 @@ const
     ReadCall        = "read"
 
     Implicit        = @[
-        "any?", "array", "ensure", "is?",
-        "get", "set", "let"       
+        "any?", "array", "ensure", "is?"       
     ]
 
     MiniKillers     = @[
