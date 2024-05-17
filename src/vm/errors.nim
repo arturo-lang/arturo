@@ -51,6 +51,9 @@ import helpers/terminal
 import vm/runtime
 import vm/values/custom/verror
 
+when defined(BUNDLE):
+    import vm/bundle
+
 #=======================================
 # Types
 #=======================================
@@ -188,7 +191,12 @@ proc printCodePreview(e: VError) =
                     e.context.file = currentFrame().path
                 
             echo ""
-            let codeLines = readFile(e.context.file).splitLines()
+            let fileContent = 
+                when defined(BUNDLE):
+                    getBundledResource(e.context.file)
+                else:
+                    readFile(e.context.file)
+            let codeLines = fileContent.splitLines()
             const linesBeforeAfter = 2
             let lineFrom = max(0, e.context.line - (linesBeforeAfter+1))
             let lineTo = min(len(codeLines)-1, e.context.line + (linesBeforeAfter-1))
