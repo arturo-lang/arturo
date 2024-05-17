@@ -293,6 +293,8 @@ when isMainModule and not defined(WEB):
                 printHelp()
             of showVersion:
                 echo ArturoVersionTxt
+            of noAction:
+                discard
     else:
         arguments = commandLineParams()
         var bundleMain = static BundleMain
