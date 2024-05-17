@@ -51,9 +51,6 @@ import helpers/terminal
 import vm/runtime
 import vm/values/custom/verror
 
-when defined(BUNDLE):
-    import vm/bundle
-
 #=======================================
 # Types
 #=======================================
@@ -181,7 +178,7 @@ proc printErrorMessage(e: VError) =
     echo strip(indent(dedent(formatMessage(e.msg)), 2), chars={'\n'})
 
 proc printCodePreview(e: VError) =
-    when not defined(NOERRORLINES):
+    when (not defined(NOERRORLINES)) and (not defined(BUNDLE)):
         if (not IsRepl) and (e.kind != CmdlineErr) and (e.kind != ProgramErr) :
             if e.context.file == "":
                 e.context.line = CurrentLine
@@ -191,11 +188,7 @@ proc printCodePreview(e: VError) =
                     e.context.file = currentFrame().path
                 
             echo ""
-            let fileContent = 
-                when defined(BUNDLE):
-                    getBundledResource(e.context.file)
-                else:
-                    readFile(e.context.file)
+            let fileContent = readFile(e.context.file)
             let codeLines = fileContent.splitLines()
             const linesBeforeAfter = 2
             let lineFrom = max(0, e.context.line - (linesBeforeAfter+1))
