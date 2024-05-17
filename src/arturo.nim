@@ -64,6 +64,8 @@ when not defined(WEB) and not defined(BUNDLE):
             showHelp
             showVersion
 
+            noAction
+
     #=======================================
     # Constants
     #=======================================
@@ -94,7 +96,7 @@ Commands:
             update                          Update all local packages
 
 """ else: "") & """
-    -e, --evaluate <code>                   Evaluate given code
+    -e, --evaluate                          Evaluate given code string
 
     -r, --repl                              Show repl / interactive console
     
@@ -105,11 +107,11 @@ Options:
     --no-color                              Mute all colors from output
 
 Experimental:
-    -c, --compile <script>                  Compile script and write bytecode
-    -x, --execute <bytecode>                Execute script from bytecode
+    -c, --compile                           Compile script and write bytecode
+    -x, --execute                           Execute script from bytecode
 
-    -b, --bundle <path>                     Bundle file as an executable
-
+    -b, --bundle                            Bundle file as an executable
+        --as <name>                         Rename executable to...
 """
     #=======================================
     # Templates
@@ -187,7 +189,7 @@ when isMainModule and not defined(WEB):
     when not defined(BUNDLE):
         var token = initOptParser()
 
-        var action: CmdAction = evalCode
+        var action: CmdAction = noAction
         var runConsole  = static readFile("src/scripts/console.art")
         #var runUpdate   = static readFile("src/scripts/update.art")
         #var runModule   = static readFile("src/scripts/module.art")
@@ -200,48 +202,42 @@ when isMainModule and not defined(WEB):
             case token.kind:
                 of cmdArgument: 
                     if code=="":
-                        if action==evalCode:
-                            action = execFile
-                        
                         code = token.key
                         break
                 of cmdShortOption, cmdLongOption:
                     case token.key:
+                        # commands
                         of "r","repl":
                             action = evalCode
                             code = runConsole
                         of "e","evaluate":
-                            echo "found -e"
                             action = evalCode
-                            code = token.val
-                            echo "setting code to: " & token.val
-                        of "c","compile":
-                            echo "found -c"
-                            action = writeBcode
-                            code = token.val
-                        of "x","execute":
-                            echo "found -x"
-                            action = readBcode
-                            code = token.val
-                        of "b","bundle":
-                            action = generateBundle
-                            code = token.val
                         # of "u","update":
                         #     action = evalCode
                         #     code = runUpdate
                         of "p", "package":
                             when not defined(MINI):
                                 action = packagerMode
-                                code = token.val
                             else:
                                 unrecognizedOption = token.key
                             #break
-                        of "no-color":
-                            muted = true
                         of "h","help":
                             action = showHelp
                         of "v","version":
                             action = showVersion
+                        
+                        # options
+                        of "no-color":
+                            muted = true
+
+                        # experimental
+                        of "c","compile":
+                            action = writeBcode
+                        of "x","execute":
+                            action = readBcode
+                        of "b","bundle":
+                            action = generateBundle
+                        
                         else:
                             unrecognizedOption = token.key
                 of cmdEnd: break
@@ -250,17 +246,21 @@ when isMainModule and not defined(WEB):
 
         setColors(muted = muted)
 
+        if action == noAction:
+            if code == "":
+                action = evalCode
+                code = runConsole
+            else:
+                action = execFile
+
+        echo "action: " & $(action)
+        echo "code: " & $(code)
+
         if unrecognizedOption!="" and ((action==evalCode and code=="") or (action notin {execFile, evalCode})):
             guard(true): Error_UnrecognizedOption(unrecognizedOption)
 
         case action:
             of execFile, evalCode:
-                if code=="":
-                    code = runConsole
-
-                echo "evalCode mode: " & $(action==evalCode)
-
-                echo "code = " & code
 
                 when defined(BENCHMARK):
                     benchmark "doParse / doEval":
@@ -293,6 +293,8 @@ when isMainModule and not defined(WEB):
                 printHelp()
             of showVersion:
                 echo ArturoVersionTxt
+            of noAction:
+                discard
     else:
         arguments = commandLineParams()
         var bundleMain = static BundleMain
