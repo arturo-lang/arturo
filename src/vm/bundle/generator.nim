@@ -151,7 +151,6 @@ proc configFile(conf: BundleConfig): string =
     conf.name & BundleSuffix
 
 proc analyzeBlock(conf: BundleConfig, filename: string, bl: ValueArray) =
-    let prefix = if filename == "": "" else: filename & "/"
     var i = 0
     while i < bl.len:
         
