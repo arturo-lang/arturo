@@ -18,6 +18,8 @@ import vm/[values/value]
 import options, os
 import osproc, sequtils, strutils
 
+import std/private/ospaths2
+
 when defined(DEV):
     import std/private/osdirs
 
@@ -34,6 +36,8 @@ import vm/[globals, vm, parse, packager]
 type
     BundleConfig = ref object
         name:           string
+        curpath:        string
+
         main:           string
         imports:        Table[string,string]
         packages:       Table[string,string]
@@ -123,9 +127,9 @@ proc startVM() =
 proc isPackageFile(p: string): bool =
     return p.contains(PackageCache)
 
-proc cleanedPath(p: string): string =
+proc cleanedPath(conf: BundleConfig, p: string): string =
     if not p.isPackageFile():
-        return p
+        return relativePath(p, conf.curpath)
 
     return ":" & p.split(PackageCache)[^1]
 
@@ -170,7 +174,7 @@ proc analyzeBlock(conf: BundleConfig, filename: string, bl: ValueArray) =
                             if (let res = getEntryForPackage(nextItem.s, (true, NoPackageVersion), "main", false); res.isSome):
                                 let src = res.get()
 
-                                let clean = cleanedPath(src)
+                                let clean = conf.cleanedPath(src)
                                 conf.imports[clean] = readFile(src)
 
                                 if src.isPackageFile():
@@ -183,13 +187,13 @@ proc analyzeBlock(conf: BundleConfig, filename: string, bl: ValueArray) =
                             if (let res = getEntryForPackage(fname, (true, NoPackageVersion), "main", false); res.isSome):
                                 let src = res.get()
 
-                                conf.imports[cleanedPath(src)] = readFile(src)
+                                conf.imports[conf.cleanedPath(src)] = readFile(src)
                                 conf.analyzeFile(src)
 
                     elif item.s == ReadCall:
                         if afterNextItem.kind != Null and nextItem.isRelativeCall():
                             let fname = relativePathTo(afterNextItem.s)
-                            conf.imports[cleanedPath(fname)] = readFile(fname)
+                            conf.imports[conf.cleanedPath(fname)] = readFile(fname)
         
             of Symbol:
                 if (let aliased = Aliases.getOrDefault(item.m, NoAliasBinding); aliased != NoAliasBinding):
@@ -237,6 +241,7 @@ proc analyzeSources(filename: string): BundleConfig =
     result = BundleConfig()
 
     result.name = name
+    result.curpath = dir
     result.main = readFile(filename)
     result.imports = initTable[string,string]()
     result.packages = initTable[string,string]()
