@@ -78,7 +78,7 @@ when defined(BUNDLE):
                 result = (BundleImports.getOrDefault(withExtension, ""), withExtension)
 
     proc checkPackages(identifier: string): string =
-        BundlePackages.getOrDefault(identifier, NoResourceFound)
+        BundlePackages.getOrDefault(identifier, "")
 
 #=======================================
 # Methods
