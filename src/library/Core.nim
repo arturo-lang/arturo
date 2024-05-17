@@ -833,9 +833,13 @@ proc defineLibrary*() =
                                 if importOnly.contains(k) or k.startsWith("__module"):
                                     SetSym(k, v)
                         else:
+                            echo "executing"
                             execUnscoped(parsed)
+                            echo "executed"
                     #echo "popped frame"
+                    echo "about to discard the frame"
                     discardFrame()
+                    echo "discarded the frame"
                 else:
                     var verspec = (true, NoPackageVersion)
                     var pkgs: seq[string]

@@ -89,5 +89,5 @@ proc popFrame*(): Frame =
 template discardFrame*() =
     ## pop last frame from the stack
     ## without returning it
-    echo "popped frame: " & $(FrameStack[FSP][]) & " / FSP: " & $(FSP-1)
     FSP -= 1
+    echo "popped frame: " & $(FrameStack[FSP][]) & " / FSP: " & $(FSP-1)
