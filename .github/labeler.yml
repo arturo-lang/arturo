@@ -5,8 +5,8 @@ ast:
   - src/vm/ast.nim
 
 bundler:
-  - src/scripts/bundler.art
-  - src/vm/bundle.nim
+  - src/vm/bundle/generator.nim
+  - src/vm/bundle/resources.nim
 
 bytecode:
   - src/vm/bytecode.nim
