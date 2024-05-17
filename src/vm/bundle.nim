@@ -57,7 +57,11 @@ when defined(BUNDLE):
 
 when defined(BUNDLE):
     proc checkImports(identifier: string): string =
-        BundleImports.getOrDefault(identifier, NoResourceFound)
+        result = BundleImports.getOrDefault(identifier, NoResourceFound)
+        if result == NoResourceFound:
+            let (_, _, ext) = splitFile(identifier)
+            if ext == "":
+                result = BundleImports.getOrDefault(identifier & ".art", NoResourceFound)
 
     proc checkPackages(identifier: string): string =
         BundlePackages.getOrDefault(identifier, NoResourceFound)
