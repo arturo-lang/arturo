@@ -184,6 +184,9 @@ proc analyzeBlock(conf: BundleConfig, filename: string, bl: ValueArray) =
                                 let clean = conf.cleanedPath(src)
                                 conf.imports[clean] = readFile(src)
 
+                                echo "asked for: " & nextItem.s
+                                echo "will store: " & clean
+
                                 if src.isPackageFile():
                                     conf.packages[nextItem.s] = clean
 
@@ -195,6 +198,9 @@ proc analyzeBlock(conf: BundleConfig, filename: string, bl: ValueArray) =
                                 let src = res.get()
 
                                 conf.imports[conf.cleanedPath(src)] = readFile(src)
+
+                                echo "asked for: " & afterNextItem.s
+                                echo "will store: " & conf.cleanedPath(src)
                                 conf.analyzeFile(src)
 
                     elif item.s == ReadCall:
