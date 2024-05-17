@@ -60,10 +60,6 @@ const
     RelativeCall    = "relative"
     ReadCall        = "read"
 
-    Implicit        = @[
-        "any?", "array", "ensure", "is?"       
-    ]
-
     MiniKillers     = @[
         "close", "open", "query",                       # Database
         "mail",                                         # Net
@@ -214,6 +210,10 @@ proc analyzeBlock(conf: BundleConfig, filename: string, bl: ValueArray) =
             of Path:
                 conf.symbols.add("get")
 
+                if (let symv = Syms.getOrDefault(item.p[0].s, nil); not symv.isNil):
+                    if symv.isStdlibSymbol():
+                        conf.symbols.add(item.p[0].s)
+
             of PathLabel:
                 conf.symbols.add("set")
 
@@ -231,6 +231,13 @@ proc analyzeFile(conf: BundleConfig, filename: string) =
     let (dir, _, _) = splitFile(filename)
     pushpopPath dir:
         conf.analyzeBlock(filename, doParse(filename, isFile=true).a)
+
+proc addImplicit(syms: var seq[string]) =
+    if syms.contains("define"):
+        syms.add(@["ensure", "function", "if", "greater?", "equal?", "return", "neg"])
+
+    if syms.contains("function") or syms.contains("method"):
+        syms.add(@["any?", "array", "is?", "ensure"])
 
 #=======================================
 # Methods
@@ -302,7 +309,7 @@ proc analyzeSources(filename: string, target: string): BundleConfig =
     pushpopPath dir:
         result.analyzeBlock("", doParse(filename, isFile=true).a)
 
-    result.symbols &= Implicit
+    result.symbols.addImplicit()
     result.symbols &= forceImplicit
 
     result.symbols = sorted(deduplicate(result.symbols))
