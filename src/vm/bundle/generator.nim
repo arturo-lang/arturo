@@ -405,5 +405,5 @@ proc generateBundle*(filepath: string, target: string) =
     section "Building executable":
         conf.buildExecutable()
     
-    # section "Cleaning up":
-    #     cleanUp()
+    section "Cleaning up":
+        cleanUp()
