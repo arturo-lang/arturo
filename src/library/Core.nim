@@ -818,13 +818,14 @@ proc defineLibrary*() =
                     #echo relp
                     #push getBundledResource(x.s)
 
-                    pushFrame(x.s, fromFile=false)
+                    pushFrame(x.s, fromFile=true)
                     #echo "pushed frame"
 
                     echo "! in IMPORT, asked for: " & x.s
                     let src = getBundledResource(x.s)
+                    echo "got >> " & src
 
-                    let parsed = doParse(src.s, isFile=false)
+                    let parsed = doParse(src, isFile=false)
                     if not parsed.isNil:
                         if importOnly.len > 0:
                             let got = execScopedModule(parsed, importOnly)
