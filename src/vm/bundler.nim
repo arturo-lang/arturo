@@ -265,6 +265,13 @@ proc checkInfo(filepath: string): string =
         if (let forceFlagsOption = bundleInfo.getOrDefault("flags", nil); not forceFlagsOption.isNil):
             forceFlags = forceFlagsOption.s
 
+        if (let forceEntryOption = bundleInfo.getOrDefault("entry", nil); not forceEntryOption.isNil):
+            entryFile = joinPath(@[filepath, forceEntryOption.s])
+
+    if not fileExists(entryFile):
+        echo "\tentry file not valid: " & entryFile
+        quit(1)
+
     return entryFile
 
 proc lookForNim() = commandExists("nim")
