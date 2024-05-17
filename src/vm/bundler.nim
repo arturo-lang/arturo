@@ -35,15 +35,15 @@ import vm/[globals, vm, parse, packager]
 
 type
     BundleConfig = ref object
-        name:           string
-        curpath:        string
+        name        :   string
+        curpath     :   string
 
-        main:           string
-        imports:        Table[string,string]
-        packages:       Table[string,string]
-        symbols:        seq[string]
-        modules:        seq[string]
-        noMini:         bool
+        main        :   string
+        files       :   Table[string,string]
+        aliases     :   Table[string,string]
+        symbols     :   seq[string]
+        modules     :   seq[string]
+        noMini      :   bool
 
 #=======================================
 # Constants
@@ -56,7 +56,7 @@ const
         when defined(DEV): "../_tmpart"
         else:              "_tmpart"
     
-    PackageCache    = "packages/cache/"
+    PackageCache    = "aliases/cache/"
 
     ImportCall      = "import"
     RelativeCall    = "relative"
@@ -182,13 +182,10 @@ proc analyzeBlock(conf: BundleConfig, filename: string, bl: ValueArray) =
                                 let src = res.get()
 
                                 let clean = conf.cleanedPath(src)
-                                conf.imports[clean] = readFile(src)
-
-                                echo "asked for: " & nextItem.s
-                                echo "will store: " & clean
+                                conf.files[clean] = readFile(src)
 
                                 if src.isPackageFile():
-                                    conf.packages[nextItem.s] = clean
+                                    conf.aliases[nextItem.s] = clean
 
                                 conf.analyzeFile(src)
                             
@@ -197,16 +194,13 @@ proc analyzeBlock(conf: BundleConfig, filename: string, bl: ValueArray) =
                             if (let res = getEntryForPackage(fname, (true, NoPackageVersion), "main", false); res.isSome):
                                 let src = res.get()
 
-                                conf.imports[conf.cleanedPath(src)] = readFile(src)
-
-                                echo "asked for: " & afterNextItem.s
-                                echo "will store: " & conf.cleanedPath(src)
+                                conf.files[conf.cleanedPath(src)] = readFile(src)
                                 conf.analyzeFile(src)
 
                     elif item.s == ReadCall:
                         if afterNextItem.kind != Null and nextItem.isRelativeCall():
                             let fname = relativePathTo(afterNextItem.s)
-                            conf.imports[conf.cleanedPath(fname)] = readFile(fname)
+                            conf.files[conf.cleanedPath(fname)] = readFile(fname)
         
             of Symbol:
                 if (let aliased = Aliases.getOrDefault(item.m, NoAliasBinding); aliased != NoAliasBinding):
@@ -256,8 +250,8 @@ proc analyzeSources(filename: string): BundleConfig =
     result.name = name
     result.curpath = dir
     result.main = readFile(filename)
-    result.imports = initTable[string,string]()
-    result.packages = initTable[string,string]()
+    result.files = initTable[string,string]()
+    result.aliases = initTable[string,string]()
 
     pushpopPath dir:
         result.analyzeBlock("", doParse(filename, isFile=true).a)
@@ -274,8 +268,8 @@ proc saveConfiguration(conf: BundleConfig) =
     let output = {
         "name"      : newString(conf.name),
         "main"      : newString(conf.main),
-        "imports"   : newStringDictionary(conf.imports),
-        "packages"  : newStringDictionary(conf.packages),
+        "files"   : newStringDictionary(conf.files),
+        "aliases"  : newStringDictionary(conf.aliases),
         "symbols"   : newStringBlock(conf.symbols),
         "modules"   : newStringBlock(conf.modules)
     }.toOrderedTable
@@ -297,13 +291,13 @@ proc debug(conf: BundleConfig) =
     echo "\t\t- " & $(not conf.nomini)
 
     echo ""
-    echo "\tFound " & $(conf.imports.len) & " imports:"
-    for k,v in conf.imports.pairs():
+    echo "\tFound " & $(conf.files.len) & " files:"
+    for k,v in conf.files.pairs():
         echo "\t\t- " & k
 
     echo ""
-    echo "\tOf them, " & $(conf.packages.len) & " being packages:"
-    for k,v in conf.packages.pairs():
+    echo "\tFound " & $(conf.aliases.len) & "aliases:"
+    for k,v in conf.aliases.pairs():
         echo "\t\t- " & k & " -> " & v
         
 
