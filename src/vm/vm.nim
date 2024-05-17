@@ -27,7 +27,7 @@ when not defined(WEB):
     import helpers/stores
 
 import vm/[
-    bundle,
+    bundle/resources,
     env, 
     errors, 
     eval, 

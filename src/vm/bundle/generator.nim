@@ -3,10 +3,10 @@
 # Programming Language + Bytecode VM compiler
 # (c) 2019-2024 Yanis Zafirópulos
 #
-# @file: vm/bundler.nim
+# @file: vm/bundle/generator.nim
 #=======================================================
 
-## Bundled executable manager
+## Bundled executable generator
 
 #=======================================
 # Libraries
