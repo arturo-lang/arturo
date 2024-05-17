@@ -240,7 +240,7 @@ proc checkInfo(filepath: string): string =
         let info = execDictionary(doParse(possibleInfoFile, isFile=true))
         if (var execPath = info.getOrDefault("executable", nil); not execPath.isNil):
             entryFile = execPath.s
-            let (_, _, ext) = splitPath(entryFile)
+            let (_, _, ext) = splitFile(entryFile)
             if ext == "":
                 entryFile &= ".art"
 
