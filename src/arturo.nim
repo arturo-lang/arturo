@@ -200,9 +200,6 @@ when isMainModule and not defined(WEB):
             case token.kind:
                 of cmdArgument: 
                     if code=="":
-                        if action==evalCode:
-                            action = execFile
-                        
                         code = token.key
                         break
                 of cmdShortOption, cmdLongOption:
@@ -249,18 +246,14 @@ when isMainModule and not defined(WEB):
 
         setColors(muted = muted)
 
+        echo "action: " & $(action)
+        echo "code: " & $(code)
+
         if unrecognizedOption!="" and ((action==evalCode and code=="") or (action notin {execFile, evalCode})):
             guard(true): Error_UnrecognizedOption(unrecognizedOption)
 
         case action:
             of execFile, evalCode:
-                if code=="":
-                    code = runConsole
-
-                echo "evalCode mode: " & $(action==evalCode)
-
-                echo "code = " & code
-
                 when defined(BENCHMARK):
                     benchmark "doParse / doEval":
                         discard run(code, arguments, action==execFile)
