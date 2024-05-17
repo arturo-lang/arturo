@@ -48,8 +48,8 @@ else:
 
 when defined(BUNDLE):
     const
-        BundleImports       = static toTable((toSeq(BundleJson["imports"].pairs)).map((z) => (z[0], z[1].getStr())))
-        BundlePackages      = static toTable((toSeq(BundleJson["packages"].pairs)).map((z) => (z[0], z[1].getStr())))
+        BundleFiles         = static toTable((toSeq(BundleJson["files"].pairs)).map((z) => (z[0], z[1].getStr())))
+        BundleAliases       = static toTable((toSeq(BundleJson["aliases"].pairs)).map((z) => (z[0], z[1].getStr())))
 
         NoResourceFound*    = ("", "")
 
@@ -69,16 +69,16 @@ when defined(BUNDLE):
     proc resourceNotFound(res: BundleResource): bool =
         res[0] == ""
 
-    proc checkImports(identifier: string): BundleResource =
-        result = (BundleImports.getOrDefault(identifier, ""), identifier)
+    proc checkFile(identifier: string): BundleResource =
+        result = (BundleFiles.getOrDefault(identifier, ""), identifier)
         if result.resourceNotFound():
             let (_, _, ext) = splitFile(identifier)
             if ext == "":
                 let withExtension = identifier & ".art"
-                result = (BundleImports.getOrDefault(withExtension, ""), withExtension)
+                result = (BundleFiles.getOrDefault(withExtension, ""), withExtension)
 
-    proc checkPackages(identifier: string): string =
-        BundlePackages.getOrDefault(identifier, "")
+    proc checkAlias(identifier: string): string =
+        BundleAliases.getOrDefault(identifier, "")
 
 #=======================================
 # Methods
@@ -86,14 +86,14 @@ when defined(BUNDLE):
 
 when defined(BUNDLE):
     proc getBundledResource*(identifier: string): BundleResource =
-        let bundledResource = checkImports(identifier)
+        let bundledResource = checkFile(identifier)
         if not bundledResource.resourceNotFound():
             return bundledResource
 
-        let bundledPackage = checkPackages(identifier)
-        if bundledPackage != "":
-            result = checkImports(bundledPackage)
-            result[1] = bundledPackage
+        let aliasedFile = checkAlias(identifier)
+        if aliasedFile != "":
+            result = checkFile(aliasedFile)
+            result[1] = aliasedFile
             return
             
         return NoResourceFound
