@@ -12,11 +12,8 @@
 # Libraries
 #=======================================
 
-import algorithm, tables
-import vm/[values/value]
-
-import options, os
-import osproc, sequtils, strutils
+import algorithm, options, os, osproc
+import sequtils, strutils, sugar, tables
 
 import std/private/ospaths2
 
@@ -26,8 +23,9 @@ when defined(DEV):
 import helpers/io
 import helpers/jsonobject
 
-import vm/values/[types, custom/vsymbol, custom/vlogical]
 import vm/[globals, vm, exec, parse, packager]
+import vm/values/[value, types]
+import vm/values/custom/[vlogical, vsymbol]
 
 #=======================================
 # Types
