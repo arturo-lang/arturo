@@ -193,6 +193,7 @@ when isMainModule and not defined(WEB):
         var runConsole  = static readFile("src/scripts/console.art")
         #var runUpdate   = static readFile("src/scripts/update.art")
         var muted: bool = not isColorFriendlyTerminal()
+        var bundleName: string = ""
 
         var unrecognizedOption = ""
 
@@ -236,6 +237,8 @@ when isMainModule and not defined(WEB):
                             action = readBcode
                         of "b","bundle":
                             action = generateBundle
+                        of "as":
+                            bundleName = token.val
                         
                         else:
                             unrecognizedOption = token.key
@@ -283,7 +286,7 @@ when isMainModule and not defined(WEB):
                 runBytecode(Translation(constants: parsed.a, instructions: bcode[1]), filename, arguments)
             
             of generateBundle:
-                generateBundle(code)
+                generateBundle(code, bundleName)
 
             of packagerMode:
                 packagerMode(code, arguments)
