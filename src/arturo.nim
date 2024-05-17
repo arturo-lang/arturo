@@ -284,9 +284,7 @@ when isMainModule and not defined(WEB):
             of showVersion:
                 echo ArturoVersionTxt
     else:
-        arguments = @[]#commandLineParams()
-        # code = static getEnv("BUNDLE_ENTRY")
-        # let portable = static getEnv("BUNDLE_DATA")
+        arguments = commandLineParams()
         var bundleMain = static BundleMain
         discard run(bundleMain, arguments, isFile=false)#, withData=portable)
 else:
