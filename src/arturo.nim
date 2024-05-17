@@ -255,9 +255,6 @@ when isMainModule and not defined(WEB):
             else:
                 action = execFile
 
-        echo "action: " & $(action)
-        echo "code: " & $(code)
-
         if unrecognizedOption!="" and ((action==evalCode and code=="") or (action notin {execFile, evalCode})):
             guard(true): Error_UnrecognizedOption(unrecognizedOption)
 
