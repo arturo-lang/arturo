@@ -315,7 +315,6 @@ proc defineLibrary*() =
 
                     push(newBinary(b))
                 else:
-                    echo "! in READ, asked for: " & x.s
                     when defined(BUNDLE):
                         let (src, tp) = (getBundledResource(x.s)[0], FileData)
                     else:
