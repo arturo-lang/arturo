@@ -29,5 +29,6 @@ proc fullBuildConfig() =
 
 proc bundleConfig() =
     --define:BUNDLE
+    --define:NOERRORLINES
 
 {. pop .}
