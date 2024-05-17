@@ -348,7 +348,7 @@ proc generateBundle*(filepath: string, target: string) =
 
     var entryFile: string
     section "Checking information":
-        entryFile = checkInfo()
+        entryFile = checkInfo(filepath)
 
     section "Looking for Nim":
         lookForNim()
