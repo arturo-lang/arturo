@@ -62,6 +62,10 @@ const
     RelativeCall    = "relative"
     ReadCall        = "read"
 
+    Implicit        = @[
+        "ensure"
+    ]
+
     MiniKillers     = @[
         "close", "open", "query",                       # Database
         "mail",                                         # Net
@@ -248,6 +252,8 @@ proc analyzeSources(filename: string): BundleConfig =
 
     pushpopPath dir:
         result.analyzeBlock("", doParse(filename, isFile=true).a)
+
+    result.symbols &= Implicit
 
     result.symbols = sorted(deduplicate(result.symbols))
     result.modules = sorted(deduplicate(result.symbols.map(
