@@ -312,6 +312,7 @@ proc defineLibrary*() =
 
                     push(newBinary(b))
                 else:
+                    echo "! in READ, asked for: " & x.s
                     let (src, tp) = getSource(x.s)
 
                     if (hadAttr("file") and tp != FileData):
