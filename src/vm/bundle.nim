@@ -26,13 +26,22 @@ when defined(BUNDLE):
     let BundleJson {.compileTime.} = parseJson(static readFile(getEnv("BUNDLE_CONFIG")))
 
     let BundleMain*     {.compileTime.} = BundleJson["main"].getStr()
-    let BundleImports*  {.compileTime.} = toTable((toSeq(BundleJson["imports"].pairs)).map((z) => (z[0], z[1].getStr())))
-    let BundlePackages* {.compileTime.} = toTable((toSeq(BundleJson["packages"].pairs)).map((z) => (z[0], z[1].getStr())))
     let BundleSymbols*  {.compileTime.} = BundleJson["symbols"].getElems().map((z) => z.getStr())
     let BundleModules*  {.compileTime.} = BundleJson["modules"].getElems().map((z) => z.getStr())
 else:
     let BundleSymbols*  {.compileTime.} : seq[string] = @[]
     let BundleModules*  {.compileTime.} : seq[string] = @[]
+
+#=======================================
+# Constants
+#=======================================
+
+when defined(BUNDLE):
+    const
+        BundleImports       = static toTable((toSeq(BundleJson["imports"].pairs)).map((z) => (z[0], z[1].getStr())))
+        BundlePackages      = static toTable((toSeq(BundleJson["packages"].pairs)).map((z) => (z[0], z[1].getStr())))
+
+        NoResourceFound     = ""
 
 #=======================================
 # Variables
@@ -43,9 +52,28 @@ when defined(BUNDLE):
         Bundled*: ValueDict
 
 #=======================================
+# Helpers
+#=======================================
+
+when defined(BUNDLE):
+    proc checkImports(identifier: string): string =
+        BundleImports.getOrDefault(identifier, NoResourceFound)
+
+    proc checkPackages(identifier: string): string =
+        BundlePackages.getOrDefault(identifier, NoResourceFound)
+
+#=======================================
 # Methods
 #=======================================
 
 when defined(BUNDLE):
-    proc getBundledResource*(identifier: string): Value =
-        Bundled[identifier]
+    proc getBundledResource*(identifier: string): string =
+        let bundledResource = checkImports(identifier)
+        if bundledResource != NoResourceFound:
+            return bundledResource
+
+        let bundledPackage = checkPackages(identifier)
+        if bundledPackage != NoResourceFound:
+            return checkImports(bundledPackage)
+
+        return NoResourceFound
