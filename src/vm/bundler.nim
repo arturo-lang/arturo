@@ -239,7 +239,7 @@ proc checkInfo(filepath: string): string =
     if fileExists(possibleInfoFile):
         let info = execDictionary(doParse(possibleInfoFile, isFile=true))
         if (var execPath = info.getOrDefault("executable", nil); not execPath.isNil):
-            entryFile = execPath.s
+            entryFile = joinPath(@[filepath, execPath.s])
             let (_, _, ext) = splitFile(entryFile)
             if ext == "":
                 entryFile &= ".art"
