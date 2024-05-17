@@ -96,7 +96,7 @@ Commands:
             update                          Update all local packages
 
 """ else: "") & """
-    -e, --evaluate <code>                   Evaluate given code
+    -e, --evaluate                          Evaluate given code string
 
     -r, --repl                              Show repl / interactive console
     
@@ -107,11 +107,10 @@ Options:
     --no-color                              Mute all colors from output
 
 Experimental:
-    -c, --compile <script>                  Compile script and write bytecode
-    -x, --execute <bytecode>                Execute script from bytecode
+    -c, --compile                           Compile script and write bytecode
+    -x, --execute                           Execute script from bytecode
 
-    -b, --bundle <path>                     Bundle file as an executable
-
+    -b, --bundle                            Bundle file as an executable
 """
     #=======================================
     # Templates
