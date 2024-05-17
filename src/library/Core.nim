@@ -823,7 +823,7 @@ proc defineLibrary*() =
 
                     echo "! in IMPORT, asked for: " & x.s
                     let src = getBundledResource(x.s)
-                    echo "got >> " & src
+                    #echo "got >> " & src
 
                     let parsed = doParse(src, isFile=false)
                     if not parsed.isNil:
@@ -833,13 +833,13 @@ proc defineLibrary*() =
                                 if importOnly.contains(k) or k.startsWith("__module"):
                                     SetSym(k, v)
                         else:
-                            echo "executing"
+                            #echo "executing"
                             execUnscoped(parsed)
-                            echo "executed"
+                            #echo "executed"
                     #echo "popped frame"
-                    echo "about to discard the frame"
+                    #echo "about to discard the frame"
                     discardFrame()
-                    echo "discarded the frame"
+                    #echo "discarded the frame"
                 else:
                     var verspec = (true, NoPackageVersion)
                     var pkgs: seq[string]
