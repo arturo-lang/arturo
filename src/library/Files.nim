@@ -42,7 +42,7 @@ when not defined(WEB):
     import vm/[bytecode, errors, parse]
 
 when defined(BUNDLE):
-    import vm/bundle
+    import vm/bundle/resources
 
 #=======================================
 # Definitions
