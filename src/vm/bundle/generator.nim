@@ -211,6 +211,12 @@ proc analyzeBlock(conf: BundleConfig, filename: string, bl: ValueArray) =
             of Inline, Block:
                 conf.analyzeBlock(filename, item.a)
 
+            of Path:
+                conf.symbols.add("get")
+
+            of PathLabel:
+                conf.symbols.add("set")
+
             else:
                 discard
 
