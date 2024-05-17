@@ -96,11 +96,6 @@ Commands:
 """ else: "") & """
     -e, --evaluate <code>                   Evaluate given code
 
-    -c, --compile <script>                  Compile script and write bytecode
-    -x, --execute <bytecode>                Execute script from bytecode
-
-    -b, --bundle <path>                     Bundle file as an executable
-
     -r, --repl                              Show repl / interactive console
     
     -h, --help                              Show this help screen
@@ -108,6 +103,13 @@ Commands:
 
 Options:
     --no-color                              Mute all colors from output
+
+Experimental:
+    -c, --compile <script>                  Compile script and write bytecode
+    -x, --execute <bytecode>                Execute script from bytecode
+
+    -b, --bundle <path>                     Bundle file as an executable
+
 """
     #=======================================
     # Templates
@@ -209,12 +211,16 @@ when isMainModule and not defined(WEB):
                             action = evalCode
                             code = runConsole
                         of "e","evaluate":
+                            echo "found -e"
                             action = evalCode
                             code = token.val
+                            echo "setting code to: " & token.val
                         of "c","compile":
+                            echo "found -c"
                             action = writeBcode
                             code = token.val
                         of "x","execute":
+                            echo "found -x"
                             action = readBcode
                             code = token.val
                         of "b","bundle":
@@ -251,6 +257,10 @@ when isMainModule and not defined(WEB):
             of execFile, evalCode:
                 if code=="":
                     code = runConsole
+
+                echo "evalCode mode: " & $(action==evalCode)
+
+                echo "code = " & code
 
                 when defined(BENCHMARK):
                     benchmark "doParse / doEval":
