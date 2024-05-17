@@ -1753,10 +1753,6 @@ proc defineLibrary*() =
             ; xello
         """:
             #=======================================================
-            echo "IN ::SET"
-            echo "\twith xKind: " & $(xKind)
-            echo "\tand yKind: " & $(yKind)
-
             case xKind:
                 of Block:
                     if likely(yKind == Integer):
