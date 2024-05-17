@@ -301,6 +301,9 @@ proc defineLibrary*() =
             ; /Users/admin/Desktop/test.txt
             """:
                 #=======================================================
+                when defined(BUNDLE):
+                    echo "-- currentFrame folder: " & currentFrame().folder
+                    echo "-- relativePath: " & joinPath(currentFrame().folder, x.s)
                 push(newString(joinPath(currentFrame().folder, x.s)))
 
     #----------------------------
