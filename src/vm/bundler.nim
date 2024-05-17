@@ -268,8 +268,8 @@ proc saveConfiguration(conf: BundleConfig) =
     let output = {
         "name"      : newString(conf.name),
         "main"      : newString(conf.main),
-        "files"   : newStringDictionary(conf.files),
-        "aliases"  : newStringDictionary(conf.aliases),
+        "files"     : newStringDictionary(conf.files),
+        "aliases"   : newStringDictionary(conf.aliases),
         "symbols"   : newStringBlock(conf.symbols),
         "modules"   : newStringBlock(conf.modules)
     }.toOrderedTable
