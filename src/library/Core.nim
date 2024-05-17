@@ -818,11 +818,14 @@ proc defineLibrary*() =
                     #echo relp
                     #push getBundledResource(x.s)
 
-                    pushFrame(x.s, fromFile=true)
+                    
                     #echo "pushed frame"
 
                     echo "! in IMPORT, asked for: " & x.s
-                    let src = getBundledResource(x.s)
+                    let (src, path) = getBundledResource(x.s)
+
+                    echo "got: " & path
+                    pushFrame(path, fromFile=true)
                     #echo "got >> " & src
 
                     let parsed = doParse(src, isFile=false)
