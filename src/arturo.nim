@@ -64,6 +64,8 @@ when not defined(WEB) and not defined(BUNDLE):
             showHelp
             showVersion
 
+            noAction
+
     #=======================================
     # Constants
     #=======================================
@@ -187,7 +189,7 @@ when isMainModule and not defined(WEB):
     when not defined(BUNDLE):
         var token = initOptParser()
 
-        var action: CmdAction = evalCode
+        var action: CmdAction = noAction
         var runConsole  = static readFile("src/scripts/console.art")
         #var runUpdate   = static readFile("src/scripts/update.art")
         #var runModule   = static readFile("src/scripts/module.art")
@@ -210,14 +212,12 @@ when isMainModule and not defined(WEB):
                             code = runConsole
                         of "e","evaluate":
                             action = evalCode
-                            code = token.val
                         # of "u","update":
                         #     action = evalCode
                         #     code = runUpdate
                         of "p", "package":
                             when not defined(MINI):
                                 action = packagerMode
-                                code = token.val
                             else:
                                 unrecognizedOption = token.key
                             #break
@@ -246,6 +246,13 @@ when isMainModule and not defined(WEB):
 
         setColors(muted = muted)
 
+        if action == noAction:
+            if code == "":
+                action = evalCode
+                code = runConsole
+            else:
+                action = execFile
+
         echo "action: " & $(action)
         echo "code: " & $(code)
 
@@ -254,6 +261,7 @@ when isMainModule and not defined(WEB):
 
         case action:
             of execFile, evalCode:
+
                 when defined(BENCHMARK):
                     benchmark "doParse / doEval":
                         discard run(code, arguments, action==execFile)
