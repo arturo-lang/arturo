@@ -809,24 +809,8 @@ proc defineLibrary*() =
                 var importOnly: seq[string] = @[]
 
                 when defined(BUNDLE):
-                    # echo "needing bundled resource: " & x.s
-                    
-                    # for i in 0..<FSP:
-                    #     echo $(FrameStack[i][])
-                    #echo "relative path:"
-                    #let relp = (if currentFrame.folder == "": "" else: currentFrame.folder & "/") & x.s #relativePath(x.s, currentFrame.folder)
-                    #echo relp
-                    #push getBundledResource(x.s)
-
-                    
-                    #echo "pushed frame"
-
-                    echo "! in IMPORT, asked for: " & x.s
                     let (src, path) = getBundledResource(x.s)
-
-                    echo "got: " & path
                     pushFrame(path, fromFile=true)
-                    #echo "got >> " & src
 
                     let parsed = doParse(src, isFile=false)
                     if not parsed.isNil:
@@ -836,13 +820,8 @@ proc defineLibrary*() =
                                 if importOnly.contains(k) or k.startsWith("__module"):
                                     SetSym(k, v)
                         else:
-                            #echo "executing"
                             execUnscoped(parsed)
-                            #echo "executed"
-                    #echo "popped frame"
-                    #echo "about to discard the frame"
                     discardFrame()
-                    #echo "discarded the frame"
                 else:
                     var verspec = (true, NoPackageVersion)
                     var pkgs: seq[string]
