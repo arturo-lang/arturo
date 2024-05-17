@@ -53,6 +53,10 @@ when defined(BUNDLE):
 
         NoResourceFound*    = ("", "")
 
+when defined(BUNDLE):
+    static:
+        echo $(BundleFiles)
+        echo $(BundleAliases)
 #=======================================
 # Variables
 #=======================================

@@ -296,11 +296,10 @@ proc debug(conf: BundleConfig) =
         echo "\t\t- " & k
 
     echo ""
-    echo "\tFound " & $(conf.aliases.len) & "aliases:"
+    echo "\tFound " & $(conf.aliases.len) & " aliases:"
     for k,v in conf.aliases.pairs():
         echo "\t\t- " & k & " -> " & v
         
-
 proc buildExecutable(conf: BundleConfig, filename: string) =
     let currentFolder = getCurrentDir()
     setCurrentDir(TmpFolder)
