@@ -207,24 +207,12 @@ when isMainModule and not defined(WEB):
                         break
                 of cmdShortOption, cmdLongOption:
                     case token.key:
+                        # commands
                         of "r","repl":
                             action = evalCode
                             code = runConsole
                         of "e","evaluate":
-                            echo "found -e"
                             action = evalCode
-                            code = token.val
-                            echo "setting code to: " & token.val
-                        of "c","compile":
-                            echo "found -c"
-                            action = writeBcode
-                            code = token.val
-                        of "x","execute":
-                            echo "found -x"
-                            action = readBcode
-                            code = token.val
-                        of "b","bundle":
-                            action = generateBundle
                             code = token.val
                         # of "u","update":
                         #     action = evalCode
@@ -236,12 +224,23 @@ when isMainModule and not defined(WEB):
                             else:
                                 unrecognizedOption = token.key
                             #break
-                        of "no-color":
-                            muted = true
                         of "h","help":
                             action = showHelp
                         of "v","version":
                             action = showVersion
+                        
+                        # options
+                        of "no-color":
+                            muted = true
+
+                        # experimental
+                        of "c","compile":
+                            action = writeBcode
+                        of "x","execute":
+                            action = readBcode
+                        of "b","bundle":
+                            action = generateBundle
+                        
                         else:
                             unrecognizedOption = token.key
                 of cmdEnd: break
