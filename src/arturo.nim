@@ -111,6 +111,7 @@ Experimental:
     -x, --execute                           Execute script from bytecode
 
     -b, --bundle                            Bundle file as an executable
+        --as <name>                         Rename executable to...
 """
     #=======================================
     # Templates
