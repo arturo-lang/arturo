@@ -72,7 +72,7 @@ template pushFrame*(newPath: string, fromFile: static bool = false) =
         FrameStack[FSP] = Frame(folder: dir, path: newPath)
     else:
         FrameStack[FSP] = Frame(folder: newPath, path: "")
-    echo "pushed frame: " & $(FrameStack[FSP][]) & " / FSP: " & $(FSP+1)
+    #echo "pushed frame: " & $(FrameStack[FSP][]) & " / FSP: " & $(FSP+1)
     FSP += 1
 
 template pushFrame*(newFrame: Frame) =
@@ -83,11 +83,11 @@ template pushFrame*(newFrame: Frame) =
 proc popFrame*(): Frame =
     ## pop last frame from the stack
     FSP -= 1
-    echo "popped frame: " & $(FrameStack[FSP][]) & " / FSP: " & $(FSP-1)
+    #echo "popped frame: " & $(FrameStack[FSP][]) & " / FSP: " & $(FSP-1)
     return FrameStack[FSP]
 
 template discardFrame*() =
     ## pop last frame from the stack
     ## without returning it
     FSP -= 1
-    echo "popped frame: " & $(FrameStack[FSP][]) & " / FSP: " & $(FSP-1)
+    #echo "popped frame: " & $(FrameStack[FSP][]) & " / FSP: " & $(FSP-1)
