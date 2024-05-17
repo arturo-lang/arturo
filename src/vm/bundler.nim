@@ -56,7 +56,7 @@ const
         when defined(DEV): "../_tmpart"
         else:              "_tmpart"
     
-    PackageCache    = "aliases/cache/"
+    PackageCache    = "packages/cache/"
 
     ImportCall      = "import"
     RelativeCall    = "relative"
