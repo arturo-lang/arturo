@@ -178,7 +178,7 @@ proc printErrorMessage(e: VError) =
     echo strip(indent(dedent(formatMessage(e.msg)), 2), chars={'\n'})
 
 proc printCodePreview(e: VError) =
-    when not defined(NOERRORLINES):
+    when (not defined(NOERRORLINES)) and (not defined(BUNDLE)):
         if (not IsRepl) and (e.kind != CmdlineErr) and (e.kind != ProgramErr) :
             if e.context.file == "":
                 e.context.line = CurrentLine
