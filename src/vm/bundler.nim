@@ -26,7 +26,7 @@ when defined(DEV):
 import helpers/io
 import helpers/jsonobject
 
-import vm/values/[types, custom/vsymbol]
+import vm/values/[types, custom/vsymbol, custom/vlogical]
 import vm/[globals, vm, exec, parse, packager]
 
 #=======================================
@@ -80,7 +80,12 @@ const
 #=======================================
 
 var
-    pathStack: seq[string]
+    pathStack           : seq[string] = @[]
+
+    forceMini           : bool = false
+    forceFull           : bool = false
+    forceImplicit       : seq[string] = @[]
+    forceFlags          : string = ""
 
 when defined(WEB):
     var stdout: string = ""
@@ -244,6 +249,22 @@ proc checkInfo(filepath: string): string =
             if ext == "":
                 entryFile &= ".art"
 
+    let possibleBundleFile = joinPath(@[filepath, "bundle.info.art"])
+    if fileExists(possibleBundleFile):
+        let bundleInfo = execDictionary(doParse(possibleBundleFile, isFile=true))
+        
+        if (let forceMiniOption = bundleInfo.getOrDefault("mini", nil); not forceMiniOption.isNil):
+            forceMini = forceMiniOption.b == True
+
+        if (let forceFullOption = bundleInfo.getOrDefault("full", nil); not forceFullOption.isNil):
+            forceFull = forceFullOption.b == True
+
+        if (let forceImplicitOption = bundleInfo.getOrDefault("implicit", nil); not forceImplicitOption.isNil):
+            forceImplicit = forceImplicitOption.a.map((z)=>z.s)
+
+        if (let forceFlagsOption = bundleInfo.getOrDefault("flags", nil); not forceFlagsOption.isNil):
+            forceFlags = forceFlagsOption.s
+
     return entryFile
 
 proc lookForNim() = commandExists("nim")
@@ -274,6 +295,7 @@ proc analyzeSources(filename: string, target: string): BundleConfig =
         result.analyzeBlock("", doParse(filename, isFile=true).a)
 
     result.symbols &= Implicit
+    result.symbols &= forceImplicit
 
     result.symbols = sorted(deduplicate(result.symbols))
     result.modules = sorted(deduplicate(result.symbols.map(
@@ -321,11 +343,17 @@ proc buildExecutable(conf: BundleConfig) =
     let currentFolder = getCurrentDir()
     setCurrentDir(TmpFolder)
 
-    let mode = 
+    var mode = 
         if conf.nomini: ""
         else: "--mode mini"
 
-    let (outp, res) = execCmdEx("./build.nims build " & conf.configFile() & " --bundle " & mode & " --as " & conf.name)
+    if forceMini:
+        mode = "--mode mini"
+
+    if forceFull:
+        mode = ""
+
+    let (outp, res) = execCmdEx("./build.nims build " & conf.configFile() & " --bundle " & mode & " " & forceFlags & " --as " & conf.name)
     if res != 0:
         echo "\tSomething went wrong went building the project..."
         echo outp
