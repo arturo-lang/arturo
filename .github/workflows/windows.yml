@@ -86,6 +86,7 @@ jobs:
           ./bin/arturo tools/tester.art
           ./bin/arturo tools/unitt-tester.art
           ./bin/arturo --bundle tests/misc/testbundling.art
+          sudo chmod +x ./testbundling
           ./testbundling
 
 
