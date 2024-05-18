@@ -25,24 +25,30 @@ else:
 when defined(PROFILE):
     import nimprof
 
-when defined(PORTABLE):
+when defined(BUNDLE):
     import os
 
 when not defined(WEB):
-    when not defined(MINI):
-        import helpers/packager
     import helpers/terminal
 
-when not defined(WEB) and not defined(PORTABLE):
+when not defined(WEB) and not defined(BUNDLE):
     import parseopt, re
-    import vm/[bytecode, env, errors, package, version]
+    import vm/[bytecode, env, errors, version]
 
 import vm/vm
 
 when not defined(WEB):
     import vm/[parse, values/value, values/printable]
+    when not defined(MINI):
+        import vm/[packager]
 
-when not defined(WEB) and not defined(PORTABLE):
+when defined(BUNDLE):
+    import vm/bundle/resources
+else:
+    when not defined(WEB):
+        import vm/bundle/generator
+
+when not defined(WEB) and not defined(BUNDLE):
 
     #=======================================
     # Types
@@ -54,10 +60,12 @@ when not defined(WEB) and not defined(PORTABLE):
             evalCode
             readBcode
             writeBcode
-            showPInfo
+            generateBundle
             packagerMode
             showHelp
             showVersion
+
+            noAction
 
     #=======================================
     # Constants
@@ -89,10 +97,7 @@ Commands:
             update                          Update all local packages
 
 """ else: "") & """
-    -e, --evaluate <code>                   Evaluate given code
-
-    -c, --compile <script>                  Compile script and write bytecode
-    -x, --execute <bytecode>                Execute script from bytecode
+    -e, --evaluate                          Evaluate given code string
 
     -r, --repl                              Show repl / interactive console
     
@@ -101,6 +106,13 @@ Commands:
 
 Options:
     --no-color                              Mute all colors from output
+
+Experimental:
+    -c, --compile                           Compile script and write bytecode
+    -x, --execute                           Execute script from bytecode
+
+    -b, --bundle                            Bundle file as an executable
+        --as <name>                         Rename executable to...
 """
     #=======================================
     # Templates
@@ -175,14 +187,14 @@ when isMainModule and not defined(WEB):
     var code: string
     var arguments: seq[string]
 
-    when not defined(PORTABLE):
+    when not defined(BUNDLE):
         var token = initOptParser()
 
-        var action: CmdAction = evalCode
+        var action: CmdAction = noAction
         var runConsole  = static readFile("src/scripts/console.art")
         #var runUpdate   = static readFile("src/scripts/update.art")
-        #var runModule   = static readFile("src/scripts/module.art")
         var muted: bool = not isColorFriendlyTerminal()
+        var bundleName: string = ""
 
         var unrecognizedOption = ""
 
@@ -191,44 +203,44 @@ when isMainModule and not defined(WEB):
             case token.kind:
                 of cmdArgument: 
                     if code=="":
-                        if action==evalCode:
-                            action = execFile
-                        
                         code = token.key
                         break
                 of cmdShortOption, cmdLongOption:
                     case token.key:
+                        # commands
                         of "r","repl":
                             action = evalCode
                             code = runConsole
                         of "e","evaluate":
                             action = evalCode
-                            code = token.val
-                        of "c","compile":
-                            action = writeBcode
-                            code = token.val
-                        of "package-info":
-                            action = showPInfo
-                            code = token.val
-                        of "x","execute":
-                            action = readBcode
-                            code = token.val
                         # of "u","update":
                         #     action = evalCode
                         #     code = runUpdate
                         of "p", "package":
                             when not defined(MINI):
                                 action = packagerMode
-                                code = token.val
                             else:
                                 unrecognizedOption = token.key
                             #break
-                        of "no-color":
-                            muted = true
                         of "h","help":
                             action = showHelp
                         of "v","version":
                             action = showVersion
+                        
+                        # options
+                        of "no-color":
+                            muted = true
+
+                        # experimental
+                        of "c","compile":
+                            action = writeBcode
+                        of "x","execute":
+                            action = readBcode
+                        of "b","bundle":
+                            action = generateBundle
+                        of "as":
+                            bundleName = token.val
+                        
                         else:
                             unrecognizedOption = token.key
                 of cmdEnd: break
@@ -237,13 +249,18 @@ when isMainModule and not defined(WEB):
 
         setColors(muted = muted)
 
+        if action == noAction:
+            if code == "":
+                action = evalCode
+                code = runConsole
+            else:
+                action = execFile
+
         if unrecognizedOption!="" and ((action==evalCode and code=="") or (action notin {execFile, evalCode})):
             guard(true): Error_UnrecognizedOption(unrecognizedOption)
 
         case action:
             of execFile, evalCode:
-                if code=="":
-                    code = runConsole
 
                 when defined(BENCHMARK):
                     benchmark "doParse / doEval":
@@ -265,23 +282,23 @@ when isMainModule and not defined(WEB):
                 let bcode = readBytecode(code)
                 let parsed = doParse(bcode[0], isFile=false).a[0]
                 runBytecode(Translation(constants: parsed.a, instructions: bcode[1]), filename, arguments)
+            
+            of generateBundle:
+                generateBundle(code, bundleName)
 
             of packagerMode:
                 packagerMode(code, arguments)
-
-            of showPInfo:
-                showPackageInfo(code)
 
             of showHelp:
                 printHelp()
             of showVersion:
                 echo ArturoVersionTxt
+            of noAction:
+                discard
     else:
         arguments = commandLineParams()
-        code = static readFile(getEnv("PORTABLE_INPUT"))
-        let portable = static readFile(getEnv("PORTABLE_DATA"))
-
-        discard run(code, arguments, isFile=false, withData=portable)
+        var bundleMain = static BundleMain
+        discard run(bundleMain, arguments, isFile=false)#, withData=portable)
 else:
     proc main*(txt: cstring, params: JsObject = jsUndefined): JsObject {.exportc:"A$", varargs.}=
         var str = $(txt)

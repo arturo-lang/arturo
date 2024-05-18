@@ -27,6 +27,7 @@ when not defined(WEB):
     import helpers/stores
 
 import vm/[
+    bundle/resources,
     env, 
     errors, 
     eval, 
@@ -48,15 +49,13 @@ when not defined(WEB):
 # Packaging setup
 #=======================================
 
-when defined(PORTABLE):
-    import json, sequtils
+# when defined(BUNDLE):
+#     import json, sequtils, sugar
 
-    let js {.compileTime.} = parseJson(static readFile(getEnv("PORTABLE_DATA")))
-    let mods {.compileTime.} = toSeq(js["uses"]["modules"]).map((x) => x.getStr())
-    let compact {.compileTime.} = js["compact"].getStr() == "true"
-else:
-    let mods {.compileTime.}: seq[string] = @[]
-    let compact {.compileTime.} = false
+#     let js {.compileTime.} = parseJson(static getEnv("BUNDLE_MODULES"))
+#     let bundledModules {.compileTime.} = toSeq(js).map((x) => x.getStr())
+# else:
+#     let bundledModules {.compileTime.}: seq[string] = @[]
 
 #=======================================
 # Macros
@@ -67,7 +66,7 @@ macro importLib(name: static[string]): untyped =
     let libpath = ident("library/" & name)
     let libname = name.toUpperAscii()
     result = quote do:
-        when not defined(PORTABLE) or not compact or mods.contains(`name`):
+        when not defined(BUNDLE) or BundleModules.contains(`name`):
             when defined(DEV):
                 static: 
                     echo "-------------------------"
@@ -192,12 +191,13 @@ template initialize(args: seq[string], filename: string, isFile:bool, scriptData
     when not defined(WEB):
         # paths
         if isFile: pushFrame(filename, fromFile=true)
-        else: pushFrame(getCurrentDir())
+        else: 
+            when defined(BUNDLE):
+                pushFrame("")
+            else:
+                pushFrame(getCurrentDir())
 
     Syms = initTable[string,Value]()
-
-    if portableData != "":
-        SetSym("_portable", valueFromJson(portableData))
 
     # library
     setupLibrary()
@@ -205,6 +205,14 @@ template initialize(args: seq[string], filename: string, isFile:bool, scriptData
     # dumper
     Dumper = proc (v:Value):string =
         v.dumped()
+
+    if portableData != "":
+        when defined(BUNDLE):
+            let bres = valueFromJson(portableData)
+
+            echo "setting bundled resources"
+            Bundled = bres.d
+            echo Dumper(bres)
 
     # set VM as initialized
     initialized = true

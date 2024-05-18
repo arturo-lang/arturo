@@ -23,27 +23,14 @@ import vm/values/[value, printable]
 # Helpers
 #=======================================
 
-# proc showWrongArgumentTypeError*(name: string, pos: int, params: openArray[Value], expected: openArray[(string, set[ValueKind])]) =
-#     ## show relevant error message in case ``require`` 
-#     ## fails to validate the arguments passed to the 
-#     ## function
-#     var expectedValues = toSeq((expected[pos][1]).items)
-#     let acceptedStr = expectedValues.map(proc(x:ValueKind):string = stringify(x)).join(" ")
-#     let actualStr = params.map(proc(x:Value):string = valueKind(x)).join(" ")
-#     var ordinalPos: string = ["first","second","third"][pos]
-
-#     Error_WrongArgumentType(name, actualStr, ordinalPos, acceptedStr)
-
 proc showWrongArgumentTypeError*(name: string, pos: int, params: openArray[Value], expected: openArray[(string, set[ValueKind])]) =
     ## show relevant error message in case ``require`` 
     ## fails to validate the arguments passed to the 
     ## function
     var expectedValues = toSeq((expected[pos][1]).items)
     let acceptedStr = expectedValues.map(proc(x:ValueKind):string = stringify(x)).join(", ")
-    #let actualStr = params.map(proc(x:Value):string = valueKind(x)).join(",\n\b") & 
     let actualStr = expected.map(proc(aa:(string,set[ValueKind])):string = aa[0]).join(" ") &
         fg(redColor) & " \u25c4" & resetColor()
-    #var ordinalPos: string = ["first","second","third"][pos]
 
     Error_WrongArgumentType(name, actualStr, Dumper(params[^1]), $(pos+1), acceptedStr)
 
@@ -52,7 +39,6 @@ proc showWrongAttributeTypeError*(fName: string, aName: string, actual:Value, ex
     ## fails to validate its argument
     var expectedValues = toSeq(expected.items)
     let acceptedStr = expectedValues.map(proc(x:ValueKind):string = stringify(x)).join(" ")
-   #let actualStr = stringify(actual)
     Error_WrongAttributeType(fName, aName & ":" & fg(redColor) & " \u25c4" & resetColor(), Dumper(actual), acceptedStr)
 
 proc showWrongValueTypeError*(fName: string, actual: Value, pre: string, expected: set[ValueKind] | string) =
@@ -110,7 +96,7 @@ template require*(name: string, spec: untyped): untyped =
                         showWrongArgumentTypeError(currentBuiltinName, 2, [x,y,z], spec)
 
 template requireBlockSize*(v: Value, expected: int, maxExpected: int = 0) =
-    when not defined(PORTABLE):
+    when not defined(BUNDLE):
         when maxExpected == 0:
             if unlikely(v.a.len != expected):
                 Error_IncompatibleBlockSize(currentBuiltinName, v.a.len, $(expected))
@@ -119,7 +105,7 @@ template requireBlockSize*(v: Value, expected: int, maxExpected: int = 0) =
                 Error_IncompatibleBlockSize(currentBuiltinName, v.a.len, $(expected) & ".." & $(maxExpected))
 
 template requireValue*(v: Value, expected: set[ValueKind], position: int = 1, message: set[ValueKind] | string = {}) = 
-    when not defined(PORTABLE):
+    when not defined(BUNDLE):
         template pre(): untyped {.redefine.} = 
             when position == 2:
                 valueKind(x) & " "
@@ -139,7 +125,7 @@ template requireValueBlock*(v: Value, expected: set[ValueKind], position: int = 
         requireValue(item, expected, position, message)
 
 template requireAttrValue*(attr: string, v: Value, expected: set[ValueKind], message: set[ValueKind] | string = {}) =
-    when not defined(PORTABLE):
+    when not defined(BUNDLE):
         if unlikely(v.kind notin expected):
             when message is string:
                 showWrongValueAttrTypeError(currentBuiltinName, attr, v, message)

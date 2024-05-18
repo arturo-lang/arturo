@@ -41,6 +41,9 @@ import vm/lib
 when not defined(WEB):
     import vm/[bytecode, errors, parse]
 
+when defined(BUNDLE):
+    import vm/bundle/resources
+
 #=======================================
 # Definitions
 #=======================================
@@ -312,7 +315,10 @@ proc defineLibrary*() =
 
                     push(newBinary(b))
                 else:
-                    let (src, tp) = getSource(x.s)
+                    when defined(BUNDLE):
+                        let (src, tp) = (getBundledResource(x.s)[0], FileData)
+                    else:
+                        let (src, tp) = getSource(x.s)
 
                     if (hadAttr("file") and tp != FileData):
                         Error_FileNotFound(src)
@@ -575,7 +581,7 @@ proc defineLibrary*() =
             ]
             """:
                 #=======================================================
-                when defined(SAFE): Error_OperationNotPermitted("file?")
+                when defined(SAFE): Error_OperationNotPermitted("directory?")
 
                 push newLogical(dirExists(x.s))
 
