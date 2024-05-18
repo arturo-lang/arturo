@@ -285,6 +285,7 @@ proc lookForNim() = commandExists("nim")
 proc lookForGit() = commandExists("git")
 
 proc cloneArturo() =
+    removeDir(TmpFolder)
     when defined(DEV):
         copyDirRecursively(getCurrentDir(), TmpFolder)
     else:
@@ -367,15 +368,15 @@ proc buildExecutable(conf: BundleConfig) =
     if forceFull:
         mode = ""
 
-    let (outp, res) = execCmdEx("./build.nims build " & conf.configFile() & " --bundle " & mode & " " & forceFlags & " --as " & conf.name)
+    let (outp, res) = execCmdEx("./build.nims build " & conf.configFile() & " --bundle " & mode & " " & forceFlags & " --log --as " & conf.name)
     if res != 0:
         echo "\tSomething went wrong went building the project..."
         echo outp
         quit(1)
 
-    copyFile(TmpFolder / "bin" / conf.name, currentFolder / conf.name)
-
     setCurrentDir(currentFolder)
+
+    copyFile(TmpFolder / "bin" / conf.name, currentFolder / conf.name)
 
 proc cleanUp() =
     removeDir(TmpFolder)
