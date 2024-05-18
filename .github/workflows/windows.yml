@@ -72,7 +72,7 @@ jobs:
           curl -L https://nim-lang.org/download/dlls.zip -o dist/dlls.zip
           curl -L https://nim-lang.org/download/nim-2.0.4_x64.zip -o dist/nim.zip
           7z x dist/dlls.zip -obin
-          #7z x dist/nim.zip -onim
+          7z x dist/nim.zip -onim
           
           export PATH="${{ github.workspace }}/nim/nim-2.0.4/bin":$PATH
 
