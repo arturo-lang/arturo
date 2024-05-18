@@ -393,11 +393,12 @@ proc generateBundle*(filepath: string, target: string) =
     section "Checking information":
         entryFile = checkInfo(filepath)
 
-    section "Looking for Nim":
-        lookForNim()
+    when not defined(windows):
+        section "Looking for Nim":
+            lookForNim()
 
-    section "Looking for Git":
-        lookForGit()
+        section "Looking for Git":
+            lookForGit()
     
     section "Cloning Arturo":
         cloneArturo()
