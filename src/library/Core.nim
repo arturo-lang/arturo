@@ -30,7 +30,7 @@ when not defined(WEB):
     import helpers/ffi
     when not defined(MINI):
         import os
-        import helpers/packager
+        import vm/[packager]
 else:
     import random
 
@@ -41,6 +41,10 @@ import vm/values/printable
 
 import vm/lib
 import vm/[errors, eval, exec, parse, runtime]
+
+when defined(BUNDLE):
+    import std/private/ospaths2
+    import vm/bundle/resources
 
 #=======================================
 # Definitions
@@ -727,7 +731,7 @@ proc defineLibrary*() =
 
             push(newLogical(condition))
 
-    when not defined(MINI):
+    when (not defined(MINI)) or defined(BUNDLE):
         # TODO(Core/__VerbosePackager) Find an elegant way to inject hidden functions
         #  labels: library, enhancement, cleanup
         builtin "__VerbosePackager",
@@ -797,72 +801,88 @@ proc defineLibrary*() =
                 ]
             """:
                 #=======================================================
-                var verspec = (true, NoPackageVersion)
+                
                 var branch = "main"
                 let latest = hadAttr("latest")
                 let verbose = hadAttr("verbose")
                 let lean = hadAttr("lean")
                 var importOnly: seq[string] = @[]
-                
-                var pkgs: seq[string]
-                if xKind in {String, Literal}:
-                    pkgs.add(x.s)
-                else:
-                    pkgs = x.a.map((p)=>p.s)
 
-                let multiple = pkgs.len > 1
-                
-                if checkAttr("version"):
-                    verspec = (hadAttr("min"), aVersion.version)
+                when defined(BUNDLE):
+                    let (src, path) = getBundledResource(x.s)
+                    pushFrame(path, fromFile=true)
 
-                if checkAttr("branch"):
-                    branch = aBranch.s
-
-                if checkAttr("only"):
-                    importOnly = aOnly.a.map((w) =>  w.s)
-
-                let verboseBefore = VerbosePackager
-                if verbose:
-                    VerbosePackager = true
-
-                var ret: ValueArray
-
-                for pkg in pkgs:
-                    if (let res = getEntryForPackage(pkg, verspec, branch, latest); res.isSome):
-                        let src = res.get()
-
-                        if not src.fileExists():
-                            Error_PackageNotValid(pkg)
-
-                        pushFrame(src, fromFile=true)
-
-                        if not lean:
-                            let parsed = doParse(src, isFile=true)
-                            if not parsed.isNil:
-                                if importOnly.len > 0:
-                                    let got = execScopedModule(parsed, importOnly)
-                                    for k,v in got.pairs:
-                                        if importOnly.contains(k) or k.startsWith("__module"):
-                                            SetSym(k, v)
-                                else:
-                                    execUnscoped(parsed)
+                    let parsed = doParse(src, isFile=false)
+                    if not parsed.isNil:
+                        if importOnly.len > 0:
+                            let got = execScopedModule(parsed, importOnly)
+                            for k,v in got.pairs:
+                                if importOnly.contains(k) or k.startsWith("__module"):
+                                    SetSym(k, v)
                         else:
-                            let parsed = doParse(src, isFile=true)
-                            if not parsed.isNil:
-                                let got = execScopedModule(parsed, importOnly)
-                                if multiple:
-                                    ret.add(newDictionary(got))
-                                else:
-                                    push(newDictionary(got))
-
-                        discardFrame()              
+                            execUnscoped(parsed)
+                    discardFrame()
+                else:
+                    var verspec = (true, NoPackageVersion)
+                    var pkgs: seq[string]
+                    if xKind in {String, Literal}:
+                        pkgs.add(x.s)
                     else:
-                        Error_PackageNotFound(pkg)
+                        pkgs = x.a.map((p)=>p.s)
 
-                VerbosePackager = verboseBefore
+                    let multiple = pkgs.len > 1
+                    
+                    if checkAttr("version"):
+                        verspec = (hadAttr("min"), aVersion.version)
 
-                if multiple:
-                    push(newBlock(ret))
+                    if checkAttr("branch"):
+                        branch = aBranch.s
+
+                    if checkAttr("only"):
+                        importOnly = aOnly.a.map((w) =>  w.s)
+
+                    let verboseBefore = VerbosePackager
+                    if verbose:
+                        VerbosePackager = true
+
+                    var ret: ValueArray
+
+                    for pkg in pkgs:
+                        if (let res = getEntryForPackage(pkg, verspec, branch, latest); res.isSome):
+                            let src = res.get()
+
+                            if not src.fileExists():
+                                Error_PackageNotValid(pkg)
+
+                            pushFrame(src, fromFile=true)
+
+                            if not lean:
+                                let parsed = doParse(src, isFile=true)
+                                if not parsed.isNil:
+                                    if importOnly.len > 0:
+                                        let got = execScopedModule(parsed, importOnly)
+                                        for k,v in got.pairs:
+                                            if importOnly.contains(k) or k.startsWith("__module"):
+                                                SetSym(k, v)
+                                    else:
+                                        execUnscoped(parsed)
+                            else:
+                                let parsed = doParse(src, isFile=true)
+                                if not parsed.isNil:
+                                    let got = execScopedModule(parsed, importOnly)
+                                    if multiple:
+                                        ret.add(newDictionary(got))
+                                    else:
+                                        push(newDictionary(got))
+
+                            discardFrame()              
+                        else:
+                            Error_PackageNotFound(pkg)
+
+                    VerbosePackager = verboseBefore
+
+                    if multiple:
+                        push(newBlock(ret))
 
 
     # TOOD(Core\let) Update thrown errors

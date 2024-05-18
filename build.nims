@@ -13,7 +13,7 @@
 # Libraries
 #=======================================
 
-import os
+import std/json, os
 import strformat, strutils
 
 import ".config/utils/ui.nims"
@@ -56,8 +56,8 @@ let
 #=======================================
 
 type BuildConfig = tuple
-    binary, version: string
-    shouldCompress, shouldInstall, shouldLog, isDeveloper: bool
+    binary, version, bundle: string
+    shouldCompress, shouldInstall, shouldLog, generateBundle, isDeveloper: bool
 
 func webVersion(config: BuildConfig): bool
 
@@ -79,9 +79,11 @@ func buildConfig(): BuildConfig =
     (
         binary:             "bin/arturo".toExe,
         version:            "@full",
+        bundle:             "",
         shouldCompress:     true,
         shouldInstall:      false,
         shouldLog:          false,
+        generateBundle:     false,
         isDeveloper:        false,
     )
 
@@ -261,7 +263,10 @@ proc showBuildInfo*(config: BuildConfig) =
         version = "version/version".staticRead()
         build = "version/build".staticRead()
 
-    section "Building..."
+    if config.generateBundle:
+        section "Bundling..."
+    else:
+        section "Building..."
     log fmt"version: {version}/{build}"
     log fmt"config: {config.version}"
 
@@ -285,6 +290,10 @@ proc buildArturo*(config: BuildConfig, targetFile: string) =
         updateBuild()
         devConfig()
 
+    proc setBundlemodeUp() =
+        bundleConfig()
+        putEnv "BUNDLE_CONFIG", config.bundle
+
     proc tryCompilation(config: BuildConfig) =
         ## Panics if can't compile.
         if (let cd = config.compile(showFooter=true); cd != 0):
@@ -295,6 +304,9 @@ proc buildArturo*(config: BuildConfig, targetFile: string) =
 
         if config.isDeveloper:
             setDevmodeUp()
+
+        if config.generateBundle:
+            setBundlemodeUp()
 
         config.showInfo()
         config.tryCompilation()
@@ -500,6 +512,10 @@ cmd build, "[default] Build arturo and optionally install the executable":
         >> ["dev"]:
             config.isDeveloper = true
             devConfig()
+
+    if args.hasFlag("bundle", "b"):
+        config.generateBundle = true
+        config.bundle = args.getPositionalArg(2)
 
     if args.hasFlag("debug", "d"):
         config.shouldCompress = false

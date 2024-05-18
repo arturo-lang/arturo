@@ -3,7 +3,7 @@
 # Programming Language + Bytecode VM compiler
 # (c) 2019-2024 Yanis Zafirópulos
 #
-# @file: helpers/packager.nim
+# @file: vm/packager.nim
 #=======================================================
 
 #=======================================

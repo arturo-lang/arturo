@@ -178,7 +178,7 @@ proc printErrorMessage(e: VError) =
     echo strip(indent(dedent(formatMessage(e.msg)), 2), chars={'\n'})
 
 proc printCodePreview(e: VError) =
-    when not defined(NOERRORLINES):
+    when (not defined(NOERRORLINES)) and (not defined(BUNDLE)):
         if (not IsRepl) and (e.kind != CmdlineErr) and (e.kind != ProgramErr) :
             if e.context.file == "":
                 e.context.line = CurrentLine
@@ -188,7 +188,8 @@ proc printCodePreview(e: VError) =
                     e.context.file = currentFrame().path
                 
             echo ""
-            let codeLines = readFile(e.context.file).splitLines()
+            let fileContent = readFile(e.context.file)
+            let codeLines = fileContent.splitLines()
             const linesBeforeAfter = 2
             let lineFrom = max(0, e.context.line - (linesBeforeAfter+1))
             let lineTo = min(len(codeLines)-1, e.context.line + (linesBeforeAfter-1))
