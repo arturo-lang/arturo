@@ -1,0 +1,23 @@
+import {unitt}!
+
+suite "contains? for :string types" [
+
+    test "" [
+        assert -> contains? "Arturo" "Art"
+        assert -> contains? "Arturo" 'A'
+        assert -> contains? "Arturo" 't'
+        assert -> contains? "Arturo" {/[Art]/}
+        assert -> not? contains? "Arturo" "Arthur"
+    ]
+    
+    test "word contains x at 0 if x is the first char of word" [
+        word: "Arturo"
+
+        assert -> contains?.at: 0 (word) (to :char first word)
+        assert -> contains?.at: 0 (word) (to :string first word)
+
+        assert -> not? contains?.at: 0 (word) (to :char last word)
+        assert -> not? contains?.at: 0 (word) (to :string last word)
+    ]
+
+]
