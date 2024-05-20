@@ -359,7 +359,9 @@ proc debug(conf: BundleConfig) =
         
 proc buildExecutable(conf: BundleConfig) =
     let currentFolder = getCurrentDir()
+    echo "currentDir: " & getCurrentDir()
     setCurrentDir(TmpFolder)
+    echo "currentDir became: " & getCurrentDir()
 
     var mode = 
         if conf.nomini: ""
@@ -371,7 +373,7 @@ proc buildExecutable(conf: BundleConfig) =
     if forceFull:
         mode = ""
 
-    let (outp, res) = execCmdEx("./build.nims build " & conf.configFile() & " --bundle " & mode & " " & forceFlags & " --log --as " & conf.name)
+    let (outp, res) = execShellCmd("./build.nims build " & conf.configFile() & " --bundle " & mode & " " & forceFlags & " --log --as " & conf.name)
     if res != 0:
         echo "\tSomething went wrong went building the project..."
         echo outp
