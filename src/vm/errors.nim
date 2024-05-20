@@ -212,7 +212,7 @@ proc printCodePreview(e: VError) =
 proc printHint(e: VError) =
     if e.hint != "":
         let wrappingWidth = min(100, int(0.8 * float(getMaxWidth() - 2 - 6)))
-        let hinter = "  " & "\e[4;97m" & "Hint" & resetColor() & ": "
+        let hinter = "  " & underline() & "Hint" & resetColor() & ": "
         echo ""
         if e.hint.contains("\n"):
             echo (hinter & "$$") ~~ @[e.hint.processPseudomarkdown()]
