@@ -359,9 +359,7 @@ proc debug(conf: BundleConfig) =
         
 proc buildExecutable(conf: BundleConfig) =
     let currentFolder = getCurrentDir()
-    echo "currentDir: " & getCurrentDir()
     setCurrentDir(TmpFolder)
-    echo "currentDir became: " & getCurrentDir()
 
     var mode = 
         if conf.nomini: ""
@@ -373,15 +371,21 @@ proc buildExecutable(conf: BundleConfig) =
     if forceFull:
         mode = ""
 
-    if execShellCmd("nim build.nims build " & conf.configFile() & " --bundle " & mode & " " & forceFlags & " --log --as " & conf.name) != 0:
-    #if res != 0:
+    let (outp, err) = execCmdEx("nim build.nims build " & conf.configFile() & " --bundle " & mode & " " & forceFlags & " --log --as " & conf.name)
+
+    if err != 0:
         echo "\tSomething went wrong went building the project..."
-        #echo outp
+        echo outp
         quit(1)
 
     setCurrentDir(currentFolder)
 
-    copyFile(TmpFolder / "bin" / conf.name, currentFolder / conf.name)
+    let finalName =
+        when defined(windows):
+            conf.name & ".exe"
+        else:
+            conf.name
+    copyFile(TmpFolder / "bin" / finalName, currentFolder / finalName)
 
 proc cleanUp() =
     removeDir(TmpFolder)
