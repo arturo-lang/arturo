@@ -118,7 +118,9 @@ proc copyDirRecursively(source: string, dest: string) =
                 copyFile(path, dest / noSource, {cfSymlinkAsIs})
 
 proc commandExists(cmd: string) =
-    return findExe(cmd) != ""
+    if findExe(cmd) != "":
+        echo "\t`" & cmd & "` command required; cannot proceed!"
+        quit(1)
     # let (_, exitCode) = execCmdEx("[ -x \"$(command -v " & cmd & ")\" ]")
     # if exitCode != 0:
     #     echo "\t`" & cmd & "` command required; cannot proceed!"
