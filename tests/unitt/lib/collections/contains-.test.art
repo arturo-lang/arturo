@@ -81,6 +81,44 @@ suite "contains? for :block types" [
 
 ]
 
+suite "contains? for :dictionary types" [
+
+    sample: #[
+        name: "John" 
+        surname: "Doe"
+        age: 22
+        role: 'programmer
+        favoriteLanguages: [
+            Arturo Python Ruby Ada Rust Zig Nim
+        ]
+        parents: #[
+            father: "Joe"
+            mother: "Jane"
+        ]
+    ]
+
+    test ":dictionary may contain :any" [
+        
+        assert -> contains? sample "John"
+        assert -> contains? sample "Doe"
+        assert -> contains? sample 'programmer
+        assert -> contains? sample 22
+        assert -> contains? sample [Arturo Python Ruby Ada Rust Zig Nim] 
+        assert -> not? contains? sample "Joe"
+        assert -> not? contains? sample "Jane"
+    ]
+
+    test "contains?.deep can find it into nested :dictionary" [
+        assert -> contains?.deep sample "Joe"
+        assert -> contains?.deep sample "Jane"
+    ]
+    
+    test "contains?.deep can't find :block's values into nested :dictionary" [
+        assert -> not? contains?.deep sample (to :word "Arturo")
+    ]
+
+]
+
 suite "test .at attribute" [
 
     test.skip "element at 0 must be equal to first" [
