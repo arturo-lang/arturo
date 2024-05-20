@@ -1,5 +1,6 @@
 import {unitt}!
 
+
 suite "contains? for :string types" [
 
     test ":string may contain :string" [
@@ -21,7 +22,7 @@ suite "contains? for :string types" [
 
     test ":string may contain :regex" [
         assert -> contains? "Arturo" {/[Art]/}
-        assert -> not? contains? "Arturo" '{/[i]/}
+        assert -> not? contains? "Arturo" {/[i]/}
     ]
 
 ]
