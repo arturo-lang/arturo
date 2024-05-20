@@ -122,45 +122,40 @@ suite "contains? for :dictionary types" [
 
 suite "test .at attribute" [
 
-    samples: [
-        "Arturo"
-        'Arturo
-        [1 2 3 4 5 6]
-        #[name: "Joe" surname: "Doe"]
-    ]
+    str: "Arturo"
+    blk: [1 2 3 4 5 6]
+    dict: #[name: "Joe" surname: "Doe"]
 
     test.prop "element at 0 must be equal to first" [
-        loop samples [sample][
-            high: dec size sample
-            assert -> contains?.at: 0 sample (first sample)
-        ]
+        assert -> contains?.at: 0 str first str
+        assert -> contains?.at: 0 blk first blk
+        assert -> contains?.at: 0 dict "Joe"
     ]
 
     test.prop "element at high must be equal to last" [
-        loop samples [sample][
-            high: dec size sample
-            assert -> contains?.at: high sample (last sample)
-        ]
+        assert -> contains?.at: (dec size str) str (last str)
+        assert -> contains?.at: (dec size blk) blk (last blk)
+        assert -> contains?.at: 1 dict "Doe"
     ]
 
     test.prop "element at x must be equal to get x" [
-        loop samples [sample][
-            high: dec size sample
-            index: 12 % high
-            assert -> contains?.at: index sample (sample\[index])
+        do.times: 5 [
+            index: (random 0 100) % (dec size str)
+            assert -> contains?.at: index str (str\[index])
+
+            index: (random 0 100) % (dec size blk)
+            assert -> contains?.at: index blk (blk\[index])
         ]
     ]
 
     test.skip "negative index should verify from backyards" [
-        loop samples [sample][
-            assert -> contains?.at: neg 1 sample (last sample)
-        ]
+        assert -> contains?.at: neg 1 str (last str)
+        assert -> contains?.at: neg 1 blk (last blk)
+        assert -> contains?.at: neg 1 dict (last dict)
     ]
     
     test.skip "should throw for index out of bounds" [
-        loop samples [sample][
-            assert -> throws? [contains?.at: 2 [0 1] 0]
-        ]
+        assert -> throws? [contains?.at: 2 [0 1] 0]
     ]
 
 ]
