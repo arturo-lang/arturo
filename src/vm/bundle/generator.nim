@@ -118,10 +118,13 @@ proc copyDirRecursively(source: string, dest: string) =
                 copyFile(path, dest / noSource, {cfSymlinkAsIs})
 
 proc commandExists(cmd: string) =
-    let (_, exitCode) = execCmdEx("[ -x \"$(command -v " & cmd & ")\" ]")
-    if exitCode != 0:
+    if findExe(cmd) == "":
         echo "\t`" & cmd & "` command required; cannot proceed!"
         quit(1)
+    # let (_, exitCode) = execCmdEx("[ -x \"$(command -v " & cmd & ")\" ]")
+    # if exitCode != 0:
+    #     echo "\t`" & cmd & "` command required; cannot proceed!"
+    #     quit(1)
 
 proc startVM() =
     var str = ""
@@ -368,15 +371,22 @@ proc buildExecutable(conf: BundleConfig) =
     if forceFull:
         mode = ""
 
-    let (outp, res) = execCmdEx("./build.nims build " & conf.configFile() & " --bundle " & mode & " " & forceFlags & " --log --as " & conf.name)
-    if res != 0:
+    let (outp, err) = execCmdEx("nim build.nims build " & conf.configFile() & " --bundle " & mode & " " & forceFlags & " --log --as " & conf.name)
+
+    if err != 0:
         echo "\tSomething went wrong went building the project..."
         echo outp
         quit(1)
 
     setCurrentDir(currentFolder)
 
-    copyFile(TmpFolder / "bin" / conf.name, currentFolder / conf.name)
+    let finalName =
+        when defined(windows):
+            conf.name & ".exe"
+        else:
+            conf.name
+
+    copyFile(TmpFolder / "bin" / finalName, currentFolder / finalName)
 
 proc cleanUp() =
     removeDir(TmpFolder)
