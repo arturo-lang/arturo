@@ -2,12 +2,26 @@ import {unitt}!
 
 suite "contains? for :string types" [
 
-    test "" [
+    test ":string may contain :string" [
         assert -> contains? "Arturo" "Art"
+        assert -> not? contains? "Arturo" "Ops!"
+    ]
+
+    test ":string may contain :char" [
         assert -> contains? "Arturo" 'A'
         assert -> contains? "Arturo" 't'
+        assert -> not? contains? "Arturo" 'i'
+    ]
+
+    test ":string may contain :literal" [
+        assert -> contains? "Arturo" 'Art
+        assert -> contains? "Arturo" 't
+        assert -> not? contains? "Arturo" 'i
+    ]
+
+    test ":string may contain :regex" [
         assert -> contains? "Arturo" {/[Art]/}
-        assert -> not? contains? "Arturo" "Arthur"
+        assert -> not? contains? "Arturo" '{/[i]/}
     ]
     
     test "word contains x at 0 if x is the first char of word" [
