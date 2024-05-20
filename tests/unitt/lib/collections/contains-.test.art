@@ -121,20 +121,45 @@ suite "contains? for :dictionary types" [
 
 suite "test .at attribute" [
 
-    test.skip "element at 0 must be equal to first" [
-
+    samples: [
+        "Arturo"
+        'Arturo
+        [1 2 3 4 5 6]
+        #[name: "Joe" surname: "Doe"]
     ]
 
-    test.skip "element at high must be equal to last" [
-
+    test.prop "element at 0 must be equal to first" [
+        loop samples [sample][
+            high: dec size sample
+            assert -> contains?.at: 0 sample (first sample)
+        ]
     ]
 
-    test.skip "element at x must be equal to get x" [
+    test.prop "element at high must be equal to last" [
+        loop samples [sample][
+            high: dec size sample
+            assert -> contains?.at: high sample (last sample)
+        ]
+    ]
 
+    test.prop "element at x must be equal to get x" [
+        loop samples [sample][
+            high: dec size sample
+            index: 12 % high
+            assert -> contains?.at: index sample (sample\[index])
+        ]
     ]
 
     test.skip "negative index should verify from backyards" [
-
+        loop samples [sample][
+            assert -> contains?.at: neg 1 sample (last sample)
+        ]
+    ]
+    
+    test.skip "should throw for index out of bounds" [
+        loop samples [sample][
+            assert -> throws? [contains?.at: 2 [0 1] 0]
+        ]
     ]
 
 ]
