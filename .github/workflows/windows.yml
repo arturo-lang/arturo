@@ -83,6 +83,7 @@ jobs:
         shell: msys2 {0}
         run: |
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
+          echo "${{ github.workspace }}/nim/nim-2.0.4/bin" >> $GITHUB_PATH
           #./bin/arturo tools/tester.art
           #./bin/arturo tools/unitt-tester.art
           ./bin/arturo --bundle tests/misc/testbundling.art
