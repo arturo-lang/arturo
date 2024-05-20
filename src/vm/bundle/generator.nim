@@ -118,10 +118,11 @@ proc copyDirRecursively(source: string, dest: string) =
                 copyFile(path, dest / noSource, {cfSymlinkAsIs})
 
 proc commandExists(cmd: string) =
-    let (_, exitCode) = execCmdEx("[ -x \"$(command -v " & cmd & ")\" ]")
-    if exitCode != 0:
-        echo "\t`" & cmd & "` command required; cannot proceed!"
-        quit(1)
+    return findExe(cmd) != ""
+    # let (_, exitCode) = execCmdEx("[ -x \"$(command -v " & cmd & ")\" ]")
+    # if exitCode != 0:
+    #     echo "\t`" & cmd & "` command required; cannot proceed!"
+    #     quit(1)
 
 proc startVM() =
     var str = ""
@@ -393,12 +394,11 @@ proc generateBundle*(filepath: string, target: string) =
     section "Checking information":
         entryFile = checkInfo(filepath)
 
-    when not defined(windows):
-        section "Looking for Nim":
-            lookForNim()
+    section "Looking for Nim":
+        lookForNim()
 
-        section "Looking for Git":
-            lookForGit()
+    section "Looking for Git":
+        lookForGit()
     
     section "Cloning Arturo":
         cloneArturo()
