@@ -91,7 +91,8 @@ jobs:
           #./bin/arturo tools/tester.art
           #./bin/arturo tools/unitt-tester.art
           ./bin/arturo --bundle tests/misc/testbundling.art
-          testbundling.exe
+          ls
+          ./testbundling.exe
 
 
       - name: Run unit tests (mini)

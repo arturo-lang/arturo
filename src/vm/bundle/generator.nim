@@ -385,6 +385,8 @@ proc buildExecutable(conf: BundleConfig) =
             conf.name & ".exe"
         else:
             conf.name
+
+    echo "currentdir: " & currentFolder
     copyFile(TmpFolder / "bin" / finalName, currentFolder / finalName)
 
 proc cleanUp() =
