@@ -373,7 +373,7 @@ proc buildExecutable(conf: BundleConfig) =
     if forceFull:
         mode = ""
 
-    if execShellCmd("./build.nims build " & conf.configFile() & " --bundle " & mode & " " & forceFlags & " --log --as " & conf.name) != 0:
+    if execShellCmd("nim build.nims build " & conf.configFile() & " --bundle " & mode & " " & forceFlags & " --log --as " & conf.name) != 0:
     #if res != 0:
         echo "\tSomething went wrong went building the project..."
         #echo outp
