@@ -51,6 +51,36 @@ suite "contains? for :range types" [
 
 ]
 
+suite "contains? for :block types" [
+
+    test ":block may contain :any" [
+        sample: @[1 "Example" 'example [] #[]]
+        
+        assert -> contains? sample 1
+        assert -> contains? sample "Example"
+        assert -> contains? sample 'example
+        assert -> contains? sample []
+        assert -> contains? sample #[]
+        assert -> not? contains? sample "Hmm"
+    ]
+
+    test "contains?.deep can find it into nested :blocks" [
+        assert -> contains?.deep [1 2 3 [4 5] 6 7] 3
+        assert -> contains?.deep [1 2 3 [4 5] 6 7] 4
+        assert -> contains?.deep [1 2 3 [4 5] 6 7] 5
+        assert -> contains?.deep [1 2 3 [4 5] 6 7] [4 5]
+
+        assert -> contains? [1 2 3 [4 5] 6 7] [4 5]
+        assert -> not? contains? [1 2 3 [4 5] 6 7] 4
+        assert -> not? contains? [1 2 3 [4 5] 6 7] 5
+    ]
+    
+    test "contains?.deep can't find :dictionary's values into nested :blocks" [
+        assert -> not? contains?.deep @[#[name: "Joe"]] "Joe" 
+    ]
+
+]
+
 suite "test .at attribute" [
 
     test.skip "element at 0 must be equal to first" [
