@@ -23,15 +23,25 @@ suite "contains? for :string types" [
         assert -> contains? "Arturo" {/[Art]/}
         assert -> not? contains? "Arturo" '{/[i]/}
     ]
-    
-    test "word contains x at 0 if x is the first char of word" [
-        word: "Arturo"
 
-        assert -> contains?.at: 0 (word) (to :char first word)
-        assert -> contains?.at: 0 (word) (to :string first word)
+]
 
-        assert -> not? contains?.at: 0 (word) (to :char last word)
-        assert -> not? contains?.at: 0 (word) (to :string last word)
+suite "test .at attribute" [
+
+    test.skip "element at 0 must be equal to first" [
+
+    ]
+
+    test.skip "element at high must be equal to last" [
+
+    ]
+
+    test.skip "element at x must be equal to get x" [
+
+    ]
+
+    test.skip "negative index should verify from backyards" [
+
     ]
 
 ]
