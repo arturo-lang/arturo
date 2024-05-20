@@ -373,10 +373,10 @@ proc buildExecutable(conf: BundleConfig) =
     if forceFull:
         mode = ""
 
-    let (outp, res) = execShellCmd("./build.nims build " & conf.configFile() & " --bundle " & mode & " " & forceFlags & " --log --as " & conf.name)
-    if res != 0:
+    if execShellCmd("./build.nims build " & conf.configFile() & " --bundle " & mode & " " & forceFlags & " --log --as " & conf.name) != 0:
+    #if res != 0:
         echo "\tSomething went wrong went building the project..."
-        echo outp
+        #echo outp
         quit(1)
 
     setCurrentDir(currentFolder)
