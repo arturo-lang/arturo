@@ -37,7 +37,7 @@ import os
 
 type
     constChar* {.importc:"const char*".} = cstring
-    LinenoiseCompletions* {.bycopy.} = object
+    LinenoiseCompletions* {.bycopy, importc: "linenoiseCompletions".} = object
       len*: csize_t
       cvec*: cstringArray
 
