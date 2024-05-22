@@ -3,7 +3,7 @@
 {.compile: "md4c/entity.c".}
 
 type 
-    memBuffer* = ref object
+    memBuffer* {.importc: "struct membuffer", bycopy.} = object
         data*: cstring
         asize*: csize_t
         size*: csize_t
@@ -13,10 +13,10 @@ type
 func toMarkdown*(
     input: cstring, 
     input_size: cint, 
-    userdata: memBuffer, 
+    userdata: ptr memBuffer, 
     parser_flags: cint, 
     renderer_flags: cint): cint {.importc: "toMarkdown",header: "<md4c/md4c-html.h>".}
 
 func freeMarkdownBuffer*(
-    userdata: memBuffer,
+    userdata: ptr memBuffer,
 ) {.importc: "membuf_fini",header: "<md4c/md4c-html.h>".}

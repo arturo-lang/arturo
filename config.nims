@@ -29,7 +29,6 @@ proc defaultConfig() =
     if hostOS != "windows": 
         --passL:"-pthread"
     --path:src
-    --passC:"-Wno-error=incompatible-pointer-types"
 
 
 proc configGMPOnWindows() =
