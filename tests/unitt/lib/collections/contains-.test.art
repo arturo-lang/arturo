@@ -1,0 +1,161 @@
+import {unitt}!
+
+
+suite "contains? for :string types" [
+
+    test ":string may contain :string" [
+        assert -> contains? "Arturo" "Art"
+        assert -> not? contains? "Arturo" "Ops!"
+    ]
+
+    test ":string may contain :char" [
+        assert -> contains? "Arturo" 'A'
+        assert -> contains? "Arturo" 't'
+        assert -> not? contains? "Arturo" 'i'
+    ]
+
+    test ":string may contain :literal" [
+        assert -> contains? "Arturo" 'Art
+        assert -> contains? "Arturo" 't
+        assert -> not? contains? "Arturo" 'i
+    ]
+
+    test ":string may contain :regex" [
+        assert -> contains? "Arturo" {/[Art]/}
+        assert -> not? contains? "Arturo" {/[i]/}
+    ]
+
+]
+
+suite "contains? for :range types" [
+
+    test ":range may contain :integer" [
+        assert -> contains? 1..10 1
+        assert -> contains? 1..10 5
+        assert -> contains? 1..10 7
+        assert -> contains? 1..10 10
+        assert -> not? contains? 1..10 0
+    ]
+
+    test ":range may contain :floating" [
+        assert -> contains? 1..10 1.0
+        assert -> contains? 1..10 5.0
+        assert -> contains? 1..10 7.0
+        assert -> contains? 1..10 10.0
+        assert -> not? contains? 1..10 0.0
+    ]
+
+    test ":range is a discrete interval" [
+        assert -> not? contains? 1..10 5.5
+        assert -> not? contains? (range.step: 2 1 10) 2
+    ]
+
+]
+
+suite "contains? for :block types" [
+
+    test ":block may contain :any" [
+        sample: @[1 "Example" 'example [] #[]]
+        
+        assert -> contains? sample 1
+        assert -> contains? sample "Example"
+        assert -> contains? sample 'example
+        assert -> contains? sample []
+        assert -> contains? sample #[]
+        assert -> not? contains? sample "Hmm"
+    ]
+
+    test "contains?.deep can find it into nested :blocks" [
+        assert -> contains?.deep [1 2 3 [4 5] 6 7] 3
+        assert -> contains?.deep [1 2 3 [4 5] 6 7] 4
+        assert -> contains?.deep [1 2 3 [4 5] 6 7] 5
+        assert -> contains?.deep [1 2 3 [4 5] 6 7] [4 5]
+
+        assert -> contains? [1 2 3 [4 5] 6 7] [4 5]
+        assert -> not? contains? [1 2 3 [4 5] 6 7] 4
+        assert -> not? contains? [1 2 3 [4 5] 6 7] 5
+    ]
+    
+    test "contains?.deep can't find :dictionary's values into nested :blocks" [
+        assert -> not? contains?.deep @[#[name: "Joe"]] "Joe" 
+    ]
+
+]
+
+suite "contains? for :dictionary types" [
+
+    sample: #[
+        name: "John" 
+        surname: "Doe"
+        age: 22
+        role: 'programmer
+        favoriteLanguages: [
+            Arturo Python Ruby Ada Rust Zig Nim
+        ]
+        parents: #[
+            father: "Joe"
+            mother: "Jane"
+        ]
+    ]
+
+    test ":dictionary may contain :any" [
+        
+        assert -> contains? sample "John"
+        assert -> contains? sample "Doe"
+        assert -> contains? sample 'programmer
+        assert -> contains? sample 22
+        assert -> contains? sample [Arturo Python Ruby Ada Rust Zig Nim] 
+        assert -> not? contains? sample "Joe"
+        assert -> not? contains? sample "Jane"
+    ]
+
+    test "contains?.deep can find it into nested :dictionary" [
+        assert -> contains?.deep sample "Joe"
+        assert -> contains?.deep sample "Jane"
+    ]
+    
+    test "contains?.deep can't find :block's values into nested :dictionary" [
+        assert -> not? contains?.deep sample (to :word "Arturo")
+    ]
+
+]
+
+suite "test .at attribute" [
+
+    str: "Arturo"
+    blk: [1 2 3 4 5 6]
+    dict: #[name: "Joe" surname: "Doe"]
+
+    test.prop "element at 0 must be equal to first" [
+        assert -> contains?.at: 0 str first str
+        assert -> contains?.at: 0 blk first blk
+        assert -> contains?.at: 0 dict "Joe"
+    ]
+
+    test.prop "element at high must be equal to last" [
+        assert -> contains?.at: (dec size str) str (last str)
+        assert -> contains?.at: (dec size blk) blk (last blk)
+        assert -> contains?.at: 1 dict "Doe"
+    ]
+
+    test.prop "element at x must be equal to get x" [
+        do.times: 5 [
+            index: (random 0 100) % (dec size str)
+            assert -> contains?.at: index str (str\[index])
+
+            index: (random 0 100) % (dec size blk)
+            assert -> contains?.at: index blk (blk\[index])
+        ]
+    ]
+
+    test.skip "negative index should verify from backyards" [
+        assert -> contains?.at: neg 1 str (last str)
+        assert -> contains?.at: neg 1 blk (last blk)
+        assert -> contains?.at: neg 1 dict (last dict)
+    ]
+    
+    test.skip "should throw for index out of bounds" [
+        assert -> throws? [contains?.at: 2 [0 1] 0]
+    ]
+
+]

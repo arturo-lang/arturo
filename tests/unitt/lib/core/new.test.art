@@ -1,0 +1,57 @@
+import {unitt}!
+
+pairs: #[
+    integer: [2 3]
+    string: ["John" "Doe"]
+    block: [[1 2 3] [4 5 6]]
+    dictionary: @[
+        #[name: "Joe" surname: "Doe"]
+        #[name: "Jane" surname: "Zurich"]
+    ] 
+]
+
+suite "test if new object reference does not change the older one" [
+
+    test "change new primitive values does not change the old ones" [
+        loop (values new pairs) [sample][
+            a: sample\0
+            b: new a
+            b: sample\1
+
+            assert -> a <> b
+        ]
+    ]
+
+    test "change the new block's value does not change the old one" [
+        a: [1 2 3 4 5]
+        b: new a
+        b\2: 8
+
+        assert -> a <> b
+    ]
+
+    test "change the new block's value does not change the old one" [
+        a: #[name: "John" surname: "Doe"]
+        b: new a
+        b\name: "Jane"
+        
+        assert -> a <> b
+    ]
+
+]
+
+suite "test if new allocate the object to a new address" [
+
+    test "change new primitive values does not change the old ones" [
+        loop (values new pairs) [sample][
+            a: sample\0
+            b: new a
+
+            addressOfA: (info.get 'a | get "address")
+            addressOfB: (info.get 'b | get "address")
+
+            assert -> addressOfA <> addressOfB
+        ]
+    ]
+
+]
