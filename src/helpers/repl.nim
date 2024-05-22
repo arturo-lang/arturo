@@ -82,8 +82,7 @@ when not defined(WEB):
 
             discard linenoiseSetCompletionCallback(completionsCback, nil)
 
-            var hintCallback: ptr LinenoiseHintsCallback = cast[ptr LinenoiseHintsCallback](hintsCback)
-            linenoiseSetHintsCallback(hintCallback, nil)
+            linenoiseSetHintsCallback(hintsCback, nil)
 
             ReplInitialized = true
 
