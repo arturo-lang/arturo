@@ -77,7 +77,7 @@ proc configUnixSSL() =
 
 proc main() =
     defaultConfig()
-    configGMPOnWindows()
+    ##configGMPOnWindows()
     configMimalloc()
 
     if defined(windows):
