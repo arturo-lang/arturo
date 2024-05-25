@@ -93,6 +93,35 @@ suite "choose common usage" [
 ]
 
 
+suite "pattern matching" [
+
+    test.skip ":blocks works as or statements" [
+        x: 5
+        
+        result: choose.with: x [
+            [1 2 3] -> "A"
+            [4 5] -> "B"
+            [6 7 8] -> "C"
+        ]
+
+        assert -> "B" = result
+    ]
+    
+    test.skip ":types compare with x's type" [
+        x: "5"
+
+        result: choose.with: x [
+            :integer -> "A"
+            :floating -> "B"
+            :string -> "C"
+        ]
+
+        assert -> "C" = result
+    ]
+
+]
+
+
 suite "integration test" [
 
     test.skip "Letter grade scale example" [
