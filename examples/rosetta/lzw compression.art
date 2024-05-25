@@ -1,11 +1,3 @@
-choose: $[blk][
-    else: true
-    array 'blk
-    loop blk [cond eff][
-        if cond eff
-    ]
-]
-
 compress: function [str][
     dict: #[]
     loop 0..255 'i -> dict\[to :char i]: i
@@ -40,11 +32,11 @@ decompress: function [compressed][
     loop arr 'k [
         entry: ""
 
-        choose [
-            key? dict k   -> entry: dict\[k]
-            k = size dict -> entry: w ++ first w
-            else          -> panic ~"Error with compressed: |k|"
-        ]
+        switch key? dict k 
+            -> entry: dict\[k]
+            -> switch k = size dict 
+                -> entry: w ++ first w
+                -> panic ~"Error with compressed: |k|"
 
         'result ++ entry
         dict\[size dict]: w ++ first entry

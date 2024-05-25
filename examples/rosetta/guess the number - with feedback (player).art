@@ -7,16 +7,6 @@ too high, too low, or equal to your number by typing h, l, or =
 rmin: 1
 rmax: 10
 
-choose: $[blk][
-    with: attr 'with
-
-    loop blk [samp eff][
-        if samp = to :word "else" -> do eff
-        if samp = with 
-            eff
-    ]
-]
-
 while ø [
     guess: random rmin rmax
     print ["My guess is:" guess]
@@ -24,16 +14,16 @@ while ø [
     while [not? inputOk][
         hle: strip input "How did I do? (h)igh, (l)ow, (=): "
 
-        choose.with: hle [
-            "h" [(rmin =< dec guess)? 
-                    [rmax: dec guess, inputOk: true]
-                    -> print "\tThat doesn't make any sense. I cannot find the number...")
+            if "h" [(rmin =< dec guess)? 
+                [rmax: dec guess, inputOk: true]
+                -> print "\tThat doesn't make any sense. I cannot find the number..."
+                continue
             ]
 
-            "l" [
-                ((inc guess) =< rmax)? 
-                    [rmin: inc guess, inputOk: true]
-                    -> print "\tThat doesn't make any sense. I cannot find the number..."
+            "l" [((inc guess) =< rmax)? 
+                [rmin: inc guess, inputOk: true]
+                -> print "\tThat doesn't make any sense. I cannot find the number..."
+                continue
             ]
 
             "=" [
@@ -43,11 +33,8 @@ while ø [
                 exit
             ]
 
-            else [
-                print "\tPlease, check your input; it doesn't appear to be correct!"
-            ]
+            print "\tPlease, check your input; it doesn't appear to be correct!"
 
-        ]
     ]
     print ""
 ]

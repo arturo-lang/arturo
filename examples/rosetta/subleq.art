@@ -16,15 +16,13 @@ run: function [prog][
 
         ip: ip + 3
 
-        choose [
-            A = neg 1 -> mem\[B]: to :integer first input ""
-            B = neg 1 -> prints to :char mem\[A]
-            else [
-                mem\[B]: mem\[B] - mem\[A]
-                if mem\[B] =< 0 -> ip: C
-            ]
-        ]
-
+        switch A = neg 1 
+            -> mem\[B]: to :integer first input ""
+            -> switch B = neg 1 -> prints to :char mem\[A]
+                [
+                    mem\[B]: mem\[B] - mem\[A]
+                    if mem\[B] =< 0 -> ip: C
+                ]
     ]
 ]
 
