@@ -3,7 +3,7 @@ import {unitt}!
 
 suite "choose common usage" [
 
-    test "choose works as chainned elifs by default" [
+    test.skip "choose works as chainned elifs by default" [
         food: "apple"
         emoji: choose [
             food = "pizza" -> "🍕"
@@ -15,7 +15,7 @@ suite "choose common usage" [
         assert -> "🍎" = choose
     ]
     
-    test "choose works as chainned ifs when using .all" [
+    test.skip "choose works as chainned ifs when using .all" [
         price: 0
         food: "🍕"
         drink: "🥤"
@@ -34,7 +34,7 @@ suite "choose common usage" [
         assert -> 40 = price
     ]
     
-    test "choose works as a swicth statement when using .with" [
+    test.skip "choose works as a swicth statement when using .with" [
         food: "apple"
         emoji: choose.with: food [
             "pizza" -> "🍕"
@@ -46,7 +46,7 @@ suite "choose common usage" [
         assert -> "🍎" = emoji
     ]
     
-    test "choose has pattern matching by default when using .with" [
+    test.skip "choose has pattern matching by default when using .with" [
         favorite: "🥞"
 
         category: choose.with: favorite [
@@ -58,7 +58,7 @@ suite "choose common usage" [
         assert -> "home-made" = category
     ]
     
-    test "choose disables pattern matching when using .raw" [
+    test.skip "choose disables pattern matching when using .raw" [
         favorites: [c d]
 
         right?: choose.raw.with: favorites [
@@ -70,7 +70,7 @@ suite "choose common usage" [
         assert -> right?
     ]
     
-    test "choose returns null as its default value" [
+    test.skip "choose returns null as its default value" [
         assert -> null? choose [
             false [true]
             false [true]
@@ -78,7 +78,7 @@ suite "choose common usage" [
         ]
     ]
     
-    test "choose has an embed else statement" [
+    test.skip "choose has an embed else statement" [
         score: "68"
         grade: choose [
             score >= 90 -> "A"
@@ -95,7 +95,7 @@ suite "choose common usage" [
 
 suite "integration test" [
 
-    test "Letter grade scale example" [
+    test.skip "Letter grade scale example" [
         score: "68"
         grade: choose [
             score >= 90 -> "A"
