@@ -2,8 +2,9 @@ luhn?: function [n][
     s1: new 0
     s2: new 0
     loop.with: 'i digits to :integer n 'd [
-        if? even? i -> 's1 + d
-        else [
+        (even? i)?[
+            's1 + d
+        ][
             'd * 2
             if d > 9 -> 'd - 9
             's2 + d

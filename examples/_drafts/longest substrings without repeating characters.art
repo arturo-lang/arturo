@@ -5,11 +5,10 @@ longestSubstrings: function [str][
     loop str 'c [
         idx: index current to :string c 
         unless null? idx [
-            if? maxlen < size current [
+            (maxlen < size current)? [
                 result: new @[current]
                 maxlen: size current
-            ]
-            else [
+              ][
                 if and? [maxlen = size current]
                          [not? contains? result current] -> 'result ++ current
                          

@@ -11,11 +11,10 @@ while [0 < size toFind][
     while [ni < size toFind][
         n: toFind\[ni]
         print n
-        if? contains? str to :string n [
+        (contains? str to :string n)? [
             result\[n]: k
             remove 'toFind n
-        ]
-        else [
+        ][
             ni: ni + 1
         ]
     ]

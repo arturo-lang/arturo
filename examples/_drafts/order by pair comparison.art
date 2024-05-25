@@ -20,7 +20,7 @@ loop lst 'a [
         print [a b]
         if a\name <> b\name [
             answer: input ~"Is |a| less than |b|? [y/n] "
-            if? answer="y" [
+            if answer="y" [
                 b\value: a\value + 1
             ]
         ]

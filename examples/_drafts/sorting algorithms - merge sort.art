@@ -141,11 +141,10 @@ merge: function [a,b,left,middle,right][
     i: left
  
     while [and? l < leftLen r < leftLen + rightLen][
-        if? bm\[l] < bm\[r] [
+        (bm\[l] < bm\[r])? [
             merged\[i]: bm\[l]
             l: l+1
-        ]
-        else [
+        ][
             merged\[i]: bm\[r]
             r: r+1
         ]

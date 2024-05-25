@@ -35,11 +35,10 @@ ident:  function [x]-> x
 integrate: function [f, a, b, steps, meth][
     result: 0.0
     h: (b-a) / to :floating steps
-    if? meth='ident [
+    (meth='ident)? [
         loop 0..dec steps 'i ->
             result: result + call meth @[null, a + (to :floating i) * h, h]
-    ]
-    else [
+    ][
         loop 0..dec steps 'i ->
             result: result + call meth @[f, a + (to :floating i) * h, h]
     ]

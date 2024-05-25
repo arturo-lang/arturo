@@ -15,16 +15,14 @@ ipAddress: [
 repl: function [blk,v][
     res: new []
     loop blk 'it [
-        if? it = & [
-            if? attribute? v [
+        (it = &)? [
+            (attribute? v)? [
                 'res ++ to :word "first"
                 'res ++ @[@[v]]
-            ]
-            else [
+            ][
                 'res ++ v
             ]
-        ]
-        else [
+        ][
             'res ++ it
         ]
     ]

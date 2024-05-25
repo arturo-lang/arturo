@@ -13,11 +13,10 @@
 mergeList: function [c,d][
     resu: []
     while [and? positive? size c, positive? size d][
-        if? c\[0] < d\[0][
+        (c\[0] < d\[0])? [
             'resu ++ c\[0]
             c: remove.index c 0
-        ]
-        else[
+        ][
             'resu ++ d\[0]
             d: remove.index d 0
         ]
@@ -32,11 +31,12 @@ strand: function [a][
     res: @[a\0]
     a: remove.index a 0
     while [i < size a][
-        if? a\[i] > last res[
+        (a\[i] > last)? res[
             'res ++ a\[i]
             a: remove.index a i
+        ][
+            inc 'i
         ]
-        else -> inc 'i
     ]
     return res
 ]

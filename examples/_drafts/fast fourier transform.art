@@ -13,8 +13,8 @@ fft: function [x][
     odds: new []
 
     loop.with:'i x 'v [
-        if? even? i -> 'evens ++ v
-        else -> 'odds ++ v
+        (even? i)? -> 'evens ++ v
+                   -> 'odds ++ v
     ]
 
     [even, odd]: @[fft evens, fft odds]

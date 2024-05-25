@@ -65,8 +65,8 @@ shellSort: function [items][
                 j: j - ink
             ]
             set arr j temp
-            if? ink=2 -> ink: 1
-            else -> ink: (ink*5)/11
+            (ink=2)? -> ink: 1
+                     -> ink: (ink*5)/11
         ]
     ]
     return arr
