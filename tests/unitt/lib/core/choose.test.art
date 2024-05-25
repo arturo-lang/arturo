@@ -1,0 +1,117 @@
+import {unitt}!
+
+
+suite "choose common usage" [
+
+    test "choose works as chainned elifs by default" [
+        food: "apple"
+        emoji: choose [
+            food = "pizza" -> "🍕"
+            food = "apple" -> "🍎"
+            food = "bacon" -> "🥓"
+            food = "cheese" -> "🧀"
+        ]
+
+        assert -> "🍎" = choose
+    ]
+    
+    test "choose works as chainned ifs when using .all" [
+        price: 0
+        food: "🍕"
+        drink: "🥤"
+
+        choose.all [
+            in? food "🍕"       -> add 'price 30
+            in? food "🍔"       -> add 'price 15
+            in? food "🌭🌮🌯🫔" -> add 'price 8
+            in? food "🍩🍨"     -> add 'price 5
+
+            in? drink "☕🧉"      -> add 'price 2.5
+            in? drink "🍷🍸"      -> add 'price 10
+            in? drink "🍹🍺🧋🥤" -> add 'price 4
+        ]
+
+        assert -> 40 = price
+    ]
+    
+    test "choose works as a swicth statement when using .with" [
+        food: "apple"
+        emoji: choose.with: food [
+            "pizza" -> "🍕"
+            "apple" -> "🍎"
+            "bacon" -> "🥓"
+            "cheese" -> "🧀"
+        ]
+
+        assert -> "🍎" = emoji
+    ]
+    
+    test "choose has pattern matching by default when using .with" [
+        favorite: "🥞"
+
+        category: choose.with: favorite [
+           ["🍕" "🍔" "🍟" "🌭"] -> "fast-food"
+           ["🥞" "🧇" "🍳" "🥪"] -> "home-made"
+           ["🍱" "🍣" "🍙" "🍜"] -> "japanese"
+        ]
+
+        assert -> "home-made" = category
+    ]
+    
+    test "choose disables pattern matching when using .raw" [
+        favorites: [c d]
+
+        right?: choose.raw.with: favorites [
+           [a b] -> false
+           [c d] -> true
+           [e f g] -> false
+        ]
+
+        assert -> right?
+    ]
+    
+    test "choose returns null as its default value" [
+        assert -> null? choose [
+            false [true]
+            false [true]
+            false [true]
+        ]
+    ]
+    
+    test "choose has an embed else statement" [
+        score: "68"
+        grade: choose [
+            score >= 90 -> "A"
+            score >= 80 -> "B"
+            score >= 70 -> "C"
+            score >= 60 -> "D"
+            else -> "F"
+        ]
+
+        assert -> "F" = grade
+    ]
+]
+
+
+suite "integration test" [
+
+    test "Letter grade scale example" [
+        score: "68"
+        grade: choose [
+            score >= 90 -> "A"
+            score >= 80 -> "B"
+            score >= 70 -> "C"
+            score >= 60 -> "D"
+            else -> "F"
+        ]
+
+        append 'grade choose.with: score % 10 [
+            7..10 -> "+"
+            0..2 ->  "-"
+            else ->  ""
+        ]
+
+        assert -> "D+" = grade
+    ]
+
+]
