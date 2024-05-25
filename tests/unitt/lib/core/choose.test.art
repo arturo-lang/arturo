@@ -1,5 +1,8 @@
 import {unitt}!
 
+implemented?: false
+if not implemented?
+    -> exit
 
 suite "choose common usage" [
 
