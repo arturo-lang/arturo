@@ -13,8 +13,7 @@ zigzag: function [n][
             x > n [x: n, y: y + 2, d: neg d]
             y > n [x: x + 2, y: n, d: neg d]
             x < 1 [x: 1, d: neg d]
-            if y < 1 [y: 1, d: neg d]
-
+            y < 1 [y: 1, d: neg d]
         ]
     ]
     result
