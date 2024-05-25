@@ -1,3 +1,11 @@
+choose: $[blk][
+    else: true
+    array 'blk
+    loop blk [cond eff][
+        if cond eff
+    ]
+]
+
 lcs: function [a,b][
     ls: array.of: @[inc size a, inc size b] 0
 

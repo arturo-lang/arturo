@@ -7,6 +7,16 @@ too high, too low, or equal to your number by typing h, l, or =
 rmin: 1
 rmax: 10
 
+choose: $[blk][
+    with: attr 'with
+
+    loop blk [samp eff][
+        if samp = to :word "else" -> do eff
+        if samp = with 
+            eff
+    ]
+]
+
 while ø [
     guess: random rmin rmax
     print ["My guess is:" guess]
@@ -36,7 +46,7 @@ while ø [
             else [
                 print "\tPlease, check your input; it doesn't appear to be correct!"
             ]
-            
+
         ]
     ]
     print ""

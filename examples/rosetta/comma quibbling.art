@@ -1,3 +1,16 @@
+choose: $[blk][
+    else: $[blk][
+        do blk
+    ]
+
+    with: attr 'with
+
+    loop blk [samp eff][
+        if samp = with 
+            eff
+    ]
+]
+
 quibble: $[sequence :block][
 
     return choose.with: size sequence [

@@ -1,3 +1,11 @@
+choose: $[blk][
+    else: true
+    array 'blk
+    loop blk [cond eff][
+        if cond eff
+    ]
+]
+
 zigzag: function [n][
     result: map 1..n 'x -> map 1..n => 0
 
