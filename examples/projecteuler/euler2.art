@@ -1,13 +1,14 @@
 fib: function [n][
-	if? n<2 -> 1
-	else [
-		prev: 0, f: 1
+	if n < 2 -> 
+		return 1
 
-		loop n 'x [
-			tmp: prev, prev: f, f: f + tmp
-		]
-		return f
+	prev: 0, f: 1
+
+	loop n 'x [
+		tmp: prev, prev: f, f: f + tmp
 	]
+	return f
+	
 ]
 
 fibsUnder: function [limit][
