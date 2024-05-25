@@ -10,24 +10,24 @@ loop strings 'str [
     chars: split str
     prints ["\"" ++ str ++ "\"" ~"(size |size str|):"]
     
-    if? chars = unique chars ->
+    if chars = unique chars [
         print "has no duplicates."
-    else [
-        seen: #[]
-        done: false
+        continue
+    ]
 
-        i: 0
-        while [and? i<size chars
-                    not? done][
-            ch: chars\[i]
-            if? not? key? seen ch [
-                seen\[ch]: i
-            ]
-            else [
-                print ~"has duplicate char `|ch|` on |get seen ch| and |i|"
-                done: true
-            ]
-            i: i+1
+    seen: #[]
+    done: false
+
+    i: 0
+    while [and? i<size chars
+                not? done][
+        ch: chars\[i]
+        switch not? key? seen ch [
+            seen\[ch]: i
+        ][
+            print ~"has duplicate char `|ch|` on |get seen ch| and |i|"
+            done: true
         ]
+        i: i+1
     ]
 ]

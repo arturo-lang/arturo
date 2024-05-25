@@ -3,8 +3,9 @@ setBits: function [inp, n][
     print "n = " ++ (to :string n) ++ "; Width e = " ++ (to :string e) ++ ":"
 
     result: new ø
-    if? or? zero? e n =< 0 -> result: inp
-    else [
+    switch or? zero? e n =< 0 [
+        result: inp
+    ][
         result: split inp
         loop 0..e-1 'i [
             if inp\[i] = '1' [

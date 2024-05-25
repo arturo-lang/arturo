@@ -17,8 +17,10 @@ subarraySum: function [arr][
             lst: i
         ]
     ]
-    if? lst > fst -> return @[mx, slice arr fst lst]
-    else -> return [0, []]
+    if lst > fst 
+        -> return @[mx, slice arr fst lst]
+    
+    return [0, []]
 ]
 
 sequences: @[

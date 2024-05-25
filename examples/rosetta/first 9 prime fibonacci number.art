@@ -1,6 +1,5 @@
 fib: $[x][
-	if? x<2 [1]
-	else [(fib x-1) + (fib x-2)]
+	switch x<2 [1] [(fib x-1) + (fib x-2)]
 ]
 
 firstPrimeFibos: select.first:9 2..∞ 'n -> prime? fib n

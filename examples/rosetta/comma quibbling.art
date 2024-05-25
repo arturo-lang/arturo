@@ -1,12 +1,14 @@
 quibble: $[sequence :block][
-    if? 0 = size sequence
-    -> return "{}"
+
+    return choose.with: size sequence [
+        0 -> "{}"
+        1 -> ~"{|sequence\0|}"
+        else [
+            last: pop 'sequence
+            ~« {|join.with: ", " sequence| and |last|}
+        ]
+    ]    
     
-    if? 1 = size sequence
-    -> return ~"{|sequence\0|}"
-    
-    last: pop 'sequence
-    return ~« {|join.with: ", " sequence| and |last|}
 ]
 
 sentences: [

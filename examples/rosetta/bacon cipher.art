@@ -19,12 +19,13 @@ encodeBacon: function [plaintext,message][
     ]
     cnt: 0
     loop lower message 'c [
-        if? lower? c [
+        (lower? c)? [
             'result ++ (et\[cnt] = 'A')? -> c -> upper c
             cnt: cnt + 1
             if cnt = size et -> break
+        ][
+            'result ++ c
         ]
-        else -> 'result ++ c
     ]
     return result
 ]
@@ -34,12 +35,12 @@ decodeBacon: function [message][
     result: ""
     loop message 'c [
         if or? lower? c upper? c [
-            if? lower? c -> 'et ++ 'A'
-            else -> 'et ++ 'B'
+            (lower? c)? -> 'et ++ 'A'
+                        -> 'et ++ 'B'
 
             if 5 = size et [
-                if? key? RevCodes et -> 'result ++ RevCodes\[et]
-                else -> 'result ++ " "
+                (key? RevCodes et)? -> 'result ++ RevCodes\[et]
+                                    -> 'result ++ " "
                 et: ""
             ]
         ]

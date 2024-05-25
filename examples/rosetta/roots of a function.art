@@ -11,10 +11,9 @@ x: start
 while [x =< stop][
     value: f x
 
-    if? value = 0 -> 
-        print ["root found at" to :string .format:".5f" x]
-    else ->
-        if sign <> value > 0 -> print ["root found near" to :string .format:".5f" x]
+    (value = 0)? 
+        -> print ["root found at" to :string .format:".5f" x]
+        -> if sign <> value > 0 -> print ["root found near" to :string .format:".5f" x]
     
     sign: value > 0
     'x + step

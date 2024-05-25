@@ -10,13 +10,10 @@ B: "I am string too"
 sA: size A
 sB: size B
 
-if? sA < sB ->
-    print ["string ->" A "(" sA ") is smaller than string ->" B "(" sB ")"]
-else [
-    if? sA > sB ->
-        print ["string ->" A "(" sA ") is larger than string ->" B "(" sB ")"]
-    else ->
-        print ["string ->" A "(" sA ") and string ->" B "(" sB ") are of equal length"]
+choose [ 
+    sA < sB -> print ["string ->" A "(" sA ") is smaller than string ->" B "(" sB ")"]
+    sA > sB -> print ["string ->" A "(" sA ") is larger than string ->" B "(" sB ")"]
+    else    -> print ["string ->" A "(" sA ") and string ->" B "(" sB ") are of equal length"]
 ]
 
 print ["sorted strings (by length):" sortByLength ["abcd" "123456789" "abcdef" "1234567"]]

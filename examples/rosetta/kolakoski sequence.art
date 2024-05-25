@@ -25,8 +25,9 @@ possibleKolakoski?: function [seq][
     rle: []
 
     loop 1..dec size seq 'i [
-        if? seq\[i] = prev -> inc 'count
-        else [
+        switch seq\[i] = prev [
+            inc 'count
+        ][
             'rle ++ count
             count: 1
             prev: seq\[i]

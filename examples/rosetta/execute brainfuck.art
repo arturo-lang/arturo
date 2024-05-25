@@ -17,15 +17,14 @@ precomputeJumps: function [][
  
     while [instrPointer<CodeLength] [
         command: get split Code instrPointer
-        if? command="[" -> 'vstack ++ instrPointer
-        else [
-            if command="]" [
+        switch command="[" 
+            -> 'vstack ++ instrPointer
+            -> if command="]" [
                 target: last vstack
                 chop 'vstack
                 jumphash\[target]: instrPointer
                 jumphash\[instrPointer]: target
             ]
-        ]
         instrPointer: instrPointer+1
     ]
     jumphash
@@ -75,8 +74,8 @@ interpret: function [].export:[DataPointer,InstructionPointer,Tape][
 ]
  
 Code: ""
-if? 1>size arg  -> Code: "++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>."
-else            -> Code: read arg\0
+(1>size arg)? -> Code: "++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>."
+              -> Code: read arg\0
 
 CodeLength: size Code
 Jumps: precomputeJumps

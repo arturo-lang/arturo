@@ -28,12 +28,9 @@ soundex: function [str][
         ]
     ]
 
-    if? 4 < size result ->
-        result: slice result 0 3
-    else [
-        do.times: 4-size result ->
-            'result ++ '0'
-    ]
+    switch 4 < size result 
+        -> result: slice result 0 3
+        -> do.times: 4-size result -> 'result ++ '0'
     return result
 ]
 

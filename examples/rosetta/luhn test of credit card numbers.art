@@ -13,8 +13,9 @@ luhn?: function [n][
     s1: 0
     s2: 0
     loop.with: 'i digits n 'd [
-        if? even? i -> 's1 + d
-        else [
+        switch even? i [ 
+            's1 + d
+        ][
             'd * 2
             if d > 9 -> 'd - 9
             's2 + d

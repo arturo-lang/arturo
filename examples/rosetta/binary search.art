@@ -15,6 +15,6 @@ ary: [
 
 loop [0 42 45 24324 99999] 'v [
     i: binarySearch ary v 0 (size ary)-1
-    if? not? null? i    -> print ["found" v "at index:" i]
-    else                -> print [v "not found"]
+    (not? null? i)? -> print ["found" v "at index:" i]
+                    -> print [v "not found"]
 ]

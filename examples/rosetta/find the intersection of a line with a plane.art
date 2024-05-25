@@ -7,9 +7,8 @@ subv: function [v1 :vector, v2 :vector]->
     to :vector @[v1\x-v2\x, v1\y-v2\y, v1\z-v2\z]
 
 mulv: function [v1 :vector, v2 :vector :floating][
-    if? is? :vector v2
-        -> return sum @[v1\x*v2\x v1\y*v2\y v1\z*v2\z]
-    else 
+    (is? :vector v2)?
+        -> return sum @[v1\x*v2\x v1\y*v2\y v1\z*v2\z] 
         -> return to :vector @[v1\x*v2, v1\y*v2, v1\z*v2]
 ]
 

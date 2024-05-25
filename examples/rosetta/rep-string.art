@@ -24,8 +24,7 @@ strings: {
 
 loop split.lines strings 'str [
     rep: repeated? str
-    if? false = rep -> 
-        print [str "-> *not* a rep-string"]
-    else ->
-        print [str "->" rep "( length:" size rep ")"]
+    (false = rep)? 
+        -> print [str "-> *not* a rep-string"]
+        -> print [str "->" rep "( length:" size rep ")"]
 ]

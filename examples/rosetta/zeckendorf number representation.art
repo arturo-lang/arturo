@@ -7,11 +7,12 @@ Z: function [x][
     
     result: ""
     loop fib 'f [
-        if? f =< n [
+        switch f =< n [
             'result ++ "1"
             'n - f
+        ][
+            'result ++ "0"
         ]
-        else -> 'result ++ "0"
     ]
     if result\0 = '0' ->
         result: slice result 1 (size result)-1

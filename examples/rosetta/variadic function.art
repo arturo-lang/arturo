@@ -17,12 +17,9 @@ variadic ["one" 2 "three"]
 ;-------------------------------------------
 variable: function [args][
     print ["args:" args]
-    if? attr? "with" [
-        print ["with:" attr "with"]
-    ]
-    else [
-        print "without attributes"
-    ]
+    switch attr? "with" 
+        -> print ["with:" attr "with"]
+        -> print "without attributes"
 ]
 
 variable "yes"

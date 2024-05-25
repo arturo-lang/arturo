@@ -8,8 +8,9 @@ fromRoman: function [roman][
 		valueA: syms\[fst]
 		valueB: syms\[snd]
 
-		if? valueA < valueB -> ret: ret - valueA
-	 	else				-> ret: ret + valueA
+		(valueA < valueB)? 
+			-> ret: ret - valueA
+	 		-> ret: ret + valueA
 	]
 	return ret + syms\[last roman]
 ]
