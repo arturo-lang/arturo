@@ -344,17 +344,22 @@ proc defineLibrary*() =
         returns     = {Logical},
         example     = """
             greet: function [x][
-                if? not? attr? 'later [
-                    print ["Hello" x "!"]
-                ]
-                else [
-                    print [x "I'm afraid I'll greet you later!"]
-                ]
+                switch attr? 'later
+                  -> ~"|x| I'm afraid, I'll greet you later"
+                  -> ~"Hello, |x|!"
             ]
             
+            greet "John"
+            ; => Hello, John!
+
             greet.later "John"
+            ; => John I'm afraid, I'll greet you later!
             
-            ; John I'm afraid I'll greet you later!
+            ; Have in mind that `attr?` won't pop your attribute's stack
+            
+            greet "Joe"
+            ; => Joe I'm afraid, I'll greet you later!
+            
         """:
             #=======================================================
             if getAttr(x.s) != VNULL:
