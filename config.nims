@@ -77,7 +77,8 @@ proc configUnixSSL() =
 
 proc main() =
     defaultConfig()
-    ##configGMPOnWindows()
+    # see: https://github.com/arturo-lang/arturo/pull/1643
+    # configGMPOnWindows()    
     configMimalloc()
 
     if defined(windows):
