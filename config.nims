@@ -55,7 +55,7 @@ proc configMimalloc() =
 
     "stdlib".patchFile("malloc"):
         "src"/"extras"/"mimalloc"
-
+ 
 
 proc configWinPCRE() =
     --dynlibOverride:pcre64
