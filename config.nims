@@ -31,7 +31,7 @@ proc defaultConfig() =
     --path:src
 
 
-proc configGMPOnWindows() =
+proc configGMPOnWindows() {.used.} =
     if "windows" == hostOS:
         let gccPath = staticExec("pkg-config --libs-only-L gmp")
                         .strip()
