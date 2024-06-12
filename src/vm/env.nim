@@ -30,6 +30,7 @@ import helpers/system
 import helpers/terminal
 
 import vm/values/value
+import vm/version
 
 when not defined(WEB):
     import vm/parse
@@ -47,10 +48,6 @@ var
     # private
     #--------------------
     Arguments       : Value
-    ArturoVersion   : string
-    ArturoBuild     : string
-    ArturoMetadata  : string
-
     ScriptInfo      : Value
 
 #=======================================
@@ -169,12 +166,9 @@ proc getScriptInfo*(): Value =
 # Methods
 #=======================================
 
-proc initEnv*(arguments: seq[string], version: string, build: string, metadata: string, script: Value) =
+proc initEnv*(arguments: seq[string], script: Value) =
     ## initialize environment with given arguments
     Arguments = newStringBlock(arguments)
-    ArturoVersion = version
-    ArturoBuild = build
-    ArturoMetadata = metadata
 
     if not script.isNil:
         ScriptInfo = script
