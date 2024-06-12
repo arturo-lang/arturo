@@ -38,8 +38,7 @@ import vm/[
     stack, 
     values/value, 
     values/printable,
-    values/custom/verror,
-    version
+    values/custom/verror
 ]
 
 when not defined(WEB):
