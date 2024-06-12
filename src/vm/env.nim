@@ -99,6 +99,10 @@ proc parseCmdlineArguments*(): ValueDict =
 
 proc getSystemInfo*(): ValueDict =
     ## return system info as a Dictionary value
+    var versionStr = ArturoVersion
+    versionStr &= "+" & ArturoBuild
+    if ArturoMetadata != "":
+        versionStr &= "." & ArturoMetadata
     try:
         result = {
             "author"    : newString("Yanis Zafirópulos"),
