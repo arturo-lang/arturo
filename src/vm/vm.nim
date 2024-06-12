@@ -153,9 +153,6 @@ template initialize(args: seq[string], filename: string, isFile:bool, scriptData
     # environment
     initEnv(
         arguments = args, 
-        version = ArturoVersion,
-        build = ArturoBuild,
-        metadata = ArturoMetadata,
         script = scriptData
     )
 
