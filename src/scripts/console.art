@@ -47,13 +47,16 @@ LongHeader: {
     |sys\copyright| |sys\author|
 }
 
-buildNo: (~{b/|sys\build|}) ++ " "
-if 2>sys\build -> buildNo: ""
+vv: to :string sys\version
+[versionPart,buildPart]: split.by:"+" to :string sys\version
 
-Details: {
-    # version : v/|sys\version| |buildNo|@ |sys\buildDate|
-    # arch    : |sys\cpu\arch|/|sys\os|
-}
+Details: {# version : |versionPart|} ++ "\n"
+
+if or? [contains? buildPart "."][3 < to :integer buildPart][
+    Details: Details ++ {# build   : |buildPart| @ |sys\buildDate|} ++ "\n"
+]
+
+Details: Details ++ {# arch    : |sys\cpu\arch|/|sys\os|}
 
 BR: "\n"
 
