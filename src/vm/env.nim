@@ -49,6 +49,7 @@ var
     Arguments       : Value
     ArturoVersion   : string
     ArturoBuild     : string
+    ArturoMetadata  : string
 
     ScriptInfo      : Value
 
@@ -104,6 +105,7 @@ proc getSystemInfo*(): ValueDict =
             "copyright" : newString("(c) 2019-2024"),
             "version"   : newVersion(ArturoVersion),
             "build"     : newInteger(parseInt(ArturoBuild)),
+            "buildMeta" : newString(ArturoMetadata),
             "buildDate" : newDate(parse(CompileDate & " " & CompileTime, "yyyy-MM-dd HH:mm:ss")),
             "deps"      : newDictionary(),
             "binary"    : 
@@ -163,11 +165,12 @@ proc getScriptInfo*(): Value =
 # Methods
 #=======================================
 
-proc initEnv*(arguments: seq[string], version: string, build: string, script: Value) =
+proc initEnv*(arguments: seq[string], version: string, build: string, metadata: string, script: Value) =
     ## initialize environment with given arguments
     Arguments = newStringBlock(arguments)
     ArturoVersion = version
     ArturoBuild = build
+    ArturoMetadata = metadata
 
     if not script.isNil:
         ScriptInfo = script

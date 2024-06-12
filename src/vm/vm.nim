@@ -155,6 +155,7 @@ template initialize(args: seq[string], filename: string, isFile:bool, scriptData
         arguments = args, 
         version = ArturoVersion,
         build = ArturoBuild,
+        metadata = ArturoMetadata,
         script = scriptData
     )
 
