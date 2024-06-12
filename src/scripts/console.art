@@ -53,7 +53,7 @@ vv: to :string sys\version
 Details: {# version : |versionPart|} ++ "\n"
 
 if or? [contains? buildPart "."][3 < to :integer buildPart][
-    Details: Details ++ {# build   : |buildPart| @ |sys\buildDate|} ++ "\n"
+    Details: Details ++ {# build   : |buildPart| @ |sys\built|} ++ "\n"
 ]
 
 Details: Details ++ {# arch    : |sys\cpu\arch|/|sys\os|}
