@@ -105,9 +105,7 @@ proc getSystemInfo*(): ValueDict =
             "author"    : newString("Yanis Zafirópulos"),
             "copyright" : newString("(c) 2019-2024"),
             "version"   : newVersion(versionStr),
-            "build"     : newInteger(parseInt(ArturoBuild)),
-            "buildMeta" : newString(ArturoMetadata),
-            "buildDate" : newDate(parse(CompileDate & " " & CompileTime, "yyyy-MM-dd HH:mm:ss")),
+            "built"     : newDate(parse(CompileDate & " " & CompileTime, "yyyy-MM-dd HH:mm:ss")),
             "deps"      : newDictionary(),
             "binary"    : 
                 when defined(WEB):
