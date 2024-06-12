@@ -27,6 +27,6 @@ const
     ArturoMetadata*   = static readFile("version/metadata").strip()
 
     ArturoVersionTxt* = "arturo v/" & ArturoVersion &                   ## The current version text
-                        " b/" & ArturoBuild & (if ArturoMetadata=="": "" else: "." & ArturoMetadata) &
+                        (if ArturoMetadata!="" or parseInt(ArturoBuild) > 3: " b/" & ArturoBuild & (if ArturoMetadata=="": "" else: "." & ArturoMetadata) else: "") &
                         " (" & systemArch & "/" & systemOs & ")"
                         
