@@ -54,7 +54,7 @@ proc cmp*(x: VVersion, y: VVersion): int {.inline.}=
         return 0
 
 func `$`*(v: VVersion): string {.inline.} =
-    fmt("{v.major}.{v.minor}.{v.patch}{v.extra}")
+    fmt("{v.major}.{v.minor}.{v.patch}{v.prerelease}{v.extra}")
     
 func newVVersion*(v: string): VVersion =
     var numPart: string
