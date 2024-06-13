@@ -93,10 +93,13 @@ func newVVersion*(v: string): VVersion =
 
     let parts: seq[string] = numPart.split(".")
 
-    return VVersion(
+    result = VVersion(
         major: parseInt(parts[0]),
         minor: parseInt(parts[1]),
         patch: parseInt(parts[2]),
         prerelease: prereleasePart,
         extra: extraPart
     )
+
+    echo "new version:"
+    echo $result[]
