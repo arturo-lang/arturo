@@ -20,9 +20,9 @@ import strformat, strutils
 
 type
     VVersion* = ref object
-        major*   : int
-        minor*   : int
-        patch*   : int
+        major*      : int
+        minor*      : int
+        patch*      : int
         prerelease* : string
         extra*      : string
 
