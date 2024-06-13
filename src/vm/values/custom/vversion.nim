@@ -23,7 +23,8 @@ type
         major*   : int
         minor*   : int
         patch*   : int
-        extra*   : string
+        prerelease* : string
+        extra*      : string
 
 #=======================================
 # Overloads
@@ -57,6 +58,7 @@ func `$`*(v: VVersion): string {.inline.} =
     
 func newVVersion*(v: string): VVersion =
     var numPart: string
+    var prereleasePart: string
     var extraPart: string
     var lastIndex : int
     for i, c in v:
@@ -69,11 +71,20 @@ func newVVersion*(v: string): VVersion =
 
     extraPart &= v[lastIndex+1 .. ^1]
 
+    if extraPart[0] == '-':
+        let subparts = extraPart.split("+")
+        prereleasePart = subparts[0]
+        if subparts.len > 1:
+            extraPart = "+" & subparts[1]
+        else:
+            extraPart = ""
+
     let parts: seq[string] = numPart.split(".")
 
     return VVersion(
         major: parseInt(parts[0]),
         minor: parseInt(parts[1]),
         patch: parseInt(parts[2]),
+        prerelease: prereleasePart,
         extra: extraPart
     )
