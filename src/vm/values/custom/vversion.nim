@@ -48,7 +48,7 @@ func `<`*(a, b: VVersion): bool {.inline.} =
 func `>`*(a, b: VVersion): bool {.inline.} =
     a.major > b.major or (a.major == b.major and (
         a.minor > b.minor or
-        (a.minor == b.minor and and (
+        (a.minor == b.minor and (
             a.patch > b.patch or (
                 a.patch == a.patch and 
                     ((a.prerelease == "" and b.prerelease != "") or 
