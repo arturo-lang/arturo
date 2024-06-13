@@ -24,8 +24,9 @@ import helpers/system
 const 
     ArturoVersion*    = static readFile("version/version").strip()      ## The current version of Arturo
     ArturoBuild*      = static readFile("version/build").strip()        ## The current build number of Arturo
+    ArturoMetadata*   = static readFile("version/metadata").strip()
 
     ArturoVersionTxt* = "arturo v/" & ArturoVersion &                   ## The current version text
-                        " b/" & ArturoBuild &
+                        (if ArturoMetadata!="" or parseInt(ArturoBuild) > 3: " b/" & ArturoBuild & (if ArturoMetadata=="": "" else: "." & ArturoMetadata) else: "") &
                         " (" & systemArch & "/" & systemOs & ")"
                         
