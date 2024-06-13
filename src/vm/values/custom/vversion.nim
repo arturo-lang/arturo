@@ -41,15 +41,22 @@ func isNumeric(s: string): bool =
 # Overloads
 #=======================================
 
-proc cmp*(x: VVersion, y: VVersion): int {.inline.}=
+proc cmp*(x: VVersion, y: VVersion): int {.inline.} =
+    echo "in VV cmp"
     if (let cmpMajor = cmp(x.major, y.major); cmpMajor != 0):
         return cmpMajor
+
+    echo "after cmpMajor"
 
     if (let cmpMinor = cmp(x.minor, y.minor); cmpMinor != 0):
         return cmpMinor
 
+    echo "after cmpMinor"
+
     if (let cmpPatch = cmp(x.patch, y.patch); cmpPatch != 0):
         return cmpPatch
+
+    echo "after cmpPatch"
 
     let 
         lX = len(x.prerelease)
@@ -89,7 +96,7 @@ proc cmp*(x: VVersion, y: VVersion): int {.inline.}=
 
 func `==`*(a, b: VVersion): bool {.inline.} =
     cmp(a,b) == 0
-    
+
 func `<`*(a, b: VVersion): bool {.inline.} =
     cmp(a,b) == -1
 
