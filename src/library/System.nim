@@ -452,13 +452,6 @@ proc defineLibrary*() =
         """:
             push(getScriptInfo())
 
-    # TODO(System\sys) normalize the way CPU architecture is shown
-    #  in our new release builds, we annotate x86_64/amd64 builds as "x86_64"
-    #  here, our sys\cpu field would return "amd64"
-    #
-    #  obviously, we should normalize this, but we need to decide on a single name
-    #  and then, we need to make sure that all our build scripts are using the same name
-    #  labels: library, enhancement, open discussion
     builtin "sys",
         alias       = unaliased, 
         op          = opNop,
