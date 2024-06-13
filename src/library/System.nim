@@ -452,13 +452,6 @@ proc defineLibrary*() =
         """:
             push(getScriptInfo())
 
-    # TODO(System\sys) normalize the way CPU architecture is shown
-    #  in our new release builds, we annotate x86_64/amd64 builds as "x86_64"
-    #  here, our sys\cpu field would return "amd64"
-    #
-    #  obviously, we should normalize this, but we need to decide on a single name
-    #  and then, we need to make sure that all our build scripts are using the same name
-    #  labels: library, enhancement, open discussion
     builtin "sys",
         alias       = unaliased, 
         op          = opNop,
@@ -470,37 +463,37 @@ proc defineLibrary*() =
         example     = """
             inspect sys
             ;[ :dictionary
-            ;	author     :	Yanis Zafirópulos :string
-            ;	copyright  :	(c) 2019-2022 :string
-            ;	version    :	0.9.80 :version
-            ;	build      :	3246 :integer
-            ;	buildDate  :	[ :date
-            ;		hour        :		11 :integer
-            ;		minute      :		27 :integer
-            ;		second      :		54 :integer
-            ;		nanosecond  :		389131000 :integer
-            ;		day         :		7 :integer
-            ;		Day         :		Wednesday :string
-            ;		days        :		340 :integer
-            ;		month       :		12 :integer
-            ;		Month       :		December :string
-            ;		year        :		2022 :integer
-            ;		utc         :		-3600 :integer
-            ;	]
-            ;	deps       :	[ :dictionary
-            ;		gmp     :		6.2.1 :version
-            ;		mpfr    :		4.1.0 :version
-            ;		sqlite  :		3.37.0 :version
-            ;		pcre    :		8.45.0 :version
-            ;	] 
-            ;	binary     :	/Users/drkameleon/OpenSource/arturo-lang/arturo/bin/arturo :string
-            ;	cpu        :        [ :dictionary
-            ;           arch    :                amd64 :literal
-            ;           endian  :                little :literal
-            ;   ]
-            ; 	os         :	macosx :string
-            ;   hostname   :    drkameleons-Mac.home :string
-            ;  	release    :	full :literal
+            ;        author     :        Yanis Zafirópulos :string
+            ;        copyright  :        (c) 2019-2024 :string
+            ;        version    :        0.9.84-alpha+3126 :version
+            ;        built      :        [ :date
+            ;                hour        :                16 :integer
+            ;                minute      :                19 :integer
+            ;                second      :                25 :integer
+            ;                nanosecond  :                0 :integer
+            ;                day         :                12 :integer
+            ;                Day         :                Wednesday :string
+            ;                days        :                163 :integer
+            ;                month       :                6 :integer
+            ;                Month       :                June :string
+            ;                year        :                2024 :integer
+            ;                utc         :                -7200 :integer
+            ;        ]
+            ;        deps       :        [ :dictionary
+            ;                gmp     :                6.3.0 :version
+            ;                mpfr    :                4.2.1 :version
+            ;                sqlite  :                3.39.5 :version
+            ;                pcre    :                8.45.0 :version
+            ;        ]
+            ;        binary     :        /Users/drkameleon/.arturo/bin/arturo :string
+            ;        cpu        :        [ :dictionary
+            ;                arch    :                amd64 :literal
+            ;                endian  :                little :literal
+            ;                cores   :                8 :integer
+            ;        ]
+            ;        os         :        macos :string
+            ;        hostname   :        drkameleons-MBP.home :string
+            ;        release    :        full :literal
             ;]
         """:
             #=======================================================

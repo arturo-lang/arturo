@@ -12,8 +12,7 @@ do [
     passed
     
     ensure -> version? sys\version
-    ensure -> integer? sys\build
-    ensure -> date? sys\buildDate
+    ensure -> date? sys\built
     ensure -> dictionary? sys\deps
     ensure -> string? sys\binary
     ensure -> literal? sys\release

@@ -30,6 +30,7 @@ import helpers/system
 import helpers/terminal
 
 import vm/values/value
+import vm/version
 
 when not defined(WEB):
     import vm/parse
@@ -47,9 +48,6 @@ var
     # private
     #--------------------
     Arguments       : Value
-    ArturoVersion   : string
-    ArturoBuild     : string
-
     ScriptInfo      : Value
 
 #=======================================
@@ -98,13 +96,16 @@ proc parseCmdlineArguments*(): ValueDict =
 
 proc getSystemInfo*(): ValueDict =
     ## return system info as a Dictionary value
+    var versionStr = ArturoVersion
+    versionStr &= "+" & ArturoBuild
+    if ArturoMetadata != "":
+        versionStr &= "." & ArturoMetadata
     try:
         result = {
             "author"    : newString("Yanis Zafirópulos"),
             "copyright" : newString("(c) 2019-2024"),
-            "version"   : newVersion(ArturoVersion),
-            "build"     : newInteger(parseInt(ArturoBuild)),
-            "buildDate" : newDate(parse(CompileDate & " " & CompileTime, "yyyy-MM-dd HH:mm:ss")),
+            "version"   : newVersion(versionStr),
+            "built"     : newDate(parse(CompileDate & " " & CompileTime, "yyyy-MM-dd HH:mm:ss")),
             "deps"      : newDictionary(),
             "binary"    : 
                 when defined(WEB):
@@ -163,11 +164,9 @@ proc getScriptInfo*(): Value =
 # Methods
 #=======================================
 
-proc initEnv*(arguments: seq[string], version: string, build: string, script: Value) =
+proc initEnv*(arguments: seq[string], script: Value) =
     ## initialize environment with given arguments
     Arguments = newStringBlock(arguments)
-    ArturoVersion = version
-    ArturoBuild = build
 
     if not script.isNil:
         ScriptInfo = script

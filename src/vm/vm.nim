@@ -38,8 +38,7 @@ import vm/[
     stack, 
     values/value, 
     values/printable,
-    values/custom/verror,
-    version
+    values/custom/verror
 ]
 
 when not defined(WEB):
@@ -153,8 +152,6 @@ template initialize(args: seq[string], filename: string, isFile:bool, scriptData
     # environment
     initEnv(
         arguments = args, 
-        version = ArturoVersion,
-        build = ArturoBuild,
         script = scriptData
     )
 
