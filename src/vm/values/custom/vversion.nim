@@ -26,44 +26,75 @@ type
         prerelease* : string
         extra*      : string
 
+# #=======================================
+# # Helpers
+# #=======================================
+
+func isNumeric(s: string): bool =
+    result = true
+
+    for c in s:
+        if not isDigit(c):
+            return false
+
 #=======================================
 # Overloads
 #=======================================
 
-func `==`*(a, b: VVersion): bool {.inline.} =
-    a[] == b[]
+proc cmp*(x: VVersion, y: VVersion): int {.inline.}=
+    if (let cmpMajor = cmp(x.major, y.major); cmpMajor != 0):
+        return cmpMajor
 
+    if (let cmpMinor = cmp(x.minor, y.minor); cmpMinor != 0):
+        return cmpMinor
+
+    if (let cmpPatch = cmp(x.patch, y.patch); cmpPatch != 0):
+        return cmpPatch
+
+    let 
+        lX = len(x.prerelease)
+        lY = len(y.prerelease)
+
+    if lX == 0 and lY == 0: 
+        return 0
+    elif lX == 0 and lY > 0: 
+        return 1
+    elif lX > 0 and lY == 0:
+        return -1
+    else:
+        var
+            i = 0
+            preX = split(x.prerelease, ".")
+            preY = split(y.prerelease, ".")
+            comp: int
+
+        while i < len(preX) and i < len(preY):
+            comp = 
+                if isNumeric(preX[i]) and isNumeric(preY[i]):
+                    cmp(parseInt(preX[i]), parseInt(preY[i]))
+                else:
+                    cmp(preX[i], preY[i])
+
+            if comp != 0:
+                return comp
+            else:
+                i = i + 1
+
+        if i == len(preX) and i == len(preY): 
+            return 0
+        elif i == len(preX) and i < len(preY): 
+            return -1
+        else: 
+            return 1
+
+func `==`*(a, b: VVersion): bool {.inline.} =
+    cmp(a,b) == 0
+    
 func `<`*(a, b: VVersion): bool {.inline.} =
-    a.major < b.major or (a.major == b.major and (
-        a.minor < b.minor or
-        (a.minor == b.minor and (
-            a.patch < b.patch or (
-                a.patch == a.patch and 
-                    ((a.prerelease != "" and b.prerelease == "") or 
-                     (a.prerelease < b.prerelease))
-            ))
-        )
-    ))
+    cmp(a,b) == -1
 
 func `>`*(a, b: VVersion): bool {.inline.} =
-    a.major > b.major or (a.major == b.major and (
-        a.minor > b.minor or
-        (a.minor == b.minor and (
-            a.patch > b.patch or (
-                a.patch == a.patch and 
-                    ((a.prerelease == "" and b.prerelease != "") or 
-                     (a.prerelease > b.prerelease))
-            ))
-        )
-    ))
-
-proc cmp*(x: VVersion, y: VVersion): int {.inline.}=
-    if x < y:
-        return -1
-    elif x > y:
-        return 1
-    else:
-        return 0
+    cmp(a,b) == 1
 
 func `$`*(v: VVersion): string {.inline.} =
     fmt("{v.major}.{v.minor}.{v.patch}{v.prerelease}{v.extra}")
@@ -101,5 +132,5 @@ func newVVersion*(v: string): VVersion =
         extra: extraPart
     )
 
-    echo "new version:"
-    echo $result[]
+    debugEcho "new version:"
+    debugEcho $result[]
