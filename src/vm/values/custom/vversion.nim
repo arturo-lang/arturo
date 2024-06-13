@@ -42,21 +42,21 @@ func isNumeric(s: string): bool =
 #=======================================
 
 proc cmp*(x: VVersion, y: VVersion): int {.inline.} =
-    echo "in VV cmp"
+    debugEcho "in VV cmp"
     if (let cmpMajor = cmp(x.major, y.major); cmpMajor != 0):
         return cmpMajor
 
-    echo "after cmpMajor"
+    debugEcho "after cmpMajor"
 
     if (let cmpMinor = cmp(x.minor, y.minor); cmpMinor != 0):
         return cmpMinor
 
-    echo "after cmpMinor"
+    debugEcho "after cmpMinor"
 
     if (let cmpPatch = cmp(x.patch, y.patch); cmpPatch != 0):
         return cmpPatch
 
-    echo "after cmpPatch"
+    debugEcho "after cmpPatch"
 
     let 
         lX = len(x.prerelease)
