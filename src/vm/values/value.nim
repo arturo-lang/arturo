@@ -1186,6 +1186,7 @@ func hash*(v: Value): Hash {.inline.} =
             result = result !& cast[Hash](v.major)
             result = result !& cast[Hash](v.minor)
             result = result !& cast[Hash](v.patch)
+            result = result !& hash(v.prerelease)
             result = result !& hash(v.extra)
         of Type         : 
             result = result !& hash(v.tpKind)
