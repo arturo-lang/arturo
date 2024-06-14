@@ -39,3 +39,10 @@ print type to :string 1.2.3
 
 print to :version "1.2.3"
 print type to :version "1.2.3"
+
+print 1.2.0 < 1.2.1
+print 1.2.0-alpha < 1.2.0
+print 1.2.3 > 1.2.2
+print 1.2.4 > 1.2.4-beta
+
+print 1.2.3+build.123 = 1.2.3+build.234
