@@ -40,9 +40,7 @@ var
 func indexOfValue(a: ValueArray, item: Value): int {.inline.}=
     result = 0
     for i in items(a):
-        if consideredEqual(item, i): 
-            debugEcho("Value already existed!")
-            return
+        if consideredEqual(item, i): return
         inc(result)
     result = -1
 
