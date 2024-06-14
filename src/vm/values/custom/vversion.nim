@@ -69,7 +69,7 @@ proc cmp*(x: VVersion, y: VVersion): int {.inline.} =
         debugEcho "lx zero, ly > 0 -> greater than"
         return 1
     elif lX > 0 and lY == 0:
-        debugEcho "lc > 0, ly zero -> less than"
+        debugEcho "lx > 0, ly zero -> less than"
         return -1
     else:
         debugEcho "lx > 0, ly > 0 -> process more..."
@@ -99,6 +99,7 @@ proc cmp*(x: VVersion, y: VVersion): int {.inline.} =
             return 1
 
 func `==`*(a, b: VVersion): bool {.inline.} =
+    debugEcho "called =="
     cmp(a,b) == 0
 
 func `<`*(a, b: VVersion): bool {.inline.} =
