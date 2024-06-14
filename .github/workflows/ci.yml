@@ -1,0 +1,51 @@
+name: "CI"
+
+on:
+    push:
+        branches:
+            - 'master'
+        tags-ignore:
+            - '**'
+    pull_request:
+        paths-ignore:
+            - 'docs/*'
+            - '*.yml'
+            - '*.md'
+            - 'LICENSE'
+
+concurrency: 
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    test:
+        runs-on: ${{ matrix.os }}
+        strategy:
+            matrix:
+                include: 
+                    - {os: ubuntu-latest,   arch: amd64, mode: full, shell: bash}
+                    - {os: ubuntu-latest,   arch: amd64, mode: mini, shell: bash}
+                    - {os: ubuntu-latest,   arch: arm64, mode: mini, shell: bash}
+                    - {os: windows-latest,  arch: amd64, mode: full, shell: "msys2 {0}"}
+                    - {os: windows-latest,  arch: amd64, mode: mini, shell: "msys2 {0}"}
+                    - {os: macOS-12,        arch: amd64, mode: full, shell: bash}
+                    - {os: macOS-12,        arch: amd64, mode: mini, shell: bash}
+                    - {os: macos-latest,    arch: arm64, mode: full, shell: bash}
+                    - {os: macos-latest,    arch: arm64, mode: mini, shell: bash}
+        defaults:
+            run:
+                shell: ${{ matrix.shell }}
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Install Arturo
+              uses: arturo-lang/arturo-action@main
+              with: 
+                token: ${{ secrets.GITHUB_TOKEN }}
+                mode: ${{ matrix.mode }}
+                arch: ${{ matrix.arch }}
+
+            - if: matrix.os != 'ubuntu-latest' || matrix.arch != 'arm64'
+              name: Run tests
+              run: |
+                arturo -v
