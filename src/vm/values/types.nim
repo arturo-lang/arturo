@@ -422,6 +422,7 @@ makeAccessor(info, path)
 makeAccessor(version, major)
 makeAccessor(version, minor)
 makeAccessor(version, patch)
+makeAccessor(version, prerelease)
 makeAccessor(version, extra)
 
 # Function

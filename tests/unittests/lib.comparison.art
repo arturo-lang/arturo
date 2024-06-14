@@ -1916,12 +1916,10 @@ do [
     ensure -> not? 1.2.3 > 1.2.3
     passed
     
-    ensure -> not? greater? 1.2.3 1.2.3-pre
-    ensure -> not? greater? 1.2.3 1.2.3-dev
-    ensure -> not? greater? 1.2.3-release 1.2.3-dev
-    ensure -> not? 1.2.3 > 1.2.3-pre
-    ensure -> not? 1.2.3 > 1.2.3-dev
-    ensure -> not? 1.2.3-release > 1.2.3-dev
+    ensure -> greater? 1.2.3 1.2.3-pre
+    ensure -> not? greater? 1.2.3-dev 1.2.3 
+    ensure -> 1.2.3 > 1.2.3-pre
+    ensure -> not? 1.2.3-dev > 1.2.3
     passed
     
     
@@ -3106,12 +3104,10 @@ do [
     ensure -> 1.2.3 >= 1.2.3
     passed
     
-    ensure -> not? greaterOrEqual? 1.2.3 1.2.3-pre
-    ensure -> not? greaterOrEqual? 1.2.3 1.2.3-dev
-    ensure -> not? greaterOrEqual? 1.2.3-release 1.2.3-dev
-    ensure -> not? 1.2.3 >= 1.2.3-pre
-    ensure -> not? 1.2.3 >= 1.2.3-dev
-    ensure -> not? 1.2.3-release >= 1.2.3-dev
+    ensure -> greaterOrEqual? 1.2.3 1.2.3-pre
+    ensure -> not? greaterOrEqual? 1.2.3-dev 1.2.3 
+    ensure -> 1.2.3 >= 1.2.3-pre
+    ensure -> not? 1.2.3-dev >= 1.2.3 
     passed
     
     
