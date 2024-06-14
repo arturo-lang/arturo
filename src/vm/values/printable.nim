@@ -567,7 +567,7 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
                 result &= fmt("to :complex [{v.z.re} {v.z.im}]")
         of Rational     :
             result &= codify(v.rat) 
-        of Version      : result &= fmt("{v.major}.{v.minor}.{v.patch}{v.extra}")
+        of Version      : result &= fmt("{v.major}.{v.minor}.{v.patch}{v.prerelease}{v.extra}")
         of Type         : 
             if v.tpKind==BuiltinType:
                 result &= ":" & ($v.t).toLowerAscii()
