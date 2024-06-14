@@ -131,6 +131,3 @@ func newVVersion*(v: string): VVersion =
         prerelease: prereleasePart,
         extra: extraPart
     )
-
-    debugEcho "new version:"
-    debugEcho $result[]
