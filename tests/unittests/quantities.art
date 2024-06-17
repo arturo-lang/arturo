@@ -2,8 +2,6 @@
 topic:  $[topic :string] -> print ~"\n>> |topic|"
 passed: $[] -> print "[+] passed!"
 
-print "here"
-
 topic « currencies
 do [
 
