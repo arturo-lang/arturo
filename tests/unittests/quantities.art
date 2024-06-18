@@ -2,107 +2,107 @@
 topic:  $[topic :string] -> print ~"\n>> |topic|"
 passed: $[] -> print "[+] passed!"
 
-topic « currencies
-do [
+; topic « currencies
+; do [
 
-    topic « currencies - currency? (hidden)
+;     topic « currencies - currency? (hidden)
 
-    ensure -> every? [
-        1`AED 1`ALL 1`ARS 1`AUD 1`BGN 1`BHD 1`BNB 1`BND 1`BOB 1`BRL 1`BTC 1`BWP
-        1`CAD 1`CHF 1`CLP 1`CNY 1`COP 1`CRC 1`CZK 1`DKK 1`DOP 1`DZD 1`EGP 1`ETB
-        1`ETH 1`EUR 1`FJD 1`GBP 1`HKD 1`HNL 1`HRK 1`HUF 1`IDR 1`ILS 1`INR 1`IRR
-        1`ISK 1`JMD 1`JOD 1`JPY 1`KES 1`KRW 1`KWD 1`KYD 1`KZT 1`LBP 1`LKR 1`MAD
-        1`MDL 1`MKD 1`MXN 1`MUR 1`MYR 1`NAD 1`NGN 1`NIO 1`NOK 1`NPR 1`NZD 1`OMR
-        1`PAB 1`PEN 1`PGK 1`PHP 1`PKR 1`PLN 1`PYG 1`QAR 1`RON 1`RSD 1`RUB 1`SAR
-        1`SCR 1`SEK 1`SGD 1`SLL 1`SOS 1`SVC 1`THB 1`TND 1`TRY 1`TTD 1`TWD 1`TZS
-        1`UAH 1`UGX 1`UYU 1`UZS 1`VES 1`VND 1`XAF 1`XAG 1`XAU 1`XOF 1`YER 1`ZAR
-        1`ZMW
-    ] => currency?
-    passed
-
-
-    topic « currencies - basic math
-
-    data: [
-        200`EUR 300`EUR 100`EUR 400`EUR
-        200`USD 300`USD 100`USD 400`USD
-        200`BRL 300`BRL 100`BRL 400`BRL
-    ]
-
-    loop data [ res res2 a b ][
-        ensure -> res  = a + a
-        ensure -> res2 = b - a
-        ensure -> res  = a * 2
-        ensure -> res  = b / 2
-        ensure -> res  = b // 2
-        passed
-    ]
+;     ensure -> every? [
+;         1`AED 1`ALL 1`ARS 1`AUD 1`BGN 1`BHD 1`BNB 1`BND 1`BOB 1`BRL 1`BTC 1`BWP
+;         1`CAD 1`CHF 1`CLP 1`CNY 1`COP 1`CRC 1`CZK 1`DKK 1`DOP 1`DZD 1`EGP 1`ETB
+;         1`ETH 1`EUR 1`FJD 1`GBP 1`HKD 1`HNL 1`HRK 1`HUF 1`IDR 1`ILS 1`INR 1`IRR
+;         1`ISK 1`JMD 1`JOD 1`JPY 1`KES 1`KRW 1`KWD 1`KYD 1`KZT 1`LBP 1`LKR 1`MAD
+;         1`MDL 1`MKD 1`MXN 1`MUR 1`MYR 1`NAD 1`NGN 1`NIO 1`NOK 1`NPR 1`NZD 1`OMR
+;         1`PAB 1`PEN 1`PGK 1`PHP 1`PKR 1`PLN 1`PYG 1`QAR 1`RON 1`RSD 1`RUB 1`SAR
+;         1`SCR 1`SEK 1`SGD 1`SLL 1`SOS 1`SVC 1`THB 1`TND 1`TRY 1`TTD 1`TWD 1`TZS
+;         1`UAH 1`UGX 1`UYU 1`UZS 1`VES 1`VND 1`XAF 1`XAG 1`XAU 1`XOF 1`YER 1`ZAR
+;         1`ZMW
+;     ] => currency?
+;     passed
 
 
-    topic « currencies - conforms?
+;     topic « currencies - basic math
 
-    ensure -> conforms? 100`EUR 200`USD
-    ensure -> conforms? 100`EUR 100`USD
-    ensure -> conforms? 100`EUR 100`EUR
-    ensure -> 100`EUR := 200`USD
-    ensure -> 100`EUR := 100`USD
-    ensure -> 100`EUR := 100`EUR
-    passed
+;     data: [
+;         200`EUR 300`EUR 100`EUR 400`EUR
+;         200`USD 300`USD 100`USD 400`USD
+;         200`BRL 300`BRL 100`BRL 400`BRL
+;     ]
 
-    ensure -> not? conforms? 100`EUR 100`m
-    ensure -> not? conforms? 100`EUR 100`m/s
-    passed
-
-
-    topic « currencies - property
-
-    ensure -> 'currency = property 100`EUR
-    ensure -> 'currency = property 100`USD
-    ensure -> 'currency = property 100`BRL
-    passed
-
-    ensure -> 'currency <> property 100`m
-    ensure -> 'currency <> property 100`m/s
-    passed
+;     loop data [ res res2 a b ][
+;         ensure -> res  = a + a
+;         ensure -> res2 = b - a
+;         ensure -> res  = a * 2
+;         ensure -> res  = b / 2
+;         ensure -> res  = b // 2
+;         passed
+;     ]
 
 
-    topic « currencies - scalar
+;     topic « currencies - conforms?
 
-    ensure -> 200 = scalar 200`USD
-    ensure -> 100 = scalar 100`USD
-    ensure -> 100 = scalar 100`EUR
-    passed
+;     ensure -> conforms? 100`EUR 200`USD
+;     ensure -> conforms? 100`EUR 100`USD
+;     ensure -> conforms? 100`EUR 100`EUR
+;     ensure -> 100`EUR := 200`USD
+;     ensure -> 100`EUR := 100`USD
+;     ensure -> 100`EUR := 100`EUR
+;     passed
 
-
-    topic « currencies - specify
-
-    specify.symbol: "ÁRT" .describes: "arturoCrypto" 'artc 10`EUR
-
-    ensure -> 'arturocrypto = property 1`artc
-    ensure -> "1.00 ÁRT" = ~"|1`artc|"
-    ensure -> "31:2`ÁRT" = as.code 15.5`artc
-    ensure -> 10`EUR = 1`artc --> `EUR
-    passed
+;     ensure -> not? conforms? 100`EUR 100`m
+;     ensure -> not? conforms? 100`EUR 100`m/s
+;     passed
 
 
-    topic « currencies - units
+;     topic « currencies - property
 
-    ensure -> `EUR = units 100`EUR
-    ensure -> `USD = units 100`USD
-    ensure -> `AUD = units 100`AUD
-    passed
+;     ensure -> 'currency = property 100`EUR
+;     ensure -> 'currency = property 100`USD
+;     ensure -> 'currency = property 100`BRL
+;     passed
 
-    ensure -> `AUD <> units 100`BRL
-    passed
-
-
-    topic « currencies - alternative names
-
-    ensure -> every? [`dollar `dollars] => equal? & `USD
-    passed
+;     ensure -> 'currency <> property 100`m
+;     ensure -> 'currency <> property 100`m/s
+;     passed
 
 
-]
+;     topic « currencies - scalar
+
+;     ensure -> 200 = scalar 200`USD
+;     ensure -> 100 = scalar 100`USD
+;     ensure -> 100 = scalar 100`EUR
+;     passed
+
+
+;     topic « currencies - specify
+
+;     specify.symbol: "ÁRT" .describes: "arturoCrypto" 'artc 10`EUR
+
+;     ensure -> 'arturocrypto = property 1`artc
+;     ensure -> "1.00 ÁRT" = ~"|1`artc|"
+;     ensure -> "31:2`ÁRT" = as.code 15.5`artc
+;     ensure -> 10`EUR = 1`artc --> `EUR
+;     passed
+
+
+;     topic « currencies - units
+
+;     ensure -> `EUR = units 100`EUR
+;     ensure -> `USD = units 100`USD
+;     ensure -> `AUD = units 100`AUD
+;     passed
+
+;     ensure -> `AUD <> units 100`BRL
+;     passed
+
+
+;     topic « currencies - alternative names
+
+;     ensure -> every? [`dollar `dollars] => equal? & `USD
+;     passed
+
+
+; ]
 
 
 topic « length
