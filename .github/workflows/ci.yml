@@ -52,10 +52,14 @@ jobs:
             - if: matrix.os != 'ubuntu-latest' || matrix.arch != 'arm64'
               name: Run tests (Old)
               run: |
+                cd arturo
                 arturo -v
-                arturo arturo/tools/tester.art
+                arturo tools/tester.art
+                cd ..
  
             - if: matrix.mode == 'full' && (matrix.os != 'ubuntu-latest' || matrix.arch != 'arm64')
               name: Run tests (Unitt)
               run: |
-                arturo arturo/tools/unitt-tester.art
+                cd arturo
+                arturo tools/unitt-tester.art
+                cd ..
