@@ -183,6 +183,7 @@ func isTemperature(q: Quantity): bool {.inline.} =
 
 proc getExchangeRate(curr: string): float =
     let s = toLowerAscii(curr)
+    echo "Gettting exchange rate for: " & $(curr)
     if ExchangeRates.len == 0:
         when not defined(WEB):
             let url = "https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/usd.min.json"
