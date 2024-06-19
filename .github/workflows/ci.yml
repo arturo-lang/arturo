@@ -37,6 +37,8 @@ jobs:
                 shell: ${{ matrix.shell }}
         steps:
             - uses: actions/checkout@v4
+              with:
+                submodules: recursive
 
             - name: Install Arturo
               uses: arturo-lang/arturo-action@main
@@ -44,6 +46,7 @@ jobs:
                 token: ${{ secrets.GITHUB_TOKEN }}
                 mode: ${{ matrix.mode }}
                 arch: ${{ matrix.arch }}
+                src: local
 
             - if: matrix.os != 'ubuntu-latest' || matrix.arch != 'arm64'
               name: Run tests (Old)
