@@ -53,9 +53,9 @@ jobs:
               name: Run tests (Old)
               run: |
                 arturo -v
-                arturo tools/tester.art
+                arturo arturo/tools/tester.art
  
             - if: matrix.mode == 'full' && (matrix.os != 'ubuntu-latest' || matrix.arch != 'arm64')
               name: Run tests (Unitt)
               run: |
-                arturo tools/unitt-tester.art
+                arturo arturo/tools/unitt-tester.art
