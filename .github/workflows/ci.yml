@@ -53,7 +53,7 @@ jobs:
             - if: matrix.os != 'ubuntu-latest' || matrix.arch != 'arm64'
               name: Run tests (Old)
               run: |
-                cd arturo
+                cd arturo 
                 arturo -v
                 arturo tools/tester.art
                 cd ..
