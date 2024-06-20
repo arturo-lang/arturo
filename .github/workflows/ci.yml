@@ -48,12 +48,13 @@ jobs:
                 mode: ${{ matrix.mode }}
                 arch: ${{ matrix.arch }}
                 src: ${{ github.ref }}
-                metadata: ${{ github.ref }}
+                metadata: ${{ github.ref_name }}
 
             - if: matrix.os != 'ubuntu-latest' || matrix.arch != 'arm64'
               name: Run tests (Old)
               run: |
                 cd arturo 
+                cat version/metadata
                 arturo -v
                 arturo tools/tester.art
                 cd ..
