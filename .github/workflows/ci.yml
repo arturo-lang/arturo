@@ -48,7 +48,7 @@ jobs:
                 mode: ${{ matrix.mode }}
                 arch: ${{ matrix.arch }}
                 src: ${{ github.ref }}
-                metadata: ${{ github.ref_name }}
+                metadata: "pr-${{ github.ref_name }}-${{ github.sha }}"
 
             - if: matrix.os != 'ubuntu-latest' || matrix.arch != 'arm64'
               name: Run tests (Old)
