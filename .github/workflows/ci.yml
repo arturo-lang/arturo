@@ -17,6 +17,9 @@ concurrency:
     group: ${{ github.workflow }}-${{ github.ref }}
     cancel-in-progress: true
 
+env:
+    BRANCH_NAME: ${{ github.head_ref || github.ref_name }} 
+
 jobs:
     test:
         runs-on: ${{ matrix.os }}
@@ -36,11 +39,6 @@ jobs:
             run:
                 shell: ${{ matrix.shell }}
         steps:
-            # - uses: actions/checkout@v4
-            #   with:
-            #     submodules: recursive
-            #     path: arturo
-
             - name: Install Arturo
               uses: arturo-lang/arturo-action@main
               with: 
@@ -48,7 +46,7 @@ jobs:
                 mode: ${{ matrix.mode }}
                 arch: ${{ matrix.arch }}
                 src: ${{ github.ref }}
-                metadata: "master-${{ github.sha }}"
+                metadata: ${{ env.BRANCH_NAME }}-${{ github.sha }}
     
             - if: matrix.os != 'ubuntu-latest' || matrix.arch != 'arm64'
               name: Run tests (Old)
