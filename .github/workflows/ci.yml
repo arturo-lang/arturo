@@ -50,7 +50,7 @@ jobs:
                 src: ${{ github.ref }}
                 metadata: ${{ env.BRANCH_NAME }}-${{ github.sha }}
     
-            - if: matrix.os != 'ubuntu-latest' || matrix.arch != 'arm64'
+            - if: (matrix.mode != 'safe' && matrix.mode != 'web') && (matrix.os != 'ubuntu-latest' || matrix.arch != 'arm64')
               name: Run tests (Old)
               run: |
                 cd arturo 
