@@ -27,8 +27,10 @@ jobs:
             matrix:
                 include: 
                     - {os: ubuntu-latest,   arch: amd64, mode: full, shell: bash}
+                    - {os: ubuntu-latest,   arch: amd64, mode: safe, shell: bash}
                     - {os: ubuntu-latest,   arch: amd64, mode: mini, shell: bash}
                     - {os: ubuntu-latest,   arch: arm64, mode: mini, shell: bash}
+                    - {os: ubuntu-latest,   arch: amd64, mode: web,  shell: bash}
                     - {os: windows-latest,  arch: amd64, mode: full, shell: "msys2 {0}"}
                     - {os: windows-latest,  arch: amd64, mode: mini, shell: "msys2 {0}"}
                     - {os: macOS-12,        arch: amd64, mode: full, shell: bash}
