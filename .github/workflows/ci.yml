@@ -26,17 +26,18 @@ jobs:
         strategy:
             matrix:
                 include: 
-                    - {os: ubuntu-latest,   arch: amd64, mode: full, shell: bash}
-                    - {os: ubuntu-latest,   arch: amd64, mode: safe, shell: bash}
-                    - {os: ubuntu-latest,   arch: amd64, mode: mini, shell: bash}
-                    - {os: ubuntu-latest,   arch: arm64, mode: mini, shell: bash}
-                    - {os: ubuntu-latest,   arch: amd64, mode: web,  shell: bash}
-                    - {os: windows-latest,  arch: amd64, mode: full, shell: "msys2 {0}"}
-                    - {os: windows-latest,  arch: amd64, mode: mini, shell: "msys2 {0}"}
-                    - {os: macOS-12,        arch: amd64, mode: full, shell: bash}
-                    - {os: macOS-12,        arch: amd64, mode: mini, shell: bash}
-                    - {os: macos-latest,    arch: arm64, mode: full, shell: bash}
-                    - {os: macos-latest,    arch: arm64, mode: mini, shell: bash}
+                    - {os: ubuntu-latest,   arch: amd64, mode: full, shell: bash, simulating: }
+                    - {os: ubuntu-latest,   arch: amd64, mode: safe, shell: bash, simulating: }
+                    - {os: ubuntu-latest,   arch: amd64, mode: mini, shell: bash, simulating: }
+                    - {os: ubuntu-latest,   arch: arm64, mode: mini, shell: bash, simulating: }
+                    - {os: ubuntu-latest,   arch: amd64, mode: web,  shell: bash, simulating: }
+                    - {os: ubuntu-latest,   arch: amd64, mode: mini, shell: bash, simulating: freebsd}
+                    - {os: windows-latest,  arch: amd64, mode: full, shell: "msys2 {0}", simulating: }
+                    - {os: windows-latest,  arch: amd64, mode: mini, shell: "msys2 {0}", simulating: }
+                    - {os: macOS-12,        arch: amd64, mode: full, shell: bash, simulating: }
+                    - {os: macOS-12,        arch: amd64, mode: mini, shell: bash, simulating: }
+                    - {os: macos-latest,    arch: arm64, mode: full, shell: bash, simulating: }
+                    - {os: macos-latest,    arch: arm64, mode: mini, shell: bash, simulating: }
         defaults:
             run:
                 shell: ${{ matrix.shell }}
@@ -49,6 +50,7 @@ jobs:
                 arch: ${{ matrix.arch }}
                 src: ${{ github.ref }}
                 metadata: ${{ env.BRANCH_NAME }}-${{ github.sha }}
+                simulating: ${{ matrix.simulating }}
     
             - if: (matrix.mode != 'safe' && matrix.mode != 'web') && (matrix.os != 'ubuntu-latest' || matrix.arch != 'arm64')
               name: Run tests (Old)
