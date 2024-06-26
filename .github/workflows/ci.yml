@@ -52,7 +52,7 @@ jobs:
                 metadata: ${{ env.BRANCH_NAME }}-${{ github.sha }}
                 simulating: ${{ matrix.simulating }}
 
-            - if: (matrix.mode != 'safe' && matrix.mode != 'web') && (matrix.os != 'ubuntu-latest' || matrix.arch != 'arm64')
+            - if: (matrix.simulating == '') && (matrix.mode != 'safe' && matrix.mode != 'web') && (matrix.os != 'ubuntu-latest' || matrix.arch != 'arm64')
               name: Run tests (Old)
               run: |
                 cd arturo 
@@ -61,9 +61,21 @@ jobs:
                 arturo tools/tester.art
                 cd ..
  
-            - if: matrix.mode == 'full' && (matrix.os != 'ubuntu-latest' || matrix.arch != 'arm64')
+            - if: (matrix.simulating == '') && matrix.mode == 'full' && (matrix.os != 'ubuntu-latest' || matrix.arch != 'arm64')
               name: Run tests (Unitt)
               run: |
                 cd arturo
                 arturo tools/unitt-tester.art
                 cd ..
+
+            - if: matrix.simulating == 'freebsd'
+              name: Run tests (Old)
+              uses: vmactions/freebsd-vm@v1
+              with:
+                usesh: true
+                run: |
+                    cd arturo 
+                    cat version/metadata
+                    arturo -v
+                    arturo tools/tester.art
+                    cd ..
