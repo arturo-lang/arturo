@@ -26,19 +26,19 @@ jobs:
         strategy:
             matrix:
                 include: 
-                    - {os: ubuntu-latest,   arch: amd64, mode: full, shell: bash}
-                    - {os: ubuntu-latest,   arch: amd64, mode: safe, shell: bash}
-                    - {os: ubuntu-latest,   arch: amd64, mode: mini, shell: bash}
-                    - {os: ubuntu-latest,   arch: arm64, mode: mini, shell: bash}
-                    - {os: ubuntu-latest,   arch: amd64, mode: web,  shell: bash}
-                    - {os: windows-latest,  arch: amd64, mode: full, shell: "msys2 {0}"}
-                    - {os: windows-latest,  arch: amd64, mode: mini, shell: "msys2 {0}"}
-                    - {os: macOS-12,        arch: amd64, mode: full, shell: bash}
-                    - {os: macOS-12,        arch: amd64, mode: mini, shell: bash}
-                    - {os: macos-latest,    arch: arm64, mode: full, shell: bash}
-                    - {os: macos-latest,    arch: arm64, mode: mini, shell: bash}
+                    - {name: "Linux / amd64 / full",    os: ubuntu-latest,   arch: amd64, mode: full, shell: bash}
+                    - {name: "Linux / amd64 / safe",    os: ubuntu-latest,   arch: amd64, mode: safe, shell: bash}
+                    - {name: "Linux / amd64 / mini",    os: ubuntu-latest,   arch: amd64, mode: mini, shell: bash}
+                    - {name: "Linux / arm64 / mini",    os: ubuntu-latest,   arch: arm64, mode: mini, shell: bash}
+                    - {name: "Web / js / mini",         os: ubuntu-latest,   arch: amd64, mode: web,  shell: bash}
+                    - {name: "Windows / amd64 / full",  os: windows-latest,  arch: amd64, mode: full, shell: "msys2 {0}"}
+                    - {name: "Windows / amd64 / mini",  os: windows-latest,  arch: amd64, mode: mini, shell: "msys2 {0}"}
+                    - {name: "macOS / amd64 / full",    os: macOS-12,        arch: amd64, mode: full, shell: bash}
+                    - {name: "macOS / amd64 / mini",    os: macOS-12,        arch: amd64, mode: mini, shell: bash}
+                    - {name: "macOS / arm64 / full",    os: macos-latest,    arch: arm64, mode: full, shell: bash}
+                    - {name: "macOS / arm64 / mini",    os: macos-latest,    arch: arm64, mode: mini, shell: bash}
 
-        name: ${{ matrix.os }}-TEST
+        name: ${{ matrix.name }}
         defaults:
             run:
                 shell: ${{ matrix.shell }}
