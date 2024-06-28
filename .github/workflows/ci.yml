@@ -1,0 +1,69 @@
+name: "CI"
+
+on:
+    push:
+        branches:
+            - 'master'
+        tags-ignore:
+            - '**'
+    pull_request:
+        paths-ignore:
+            - 'docs/*'
+            - '*.yml'
+            - '*.md'
+            - 'LICENSE'
+ 
+concurrency: 
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+env:
+    BRANCH_NAME: ${{ github.head_ref || github.ref_name }} 
+
+jobs:
+    test:
+        runs-on: ${{ matrix.os }}
+        strategy:
+            matrix:
+                include: 
+                    - {name: "Linux (amd64 / full)",    os: ubuntu-latest,   arch: amd64, mode: full, shell: bash}
+                    - {name: "Linux (amd64 / safe)",    os: ubuntu-latest,   arch: amd64, mode: safe, shell: bash}
+                    - {name: "Linux (amd64 / mini)",    os: ubuntu-latest,   arch: amd64, mode: mini, shell: bash}
+                    - {name: "Linux (arm64 / mini)",    os: ubuntu-latest,   arch: arm64, mode: mini, shell: bash}
+                    - {name: "JS (web / mini)",         os: ubuntu-latest,   arch: amd64, mode: web,  shell: bash}
+                    - {name: "Windows (amd64 / full)",  os: windows-latest,  arch: amd64, mode: full, shell: "msys2 {0}"}
+                    - {name: "Windows (amd64 / mini)",  os: windows-latest,  arch: amd64, mode: mini, shell: "msys2 {0}"}
+                    - {name: "macOS (amd64 / full)",    os: macOS-12,        arch: amd64, mode: full, shell: bash}
+                    - {name: "macOS (amd64 / mini)",    os: macOS-12,        arch: amd64, mode: mini, shell: bash}
+                    - {name: "macOS (arm64 / full)",    os: macos-latest,    arch: arm64, mode: full, shell: bash}
+                    - {name: "macOS (arm64 / mini)",    os: macos-latest,    arch: arm64, mode: mini, shell: bash}
+
+        name: ${{ matrix.name }}
+        defaults:
+            run:
+                shell: ${{ matrix.shell }}
+        steps:
+            - name: Install Arturo
+              uses: arturo-lang/arturo-action@main
+              with: 
+                token: ${{ secrets.GITHUB_TOKEN }}
+                mode: ${{ matrix.mode }}
+                arch: ${{ matrix.arch }}
+                src: ${{ github.ref }}
+                metadata: ${{ env.BRANCH_NAME }}-${{ github.sha }}
+
+            - if: (matrix.mode != 'safe' && matrix.mode != 'web') && (matrix.os != 'ubuntu-latest' || matrix.arch != 'arm64')
+              name: Run tests (Old)
+              run: |
+                cd arturo 
+                cat version/metadata
+                arturo -v
+                arturo tools/tester.art
+                cd ..
+ 
+            - if: matrix.mode == 'full' && (matrix.os != 'ubuntu-latest' || matrix.arch != 'arm64')
+              name: Run tests (Unitt)
+              run: |
+                cd arturo
+                arturo tools/unitt-tester.art
+                cd ..
