@@ -70,7 +70,7 @@ template pop*(): Value =
             discard Stack[SP]
     else:
         SP -= 1
-    move Stack[SP]
+    Stack[SP]
 
 template popN*(n: int) =
     ## simulate popping ``n`` values from the stack
