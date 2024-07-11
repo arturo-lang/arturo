@@ -42,7 +42,7 @@ var
 
 # Main stack
 
-template push*(v: Value) = 
+proc push*(v: Value) = 
     ## push given value onto the stack
     hookProcProfiler("stack/push"):
         Stack[SP] = v
@@ -70,7 +70,7 @@ template pop*(): Value =
             discard Stack[SP]
     else:
         SP -= 1
-    Stack[SP]
+    move Stack[SP]
 
 template popN*(n: int) =
     ## simulate popping ``n`` values from the stack
