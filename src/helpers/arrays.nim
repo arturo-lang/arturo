@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2023 Yanis Zafirópulos
+# (c) 2019-2024 Yanis Zafirópulos
 #
 # @file: helpers/arrays.nim
 #=======================================================
@@ -170,7 +170,7 @@ proc deduplicated*[T](s: openArray[T], isSorted: bool = false): seq[T] =
       for itm in items(s):
         if not result.contains(itm): result.add(itm)
 
-func prepend*(s: Value, t: Value, singleValue: static bool = false): ValueArray {.inline,enforceNoRaises.} =
+func prepend*(s: Value, t: Value, singleValue: static bool = false): ValueArray {.inline.} =
     ## Prepends `t` to `s`, and returning a `ValueArray`
     ##
     ## Note:
@@ -199,7 +199,7 @@ func prepend*(s: Value, t: Value, singleValue: static bool = false): ValueArray 
 
     setLen(result, cnt)
 
-proc prependInPlace*(s: var Value, t: Value) {.inline,enforceNoRaises.} =
+proc prependInPlace*(s: var Value, t: Value) {.inline.} =
     ## Prepends `t` to `s`, and changing `s` in-place
     ##
     ## Note:
@@ -211,3 +211,15 @@ proc prependInPlace*(s: var Value, t: Value) {.inline,enforceNoRaises.} =
     for i in t.a:
         s.a.insert(i, cnt)
         cnt += 1
+
+
+proc inNestedBlock*(container: ValueArray, target: Value): bool =
+    for element in container:
+        if element == target:
+            return true
+        if element.kind == Block:
+            if element.a.inNestedBlock(target):
+                return true
+        
+    return false
+        

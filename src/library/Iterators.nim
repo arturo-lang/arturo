@@ -1,13 +1,20 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2023 Yanis Zafirópulos
+# (c) 2019-2024 Yanis Zafirópulos
 #
 # @file: library/Iterators.nim
 #=======================================================
 
 ## The main Iterators module 
 ## (part of the standard library)
+
+# TODO(Iterators) add `.rolling` option
+#  this would allow us to have a rolling window of values
+#  for example, if we have a list of 10 values, and we want to
+#  iterate over it with a window of 3 values, we would get:
+#  `[1,2,3], [2,3,4], [3,4,5], [4,5,6], [5,6,7], [6,7,8], [7,8,9], [8,9,10]`
+#  labels: library, enhancement
 
 #=======================================
 # Pragmas
@@ -22,6 +29,7 @@
 import algorithm, sequtils, sugar, unicode
 
 import helpers/dictionaries
+import helpers/objects
 import helpers/ranges
 
 import vm/lib
@@ -30,7 +38,7 @@ import vm/[errors, eval, exec]
 import vm/values/custom/vrange
 
 #=======================================
-# Helpers
+# Definitions
 #=======================================
 
 template iteratorLoop(justLiteral: bool, forever: bool, before: untyped, body: untyped) {.dirty.} =
@@ -262,21 +270,28 @@ template iterateBlockWithParams(
 
     finalizeLeakless()
 
+# TODO(Iterators) we should make sure that params block is either literals or words
+#  labels: library, enhancement, error handling, performance
 template fetchParamsBlock() {.dirty.} =
     var params: seq[string]
     if hasIndex: params.add(withIndex.s)
-    if y.kind != Null:
+    if yKind != Null:
         for item in mitems(y.a):
+            item.requireValue({Literal, Word})
             params.add(item.s)
 
 template prepareIteration(doesAcceptLiterals=true) {.dirty.} =
     let preevaled = evalOrGet(z)
-    let withIndex = popAttr("with")
+    let withIndex: Value = 
+        if checkAttr("with"):
+            aWith
+        else: 
+            nil
     let hasIndex = not withIndex.isNil
     var iterable{.cursor.} = x
 
     when doesAcceptLiterals:
-        let inPlace = x.kind==Literal
+        let inPlace = xKind==Literal
         if inPlace: 
             ensureInPlace()
             iterable = InPlaced
@@ -293,7 +308,7 @@ template fetchIterableItems(doesAcceptLiterals=true, defaultReturn: untyped) {.d
             of Dictionary:
                 iterable.d.flattenedDictionary()
             of Object:
-                iterable.o.flattenedDictionary()
+                iterable.o.flattenedObject()
             of String:
                 toSeq(runes(iterable.s)).map((w) => newChar(w))
             of Integer:
@@ -316,7 +331,7 @@ template iterateRange(withCap:bool, withInf:bool, withCounter:bool, rolling:bool
     when withCounter:
         var cntr = 0
                 
-    if likely(y.kind==Literal):
+    if likely(yKind==Literal):
         if likely(not hasIndex):
             iterateRangeWithLiteral(rang, y.s, cap=withCap, inf=withInf):
                 act
@@ -345,7 +360,7 @@ template iterateBlock(withCap:bool, withInf:bool, withCounter:bool, rolling:bool
     when withCounter:
         var cntr = 0
 
-    if likely(y.kind==Literal):
+    if likely(yKind==Literal):
         if likely(not hasIndex):
             iterateBlockWithLiteral(blo, y.s, cap=withCap, inf=withInf):
                 act
@@ -405,7 +420,11 @@ template doIterate(
 # Methods
 #=======================================
 
-proc defineSymbols*() =
+proc defineLibrary*() =
+
+    #----------------------------
+    # Functions
+    #----------------------------
 
     builtin "arrange",
         alias       = unaliased,
@@ -438,7 +457,7 @@ proc defineSymbols*() =
             doIterate(itLit=true, itCap=true, itInf=false, itCounter=false, itRolling=false, newBlock()):
                 var unsorted: seq[(ValueArray,Value)]
             do:
-                let popped = move stack.pop()
+                let popped = stack.pop()
 
                 when captured is ValueArray:
                     unsorted.add((captured, popped))
@@ -477,7 +496,7 @@ proc defineSymbols*() =
         },
         attrs       = {
             "with"  : ({Literal},"use given index"),
-            "value" : ({Any},"also include condition values")
+            "value" : ({Logical},"also include condition values")
         },
         returns     = {Block,Nothing},
         example     = """
@@ -502,7 +521,7 @@ proc defineSymbols*() =
                 var state: Value = VNULL # important
                 var currentSet: ValueArray
             do:
-                let popped = move stack.pop()
+                let popped = stack.pop()
                 if popped != state:
                     if len(currentSet)>0:
                         if showValue: res.add(newBlock(@[state, newBlock(currentSet)]))
@@ -531,7 +550,7 @@ proc defineSymbols*() =
         },
         attrs       = {
             "with"  : ({Literal},"use given index"),
-            "value" : ({Any},"also include condition values")
+            "value" : ({Logical},"also include condition values")
         },
         returns     = {Block,Nothing},
         example     = """
@@ -563,7 +582,7 @@ proc defineSymbols*() =
                 var res: ValueArray
                 var sets = initOrderedTable[Value,ValueArray]()
             do:
-                let popped = move stack.pop()
+                let popped = stack.pop()
 
                 discard sets.hasKeyOrPut(popped, @[])
                 sets[popped].add(captured)
@@ -595,7 +614,7 @@ proc defineSymbols*() =
         returns     = {Block,Nothing},
         example     = """
             collect [1 3 5 4 6 7] => odd?
-            ; => [1 3 4]
+            ; => [1 3 5]
 
             collect [1 2 3 4 3 2 1 2 3] 'x -> x < 4
             ; => [1 2 3]
@@ -618,7 +637,7 @@ proc defineSymbols*() =
                 
                     iterateRange(withCap=false, withInf=false, withCounter=false, rolling=false):
                         stoppedAt = indx
-                        if isTrue(move stack.pop()):
+                        if isTrue(stack.pop()):
                             keepGoing = false
                             break
 
@@ -633,7 +652,7 @@ proc defineSymbols*() =
                     
                     iterateBlock(withCap=false, withInf=false, withCounter=false, rolling=false):
                         stoppedAt = indx
-                        if isTrue(move stack.pop()):
+                        if isTrue(stack.pop()):
                             keepGoing = false
                             break
 
@@ -647,7 +666,7 @@ proc defineSymbols*() =
                 doIterate(itLit=true, itCap=true, itInf=false, itCounter=false, itRolling=false, newBlock()):
                     var res: ValueArray
                 do:
-                    if isTrue(move stack.pop()):
+                    if isTrue(stack.pop()):
                         res.add(captured)
                     else:
                         keepGoing = false
@@ -681,51 +700,10 @@ proc defineSymbols*() =
             doIterate(itLit=false, itCap=false, itInf=false, itCounter=false, itRolling=false, VFALSE):
                 var cntr = 0
             do:
-                if isTrue(move stack.pop()):
+                if isTrue(stack.pop()):
                     cntr += 1
             do:
                 push(newInteger(cntr))
-
-    builtin "every?",
-        alias       = unaliased,
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "check if every item in collection satisfies given condition",
-        args        = {
-            "collection"    : {Integer,String,Block,Range,Inline,Dictionary,Object},
-            "params"        : {Literal,Block,Null},
-            "condition"     : {Block,Bytecode}
-        },
-        attrs       = {
-            "with"      : ({Literal},"use given index")
-        },
-        returns     = {Logical},
-        example     = """
-            if every? [2 4 6 8] 'x [even? x]
-                -> print "every number is an even integer"
-            ; every number is an even integer
-            ..........
-            print every? 1..10 'x -> x < 11
-            ; true
-            ..........
-            print every? 1..10 [x y]-> 20 > x+y
-            ; true
-            ..........
-            print every? [2 3 5 7 11 14] 'x [prime? x]
-            ; false
-            ..........
-            print every?.with:'i ["one" "two" "three"] 'x -> 4 > (size x)-i
-            ; true
-        """:
-            #=======================================================
-            doIterate(itLit=false, itCap=false, itInf=false, itCounter=false, itRolling=false, VFALSE):
-                discard
-            do:
-                if isFalse(move stack.pop()):
-                    push(VFALSE)
-                    return
-            do:
-                push(VTRUE)
 
     builtin "filter",
         alias       = unaliased,
@@ -803,7 +781,7 @@ proc defineSymbols*() =
                     rang = rang.reversed(safe=true)
                 
                 iterateRange(withCap=true, withInf=false, withCounter=false, rolling=false):
-                    let popped = move stack.pop()
+                    let popped = stack.pop()
                     if isFalse(popped):
                         res.add(captured)
                     else:
@@ -836,7 +814,7 @@ proc defineSymbols*() =
                 var res: ValueArray
 
                 iterateBlock(withCap=true, withInf=false, withCounter=false, rolling=false):
-                    let popped = move stack.pop()
+                    let popped = stack.pop()
                     if isFalse(popped):
                         res.add(captured)
                     else:
@@ -945,7 +923,7 @@ proc defineSymbols*() =
                 res = seed
                 
                 iterateRange(withCap=false, withInf=false, withCounter=false, rolling=true):
-                    res = move stack.pop()
+                    res = stack.pop()
 
                 if unlikely(inPlace): RawInPlaced = res
                 else: push(res)
@@ -971,7 +949,7 @@ proc defineSymbols*() =
                 res = seed
 
                 iterateBlock(withCap=false, withInf=false, withCounter=false, rolling=true):
-                    res = move stack.pop()
+                    res = stack.pop()
 
                 if unlikely(inPlace): RawInPlaced = res
                 else: push(res)
@@ -1008,7 +986,7 @@ proc defineSymbols*() =
             doIterate(itLit=true, itCap=true, itInf=false, itCounter=false, itRolling=false, newDictionary()):
                 var res = initOrderedTable[string,Value]()
             do:
-                let popped = $(move stack.pop())
+                let popped = $(stack.pop())
                 discard res.hasKeyOrPut(popped, newBlock())
                 res[popped].a.add(captured)
             do:
@@ -1130,7 +1108,7 @@ proc defineSymbols*() =
                 var res: ValueArray = newSeq[Value](rang.len)
                 
                 iterateRange(withCap=false, withInf=false, withCounter=true, rolling=false):
-                    res[cntr] = move stack.pop()
+                    res[cntr] = stack.pop()
 
                 if unlikely(inPlace): RawInPlaced = newBlock(res)
                 else: push(newBlock(res))
@@ -1141,7 +1119,7 @@ proc defineSymbols*() =
                 var res: ValueArray = newSeq[Value](blo.len)
 
                 iterateBlock(withCap=false, withInf=false, withCounter=true, rolling=false):
-                    res[cntr] = move stack.pop()
+                    res[cntr] = stack.pop()
 
                 if unlikely(inPlace): RawInPlaced = newBlock(res)
                 else: push(newBlock(res))
@@ -1177,7 +1155,7 @@ proc defineSymbols*() =
                 var selected: ValueArray
                 var maxVal: Value = VNULL
             do:
-                let popped = move stack.pop()
+                let popped = stack.pop()
                 if selected.len == 0 or popped > maxVal:
                     maxVal = popped
                     when captured is Value:
@@ -1231,7 +1209,7 @@ proc defineSymbols*() =
                 var selected: ValueArray
                 var minVal: Value = VNULL
             do:
-                let popped = move stack.pop()
+                let popped = stack.pop()
                 if selected.len == 0 or popped < minVal:
                     minVal = popped
                     when captured is Value:
@@ -1254,6 +1232,18 @@ proc defineSymbols*() =
                         if unlikely(inPlace): RawInPlaced = newBlock(selected)
                         else: push(newBlock(selected))
 
+    # TODO(Iterators\select) should `.first` & `.last` return just one element?
+    #  Right now, they both return a block with this one element inside. 
+    #  The original idea was that since `.first` can either be a switch-type of 
+    #  attribute or an attributeLabel (that is: taking an argument), it would
+    #  make sense to always return a block for consistency.
+    # 
+    #  The problem is that having to do something like `first select.first ...`
+    #  seems a bit redundant.
+    #
+    #  P.S. This is totally *not* the case for `filter` which does something
+    #  different altogether...
+    #  labels: library, enhancement
     builtin "select",
         alias       = unaliased,
         op          = opSelect,
@@ -1337,7 +1327,7 @@ proc defineSymbols*() =
                     rang = rang.reversed(safe=true)
                 
                 iterateRange(withCap=true, withInf=false, withCounter=false, rolling=false):
-                    if isTrue(move stack.pop()):
+                    if isTrue(stack.pop()):
                         if likely(not onlyN):
                             res.add(captured)
 
@@ -1374,7 +1364,7 @@ proc defineSymbols*() =
                 var res: ValueArray
 
                 iterateBlock(withCap=true, withInf=false, withCounter=false, rolling=false):
-                    if isTrue(move stack.pop()):
+                    if isTrue(stack.pop()):
                         if likely(not onlyN):
                             res.add(captured)
 
@@ -1401,6 +1391,51 @@ proc defineSymbols*() =
                 else:
                     if unlikely(inPlace): RawInPlaced = newBlock(res)
                     else: push(newBlock(res))
+
+    #----------------------------
+    # Predicates
+    #----------------------------
+
+    builtin "every?",
+        alias       = unaliased,
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "check if every item in collection satisfies given condition",
+        args        = {
+            "collection"    : {Integer,String,Block,Range,Inline,Dictionary,Object},
+            "params"        : {Literal,Block,Null},
+            "condition"     : {Block,Bytecode}
+        },
+        attrs       = {
+            "with"      : ({Literal},"use given index")
+        },
+        returns     = {Logical},
+        example     = """
+            if every? [2 4 6 8] 'x [even? x]
+                -> print "every number is an even integer"
+            ; every number is an even integer
+            ..........
+            print every? 1..10 'x -> x < 11
+            ; true
+            ..........
+            print every? 1..10 [x y]-> 20 > x+y
+            ; true
+            ..........
+            print every? [2 3 5 7 11 14] 'x [prime? x]
+            ; false
+            ..........
+            print every?.with:'i ["one" "two" "three"] 'x -> 4 > (size x)-i
+            ; true
+        """:
+            #=======================================================
+            doIterate(itLit=false, itCap=false, itInf=false, itCounter=false, itRolling=false, VFALSE):
+                discard
+            do:
+                if isFalse(stack.pop()):
+                    push(VFALSE)
+                    return
+            do:
+                push(VTRUE)
 
     builtin "some?",
         alias       = unaliased,
@@ -1440,7 +1475,7 @@ proc defineSymbols*() =
             doIterate(itLit=false, itCap=false, itInf=false, itCounter=false, itRolling=false, VFALSE):
                 discard
             do:
-                if isTrue(move stack.pop()):
+                if isTrue(stack.pop()):
                     push(VTRUE)
                     return
             do:
@@ -1450,4 +1485,4 @@ proc defineSymbols*() =
 # Add Library
 #=======================================
 
-Libraries.add(defineSymbols)
+Libraries.add(defineLibrary)

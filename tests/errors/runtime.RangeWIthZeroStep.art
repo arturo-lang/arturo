@@ -1,0 +1,5 @@
+print range 5 0
+print range.step: 2 1 5
+print range.step: 1 1 5
+
+print range.step: 0 1 5

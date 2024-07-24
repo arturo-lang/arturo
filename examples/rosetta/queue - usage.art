@@ -1,0 +1,37 @@
+define :queue [
+    init: method [][
+        this\items: []
+    ]
+
+    empty?: method [][
+        zero? this\items
+    ]
+
+    push: method [item][
+        this\items: this\items ++ item
+    ]
+
+    pop: method [][
+        ensure [not? this\empty?]
+
+        result: this\items\0
+        this\items: remove.index this\items 0
+        return result
+    ]
+]
+
+Q: to :queue []
+
+do ::
+
+    Q\push 1
+    Q\push 2
+    Q\push 3
+
+    print ["queue is empty?" Q\empty?]
+
+    print ["popping:" Q\pop]
+    print ["popping:" Q\pop]
+    print ["popping:" Q\pop]
+
+    print ["queue is empty?" Q\empty?]

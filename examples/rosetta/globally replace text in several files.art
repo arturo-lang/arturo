@@ -1,0 +1,4 @@
+files: select list "." 'f -> suffix? ".txtfile"
+
+loop files 'file ->
+    write file replace read file "Goodbye London!" "Hello New York!"

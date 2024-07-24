@@ -1,0 +1,1 @@
+print sum select 2..2000000 => prime?

@@ -1,3 +1,8 @@
+@font-face {
+    font-family: "Fira Code Arturo";
+    src: url('../fonts/FiraCode-Regular.ttf') format('truetype');
+}
+
 $main-purple: #6a156b;
 $purple-fade: #580059;
 
@@ -200,7 +205,7 @@ sup {
 }
 
 code[class*=language-], pre[class*=language-] { 
-    font-family: 'Fira Code', monospace !important; 
+    font-family: 'Fira Code Arturo', monospace !important; 
 }
 
 // @supports (font-variation-settings: normal) {

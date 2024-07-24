@@ -1,0 +1,22 @@
+honaker?: function [n, pos]->
+    equal? sum digits n sum digits pos
+
+idx: 0
+found: 0
+
+honakers: []
+
+loop 2..∞ 'n [
+    if prime? n [
+        idx: idx + 1
+
+        if honaker? n idx [
+            found: found + 1
+            'honakers ++ @[@[found, idx, n]]
+        ]
+    ]
+    if found = 50 -> break
+]
+
+loop split.every: 5 honakers 'x ->
+    print map x 's -> pad as.code s 14

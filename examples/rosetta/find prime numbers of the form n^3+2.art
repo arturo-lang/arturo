@@ -1,0 +1,11 @@
+primes: []
+loop 1..199 'i [
+    num: 2 + i^3
+    if prime? num ->
+        'primes ++ @[to :string i, to :string num]
+]
+
+loop primes [i, num][
+    prints pad i 4
+    print pad num 9
+]

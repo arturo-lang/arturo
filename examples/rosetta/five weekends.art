@@ -1,0 +1,25 @@
+longMonths: [1 3 5 7 8 10 12]
+dates: []
+
+yearsWithout: 0
+
+loop 1900..2100 'year [
+    found?: false
+    loop longMonths 'month [
+        dt: to :date .format:"d-M-YYYY" ~"1-|month|-|year|"
+        if friday? dt [
+            'dates ++ @[@[dt\Month year]]
+            found?: true
+        ]
+    ]
+    if not? found? ->
+        inc 'yearsWithout 
+]
+
+print.lines map first.n:5 dates 'd -> ~"|to :string d\0|, |to :string d\1|"
+print "..."
+print.lines map last.n:5 dates 'd -> ~"|to :string d\0|, |to :string d\1|"
+
+print ""
+print ["Found" size dates "months in total."]
+print ["There are" yearsWithout "years without any month that has 5 full weekends."]

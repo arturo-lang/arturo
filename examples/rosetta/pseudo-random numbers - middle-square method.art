@@ -1,0 +1,9 @@
+; by @Krenium
+
+seed: 675248
+
+rand: function => [
+    let 'seed <= ((seed^2) / 1000) % 1000000
+]
+
+do.times: 5 -> print rand

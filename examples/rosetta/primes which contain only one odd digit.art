@@ -1,0 +1,14 @@
+onlyOneOddDigit?: function [n][
+    and? -> prime? n
+         -> one? select digits n => odd?
+]
+
+primesWithOnlyOneOddDigit: select 1..1000 => onlyOneOddDigit?
+
+loop split.every: 9 primesWithOnlyOneOddDigit 'x ->
+    print map x 's -> pad to :string s 4
+
+nofPrimesBelow1M: enumerate 1..1000000 => onlyOneOddDigit?
+
+print ""
+print ["Found" nofPrimesBelow1M "primes with only one odd digit below 1000000."]

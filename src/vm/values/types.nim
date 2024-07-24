@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2023 Yanis Zafirópulos
+# (c) 2019-2024 Yanis Zafirópulos
 #
 # @file: vm/values/types.nim
 #=======================================================
@@ -15,17 +15,20 @@
 import std/[tables, times, unicode, setutils]
 
 when not defined(NOSQLITE):
-    import db_sqlite as sqlite
+    import extras/db_connector/db_sqlite as sqlite
 
 when defined(WEB):
     import std/jsbigints
 
-when not defined(NOGMP):
+when defined(GMP):
     import helpers/bignums
 
 import vm/opcodes
-import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vquantity, vrange, vrational, vregex, vsocket, vsymbol, vversion]
+import vm/values/custom/[vbinary, vcolor, vcomplex, verror, vlogical, vquantity, vrange, vrational, vregex, vsymbol, vversion]
 import vm/values/flags
+
+when not defined(WEB):
+    import vm/values/custom/[vsocket]
 
 #=======================================
 # Types
@@ -47,12 +50,17 @@ type
 
     BuiltinAction* = proc ()
 
-    # TODO(VM/values/types add new `:matrix` type?
+    # TODO(VM/values/types) add new `:matrix` type?
     #  this would normally go with a separate Linear Algebra-related stdlib module
     #  labels: vm, values, enhancement, open discussion
 
     # TODO(VM/values/types) add new `:typeset` type?
     #  or... could this be encapsulated in our existing `:type` values?
+    #  labels: vm, values, enhancement, open discussion
+
+    # TODO(Vm/values/types) add new `:exception` type?
+    #  this could work well with a new potential `try?`/`catch` syntax, 
+    #  or a `throw` method
     #  labels: vm, values, enhancement, open discussion
 
     ValueKind* = enum
@@ -73,27 +81,33 @@ type
         AttributeLabel  = 14
         Path            = 15
         PathLabel       = 16
-        Symbol          = 17
-        SymbolLiteral   = 18
+        PathLiteral     = 17
+        Symbol          = 18
+        SymbolLiteral   = 19
 
-        Quantity        = 19
-        Regex           = 20
-        Color           = 21
-        Date            = 22
-        Binary          = 23
-        Dictionary      = 24
-        Object          = 25
-        Store           = 26
-        Function        = 27
-        Inline          = 28
-        Block           = 29
-        Range           = 30
-        Database        = 31
-        Socket          = 32    
-        Bytecode        = 33
+        Unit            = 20
+        Quantity        = 21
+        Error           = 22
+        ErrorKind       = 23
+        Regex           = 24
+        Color           = 25
+        Date            = 26
+        Binary          = 27
+        Dictionary      = 28
+        Object          = 29
+        Store           = 30
+        Function        = 31
+        Method          = 32
+        Inline          = 33
+        Block           = 34
+        Module          = 35
+        Range           = 36
+        Database        = 37
+        Socket          = 38    
+        Bytecode        = 39
 
-        Nothing         = 34
-        Any             = 35
+        Nothing         = 40
+        Any             = 41
 
     ValueSpec* = set[ValueKind]
 
@@ -129,13 +143,59 @@ type
         name*:       Value
 
     Prototype* = ref object
-        name*       : string
-        fields*     : ValueArray
-        methods*    : ValueDict
-        doInit*     : proc (v:Value)
-        doPrint*    : proc (v:Value): string
-        doCompare*  : proc (a,b:Value): int
-        inherits*   : Prototype
+        name*           : string
+        content*        : ValueDict
+        inherits*       : Value
+        fields*         : ValueDict
+        super*          : ValueDict
+
+    MagicMethodInternal* = 
+        proc (values: ValueArray)
+
+    MagicMethod* = enum
+        ConstructorM        = "init"
+
+        GetM                = "get"
+        SetM                = "set"
+
+        ChangingM           = "changing"
+        ChangedM            = "changed"
+
+        CompareM            = "compare"
+        EqualQM             = "equal?"
+        LessQM              = "less?"
+        GreaterQM           = "greater?"
+
+        AddM                = "add"
+        SubM                = "sub"
+        MulM                = "mul"
+        DivM                = "div"
+        FDivM               = "fdiv"
+        ModM                = "mod"
+        PowM                = "pow"
+
+        IncM                = "inc"
+        DecM                = "dec"
+
+        NegM                = "neg"
+
+        KeyQM               = "key?"
+        ContainsQM          = "contains?"
+
+        AppendM             = "append"
+        RemoveM             = "remove"
+
+        ToStringM           = "string"
+        ToIntegerM          = "integer"
+        ToFloatingM         = "floating"
+        ToRationalM         = "rational"
+        ToComplexM          = "complex"
+        ToQuantityM         = "quantity"
+        ToLogicalM          = "logical"
+        ToBlockM            = "block"
+        ToDictionaryM       = "dictionary"
+
+    MagicMethods* = Table[MagicMethod, MagicMethodInternal]
 
     SymbolDict*   = OrderedTable[VSymbol,AliasBinding]
 
@@ -147,12 +207,13 @@ type
             line*       : int
 
         case kind*: ValueKind:
-            of Function:
+            of Function, Method:
                 args*       : OrderedTable[string,ValueSpec]
                 attrs*      : OrderedTable[string,(ValueSpec,string)]
                 returns*    : ValueSpec
                 when defined(DOCGEN):
                     example*    : string
+                path*       : ref string
             else:
                 discard
 
@@ -172,6 +233,14 @@ type
                 op*         : OpCode
                 action*     : BuiltinAction
 
+    VMethod* = ref object
+        marity*     : int8
+        mparams*    : seq[string]
+        mmain*      : Value
+        mbcode*     : Value
+        mdistinct*  : bool
+        mpublic*    : bool
+
     VStore* = ref object
         data*       : ValueDict     # the actual data
         path*       : string        # the path to the store
@@ -190,9 +259,11 @@ type
             else:
                 discard
 
+    # TODO(VM/values/types) Re-optimize Value object size
+    #  Quantity + Rational values specifically
+    #  labels: vm, values, enhancement
     Value* {.final,acyclic.} = ref object
-        when not defined(PORTABLE):
-            info*   : ValueInfo
+        info*   : ValueInfo
 
         ln*     : uint32
         flags*  : ValueFlags
@@ -212,7 +283,7 @@ type
                     of BigInteger:
                         when defined(WEB):
                             bi* : JsBigInt
-                        elif not defined(NOGMP):
+                        elif defined(GMP):
                             bi* : Int
                         else:
                             discard
@@ -224,7 +295,7 @@ type
             of Type:
                 t*  : ValueKind
                 case tpKind*: TypeKind:
-                    of UserType:    ts* : Prototype
+                    of UserType:    tid* : string
                     of BuiltinType: discard
             of Char:        c*  : Rune
             of String,
@@ -234,14 +305,18 @@ type
                Attribute,
                AttributeLabel:       s*  : string
             of Path,
-               PathLabel:   p*  : ValueArray
+               PathLabel,
+               PathLiteral      :   p*  : ValueArray
             of Symbol,
                SymbolLiteral:
-                   m*  : VSymbol
+                m*  : VSymbol
             of Regex:       rx* : VRegex
-            of Quantity:
-                nm*: Value
-                unit*: VQuantity
+            of Unit:        u*  : VUnit
+            of Quantity:    q*  : VQuantity
+            of Error: 
+                err*: VError
+            of ErrorKind:
+                errKind*: VErrorKind
             of Color:       l*  : VColor
             of Date:
                 e*     : ValueDict
@@ -251,16 +326,21 @@ type
                Block:
                    a*       : ValueArray
                    data*    : Value
+            of Module:
+                singleton*  : Value
             of Range:
-                    rng*    : VRange
+                rng*    : VRange
             of Dictionary:  d*  : ValueDict
             of Object:
-                o*: ValueDict   # fields
-                proto*: Prototype # custom type pointer
+                proto*  : Prototype 
+                o*      : ValueDict 
+                magic*  : MagicMethods
             of Store:
                 sto*: VStore
             of Function:
                 funcType*: VFunction
+            of Method:
+                methType*: VMethod
             of Database:
                 case dbKind*: DatabaseKind:
                     of SqliteDatabase:
@@ -275,16 +355,34 @@ type
                 trans*: Translation
 
     ValueObj = typeof(Value()[])
-    FuncObj = typeof(VFunction()[])
 
-# Benchmarking
-{.hints: on.} # Apparently we cannot disable just `Name` hints?
-{.hint: "Value's inner type is currently " & $sizeof(ValueObj) & ".".}
-{.hint: "Function's inner type is currently " & $sizeof(FuncObj) & ".".}
-{.hints: off.}
+#=======================================
+# Constants
+#=======================================
 
-when sizeof(ValueObj) > 72: # At time of writing it was '72', 8 - 64 bit integers seems like a good warning site? Can always go smaller
-    {.warning: "'Value's inner object is large which will impact performance".}
+let 
+    NoPrototypeFound* = Prototype(name: "prototype-error")
+
+#=======================================
+# Variables
+#=======================================
+
+var
+    TypeLookup*: OrderedTable[string,Prototype]
+
+#=======================================
+# Compile-Time Warnings
+#=======================================
+
+when sizeof(ValueObj) > 64:
+    type
+        FuncObj = typeof(VFunction()[])
+
+    {.warning: "Value's inner object is large which will impact performance".}
+    {.hints: on.} # Apparently we cannot disable just `Name` hints?
+    {.hint: "Value's inner type is currently " & $sizeof(ValueObj) & ".".}
+    {.hint: "Function's inner type is currently " & $sizeof(FuncObj) & ".".}
+    {.hints: off.}
 
 #=======================================
 # Accessors
@@ -317,12 +415,14 @@ makeAccessor(info, attrs)
 makeAccessor(info, returns)
 when defined(DOCGEN):
     makeAccessor(info, example)
+makeAccessor(info, path)
 
 # Version
 
 makeAccessor(version, major)
 makeAccessor(version, minor)
 makeAccessor(version, patch)
+makeAccessor(version, prerelease)
 makeAccessor(version, extra)
 
 # Function
@@ -338,3 +438,80 @@ makeAccessor(funcType, bcode)
 makeAccessor(funcType, inline)
 makeAccessor(funcType, action)
 makeAccessor(funcType, op)
+
+# Method
+
+makeAccessor(methType, marity)
+makeAccessor(methType, mparams)
+makeAccessor(methType, mmain)
+makeAccessor(methType, mbcode)
+makeAccessor(methType, mdistinct)
+makeAccessor(methType, mpublic)
+
+#=======================================
+# Helpers
+#=======================================
+
+template getValuePair*(): untyped =
+    ## get ValuePair value for given x and y Value objects
+    ## so that we can check against given ValuePair's inside
+    ## a case statement
+    ##
+    ## Caution: since it's a template, its value is meant to
+    ## be assigned first to a variable and *then* we may use
+    ## that variable. Doing something like `case getValuePair():`
+    ## would lead to an infinite number of code repetitions!
+    when not declared(xKind):
+        let xKind {.inject.} = x.kind
+    when not declared(yKind):
+        let yKind {.inject.} = y.kind
+
+    (cast[uint32](ord(xKind)) shl 16.uint32) or 
+    (cast[uint32](ord(yKind))) or  
+    (cast[uint32](cast[uint32](xKind==Integer) * cast[uint32](x.iKind==BigInteger)) shl 31) or
+    (cast[uint32](cast[uint32](yKind==Integer) * cast[uint32](y.iKind==BigInteger)) shl 15)
+
+proc `||`*(va: static[ValueKind | IntegerKind], vb: static[ValueKind | IntegerKind]): uint32 {.compileTime.}=
+    ## generate a ValuePair value for given va and vb Value kinds
+    ## the codes are produced statically, at compile time and are
+    ## meant to be used solely in a case statement
+    when va is ValueKind:
+        result = cast[uint32](ord(va)) shl 16
+    elif va is IntegerKind:
+        when va == NormalInteger:
+            result = cast[uint32](ord(Integer)) shl 16
+        elif va == BigInteger:
+            result = cast[uint32](ord(Integer)) shl 16 or (1.uint32 shl 31)
+
+    when vb is ValueKind:
+        result = result or cast[uint32](ord(vb))
+    elif vb is IntegerKind:
+        when vb == NormalInteger:
+            result = result or cast[uint32](ord(Integer))
+        elif vb == BigInteger:
+            result = result or cast[uint32](ord(Integer)) or (1.uint32 shl 15)
+
+template fetch*(what: MagicMethods, magicMethodId: MagicMethod): untyped {.dirty.} =
+    (let mgk = what.getOrDefault(magicMethodId, nil); not mgk.isNil)
+
+template `in`*(z: ValueKind, typeset: untyped): untyped {.dirty.} =
+    contains(system.set[ValueKind](typeset), z)
+
+#=======================================
+# Methods
+#=======================================
+
+proc setType*(tid: string, proto: Prototype = nil) {.inline.} =
+    if proto.isNil:
+        discard TypeLookup.hasKeyOrPut(tid, nil)
+    else:
+        TypeLookup[tid] = proto
+
+proc getType*(tid: string, safe: static bool = false): Prototype {.inline.} =
+    when safe:
+        return TypeLookup.getOrDefault(tid, NoPrototypeFound)
+    else:
+        return TypeLookup[tid]
+
+proc newPrototype*(name: string, content: ValueDict, inherits: Value, fields: ValueDict = newOrderedTable[string,Value](), super: ValueDict = newOrderedTable[string,Value]()): Prototype {.inline.} =
+    Prototype(name: name, content: content, inherits: inherits, fields: fields, super: super)

@@ -1,0 +1,6 @@
+mersenne?: function [n][
+    prime? dec 2 ^ n
+]
+
+1..31 | select => mersenne?
+      | loop 'x -> print ["M (" x ") = 2 ^" x " - 1 =" (2^x)-1 "is a prime"]

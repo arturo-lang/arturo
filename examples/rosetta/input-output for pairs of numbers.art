@@ -1,0 +1,9 @@
+printNumbers: function [num]-> 
+    print [num\0 "+" num\1 "=" num\0 + num\1]
+
+lineCount: to :integer strip input ""
+
+do.times:lineCount [
+    numbers: to [:integer] split.words input ""
+    printNumbers numbers
+]

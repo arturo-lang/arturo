@@ -1,0 +1,7 @@
+nofDecimals: function [n][
+    str: (string? n)? -> n -> to :string n
+    size last split.by:"." str
+]
+
+loop [12 12.345 "12.3450" 12.34567] 'n ->
+    print ["number of decimals of" n "->" nofDecimals n]

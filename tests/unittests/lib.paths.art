@@ -1,0 +1,19 @@
+; I'm temporarialy creating this to just ensure the working of paths for pathLiteral
+; This should be moved soon to unitt.
+
+topic: $[topic :string] -> print ~"\n>> |topic|"
+passed: $[] -> print "[+] passed!"
+
+topic « normalize
+do [
+
+    str: "one/../two/../../three"
+
+    a: new str
+    b: # [b: new str]
+
+    normalize 'a
+    normalize 'b\b
+    ensure -> a = b\b
+    passed
+]

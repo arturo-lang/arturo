@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2023 Yanis Zafirópulos
+# (c) 2019-2024 Yanis Zafirópulos
 #
 # @file: vm/common.nim
 #=======================================================
@@ -12,14 +12,16 @@
 # Libraries
 #=======================================
 
-import sequtils, strutils, tables
+import macros, strutils, tables
 export strutils, tables
 
-import vm/[globals, errors, opcodes, stack, values/comparison, values/printable, values/value]
-export comparison, globals, printable, opcodes, stack, value
+import vm/[checks, globals, opcodes, stack, values/comparison, values/operators, values/printable, values/value]
+export checks, comparison, globals, opcodes, operators, printable, stack, value
 
 import vm/values/custom/[vcolor, vcomplex, vlogical, vquantity, vrational, vregex, vsymbol]
 export vcolor, vcomplex, vlogical, vquantity, vrational, vregex, vsymbol
+
+import vm/bundle/resources
 
 import vm/profiler
 
@@ -34,15 +36,13 @@ const
 #=======================================
 # Templates
 #=======================================
-when defined(PORTABLE):
-    import algorithm, json, os, sugar
+# when defined(BUNDLE):
+#     import algorithm, json, os, sequtils, sugar
 
-    let js {.compileTime.} = parseJson(static readFile(getEnv("PORTABLE_DATA")))
-    let funcs {.compileTime.} = toSeq(js["uses"]["functions"]).map((x) => x.getStr())
-    let compact {.compileTime.} = js["compact"].getStr() == "true"
-else:
-    let funcs {.compileTime.}: seq[string] = @[]
-    let compact {.compileTime.} = false
+#     let js {.compileTime.} = parseJson(static getEnv("BUNDLE_FUNCTIONS"))
+#     let bundledFuncs {.compileTime.} = toSeq(js).map((x) => x.getStr())
+# else:
+#     let bundledFuncs {.compileTime.}: seq[string] = @[]
 
 # template expandTypesets*(args: untyped): untyped =
 #     when (static args.len)==1 and args!=NoArgs:
@@ -54,13 +54,31 @@ else:
 #     else:
 #         args
 
-template builtin*(n: string, alias: VSymbol, op: OpCode, rule: PrecedenceKind, description: string, args: untyped, attrs: untyped, returns: ValueSpec, example: string, act: untyped):untyped =
+macro attrTypes*(name: static[string], types: static[set[ValueKind]]): untyped =
+    let attrRequiredTypes =  ident('t' & ($name).capitalizeAscii())
+    if types == {Any}:
+        result = quote do:
+            let `attrRequiredTypes` {.used.} = {Null..Any}
+    elif types != {Logical}:
+        result = quote do:
+            let `attrRequiredTypes` {.used.} = `types`
+    
+template addOne*(attrs: untyped, idx: int): untyped =
+    when attrs.len > idx:
+        attrTypes(attrs[idx][0], attrs[idx][1][0])
+
+macro addAttrTypes*(attrs: untyped): untyped =
+    result = newStmtList()
+    for i in 0..<20:
+        result.add quote do:
+            addOne(`attrs`, `i`)
+
+template builtin*(n: string, alias: VSymbol, op: OpCode, rule: PrecedenceKind, description: string, args: untyped, attrs: static openArray[(string,(set[ValueKind],string))], returns: ValueSpec, example: string, act: untyped):untyped =
     ## add new builtin, function with given name, alias, 
     ## rule, etc - followed by the code block to be 
     ## executed when the function is called
     
-    when not defined(PORTABLE) or not compact or funcs.contains(n):
-        
+    when not defined(BUNDLE) or BundleSymbols.contains(n):
         when defined(DEV):
             static: echo " -> " & n
 
@@ -87,6 +105,9 @@ template builtin*(n: string, alias: VSymbol, op: OpCode, rule: PrecedenceKind, d
             proc () =
                 hookProcProfiler("lib/require"):
                     require(n, args)
+
+                when attrs != NoAttrs:
+                    addAttrTypes(attrs)
 
                 {.emit: "////implementation: " & (static (instantiationInfo().filename.replace(".nim"))) & "/" & n .}
 
@@ -151,6 +172,10 @@ template builtin*(n: string, alias: VSymbol, op: OpCode, rule: PrecedenceKind, d
         elif n=="print"             : DoPrint = b.action()
 
         when alias != unaliased:
+            # if Aliases.hasKey(alias):
+            #     echo "Already aliased! -> " & $(alias)
+            #     echo "was aliased to: " & Aliases[alias].name.s
+            #     echo "and trying to realias to: " & n
             Aliases[alias] = AliasBinding(
                 precedence: rule,
                 name: newWord(n)
@@ -165,56 +190,31 @@ template builtin*(n: string, alias: VSymbol, op: OpCode, rule: PrecedenceKind, d
 template constant*(n: string, alias: VSymbol, description: string, v: Value): untyped =
     ## add new constant with given name, alias, description - 
     ## followed by the value it's assigned to
-    SetSym(n, v)
-    var vInfo = ValueInfo(
-        descr: description,
-        module: static (instantiationInfo().filename).replace(".nim"),
-        kind: v.kind
-    )
+    
+    when not defined(BUNDLE) or BundleSymbols.contains(n):
+    
+        when defined(DEV):
+            static: echo " -> " & n
 
-    when defined(DOCGEN):
-        vInfo.line = static (instantiationInfo().line)
-
-    GetSym(n).info = vInfo
-
-    when alias != unaliased:
-        Aliases[alias] = AliasBinding(
-            precedence: PrefixPrecedence,
-            name: newWord(n)
+        SetSym(n, v)
+        let moduleName = 
+            when ((static (instantiationInfo().filename).replace(".nim")) != "macros"):
+                (static (instantiationInfo().filename.replace(".nim")))
+            else:
+                "Quantities"
+        var vInfo = ValueInfo(
+            descr: description,
+            module: moduleName,
+            kind: v.kind
         )
 
-proc showWrongArgumentTypeError*(name: string, pos: int, params: openArray[Value], expected: openArray[(string, set[ValueKind])]) =
-    ## show relevant error message in case ``require`` 
-    ## fails to validate the arguments passed to the 
-    ## function
-    var expectedValues = toSeq((expected[pos][1]).items)
-    let acceptedStr = expectedValues.map(proc(x:ValueKind):string = ":" & ($(x)).toLowerAscii()).join(" ")
-    let actualStr = params.map(proc(x:Value):string = ":" & ($(x.kind)).toLowerAscii()).join(" ")
-    var ordinalPos: string = ["first","second","third"][pos]
+        when defined(DOCGEN):
+            vInfo.line = static (instantiationInfo().line)
 
-    RuntimeError_WrongArgumentType(name, actualStr, ordinalPos, acceptedStr)
+        GetSym(n).info = vInfo
 
-template require*(name: string, spec: untyped): untyped =
-    ## make sure that the given arguments match the given spec, 
-    ## before passing the control to the function
-    when spec!=NoArgs:
-        if unlikely(SP<(static spec.len)):
-            RuntimeError_NotEnoughArguments(name, spec.len)
-
-    when (static spec.len)>=1 and spec!=NoArgs:
-        let x {.inject.} = move stack.pop()
-        when not (ANY in static spec[0][1]):
-            if unlikely(not (x.kind in (static spec[0][1]))):
-                showWrongArgumentTypeError(name, 0, [x], spec)
-                
-        when (static spec.len)>=2:
-            let y {.inject.} = move stack.pop()
-            when not (ANY in static spec[1][1]):
-                if unlikely(not (y.kind in (static spec[1][1]))):
-                    showWrongArgumentTypeError(name, 1, [x,y], spec)
-                    
-            when (static spec.len)>=3:
-                let z {.inject.} = move stack.pop()
-                when not (ANY in static spec[2][1]):
-                    if unlikely(not (z.kind in (static spec[2][1]))):
-                        showWrongArgumentTypeError(name, 2, [x,y,z], spec)
+        when alias != unaliased:
+            Aliases[alias] = AliasBinding(
+                precedence: PrefixPrecedence,
+                name: newWord(n)
+            )

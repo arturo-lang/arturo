@@ -1,0 +1,19 @@
+; by @Krenium
+
+nextPrime: $[n][
+    ensure -> and? n > 2 odd? n
+    range .step:2 2+n ∞ | select.first => prime?
+                        | last
+]
+
+anagrams?: $[a b] [equal? tally to :string a tally to :string b]
+
+ormiston?: $[n] [and? -> prime? n -> anagrams? n nextPrime n]
+
+print "First 30 Ormiston pairs:"
+range .step: 2 3 ∞ | select .first:30 => ormiston?
+                   | map 'x -> @[x nextPrime x]
+                   | loop [a b c d e] -> print [a b c d e]
+
+count: range .step: 2 3 1e6 | enumerate => ormiston?
+print ~"\n|count| ormiston pairs less than a million"

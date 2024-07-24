@@ -1,0 +1,50 @@
+sternBrocot: function [mx][
+    seq: [1 1]
+    result: [[1 1] [2 1]]
+    idx: 1
+    while [idx < mx][
+        'seq ++ seq\[idx] + seq\[idx - 1]
+        'result ++ @[@[size seq, last seq]]
+        'seq ++ seq\[idx]
+        'result ++ @[@[size seq, last seq]]
+        inc 'idx
+    ]
+    return result
+]
+
+sbs: sternBrocot 1000
+
+print ["First 15 terms:" join.with:", " first.n:15 map sbs 'sb -> to :string last sb]
+
+print ""
+indexes: array.of:101 0
+toFind: 101
+loop sbs 'sb [
+    [i, n]: sb
+    if and? -> contains? 1..100 n -> zero? indexes\[n][
+        indexes\[n]: i
+        dec 'toFind
+        if zero? toFind [
+            break
+        ]
+    ]
+]
+
+loop (@1..10) ++ 100 'n ->
+    print ["Index of first occurrence of number" n ":" indexes\[n]]
+
+print ""
+
+prev: 1
+idx: 1
+
+loop sbs 'sb [
+    [i, n]: sb
+    if not? one? gcd @[prev n] -> break
+    prev: n
+    inc 'idx
+    if idx > 1000 -> break
+]
+
+print (idx =< 1000)? -> ["Found two successive terms at index:" idx]
+                     -> "All consecutive terms up to the 1000th member have a GCD equal to one."

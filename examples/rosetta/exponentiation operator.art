@@ -1,0 +1,24 @@
+myPow: function [base,xp][
+    if xp < 0 [
+        (floating? base)? -> return 1 // myPow base neg xp
+                          -> return 1 / myPow base neg xp
+    ]
+
+    if xp = 0 ->
+        return 1
+
+    ans: 1
+    while [xp > 0][
+        ans: ans * base
+        xp: xp - 1
+    ]
+    return ans
+]
+
+print ["2 ^ 3 =" myPow 2 3]
+print ["1 ^ -10 =" myPow 1 neg 10]
+print ["-1 ^ -3 =" myPow neg 1 neg 3]
+print ""
+print ["2.0 ^ -3 =" myPow 2.0 neg 3]
+print ["1.5 ^ 0 =" myPow 1.5 0]
+print ["4.5 ^ 2 =" myPow 4.5 2]

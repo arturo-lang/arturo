@@ -1,0 +1,6 @@
+loop.with:'i 
+    select.first:20 1..∞ 'x -> prime? x + x+1
+    'x -> print [
+            (pad to :string i+1 2)++":"
+            (pad to :string x 2) "+" (pad.right to :string x+1 2) "=" x + x+1
+        ]

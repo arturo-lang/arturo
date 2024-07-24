@@ -1,0 +1,18 @@
+; by @Krenium
+
+i: 0
+sum: 0
+
+while ø [
+    n: input "Enter rainfall as integer (99999 to quit): "
+
+    if throws? -> n: to :integer n [
+        print "Input must be an integer."
+        continue
+    ]
+
+    if 99999 = n -> break
+    'i + 1
+    'sum + n
+    print ~« The current average rainfall is |sum // i|.
+]

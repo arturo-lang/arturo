@@ -1,0 +1,16 @@
+print "   i | p(i)  sum"
+print repeat "-" 17
+idx: 0
+sm: 0
+p: 1
+while [p < 1000][
+    inc 'p
+    if prime? p [
+        inc 'idx
+        if odd? idx [
+            sm: sm + p
+            if prime? sm ->
+                print (pad to :string idx 4) ++ " | " ++ (pad to :string p 3) ++ (pad to :string sm 6)
+        ]
+    ]
+]

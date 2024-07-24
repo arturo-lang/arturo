@@ -1,0 +1,41 @@
+innerCircleSort: function [ar, lo, hi, swaps][
+    localSwaps: swaps
+    localHi: hi
+    localLo: lo
+    if localLo = localHi -> return swaps
+
+    high: localHi
+    low: localLo
+    mid: (localHi - localLo) / 2
+
+    while [localLo < localHi] [
+        if ar\[localLo] > ar\[localHi] [
+            tmp: ar\[localLo]
+            ar\[localLo]: ar\[localHi]
+            ar\[localHi]: tmp
+            localSwaps: localSwaps + 1
+        ]
+        localLo: localLo + 1
+        localHi: localHi - 1
+    ]
+    if localLo = localHi [
+        if ar\[localLo] > ar\[localHi + 1] [
+            tmp: ar\[localLo]
+            ar\[localLo]: ar\[localHi + 1]
+            ar\[localHi + 1]: tmp
+            localSwaps: localSwaps + 1
+        ]
+    ]
+
+    localSwaps: innerCircleSort ar low low + mid localSwaps
+    localSwaps: innerCircleSort ar low + mid + 1 high localSwaps
+    return localSwaps
+]
+
+circleSort: function [arr][
+    result: new arr
+    while [not? zero? innerCircleSort result 0 dec size result 0][]
+    return result
+]
+
+print circleSort [3 1 2 8 5 7 9 4 6]

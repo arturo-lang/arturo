@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2023 Yanis Zafirópulos
+# (c) 2019-2024 Yanis Zafirópulos
 #
 # @file: library/Arithmetic.nim
 #=======================================================
@@ -21,11 +21,21 @@
 
 import vm/lib
 
+when defined(GMP):
+    import helpers/bignums as BignumsHelper
+
 #=======================================
-# Methods
+# Definitions
 #=======================================
 
-proc defineSymbols*() =
+# TODO(Arithmetic) add `powmod` built-in function?
+#  labels: library, enhancement, open discussion
+
+proc defineLibrary*() =
+
+    #----------------------------
+    # Functions
+    #----------------------------
 
     builtin "add",
         alias       = plus, 
@@ -33,11 +43,11 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "add given values and return result",
         args        = {
-            "valueA": {Integer,Floating,Complex,Rational,Color,Quantity,Literal},
-            "valueB": {Integer,Floating,Complex,Rational,Color,Quantity}
+            "valueA": {Integer,Floating,Complex,Rational,Color,Quantity,Object,Literal,PathLiteral},
+            "valueB": {Integer,Floating,Complex,Rational,Color,Quantity,Object}
         },
         attrs       = NoAttrs,
-        returns     = {Integer,Floating,Complex,Rational,Color,Quantity,Nothing},
+        returns     = {Integer,Floating,Complex,Rational,Color,Quantity,Object,Nothing},
         example     = """
             print add 1 2      ; 3
             print 1 + 3        ; 4
@@ -46,8 +56,7 @@ proc defineSymbols*() =
             add 'a 1           ; a: 5
         """:
             #=======================================================
-            if x.kind==Literal  : ensureInPlace(); InPlaced += y
-            else                : push(x+y)
+            generateOperationB("add", `+`, `+=`)
 
     builtin "dec",
         alias       = unaliased, 
@@ -55,10 +64,10 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "decrease given value by 1",
         args        = {
-            "value" : {Integer,Floating,Complex,Rational,Quantity,Literal}
+            "value" : {Integer,Floating,Complex,Rational,Quantity,Object,Literal,PathLiteral}
         },
         attrs       = NoAttrs,
-        returns     = {Integer,Floating,Complex,Rational,Quantity,Nothing},
+        returns     = {Integer,Floating,Complex,Rational,Quantity,Object,Nothing},
         example     = """
             print dec 5        ; 4
             ..........
@@ -66,8 +75,7 @@ proc defineSymbols*() =
             dec 'a             ; a: 3
         """:
             #=======================================================
-            if x.kind==Literal  : ensureInPlace(); InPlaced -= I1
-            else                : push(x-I1)
+            generateOperationA("dec", `dec`, `decI`)
         
     builtin "div",
         alias       = slash, 
@@ -75,11 +83,11 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "perform integer division between given values and return result",
         args        = {
-            "valueA": {Integer,Floating,Complex,Rational,Quantity,Literal},
-            "valueB": {Integer,Floating,Complex,Rational,Quantity}
+            "valueA": {Integer,Floating,Complex,Rational,Quantity,Object,Literal,PathLiteral},
+            "valueB": {Integer,Floating,Complex,Rational,Quantity,Object}
         },
         attrs       = NoAttrs,
-        returns     = {Integer,Floating,Complex,Rational,Quantity,Nothing},
+        returns     = {Integer,Floating,Complex,Rational,Quantity,Object,Nothing},
         example     = """
             print div 5 2      ; 2
             print 9 / 3        ; 3
@@ -88,8 +96,7 @@ proc defineSymbols*() =
             div 'a 3           ; a: 2
         """:
             #=======================================================
-            if x.kind==Literal  : ensureInPlace(); InPlaced /= y
-            else                : push(x/y)
+            generateOperationB("div", `/`, `/=`)
 
     builtin "divmod",
         alias       = slashpercent, 
@@ -97,7 +104,7 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "perform integer division between given values and return tuple with quotient and remainder",
         args        = {
-            "valueA": {Integer,Floating,Complex,Rational,Quantity,Literal},
+            "valueA": {Integer,Floating,Complex,Rational,Quantity,Literal,PathLiteral},
             "valueB": {Integer,Floating,Complex,Rational,Quantity}
         },
         attrs       = NoAttrs,
@@ -112,8 +119,7 @@ proc defineSymbols*() =
             divmod 'a 4             ; a: [1, 2]
         """:
             #=======================================================
-            if x.kind==Literal  : ensureInPlace(); InPlaced /%= y
-            else                : push(x/%y)
+            generateOperationB("divmod", `/%`, `/%=`)
 
     builtin "fdiv",
         alias       = doubleslash, 
@@ -121,11 +127,11 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "divide given values and return result",
         args        = {
-            "valueA": {Integer,Floating,Rational,Quantity,Literal},
+            "valueA": {Integer,Floating,Rational,Quantity,Object,Literal,PathLiteral},
             "valueB": {Integer,Floating,Rational,Quantity}
         },
         attrs       = NoAttrs,
-        returns     = {Floating,Rational,Quantity,Nothing},
+        returns     = {Floating,Rational,Quantity,Object,Nothing},
         example     = """
             print fdiv 5 2     ; 2.5
             ..........
@@ -133,8 +139,7 @@ proc defineSymbols*() =
             fdiv 'a 3          ; a: 2.0
         """:
             #=======================================================
-            if x.kind==Literal  : ensureInPlace(); InPlaced //= y
-            else                : push(x//y)
+            generateOperationB("fdiv", `//`, `//=`)
 
     builtin "inc",
         alias       = unaliased, 
@@ -142,10 +147,10 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "increase given value by 1",
         args        = {
-            "value" : {Integer,Floating,Complex,Rational,Quantity,Literal}
+            "value" : {Integer,Floating,Complex,Rational,Quantity,Object,Literal,PathLiteral}
         },
         attrs       = NoAttrs,
-        returns     = {Integer,Floating,Complex,Rational,Quantity,Nothing},
+        returns     = {Integer,Floating,Complex,Rational,Quantity,Object,Nothing},
         example     = """
             print inc 5        ; 6
             ..........
@@ -153,8 +158,7 @@ proc defineSymbols*() =
             inc 'a             ; a: 5
         """:
             #=======================================================
-            if x.kind==Literal  : ensureInPlace(); InPlaced += I1
-            else                : push(x+I1)
+            generateOperationA("inc", `inc`, `incI`)
 
     builtin "mod",
         alias       = percent, 
@@ -162,11 +166,11 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "calculate the modulo of given values and return result",
         args        = {
-            "valueA": {Integer,Floating,Rational,Quantity,Literal},
+            "valueA": {Integer,Floating,Rational,Quantity,Object,Literal,PathLiteral},
             "valueB": {Integer,Floating,Rational,Quantity}
         },
         attrs       = NoAttrs,
-        returns     = {Integer,Floating,Rational,Quantity,Nothing},
+        returns     = {Integer,Floating,Rational,Quantity,Object,Nothing},
         example     = """
             print mod 5 2      ; 1
             print 9 % 3        ; 0
@@ -175,8 +179,7 @@ proc defineSymbols*() =
             mod 'a 3           ; a: 2
         """:
             #=======================================================
-            if x.kind==Literal  : ensureInPlace(); InPlaced %= y
-            else                : push(x%y)
+            generateOperationB("mod", `%`, `%=`)
 
     builtin "mul",
         alias       = asterisk, 
@@ -184,11 +187,11 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "calculate the product of given values and return result",
         args        = {
-            "valueA": {Integer,Floating,Complex,Rational,Quantity,Literal},
-            "valueB": {Integer,Floating,Complex,Rational,Quantity}
+            "valueA": {Integer,Floating,Complex,Rational,Quantity,Object,Literal,PathLiteral},
+            "valueB": {Integer,Floating,Complex,Rational,Quantity,Object}
         },
         attrs       = NoAttrs,
-        returns     = {Integer,Floating,Complex,Rational,Nothing},
+        returns     = {Integer,Floating,Complex,Rational,Quantity,Object,Nothing},
         example     = """
             print mul 1 2      ; 2
             print 2 * 3        ; 6
@@ -197,8 +200,7 @@ proc defineSymbols*() =
             mul 'a 2           ; a: 10
         """:
             #=======================================================
-            if x.kind==Literal  : ensureInPlace(); InPlaced *= y
-            else                : push(x*y)
+            generateOperationB("mul", `*`, `*=`)
 
     builtin "neg",
         alias       = unaliased, 
@@ -206,10 +208,10 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "reverse sign of given value and return it",
         args        = {
-            "value" : {Integer,Floating,Complex,Rational,Quantity,Literal}
+            "value" : {Integer,Floating,Complex,Rational,Quantity,Object,Literal,PathLiteral}
         },
         attrs       = NoAttrs,
-        returns     = {Integer,Floating,Complex,Rational,Quantity,Nothing},
+        returns     = {Integer,Floating,Complex,Rational,Quantity,Object,Nothing},
         example     = """
             print neg 1        ; -1
             ..........
@@ -217,8 +219,7 @@ proc defineSymbols*() =
             neg 'a             ; a: -5
         """:
             #=======================================================
-            if x.kind==Literal  : ensureInPlace(); InPlaced *= I1M
-            else                : push(x * I1M)
+            generateOperationA("neg", `neg`, `negI`)
 
     builtin "pow",
         alias       = caret, 
@@ -226,11 +227,11 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "calculate the power of given values and return result",
         args        = {
-            "valueA": {Integer,Floating,Complex,Rational,Quantity,Literal},
+            "valueA": {Integer,Floating,Complex,Rational,Quantity,Object,Literal,PathLiteral},
             "valueB": {Integer,Floating}
         },
         attrs       = NoAttrs,
-        returns     = {Integer,Floating,Complex,Rational,Quantity,Nothing},
+        returns     = {Integer,Floating,Complex,Rational,Quantity,Object,Nothing},
         example     = """
             print pow 2 3      ; 8
             print 3 ^ 2        ; 9
@@ -239,11 +240,7 @@ proc defineSymbols*() =
             pow 'a 2           ; a: 25
         """:
             #=======================================================
-            if x.kind==Literal  : ensureInPlace(); InPlaced ^= y
-            else                : push(x^y)
-
-    # TODO(Arithmetic) add `powmod` built-in function?
-    #  labels: library, enhancement, open discussion
+            generateOperationB("pow", `^`, `^=`)
 
     builtin "sub",
         alias       = minus, 
@@ -251,11 +248,11 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "subtract given values and return result",
         args        = {
-            "valueA": {Integer,Floating,Complex,Rational,Color,Quantity,Literal},
-            "valueB": {Integer,Floating,Complex,Rational,Color,Quantity}
+            "valueA": {Integer,Floating,Complex,Rational,Color,Quantity,Object,Literal,PathLiteral},
+            "valueB": {Integer,Floating,Complex,Rational,Color,Quantity,Object}
         },
         attrs       = NoAttrs,
-        returns     = {Integer,Floating,Complex,Rational,Color,Quantity,Nothing},
+        returns     = {Integer,Floating,Complex,Rational,Color,Quantity,Object,Nothing},
         example     = """
             print sub 2 1      ; 1
             print 5 - 3        ; 2
@@ -264,11 +261,10 @@ proc defineSymbols*() =
             sub 'a 2           ; a: 5
         """:
             #=======================================================
-            if x.kind==Literal  : ensureInPlace(); InPlaced -= y
-            else                : push(x-y)
+            generateOperationB("sub", `-`, `-=`)
 
 #=======================================
 # Add Library
 #=======================================
 
-Libraries.add(defineSymbols)
+Libraries.add(defineLibrary)

@@ -1,0 +1,40 @@
+benchmark [
+    primes: select 2..300 => prime?
+
+    derivs: #[]
+    loop primes 'p1 [
+        derivs\[p1]: 1
+        loop primes 'p2 [
+            prod2: p1*p2
+            derivs\[prod2]: p1+p2
+            loop primes 'p3 [
+                prod3: prod2*p3
+                derivs\[prod3]: prod2 + derivs\[prod2] * p3
+                loop primes 'p4 [
+                    prod4: prod3*p4
+                    derivs\[prod4]: prod3 + derivs\[prod3] * p4
+                ]
+            ]
+        ]
+    ]
+]
+
+print [
+    pad.left "N" 10
+    pad "prime factors" 40
+    pad.left "   Derivative" 10
+    pad "prime factors" 40
+    "    GCD"
+]
+print repeat "=" 120
+loop arrange derivs [x,y]-> to :integer x 'v [
+    print [
+        pad.left to :string first v 10 
+        pad to :string factors.prime to :integer first v 40 
+        "=>" 
+        pad.left to :string last v 10
+        pad to :string factors.prime last v 40
+        "   " gcd @[to :integer first v, last v]
+    ]
+]
+; print size derivs

@@ -1,12 +1,24 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2023 Yanis Zafirópulos
+# (c) 2019-2024 Yanis Zafirópulos
 #
 # @file: vm/values/custom/vregex.nim
 #=======================================================
 
 ## The internal `:regex` type
+
+#=======================================
+# Compilation & Linking
+#=======================================
+
+when defined(windows): 
+    {.passL: "-Bstatic -Lsrc/extras/pcre/deps/windows -lpcre -Bdynamic".}
+elif defined(macosx):
+    when defined(arm64):
+        {.passL: "-Bstatic -Lsrc/extras/pcre/deps/macos/m1 -lpcre -Bdynamic".}
+    else:
+        {.passL: "-Bstatic -Lsrc/extras/pcre/deps/macos -lpcre -Bdynamic".}
 
 #=======================================
 # Libraries
@@ -50,11 +62,33 @@ proc `$`*(rx: VRegex): string =
     else:
         rx.pattern
 
-proc newRegexObj*(pattern: string): VRegex =
+proc newRegexObj*(pattern: string, flags: string = ""): VRegex =
     when defined(WEB):
-        newRegExp(cstring(pattern))
+        if flags == "":
+            result = newRegExp(cstring(pattern))
+        else:
+            var fla = ""
+            if flags.contains("i"):
+                fla.add("i")
+            if flags.contains("m"):
+                fla.add("m")
+            if flags.contains("s"):
+                fla.add("s")
+            
+            result = newRegExp(cstring(pattern), cstring(fla))
     else:
-        re(pattern)
+        if flags == "":
+            result = re(pattern)
+        else:
+            var patt = pattern
+            if flags.contains("i"):
+                patt = "(?i)" & patt
+            if flags.contains("m"):
+                patt = "(?m)" & patt
+            if flags.contains("s"):
+                patt = "(?s)" & patt
+
+            result = re(patt)
 
 proc contains*(str: string, rx: VRegex): bool =
     when defined(WEB):
@@ -123,3 +157,9 @@ proc hash*(rx: VRegex): Hash =
         hash($(rx))
     else:
         hash(rx.pattern)
+
+func `==`*(a, b: VRegex): bool =
+    when defined(WEB):
+        $(a) == $(b)
+    else:
+        a.pattern == b.pattern

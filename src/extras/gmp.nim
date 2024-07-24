@@ -3,7 +3,7 @@
 # GMP BigNum library wrapper
 # for Nim
 #
-# (c) 2023 Yanis Zafirópulos
+# (c) 2024 Yanis Zafirópulos
 # 
 # @license: see LICENSE file
 # @file: extras/gmp.nim
@@ -16,6 +16,9 @@
 # Compilation & Linking
 #=======================================
 
+when defined(macosx) and defined(arm64):
+    {.passL: "-L/opt/homebrew/lib".}
+    
 {.passL: "-lmpfr -lgmp".}
 
 {.push header: "<gmp.h>", cdecl.}

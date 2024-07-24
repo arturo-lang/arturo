@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2023 Yanis Zafirópulos
+# (c) 2019-2024 Yanis Zafirópulos
 #
 # @file: vm/env.nim
 #=======================================================
@@ -11,31 +11,36 @@
 #=======================================
 # Libraries
 #=======================================
-when not defined(WEB) and not defined(windows):
+when not defined(WEB):
+    import cpuinfo, nativesockets
     import parseopt, sequtils, sugar
 
-when not defined(NOGMP):
+when defined(GMP):
     import extras/gmp
     import extras/mpfr
 
 when not defined(NOSQLITE):
-    import sqlite3
+    import extras/db_connector/sqlite3
 
 import pcre
 
-import os, strutils, tables, times
+import os, strutils, tables, times, system
 
+import helpers/system
 import helpers/terminal
 
-import vm/[parse,values/value]
-import vm/values/custom/[vlogical]
+import vm/values/value
+import vm/version
+
+when not defined(WEB):
+    import vm/parse
+    import vm/values/custom/[vlogical]
 
 #=======================================
 # Globals
 #=======================================
 
 var 
-    PathStack*  {.threadvar.}: seq[string]      ## The main path stack
     HomeDir*    : string                        ## User's home directory
     TmpDir*     : string                        ## User's temp directory
 
@@ -43,9 +48,6 @@ var
     # private
     #--------------------
     Arguments       : Value
-    ArturoVersion   : string
-    ArturoBuild     : string
-
     ScriptInfo      : Value
 
 #=======================================
@@ -57,33 +59,36 @@ proc getCmdlineArgumentArray*(): Value =
     ## a Block value
     Arguments
 
-proc parseCmdlineValue(v: string): Value =
-    if v=="" or v=="true" or v=="on": return newLogical(True)
-    elif v=="false" or v=="off": return newLogical(False)
-    else:
-        try:
-            discard parseFloat(v)
-            return doParse(v, isFile=false).a[0]
-        except:
-            return newString(v)
+when not defined(WEB):
+    proc parseCmdlineValue(v: string): Value =
+        if v=="" or v=="true" or v=="on": return newLogical(True)
+        elif v=="false" or v=="off": return newLogical(False)
+        else:
+            try:
+                discard parseFloat(v)
+                return doParse(v, isFile=false).a[0]
+            except CatchableError:
+                return newString(v)
 
 # TODO(Env\parseCmdlineArguments) verify it's working right
 #  labels: vm,library,language,unit-test
+
 proc parseCmdlineArguments*(): ValueDict =
     ## parse command-line arguments and return 
     ## result as a Dictionary value
     result = initOrderedTable[string,Value]()
     var values: ValueArray
 
-    when not defined(windows) and not defined(WEB):
-        var p = initOptParser(Arguments.a.map((x)=>x.s))
-        for kind, key, val in p.getopt():
-            case kind
-                of cmdArgument:
-                    values.add(parseCmdlineValue(key))
-                of cmdLongOption, cmdShortOption:
-                    result[key] = parseCmdlineValue(val)
-                of cmdEnd: assert(false) # cannot happen
+    when not defined(WEB):
+        if Arguments.a.len > 0:
+            var p = initOptParser(Arguments.a.map((x)=>x.s))
+            for kind, key, val in p.getopt():
+                case kind
+                    of cmdArgument:
+                        values.add(parseCmdlineValue(key))
+                    of cmdLongOption, cmdShortOption:
+                        result[key] = parseCmdlineValue(val)
+                    of cmdEnd: assert(false) # cannot happen
     else:
         values = Arguments.a
 
@@ -91,29 +96,46 @@ proc parseCmdlineArguments*(): ValueDict =
 
 proc getSystemInfo*(): ValueDict =
     ## return system info as a Dictionary value
+    var versionStr = ArturoVersion
+    versionStr &= "+" & ArturoBuild
+    if ArturoMetadata != "":
+        versionStr &= "." & ArturoMetadata
     try:
         result = {
             "author"    : newString("Yanis Zafirópulos"),
-            "copyright" : newString("(c) 2019-2023"),
-            "version"   : newVersion(ArturoVersion),
-            "build"     : newInteger(parseInt(ArturoBuild)),
-            "buildDate" : newDate(parse(CompileDate & " " & CompileTime, "yyyy-MM-dd HH:mm:ss")),
+            "copyright" : newString("(c) 2019-2024"),
+            "version"   : newVersion(versionStr),
+            "built"     : newDate(parse(CompileDate & " " & CompileTime, "yyyy-MM-dd HH:mm:ss")),
             "deps"      : newDictionary(),
             "binary"    : 
                 when defined(WEB):
                     newString("arturo.js")
                 else:
                     newString(getAppFilename()),
-            "cpu"       : newString(hostCPU),
-            "os"        : newString(hostOS),
+            "cpu"       : newDictionary(),
+            "os"        : newString(systemOs),
+            "hostname"  : newString(""),
             "release"   : 
                 when defined(MINI):
                     newLiteral("mini")
                 else:
                     newLiteral("full")
         }.toOrderedTable
+        
+        result["cpu"].d["arch"] = newLiteral(systemArch)
+        result["cpu"].d["endian"] = 
+            if cpuEndian == Endianness.littleEndian:
+                newLiteral("little")
+            else:
+                newLiteral("big")
 
-        when not defined(NOGMP):
+        when not defined(WEB):
+            result["cpu"].d["cores"] = newInteger(countProcessors())
+
+        when not defined(WEB):
+            result["hostname"] = newString(getHostname())
+
+        when defined(GMP):
             result["deps"].d["gmp"] = newVersion($(gmpVersion))
             result["deps"].d["mpfr"] = newVersion($(mpfr_get_version()))
 
@@ -123,7 +145,7 @@ proc getSystemInfo*(): ValueDict =
         let pcreVersion = ($(pcre.version())).split(" ")[0] & ".0"
         result["deps"].d["pcre"] = newVersion(pcreVersion)
         
-    except:
+    except CatchableError:
         discard
 
 proc getPathInfo*(): ValueDict =
@@ -142,35 +164,16 @@ proc getScriptInfo*(): Value =
 # Methods
 #=======================================
 
-proc entryPath*(): string =
-    ## get initial script path
-    PathStack[0]
-
-proc currentPath*(): string =
-    ## get current path
-    PathStack[^1]
-
-proc addPath*(newPath: string) =
-    ## add given path to path stack
-    var (dir, _, _) = splitFile(newPath)
-    PathStack.add(dir)
-
-proc popPath*(): string =
-    ## pop last path from path stack
-    PathStack.pop()
-
-proc initEnv*(arguments: seq[string], version: string, build: string, script: Value) =
+proc initEnv*(arguments: seq[string], script: Value) =
     ## initialize environment with given arguments
     Arguments = newStringBlock(arguments)
-    ArturoVersion = version
-    ArturoBuild = build
 
     if not script.isNil:
         ScriptInfo = script
     else:
         ScriptInfo = newDictionary()
 
-    PathStack = @[]
+    # PathStack = @[]
     when not defined(WEB):
         HomeDir = getHomeDir()
         TmpDir  = getTempDir()

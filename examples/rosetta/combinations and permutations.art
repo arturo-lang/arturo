@@ -1,0 +1,36 @@
+printPermutations: function [s,b][
+    print [
+        "P(" ++ (to :string s) ++ ", " ++ (to :string b) ++ ") = "
+        permutate.count.by:b @1..s
+    ]
+]
+
+printCombinations: function [s,b][
+    print [
+        "C(" ++ (to :string s) ++ ", " ++ (to :string b) ++ ") = "
+        combine.count.by:b @1..s
+    ]
+]
+
+printPermutations 4 2
+printPermutations 5 3
+printPermutations 6 4
+printPermutations 7 5
+printPermutations 8 6
+printPermutations 9 7
+printPermutations 10 8
+printPermutations 11 9
+printPermutations 12 10
+
+printCombinations 10 8
+printCombinations 20 18
+printCombinations 30 28
+printCombinations 40 38
+printCombinations 50 48
+printCombinations 60 58
+
+printPermutations 340 230
+printPermutations 12503 150
+
+printCombinations 180 40
+printCombinations 970 730

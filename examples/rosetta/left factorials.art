@@ -1,0 +1,20 @@
+; by @Krenium
+
+lfactorial: function [n][
+    if zero? n -> return 0
+    fold 0..dec n [x y] -> x + factorial y
+]
+
+print "First eleven:"
+0..10 | map => lfactorial
+      | print
+
+print "\n20th through 110th by tens:"
+r: range.step: 10 20 110
+r | map => lfactorial
+  | loop => print
+
+print "\nDigits in 1,000th through 10,000th by thousands:"
+r: range.step: 1000 1000 10000
+r | map'x -> size ~"|lfactorial x|"
+  | print

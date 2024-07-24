@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2023 Yanis Zafirópulos
+# (c) 2019-2024 Yanis Zafirópulos
 #
 # @file: vm/parse.nim
 #=======================================================
@@ -69,14 +69,16 @@ const
     Tab                         = '\t'
     Whitespace                  = {' ', Tab}
 
-    PermittedNumbers_Start      = {'0'..'9'}
+    Numbers                     = {'0'..'9'}
+    PermittedNumbers_Start      = Numbers
     ScientificNotation          = PermittedNumbers_Start + {'+', '-'}
     ScientificNotation_Start    = {'e', 'E'}
-    Symbols                     = {'~', '!', '@', '#', '$', '%', '^', '&', '*', '-', '_', '=', '+', '<', '>', '/', '\\', '|', '?'}
+    Symbols                     = {'~', '!', '@', '#', '$', '%', '^', '&', '*', '-', '=', '+', '<', '>', '/', '|', '?'}
     Letters                     = {'a'..'z', 'A'..'Z'}
-    PermittedIdentifiers_Start  = Letters
-    PermittedColorChars         = Letters + {'0'..'9'}
-    PermittedIdentifiers_In     = PermittedColorChars + {'?'}
+    PermittedIdentifiers_Start  = Letters + {'_'}
+    PermittedColorChars         = Letters + Numbers
+    PermittedIdentifiers_In     = PermittedIdentifiers_Start + Numbers + {'?'}
+    PermittedQuantityChars      = Letters + Numbers + {'.', '/'}
     
     SemVerExtra                 = Letters + PermittedNumbers_Start + {'+', '-', '.'}
 
@@ -94,7 +96,7 @@ proc parseDataBlock*(blk: Value): Value
 template Empty(s: var string): bool =
     s.len == 0
 
-func addAnnotatedTokenToBlock(blok: var Value, token: Value, p: var Parser) {.enforceNoRaises.} =
+func addAnnotatedTokenToBlock(blok: var Value, token: Value, p: var Parser)  =
     token.ln = uint32(p.lineNumber)
     blok.a.add(token)
 
@@ -113,22 +115,22 @@ template ReplaceLastToken(with: untyped): untyped =
 
 # Error reporting
 
-func getContext(p: var Parser, curPos: int): string =
-    var i = curPos
+# func getContext(p: var Parser, curPos: int): string =
+#     var i = curPos
 
-    while i > 0 and p.buf[i] notin {CR,LF,'\n'}:
-        result.add(p.buf[i])
-        dec(i)
+#     while i > 0 and p.buf[i] notin {CR,LF,'\n'}:
+#         result.add(p.buf[i])
+#         dec(i)
 
-    result = reversed(result)
-    let initial = i
-    i = curPos+1
+#     result = reversed(result)
+#     let initial = i
+#     i = curPos+1
 
-    while p.buf[i]!=EOF and p.buf[i] notin {CR,LF,'\n'}:
-        result.add(p.buf[i])
-        inc(i)
+#     while p.buf[i]!=EOF and p.buf[i] notin {CR,LF,'\n'}:
+#         result.add(p.buf[i])
+#         inc(i)
 
-    result &= ";" & repeat("~%",6 + curPos-initial) & "_^_"
+#     result &= "\n" & repeat("~%",6 + curPos-initial) & "_^_"
 
 # Lexer/parser
 
@@ -212,11 +214,11 @@ template parseString(p: var Parser, stopper: char = Quote) =
     var pos = p.bufpos + 1
     var inCode = false
     let initialLine = p.lineNumber
-    let initialPoint = p.bufpos
     while true:
         case p.buf[pos]:
             of EOF: 
-                SyntaxError_UnterminatedString("", initialLine, getContext(p, initialPoint))
+                p.lineNumber = initialLine
+                Error_UnterminatedString("")
             of stopper:
                 inc(pos)
                 break
@@ -280,13 +282,13 @@ template parseString(p: var Parser, stopper: char = Quote) =
                     add(p.value, p.buf[pos])
                     inc(pos)
             of CR:
-                var prepos = pos-1
                 pos = lexbase.handleCR(p, pos)
-                SyntaxError_NewlineInQuotedString(p.lineNumber-1, getContext(p, prepos))
+                p.lineNumber -= 1
+                Error_NewlineInQuotedString()
             of LF:
-                var prepos = pos-1
                 pos = lexbase.handleLF(p, pos)
-                SyntaxError_NewlineInQuotedString(p.lineNumber-1, getContext(p, prepos))
+                p.lineNumber -= 1
+                Error_NewlineInQuotedString()
             else:
                 add(p.value, p.buf[pos])
                 inc(pos)
@@ -327,6 +329,7 @@ template parseCurlyString(p: var Parser) =
     var curliesExpected = 1
     var verbatimString = false
     var regexString = false
+    var regexFlags = ""
     if p.buf[pos]=='!':
         inc(pos)
         while p.buf[pos] in Letters:
@@ -340,11 +343,14 @@ template parseCurlyString(p: var Parser) =
         regexString = true
 
     let initialLine = p.lineNumber
-    let initialPoint = p.bufpos
     while true:
         case p.buf[pos]:
             of EOF: 
-                SyntaxError_UnterminatedString("curly", initialLine, getContext(p, initialPoint))
+                p.lineNumber = initialLine
+                if verbatimString:
+                    Error_UnterminatedString("verbatim")
+                else:
+                    Error_UnterminatedString("curly")
             of LCurly:
                 curliesExpected += 1
                 add(p.value, p.buf[pos])
@@ -385,11 +391,34 @@ template parseCurlyString(p: var Parser) =
                 else:
                     add(p.value, p.buf[pos])
                     inc(pos)
+            of '\\':
+                if regexString:
+                    if p.buf[pos+1]=='/':
+                        add(p.value, '/')
+                        inc(pos, 2)
+                    else:
+                        add(p.value, '\\')
+                        inc(pos)
+                else:
+                    add(p.value, p.buf[pos])
+                    inc(pos)
             of '/':
                 if regexString:
                     if p.buf[pos+1]==RCurly:
                         inc(pos,2)
                         break
+                    elif p.buf[pos+1] in {'i','m','s'}:
+                        add(regexFlags, p.buf[pos+1])
+                        inc(pos,2)
+                        while p.buf[pos] in {'i','m','s'}:
+                            add(regexFlags, p.buf[pos])
+                            inc(pos)
+                        if p.buf[pos] != RCurly:
+                            p.lineNumber = initialLine
+                            Error_UnterminatedString("regex")
+                        else:
+                            inc(pos)
+                            break
                     else:
                         add(p.value, p.buf[pos])
                         inc(pos)
@@ -408,7 +437,7 @@ template parseCurlyString(p: var Parser) =
         if verbatimString:
             AddToken newString(p.value)
         elif regexString:
-            AddToken newRegex(p.value)
+            AddToken newRegex(p.value, regexFlags)
         else:
             AddToken newString(p.value, dedented=true)
 
@@ -435,7 +464,7 @@ template parseSafeString(p: var Parser) =
     while true:
         case p.buf[pos]:
             of EOF: 
-                SyntaxError_UnterminatedString("", p.lineNumber, getContext(p, p.bufpos-2))
+                Error_UnterminatedString("")
                 break
             of CR:
                 pos = lexbase.handleCR(p, pos)
@@ -487,29 +516,28 @@ template parseNumber(p: var Parser) =
 
     var hasDot{.inject.} = false
 
-    if p.buf[pos] == Dot:
-        if p.buf[pos+1] != Dot:
-            hasDot = true
+    if p.buf[pos] == Dot and p.buf[pos+1] in Digits:
+        hasDot = true
 
-            add(p.value, Dot)
+        add(p.value, Dot)
+        inc(pos)
+
+        while p.buf[pos] in Digits:
+            add(p.value, p.buf[pos])
             inc(pos)
-    
-            while p.buf[pos] in Digits:
-                add(p.value, p.buf[pos])
-                inc(pos)
 
-            if p.buf[pos] == Dot:
-                if p.buf[pos+1] in Digits:
-                    add(p.value, Dot)
+        if p.buf[pos] == Dot:
+            if p.buf[pos+1] in Digits:
+                add(p.value, Dot)
+                inc(pos)
+                while p.buf[pos] in Digits:
+                    add(p.value, p.buf[pos])
                     inc(pos)
-                    while p.buf[pos] in Digits:
+                
+                if p.buf[pos] in {'+','-'}:
+                    while p.buf[pos] in SemVerExtra:
                         add(p.value, p.buf[pos])
                         inc(pos)
-                    
-                    if p.buf[pos] in {'+','-'}:
-                        while p.buf[pos] in SemVerExtra:
-                            add(p.value, p.buf[pos])
-                            inc(pos)
 
     p.bufpos = pos
 
@@ -573,8 +601,12 @@ template parseAndAddSymbol(p: var Parser, topBlock: var Value) =
         of '%'  : p.symbol = percent
         of '^'  : p.symbol = caret
         of '&'  : p.symbol = ampersand
-        of '*'  : p.symbol = asterisk
-        of '_'  : p.symbol = underscore
+        of '*'  : 
+            if p.buf[pos+1]=='*':
+                inc(pos)
+                p.symbol = doubleasterisk
+            else:
+                p.symbol = asterisk
         of '|'  : 
             if p.buf[pos+1]=='|': 
                 inc(pos)
@@ -602,15 +634,6 @@ template parseAndAddSymbol(p: var Parser, topBlock: var Value) =
                 p.symbol = logicaland
             else: 
                 p.symbol = slash
-        of '\\' : 
-            if p.buf[pos+1]=='\\': 
-                inc(pos)
-                p.symbol = doublebackslash
-            elif p.buf[pos+1] == '/':
-                inc(pos)
-                p.symbol = logicalor
-            else: 
-                p.symbol = backslash
         of '+'  : 
             if p.buf[pos+1]=='+': inc(pos); p.symbol = doubleplus
             else: p.symbol = plus
@@ -766,7 +789,7 @@ template parseAndAddSymbol(p: var Parser, topBlock: var Value) =
         p.bufpos = pos
         AddToken newSymbol(p.symbol)
 
-template parsePath(p: var Parser, root: Value, curLevel: int) =
+template parsePath(p: var Parser, root: Value, curLevel: int, asLiteral: bool = false) =
     p.values.add(@[root])
 
     while p.buf[p.bufpos]==Backslash:
@@ -782,18 +805,21 @@ template parsePath(p: var Parser, root: Value, curLevel: int) =
                 if hasDot: p.values[^1].add(newFloating(p.value))
                 else: p.values[^1].add(newInteger(p.value))
             of LBracket:
-                inc(p.bufpos)
-                setLen(p.value,0)
-                var subblock = parseBlock(p,curLevel+1)
-                p.values[^1].add(subblock)
+                when asLiteral:
+                    break
+                else:
+                    inc(p.bufpos)
+                    setLen(p.value,0)
+                    var subblock = parseBlock(p,curLevel+1,isSubBlock=true)
+                    p.values[^1].add(subblock)
             else:
                 break
 
-template parseQuantity(p: var Parser) =
+template parseUnit(p: var Parser) =
     setLen(p.value, 0)
     var pos = p.bufpos
     inc(pos)
-    while p.buf[pos] in PermittedColorChars:
+    while p.buf[pos] in PermittedQuantityChars:
         add(p.value, p.buf[pos])
         inc(pos)
     p.bufpos = pos
@@ -812,12 +838,16 @@ template parseExponent(p: var Parser) =
 
     p.bufpos = pos
 
-proc parseBlock(p: var Parser, level: int, isDeferred: bool = true): Value {.inline.} =
-    var topBlock: Value
+proc parseBlock(p: var Parser, level: int, isSubBlock: bool = false, isSubInline: bool = false): Value {.inline.} =
+    #var topBlock: Value
     var scriptStr: string
-    if isDeferred: topBlock = newBlock()
-    else: topBlock = newInline()
-    let initial = p.bufpos
+    var topBlock =
+        if isSubInline:
+            newInline()
+        else:
+            newBlock()
+    # if isSubBlock: topBlock = newBlock()
+    # else: topBlock = newInline()
     let initialLine = p.lineNumber
     while true:
         setLen(p.value, 0)
@@ -825,7 +855,12 @@ proc parseBlock(p: var Parser, level: int, isDeferred: bool = true): Value {.inl
 
         case p.buf[p.bufpos]
             of EOF:
-                if unlikely(level!=0): SyntaxError_MissingClosingBracket(initialLine, getContext(p, initial-1))
+                if unlikely(level!=0): 
+                    p.lineNumber = initialLine
+                    if isSubBlock:
+                        Error_MissingClosingSquareBracket()
+                    else:
+                        Error_MissingClosingParenthesis()
                 break
             of Quote:
                 parseString(p)
@@ -834,15 +869,18 @@ proc parseBlock(p: var Parser, level: int, isDeferred: bool = true): Value {.inl
                     AddToken newLabel(p.value)
                 else:
                     AddToken newString(p.value)
-            of BackTick:
-                parseString(p, stopper=BackTick)
-                AddToken newChar(p.value)
+            # of BackTick:
+            #     parseString(p, stopper=BackTick)
+            #     AddToken newChar(p.value)
             of Colon:
                 parseIdentifier(p, alsoAddCurrent=false)
                 if Empty(p.value):
                     if p.buf[p.bufpos]==Colon:
                         inc(p.bufpos)
                         AddToken newSymbol(doublecolon)
+                    elif p.buf[p.bufpos]=='=':
+                        inc(p.bufpos)
+                        AddToken newSymbol(colonequal)
                     else:
                         AddToken newSymbol(colon)
                 else:
@@ -853,10 +891,10 @@ proc parseBlock(p: var Parser, level: int, isDeferred: bool = true): Value {.inl
                     if p.value.count(Dot)>1:
                         AddToken newVersion(p.value)
                     else:
-                        if p.buf[p.bufpos]==Colon:
+                        if p.buf[p.bufpos]==BackTick:
                             let pv = newFloating(p.value)
-                            parseQuantity(p)
-                            AddToken newQuantity(pv, parseQuantitySpec(p.value))
+                            parseUnit(p)
+                            AddToken newQuantity(pv, p.value)
                         elif p.buf[p.bufpos] in ScientificNotation_Start and p.buf[p.bufpos+1] in ScientificNotation:
                             let pv = p.value
                             parseExponent(p)
@@ -864,10 +902,24 @@ proc parseBlock(p: var Parser, level: int, isDeferred: bool = true): Value {.inl
                         else:
                             AddToken newFloating(p.value)
                 else:
-                    if p.buf[p.bufpos]==Colon:
+                    if p.buf[p.bufpos]==BackTick:
                         let pv = newInteger(p.value, p.lineNumber)
-                        parseQuantity(p)
-                        AddToken newQuantity(pv, parseQuantitySpec(p.value))
+                        parseUnit(p)
+                        AddToken newQuantity(pv, p.value)
+                    elif p.buf[p.bufpos]==Colon:
+                        inc(p.bufpos)
+                        let leftValue = newInteger(p.value, p.lineNumber)
+                        setLen(p.value, 0)
+                        parseNumber(p)
+                        if hasDot: 
+                            raise newException(ValueError, "Invalid syntax for rationals")
+                        else:
+                            if p.buf[p.bufpos]==BackTick:
+                                let pv = newRational(leftValue, newInteger(p.value, p.lineNumber))
+                                parseUnit(p)
+                                AddToken newQuantity(pv, p.value)
+                            else:
+                                AddToken newRational(leftValue, newInteger(p.value, p.lineNumber))
                     elif p.buf[p.bufpos]=='e' and p.buf[p.bufpos+1] in ScientificNotation:
                         let pv = p.value
                         parseExponent(p)
@@ -876,6 +928,25 @@ proc parseBlock(p: var Parser, level: int, isDeferred: bool = true): Value {.inl
                         AddToken newInteger(p.value, p.lineNumber)
             of Symbols:
                 parseAndAddSymbol(p,topBlock)
+            of Backslash:
+                if (p.buf[p.bufpos+1] in PermittedIdentifiers_Start) or
+                   (p.buf[p.bufpos+1] == LBracket):
+                    parsePath(p, newWord("this"), level)
+                    if p.buf[p.bufpos]==Colon:
+                        inc(p.bufpos)
+                        AddToken newPathLabel(p.values[^1])
+                    else:
+                        AddToken newPath(p.values[^1])
+                    discard p.values.pop()
+                elif p.buf[p.bufpos+1]==Backslash: 
+                    inc(p.bufpos)
+                    AddToken newSymbol(doublebackslash)
+                elif p.buf[p.bufpos+1] == '/':
+                    inc(p.bufpos)
+                    AddToken newSymbol(logicalor)
+                else: 
+                    AddToken newSymbol(backslash)
+                    
             of PermittedIdentifiers_Start:
                 parseIdentifier(p, alsoAddCurrent=true)
                 if p.buf[p.bufpos] == Colon:
@@ -899,16 +970,51 @@ proc parseBlock(p: var Parser, level: int, isDeferred: bool = true): Value {.inl
                     AddToken newWord(p.value)
             of Tick:
                 # first try parsing it as a normal :literal
+                let initialP = p.bufpos
                 parseIdentifier(p, alsoAddCurrent=false)
                 if Empty(p.value): 
                     # if it's empty, then try parsing it as :symbolLiteral
                     if likely(p.buf[p.bufpos] in Symbols):
                         parseAndAddSymbol(p,topBlock)
-                        ReplaceLastToken(newSymbolLiteral(LastToken.m))
+                        if LastToken.m == backslash and p.buf[p.bufpos] in ['n', 'r', 't', 'b', 'f', 'v', 'a', 'e', 'x', 'u', 'U', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9']:
+                            p.bufpos = p.bufpos - 2
+                            parseString(p, stopper=Tick)
+                            ReplaceLastToken newChar(p.value)
+                        elif p.buf[p.bufpos]==Tick:
+                            p.bufpos = initialP
+                            parseString(p, stopper=Tick)
+                            ReplaceLastToken newChar(p.value)
+                        else:
+                            ReplaceLastToken(newSymbolLiteral(LastToken.m))
                     else:
-                        SyntaxError_EmptyLiteral(p.lineNumber, getContext(p, p.bufpos-1))
+                        p.bufpos = p.bufpos - 1
+                        parseString(p, stopper=Tick)
+                        AddToken newChar(p.value)
+                    # else:
+                    #     Error_EmptyLiteral(p.lineNumber, getContext(p, p.bufpos-1))
                 else:
-                    AddToken newLiteral(p.value)
+                    if p.buf[p.bufpos] == Backslash:
+                        if (p.buf[p.bufpos+1] in PermittedIdentifiers_Start) or 
+                           (p.buf[p.bufpos+1] in PermittedNumbers_Start):
+                            parsePath(p, newWord(p.value), level, asLiteral=true)
+                            # if p.buf[p.bufpos]==Colon:
+                            #     inc(p.bufpos)
+                            #     AddToken newPathLabel(p.values[^1])
+                            # else:
+                            AddToken newPathLiteral(p.values[^1])
+                            discard p.values.pop()
+                        else:
+                            inc(p.bufpos)
+                            AddToken newSymbol(backslash)
+                    elif p.buf[p.bufpos]==Tick:
+                        #parseString(p, stopper=BackTick)
+                        AddToken newChar(p.value)
+                        inc(p.bufpos)
+                    else:
+                        AddToken newLiteral(p.value)
+            of BackTick:
+                parseUnit(p)
+                AddToken newUnit(p.value)
             of Dot:
                 if p.buf[p.bufpos+1] == Dot:
                     inc(p.bufpos, 2)
@@ -929,22 +1035,36 @@ proc parseBlock(p: var Parser, level: int, isDeferred: bool = true): Value {.inl
                         AddToken newAttribute(p.value)
             of LBracket:
                 inc(p.bufpos)
-                var subblock = parseBlock(p,level+1)
+                var subblock = parseBlock(p,level+1, isSubBlock=true)
                 AddToken subblock
             of RBracket:
-                inc(p.bufpos)
-                break
+                if isSubBlock:
+                    inc(p.bufpos)
+                    break
+                else:
+                    if isSubInline:
+                        p.lineNumber = initialLine
+                        Error_MissingClosingParenthesis()
+                    else:
+                        Error_StrayClosingSquareBracket()
             of LParen:
                 inc(p.bufpos)
-                var subblock = parseBlock(p, level+1, isDeferred=false)
+                var subblock = parseBlock(p, level+1, isSubInline=true)
                 AddToken subblock
             of RParen:
-                inc(p.bufpos)
-                break
+                if isSubInline:
+                    inc(p.bufpos)
+                    break
+                else:
+                    if isSubBlock:
+                        p.lineNumber = initialLine
+                        Error_MissingClosingSquareBracket()
+                    else:
+                        Error_StrayClosingParenthesis()
             of LCurly:
                 parseCurlyString(p)
             of RCurly:
-                inc(p.bufpos)
+                Error_StrayClosingCurlyBracket()
             of '\194':
                 if p.buf[p.bufpos+1]=='\171': # got «
                     if p.buf[p.bufpos+2]=='\194' and p.buf[p.bufpos+3]=='\171':
@@ -1123,7 +1243,7 @@ proc doParse*(input: string, isFile: bool = true): Value =
             var filePath = input
             when not defined(WEB):
                 if unlikely(not fileExists(filePath)):
-                    CompilerError_ScriptNotExists(input)
+                    Error_ScriptNotExists(input)
 
             var stream = newFileStream(filePath)
             lexbase.open(p, stream)
@@ -1131,12 +1251,12 @@ proc doParse*(input: string, isFile: bool = true): Value =
             var stream = newStringStream(input)
 
             lexbase.open(p, stream)
-
-        # do parse    
-        let rootBlock = parseBlock(p, 0)
+        try:
+            # do parse    
+            result = parseBlock(p, 0)
+        except CatchableError as e:
+            CurrentLine = p.lineNumber
+            raise e
 
         # close lexer
         lexbase.close(p)
-
-    # if everything went fine, return result     
-    return rootBlock

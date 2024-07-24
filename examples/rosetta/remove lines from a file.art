@@ -1,0 +1,14 @@
+removeFileLines: function [filename, start, cnt][
+    previous: ø
+    ensure -> all? @[
+        exists? filename
+        previous: read.lines filename
+        start < size previous
+        (start + cnt) < size previous
+    ]
+
+    final: previous\[0..start-1] ++ previous\[start+cnt..dec size previous]
+    write filename join.with:"\n" final
+]
+
+removeFileLines "myfile.txt" 3 10

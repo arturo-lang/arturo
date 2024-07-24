@@ -3,7 +3,7 @@
 # New-style Zaitsev's webview wrapper
 # for Nim
 #
-# (c) 2023 Yanis Zafirópulos
+# (c) 2024 Yanis Zafirópulos
 # 
 # @license: see LICENSE file
 # @file: extras/webview.nim
@@ -25,11 +25,11 @@ import extras/window
 
 when defined(linux):
     {.compile("webview/webview-unix.cc","-std=c++11").}
-    {.passC: "-DWEBVIEW_GTK=1 " &
+    {.passC: "-DWEBVIEW_GTK=1 -DWEBVIEW_STATIC=1 " &
              staticExec"pkg-config --cflags gtk+-3.0 webkit2gtk-4.0".}
     {.passL: "-lstdc++ " &
              staticExec"pkg-config --libs gtk+-3.0 webkit2gtk-4.0".}
-elif defined(freebsd):
+elif defined(freebsd) or defined(netbsd) or defined(openbsd):
     {.compile("webview/webview-unix.cc","-std=c++11").}
     {.passC: "-DWEBVIEW_GTK=1 " &
              staticExec"pkg-config --cflags gtk3 webkit2-gtk3".}
@@ -37,7 +37,7 @@ elif defined(freebsd):
              staticExec"pkg-config --libs gtk3 webkit2-gtk3".}
 elif defined(macosx):
     {.compile("webview/webview-unix.cc","-std=c++11").}
-    {.passC: "-DWEBVIEW_COCOA=1".}
+    {.passC: "-DWEBVIEW_COCOA=1 -DWEBVIEW_STATIC=1".}
     {.passL: "-lstdc++ -framework WebKit".}
 elif defined(windows):
     {.passC: "-DWEBVIEW_EDGE=1 -mwindows".}
@@ -105,6 +105,10 @@ proc webview_navigate*(w: Webview, url: cstring) {.importc.}
     ## Navigates webview to the given URL. URL may be a data URI, i.e.
     ## "data:text/html,<html>...</html>". It is often ok not to url-encode it
     ## properly, webview will re-encode it for you.
+
+proc webview_set_html*(w: Webview, html: cstring) {.importc.}
+    ## Set webview HTML directly.
+    ## Example: webview_set_html(w, "<h1>Hello</h1>");
 
 proc webview_init*(w: Webview, js: cstring) {.importc.}
     ## Injects JavaScript code at the initialization of the new page. Every time

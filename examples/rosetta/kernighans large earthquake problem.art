@@ -4,7 +4,7 @@ data: {
     5/18/1980    MountStHelens       7.6
 }
 
-define :earthquake [date place magnitude][]
+define :earthquake [date place magnitude]
 
 print first sort.descending.by:'magnitude map split.lines data => 
     [to :earthquake split.words &]

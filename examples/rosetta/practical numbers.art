@@ -1,0 +1,25 @@
+allSums: function [n][
+    result: []
+    current: []
+    loop factors n 'd [
+        current: new result
+        loop current 's ->
+            'result ++ s+d
+        'result ++ d
+        unique 'result
+    ]
+    return result
+]
+
+practical?: function [n]->
+    or? -> n=1 -> subset? @1..dec n allSums n
+
+practicals: select 1..333 => practical?
+
+print ["Found" size practicals "practical numbers between 1 and 333:"]
+loop split.every: 10 practicals 'x ->
+    print map x 's -> pad to :string s 4
+
+print ""
+p666: practical? 666
+print ["666" p666 ? -> "is" -> "is not" "a practical number"]

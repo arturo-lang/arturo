@@ -1,0 +1,20 @@
+; by @Krenium
+
+subseqs: function [a :block][
+    ;; description: « returns every contiguous subsequence in a block
+    ;; returns: :block
+    flatten.once map 0..dec size a'x ->
+        map x..dec size a'y -> a\[x..y]
+]
+
+calmo: 1..100 | select => prime?
+              | subseqs
+              | select => [prime? sum &]
+              | maximum => size
+
+print ~{
+    The longest sequence of calmo primes < 100
+    has sum |sum calmo| (prime) and length |size calmo|:
+    
+    |calmo|
+}

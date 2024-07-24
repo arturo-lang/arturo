@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2023 Yanis Zafirópulos
+# (c) 2019-2024 Yanis Zafirópulos
 #
 # @file: vm/exec.nim
 #=======================================================
@@ -22,7 +22,8 @@
 # Libraries
 #=======================================
 
-import hashes, macros, sugar, tables
+import algorithm, hashes, macros
+import strutils, sugar, tables
 
 import vm/[
     bytecode, 
@@ -31,6 +32,7 @@ import vm/[
     globals, 
     parse, 
     profiler, 
+    runtime,
     stack, 
     values/value
 ]
@@ -58,6 +60,10 @@ var
 # Forward Declarations
 #=======================================
 
+proc execFunction*(fun: Value, fid: Hash)
+proc execFunctionInline*(fun: Value, fid: Hash)
+proc execMethod*(meth: Value, fid: Hash)
+
 proc ExecLoop*(cnst: ValueArray, it: VBinary)
 
 #=======================================
@@ -67,7 +73,7 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary)
 template pushByIndex(idx: int):untyped =
     stack.push(cnst[idx])
 
-proc storeByIndex(cnst: ValueArray, idx: int, doPop: static bool = true) {.inline,enforceNoRaises.}=
+proc storeByIndex(cnst: ValueArray, idx: int, doPop: static bool = true) {.inline.}=
     hookProcProfiler("exec/storeByIndex"):
         var stackTop {.cursor.} = stack.peek(0)
 
@@ -75,7 +81,7 @@ proc storeByIndex(cnst: ValueArray, idx: int, doPop: static bool = true) {.inlin
         when doPop:
             stack.popN(1)
 
-proc dStoreByIndex(cnst: ValueArray, idx: int, doPop: static bool = true) {.inline,enforceNoRaises.}=
+proc dStoreByIndex(cnst: ValueArray, idx: int, doPop: static bool = true) {.inline.}=
     hookProcProfiler("exec/storeByIndex"):
         var stackTop {.cursor.} = stack.peek(0)
 
@@ -87,13 +93,34 @@ template loadByIndex(idx: int):untyped =
     hookProcProfiler("exec/loadByIndex"):
         stack.push(FetchSym(cnst[idx].s))
 
+proc callFunction*(f: Value, fnName: string, args: ValueArray) =
+    ## Take a Function value, whether a user or a built-in one, 
+    ## and execute it with given arguments
+    if f.fnKind==UserFunction:
+        hookProcProfiler("exec/callFunction:user"):
+            var safeToProceed = true
+            for arg in args.reversed:
+                push arg
+                if arg.kind == Function:
+                    safeToProceed = false
+
+            if unlikely(SP < f.arity):
+                Error_NotEnoughArguments(fnName, f.arity)
+
+            if f.inline: 
+                if safeToProceed: execFunctionInline(f, hash(fnName))
+                else: execFunction(f, hash(fnName))
+            else: execFunction(f, hash(fnName))
+    else:
+        f.action()()
+
 template callFunction*(f: Value, fnName: string = "<closure>"):untyped =
     ## Take a Function value, whether a user or a built-in one, 
     ## and execute it
     if f.fnKind==UserFunction:
         hookProcProfiler("exec/callFunction:user"):
             if unlikely(SP < f.arity):
-                RuntimeError_NotEnoughArguments(fnName, f.arity)
+                Error_NotEnoughArguments(fnName, f.arity)
 
             if f.inline: 
                 var safeToProceed = true
@@ -107,30 +134,47 @@ template callFunction*(f: Value, fnName: string = "<closure>"):untyped =
     else:
         f.action()()
 
+proc callMethod*(f: Value, methName: string, args: ValueArray) =
+    ## Take a Method value,
+    ## and execute it with given arguments
+    hookProcProfiler("exec/callMethod"):
+        for arg in args.reversed:
+            push arg
+        if unlikely(SP < f.marity):
+            Error_NotEnoughArguments(methName, f.marity)
+
+        execMethod(f, hash(methName))
+
+template callMethod*(f: Value, methName: string = "<closure>"):untyped =
+    ## Take a Method value, 
+    ## and execute it
+    hookProcProfiler("exec/callMethod"):
+        if unlikely(SP < f.marity):
+            Error_NotEnoughArguments(methName, f.marity)
+
+        execMethod(f, hash(methName))
+
 template callByName(symIndx: string):untyped =
     let fun = FetchSym(symIndx)
     callFunction(fun, symIndx)
 
 template callByIndex(idx: int):untyped =
     hookProcProfiler("exec/callByIndex"):
-        if cnst[idx].kind==Function:
-            callFunction(cnst[idx])
-        else:
-            callByName(cnst[idx].s)
+        callByName(cnst[idx].s)
 
 template fetchAttributeByIndex(idx: int):untyped =
-    stack.pushAttr(cnst[idx].s, move stack.pop())
+    stack.pushAttr(cnst[idx].s, stack.pop())
 
 template performConditionalJump(symb: untyped, short: static bool=false): untyped =
     when short:
-        let x = move stack.pop()
-        let y = move stack.pop()
+        let x = stack.pop()
+        let y = stack.pop()
         i += 1
         if `symb`(x,y):
             i += int(it[i])
     else:
-        let x = move stack.pop()
-        let y = move stack.pop()
+        let x = stack.pop()
+        let y = stack.pop()
         i += 2
         if `symb`(x,y):
             i += int(uint16(it[i-1]) shl 8 + byte(it[i]))
@@ -153,7 +197,21 @@ template callInternal*(fname: string, getValue: bool, args: varargs[Value]): unt
     callFunction(fun)
 
     when getValue:
-        pop()
+        stack.pop()
+
+# TODO(VM/exec) Leakless blocks not working properly with pre-defined functions
+#  Let's say we have a pre-defined function (e.g. `arg`) and this symbol is used
+#  as an iterator variable - which is precisely where leakless blocks come into play -
+#  this creates a total mess, since their arities are not properly handled.
+#  e.g.
+#  ```
+#  for arr 'arg [ 
+#      ; do sth
+#  ]
+#  ```
+#  Also see: https://github.com/arturo-lang/arturo/blob/master/examples/rosetta/call%20a%20function.art
+#  and https://github.com/arturo-lang/arturo/blob/master/examples/rosetta/variadic%20function.art
+#  labels: bug, critical, library, vm, execution
 
 template prepareLeakless*(protected: seq[string] | ValueArray): untyped =
     ## Prepare for leak-less block execution
@@ -196,6 +254,8 @@ template finalizeLeaklessOne*(): untyped =
     else:
         Syms[toRestoreKey] = move toRestoreVal
 
+# TODO(VM/exec) Should also catch any *CatchableError* in `handleBranching`?
+#  labels: vm, execution, error handling
 template handleBranching*(tryDoing, finalize: untyped): untyped =
     ## Wrapper for code that may throw *Break* or *Continue* signals, 
     ## or other errors that are to be caught
@@ -257,6 +317,28 @@ proc execDictionary*(blk: Value): ValueDict =
 
     result = DictSyms.pop()
 
+proc execScopedModule*(blk: Value, exporting: seq[string] = @[]): ValueDict =
+    let olderSyms: SymTable = Syms
+
+    let exportAll = exporting.len == 0
+    let preevaled = doEval(blk)
+
+    ExecLoop(preevaled.constants, preevaled.instructions)
+
+    result = 
+        collect(initOrderedTable()):
+            for i,d in Syms.pairs:
+                let hasK = olderSyms.hasKey(i)
+                if (exportAll or exporting.contains(i) or i.startsWith("__module")) and ((hasK and olderSyms[i] != d) or not hasK):
+                    {i: d}
+
+    Syms = olderSyms
+
+    for i,d in result.pairs:
+        if i.startsWith("__module"):
+            Syms[i] = d
+            result.del(i)
+
 proc execFunction*(fun: Value, fid: Hash) =
     ## Execute given Function value with scoping
     ## 
@@ -272,6 +354,11 @@ proc execFunction*(fun: Value, fid: Hash) =
     var savedSyms: SymTable
 
     let argsL = len(fun.params)
+
+    when not defined(WEB):
+        var fpath: ref string
+        if (fpath = fun.info.path; not fpath.isNil()):
+            pushFrame(fpath[], fromFile=true)
 
     if fun.memoize:
         memoizedParams = newBlock()
@@ -295,18 +382,25 @@ proc execFunction*(fun: Value, fid: Hash) =
 
     for arg in fun.params:
         # pop argument and set it
-        SetSym(arg, move stack.pop())
-
-    if fun.bcode.isNil:
-        fun.bcode = newBytecode(doEval(fun.main, isFunctionBlock=true))
+        SetSym(arg, stack.pop())
 
     try:
-        ExecLoop(fun.bcode().trans.constants, fun.bcode().trans.instructions)
+        if not fun.bcode.isNil:
+            ExecLoop(fun.bcode().trans.constants, fun.bcode().trans.instructions)
+        else:
+            let (trans, storable) = doEvalAndCheckSafety(fun.main, isFunctionBlock=true)
+            if storable:
+                fun.bcode = newBytecode(trans)
+            ExecLoop(trans.constants, trans.instructions)
 
     except ReturnTriggered:
         discard
 
     finally:
+        when not defined(WEB):
+            if not fpath.isNil():
+                discardFrame()
+
         if fun.memoize:
             setMemoized(fid, memoizedParams, stack.peek(0))
 
@@ -331,6 +425,11 @@ proc execFunctionInline*(fun: Value, fid: Hash) =
  
     let argsL = len(fun.params)
 
+    when not defined(WEB):
+        var fpath: ref string
+        if (fpath = fun.info.path; not fpath.isNil()):
+            pushFrame(fpath[], fromFile=true)
+
     if fun.memoize:
         memoizedParams = newBlock()
 
@@ -350,22 +449,70 @@ proc execFunctionInline*(fun: Value, fid: Hash) =
 
     for arg in fun.params:
         # pop argument and set it
-        SetSym(arg, move stack.pop())
-
-    if fun.bcode.isNil:
-        fun.bcode = newBytecode(doEval(fun.main, isFunctionBlock=true))
+        SetSym(arg, stack.pop())
 
     try:
-        ExecLoop(fun.bcode().trans.constants, fun.bcode().trans.instructions)
+        if not fun.bcode.isNil:
+            ExecLoop(fun.bcode().trans.constants, fun.bcode().trans.instructions)
+        else:
+            let (trans, storable) = doEvalAndCheckSafety(fun.main, isFunctionBlock=true)
+            if storable:
+                fun.bcode = newBytecode(trans)
+            ExecLoop(trans.constants, trans.instructions)
 
     except ReturnTriggered:
         discard
 
     finally:
+        when not defined(WEB):
+            if not fpath.isNil():
+                discardFrame()
+
         if fun.memoize:
             setMemoized(fid, memoizedParams, stack.peek(0))
 
         finalizeLeakless()
+
+proc execMethod*(meth: Value, fid: Hash) =
+    ## Execute given Method value with scoping
+    ## 
+    ## This means:
+    ## - All symbols declared inside will NOT be 
+    ##   available in the outer scope
+    ## - Symbols re-assigned inside will NOT 
+    ##   overwrite the value in the outer scope
+
+    var savedSyms: SymTable
+
+    savedSyms = Syms
+
+    when not defined(WEB):
+        var fpath: ref string
+        if (fpath = meth.info.path; not fpath.isNil()):
+            pushFrame(fpath[], fromFile=true)
+
+    for arg in meth.mparams:
+        # pop argument and set it
+        SetSym(arg, stack.pop())
+
+    try:
+        if not meth.mbcode.isNil:
+            ExecLoop(meth.mbcode().trans.constants, meth.mbcode().trans.instructions)
+        else:
+            let (trans, storable) = doEvalAndCheckSafety(meth.mmain, isFunctionBlock=true)
+            if storable:
+                meth.mbcode = newBytecode(trans)
+            ExecLoop(trans.constants, trans.instructions)
+
+    except ReturnTriggered:
+        discard
+
+    finally:
+        Syms = savedSyms
+
+        when not defined(WEB):
+            if not fpath.isNil():
+                discardFrame()
 
 proc ExecLoop*(cnst: ValueArray, it: VBinary) =
     ## The main execution loop.
@@ -682,25 +829,25 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
 
                 # conditional jumps
                 of opJmpIf              :
-                    let x = move stack.pop()
+                    let x = stack.pop()
                     i += 1
                     if not (x.kind==Null or isFalse(x)):
                         i += int(it[i])
 
                 of opJmpIfX:
-                    let x = move stack.pop()
+                    let x = stack.pop()
                     i += 2
                     if not (x.kind==Null or isFalse(x)):
                         i += int(uint16(it[i-1]) shl 8 + byte(it[i]))
                 
                 of opJmpIfNot           :
-                    let x = move stack.pop()
+                    let x = stack.pop()
                     i += 1
                     if x.kind==Null or isFalse(x):
                         i += int(it[i])
                 
                 of opJmpIfNotX:
-                    let x = move stack.pop()
+                    let x = stack.pop()
                     i += 2
                     if x.kind==Null or isFalse(x):
                         i += int(uint16(it[i-1]) shl 8 + byte(it[i]))
@@ -717,6 +864,20 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 of opJmpIfLtX           : performConditionalJump(`<`)
                 of opJmpIfLe            : performConditionalJump(`<=`, short=true)
                 of opJmpIfLeX           : performConditionalJump(`<=`)
+
+                # calls
+                of opInvokeM            :
+                    let meth = stack.pop()
+                    callMethod(meth)
+
+                of opInvokeF            :
+                    let fun = stack.pop()
+                    callFunction(fun)
+
+                # block execution
+                of opExec               :
+                    let blo = stack.pop()
+                    execUnscoped(doEval(blo, useStored=false))
 
                 # flow control
                 of opGoto               :
@@ -737,6 +898,9 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
 
                 of opRet                :
                     discard
+
+                of RSRV12               : discard
+                of RSRV13               : discard
 
                 of opEnd                :
                     break

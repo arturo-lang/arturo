@@ -2,17 +2,15 @@ name: Code Linter
 
 on: [pull_request]
 
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
 jobs:
   nimlint:
     name: Nim
     runs-on: ubuntu-latest
     steps:
-      - name: "Cancel similar actions in progress"
-        uses: styfle/cancel-workflow-action@0.10.0
-        with:
-          all_but_latest: true
-          access_token: ${{ github.token }}
-
       - uses: actions/checkout@v2
 
       - uses: reviewdog/action-setup@v1

@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2023 Yanis Zafirópulos
+# (c) 2019-2024 Yanis Zafirópulos
 #
 # @file: vm/values/custom/vrange.nim
 #=======================================================
@@ -19,6 +19,12 @@
 # TODO(VRange) Should we support BigNum bounds?
 #  so that somebody can e.g. select.first:3 167126537612537126536127..∞ => prime?
 # labels: enhancement, values, open discussion
+
+# TODO(VRange) Should properly handly a zero `.step`
+#  this for example: `@ range.step:0 1 10`
+#  returns: `[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]`
+#  while it should return an empty block
+#  labels: values, bug
 
 type
     GenericRange[T] = ref object
@@ -80,10 +86,10 @@ func reversed*(self: VRange, safe: bool = false): VRange =
 # Overloads
 #=======================================
 
-func `==`*(a, b: VRange): bool {.inline,enforceNoRaises.} =
+func `==`*(a, b: VRange): bool {.inline.} =
     a[] == b[]
 
-func `$`*(v: VRange): string {.inline,enforceNoRaises.} =
+func `$`*(v: VRange): string {.inline.} =
     var start: string
     var stop: string
 

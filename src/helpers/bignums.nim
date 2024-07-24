@@ -1,16 +1,13 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2023 Yanis Zafirópulos
+# (c) 2019-2024 Yanis Zafirópulos
 #
 # @file: helpers/bignums.nim
 #=======================================================
 
-# Code based on Nim GMP wrapper
+# Code initially based on Nim GMP wrapper
 # (c) Copyright 2014 Will Szumski
-
-# TODO(Helpers/bignums) General cleanup needed
-#  labels: helpers, cleanup
 
 # TODO(Helper/bignums) Is there any way *not* to use the GMP/MPFR library?
 #  Right now, Arturo's BigNum handling capabilities are based exclusively on the GMP & MPFR libraries, and available only in the "full" builds. Could we replace them - with whatever shortcomings this might bring? For example: https://bellard.org/libbf/ seems like a good-enough candidate. It's small, fast enough - apparently - written in C, supports Integers and Floats + it's MIT-licensed.
@@ -21,7 +18,7 @@
 # Libraries
 #=======================================
 
-import os
+import math, os
 
 import extras/gmp
 import extras/mpfr
@@ -63,39 +60,54 @@ when defined(windows):
     proc fitsLLP64ULong(x: int): bool =
         return x >= 0 and x <= LLP64_ULONG_MAX
 
+proc getInt*(x: Int): int =
+    return int(mpz_get_ui(x[]))
+
+proc fitsInt*(x: Int): bool =
+    return mpz_fits_ulong_p(x[]) != 0
+
 proc fitsDouble*(x: Float): bool =
     if mpfr_fits_uint_p(x[], MPFR_RNDN)==0:
         return false
     else:
         return true
 
+proc canBeSimplified*(x: Rat): bool =
+    return (mpz_fits_ulong_p(mpq_numref(x[])) != 0) and (mpz_fits_ulong_p(mpq_denref(x[])) != 0)
+
 func sign*(x: Int): cint =
     mpz_sgn(x[])
+
+func canonicalize*(x: Rat) =
+    mpq_canonicalize(x[])
 
 #=======================================
 # Constructors
 #=======================================
 
 func newInt*(x: culong): Int =
+    # TODO(Helpers/bignums) fix warning with `newInt`, `newFloat`, `newRat`
+    #  this triggers the following warning:
+    #  ```
+    #  Warning: A custom '=destroy' hook which takes a 'var T' parameter is deprecated; it should take a 'T' parameter [Deprecated]
+    #  ```
+    #  labels: 3rd-party, enhancement
     new(result, finalizeInt)
     mpz_init_set_ui(result[], x)
 
 func newInt*(x: int = 0): Int =
     new(result, finalizeInt)
-    # when isLLP64():
-    #     if x.fitsLLP64Long:
-    #         mpz_init_set_si(result[], x.clong)
-    #     elif x.fitsLLP64ULong:
-    #         mpz_init_set_ui(result[], x.culong)
-    #     else:
-    #         mpz_init(result[])
-    #         if x < 0: result[].mp_size = -1 else: result[].mp_size = 1
-    #         if x < 0 and x > low(int):
-    #             result[].mp_d[] = (-x).mp_limb_t
-    #         else:
-    #             result[].mp_d[] = x.mp_limb_t
-    # else:
-    mpz_init_set_si(result[], x.clong)
+    when isLLP64():
+        if x.fitsLLP64Long:
+            mpz_init_set_si(result[], x.clong)
+        elif x.fitsLLP64ULong:
+            mpz_init_set_ui(result[], x.culong)
+        else:
+            mpz_init_set_ui(result[], (x shr 32).uint32)
+            mpz_mul_2exp(result[], result[], 32)
+            mpz_add_ui(result[], result[], (x.uint32))
+    else:
+        mpz_init_set_si(result[], x.clong)
 
 func newInt*(x: Float): Int =
     new(result,finalizeInt)
@@ -135,6 +147,109 @@ func newFloat*(s: string, base: cint = 10): Float =
     if mpfr_set_str(result[], s, base, MPFR_RNDN) == -1:
         raise newException(ValueError, "String not in correct base")
 
+func newRat*(x: culong): Rat =
+    new(result, finalizeRat)
+    mpq_init(result[])
+    mpq_set_ui(result[], x, 1)
+    canonicalize(result)
+
+func newRat*(x, y: culong): Rat =
+    new(result,finalizeRat)
+    mpq_init(result[])
+    mpq_set_ui(result[], x, y)
+    canonicalize(result)
+
+func newRat*(x: int = 0): Rat =
+    new(result, finalizeRat)
+    mpq_init(result[])
+    when isLLP64():
+        if x.fitsLLP64Long:
+            mpq_set_si(result[], x.clong, 1)
+        elif x.fitsLLP64ULong:
+            mpq_set_ui(result[], x.culong, 1)
+        else:
+            mpq_set_ui(result[], (x shr 32).uint32, 1)
+            mpq_mul_2exp(result[], result[], 32)
+            mpq_add(result[], result[], newRat(x.uint32)[])
+    else:
+        mpq_set_si(result[], x.clong, 1)
+    canonicalize(result)
+
+func newRat*(x, y: int): Rat =
+    new(result, finalizeRat)
+    mpq_init(result[])
+    when isLLP64():
+        var nref = mpq_numref(result[])
+        var dref = mpq_denref(result[])
+
+        if x.fitsLLP64Long:
+            mpz_set_si(nref, x.clong)
+        elif x.fitsLLP64ULong:
+            mpz_set_ui(nref, x.culong)
+        else:
+            mpz_set_ui(nref, (x shr 32).uint32)
+            mpz_mul_2exp(nref, nref, 32)
+            mpz_add_ui(nref, nref, (x.uint32))
+
+        if y.fitsLLP64Long:
+            mpz_set_si(dref, y.clong)
+        elif y.fitsLLP64ULong:
+            mpz_set_ui(dref, y.culong)
+        else:
+            mpz_set_ui(dref, (y shr 32).uint32)
+            mpz_mul_2exp(dref, dref, 32)
+            mpz_add_ui(dref, dref, (y.uint32))
+    else:
+        mpq_set_si(result[], x.clong, y.culong)
+        
+    canonicalize(result)
+
+func newRat*(x, y: Int): Rat =
+    new(result,finalizeRat)
+    mpq_init(result[])
+    mpq_set_num(result[], x[])
+    mpq_set_den(result[], y[])
+    canonicalize(result)
+
+func newRat*(x: float): Rat =
+    new(result,finalizeRat)
+    mpq_init(result[])
+    mpq_set_d(result[], x)
+    canonicalize(result)
+
+func newRat*(x: Int): Rat =
+    new(result,finalizeRat)
+    mpq_init(result[])
+    mpq_set_z(result[], x[])
+    canonicalize(result)
+
+func newRat*(s: string, base: cint = 10): Rat =
+    validBase(base)
+    new(result, finalizeRat)
+    mpq_init(result[])
+    if mpq_set_str(result[], s, base) == -1:
+        raise newException(ValueError, "String not in correct base")
+    canonicalize(result)
+
+#=======================================
+# Value copying
+#=======================================
+
+func copyInt*(x: Int): Int =
+    new(result, finalizeInt)
+    mpz_init(result[])
+    mpz_set(result[], x[])
+
+func copyFloat*(x: Float): Float =
+    new(result,finalizeFloat)
+    mpfr_init(result[])
+    mpfr_set(result[], x[], MPFR_RNDN)
+
+func copyRat*(x: Rat): Rat = 
+    new(result,finalizeRat)
+    mpq_init(result[])
+    mpq_set(result[], x[])
+
 #=======================================
 # Setters
 #=======================================
@@ -149,25 +264,56 @@ func set*(z: Int, x: culong): Int =
 
 func set*(z: Int, x: int): Int =
     result = z
-    # when isLLP64():
-    #     if x.fitsLLP64Long:
-    #         mpz_set_si(result[], x.clong)
-    #     elif x.fitsLLP64ULong:
-    #         mpz_set_ui(result[], x.culong)
-    #     else:
-    #         if x < 0: result[].mp_size = -1 else: result[].mp_size = 1
-    #         if x < 0 and x > low(int):
-    #             result[].mp_d[] = (-x).mp_limb_t
-    #         else:
-    #             result[].mp_d[] = x.mp_limb_t
-    # else:
-    mpz_set_si(result[], x.clong)
+    when isLLP64():
+        if x.fitsLLP64Long:
+            mpz_init_set_si(result[], x.clong)
+        elif x.fitsLLP64ULong:
+            mpz_init_set_ui(result[], x.culong)
+        else:
+            mpz_init_set_ui(result[], (x shr 32).uint32)
+            mpz_mul_2exp(result[], result[], 32)
+            mpz_add_ui(result[], result[], (x.uint32))
+    else:
+        mpz_init_set_si(result[], x.clong)
 
 func set*(z: Int, s: string, base: cint = 10): Int =
     validBase(base)
     result = z
     if mpz_set_str(result[], s, base) == -1:
         raise newException(ValueError, "String not in correct base")
+
+func set*(z, x: Rat): Rat =
+    result = z
+    mpq_set(result[], x[])
+
+func set*(z: Rat, x: culong): Rat =
+    result = z
+    mpq_set_ui(result[], x, 1)
+
+func set*(z: Rat, x: int): Rat =
+    result = z
+    when isLLP64():
+        if x.fitsLLP64Long:
+            mpq_set_si(result[], x.clong, 1)
+        elif x.fitsLLP64ULong:
+            mpq_set_ui(result[], x.culong, 1)
+        else:
+            mpq_set_ui(result[], (x shr 32).uint32, 1)
+            mpq_mul_2exp(result[], result[], 32)
+            mpq_add(result[], result[], newRat(x.uint32)[])
+    else:
+        mpq_set_si(result[], x.clong, 1)
+
+func set*(z: Rat, x: float): Rat =
+    result = z
+    mpq_set_d(result[], x)
+
+func set*(z: Rat, s: string, base: cint = 10): Rat =
+    validBase(base)
+    result = z
+    if mpq_set_str(result[], s, base) == -1:
+        raise newException(ValueError, "String not in correct base")
+    canonicalize(result)
 
 #=======================================
 # Converters
@@ -176,8 +322,14 @@ func set*(z: Int, s: string, base: cint = 10): Int =
 func toCLong*(x: Int): clong =
     mpz_get_si(x[])
 
+func toCDouble*(x: Int): cdouble =
+    return mpz_get_d(x[])
+
 func toCDouble*(x: Float): cdouble =
     return mpfr_get_d(x[], MPFR_RNDN)
+
+func toCDouble*(x: Rat): cdouble =
+    return mpq_get_d(x[])
 
 #=======================================
 # Overloads
@@ -201,6 +353,8 @@ func cmp*(x: Int, y: culong): cint =
     elif result > 0:
         result = 1
 
+# TODO(Bignums/cmp) should properly handle LLP64 mode
+#  labels: critical, bug, windows
 func cmp*(x: Int, y: int): cint =
     # when isLLP64():
     #     if y.fitsLLP64Long:
@@ -304,6 +458,13 @@ func cmp*(x: Float, y: int): cint =
     elif result > 0:
         result = 1
 
+func cmp*(x: Rat, y: Rat): cint =
+    result = mpq_cmp(x[], y[])
+    if result < 0:
+        result = -1
+    elif result > 0:
+        result = 1
+
 func `==`*(x: Int, y: int | culong | Int): bool =
     cmp(x, y) == 0
 
@@ -316,11 +477,17 @@ func `==`*(x: Float, y: int | float | culong | Float): bool =
 func `==`*(x: float | int | culong, y: Float): bool =
     cmp(y, x) == 0
 
+func `==`*(x, y: Rat): bool =
+    cmp(x, y) == 0
+
 func `<`*(x: Int, y: int | culong | Int): bool =
     cmp(x, y) == -1
 
 func `<`*(x: int | culong, y: Int): bool =
     cmp(y, x) == 1
+
+func `<`*(x, y: Rat): bool =
+    cmp(x, y) == -1
 
 func `<=`*(x: Int, y: int | culong | Int): bool =
     let c = cmp(x, y)
@@ -329,6 +496,10 @@ func `<=`*(x: Int, y: int | culong | Int): bool =
 func `<=`*(x: int | culong, y: Int): bool =
     let c = cmp(y, x)
     c == 0 or c == 1
+
+func `<=`*(x, y: Rat): bool =
+    let c = cmp(x, y)
+    c == 0 or c == -1
 
 #-----------------------
 # Arithmetic operators
@@ -348,6 +519,10 @@ func add*(z, x: Int, y: int): Int =
     else:
         if y >= 0: z.add(x, y.culong) else: z.add(x, newInt(y))
 
+func add*(z, x, y: Rat): Rat =
+    result = z
+    mpq_add(result[], x[], y[])
+
 func inc*(z: Int, x: int | culong | Int) =
     discard z.add(z, x)
 
@@ -366,6 +541,12 @@ func `+`*(x:Int, y: float): float =
     let res = newFloat()
     mpfr_add_d(res[], newFloat(x)[], y, MPFR_RNDN)
     result = toCDouble(res)
+
+func `+`*(x: Rat, y: Rat): Rat =
+    newRat().add(x, y)
+
+func `+=`*(x, y: Rat) =
+    discard x.add(x, y)
 
 func `+=`*(z: Int, x: int | culong | Int) =
     z.inc(x)
@@ -394,6 +575,10 @@ func sub*(z: Int, x: int, y: Int): Int =
     else:
         if x >= 0: z.sub(x.culong, y) else: z.sub(newInt(x), y)
 
+func sub*(z, x, y: Rat): Rat =
+    result = z
+    mpq_sub(result[], x[], y[])
+
 func dec*(z: Int, x: int | culong | Int) =
     discard z.sub(z, x)
 
@@ -413,8 +598,14 @@ func `-`*(x:Int, y: float): float =
     mpfr_sub_d(res[], newFloat(x)[], y, MPFR_RNDN)
     result = toCDouble(res)
 
+func `-`*(x: Rat, y: Rat): Rat =
+    newRat().sub(x, y)
+
 func `-=`*(z: Int, x: int | culong | Int) =
     z.dec(x)
+
+func `-=`*(x, y: Rat) =
+    discard x.sub(x, y)
 
 func mul*(z, x, y: Int): Int =
     result = z
@@ -440,6 +631,14 @@ func mul*(z, x: Int, y: int): Int =
     else:
         mpz_mul_si(result[], x[], y.clong)
 
+func `mul`*(z, x, y: Float): Float =
+    result = z
+    mpfr_mul(result[], x[], y[], MPFR_RNDN)
+
+func mul*(z, x, y: Rat): Rat =
+    result = z
+    mpq_mul(result[], x[], y[])
+
 func `*`*(x: Int, y: int | culong | Int): Int =
     newInt().mul(x, y)
 
@@ -456,8 +655,20 @@ func `*`*(x:Int, y: float): float =
     mpfr_mul_d(res[], newFloat(x)[], y, MPFR_RNDN)
     result = toCDouble(res)
 
+func `*`*(x: Float, y: Float): Float =
+    newFloat().mul(x, y)
+
+func `*`*(x: Rat, y: Rat): Rat =
+    newRat().mul(x, y)
+
 func `*=`*(z: Int, x: int | culong | Int) =
     discard z.mul(z, x)
+
+func `*=`*(x, y: Rat) =
+    discard x.mul(x, y)
+
+func inv*(x: Rat): Rat =
+    mpq_inv(result[], x[])
 
 func `div`*(z, x, y: Int): Int =
     if y == 0: raise newException(DivByZeroDefect, "Division by zero")
@@ -477,6 +688,13 @@ func `div`*(z, x: Int, y: int): Int =
 
 func `div`*(x: Int, y: int | culong | Int): Int =
     newInt().`div`(x, y)
+
+func `div`*(z, x, y: Rat): Rat =
+    result = z
+    mpq_div(result[], x[], y[])
+
+func `divI`*(x: Int, y: int | culong | Int) = 
+    discard x.`div`(x, y)
 
 func `div`*(x: int | culong, y: Int): Int =
     newInt().`div`(newInt(x), y)
@@ -540,6 +758,12 @@ func `/`*(x: Int, y: float): float =
     mpfr_div_d(res[], newFloat(x)[], y, MPFR_RNDN)
     result = toCDouble(res)
 
+func `/`*(x: Rat, y: Rat): Rat =
+    newRat().div(x, y)
+
+func `/=`*(x, y: Rat) =
+    discard x.div(x, y)
+
 func `mod`*(z, x, y: Int): Int =
     if y == 0: raise newException(DivByZeroDefect, "Division by zero")
     result = z
@@ -561,6 +785,9 @@ func `mod`*(x: Int, y: int | culong | Int): Int =
 
 func `mod`*(x: int | culong, y: Int): Int =
     newInt().`mod`(newInt(x), y)
+
+func `modI`*(x: Int, y: int | culong | Int) = 
+    discard x.`mod`(x, y)
 
 func modInverse*(z, g, n: Int): bool =
     mpz_invert(z[], g[], n[]) != 0
@@ -608,6 +835,9 @@ func pow*(z: Int, x, y: culong): Int =
 func pow*(x: culong | Int, y: culong): Int =
     newInt().pow(x, y)
 
+func powI*(x: Int, y: culong) =
+    mpz_pow_ui(x[], x[], y)
+
 func pow*(x: int, y: culong): Int =
     when isLLP64():
         if x.fitsLLP64ULong: pow(x.culong, y) else: pow(newInt(x), y)
@@ -624,7 +854,23 @@ func pow*(x: Int, y: float): float =
     mpfr_pow(res[], newFloat(x)[], newFloat(y)[], MPFR_RNDN)
     result = toCDouble(res)
 
+func pow*(x: Rat, y: int): Rat =
+    result = newRat()
+    discard result.set(x)
+    for i in 1 ..< y:
+        discard result.mul(result, x)
+
+func pow*(x: Rat, y: float): Rat =
+    let res = pow(float(toCDouble(x)), y)
+    result = newRat(res)
+
 func `^`*(x: int | culong | Int, y: culong): Int =
+    pow(x, y)
+
+func `^`*(x: Rat, y: int): Rat =
+    pow(x, y)
+
+func `^`*(x: Rat, y: float): Rat =
     pow(x, y)
 
 func exp*(z, x: Int, y: culong, m: Int): Int =
@@ -666,6 +912,12 @@ func `and`*(z, x, y: Int): Int =
 func `and`*(x, y: Int): Int =
     newInt().`and`(x, y)
 
+func `andI`*(x: Int, y: culong | int) =
+    mpz_and(x[], x[], newInt(y)[])
+
+func `andI`*(x: Int, y: Int) =
+    mpz_and(x[], x[], y[])
+
 func `and`*(x: Int, y: int | culong): Int =
     x and newInt(y)
 
@@ -678,6 +930,12 @@ func `or`*(z, x, y: Int): Int =
 
 func `or`*(x, y: Int): Int =
     newInt().`or`(x, y)
+
+func `orI`*(x: Int, y: culong | int) =
+    mpz_ior(x[], x[], newInt(y)[])
+
+func `orI`*(x: Int, y: Int) =
+    mpz_ior(x[], x[], y[])
 
 func `or`*(x: Int, y: int | culong): Int =
     x or newInt(y)
@@ -692,6 +950,12 @@ func `xor`*(z, x, y: Int): Int =
 func `xor`*(x, y: Int): Int =
     newInt().`xor`(x, y)
 
+func `xorI`*(x: Int, y: culong | int) =
+    mpz_xor(x[], x[], newInt(y)[])
+
+func `xorI`*(x: Int, y: Int) =
+    mpz_xor(x[], x[], y[])
+
 func `xor`*(x: Int, y: int | culong): Int =
     x xor newInt(y)
 
@@ -705,12 +969,18 @@ func `not`*(z, x: Int): Int =
 func `not`*(x: Int): Int =
     newInt().`not` x
 
+func `notI`*(x: Int) =
+    mpz_com(x[], x[])
+
 func `shr`*(z, x: Int, y: culong): Int =
     result = z
     mpz_fdiv_q_2exp(z[], x[], y)
 
 func `shr`*(x: Int, y: culong): Int =
     newInt().`shr`(x, y)
+
+func `shrI`*(x: Int, y: culong) =
+    mpz_fdiv_q_2exp(x[], x[], y)
 
 func `shl`*(z, x: Int, y: culong): Int =
     result = z
@@ -719,6 +989,9 @@ func `shl`*(z, x: Int, y: culong): Int =
 func `shl`*(x: Int, y: culong): Int =
     newInt().`shl`(x, y)
 
+func `shlI`*(x: Int, y: culong) =
+    mpz_mul_2exp(x[], x[], y)
+
 #-----------------------
 # Output
 #-----------------------
@@ -726,24 +999,31 @@ func `shl`*(x: Int, y: culong): Int =
 func digits*(z: Int, base: range[(2.cint) .. (62.cint)] = 10): csize_t =
     mpz_sizeinbase(z[], base)
 
+func digits*(z: mpz_ptr, base: range[(2.cint) .. (62.cint)] = 10): csize_t =
+    mpz_sizeinbase(z, base)
+
+func numerator*(x: Rat): Int =
+    result = newInt()
+    mpz_set(result[], mpq_numref(x[])[])
+    
+func denominator*(x: Rat): Int =
+    result = newInt()
+    mpq_get_den(result[], x[])
+
 func `$`*(z: Int, base: cint = 10): string =
     validBase(base)
     result = newString(digits(z, base) + 2)
     result.setLen(mpz_get_str(cstring(result), base, z[]).len)
 
-# func `$`*(z: Float, base: range[(2.cint) .. (62.cint)] = 10, n_digits = 0): string =
-#     # let outOfRange = toCDouble(z)
-#     # if base == 10 and outOfRange != FloatOverflow:
-#     #     return $outOfRange
-  
-#     var exp: mp_exp_t
-#     var str = newString(n_digits + 1)
-#     var coeff = $mpfr_get_str(cstring(str),exp,base,(csize_t)n_digits,z[],MPFR_RNDN)
-#     coeff.insert(".", abs(exp))
-#     return "str: " & str & ", coeff: " & coeff & ", exp: " & $exp
-#     if (exp != 0):  return coeff & "e" & (if exp>0: "+" else: "") & $exp
-#     if coeff == "": return "0.0"
-#     result = coeff
+func `$`*(z: Float): string =
+    result = newString(32)
+    var exp: mp_exp_t = 0
+    result.setLen(mpfr_get_str(cstring(result), exp, 10, 0, z[], MPFR_RNDN).len)
+
+func `$`*(z: Rat, base: range[(2.cint) .. (62.cint)] = 10): string =
+    validBase(base)
+    result = newString(digits(mpq_numref(z[]), base) + digits(mpq_denref(z[]), base) + 3)
+    result.setLen(mpq_get_str(cstring(result), base, z[]).len)
 
 #=======================================
 # Methods
@@ -813,6 +1093,30 @@ func abs*(z, x: Int): Int =
 func abs*(x: Int): Int =
     newInt().abs(x)
 
+func abs*(z, x: Rat): Rat =
+    result = z
+    mpq_abs(result[], x[])
+
+func abs*(x: Rat): Rat =
+    newRat().abs(x)
+
+func neg*(z, x: Int): Int =
+    result = z
+    mpz_neg(result[], x[])
+
+func neg*(x: Int): Int =
+    newInt().neg(x)
+
+func negI*(x: Int) =
+    mpz_neg(x[], x[])
+
+func neg*(z, x: Rat): Rat =
+    result = z
+    mpq_neg(result[], x[])
+
+func neg*(x: Rat): Rat =
+    newRat().neg(x)
+
 func gcd*(z, x, y: Int): Int =
     result = z
     mpz_gcd(z[], x[], y[])
@@ -878,442 +1182,3 @@ func clear*(z: Float) {.inline.} =
 func clear*(z: Rat) {.inline.} =
     GCunref(z)
     finalizeRat(z)
-    
-# func clone*(z: Int): Int =
-#     ## Returns a clone of `z`.
-#     new(result, finalizeInt)
-#     mpz_init_set(result[], z[])
-
-
-# func swap*(x: Int, y: Int) =
-#     ## Swaps the values `x` and `y` efficiently.
-#     mpz_swap(x[], y[])
-
-# func addMul*(z, x, y: Int): Int =
-#     ## Increments `z` by `x` times `y`.
-#     result = z
-#     mpz_addmul(result[], x[], y[])
-
-# func addMul*(z, x: Int, y: culong): Int =
-#     ## Increments `z` by `x` times `y`.
-#     result = z
-#     mpz_addmul_ui(result[], x[], y)
-
-# func addMul*(z, x: Int, y: int): Int =
-#     ## Increments `z` by `x` times `y`.
-#     when isLLP64():
-#         if y.fitsLLP64ULong: z.addMul(x, y.culong) else: z.addMul(x, newInt(y))
-#     else:
-#         if y >= 0: z.addMul(x, y.culong) else: z.addMul(x, newInt(y))
-
-# func addMul*(z: Int, x: int | culong, y: Int): Int =
-#     ## Increments `z` by `x` times `y`.
-#     z.addMul(y, x)
-
-# func addMul*(z: Int, x: int | culong, y: int | culong): Int =
-#     ## Increments `z` by `x` times `y`.
-#     z.addMul(newInt(x), y)
-
-# func subMul*(z, x, y: Int): Int =
-#     ## Decrements `z` by `x` times `y`.
-#     result = z
-#     mpz_submul(result[], x[], y[])
-
-# func subMul*(z, x: Int, y: culong): Int =
-#     ## Decrements `z` by `x` times `y`.
-#     result = z
-#     mpz_submul_ui(result[], x[], y)
-
-# func subMul*(z, x: Int, y: int): Int =
-#     ## Decrements `z` by `x` times `y`.
-#     when isLLP64():
-#         if y.fitsLLP64ULong: z.subMul(x, y.culong) else: z.subMul(x, newInt(y))
-#     else:
-#         if y >= 0: z.subMul(x, y.culong) else: z.subMul(x, newInt(y))
-
-# func subMul*(z: Int, x: int | culong, y: Int): Int =
-#     ## Decrements `z` by `x` times `y`.
-#     z.subMul(y, x)
-
-# func subMul*(z: Int, x: int | culong, y: int | culong): Int =
-#     ## Increments `z` by `x` times `y`.
-#     z.subMul(newInt(x), y)
-
-# template countupImpl(incr: stmt) {.immediate, dirty.} =
-#   when a is int or a is culong:
-#     var res = newInt(a)
-#   else:
-#     var res = a.clone
-
-#   while res <= b:
-#     yield res
-#     incr
-
-# iterator countup*(a: Int, b: int | culong | Int, step: int | culong | Int): Int {.inline.} =
-#   ## Counts from `a` up to `b` with the given `step` count.
-#   countupImpl: inc(res, step)
-
-# iterator countup*(a: int | culong, b: Int, step: Int): Int {.inline.} =
-#   ## Counts from `a` up to `b` with the given `step` count.
-#   countupImpl: inc(res, step)
-
-# iterator countup*(a: int | culong, b: int | culong, step: Int): Int {.inline.} =
-#   ## Counts from `a` up to `b` with the given `step` count.
-#   countupImpl: inc(res, step)
-
-# iterator countup*(a: int | culong, b: Int, step: int | culong): Int {.inline.} =
-#   ## Counts from `a` up to `b` with the given `step` count.
-#   countupImpl: inc(res, step)
-
-# iterator `..`*(a: Int, b: int | culong | Int): Int {.inline.} =
-#   ## An alias for `countup`.
-#   let step = 1
-#   countupImpl: inc(res, step)
-
-# iterator `..`*(a: int | culong, b: Int): Int {.inline.} =
-#   ## An alias for `countup`.
-#   let step = 1
-#   countupImpl: inc(res, step)
-
-
-
-# func fmod*(z, x, y: Int): Int =
-#     ## Sets `z` to the remainder x/y for `y` != 0 and returns `z`.
-#     ## `fmod` implements truncated division towards negative infinity.
-#     ## The f stands for “floor”.
-#     if y == 0: raise newException(DivByZeroDefect, "Division by zero")
-#     result = z
-#     mpz_fdiv_r(result[], x[], y[])
-
-# func fmod*(z, x: Int, y: culong): Int =
-#     ## Sets `z` to the remainder x/y for `y` != 0 and returns `z`.
-#     ## `fmod` implements truncated division towards negative infinity.
-#     ## The f stands for “floor”.
-#     if y == 0: raise newException(DivByZeroDefect, "Division by zero")
-#     result = z
-#     discard mpz_fdiv_r_ui(result[], x[], y)
-
-# func fmod*(z, x: Int, y: int): Int =
-#     ## Sets `z` to the remainder x/y for `y` != 0 and returns `z`.
-#     ## `fmod` implements truncated division towards negative infinity.
-#     ## The f stands for “floor”.
-#     when isLLP64():
-#         if y.fitsLLP64ULong: z.fmod(x, y.culong) else: z.fmod(x, newInt(y))
-#     else:
-#         if y >= 0: z.fmod(x, y.culong) else: z.fmod(x, newInt(y))
-
-# func fmod*(x: Int, y: int | culong | Int): Int =
-#     ## Returns the remainder x/y for `y` != 0.
-#     ## `fmod` implements truncated division towards negative infinity.
-#     ## The f stands for “floor”.
-#     newInt().fmod(x, y)
-
-# func fmod*(x: int | culong, y: Int): Int =
-#     ## Returns the remainder x/y for `y` != 0.
-#     ## `fmod` implements truncated division towards negative infinity.
-#     ## The f stands for “floor”.
-#     newInt().fmod(newInt(x), y)
-
-# func `\\`*(x: Int, y: int | culong | Int): Int =
-#     ## Returns the remainder x/y for `y` != 0.
-#     ## `\\` implements truncated division towards negative infinity.
-#     fmod(x, y)
-
-# func `\\`*(x: int | culong, y: Int): Int =
-#     ## Returns the remainder x/y for `y` != 0.
-#     ## `\\` implements truncated division towards negative infinity.
-#     fmod(x, y)
-
-# func fdivMod*(q, r, x, y: Int): tuple[q, r: Int] =
-#     ## Sets `q` to the quotient and `r` to the remainder resulting from x/y for
-#     ## `y` != 0 and returns the tuple (`q`, `r`).
-#     ## `fdivMod` implements truncated division towards negative infinity.
-#     ## The f stands for “floor”.
-#     if y == 0: raise newException(DivByZeroDefect, "Division by zero")
-#     result = (q: q, r: r)
-#     mpz_fdiv_qr(q[], r[], x[], y[])
-
-# func fdivMod*(q, r, x: Int, y: culong): tuple[q, r: Int] =
-#     ## Sets `q` to the quotient and `r` to the remainder resulting from x/y for
-#     ## `y` != 0 and returns the tuple (`q`, `r`).
-#     ## `fdivMod` implements truncated division towards negative infinity.
-#     ## The f stands for “floor”.
-#     if y == 0: raise newException(DivByZeroDefect, "Division by zero")
-#     result = (q: q, r: r)
-#     discard mpz_fdiv_qr_ui(q[], r[], x[], y)
-
-# func fdivMod*(q, r, x: Int, y: int): tuple[q, r: Int] =
-#     ## Sets `q` to the quotient and `r` to the remainder resulting from x/y for
-#     ## `y` != 0 and returns the tuple (`q`, `r`).
-#     ## `fdivMod` implements truncated division towards negative infinity.
-#     ## The f stands for “floor”.
-#     when isLLP64():
-#         if y.fitsLLP64ULong: fdivMod(q, r, x, y.culong) else: fdivMod(q, r, x, newInt(y))
-#     else:
-#         if y >= 0: fdivMod(q, r, x, y.culong) else: fdivMod(q, r, x, newInt(y))
-
-# func fdivMod*(x: Int, y: int | culong | Int): tuple[q, r: Int] =
-#     ## Returns a tuple consisting of the quotient and remainder resulting from x/y
-#     ## for `y` != 0.
-#     ## `fdivMod` implements truncated division towards negative infinity.
-#     ## The f stands for “floor”.
-#     fdivMod(newInt(), newInt(), x, y)
-
-# func fdivMod*(x: int | culong, y: Int): tuple[q, r: Int] =
-#     ## Returns a tuple consisting of the quotient and remainder resulting from x/y
-#     ## for `y` != 0.
-#     ## `fdivMod` implements truncated division towards negative infinity.
-#     ## The f stands for “floor”.
-#     fdivMod(newInt(), newInt(), newInt(x), y)
-
-# func cdiv*(z, x, y: Int): Int =
-#     ## Sets `z` to the quotient x/y for `y` != 0 and returns `z`.
-#     ## `cdiv` implements truncated division towards positive infinity.
-#     ## The c stands for “ceil”.
-#     if y == 0: raise newException(DivByZeroDefect, "Division by zero")
-#     result = z
-#     mpz_cdiv_q(result[], x[], y[])
-
-# func cdiv*(z, x: Int, y: culong): Int =
-#     ## Sets `z` to the quotient x/y for `y` != 0 and returns `z`.
-#     ## `cdiv` implements truncated division towards positive infinity.
-#     ## The c stands for “ceil”.
-#     if y == 0: raise newException(DivByZeroDefect, "Division by zero")
-#     result = z
-#     discard mpz_cdiv_q_ui(result[], x[], y)
-
-# func cdiv*(z, x: Int, y: int): Int =
-#     ## Sets `z` to the quotient x/y for `y` != 0 and returns `z`.
-#     ## `cdiv` implements truncated division towards positive infinity.
-#     ## The c stands for “ceil”.
-#     when isLLP64():
-#         if y.fitsLLP64ULong: z.cdiv(x, y.culong) else: z.cdiv(x, newInt(y))
-#     else:
-#         if y >= 0: z.cdiv(x, y.culong) else: z.cdiv(x, newInt(y))
-
-# func cdiv*(x: Int, y: int | culong | Int): Int =
-#     ## Returns the quotient x/y for `y` != 0.
-#     ## `cdiv` implements truncated division towards positive infinity.
-#     ## The c stands for “ceil”.
-#     newInt().cdiv(x, y)
-
-# func cdiv*(x: int | culong, y: Int): Int =
-#     ## Returns the quotient x/y for `y` != 0.
-#     ## `cdiv` implements truncated division towards positive infinity.
-#     ## The c stands for “ceil”.
-#     newInt().cdiv(newInt(x), y)
-
-# func cmod*(z, x, y: Int): Int =
-#     ## Sets `z` to the remainder x/y for `y` != 0 and returns `z`.
-#     ## `cmod` implements truncated division towards positive infinity.
-#     ## The c stands for “ceil”.
-#     if y == 0: raise newException(DivByZeroDefect, "Division by zero")
-#     result = z
-#     mpz_cdiv_r(result[], x[], y[])
-
-# func cmod*(z, x: Int, y: culong): Int =
-#     ## Sets `z` to the remainder x/y for `y` != 0 and returns `z`.
-#     ## `cmod` implements truncated division towards positive infinity.
-#     ## The c stands for “ceil”.
-#     if y == 0: raise newException(DivByZeroDefect, "Division by zero")
-#     result = z
-#     discard mpz_cdiv_r_ui(result[], x[], y)
-
-# func cmod*(z, x: Int, y: int): Int =
-#     ## Sets `z` to the remainder x/y for `y` != 0 and returns `z`.
-#     ## `cmod` implements truncated division towards positive infinity.
-#     ## The c stands for “ceil”.
-#     when isLLP64():
-#         if y.fitsLLP64ULong: z.cmod(x, y.culong) else: z.cmod(x, newInt(y))
-#     else:
-#         if y >= 0: z.cmod(x, y.culong) else: z.cmod(x, newInt(y))
-
-# func cmod*(x: Int, y: int | culong | Int): Int =
-#     ## Returns the remainder x/y for `y` != 0.
-#     ## `cmod` implements truncated division towards positive infinity.
-#     ## The c stands for “ceil”.
-#     newInt().cmod(x, y)
-
-# func cmod*(x: int | culong, y: Int): Int =
-#     ## Returns the remainder x/y for `y` != 0.
-#     ## `cmod` implements truncated division towards positive infinity.
-#     ## The c stands for “ceil”.
-#     newInt().cmod(newInt(x), y)
-
-# func cdivMod*(q, r, x, y: Int): tuple[q, r: Int] =
-#     ## Sets `q` to the quotient and `r` to the remainder resulting from x/y for
-#     ## `y` != 0 and returns the tuple (`q`, `r`).
-#     ## `cdivMod` implements truncated division towards positive infinity.
-#     ## The c stands for “ceil”.
-#     if y == 0: raise newException(DivByZeroDefect, "Division by zero")
-#     result = (q: q, r: r)
-#     mpz_cdiv_qr(q[], r[], x[], y[])
-
-# func cdivMod*(q, r, x: Int, y: culong): tuple[q, r: Int] =
-#     ## Sets `q` to the quotient and `r` to the remainder resulting from x/y for
-#     ## `y` != 0 and returns the tuple (`q`, `r`).
-#     ## `cdivMod` implements truncated division towards positive infinity.
-#     ## The c stands for “ceil”.
-#     if y == 0: raise newException(DivByZeroDefect, "Division by zero")
-#     result = (q: q, r: r)
-#     discard mpz_cdiv_qr_ui(q[], r[], x[], y)
-
-# func cdivMod*(q, r, x: Int, y: int): tuple[q, r: Int] =
-#     ## Sets `q` to the quotient and `r` to the remainder resulting from x/y for
-#     ## `y` != 0 and returns the tuple (`q`, `r`).
-#     ## `cdivMod` implements truncated division towards positive infinity.
-#     ## The c stands for “ceil”.
-#     when isLLP64():
-#         if y.fitsLLP64ULong: cdivMod(q, r, x, y.culong) else: cdivMod(q, r, x, newInt(y))
-#     else:
-#         if y >= 0: cdivMod(q, r, x, y.culong) else: cdivMod(q, r, x, newInt(y))
-
-# func cdivMod*(x: Int, y: int | culong | Int): tuple[q, r: Int] =
-#     ## Returns a tuple consisting of the quotient and remainder resulting from x/y
-#     ## for `y` != 0.
-#     ## `cdivMod` implements truncated division towards positive infinity.
-#     ## The c stands for “ceil”.
-#     cdivMod(newInt(), newInt(), x, y)
-
-# func cdivMod*(x: int | culong, y: Int): tuple[q, r: Int] =
-#     ## Returns a tuple consisting of the quotient and remainder resulting from x/y
-#     ## for `y` != 0.
-#     ## `cdivMod` implements truncated division towards positive infinity.
-#     ## The c stands for “ceil”.
-#     cdivMod(newInt(), newInt(), newInt(x), y)
-
-# proc mulRange*(z: Int, a: int | culong | Int, b: int | culong | Int): Int =
-#   ## Sets `z` to the product of all values in the range [a, b] inclusively and
-#   ## returns `z`.
-#   ## If a > b (empty range), the result is 1.
-#   when (a is int or a is culong) and (b is int or b is culong):
-#     var a = cast[b.type](a)
-#     var zero = cast[b.type](0)
-#   elif b is culong:
-#     var zero = cast[b.type](0)
-#   else:
-#     var zero = 0
-
-#   if a > b: return z.set(1)                 # empty range
-#   if a <= 0 and b >= zero: return z.set(0)  # range includes 0
-
-#   result = z
-
-#   # Can use fac proc if a = 1 or a = 2
-#   if a == 1 or a == 2:
-#     discard z.fac(b)
-#   else:
-#     # Slow
-#     discard z.set(a)
-#     for i in a + 1 .. b:
-#       z *= i
-
-# proc mulRange*(a: int | culong | Int, b: int | culong | Int): Int =
-#   ## Returns the product of all values in the range [a, b] inclusively.
-#   ## If a > b (empty range), the result is 1.
-#   newInt().mulRange(a, b)
-
-# func binom*(z, n: Int, k: culong): Int =
-#     ## Sets `z` to the binomial coefficient of (`n`, `k`) and returns `z`.
-#     result = z
-#     mpz_bin_ui(z[], n[], k)
-
-# func binom*(z: Int, n, k: culong): Int =
-#     ## Sets `z` to the binomial coefficient of (`n`, `k`) and returns `z`.
-#     result = z
-#     mpz_bin_uiui(z[], n, k)
-
-# proc binom*(n, k: Int): Int =
-#   ## Returns the binomial coefficient of (`n`, `k`).
-#   if k.sign <= 0: return newInt(1)
-#   var a = newInt().mulRange(n - k + 1, n)
-#   var b = newInt().mulRange(1, k)
-#   return newInt().`div`(a, b)
-
-# proc binom*(n: culong | Int, k: culong): Int =
-#   ## Returns the binomial coefficient of (`n`, `k`).
-#   newInt().binom(n, k)
-
-# proc binom*(n: int | culong, k: Int): Int =
-#   ## Returns the binomial coefficient of (`n`, `k`).
-#   binom(newInt(n), k)
-
-# proc binom*(n: Int, k: int): Int =
-#   ## Returns the binomial coefficient of (`n`, `k`).
-#   if k <= 0: return newInt(1)
-#   when isLLP64():
-#     if k.fitsLLP64Ulong:
-#       result = binom(n, k.culong)
-#     else:
-#       result = binom(n, newInt(k))
-#   else:
-#     result = binom(n, k.culong)
-
-# func bit*(x: Int, i: culong): cint =
-#     ## Returns the value of the `i`'th bit of `x`.
-#     mpz_tstbit(x[], i)
-
-# func setBit*(z: Int, i: culong): Int =
-#     ## Sets the i`'th bit of `z` and returns the resulting Int.
-#     result = z
-#     mpz_setbit(z[], i)
-
-# func clearBit*(z: Int, i: culong): Int =
-#     ## Clears the i`'th bit of `z` and returns the resulting Int.
-#     result = z
-#     mpz_clrbit(z[], i)
-
-# func complementBit*(z: Int, i: culong): Int =
-#     ## Complements the i`'th bit of `z` and returns the resulting Int.
-#     result = z
-#     mpz_combit(z[], i)
-
-# func bitLen*(x: Int): csize_t =
-#     ## Returns the length of the absolute value of `x` in bits.
-#     digits(x, 2)
-
-# func fitsCULong*(x: Int): bool =
-#     ## Returns whether `x` fits in a culong.
-#     mpz_fits_ulong_p(x[]) != 0
-
-# func fitsCLong*(x: Int): bool =
-#     ## Returns whether `x` fits in a clong.
-#     mpz_fits_slong_p(x[]) != 0
-
-# func fitsInt*(x: Int): bool =
-#     ## Returns whether `x` fits in an int.
-#     when isLLP64():
-#         if x[].mp_size < -1 or x[].mp_size > 1: return false
-#         if x[].mp_size == 0: return true
-#         if x[].mp_size > 0: return (x[].mp_d[]).uint <= high(int).uint
-#         return x.cmp(low(int)) >= 0
-#     else:
-#         x.fitsClong
-
-# func toCULong*(x: Int): culong =
-#     ## Returns the value of `x` as a culong.
-#     ## If `x` is too big to fit a culong then just the least significant bits that
-#     ## do fit are returned. The sign of `x` is ignored, only the absolute value is
-#     ## used. To find out if the value will fit, use the proc `fitsCULong`.
-#     mpz_get_ui(x[])
-
-# func toInt*(x: Int): int =
-#     ## If `x` fits into an int returns the value of `x`. Otherwise returns the
-#     ## least significant part of `x`, with the same sign as `x`.
-#     ## If `x` is too big to fit in an int, the returned result is probably not
-#     ## very useful. To find out if the value will fit, use the proc `fitsInt`.
-#     when isLLP64():
-#         if x[].mp_size > 0: return (x[].mp_d[]).int
-#         if x[].mp_size < 0: return -1 - ((x[].mp_d[]).uint - 1).int
-#         return 0
-#     else:
-#         x.toCLong
-
-# func neg*(z, x: Int): Int =
-#     ## Sets `z` to -`x` and returns `z`.
-#     result = z
-#     mpz_neg(z[], x[])
-
-# func `-`*(x: Int): Int =
-#     ## Unary `-` operator for an Int. Negates `x`.
-#     newInt().neg(x)

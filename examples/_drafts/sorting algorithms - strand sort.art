@@ -1,0 +1,79 @@
+; proc mergeList[T](a, b: var seq[T]): seq[T] =
+;   result = @[]
+;   while a.len > 0 and b.len > 0:
+;     if a[0] < b[0]:
+;       result.add a[0]
+;       a.delete 0
+;     else:
+;       result.add b[0]
+;       b.delete 0
+;   result.add a
+;   result.add b
+
+mergeList: function [c,d][
+    resu: []
+    while [and? positive? size c, positive? size d][
+        if? c\[0] < d\[0][
+            'resu ++ c\[0]
+            c: remove.index c 0
+        ]
+        else[
+            'resu ++ d\[0]
+            d: remove.index d 0
+        ]
+    ]
+    'resu ++ c
+    'resu ++ d
+    return resu
+]
+
+strand: function [a][
+    i: 0
+    res: @[a\0]
+    a: remove.index a 0
+    while [i < size a][
+        if? a\[i] > last res[
+            'res ++ a\[i]
+            a: remove.index a i
+        ]
+        else -> inc 'i
+    ]
+    return res
+]
+; proc strand[T](a: var seq[T]): seq[T] =
+;   var i = 0
+;   result = @[a[0]]
+;   a.delete 0
+;   while i < a.len:
+;     if a[i] > result[result.high]:
+;       result.add a[i]
+;       a.delete i
+;     else:
+;       inc i
+
+
+strandSort: function [arr][
+    temp: new arr
+    result: strand temp
+
+    while [positive? size temp][
+        print "HERE"
+        s: strand temp
+        print s
+        result: mergeList result s
+        print result
+    ]
+
+    return result
+]
+
+; proc strandSort[T](a: seq[T]): seq[T] =
+;   var a = a
+;   result = a.strand
+;   while a.len > 0:
+;     var s = a.strand
+;     result = mergeList(result, s)
+
+
+
+print strandSort [3 1 2 8 5 7 9 4 6]

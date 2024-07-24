@@ -1,0 +1,15 @@
+records: @[
+    #[country: "UK", city: "London"]
+    #[country: "US", city: "New York"]
+    #[country: "US", city: "Birmingham"]
+    #[country: "UK", city: "Birmingham"]
+]
+
+print "Original order:"
+loop records => print
+
+print "\nSorted by country name:"
+loop sort.by:'country records => print
+
+print "\nSorted by city name:"
+loop sort.by:'city records => print

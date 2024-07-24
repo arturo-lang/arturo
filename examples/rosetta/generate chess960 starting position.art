@@ -1,0 +1,20 @@
+; by @Krenium
+
+; Using Edward Collins' single-die method
+; http://www.edcollins.com/chess/fischer-random.htm
+
+chess960: function [][
+    result: array.of: 8 ø
+    vacant: @0..7  ; open squares available to put pieces
+    result\[remove 'vacant <= 2 * random 0 3]: 'bishop      ; place on random black square
+    result\[remove 'vacant <= 1 + 2 * random 0 3]: 'bishop  ; place on random white square
+    loop ['queen 'knight 'knight] 'piece [
+        result\[remove 'vacant <= sample vacant]: piece     ; place on random open square
+    ]
+    result\[vacant\0]: 'rook  ; place king between rooks on remaining open squares
+    result\[vacant\1]: 'king
+    result\[vacant\2]: 'rook
+    result
+]
+
+do.times:5 -> print chess960

@@ -1,0 +1,1 @@
+|relative "cmdline/inspectArgs.art"| -a main

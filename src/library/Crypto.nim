@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2023 Yanis Zafirópulos
+# (c) 2019-2024 Yanis Zafirópulos
 #
 # @file: library/Crypto.nim
 #=======================================================
@@ -26,7 +26,7 @@
 #=======================================
 
 when not defined(WEB):
-    import md5, std/sha1
+    import extras/checksums/md5, extras/checksums/sha1
 
 import base64, uri
 when not defined(freebsd) and not defined(WEB):
@@ -38,10 +38,14 @@ import helpers/url
 import vm/lib
 
 #=======================================
-# Methods
+# Definitions
 #=======================================
 
-proc defineSymbols*() =
+proc defineLibrary*() =
+
+    #----------------------------
+    # Functions
+    #----------------------------
 
     builtin "crc",
         alias       = unaliased, 
@@ -49,7 +53,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the CRC32 polynomial of given string",
         args        = {
-            "value" : {String,Literal}
+            "value" : {String,Literal, PathLiteral}
         },
         attrs       = NoAttrs,
         returns     = {String,Nothing},
@@ -58,8 +62,8 @@ proc defineSymbols*() =
             ; 414FA339
         """:
             #=======================================================
-            if x.kind==Literal:
-                ensureInPlace()
+            if xKind in {Literal, PathLiteral}:
+                ensureInPlaceAny()
                 InPlaced.s = InPlaced.s.crc32()
             else:
                 push(newString(x.s.crc32()))
@@ -70,7 +74,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "encode given value (default: base-64)",
         args        = {
-            "value" : {String,Literal}
+            "value" : {String,Literal, PathLiteral}
         },
         attrs       = {
             "url"   : ({Logical},"decode URL based on RFC3986")
@@ -85,14 +89,14 @@ proc defineSymbols*() =
         """:
             #=======================================================
             if (hadAttr("url")):
-                if x.kind==Literal:
-                    ensureInPlace()
+                if xKind in {Literal, PathLiteral}:
+                    ensureInPlaceAny()
                     InPlaced.s = InPlaced.s.decodeUrl()
                 else:
                     push(newString(x.s.decodeUrl()))
             else:
-                if x.kind==Literal:
-                    ensureInPlace()
+                if xKind in {Literal, PathLiteral}:
+                    ensureInPlaceAny()
                     InPlaced.s = InPlaced.s.decode()
                 else:
                     push(newString(x.s.decode()))
@@ -100,13 +104,14 @@ proc defineSymbols*() =
     # TODO(Crypto\encode) Move function to different module?
     #  Function doesn't really correspond to cryptography anymore. Or at least most of it. What should be done?
     #  labels: library, open discussion
+
     builtin "encode",
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "decode given value (default: base-64)",
         args        = {
-            "value" : {String,Literal}
+            "value" : {String,Literal, PathLiteral}
         },
         attrs       = {
             "url"       : ({Logical},"encode URL based on RFC3986"),
@@ -127,8 +132,8 @@ proc defineSymbols*() =
             if (hadAttr("url")):
                 let spaces = (hadAttr("spaces"))
                 let slashes = (hadAttr("slashes"))
-                if x.kind==Literal:
-                    ensureInPlace()
+                if xKind in {Literal, PathLiteral}:
+                    ensureInPlaceAny()
                     InPlaced.s = InPlaced.s.urlencode(encodeSpaces=spaces, encodeSlashes=slashes)
                 else:
                     push(newString(x.s.urlencode(encodeSpaces=spaces, encodeSlashes=slashes)))
@@ -140,13 +145,13 @@ proc defineSymbols*() =
                     if checkAttr("to"):
                         dest = aTo.s
 
-                    if x.kind==Literal:
-                        ensureInPlace()
+                    if xKind in {Literal, PathLiteral}:
+                        ensureInPlaceAny()
                         InPlaced.s = convert(InPlaced.s, srcEncoding=src, destEncoding=dest)
                     else:
                         push(newString(convert(x.s, srcEncoding=src, destEncoding=dest)))
                 else:
-                    if x.kind==String:
+                    if xKind==String:
                         push(newString(x.s))
 
             elif checkAttr("to"):
@@ -154,18 +159,18 @@ proc defineSymbols*() =
                     var src = "CP1252"
                     var dest = aTo.s
 
-                    if x.kind==Literal:
-                        ensureInPlace()
+                    if xKind in {Literal, PathLiteral}:
+                        ensureInPlaceAny()
                         InPlaced.s = convert(InPlaced.s, srcEncoding=src, destEncoding=dest)
                     else:
                         push(newString(convert(x.s, srcEncoding=src, destEncoding=dest)))
                 else:
-                    if x.kind==String:
+                    if xKind==String:
                         push(newString(x.s))
 
             else:
-                if x.kind==Literal:
-                    ensureInPlace()
+                if xKind in {Literal, PathLiteral}:
+                    ensureInPlaceAny()
                     InPlaced.s = InPlaced.s.encode()
                 else:
                     push(newString(x.s.encode()))
@@ -174,13 +179,14 @@ proc defineSymbols*() =
         # TODO(Crypto\digest) could it be used for Web/JS builds too?
         #  would it be that useful to have md5/sha1 encoding capabilities through JavaScript?
         #  labels: library,enhancement,open discussion,web
+
         builtin "digest",
             alias       = unaliased, 
             op          = opNop,
             rule        = PrefixPrecedence,
             description = "get digest for given value (default: MD5)",
             args        = {
-                "value" : {String,Literal}
+                "value" : {String, Literal, PathLiteral}
             },
             attrs       = {
                 "sha"   : ({Logical},"use SHA1")
@@ -195,15 +201,15 @@ proc defineSymbols*() =
             """:
                 #=======================================================
                 if (hadAttr("sha")):
-                    if x.kind==Literal:
-                        ensureInPlace()
-                        SetInPlace(newString(($(secureHash(InPlaced.s))).toLowerAscii()))
+                    if xKind in {Literal, PathLiteral}:
+                        ensureInPlaceAny()
+                        SetInPlaceAny(newString(($(secureHash(InPlaced.s))).toLowerAscii()))
                     else:
                         push(newString(($(secureHash(x.s))).toLowerAscii()))
                 else:
-                    if x.kind==Literal:
-                        ensureInPlace()
-                        SetInPlace(newString(($(toMD5(InPlaced.s))).toLowerAscii()))
+                    if xKind in {Literal, PathLiteral}:
+                        ensureInPlaceAny()
+                        SetInPlaceAny(newString(($(toMD5(InPlaced.s))).toLowerAscii()))
                     else:
                         push(newString(($(toMD5(x.s))).toLowerAscii()))
 
@@ -238,4 +244,4 @@ proc defineSymbols*() =
 # Add Library
 #=======================================
 
-Libraries.add(defineSymbols)
+Libraries.add(defineLibrary)

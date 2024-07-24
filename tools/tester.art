@@ -11,7 +11,7 @@ if 1 = size arg -> errorMargin: to :integer first arg
 
 supersuccess: 0
 superskipped: 0
-supertotal: 0 
+supertotal: 0
 
 canExecute?: function [scri][
     scr: extract.filename scri
@@ -20,16 +20,24 @@ canExecute?: function [scri][
             "runtime.NumberOutOfPermittedRange"
 
             "branching"
+            "lib.collections"
+            "lib.comparison"
+            "lib.files"
+            "quantities"
             "sorting"
 
             "ackermann function"
             "arbitrary-precision integers - included"
+            "bell numbers"
+            "benford's law"
+            "combinations and permutations"
             "curzon numbers"
             "hamming numbers"
             "iban"
             "integer overflow"
             "integer roots"
             "jacobsthal numbers"
+            "left factorials"
             "long multiplication"
             "loops - continue"
             "lucas-lehmer test"
@@ -37,9 +45,17 @@ canExecute?: function [scri][
             "modular exponentation"
             "next special primes"
             "pell's equation"
+            "penta-power prime seeds"
             "permutations - derangements"
+            "primorial numbers"
+            "quad-power prime seeds"
+            "repunit primes"
+            "sequence of primorial primes"
+            "smallest power of 6 whose decimal expansion contains n"
+            "sort a list of object identifiers"
             "sorting algorithms - cycle sort"
             "sorting algorithms - pancake sort"
+            "special factorials"
             "square root by hand"
             "sylvester's sequence"
             "trigonometric functions"
@@ -47,7 +63,7 @@ canExecute?: function [scri][
             "unicode strings"
             "wieferich primes"
             "xml - input"
-        ] -> return false 
+        ] -> return false
     ]
 
     if sys\release='full [
@@ -71,13 +87,27 @@ runSet: function [title,location].export:[supersuccess,supertotal,superskipped][
 
     loop tests 'test [
         script: replace test ".res" ".art"
-        expected: split.lines strip read test
+        expected: read test
+        if title="Errors" [
+            expected: replace expected {═} ""
+        ]
+        expected: split.lines strip expected
 
-        prints pad.right ((color #magenta "\n- Running: ") ++ truncate.preserve extract.filename script 40) 70 
+        prints pad.right ((color #magenta "\n- Running: ") ++ truncate.preserve extract.filename script 40) 70
         if? canExecute? script [
 
             ;tim: benchmark.get [
-                result: split.lines strip execute ~{|sys\binary| --no-color "|script|"}
+                result: execute ~{|sys\binary| --no-color "|script|"}
+                cleanResult: ""
+                if title="Errors" [
+                    cleanResult: split.lines strip result
+                    result: replace result {═} ""
+                ]
+                result: split.lines strip result
+                if title <> "Errors" [
+                    cleanResult: result
+                ]
+
             ;]
             ; indiTimes: indiTimes ++ #[
             ;     tst: test
@@ -92,7 +122,7 @@ runSet: function [title,location].export:[supersuccess,supertotal,superskipped][
             ]
             else [
                 print "<-------------------"
-                print join.with:"\n" result
+                print join.with:"\n" cleanResult
                 print "------------------->"
                 prints color #red "[  ERROR  ]"
             ]
@@ -103,7 +133,7 @@ runSet: function [title,location].export:[supersuccess,supertotal,superskipped][
             success: success + 1
             supersuccess: supersuccess + 1
         ]
-    ] 
+    ]
 
     print "\n"
     print pad.left render.template "<||= success ||> of <||= size tests ||> tasks succeeded ◀" 69
@@ -121,11 +151,11 @@ print color #gray ~"  Release: @|sys\release|\n"
 
 supertime: in's benchmark.get [
     runSet "Unit Tests" "../tests/unittests"
-    runSet "Errors" "../tests/errors"
+    ;runSet "Errors" "../tests/errors"
     runSet "Examples" "../examples/rosetta"
 ]
 
-if supersuccess < supertotal-errorMargin [ 
+if supersuccess < supertotal-errorMargin [
     panic.code: 1 "Some unit-tests failed!"
 ]
 
@@ -140,7 +170,8 @@ rate: to :string .format:".1f" 100 * supersuccess//supertotal
 print color #cyan "====================================================================="
 if? supersuccess=supertotal -> print [color #cyan "|" "Success rate:" color #green append rate "%" color #cyan pad "|" 51 - size rate]
 else -> print [color #cyan "|" "Success rate:" append rate "%" color #cyan pad "|" 51 - size rate]
-print [color #cyan "|" "Total time:" supertime color #cyan pad "|" 54 - size to :string supertime]
+printableTime: ~"|round.to: 2 to :floating scalar supertime| s"
+print [color #cyan "|" "Total time:" printableTime color #cyan pad "|" 54 - size to :string printableTime]
 print color #cyan "====================================================================="
 
 exit

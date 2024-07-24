@@ -1,0 +1,15 @@
+cnt: 0
+n: 1
+while [cnt < 45][
+    m: 0
+    while [true][
+        p: inc n * 2^m
+        if prime? p [
+            print ["n:" n "m:" m "p:" p]
+            inc 'cnt
+            break
+        ]
+        inc 'm
+    ]
+    inc 'n
+]

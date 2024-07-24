@@ -1,0 +1,29 @@
+
+symbolTable: @'a'..'z'
+
+encodeWord: function [s][
+    symt: new symbolTable
+    result: []
+    loop s 'c [
+        idx: index symt c
+        'result ++ idx
+        symt: (rotate symt\[0..idx] 1) ++ symt\[(idx+1)..dec size symt]
+    ]
+    return result
+]
+
+decodeWord: function [s][
+    symt: new symbolTable
+    result: []
+    loop s 'idx [
+        'result ++ symt\[idx]
+        symt: (rotate symt\[0..idx] 1) ++ symt\[(idx+1)..dec size symt]
+    ]
+    return join result
+]
+
+loop ["broood", "babanaaa", "hiphophiphop"] 'word [
+    encoded: encodeWord word
+    decoded: decodeWord encoded
+    print ["'"++word++"'" "encodes to" encoded "which correctly decodes to" "'"++decoded++"'"]
+]

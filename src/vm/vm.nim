@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2023 Yanis Zafirópulos
+# (c) 2019-2024 Yanis Zafirópulos
 #
 # @file: vm/vm.nim
 #=======================================================
@@ -27,36 +27,34 @@ when not defined(WEB):
     import helpers/stores
 
 import vm/[
+    bundle/resources,
     env, 
     errors, 
     eval, 
     exec, 
     globals, 
     parse, 
+    runtime,
     stack, 
     values/value, 
-    version
+    values/printable,
+    values/custom/verror
 ]
 
 when not defined(WEB):
     import vm/profiler
 
-when defined(WEB):
-    import vm/values/printable
-
 #=======================================
 # Packaging setup
 #=======================================
 
-when defined(PORTABLE):
-    import json, sequtils
+# when defined(BUNDLE):
+#     import json, sequtils, sugar
 
-    let js {.compileTime.} = parseJson(static readFile(getEnv("PORTABLE_DATA")))
-    let mods {.compileTime.} = toSeq(js["uses"]["modules"]).map((x) => x.getStr())
-    let compact {.compileTime.} = js["compact"].getStr() == "true"
-else:
-    let mods {.compileTime.}: seq[string] = @[]
-    let compact {.compileTime.} = false
+#     let js {.compileTime.} = parseJson(static getEnv("BUNDLE_MODULES"))
+#     let bundledModules {.compileTime.} = toSeq(js).map((x) => x.getStr())
+# else:
+#     let bundledModules {.compileTime.}: seq[string] = @[]
 
 #=======================================
 # Macros
@@ -64,19 +62,36 @@ else:
 
 macro importLib(name: static[string]): untyped =
     let id = ident(name & "Lib")
+    let libpath = ident("library/" & name)
     let libname = name.toUpperAscii()
     result = quote do:
-        when not defined(PORTABLE) or not compact or mods.contains(`name`):
+        when not defined(BUNDLE) or BundleModules.contains(`name`):
             when defined(DEV):
                 static: 
                     echo "-------------------------"
                     echo " ## " & `libname`
                     echo "-------------------------"
-            import library/`name` as `id`
+            import `libpath` as `id`
 
 #=======================================
 # Standard library setup
 #=======================================
+
+# TODO(VM/vm) don't completely eliminate unsupported functions
+#  right now, if we have e.g. a MINI build, some - albeit few -
+#  features are disabled. As a consequence, some functions cannot
+#  work. For example, mysqlite is not available in MINI builds.
+#  However, totally removing e.g. `open` - leads to confusing
+#  situations, such as me using the function and all I can see
+#  is that the identifier... "open" wasn't found.
+#  Not very helpful at all, given that we could simply let people
+#  know what is going on. That would obviously mean *not* completely
+#  eliminating the function, only having it throw an error in case
+#  some - or all - of its features are not supported.
+#  Also, it would be a good idea to create sth like a macro(?) which
+#  could combine the logic of `when defined(MINI)` (or whatever) +
+#  the error handling part. Food for thought! ;-)
+#  labels: vm, library, error handling, enhancement
 
 importLib "Arithmetic"
 importLib "Bitwise"
@@ -88,6 +103,7 @@ importLib "Core"
 importLib "Crypto"
 importLib "Databases"
 importLib "Dates"
+importLib "Exceptions"
 importLib "Files"
 importLib "Io"
 importLib "Iterators"
@@ -95,12 +111,14 @@ importLib "Logic"
 importLib "Net"
 importLib "Numbers"
 importLib "Paths"
+importLib "Quantities"
 importLib "Reflection"
 importLib "Sets"
 importLib "Sockets"
 importLib "Statistics"
 importLib "Strings"
 importLib "System"
+importLib "Types"
 importLib "Ui"
 
 #=======================================
@@ -124,6 +142,9 @@ template initialize(args: seq[string], filename: string, isFile:bool, scriptData
 
     # attributes
     createAttrsStack()
+
+    # frame stack
+    createFrameStack()
     
     # random number generator
     randomize()
@@ -131,37 +152,64 @@ template initialize(args: seq[string], filename: string, isFile:bool, scriptData
     # environment
     initEnv(
         arguments = args, 
-        version = ArturoVersion,
-        build = ArturoBuild,
         script = scriptData
     )
 
     when not defined(WEB):
         # configuration
-        Config = newStore(
-            initStore(
-                "config",
-                doLoad=false,
-                forceExtension=true,
-                createIfNotExists=true,
-                global=true,
-                autosave=true,
-                kind=NativeStore
+
+        let currentDir = os.getCurrentDir()
+
+        if os.fileExists(currentDir/"config.art"):
+            Config = newStore(
+                initStore(
+                    currentDir/"config.art",
+                    doLoad=false,
+                    forceExtension=true,
+                    createIfNotExists=false,
+                    global=false,
+                    autosave=true,
+                    kind=NativeStore
+                )
             )
-        )
+        else:
+            Config = newStore(
+                initStore(
+                    "config",
+                    doLoad=false,
+                    forceExtension=true,
+                    createIfNotExists=true,
+                    global=true,
+                    autosave=true,
+                    kind=NativeStore
+                )
+            )
 
     when not defined(WEB):
         # paths
-        if isFile: env.addPath(filename)
-        else: env.addPath(getCurrentDir())
+        if isFile: pushFrame(filename, fromFile=true)
+        else: 
+            when defined(BUNDLE):
+                pushFrame("")
+            else:
+                pushFrame(getCurrentDir())
 
     Syms = initTable[string,Value]()
 
-    if portableData != "":
-        SetSym("_portable", valueFromJson(portableData))
-
     # library
     setupLibrary()
+
+    # dumper
+    Dumper = proc (v:Value):string =
+        v.dumped()
+
+    if portableData != "":
+        when defined(BUNDLE):
+            let bres = valueFromJson(portableData)
+
+            echo "setting bundled resources"
+            Bundled = bres.d
+            echo Dumper(bres)
 
     # set VM as initialized
     initialized = true
@@ -169,17 +217,17 @@ template initialize(args: seq[string], filename: string, isFile:bool, scriptData
 template handleVMErrors(blk: untyped): untyped =
     try:
         blk
-    except:
-        let e = getCurrentException()        
-        showVMErrors(e)
+    except CatchableError, Defect:
+        let e = getCurrentException()   
+        showError(VError(e))
 
         when not defined(WEB):
             savePendingStores()
 
-        if e.name == $(ProgramError):
-            let code = parseInt(e.msg.split(";;")[1].split("<:>")[0])
+        try:
+            let code = parseInt($(e.name))
             quit(code)
-        else:
+        except ValueError:
             quit(1)
 
 #=======================================
@@ -202,13 +250,6 @@ when not defined(WEB):
             # TODO(VM/vm) Would it make sense to `GC_disableMarkAndSweep`?
             #  will it even matter at all?
             #  labels: vm, open discussion, benchmark, performance
-
-            if isFile:
-                when defined(SAFE):
-                    CurrentFile = "main.art"
-                else:
-                    CurrentFile = lastPathPart(code)
-                    CurrentPath = code
 
             initProfiler()
             
@@ -233,6 +274,17 @@ when not defined(WEB):
             savePendingStores()
 
             return evaled
+    
+    proc run*(bl: proc()) =
+        handleVMErrors:
+            if not initialized:
+                initialize(
+                    @[], 
+                    "", 
+                    isFile=false, 
+                    newBlock()
+                )
+            bl()
 
 else:
 

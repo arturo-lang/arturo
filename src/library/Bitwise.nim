@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2023 Yanis Zafirópulos
+# (c) 2019-2024 Yanis Zafirópulos
 #
 # @file: library/Bitwise.nim
 #=======================================================
@@ -22,16 +22,20 @@
 import vm/lib
 
 #=======================================
-# Methods
+# Definitions
 #=======================================
 
-proc defineSymbols*() =
-    
-    # TODO(Binary) more potential built-in function candidates?
-    #  I'm thinking that we could probably add functions that allows to either clear or "set" a specific bit.
-    #  Potentially, this could lead to the need of having another - e.g. `:bitset` - type.
-    #  Is it worth the fuss?
-    #  labels: library, enhancement, open discussion
+# TODO(Binary) more potential built-in function candidates?
+#  I'm thinking that we could probably add functions that allows to either clear or "set" a specific bit.
+#  Potentially, this could lead to the need of having another - e.g. `:bitset` - type.
+#  Is it worth the fuss?
+#  labels: library, enhancement, open discussion
+
+proc defineLibrary*() =
+
+    #----------------------------
+    # Functions
+    #----------------------------
 
     builtin "and",
         alias       = unaliased, 
@@ -39,7 +43,7 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "calculate the binary AND for the given values",
         args        = {
-            "valueA": {Integer,Binary,Literal},
+            "valueA": {Integer,Binary,Literal,PathLiteral},
             "valueB": {Integer,Binary}
         },
         attrs       = NoAttrs,
@@ -51,9 +55,7 @@ proc defineSymbols*() =
             and 'a 3           ; a: 2
         """:
             #=======================================================
-            if x.kind==Literal : ensureInPlace(); InPlaced &&= y
-            else               : push(x && y)
-
+            generateOperationB("and", `&&`, `&&=`)
 
     builtin "nand",
         alias       = unaliased, 
@@ -61,7 +63,7 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "calculate the binary NAND for the given values",
         args        = {
-            "valueA": {Integer,Binary,Literal},
+            "valueA": {Integer,Binary,Literal,PathLiteral},
             "valueB": {Integer,Binary}
         },
         attrs       = NoAttrs,
@@ -73,8 +75,12 @@ proc defineSymbols*() =
             nand 'a 3          ; a: -3
         """:
             #=======================================================
-            if x.kind==Literal : ensureInPlace(); InPlaced &&= y; !!= InPlaced
-            else               : push(!! (x && y))
+            if xKind==Literal : 
+                ensureInPlace(); InPlaced &&= y; !!= InPlaced
+            elif normalIntegerOperation():
+                push(normalIntegerNot(normalIntegerAnd(x.i, y.i).i))
+            else:
+                push(!! (x && y))
 
     builtin "nor",
         alias       = unaliased, 
@@ -82,7 +88,7 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "calculate the binary NOR for the given values",
         args        = {
-            "valueA": {Integer,Binary,Literal},
+            "valueA": {Integer,Binary,Literal,PathLiteral},
             "valueB": {Integer,Binary}
         },
         attrs       = NoAttrs,
@@ -94,8 +100,12 @@ proc defineSymbols*() =
             nor 'a 3           ; a: -4
         """:
             #=======================================================
-            if x.kind==Literal : ensureInPlace(); InPlaced ||= y; !!= InPlaced
-            else               : push(!! (x || y))
+            if xKind==Literal : 
+                ensureInPlace(); InPlaced ||= y; !!= InPlaced
+            elif normalIntegerOperation():
+                push(normalIntegerNot(normalIntegerOr(x.i, y.i).i))
+            else:
+                push(!! (x || y))
 
     builtin "not",
         alias       = unaliased, 
@@ -103,7 +113,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the binary complement the given value",
         args        = {
-            "value" : {Integer,Binary,Literal}
+            "value" : {Integer,Binary,Literal,PathLiteral}
         },
         attrs       = NoAttrs,
         returns     = {Integer,Binary,Nothing},
@@ -114,8 +124,7 @@ proc defineSymbols*() =
             not 'a             ; a: -124
         """:
             #=======================================================
-            if x.kind==Literal : ensureInPlace(); !!= InPlaced 
-            else               : push(!! x)
+            generateOperationA("not", `!!`, `!!=`)
 
     builtin "or",
         alias       = unaliased, 
@@ -123,7 +132,7 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "calculate the binary OR for the given values",
         args        = {
-            "valueA": {Integer,Binary,Literal},
+            "valueA": {Integer,Binary,Literal,PathLiteral},
             "valueB": {Integer,Binary}
         },
         attrs       = NoAttrs,
@@ -135,8 +144,7 @@ proc defineSymbols*() =
             or 'a 3            ; a: 3
         """:
             #=======================================================
-            if x.kind==Literal : ensureInPlace(); InPlaced ||= y
-            else               : push(x || y)
+            generateOperationB("or", `||`, `||=`)
 
     builtin "shl",
         alias       = unaliased, 
@@ -144,7 +152,7 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "shift-left first value bits by second value",
         args        = {
-            "value" : {Integer,Literal},
+            "value" : {Integer,Literal,PathLiteral},
             "bits"  : {Integer}
         },
         attrs       = {
@@ -158,14 +166,18 @@ proc defineSymbols*() =
             shl 'a 3           ; a: 16
         """:
             #=======================================================
-            if x.kind==Literal : 
-                ensureInPlace(); 
-                let valBefore = InPlaced 
+            if xKind in {Literal, PathLiteral}: 
+                ensureInPlaceAny(); 
+                let valBefore = InPlaced
                 InPlaced <<= y
                 if InPlaced < valBefore and (hadAttr("safe")):
-                    SetInPlace(newBigInteger(valBefore.i) << y)
-                    
-            else               : 
+                    SetInPlaceAny(newBigInteger(valBefore.i) << y)
+            elif normalIntegerOperation():
+                var res = normalIntegerShl(x.i, y.i)
+                if res < x and (hadAttr("safe")):
+                    res = newBigInteger(x.i) << y
+                push(res)
+            else:
                 var res = x << y
                 if res < x and (hadAttr("safe")):
                     res = newBigInteger(x.i) << y
@@ -177,7 +189,7 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "shift-right first value bits by second value",
         args        = {
-            "value" : {Integer,Literal},
+            "value" : {Integer,Literal,PathLiteral},
             "bits"  : {Integer}
         },
         attrs       = NoAttrs,
@@ -189,8 +201,7 @@ proc defineSymbols*() =
             shr 'a 3           ; a: 2
         """:
             #=======================================================
-            if x.kind==Literal : ensureInPlace(); InPlaced >>= y
-            else               : push(x >> y)
+            generateOperationB("shr", `>>`, `>>=`)
 
     builtin "xnor",
         alias       = unaliased, 
@@ -198,7 +209,7 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "calculate the binary XNOR for the given values",
         args        = {
-            "valueA": {Integer,Binary,Literal},
+            "valueA": {Integer,Binary,Literal,PathLiteral},
             "valueB": {Integer,Binary}
         },
         attrs       = NoAttrs,
@@ -210,8 +221,12 @@ proc defineSymbols*() =
             xnor 'a 3          ; a: -2
         """:
             #=======================================================
-            if x.kind==Literal : ensureInPlace(); InPlaced ^^= y; !!= InPlaced
-            else               : push(!! (x ^^ y))
+            if xKind==Literal : 
+                ensureInPlace(); InPlaced ^^= y; !!= InPlaced
+            elif normalIntegerOperation():
+                push(normalIntegerNot(normalIntegerXor(x.i, y.i).i))
+            else:
+                push(!! (x ^^ y))
         
     builtin "xor",
         alias       = unaliased, 
@@ -219,7 +234,7 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "calculate the binary XOR for the given values",
         args        = {
-            "valueA": {Integer,Binary,Literal},
+            "valueA": {Integer,Binary,Literal,PathLiteral},
             "valueB": {Integer,Binary}
         },
         attrs       = NoAttrs,
@@ -231,11 +246,10 @@ proc defineSymbols*() =
             xor 'a 3           ; a: 1
         """:
             #=======================================================
-            if x.kind==Literal : ensureInPlace(); InPlaced ^^= y
-            else               : push(x ^^ y)
+            generateOperationB("xor", `^^`, `^^=`)
 
 #=======================================
 # Add Library
 #=======================================
 
-Libraries.add(defineSymbols)
+Libraries.add(defineLibrary)

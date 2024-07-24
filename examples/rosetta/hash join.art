@@ -1,0 +1,33 @@
+hashJoin: function [t1, t2][
+    result: []
+    h: #[]
+    loop t1 's [
+        if not? key? h s\1 -> h\[s\1]: []
+        h\[s\1]: h\[s\1] ++ @[s]
+    ]
+    loop t2 'r [
+        loop h\[r\0] 's [
+            'result ++ @[@[s r]]
+        ]
+    ]
+    return result
+]
+
+table1: [
+    [27 "Jonah"]
+    [18 "Alan"]
+    [28 "Glory"]
+    [18 "Popeye"]
+    [28 "Alan"]
+]
+
+table2: [
+    ["Jonah" "Whales"]
+    ["Jonah" "Spiders"]
+    ["Alan" "Ghosts"]
+    ["Alan" "Zombies"]
+    ["Glory" "Buffy"]
+]
+
+loop hashJoin table1 table2 'row ->
+    print row

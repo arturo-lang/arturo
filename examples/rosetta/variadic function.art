@@ -2,8 +2,8 @@
 ; a quasi-variadic function
 ;-------------------------------------------
 variadic: function [args][
-    loop args 'arg [
-        print arg
+    loop args 'argv [
+        print argv
     ]
 ]
 

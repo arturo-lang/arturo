@@ -1,0 +1,3 @@
+100..1000 | select => odd?
+          | select 'x -> zero? (sqrt x) % 1
+          | print

@@ -1,0 +1,14 @@
+euler: function [f, y0, a, b, h][
+    [t,y]: @[a, y0]
+
+    while [t < b][
+        print [to :string .format:".3f" t, to :string .format:".3f" y]
+        t: t + h
+        y: y + h * call f @[t,y]
+    ]
+]
+
+newtoncooling: function [ti, te]->
+    (neg 0.07) * te - 20
+
+euler 'newtoncooling 100.0 0.0 100.0 10.0

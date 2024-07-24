@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2023 Yanis Zafirópulos
+# (c) 2019-2024 Yanis Zafirópulos
 #
 # @file: library/Ui.nim
 #=======================================================
@@ -22,9 +22,8 @@
 import vm/lib
 
 when not defined(NOWEBVIEW):
-    import algorithm, hashes
+    import algorithm, hashes, tables
 
-    import helpers/url
     import helpers/webviews
 
     import vm/[exec, parse]
@@ -36,10 +35,14 @@ when not defined(NODIALOGS):
     import helpers/dialogs
 
 #=======================================
-# Methods
+# Definitions
 #=======================================
 
-proc defineSymbols*() =
+proc defineLibrary*() =
+
+    #----------------------------
+    # Functions
+    #----------------------------
 
     when not defined(NODIALOGS):
         
@@ -274,17 +277,16 @@ proc defineSymbols*() =
                 if checkAttr("title"): title = aTitle.s
                 if checkAttr("width"): width = aWidth.i
                 if checkAttr("height"): height = aHeight.i
-                if checkAttr("on"): on = aOn.d
                 if checkAttr("inject"): inject = aInject.s
+                
+                if checkAttr("on"): on = aOn.d
+                else: on = newOrderedTable[string,Value]()
 
-                var targetUrl = x.s
-
-                if not isUrl(x.s):
-                    targetUrl = "data:text/html, " & x.s
+                var content = x.s
 
                 let wv: Webview = newWebview(
                     title       = title, 
-                    url         = targetUrl, 
+                    content     = content, 
                     width       = width, 
                     height      = height, 
                     resizable   = not fixed, 
@@ -311,14 +313,14 @@ proc defineSymbols*() =
                                     fun.action()()
 
                                 if SP > prevSP:
-                                    result = pop()
+                                    result = stack.pop()
                         elif call==ExecuteCode:
                             let parsed = doParse(value.s, isFile=false)
                             let prevSP = SP
                             if not isNil(parsed):
                                 execUnscoped(parsed)
                             if SP > prevSP:
-                                result = pop()
+                                result = stack.pop()
                         elif call==WebviewEvent:
                             if (let onEvent = on.getOrDefault(value.s, nil); not onEvent.isNil):
                                 execUnscoped(onEvent)
@@ -347,4 +349,4 @@ proc defineSymbols*() =
 # Add Library
 #=======================================
 
-Libraries.add(defineSymbols)
+Libraries.add(defineLibrary)

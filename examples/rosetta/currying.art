@@ -1,0 +1,13 @@
+addN: function [n][
+    return function [x] with 'n [
+        return x + n
+    ]
+]
+
+add2: addN 2
+add3: addN 3
+
+do [
+    print add2 7
+    print add3 7
+]

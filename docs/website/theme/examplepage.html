@@ -24,11 +24,11 @@
                         if odd? halfM [halfM: halfM+1]
                         otherHalfM: (size Data\rosetta) - halfM
 
-                        previousFirst: ` `
+                        previousFirst: ' '
 
                         read.markdown replace replace replace W\content "%EXAMPLES_COUNT%" to :string size Data\rosetta "%EXAMPLES_2%" "<ul style='margin-top:0;'>" ++ join.with:"\n" map last.n:otherHalfM Data\rosetta [ti][
                             switch and? previousFirst <> first ti 
-                                        `l` <> first ti [
+                                        'l' <> first ti [
                                 previousFirst: first ti
                                 ~{</ul><p class="exampleletter">|upper to :string previousFirst|</p><ul><li><a href="https://arturo-lang.io/playground?example=|encode.url.spaces ti|" target="_blank">|capitalize ti|</a></li>}
                             ] [

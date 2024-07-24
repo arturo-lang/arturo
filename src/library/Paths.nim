@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2023 Yanis Zafirópulos
+# (c) 2019-2024 Yanis Zafirópulos
 #
 # @file: library/Path.nim
 #=======================================================
@@ -25,36 +25,24 @@ when not defined(WEB):
     import helpers/path
     import helpers/url
 
+    import vm/runtime
+
 import vm/lib
-when not defined(WEB):
-    import vm/env
+
 when defined(SAFE):
     import vm/errors
 
 #=======================================
-# Methods
+# Definitions
 #=======================================
 
-proc defineSymbols*() =
+proc defineLibrary*() =
+
+    #----------------------------
+    # Functions
+    #----------------------------
 
     when not defined(WEB):
-
-        builtin "absolute?",
-            alias       = unaliased,
-            op          = opNop,
-            rule        = PrefixPrecedence,
-            description = "check if given path is an absolute path",
-            args        = {
-                "path"  : {String}
-            },
-            attrs       = NoAttrs,
-            returns     = {Logical},
-            example     = """
-            absolute? "/usr/bin"        ; => true
-            absolute? "usr/bin"         ; => false
-            """:
-                #=======================================================
-                push(newLogical(isAbsolute(x.s)))
 
         # TODO(Paths\extract) implement for Web/JS builds
         #  labels: library,enhancement,web
@@ -128,7 +116,7 @@ proc defineSymbols*() =
             ; => 300
             """:
                 #=======================================================
-                if x.kind==Color:
+                if xKind==Color:
                     if (hadAttr("red")):
                         push newInteger(RGBfromColor(x.l).r)
                     elif (hadAttr("green")):
@@ -227,7 +215,7 @@ proc defineSymbols*() =
             ; data.txt
             """:
                 #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("list")
+                when defined(SAFE): Error_OperationNotPermitted("list")
                 let recursive = (hadAttr("recursive"))
                 let relative = (hadAttr("relative"))
                 let path = x.s
@@ -241,39 +229,13 @@ proc defineSymbols*() =
 
                 push(newStringBlock(contents))
 
-        # TODO(Paths\module) Re-implement & change behavior of built-in function
-        #  This should actually check if the aforementioned module/package is installed first.
-        #  If not, it should look it up - and if available online - download it and install it.
-        #  This obviously goes hand-in-hand with the development & implementation of Arturo's new package manager.
-        #  labels: library, package manager, enhancement
-        builtin "module",
-            alias       = unaliased, 
-            op          = opNop,
-            rule        = PrefixPrecedence,
-            description = "get path for given module name",
-            args        = {
-                "name"  : {String,Literal}
-            },
-            attrs       = NoAttrs,
-            returns     = {String,Null},
-            example     = """
-            print module 'html        ; /usr/local/lib/arturo/html.art
-            ..........
-            do module 'html    ; (imports given module)
-            """:
-                #=======================================================
-                when defined(windows):
-                    push(newString(HomeDir & ".arturo\\lib\\" & x.s & ".art"))
-                else:
-                    push(newString(HomeDir & ".arturo/lib/" & x.s & ".art"))
-        
         builtin "normalize",
             alias       = unaliased, 
             op          = opNop,
             rule        = PrefixPrecedence,
             description = "get normalized version of given path",
             args        = {
-                "path"  : {String,Literal}
+                "path"  : {String,Literal,PathLiteral}
             },
             attrs       = {
                 "executable"    : ({Logical},"treat path as executable"),
@@ -298,8 +260,8 @@ proc defineSymbols*() =
             """:
                 #=======================================================
                 if (hadAttr("executable")):
-                    if x.kind==Literal:
-                        ensureInPlace()
+                    if xKind in {Literal,PathLiteral}:
+                        ensureInPlaceAny()
                         if (hadAttr("tilde")):
                             InPlaced.s = InPlaced.s.expandTilde()
                         InPlaced.s.normalizeExe()
@@ -312,8 +274,8 @@ proc defineSymbols*() =
                         ret.normalizeExe()
                         push(newString(ret))
                 else:
-                    if x.kind==Literal:
-                        ensureInPlace()
+                    if xKind in {Literal,PathLiteral}:
+                        ensureInPlaceAny()
                         if (hadAttr("tilde")):
                             InPlaced.s = InPlaced.s.expandTilde()
                         InPlaced.s.normalizePath()
@@ -322,11 +284,6 @@ proc defineSymbols*() =
                             push(newString(normalizedPath(x.s.expandTilde())))
                         else:
                             push(newString(normalizedPath(x.s)))
-
-        constant "path",
-            alias       = unaliased,
-            description = "common path constants":
-                newDictionary(getPathInfo())
 
         builtin "relative",
             alias       = dotslash, 
@@ -345,10 +302,33 @@ proc defineSymbols*() =
             ; /Users/admin/Desktop/test.txt
             """:
                 #=======================================================
-                push(newString(joinPath(env.currentPath(),x.s)))
+                push(newString(joinPath(currentFrame().folder, x.s)))
+
+    #----------------------------
+    # Predicates
+    #----------------------------
+
+    when not defined(WEB):
+        
+        builtin "absolute?",
+            alias       = unaliased,
+            op          = opNop,
+            rule        = PrefixPrecedence,
+            description = "check if given path is an absolute path",
+            args        = {
+                "path"  : {String}
+            },
+            attrs       = NoAttrs,
+            returns     = {Logical},
+            example     = """
+            absolute? "/usr/bin"        ; => true
+            absolute? "usr/bin"         ; => false
+            """:
+                #=======================================================
+                push(newLogical(isAbsolute(x.s)))
 
 #=======================================
 # Add Library
 #=======================================
 
-Libraries.add(defineSymbols)
+Libraries.add(defineLibrary)

@@ -1,0 +1,1 @@
+|relative "cmdline/inspectArgs.art"| -c -b --name:Rick

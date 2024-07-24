@@ -26,15 +26,13 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        version:
+        platform:
           - web
+        version:
+          - mini
+        arch:
+          - js
     steps:
-      - name: "Cancel similar actions in progress"
-        uses: styfle/cancel-workflow-action@0.10.0
-        with:
-          all_but_latest: true
-          access_token: ${{ github.token }}
-
       - name: "Checkout"
         uses: actions/checkout@main
         with:
@@ -62,7 +60,14 @@ jobs:
       - name: Setup nim
         uses: jiro4989/setup-nim-action@v1
         with:
-          nim-version: 'stable'
+          nim-version: '2.x'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install dependencies
+        run: |
+          npm install -g uglify-js
+          sudo apt-get update
+          sudo apt-get install libgtk-3-dev libwebkit2gtk-4.0-dev libmpfr-dev
           
       - name: Verify dependecies
         run: |
@@ -71,10 +76,26 @@ jobs:
       - name: Build Arturo
         run: |
           echo "$HOME/.arturo/bin" >> $GITHUB_PATH
-          ./build.nims install ${{ matrix.version }} log
+          ./build.nims build --mode ${{ matrix.platform }} --log
+
+      - name: Build Arturo (Normal binary)
+        run: |
+          echo "$HOME/.arturo/bin" >> $GITHUB_PATH
+          ./build.nims build --log
+
+      - name: Create artifact
+        run: |
+          mkdir webartifacts
+          cp bin/arturo.js webartifacts
+          cp bin/arturo.min.js webartifacts
 
       - name: Upload Artifacts
         uses: 'actions/upload-artifact@v2'
         with:
           name: "arturo-${{matrix.version}}"
-          path: bin/arturo.js
+          path: webartifacts
+
+      - name: Run unit tests
+        run: |
+          echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
+          ./bin/arturo tools/tester.web.art

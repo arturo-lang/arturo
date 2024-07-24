@@ -1,0 +1,31 @@
+rule1: {"I before E when not preceded by C"}
+rule2: {"E before I when preceded by C"}
+phrase: {"I before E except after C"}
+
+plausibility: #[
+    false: "not plausible", 
+    true: "plausible"
+]
+
+checkPlausible: function [rule, count1, count2][
+    result: count1 > 2 * count2
+    print ["The rule" rule "is" plausibility\[result] ":"]
+    print ["\tthere were" count1 "examples and" count2 "counter-examples."]
+    return result
+]
+
+words: read.lines relative "unixdict.txt"
+
+[nie,cie,nei,cei]: 0
+
+loop words 'word [
+    if contains? word "ie" ->
+        inc (contains? word "cie")? -> 'cie -> 'nie
+    if contains? word "ei" ->
+        inc (contains? word "cei")? -> 'cei -> 'nei
+]
+
+p1: checkPlausible rule1 nie nei
+p2: checkPlausible rule2 cei cie
+
+print ["\nSo the phrase" phrase "is" (to :string plausibility\[and? p1 p2]) ++ "."]

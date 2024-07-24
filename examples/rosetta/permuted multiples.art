@@ -1,0 +1,6 @@
+permutable?: function [n]->
+    one? unique map 2..6 'x -> sort digits x*n
+
+firstPermutable: first select.first 1..∞ => permutable?
+
+print [firstPermutable join.with:" " to [:string] map 2..6 'x -> x*firstPermutable]

@@ -1,0 +1,8 @@
+numsWithPrimeNofDivisors: select 1..100000 'x [
+    nofDivisors: size factors x
+    and? [prime? nofDivisors]
+         [nofDivisors <> 2]
+]
+
+loop split.every: 5 numsWithPrimeNofDivisors 'x ->
+    print map x 's -> pad to :string s 6

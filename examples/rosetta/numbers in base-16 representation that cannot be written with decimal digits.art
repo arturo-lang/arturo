@@ -1,0 +1,5 @@
+nonDecimalNums: select 1..500 'x ->
+    empty? intersection digits.base:16 x @0..9
+
+loop split.every: 7 nonDecimalNums 'x ->
+    print map x 's -> pad to :string s 4

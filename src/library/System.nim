@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2023 Yanis Zafirópulos
+# (c) 2019-2024 Yanis Zafirópulos
 #
 # @file: library/Shell.nim
 #=======================================================
@@ -43,27 +43,106 @@ when not defined(WEB):
         ActiveProcesses = initOrderedTable[int, Process]()
 
 #=======================================
-# Methods
+# Definitions
 #=======================================
 
-proc defineSymbols*() =
+proc defineLibrary*() =
 
-    constant "arg",
-        alias       = unaliased,
-        description = "access command-line arguments as a list":
-            getCmdlineArgumentArray()
+    #----------------------------
+    # Functions
+    #----------------------------
 
-    constant "args",
-        alias       = unaliased,
-        description = "a dictionary with all command-line arguments parsed":
-            newDictionary(parseCmdlineArguments())
+    builtin "arg",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "get command-line arguments as a list",
+        args        = NoArgs,
+        attrs       = NoAttrs,
+        returns     = {Block},
+        example     = """
+            ; called with no parameters
+            arg         ; => []
+
+            ; called with: 1 two 3
+            arg         ; => ["1" "two" "3"]
+        """:
+            push(getCmdlineArgumentArray())
+
+    builtin "args",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "get all command-line arguments parsed as a dictionary",
+        args        = NoArgs,
+        attrs       = NoAttrs,
+        returns     = {Dictionary},
+        example     = """
+            ; called with: 1 two 3
+            args         
+            ; => #[
+            ;     1 
+            ;     "two"
+            ;     3
+            ; ]
+            ..........
+            ; called with switches: -c -b
+            args 
+            ; => #[
+            ;     c : true
+            ;     b : true
+            ;     values: []
+            ; ]
+
+            ; called with switches: -c -b and values: 1 two 3
+            args
+            ; => #[
+            ;     c : true
+            ;     b : true
+            ;     values: [1 "two" 3]
+            ; ]
+            ..........
+            ; called with named parameters: -c:2 --name:newname myfile.txt
+            args
+            ; => #[
+            ;     c : 2
+            ;     name : "newname"
+            ;     values: ["myfile.txt"]
+            ; ]
+        """:
+            push(newDictionary(parseCmdlineArguments()))
 
     when not defined(WEB):
-        
-        constant "config",
-            alias       = unaliased,
-            description = "access global configuration":
-                Config
+
+        builtin "config",
+            alias       = unaliased, 
+            op          = opNop,
+            rule        = PrefixPrecedence,
+            description = "get local or global configuration",
+            args        = NoArgs,
+            attrs       = NoAttrs,
+            returns     = {Store},
+            example     = """
+                ; `config` searches for `config.art` into your current directory. 
+                ; if not found, it returns from `~/.arturo/stores/config.art`
+
+                config
+                ; => []
+                ; `config.art` is empty at first, but we can change this manually
+
+                write.append path\home ++ normalize ".arturo/stores/config.art" 
+                             "language: {Arturo}"
+                config
+                ; => []
+                
+                ; this stills empty, but now try to relaunch Arturo:
+                exit
+                ......................
+                config
+                ; => [language:Arturo]
+
+            """:
+                push(Config)
 
         # TODO(System\env) could it be used for Web/JS builds too?
         #  and what type of environment variables could be served or would be useful serve?
@@ -87,7 +166,7 @@ proc defineSymbols*() =
             ; /Users/drkameleon/.arturo/bin:/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
             """:
                 #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("env")
+                when defined(SAFE): Error_OperationNotPermitted("env")
                 var res: ValueDict = initOrderedTable[string,Value]()
 
                 for k,v in envPairs():
@@ -122,13 +201,13 @@ proc defineSymbols*() =
             ; => ["tests" "var" "data.txt"]
             """:
                 #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("execute")
+                when defined(SAFE): Error_OperationNotPermitted("execute")
 
                 # get arguments & options
                 var cmd = x.s
                 var args: seq[string]
                 if checkAttr("args"):
-                    args = aArgs.a.map((x) => x.s)
+                    args = aArgs.a.map((x) => (requireAttrValue("args", x, {String}); x.s))
                 let code = (hadAttr("code"))
                 let directly = (hadAttr("directly"))
 
@@ -176,19 +255,13 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "exit program",
         args        = NoArgs,
-        attrs       = {
-            "args"      : ({Integer},"use given error code"),
-        },
+        attrs       = NoAttrs,
         returns     = {Nothing},
         example     = """
             exit              ; (terminates the program)
-            ..........
-            exit.with: 3      ; (terminates the program with code 3)
         """:
             #=======================================================
             var errCode = QuitSuccess
-            if checkAttr("with"):
-                errCode = aWith.i
 
             when not defined(WEB):
                 savePendingStores()
@@ -231,6 +304,21 @@ proc defineSymbols*() =
             else:
                 ProgramError_panic(x.s.replace("\n",";"), code)
 
+    builtin "path",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "get path information",
+        args        = NoArgs,
+        attrs       = NoAttrs,
+        returns     = {Dictionary},
+        example     = """
+        path
+        ; => [current:C:\Users\me\my-proj home:C:\Users\me\ temp:C:\Users\me\AppData\Local\Temp\
+        """:
+            #=======================================================
+            push(newDictionary(getPathInfo()))
+
     when not defined(WEB):
         # TODO(System\pause) implement for Web/JS builds
         #  it could easily correspond to some type of javascript timeout
@@ -259,10 +347,10 @@ proc defineSymbols*() =
             print "done!"
             """:
                 #=======================================================
-                if x.kind == Integer:
+                if xKind == Integer:
                     sleep(x.i)
                 else:
-                    sleep(asInt(convertQuantityValue(x.nm, x.unit.name, MS)))
+                    sleep(toInt((x.q.convertTo(parseAtoms("ms"))).original))
 
         builtin "process",
             alias       = unaliased, 
@@ -292,9 +380,9 @@ proc defineSymbols*() =
 
                 ret["id"] = newInteger(getCurrentProcessId())
                 ret["memory"] = newDictionary({
-                    "occupied": newQuantity(newInteger(getOccupiedMem()), B),
-                    "free": newQuantity(newInteger(getFreeMem()), B),
-                    "total": newQuantity(newInteger(getTotalMem()), B),
+                    "occupied": newQuantity(toQuantity(getOccupiedMem(), parseAtoms("B"))),
+                    "free": newQuantity(toQuantity(getFreeMem(), parseAtoms("B"))),
+                    "total": newQuantity(toQuantity(getTotalMem(), parseAtoms("B")))
                     #"max": newQuantity(newInteger(getMaxMem()), B)
                 }.toOrderedTable)
 
@@ -304,29 +392,65 @@ proc defineSymbols*() =
     #  Right now, it picks script-comments from the entire script, but these are not accessible from an included script, nor from the includer. 
     #  So, its current usefulness is very much doubtable.
     #  labels: library, enhancement, open discussion
-    constant "script",
-        alias       = unaliased,
-        description = "embedded information about the current script":
-            getScriptInfo()
 
-    when not defined(WEB):
-        builtin "superuser?",
-            alias       = unaliased, 
-            op          = opNop,
-            rule        = PrefixPrecedence,
-            description = "check if current user has administrator/root privileges",
-            args        = NoArgs,
-            attrs       = NoAttrs,
-            returns     = {Logical},
-            example     = """
-            ; when running as root
-            superuser?          ; => true
+    # TODO(System\script) also add information about the current script being executed
+    #  another location could also be Paths/path
+    #  labels: library,enhancement
 
-            ; when running as regular user
-            superuser?          ; => false
-            """:
-                #=======================================================
-                push newLogical(isAdmin())
+    builtin "script",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "get embedded information about the current script",
+        args        = NoArgs,
+        attrs       = NoAttrs,
+        returns     = {Dictionary},
+        example     = """
+            ;; author: {Me :P}
+            ;; year: 2023
+            ;; license: Some License
+            ;; 
+            ;; description: {
+            ;;      This is an example of documentation.
+            ;;
+            ;;      You can get this by using ``script``.
+            ;; }
+            ;;
+            ;; hint: {
+            ;;      Notice that we use `;;` for documentation,
+            ;;      while the single `;` is just a comment, 
+            ;;      that will be ignored.   
+            ;; }
+            ;;
+            ;; export: [
+            ;;    'myFun
+            ;;    'otherFun
+            ;;    'someConst
+            ;; ]
+            ;;
+
+            inspect script
+            ; [ :dictionary
+            ;         author       :        Me :P :string
+            ;         year         :        2023 :integer
+            ;         license      :        [ :block
+            ;                 Some :string
+            ;                 License :string
+            ;         ]
+            ;         description  :        This is an example of documentation.
+            ;  
+            ; You can get this by using ``script``. :string
+            ;         hint         :        Notice that we use `;;` for documentation,
+            ; while the single `;` is just a comment, 
+            ; that will be ignored. :string
+            ;         export       :        [ :block
+            ;                 myFun :string
+            ;                 otherFun :string
+            ;                 someConst :string
+            ;         ]
+            ; ]
+        """:
+            push(getScriptInfo())
 
     builtin "sys",
         alias       = unaliased, 
@@ -339,33 +463,37 @@ proc defineSymbols*() =
         example     = """
             inspect sys
             ;[ :dictionary
-            ;	author     :	Yanis Zafirópulos :string
-            ;	copyright  :	(c) 2019-2022 :string
-            ;	version    :	0.9.80 :version
-            ;	build      :	3246 :integer
-            ;	buildDate  :	[ :date
-            ;		hour        :		11 :integer
-            ;		minute      :		27 :integer
-            ;		second      :		54 :integer
-            ;		nanosecond  :		389131000 :integer
-            ;		day         :		7 :integer
-            ;		Day         :		Wednesday :string
-            ;		days        :		340 :integer
-            ;		month       :		12 :integer
-            ;		Month       :		December :string
-            ;		year        :		2022 :integer
-            ;		utc         :		-3600 :integer
-            ;	]
-            ;	deps       :	[ :dictionary
-            ;		gmp     :		6.2.1 :version
-            ;		mpfr    :		4.1.0 :version
-            ;		sqlite  :		3.37.0 :version
-            ;		pcre    :		8.45.0 :version
-            ;	] 
-            ;	binary     :	/Users/drkameleon/OpenSource/arturo-lang/arturo/bin/arturo :string
-            ;	cpu        :	amd64 :string
-            ; 	os         :	macosx :string
-            ;  	release    :	full :literal
+            ;        author     :        Yanis Zafirópulos :string
+            ;        copyright  :        (c) 2019-2024 :string
+            ;        version    :        0.9.84-alpha+3126 :version
+            ;        built      :        [ :date
+            ;                hour        :                16 :integer
+            ;                minute      :                19 :integer
+            ;                second      :                25 :integer
+            ;                nanosecond  :                0 :integer
+            ;                day         :                12 :integer
+            ;                Day         :                Wednesday :string
+            ;                days        :                163 :integer
+            ;                month       :                6 :integer
+            ;                Month       :                June :string
+            ;                year        :                2024 :integer
+            ;                utc         :                -7200 :integer
+            ;        ]
+            ;        deps       :        [ :dictionary
+            ;                gmp     :                6.3.0 :version
+            ;                mpfr    :                4.2.1 :version
+            ;                sqlite  :                3.39.5 :version
+            ;                pcre    :                8.45.0 :version
+            ;        ]
+            ;        binary     :        /Users/drkameleon/.arturo/bin/arturo :string
+            ;        cpu        :        [ :dictionary
+            ;                arch    :                amd64 :literal
+            ;                endian  :                little :literal
+            ;                cores   :                8 :integer
+            ;        ]
+            ;        os         :        macos :string
+            ;        hostname   :        drkameleons-MBP.home :string
+            ;        release    :        full :literal
             ;]
         """:
             #=======================================================
@@ -417,8 +545,32 @@ proc defineSymbols*() =
                     else:
                         sendSignal(int32(pid), errCode)
 
+    #----------------------------
+    # Predicates
+    #----------------------------
+
+    when not defined(WEB):
+
+        builtin "superuser?",
+            alias       = unaliased, 
+            op          = opNop,
+            rule        = PrefixPrecedence,
+            description = "check if current user has administrator/root privileges",
+            args        = NoArgs,
+            attrs       = NoAttrs,
+            returns     = {Logical},
+            example     = """
+            ; when running as root
+            superuser?          ; => true
+
+            ; when running as regular user
+            superuser?          ; => false
+            """:
+                #=======================================================
+                push newLogical(isAdmin())
+
 #=======================================
 # Add Library
 #=======================================
 
-Libraries.add(defineSymbols)
+Libraries.add(defineLibrary)

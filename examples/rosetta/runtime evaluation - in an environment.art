@@ -1,0 +1,8 @@
+code: [x * 2]
+fn: function [x]-> 
+    do with 'x code
+
+a: fn 2
+b: fn 4
+
+print b - a

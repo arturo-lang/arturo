@@ -9,9 +9,6 @@
 Ruby:NONE               :  
 Arturo:NONE             : aberración abismo dos Dos pero perversión pértiga tres Tres uno Uno ábaco 
 
-Arturo:ASCII            : ábaco aberración abismo dos Dos pero pértiga perversión tres Tres uno Uno 
-Arturo:ASCII+Sensitive  : Dos Tres Uno ábaco aberración abismo dos pero pértiga perversión tres uno 
-
 Ruby:Sensitive          :  
 Arturo:Sensitive        : Dos Tres Uno aberración abismo dos pero perversión pértiga tres uno ábaco 
 
@@ -37,9 +34,6 @@ Arturo:Locale+Sensitive : Dos Tres Uno ábaco aberración abismo dos pero pérti
 
 Ruby:NONE               :  
 Arturo:NONE             : art ved Wasa Älg 
-
-Arturo:ASCII            : Älg art ved Wasa 
-Arturo:ASCII+Sensitive  : Älg Wasa art ved 
 
 Ruby:Sensitive          :  
 Arturo:Sensitive        : Wasa art ved Älg 
@@ -67,9 +61,6 @@ Arturo:Locale+Sensitive : Älg Wasa art ved
 Ruby:NONE               :  
 Arturo:NONE             : alpha Bob bor bók mode mother móðir það 
 
-Arturo:ASCII            : alpha Bob bók bor mode móðir mother það 
-Arturo:ASCII+Sensitive  : Bob alpha bók bor mode móðir mother það 
-
 Ruby:Sensitive          :  
 Arturo:Sensitive        : Bob alpha bor bók mode mother móðir það 
 
@@ -95,9 +86,6 @@ Arturo:Locale+Sensitive : Bob alpha bor bók mode mother móðir það
 
 Ruby:NONE               :  
 Arturo:NONE             : csardas czink cárné cárnő cúgos köszönöm szia Örvendek 
-
-Arturo:ASCII            : cárné cárnő csardas cúgos czink köszönöm Örvendek szia 
-Arturo:ASCII+Sensitive  : Örvendek cárné cárnő csardas cúgos czink köszönöm szia 
 
 Ruby:Sensitive          :  
 Arturo:Sensitive        : csardas czink cárné cárnő cúgos köszönöm szia Örvendek 

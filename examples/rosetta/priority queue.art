@@ -1,0 +1,51 @@
+define :item [
+    init: method [priority, value][
+        this\priority: priority
+        this\value: value
+    ]
+    string: method [][
+        ~"(|this\priority|, |this\value|)"
+    ]
+]
+define :queue [
+    init: method [items][
+        this\items: arrange items 'it -> it\priority
+    ]
+
+    empty?: method [][
+        zero? this\items
+    ]
+
+    push: method [item][
+        this\items: this\items ++ item
+        this\items: arrange this\items 'it -> it\priority
+    ]
+
+    pop: method [][
+        ensure [not? this\empty?]
+        
+        result: this\items\0
+        this\items: remove.index this\items 0
+        return result
+    ]
+]
+
+Q: to :queue @[to [:item] [
+    [3 "Clear drains"]
+    [4 "Feed cat"]
+    [5 "Make tea"]
+    [1 "Solve RC tasks"]
+]]
+
+do ::
+
+    Q\push to :item [2 "Tax return"]
+
+    print ["queue is empty?" Q\empty?]
+    print ""
+
+    while [not? Q\empty?]->
+        print ["task:" Q\pop]
+
+    print ""
+    print ["queue is empty?" Q\empty?]

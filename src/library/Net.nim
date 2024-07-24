@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2023 Yanis Zafirópulos
+# (c) 2019-2024 Yanis Zafirópulos
 #
 # @file: library/Net.nim
 #=======================================================
@@ -16,17 +16,44 @@
 {.used.}
 
 #=======================================
+# Compilation & Linking
+#=======================================
+
+when defined(ssl):
+
+    when defined(windows): 
+        {.passL: "-Bstatic -Lsrc/extras/openssl/deps/windows -lssl -lcrypto -lws2_32 -Bdynamic".}
+    elif defined(linux):
+        {.passL: "-Bstatic -Lsrc/extras/openssl/deps/linux -lssl -lcrypto -Bdynamic".}
+    elif defined(macosx):
+        # TODO(Net) Use OpenSSL 1.1 in all cases
+        #  right now, every OS/architecture statically links OpenSSL 1.1.
+        #  except for Mac/arm64 (M1). This - most likely - leads to the aforementioned
+        #  binaries being largest, without any reason. This has to be fixed (by finding the correct
+        #  libraries to link against and making sure they are found during compilation). Once this is
+        #  done, we'll also have to remove the definition of `--define:useOpenssl3` in 
+        #  .config/buildmode.nims
+        #  labels: enhancement, 3rd-party, macos
+        when defined(arm64):
+            {.passL: "-Bstatic -Lsrc/extras/openssl/deps/macos/m1 -lssl -lcrypto -Bdynamic".}
+        else:
+            {.passL: "-Bstatic -Lsrc/extras/openssl/deps/macos -lssl -lcrypto -Bdynamic".}
+
+#=======================================
 # Libraries
 #=======================================
 
 when not defined(WEB):
-    import algorithm, asyncdispatch, browsers, httpclient
-    import httpcore, std/net, os, smtp, strformat
+    import algorithm, asyncdispatch, browsers
+    import httpclient, httpcore, std/net, os
     import strutils, times, uri
+
+    when defined(ssl):
+        import extras/smtp
+        import helpers/stores
 
     import helpers/jsonobject
     import helpers/servers
-    import helpers/stores
     import helpers/terminal
     import helpers/url
     import helpers/webviews
@@ -38,10 +65,14 @@ when defined(SAFE):
     import vm/[errors]
 
 #=======================================
-# Methods
+# Definitions
 #=======================================
 
-proc defineSymbols*() =
+proc defineLibrary*() =
+
+    #----------------------------
+    # Functions
+    #----------------------------
 
     when not defined(WEB):
 
@@ -60,7 +91,7 @@ proc defineSymbols*() =
             ; opens Arturo's official website in a new browser window
             """:
                 #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("browse")
+                when defined(SAFE): Error_OperationNotPermitted("browse")
                 openDefaultBrowser(x.s)
         
         builtin "download",
@@ -85,7 +116,7 @@ proc defineSymbols*() =
             ; (downloads file with a different name)
             """:
                 #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("download")
+                when defined(SAFE): Error_OperationNotPermitted("download")
                 let path = x.s
 
                 var target: string
@@ -98,45 +129,49 @@ proc defineSymbols*() =
                 var client = newHttpClient()
                 client.downloadFile(path,target)
 
-        builtin "mail",
-            alias       = unaliased, 
-            op          = opNop,
-            rule        = PrefixPrecedence,
-            description = "send mail using given title and message to selected recipient",
-            args        = {
-                "recipient" : {String},
-                "title"     : {String},
-                "message"   : {String}
-            },
-            attrs       = {
-                "using"     : ({Dictionary},"use given configuration")
-            },
-            returns     = {Nothing},
-            example     = """
-            mail .using: #[
-                    server: "mymailserver.com"
-                    username: "myusername"
-                    password: "mypass123"
-                ]
-                "recipient@somemail.com" "Hello from Arturo" "Arturo rocks!"                
-            """:
-                #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("mail")
-                let recipient = x.s
-                let title = y.s
-                let message = z.s
+        when defined(ssl):
+            builtin "mail",
+                alias       = unaliased, 
+                op          = opNop,
+                rule        = PrefixPrecedence,
+                description = "send mail using given title and message to selected recipient",
+                args        = {
+                    "recipient" : {String},
+                    "title"     : {String},
+                    "message"   : {String}
+                },
+                attrs       = {
+                    "using"     : ({Dictionary},"use given configuration")
+                },
+                returns     = {Nothing},
+                example     = """
+                mail .using: #[
+                        server: "mymailserver.com"
+                        username: "myusername"
+                        password: "mypass123"
+                    ]
+                    "recipient@somemail.com" "Hello from Arturo" "Arturo rocks!"                
+                """:
+                    #=======================================================
+                    when defined(SAFE): Error_OperationNotPermitted("mail")
+                    let recipient = x.s
+                    let title = y.s
+                    let message = z.s
 
-                retrieveConfig("mail", "using")
+                    if checkAttr("using"):
+                        discard
+                    
+                    retrieveConfig("mail", "using")
 
-                # TODO(Net/mail) raise error, if there is no configuration provided whatsoever
-                #  perhaps, this could be also done in a more "templated" way; at least, for Config values
-                #  labels: library, bug
+                    # TODO(Net\mail) raise error, if there is no configuration provided whatsoever
+                    #  perhaps, this could be also done in a more "templated" way; at least, for Config values
+                    #  labels: library, bug
 
-                var mesg = createMessage(title, message, @[recipient])
-                let smtpConn = newSmtp(useSsl = true, debug=true)
-                smtpConn.connect(config["server"].s, Port 465)
-                smtpConn.auth(config["username"].s, config["password"].s)
-                smtpConn.sendmail(config["username"].s, @[recipient], $mesg)
+                    var mesg = createMessage(title, message, @[recipient])
+                    let smtpConn = newSmtp(useSsl = true, debug=true)
+                    smtpConn.connect(config["server"].s, Port 465)
+                    smtpConn.auth(config["username"].s, config["password"].s)
+                    smtpConn.sendmail(config["username"].s, @[recipient], $mesg)
 
         # TODO(Net\request) could it work for Web/JS builds?
         #  it could easily be a hidden Ajax request
@@ -199,7 +234,7 @@ proc defineSymbols*() =
             ; ...same as above...
             """:
                 #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("request")
+                when defined(SAFE): Error_OperationNotPermitted("request")
 
                 var url = x.s
                 var meth: HttpMethod = HttpGet 
@@ -238,10 +273,9 @@ proc defineSymbols*() =
                     else:
                         multipart = newMultipartData()
                         for k,v in pairs(y.d):
-                            echo "adding multipart data:" & $(k)
                             multipart[k] = $(v)
                 else:
-                    if y != VNULL and (y.kind==Dictionary and y.d.len!=0):
+                    if y != VNULL and (yKind==Dictionary and y.d.len!=0):
                         var parts: seq[string]
                         for k,v in pairs(y.d):
                             parts.add(k & "=" & urlencode($(v)))
@@ -250,14 +284,23 @@ proc defineSymbols*() =
                 var client: HttpClient
 
                 if checkAttr("certificate"):
-                    let certificate = aCertificate.s
-                    client = newHttpClient(
-                        userAgent = agent,
-                        sslContext = newContext(certFile=certificate),
-                        proxy = proxy, 
-                        timeout = timeout,
-                        headers = headers
-                    )
+                    when defined(ssl):
+                        client = newHttpClient(
+                            userAgent = agent,
+                            sslContext = newContext(certFile=aCertificate.s),
+                            proxy = proxy, 
+                            timeout = timeout,
+                            headers = headers
+                        )
+                    else:
+                        # TODO(Net\request) show warning/error when trying to use SSL certificates in MINI builds
+                        #  labels: library, error handling, enhancement
+                        client = newHttpClient(
+                            userAgent = agent,
+                            proxy = proxy, 
+                            timeout = timeout,
+                            headers = headers
+                        )
                 else:
                     client = newHttpClient(
                         userAgent = agent,
@@ -286,7 +329,7 @@ proc defineSymbols*() =
                     try:
                         let respStatus = (response.status.splitWhitespace())[0]
                         ret["status"] = newInteger(respStatus)
-                    except:
+                    except CatchableError:
                         ret["status"] = newString(response.status)
 
                     for k,v in response.headers.table:
@@ -296,7 +339,7 @@ proc defineSymbols*() =
                                 of "age","content-length": 
                                     try:
                                         val = newInteger(v[0])
-                                    except:
+                                    except CatchableError:
                                         val = newString(v[0])
                                 of "access-control-allow-credentials":
                                     val = newLogical(v[0])
@@ -307,7 +350,7 @@ proc defineSymbols*() =
                                     let timeFormat = initTimeFormat(dateFormat)
                                     try:
                                         val = newDate(parse(cleanDate, timeFormat))
-                                    except:
+                                    except CatchableError:
                                         val = newString(v[0])
                                 else:
                                     val = newString(v[0])
@@ -351,7 +394,7 @@ proc defineSymbols*() =
             ; and also POST requests to "/getinfo" with an 'id' parameter
             """:
                 #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("serve")
+                when defined(SAFE): Error_OperationNotPermitted("serve")
 
                 # get parameters
                 let routes = x
@@ -360,7 +403,7 @@ proc defineSymbols*() =
                 if checkAttr("port"):
                     port = aPort.i
             
-                if checkAttr("chrome"):
+                if hadAttr("chrome"):
                     openChromeWindow(port)
 
                 # necessary so that "serveInternal" is available
@@ -380,6 +423,7 @@ proc defineSymbols*() =
                         let reqHeaders = req.headers().table
                         var reqQuery = initOrderedTable[string,Value]()
                         var reqPath = req.path()
+                        let initialReqPath = reqPath
 
                         # get query components, if any
                         if reqPath.contains("?"):
@@ -394,7 +438,7 @@ proc defineSymbols*() =
                         if reqAction!=HttpGet: 
                             try:
                                 reqBodyV = valueFromJson(reqBody) 
-                            except:
+                            except CatchableError:
                                 reqBodyV = newDictionary()
                                 for k,v in decodeQuery(reqBody):
                                     reqBodyV.d[k] = newString(v)
@@ -406,12 +450,25 @@ proc defineSymbols*() =
                             newDictionary({
                                 "method": newString($(reqAction)),
                                 "path": newString(reqPath),
+                                "fullPath": newString(initialReqPath),
                                 "body": reqBodyV,
                                 "query": newDictionary(reqQuery),
                                 "headers": newStringDictionary(reqHeaders, collapseBlocks=true)
                             }.toOrderedTable),
                             newLogical(verbose)
                         )
+
+                        # show request info
+                        # if we're on .verbose mode
+                        if verbose:
+                            var serverPattern = " "
+                            if got.d["serverPattern"].s != initialReqPath and got.d["serverPattern"].s != "":
+                                serverPattern = " -> " & got.d["serverPattern"].s & " "
+
+                            echo bold(whiteColor) & "<<" & resetColor & " " & 
+                                 fg(whiteColor) & "[" & $(now()) & "] " &
+                                 bold(whiteColor) & ($(reqAction)).toUpperAscii() & " " & initialReqPath & 
+                                 resetColor & serverPattern & resetColor
 
                         # send response
                         req.respond(newServerResponse(
@@ -420,7 +477,7 @@ proc defineSymbols*() =
                             got.d["serverHeaders"].s
                         ))
 
-                        # show request info
+                        # show request response info
                         # if we're on .verbose mode
                         if verbose:
                             var colorCode = greenColor
@@ -428,16 +485,18 @@ proc defineSymbols*() =
                                 colorCode = redColor
 
                             var serverPattern = " "
-                            if got.d["serverPattern"].s != reqPath and got.d["serverPattern"].s != "":
+                            if got.d["serverPattern"].s != initialReqPath and got.d["serverPattern"].s != "":
                                 serverPattern = " -> " & got.d["serverPattern"].s & " "
 
-                            let serverBenchmark = got.d["serverBenchmark"].f
+                            let serverBenchmark = $(got.d["serverBenchmark"])
 
-                            echo bold(colorCode) & ">> " & $(got.d["serverStatus"].i) & resetColor & " " & 
+                            echo bold(colorCode) & ">>" & resetColor & " " & 
                                  fg(whiteColor) & "[" & $(now()) & "] " &
-                                 bold(whiteColor) & ($(reqAction)).toUpperAscii() & " " & reqPath & 
-                                 resetColor & serverPattern & 
-                                 fg(grayColor) & "(" & fmt"{serverBenchmark:.2f}" & " ms)" & resetColor
+                                 bold(colorCode) & $(got.d["serverStatus"].i) & " " & resetColor &
+                                 fg(whiteColor) & got.d["serverContentType"].s & " " &
+                                #  bold(whiteColor) & ($(reqAction)).toUpperAscii() & " " & initialReqPath & 
+                                #  resetColor & serverPattern & 
+                                 fg(grayColor) & "(" & serverBenchmark & ")" & resetColor
 
                 # show server startup info
                 # if we're on .verbose mode
@@ -450,4 +509,4 @@ proc defineSymbols*() =
 # Add Library
 #=======================================
 
-Libraries.add(defineSymbols)
+Libraries.add(defineLibrary)

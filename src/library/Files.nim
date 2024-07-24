@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2023 Yanis Zafirópulos
+# (c) 2019-2024 Yanis Zafirópulos
 #
 # @file: library/Files.nim
 #=======================================================
@@ -41,14 +41,25 @@ import vm/lib
 when not defined(WEB):
     import vm/[bytecode, errors, parse]
 
+when defined(BUNDLE):
+    import vm/bundle/resources
+
 #=======================================
-# Methods
+# Definitions
 #=======================================
 
-proc defineSymbols*() =
+# TODO(Files) more potential built-in function candidates?
+#  labels: library, enhancement, open discussion
 
-    # TODO(Files) more potential built-in function candidates?
-    #  labels: library, enhancement, open discussion
+# TODO(Files) add function to enable writing/reading to/from binary files
+#  this should obviously support writing a 16-bit int, and all this
+#  labels: library, enhancement, new feature, open discussion
+
+proc defineLibrary*() =
+
+    #----------------------------
+    # Functions
+    #----------------------------
 
     when not defined(WEB):
 
@@ -73,7 +84,7 @@ proc defineSymbols*() =
             ; copied whole folder
             """:
                 #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("copy")
+                when defined(SAFE): Error_OperationNotPermitted("copy")
 
                 var target = y.s
                 if (hadAttr("directory")): 
@@ -104,7 +115,7 @@ proc defineSymbols*() =
             ; file deleted
             """:
                 #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("delete")
+                when defined(SAFE): Error_OperationNotPermitted("delete")
                 
                 if (hadAttr("directory")): 
                     try:
@@ -113,50 +124,6 @@ proc defineSymbols*() =
                         discard
                 else: 
                     discard tryRemoveFile(x.s)
-
-        builtin "exists?",
-            alias       = unaliased, 
-            op          = opNop,
-            rule        = PrefixPrecedence,
-            description = "check if given file exists",
-            args        = {
-                "file"  : {String}
-            },
-            attrs       = {
-                "directory" : ({Logical},"check for directory")
-            },
-            returns     = {Logical},
-            example     = """
-            if exists? "somefile.txt" [ 
-                print "file exists!" 
-            ]
-            """:
-                #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("exists?")
-
-                if (hadAttr("directory")): 
-                    push(newLogical(dirExists(x.s)))
-                else: 
-                    push(newLogical(fileExists(x.s)))
-
-        builtin "hidden?",
-            alias       = unaliased, 
-            op          = opNop,
-            rule        = PrefixPrecedence,
-            description = "check if file/folder at given path is hidden",
-            args        = {
-                "file"      : {String}
-            },
-            attrs       = NoAttrs,
-            returns     = {Logical},
-            example     = """
-            hidden? "README.md"     ; => false
-            hidden? ".git"          ; => true
-            """:
-                #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("hidden?")
-
-                push newLogical(isHidden(x.s))
 
         builtin "move",
             alias       = unaliased, 
@@ -179,7 +146,7 @@ proc defineSymbols*() =
             ; moved whole folder
             """:
                 #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("move")
+                when defined(SAFE): Error_OperationNotPermitted("move")
 
                 var target = y.s
                 if (hadAttr("directory")): 
@@ -229,24 +196,24 @@ proc defineSymbols*() =
             ; gave write permission to 'others'
             """:
                 #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("permissions")
+                when defined(SAFE): Error_OperationNotPermitted("permissions")
 
                 try:
-                    if (hadAttr("set")):
+                    if (checkAttr("set")):
                         var source = x.s
                         var perms: set[FilePermission]
 
-                        if x.d.hasKey("user") and x.d["user"].d.hasKey("read"): perms.incl(fpUserRead)
-                        if x.d.hasKey("user") and x.d["user"].d.hasKey("write"): perms.incl(fpUserWrite)
-                        if x.d.hasKey("user") and x.d["user"].d.hasKey("execute"): perms.incl(fpUserExec)
+                        if aSet.d.hasKey("user") and aSet.d["user"].d.hasKey("read"): perms.incl(fpUserRead)
+                        if aSet.d.hasKey("user") and aSet.d["user"].d.hasKey("write"): perms.incl(fpUserWrite)
+                        if aSet.d.hasKey("user") and aSet.d["user"].d.hasKey("execute"): perms.incl(fpUserExec)
 
-                        if x.d.hasKey("group") and x.d["group"].d.hasKey("read"): perms.incl(fpGroupRead)
-                        if x.d.hasKey("group") and x.d["group"].d.hasKey("write"): perms.incl(fpGroupWrite)
-                        if x.d.hasKey("group") and x.d["group"].d.hasKey("execute"): perms.incl(fpGroupExec)
+                        if aSet.d.hasKey("group") and aSet.d["group"].d.hasKey("read"): perms.incl(fpGroupRead)
+                        if aSet.d.hasKey("group") and aSet.d["group"].d.hasKey("write"): perms.incl(fpGroupWrite)
+                        if aSet.d.hasKey("group") and aSet.d["group"].d.hasKey("execute"): perms.incl(fpGroupExec)
 
-                        if x.d.hasKey("others") and x.d["others"].d.hasKey("read"): perms.incl(fpOthersRead)
-                        if x.d.hasKey("others") and x.d["others"].d.hasKey("write"): perms.incl(fpOthersWrite)
-                        if x.d.hasKey("others") and x.d["others"].d.hasKey("execute"): perms.incl(fpOthersExec)
+                        if aSet.d.hasKey("others") and aSet.d["others"].d.hasKey("read"): perms.incl(fpOthersRead)
+                        if aSet.d.hasKey("others") and aSet.d["others"].d.hasKey("write"): perms.incl(fpOthersWrite)
+                        if aSet.d.hasKey("others") and aSet.d["others"].d.hasKey("execute"): perms.incl(fpOthersExec)
 
                         setFilePermissions(move source, move perms)
                     else:
@@ -274,6 +241,20 @@ proc defineSymbols*() =
                 except OSError:
                     push(VNULL)
 
+        # TODO(Files\read) add support for different delimiters when in `.csv` mode
+        #  this could be something as simple as `.with:` or `.delimiter:`, or `.delimited:`
+        #  also see: https://github.com/arturo-lang/arturo/pull/1008#issuecomment-1450571702
+        #  labels:library,enhancement
+
+        # TODO(Files\read) show a warning in case an unsupported attribute is used in MINI builds
+        #  right now, passing e.g. `.html` in a MINI build will silently fail, but
+        #  the results might be too confusing: 
+        #  https://github.com/arturo-lang/arturo/pull/1008#issuecomment-1451696988
+        #
+        #  In that case, instead of just ignoring the passed option - as we normally do -
+        #  we should something: an error? a "warning"? it doesn't matter. But something *must*
+        #  be shown to avoid perplexing the user.
+        #  labels: library, enhancement
         builtin "read",
             alias       = doublearrowleft, 
             op          = opNop,
@@ -288,6 +269,7 @@ proc defineSymbols*() =
                         "lines"         : ({Logical},"read file lines into block"),
                         "json"          : ({Logical},"read Json into value"),
                         "csv"           : ({Logical},"read CSV file into a block of rows"),
+                        "delimiter"     : ({Char},   "read CSV file with a specific delimiter"),
                         "withHeaders"   : ({Logical},"read CSV headers"),
                         "html"          : ({Logical},"read HTML into node dictionary"),
                         "xml"           : ({Logical},"read XML into node dictionary"),
@@ -302,6 +284,7 @@ proc defineSymbols*() =
                         "lines"         : ({Logical},"read file lines into block"),
                         "json"          : ({Logical},"read Json into value"),
                         "csv"           : ({Logical},"read CSV file into a block of rows"),
+                        "delimiter"     : ({Char},   "read CSV file with a specific delimiter"),
                         "withHeaders"   : ({Logical},"read CSV headers"),
                         "bytecode"      : ({Logical},"read file as Arturo bytecode"),
                         "binary"        : ({Logical},"read as binary"),
@@ -332,17 +315,24 @@ proc defineSymbols*() =
 
                     push(newBinary(b))
                 else:
-                    let (src, tp) = getSource(x.s)
+                    when defined(BUNDLE):
+                        let (src, tp) = (getBundledResource(x.s)[0], FileData)
+                    else:
+                        let (src, tp) = getSource(x.s)
 
                     if (hadAttr("file") and tp != FileData):
-                        RuntimeError_FileNotFound(src)
+                        Error_FileNotFound(src)
 
                     if (hadAttr("lines")):
                         push(newStringBlock(src.splitLines()))
                     elif (hadAttr("json")):
                         push(valueFromJson(src))
                     elif (hadAttr("csv")):
-                        push(parseCsvInput(src, withHeaders=(hadAttr("withHeaders"))))
+                        if checkAttr("delimiter"):
+                            let delimiter = aDelimiter.c.char()
+                            push(parseCsvInput(src, withHeaders=hadAttr("withHeaders"), withDelimiter=delimiter))
+                        else:
+                            push(parseCsvInput(src, (hadAttr("withHeaders"))))
                     elif (hadAttr("bytecode")):
                         let bcode = readBytecode(x.s)
                         let parsed = doParse(bcode[0], isFile=false).a[0]
@@ -383,7 +373,7 @@ proc defineSymbols*() =
             ; file renamed
             """:
                 #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("rename")
+                when defined(SAFE): Error_OperationNotPermitted("rename")
 
                 var source = x.s
                 var target = y.s
@@ -423,7 +413,7 @@ proc defineSymbols*() =
             ; to our desktop
             """:
                 #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("symlink")
+                when defined(SAFE): Error_OperationNotPermitted("symlink")
 
                 var source = x.s
                 var target = y.s
@@ -459,7 +449,7 @@ proc defineSymbols*() =
                         "accessed": newDate(local(getLastAccessTime(x.s))),
                         "modified": newDate(local(getLastModificationTime(x.s)))
                     }.toOrderedTable)
-                except:
+                except CatchableError:
                     push VNULL
                         
         builtin "unzip",
@@ -477,7 +467,7 @@ proc defineSymbols*() =
             unzip "folder" "archive.zip"
             """:
                 #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("unzip")
+                when defined(SAFE): Error_OperationNotPermitted("unzip")
 
                 miniz.unzip(y.s, x.s)
 
@@ -497,9 +487,9 @@ proc defineSymbols*() =
             ; (size in bytes)
             """:
                 #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("volume")
+                when defined(SAFE): Error_OperationNotPermitted("volume")
 
-                push newQuantity(newInteger(getFileSize(x.s)), newQuantitySpec(B))
+                push newQuantity(toQuantity(int(getFileSize(x.s)), parseAtoms("B")))
 
         builtin "write",
             alias       = doublearrowright, 
@@ -529,9 +519,9 @@ proc defineSymbols*() =
             write.append "somefile.txt" "Yes, Hello again!"
             """:
                 #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("write")
+                when defined(SAFE): Error_OperationNotPermitted("write")
 
-                if y.kind==Bytecode:
+                if yKind==Bytecode:
                     let dataS = codify(newBlock(y.trans.constants), unwrapped=true, safeStrings=true)
                     let codeS = y.trans.instructions
                     discard writeBytecode(dataS, codeS, x.s)
@@ -566,13 +556,116 @@ proc defineSymbols*() =
             zip "dest.zip" ["file1.txt" "img.png"]
             """:
                 #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("zip")
+                when defined(SAFE): Error_OperationNotPermitted("zip")
 
                 let files: seq[string] = y.a.map((z)=>z.s)
                 miniz.zip(files, x.s)
+
+    #----------------------------
+    # Predicates
+    #----------------------------
+
+        builtin "directory?",
+            alias       = unaliased, 
+            op          = opNop,
+            rule        = PrefixPrecedence,
+            description = "check if given path exists and corresponds to a directory",
+            args        = {
+                "path"  : {String}
+            },
+            attrs       = NoAttrs,
+            returns     = {Logical},
+            example     = """
+            if directory? "src" [ 
+                print "directory exists!" 
+            ]
+            """:
+                #=======================================================
+                when defined(SAFE): Error_OperationNotPermitted("directory?")
+
+                push newLogical(dirExists(x.s))
+
+        builtin "exists?",
+            alias       = unaliased, 
+            op          = opNop,
+            rule        = PrefixPrecedence,
+            description = "check if file/directory at given path exists",
+            args        = {
+                "path"  : {String}
+            },
+            attrs       = NoAttrs,
+            returns     = {Logical},
+            example     = """
+            if exists? "somefile.txt" [ 
+                print "path exists!" 
+            ]
+            """:
+                #=======================================================
+                when defined(SAFE): Error_OperationNotPermitted("exists?")
+
+                push newLogical(fileExists(x.s) or dirExists(x.s) or symlinkExists(x.s))
+
+        builtin "file?",
+            alias       = unaliased, 
+            op          = opNop,
+            rule        = PrefixPrecedence,
+            description = "check if given path exists and corresponds to a file",
+            args        = {
+                "path"  : {String}
+            },
+            attrs       = NoAttrs,
+            returns     = {Logical},
+            example     = """
+            if file? "somefile.txt" [ 
+                print "file exists!" 
+            ]
+            """:
+                #=======================================================
+                when defined(SAFE): Error_OperationNotPermitted("file?")
+
+                push newLogical(fileExists(x.s))
+
+        builtin "hidden?",
+            alias       = unaliased, 
+            op          = opNop,
+            rule        = PrefixPrecedence,
+            description = "check if file/folder at given path is hidden",
+            args        = {
+                "file"      : {String}
+            },
+            attrs       = NoAttrs,
+            returns     = {Logical},
+            example     = """
+            hidden? "README.md"     ; => false
+            hidden? ".git"          ; => true
+            """:
+                #=======================================================
+                when defined(SAFE): Error_OperationNotPermitted("hidden?")
+
+                push newLogical(isHidden(x.s))
+
+        builtin "symlink?",
+            alias       = unaliased, 
+            op          = opNop,
+            rule        = PrefixPrecedence,
+            description = "check if given path exists and corresponds to a symlink",
+            args        = {
+                "path"  : {String}
+            },
+            attrs       = NoAttrs,
+            returns     = {Logical},
+            example     = """
+            if symlink? "somefile" [ 
+                print "symlink exists!" 
+            ]
+            """:
+                #=======================================================
+                when defined(SAFE): Error_OperationNotPermitted("symlink?")
+
+                push newLogical(symlinkExists(x.s))
 
 #=======================================
 # Add Library
 #=======================================
 
-Libraries.add(defineSymbols)
+Libraries.add(defineLibrary)

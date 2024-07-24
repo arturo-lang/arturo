@@ -26,6 +26,7 @@ serveInternal: function [Request, verbose][
         serverPattern: ""
         serverStatus: null
         serverHeaders: ""
+        serverContentType: ""
         serverBenchmark: 0.0
     ]
 
@@ -39,6 +40,8 @@ serveInternal: function [Request, verbose][
         if not? null? attr 'js      -> servedContent: "application/javascript"
         if not? null? attr 'json    -> servedContent: "application/json"
         if not? null? attr 'xml     -> servedContent: "application/xml"
+
+        serverResponse\serverContentType: servedContent
 
         servedContent: "Content-Type: " ++ servedContent
 
@@ -58,13 +61,12 @@ serveInternal: function [Request, verbose][
     callActionFunction: function [actionFunc, ptrn][
         actionParams: keys get info.get 'actionFunc 'args
         passedParams: new []
-
         if positive? size actionParams [
-            matchedGroups: match.capture Request\path ptrn
+            matchedGroups: first match.named.capture Request\path ptrn
             loop actionParams 'actionParam [
                 if and? [dictionary? Request\body][key? Request\body actionParam] ->
                     'passedParams ++ Request\body\[actionParam]
-                
+
                 if key? Request\query actionParam ->
                     'passedParams ++ Request\query\[actionParam]
 
@@ -73,7 +75,7 @@ serveInternal: function [Request, verbose][
             ]
         ]
 
-        call var'actionFunc passedParams
+        send.html call var'actionFunc passedParams
     ]
 
     getServerResponse: [
@@ -82,7 +84,7 @@ serveInternal: function [Request, verbose][
                 action: ROUTES\[Request\method]\[pattern]
 
                 serverResponse\serverPattern: pattern
-                try?.verbose [
+                if throws? [
                     (block? var'action)? [
                         serverResponse\serverBody: do action
                     ][
@@ -90,10 +92,7 @@ serveInternal: function [Request, verbose][
                     ]
                     if null? serverResponse\serverStatus ->
                         serverResponse\serverStatus: 200 ; OK
-                ]
-                else [
-                    serverResponse\serverStatus: 500 ; Internal Server Error
-                ]
+                ] -> serverResponse\serverStatus: 500 ; Internal Server Error
             ]
         ]
     ]
@@ -102,6 +101,9 @@ serveInternal: function [Request, verbose][
 
     if null? serverResponse\serverStatus ->
         serverResponse\serverStatus: 404 ; Not Found
+
+    if serverResponse\serverStatus <> 200 ->
+        serverResponse\serverContentType: "-"
 
     return serverResponse
 ]

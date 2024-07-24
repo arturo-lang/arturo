@@ -1,0 +1,6 @@
+giuga?: function [n]->
+    and? -> not? prime? n
+         -> every? factors.prime n 'f
+            -> zero? (dec n/f) % f
+
+print.lines select.first:4 1..∞ => giuga?

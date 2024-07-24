@@ -1,0 +1,219 @@
+import {unitt}!
+import relative {../../commons/functions}!
+
+
+suite "Generic testing" [
+
+    test.prop "appending keeps the order" [
+        assert -> [a b c d] = [a] ++ [b c d]
+        assert -> [b c d a] = [b c d] ++ [a]
+        assert -> [a b c d] <> [b c d] ++ [a]
+    ]
+
+    test.prop "alias works seamlessly" [
+        assert -> equal? append [] [] [] ++ [] 
+        assert -> equal? append [a b c] [a b] [a b c] ++ [a b] 
+    ]
+
+]
+
+
+suite "Test :binary operations" [
+
+    integers: [0 1]
+    binaries: map integers 'x -> to :binary x
+
+    ; ===== ===== Property-based ===== =====
+
+    test.prop ":binary ++ :binary results in :binary" [
+        loop permutate.repeated new binaries 'entries [
+            a: first entries
+            b: last entries
+            assert -> binary? append a b
+        ]
+    ]
+    
+    test.prop ":binary ++ :integer results in :binary" [
+        sample: $[x] -> flatten permutate.repeated x 
+        binaries: sample binaries
+        integers: sample integers
+        
+        loop couple binaries integers 'entries [
+            a: first entries
+            b: last entries
+            assert -> binary? append a b
+        ]
+    ]
+    
+    test.prop ":binary ++ :binary results in :binary" [
+        [a b]: new binaries
+        
+        assert -> binary? append a b
+    ]
+
+    ; ===== ===== Examples ===== =====
+
+    test ":binary ++ :binary | 00 ++ 01 = 00 01" [
+        [a b]: new binaries
+        correct: to :binary [0 1]
+        assert -> correct = a ++ b
+    ]
+    
+    test ":binary ++ :integer | 00 ++ 1 = 00 01" [
+        a: first new binaries
+        b: 1
+        correct: to :binary [0 1]
+        assert -> correct = a ++ b
+    ]
+
+    ; ===== ===== Testing in-place equivalence ===== =====
+
+    test.prop ":binary ++ :binary | in-place has the same behavior" [
+        [a b]: new binaries
+
+        [ref inp]: inplaceEquivalence (a) 'append @[b]
+        assert -> ref = inp
+    ]
+   
+    test.prop ":binary ++ :integer | in-place has the same behavior" [
+        [a]: first new binaries
+        b: 1
+
+        [reference inplaced pathInplaced]: fullInplaceEquivalence (a) 'append @[b]
+        assert -> reference = inplaced
+        assert -> inplaced  = pathInplaced
+
+    ]
+
+]
+
+
+suite "Test :string operations" [
+
+    ; ===== ===== Property-based ===== =====
+
+    test.prop ":string appending results in :string" [
+        assert -> string? "Art" ++ "uro" 
+    ]
+   
+    test.prop ":char appending results in :string" [
+        assert -> string? 'H' ++ 'i'
+        assert -> string? 'H' ++ "igh" 
+        assert -> string? "Ph" ++ 'i' 
+    ]
+
+    test.prop ":string and :char appending are seamless" [
+        assert -> equal? "Artur" ++ "o" "Artur" ++ 'o' 
+    ]
+
+    ; ===== ===== Examples ===== =====
+    
+    test "Arturo can be generated from :string and :char appending" [
+        assert -> "Arturo" = "Art" ++ "uro"
+        assert -> "Arturo" = "Artur" ++ 'o'
+        assert -> "Arturo" = 'A' ++ "rturo"
+    ]
+
+    ; ===== ===== Testing in-place equivalence ===== =====
+
+    test.prop ":string ++ :string | in-place has the same behavior" [
+        [reference inplaced pathInplaced]: fullInplaceEquivalence "Art" 'append ["uro"]
+        assert -> reference = inplaced
+        assert -> inplaced = pathInplaced
+    ]
+    
+    test.prop ":string ++ :char | in-place has the same behavior" [
+        [reference inplaced pathInplaced]: fullInplaceEquivalence "Artur" 'append ['o']
+        assert -> reference = inplaced
+        assert -> inplaced  = pathInplaced
+    ]
+    
+    test.prop ":char ++ :char | in-place has the same behavior" [
+        [reference inplaced pathInplaced]: fullInplaceEquivalence 'H' 'append ['i']
+        assert -> reference = inplaced
+        assert -> inplaced  = pathInplaced
+    ]
+
+]
+
+
+suite "Test :block operations" [
+
+    interpreted: ["Arturo" "Ruby" "Python" "Wren"]
+    compiled: ["C" "C++" "Nim" "Rust" "Smalltalk"]
+    languages: shuffle (append interpreted compiled)
+
+    ; ===== ===== Property-based ===== =====
+
+    test.prop ":block appending results in :block" [
+        assert -> block? [] ++ []
+        assert -> block? interpreted ++ compiled
+    ]
+    
+    test.prop "appending between :blocks does not nest it" [
+        a: @[sample languages]
+        b: @[sample languages]
+        res: @[first a first b]
+
+        assert -> res = append a b
+        assert -> [] = append [] []
+        assert -> all? map (append a b) 'x -> not? block? x
+    ]
+
+    test.prop "appending :blocks of :T results in :blocks of :T" [
+        assert -> all? map ["Arturo"] ++ ["Python"] => string?
+        assert -> all? map [1] ++ [2] => integer?
+        assert -> all? map [1:2] ++ [2:3] => rational?
+    ]
+
+    test.prop "append empty block with 'x results into [x]" [
+        number: random 0 85
+        res: @[number] 
+        assert -> res = [] ++ number
+    ]
+
+    test.prop "append empty blocks results on empty block" [
+        assert -> empty? [] ++ []
+        assert -> [] = [] ++ []
+    ]
+
+    ; ===== ===== Examples ===== =====
+    
+    test {["A" "r" "t"] = ["A" "r"] ++ ["t"]} [
+        assert -> ["A" "r" "t"] = ["A" "r"] ++ ["t"]
+    ]
+
+    ; ===== ===== Testing in-place equivalence ===== =====
+
+    test.prop ":block ++ :any | in-place has the same behavior" [
+        [reference inplaced pathInplaced]: fullInplaceEquivalence [a b c] 'append -> [d e f]
+        assert -> reference = inplaced
+        assert -> inplaced  = pathInplaced
+
+        [reference inplaced pathInplaced]: fullInplaceEquivalence [a b c] 'append [5]
+        assert -> reference = inplaced
+        assert -> inplaced  = pathInplaced
+    ]
+
+]
+
+
+suite "Test magic-methods" [
+
+    define :container [
+        init:   method [ initial ][ this\_block: [] ++ initial ]
+        append: method [  value  ][ append this\_block value ]
+    ]
+
+    test "append works for magic-methods" [
+        container: to :container [[]]!
+        
+        assert -> empty? do -> container\_block
+        assert -> equal? [1 2] do [container\append [1 2]]
+        assert -> equal? [3 4] do [append container [3 4]]
+        assert -> equal? [5 6] do [container ++ [5 6]]
+    ]
+
+]
+
+; TODO(test\append): Test error handling when there is no magic-method

@@ -1,0 +1,11 @@
+multiPalindromic?: function [n][
+    if (digits.base:2 n) <> reverse digits.base:2 n -> return false
+    if (digits.base:4 n) <> reverse digits.base:4 n -> return false
+    if (digits.base:16 n) <> reverse digits.base:16 n -> return false
+    return true
+]
+
+mpUpTo25K: select 0..25000 => multiPalindromic?
+
+loop split.every: 12 mpUpTo25K 'x ->
+    print map x 's -> pad to :string s 5

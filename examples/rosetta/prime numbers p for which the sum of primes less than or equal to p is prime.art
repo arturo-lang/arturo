@@ -1,0 +1,7 @@
+primes: select 1..1000 => prime?
+
+pprimes: select primes 'x ->
+    prime? sum select primes 'y -> y =< x
+
+loop split.every:7 pprimes 'x ->
+    print map x 's -> pad to :string s 4

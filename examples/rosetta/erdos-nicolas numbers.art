@@ -1,0 +1,20 @@
+erdosNicolas: function [n][
+    facts: factors n
+    if facts > 2 [
+        loop 1..(size facts)-2 'k [
+            if n = sum first.n:k facts -> return @[n, k]
+        ]
+    ]
+
+    return ø
+]
+
+cnt: 0
+i: 2
+while [cnt < 8][
+    if enNum: <= erdosNicolas i [
+        print[enNum\0 "equals the sum of its first" enNum\1 "divisors"]
+        cnt: cnt + 1
+    ]
+    i: i + 2
+]

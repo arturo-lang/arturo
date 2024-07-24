@@ -1,4 +1,4 @@
-ord0: to :integer `0`
+ord0: to :integer '0'
 happy?: function [x][
     n: x
     past: []

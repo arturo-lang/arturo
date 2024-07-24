@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2023 Yanis Zafirópulos
+# (c) 2019-2024 Yanis Zafirópulos
 #
 # @file: vm/values/custom/vsymbol.nim
 #=======================================================
@@ -11,6 +11,10 @@
 #=======================================
 # Types
 #=======================================
+# TODO(values/custom/vsymbol) add symbol for `**`
+#  apart from the use this could have in Grafito (which could most like be attached to something like `any`)
+#  it seems inconsistent to have `++`, `--`, etc but not this one...
+#  labels: vm,values,enhancement
 
 type 
     VSymbol* = enum
@@ -52,7 +56,7 @@ type
         equalless                = "=<"
         greaterequal             = ">="
         lessgreater              = "<>"
-
+        
         lesscolon                = "<:"
         minuscolon               = "-:"
         greatercolon             = ">:"
@@ -74,9 +78,9 @@ type
         caret                    = "^"
         ampersand                = "&"
         asterisk                 = "*"
+        doubleasterisk           = "**"
         minus                    = "-"
         doubleminus              = "--"
-        underscore               = "_"
         equal                    = "="
         doubleequal              = "=="
         approxequal              = "=~"
@@ -98,6 +102,7 @@ type
         dotslash                 = "./"
         colon                    = ":"
         doublecolon              = "::"
+        colonequal               = ":="
         doublepipe               = "||"
 
         slashedzero              = "∅"

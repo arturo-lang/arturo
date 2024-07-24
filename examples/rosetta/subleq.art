@@ -1,0 +1,26 @@
+run: function [prog][
+    mem: new prog
+    ip: 0
+    while [ip >= 0][
+        A: mem\[ip]
+        B: mem\[ip+1]
+        C: mem\[ip+2]
+
+        ip: ip + 3
+
+        if? A = neg 1 -> mem\[B]: to :integer first input ""
+        else [
+            if? B = neg 1 -> prints to :char mem\[A]
+            else [
+                mem\[B]: mem\[B] - mem\[A]
+                if mem\[B] =< 0 -> ip: C
+            ]
+        ]
+
+    ]
+]
+
+test: @[15, 17, neg 1, 17, neg 1, neg 1, 16, 1, neg 1, 16, 3, neg 1, 15, 15, 0, 0, neg 1,
+         72, 101, 108, 108, 111, 44, 32, 119, 111, 114, 108, 100, 33, 10, 0]
+
+run test

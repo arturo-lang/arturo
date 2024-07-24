@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2023 Yanis Zafirópulos
+# (c) 2019-2024 Yanis Zafirópulos
 #
 # @file: vm/values/custom/vcolor.nim
 #=======================================================
@@ -16,6 +16,10 @@ from algorithm import binarySearch
 
 import math, random, sequtils
 import strutils, sugar
+
+import helpers/strings
+
+import vm/errors
 
 #=======================================
 # Types
@@ -1381,6 +1385,9 @@ func `+`*(a, b: VColor): VColor =
         satPlus(A.a, B.a)
     )
 
+func `+=`*(a: var VColor, b: VColor) =
+    a = a + b
+
 func `-`*(a, b: VColor): VColor =
     let A = RGBfromColor(a)
     let B = RGBfromColor(b)
@@ -1391,6 +1398,9 @@ func `-`*(a, b: VColor): VColor =
         satMinus(A.b, B.b),
         satMinus(A.a, B.a)
     )
+
+func `-=`*(a: var VColor, b: VColor) =
+    a = a - b
 
 func `$`*(c: VColor): string =
     if (c.int and 0xff) < 0xff:
@@ -1414,7 +1424,7 @@ func colorFromHexWithAlpha*(s: string): VColor =
 
 func colorByName*(name: string): VColor =
     var idx = binarySearch(colorNames, name, colorNameCmp)
-    if idx < 0: raise newException(ValueError, "unknown color: " & name)
+    if idx < 0: Error_ColorNameNotFound(name, name.getSimilar(colorNames.map((z) => z[0])))
     result = colorNames[idx][1]
 
 func parseColor*(str: string): VColor =
@@ -1425,7 +1435,7 @@ func parseColor*(str: string): VColor =
         elif s.len==6:  result = colorFromHex(s)
         elif s.len==8:  result = colorFromHexWithAlpha(s)
         else:           result = colorByName(s)
-    except:
+    except CatchableError:
         result = colorByName(s)
 
 #=======================================

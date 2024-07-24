@@ -1,0 +1,19 @@
+f10: 1*2*3*4*5*6*7*8*9*10 ; this is evaluated at compile time
+
+; the generate bytecode is:
+; [ :bytecode
+;         ================================
+;          DATA
+;         ================================
+;         0: 3628800 :integer
+;         1: f10 :label
+
+;         ================================
+;          CODE
+;         ================================
+;         push0
+;         store1
+;         end
+; ]
+
+print f10

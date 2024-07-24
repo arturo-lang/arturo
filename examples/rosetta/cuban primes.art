@@ -1,0 +1,18 @@
+cubes: map 1..780000 'x -> x^3
+
+cubans: []
+i: 1
+while [100000 > size cubans][
+    num: cubes\[i] - cubes\[i-1]
+    if prime? num ->
+        'cubans ++ num
+    inc 'i
+]
+
+first200primes: first.n: 200 cubans
+
+loop split.every: 10 first200primes 'x ->
+    print map x 's -> pad to :string s 8
+
+print ""
+print ["The 100000th Cuban prime is" last cubans]

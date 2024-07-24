@@ -1,0 +1,51 @@
+; defining a custom type
+define :person [                           
+    ; define a new custom type "Person"
+    ; with fields: name, surname, age
+
+    init: method [name, surname, age][
+        this\name: capitalize name
+        this\surname: surname
+        this\age: age
+    ]
+
+    ; custom print function
+    string: method [][
+        render "NAME: |this\name|, SURNAME: |this\surname|, AGE: |this\age|"
+    ]
+
+    compare: sortable 'age
+
+    ; create a method for our custom type
+    sayHello: method [][
+        print ["Hello" this\name]
+    ]
+]
+
+; create new objects of our custom type
+a: to :person ["John" "Doe" 34]                 ; let's create 2 "Person"s
+b: to :person ["jane" "Doe" 33]                 ; and another one
+
+do ::
+    ; call inner method
+    a\sayHello                                      ; Hello John                       
+    b\sayHello                                      ; Hello Jane
+
+    ; access object fields
+    print ["The first person's name is:" a\name]    ; The first person's name is: John
+    print ["The second person's name is:" b\name]   ; The second person's name is: Jane
+
+    ; changing object fields
+    a\name: "Bob"                                   
+    a\sayHello                                      ; Hello Bob
+
+    ; verifying object type
+    print type a                                    ; :person
+    print is? :person a                             ; true
+
+    ; printing objects
+    print a                                         ; NAME: John, SURNAME: Doe, AGE: 34
+
+    ; sorting user objects (using custom comparator)
+    sort @[a b]                                     ; Jane..., John...
+    sort.descending @[a b]                          ; John..., Jane...  

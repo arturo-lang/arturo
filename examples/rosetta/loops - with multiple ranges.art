@@ -1,0 +1,36 @@
+multiLoop: function [ranges, it, blk][
+    loop ranges 'rng [
+        loop rng 'r [
+            let it r
+            do blk
+        ]
+    ]
+]
+
+x: 5
+y: neg 5
+z: neg 2
+one: 1
+three: 3
+seven: 7 
+
+totalSum: 0
+totalProduct: 1
+
+multiLoop @[ 
+    range.step:three neg three 3^3
+    range.step:x neg seven seven
+    range 555 550-y
+    range.step:neg three 22 neg 28
+    range 1927 1939
+    range.step: z x y
+    range 11^x 1+11^x
+] 'i [
+    totalSum: totalSum + abs i
+    if and? (abs totalProduct) < 2^27 
+            i <> 0 ->
+        totalProduct: totalProduct * i
+]
+
+print ["Sum:" totalSum]
+print ["Product:" totalProduct]

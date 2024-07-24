@@ -4,6 +4,10 @@
 ast:
   - src/vm/ast.nim
 
+bundler:
+  - src/vm/bundle/generator.nim
+  - src/vm/bundle/resources.nim
+
 bytecode:
   - src/vm/bytecode.nim
   - src/vm/opcodes.nim
@@ -12,6 +16,8 @@ ci:
   - .github/workflows/freebsd.yml
   - .github/workflows/linux.yml
   - .github/workflows/macos.yml
+  - .github/workflows/netbsd.yml
+  - .github/workflows/openbsd.yml
   - .github/workflows/web.yml
   - .github/workflows/windows.yml
 
@@ -33,6 +39,9 @@ evaluator:
 execution:
   - src/vm/exec.nim
 
+freebsd:
+  - .github/workflows/freebsd.yml
+
 helpers:
   - src/helpers/*
   
@@ -43,9 +52,14 @@ installer:
 library:
   - src/library/*
 
+netbsd:
+  - .github/workflows/netbsd.yml
+
+openbsd:
+  - .github/workflows/openbsd.yml
+
 package manager:
   - src/vm/packager.nim
-  - src/scripts/module.art
 
 parser:
   - src/vm/parse.nim
@@ -77,11 +91,14 @@ ui:
   - src/library/Ui.nim
 
 unit-test:
-  - tests/benchmarks/*
+  - tests/errors/*
   - tests/unittests/*
+  - tests/web/*
 
 values:
   - src/vm/values/*
+  - src/vm/values/custom/*
+  - src/vm/values/custom/quantities/*
 
 vm:
   - src/vm/*

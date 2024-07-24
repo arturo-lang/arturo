@@ -6,3 +6,27 @@ TnVtcXVhbSBmdWdpZW5zIHJlc3BleGVyaXM=
 3230320324843748754
 2386245923368600779
 -2167075274812200822
+
+>> crc
+[+] passed!
+
+>> decode
+[+] passed!
+
+>> decode.url
+[+] passed!
+
+>> encode
+[+] passed!
+
+>> encode.url
+[+] passed!
+
+>> encode.spaces
+[+] passed!
+
+>> encode.slashes
+[+] passed!
+
+>> digest
+[+] passed!

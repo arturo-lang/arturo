@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2023 Yanis Zafirópulos
+# (c) 2019-2024 Yanis Zafirópulos
 #
 # @file: library/Io.nim
 #=======================================================
@@ -31,7 +31,7 @@ when not defined(WEB):
 import helpers/terminal as terminalHelper
 
 import vm/lib
-import vm/[eval, exec]
+import vm/[errors, eval, exec]
 import vm/values/printable
 
 when defined(WEB):
@@ -44,10 +44,14 @@ when defined(WEB):
         echo buffer
 
 #=======================================
-# Methods
+# Definitions
 #=======================================
 
-proc defineSymbols*() =
+proc defineLibrary*() =
+
+    #----------------------------
+    # Functions
+    #----------------------------
 
     builtin "clear",
         alias       = unaliased, 
@@ -73,7 +77,6 @@ proc defineSymbols*() =
             "string": {String}
         },
         attrs       = {
-            "rgb"       : ({Integer},"use specific RGB color"),
             "bold"      : ({Logical},"bold font"),
             "underline" : ({Logical},"show underlined"),
             "keep"      : ({Logical},"don't reset color at string end")
@@ -164,8 +167,8 @@ proc defineSymbols*() =
             goto 10 ø       ; (move cursor to column 10, same line)
             """:
                 #=======================================================
-                if x.kind==Null:
-                    if y.kind==Null:
+                if xKind==Null:
+                    if yKind==Null:
                         discard
                     else:
                         when defined(windows):
@@ -173,7 +176,7 @@ proc defineSymbols*() =
                         else:
                             discard
                 else:
-                    if y.kind==Null:
+                    if yKind==Null:
                         stdout.setCursorXPos(x.i)
                     else:
                         stdout.setCursorPos(x.i, y.i)
@@ -230,11 +233,13 @@ proc defineSymbols*() =
                         historyPath = aHistory.s
 
                     if checkAttr("complete"):
+                        requireAttrValueBlock("complete", aComplete, {String,Word,Literal})
                         completionsArray = aComplete.a
 
                     if checkAttr("hint"):
                         hintsTable = aHint.d
 
+                    IsRepl = true
                     let (str, hasToKill) = replInput(x.s, historyPath, completionsArray, hintsTable)
                     if hasToKill:
                         when not defined(WEB):
@@ -264,7 +269,7 @@ proc defineSymbols*() =
             print "Hello world!"          ; Hello world!
         """:
             #=======================================================
-            if x.kind==Block:
+            if xKind==Block:
                 when defined(WEB):
                     stdout = ""
 
@@ -276,7 +281,7 @@ proc defineSymbols*() =
 
                 var res: ValueArray
                 while SP>stop:
-                    res.add(pop())
+                    res.add(stack.pop())
 
                 for r in res.reversed:
                     stdout.write($(r))
@@ -309,14 +314,14 @@ proc defineSymbols*() =
             when defined(WEB):
                 stdout = ""
 
-            if x.kind==Block:
+            if xKind==Block:
                 let xblock = doEval(x)
                 let stop = SP
                 execUnscoped(xblock)
 
                 var res: ValueArray
                 while SP>stop:
-                    res.add(pop())
+                    res.add(stack.pop())
 
                 for r in res.reversed:
                     stdout.write($(r))
@@ -353,4 +358,4 @@ proc defineSymbols*() =
 # Add Library
 #=======================================
 
-Libraries.add(defineSymbols)
+Libraries.add(defineLibrary)

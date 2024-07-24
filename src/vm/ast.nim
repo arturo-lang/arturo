@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2023 Yanis Zafirópulos
+# (c) 2019-2024 Yanis Zafirópulos
 #
 # @file: vm/ast.nim
 #=======================================================
@@ -15,22 +15,22 @@
 ## 
 ## The main entry point is ``generateAst``.
 
-# Pending task for new AST+Eval:
-# - [x] make Attribute's work
-# - [x] make AttributeLabel's work
-# - [x] make Path's work
-# - [x] make PathLabel's work
-# - [x] make Newline values work
-# - [x] create new opCode for append
-# - [x] clean up opCode's
-# - [x] attach opCode's to built-in function (for faster lookups)
-# - [x] optimize appends
-# - [x] optimize returns when it's the last statement of a function block
-# - [x] make labels store new functions in TmpArities
-# - [x] make labels unstore overwritten functions in TmpArities
-# - [x] make if/if?/else/while/switch work
-# - [x] correctly process to :string/:integer
-# - [ ] make sure all this left/right (when checking for optimization) are not Newline's
+# TODO(VM/ast) show warning in case `else` is preceded by `if` - and not `if?`
+#  labels: vm, ast, enhancement, error handling
+
+# TODO(VM/ast) make sure all left-right checking are not Newlines
+#  labels: vm, ast, enhancement, unit-test
+
+# TODO(VM/ast) make it so that pipes work inside arrow blocks
+#  something like this could/should be working:
+#  ```red
+#  f: function [x]-> 2..x | select => even?
+#  ```
+#  labels: vm, ast, enhancement
+
+# TODO(VM/ast) Are inline function declarations properly handled?
+#  see also: https://github.com/arturo-lang/arturo/blob/9fa7828494bb84a986ecf5fe1d31c8270ff115b8/tests/unittests/lib.comparison.art#L4089
+#  labels: vm, ast, enhancement, unit-test
 
 #=======================================
 # Libraries
@@ -39,9 +39,9 @@
 import sequtils, strutils
 import sugar, tables, unicode, std/with
 
-import vm/[globals, values/value, values/comparison, values/types]
+import vm/[globals, values/value, values/comparison, values/operators, values/types]
 import vm/values/printable
-import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vrational, vsymbol, vversion]
+import vm/values/custom/[vbinary, vcolor, vlogical, vquantity, vsymbol, vversion]
 
 import vm/profiler
 
@@ -88,10 +88,15 @@ type
 
     NodeObj = typeof(Node()[])
 
-# Benchmarking
-{.hints: on.}
-{.hint: "Node's inner type is currently " & $sizeof(NodeObj) & ".".}
-{.hints: off.}
+#=======================================
+# Compile-Time Warnings
+#=======================================
+
+when sizeof(NodeObj) > 40:
+    {.warning: "Node's inner object is large which will impact performance".}
+    {.hints: on.}
+    {.hint: "Node's inner type is currently " & $sizeof(NodeObj) & ".".}
+    {.hints: off.}
 
 #=======================================
 # Variables
@@ -100,8 +105,9 @@ type
 var
     TmpArities : Table[string,int8]
     ArrowBlock : seq[ValueArray]
-    OldChild  : Node
-    OldParent : Node
+
+    PipeParent : Node
+    CanStore   : bool
 
 #=======================================
 # Constants
@@ -127,33 +133,47 @@ proc dumpNode*(node: Node, level = 0, single: static bool=false, showNewlines: s
 # Tree manipulation
 #------------------------
 
-func setOnlyChild(node: Node, child: Node) {.enforceNoRaises.} =
+func setOnlyChild(node: Node, child: Node)  =
     child.parent = node
     node.children.setLen(1)
     node.children[0] = child
 
-func addChild*(node: Node, child: Node) {.enforceNoRaises.} =
+func addChild*(node: Node, child: Node)  =
     child.parent = node
     node.children.add(child)
     if node.kind in CallNode and child.kind notin {NewlineNode, AttributeNode}:
         node.params += 1
 
-func addChildren*(node: Node, children: openArray[Node]) {.enforceNoRaises.} =
+func addChildToFront*(node: Node, child: Node): int  =
+    result = 0
+    while node.children[result].kind==AttributeNode:
+        result += 1
+
+    child.parent = node
+    node.children.insert(child, result)
+    if node.kind in CallNode and child.kind notin {NewlineNode, AttributeNode}:
+        node.params += 1
+
+func addChildren*(node: Node, children: openArray[Node])  =
     for child in children:
         node.addChild(child)
 
-func deleteNode(node: Node) =
-    if not node.parent.isNil:
-        node.parent.children.delete(node.parent.children.find(node))
-        node.parent = nil
+# NOT USED
+
+# func deleteNode(node: Node) =
+#     if not node.parent.isNil:
+#         node.parent.children.delete(node.parent.children.find(node))
+#         node.parent = nil
 
 proc replaceNode(node: Node, newNode: Node) =
     newNode.parent = node.parent
     node.parent.children[node.parent.children.find(node)] = newNode
 
-proc addSibling(node: Node, newNode: Node) =
-    newNode.parent = node.parent
-    node.parent.children.insert(newNode, node.parent.children.find(node)+1)
+# NOT USED
+
+# proc addSibling(node: Node, newNode: Node) =
+#     newNode.parent = node.parent
+#     node.parent.children.insert(newNode, node.parent.children.find(node)+1)
 
 proc isLastChild(node: Node): bool =
     var j = node.parent.children.len-1
@@ -268,7 +288,7 @@ proc processBlock*(
     # Optimization
     #------------------------
 
-    proc optimizeAdd(target: var Node) {.enforceNoRaises.} =
+    proc optimizeAdd(target: var Node)  =
         var left = target.children[0]
         var right = target.children[1]
 
@@ -335,7 +355,7 @@ proc processBlock*(
                     left.children[1].kind = ConstantValue
                     left.children[1].value = newInteger(1)
 
-    proc optimizeSub(target: var Node) {.enforceNoRaises.} =
+    proc optimizeSub(target: var Node)  =
         var left = target.children[0]
         var right = target.children[1]
 
@@ -359,7 +379,7 @@ proc processBlock*(
             hookOptimProfiler("other (CF)")
             target.replaceNode(newConstant(op(left.value,right.value)))
 
-    proc optimizeAppend(target: var Node) {.enforceNoRaises.} =
+    proc optimizeAppend(target: var Node)  =
         var left = target.children[0]
         var right = target.children[1]
 
@@ -369,7 +389,7 @@ proc processBlock*(
                 hookOptimProfiler("append (CF)")
                 target.replaceNode(newConstant(newString(left.value.s & right.value.s)))
 
-    proc optimizeTo(target: var Node) {.enforceNoRaises.} =
+    proc optimizeTo(target: var Node)  =
         var left = target.children[0]
 
         if left.kind == ConstantValue and left.value.kind==Type:
@@ -386,31 +406,35 @@ proc processBlock*(
                 target.arity = 1
                 target.children.delete(0)
 
-    proc optimizeReturn(target: var Node) {.enforceNoRaises.} =
+    proc optimizeReturn(target: var Node)  =
         if isLastChild(target):
             hookOptimProfiler("return (eliminate last)")
             # Replace last return
             var left = target.children[0]
             target.replaceNode(left)
 
-    proc updateAritiesFromStore(target: var Node) {.enforceNoRaises.} =
+    proc updateAritiesFromStore(target: var Node)  =
         var child = target.children[0]
 
-        if child.op == opFunc:
-            let params {.cursor.} = child.children[0]
+        if child.kind in CallNode and child.op == opFunc:
+            var startIndex = 0
+            while child.children[startIndex].kind == NewlineNode:
+                startIndex += 1
+
+            let params {.cursor.} = child.children[startIndex]
 
             if params.value.kind == Literal:
                 TmpArities[target.value.s] = 1
-            else:
+            elif params.value.kind == Block:
                 TmpArities[target.value.s] = int8(params.value.a.countIt(it.kind != Type))
         else:
             TmpArities.del(target.value.s)
-
+ 
     #------------------------
     # Helper Functions
     #------------------------
 
-    template rewindCallBranches(target: var Node, optimize: bool = false): untyped =
+    template rewindCallBranches(target: var Node, optimize: bool = false, clearPipes: bool = true): untyped =
         while target.kind in CallNode and target.params == target.arity:
             when optimize:
                 if target.kind == VariableStore:
@@ -420,11 +444,11 @@ proc processBlock*(
                         case target.op:
                             of opAdd        : target.optimizeAdd()
                             of opSub        : target.optimizeSub()
-                            of opMul        : target.optimizeArithmeticOp(`*`)
-                            of opDiv        : target.optimizeArithmeticOp(`/`)
-                            of opFDiv       : target.optimizeArithmeticOp(`//`)
-                            of opMod        : target.optimizeArithmeticOp(`%`)
-                            of opPow        : target.optimizeArithmeticOp(`^`)
+                            of opMul        : target.optimizeArithmeticOp(operators.`*`)
+                            of opDiv        : target.optimizeArithmeticOp(operators.`/`)
+                            of opFDiv       : target.optimizeArithmeticOp(operators.`//`)
+                            of opMod        : target.optimizeArithmeticOp(operators.`%`)
+                            of opPow        : target.optimizeArithmeticOp(operators.`^`)
                             of opAppend     : target.optimizeAppend()
                             of opTo         : target.optimizeTo()
                             of opReturn     : 
@@ -433,10 +457,14 @@ proc processBlock*(
                                 
                             else:
                                 discard
-                    except:
+                    except Defect, CatchableError:
                         discard
 
             target = target.parent
+
+            when clearPipes:
+                if target.kind == RootNode:
+                    PipeParent = nil
 
     template rollThrough(target: var Node): untyped =
         target = target.children[^1]
@@ -504,21 +532,32 @@ proc processBlock*(
                 addChild(newCall)
                 rewindCallBranches(optimize=true)
 
-    func addStore(target: var Node, val: Value) {.enforceNoRaises.} =
+    proc addBuiltinCall(target: var Node, op: OpCode, arity: int8) =
+        target.addChild(newCallNode(BuiltinCall, arity, nil, op))
+        target.rollThrough()
+
+    func addStore(target: var Node, val: Value)  =
         target.addChild(newCallNode(VariableStore, 1, val))
 
         target.rollThrough()
 
-    proc addAttribute(target: var Node, val: Value, isLabel: static bool = false) {.enforceNoRaises.} =
+    proc addAttribute(target: var Node, val: Value, isLabel: static bool = false)  =
         let attrNode = newCallNode(AttributeNode, 1, val)
 
         when not isLabel:
             attrNode.addChild(newConstant(VTRUE))
 
-        target.addChild(attrNode)
+        if not PipeParent.isNil:
+            let injectionIndex {.used.} = PipeParent.addChildToFront(attrNode)
+            target = PipeParent
+            when isLabel:
+                target = target.children[injectionIndex]
+            target.rewindCallBranches(clearPipes=false)
+        else:
+            target.addChild(attrNode)
 
-        when isLabel:
-            target.rollThrough()
+            when isLabel:
+                target.rollThrough()
 
     proc addNewline(target: var Node) =
         target.addChild(Node(kind: NewlineNode, line: currentLine))
@@ -532,7 +571,7 @@ proc processBlock*(
             addChild(node)
 
             rewindCallBranches(optimize=true)
-
+            
     proc addTerminals(target: var Node, nodes: openArray[Node], dontOptimize: bool =false) =
         with target:
             rewindCallBranches()
@@ -545,61 +584,78 @@ proc processBlock*(
             target.rewindCallBranches(optimize=true)
 
     proc addPath(target: var Node, val: Value, isLabel: static bool=false) =
-        var pathCallV: Value = nil
-
         when not isLabel:
-            if (let curr = Syms.getOrDefault(val.p[0].s, nil); not curr.isNil):
-                let next {.cursor.} = val.p[1]
-                if curr.kind==Dictionary and (next.kind==Literal or next.kind==Word):
-                    if (let item = curr.d.getOrDefault(next.s, nil); not item.isNil):
-                        if item.kind == Function:
-                            pathCallV = item
+            if (let actualMethod = CheckCallablePath(val.p); (not actualMethod.isNil) and actualMethod.kind in {Function,Method}):
+                var methodInvocation: Node
+                var ar: int8
+                var limitArity: int8
+                CanStore = false
+                if actualMethod.kind == Method:
+                    ar = actualMethod.marity
+                    limitArity = 2
+                    methodInvocation = newCallNode(BuiltinCall, ar + 1, nil, opInvokeM)
+                    methodInvocation.addChild(newConstant(actualMethod))
+                    methodInvocation.addChild(newConstant(FetchPathSym(val.p[0..^2])))
+                else:
+                    ar = actualMethod.arity
+                    limitArity = 1
+                    methodInvocation = newCallNode(BuiltinCall, ar + 1, nil, opInvokeF)
+                    methodInvocation.addChild(newConstant(actualMethod))
 
-        if not pathCallV.isNil:
-            target.addChild(Node(kind: OtherCall, arity: pathCallV.arity, op: opNop, value: pathCallV))
+                if ar >= limitArity:
+                    target.addChild(methodInvocation)
+                    target.rollThrough()
+                else:
+                    target.addTerminal(methodInvocation)
+               
+                return
+
+        let basePath {.cursor.} = val.p[0]
+
+        when isLabel:
+            var baseNode = newVariable(basePath)
+        else:
+            var baseNode = 
+                if TmpArities.getOrDefault(basePath.s, -1) == 0:
+                    newCallNode(OtherCall, 0, basePath)
+                else:
+                    newVariable(basePath)
+
+        var i = 1
+        while i < val.p.len:
+            when isLabel:
+                let newNode = 
+                    if i == val.p.len - 1:
+                        newCallNode(BuiltinCall, 3, nil, opSet)
+                    else:
+                        newCallNode(BuiltinCall, 2, nil, opGet)
+            else:
+                let newNode = newCallNode(BuiltinCall, 2, nil, opGet)
+            
+            newNode.addChild(baseNode)
+            
+            if val.p[i].kind==Block:
+                var subNode = newRootNode()
+                discard subNode.processBlock(val.p[i], startingLine=currentLine, asDictionary=false)
+                newNode.addChildren(subNode.children)
+            else:
+                newNode.addChild(newConstant(val.p[i]))
+            
+            baseNode = newNode
+            i += 1
+
+        when isLabel:
+            target.addChild(baseNode)
             target.rollThrough()
         else:
-            let basePath {.cursor.} = val.p[0]
+            target.addTerminal(baseNode)
 
-            when isLabel:
-                var baseNode = newVariable(basePath)
-            else:
-                var baseNode = 
-                    if TmpArities.getOrDefault(basePath.s, -1) == 0:
-                        newCallNode(OtherCall, 0, basePath)
-                    else:
-                        newVariable(basePath)
-
-            var i = 1
-
-            while i < val.p.len:
-                when isLabel:
-                    let newNode = 
-                        if i == val.p.len - 1:
-                            newCallNode(BuiltinCall, 3, nil, opSet)
-                        else:
-                            newCallNode(BuiltinCall, 2, nil, opGet)
-                else:
-                    let newNode = newCallNode(BuiltinCall, 2, nil, opGet)
-                
-                newNode.addChild(baseNode)
-                
-                if val.p[i].kind==Block:
-                    var subNode = newRootNode()
-                    discard subNode.processBlock(val.p[i], startingLine=currentLine, asDictionary=false)
-                    newNode.addChildren(subNode.children)
-                else:
-                    newNode.addChild(newConstant(val.p[i]))
-                
-                baseNode = newNode
-                i += 1
-
-            when isLabel:
-                target.addChild(baseNode)
-                target.rollThrough()
-            else:
-                target.addTerminal(baseNode)
-
+    # TODO(VM/ast) verify attributes are correctly processed when using pipes
+    #  example:
+    #  ```
+    #  1..10 | loop.with:'i 'x -> print [i x]
+    #  ```
+    #  labels: vm,ast,bug
     template addPotentialTrailingPipe(target: var Node): untyped =
         var added = false
         if i < nLen - 1:
@@ -607,6 +663,7 @@ proc processBlock*(
             if nextNode.kind == Word:
                 if (let funcArity = TmpArities.getOrDefault(nextNode.s, -1); funcArity != -1):
                     i += 1
+
                     target.rewindCallBranches()
 
                     var toSpot = target.children.len - 1
@@ -626,8 +683,10 @@ proc processBlock*(
                         let newCall = getCallNode(nextNode.s, funcArity)
                         newCall.addChild(toWrap)
 
+                        PipeParent = newCall
                         lastChild.children[0].replaceNode(newCall)
                         target = lastChild
+                    
                         target.rollThrough()
                     else:
                     
@@ -635,8 +694,9 @@ proc processBlock*(
 
                         target.addCall(nextNode.s, funcArity)
                         target.addChild(toWrap)
+                        PipeParent = target
 
-                    target.rewindCallBranches()
+                    target.rewindCallBranches(clearPipes=false)
                     
                     added = true
 
@@ -789,6 +849,18 @@ proc processBlock*(
                     of pipe             :
                         current.addPotentialTrailingPipe()
 
+                    of exclamation      :
+                        inc(i)
+                        var subblock: ValueArray
+                        while i < nLen:
+                            subblock.add(blok.a[i])
+                            inc(i)
+
+                        let doMagic = newCallNode(BuiltinCall, 1, nil, opExec)
+                        doMagic.addChild(newConstant(newBlock(subblock)))
+                        
+                        current.addChild(doMagic)
+
                     else:
                         when processingArrow: ArrowBlock[^1].add(item)
 
@@ -805,6 +877,27 @@ proc processBlock*(
                                     current.addTerminal(newVariable(newWord(aliased.name.s)))
                         else:
                             current.addTerminal(newConstant(item))
+
+            of Quantity:
+                when processingArrow: ArrowBlock[^1].add(item)
+
+                if unlikely(item.q.withUserUnits):
+                    # if the quantity contains user-defined units,
+                    # they may not be defined yet - remember we are at the AST stage,
+                    # that is: pre-runtime - so the calculations will be wrong
+                    # For that reason, we substitute the quantity literal with:
+                    # `to :quantity [value unit]`
+                    current.addPotentialInfixCall()
+                    current.addBuiltinCall(opTo, 2)
+                    current.addTerminal(newConstant(newType("quantity")))
+                    current.addTerminal(newConstant(newBlock(@[
+                        newRational(item.q.original),
+                        newUnit(item.q.atoms)
+                    ])))
+                else:
+                    # the quantity doesn't contain user-defined units,
+                    # so we can simply push it to the tree
+                    current.addTerminal(newConstant(item))
 
             else:
                 when processingArrow: ArrowBlock[^1].add(item)
@@ -855,7 +948,10 @@ proc dumpNode*(node: Node, level = 0, single: static bool = false, showNewlines:
                     callName.removePrefix("op")
                     result &= callName & " <" & $node.arity & ">\n"
                 else:
-                    result &= node.value.s & " <" & $node.arity & ">\n"
+                    if node.value.kind in {Word,Literal,Label,String}:
+                        result &= node.value.s & " <" & $node.arity & ">\n"
+                    else:
+                        result &= "meth? <" & $node.arity & ">\n"
 
             when not single:
                 for child in node.children:
@@ -867,8 +963,11 @@ proc dumpNode*(node: Node, level = 0, single: static bool = false, showNewlines:
 # Main
 #=======================================
 
-proc generateAst*(parsed: Value, asDictionary=false, asFunction=false, reuseArities: static bool=false): Node =
-    result = newRootNode()
+proc generateAst*(parsed: Value, asDictionary=false, asFunction=false, reuseArities: static bool=false): (Node, bool) =
+    var res = newRootNode()
+
+    PipeParent = nil
+    CanStore = true
 
     when not reuseArities:
         TmpArities = collect:
@@ -876,6 +975,7 @@ proc generateAst*(parsed: Value, asDictionary=false, asFunction=false, reuseArit
                 if v.kind == Function:
                     {k: v.arity}
 
-    discard result.processBlock(parsed, asDictionary=asDictionary, asFunction=asFunction)
+    discard res.processBlock(parsed, asDictionary=asDictionary, asFunction=asFunction)
+    return (res, CanStore)
 
     #echo dumpNode(result)

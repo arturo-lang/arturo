@@ -1,0 +1,51 @@
+printTable: function [title, rows][
+    print title ++ ":"
+    print repeat "=" 60
+
+    prints pad.center "A" 10
+    prints pad.center "B" 10
+    prints pad.center "C" 10
+    prints pad.center "Perimeter" 15
+    print pad.center "Area" 15
+    print repeat "-" 60
+
+    loop rows 'row [
+        prints pad.center to :string row\0 10
+        prints pad.center to :string row\1 10
+        prints pad.center to :string row\2 10
+        prints pad.center to :string row\3 15
+        print pad.center to :string row\4 15
+    ]
+    print ""
+]
+
+hero: function [a,b,c][
+    s: (a + b + c) // 2
+    return sqrt(s * (s-a) * (s-b) * (s-c))
+]
+
+heronian?: function [x]->
+    and? -> x > 0
+         -> x = ceil x
+
+lst: []
+mx: 200
+
+loop 1..mx 'c ->
+    loop 1..c 'b ->
+        loop 1..b 'a [
+            area: hero a b c
+            if and? [heronian? area] [one? gcd @[a b c]]->
+                'lst ++ @[
+                    @[a, b, c, a + b + c, to :integer area]
+                ]
+        ]
+
+print ["Number of Heronian triangles:" size lst]
+print ""
+
+lst: arrange lst 'item ->
+    (item\4 * 10000) + (item\3 * 100) + max first.n:3 item
+
+printTable "Ordered list of first ten Heronian triangles" first.n: 10 lst
+printTable "Ordered list of Heronian triangles with area 210" select lst 'x -> x\4 = 210

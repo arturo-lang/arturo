@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2023 Yanis Zafirópulos
+# (c) 2019-2024 Yanis Zafirópulos
 #
 # @file: library/Numbers.nim
 #=======================================================
@@ -24,11 +24,15 @@ import math, random, sequtils, sugar
 when defined(WEB):
     import std/jsbigints
 
-when not defined(NOGMP):
+when defined(GMP):
     import helpers/bignums as BignumsHelper
 
 import helpers/maths
 import helpers/ranges
+import vm/values/custom/vrange
+import vm/values/custom/vquantity
+
+import vm/errors
 
 import vm/lib
 
@@ -38,17 +42,27 @@ import vm/lib
 
 template processTrigonometric(fun: untyped): untyped =
     var v = x
-    if x.kind == Quantity:
-        v = convertQuantityValue(x.nm, x.unit.name, RAD)
+    if xKind == Quantity:
+        v = newQuantity(x.q.convertTo(parseAtoms("rad")))
 
     if v.kind==Complex: push(newComplex(fun(v.z)))
+    elif v.kind==Rational: push(newRational(fun(toFloat(v.rat))))
     else: push(newFloating(fun(asFloat(v))))
 
 #=======================================
-# Methods
+# Definitions
 #=======================================
 
-proc defineSymbols*() =
+# TODO(Numbers) add `cbrt` built-in function
+#  the goal would be to have a function that returns the cubic root of a number
+#  potential use: https://rosettacode.org/wiki/Cubic_special_primes
+#  labels: library, enhancement, new feature
+ 
+proc defineLibrary*() =
+
+    #----------------------------
+    # Functions
+    #----------------------------
 
     builtin "abs",
         alias       = unaliased, 
@@ -68,15 +82,15 @@ proc defineSymbols*() =
             ; => 3.296908309475615
         """:
             #=======================================================
-            if x.kind==Integer:
+            if xKind==Integer:
                 if x.iKind==NormalInteger: 
                     push(newInteger(abs(x.i)))
                 else:
-                    when defined(WEB) or not defined(NOGMP):
+                    when defined(WEB) or defined(GMP):
                         push(newInteger(abs(x.bi)))
-            elif x.kind==Floating:
+            elif xKind==Floating:
                 push(newFloating(abs(x.f)))
-            elif x.kind==Complex:
+            elif xKind==Complex:
                 push(newFloating(abs(x.z)))
             else:
                 push(newRational(abs(x.rat)))
@@ -87,7 +101,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the inverse cosine of given angle",
         args        = {
-            "angle" : {Integer,Floating,Complex,Quantity}
+            "angle" : {Integer,Floating,Complex,Rational,Quantity}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -108,7 +122,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the inverse hyperbolic cosine of given angle",
         args        = {
-            "angle" : {Integer,Floating,Complex,Quantity}
+            "angle" : {Integer,Floating,Complex,Rational,Quantity}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -129,7 +143,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the inverse cosecant of given angle",
         args        = {
-            "angle" : {Integer,Floating,Complex,Quantity}
+            "angle" : {Integer,Floating,Complex,Rational,Quantity}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -150,7 +164,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the inverse hyperbolic cosecant of given angle",
         args        = {
-            "angle" : {Integer,Floating,Complex,Quantity}
+            "angle" : {Integer,Floating,Complex,Rational,Quantity}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -171,7 +185,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the inverse cotangent of given angle",
         args        = {
-            "angle" : {Integer,Floating,Complex,Quantity}
+            "angle" : {Integer,Floating,Complex,Rational,Quantity}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -192,7 +206,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the inverse hyperbolic cotangent of given angle",
         args        = {
-            "angle" : {Integer,Floating,Complex,Quantity}
+            "angle" : {Integer,Floating,Complex,Rational,Quantity}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -230,7 +244,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the inverse secant of given angle",
         args        = {
-            "angle" : {Integer,Floating,Complex,Quantity}
+            "angle" : {Integer,Floating,Complex,Rational,Quantity}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -251,7 +265,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the inverse hyperbolic secant of given angle",
         args        = {
-            "angle" : {Integer,Floating,Complex,Quantity}
+            "angle" : {Integer,Floating,Complex,Rational,Quantity}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -272,7 +286,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the inverse sine of given angle",
         args        = {
-            "angle" : {Integer,Floating,Complex,Quantity}
+            "angle" : {Integer,Floating,Complex,Rational,Quantity}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -293,7 +307,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the inverse hyperbolic sine of given angle",
         args        = {
-            "angle" : {Integer,Floating,Complex,Quantity}
+            "angle" : {Integer,Floating,Complex,Rational,Quantity}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -314,7 +328,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the inverse tangent of given angle",
         args        = {
-            "angle" : {Integer,Floating,Complex,Quantity}
+            "angle" : {Integer,Floating,Complex,Rational,Quantity}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -335,8 +349,8 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the inverse tangent of y / x",
         args        = {
-            "y"     : {Integer,Floating},
-            "x"     : {Integer,Floating}
+            "y"     : {Integer,Floating,Rational},
+            "x"     : {Integer,Floating,Rational}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -353,7 +367,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the inverse hyperbolic tangent of given angle",
         args        = {
-            "angle" : {Integer,Floating,Complex,Quantity}
+            "angle" : {Integer,Floating,Complex,Rational,Quantity}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -374,15 +388,16 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the smallest integer not smaller than given value",
         args        = {
-            "value" : {Integer,Floating}
+            "value" : {Integer,Floating,Rational}
         },
         attrs       = NoAttrs,
         returns     = {Integer},
         example     = """
-            print ceil 2.1          ; 3
-            print ceil 2.9          ; 3
-            print ceil neg 3.5      ; -3
-            print ceil 4            ; 4
+            print ceil 2.1                      ; 3
+            print ceil 2.9                      ; 3
+            print ceil neg 3.5                  ; -3
+            print ceil 4                        ; 4
+            print ceil to :rational @[neg 7 2]  ; -3
         """:
             #=======================================================
             push(newInteger(int(ceil(asFloat(x)))))
@@ -393,25 +408,52 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "force value within given range",
         args        = {
-            "number" : {Integer,Floating},
-            "min"    : {Integer,Floating},
-            "max"    : {Integer,Floating}
+            "number" : {Integer, Floating, Rational},
+            "range"  : {Range, Block}
         },
         attrs       = NoAttrs,
-        returns     = {Integer,Floating},
+        returns     = {Integer, Floating, Rational},
         example     = """
-            clamp 2 1 3             ; 2
-            clamp 0 1 3             ; 1
-            clamp 4 1 3             ; 3
+            clamp 2 1..3                        ; 2
+            clamp 0 1..3                        ; 1
+            clamp 4 1..3                        ; 3
+            clamp 4 3..1                        ; 3
+            clamp 5 range.step: 2 0 5           ; 4
+            
+            clamp 4.5 0..6                      ; 4.5
+            clamp to :rational [1 5] 0..1       ; 1/5
+            
+            clamp 4.5 [1 2.5]                   ; 2.5
+            clamp 2 [5 10]                      ; 5
+            clamp 2 [10 5]                      ; 5
+            clamp 2.5 @[1 to :rational [5 2]]   ; 2.5
         """:
             #=======================================================
-            if x < y:
-                push(y)
-            elif x > z:
-                push(z)
+            case y.kind
+            of Range:
+                if not y.rng.numeric:
+                    Error_IncompatibleValueType("clamp", valueKind(y), "numeric range")
+                
+                if (let minElem = y.rng.min()[1]; x.asFloat < float(minElem.i)): push(minElem)
+                elif (let maxElem = y.rng.max()[1]; x.asFloat > float(maxElem.i)): push(maxElem)
+                else: push(x)       
+            of Block:
+                y.requireBlockSize(2)
+                let firstElem {.cursor} = y.a[0]
+                let secondElem {.cursor} = y.a[1]
+                firstElem.requireValue({Integer, Floating, Rational})
+                secondElem.requireValue({Integer, Floating, Rational})
+                
+                let minElem = min([firstElem, secondElem])
+                let maxElem = max([firstElem, secondElem])
+                
+                if x.asFloat < minElem.asFloat: push(minElem)
+                elif x.asFloat > maxElem.asFloat: push(maxElem)
+                else: push(x)  
+                    
             else:
-                push(x)
-
+                discard
+             
     builtin "conj",
         alias       = unaliased, 
         op          = opNop,
@@ -435,7 +477,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the cosine of given angle",
         args        = {
-            "angle" : {Integer,Floating,Complex,Quantity}
+            "angle" : {Integer,Floating,Complex,Rational,Quantity}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -456,7 +498,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the hyperbolic cosine of given angle",
         args        = {
-            "angle" : {Integer,Floating,Complex,Quantity}
+            "angle" : {Integer,Floating,Complex,Rational,Quantity}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -477,7 +519,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the cosecant of given angle",
         args        = {
-            "angle" : {Integer,Floating,Complex,Quantity}
+            "angle" : {Integer,Floating,Complex,Rational,Quantity}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -498,7 +540,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the hyperbolic cosecant of given angle",
         args        = {
-            "angle" : {Integer,Floating,Complex,Quantity}
+            "angle" : {Integer,Floating,Complex,Rational,Quantity}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -519,7 +561,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the cotangent of given angle",
         args        = {
-            "angle" : {Integer,Floating,Complex,Quantity}
+            "angle" : {Integer,Floating,Complex,Rational,Quantity}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -540,7 +582,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the hyperbolic cotangent of given angle",
         args        = {
-            "angle" : {Integer,Floating,Complex,Quantity}
+            "angle" : {Integer,Floating,Complex,Rational,Quantity}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -576,14 +618,17 @@ proc defineSymbols*() =
             #=======================================================
             var rat: VRational
 
-            if x.kind==Rational:
+            if xKind==Rational:
                 rat = x.rat
-            elif x.kind==Integer:
+            elif xKind==Integer:
                 rat = toRational(x.i)
             else:
                 rat = toRational(x.f)
 
-            push(newInteger(rat.den))
+            if rat.rKind == NormalRational:
+                push(newInteger(getDenominator(rat)))
+            else:
+                push(newInteger(getDenominator(rat, big=true)))
 
     builtin "digits",
         alias       = unaliased, 
@@ -618,32 +663,8 @@ proc defineSymbols*() =
             if x.iKind == NormalInteger:
                 push newBlock(getDigits(x.i, base).map((z)=>newInteger(z)))
             else:
-                when defined(WEB) or not defined(NOGMP):
+                when defined(WEB) or defined(GMP):
                     push newBlock(getDigits(x.bi, base).map((z)=>newInteger(z)))
-
-    constant "epsilon",
-        alias       = unaliased,
-        description = "the constant e, Euler's number":
-            newFloating(E)
-
-    builtin "even?",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "check if given number is even",
-        args        = {
-            "number"    : {Integer}
-        },
-        attrs       = NoAttrs,
-        returns     = {Logical},
-        example     = """
-            even? 4           ; => true
-            even? 3           ; => false
-            ..........
-            print select 1..10 => even?       ; 2 4 6 8 10
-        """:
-            #=======================================================
-            push(newLogical(x % I2 == I0))
 
     builtin "exp",
         alias       = unaliased, 
@@ -651,7 +672,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the exponential function for given value",
         args        = {
-            "value" : {Integer,Floating,Complex}
+            "value" : {Integer,Floating,Complex,Rational}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -664,7 +685,7 @@ proc defineSymbols*() =
             ; => 12.50296958887651+19.47222141884161i
         """:
             #=======================================================
-            if x.kind==Complex: push(newComplex(exp(x.z)))
+            if xKind==Complex: push(newComplex(exp(x.z)))
             else: push(newFloating(exp(asFloat(x))))
 
     builtin "factorial",
@@ -683,7 +704,10 @@ proc defineSymbols*() =
             factorial 20        ; => 2432902008176640000
         """:
             #=======================================================
-            push(factorial(x))
+            if unlikely(x.iKind == BigInteger):
+                Error_InvalidOperation("factorial", valueKind(x, withBigInfo=true), "")
+            else:
+                push(factorial(x.i))
 
     builtin "factors",
         alias       = unaliased, 
@@ -716,7 +740,7 @@ proc defineSymbols*() =
                 else:
                     push(newBlock(factors(x.i).map((x)=>newInteger(x))))
             else:
-                when defined(WEB) or not defined(NOGMP):
+                when defined(WEB) or defined(GMP):
                     # TODO(Numbers\factors) `.prime` not working for Web builds
                     # labels: web,enhancement
                     if prime:
@@ -733,15 +757,16 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the largest integer not greater than given value",
         args        = {
-            "value" : {Integer,Floating}
+            "value" : {Integer,Floating,Rational}
         },
         attrs       = NoAttrs,
         returns     = {Integer},
         example     = """
-            print floor 2.1         ; 2
-            print floor 2.9         ; 2
-            print floor neg 3.5     ; -4
-            print floor 4           ; 4
+            print floor 2.1                     ; 2
+            print floor 2.9                     ; 2
+            print floor neg 3.5                 ; -4
+            print floor 4                       ; 4
+            print floor to :rational @[neg 7 2] ; -4
         """:
             #=======================================================
             push(newInteger(int(floor(asFloat(x)))))
@@ -753,7 +778,7 @@ proc defineSymbols*() =
             rule        = PrefixPrecedence,
             description = "calculate the gamma function for given value",
             args        = {
-                "value" : {Integer,Floating}
+                "value" : {Integer,Floating,Rational}
             },
             attrs       = NoAttrs,
             returns     = {Floating},
@@ -780,23 +805,27 @@ proc defineSymbols*() =
         """:
             #=======================================================
             var current = x.a[0]
+            requireValue(current, {Integer})
 
             var i = 1
             # TODO(Numbers\gcd) not working for Web builds
             # labels: web,enhancement
             while i<x.a.len:
+                let elem {.cursor.} = x.a[i]
+                requireValue(elem, {Integer})
+
                 if current.iKind==NormalInteger:
-                    if x.a[i].iKind==BigInteger:
-                        when not defined(NOGMP):
-                            current = newInteger(gcd(current.i, x.a[i].bi))
+                    if elem.iKind==BigInteger:
+                        when defined(GMP):
+                            current = newInteger(gcd(current.i, elem.bi))
                     else:
-                        current = newInteger(gcd(current.i, x.a[i].i))
+                        current = newInteger(gcd(current.i, elem.i))
                 else:
-                    when not defined(NOGMP):
-                        if x.a[i].iKind==BigInteger:
-                            current = newInteger(gcd(current.bi, x.a[i].bi))
+                    when defined(GMP):
+                        if elem.iKind==BigInteger:
+                            current = newInteger(gcd(current.bi, elem.bi))
                         else:
-                            current = newInteger(gcd(current.bi, x.a[i].i))
+                            current = newInteger(gcd(current.bi, elem.i))
                 inc(i)
 
             push(current)
@@ -807,8 +836,8 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the hypotenuse of a right-angle triangle with given base and height",
         args        = {
-            "base"  : {Integer,Floating},
-            "height": {Integer,Floating}
+            "base"  : {Integer,Floating,Rational},
+            "height": {Integer,Floating,Rational}
         },
         attrs       = NoAttrs,
         returns     = {Floating},
@@ -821,29 +850,6 @@ proc defineSymbols*() =
         """:
             #=======================================================
             push(newFloating(hypot(asFloat(x), asFloat(y))))
-
-    constant "infinite",
-        alias       = infinite,
-        description = "the IEEE floating point value of positive infinity":
-            newFloating(Inf)
-
-    builtin "infinite?",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "check whether given value is an infinite one",
-        args        = {
-            "value" : {Any}
-        },
-        attrs       = NoAttrs,
-        returns     = {Logical},
-        example     = """
-        """:
-            #=======================================================
-            if x.kind == Floating and (x.f == Inf or x.f == NegInf):
-                push(VTRUE)
-            else:
-                push(VFALSE)
 
     builtin "lcm",
         alias       = unaliased,
@@ -860,23 +866,27 @@ proc defineSymbols*() =
         """:
             #=======================================================
             var current = x.a[0]
+            requireValue(current, {Integer})
 
             var i = 1
             # TODO(Numbers\lcm) not working for Web builds
             # labels: web,enhancement
             while i<x.a.len:
+                let elem {.cursor.} = x.a[i]
+                requireValue(elem, {Integer})
+
                 if current.iKind==NormalInteger:
-                    if x.a[i].iKind==BigInteger:
-                        when not defined(NOGMP):
-                            current = newInteger(lcm(current.i, x.a[i].bi))
+                    if elem.iKind==BigInteger:
+                        when defined(GMP):
+                            current = newInteger(lcm(current.i, elem.bi))
                     else:
-                        current = newInteger(lcm(current.i, x.a[i].i))
+                        current = newInteger(lcm(current.i, elem.i))
                 else:
-                    when not defined(NOGMP):
-                        if x.a[i].iKind==BigInteger:
-                            current = newInteger(lcm(current.bi, x.a[i].bi))
+                    when defined(GMP):
+                        if elem.iKind==BigInteger:
+                            current = newInteger(lcm(current.bi, elem.bi))
                         else:
-                            current = newInteger(lcm(current.bi, x.a[i].i))
+                            current = newInteger(lcm(current.bi, elem.i))
                 inc(i)
 
             push(current)
@@ -887,7 +897,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the natural logarithm of given value",
         args        = {
-            "value" : {Integer,Floating,Complex}
+            "value" : {Integer,Floating,Complex,Rational}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -900,7 +910,7 @@ proc defineSymbols*() =
             ; => 1.19298515341341+0.308169071115985i
         """:
             #=======================================================
-            if x.kind==Complex: push(newComplex(ln(x.z)))
+            if xKind==Complex: push(newComplex(ln(x.z)))
             else: push(newFloating(ln(asFloat(x))))
 
     builtin "log",
@@ -909,8 +919,8 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the logarithm of value using given base",
         args        = {
-            "value" : {Integer,Floating},
-            "base"  : {Integer,Floating}
+            "value" : {Integer,Floating,Rational},
+            "base"  : {Integer,Floating,Rational}
         },
         attrs       = NoAttrs,
         returns     = {Floating},
@@ -974,38 +984,17 @@ proc defineSymbols*() =
             #=======================================================
             var rat: VRational
 
-            if x.kind==Rational:
+            if xKind==Rational:
                 rat = x.rat
-            elif x.kind==Integer:
+            elif xKind==Integer:
                 rat = toRational(x.i)
             else:
                 rat = toRational(x.f)
 
-            push(newInteger(rat.num))
-
-    builtin "odd?",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "check if given number is odd",
-        args        = {
-            "number"    : {Integer}
-        },
-        attrs       = NoAttrs,
-        returns     = {Logical},
-        example     = """
-            odd? 4            ; => false
-            odd? 3            ; => true
-            ..........
-            print select 1..10 => odd?       ; 1 3 5 7 9
-        """:
-            #=======================================================
-            push(newLogical(x % I2 == I1))
-
-    constant "pi",
-        alias       = unaliased,
-        description = "the number pi, mathematical constant":
-            newFloating(PI)
+            if rat.rKind == NormalRational:
+                push(newInteger(getNumerator(rat)))
+            else:
+                push(newInteger(getNumerator(rat, big=true)))
 
     builtin "positive?",
         alias       = unaliased, 
@@ -1066,6 +1055,440 @@ proc defineSymbols*() =
                 #=======================================================
                 push(powmod(x, y, z))
         
+    builtin "product",
+        alias       = product, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "calculate the product of all values in given list",
+        args        = {
+            "collection"    : {Block,Range}
+        },
+        attrs       = {
+            "cartesian"  : ({Logical},"return the cartesian product of given sublists")
+        },
+        returns     = {Integer,Floating,Rational},
+        example     = """
+            print product [3 4]       ; 12
+            print product [1 2 4 6]   ; 48
+            ..........
+            print product 1..10       ; 3628800
+        """:
+            #=======================================================
+            if (hadAttr("cartesian")):
+                let blk = x.a.map((z)=>z.a)
+                push(newBlock(cartesianProduct(blk).map((z) => newBlock(z))))
+            else:
+                var product = I1.copyValue
+                if xKind==Range:
+                    for item in items(x.rng):
+                        product *= item
+                    push(product)
+                else:
+                    if x.a.len==0: push(I0.copyValue)
+                    else:
+                        var i = 0
+                        while i<x.a.len:
+                            product *= x.a[i]
+                            i += 1
+
+                        push(product)
+
+    builtin "random",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "get a random integer between given limits",
+        args        = {
+            "lowerLimit"    : {Integer, Floating, Rational},
+            "upperLimit"    : {Integer, Floating, Rational}
+        },
+        attrs       = NoAttrs,
+        returns     = {Integer, Floating},
+        example     = """
+            rnd: random 0 60          ; rnd: (a random number between 0 and 60)
+        """:
+            #=======================================================
+            if xKind==Integer and yKind==Integer:
+                push(newInteger(rand(x.i..y.i)))
+            else:
+                push(newFloating(rand(asFloat(x)..asFloat(y))))
+
+    builtin "reciprocal",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "calculate the reciprocal of given number",
+        args        = {
+            "value" : {Integer,Floating,Rational}
+        },
+        attrs       = NoAttrs,
+        returns     = {Rational},
+        example     = """
+            r: to :rational [3 2]
+
+            print reciprocal r
+            ; 2/3
+            ..........
+            reciprocal 3        ; => 1/3
+            reciprocal 3.2      ; => 5/16
+        """:
+            #=======================================================
+            if xKind==Integer:
+                push(newRational(reciprocal(toRational(x.i))))
+            elif xKind==Floating:
+                push(newRational(reciprocal(toRational(x.f))))
+            else:
+                push(newRational(reciprocal(x.rat)))
+
+    builtin "round",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "round given value",
+        args        = {
+            "value" : {Integer,Floating,Rational}
+        },
+        attrs       = {
+            "to"    : ({Integer},"round to given decimal places")
+        },
+        returns     = {Floating},
+        example     = """
+            print round 2.1                     ; 2.0
+            print round 2.9                     ; 3.0
+            print round 6                       ; 6.0
+
+            print round to :rational [29 10]    ; 3.0
+            print round to :rational [21 10]    ; 2.0
+            print round to :rational [5 2]      ; 3.0
+
+            print round pi          ; 3.0
+            ..........
+            print round.to:5 pi     ; 3.14159
+            print round.to:2 pi     ; 3.14
+        """:
+            #=======================================================
+            var places = 0
+            if checkAttr("to"):
+                places = aTo.i
+                
+            push(newFloating(round(asFloat(x), places)))
+
+    builtin "sec",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "calculate the secant of given angle",
+        args        = {
+            "angle" : {Integer,Floating,Complex,Rational,Quantity}
+        },
+        attrs       = NoAttrs,
+        returns     = {Floating,Complex},
+        example     = """
+            print sec 0                 ; 1.0
+            print sec 0.3               ; 1.046751601538086
+            print sec 1.0               ; 1.850815717680925
+            ..........
+            sec to :complex [1 1]
+            ; => 0.4983370305551868+0.591083841721045i
+        """:
+            #=======================================================
+            processTrigonometric(sec)
+
+    builtin "sech",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "calculate the hyperbolic secant of given angle",
+        args        = {
+            "angle" : {Integer,Floating,Complex,Rational,Quantity}
+        },
+        attrs       = NoAttrs,
+        returns     = {Floating,Complex},
+        example     = """
+            print sech 0                ; 1.0
+            print sech 0.3              ; 0.9566279119002483
+            print sech 1.0              ; 0.6480542736638855
+            ..........
+            sech to :complex [1 1]
+            ; => 0.4983370305551868-0.5910838417210451i
+        """:
+            #=======================================================
+            processTrigonometric(sech)
+
+    builtin "sin",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "calculate the sine of given angle",
+        args        = {
+            "angle" : {Integer,Floating,Complex,Rational,Quantity}
+        },
+        attrs       = NoAttrs,
+        returns     = {Floating,Complex},
+        example     = """
+            print sin 0                 ; 0.0
+            print sin 0.3               ; 0.2955202066613395
+            print sin 1.0               ; 0.8414709848078965
+            ..........
+            sin to :complex [1 1]
+            ; => 0.4983370305551868-0.5910838417210451i
+        """:
+            #=======================================================
+            processTrigonometric(sin)
+
+    builtin "sinh",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "calculate the hyperbolic sine of given angle",
+        args        = {
+            "angle" : {Integer,Floating,Complex,Rational,Quantity}
+        },
+        attrs       = NoAttrs,
+        returns     = {Floating,Complex},
+        example     = """
+            print sinh 0                ; 0.0
+            print sinh 0.3              ; 0.3045202934471426
+            print sinh 1.0              ; 1.175201193643801
+            ..........
+            sinh to :complex [1 1]
+            ; => 0.6349639147847361+1.298457581415977i
+        """:
+            #=======================================================
+            processTrigonometric(sinh)
+
+    builtin "sqrt",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "get square root of given value",
+        args        = {
+            "value" : {Integer,Floating,Complex,Rational}
+        },
+        attrs       = {
+            "integer"   : ({Logical},"get the integer square root")
+        },
+        returns     = {Floating},
+        example     = """
+            print sqrt 4                ; 2.0
+            print sqrt 16.0             ; 4.0
+            print sqrt 1.45             ; 1.20415945787923
+            ..........
+            sqrt to :complex @[pi 1]
+            ; => 1.794226987182141+0.2786715413222365i
+        """:
+            #=======================================================
+            if (hadAttr("integer")):
+                when defined(WEB) or defined(GMP):
+                    if x.iKind == NormalInteger:
+                        push(newInteger(isqrt(x.i)))
+                    else:
+                        push(newInteger(isqrt(x.bi)))
+                else:
+                    push(newInteger(isqrt(x.i)))
+            elif xKind==Complex: push(newComplex(sqrt(x.z)))
+            else: push(newFloating(sqrt(asFloat(x))))
+
+    builtin "sum",
+        alias       = summation, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "calculate the sum of all values in given list",
+        args        = {
+            "collection"    : {Block,Range}
+        },
+        attrs       = NoAttrs,
+        returns     = {Integer,Floating,Rational},
+        example     = """
+            print sum [3 4]           ; 7
+            print sum [1 2 4 6]       ; 13
+            ..........
+            print sum 1..10           ; 55
+        """:
+            #=======================================================
+            var sum = I0.copyValue
+            if xKind==Range:
+                for item in items(x.rng):
+                    sum += item
+            else:
+                var i = 0
+                while i<x.a.len:
+                    sum += x.a[i]
+                    i += 1
+
+            push(sum)
+
+    builtin "tan",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "calculate the tangent of given angle",
+        args        = {
+            "angle" : {Integer,Floating,Complex,Rational,Quantity}
+        },
+        attrs       = NoAttrs,
+        returns     = {Floating,Complex},
+        example     = """
+            print tan 0                 ; 0.0
+            print tan 0.3               ; 0.3093362496096232
+            print tan 1.0               ; 1.557407724654902
+            ..........
+            tan to :complex [1 1]
+            ; => 0.2717525853195119+1.083923327338695i
+        """:
+            #=======================================================
+            processTrigonometric(tan)
+
+    builtin "tanh",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "calculate the hyperbolic tangent of given angle",
+        args        = {
+            "angle" : {Integer,Floating,Complex,Rational,Quantity}
+        },
+        attrs       = NoAttrs,
+        returns     = {Floating,Complex},
+        example     = """
+            print tanh 0            ; 0.0
+            print tanh 0.3          ; 0.2913126124515909
+            print tanh 1.0          ; 0.7615941559557649
+            ..........
+            tanh to :complex [1 1]
+            ; => 1.083923327338695+0.2717525853195117i
+        """:
+            #=======================================================
+            processTrigonometric(tanh)
+            
+    #----------------------------
+    # Predicates
+    #----------------------------
+
+    builtin "even?",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "check if given number is even",
+        args        = {
+            "number"    : {Integer}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            even? 4           ; => true
+            even? 3           ; => false
+            ..........
+            print select 1..10 => even?       ; 2 4 6 8 10
+        """:
+            #=======================================================
+            push(newLogical(x % I2 == I0))
+
+    builtin "infinite?",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "check whether given value is an infinite one",
+        args        = {
+            "value" : {Any}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            infinite? 4             ; false
+            infinite? infinite      ; true
+            infinite? ∞             ; true
+            ..........
+            a: infinite
+            infinite? a             ; true
+            
+            b: 0
+            infinite? b             ; false
+        """:
+            #=======================================================
+            if xKind == Floating and (x.f == Inf or x.f == NegInf):
+                push(VTRUE)
+            else:
+                push(VFALSE)
+
+    builtin "negative?",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "check if given number is negative",
+        args        = {
+            "number"    : {Integer,Floating,Complex,Rational}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            negative? 5       ; => false
+            negative? 6-7     ; => true 
+        """:
+            #=======================================================
+            if xKind==Integer:
+                if x.iKind==BigInteger:
+                    when defined(WEB):
+                        push(newLogical(x.bi < big(0)))
+                    elif defined(GMP):
+                        push(newLogical(negative(x.bi)))
+                else:
+                    push(newLogical(x < I0))
+            elif xKind==Floating:
+                push(newLogical(x.f < 0.0))
+            elif xKind==Rational:
+                push(newLogical(isNegative(x.rat)))
+            elif xKind==Complex:
+                push(newLogical(x.z.re < 0.0 or (x.z.re == 0.0 and x.z.im < 0.0)))
+
+    builtin "odd?",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "check if given number is odd",
+        args        = {
+            "number"    : {Integer}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            odd? 4            ; => false
+            odd? 3            ; => true
+            ..........
+            print select 1..10 => odd?       ; 1 3 5 7 9
+        """:
+            #=======================================================
+            push(newLogical(x % I2 == I1))
+
+    builtin "positive?",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "check if given number is positive",
+        args        = {
+            "number"    : {Integer,Floating,Complex,Rational}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            positive? 5       ; => true
+            positive? 6-7     ; => false
+        """:
+            #=======================================================
+            if xKind==Integer:
+                if x.iKind==BigInteger:
+                    when defined(WEB):
+                        push(newLogical(x.bi > big(0)))
+                    elif defined(GMP):
+                        push(newLogical(positive(x.bi)))
+                else:
+                    push(newLogical(x > I0))
+            elif xKind==Floating:
+                push(newLogical(x.f > 0.0))
+            elif xKind==Rational:
+                push(newLogical(isPositive(x.rat)))
+            elif xKind==Complex:
+                push(newLogical(x.z.re > 0.0 or (x.z.re == 0.0 and x.z.im > 0.0)))
+
     builtin "prime?",
         alias       = unaliased, 
         op          = opNop,
@@ -1094,312 +1517,35 @@ proc defineSymbols*() =
             else:
                 # TODO(Numbers\prime?) not working for Web builds
                 # labels: web,enhancement
-                when not defined(NOGMP):
+                when defined(GMP):
                     push(newLogical(probablyPrime(x.bi,25)>0))
 
-    builtin "product",
-        alias       = product, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "calculate the product of all values in given list",
-        args        = {
-            "collection"    : {Block,Range}
-        },
-        attrs       = {
-            "cartesian"  : ({Logical},"return the cartesian product of given sublists")
-        },
-        returns     = {Integer,Floating},
-        example     = """
-            print product [3 4]       ; 12
-            print product [1 2 4 6]   ; 48
-            ..........
-            print product 1..10       ; 3628800
-        """:
-            #=======================================================
-            if (hadAttr("cartesian")):
-                let blk = x.a.map((z)=>z.a)
-                push(newBlock(cartesianProduct(blk).map((z) => newBlock(z))))
-            else:
-                var product = I1.copyValue
-                if x.kind==Range:
-                    for item in items(x.rng):
-                        product *= item
-                    push(product)
-                else:
-                    if x.a.len==0: push(I0.copyValue)
-                    else:
-                        var i = 0
-                        while i<x.a.len:
-                            product *= x.a[i]
-                            i += 1
+    #----------------------------
+    # Constants
+    #----------------------------
 
-                        push(product)
+    constant "epsilon",
+        alias       = unaliased,
+        description = "the constant e, Euler's number":
+            newFloating(E)
 
-    builtin "random",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "get a random integer between given limits",
-        args        = {
-            "lowerLimit"    : {Integer, Floating},
-            "upperLimit"    : {Integer, Floating}
-        },
-        attrs       = NoAttrs,
-        returns     = {Integer, Floating},
-        example     = """
-            rnd: random 0 60          ; rnd: (a random number between 0 and 60)
-        """:
-            #=======================================================
-            if x.kind==Integer and y.kind==Integer:
-                push(newInteger(rand(x.i..y.i)))
-            else:
-                push(newFloating(rand(asFloat(x)..asFloat(y))))
+    constant "infinite",
+        alias       = infinite,
+        description = "the IEEE floating point value of positive infinity":
+            newFloating(Inf)
 
-    builtin "reciprocal",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "calculate the reciprocal of given number",
-        args        = {
-            "value" : {Integer,Floating,Rational}
-        },
-        attrs       = NoAttrs,
-        returns     = {Rational},
-        example     = """
-            r: to :rational [3 2]
+    constant "pi",
+        alias       = unaliased,
+        description = "the number pi, mathematical constant":
+            newFloating(PI)
 
-            print reciprocal r
-            ; 2/3
-            ..........
-            reciprocal 3        ; => 1/3
-            reciprocal 3.2      ; => 5/16
-        """:
-            #=======================================================
-            if x.kind==Integer:
-                push(newRational(reciprocal(toRational(x.i))))
-            elif x.kind==Floating:
-                push(newRational(reciprocal(toRational(x.f))))
-            else:
-                push(newRational(reciprocal(x.rat)))
-
-    builtin "round",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "round given value",
-        args        = {
-            "value" : {Integer,Floating}
-        },
-        attrs       = {
-            "to"    : ({Integer},"round to given decimal places")
-        },
-        returns     = {Floating},
-        example     = """
-            print round 2.1         ; 2.0
-            print round 2.9         ; 3.0
-            print round 6           ; 6.0
-
-            print round pi          ; 3.0
-            ..........
-            print round.to:5 pi     ; 3.14159
-            print round.to:2 pi     ; 3.14
-        """:
-            #=======================================================
-            var places = 0
-            if checkAttr("to"):
-                places = aTo.i
-                
-            push(newFloating(round(asFloat(x), places)))
-
-    builtin "sec",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "calculate the secant of given angle",
-        args        = {
-            "angle" : {Integer,Floating,Complex,Quantity}
-        },
-        attrs       = NoAttrs,
-        returns     = {Floating,Complex},
-        example     = """
-            print sec 0                 ; 1.0
-            print sec 0.3               ; 1.046751601538086
-            print sec 1.0               ; 1.850815717680925
-            ..........
-            sec to :complex [1 1]
-            ; => 0.4983370305551868+0.591083841721045i
-        """:
-            #=======================================================
-            processTrigonometric(sec)
-
-    builtin "sech",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "calculate the hyperbolic secant of given angle",
-        args        = {
-            "angle" : {Integer,Floating,Complex,Quantity}
-        },
-        attrs       = NoAttrs,
-        returns     = {Floating,Complex},
-        example     = """
-            print sech 0                ; 1.0
-            print sech 0.3              ; 0.9566279119002483
-            print sech 1.0              ; 0.6480542736638855
-            ..........
-            sech to :complex [1 1]
-            ; => 0.4983370305551868-0.5910838417210451i
-        """:
-            #=======================================================
-            processTrigonometric(sech)
-
-    builtin "sin",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "calculate the sine of given angle",
-        args        = {
-            "angle" : {Integer,Floating,Complex,Quantity}
-        },
-        attrs       = NoAttrs,
-        returns     = {Floating,Complex},
-        example     = """
-            print sin 0                 ; 0.0
-            print sin 0.3               ; 0.2955202066613395
-            print sin 1.0               ; 0.8414709848078965
-            ..........
-            sin to :complex [1 1]
-            ; => 0.4983370305551868-0.5910838417210451i
-        """:
-            #=======================================================
-            processTrigonometric(sin)
-
-    builtin "sinh",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "calculate the hyperbolic sine of given angle",
-        args        = {
-            "angle" : {Integer,Floating,Complex,Quantity}
-        },
-        attrs       = NoAttrs,
-        returns     = {Floating,Complex},
-        example     = """
-            print sinh 0                ; 0.0
-            print sinh 0.3              ; 0.3045202934471426
-            print sinh 1.0              ; 1.175201193643801
-            ..........
-            sinh to :complex [1 1]
-            ; => 0.6349639147847361+1.298457581415977i
-        """:
-            #=======================================================
-            processTrigonometric(sinh)
-
-    builtin "sqrt",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "get square root of given value",
-        args        = {
-            "value" : {Integer,Floating,Complex}
-        },
-        attrs       = {
-            "integer"   : ({Logical},"get the integer square root")
-        },
-        returns     = {Floating},
-        example     = """
-            print sqrt 4                ; 2.0
-            print sqrt 16.0             ; 4.0
-            print sqrt 1.45             ; 1.20415945787923
-            ..........
-            sqrt to :complex @[pi 1]
-            ; => 1.794226987182141+0.2786715413222365i
-        """:
-            #=======================================================
-            if (hadAttr("integer")):
-                when defined(WEB) or not defined(NOGMP):
-                    if x.iKind == NormalInteger:
-                        push(newInteger(isqrt(x.i)))
-                    else:
-                        push(newInteger(isqrt(x.bi)))
-                else:
-                    push(newInteger(isqrt(x.i)))
-            elif x.kind==Complex: push(newComplex(sqrt(x.z)))
-            else: push(newFloating(sqrt(asFloat(x))))
-
-    builtin "sum",
-        alias       = summation, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "calculate the sum of all values in given list",
-        args        = {
-            "collection"    : {Block,Range}
-        },
-        attrs       = NoAttrs,
-        returns     = {Integer,Floating},
-        example     = """
-            print sum [3 4]           ; 7
-            print sum [1 2 4 6]       ; 13
-            ..........
-            print sum 1..10           ; 55
-        """:
-            #=======================================================
-            var sum = I0.copyValue
-            if x.kind==Range:
-                for item in items(x.rng):
-                    sum += item
-            else:
-                var i = 0
-                while i<x.a.len:
-                    sum += x.a[i]
-                    i += 1
-
-            push(sum)
-
-    builtin "tan",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "calculate the tangent of given angle",
-        args        = {
-            "angle" : {Integer,Floating,Complex,Quantity}
-        },
-        attrs       = NoAttrs,
-        returns     = {Floating,Complex},
-        example     = """
-            print tan 0                 ; 0.0
-            print tan 0.3               ; 0.3093362496096232
-            print tan 1.0               ; 1.557407724654902
-            ..........
-            tan to :complex [1 1]
-            ; => 0.2717525853195119+1.083923327338695i
-        """:
-            #=======================================================
-            processTrigonometric(tan)
-
-    builtin "tanh",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "calculate the hyperbolic tangent of given angle",
-        args        = {
-            "angle" : {Integer,Floating,Complex,Quantity}
-        },
-        attrs       = NoAttrs,
-        returns     = {Floating,Complex},
-        example     = """
-            print tanh 0            ; 0.0
-            print tanh 0.3          ; 0.2913126124515909
-            print tanh 1.0          ; 0.7615941559557649
-            ..........
-            tanh to :complex [1 1]
-            ; => 1.083923327338695+0.2717525853195117i
-        """:
-            #=======================================================
-            processTrigonometric(tanh)
-
+    constant "tau",
+        alias       = unaliased,
+        description = "the number tau, mathematical constant":
+            newFloating(TAU)
+         
 #=======================================
 # Add Library
 #=======================================
 
-Libraries.add(defineSymbols)
+Libraries.add(defineLibrary)

@@ -1,0 +1,16 @@
+counters: #[]
+
+loop symbols [sym,val][
+    information: info.get sym
+    if key? information 'module [
+        module: information\module
+        if module = "macros" ->
+            print sym
+        unless key? counters module ->
+            counters\[module]: 0
+
+        counters\[module]: counters\[module] + 1
+    ]
+]
+
+inspect sort.values.descending counters

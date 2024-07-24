@@ -1,0 +1,14 @@
+strange?: function [n][
+    digs: digits n
+    loop 1..dec size digs 'd [
+        if not? contains? [2 3 5 7] abs digs\[d] - digs\[d-1] ->
+            return false
+    ]
+    return true
+]
+
+strangeNums: select 100..500 => strange?
+
+print "Strange numbers in 100..500:"
+loop split.every: 10 strangeNums 'x ->
+    print map x 's -> pad to :string s 4

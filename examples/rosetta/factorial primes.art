@@ -1,0 +1,16 @@
+found: 0
+i: 1
+
+while [found < 10][
+    fct: factorial i
+
+    if prime? dec fct [
+        found: found + 1
+        print [pad (to :string found) ++ ":" 4 (to :string i)++"! - 1 = " dec fct]
+    ]
+    if prime? inc fct [
+        found: found + 1
+        print [pad (to :string found) ++ ":" 4 (to :string i)++"! + 1 = " inc fct]
+    ]
+    i: i + 1
+]

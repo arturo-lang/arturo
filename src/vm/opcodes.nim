@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2023 Yanis Zafirópulos
+# (c) 2019-2024 Yanis Zafirópulos
 #
 # @file: vm/opcodes.nim
 #=======================================================
@@ -329,14 +329,26 @@ type
         opJmpIfLe       = 0xD3      # (idx)             # cond              #
         opJmpIfLeX      = 0xD4      # (idx,idxB)        # cond              #
 
+        # calls
+        opInvokeF       = 0xD5      # ()                # method            #
+        opInvokeM       = 0xD6      # ()                # method            #
+
+        # block execution
+        opExec          = 0xD7      # ()                # block             #
+
         # flow control
-        opGoto          = 0xD5      # (idx)             #                   #
-        opGotoX         = 0xD6      # (idx,idxB)        #                   #
-        opGoup          = 0xD7      # (idx)             #                   #
-        opGoupX         = 0xD8      # (idx,idxB)        #                   #
+        opGoto          = 0xD8      # (idx)             #                   #
+        opGotoX         = 0xD9      # (idx,idxB)        #                   #
+        opGoup          = 0xDA      # (idx)             #                   #
+        opGoupX         = 0xDB      # (idx,idxB)        #                   #
         
-        opRet           = 0xD9      # ()                #                   #
-        opEnd           = 0xDA      # ()                #                   #
+        opRet           = 0xDC      # ()                #                   #
+
+        RSRV12          = 0xDD      #
+        RSRV13          = 0xDE      #
+
+        # the end
+        opEnd           = 0xDF      # ()                #                   #
 
 when false:
     #=======================================
@@ -422,7 +434,7 @@ proc parseOpCode*(x: string): OpCode =
 
     try:
         return parseEnum[OpCode](str)
-    except:
+    except CatchableError:
         return opNop
 
 func stringify*(x: OpCode): string {.inline.} =

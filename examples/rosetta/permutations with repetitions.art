@@ -1,0 +1,25 @@
+decide: function [pc]->
+    and? pc\0 = 'B'
+         pc\1 = 'C'
+
+permutation: function [vals, n][
+    k: size vals
+    pn: array.of:n 0
+    p: array.of:n '0'
+
+    while [true][
+        loop.with:'i pn 'x -> p\[i]: vals\[x]
+        print p
+        if decide p -> return ø
+        i: 0
+        while [true][
+            pn\[i]: pn\[i] + 1
+            if pn\[i] < k -> break
+            pn\[i]: 0
+            i: i + 1
+            if i = n -> return ø
+        ]
+    ]
+]
+
+permutation "ABCD" 3

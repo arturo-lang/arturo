@@ -41,7 +41,7 @@ when not defined(WEB):
         result = result !& hash(a.port)
         result = !$ result
 
-    func `$`*(b: VSocket): string  {.enforceNoRaises.} =
+    func `$`*(b: VSocket): string   =
         if b.protocol == IPPROTO_TCP:
             result = "tcp://"
         else:

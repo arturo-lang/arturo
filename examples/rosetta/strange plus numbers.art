@@ -1,0 +1,6 @@
+strangeNums: select 101..499 'x ->
+    and? -> prime? sum first.n:2 digits x
+         -> prime? sum last.n:2 digits x
+
+loop split.every: 5 strangeNums 'x ->
+    print map x 's -> pad to :string s 3

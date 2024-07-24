@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2023 Yanis Zafirópulos
+# (c) 2019-2024 Yanis Zafirópulos
 #
 # @file: helpers/ranges.nim
 #=======================================================
@@ -105,11 +105,49 @@ func `[]`*(rng: VRange, idx: HSlice): ValueArray =
         )
         start += step
         i += 1
+        
+        
+func `[]`*(rng: VRange, idx: int, returnValue: bool): Value =
+    
+    if idx > rng.len or idx < 0: 
+        raise newException(ValueError, "Index out of range!!")
 
-proc contains*(rng: VRange, v: Value): bool {.inline,enforceNoRaises.} =
+    let step = 
+        if rng.forward: rng.step
+        else: -1 * rng.step
+    
+    return 
+        if rng.numeric: newInteger(rng.start + step*(idx - 1))
+        else: newChar(char(rng.start + step*(idx - 1)))
+    
+    
+        
+func `[]`*(rng: VRange, idx: HSlice, returnValue: bool): VRange =
+    
+    if idx.a > rng.len or idx.b > rng.len or idx.a < 0 or idx.b < 0: 
+        raise newException(ValueError, "Index out of range!!")
+
+    let step = 
+        if rng.forward: rng.step
+        else: -1 * rng.step
+
+    var start = rng.start + step*idx.a
+    var stop = rng.start + step*(idx.b-1)
+    
+    return VRange(
+            start:      start,
+            stop:       stop,
+            step:       rng.step,
+            infinite:   rng.infinite,
+            numeric:    rng.numeric,
+            forward:    rng.forward
+        )
+
+
+proc contains*(rng: VRange, v: Value): bool {.inline.} =
     rng.find(v) >= 0
 
-func min*(rng: VRange): (int,Value) {.inline,enforceNoRaises.} =
+func min*(rng: VRange): (int,Value) {.inline.} =
     if rng.forward: 
         return (0, getValueForRangeItem(rng, rng.start))
     else:
@@ -119,7 +157,7 @@ func min*(rng: VRange): (int,Value) {.inline,enforceNoRaises.} =
         let lastItem = rng.start - rng.step * rHigh
         return (rHigh, getValueForRangeItem(rng, lastItem))
 
-func max*(rng: VRange): (int,Value) {.inline,enforceNoRaises.} =
+func max*(rng: VRange): (int,Value) {.inline.} =
     if rng.forward: 
         if rng.infinite: return (0, newFloating(Inf))
 

@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2023 Yanis Zafirópulos
+# (c) 2019-2024 Yanis Zafirópulos
 #
 # @file: helpers/webview.nim
 #=======================================================
@@ -11,6 +11,7 @@
 #=======================================
 
 import os, osproc, strutils
+import vm/errors
 
 when not defined(NOWEBVIEW):
     import std/json
@@ -19,6 +20,7 @@ when not defined(NOWEBVIEW):
     when defined(macosx):
         import extras/menubar
     import helpers/jsonobject
+    import helpers/url
     import helpers/windows
     import vm/values/value
 
@@ -133,16 +135,24 @@ proc openChromeWindow*(port: int, flags: seq[string] = @[]) =
             break
 
     if chromePath == "":
-        echo "could not find any Chrome-compatible browser installed"
+        Error_CompatibleBrowserNotFound()
     else:
         let command = chromePath.replace(" ", r"\ ") & " " & args.join(" ")
         if execCmd(command) != 0:
-            echo "could not open a Chrome window"
+            Error_CompatibleBrowserCouldNotOpenWindow()
 
 when not defined(NOWEBVIEW):
 
+    # proc startWebView*(content: string): Webview =
+    #     result = webview_create(1)
+    #     result.webview_set_title("This is a - successful - test".cstring)
+    #     result.webview_set_size(320.cint, 480.cint, Default)
+    #     result.webview_set_html(content.cstring)
+    #     result.webview_run()
+    #     result.webview_destroy()
+
     proc newWebView*(title       : string                = "Arturo", 
-                     url         : string                = "", 
+                     content     : string                = "", 
                      width       : int                   = 640, 
                      height      : int                   = 480, 
                      resizable   : bool                  = true, 
@@ -157,7 +167,11 @@ when not defined(NOWEBVIEW):
         result = webview_create(debug.cint)
         webview_set_title(result, title=title.cstring)
         webview_set_size(result, width.cint, height.cint, if resizable: Constraints.Default else: Constraints.Fixed)
-        webview_navigate(result, url.cstring)
+        if content.isUrl():
+            webview_navigate(result, content.cstring)
+        else:
+            webview_set_html(result, content.cstring)
+
         webview_init(result,(
             (static readFile(parentDir(currentSourcePath()) & "/webviews.js")) & 
             "\n" & 

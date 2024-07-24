@@ -1,0 +1,31 @@
+patienceSort: function [arr][
+    result: new arr
+
+    if 2 > size result -> return result
+
+    piles: []
+
+    loop result 'elem ->
+        'piles ++ @[@[elem]]
+
+    loop 0..dec size result 'i [
+        minP: last piles\0
+        minPileIndex: 0
+
+        if 2 =< size piles ->
+            loop 1..dec size piles 'j [
+                if minP > last piles\[j] [
+                    minP: last piles\[j]
+                    minPileIndex: j
+                ]
+            ]
+
+        result\[i]: minP
+        piles\[minPileIndex]: slice piles\[minPileIndex] 0 dec dec size piles\[minPileIndex]
+        if zero? size piles\[minPileIndex] -> 
+            piles: remove.index piles minPileIndex
+    ]
+    return result
+]
+
+print patienceSort [3 1 2 8 5 7 9 4 6]

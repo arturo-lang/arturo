@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2023 Yanis Zafirópulos
+# (c) 2019-2024 Yanis Zafirópulos
 #
 # @file: library/Colors.nim
 #=======================================================
@@ -24,21 +24,25 @@ import sequtils, sugar
 import vm/lib
 
 #=======================================
-# Methods
+# Definitions
 #=======================================
 
-proc defineSymbols*() =
+# TODO(Colors) more potential built-in function candidates?
+#  labels: library, enhancement, open discussion
 
-    # TODO(Colors) more potential built-in function candidates?
-    #  labels: library, enhancement, open discussion
+proc defineLibrary*() =
+
+    #----------------------------
+    # Functions
+    #----------------------------
 
     builtin "blend",
-        alias       = at, 
+        alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "blend given colors and get result",
         args        = {
-            "colorA"    : {Color},
+            "colorA"    : {Color,Literal,PathLiteral},
             "colorB"    : {Color}
         },
         attrs       = {
@@ -56,11 +60,11 @@ proc defineSymbols*() =
             if checkAttr("balance"):
                 balance = aBalance.f
 
-            if x.kind == Literal:
-                ensureInPlace()
-                SetInPlace(newColor(blendColors(InPlaced.l, y.l, balance)))
-            else:
+            if xKind == Color:
                 push newColor(blendColors(x.l, y.l, balance))
+            else:
+                ensureInPlaceAny()
+                SetInPlaceAny(newColor(blendColors(InPlaced.l, y.l, balance)))                
 
     builtin "darken",
         alias       = unaliased, 
@@ -68,7 +72,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "darken color by given percentage (0.0-1.0)",
         args        = {
-            "color"     : {Color},
+            "color"     : {Color,Literal,PathLiteral},
             "percent"   : {Floating}
         },
         attrs       = NoAttrs,
@@ -80,11 +84,11 @@ proc defineSymbols*() =
             darken #9944CC 0.3      ; => #6B308F
         """:
             #=======================================================
-            if x.kind == Literal:
-                ensureInPlace()
-                SetInPlace(newColor(alterColorValue(InPlaced.l, y.f * (-1))))
-            else:
+            if xKind == Color:
                 push newColor(alterColorValue(x.l, y.f * (-1)))
+            else:
+                ensureInPlaceAny()
+                SetInPlaceAny(newColor(alterColorValue(InPlaced.l, y.f * (-1))))                
 
     builtin "desaturate",
         alias       = unaliased, 
@@ -92,7 +96,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "desaturate color by given percentage (0.0-1.0)",
         args        = {
-            "color"     : {Color},
+            "color"     : {Color,Literal,PathLiteral},
             "percent"   : {Floating}
         },
         attrs       = NoAttrs,
@@ -104,11 +108,11 @@ proc defineSymbols*() =
             desaturate #9944CC 0.3      ; => #9558B8
         """:
             #=======================================================
-            if x.kind == Literal:
-                ensureInPlace()
-                SetInPlace(newColor(saturateColor(InPlaced.l, y.f * (-1))))
-            else:
+            if xKind == Color:
                 push newColor(saturateColor(x.l, y.f * (-1)))
+            else:
+                ensureInPlaceAny()
+                SetInPlaceAny(newColor(saturateColor(InPlaced.l, y.f * (-1))))
 
     builtin "grayscale",
         alias       = unaliased, 
@@ -116,7 +120,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "convert color to grayscale",
         args        = {
-            "color"     : {Color}
+            "color"     : {Color,Literal,PathLiteral}
         },
         attrs       = NoAttrs,
         returns     = {Color},
@@ -127,11 +131,11 @@ proc defineSymbols*() =
             grayscale #FF44CC           ; => #A2A2A2
         """:
             #=======================================================
-            if x.kind == Literal:
-                ensureInPlace()
-                SetInPlace(newColor(saturateColor(InPlaced.l, -1.0)))
-            else:
+            if xKind == Color:
                 push newColor(saturateColor(x.l, -1.0))
+            else:
+                ensureInPlaceAny()
+                SetInPlaceAny(newColor(saturateColor(InPlaced.l, -1.0)))
 
     builtin "invert",
         alias       = unaliased, 
@@ -139,7 +143,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "get complement for given color",
         args        = {
-            "color"     : {Color}
+            "color"     : {Color,Literal,PathLiteral}
         },
         attrs       = NoAttrs,
         returns     = {Color},
@@ -149,11 +153,11 @@ proc defineSymbols*() =
             invert #orange              ; => #0059FF
         """:
             #=======================================================
-            if x.kind == Literal:
-                ensureInPlace()
-                SetInPlace(newColor(invertColor(InPlaced.l)))
-            else:
+            if xKind == Color:
                 push newColor(invertColor(x.l))
+            else:
+                ensureInPlaceAny()
+                SetInPlaceAny(newColor(invertColor(InPlaced.l)))
 
     builtin "lighten",
         alias       = unaliased, 
@@ -161,7 +165,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "lighten color by given percentage (0.0-1.0)",
         args        = {
-            "color"     : {Color},
+            "color"     : {Color,Literal,PathLiteral},
             "percent"   : {Floating}
         },
         attrs       = NoAttrs,
@@ -175,11 +179,11 @@ proc defineSymbols*() =
             lighten #9944CC 0.3         ; => #C758FF
         """:
             #=======================================================
-            if x.kind == Literal:
-                ensureInPlace()
-                SetInPlace(newColor(alterColorValue(InPlaced.l, y.f)))
-            else:
+            if xKind == Color:
                 push newColor(alterColorValue(x.l, y.f))
+            else:
+                ensureInPlaceAny()
+                SetInPlaceAny(newColor(alterColorValue(InPlaced.l, y.f)))                
 
     builtin "palette",
         alias       = unaliased, 
@@ -252,7 +256,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "saturate color by given percentage (0.0-1.0)",
         args        = {
-            "color"     : {Color},
+            "color"     : {Color,Literal,PathLiteral},
             "percent"   : {Floating}
         },
         attrs       = NoAttrs,
@@ -266,11 +270,11 @@ proc defineSymbols*() =
             saturate #9944CC 0.3        ; => #A030E0
         """:
             #=======================================================
-            if x.kind == Literal:
-                ensureInPlace()
-                SetInPlace(newColor(saturateColor(InPlaced.l, y.f)))
-            else:
+            if xKind == Color:
                 push newColor(saturateColor(x.l, y.f))
+            else:
+                ensureInPlaceAny()
+                SetInPlaceAny(newColor(saturateColor(InPlaced.l, y.f)))
 
     builtin "spin",
         alias       = unaliased, 
@@ -278,7 +282,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "spin color around the hue wheel by given amount",
         args        = {
-            "color"     : {Color},
+            "color"     : {Color,Literal,PathLiteral},
             "amount"    : {Integer}
         },
         attrs       = NoAttrs,
@@ -291,14 +295,14 @@ proc defineSymbols*() =
             spin #123456 360        ; => #123456
         """:
             #=======================================================
-            if x.kind == Literal:
-                ensureInPlace()
-                SetInPlace(newColor(spinColor(InPlaced.l, y.i)))
-            else:
+            if xKind == Color:
                 push newColor(spinColor(x.l, y.i))
+            else:
+                ensureInPlaceAny()
+                SetInPlaceAny(newColor(spinColor(InPlaced.l, y.i)))
 
 #=======================================
 # Add Library
 #=======================================
 
-Libraries.add(defineSymbols)
+Libraries.add(defineLibrary)

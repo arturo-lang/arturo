@@ -16,13 +16,10 @@ loop keys symbols 'ss [
 getAliasedFunction: function [s][
     print ["looking up:" s]
     loop keys symbols 'declared [
-        try? [
+        if throws? [
             inf: info.get declared
             if and? [key? inf 'alias][inf\alias = to :string s] -> return declared
-        ]
-        else [
-            return null
-        ]
+        ] -> return null
     ]
     return null
 ]

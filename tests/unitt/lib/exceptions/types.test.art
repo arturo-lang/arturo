@@ -1,0 +1,54 @@
+import {unitt}!
+
+fileNotFound: try [throw "File not found"]
+
+suite "Test types and its properties" [
+
+    test.prop "catched error is an :error" [
+        err: fileNotFound
+        assert -> error? err
+        assert -> :error = type err
+    ]
+
+    test.prop ":error contains \\kind and \\message" [
+        err: fileNotFound
+        
+        assert -> not? throws? [
+            kind: err\kind
+            msg:  err\message
+        ]
+    ]
+    
+    test.prop ":error's \\kind is an :errorKind" [
+        err: fileNotFound
+
+        assert -> errorKind? err\kind
+        assert -> :errorKind = type err\kind
+    ]
+
+    test.prop ":error's \\message is an :string" [
+        err: fileNotFound
+
+        assert -> string? err\message
+        assert -> :string = type err\message
+    ]
+
+]
+
+
+suite "Test types for :errorKind and custom ones" [
+
+    test "custom :errorKinds can be created from :strings" [
+        fileNotFound: to :errorKind "File not found"
+        ensure -> errorKind? fileNotFound
+        ensure -> "File not found" = fileNotFound\label
+    ]
+    
+    test "custom :errorKinds can't be created from :string-like values" [
+        label: 'FileNotFound
+        loop @[label to :word label] 'customLabel [
+            assert -> throws? [fileNotFound: to :errorKind customLabel]
+        ]
+    ]
+
+]

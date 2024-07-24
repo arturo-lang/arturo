@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2023 Yanis Zafirópulos
+# (c) 2019-2024 Yanis Zafirópulos
 #
 # @file: vm/stack.nim
 #=======================================================
@@ -42,7 +42,12 @@ var
 
 # Main stack
 
-template push*(v: Value) = 
+proc push*(v: Value) = 
+    # TODO(Stack/push) performance enhancements?
+    #  this was a `template` that we converted into a `proc` so that
+    #  we could get the whole project to compile with Nim 2.0.8
+    #  does it make any sense performance-wise?
+    #  labels: vm, stack, enhancement, performance, benchmark
     ## push given value onto the stack
     hookProcProfiler("stack/push"):
         Stack[SP] = v
@@ -70,7 +75,7 @@ template pop*(): Value =
             discard Stack[SP]
     else:
         SP -= 1
-    Stack[SP]
+    move Stack[SP]
 
 template popN*(n: int) =
     ## simulate popping ``n`` values from the stack
@@ -134,13 +139,13 @@ template createAttrsStack*() =
     ## initialize the attributes table
     emptyAttrs()
 
-proc getAttr*(attr: string): Value {.inline,enforceNoRaises.} =
+proc getAttr*(attr: string): Value {.inline.} =
     ## get attribute ``attr`` from the attributes table
     ## 
     ## **Hint:** Returns ``VNULL`` if attribute doesn't exist
     Attrs.getOrDefault(attr, VNULL)
 
-proc popAttr*(attr: string): Value {.inline,enforceNoRaises.} =
+proc popAttr*(attr: string): Value {.inline.} =
     ## pop attribute ``attr`` from the attributes table
     ## 
     ## **Hint:** Returns ``nil`` if attribute doesn't exist
@@ -148,14 +153,31 @@ proc popAttr*(attr: string): Value {.inline,enforceNoRaises.} =
     hookProcProfiler("stack/popAttr"):
         discard Attrs.pop(attr, result)
 
-macro checkAttr*(name: untyped): untyped =
+macro checkAttrUnsafeImpl*(name: untyped): untyped =
     ## check if attribute ``name`` exists in the attributes table
     ## 
     ## **Hint:** To be normally used with ``if`` statements (as 
     ## a condition)
     let attrName =  ident('a' & ($name).capitalizeAscii())
     result = quote do:
-        (let `attrName` = popAttr(`name`); not `attrName`.isNil)
+        (let `attrName` = popAttr(`name`); (not `attrName`.isNil))
+
+macro checkAttrImpl*(name: untyped): untyped =
+    ## check if attribute ``name`` exists in the attributes table
+    ## 
+    ## **Hint:** To be normally used with ``if`` statements (as 
+    ## a condition)
+    let attrName =  ident('a' & ($name).capitalizeAscii())
+    let attrTName = ident('t' & ($name).capitalizeAscii())
+    let attrField = newStrLitNode('.' & ($name))
+    result = quote do:
+        (let `attrName` = popAttr(`name`); (not `attrName`.isNil) and (`attrName`.kind in `attrTName` or showWrongAttributeTypeError(currentBuiltinName, `attrField`,`attrName`,`attrTName`)))
+
+template checkAttr*(name: untyped, doValidate=true): untyped =
+    when doValidate:
+        checkAttrImpl(name)
+    else:
+        checkAttrUnsafeImpl(name)
 
 template hadAttr*(attr: string): bool = 
     ## check if attribute ``attr`` exists in the attributes table

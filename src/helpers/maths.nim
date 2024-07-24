@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2023 Yanis Zafirópulos
+# (c) 2019-2024 Yanis Zafirópulos
 #
 # @file: helpers/math.nim
 #=======================================================
@@ -17,10 +17,17 @@ import algorithm, bitops, std/math, sequtils, sugar
 
 when defined(WEB):
     import std/jsbigints
-elif not defined(NOGMP):
+elif defined(GMP):
     import helpers/bignums as BignumsHelper
 
+when (not defined(GMP)) and (not defined(WEB)):
+    import vm/globals
+    import vm/errors
+    
 import vm/values/value
+
+when defined(WEB):
+    import vm/values/operators
 
 #=======================================
 # Methods
@@ -43,6 +50,11 @@ func mulmod*[T: SomeInteger](a, b, modulus: T): T =
         if (b_m and 1) == 1: result = addmod(result, a_m, modulus)
         a_m = (a_m shl 1) - (if a_m >= (modulus - a_m): modulus else: 0)
         b_m = b_m shr 1
+
+func divmod*[T: SomeInteger](a, b: T): array[2, T] =
+    let quot = a div b
+    let rem = a - b * quot
+    return [quot, rem]
  
 func expmod*[T: SomeInteger](base, exponent, modulus: T): T =
     result = 1
@@ -92,7 +104,7 @@ func isPrime*[T: SomeInteger](n: T): bool =
     let witnesses = selectWitnesses(n)
     miller_rabin_test(n, witnesses)
 
-when not defined(NOGMP):
+when defined(GMP):
     func pollardG*(n: var Int, m: Int) {.inline.} =
         discard mul(n,n,n)
         discard add(n,n,1)
@@ -258,7 +270,7 @@ when defined(WEB):
         tail.reverse()
         result &= tail
 
-elif not defined(NOGMP):
+elif defined(GMP):
     func getDigits*(n: Int, base: int = 10): seq[int] =
         if n == 0: return @[0]
 
@@ -386,3 +398,27 @@ proc cartesianProduct*[T](a: varargs[seq[T]]): seq[seq[T]] =
         for x in a[0]:
             for s in cartesianProduct(a[1..^1]):
                 result.add(x & s)
+
+proc factorial*(x: int): Value =
+    if x < 21:
+        when defined(WEB):
+            if x < 13:
+                return newInteger(fac(x))
+            else:
+                let items = (toSeq(1..x)).map((w)=>newInteger(w))
+                var res = newInteger(1)
+                for item in items:
+                    res = res * item
+                return res
+        else:
+            return newInteger(fac(x))
+    else:
+        when defined(WEB):
+            let items = (toSeq(1..x)).map((w)=>newInteger(w))
+            var res = newInteger(1)
+            for item in items:
+                res = res * item
+        elif not defined(GMP):
+            Error_NumberOutOfSupportedRange("factorial", Dumper(newInteger(x)))
+        else:
+            return newInteger(BignumsHelper.fac(x))

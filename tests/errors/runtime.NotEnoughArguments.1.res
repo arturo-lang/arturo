@@ -1,6 +1,19 @@
 hello
->> Runtime | File: runtime.NotEnoughArguments.1.art
-     error | Line: 3
-           | 
-           | cannot perform print
-           | not enough parameters: 1 required
+
+══╡ Value Error ╞═════════════════════════════════════════════════════════════════════════════════════════ <script> ══
+
+  Not enough parameters
+  
+  Cannot perform:
+      print
+  
+  Required: 
+      1
+
+  ┃ File: tests/errors/runtime.NotEnoughArguments.1.art
+  ┃ Line: 3
+  ┃ 
+  ┃    1 ║  hello: "hello"
+  ┃    2 ║  print
+  ┃    3 ║► print "hello"
+  ┃    4 ║  print 2

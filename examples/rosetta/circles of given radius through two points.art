@@ -1,0 +1,37 @@
+getPoint: function [p]->  ~{(x: |p\0|, y: |p\1|)}
+getCircle: function [c]-> ~{(x: |c\0|, y: |c\1|, r: |c\2|)}
+
+circles: function [p1, p2, r][
+    if r = 0 -> return "radius of zero"
+    if p1 = p2 -> return "coincident points gives infinite number of circles"
+
+    [dx, dy]: @[p2\0 - p1\0, p2\1 - p1\1]
+    q: sqrt add dx*dx dy*dy
+    if q > 2*r -> return "separation of points > diameter"
+
+    p3: @[(p1\0 + p2\0)/ 2, (p1\1 + p2\1) / 2]
+    d: sqrt (r*r) - (q/2)*(q/2)
+    return @[
+        @[(p3\0 - d*dy/q), (p3\1 + d*dx/q), abs r],
+        @[(p3\0 + d*dy/q), (p3\1 - d*dx/q), abs r]
+    ]
+]
+
+loop [
+    [[0.1234, 0.9876], [0.8765, 0.2345], 2.0]
+    [[0.0000, 2.0000], [0.0000, 0.0000], 1.0]
+    [[0.1234, 0.9876], [0.1234, 0.9876], 2.0]
+    [[0.1234, 0.9876], [0.8765, 0.2345], 0.5]
+    [[0.1234, 0.9876], [0.1234, 0.9876], 0.0]
+] 'tr [
+    [p1, p2, r]: tr
+    print ["Through points:\n  " getPoint p1 "\n  " getPoint p2]
+    print ["and radius" (to :string r)++"," "you can construct the following circles:"]
+    if? string? cic: <= circles p1 p2 r -> print ["   ERROR:" cic]
+    else [
+        [c1, c2]: cic
+        print ["  " getCircle c1]
+        print ["  " getCircle c2]
+    ]
+    print ""
+]

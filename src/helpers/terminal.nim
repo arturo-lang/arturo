@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2023 Yanis Zafirópulos
+# (c) 2019-2024 Yanis Zafirópulos
 #
 # @file: helpers/terminal.nim
 #=======================================================
@@ -15,6 +15,9 @@ when not defined(WEB):
 
 when defined(WEB):
     import jsconsole
+
+when defined(windows):
+    import os
 
 #=======================================
 # Global Variables
@@ -71,6 +74,14 @@ template rgb*(color: string=""):string =
 template rgb*(color: tuple[r, g, b: int]):string =
     if NoColors: ""
     else: ";38;2;" & $(color[0]) & ";" & $(color[1]) & ";" & $(color[2])
+
+proc isColorFriendlyTerminal*(): bool =
+    when defined(windows):
+        existsEnv("MSYSTEM") or 
+        existsEnv("TERM") or 
+        ((not existsEnv("COMSPEC")) and (not existsEnv("PSModulePath")))
+    else:
+        true        
 
 proc clearTerminal*() = 
     when defined(WEB):

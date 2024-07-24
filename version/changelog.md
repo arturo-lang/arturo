@@ -1,3 +1,71 @@
+v0.9.84
+========
+
+### Documentation
+
+- Added numerous new Rosetta Code examples
+
+### Language
+
+- Added flag support for Regex values (`/i`, `/m` & `/s`)
+- Identifiers (Word, Literal, etc) can now support underscores (`_`) as well 
+- Added literal syntax sypport for Rationals, e.g. `1:2`
+- Modified existing `:quantity` type with new syntax
+- New `:unit` type
+
+### Library
+
+**New**
+
+- Collections: added new `pop` method
+- Core: added new `throws?` method
+- Numbers: added new `tau` constant
+- Quantities: new module with various new Quantity-related built-in methods (`conforms?`, `convert`, `in`, `property`, `scalar`, `specify`, `units`) along with property-testing predicates (e.g. `length?`, `currency?`, etc) and many built-in physics-related constants (e.g. `avogadroContant`, `bohrRadius`, etc)
+
+**Enhancements, Changes & Fixes**
+
+- Arithmetic: all operations have been sanitized and throw an error in case it's between a non-supported pair of value types, instead of just returning *null*
+- Arithmetic\add: fixed for operations between Color values
+- Arithmetic\sub: fixed for operations between Color values
+- Collections\contains?: added `.deep` option
+- Collections\drop: fixed SIGSEGV errors
+- Collections\first: made to return ranges for Range values + ability to handle infinite ranges correctly
+- Collections\get: fixed to work with String-Range parameters
+- Collections\in?: added `.deep` option
+- Collections\last: made to return ranges for Range values + ability to handle infinite ranges correctly
+- Collections\sort: fixed `.ascii` when working with Literal values
+- Collections\split: fixed `.every:` and `.at:` when working with Literal values
+- Collections\take: fixed SIGSEGV errors
+- Comparison\between?: added support for order-insensitive limits
+- Converters\as: fixed `.code` to properly convert Rational or Complex values with negative fields
+- Converters\range: disallow zero `.step:` for new ranges
+- Converters\to: fixed support for Block/Dictionary/Object/Store to String conversions
+- Core\ensure: added `.that:` option (to show user-defined message on failure)
+- Core\pop: renamed to `unstack` (`pop` is added as a proper popping function in Collections)
+- Files\read: added `.delimiter:` support for CSV's
+- Numbers: added Rational value support to most (mainly trigonometric) functions
+- Numbers\clamp: made to work with Range values instead of lower/upper limits + better type support
+- Statistics\median: fixed bug + better and more efficient implementation
+- Strings\match: added support for Char values as needle
+- System\arg: converted to built-in method
+- System\args: converted to built-in method
+- System\config: converted to built-in method
+- System\script: converted to built-in method
+- System\sys: added info about CPU endianess, current hostname and re-organized returned information
+
+### Misc
+
+- Introduced error messages for extra/stray closing brackets (square, curly or parentheses)
+- Added type-checking for built-in function attributes
+- Fixed issue with GMP-based BigNum handling on Windows
+- Fixed issues with Date values and comparison operators
+- Added `auto/complete:` and `auto/hints:` magic variables, to enable setting (or unsetting) autocompletion and hints, respectively, in the REPL console
+- Improved error handling for incompatible values within Block parameters
+- Better support for parsing "hanging" attributes in pipe'd constructs
+- Rationals: added implicit GMP-powered BigNum support and more efficient handling
+- Fixed arm64/M1 compilation for macOS
+- Better `--update` support
+
 v0.9.82
 ========
 
@@ -19,6 +87,7 @@ v0.9.82
 ### Library
 
 **New**
+
 - Arithmetic: added new `divmod` method
 - Collections: added new `combine`, `decouple`, `one?`, `prepend`, `rotate` & `tally` methods
 - Comparison: added new `between?` & `compare` methods

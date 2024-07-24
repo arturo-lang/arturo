@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2023 Yanis Zafirópulos
+# (c) 2019-2024 Yanis Zafirópulos
 #
 # @file: helpers/repl.nim
 #=======================================================
@@ -53,7 +53,7 @@ when not defined(WEB):
         completions = completionsArray
         hints = hintsTable
 
-        proc completionsCback(buf: cstring; lc: ptr LinenoiseCompletions) {.cdecl.} =
+        proc completionsCback(buf: constChar; lc: ptr LinenoiseCompletions, userdata: pointer) {.cdecl.} =
             var token = $(buf)
             var copied = strip($(buf))
             let tokenParts = splitWhitespace(token)
@@ -64,7 +64,7 @@ when not defined(WEB):
                     linenoiseAddCompletion(lc, (copied & item).cstring)
 
 
-        proc hintsCback(buf: cstring; color: var cint; bold: var cint): cstring {.cdecl.} =
+        proc hintsCback(buf: constChar; color: var cint; bold: var cint, userdata: pointer): cstring {.cdecl.} =
             var token = $(buf)
             let tokenParts = splitWhitespace(token)
             if tokenParts.len >= 1:
@@ -80,8 +80,9 @@ when not defined(WEB):
                 createDir(parentDir(path))
             discard linenoiseHistoryLoad(path)
 
-            linenoiseSetCompletionCallback(cast[ptr LinenoiseCompletionCallback](completionsCback), nil)
-            linenoiseSetHintsCallback(cast[ptr LinenoiseHintsCallback](hintsCback), nil)
+            discard linenoiseSetCompletionCallback(completionsCback, nil)
+
+            linenoiseSetHintsCallback(hintsCback, nil)
 
             ReplInitialized = true
 

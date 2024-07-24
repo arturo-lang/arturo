@@ -1,4 +1,4 @@
 {}
 {ABC}
-{ABC, DEF and DEF}
-{ABC, DEF, G, H and H}
+{ABC and DEF}
+{ABC, DEF, G and H}

@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2023 Yanis Zafirópulos
+# (c) 2019-2024 Yanis Zafirópulos
 #
 # @file: library/Strings.nim
 #=======================================================
@@ -50,16 +50,22 @@ when not defined(WEB):
 #=======================================
 
 template replaceStrWith(str: var string, src: Value, dst: Value): untyped =
+    requireValue(src, {String,Regex})
+    requireValue(dst, {String})
     if src.kind==String:
         str = str.replaceAll(src.s, dst.s)
     elif src.kind==Regex:
         str = str.replaceAll(src.rx, dst.s)
 
 #=======================================
-# Methods
+# Definitions
 #=======================================
 
-proc defineSymbols*() =
+proc defineLibrary*() =
+
+    #----------------------------
+    # Functions
+    #----------------------------
     
     # TODO(Strings\alphabet) Should we move it to the Sets module?
     #  yes, strings are composed by characters which - together - form an alphabet.
@@ -109,46 +115,13 @@ proc defineSymbols*() =
 
             push(newBlock(got))
 
-    builtin "ascii?",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "check if given character/string is in ASCII",
-        args        = {
-            "string": {Char,String}
-        },
-        attrs       = NoAttrs,
-        returns     = {Logical},
-        example     = """
-            ascii? `d`              ; true
-            ..........
-            ascii? `😀`             ; false
-
-            ascii? "hello world"    ; true
-            ascii? "Hællø wœrld"    ; false
-            ascii? "Γειά!"          ; false
-        """:
-            #=======================================================
-            if x.kind==Char:
-                push(newLogical(ord(x.c)<128))
-            else:
-                var allOK = true
-                for ch in runes(x.s):
-                    if ord(ch) >= 128:
-                        allOK = false
-                        push(VFALSE)
-                        break
-
-                if allOK:
-                    push(VTRUE)
-
     builtin "capitalize",
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "convert given string to capitalized",
         args        = {
-            "string": {String,Char,Literal}
+            "string": {String,Char,Literal,PathLiteral}
         },
         attrs       = NoAttrs,
         returns     = {String,Char,Nothing},
@@ -159,10 +132,10 @@ proc defineSymbols*() =
             capitalize 'str                     ; str: "Hello World"
         """:
             #=======================================================
-            if x.kind==String: push(newString(x.s.capitalize()))
-            elif x.kind==Char: push(newChar(x.c.toUpper()))
+            if xKind==String: push(newString(x.s.capitalize()))
+            elif xKind==Char: push(newChar(x.c.toUpper()))
             else: 
-                ensureInPlace()
+                ensureInPlaceAny()
                 if InPlaced.kind==String:
                     InPlaced.s = InPlaced.s.capitalize()
                 else:
@@ -174,7 +147,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "escape given string",
         args        = {
-            "string": {String,Literal}
+            "string": {String,Literal,PathLiteral}
         },
         attrs       = {
             "json"  : ({Logical},"for literal use in JSON strings"),
@@ -202,19 +175,19 @@ proc defineSymbols*() =
             ; a long &quot;string&quot; + with \diffe\rent symbols.
         """:
             #=======================================================
-            if x.kind==Literal:
-                ensureInPlace()
+            if xKind in {Literal, PathLiteral}:
+                ensureInPlaceAny()
                 if (hadAttr("json")):
-                    SetInPlace(newString(escapeJsonUnquoted(InPlaced.s)))
+                    SetInPlaceAny(newString(escapeJsonUnquoted(InPlaced.s)))
                 elif (hadAttr("regex")):
-                    SetInPlace(newString(escapeForRegex(InPlaced.s)))
+                    SetInPlaceAny(newString(escapeForRegex(InPlaced.s)))
                 elif (hadAttr("shell")):
                     when not defined(WEB):
-                        SetInPlace(newString(quoteShell(InPlaced.s)))
+                        SetInPlaceAny(newString(quoteShell(InPlaced.s)))
                 elif (hadAttr("xml")):
-                    SetInPlace(newString(xmltree.escape(InPlaced.s)))
+                    SetInPlaceAny(newString(xmltree.escape(InPlaced.s)))
                 else:
-                    SetInPlace(newString(strutils.escape(InPlaced.s)))
+                    SetInPlaceAny(newString(strutils.escape(InPlaced.s)))
             else:
                 if (hadAttr("json")):
                     push(newString(escapeJsonUnquoted(x.s)))
@@ -234,7 +207,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "indent each line of given text",
         args        = {
-            "text"  : {String,Literal}
+            "text"  : {String,Literal,PathLiteral}
         },
         attrs       = {
             "n"     : ({Integer},"pad by given number of spaces (default: 4)"),
@@ -264,9 +237,9 @@ proc defineSymbols*() =
             if checkAttr("with"):
                 padding = aWith.s
 
-            if x.kind==Literal:
-                ensureInPlace()
-                SetInPlace(newString(indent(InPlaced.s, count, padding)))
+            if xKind in {Literal, PathLiteral}:
+                ensureInPlaceAny()
+                SetInPlaceAny(newString(indent(InPlaced.s, count, padding)))
             else:
                 push(newString(indent(x.s, count, padding)))      
 
@@ -298,7 +271,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "join collection of values into string",
         args        = {
-            "collection"    : {Block,Literal}
+            "collection"    : {Block,Literal,PathLiteral}
         },
         attrs       = {
             "with"  : ({String},"use given separator"),
@@ -324,9 +297,9 @@ proc defineSymbols*() =
         """:
             #=======================================================
             if (hadAttr("path")):
-                if x.kind==Literal:
-                    ensureInPlace()
-                    SetInPlace(newString(joinPath(InPlaced.a.map(proc (v:Value):string = $(v)))))
+                if xKind in {Literal, PathLiteral}:
+                    ensureInPlaceAny()
+                    SetInPlaceAny(newString(joinPath(InPlaced.a.map(proc (v:Value):string = $(v)))))
                 else:
                     push(newString(joinPath(x.a.map(proc (v:Value):string = $(v)))))
             else:
@@ -334,9 +307,9 @@ proc defineSymbols*() =
                 if checkAttr("with"):
                     sep = aWith.s
 
-                if x.kind==Literal:
-                    ensureInPlace()
-                    SetInPlace(newString(InPlaced.a.map(proc (v:Value):string = $(v)).join(sep)))
+                if xKind in {Literal, PathLiteral}:
+                    ensureInPlaceAny()
+                    SetInPlaceAny(newString(InPlaced.a.map(proc (v:Value):string = $(v)).join(sep)))
                 else:
                     push(newString(x.a.map(proc (v:Value):string = $(v)).join(sep)))
 
@@ -377,7 +350,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "convert given string to lowercase",
         args        = {
-            "string": {String,Char,Literal}
+            "string": {String,Char,Literal,PathLiteral}
         },
         attrs       = NoAttrs,
         returns     = {String,Char,Nothing},
@@ -392,47 +365,20 @@ proc defineSymbols*() =
             ; => `a`  
         """:
             #=======================================================
-            if x.kind==String: push(newString(x.s.toLower()))
-            elif x.kind==Char: push(newChar(x.c.toLower()))
+            if xKind==String: push(newString(x.s.toLower()))
+            elif xKind==Char: push(newChar(x.c.toLower()))
             else: 
-                ensureInPlace()
+                ensureInPlaceAny()
                 if InPlaced.kind==String:
                     InPlaced.s = InPlaced.s.toLower()
                 else:
                     InPlaced.c = InPlaced.c.toLower()
 
-    builtin "lower?",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "check if given string is lowercase",
-        args        = {
-            "string": {String,Char}
-        },
-        attrs       = NoAttrs,
-        returns     = {Logical},
-        example     = """
-            lower? "ñ"               ; => true
-            lower? "X"               ; => false
-            lower? "Hello World"     ; => false
-            lower? "hello"           ; => true
-        """:
-            #=======================================================
-            if x.kind==Char:
-                push(newLogical(x.c.isLower()))
-            else:
-                var broken = false
-                for c in runes(x.s):
-                    if not c.isLower():
-                        push(VFALSE)
-                        broken = true
-                        break
-
-                if not broken:
-                    push(VTRUE)
-
-    # TODO(Strings/match) should work for Web builds as well
+    # TODO(Strings\match) should work for Web builds as well
     #  labels: library, web, bug
+
+    # TODO(Strings\match) add support for Char values as the value-to-match
+    #  labels: library, enhancement
     when not defined(WEB):
         builtin "match",
             alias       = unaliased, 
@@ -441,7 +387,7 @@ proc defineSymbols*() =
             description = "get matches within string, using given regular expression",
             args        = {
                 "string": {String},
-                "regex" : {Regex, String}
+                "regex" : {Regex, String, Char}
             },
             attrs       = {
                 "once"      : ({Logical},"get just the first match"),
@@ -488,8 +434,9 @@ proc defineSymbols*() =
             """:
                 #=======================================================
                 let rgx : VRegex =
-                    if y.kind==Regex: y.rx
-                    else: newRegex(y.s).rx
+                    if yKind==Regex: y.rx
+                    elif yKind==String: newRegex(y.s).rx
+                    else: newRegex($(y.c)).rx
 
                 var iFrom = 0
                 var iTo = int.high
@@ -563,87 +510,13 @@ proc defineSymbols*() =
 
                     push(newBlock(res))
 
-        # TODO(Strings/match?) should work for Web builds as well
-        #  labels: library, web, bug
-        builtin "match?",
-            alias       = unaliased, 
-            op          = opNop,
-            rule        = PrefixPrecedence,
-            description = "check if string matches given regular expression",
-            args        = {
-                "string": {String},
-                "regex" : {Regex, String}
-            },
-            attrs       = {
-                "in"        : ({Range},"get matches within given range")
-            },
-            returns     = {Logical},
-            example     = """
-            match? "hello" {/l/}            ; => true
-            match? "hello" {/x/}            ; => false
-
-            match? "hello" "l"              ; => true
-            ..........
-            match?.in:0..1 "hello" {/l/}        ; => false
-            match?.in:2..4 "hello" {/l/}        ; => true
-            """:
-                #=======================================================
-                let rgx : VRegex =
-                    if y.kind==Regex: y.rx
-                    else: newRegex(y.s).rx
-
-                var iFrom = 0
-                var iTo = int.high
-
-                if checkAttr("in"):
-                    iFrom = aIn.rng.start
-                    if iFrom < 0: 
-                        iFrom = 0
-                        
-                    iTo = aIn.rng.stop
-                    if iTo >= x.s.len: 
-                        iTo = x.s.len-1
-
-                var matched = false
-                for m in x.s.findIter(rgx, iFrom, iTo):
-                    matched = true
-                    break
-
-                push newLogical(matched)
- 
-    builtin "numeric?",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "check if given string is numeric",
-        args        = {
-            "string": {String,Char}
-        },
-        attrs       = NoAttrs,
-        returns     = {Logical},
-        example     = """
-            numeric? "hello"           ; => false
-            numeric? "3.14"            ; => true
-            numeric? "18966"           ; => true
-            numeric? "123xxy"          ; => false
-        """:
-            #=======================================================
-            try:
-                if x.kind==Char:
-                    discard parseFloat($(x.c))
-                else:
-                    discard x.s.parseFloat()
-                push(VTRUE)
-            except ValueError:
-                push(VFALSE)
-
     builtin "outdent",
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "outdent each line of given text, by using minimum shared indentation",
         args        = {
-            "text"  : {String,Literal}
+            "text"  : {String,Literal,PathLiteral}
         },
         attrs       = {
             "n"     : ({Integer},"unpad by given number of spaces"),
@@ -672,8 +545,8 @@ proc defineSymbols*() =
         """:
             #=======================================================
             var count = 0
-            if x.kind==Literal:
-                ensureInPlace()
+            if xKind in {Literal,PathLiteral}:
+                ensureInPlaceAny()
                 count = indentation(InPlaced.s)
             else:
                 count = indentation(x.s)
@@ -686,9 +559,9 @@ proc defineSymbols*() =
             if checkAttr("with"):
                 padding = aWith.s
 
-            if x.kind==Literal:
-                ensureInPlace()
-                SetInPlace(newString(unindent(InPlaced.s, count, padding)))
+            if xKind in {Literal, PathLiteral}:
+                ensureInPlaceAny()
+                SetInPlaceAny(newString(unindent(InPlaced.s, count, padding)))
             else:
                 push(newString(unindent(x.s, count, padding))) 
 
@@ -698,7 +571,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "align string by adding given padding",
         args        = {
-            "string"    : {String,Literal},
+            "string"    : {String,Literal,PathLiteral},
             "padding"   : {Integer}
         },
         attrs       = {
@@ -724,53 +597,33 @@ proc defineSymbols*() =
                 padding = aWith.c
 
             if (hadAttr("right")):
-                if x.kind==String: push(newString(unicode.alignLeft(x.s, y.i, padding=padding)))
+                if xKind==String: push(newString(unicode.alignLeft(x.s, y.i, padding=padding)))
                 else: 
-                    ensureInPlace()
+                    ensureInPlaceAny()
                     InPlaced.s = unicode.alignLeft(InPlaced.s, y.i, padding=padding)
             elif (hadAttr("center")):
-                if x.kind==String: push(newString(centerUnicode(x.s, y.i, padding=padding)))
+                if xKind==String: push(newString(centerUnicode(x.s, y.i, padding=padding)))
                 else: 
-                    ensureInPlace()
+                    ensureInPlaceAny()
                     InPlaced.s = centerUnicode(InPlaced.s, y.i, padding=padding)
             else:
-                if x.kind==String: push(newString(unicode.align(x.s, y.i, padding=padding)))
+                if xKind==String: push(newString(unicode.align(x.s, y.i, padding=padding)))
                 else: 
-                    ensureInPlace()
+                    ensureInPlaceAny()
                     InPlaced.s = unicode.align(InPlaced.s, y.i, padding=padding)
-
-    builtin "prefix?",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "check if string starts with given prefix",
-        args        = {
-            "string": {String},
-            "prefix": {String, Regex}
-        },
-        attrs       = NoAttrs,
-        returns     = {Logical},
-        example     = """
-            prefix? "hello" "he"          ; => true
-            prefix? "boom" "he"           ; => false
-        """:
-            #=======================================================
-            if y.kind==Regex:
-                push(newLogical(x.s.startsWith(y.rx)))
-            else:
-                push(newLogical(x.s.startsWith(y.s)))
 
     when not defined(WEB):
         # TODO(Strings\render) function should also work for Web/JS builds
         #  the lack of proper RegEx libraries could be handled by using the newly-added JS helper functions
         #  labels: enhancement,library,web
+
         builtin "render",
             alias       = tilde, 
             op          = opNop,
             rule        = PrefixPrecedence,
             description = "render template with |string| interpolation",
             args        = {
-                "template"  : {String}
+                "template"  : {String,Literal,PathLiteral}
             },
             attrs       = {
                 "once"      : ({Logical},"don't render recursively"),
@@ -786,8 +639,8 @@ proc defineSymbols*() =
                 let recursive = not (hadAttr("once"))
                 let templated = (hadAttr("template"))
                 var res: string
-                if x.kind == Literal:
-                    ensureInPlace()
+                if xKind in {Literal,PathLiteral}:
+                    ensureInPlaceAny()
                     res = InPlaced.s
                 else:
                     res = x.s
@@ -841,7 +694,7 @@ proc defineSymbols*() =
                     while keepGoing:
                         res = res.replace(Interpolated, proc (match: RegexMatch): string =
                                     execUnscoped(doParse(match.captures[0], isFile=false))
-                                    $(pop())
+                                    $(stack.pop())
                                 )
 
                         # if recursive, check if there's still more embedded tags
@@ -849,11 +702,18 @@ proc defineSymbols*() =
                         if recursive: keepGoing = res.find(Interpolated).isSome
                         else: keepGoing = false
 
-                if x.kind == Literal:
-                    ensureInPlace()
-                    SetInPlace(newString(res))
+                if xKind in {Literal,PathLiteral}:
+                    ensureInPlaceAny()
+                    SetInPlaceAny(newString(res))
                 else:
                     push(newString(res))
+
+    # TODO(Strings\replace) better implementation with more options needed
+    #  Obviously, no need to overdo it here. But at least, we could add support for things like `.once`
+    #  or strict replacement of the matched groups, etc - if possible, in the style of `match`
+    #
+    #  see: https://discord.com/channels/765519132186640445/829324913097048065/1078717850270842962
+    #  labels: enhancement,library
 
     builtin "replace",
         alias       = unaliased, 
@@ -861,7 +721,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "replace every matched substring/s by given replacement string and return result",
         args        = {
-            "string"        : {String, Literal},
+            "string"        : {String, Literal,PathLiteral},
             "match"         : {String, Regex, Block},
             "replacement"   : {String, Block}
         },
@@ -877,14 +737,14 @@ proc defineSymbols*() =
             replace "hello" ["h" "o"] ["x" "z"]     ; => "xellz"
         """:
             #=======================================================
-            if x.kind==String:
-                if y.kind==String:
+            if xKind==String:
+                if yKind==String:
                     push(newString(x.s.replaceAll(y.s, z.s)))
-                elif y.kind==Regex:
+                elif yKind==Regex:
                     push(newString(x.s.replaceAll(y.rx, z.s)))
                 else:
                     var final = x.s
-                    if z.kind==String:
+                    if zKind==String:
                         for item in y.a:
                             replaceStrWith(final, item, z)
                     else:
@@ -895,13 +755,13 @@ proc defineSymbols*() =
                             inc i
                     push(newString(final))
             else:
-                ensureInPlace()
-                if y.kind==String:
+                ensureInPlaceAny()
+                if yKind==String:
                     InPlaced.s = InPlaced.s.replaceAll(y.s, z.s)
-                elif y.kind==Regex:
+                elif yKind==Regex:
                     InPlaced.s = InPlaced.s.replaceAll(y.rx, z.s)
                 else:
-                    if z.kind==String:
+                    if zKind==String:
                         for item in y.a:
                             replaceStrWith(InPlaced.s, item, z)
                     else:
@@ -917,7 +777,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "strip whitespace from given string",
         args        = {
-            "string": {String,Literal}
+            "string": {String,Literal,PathLiteral}
         },
         attrs       = {
             "start" : ({Logical},"strip leading whitespace"),
@@ -943,31 +803,10 @@ proc defineSymbols*() =
                 leading = true
                 trailing = true
 
-            if x.kind==String: push(newString(strutils.strip(x.s, leading, trailing)))
+            if xKind==String: push(newString(strutils.strip(x.s, leading, trailing)))
             else: 
-                ensureInPlace()
+                ensureInPlaceAny()
                 InPlaced.s = strutils.strip(InPlaced.s, leading, trailing) 
-
-    builtin "suffix?",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "check if string ends with given suffix",
-        args        = {
-            "string": {String},
-            "suffix": {String, Regex}
-        },
-        attrs       = NoAttrs,
-        returns     = {Logical},
-        example     = """
-            suffix? "hello" "lo"          ; => true
-            suffix? "boom" "lo"           ; => false
-        """:
-            #=======================================================
-            if y.kind==Regex:
-                push(newLogical(x.s.endsWith(y.rx)))
-            else:
-                push(newLogical(x.s.endsWith(y.s)))
 
     builtin "translate",
         alias       = unaliased, 
@@ -975,7 +814,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "takes a dictionary of translations and replaces each instance sequentially",
         args        = {
-            "string"        : {String, Literal},
+            "string"        : {String, Literal, PathLiteral},
             "translations"  : {Dictionary}
         },
         attrs       = NoAttrs,
@@ -992,10 +831,10 @@ proc defineSymbols*() =
             #=======================================================
             let replacements = (toSeq(y.d.pairs)).map((w) => (w[0], w[1].s))
 
-            if x.kind==String:
+            if xKind==String:
                 push(newString(x.s.multiReplace(replacements)))
             else:
-                ensureInPlace()
+                ensureInPlaceAny()
                 InPlaced.s = InPlaced.s.multiReplace(replacements)
 
     builtin "truncate",
@@ -1004,7 +843,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "truncate string at given length",
         args        = {
-            "string": {String,Literal},
+            "string": {String,Literal,PathLiteral},
             "cutoff": {Integer}
         },
         attrs       = {
@@ -1033,14 +872,14 @@ proc defineSymbols*() =
                 with = aWith.s
 
             if (hadAttr("preserve")):
-                if x.kind==String: push(newString(truncatePreserving(x.s, y.i, with)))
+                if xKind==String: push(newString(truncatePreserving(x.s, y.i, with)))
                 else: 
-                    ensureInPlace()
+                    ensureInPlaceAny()
                     InPlaced.s = truncatePreserving(InPlaced.s, y.i, with)
             else:
-                if x.kind==String: push(newString(truncate(x.s, y.i, with)))
+                if xKind==String: push(newString(truncate(x.s, y.i, with)))
                 else: 
-                    ensureInPlace()
+                    ensureInPlaceAny()
                     InPlaced.s = truncate(InPlaced.s, y.i, with)
 
     builtin "upper",
@@ -1049,7 +888,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "convert given string to uppercase",
         args        = {
-            "string": {String,Char,Literal}
+            "string": {String,Char,Literal,PathLiteral}
         },
         attrs       = NoAttrs,
         returns     = {String,Char,Nothing},
@@ -1064,44 +903,14 @@ proc defineSymbols*() =
             ; => `A`                     
         """:
             #=======================================================
-            if x.kind==String: push(newString(x.s.toUpper()))
-            elif x.kind==Char: push(newChar(x.c.toUpper()))
+            if xKind==String: push(newString(x.s.toUpper()))
+            elif xKind==Char: push(newChar(x.c.toUpper()))
             else: 
-                ensureInPlace()
+                ensureInPlaceAny()
                 if InPlaced.kind==String:
                     InPlaced.s = InPlaced.s.toUpper()
                 else:
                     InPlaced.c = InPlaced.c.toUpper()
-
-    builtin "upper?",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "check if given string is uppercase",
-        args        = {
-            "string": {String,Char}
-        },
-        attrs       = NoAttrs,
-        returns     = {Logical},
-        example     = """
-            upper? "Ñ"               ; => true
-            upper? "x"               ; => false
-            upper? "Hello World"     ; => false
-            upper? "HELLO"           ; => true
-        """:
-            #=======================================================
-            if x.kind==Char:
-                push(newLogical(x.c.isUpper()))
-            else:
-                var broken = false
-                for c in runes(x.s):
-                    if not c.isUpper():
-                        push(VFALSE)
-                        broken = true
-                        break
-
-                if not broken:
-                    push(VTRUE)
 
     builtin "wordwrap",
         alias       = unaliased, 
@@ -1109,7 +918,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "word wrap a given string",
         args        = {
-            "string": {String,Literal}
+            "string": {String,Literal,PathLiteral}
         },
         attrs       = {
             "at"    : ({Integer},"use given max line width (default: 80)")
@@ -1138,11 +947,226 @@ proc defineSymbols*() =
             if checkAttr("at"):
                 cutoff = aAt.i
             
-            if x.kind==Literal:
-                ensureInPlace()
-                SetInPlace(newString(wrapWords(InPlaced.s, maxLineWidth=cutoff)))
+            if xKind in {Literal, PathLiteral}:
+                ensureInPlaceAny()
+                SetInPlaceAny(newString(wrapWords(InPlaced.s, maxLineWidth=cutoff)))
             else:
                 push newString(wrapWords(x.s, maxLineWidth=cutoff))
+
+    #----------------------------
+    # Predicates
+    #----------------------------
+
+    builtin "ascii?",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "check if given character/string is in ASCII",
+        args        = {
+            "string": {Char,String}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            ascii? `d`              ; true
+            ..........
+            ascii? `😀`             ; false
+
+            ascii? "hello world"    ; true
+            ascii? "Hællø wœrld"    ; false
+            ascii? "Γειά!"          ; false
+        """:
+            #=======================================================
+            if xKind==Char:
+                push(newLogical(ord(x.c)<128))
+            else:
+                var allOK = true
+                for ch in runes(x.s):
+                    if ord(ch) >= 128:
+                        allOK = false
+                        push(VFALSE)
+                        break
+
+                if allOK:
+                    push(VTRUE)
+
+    builtin "lower?",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "check if given string is lowercase",
+        args        = {
+            "string": {String,Char}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            lower? "ñ"               ; => true
+            lower? "X"               ; => false
+            lower? "Hello World"     ; => false
+            lower? "hello"           ; => true
+        """:
+            #=======================================================
+            if xKind==Char:
+                push(newLogical(x.c.isLower()))
+            else:
+                var broken = false
+                for c in runes(x.s):
+                    if not c.isLower():
+                        push(VFALSE)
+                        broken = true
+                        break
+
+                if not broken:
+                    push(VTRUE)
+
+    when not defined(WEB):
+
+        # TODO(Strings\match?) should work for Web builds as well
+        #  labels: library, web, bug
+        builtin "match?",
+            alias       = unaliased, 
+            op          = opNop,
+            rule        = PrefixPrecedence,
+            description = "check if string matches given regular expression",
+            args        = {
+                "string": {String},
+                "regex" : {Regex, String}
+            },
+            attrs       = {
+                "in"        : ({Range},"get matches within given range")
+            },
+            returns     = {Logical},
+            example     = """
+            match? "hello" {/l/}            ; => true
+            match? "hello" {/x/}            ; => false
+
+            match? "hello" "l"              ; => true
+            ..........
+            match?.in:0..1 "hello" {/l/}        ; => false
+            match?.in:2..4 "hello" {/l/}        ; => true
+            """:
+                #=======================================================
+                let rgx : VRegex =
+                    if yKind==Regex: y.rx
+                    else: newRegex(y.s).rx
+
+                var iFrom = 0
+                var iTo = int.high
+
+                if checkAttr("in"):
+                    iFrom = aIn.rng.start
+                    if iFrom < 0: 
+                        iFrom = 0
+                        
+                    iTo = aIn.rng.stop
+                    if iTo >= x.s.len: 
+                        iTo = x.s.len-1
+
+                var matched = false
+                for m in x.s.findIter(rgx, iFrom, iTo):
+                    matched = true
+                    break
+
+                push newLogical(matched)
+
+    builtin "numeric?",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "check if given string is numeric",
+        args        = {
+            "string": {String,Char}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            numeric? "hello"           ; => false
+            numeric? "3.14"            ; => true
+            numeric? "18966"           ; => true
+            numeric? "123xxy"          ; => false
+        """:
+            #=======================================================
+            try:
+                if xKind==Char:
+                    discard parseFloat($(x.c))
+                else:
+                    discard x.s.parseFloat()
+                push(VTRUE)
+            except ValueError:
+                push(VFALSE)
+
+    builtin "prefix?",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "check if string starts with given prefix",
+        args        = {
+            "string": {String},
+            "prefix": {String, Regex}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            prefix? "hello" "he"          ; => true
+            prefix? "boom" "he"           ; => false
+        """:
+            #=======================================================
+            if yKind==Regex:
+                push(newLogical(x.s.startsWith(y.rx)))
+            else:
+                push(newLogical(x.s.startsWith(y.s)))
+
+    builtin "suffix?",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "check if string ends with given suffix",
+        args        = {
+            "string": {String},
+            "suffix": {String, Regex}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            suffix? "hello" "lo"          ; => true
+            suffix? "boom" "lo"           ; => false
+        """:
+            #=======================================================
+            if yKind==Regex:
+                push(newLogical(x.s.endsWith(y.rx)))
+            else:
+                push(newLogical(x.s.endsWith(y.s)))
+
+    builtin "upper?",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "check if given string is uppercase",
+        args        = {
+            "string": {String,Char}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            upper? "Ñ"               ; => true
+            upper? "x"               ; => false
+            upper? "Hello World"     ; => false
+            upper? "HELLO"           ; => true
+        """:
+            #=======================================================
+            if xKind==Char:
+                push(newLogical(x.c.isUpper()))
+            else:
+                var broken = false
+                for c in runes(x.s):
+                    if not c.isUpper():
+                        push(VFALSE)
+                        broken = true
+                        break
+
+                if not broken:
+                    push(VTRUE)
 
     builtin "whitespace?",
         alias       = unaliased, 
@@ -1162,8 +1186,9 @@ proc defineSymbols*() =
             #=======================================================
             push(newLogical(x.s.isEmptyOrWhitespace()))
 
+
 #=======================================
 # Add Library
 #=======================================
 
-Libraries.add(defineSymbols)
+Libraries.add(defineLibrary)

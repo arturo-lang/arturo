@@ -1,4 +1,4 @@
-define :vector [x, y, z][]
+define :vector [x, y, z]
 
 addv: function [v1 :vector, v2 :vector]->
     to :vector @[v1\x+v2\x, v1\y+v2\y, v1\z+v2\z]

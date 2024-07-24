@@ -1,0 +1,28 @@
+arithmetic?: function [n][
+    avg: average factors n
+    zero? abs avg - to :integer avg
+]
+
+composite?: function [n]->
+    not? prime? n
+
+arithmeticsUpTo: function [lim][
+    items: select.first: lim 1..∞ => arithmetic?
+    print [(to :string lim)++"th" "arithmetic number:" last items]
+    print ["Number of composite arithmetic numbers <= " last items ":" dec enumerate items => composite?]
+    print ""
+]
+
+first100: select.first:100 1..∞ => arithmetic?
+
+loop split.every: 10 first100 'x ->
+    print map x 's -> pad to :string s 4
+
+print "" 
+
+arithmeticsUpTo 1000
+arithmeticsUpTo 10000
+
+; stretch goal
+arithmeticsUpTo 100000
+arithmeticsUpTo 1000000

@@ -1,4 +1,4 @@
-define :point [x y][]
+define :point [x, y]
 
 orientation: function [P Q R][
     val: sub (Q\y - P\y)*(R\x - Q\x) (Q\x - P\x)*(R\y - Q\y)
@@ -41,26 +41,26 @@ calculateConvexHull: function [points][
     return result
 ]
  
-points: @[
-    to :point [16 3],
-    to :point [12 17],
-    to :point [0 6],
-    to :point @[neg 4 neg 6],
-    to :point [16 6],
-    to :point @[16 neg 7],
-    to :point @[17 neg 4],
-    to :point [5 19],
-    to :point @[19 neg 8],
-    to :point [3 16],
-    to :point [12 13],
-    to :point @[3 neg 4],
-    to :point [17 5],
-    to :point @[neg 3 15],
-    to :point @[neg 3 neg 9],
-    to :point [0 11],
-    to :point @[neg 9 neg 3],
-    to :point @[neg 4 neg 2],
-    to :point [12 10]
+points: to [:point] @[
+    [16 3],
+    [12 17],
+    [0 6],
+    @[neg 4 neg 6],
+    [16 6],
+    @[16 neg 7],
+    @[17 neg 4],
+    [5 19],
+    @[19 neg 8],
+    [3 16],
+    [12 13],
+    @[3 neg 4],
+    [17 5],
+    @[neg 3 15],
+    @[neg 3 neg 9],
+    [0 11],
+    @[neg 9 neg 3],
+    @[neg 4 neg 2],
+    [12 10]
 ]
 
 hull: calculateConvexHull points

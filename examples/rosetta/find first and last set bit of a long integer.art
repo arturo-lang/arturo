@@ -1,0 +1,14 @@
+msb: function [x]-> dec size as.binary x
+lsb: function [x]-> msb and x neg x
+
+loop 0..5 'i [
+    x: 42 ^ i
+    print [pad to :string x 10 "-->" "MSB:" pad.right to :string (msb x) 2 "- LSB:" lsb x]
+]
+
+print ""
+
+loop 0..5 'i [
+    x: 1302 ^ i
+    print [pad to :string x 17 "-->" "MSB:" pad.right to :string (msb x) 2 "- LSB:" lsb x]
+]

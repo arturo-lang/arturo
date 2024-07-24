@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2023 Yanis Zafirópulos
+# (c) 2019-2024 Yanis Zafirópulos
 #
 # @file: library/Logic.nim
 #=======================================================
@@ -23,10 +23,14 @@ import vm/lib
 import vm/[exec]
 
 #=======================================
-# Methods
+# Definitions
 #=======================================
 
-proc defineSymbols*() =
+proc defineLibrary*() =
+
+    #----------------------------
+    # Predicates
+    #----------------------------
 
     builtin "all?",
         alias       = unaliased, 
@@ -58,7 +62,7 @@ proc defineSymbols*() =
                 var val {.cursor.}: Value
                 if item.kind == Block: 
                     execUnscoped(item)
-                    val = pop()
+                    val = stack.pop()
                 else:
                     val = item
 
@@ -92,23 +96,23 @@ proc defineSymbols*() =
             ; yep, that's correct!
         """:
             #=======================================================
-            if x.kind==Logical and y.kind==Logical:
+            if xKind==Logical and yKind==Logical:
                 push(newLogical(And(x.b,y.b)))
             else:
-                if x.kind==Block:
-                    if y.kind==Block:
+                if xKind==Block:
+                    if yKind==Block:
                         # block block
                         execUnscoped(x)
-                        if isFalse(move stack.pop()):
+                        if isFalse(stack.pop()):
                             push(newLogical(false))
                             return
 
                         execUnscoped(y)
-                        push(newLogical(pop().b))
+                        push(newLogical(stack.pop().b))
                     else:
                         # block logical
                         execUnscoped(x)
-                        push(newLogical(And(pop().b,y.b)))
+                        push(newLogical(And(stack.pop().b,y.b)))
                 else:
                     # logical block
                     if isFalse(x):
@@ -116,7 +120,7 @@ proc defineSymbols*() =
                         return
 
                     execUnscoped(y)
-                    push(newLogical(pop().b))
+                    push(newLogical(stack.pop().b))
 
     builtin "any?",
         alias       = unaliased, 
@@ -159,11 +163,6 @@ proc defineSymbols*() =
             if not anyOK:
                 push(newLogical(false))
 
-    constant "false",
-        alias       = unaliased,
-        description = "the FALSE logical constant":
-            VFALSE
-
     builtin "false?",
         alias       = unaliased, 
         op          = opNop,
@@ -182,13 +181,8 @@ proc defineSymbols*() =
             print false? [1 2 3]        ; false
         """:
             #=======================================================
-            if x.kind != Logical: push(newLogical(false))
+            if xKind != Logical: push(newLogical(false))
             else: push(newLogical(Not(x.b)))
-
-    constant "maybe",
-        alias       = unaliased,
-        description = "the MAYBE logical constant":
-            VMAYBE
 
     builtin "nand?",
         alias       = logicalnand, 
@@ -215,23 +209,23 @@ proc defineSymbols*() =
             ; nope, that's not correct
         """:
             #=======================================================
-            if x.kind==Logical and y.kind==Logical:
+            if xKind==Logical and yKind==Logical:
                 push(newLogical(NAnd(x.b, y.b)))
             else:
-                if x.kind==Block:
-                    if y.kind==Block:
+                if xKind==Block:
+                    if yKind==Block:
                         # block block
                         execUnscoped(x)
-                        if isFalse(move stack.pop()):
+                        if isFalse(stack.pop()):
                             push(newLogical(true))
                             return
 
                         execUnscoped(y)
-                        push(newLogical(Not(pop().b)))
+                        push(newLogical(Not(stack.pop().b)))
                     else:
                         # block logical
                         execUnscoped(x)
-                        push(newLogical(Nand(pop().b, y.b)))
+                        push(newLogical(Nand(stack.pop().b, y.b)))
                 else:
                     # logical block
                     if isFalse(x):
@@ -239,7 +233,7 @@ proc defineSymbols*() =
                         return
 
                     execUnscoped(y)
-                    push(newLogical(Not(pop().b)))
+                    push(newLogical(Not(stack.pop().b)))
 
     builtin "nor?",
         alias       = unaliased, 
@@ -266,23 +260,23 @@ proc defineSymbols*() =
             ; nope, that's not correct
         """:
             #=======================================================
-            if x.kind==Logical and y.kind==Logical:
+            if xKind==Logical and yKind==Logical:
                 push(newLogical(Nor(x.b, y.b)))
             else:
-                if x.kind==Block:
-                    if y.kind==Block:
+                if xKind==Block:
+                    if yKind==Block:
                         # block block
                         execUnscoped(x)
-                        if isTrue(move stack.pop()):
+                        if isTrue(stack.pop()):
                             push(newLogical(false))
                             return
 
                         execUnscoped(y)
-                        push(newLogical(Not(pop().b)))
+                        push(newLogical(Not(stack.pop().b)))
                     else:
                         # block logical
                         execUnscoped(x)
-                        push(newLogical(Nor(pop().b, y.b)))
+                        push(newLogical(Nor(stack.pop().b, y.b)))
                 else:
                     # logical block
                     if isTrue(x):
@@ -290,7 +284,7 @@ proc defineSymbols*() =
                         return
 
                     execUnscoped(y)
-                    push(newLogical(Not(pop().b)))
+                    push(newLogical(Not(stack.pop().b)))
 
     builtin "not?",
         alias       = logicalnot, 
@@ -311,11 +305,11 @@ proc defineSymbols*() =
             ; we're still not ready!
         """:
             #=======================================================
-            if x.kind==Logical:
+            if xKind==Logical:
                 push(newLogical(Not(x.b)))
             else:
                 execUnscoped(x)
-                push(newLogical(Not(pop().b)))
+                push(newLogical(Not(stack.pop().b)))
 
     builtin "or?",
         alias       = logicalor, 
@@ -339,23 +333,23 @@ proc defineSymbols*() =
             ; yep, that's correct!
         """:
             #=======================================================
-            if x.kind==Logical and y.kind==Logical:
+            if xKind==Logical and yKind==Logical:
                 push(newLogical(Or(x.b, y.b)))
             else:
-                if x.kind==Block:
-                    if y.kind==Block:
+                if xKind==Block:
+                    if yKind==Block:
                         # block block
                         execUnscoped(x)
-                        if isTrue(move stack.pop()):
+                        if isTrue(stack.pop()):
                             push(newLogical(true))
                             return
 
                         execUnscoped(y)
-                        push(newLogical(pop().b))
+                        push(newLogical(stack.pop().b))
                     else:
                         # block logical
                         execUnscoped(x)
-                        push(newLogical(Or(pop().b, y.b)))
+                        push(newLogical(Or(stack.pop().b, y.b)))
                 else:
                     # logical block
                     if isTrue(x):
@@ -363,12 +357,7 @@ proc defineSymbols*() =
                         return
 
                     execUnscoped(y)
-                    push(newLogical(pop().b))
-
-    constant "true",
-        alias       = unaliased,
-        description = "the TRUE logical constant":
-            VTRUE
+                    push(newLogical(stack.pop().b))
 
     builtin "true?",
         alias       = unaliased, 
@@ -388,7 +377,7 @@ proc defineSymbols*() =
             print true? [1 2 3]         ; false
         """:
             #=======================================================
-            if x.kind != Logical: push(newLogical(false))
+            if xKind != Logical: push(newLogical(false))
             else: push(x)
 
     builtin "xnor?",
@@ -418,17 +407,17 @@ proc defineSymbols*() =
             #=======================================================
             var a: VLogical
             var b: VLogical
-            if x.kind == Logical: 
+            if xKind == Logical: 
                 a = x.b
             else:
                 execUnscoped(x)
-                a = pop().b
+                a = stack.pop().b
 
-            if y.kind == Logical: 
+            if yKind == Logical: 
                 b = y.b
             else:
                 execUnscoped(y)
-                b = pop().b
+                b = stack.pop().b
 
             push(newLogical(Xnor(a, b)))
 
@@ -459,22 +448,41 @@ proc defineSymbols*() =
             #=======================================================
             var a: VLogical
             var b: VLogical
-            if x.kind == Logical: 
+            if xKind == Logical: 
                 a = x.b
             else:
                 execUnscoped(x)
-                a = pop().b
+                a = stack.pop().b
 
-            if y.kind == Logical: 
+            if yKind == Logical: 
                 b = y.b
             else:
                 execUnscoped(y)
-                b = pop().b
+                b = stack.pop().b
 
             push(newLogical(Xor(a, b)))
             
+    #----------------------------
+    # Constants
+    #----------------------------
+
+    constant "false",
+        alias       = unaliased,
+        description = "the FALSE logical constant":
+            VFALSE
+
+    constant "maybe",
+        alias       = unaliased,
+        description = "the MAYBE logical constant":
+            VMAYBE
+
+    constant "true",
+        alias       = unaliased,
+        description = "the TRUE logical constant":
+            VTRUE
+
 #=======================================
 # Add Library
 #=======================================
 
-Libraries.add(defineSymbols)
+Libraries.add(defineLibrary)

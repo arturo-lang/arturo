@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2023 Yanis Zafirópulos
+# (c) 2019-2024 Yanis Zafirópulos
 #
 # @file: helpers/database.nim
 #=======================================================
@@ -10,10 +10,11 @@
 # Libraries
 #=======================================
 
-import sequtils, sqlite3, strutils
+import sequtils, strutils
 
 #import db_mysql as mysql
-import db_sqlite as sqlite
+import extras/db_connector/sqlite3
+import extras/db_connector/db_sqlite as sqlite
 
 import vm/values/value
 
@@ -63,8 +64,6 @@ func openSqliteDb*(name: string): sqlite.DbConn =
 proc execSqliteDb*(db: sqlite.DbConn, command: string, with: seq[string] = @[]): QueryResult =
     var ret: ValueArray
 
-    #echo "executing SQL:" & $(command)
-
     for row in db.rows(sql(command), with):
         ret.add(newStringBlock(row))
 
@@ -75,8 +74,6 @@ proc execSqliteDb*(db: sqlite.DbConn, command: string, with: seq[string] = @[]):
 
 proc execManySqliteDb*(db: sqlite.DbConn, commands: seq[string], with: seq[string] = @[]): QueryResult =
     var ret: ValueArray
-
-    #echo "executing SQL:" & $(commands)
 
     db.exec(sql"BEGIN")
 

@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2023 Yanis Zafirópulos
+# (c) 2019-2024 Yanis Zafirópulos
 #
 # @file: library/Sockets.nim
 #=======================================================
@@ -23,7 +23,7 @@ when not defined(WEB):
     import std/net as netsock except Socket
     import nativesockets
 
-import vm/values/custom/[vsocket]
+    import vm/values/custom/[vsocket]
 
 import vm/lib
 
@@ -31,7 +31,7 @@ when not defined(WEB):
     import vm/errors
 
 #=======================================
-# Methods
+# Definitions
 #=======================================
 
 # TODO(Sockets) Verify the whole module & check for missing functionality
@@ -40,7 +40,11 @@ when not defined(WEB):
 #  features
 #  labels: open discussion
 
-proc defineSymbols*() =
+proc defineLibrary*() =
+
+    #----------------------------
+    # Functions
+    #----------------------------
     
     when not defined(WEB):
 
@@ -62,7 +66,7 @@ proc defineSymbols*() =
             print ["accepted incoming connection from:" client]
             """:
                 #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("accept")
+                when defined(SAFE): Error_OperationNotPermitted("accept")
 
                 var client: netsock.Socket
                 x.sock.socket.accept(client)
@@ -96,7 +100,7 @@ proc defineSymbols*() =
             server: connect.to:"123.456.789.123" 18966
             """:
                 #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("connect")
+                when defined(SAFE): Error_OperationNotPermitted("connect")
 
                 let isUDP = hadAttr("udp")
 
@@ -129,7 +133,7 @@ proc defineSymbols*() =
                 "port"  : {Integer}
             },
             attrs       = {
-                "blocking"  : ({String},"set blocking mode (default: false)"),
+                "blocking"  : ({Logical},"set blocking mode (default: false)"),
                 "udp"       : ({Logical},"use UDP instead of TCP")
             },
             returns     = {Socket},
@@ -138,7 +142,7 @@ proc defineSymbols*() =
             server: listen 18966
             """:
                 #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("listen")
+                when defined(SAFE): Error_OperationNotPermitted("listen")
 
                 let blocking = hadAttr("blocking")
                 let protocol = 
@@ -192,7 +196,7 @@ proc defineSymbols*() =
             unplug server
             """:
                 #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("receive")
+                when defined(SAFE): Error_OperationNotPermitted("receive")
 
                 var size = MaxLineLength
                 if checkAttr("size"):
@@ -225,7 +229,7 @@ proc defineSymbols*() =
             send socket "Hello Socket World"
             """:
                 #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("send")
+                when defined(SAFE): Error_OperationNotPermitted("send")
 
                 let asChunk = hadAttr("chunk")
 
@@ -234,6 +238,37 @@ proc defineSymbols*() =
                     else: y.s & "\r\L"
 
                 x.sock.socket.send(message)
+
+        builtin "unplug",
+            alias       = unaliased, 
+            op          = opNop,
+            rule        = PrefixPrecedence,
+            description = "close given socket",
+            args        = {
+                "socket"    : {Socket} 
+            },
+            attrs       = NoAttrs,
+            returns     = {Nothing},
+            example     = """
+            ; connect to a local server on port 256
+            socket: connect.to:"localhost" 256
+
+            ; send a message to the server
+            send socket "Hello Socket World"
+
+            ; disconnect from the server
+            unplug socket
+            """:
+                #=======================================================
+                when defined(SAFE): Error_OperationNotPermitted("unplug")
+
+                x.sock.socket.close()
+
+    #----------------------------
+    # Predicates
+    #----------------------------
+
+    when not defined(WEB):
 
         builtin "send?",
             alias       = unaliased, 
@@ -257,39 +292,12 @@ proc defineSymbols*() =
             print ["Message was sent successfully:" sent?]
             """:
                 #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("send?")
+                when defined(SAFE): Error_OperationNotPermitted("send?")
 
                 push newLogical(x.sock.socket.trySend(y.s))
-
-        builtin "unplug",
-            alias       = unaliased, 
-            op          = opNop,
-            rule        = PrefixPrecedence,
-            description = "close given socket",
-            args        = {
-                "socket"    : {Socket} 
-            },
-            attrs       = NoAttrs,
-            returns     = {Nothing},
-            example     = """
-            ; connect to a local server on port 256
-            socket: connect.to:"localhost" 256
-
-            ; send a message to the server
-            send socket "Hello Socket World"
-
-            ; disconnect from the server
-            unplug socket
-            """:
-                #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("unplug")
-
-                x.sock.socket.close()
-    else:
-        discard
 
 #=======================================
 # Add Library
 #=======================================
 
-Libraries.add(defineSymbols)
+Libraries.add(defineLibrary)

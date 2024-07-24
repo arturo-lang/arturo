@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2023 Yanis Zafirópulos
+# (c) 2019-2024 Yanis Zafirópulos
 #
 # @file: library/Comparison.nim
 #=======================================================
@@ -22,46 +22,25 @@
 import vm/lib
 
 #=======================================
-# Methods
+# Definitions
 #=======================================
 
-proc defineSymbols*() =
+# TODO(Comparison) add built-in function for "approximately equal"
+#  This could serve in cases where we want to compare between weirdly-rounded floating-point numbers and integers, e.g.: 3.0000001 and 3.
+#  But: we'll obviously have to somehow "define" this... approximate equality.
+#  labels: library, enhancement, open discussion
 
-    # TODO(Comparison) add built-in function for "approximately equal"
-    #  This could serve in cases where we want to compare between weirdly-rounded floating-point numbers and integers, e.g.: 3.0000001 and 3.
-    #  But: we'll obviously have to somehow "define" this... approximate equality.
-    #  labels: library, enhancement, open discussion
-    builtin "between?",
-        alias       = thickarrowboth, 
-        op          = opNop,
-        rule        = InfixPrecedence,
-        description = "check if given value is between the given values (inclusive)",
-        args        = {
-            "value"     : {Any},
-            "rangeFrom" : {Any},
-            "rangeTo"   : {Any}
-        },
-        attrs       = NoAttrs,
-        returns     = {Logical},
-        example     = """
-            between? 1 2 3      ; => false
-            between? 2 0 3      ; => true
-            between? 3 2 3      ; => true
+proc defineLibrary*() =
 
-            1 <=> 2 3           ; => false
-            2 <=> 0 3           ; => true
-            3 <=> 2 3           ; => true  
-        """:
-            #=======================================================
-            if x < y: 
-                push VFALSE
-                return
-            if x > z:
-                push VFALSE
-                return
+    #----------------------------
+    # Functions
+    #----------------------------
 
-            push VTRUE
-
+    # TODO(Comparison\compare) verify it's working right
+    #  The main problem seems to be this vague `else:`.
+    #  In a few words: Even comparisons that are simply not possible will return 1 (!)
+    #  see also: https://github.com/arturo-lang/arturo/pull/1139#issuecomment-1509404906
+    #  labels: library, critical, bug
     builtin "compare",
         alias       = unaliased, 
         op          = opNop,
@@ -85,6 +64,54 @@ proc defineSymbols*() =
                 push(I0)
             else:
                 push(I1)
+
+    #----------------------------
+    # Predicates
+    #----------------------------
+
+    # TODO(Comparison\between?): deprecate the support for some types
+    # Right now this uses a generic algorithm and :any as entry, but does it even makes sense?
+    #
+    # ```art
+    # between? #[user: "Rick"] #[user: "Rick"] #[user: "Rick"]
+    # ``` 
+    #
+    # The above code returns true, but what is the sense of seeing if a dictionary is between other two.
+    # I think this should be good to limit what types can be between other ones.
+    # labels: library, open-discussion
+    builtin "between?",
+        alias       = thickarrowboth, 
+        op          = opNop,
+        rule        = InfixPrecedence,
+        description = "check if given value is between the given values (inclusive)",
+        args        = {
+            "value"     : {Any},
+            "rangeFrom" : {Any},
+            "rangeTo"   : {Any}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            between? 1 2 3      ; => false
+            between? 2 0 3      ; => true
+            between? 3 2 3      ; => true
+            between? 3 3 2      ; => true
+
+            1 <=> 2 3           ; => false
+            1 <=> 3 2           ; => false
+            2 <=> 0 3           ; => true
+            2 <=> 3 0           ; => true
+            3 <=> 2 3           ; => true  
+        """:
+            #=======================================================
+            template isBetween(target, lower, upper: untyped) =
+                if (target == lower or target == upper) or (target > lower and target < upper):
+                    push VTRUE
+                else:
+                    push VFALSE
+        
+            if y < z: x.isBetween(y, z)
+            else: x.isBetween(z, y)
 
     builtin "equal?",
         alias       = equal, 
@@ -229,4 +256,4 @@ proc defineSymbols*() =
 # Add Library
 #=======================================
 
-Libraries.add(defineSymbols)
+Libraries.add(defineLibrary)

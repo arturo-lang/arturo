@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 
-extern void generateMenus(void);
+extern void generateDefaultMainMenu(void);
 
 #ifdef __cplusplus
 }

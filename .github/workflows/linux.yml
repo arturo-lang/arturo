@@ -27,15 +27,15 @@ jobs:
     strategy:
       matrix:
         os:
-          - ubuntu-20.04
+          - ubuntu-latest
         version:
           - mini
           - full
           - safe
         arch:
-          - x86
-          - x86_64
-          - arm
+          #- x86
+          - amd64
+          #- arm
           - arm64
         exclude:
           - version: full
@@ -51,12 +51,6 @@ jobs:
           - version: safe
             arch: arm64
     steps:
-      - name: "Cancel similar actions in progress"
-        uses: styfle/cancel-workflow-action@0.10.0
-        with:
-          all_but_latest: true
-          access_token: ${{ github.token }}
-
       - name: "Checkout"
         uses: actions/checkout@main
         with:
@@ -84,7 +78,8 @@ jobs:
       - name: Setup nim
         uses: jiro4989/setup-nim-action@v1
         with:
-          nim-version: 'stable'
+          nim-version: '2.x'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install dependencies (mini / x86)
         if: matrix.version == 'mini' && matrix.arch != 'arm' && matrix.arch != 'arm64'
@@ -101,7 +96,8 @@ jobs:
       - name: Install dependencies (full)
         if: matrix.version != 'mini'
         run: |
-          sudo apt-get install libwebkit2gtk-4.0-dev libmpfr-dev
+          sudo apt-get update
+          sudo apt-get install libgtk-3-dev libwebkit2gtk-4.0-dev libmpfr-dev
           
       - name: Verify dependecies
         run: |
@@ -110,7 +106,7 @@ jobs:
       - name: Build Arturo
         run: |
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
-          ./build.nims install ${{ matrix.version }} ${{ matrix.arch }} log
+          ./build.nims build --mode ${{ matrix.version }} --arch ${{ matrix.arch }} --log
 
       - name: Upload Artifacts
         uses: 'actions/upload-artifact@v2'
@@ -118,8 +114,16 @@ jobs:
           name: "arturo-${{matrix.version}}-${{matrix.arch}}-linux"
           path: bin/arturo
 
-      - name: Run unit tests
-        if: matrix.arch == 'x86_64' && (matrix.version == 'full' || matrix.version == 'mini')
+      - name: Run unit tests (mini)
+        if: matrix.arch == 'amd64' && (matrix.version == 'mini')
         run: |
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
           arturo tools/tester.art
+      
+      - name: Run unit tests (full)
+        if: matrix.arch == 'amd64' && (matrix.version == 'full')
+        run: |
+          echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
+          ./bin/arturo tools/tester.art
+          ./bin/arturo tools/unitt-tester.art
+  

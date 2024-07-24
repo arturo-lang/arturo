@@ -1,0 +1,11 @@
+meisselMertens: function [depth][
+    Euler: 0.57721566490153286
+    m: (1//2) + ln 1-1//2
+    loop range.step:2 3 depth 'x ->
+        if prime? x ->
+            m: m + (1//x) + ln 1-1//x
+
+    return m + Euler
+]
+
+print meisselMertens 10000000

@@ -1,0 +1,446 @@
+; I'm temporarialy creating this to just ensure the working of strings for pathLiteral
+; This should be moved soon to unitt.
+
+topic: $[topic :string] -> print ~"\n>> |topic|"
+passed: $[] -> print "[+] passed!"
+
+
+topic « capitalize
+do [
+    str: "hello World"
+    
+    sample1: new str
+    sample2: #[sample: new str]
+    
+    capitalize 'sample1
+    capitalize 'sample2\sample
+    ensure -> sample1 = sample2\sample
+    passed
+]
+
+
+topic « escape
+do [
+    str: {a long "string" + with \diffe\rent symbols.}
+    
+    sample1: new str
+    sample2: #[sample: new str]
+    
+    escape 'sample1
+    escape 'sample2\sample
+    ensure -> sample1 = sample2\sample
+    passed
+]
+
+topic « escape.json
+do [
+    str: {a long "string" + with \diffe\rent symbols.}
+    
+    sample1: new str
+    sample2: #[sample: new str]
+    
+    escape.json 'sample1
+    escape.json 'sample2\sample
+    ensure -> sample1 = sample2\sample
+    passed
+]
+
+topic « escape.regex
+do [
+    str: {a long "string" + with \diffe\rent symbols.}
+    
+    sample1: new str
+    sample2: #[sample: new str]
+    
+    escape.regex 'sample1
+    escape.regex 'sample2\sample
+    ensure -> sample1 = sample2\sample
+    passed
+]
+
+topic « escape.shell
+do [
+    str: {a long "string" + with \diffe\rent symbols.}
+    
+    sample1: new str
+    sample2: #[sample: new str]
+    
+    escape.shell 'sample1
+    escape.shell 'sample2\sample
+    ensure -> sample1 = sample2\sample
+    passed
+]
+
+topic « escape.xml
+do [
+    str: {a long "string" + with \diffe\rent symbols.}
+    
+    sample1: new str
+    sample2: #[sample: new str]
+    
+    escape.xml 'sample1
+    escape.xml 'sample2\sample
+    ensure -> sample1 = sample2\sample
+    passed
+]
+
+topic « indent
+do [
+    str: "one\ntwo\nthree"
+    
+    sample1: new str
+    sample2: #[sample: new str]
+    
+    indent 'sample1
+    indent 'sample2\sample
+    ensure -> sample1 = sample2\sample
+    passed
+]
+
+topic « indent.n
+do [
+    str: "one\ntwo\nthree"
+    
+    sample1: new str
+    sample2: #[sample: new str]
+    
+    indent.n: 10 'sample1
+    indent.n: 10 'sample2\sample
+    ensure -> sample1 = sample2\sample
+    passed
+]
+
+topic « indent.with
+do [
+    str: "one\ntwo\nthree"
+    
+    sample1: new str
+    sample2: #[sample: new str]
+    
+    indent.with: "#" 'sample1
+    indent.with: "#" 'sample2\sample
+    ensure -> sample1 = sample2\sample
+    passed
+]
+
+topic « indent.with.n
+do [
+    str: "one\ntwo\nthree"
+    
+    sample1: new str
+    sample2: #[sample: new str]
+    
+    indent.with: "#" .n: 10 'sample1
+    indent.with: "#" .n: 10 'sample2\sample
+    ensure -> sample1 = sample2\sample
+    passed
+]
+
+topic « join
+do [
+    blk: ["one" "two" "three"]
+    
+    sample1: new blk
+    sample2: #[sample: new blk]
+    
+    join 'sample1
+    join 'sample2\sample
+    ensure -> sample1 = sample2\sample
+    passed
+]
+
+topic « join.path
+do [
+    blk: ["one" "two" "three"]
+    
+    sample1: new blk
+    sample2: #[sample: new blk]
+    
+    join.path 'sample1
+    join.path 'sample2\sample
+    ensure -> sample1 = sample2\sample
+    passed
+]
+
+
+topic « outdent
+do [
+    str: {:
+        one
+            two
+            three
+    :}
+    
+    sample1: new str
+    sample2: #[sample: new str]
+    
+    outdent 'sample1
+    outdent 'sample2\sample
+    ensure -> sample1 = sample2\sample
+    passed
+]
+
+topic « outdent.n
+do [
+    str: {:
+        one
+            two
+            three
+    :}
+    
+    sample1: new str
+    sample2: #[sample: new str]
+    
+    outdent.n: 10 'sample1
+    outdent.n: 10 'sample2\sample
+    ensure -> sample1 = sample2\sample
+    passed
+]
+
+topic « outdent.with
+do [
+    str: {:
+        one
+            two
+            three
+    :}
+    
+    sample1: new str
+    sample2: #[sample: new str]
+    
+    outdent.with: "~" 'sample1
+    outdent.with: "~" 'sample2\sample
+    ensure -> sample1 = sample2\sample
+    passed
+]
+
+
+topic « pad
+do [
+    str: "good"
+    
+    sample1: new str
+    sample2: #[sample: new str]
+    
+    pad 'sample1 10
+    pad 'sample2\sample 10
+    ensure -> sample1 = sample2\sample
+    passed
+]
+
+topic « pad.right
+do [
+    str: "good"
+    
+    sample1: new str
+    sample2: #[sample: new str]
+    
+    pad.right 'sample1 10
+    pad.right 'sample2\sample 10
+    ensure -> sample1 = sample2\sample
+    passed
+]
+
+topic « pad.center
+do [
+    str: "good"
+    
+    sample1: new str
+    sample2: #[sample: new str]
+    
+    pad.center 'sample1 10
+    pad.center 'sample2\sample 10
+    ensure -> sample1 = sample2\sample
+    passed
+]
+
+topic « pad.with
+do [
+    str: "good"
+    
+    sample1: new str
+    sample2: #[sample: new str]
+    
+    pad.with: 'a' 'sample1 10
+    pad.with: 'a' 'sample2\sample 10
+    ensure -> sample1 = sample2\sample
+    passed
+]
+
+topic « render
+do [
+    x: 2
+    greeting: "hello"
+    str: "|greeting|, your number is |x|"
+    
+    sample1: new str
+    sample2: #[sample: new str]
+    
+    render 'sample1
+    render 'sample2\sample
+    ensure -> sample1 = sample2\sample
+    passed
+]
+
+topic « replace
+do [
+    str: "hello"
+    sample1: new str
+    sample2: #[sample: new str]
+    
+    replace 'sample1 "l" "x"
+    replace 'sample2\sample "l" "x"
+    ensure -> sample1 = sample2\sample
+    passed
+]
+
+do [
+    str: "hello"
+    sample1: new str
+    sample2: #[sample: new str]
+    
+    replace 'sample1 ["h" "o"] ["x" "z"]
+    replace 'sample2\sample ["h" "o"] ["x" "z"]
+    ensure -> sample1 = sample2\sample
+    passed
+]
+
+
+topic « strip
+do [
+
+    str: "     Hello World     "
+    
+    sample1: new str
+    sample2: #[sample: new str]
+    
+    strip 'sample1
+    strip 'sample2\sample
+    ensure -> sample1 = sample2\sample
+    passed
+]
+
+topic « strip.start
+do [
+
+    str: "     Hello World     "
+    
+    sample1: new str
+    sample2: #[sample: new str]
+    
+    strip.start 'sample1
+    strip.start 'sample2\sample
+    ensure -> sample1 = sample2\sample
+    passed
+]
+
+topic « strip.end
+do [
+
+    str: "     Hello World     "
+    
+    sample1: new str
+    sample2: #[sample: new str]
+    
+    strip.end 'sample1
+    strip.end 'sample2\sample
+    ensure -> sample1 = sample2\sample
+    passed
+]
+
+topic « strip.start.end
+do [
+
+    str: "     Hello World     "
+    
+    sample1: new str
+    sample2: #[sample: new str]
+    
+    strip.start.end 'sample1
+    strip.start.end 'sample2\sample
+    ensure -> sample1 = sample2\sample
+    passed
+]
+
+topic « translate
+do [
+
+    table: #[brown: "green" fox: "wolf" jumped:"flew" dog:"cat"]
+    
+    sample1: "the brown fox jumped over the lazy dog" 
+    sample2: #[sample: new sample1]
+    
+    translate 'sample1 table
+    translate 'sample2\sample table
+    ensure -> sample1 = sample2\sample
+    passed
+]
+
+
+topic « truncate
+
+do [
+    sample1: {Lorem ipsum dolor sit amet, consectetur adipiscing elit. In eget mauris non justo mattis dignissim. Cras in lobortis felis, id ultricies ligula. Curabitur egestas tortor sed purus vestibulum auctor. Cras dui metus, euismod sit amet suscipit et, cursus ullamcorper felis. Integer elementum condimentum neque, et sagittis arcu rhoncus sed. In luctus congue eros, viverra dapibus mi rhoncus non. Pellentesque nisl diam, auctor quis sapien nec, suscipit aliquam velit. Nam ac nisi justo.}
+    sample2: #[sample: new sample1]
+    truncate 'sample1 30
+    truncate 'sample2\sample 30
+    ensure -> sample1 = sample2\sample
+    passed
+]
+
+topic « truncate.preserve
+
+do [
+    sample1: {Lorem ipsum dolor sit amet, consectetur adipiscing elit. In eget mauris non justo mattis dignissim. Cras in lobortis felis, id ultricies ligula. Curabitur egestas tortor sed purus vestibulum auctor. Cras dui metus, euismod sit amet suscipit et, cursus ullamcorper felis. Integer elementum condimentum neque, et sagittis arcu rhoncus sed. In luctus congue eros, viverra dapibus mi rhoncus non. Pellentesque nisl diam, auctor quis sapien nec, suscipit aliquam velit. Nam ac nisi justo.}
+    sample2: #[sample: new sample1]
+    truncate.preserve 'sample1 30
+    truncate.preserve 'sample2\sample 30
+    ensure -> sample1 = sample2\sample
+    passed
+]
+
+topic « truncate.with: "---"
+
+do [
+    sample1: {Lorem ipsum dolor sit amet, consectetur adipiscing elit. In eget mauris non justo mattis dignissim. Cras in lobortis felis, id ultricies ligula. Curabitur egestas tortor sed purus vestibulum auctor. Cras dui metus, euismod sit amet suscipit et, cursus ullamcorper felis. Integer elementum condimentum neque, et sagittis arcu rhoncus sed. In luctus congue eros, viverra dapibus mi rhoncus non. Pellentesque nisl diam, auctor quis sapien nec, suscipit aliquam velit. Nam ac nisi justo.}
+    sample2: #[sample: new sample1]
+    truncate.with: "---" 'sample1 30
+    truncate.with: "---" 'sample2\sample 30
+    ensure -> sample1 = sample2\sample
+    passed
+]
+
+topic « truncate.preserve.with: "---"
+
+do [
+    sample1: {Lorem ipsum dolor sit amet, consectetur adipiscing elit. In eget mauris non justo mattis dignissim. Cras in lobortis felis, id ultricies ligula. Curabitur egestas tortor sed purus vestibulum auctor. Cras dui metus, euismod sit amet suscipit et, cursus ullamcorper felis. Integer elementum condimentum neque, et sagittis arcu rhoncus sed. In luctus congue eros, viverra dapibus mi rhoncus non. Pellentesque nisl diam, auctor quis sapien nec, suscipit aliquam velit. Nam ac nisi justo.}
+    sample2: #[sample: new sample1]
+    truncate.preserve.with: "---" 'sample1 30
+    truncate.preserve.with: "---" 'sample2\sample 30
+    ensure -> sample1 = sample2\sample
+    passed
+]
+
+
+topic « wordwrap
+
+do [
+    sample1: {Lorem ipsum dolor sit amet, consectetur adipiscing elit. In eget mauris non justo mattis dignissim. Cras in lobortis felis, id ultricies ligula. Curabitur egestas tortor sed purus vestibulum auctor. Cras dui metus, euismod sit amet suscipit et, cursus ullamcorper felis. Integer elementum condimentum neque, et sagittis arcu rhoncus sed. In luctus congue eros, viverra dapibus mi rhoncus non. Pellentesque nisl diam, auctor quis sapien nec, suscipit aliquam velit. Nam ac nisi justo.}
+    sample2: #[sample: new sample1]
+    wordwrap 'sample1
+    wordwrap 'sample2\sample
+    ensure -> sample1 = sample2\sample
+    passed
+]
+
+topic « wordwrap.at
+do [
+    sample1: {Lorem ipsum dolor sit amet, consectetur adipiscing elit. In eget mauris non justo mattis dignissim. Cras in lobortis felis, id ultricies ligula. Curabitur egestas tortor sed purus vestibulum auctor. Cras dui metus, euismod sit amet suscipit et, cursus ullamcorper felis. Integer elementum condimentum neque, et sagittis arcu rhoncus sed. In luctus congue eros, viverra dapibus mi rhoncus non. Pellentesque nisl diam, auctor quis sapien nec, suscipit aliquam velit. Nam ac nisi justo.}
+    sample2: #[sample: new sample1]
+    wordwrap.at: 40 'sample1
+    wordwrap.at: 40 'sample2\sample
+
+    ensure -> sample1 = sample2\sample
+    passed
+]
+

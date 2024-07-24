@@ -1,0 +1,20 @@
+maximumAdjacentDifference: function [L][
+    result: [[[] 0]]
+
+    loop 0..(size L)-2 'a [
+        diff: abs (y: <= L\[a+1]) - (x: <= L\[a])
+
+        if diff >= last maximum result => last ->
+            result: (select result 'x -> diff = last x) ++ @[@[@[x,y], diff]]
+    ]
+    maxLen: result\0\1
+    result: @[unique map result 'x -> first x, maxLen]
+    return result
+]
+
+lst: @[1,8,2,neg 3,0,1,1,neg 2.3,0,5.5,8,6,2,9,11,10,3]
+
+diffs: maximumAdjacentDifference lst
+
+loop diffs\0 'd ->
+    print [d "->" diffs\1]

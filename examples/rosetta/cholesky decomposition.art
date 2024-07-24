@@ -1,0 +1,36 @@
+cholesky: function [m][
+    result: array.of: @[size m, size m] 0.0
+
+    loop 0..dec size m\0 'i [
+        loop 0..i 'j [
+            s: 0.0
+            loop 0..j 'k ->
+                s: s + result\[i]\[k] * result\[j]\[k]
+
+            result\[i]\[j]: (i = j)? -> sqrt m\[i]\[i] - s
+                                     -> (1.0 // result\[j]\[j]) * (m\[i]\[j] - s)
+        ]
+    ]
+    return result
+]
+
+printMatrix: function [a]->
+    loop a 'b ->
+        print to [:string] .format:"8.5f" b
+
+m1: @[
+    @[25.0, 15.0, neg 5.0]
+    @[15.0, 18.0,  0.0]
+    @[neg 5.0,  0.0, 11.0]
+]
+printMatrix cholesky m1
+
+print ""
+
+m2: [
+    [18.0, 22.0,  54.0,  42.0]
+    [22.0, 70.0,  86.0,  62.0]
+    [54.0, 86.0, 174.0, 134.0]
+    [42.0, 62.0, 134.0, 106.0]
+]
+printMatrix cholesky m2

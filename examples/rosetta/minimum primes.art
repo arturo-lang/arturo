@@ -1,0 +1,8 @@
+lists: [
+    [ 5 45 23 21 67]
+    [43 22 78 46 38]
+    [ 9 98 12 54 53]
+]
+
+print map 0..dec size first lists 'i ->
+    first select.first (max map lists 'l -> l\[i])..∞ => prime?

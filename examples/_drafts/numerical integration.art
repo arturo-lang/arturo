@@ -1,0 +1,80 @@
+leftRect:  function [f, x, h]-> f ?? -> call f @[x] -> x
+midRect:   function [f, x, h]-> f ?? -> call f @[x + h/2.0] -> x + h/2.0
+rightRect: function [f, x, h]-> f ?? -> call f @[x + h] -> x + h
+trapezium: function [f, x, h]-> f ?? -> ((call f @[x]) + (call f @[x+h])) / 2.0 -> (x + x+h)/2.0
+simpson:   function [f, x, h]-> f ?? -> ((call f @[x]) + (call f @[x+h]) + 4.0*(call f @[x+h/2.0])) / 6.0 -> (x + x+h + 4.0*(x+h/2.0))/6.0
+
+cube:   function [x]-> x ^ 3
+recip:  function [x]-> 1.0 / x
+ident:  function [x]-> x
+
+; proc leftRect(f: Function; x, h: float): float =
+;   f(x)
+
+; proc midRect(f: Function; x, h: float): float =
+;   f(x + h/2.0)
+
+; proc rightRect(f: Function; x, h: float): float =
+;   f(x + h)
+
+; proc trapezium(f: Function; x, h: float): float =
+;   (f(x) + f(x+h)) / 2.0
+
+; proc simpson(f: Function, x, h: float): float =
+;   (f(x) + 4.0*f(x+h/2.0) + f(x+h)) / 6.0
+
+; proc cube(x: float): float =
+;   x * x * x
+
+; proc reciprocal(x: float): float =
+;   1.0 / x
+
+; proc identity(x: float): float =
+;   x
+
+integrate: function [f, a, b, steps, meth][
+    result: 0.0
+    h: (b-a) / to :floating steps
+    if? meth='ident [
+        loop 0..dec steps 'i ->
+            result: result + call meth @[null, a + (to :floating i) * h, h]
+    ]
+    else [
+        loop 0..dec steps 'i ->
+            result: result + call meth @[f, a + (to :floating i) * h, h]
+    ]
+    return h * result
+]
+
+; proc integrate(f: Function; a, b: float; steps: int; meth: Rule): float =
+;   let h = (b-a) / float(steps)
+;   for i in 0 ..< steps:
+;     result += meth(f, a+float(i)*h, h)
+;   result = h * result
+
+loop [
+        ["cube", 0, 1, 100, 'cube]
+        ["reciprocal", 1, 100, 1000, 'recip]
+        ["identity", 0, 100, 1000, 'ident]
+        ["identity", 0, 100, 1000, 'ident]
+] 'items [
+    [fName, a, b, steps, fun]: items
+
+    loop ['leftRect, 'midRect, 'rightRect, 'trapezium, 'simpson] 'rule [
+        print [fName "integrated using" rule]
+        print ["  from" a "to" b "(steps: " steps ") =" integrate fun to :floating a to :floating b steps rule]
+    ]
+]
+
+; for fName, a, b, steps, fun in items(
+;    [("cube", 0, 1, 100, cube),
+;     ("reciprocal", 1, 100, 1000, reciprocal),
+;     ("identity", 0, 5000, 5_000_000, identity),
+;     ("identity", 0, 6000, 6_000_000, identity)]):
+
+;   for rName, rule in items({"leftRect": leftRect, "midRect": midRect,
+;       "rightRect": rightRect, "trapezium": trapezium, "simpson": simpson}):
+
+;     echo fName, " integrated using ", rName
+;     echo "  from ", a, " to ", b, " (", steps, " steps) = ",
+;       integrate(fun, float(a), float(b), steps, rule)

@@ -1,0 +1,22 @@
+degToRad: function [deg]-> deg * pi // 180
+radToDeg: function [rad]-> rad * 180 // pi
+ 
+lat: to :floating input "Enter latitude       => "
+lng: to :floating input "Enter longitude      => "
+med: to :floating input "Enter legal meridian => "
+print ""
+ 
+slat: sin degToRad lat
+
+print "    sine of latitude:   " ++ to :string .format:".3f" slat
+print "    diff longitude:     " ++ to :string .format:".3f" lng-med
+print ""
+print "Hour, sun hour angle, dial hour line angle from 6am to 6pm"
+ 
+loop (neg 6)..6 'h [
+    hra: med + (to :floating 15*h) - lng
+    hla: radToDeg atan slat * tan degToRad hra
+    print "HR=" ++ (to :string .format:"3d" h) ++ "; " ++
+          "HRA=" ++ (to :string .format:"7.3f" hra) ++ "; " ++
+          "HLA=" ++ (to :string .format:"7.3f" hla)
+]

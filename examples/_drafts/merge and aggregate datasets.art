@@ -1,0 +1,61 @@
+; MISSING `<` and `>` operators for dates!
+
+patients: {:
+PATIENT_ID,LASTNAME
+1001,Hopper
+4004,Wirth
+3003,Kemeny
+2002,Gosling
+5005,Kurtz
+:}
+
+visits: {:
+PATIENT_ID,VISIT_DATE,SCORE
+2002,2020-09-10,6.8
+1001,2020-09-17,5.5
+4004,2020-09-24,8.4
+2002,2020-10-08,
+1001,,6.6
+3003,2020-11-12,
+4004,2020-11-05,7.0
+1001,2020-11-19,5.3
+:}
+
+mergeDatasets: function [d1, d2][
+    getEntry: function [id][
+        loop.with:'i result 'row [
+            if row\["PATIENT_ID"] = id [
+                return i
+            ]
+        ]
+    ]
+    result: []
+    loop d1 'row ->
+        'result ++ #[
+            "PATIENT_ID": row\["PATIENT_ID"]
+            LASTNAME: row\LASTNAME
+            "LAST_VISIT": ""
+            "SCORE_SUM": 0
+            "SCORE_AVG": 0,
+            "SCORE_CNT": 0
+        ]
+
+    loop d2 'r [
+        e: getEntry r\["PATIENT_ID"]
+        inspect r
+        if not? empty? r\SCORE [
+            result\[e]\["SCORE_CNT"]: result\[e]\["SCORE_CNT"] + 1
+            result\[e]\["SCORE_SUM"]: result\[e]\["SCORE_SUM"] + to :floating r\SCORE
+            result\[e]\["SCORE_AVG"]: (result\[e]\["SCORE_AVG"] + to :floating r\SCORE) // result\[e]\["SCORE_CNT"]
+            if result\[e]\["LAST_VISIT"]="" 
+            result\[e]\["LAST_VISIT"]: r\["VISIT_DATE"]
+        ]
+    ]
+    return result
+]
+
+inspect read.csv.withHeaders patients
+inspect read.csv.withHeaders visits
+
+inspect mergeDatasets read.csv.withHeaders patients
+                      read.csv.withHeaders visits

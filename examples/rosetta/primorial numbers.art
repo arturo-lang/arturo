@@ -1,0 +1,15 @@
+; by @Krenium
+
+primes: [2] ++ select.first: 99999 range.step: 2 3 ∞ => prime?
+
+primorial: function [n][
+    if 0 = n -> return 1
+    product take primes n
+]
+
+print "First ten primorials:"
+loop 0..9 => [print primorial &]
+print ""
+loop 1..5 'm -> print [
+    "primorial" 10^m "has" size ~"|primorial 10^m|" "digits"
+]

@@ -28,3 +28,8 @@ false
 :string
 1.2.3
 :version
+true
+true
+true
+true
+true

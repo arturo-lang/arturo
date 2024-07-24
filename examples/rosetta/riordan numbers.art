@@ -1,0 +1,11 @@
+riordan: function [n].memoize[
+    if zero? n -> return 1
+    if one? n -> return 0
+
+    return ((n-1) * ((2*riordan n-1) + 3*riordan n-2)) / n+1
+]
+
+riordans: map 0..31 => riordan
+
+loop split.every: 4 riordans 'x ->
+    print map x 's -> pad to :string s 13

@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2023 Yanis Zafirópulos
+# (c) 2019-2024 Yanis Zafirópulos
 #
 # @file: vm/profiler.nim
 #=======================================================
@@ -14,7 +14,7 @@
 ## Profiler for the Arturo VM.
 ## 
 ## To enable, compile with: 
-## `./build.nims install profiler`
+## `./build.nims build profiler`
 
 when defined(PROFILER):
     {.push profiler: off.}

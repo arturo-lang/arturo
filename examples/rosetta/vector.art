@@ -1,0 +1,36 @@
+; by @Krenium
+
+define :vector [
+    init: method [x,y][
+        this\x: x
+        this\y: y
+    ]
+    
+    add: method [that :vector][
+        to :vector @[this\x + that\x, this\y + that\y]
+    ]
+
+    sub: method [that :vector][
+        to :vector @[this\x - that\x, this\y - that\y]
+    ]
+
+    mul: method [n :integer][
+        to :vector @[this\x * n, this\y * n]
+    ]
+
+    div: method [n :integer][
+        to :vector @[this\x // n, this\y // n]
+    ]
+
+    string: method [][
+        render "(|this\x|, |this\y|)"
+    ]
+]
+
+; test our vector object
+a: to :vector [5 7]
+b: to :vector [2 3]
+print [a '+ b '= a + b]
+print [a '- b '= a - b]
+print [a '* 11 '= a * 11]
+print [a '/ 11 '= a / 2]

@@ -1,4 +1,4 @@
-define :circle [x y r][]
+define :circle [x y r]
  
 solveApollonius: function [c1 c2 c3 s1 s2 s3][
     v11: sub 2*c2\x 2*c1\x
