@@ -46,6 +46,7 @@ const
     clAloeVeraGreen* = VColor(0x98F516FF)
     clAntiqueBronze* = VColor(0x665D1EFF)
     clAntiqueWhite* = VColor(0xFAEBD7FF)
+    clAqua* = VColor(0x00FFFFFF)
     clAquamarine* = VColor(0x7FFFD4FF)
     clAquamarineStone* = VColor(0x348781FF)
     clArmyBrown* = VColor(0x827B60FF)
@@ -188,7 +189,7 @@ const
     clDarkCyan* = VColor(0x008B8BFF)
     clDarkForestGreen* = VColor(0x254117FF)
     clDarkGoldenRod* = VColor(0xB8860BFF)
-    clDarkGray* = VColor(0x3A3B3CFF)
+    clDarkGray* = VColor(0xA9A9A9FF)
     clDarkGreen* = VColor(0x006400FF)
     clDarkHotPink* = VColor(0xF660ABFF)
     clDarkKhaki* = VColor(0xBDB76BFF)
@@ -208,7 +209,7 @@ const
     clDarkSienna* = VColor(0x8A4117FF)
     clDarkSlate* = VColor(0x2B3856FF)
     clDarkSlateBlue* = VColor(0x483D8BFF)
-    clDarkSlateGray* = VColor(0x25383CFF)
+    clDarkSlateGray* = VColor(0x2F4F4FFF)
     clDarkTurquoise* = VColor(0x00CED1FF)
     clDarkViolet* = VColor(0x9400D3FF)
     clDarkYellow* = VColor(0x8B8000FF)
@@ -260,6 +261,7 @@ const
     clForestGreen* = VColor(0x228B22FF)
     clFrenchLilac* = VColor(0x86608EFF)
     clFrogGreen* = VColor(0x99C68EFF)
+    clFuchsia* = VColor(0xFF00FFFF)
     clGainsboro* = VColor(0xDCDCDCFF)
     clGhostWhite* = VColor(0xF8F8FFFF)
     clGingerBrown* = VColor(0xC9BE62FF)
@@ -356,7 +358,7 @@ const
     clLightSlate* = VColor(0xCCFFFFFF)
     clLightSlateBlue* = VColor(0x736AFFFF)
     clLightSlateGray* = VColor(0x778899FF)
-    clLightSteelBlue* = VColor(0xB0CFDEFF)
+    clLightSteelBlue* = VColor(0xB0C4DEFF)
     clLightWhite* = VColor(0xFFFFF7FF)
     clLightYellow* = VColor(0xFFFFE0FF)
     clLilac* = VColor(0xC8A2C8FF)
@@ -624,6 +626,7 @@ const
         ("aloeVeraGreen", clAloeVeraGreen),
         ("antiqueBronze", clAntiqueBronze),
         ("antiqueWhite", clAntiqueWhite),
+        ("aqua", clAqua),
         ("aquamarine", clAquamarine),
         ("aquamarineStone", clAquamarineStone),
         ("armyBrown", clArmyBrown),
@@ -767,7 +770,6 @@ const
         ("darkForestGreen", clDarkForestGreen),
         ("darkGoldenRod", clDarkGoldenRod),
         ("darkGray", clDarkGray),
-        ("darkGray", clDarkGray),
         ("darkGreen", clDarkGreen),
         ("darkHotPink", clDarkHotPink),
         ("darkKhaki", clDarkKhaki),
@@ -839,6 +841,7 @@ const
         ("forestGreen", clForestGreen),
         ("frenchLilac", clFrenchLilac),
         ("frogGreen", clFrogGreen),
+        ("fuchsia", clFuchsia),
         ("gainsboro", clGainsboro),
         ("ghostWhite", clGhostWhite),
         ("gingerBrown", clGingerBrown),
