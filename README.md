@@ -182,7 +182,6 @@ We have different options for you:
 
 - [GitHub Sponsors](https://github.com/sponsors/drkameleon)
 - [Patreon](https://patreon.com/arturolang)
-- [OpenCollective](https://opencollective.com/arturo-lang)
 
 You may also donate [via Bitcoin](https://blockchain.info/address/bc1qpjlmktrz79muz4yksm8aadz3d3srh0rmnn3hhd):
 
