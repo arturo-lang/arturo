@@ -191,10 +191,19 @@ You may also donate [via Bitcoin](https://blockchain.info/address/bc1qpjlmktrz79
 
 Every little bit counts and the least we could do is to thank you all for your help and making us stick to the project:
 
-#### Silver sponsors 🩶
+<div align="center">
+<h4>🩶 Silver sponsors</h4>
 
-<a href="https://github.com/hcengineering"><img align="center" width="100" src="https://avatars.githubusercontent.com/u/87086734?s=200&v=4"/></a>
+<a href="https://github.com/hcengineering"><img align="center" width="100" src="https://avatars.githubusercontent.com/u/87086734?s=200&v=4"/><br><b>Huly® Platform™</b></a>
+</div>
 
+<div align="center">
+<h4>🥉 Bronze sponsors</h4>
+
+<a href="https://github.com/BNAndras"><img align="center" width="50" src="https://avatars.githubusercontent.com/u/20251272?v=4"/></a>
+</div>
+
+-----------------------------
 
 License
 ------------------------------
