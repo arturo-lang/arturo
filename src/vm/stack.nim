@@ -42,7 +42,12 @@ var
 
 # Main stack
 
-template push*(v: Value) = 
+proc push*(v: Value) = 
+    # TODO(Stack/push) performance enhancements?
+    #  this was a `template` that we converted into a `proc` so that
+    #  we could get the whole project to compile with Nim 2.0.8
+    #  does it make any sense performance-wise?
+    #  labels: vm, stack, enhancement, performance, benchmark
     ## push given value onto the stack
     hookProcProfiler("stack/push"):
         Stack[SP] = v
