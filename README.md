@@ -187,6 +187,15 @@ You may also donate [via Bitcoin](https://blockchain.info/address/bc1qpjlmktrz79
 
 <img width="150" src="docs/images/bitc.png"/>
 
+### Sponsors
+
+Every little bit counts and the least we could do is to thank you all for your help and making us stick to the project:
+
+#### Silver sponsors 🩶
+
+<a href="https://github.com/hcengineering"><img align="center" width="100" src="https://avatars.githubusercontent.com/u/87086734?s=200&v=4"/></a>
+
+
 License
 ------------------------------
 
