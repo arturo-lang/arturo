@@ -24,7 +24,7 @@ when not defined(WEB):
 import vm/[checks, errors, eval, exec, parse, stack]
 
 import vm/values/[value, printable]
-import vm/values/custom/[vbinary, vcolor, verror, vlogical, vrange, vrational]
+import vm/values/custom/[vbinary, vcolor, verror, vlogical, vquantity, vrange, vrational]
 
 #=======================================
 # Constants
