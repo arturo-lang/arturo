@@ -199,13 +199,10 @@ proc defineLibrary*() =
             x: 2
             y: 3
             
-            if? nand? x=2 y=3 [
-                print "yep, that's correct!"]
-            ]
-            else [
-                print "nope, that's not correct"
-            ]
-            
+            switch nand? x=2 y=3 
+                -> print "yep, that's correct!"
+                -> print "nope, that's not correct
+
             ; nope, that's not correct
         """:
             #=======================================================
@@ -250,13 +247,10 @@ proc defineLibrary*() =
             x: 2
             y: 3
             
-            if? nor? x>2 y=3 [
-                print "yep, that's correct!"]
-            ]
-            else [
-                print "nope, that's not correct"
-            ]
-            
+            switch nor? x>2 y=3
+                -> print "yep, that's correct!"
+                -> print "nope, that's not correct
+
             ; nope, that's not correct
         """:
             #=======================================================
@@ -395,14 +389,11 @@ proc defineLibrary*() =
             x: 2
             y: 3
             
-            if? xnor? x=2 y=3 [
-                print "yep, that's correct!"]
-            ]
-            else [
-                print "nope, that's not correct"
-            ]
+            switch xnor? x=2 y=3
+                -> print "yep, that's correct!"
+                -> print "nope, that's not correct
             
-            ; yep, that's not correct
+            ; yep, that's correct!
         """:
             #=======================================================
             var a: VLogical
@@ -436,12 +427,9 @@ proc defineLibrary*() =
             x: 2
             y: 3
             
-            if? xor? x=2 y=3 [
-                print "yep, that's correct!"]
-            ]
-            else [
-                print "nope, that's not correct"
-            ]
+            switch xor? x=2 y=3
+                -> print "yep, that's correct!"
+                -> print "nope, that's not correct
             
             ; nope, that's not correct
         """:
