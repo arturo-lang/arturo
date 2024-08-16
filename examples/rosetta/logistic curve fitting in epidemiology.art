@@ -40,17 +40,15 @@ solve: function [fn][
     while [and? -> delta > eps 
                 -> result <> result - delta][
         nf: call fn @[result-delta]
-        if? nf < f0 [
+        switch nf < f0 [
             f0: nf
             result: result - delta
-        ]
-        else [
+        ][
             nf: call fn @[result+delta]
-            if? nf < f0 [
+            switch nf < f0 [
                 f0: nf
                 result: result + delta
-            ]
-            else [
+            ][
                 factor: 0.5
             ]
         ]
