@@ -45,8 +45,8 @@ The language has been designed following some very simple and straightforward pr
 
 ```red
 factorial: function [n][
-	if? n > 0 -> n * factorial n-1
-	else 	  -> 1
+	switch n > 0 -> n * factorial n-1
+	             -> 1
 ] 
 
 loop 1..19 [x]->
