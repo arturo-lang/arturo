@@ -214,13 +214,12 @@ runGame: $[sampleTable :block][
             -> endGame "Exiting game..."
 
         validInp: validInput? command
-        if? validInp [
+        switch validInp [
             validMov: validMovement? game command
             (validMov)?
                 -> movePlayer game command
                 -> printWrongMovement command
-        ] else
-            -> printWrongInput command
+        ] -> printWrongInput command
 
         if sampleTable = game
             -> endGame "Congratulations! You won!"

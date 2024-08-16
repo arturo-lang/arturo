@@ -9,11 +9,11 @@ almostPrime: function [k, listLen][
         n: test
 
         while [i =< n][
-            if? zero? n % i [
+            switch zero? n % i [
                 n: n / i
                 m: m + 1
             ]
-            else -> i: i + 1
+            -> i: i + 1
         ]
         if m = k [
             'result ++ test
