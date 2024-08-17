@@ -1378,17 +1378,16 @@ proc defineLibrary*() =
         example     = """
         """:
             #=======================================================
-            echo "executing when"
+            let stop = SP
+            execUnscoped(y)
+            let arr: ValueArray = sTopsFrom(stop)
+            SP = stop
+
             var i = 0
-            while i < y.a.len-1:
-                echo "echo checking element:" 
-                echo Dumper(y.a[i])
-                if x == y.a[i]:
-                    echo "Yes, it's equal!"
+            while i < arr.len-1:
+                if x == arr[i]:
                     handleBranching:
-                        echo "executing block!"
-                        let evaled = evalOrGet(y.a[i+1])
-                        execUnscoped(evaled)
+                        execUnscoped(arr[i+1])
                     do:
                         break
                 i += 2
