@@ -15,12 +15,11 @@ samples: #[]
 loop 1..nofTrials 'x [
     z: random 0.0 1.0
     loop probabilities [item,prob][
-        if? z < prob [
+        switch z < prob [
             unless key? samples item -> samples\[item]: 0
             samples\[item]: samples\[item] + 1
             break
-        ]
-        else [
+        ][
             z: z - prob
         ]
     ]

@@ -22,6 +22,6 @@ parseConfig: function [f][
 ]
 
 loop parseConfig relative "config.file" [k,v][
-    if? block? v -> print [k "->" join.with:", " v]
-    else -> print [k "->" v]
+    switch block? v -> print [k "->" join.with:", " v]
+                    -> print [k "->" v]
 ]

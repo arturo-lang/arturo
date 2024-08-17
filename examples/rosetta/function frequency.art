@@ -8,10 +8,9 @@ inspectBlock: function [blk][
                 sItem: to :string item
                 if set? sItem ->
                     if function? var sItem [
-                        if? key? frequencies sItem ->
-                            set frequencies sItem (get frequencies sItem)+1
-                        else ->
-                            set frequencies sItem 1
+                        switch key? frequencies sItem 
+                            -> set frequencies sItem (get frequencies sItem)+1
+                            -> set frequencies sItem 1
                     ]
             ]
 

@@ -2,11 +2,10 @@ isBalanced: function [s][
 	cnt: 0
  
 	loop split s [ch][
-		if? ch="]" [
+		switch ch="]" [
 			cnt: cnt-1
 			if cnt<0 -> return false
-		]
-		else [
+		][
 			if ch="[" -> cnt: cnt+1
 		]
     ]
@@ -19,6 +18,6 @@ loop 1..10 'i [
 	
 	prints str
 
-	if? isBalanced str  -> print " OK"
-	else 				-> print " Not OK"
+	switch isBalanced str  -> print " OK"
+						   -> print " Not OK"
 ]
