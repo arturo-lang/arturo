@@ -1378,14 +1378,19 @@ proc defineLibrary*() =
         example     = """
         """:
             #=======================================================
+            echo "executing when"
             var i = 0
             while i < y.a.len-1:
+                echo "echo checking element:" 
+                echo Dumper(y.a[i])
                 if x == y.a[i]:
+                    echo "Yes, it's equal!"
                     handleBranching:
-                        execUnscoped(y.a[i+1])
+                        echo "executing block!"
+                        let evaled = evalOrGet(y.a[i+1])
+                        execUnscoped(evaled)
                     do:
-                        discard
-                    break
+                        break
                 i += 2
 
     builtin "while",
