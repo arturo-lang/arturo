@@ -1362,6 +1362,32 @@ proc defineLibrary*() =
             else:
                 push(FetchPathSym(x.p))
 
+    builtin "when",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "match given argument to different values and execute corresponding block",
+        args        = {
+            "argument"  : {Any},
+            "matches"   : {Block}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        # TODO(Core/when) Add documentation example
+        #  labels: library, documentation, easy
+        example     = """
+        """:
+            #=======================================================
+            var i = 0
+            while i < y.a.len-1:
+                if x == y.a[i]:
+                    handleBranching:
+                        execUnscoped(y.a[i+1])
+                    do:
+                        discard
+                    break
+                i += 2
+
     builtin "while",
         alias       = unaliased, 
         op          = opWhile,
