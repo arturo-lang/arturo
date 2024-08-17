@@ -1383,6 +1383,10 @@ proc defineLibrary*() =
             let arr: ValueArray = sTopsFrom(stop)
             SP = stop
 
+            prepareLeaklessOne("else")
+
+            SetSym("else", x)
+
             var i = 0
             while i < arr.len-1:
                 if x == arr[i]:
@@ -1391,6 +1395,8 @@ proc defineLibrary*() =
                     do:
                         break
                 i += 2
+
+            finalizeLeaklessOne("else")
 
     builtin "while",
         alias       = unaliased, 
