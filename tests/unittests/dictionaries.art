@@ -71,10 +71,9 @@ do [
     print b
 ]
 
-if? set? 'b [
+switch set? 'b [
 	print b
-]
-else [
+][
 	print "b: not set -> NOT CORRECT"
 ]
 

@@ -599,10 +599,9 @@ proc defineLibrary*() =
                 ;; }
 
                 mult?: attr 'mult
-                if? not? null? mult? ->
-                    return mult? * x + y
-                else ->
-                    return x + y
+                switch not? null? mult? 
+                    -> return mult? * x + y
+                    -> return x + y
             ]
 
             info'addThem
@@ -633,8 +632,8 @@ proc defineLibrary*() =
             ..........
             ; memoization
             fib: $[x].memoize[
-                if? x<2 [1]
-                else [(fib x-1) + (fib x-2)]
+                switch x<2 -> 1
+                           -> (fib x-1) + (fib x-2)
             ]
 
             loop 1..25 [x][

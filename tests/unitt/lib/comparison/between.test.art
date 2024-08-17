@@ -41,6 +41,8 @@ suite "Test generic assertions" [
 
 
 suite "Test numeric-like values" [
+    ; CAUTION: This test seems to be failing randomly
+    ; We have to make sure the results are consistent!
 
     test.prop "start < middle < end, for deterministic operations"  [
         limit: 100000000
