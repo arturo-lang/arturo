@@ -1378,14 +1378,13 @@ proc defineLibrary*() =
         example     = """
         """:
             #=======================================================
+            prepareLeaklessOne("else")
+            SetSym("else", x)
+
             let stop = SP
             execUnscoped(y)
             let arr: ValueArray = sTopsFrom(stop)
             SP = stop
-
-            prepareLeaklessOne("else")
-
-            SetSym("else", x)
 
             var i = 0
             while i < arr.len-1:
@@ -1396,7 +1395,7 @@ proc defineLibrary*() =
                         break
                 i += 2
 
-            finalizeLeaklessOne("else")
+            finalizeLeaklessOne()
 
     builtin "while",
         alias       = unaliased, 
