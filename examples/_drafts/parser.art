@@ -37,8 +37,8 @@ parse: function [in,rules][
     while [i < size rules][
         rule: rules \ i
         item: in \ pos
-        case [(type rule)=]
-            when? [:type][
+        when type rule [
+            :type [
                 if rule <> type item -> return false
                 if (i+1) < size rules [
                     if inline? rules \ i+1 [
@@ -51,6 +51,7 @@ parse: function [in,rules][
             else [
                 print ["found something else:" rule]
             ]
+        ]
         i: i + 1
         pos: pos + 1
     ]
