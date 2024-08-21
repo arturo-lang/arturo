@@ -9,11 +9,11 @@ parseConfig: function [f][
         rest: strip replace line field ""
         parts: select map split.by:"," rest => strip 'part -> not? empty? part
 
-        val: null
-        case [(size parts)]
-            when? [= 0] -> val: true
-            when? [= 1] -> val: first parts
-            else -> val: parts
+        val: when size parts [
+            0       -> true
+            1       -> first parts
+            else    -> parts
+        ]
 
         result\[lower field]: val
     ]
