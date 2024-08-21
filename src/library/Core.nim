@@ -1386,8 +1386,11 @@ proc defineLibrary*() =
             let arr: ValueArray = sTopsFrom(stop)
             SP = stop
 
+            echo "unstacked " & $(arr.len) & " values..."
+
             var i = 0
             while i < arr.len-1:
+                echo "trying " & $(i)
                 if x == arr[i]:
                     handleBranching:
                         execUnscoped(arr[i+1])
