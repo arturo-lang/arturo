@@ -278,7 +278,10 @@ proc getLocalVersionsInPath(path: string): seq[VersionLocation] =
             echo "and name: |" & name & "|"
             echo "and ext:  |" & ext  & "|"
             if name != ".DS_Store":
+                echo "it's not a DS_Store, adding"
                 result.add((filepath, newVVersion(name & ext)))
+            else:
+                echo "it's a DSStore!?"
         else:
             result.add((filepath, newVVersion(name & ext)))
 
@@ -327,9 +330,16 @@ proc downloadPackageSourceInto*(url: string, target: string) =
     removeDir(target) # delete it, just in case
     newHttpClient().downloadFile(url, PackageTmpZip.fmt)
     let files = miniz.unzipAndGetFiles(PackageTmpZip.fmt, TmpFolder.fmt)
+    for fl in files:
+        echo "file >> " & $(fl)
+        echo ".. splitFile: " & $(splitFile(fl))
+        echo ".. splitPath: " & $(splitPath(fl))
+    echo "first file: " & files[0]
     let (actualSubFolder, _, _) = splitFile(files[0])
     let actualFolder = TmpFolder.fmt / actualSubFolder
+    echo "actualFolder: " & actualFolder
     createDir(target) # make sure the path (and all subdirs) exist
+
     moveDir(actualFolder, target)
     discard tryRemoveFile(PackageTmpZip.fmt)
 
