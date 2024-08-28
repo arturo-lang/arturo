@@ -123,7 +123,6 @@ func newVVersion*(v: string): VVersion =
             extraPart = ""
 
     let parts: seq[string] = numPart.split(".")
-
     result = VVersion(
         major: parseInt(parts[0]),
         minor: parseInt(parts[1]),
