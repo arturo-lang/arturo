@@ -330,12 +330,16 @@ proc downloadPackageSourceInto*(url: string, target: string) =
     removeDir(target) # delete it, just in case
     newHttpClient().downloadFile(url, PackageTmpZip.fmt)
     let files = miniz.unzipAndGetFiles(PackageTmpZip.fmt, TmpFolder.fmt)
-    for fl in files:
-        echo "file >> " & $(fl)
-        echo ".. splitFile: " & $(splitFile(fl))
-        echo ".. splitPath: " & $(splitPath(fl))
-    echo "first file: " & files[0]
-    let (actualSubFolder, _, _) = splitFile(files[0])
+
+    let actualSubFolder = (toSeq(parentDirs(files[0])))[^1]
+    # for fl in files:
+    #     echo "file >> " & $(fl)
+    #     echo ".. splitFile  : " & $(splitFile(fl))
+    #     echo ".. splitPath  : " & $(splitPath(fl))
+    #     echo ".. parentDir  : " & $(parentDir(fl))
+    #     echo ".. parentDirs : " & $(toSeq(parentDirs(fl)))
+    # echo "first file: " & files[0]
+    # let (actualSubFolder, _, _) = splitFile(files[0])
     let actualFolder = TmpFolder.fmt / actualSubFolder
     echo "actualFolder: " & actualFolder
     createDir(target) # make sure the path (and all subdirs) exist
