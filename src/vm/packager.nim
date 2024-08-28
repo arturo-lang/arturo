@@ -268,12 +268,28 @@ proc getLocalVersionsInPath(path: string): seq[VersionLocation] =
     ## Get a sorted list of all cached versions found
     ## for a given package, using path
 
-    return (toSeq(walkDir(path))).map(
-            proc (vers: tuple[kind: PathComponent, path: string]): VersionLocation = 
-                let filepath = vers.path
-                let (_, name, ext) = splitFile(filepath)
-                (filepath, newVVersion(name & ext))
-        ).sorted(proc (a: VersionLocation, b: VersionLocation): int = cmp(a.ver, b.ver), order=SortOrder.Descending)
+    for vers in walkDir(path):
+        let filepath = vers.path
+        let (_, name, ext) = splitFile(filepath)
+
+        when defined(macosx):
+            if name != ".DS_Store":
+                result.add((filepath, newVVersion(name & ext)))
+        else:
+            result.add((filepath, newVVersion(name & ext)))
+
+    result = result.sorted(
+        proc (a: VersionLocation, b: VersionLocation): int = 
+            cmp(a.ver, b.ver)
+        ,order=SortOrder.Descending)
+
+
+    # return (toSeq(walkDir(path))).map(
+    #         proc (vers: tuple[kind: PathComponent, path: string]): VersionLocation = 
+    #             let filepath = vers.path
+    #             let (_, name, ext) = splitFile(filepath)
+    #             (filepath, newVVersion(name & ext))
+    #     ).sorted(proc (a: VersionLocation, b: VersionLocation): int = cmp(a.ver, b.ver), order=SortOrder.Descending)
 
 proc lookupLocalPackageVersion(pkg: string, version: VersionSpec): Option[VersionLocation] =
     ## Look for a specific package by name and a version specification
@@ -305,9 +321,11 @@ proc downloadPackageSourceInto*(url: string, target: string) =
     removeDir(target) # delete it, just in case
     newHttpClient().downloadFile(url, PackageTmpZip.fmt)
     let files = miniz.unzipAndGetFiles(PackageTmpZip.fmt, TmpFolder.fmt)
-    let (actualSubFolder, _, _) = splitFile(files[0])
+
+    let actualSubFolder = (toSeq(parentDirs(files[0])))[^1]
     let actualFolder = TmpFolder.fmt / actualSubFolder
     createDir(target) # make sure the path (and all subdirs) exist
+
     moveDir(actualFolder, target)
     discard tryRemoveFile(PackageTmpZip.fmt)
 
