@@ -267,13 +267,33 @@ proc removeAllLocalPackageVersions(pkg: string): bool =
 proc getLocalVersionsInPath(path: string): seq[VersionLocation] =
     ## Get a sorted list of all cached versions found
     ## for a given package, using path
+    echo "in getLocalVersionsInPath: " & path
 
-    return (toSeq(walkDir(path))).map(
-            proc (vers: tuple[kind: PathComponent, path: string]): VersionLocation = 
-                let filepath = vers.path
-                let (_, name, ext) = splitFile(filepath)
-                (filepath, newVVersion(name & ext))
-        ).sorted(proc (a: VersionLocation, b: VersionLocation): int = cmp(a.ver, b.ver), order=SortOrder.Descending)
+    for vers in walkDir(path):
+        let filepath = vers.path
+        let (_, name, ext) = splitFile(filepath)
+
+        when defined(macosx):
+            echo "yes, macos is defined"
+            echo "and name: |" & name & "|"
+            echo "and ext:  |" & ext  & "|"
+            if name != ".DS_Store":
+                result.add((filepath, newVVersion(name & ext)))
+        else:
+            result.add((filepath, newVVersion(name & ext)))
+
+    result = result.sorted(
+        proc (a: VersionLocation, b: VersionLocation): int = 
+            cmp(a.ver, b.ver)
+        ,order=SortOrder.Descending)
+
+
+    # return (toSeq(walkDir(path))).map(
+    #         proc (vers: tuple[kind: PathComponent, path: string]): VersionLocation = 
+    #             let filepath = vers.path
+    #             let (_, name, ext) = splitFile(filepath)
+    #             (filepath, newVVersion(name & ext))
+    #     ).sorted(proc (a: VersionLocation, b: VersionLocation): int = cmp(a.ver, b.ver), order=SortOrder.Descending)
 
 proc lookupLocalPackageVersion(pkg: string, version: VersionSpec): Option[VersionLocation] =
     ## Look for a specific package by name and a version specification
@@ -282,12 +302,14 @@ proc lookupLocalPackageVersion(pkg: string, version: VersionSpec): Option[Versio
     let packagesPath = CachePackage.fmt
 
     if packagesPath.dirExists():
+        echo "local package exists for: " &  pkg
         # Get all local versions
         let localVersions =  getLocalVersionsInPath(packagesPath)
-
+        echo "after getLocalVersionsInPath"
         # Go through them and return the one - if any -
         # that matches the version specification we are looking for
         for found in localVersions:
+            echo "checking version..."
             if version.min:
                 if (found.ver > version.ver or found.ver == version.ver):
                     return some(found)
@@ -595,13 +617,16 @@ proc packageListRemote*() =
         let list = waitFor (newAsyncHttpClient().getContent("https://pkgr.art/list.art".fmt))
         let listDict = execDictionary(doParse(list, isFile=false))
 
+        echo "GOT: REMOTE PACKAGES"
         echo fg(cyanColor) & "\n  Remote packages\n" & resetColor()
         echo "-".repeat(80)
         echo "  " & "Package".alignLeft(30) & "Description"
         echo "-".repeat(80)
         for key,val in listDict:
+            echo "PROCESSING: " & $(key)
             let desc = val.d["description"].s
             var installed = "-"
+            echo "looking up local package version"
             if lookupLocalPackageVersion(key, (true,NoPackageVersion)).isSome:
                 installed = "*"
             stdout.write "{installed} ".fmt & bold(whiteColor) & key.alignLeft(30) & resetColor()
