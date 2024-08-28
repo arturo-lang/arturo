@@ -100,7 +100,6 @@ func `$`*(v: VVersion): string {.inline.} =
     fmt("{v.major}.{v.minor}.{v.patch}{v.prerelease}{v.extra}")
     
 func newVVersion*(v: string): VVersion =
-    debugEcho "in newVVersion"
     var numPart: string
     var prereleasePart: string
     var extraPart: string
@@ -124,7 +123,6 @@ func newVVersion*(v: string): VVersion =
             extraPart = ""
 
     let parts: seq[string] = numPart.split(".")
-    debugEcho "---- before parseInt's: " & $(parts)
     result = VVersion(
         major: parseInt(parts[0]),
         minor: parseInt(parts[1]),
@@ -132,4 +130,3 @@ func newVVersion*(v: string): VVersion =
         prerelease: prereleasePart,
         extra: extraPart
     )
-    debugEcho "---- after parseInt's"
