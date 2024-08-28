@@ -269,15 +269,15 @@ proc Error_UnrecognizedOption*(name: string) =
 proc Error_UnrecognizedPackageCommand*(name: string) =
     panic(false):
         toError CmdlineErr, """
-            Unrecognized _package_ command:
+            Unrecognized package command:
                 _$#_
         """ ~~ @[name]
 
 proc Error_NoPackageCommand*() =
     panic(false):
         toError CmdlineErr, """
-            No _package_ command given:
-            type `--help` to see all the available options
+            No package command given:
+            type _`--help`_ to see all the available options
         """
 
 proc Error_ExtraneousParameter*(subcmd: string, name: string) =
