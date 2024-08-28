@@ -276,8 +276,8 @@ proc Error_UnrecognizedPackageCommand*(name: string) =
 proc Error_NoPackageCommand*() =
     panic(false):
         toError CmdlineErr, """
-            No _package_ command command given -
-            have a look at the options below
+            No _package_ command given -
+            type `--help` to see all the available options
         """
 
 proc Error_ExtraneousParameter*(subcmd: string, name: string) =
