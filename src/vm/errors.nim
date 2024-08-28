@@ -277,7 +277,7 @@ proc Error_NoPackageCommand*() =
     panic(false):
         toError CmdlineErr, """
             No package command given:
-            type _`--help`_ to see all the available options
+            type _--help_ to see all the available options
         """
 
 proc Error_ExtraneousParameter*(subcmd: string, name: string) =
