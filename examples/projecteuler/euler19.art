@@ -1,0 +1,10 @@
+sundays: 0
+day: to :date .format: "yyyy-MM-dd" "1901-01-01"
+finish: to :date .format: "yyyy-MM-dd" "2000-12-31"
+
+while [day =< finish][
+	if sunday? day -> inc 'sundays
+	after.months: 1 'day
+]
+
+print sundays
