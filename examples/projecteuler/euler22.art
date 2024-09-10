@@ -1,12 +1,7 @@
 score: 0
 alphabet: "ABCDEFGHIJKLMNOPQRSTUVWXYZ" 
 
-names: 
-	sort 
-		map 
-			split.by:"," 
-				read relative "euler22.txt" 
-		'x -> remove x "\""
+names: @ to :block read ./"euler22.txt"
 
 indx: 1
 loop names 'name [
