@@ -1,6 +1,6 @@
 pandigital?: function[x][
-	parts: map split to :string x 'z [to :integer z]
-	(1..size parts) = sort unique parts
+	parts: to [:integer] split to :string x
+	(sort unique parts) = @(1..size parts)
 ]
 
 largest: 7654323
