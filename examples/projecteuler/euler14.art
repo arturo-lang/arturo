@@ -1,0 +1,7 @@
+collatz: function.memoize [n][
+	if n = 1 -> return 1
+	if 0 = n % 2 -> return 1 + collatz (n / 2)
+	return 1 + collatz (1 + 3 * n)
+]!
+
+print maximum 1..999999 => collatz
