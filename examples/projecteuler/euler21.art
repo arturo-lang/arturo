@@ -1,16 +1,9 @@
 sumOfDivisors: function [n]-> sum (factors n)--n
 
-sumAmicable: 0
-upperLimit: 10000
-
-loop 2..upperLimit 'i [
-	fi: sumOfDivisors i
-	if and? fi>i fi=<upperLimit [
-		fj: sumOfDivisors fi
-		
-		if fj=i -> sumAmicable: sumAmicable + i + fi
-	
-	]
+amicable?: $[a] [
+	b: sumOfDivisors a
+	return (a <> b) ∧ (a = sumOfDivisors b)
 ]
 
-print sumAmicable
+upperLimit: 9999
+print sum select 2..upperLimit => amicable?
