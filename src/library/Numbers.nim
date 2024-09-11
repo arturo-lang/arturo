@@ -634,7 +634,7 @@ proc defineLibrary*() =
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "convert a number into an array of its digits or an array of digits back into a number",
+        description = "convert a number into an array of digits or an array of digits back into a number",
         args        = {
             "number" : {Integer, Block},
         },
