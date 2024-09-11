@@ -1,5 +1,5 @@
 sumFifthPowers: function[x][
-	sum map digits x 'y [(to :integer y)^5]
+	sum map digits x 'y [y^5]
 ]
 
 found: []
