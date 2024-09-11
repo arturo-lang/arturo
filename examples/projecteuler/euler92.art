@@ -1,0 +1,21 @@
+seq: function.memoize [n] [
+	if (n =< 1) ∨ (n = 89) -> return n
+	return seq sum (map (digits n) 'x -> x ^ 2)
+]!
+
+; n_digits: 7
+n_digits: 7
+
+; naive solution
+; print enumerate 1..(dec 10^n_digits) => [89 = seq &]
+
+unique_permutations: function [set] [
+	(permutate.count set) / product map values tally set => factorial
+]
+
+count: 0
+loop combine.repeated.by: n_digits @ 0..9 'dgt [
+	if 89 = seq digits dgt ->
+		'count + unique_permutations dgt
+]
+print count
