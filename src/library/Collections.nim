@@ -302,16 +302,6 @@ proc defineLibrary*() =
     # TODO(Collections\combine) should also work with in-place Literals?
     #  labels: library, enhancement, open discussion
 
-    # TODO(Collections\combine) should follow the rule: C[n:k] = 0, for k > n
-    #  being k the attribute by, n the size of the collection and 
-    #  C the amount of possible combinations:
-    #
-    #  ```art
-    #  ensure -> empty? combine.by: 4 [a b c] 
-    #  ensure -> empty? combine.by: 5 [a b c] 
-    #  ensure -> empty? combine.by: 6 [a b c] 
-    #  ``` 
-    # labels: library, open-discussion
     builtin "combine",
         alias       = unaliased,
         op          = opNop,
@@ -338,6 +328,10 @@ proc defineLibrary*() =
 
             combine.repeated.by:2 [A B C]
             ; => [[A A] [A B] [A C] [B B] [B C] [C C]]
+
+            combine.repeated.by: 3 [A B]
+            ; => [[A A A] [A A B] [A B B] [B B B]]
+
             ..........
             combine.count [A B C]
             ; => 1
@@ -350,8 +344,7 @@ proc defineLibrary*() =
 
             var sz = x.a.len
             if checkAttr("by"):
-                if aBy.i > 0 and aBy.i < sz:
-                    sz = aBy.i
+                sz = aBy.i
 
             if hadAttr("count"):
                 push(countCombinations(x.a, sz, doRepeat))
@@ -1218,6 +1211,10 @@ proc defineLibrary*() =
 
             permutate.repeated.by:2 [A B C]
             ; => [[A A] [A B] [A C] [B A] [B B] [B C] [C A] [C B] [C C]]
+
+            permutate.repeated.by:3 [A B]
+            ; => [[A A A] [A A B] [A B A] [A B B] [B A A] [B A B] [B B A] [B B B]]
+
             ..........
             permutate.count [A B C]
             ; => 6
@@ -1230,8 +1227,7 @@ proc defineLibrary*() =
 
             var sz = x.a.len
             if checkAttr("by"):
-                if aBy.i > 0 and aBy.i < sz:
-                    sz = aBy.i
+                sz = aBy.i
 
             if hadAttr("count"):
                 push(countPermutations(x.a, sz, doRepeat))
