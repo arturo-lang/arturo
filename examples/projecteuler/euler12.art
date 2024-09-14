@@ -1,0 +1,3 @@
+n: first select.first: 1 1..infinite 'n [500 < size factors ((n * (n+1))/2)]
+
+print (n * (n + 1))/2

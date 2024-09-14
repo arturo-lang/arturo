@@ -1,0 +1,16 @@
+palindrome?: function [x] [ 
+	dts: digits x 
+	dts = reverse dts 
+]
+
+biggest: 0
+loop 999..100 'x [
+	loop 999..100 'y [
+		if biggest > x * y -> break
+		if and? palindrome? x * y biggest < x * y [
+			biggest: x * y
+		]
+	]
+]
+
+print biggest
