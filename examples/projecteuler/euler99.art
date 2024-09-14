@@ -1,0 +1,8 @@
+numbers: read.csv ./"euler99.txt"
+greatest: maximum numbers 'pair [
+	a: to :integer first pair
+	b: to :integer last pair
+	b * ln a
+]
+print ["Greatest number: " join.with: {^} greatest]
+print ["Index: " 1 + index numbers greatest]
