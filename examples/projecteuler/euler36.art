@@ -1,0 +1,7 @@
+palindromes?: function [x] [ 
+	dts: digits x 
+	dts2: digits.base:2 x 
+	and? (dts = (reverse dts)) (dts2 = (reverse dts2))
+]
+
+print sum select 1..999999 => palindromes?

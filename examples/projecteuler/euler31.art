@@ -7,7 +7,7 @@ coinCombinations: function [amount coins][
 			set ways j (get ways j) + get ways j-coin
 	]
 
-	ways \ amount
+	ways\[amount]
 ]
  
 ; 200p = 2 pounds
