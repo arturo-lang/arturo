@@ -49,6 +49,9 @@ proc defineLibrary*() =
             ..........
             print all? @[true false true true]
             ; false
+            ..........
+            all? []
+            ; => true
         """:
             #=======================================================
             var allOK = true
