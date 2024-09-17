@@ -3158,7 +3158,8 @@ do [
 topic "take - :block < :range (pathLiteral) :integer"
 do [
 
-    ; TODO: not working well
+    ; TODO(lib.collections) not working well
+    ;  labels: unit-test
 
     rng: 1..3
 
