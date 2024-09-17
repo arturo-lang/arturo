@@ -11,9 +11,8 @@ jobs:
     steps:
       - uses: "actions/checkout@master"
       - name: "TODO to Issue generator"
-        uses: "alstr/todo-to-issue-action@v2.4.1"
+        uses: "alstr/todo-to-issue-action@v4.13.3"
         id: "todo"
         with:
-          AUTO_P: false
-          #ISSUE_TEMPLATE: "**Description:**\n\n{{ body }}\n\n**Code:**\n\n{{ url }}\n\n{{ snippet }}"
           TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          LANGUAGES: https://raw.githubusercontent.com/arturo-lang/arturo/master/.github/arturo_todo.json
