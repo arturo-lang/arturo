@@ -51,11 +51,6 @@ proc defineLibrary*() =
             ; false
         """:
             #=======================================================
-            # check if empty
-            if x.a.len==0: 
-                push(newLogical(false))
-                return
-
             var allOK = true
 
             for item in x.a:
@@ -68,11 +63,9 @@ proc defineLibrary*() =
 
                 if val!=VTRUE:
                     allOK = false
-                    push(newLogical(false))
                     break
 
-            if allOK:
-                push(newLogical(true))
+            push(newLogical(allOK))
 
     builtin "and?",
         alias       = logicaland, 
