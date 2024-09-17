@@ -1435,7 +1435,7 @@ proc defineLibrary*() =
             ; true
         """:
             #=======================================================
-            doIterate(itLit=false, itCap=false, itInf=false, itCounter=false, itRolling=false, VFALSE):
+            doIterate(itLit=false, itCap=false, itInf=false, itCounter=false, itRolling=false, VTRUE):
                 discard
             do:
                 if isFalse(stack.pop()):
