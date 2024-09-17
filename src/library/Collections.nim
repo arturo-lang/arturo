@@ -2484,7 +2484,7 @@ proc defineLibrary*() =
         """:
             #=======================================================
             if (hadAttr("id")):
-                # TODO(System\unique) make `.id` work for Web/JS builds
+                # TODO(Collections\unique) make `.id` work for Web/JS builds
                 #  labels: library,enhancement,web
                 when not defined(WEB):
                     push newString(x.s & $(genOid()))
