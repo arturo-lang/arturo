@@ -68,16 +68,11 @@ proc defineLibrary*() =
             else:
                 push(newString(x.s.crc32()))
 
-    # TODO(Crypto\decode) fix documentation
-    #  it mistakenly includes the description of `encode`
-    #  also: this TODO serves as a test, to check if I actually fixed the workflow
-    #  (obviously, it would take less time to fix the issue, than post about it lol)
-    #  labels: documentation, easy, bug
     builtin "decode",
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "encode given value (default: base-64)",
+        description = "decode given value (default: base-64)",
         args        = {
             "value" : {String,Literal, PathLiteral}
         },
@@ -110,17 +105,11 @@ proc defineLibrary*() =
     #  Function doesn't really correspond to cryptography anymore. Or at least most of it. What should be done?
     #  labels: library, open discussion
 
-    # TODO(Crypto\encode) fix documentation
-    #  it mistakenly includes the description of `decode`
-    #  also: this TODO serves as a test, to check if I actually fixed the workflow
-    #  (Similar issue with `decode`)
-    #  labels: documentation, easy, bug
-
     builtin "encode",
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "decode given value (default: base-64)",
+        description = "encode given value (default: base-64)",
         args        = {
             "value" : {String,Literal, PathLiteral}
         },
