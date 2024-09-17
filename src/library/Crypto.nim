@@ -68,6 +68,11 @@ proc defineLibrary*() =
             else:
                 push(newString(x.s.crc32()))
 
+    # TODO(Crypto\decode) fix documentation
+    #  it mistakenly includes the description of `encode`
+    #  also: this TODO serves as a test, to check if I actually fixed the workflow
+    #  (obviously, it would take less time to fix the issue, than post about it lol)
+    #  labels: documentation, easy, bug
     builtin "decode",
         alias       = unaliased, 
         op          = opNop,
@@ -104,6 +109,12 @@ proc defineLibrary*() =
     # TODO(Crypto\encode) Move function to different module?
     #  Function doesn't really correspond to cryptography anymore. Or at least most of it. What should be done?
     #  labels: library, open discussion
+
+    # TODO(Crypto\encode) fix documentation
+    #  it mistakenly includes the description of `decode`
+    #  also: this TODO serves as a test, to check if I actually fixed the workflow
+    #  (Similar issue with `decode`)
+    #  labels: documentation, easy, bug
 
     builtin "encode",
         alias       = unaliased, 
