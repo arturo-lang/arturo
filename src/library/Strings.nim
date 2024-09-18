@@ -305,7 +305,10 @@ proc defineLibrary*() =
             else:
                 var sep: string
                 if checkAttr("with"):
-                    sep = aWith.s
+                    if likely(aWith.kind == String):
+                        sep = aWith.s
+                    else:
+                        sep = $(aWith.c)
 
                 if xKind in {Literal, PathLiteral}:
                     ensureInPlaceAny()
