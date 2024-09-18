@@ -1035,14 +1035,12 @@ proc defineLibrary*() =
                         product *= item
                     push(product)
                 else:
-                    if x.a.len==0: push(I0.copyValue)
-                    else:
-                        var i = 0
-                        while i<x.a.len:
-                            product *= x.a[i]
-                            i += 1
+                    var i = 0
+                    while i<x.a.len:
+                        product *= x.a[i]
+                        i += 1
 
-                        push(product)
+                    push(product)
 
     builtin "random",
         alias       = unaliased, 
