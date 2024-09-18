@@ -294,6 +294,9 @@ proc defineLibrary*() =
 
             print join @["1 + 2 = " 1+2]
             ; 1 + 2 = 3
+            ..........
+            join.with:'-' ["Hello" "world"]
+            ; => "Hello-world"
         """:
             #=======================================================
             if (hadAttr("path")):
