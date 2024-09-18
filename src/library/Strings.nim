@@ -274,7 +274,7 @@ proc defineLibrary*() =
             "collection"    : {Block,Literal,PathLiteral}
         },
         attrs       = {
-            "with"  : ({String},"use given separator"),
+            "with"  : ({String, Char},"use given separator"),
             "path"  : ({Logical},"join as path components")
         },
         returns     = {String,Nothing},
@@ -289,11 +289,14 @@ proc defineLibrary*() =
             join 'arr
             ; arr: "onetwothree"
             ..........
-            print join [`H` `e` `l` `l` `o` `!`]
+            print join ['H' 'e' 'l' 'l' 'o' '!']
             ; Hello!
 
             print join @["1 + 2 = " 1+2]
             ; 1 + 2 = 3
+            ..........
+            join.with:'-' ["Hello" "world"]
+            ; => "Hello-world"
         """:
             #=======================================================
             if (hadAttr("path")):
@@ -305,7 +308,10 @@ proc defineLibrary*() =
             else:
                 var sep: string
                 if checkAttr("with"):
-                    sep = aWith.s
+                    if likely(aWith.kind == String):
+                        sep = aWith.s
+                    else:
+                        sep = $(aWith.c)
 
                 if xKind in {Literal, PathLiteral}:
                     ensureInPlaceAny()
