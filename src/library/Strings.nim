@@ -274,7 +274,7 @@ proc defineLibrary*() =
             "collection"    : {Block,Literal,PathLiteral}
         },
         attrs       = {
-            "with"  : ({String},"use given separator"),
+            "with"  : ({String, Char},"use given separator"),
             "path"  : ({Logical},"join as path components")
         },
         returns     = {String,Nothing},
