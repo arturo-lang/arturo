@@ -289,7 +289,7 @@ proc defineLibrary*() =
             join 'arr
             ; arr: "onetwothree"
             ..........
-            print join [`H` `e` `l` `l` `o` `!`]
+            print join ['H' 'e' 'l' 'l' 'o' '!']
             ; Hello!
 
             print join @["1 + 2 = " 1+2]
