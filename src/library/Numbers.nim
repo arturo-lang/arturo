@@ -1021,8 +1021,12 @@ proc defineLibrary*() =
         example     = """
             print product [3 4]       ; 12
             print product [1 2 4 6]   ; 48
+            print product []          ; 1
             ..........
             print product 1..10       ; 3628800
+            ..........
+            product.cartesian [[A B C][D E]]
+            ; => [[A D] [A E] [B D] [B E] [C D] [C E]]
         """:
             #=======================================================
             if (hadAttr("cartesian")):
@@ -1035,14 +1039,12 @@ proc defineLibrary*() =
                         product *= item
                     push(product)
                 else:
-                    if x.a.len==0: push(I0.copyValue)
-                    else:
-                        var i = 0
-                        while i<x.a.len:
-                            product *= x.a[i]
-                            i += 1
+                    var i = 0
+                    while i<x.a.len:
+                        product *= x.a[i]
+                        i += 1
 
-                        push(product)
+                    push(product)
 
     builtin "random",
         alias       = unaliased, 
