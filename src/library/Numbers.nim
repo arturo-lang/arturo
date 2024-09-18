@@ -1021,8 +1021,12 @@ proc defineLibrary*() =
         example     = """
             print product [3 4]       ; 12
             print product [1 2 4 6]   ; 48
+            print product []          ; 1
             ..........
             print product 1..10       ; 3628800
+            ..........
+            product.cartesian [[A B C][D E]]
+            ; => [[A D] [A E] [B D] [B E] [C D] [C E]]
         """:
             #=======================================================
             if (hadAttr("cartesian")):
