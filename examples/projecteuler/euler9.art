@@ -1,0 +1,14 @@
+; https://en.wikipedia.org/wiki/Pythagorean_triple#Generating_a_triple
+max: ceil sqrt 1000
+
+loop 1..max 'n [
+	loop (n+1)..max 'm [
+		a: (m ^ 2) - (n ^ 2)
+		b: 2*m*n
+		c: (m ^ 2) + (n ^ 2)
+		if? 1000 = a + b + c [
+			print a * b * c
+			break
+		]
+	]
+]

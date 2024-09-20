@@ -1118,6 +1118,19 @@ do [
     ensure -> 9 = permutate.count.repeated.by:2 [A B C]
     passed
 
+    ensure -> 1 = permutate.count.by: 0 [A B C]
+    passed
+    ensure -> [[]] = permutate.by: 0 [A B C]
+    passed
+    ensure -> 0 = permutate.count.by: 10 [A B C]
+    passed
+    ensure -> [] = permutate.by: 10 [A B C]
+    passed
+    ensure -> 8 = permutate.count.repeated.by: 3 [A B]
+    passed
+    ensure -> [[A A A] [A A B] [A B A] [A B B] [B A A] [B A B] [B B A] [B B B]]
+        = permutate.repeated.by:3 [A B]
+    passed
 
 ]
 
@@ -3145,7 +3158,9 @@ do [
 topic "take - :block < :range (pathLiteral) :integer"
 do [
 
-    ; TODO: not working well
+    ; TODO(lib.collections) revise tests for `take`
+    ;  it doesn't appear to be working well
+    ;  labels: unit-test, :block, :range, :integer
 
     rng: 1..3
 

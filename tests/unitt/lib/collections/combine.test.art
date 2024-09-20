@@ -40,7 +40,8 @@ suite "General Tests" [
     ]
 
     test.prop ".count is the size of the combination" [
-        operations: [[combine.by: 2] [combine.repeated] [combine.repeated.by: 2]]
+        operations: [[combine.by: 2] [combine.repeated] [combine.repeated.by: 2]
+                     [combine.by:0] [combine.repeated.by: 0]]
         loop operations 'op [
             counted: (op ++ [.count someBlock])
             sized: ([size] ++ op ++ [someBlock])
@@ -65,8 +66,12 @@ suite "Matematical Properties" [
         assert -> 1 = combine.count.by: 0 someBlock 
     ]
 
-    test.prop.skip "C[n:k] = 0, for all k > n" [
+    test.prop "C[n:k] = 0, for all k > n" [
         assert -> 0 = combine.count.by: (inc size someBlock) someBlock
+    ]
+
+    test.prop "C[n:k] = 0, for all k < 0" [
+        assert -> 0 = combine.count.by: (neg 1) someBlock
     ]
 
     test.prop "C[n:k] = n! / (k! * (n - k)!)" [
@@ -115,6 +120,13 @@ suite "Specific Tests" [
 
         assert -> result = combine.repeated.by: 2 [A B C]
         assert -> equal? size result combine.count.repeated.by: 2 [A B C]
+    ]
+
+    test "combine.repeated.by: 3 [A B]" [
+        result: [[A A A] [A A B] [A B B] [B B B]]
+
+        assert -> result = combine.repeated.by: 3 [A B]
+        assert -> equal? size result combine.count.repeated.by: 3 [A B]
     ]
 
 ]

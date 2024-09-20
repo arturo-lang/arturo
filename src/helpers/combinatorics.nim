@@ -26,7 +26,10 @@ import vm/values/operators
 
 proc repeatedPermutations(a: ValueArray, n: int): seq[ValueArray] =
     result = newSeq[ValueArray]()
-    if n <= 0: return
+    if n < 0: return
+    if n == 0:
+        result.add(@[])
+        return result
     for i in 0 .. a.high:
         if n == 1:
             result.add(@[a[i]])
@@ -36,7 +39,10 @@ proc repeatedPermutations(a: ValueArray, n: int): seq[ValueArray] =
 
 proc uniquePermutations(a: ValueArray, n: int, used: var seq[bool]): seq[ValueArray] =
     result = newSeq[ValueArray]()
-    if n <= 0: return
+    if n < 0: return
+    if n == 0:
+        result.add(@[])
+        return result
     for i in 0 .. a.high:
         if not used[i]:
             if n == 1:
@@ -50,7 +56,10 @@ proc uniquePermutations(a: ValueArray, n: int, used: var seq[bool]): seq[ValueAr
 proc repeatedCombinations(a: ValueArray; n: int; used: seq[bool]): seq[ValueArray] =
     result = newSeq[ValueArray]()
     var used = used
-    if n <= 0: return
+    if n < 0: return
+    if n == 0:
+        result.add(@[])
+        return result
     for i in 0  .. a.high:
         if not used[i]:
             if n == 1:
@@ -63,7 +72,10 @@ proc repeatedCombinations(a: ValueArray; n: int; used: seq[bool]): seq[ValueArra
 proc uniqueCombinations(a: ValueArray; n: int; used: seq[bool]): seq[ValueArray] =
     result = newSeq[ValueArray]()
     var used = used
-    if n <= 0: return
+    if n < 0: return
+    if n == 0:
+        result.add(@[])
+        return result
     for i in 0  .. a.high:
         if not used[i]:
             if n == 1:
@@ -90,10 +102,12 @@ func getCombinations*(lst: ValueArray, size: int, repeated: bool = false): seq[V
 
 proc countPermutations*(lst: ValueArray, size: int, repeated: bool = false): Value =
     let n = lst.len
-    if repeated: newInteger(n) ^ newInteger(size)
+    if size < 0 or (size > n and not repeated): newInteger(0)
+    elif repeated: newInteger(n) ^ newInteger(size)
     else: factorial(n) / factorial(n-size)
 
 proc countCombinations*(lst: ValueArray, size: int, repeated: bool = false): Value =
     let n = lst.len
-    if repeated: factorial(n+size-1) / (factorial(size)*factorial(n-1))
+    if size < 0 or (size > n and not repeated): newInteger(0)
+    elif repeated: factorial(n+size-1) / (factorial(size)*factorial(n-1))
     else: factorial(n) / (factorial(size)*factorial(n-size))
