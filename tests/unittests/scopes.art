@@ -1,4 +1,4 @@
-; TODO(Tests\scopes) verify & update unit tests
+; TODO(Tests\scopes) verify & update related unit tests
 ;  tests need to be verified + add more for `with` and `.import` (if it stays in)
 ;  labels: easy, unit-test
 

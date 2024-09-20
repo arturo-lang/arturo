@@ -1,27 +1,5 @@
 almostPrime: function [k, listLen][
-    result: []
-    test: 2
-    c: 0
-
-    while [c < listLen][
-        i: 2
-        m: 0
-        n: test
-
-        while [i =< n][
-            switch zero? n % i [
-                n: n / i
-                m: m + 1
-            ]
-            -> i: i + 1
-        ]
-        if m = k [
-            'result ++ test
-            c: c + 1
-        ]
-        test: test + 1
-    ]
-    return result
+    select.first: listLen 1..infinite 'n [k = size factors.prime n]
 ]
 
 loop 1..5 'x ->

@@ -567,7 +567,7 @@ jobs:
           path: version/version
           trim: true
 
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v4.1.7
         with:
           path: ./assets
 
