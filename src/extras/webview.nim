@@ -60,6 +60,16 @@ type
         Window = 0
         Widget = 1
         BrowserController = 2
+
+    WebviewError* = enum
+        MissingDependency   = -5
+        Canceled            = -4
+        InvalidState        = -3
+        InvalidArgument     = -2
+        Unspecified         = -1
+        OK                  = 0
+        Duplicate           = 1
+        NotFound            = 2
     
     ccstring* {.importc:"const char*".} = cstring
 
@@ -95,23 +105,23 @@ proc webview_create*(debug: cint = 0, window: pointer = nil): Webview {.importc.
     ## @retval WEBVIEW_ERROR_MISSING_DEPENDENCY
     ##         May be returned if WebView2 is unavailable on Windows.
 
-proc webview_destroy*(w: Webview) {.importc.}
+proc webview_destroy*(w: Webview): WebviewError {.importc.}
     ## Destroys a webview instance and closes the native window.
     ##
     ## @param w The webview instance.
 
-proc webview_run*(w: Webview) {.importc.}
+proc webview_run*(w: Webview): WebviewError {.importc.}
     ## Runs the main loop until it's terminated.
     ##
     ## @param w The webview instance.
 
-proc webview_terminate*(w: Webview) {.importc.}
+proc webview_terminate*(w: Webview): WebviewError {.importc.}
     ## Stops the main loop. It is safe to call this function from another other
     ## background thread.
     ##
     ## @param w The webview instance.
 
-proc webview_dispatch(w: Webview, fn: WebviewDispatch, arg: pointer) {.importc, used.}
+proc webview_dispatch(w: Webview, fn: WebviewDispatch, arg: pointer): WebviewError {.importc, used.}
     ## Schedules a function to be invoked on the thread with the run/event loop.
     ## Use this function e.g. to interact with the library or native handles.
     ##
@@ -135,13 +145,13 @@ proc webview_get_native_handle*(w: Webview, handle: NativeHandle): pointer {.imp
     ## @return The native handle or @c NULL.
     ## @since 0.11
 
-proc webview_set_title*(w: Webview, title: cstring) {.importc.}
+proc webview_set_title*(w: Webview, title: cstring): WebviewError {.importc.}
     ## Updates the title of the native window.
     ##
     ## @param w The webview instance.
     ## @param title The new title.
 
-proc webview_set_size*(w: Webview, width: cint, height: cint, constraints: Constraints) {.importc.}
+proc webview_set_size*(w: Webview, width: cint, height: cint, constraints: Constraints): WebviewError {.importc.}
     ## Updates the size of the native window.
     ##
     ## Remarks:
@@ -155,7 +165,7 @@ proc webview_set_size*(w: Webview, width: cint, height: cint, constraints: Const
     ## @param height New height.
     ## @param hints Size hints.
 
-proc webview_navigate*(w: Webview, url: cstring) {.importc.}
+proc webview_navigate*(w: Webview, url: cstring): WebviewError {.importc.}
     ## Navigates webview to the given URL. URL may be a properly encoded data URI.
     ##
     ## Example:
@@ -168,7 +178,7 @@ proc webview_navigate*(w: Webview, url: cstring) {.importc.}
     ## @param w The webview instance.
     ## @param url URL.
     
-proc webview_set_html*(w: Webview, html: cstring) {.importc.}
+proc webview_set_html*(w: Webview, html: cstring): WebviewError {.importc.}
     ## Load HTML content into the webview.
     ##
     ## Example:
@@ -179,14 +189,14 @@ proc webview_set_html*(w: Webview, html: cstring) {.importc.}
     ## @param w The webview instance.
     ## @param html HTML content.
 
-proc webview_init*(w: Webview, js: cstring) {.importc.}
+proc webview_init*(w: Webview, js: cstring): WebviewError {.importc.}
     ## Injects JavaScript code to be executed immediately upon loading a page.
     ## The code will be executed before @c window.onload.
     ##
     ## @param w The webview instance.
     ## @param js JS content.
 
-proc webview_eval*(w: Webview, js: cstring) {.importc.}
+proc webview_eval*(w: Webview, js: cstring): WebviewError {.importc.}
     ## Evaluates arbitrary JavaScript code.
     ##
     ## Use bindings if you need to communicate the result of the evaluation.
@@ -194,7 +204,7 @@ proc webview_eval*(w: Webview, js: cstring) {.importc.}
     ## @param w The webview instance.
     ## @param js JS content.
 
-proc webview_bind*(w: Webview, name: cstring, cb: WebviewCallback, arg: pointer) {.importc.}
+proc webview_bind*(w: Webview, name: cstring, cb: WebviewCallback, arg: pointer): WebviewError {.importc.}
     ## Binds a function pointer to a new global JavaScript function.
     ##
     ## Internally, JS glue code is injected to create the JS function by the
@@ -209,14 +219,14 @@ proc webview_bind*(w: Webview, name: cstring, cb: WebviewCallback, arg: pointer)
     ## @retval WEBVIEW_ERROR_DUPLICATE
     ##         A binding already exists with the specified name.
 
-proc webview_unbind*(w: Webview, name: cstring) {.importc.}
+proc webview_unbind*(w: Webview, name: cstring): WebviewError {.importc.}
     ## Removes a binding created with webview_bind().
     ##
     ## @param w The webview instance.
     ## @param name Name of the binding.
     ## @retval WEBVIEW_ERROR_NOT_FOUND No binding exists with the specified name.
 
-proc webview_return*(w: Webview; seq: cstring; status: cint; result: cstring)
+proc webview_return*(w: Webview; seq: cstring; status: cint; result: cstring): WebviewError
     ## Responds to a binding call from the JS side.
     ##
     ## @param w The webview instance.
