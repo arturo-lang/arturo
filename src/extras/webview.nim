@@ -68,71 +68,151 @@ type
 #=======================================
 
 proc webview_create*(debug: cint = 0, window: pointer = nil): Webview {.importc.}
-    ## Creates a new webview instance. If debug is non-zero - developer tools will
-    ## be enabled (if the platform supports them). Window parameter can be a
-    ## pointer to the native window handle. If it's non-null - then child WebView
-    ## is embedded into the given parent window. Otherwise a new window is created.
-    ## Depending on the platform, a GtkWindow, NSWindow or HWND pointer can be
-    ## passed here.
+    ## Creates a new webview instance.
+    ##
+    ## @param debug Enable developer tools if supported by the backend.
+    ## @param window Optional native window handle, i.e. @c GtkWindow pointer
+    ##        @c NSWindow pointer (Cocoa) or @c HWND (Win32). If non-null,
+    ##        the webview widget is embedded into the given window, and the
+    ##        caller is expected to assume responsibility for the window as
+    ##        well as application lifecycle. If the window handle is null,
+    ##        a new window is created and both the window and application
+    ##        lifecycle are managed by the webview instance.
+    ## @remark Win32: The function also accepts a pointer to @c HWND (Win32) in the
+    ##         window parameter for backward compatibility.
+    ## @remark Win32/WebView2: @c CoInitializeEx should be called with
+    ##         @c COINIT_APARTMENTTHREADED before attempting to call this function
+    ##         with an existing window. Omitting this step may cause WebView2
+    ##         initialization to fail.
+    ## @return @c NULL on failure. Creation can fail for various reasons such
+    ##         as when required runtime dependencies are missing or when window
+    ##         creation fails.
+    ## @retval WEBVIEW_ERROR_MISSING_DEPENDENCY
+    ##         May be returned if WebView2 is unavailable on Windows.
 
 proc webview_destroy*(w: Webview) {.importc.}
-    ## Destroys a webview and closes the native window.
+    ## Destroys a webview instance and closes the native window.
+    ##
+    ## @param w The webview instance.
 
 proc webview_run*(w: Webview) {.importc.}
-    ## Runs the main loop until it's terminated. After this function exits - you
-    ## must destroy the webview.
+    ## Runs the main loop until it's terminated.
+    ##
+    ## @param w The webview instance.
 
 proc webview_terminate*(w: Webview) {.importc.}
     ## Stops the main loop. It is safe to call this function from another other
     ## background thread.
+    ##
+    ## @param w The webview instance.
 
 proc webview_dispatch(w: Webview, fn: WebviewDispatch, arg: pointer) {.importc, used.}
-    ## Posts a function to be executed on the main thread. You normally do not need
-    ## to call this function, unless you want to tweak the native window.
+    ## Schedules a function to be invoked on the thread with the run/event loop.
+    ## Use this function e.g. to interact with the library or native handles.
+    ##
+    ## @param w The webview instance.
+    ## @param fn The function to be invoked.
+    ## @param arg An optional argument passed along to the callback function.
 
 proc webview_get_window*(w: Webview): Window {.importc.}
-    ## Returns a native window handle pointer. When using GTK backend the pointer
-    ## is GtkWindow pointer, when using Cocoa backend the pointer is NSWindow
-    ## pointer, when using Win32 backend the pointer is HWND pointer.
+    ## Returns the native handle of the window associated with the webview instance.
+    ## The handle can be a @c GtkWindow pointer (GTK), @c NSWindow pointer (Cocoa)
+    ## or @c HWND (Win32).
+    ##
+    ## @param w The webview instance.
+    ## @return The handle of the native window.
 
 proc webview_set_title*(w: Webview, title: cstring) {.importc.}
-    ## Updates the title of the native window. Must be called from the UI thread.
+    ## Updates the title of the native window.
+    ##
+    ## @param w The webview instance.
+    ## @param title The new title.
 
 proc webview_set_size*(w: Webview, width: cint, height: cint, constraints: Constraints) {.importc.}
-    ## Updates native window size. See WEBVIEW_HINT constants.
+    ## Updates the size of the native window.
+    ##
+    ## Remarks:
+    ## - Using WEBVIEW_HINT_MAX for setting the maximum window size is not
+    ##   supported with GTK 4 because X11-specific functions such as
+    ##   gtk_window_set_geometry_hints were removed. This option has no effect
+    ##   when using GTK 4.
+    ##
+    ## @param w The webview instance.
+    ## @param width New width.
+    ## @param height New height.
+    ## @param hints Size hints.
 
 proc webview_navigate*(w: Webview, url: cstring) {.importc.}
-    ## Navigates webview to the given URL. URL may be a data URI, i.e.
-    ## "data:text/html,<html>...</html>". It is often ok not to url-encode it
-    ## properly, webview will re-encode it for you.
-
+    ## Navigates webview to the given URL. URL may be a properly encoded data URI.
+    ##
+    ## Example:
+    ## @code{.c}
+    ## webview_navigate(w, "https://github.com/webview/webview");
+    ## webview_navigate(w, "data:text/html,%3Ch1%3EHello%3C%2Fh1%3E");
+    ## webview_navigate(w, "data:text/html;base64,PGgxPkhlbGxvPC9oMT4=");
+    ## @endcode
+    ##
+    ## @param w The webview instance.
+    ## @param url URL.
+    
 proc webview_set_html*(w: Webview, html: cstring) {.importc.}
-    ## Set webview HTML directly.
-    ## Example: webview_set_html(w, "<h1>Hello</h1>");
+    ## Load HTML content into the webview.
+    ##
+    ## Example:
+    ## @code{.c}
+    ## webview_set_html(w, "<h1>Hello</h1>");
+    ## @endcode
+    ##
+    ## @param w The webview instance.
+    ## @param html HTML content.
 
 proc webview_init*(w: Webview, js: cstring) {.importc.}
-    ## Injects JavaScript code at the initialization of the new page. Every time
-    ## the webview will open a the new page - this initialization code will be
-    ## executed. It is guaranteed that code is executed before window.onload.
+    ## Injects JavaScript code to be executed immediately upon loading a page.
+    ## The code will be executed before @c window.onload.
+    ##
+    ## @param w The webview instance.
+    ## @param js JS content.
 
 proc webview_eval*(w: Webview, js: cstring) {.importc.}
-    ## Evaluates arbitrary JavaScript code. Evaluation happens asynchronously, also
-    ## the result of the expression is ignored. Use RPC bindings if you want to
-    ## receive notifications about the results of the evaluation.
+    ## Evaluates arbitrary JavaScript code.
+    ##
+    ## Use bindings if you need to communicate the result of the evaluation.
+    ##
+    ## @param w The webview instance.
+    ## @param js JS content.
 
 proc webview_bind*(w: Webview, name: cstring, cb: WebviewCallback, arg: pointer) {.importc.}
-    ## Binds a native C callback so that it will appear under the given name as a
-    ## global JavaScript function. Internally it uses webview_init(). Callback
-    ## receives a request string and a user-provided argument pointer. Request
-    ## string is a JSON array of all the arguments passed to the JavaScript
-    ## function.
+    ## Binds a function pointer to a new global JavaScript function.
+    ##
+    ## Internally, JS glue code is injected to create the JS function by the
+    ## given name. The callback function is passed a request identifier,
+    ## a request string and a user-provided argument. The request string is
+    ## a JSON array of the arguments passed to the JS function.
+    ##
+    ## @param w The webview instance.
+    ## @param name Name of the JS function.
+    ## @param fn Callback function.
+    ## @param arg User argument.
+    ## @retval WEBVIEW_ERROR_DUPLICATE
+    ##         A binding already exists with the specified name.
 
 proc webview_unbind*(w: Webview, name: cstring) {.importc.}
+    ## Removes a binding created with webview_bind().
+    ##
+    ## @param w The webview instance.
+    ## @param name Name of the binding.
+    ## @retval WEBVIEW_ERROR_NOT_FOUND No binding exists with the specified name.
 
 proc webview_return*(w: Webview; seq: cstring; status: cint; result: cstring)
-    ## Allows to return a value from the native binding. Original request pointer
-    ## must be provided to help internal RPC engine match requests with responses.
-    ## If status is zero - result is expected to be a valid JSON result value.
-    ## If status is not zero - result is an error JSON object.
+    ## Responds to a binding call from the JS side.
+    ##
+    ## @param w The webview instance.
+    ## @param id The identifier of the binding call. Pass along the value received
+    ##           in the binding handler (see webview_bind()).
+    ## @param status A status of zero tells the JS side that the binding call was
+    ##               succesful; any other value indicates an error.
+    ## @param result The result of the binding call to be returned to the JS side.
+    ##               This must either be a valid JSON value or an empty string for
+    ##               the primitive JS value @c undefined.
 
 {.pop.}
