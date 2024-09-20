@@ -1,8 +1,8 @@
 ## Migration instructions
 
-This is more like a guideline as per what we should do in case we want to pull the latest sources from the parent repo @ webview/webview.
+This is more like a guideline as per what we should do in case we want to pull the latest sources from the parent repo @ [webview/webview](https://github.com/webview/webview).
 
-(I honestly don't remember the specifics or the *why* behind this weirdness; all I do remember is that I had totally struggled to get it working a) with errors, b) Windows included and c) without the whole Nim project switching to C++, so... I'm satisfied enough).
+(I honestly don't remember the specifics or the *why* behind this weirdness; all I do remember is that I had totally struggled to get it working a) without any errors whatsoever, b) Windows included and c) without the whole Nim project switching to C++, so... I'm satisfied enough).
 
 ### Step-by-step
 
