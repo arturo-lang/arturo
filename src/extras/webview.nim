@@ -55,6 +55,11 @@ type
         Minimum = 1
         Maximum = 2
         Fixed = 3
+
+    NativeHandle* = enum
+        Window = 0
+        Widget = 1
+        BrowserController = 2
     
     ccstring* {.importc:"const char*".} = cstring
 
@@ -121,6 +126,14 @@ proc webview_get_window*(w: Webview): Window {.importc.}
     ##
     ## @param w The webview instance.
     ## @return The handle of the native window.
+
+proc webview_get_native_handle*(w: Webview, handle: NativeHandle): pointer {.importc.}
+    ## Get a native handle of choice.
+    ##
+    ## @param w The webview instance.
+    ## @param kind The kind of handle to retrieve.
+    ## @return The native handle or @c NULL.
+    ## @since 0.11
 
 proc webview_set_title*(w: Webview, title: cstring) {.importc.}
     ## Updates the title of the native window.
