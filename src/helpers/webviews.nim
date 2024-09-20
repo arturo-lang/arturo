@@ -165,14 +165,14 @@ when not defined(NOWEBVIEW):
                      callHandler : WebviewCallHandler    = nil): Webview =
 
         result = webview_create(debug.cint)
-        webview_set_title(result, title=title.cstring)
-        webview_set_size(result, width.cint, height.cint, if resizable: Constraints.Default else: Constraints.Fixed)
+        discard webview_set_title(result, title=title.cstring)
+        discard webview_set_size(result, width.cint, height.cint, if resizable: Constraints.Default else: Constraints.Fixed)
         if content.isUrl():
-            webview_navigate(result, content.cstring)
+            discard webview_navigate(result, content.cstring)
         else:
-            webview_set_html(result, content.cstring)
+            discard webview_set_html(result, content.cstring)
 
-        webview_init(result,(
+        discard webview_init(result,(
             (static readFile(parentDir(currentSourcePath()) & "/webviews.js")) & 
             "\n" & 
             initializer
