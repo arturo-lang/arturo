@@ -230,21 +230,21 @@ when not defined(NOWEBVIEW):
                 if callKind != UnrecognizedCall:
                     returned = jsonFromValue(mainCallHandler(callKind, value), pretty=false).cstring
 
-            webview_return(mainWebview, cast[cstring](seq), res.cint, returned)
+            discard webview_return(mainWebview, cast[cstring](seq), res.cint, returned)
 
         mainWebview = result
         mainCallHandler = callHandler
-        result.webview_bind("callback", handler, cast[pointer](0))
+        discard result.webview_bind("callback", handler, cast[pointer](0))
 
     proc show*(w: Webview) =
         when defined(macosx):
             generateDefaultMainMenu()
 
-        webview_run(w)
-        webview_destroy(w)
+        discard webview_run(w)
+        discard webview_destroy(w)
 
     proc evaluate*(w: Webview, js: string) =
-        webview_eval(w, js.cstring)
+        discard webview_eval(w, js.cstring)
 
     proc getWindow*(w: Webview): Window =
         webview_get_window(w)
