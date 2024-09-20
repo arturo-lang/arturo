@@ -464,7 +464,8 @@ do [
  
     
     topic « compare - :database
-    ; todo: test this
+    ; TODO(lib.comparison) Add tests for `compare` with Database values
+    ;  labels: unit-test,library,:database
     
     
     topic « less? - :date
@@ -1131,7 +1132,8 @@ do [
 
 
     topic « equal? - :database
-    ; todo: test this
+    ; TODO(lib.comparison) Add tests for `equal?` with Database values
+    ;  labels: unit-test,library,:database
 
 
     topic « equal? - :date
@@ -7136,7 +7138,8 @@ do [
     
     
     topic « notEqual? - :database
-    ; todo: test this
+    ; TODO(lib.comparison) Add tests for `notEqual?` with Database values
+    ;  labels: unit-test,library,:database
     
     
     topic « notEqual? - :date
@@ -8212,7 +8215,8 @@ do [
     
     
     topic « same? - :database
-    ; todo: test this
+    ; TODO(lib.comparison) Add tests for `same?` with Database values
+    ;  labels: unit-test,library,:database
     
     
     topic « same? - :date

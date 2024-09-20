@@ -217,3 +217,4 @@ suite "Test magic-methods" [
 ]
 
 ; TODO(test\append): Test error handling when there is no magic-method
+;  labels: unit-test

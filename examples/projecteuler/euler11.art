@@ -21,21 +21,20 @@ grid: split.lines {
     01 70 54 71 83 51 54 69 16 92 33 48 61 43 52 01 89 19 67 48
 }
 
-ns: map grid 'line [map split.by:" " line => [to :integer]]
+ns: map grid 'line [map split.by:" " line => [to :integer &]]
 
 products: []
 
 ; horizontal
-loop 0..19 'y [ loop 0..16 'x [ 'products ++ product @[(ns \ y)\ x (ns \ y)\ x+1 (ns \ y)\ x+2 (ns \ y)\ x+3] ] ]
+loop 0..19 'y [ loop 0..16 'x [ 'products ++ product map 0..3 'z -> ns\[y]\[x+z] ] ]
 
 ; vertical
-loop 0..16 'y [ loop 0..19 'x [ 'products ++ product @[(ns \ y)\ x (ns \ y+1)\ x (ns \ y+2)\ x (ns \ y+3)\ x] ] ]
+loop 0..16 'y [ loop 0..19 'x [ 'products ++ product map 0..3 'z -> ns\[y+z]\[x] ] ]
 
 ; bottom-right
-loop 0..16 'y [ loop 0..16 'x [ 'products ++ product @[(ns \ y)\ x (ns \ y+1)\ x+1 (ns \ y+2)\ x+2 (ns \ y+3)\ x+3] ] ]
+loop 0..16 'y [ loop 0..16 'x [ 'products ++ product map 0..3 'z -> ns\[y+z]\[x+z] ] ]
 
 ; top-right
-loop 3..19 'y [ loop 3..16 'x [ 'products ++ product @[(ns \ y)\ x (ns \ y-1)\ x+1 (ns \ y-2)\ x+2 (ns \ y-3)\ x+3] ] ]
-
+loop 3..19 'y [ loop 3..16 'x [ 'products ++ product map 0..3 'z -> ns\[y-z]\[x+z] ] ]
 
 print max products

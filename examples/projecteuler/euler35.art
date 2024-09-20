@@ -1,0 +1,16 @@
+; Except 2 and 5, all circular primes must contain only the digits 1,3,7,9
+candidates: 
+	[2 5] ++ flatten map 1..6 'lngth [
+		select (map permutate.repeated.by: lngth [1 3 7 9] => digits) => prime?
+	]
+
+circularPrime?: function 'n [
+	dgts: digits n
+	all? @[loop 1..(dec size dgts) 'shft ->
+			prime? digits rotate dgts shft]
+]
+print size select candidates => circularPrime?
+
+
+
+
