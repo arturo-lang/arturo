@@ -127,6 +127,8 @@ proc webview_bind*(w: Webview, name: cstring, cb: WebviewCallback, arg: pointer)
     ## string is a JSON array of all the arguments passed to the JavaScript
     ## function.
 
+proc webview_unbind*(w: Webview, name: cstring) {.importc.}
+
 proc webview_return*(w: Webview; seq: cstring; status: cint; result: cstring)
     ## Allows to return a value from the native binding. Original request pointer
     ## must be provided to help internal RPC engine match requests with responses.
