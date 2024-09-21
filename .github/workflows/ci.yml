@@ -74,4 +74,4 @@ jobs:
               uses: 'actions/upload-artifact@v4'
               with:
                 name: arturo-${{matrix.os}}-${{matrix.mode}}-windows
-                path: /usr/bin/arturo.exe
+                path: D:\a\arturo\arturo\arturo\bin\arturo.exe
