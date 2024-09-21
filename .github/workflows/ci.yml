@@ -68,9 +68,9 @@ jobs:
                 arturo tools/unitt-tester.art
                 cd ..
 
-            - if: matrix.mode == full && matrix.os == 'windows-latest'
+            - if: matrix.mode == 'full' && matrix.os == 'windows-latest'
               name: Upload artifact
               uses: 'actions/upload-artifact@v1'
                 with:
-                    name: arturo-${{matrix.os}}-${{matrix.full}}-windows
+                    name: arturo-${{matrix.os}}-${{matrix.mode}}-windows
                     path: arturo/arturo.exe
