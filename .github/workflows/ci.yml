@@ -70,7 +70,7 @@ jobs:
 
             - if: matrix.mode == 'full' && matrix.os == 'windows-latest'
               name: Upload artifact
-              uses: 'actions/upload-artifact@v1'
+              uses: 'actions/upload-artifact@v4'
               with:
                 name: arturo-${{matrix.os}}-${{matrix.mode}}-windows
                 path: arturo/arturo.exe
