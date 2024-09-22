@@ -562,7 +562,7 @@ proc processRemotePackage(pkg: string, verspec: VersionSpec, doLoad: bool = true
                 createDir(BinFolder.fmt)
                 when defined(windows):
                     let executableDest = BinFolder.fmt / "{pkg}.bat".fmt
-                    writeToFile(executableDest, "{executableFile} %*".fmt)
+                    writeToFile(executableDest, "@echo off\narturo {executableFile} %*".fmt)
                 else:
                     let executableDest = BinFolder.fmt / pkg
                     writeToFile(executableDest, "#!/usr/bin/env bash\narturo {executableFile} \"$@\"".fmt)
