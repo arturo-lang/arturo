@@ -991,7 +991,7 @@ inline int json_unescape(const char *s, size_t n, char *out) {
       case '\"':
         c = '\"';
         break;
-      default: // TODO: support unicode decoding
+      default:
         return -1;
       }
     }
@@ -1648,7 +1648,6 @@ static inline bool is_gdk_x11_backend() {
 static inline bool is_webkit_dmabuf_bugged() {
   auto wk_major = webkit_get_major_version();
   auto wk_minor = webkit_get_minor_version();
-  // TODO: Narrow down affected WebKit version when there's a fixed version
   auto is_affected_wk_version = wk_major == 2 && wk_minor >= 42;
   if (!is_affected_wk_version) {
     return false;
@@ -2281,8 +2280,6 @@ public:
       // Needed for the window to close immediately.
       deplete_run_loop_event_queue();
     }
-    // TODO: Figure out why m_manager is still alive after the autoreleasepool
-    // has been drained.
   }
 
 protected:
@@ -4131,8 +4128,6 @@ protected:
   }
 
   noresult eval_impl(const std::string &js) override {
-    // TODO: Skip if no content has begun loading yet. Can't check with
-    //       ICoreWebView2::get_Source because it returns "about:blank".
     auto wjs = widen_string(js);
     m_webview->ExecuteScript(wjs.c_str(), nullptr);
     return {};
@@ -4161,8 +4156,6 @@ protected:
         deplete_run_loop_event_queue();
       }
     }
-    // TODO: There's a non-zero chance that we didn't get the script ID.
-    //       We need to convey the error somehow.
     return user_script{js, std::unique_ptr<user_script::impl>{
                                new user_script::impl{script_id, wjs}}};
   }
