@@ -1866,7 +1866,7 @@ proc defineLibrary*() =
         rule        = PrefixPrecedence,
         description = "get size/length of given collection",
         args        = {
-            "collection": {String, Block, Range, Dictionary, Object, Null}
+            "collection": {String, Block, Range, Dictionary, Binary, Object, Null}
         },
         attrs       = NoAttrs,
         returns     = {Integer, Floating},
@@ -1895,6 +1895,8 @@ proc defineLibrary*() =
                 else: push(newInteger(sz))
             elif xKind == Block:
                 push(newInteger(x.a.len))
+            elif xKind == Binary:
+                push(newInteger(x.n.len))
             else: # Null
                 push(newInteger(0))
 
