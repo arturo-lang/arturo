@@ -52,28 +52,28 @@ jobs:
                 src: ${{ github.ref }}
                 metadata: ${{ env.BRANCH_NAME }}-${{ github.sha }}
  
-            # - if: (matrix.mode != 'safe' && matrix.mode != 'web') && (matrix.os != 'ubuntu-latest' || matrix.arch != 'arm64')
-            #   name: Run tests (Old)
-            #   run: |
-            #     ls -la arturo
-            #     cd arturo 
-            #     cat version/metadata
-            #     arturo -v
-            #     arturo tools/tester.art
-            #     cd ..
+            - if: (matrix.mode != 'safe' && matrix.mode != 'web') && (matrix.os != 'ubuntu-latest' || matrix.arch != 'arm64')
+              name: Run tests (Old)
+              run: |
+                ls -la arturo
+                cd arturo 
+                cat version/metadata
+                arturo -v
+                arturo tools/tester.art
+                cd ..
  
-            # - if: matrix.mode == 'full' && (matrix.os != 'ubuntu-latest' || matrix.arch != 'arm64')
-            #   name: Run tests (Unitt)
-            #   run: |
-            #     cd arturo
-            #     arturo tools/unitt-tester.art
-            #     cd ..
+            - if: matrix.mode == 'full' && (matrix.os != 'ubuntu-latest' || matrix.arch != 'arm64')
+              name: Run tests (Unitt)
+              run: |
+                cd arturo
+                arturo tools/unitt-tester.art
+                cd ..
 
             - name: Prepare artifact
               id: artifact-details
               run: |
                 binary_path="arturo/bin/arturo"
-                
+
                 artifact_os="macos"
                 artifact_arch="${{matrix.arch}}"
                 artifact_mode="${{matrix.mode}}"
