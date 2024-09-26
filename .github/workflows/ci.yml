@@ -70,6 +70,7 @@ jobs:
             #     cd ..
 
             - name: Prepare artifact
+              id: artifact-details
               run: |
                 binary_path="arturo/bin/arturo"
                 artifact_os="macos"
@@ -94,21 +95,18 @@ jobs:
 
                 cd arturo
                 git_hash=$(git rev-parse --short "$GITHUB_SHA")
-                echo "GITHUB_SHA = $GITHUB_SHA"
-                echo "git_hash = $git_hash"
-                echo "full = ${{ env.BRANCH_NAME }}-${{ github.sha }}"
+                git_stamp="${{ env.BRANCH_NAME}}.${git_hash}"
                 cd ..
 
-                artifact_name="arturo-${git_hash}-${artifact_arch}-${artifact_os}-${artifact_mode}"
+                artifact_name="arturo-${git_stamp}-${artifact_arch}-${artifact_os}-${artifact_mode}"
                 echo "BINARY_PATH = $binary_path"
                 echo "ARTIFACT_NAME = $artifact_name"
-            # binary_path="arturo"
-            # echo "action_state=yellow" >> "$GITHUB_ENV"
-              
 
-            # - if: matrix.mode == 'full' && matrix.os == 'windows-latest'
-            #   name: Upload artifact
-            #   uses: 'actions/upload-artifact@v4'
-            #   with:
-            #     name: arturo-${{matrix.os}}-${{matrix.mode}}-windows
-            #     path: D:\a\arturo\arturo\arturo\bin\arturo.exe
+                echo "BINARY_PATH=$binary_path" >> "$GITHUB_OUTPUT"
+                echo "ARTIFACT_NAME=$artifact_name" >> "$GITHUB_OUTPUT"
+
+            - name: Upload artifact
+              uses: 'actions/upload-artifact@v4'
+              with:
+                name: ${{ steps.artifact-details.outputs.ARTIFACT_NAME }}
+                path: ${{ steps.artifact-details.outputs.BINARY_PATH }}
