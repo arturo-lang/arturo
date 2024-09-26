@@ -71,9 +71,6 @@ jobs:
 
             - name: Prepare artifact
               run: |
-                ls -la .
-                ls -la arturo
-                ls -la bin
                 ls -la arturo/bin
             # binary_path="arturo"
             # echo "action_state=yellow" >> "$GITHUB_ENV"
