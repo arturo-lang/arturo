@@ -73,6 +73,7 @@ jobs:
               id: artifact-details
               run: |
                 binary_path="arturo/bin/arturo"
+                
                 artifact_os="macos"
                 artifact_arch="${{matrix.arch}}"
                 artifact_mode="${{matrix.mode}}"
@@ -91,16 +92,12 @@ jobs:
                     fi
                 fi
 
-                ls -la arturo/bin
-
                 cd arturo
                 git_hash=$(git rev-parse --short "$GITHUB_SHA")
                 git_stamp="${{ env.BRANCH_NAME}}.${git_hash}"
                 cd ..
 
                 artifact_name="arturo-${git_stamp}-${artifact_arch}-${artifact_os}-${artifact_mode}"
-                echo "BINARY_PATH = $binary_path"
-                echo "ARTIFACT_NAME = $artifact_name"
 
                 echo "BINARY_PATH=$binary_path" >> "$GITHUB_OUTPUT"
                 echo "ARTIFACT_NAME=$artifact_name" >> "$GITHUB_OUTPUT"
