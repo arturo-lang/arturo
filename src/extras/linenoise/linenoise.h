@@ -1,12 +1,14 @@
-/* linenoise.h -- guerrilla line editing library against the idea that a
- * line editing lib needs to be 20,000 lines of C code.
+/* linenoise.h -- VERSION 1.0
+ *
+ * Guerrilla line editing library against the idea that a line editing lib
+ * needs to be 20,000 lines of C code.
  *
  * See linenoise.c for more information.
  *
  * ------------------------------------------------------------------------
  *
- * Copyright (c) 2010, Salvatore Sanfilippo <antirez at gmail dot com>
- * Copyright (c) 2010, Pieter Noordhuis <pcnoordhuis at gmail dot com>
+ * Copyright (c) 2010-2023, Salvatore Sanfilippo <antirez at gmail dot com>
+ * Copyright (c) 2010-2013, Pieter Noordhuis <pcnoordhuis at gmail dot com>
  *
  * All rights reserved.
  *
@@ -41,109 +43,72 @@
 extern "C" {
 #endif
 
-#ifndef NO_COMPLETION
+#include <stddef.h> /* For size_t. */
+
+extern char *linenoiseEditMore;
+
+/* The linenoiseState structure represents the state during line editing.
+ * We pass this state to functions implementing specific editing
+ * functionalities. */
+struct linenoiseState {
+    int in_completion;  /* The user pressed TAB and we are now in completion
+                         * mode, so input is handled by completeLine(). */
+    size_t completion_idx; /* Index of next completion to propose. */
+    int ifd;            /* Terminal stdin file descriptor. */
+    int ofd;            /* Terminal stdout file descriptor. */
+    char *buf;          /* Edited line buffer. */
+    size_t buflen;      /* Edited line buffer size. */
+    const char *prompt; /* Prompt to display. */
+    size_t plen;        /* Prompt length. */
+    size_t pos;         /* Current cursor position. */
+    size_t oldpos;      /* Previous refresh cursor position. */
+    size_t len;         /* Current edited line length. */
+    size_t cols;        /* Number of columns in terminal. */
+    size_t oldrows;     /* Rows used by last refrehsed line (multiline mode) */
+    int history_index;  /* The history index we are currently editing. */
+};
+
 typedef struct linenoiseCompletions {
   size_t len;
   char **cvec;
 } linenoiseCompletions;
 
-/*
- * The callback type for tab completion handlers.
- */
-typedef void(linenoiseCompletionCallback)(const char *prefix, linenoiseCompletions *comp, void *userdata);
+/* Non blocking API. */
+int linenoiseEditStart(struct linenoiseState *l, int stdin_fd, int stdout_fd, char *buf, size_t buflen, const char *prompt);
+char *linenoiseEditFeed(struct linenoiseState *l);
+void linenoiseEditStop(struct linenoiseState *l);
+void linenoiseHide(struct linenoiseState *l);
+void linenoiseShow(struct linenoiseState *l);
 
-/*
- * Sets the current tab completion handler and returns the previous one, or NULL
- * if no prior one has been set.
- */
-linenoiseCompletionCallback * linenoiseSetCompletionCallback(linenoiseCompletionCallback *comp, void *userdata);
-
-/*
- * Adds a copy of the given string to the given completion list. The copy is owned
- * by the linenoiseCompletions object.
- */
-void linenoiseAddCompletion(linenoiseCompletions *comp, const char *str);
-
-typedef char*(linenoiseHintsCallback)(const char *, int *color, int *bold, void *userdata);
-typedef void(linenoiseFreeHintsCallback)(void *hint, void *userdata);
-void linenoiseSetHintsCallback(linenoiseHintsCallback *callback, void *userdata);
-void linenoiseSetFreeHintsCallback(linenoiseFreeHintsCallback *callback);
-
-#endif
-
-/*
- * Prompts for input using the given string as the input
- * prompt. Returns when the user has tapped ENTER or (on an empty
- * line) EOF (Ctrl-D on Unix, Ctrl-Z on Windows). Returns either
- * a copy of the entered string (for ENTER) or NULL (on EOF).  The
- * caller owns the returned string and must eventually free() it.
- */
+/* Blocking API. */
 char *linenoise(const char *prompt);
+void linenoiseFree(void *ptr);
 
-/**
- * Like linenoise() but starts with an initial buffer.
- */
-char *linenoiseWithInitial(const char *prompt, const char *initial);
+/* Completion API. */
+typedef void(linenoiseCompletionCallback)(const char *, linenoiseCompletions *);
+typedef char*(linenoiseHintsCallback)(const char *, int *color, int *bold);
+typedef void(linenoiseFreeHintsCallback)(void *);
+void linenoiseSetCompletionCallback(linenoiseCompletionCallback *);
+void linenoiseSetHintsCallback(linenoiseHintsCallback *);
+void linenoiseSetFreeHintsCallback(linenoiseFreeHintsCallback *);
+void linenoiseAddCompletion(linenoiseCompletions *, const char *);
 
-/**
- * Clear the screen.
- */
-void linenoiseClearScreen(void);
-
-/*
- * Adds a copy of the given line of the command history.
- */
+/* History API. */
 int linenoiseHistoryAdd(const char *line);
-
-/*
- * Sets the maximum length of the command history, in lines.
- * If the history is currently longer, it will be trimmed,
- * retaining only the most recent entries. If len is 0 or less
- * then this function does nothing.
- */
 int linenoiseHistorySetMaxLen(int len);
-
-/*
- * Returns the current maximum length of the history, in lines.
- */
-int linenoiseHistoryGetMaxLen(void);
-
-/*
- * Saves the current contents of the history to the given file.
- * Returns 0 on success.
- */
 int linenoiseHistorySave(const char *filename);
-
-/*
- * Replaces the current history with the contents
- * of the given file.  Returns 0 on success.
- */
 int linenoiseHistoryLoad(const char *filename);
 
-/*
- * Frees all history entries, clearing the history.
- */
-void linenoiseHistoryFree(void);
-
-/*
- * Returns a pointer to the list of history entries, writing its
- * length to *len if len is not NULL. The memory is owned by linenoise
- * and must not be freed.
- */
-char **linenoiseHistory(int *len);
-
-/*
- * Returns the number of display columns in the current terminal.
- */
-int linenoiseColumns(void);
-
-/**
- * Enable or disable multiline mode (disabled by default)
- */
-void linenoiseSetMultiLine(int enableml);
+/* Other utilities. */
+void linenoiseClearScreen(void);
+void linenoiseSetMultiLine(int ml);
+void linenoisePrintKeyCodes(void);
+void linenoiseMaskModeEnable(void);
+void linenoiseMaskModeDisable(void);
 
 #ifdef __cplusplus
 }
 #endif
 
 #endif /* __LINENOISE_H */
+
