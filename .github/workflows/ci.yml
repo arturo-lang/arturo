@@ -72,10 +72,10 @@ jobs:
             - name: Prepare artifact
               run: |
                 binary_path="bin/arturo"
-                if ["${{matrix.os}}"="windows-latest"]; then
+                if [ "${{matrix.os}}" = "windows-latest" ]; then
                     binary_path="bin/arturo.exe"
                 fi
-                if ["${{matrix.mode}}"="web"]; then
+                if [ "${{matrix.mode}}" = "web" ]; then
                     binary_path="bin/arturo.js"
                 fi
 
