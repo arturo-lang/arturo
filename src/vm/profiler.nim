@@ -263,7 +263,7 @@ template hookOpProfiler*(name: string, actionContent: untyped): untyped =
         actionContent
 
 template hookProcProfiler*(name: string, actionContent: untyped): untyped =
-    when defined(PROFILER):
+    when false:#defined(PROFILER):
         var newRow = addMetricIfNotExists(name, "procs")
         newRow.runs += 1
         newRow.time += getMetric(actionContent)
@@ -290,7 +290,7 @@ proc initProfiler*() =
 
         # TODO(VM/profiler) Completely remove or make it work "properly"
         #  labels: vm, benchmark, performance, bug
-        when false:
+        when true:
             system.profilingRequestedHook = requestedHook
             system.profilerHook = hook
     else:
