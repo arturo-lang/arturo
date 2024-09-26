@@ -80,7 +80,7 @@ jobs:
                     artifact_os="windows"
                     binary_path="${binary_path}.exe"
                 fi
-                if [ "${{matrix.os}} = "ubuntu-latest" ]; then
+                if [ "${{matrix.os}}" = "ubuntu-latest" ]; then
                     artifact_os="linux"
                     if [ "${{matrix.mode}}" = "web" ]; then
                         artifact_os="js"
