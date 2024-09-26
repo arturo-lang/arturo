@@ -41,9 +41,9 @@ type
       len*: csize_t
       cvec*: cstringArray
 
-    LinenoiseCompletionCallback*    = proc (buf: constChar; lc: ptr LinenoiseCompletions, userdata: pointer) {.cdecl.}
-    LinenoiseHintsCallback*         = proc (buf: constChar; color: var cint; bold: var cint, userdata: pointer): cstring {.cdecl.}
-    LinenoiseFreeHintsCallback*     = proc (buf: constChar; color: var cint; bold: var cint, userdata: pointer) {.cdecl.}
+    LinenoiseCompletionCallback*    = proc (buf: constChar; lc: ptr LinenoiseCompletions) {.cdecl.}
+    LinenoiseHintsCallback*         = proc (buf: constChar; color: var cint; bold: var cint): cstring {.cdecl.}
+    LinenoiseFreeHintsCallback*     = proc (buf: constChar; color: var cint; bold: var cint) {.cdecl.}
 
 #=======================================
 # Function prototypes
