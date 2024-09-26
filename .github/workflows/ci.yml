@@ -76,17 +76,17 @@ jobs:
                 artifact_arch="${{matrix.arch}}"
                 artifact_mode="${{matrix.mode}}"
 
-                if [ "${{matrix.os}}" = "windows-latest" ]; then
+                if [[ "${{matrix.os}}" = "windows-latest" ]]; then
                     artifact_os="windows"
                     binary_path="${binary_path}.exe"
                 fi
-                if [ "${{matrix.os}} = "ubuntu-latest" ]; then
+                if [[ "${{matrix.os}} = "ubuntu-latest" ]]; then
                     artifact_os="linux"
-                    if [ "${{matrix.mode}}" = "web" ]; then
+                    if [[ "${{matrix.mode}}" = "web" ]]; then
                         artifact_os="js"
                         artifact_arch="web"
                         artifact_mode="mini"
-                        binary_path=${binary_path}.js"
+                        binary_path="${binary_path}.js"
                     fi
                 fi
 
