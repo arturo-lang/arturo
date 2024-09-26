@@ -92,9 +92,9 @@ jobs:
 
                 ls -la arturo/bin
 
-                echo "${{ github.head_ref || github.ref_name }}"
+                git_hash=$(git rev-parse --short "$GITHUB_SHA")
 
-                artifact_name="arturo-${artifact_arch}-${artifact_os}-${artifact_mode}"
+                artifact_name="arturo-${git_hash}-${artifact_arch}-${artifact_os}-${artifact_mode}"
                 echo "BINARY_PATH = $binary_path"
                 echo "ARTIFACT_NAME = $artifact_name"
             # binary_path="arturo"
