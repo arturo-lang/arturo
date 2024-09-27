@@ -2691,9 +2691,9 @@ proc defineLibrary*() =
     #  same as with `contains?`
     #  labels: library, enhancement, open discussion
     builtin "in?",
-        alias       = unaliased,
+        alias       = element, 
         op          = opNop,
-        rule        = PrefixPrecedence,
+        rule        = InfixPrecedence,
         description = "check if value exists in given collection",
         args        = {
             "value"     : {Any},
