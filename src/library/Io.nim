@@ -185,9 +185,9 @@ proc defineLibrary*() =
             alias       = unaliased, 
             op          = opNop,
             rule        = PrefixPrecedence,
-            description = "print prompt and get user input",
+            description = "print prompt and get user input. If the prompt is ø, get a single character",
             args        = {
-                "prompt": {String}
+                "prompt": {String,Null}
             },
             attrs       = {
                 "repl"      : ({Logical},"get input as if in a REPL"),
@@ -195,7 +195,7 @@ proc defineLibrary*() =
                 "complete"  : ({Block},"use given array for auto-completions"),
                 "hint"      : ({Dictionary},"use given dictionary for typing hints")
             },
-            returns     = {String},
+            returns     = {String,Char},
             example     = """
             name: input "What is your name? "
             ; (user enters his name: Bob)
@@ -217,6 +217,11 @@ proc defineLibrary*() =
             ; show previous entries with arrow-up, store entries in
             ; a recoverable file and also use autocompletions and hints
             ; based on give reference
+            ...........
+            character: input ø
+            ; (User types a key, for example "A")
+            print character
+            ; A
             """:
                 #=======================================================
                 if (hadAttr("repl")):
@@ -249,9 +254,12 @@ proc defineLibrary*() =
                     else:
                         push(newString(str))
                 else:
-                    stdout.write(x.s)
-                    stdout.flushFile()
-                    push(newString(stdin.readLine()))
+                    if xKind == Null:
+                        push(newChar(getch()))
+                    else:
+                        stdout.write(x.s)
+                        stdout.flushFile()
+                        push(newString(stdin.readLine()))
 
     builtin "print",
         alias       = unaliased, 
