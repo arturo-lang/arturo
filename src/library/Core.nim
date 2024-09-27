@@ -725,8 +725,6 @@ proc defineLibrary*() =
             ]
         """:
             #=======================================================
-            Warning_DeprecatedFunction("if?", "switch")
-
             let condition = not (xKind==Null or isFalse(x))
             if condition: 
                 execUnscoped(y)
@@ -1496,8 +1494,6 @@ proc defineLibrary*() =
             ]
         """:
             #=======================================================
-            Warning_DeprecatedFunction("if?", "switch")
-            
             let condition = not (xKind==Null or isFalse(x))
             if condition: 
                 execUnscoped(y)
