@@ -2762,7 +2762,7 @@ proc defineLibrary*() =
                         let values = toSeq(y.d.values)
                         push(newLogical(values[at] == x))
                     of Object:
-                        if unlikely(x.magic.fetch(ContainsQM)):
+                        if unlikely(y.magic.fetch(ContainsQM)):
                             pushAttr("at", aAt)
                             mgk(@[y, x]) # already pushes value
                         else:
@@ -2794,7 +2794,7 @@ proc defineLibrary*() =
                             let values = toSeq(y.d.values)
                             push(newLogical(x in values))
                     of Object:
-                        if unlikely(x.magic.fetch(ContainsQM)):
+                        if unlikely(y.magic.fetch(ContainsQM)):
                             if hadAttr("deep"):
                                 pushAttr("deep", VTRUE)
 
