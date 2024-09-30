@@ -41,6 +41,8 @@ serveInternal: function [Request, verbose][
         if not? null? attr 'json    -> servedContent: "application/json"
         if not? null? attr 'xml     -> servedContent: "application/xml"
 
+        if asContent: <= attr 'as   -> servedContent: asContent
+
         serverResponse\serverContentType: servedContent
 
         servedContent: "Content-Type: " ++ servedContent
