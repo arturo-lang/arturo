@@ -75,7 +75,7 @@ serveInternal: function [Request, verbose][
             ]
         ]
 
-        send.html call var'actionFunc passedParams
+        call var'actionFunc passedParams
     ]
 
     getServerResponse: [
