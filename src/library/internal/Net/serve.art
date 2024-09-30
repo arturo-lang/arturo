@@ -32,7 +32,7 @@ serveInternal: function [Request, verbose][
 
     customServerStatus: false
 
-    send: function [str][
+    emit: function [str][
         servedContent: "text/plain"
 
         if not? null? attr 'css     -> servedContent: "text/css"
