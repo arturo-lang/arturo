@@ -475,8 +475,6 @@ proc defineLibrary*() =
                                         "headers": newString("")
                                     }.toOrderedTable)
                             
-                            responseDict.d["pattern"] = newString(initialReqPath)
-                            responseDict.d["contentType"] = newString("")
                             responseDict.d["benchmark"] = newQuantity(toQuantity(timeTaken, parseAtoms("ms")))
                         else:
                             # call internal implementation
@@ -497,30 +495,38 @@ proc defineLibrary*() =
                                  bold(whiteColor) & ($(reqAction)).toUpperAscii() & " " & initialReqPath & 
                                  resetColor & serverPattern & resetColor
 
+                        let headerStr = (toSeq(responseDict.d["headers"].pairs)).map(
+                            proc(kv: (string,Value)): string = 
+                                kv[0] & ": " & kv[1].s
+                        ).join("\c\L")
+
                         # send response
                         req.respond(newServerResponse(
                             responseDict.d["body"].s,
                             HttpCode(responseDict.d["status"].i),
-                            responseDict.d["headers"].s
+                            headerStr
                         ))
 
                         # show request response info
                         # if we're on .verbose mode
                         if verbose:
+                            let contentType = responseDict.d["headers"].d.getOrDefault("Content-Type", newString("--"))
+                            let requestPattern = responseDict.d.getOrDefault("pattern", newString(initialReqPath))
+
                             var colorCode = greenColor
                             if responseDict.d["status"].i != 200: 
                                 colorCode = redColor
 
                             var serverPattern = " "
-                            if responseDict.d["pattern"].s != initialReqPath and responseDict.d["pattern"].s != "":
-                                serverPattern = " -> " & responseDict.d["pattern"].s & " "
+                            if requestPattern.s != initialReqPath and requestPattern.s != "":
+                                serverPattern = " -> " & requestPattern.s & " "
 
                             let serverBenchmark = $(responseDict.d["benchmark"])
 
                             echo bold(colorCode) & ">>" & resetColor & " " & 
                                  fg(whiteColor) & "[" & $(now()) & "] " &
                                  bold(colorCode) & $(responseDict.d["status"].i) & " " & resetColor &
-                                 fg(whiteColor) & responseDict.d["contentType"].s & " " &
+                                 fg(whiteColor) & contentType.s & " " &
                                 #  bold(whiteColor) & ($(reqAction)).toUpperAscii() & " " & initialReqPath & 
                                 #  resetColor & serverPattern & 
                                  fg(grayColor) & "(" & serverBenchmark & ")" & resetColor
