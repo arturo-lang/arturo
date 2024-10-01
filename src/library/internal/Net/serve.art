@@ -20,7 +20,7 @@ initServerInternal: function [serverRoutes][
 ]
 
 ; main request handler
-serveInternal: function [Request, verbose][
+serveInternal: function [Request][
     serverResponse: #[
         body: ""
         pattern: ""
