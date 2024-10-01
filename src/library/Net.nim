@@ -464,16 +464,16 @@ proc defineLibrary*() =
                                                 # show request info
                         # if we're on .verbose mode
                         
-                        if verbose:
-                            # requestPattern = responseDict.getOrDefault("pattern", newString(initialReqPath))
-                            # var serverPattern = " "
-                            # if requestPattern.s != initialReqPath and requestPattern.s != "":
-                            #     serverPattern = " -> " & requestPattern.s & " "
+                        # if verbose:
+                        #     # requestPattern = responseDict.getOrDefault("pattern", newString(initialReqPath))
+                        #     # var serverPattern = " "
+                        #     # if requestPattern.s != initialReqPath and requestPattern.s != "":
+                        #     #     serverPattern = " -> " & requestPattern.s & " "
 
-                            echo bold(whiteColor) & "<<" & resetColor & " " & 
-                                 fg(whiteColor) & "[" & $(now()) & "] " &
-                                 bold(whiteColor) & ($(reqAction)).toUpperAscii() & " " & initialReqPath & 
-                                 resetColor
+                        #     echo bold(whiteColor) & "<<" & resetColor & " " & 
+                        #          fg(whiteColor) & "[" & $(now()) & "] " &
+                        #          bold(whiteColor) & ($(reqAction)).toUpperAscii() & " " & initialReqPath & 
+                        #          resetColor
 
 
                         # the response
@@ -538,10 +538,12 @@ proc defineLibrary*() =
                                 serverPattern = " -> " & requestPattern.s & " "
 
                             let serverBenchmark = $(responseDict["benchmark"])
+                            let timestamp = "[" & $(now()) & "] "
 
-                            echo bold(colorCode) & ">>" & resetColor & " " & 
-                                 fg(whiteColor) & "[" & $(now()) & "] " &
-                                 bold(colorCode) & $(responseDict["status"].i) & " " & resetColor &
+                            echo bold(colorCode) & ">" & resetColor & " " & 
+                                 fg(whiteColor) & timestamp &
+                                 bold(whiteColor) & ($(reqAction)).toUpperAscii() & " " & initialReqPath & "\n"
+                                 bold(colorCode) & alignLeft($(responseDict["status"].i), timestamp.len()) & " " & resetColor &
                                  fg(whiteColor) & contentType.s & " " &
                                  fg(grayColor) & "(" & serverBenchmark & ")" & resetColor
 
