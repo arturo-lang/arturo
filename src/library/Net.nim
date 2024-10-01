@@ -366,7 +366,7 @@ proc defineLibrary*() =
             rule        = PrefixPrecedence,
             description = "start web server using given routes",
             args        = {
-                "routes"    : {Block}
+                "routes"    : {Block, Function}
             },
             attrs       = {
                 "port"      : ({Integer},"use given port"),
