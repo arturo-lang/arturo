@@ -465,17 +465,25 @@ proc defineLibrary*() =
 
                         if routes.kind == Function:
                             let timeTaken = getBenchmark:
-                                callFunction(routes, "<closure>", @[requestDict])
-                                responseDict = stack.pop()
+                                try:
+                                    callFunction(routes, "<closure>", @[requestDict])
+                                    responseDict = stack.pop()
 
-                                if responseDict.kind == String:
-                                    responseDict = newDictionary({
-                                        "body": responseDict,
-                                        "status": newInteger(200),
-                                        "headers": newDictionary()
-                                    }.toOrderedTable)
-                                else:
-                                    discard responseDict.d.hasKeyOrPut("status", newInteger(200))
+                                    if responseDict.kind == String:
+                                        responseDict = newDictionary({
+                                            "body": responseDict,
+                                            "status": newInteger(200),
+                                            "headers": newDictionary()
+                                        }.toOrderedTable)
+                                    else:
+                                        discard responseDict.d.hasKeyOrPut("status", newInteger(200))
+                                except VError as e:
+                                    showError(e)
+                                    responseDict = newDictionary({"status": newInteger(500)}.toOrderedTable)
+                                except CatchableError, Defect:
+                                    let e = getCurrentException()
+                                    showError(VError(e))
+                                    responseDict = newDictionary({"status": newInteger(500)}.toOrderedTable)
                             
                             responseDict.d["benchmark"] = newQuantity(toQuantity(timeTaken, parseAtoms("ms")))
                         else:
