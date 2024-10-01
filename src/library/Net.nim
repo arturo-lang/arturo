@@ -479,8 +479,7 @@ proc defineLibrary*() =
                         else:
                             # call internal implementation
                             responseDict = callInternal("serveInternal", getValue=true,
-                                requestDict,
-                                newLogical(verbose)
+                                requestDict
                             )
 
                         # show request info
