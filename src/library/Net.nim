@@ -461,6 +461,21 @@ proc defineLibrary*() =
                                 "headers": newStringDictionary(reqHeaders, collapseBlocks=true)
                             }.toOrderedTable)
 
+                                                # show request info
+                        # if we're on .verbose mode
+                        
+                        if verbose:
+                            # requestPattern = responseDict.getOrDefault("pattern", newString(initialReqPath))
+                            # var serverPattern = " "
+                            # if requestPattern.s != initialReqPath and requestPattern.s != "":
+                            #     serverPattern = " -> " & requestPattern.s & " "
+
+                            echo bold(whiteColor) & "<<" & resetColor & " " & 
+                                 fg(whiteColor) & "[" & $(now()) & "] " &
+                                 bold(whiteColor) & ($(reqAction)).toUpperAscii() & " " & initialReqPath & 
+                                 resetColor & serverPattern & resetColor
+
+
                         # the response
                         var responseDict: ValueDict = {
                             "body": newString(""),
@@ -469,7 +484,6 @@ proc defineLibrary*() =
                         }.toOrderedTable
 
                         var resp: Value
-
                         if routes.kind == Function:
                             let timeTaken = getBenchmark:
                                 try:
@@ -497,20 +511,6 @@ proc defineLibrary*() =
                                 requestDict
                             ).d
 
-                        # show request info
-                        # if we're on .verbose mode
-                        var requestPattern: Value
-                        if verbose:
-                            requestPattern = responseDict.getOrDefault("pattern", newString(initialReqPath))
-                            var serverPattern = " "
-                            if requestPattern.s != initialReqPath and requestPattern.s != "":
-                                serverPattern = " -> " & requestPattern.s & " "
-
-                            echo bold(whiteColor) & "<<" & resetColor & " " & 
-                                 fg(whiteColor) & "[" & $(now()) & "] " &
-                                 bold(whiteColor) & ($(reqAction)).toUpperAscii() & " " & initialReqPath & 
-                                 resetColor & serverPattern & resetColor
-
                         let headerStr = (toSeq(responseDict["headers"].d.pairs)).map(
                             proc(kv: (string,Value)): string = 
                                 kv[0] & ": " & kv[1].s
@@ -527,6 +527,7 @@ proc defineLibrary*() =
                         # if we're on .verbose mode
                         if verbose:
                             let contentType = responseDict["headers"].d.getOrDefault("Content-Type", newString("--"))
+                            let requestPattern = responseDict.getOrDefault("pattern", newString(initialReqPath))
 
                             var colorCode = greenColor
                             if responseDict["status"].i != 200: 
