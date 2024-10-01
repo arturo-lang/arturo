@@ -514,7 +514,7 @@ proc defineLibrary*() =
                             ).d
 
                             if not responseDict["headers"].d.hasKey("Content-Type"):
-                                responseDict["headers"].d["Content-Type"] = "text/html"
+                                responseDict["headers"].d["Content-Type"] = newString("text/html")
 
                         let headerStr = (toSeq(responseDict["headers"].d.pairs)).map(
                             proc(kv: (string,Value)): string = 
