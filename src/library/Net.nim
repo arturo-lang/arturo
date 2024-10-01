@@ -446,16 +446,18 @@ proc defineLibrary*() =
                         else: 
                             reqBodyV = newString(reqBody)
 
-                        # call internal implementation
-                        let got = callInternal("serveInternal", getValue=true,
-                            newDictionary({
+                        let requestDict = newDictionary({
                                 "method": newString($(reqAction)),
                                 "path": newString(reqPath),
                                 "fullPath": newString(initialReqPath),
                                 "body": reqBodyV,
                                 "query": newDictionary(reqQuery),
                                 "headers": newStringDictionary(reqHeaders, collapseBlocks=true)
-                            }.toOrderedTable),
+                            }.toOrderedTable)
+
+                        # call internal implementation
+                        let got = callInternal("serveInternal", getValue=true,
+                            requestDict,
                             newLogical(verbose)
                         )
 
