@@ -476,6 +476,7 @@ proc defineLibrary*() =
                                     }.toOrderedTable)
                             
                             responseDict.d["serverPattern"] = newString(initialReqPath)
+                            responseDict.d["serverContentType"] = newString("")
                             responseDict.d["serverBenchmark"] = newQuantity(toQuantity(timeTaken, parseAtoms("ms")))
                         else:
                             # call internal implementation
