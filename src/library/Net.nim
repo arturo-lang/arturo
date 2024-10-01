@@ -542,7 +542,7 @@ proc defineLibrary*() =
 
                             echo bold(colorCode) & ">" & resetColor & " " & 
                                  fg(whiteColor) & timestamp &
-                                 bold(whiteColor) & ($(reqAction)).toUpperAscii() & " " & initialReqPath & "\n"
+                                 bold(whiteColor) & ($(reqAction)).toUpperAscii() & " " & initialReqPath & "\n" &
                                  bold(colorCode) & alignLeft($(responseDict["status"].i), timestamp.len()) & " " & resetColor &
                                  fg(whiteColor) & contentType.s & " " &
                                  fg(grayColor) & "(" & serverBenchmark & ")" & resetColor
