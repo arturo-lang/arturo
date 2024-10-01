@@ -474,6 +474,8 @@ proc defineLibrary*() =
                                         "status": newInteger(200),
                                         "headers": newDictionary()
                                     }.toOrderedTable)
+                                else:
+                                    discard responseDict.d.hasKeyOrPut("status", newInteger(200))
                             
                             responseDict.d["benchmark"] = newQuantity(toQuantity(timeTaken, parseAtoms("ms")))
                         else:
