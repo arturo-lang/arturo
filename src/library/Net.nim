@@ -511,7 +511,7 @@ proc defineLibrary*() =
                                 colorCode = redColor
 
                             var serverPattern = " "
-                            if responseDict.d["serverPattern"].s != initialReqPath and got.d["serverPattern"].s != "":
+                            if responseDict.d["serverPattern"].s != initialReqPath and responseDict.d["serverPattern"].s != "":
                                 serverPattern = " -> " & responseDict.d["serverPattern"].s & " "
 
                             let serverBenchmark = $(responseDict.d["serverBenchmark"])
