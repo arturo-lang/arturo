@@ -462,42 +462,46 @@ proc defineLibrary*() =
                             }.toOrderedTable)
 
                         # the response
-                        var responseDict: Value
+                        var responseDict: ValueDict = {
+                            "body": newString(""),
+                            "status": newInteger(200),
+                            "headers": newDictionary()
+                        }.toOrderedTable
+
+                        var resp: Value
 
                         if routes.kind == Function:
                             let timeTaken = getBenchmark:
                                 try:
                                     callFunction(routes, "<closure>", @[requestDict])
-                                    responseDict = stack.pop()
+                                    resp = stack.pop()
 
-                                    if responseDict.kind == String:
-                                        responseDict = newDictionary({
-                                            "body": responseDict,
-                                            "status": newInteger(200),
-                                            "headers": newDictionary()
-                                        }.toOrderedTable)
+                                    if resp.kind == String:
+                                        responseDict["body"] = resp
                                     else:
-                                        discard responseDict.d.hasKeyOrPut("status", newInteger(200))
+                                        for k,v in resp.d.pairs:
+                                            responseDict[k] = v
+
                                 except VError as e:
                                     showError(e)
-                                    responseDict = newDictionary({"status": newInteger(500)}.toOrderedTable)
+                                    responseDict["status"] = newInteger(500)
                                 except CatchableError, Defect:
                                     let e = getCurrentException()
                                     showError(VError(e))
-                                    responseDict = newDictionary({"status": newInteger(500)}.toOrderedTable)
+                                    responseDict["status"] = newInteger(500)
                             
-                            responseDict.d["benchmark"] = newQuantity(toQuantity(timeTaken, parseAtoms("ms")))
+                            responseDict["benchmark"] = newQuantity(toQuantity(timeTaken, parseAtoms("ms")))
                         else:
                             # call internal implementation
                             responseDict = callInternal("serveInternal", getValue=true,
                                 requestDict
-                            )
+                            ).d
 
                         # show request info
                         # if we're on .verbose mode
                         var requestPattern: Value
                         if verbose:
-                            requestPattern = responseDict.d.getOrDefault("pattern", newString(initialReqPath))
+                            requestPattern = responseDict.getOrDefault("pattern", newString(initialReqPath))
                             var serverPattern = " "
                             if requestPattern.s != initialReqPath and requestPattern.s != "":
                                 serverPattern = " -> " & requestPattern.s & " "
@@ -507,36 +511,36 @@ proc defineLibrary*() =
                                  bold(whiteColor) & ($(reqAction)).toUpperAscii() & " " & initialReqPath & 
                                  resetColor & serverPattern & resetColor
 
-                        let headerStr = (toSeq(responseDict.d["headers"].d.pairs)).map(
+                        let headerStr = (toSeq(responseDict["headers"].d.pairs)).map(
                             proc(kv: (string,Value)): string = 
                                 kv[0] & ": " & kv[1].s
                         ).join("\c\L")
 
                         # send response
                         req.respond(newServerResponse(
-                            responseDict.d["body"].s,
-                            HttpCode(responseDict.d["status"].i),
+                            responseDict["body"].s,
+                            HttpCode(responseDict["status"].i),
                             headerStr
                         ))
 
                         # show request response info
                         # if we're on .verbose mode
                         if verbose:
-                            let contentType = responseDict.d["headers"].d.getOrDefault("Content-Type", newString("--"))
+                            let contentType = responseDict["headers"].d.getOrDefault("Content-Type", newString("--"))
 
                             var colorCode = greenColor
-                            if responseDict.d["status"].i != 200: 
+                            if responseDict["status"].i != 200: 
                                 colorCode = redColor
 
                             var serverPattern = " "
                             if requestPattern.s != initialReqPath and requestPattern.s != "":
                                 serverPattern = " -> " & requestPattern.s & " "
 
-                            let serverBenchmark = $(responseDict.d["benchmark"])
+                            let serverBenchmark = $(responseDict["benchmark"])
 
                             echo bold(colorCode) & ">>" & resetColor & " " & 
                                  fg(whiteColor) & "[" & $(now()) & "] " &
-                                 bold(colorCode) & $(responseDict.d["status"].i) & " " & resetColor &
+                                 bold(colorCode) & $(responseDict["status"].i) & " " & resetColor &
                                  fg(whiteColor) & contentType.s & " " &
                                  fg(grayColor) & "(" & serverBenchmark & ")" & resetColor
 
