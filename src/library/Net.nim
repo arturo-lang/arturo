@@ -470,14 +470,14 @@ proc defineLibrary*() =
 
                                 if responseDict.kind == String:
                                     responseDict = newDictionary({
-                                        "serverBody": responseDict,
-                                        "serverStatus": newInteger(200),
-                                        "serverHeaders": newString("")
+                                        "body": responseDict,
+                                        "status": newInteger(200),
+                                        "headers": newString("")
                                     }.toOrderedTable)
                             
-                            responseDict.d["serverPattern"] = newString(initialReqPath)
-                            responseDict.d["serverContentType"] = newString("")
-                            responseDict.d["serverBenchmark"] = newQuantity(toQuantity(timeTaken, parseAtoms("ms")))
+                            responseDict.d["pattern"] = newString(initialReqPath)
+                            responseDict.d["contentType"] = newString("")
+                            responseDict.d["benchmark"] = newQuantity(toQuantity(timeTaken, parseAtoms("ms")))
                         else:
                             # call internal implementation
                             responseDict = callInternal("serveInternal", getValue=true,
@@ -489,8 +489,8 @@ proc defineLibrary*() =
                         # if we're on .verbose mode
                         if verbose:
                             var serverPattern = " "
-                            if responseDict.d["serverPattern"].s != initialReqPath and responseDict.d["serverPattern"].s != "":
-                                serverPattern = " -> " & responseDict.d["serverPattern"].s & " "
+                            if responseDict.d["pattern"].s != initialReqPath and responseDict.d["pattern"].s != "":
+                                serverPattern = " -> " & responseDict.d["pattern"].s & " "
 
                             echo bold(whiteColor) & "<<" & resetColor & " " & 
                                  fg(whiteColor) & "[" & $(now()) & "] " &
@@ -499,28 +499,28 @@ proc defineLibrary*() =
 
                         # send response
                         req.respond(newServerResponse(
-                            responseDict.d["serverBody"].s,
-                            HttpCode(responseDict.d["serverStatus"].i),
-                            responseDict.d["serverHeaders"].s
+                            responseDict.d["body"].s,
+                            HttpCode(responseDict.d["status"].i),
+                            responseDict.d["headers"].s
                         ))
 
                         # show request response info
                         # if we're on .verbose mode
                         if verbose:
                             var colorCode = greenColor
-                            if responseDict.d["serverStatus"].i != 200: 
+                            if responseDict.d["status"].i != 200: 
                                 colorCode = redColor
 
                             var serverPattern = " "
-                            if responseDict.d["serverPattern"].s != initialReqPath and responseDict.d["serverPattern"].s != "":
-                                serverPattern = " -> " & responseDict.d["serverPattern"].s & " "
+                            if responseDict.d["pattern"].s != initialReqPath and responseDict.d["pattern"].s != "":
+                                serverPattern = " -> " & responseDict.d["pattern"].s & " "
 
-                            let serverBenchmark = $(responseDict.d["serverBenchmark"])
+                            let serverBenchmark = $(responseDict.d["benchmark"])
 
                             echo bold(colorCode) & ">>" & resetColor & " " & 
                                  fg(whiteColor) & "[" & $(now()) & "] " &
-                                 bold(colorCode) & $(responseDict.d["serverStatus"].i) & " " & resetColor &
-                                 fg(whiteColor) & responseDict.d["serverContentType"].s & " " &
+                                 bold(colorCode) & $(responseDict.d["status"].i) & " " & resetColor &
+                                 fg(whiteColor) & responseDict.d["contentType"].s & " " &
                                 #  bold(whiteColor) & ($(reqAction)).toUpperAscii() & " " & initialReqPath & 
                                 #  resetColor & serverPattern & 
                                  fg(grayColor) & "(" & serverBenchmark & ")" & resetColor
