@@ -473,7 +473,7 @@ proc defineLibrary*() =
                             echo bold(whiteColor) & "<<" & resetColor & " " & 
                                  fg(whiteColor) & "[" & $(now()) & "] " &
                                  bold(whiteColor) & ($(reqAction)).toUpperAscii() & " " & initialReqPath & 
-                                 resetColor & serverPattern & resetColor
+                                 resetColor
 
 
                         # the response
