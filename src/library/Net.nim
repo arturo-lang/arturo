@@ -528,8 +528,6 @@ proc defineLibrary*() =
                                  fg(whiteColor) & "[" & $(now()) & "] " &
                                  bold(colorCode) & $(responseDict.d["status"].i) & " " & resetColor &
                                  fg(whiteColor) & contentType.s & " " &
-                                #  bold(whiteColor) & ($(reqAction)).toUpperAscii() & " " & initialReqPath & 
-                                #  resetColor & serverPattern & 
                                  fg(grayColor) & "(" & serverBenchmark & ")" & resetColor
 
                 # show server startup info
