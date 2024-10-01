@@ -55,6 +55,7 @@ when not defined(WEB):
     import helpers/benchmark
     import helpers/jsonobject
     import helpers/servers
+    import helpers/strings
     import helpers/terminal
     import helpers/url
     import helpers/webviews
@@ -540,12 +541,15 @@ proc defineLibrary*() =
                             let serverBenchmark = $(responseDict["benchmark"])
                             let timestamp = "[" & $(now()) & "] "
 
-                            echo bold(colorCode) & "--" & resetColor & " " & 
-                                 fg(whiteColor) & timestamp &
-                                 bold(whiteColor) & ($(reqAction)).toUpperAscii() & " " & initialReqPath & "\n" &
-                                 bold(colorCode) & align($(responseDict["status"].i), timestamp.len() + 3) & " " & resetColor &
-                                 fg(whiteColor) & contentType.s & " " &
-                                 fg(grayColor) & "(" & serverBenchmark & ")" & resetColor
+                            let logStr = 
+                                bold(colorCode) & "-- " & $(responseDict["status"].i) & resetColor & " " & 
+                                fg(whiteColor) & timestamp &
+                                bold(whiteColor) & ($(reqAction)).toUpperAscii() & " " & initialReqPath & #& "\n" & align($(responseDict["status"].i), timestamp.len() + 6)
+                                bold(colorCode)  & " " & resetColor &
+                                fg(whiteColor) & contentType.s & " "
+
+                            echo logStr & fg(grayColor) & align(serverBenchmark, terminalWidth() - logStr.realLen()) & resetColor
+
 
                 # show server startup info
                 # if we're on .verbose mode
