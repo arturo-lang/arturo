@@ -52,6 +52,7 @@ when not defined(WEB):
         import extras/smtp
         import helpers/stores
 
+    import helpers/benchmark
     import helpers/jsonobject
     import helpers/servers
     import helpers/terminal
@@ -446,6 +447,10 @@ proc defineLibrary*() =
                         else: 
                             reqBodyV = newString(reqBody)
 
+                        # store request info inside a Dictionary
+                        # we will pass this to the function -
+                        # user-defined or the "default" one -
+                        # which will handle it
                         let requestDict = newDictionary({
                                 "method": newString($(reqAction)),
                                 "path": newString(reqPath),
@@ -455,11 +460,29 @@ proc defineLibrary*() =
                                 "headers": newStringDictionary(reqHeaders, collapseBlocks=true)
                             }.toOrderedTable)
 
-                        # call internal implementation
-                        let got = callInternal("serveInternal", getValue=true,
-                            requestDict,
-                            newLogical(verbose)
-                        )
+                        # the response
+                        var responseDict: Value
+
+                        if routes.kind == Function:
+                            let timeTaken = getBenchmark:
+                                callFunction(routes, "<closure>", @[requestDict])
+                                responseDict = stack.pop()
+
+                                if responseDict.kind == String:
+                                    responseDict = newDictionary({
+                                        "serverBody": responseDict,
+                                        "serverStatus": newInteger(200),
+                                        "serverHeaders": ""
+                                    }.toOrderedTable)
+                            
+                            responseDict.d["serverPattern"] = initialReqPath
+                            responseDict.d["serverBenchmark"] = newQuantity(toQuantity(timeTaken, parseAtoms("ms")))
+                        else:
+                            # call internal implementation
+                            responseDict = callInternal("serveInternal", getValue=true,
+                                requestDict,
+                                newLogical(verbose)
+                            )
 
                         # show request info
                         # if we're on .verbose mode
