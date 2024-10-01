@@ -540,10 +540,10 @@ proc defineLibrary*() =
                             let serverBenchmark = $(responseDict["benchmark"])
                             let timestamp = "[" & $(now()) & "] "
 
-                            echo bold(colorCode) & ">" & resetColor & " " & 
+                            echo bold(colorCode) & "--" & resetColor & " " & 
                                  fg(whiteColor) & timestamp &
                                  bold(whiteColor) & ($(reqAction)).toUpperAscii() & " " & initialReqPath & "\n" &
-                                 bold(colorCode) & alignLeft($(responseDict["status"].i), timestamp.len()) & " " & resetColor &
+                                 bold(colorCode) & align($(responseDict["status"].i), timestamp.len() + 3) & " " & resetColor &
                                  fg(whiteColor) & contentType.s & " " &
                                  fg(grayColor) & "(" & serverBenchmark & ")" & resetColor
 
