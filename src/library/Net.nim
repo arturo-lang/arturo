@@ -46,7 +46,7 @@ when defined(ssl):
 when not defined(WEB):
     import algorithm, asyncdispatch, browsers
     import httpclient, httpcore, std/net, os
-    import strutils, times, uri
+    import sequtils, strutils, times, uri
 
     when defined(ssl):
         import extras/smtp
