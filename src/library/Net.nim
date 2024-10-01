@@ -455,7 +455,7 @@ proc defineLibrary*() =
                         let requestDict = newDictionary({
                                 "method": newString($(reqAction)),
                                 "path": newString(reqPath),
-                                "fullPath": newString(initialReqPath),
+                                "uri": newString(initialReqPath),
                                 "body": reqBodyV,
                                 "query": newDictionary(reqQuery),
                                 "headers": newStringDictionary(reqHeaders, collapseBlocks=true)
