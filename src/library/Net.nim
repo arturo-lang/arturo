@@ -488,8 +488,8 @@ proc defineLibrary*() =
                         # if we're on .verbose mode
                         if verbose:
                             var serverPattern = " "
-                            if got.d["serverPattern"].s != initialReqPath and got.d["serverPattern"].s != "":
-                                serverPattern = " -> " & got.d["serverPattern"].s & " "
+                            if responseDict.d["serverPattern"].s != initialReqPath and responseDict.d["serverPattern"].s != "":
+                                serverPattern = " -> " & responseDict.d["serverPattern"].s & " "
 
                             echo bold(whiteColor) & "<<" & resetColor & " " & 
                                  fg(whiteColor) & "[" & $(now()) & "] " &
@@ -498,28 +498,28 @@ proc defineLibrary*() =
 
                         # send response
                         req.respond(newServerResponse(
-                            got.d["serverBody"].s,
-                            HttpCode(got.d["serverStatus"].i),
-                            got.d["serverHeaders"].s
+                            responseDict.d["serverBody"].s,
+                            HttpCode(responseDict.d["serverStatus"].i),
+                            responseDict.d["serverHeaders"].s
                         ))
 
                         # show request response info
                         # if we're on .verbose mode
                         if verbose:
                             var colorCode = greenColor
-                            if got.d["serverStatus"].i != 200: 
+                            if responseDict.d["serverStatus"].i != 200: 
                                 colorCode = redColor
 
                             var serverPattern = " "
-                            if got.d["serverPattern"].s != initialReqPath and got.d["serverPattern"].s != "":
-                                serverPattern = " -> " & got.d["serverPattern"].s & " "
+                            if responseDict.d["serverPattern"].s != initialReqPath and got.d["serverPattern"].s != "":
+                                serverPattern = " -> " & responseDict.d["serverPattern"].s & " "
 
-                            let serverBenchmark = $(got.d["serverBenchmark"])
+                            let serverBenchmark = $(responseDict.d["serverBenchmark"])
 
                             echo bold(colorCode) & ">>" & resetColor & " " & 
                                  fg(whiteColor) & "[" & $(now()) & "] " &
-                                 bold(colorCode) & $(got.d["serverStatus"].i) & " " & resetColor &
-                                 fg(whiteColor) & got.d["serverContentType"].s & " " &
+                                 bold(colorCode) & $(responseDict.d["serverStatus"].i) & " " & resetColor &
+                                 fg(whiteColor) & responseDict.d["serverContentType"].s & " " &
                                 #  bold(whiteColor) & ($(reqAction)).toUpperAscii() & " " & initialReqPath & 
                                 #  resetColor & serverPattern & 
                                  fg(grayColor) & "(" & serverBenchmark & ")" & resetColor
