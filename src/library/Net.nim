@@ -472,7 +472,7 @@ proc defineLibrary*() =
                                     responseDict = newDictionary({
                                         "body": responseDict,
                                         "status": newInteger(200),
-                                        "headers": newString("")
+                                        "headers": newDictionary()
                                     }.toOrderedTable)
                             
                             responseDict.d["benchmark"] = newQuantity(toQuantity(timeTaken, parseAtoms("ms")))
