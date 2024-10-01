@@ -472,10 +472,10 @@ proc defineLibrary*() =
                                     responseDict = newDictionary({
                                         "serverBody": responseDict,
                                         "serverStatus": newInteger(200),
-                                        "serverHeaders": ""
+                                        "serverHeaders": newString("")
                                     }.toOrderedTable)
                             
-                            responseDict.d["serverPattern"] = initialReqPath
+                            responseDict.d["serverPattern"] = newString(initialReqPath)
                             responseDict.d["serverBenchmark"] = newQuantity(toQuantity(timeTaken, parseAtoms("ms")))
                         else:
                             # call internal implementation
