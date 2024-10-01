@@ -46,8 +46,8 @@ when defined(ssl):
 when not defined(WEB):
     import algorithm, asyncdispatch, browsers
     import httpclient, httpcore, std/net, os
-    import sequtils, strutils, terminal
-    import times, uri
+    import sequtils, strformat, strutils
+    import terminal, times, uri
 
     when defined(ssl):
         import extras/smtp
@@ -539,23 +539,25 @@ proc defineLibrary*() =
                             if requestPattern.s != initialReqPath and requestPattern.s != "":
                                 serverPattern = " -> " & requestPattern.s & " "
 
-                            let serverBenchmark = $(responseDict["benchmark"])
+                            var serverBenchmark: string
+                            formatValue(serverBenchmark, toFloat(responseDict["benchmark"].q.original), ".2f")
+                            serverBenchmark = "| " & align(serverBenchmark, 6) & " ms "
                             let timestamp = "[" & $(now()) & "] "
 
                             let logStr = 
-                                bold(colorCode) & "-- " & $(responseDict["status"].i) & resetColor & " " & 
+                                bold(colorCode) & " -- " & $(responseDict["status"].i) & resetColor & " " & 
                                 fg(whiteColor) & timestamp &
                                 bold(whiteColor) & ($(reqAction)).toUpperAscii() & " " & initialReqPath & #& "\n" & align($(responseDict["status"].i), timestamp.len() + 6)
-                                bold(colorCode)  & " " & resetColor &
-                                fg(whiteColor) & contentType.s & " "
+                                bold(colorCode)  & " " & resetColor
 
-                            echo logStr & fg(grayColor) & align(serverBenchmark, terminalWidth() - logStr.realLen()) & resetColor
+                            echo logStr & fg(whiteColor) & align(contentType.s, terminalWidth() - logStr.realLen() - serverBenchmark.realLen() - 1) & " " &
+                                          fg(grayColor) & serverBenchmark & resetColor
 
 
                 # show server startup info
                 # if we're on .verbose mode
                 if verbose:
-                    echo ":: Starting server on port " & $(port) & "...\n"
+                    echo " :: Starting server on port " & $(port) & "...\n"
                 
                 startServer(requestHandler.RequestHandler, port)
 
