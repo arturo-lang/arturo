@@ -495,7 +495,7 @@ proc defineLibrary*() =
                                  bold(whiteColor) & ($(reqAction)).toUpperAscii() & " " & initialReqPath & 
                                  resetColor & serverPattern & resetColor
 
-                        let headerStr = (toSeq(responseDict.d["headers"].pairs)).map(
+                        let headerStr = (toSeq(responseDict.d["headers"].d.pairs)).map(
                             proc(kv: (string,Value)): string = 
                                 kv[0] & ": " & kv[1].s
                         ).join("\c\L")
