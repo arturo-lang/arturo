@@ -406,14 +406,15 @@ proc defineLibrary*() =
                 if hadAttr("chrome"):
                     openChromeWindow(port)
 
-                # necessary so that "serveInternal" is available
-                execInternal("Net/serve")
+                if routes.kind != Function:
+                    # necessary so that "serveInternal" is available
+                    execInternal("Net/serve")
 
-                # call internal implementation
-                # to initialize routes
-                callInternal("initServerInternal", getValue=false,
-                    routes
-                )
+                    # call internal implementation
+                    # to initialize routes
+                    callInternal("initServerInternal", getValue=false,
+                        routes
+                    )
 
                 proc requestHandler(req: ServerRequest): Future[void] {.gcsafe.} =
                     {.cast(gcsafe).}:
