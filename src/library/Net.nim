@@ -60,10 +60,11 @@ when not defined(WEB):
     import helpers/webviews
 
 import vm/lib
+import vm/errors
+import vm/values/custom/verror
+
 when not defined(WEB):
     import vm/[env, exec]
-when defined(SAFE):
-    import vm/[errors]
 
 #=======================================
 # Definitions
