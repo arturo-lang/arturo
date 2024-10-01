@@ -23,10 +23,8 @@ initServerInternal: function [serverRoutes][
 serveInternal: function [Request][
     serverResponse: #[
         body: ""
-        pattern: ""
         status: null
         headers: #[]
-        contentType: ""
         benchmark: 0.0
     ]
 
@@ -83,14 +81,13 @@ serveInternal: function [Request][
             if not? empty? match Request\path "^"++pattern++"$" [
                 action: ROUTES\[Request\method]\[pattern]
 
-                serverResponse\serverPattern: pattern
                 if throws? [
                     (block? var'action)? [
                         serverResponse\body: do action
                     ][
                         serverResponse\body: callActionFunction var'action pattern
                     ]
-                    if null? serverResponse\serverPatterntatus ->
+                    if null? serverResponse\status ->
                         serverResponse\status: 200 ; OK
                 ] -> serverResponse\status: 500 ; Internal Server Error
             ]
@@ -99,11 +96,8 @@ serveInternal: function [Request][
 
     serverResponse\benchmark: benchmark.get getServerResponse
 
-    if null? serverResponse\serverStatus ->
+    if null? serverResponse\status ->
         serverResponse\status: 404 ; Not Found
-
-    if serverResponse\serverStatus <> 200 ->
-        serverResponse\contentType: "-"
 
     return serverResponse
 ]
