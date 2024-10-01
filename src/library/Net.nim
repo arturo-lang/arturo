@@ -465,8 +465,11 @@ proc defineLibrary*() =
 
                         if routes.kind == Function:
                             let timeTaken = getBenchmark:
+                                echo "calling handler"
                                 callFunction(routes, "<closure>", @[requestDict])
+                                echo "returned"
                                 responseDict = stack.pop()
+                                echo "got response"
 
                                 if responseDict.kind == String:
                                     responseDict = newDictionary({
@@ -475,6 +478,7 @@ proc defineLibrary*() =
                                         "headers": newDictionary()
                                     }.toOrderedTable)
                             
+                            echo "after benchmarking"
                             responseDict.d["benchmark"] = newQuantity(toQuantity(timeTaken, parseAtoms("ms")))
                         else:
                             # call internal implementation
@@ -485,10 +489,13 @@ proc defineLibrary*() =
 
                         # show request info
                         # if we're on .verbose mode
+                        echo "before first verbose"
+                        var requestPattern: Value
                         if verbose:
+                            requestPattern = responseDict.d.getOrDefault("pattern", newString(initialReqPath))
                             var serverPattern = " "
-                            if responseDict.d["pattern"].s != initialReqPath and responseDict.d["pattern"].s != "":
-                                serverPattern = " -> " & responseDict.d["pattern"].s & " "
+                            if requestPattern.s != initialReqPath and requestPattern.s != "":
+                                serverPattern = " -> " & requestPattern.s & " "
 
                             echo bold(whiteColor) & "<<" & resetColor & " " & 
                                  fg(whiteColor) & "[" & $(now()) & "] " &
@@ -511,7 +518,6 @@ proc defineLibrary*() =
                         # if we're on .verbose mode
                         if verbose:
                             let contentType = responseDict.d["headers"].d.getOrDefault("Content-Type", newString("--"))
-                            let requestPattern = responseDict.d.getOrDefault("pattern", newString(initialReqPath))
 
                             var colorCode = greenColor
                             if responseDict.d["status"].i != 200: 
