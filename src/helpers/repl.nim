@@ -53,7 +53,7 @@ when not defined(WEB):
         completions = completionsArray
         hints = hintsTable
 
-        proc completionsCback(buf: constChar; lc: ptr LinenoiseCompletions, userdata: pointer) {.cdecl.} =
+        proc completionsCback(buf: constChar; lc: ptr LinenoiseCompletions) {.cdecl.} =
             var token = $(buf)
             var copied = strip($(buf))
             let tokenParts = splitWhitespace(token)
@@ -64,7 +64,7 @@ when not defined(WEB):
                     linenoiseAddCompletion(lc, (copied & item).cstring)
 
 
-        proc hintsCback(buf: constChar; color: var cint; bold: var cint, userdata: pointer): cstring {.cdecl.} =
+        proc hintsCback(buf: constChar; color: var cint; bold: var cint): cstring {.cdecl.} =
             var token = $(buf)
             let tokenParts = splitWhitespace(token)
             if tokenParts.len >= 1:
@@ -80,9 +80,8 @@ when not defined(WEB):
                 createDir(parentDir(path))
             discard linenoiseHistoryLoad(path)
 
-            discard linenoiseSetCompletionCallback(completionsCback, nil)
-
-            linenoiseSetHintsCallback(hintsCback, nil)
+            linenoiseSetCompletionCallback(completionsCback)
+            linenoiseSetHintsCallback(hintsCback)
 
             ReplInitialized = true
 
