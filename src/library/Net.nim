@@ -374,7 +374,7 @@ proc defineLibrary*() =
             },
             attrs       = {
                 "port"      : ({Integer},"use given port"),
-                "verbose"   : ({Logical},"print info log"),
+                "silent"    : ({Logical},"don't print info log"),
                 "chrome"    : ({Logical},"open in Chrome windows as an app")
             },
             returns     = {Nothing},
@@ -403,7 +403,7 @@ proc defineLibrary*() =
                 # get parameters
                 let routes = x
                 var port = 18966
-                var verbose = (hadAttr("verbose"))
+                var verbose = not hadAttr("silent")
                 if checkAttr("port"):
                     port = aPort.i
             
