@@ -1,4 +1,4 @@
-import htmlparser
+import extras/htmlparser
 
 proc htmlEntityToUtf8*(s: string): string =
   case s
