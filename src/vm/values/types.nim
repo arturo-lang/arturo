@@ -362,6 +362,7 @@ type
 
 let 
     NoPrototypeFound* = Prototype(name: "prototype-error")
+    NoMagicMethod*: MagicMethodInternal = nil
 
 #=======================================
 # Variables
@@ -491,8 +492,8 @@ proc `||`*(va: static[ValueKind | IntegerKind], vb: static[ValueKind | IntegerKi
         elif vb == BigInteger:
             result = result or cast[uint32](ord(Integer)) or (1.uint32 shl 15)
 
-template fetch*(what: MagicMethods, magicMethodId: MagicMethod): untyped {.dirty.} =
-    (let mgk = what.getOrDefault(magicMethodId, nil); not mgk.isNil)
+template fetch*(what: MagicMethods, magicMethodId: typed): untyped {.dirty.} =
+    (let mgk = what.getOrDefault(magicMethodId); not mgk.isNil)
 
 template `in`*(z: ValueKind, typeset: untyped): untyped {.dirty.} =
     contains(system.set[ValueKind](typeset), z)
