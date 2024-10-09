@@ -11,7 +11,7 @@
 #=======================================
 
 when not defined(NOPARSERS):
-    import htmlparser
+    import extras/htmlparser
     import strtabs, tables, xmltree
 
 import vm/values/value
