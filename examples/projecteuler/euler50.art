@@ -9,8 +9,8 @@ until [
 	s: 0
 	counter: counter + 1
 	i: counter
-	while [1000000 > s + primes \ i][
-		s: s + primes \ i
+	while [1000000 > s + primes\[i]][
+		s: s + primes\[i]
 		i: i + 1
 	]
 ][prime? s]

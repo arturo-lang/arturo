@@ -24,7 +24,7 @@ number: join split.lines {
 findMaxGroupProduct: function [n][
     max map map 0..(size number)-n 'indx [slice number indx indx+n-1] 'part 
         -> product map split part 
-            => [to :integer]
+            => [to :integer &]
 ]
 
 print findMaxGroupProduct 13

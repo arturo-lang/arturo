@@ -1,15 +1,10 @@
-pandigital?: function[x][
-	parts: map split to :string x 'z [to :integer z]
-	(1..size parts) = sort unique parts
-]
-
-largest: 7654323
-
-until [
-	largest: largest - 2
-	while [not? prime? largest][
-		largest: largest - 2
+loop 9..1 'n_digits [
+	if 0 = (sum 1..n_digits) % 3 -> continue
+	loop permutate values n_digits..1 'dig [
+		number: digits dig
+		if prime? number [
+			print ~"Largest pandigital prime: |number|"
+			exit
+		]
 	]
-][ pandigital? largest]
-
-print ["Largest pandigital prime:" largest]
+]

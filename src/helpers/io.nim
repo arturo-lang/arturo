@@ -36,7 +36,7 @@ proc writeToFile*(path: string, contents: VBinary, append = false) {.tags: [Writ
     var f: File = nil
     if open(f, path, fm):
         try:
-            f.writeBuffer(unsafeAddr contents[0], contents.len)
+            discard f.writeBuffer(unsafeAddr contents[0], contents.len)
         finally:
             close(f)
     else:

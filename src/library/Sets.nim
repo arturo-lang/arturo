@@ -260,7 +260,7 @@ proc defineLibrary*() =
                     push(newLogical(contains))
 
     builtin "superset?",
-        alias       = superset, 
+        alias       = supersetorequal, 
         op          = opNop,
         rule        = InfixPrecedence,
         description = "check if given set is a superset of second set",
