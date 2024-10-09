@@ -376,29 +376,26 @@ g: function [x][
 ;---------------------------------
 
 ; defining a custom type
-define :person [                            ; define a new custom type "Person"
-    name                                    ; with fields: name, surname, age
-    surname
-    age 
-][ 
-    ; with custom post-construction initializer
-    init: [
-        this\name: capitalize this\name
+define :person [
+    ; define a new custom type "Person"
+    ; with fields: name, surname, age
+    init: method [name surname age][
+        \name: capitalize name
+        \surname: surname
+        \age: age
     ]
 
     ; custom print function
-    print: [
-        render "NAME: |this\name|, SURNAME: |this\surname|, AGE: |this\age|"
+    string: method [][
+        render "NAME: |\name|, SURNAME: |\surname|, AGE: |\age|"
     ]
 
     ; custom comparison operator
-    compare: 'age
+    compare: sortable 'age
 ]
 
 ; create a method for our custom type
-sayHello: function [this][
-    ensure -> is? :person this
-
+sayHello: function [this :person][
     print ["Hello" this\name]
 ]
 
@@ -423,10 +420,10 @@ print type a                                    ; :person
 print is? :person a                             ; true
 
 ; printing objects
-print a                                         ; NAME: John, SURNAME: Doe, AGE: 34
+print a                                         ; NAME: Bob, SURNAME: Doe, AGE: 34
 
 ; sorting user objects (using custom comparator)
-sort @[a b]                                     ; Jane..., John...
-sort.descending @[a b]                          ; John..., Jane...       
+print sort @[a b]                                     ; Jane..., Bob...
+print sort.descending @[a b]                          ; Bob..., Jane...       
 ```
 }
