@@ -165,14 +165,14 @@ when not defined(NOWEBVIEW):
                      callHandler : WebviewCallHandler    = nil): Webview =
 
         result = webview_create(debug.cint)
-        webview_set_title(result, title=title.cstring)
-        webview_set_size(result, width.cint, height.cint, if resizable: Constraints.Default else: Constraints.Fixed)
+        discard webview_set_title(result, title=title.cstring)
+        discard webview_set_size(result, width.cint, height.cint, if resizable: Constraints.Default else: Constraints.Fixed)
         if content.isUrl():
-            webview_navigate(result, content.cstring)
+            discard webview_navigate(result, content.cstring)
         else:
-            webview_set_html(result, content.cstring)
+            discard webview_set_html(result, content.cstring)
 
-        webview_init(result,(
+        discard webview_init(result,(
             (static readFile(parentDir(currentSourcePath()) & "/webviews.js")) & 
             "\n" & 
             initializer
@@ -230,21 +230,21 @@ when not defined(NOWEBVIEW):
                 if callKind != UnrecognizedCall:
                     returned = jsonFromValue(mainCallHandler(callKind, value), pretty=false).cstring
 
-            webview_return(mainWebview, cast[cstring](seq), res.cint, returned)
+            discard webview_return(mainWebview, cast[cstring](seq), res.cint, returned)
 
         mainWebview = result
         mainCallHandler = callHandler
-        result.webview_bind("callback", handler, cast[pointer](0))
+        discard result.webview_bind("callback", handler, cast[pointer](0))
 
     proc show*(w: Webview) =
         when defined(macosx):
             generateDefaultMainMenu()
 
-        webview_run(w)
-        webview_destroy(w)
+        discard webview_run(w)
+        discard webview_destroy(w)
 
     proc evaluate*(w: Webview, js: string) =
-        webview_eval(w, js.cstring)
+        discard webview_eval(w, js.cstring)
 
     proc getWindow*(w: Webview): Window =
         webview_get_window(w)
