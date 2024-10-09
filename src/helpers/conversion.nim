@@ -620,7 +620,13 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat:Value = nil): Val
                         return newString($(y))
                     else:
                         throwCannotConvert()
+            of Binary:
+                case tp:
+                    of String:
+                        return newString($(split(y.n.map((c) => chr(c)), [])).join)
 
+                    else:
+                        throwCannotConvert()
             of Function,
                Method,
                Module,
@@ -630,5 +636,4 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat:Value = nil): Val
                Any,
                Path,
                PathLabel,
-               PathLiteral,
-               Binary: throwCannotConvert()
+               PathLiteral: throwCannotConvert()

@@ -52,6 +52,61 @@ installer:
 library:
   - src/library/*
 
+"→ Arithmetic":
+  - src/library/Arithmetic.nim
+"→ Bitwise":
+  - src/library/Bitwise.nim
+"→ Collections":
+  - src/library/Collections.nim
+"→ Colors":
+  - src/library/Colors.nim
+"→ Comparison":
+  - src/library/Comparison.nim
+"→ Converters":
+  - src/library/Converters.nim
+"→ Core":
+  - src/library/Core.nim
+"→ Crypto":
+  - src/library/Crypto.nim
+"→ Databases":
+  - src/library/Databases.nim
+"→ Dates":
+  - src/library/Dates.nim
+"→ Exceptions":
+  - src/library/Exceptions.nim
+"→ Files":
+  - src/library/Files.nim
+"→ Io":
+  - src/library/Io.nim
+"→ Iterators":
+  - src/library/Iterators.nim
+"→ Logic":
+  - src/library/Logic.nim
+"→ Net":
+  - src/library/Net.nim
+"→ Numbers":
+  - src/library/Numbers.nim
+"→ Paths":
+  - src/library/Paths.nim
+"→ Quantities":
+  - src/library/Quantities.nim
+"→ Reflection":
+  - src/library/Reflection.nim
+"→ Sets":
+  - src/library/Sets.nim
+"→ Sockets":
+  - src/library/Sockets.nim
+"→ Statistics":
+  - src/library/Statistics.nim
+"→ Strings":
+  - src/library/Strings.nim
+"→ System":
+  - src/library/System.nim
+"→ Types":
+  - src/library/Types.nim
+"→ Ui":
+  - src/library/Ui.nim
+
 netbsd:
   - .github/workflows/netbsd.yml
 
