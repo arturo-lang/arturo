@@ -333,29 +333,30 @@ proc saveConfiguration(conf: BundleConfig) =
 
     writeToFile(joinPath(@[TmpFolder, conf.configFile()]), jsonFromValueDict(output))
 
-proc debug(conf: BundleConfig) =
-    echo "\tFound " & $(conf.symbols.len) & " stdlib symbols:"
-    for s in conf.symbols:
-        echo "\t\t- " & s
+when defined(DEV):
+    proc debug(conf: BundleConfig) =
+        echo "\tFound " & $(conf.symbols.len) & " stdlib symbols:"
+        for s in conf.symbols:
+            echo "\t\t- " & s
 
-    echo ""
-    echo "\tFrom " & $(conf.modules.len) & " stdlib modules:"
-    for m in conf.modules:
-        echo "\t\t- " & m
+        echo ""
+        echo "\tFrom " & $(conf.modules.len) & " stdlib modules:"
+        for m in conf.modules:
+            echo "\t\t- " & m
 
-    echo ""
-    echo "\tBuild can be mini?"
-    echo "\t\t- " & $(not conf.nomini)
+        echo ""
+        echo "\tBuild can be mini?"
+        echo "\t\t- " & $(not conf.nomini)
 
-    echo ""
-    echo "\tFound " & $(conf.files.len) & " files:"
-    for k,v in conf.files.pairs():
-        echo "\t\t- " & k
+        echo ""
+        echo "\tFound " & $(conf.files.len) & " files:"
+        for k,v in conf.files.pairs():
+            echo "\t\t- " & k
 
-    echo ""
-    echo "\tFound " & $(conf.aliases.len) & " aliases:"
-    for k,v in conf.aliases.pairs():
-        echo "\t\t- " & k & " -> " & v
+        echo ""
+        echo "\tFound " & $(conf.aliases.len) & " aliases:"
+        for k,v in conf.aliases.pairs():
+            echo "\t\t- " & k & " -> " & v
         
 proc buildExecutable(conf: BundleConfig) =
     let currentFolder = getCurrentDir()

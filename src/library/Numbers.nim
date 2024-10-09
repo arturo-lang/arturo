@@ -634,9 +634,9 @@ proc defineLibrary*() =
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "get array of digits of given number",
+        description = "convert a number into an array of digits or an array of digits back into a number",
         args        = {
-            "number" : {Integer}
+            "number" : {Integer, Block},
         },
         attrs       = {
             "base"  : ({Integer},"use given based (default: 10)")
@@ -646,6 +646,9 @@ proc defineLibrary*() =
             digits 123
             ; => [1 2 3]
 
+            digits [1 2 3]
+            ; => 123
+            
             digits 0
             ; => [0]
 
@@ -660,11 +663,19 @@ proc defineLibrary*() =
             if checkAttr("base"):
                 base = aBase.i
 
-            if x.iKind == NormalInteger:
-                push newBlock(getDigits(x.i, base).map((z)=>newInteger(z)))
+            if x.kind == Block:
+                var digits = x.a
+                var composedNumber = 0
+                for digit in digits:
+                    requireValue(digit, {Integer})
+                    composedNumber = composedNumber * base + digit.i
+                push newInteger(composedNumber)
             else:
-                when defined(WEB) or defined(GMP):
-                    push newBlock(getDigits(x.bi, base).map((z)=>newInteger(z)))
+                if x.iKind == NormalInteger:
+                    push newBlock(getDigits(x.i, base).map((z)=>newInteger(z)))
+                else:
+                    when defined(WEB) or defined(GMP):
+                        push newBlock(getDigits(x.bi, base).map((z)=>newInteger(z)))
 
     builtin "exp",
         alias       = unaliased, 
@@ -1010,8 +1021,12 @@ proc defineLibrary*() =
         example     = """
             print product [3 4]       ; 12
             print product [1 2 4 6]   ; 48
+            print product []          ; 1
             ..........
             print product 1..10       ; 3628800
+            ..........
+            product.cartesian [[A B C][D E]]
+            ; => [[A D] [A E] [B D] [B E] [C D] [C E]]
         """:
             #=======================================================
             if (hadAttr("cartesian")):
@@ -1024,14 +1039,12 @@ proc defineLibrary*() =
                         product *= item
                     push(product)
                 else:
-                    if x.a.len==0: push(I0.copyValue)
-                    else:
-                        var i = 0
-                        while i<x.a.len:
-                            product *= x.a[i]
-                            i += 1
+                    var i = 0
+                    while i<x.a.len:
+                        product *= x.a[i]
+                        i += 1
 
-                        push(product)
+                    push(product)
 
     builtin "random",
         alias       = unaliased, 

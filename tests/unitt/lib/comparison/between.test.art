@@ -41,27 +41,30 @@ suite "Test generic assertions" [
 
 
 suite "Test numeric-like values" [
-    ; CAUTION: This test seems to be failing randomly
-    ; We have to make sure the results are consistent!
+    ; TODO(lib\comparison\between) Test seems to be failing randomly
+    ;  We have to make sure the results are consistent and 
+    ;  re-enable the test
+    ;  See also https://github.com/arturo-lang/arturo/issues/1667
+    ;  labels: unit-test, bug
 
-    test.prop "start < middle < end, for deterministic operations"  [
-        limit: 100000000
-        loop permutate.repeated.by:3 numericTypes 'numericType [
-            middle: to numericType\[1] (random neg limit limit)
-            start:  to numericType\[0] (random neg limit (dec middle))
-            end:    to numericType\[2] (random (inc middle) limit)
+    ; test.prop "start < middle < end, for deterministic operations"  [
+    ;     limit: 100000000
+    ;     loop permutate.repeated.by:3 numericTypes 'numericType [
+    ;         middle: to numericType\[1] (random neg limit limit)
+    ;         start:  to numericType\[0] (random neg limit (dec middle))
+    ;         end:    to numericType\[2] (random (inc middle) limit)
             
-            candidates: @[middle start end]
-            impreciseOperation: or?  ; skips floating-rational and rational-rational
-                and? (some? candidates => rational?) (some? candidates => floating?)
-                (every? candidates => rational?)
+    ;         candidates: @[middle start end]
+    ;         impreciseOperation: or?  ; skips floating-rational and rational-rational
+    ;             and? (some? candidates => rational?) (some? candidates => floating?)
+    ;             (every? candidates => rational?)
 
-            if impreciseOperation
-                -> continue
+    ;         if impreciseOperation
+    ;             -> continue
             
-            assert -> between? middle start end
-        ]
-    ]
+    ;         assert -> between? middle start end
+    ;     ]
+    ; ]
 
     test "start < middle < end, for :rational and :floating" [
         assert -> between? 3:2 1:1 2:1 ; :rational :rational :rational

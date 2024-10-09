@@ -33,8 +33,8 @@ jobs:
                     - {name: "JS (web / mini)",         os: ubuntu-latest,   arch: amd64, mode: web,  shell: bash}
                     - {name: "Windows (amd64 / full)",  os: windows-latest,  arch: amd64, mode: full, shell: "msys2 {0}"}
                     - {name: "Windows (amd64 / mini)",  os: windows-latest,  arch: amd64, mode: mini, shell: "msys2 {0}"}
-                    - {name: "macOS (amd64 / full)",    os: macOS-12,        arch: amd64, mode: full, shell: bash}
-                    - {name: "macOS (amd64 / mini)",    os: macOS-12,        arch: amd64, mode: mini, shell: bash}
+                    - {name: "macOS (amd64 / full)",    os: macOS-13,        arch: amd64, mode: full, shell: bash}
+                    - {name: "macOS (amd64 / mini)",    os: macOS-13,        arch: amd64, mode: mini, shell: bash}
                     - {name: "macOS (arm64 / full)",    os: macos-latest,    arch: arm64, mode: full, shell: bash}
                     - {name: "macOS (arm64 / mini)",    os: macos-latest,    arch: arm64, mode: mini, shell: bash}
 
@@ -55,6 +55,7 @@ jobs:
             - if: (matrix.mode != 'safe' && matrix.mode != 'web') && (matrix.os != 'ubuntu-latest' || matrix.arch != 'arm64')
               name: Run tests (Old)
               run: |
+                ls -la arturo
                 cd arturo 
                 cat version/metadata
                 arturo -v
@@ -67,3 +68,42 @@ jobs:
                 cd arturo
                 arturo tools/unitt-tester.art
                 cd ..
+
+            - name: Prepare artifact
+              id: artifact-details
+              run: |
+                binary_path="arturo/bin/arturo"
+
+                artifact_os="macos"
+                artifact_arch="${{matrix.arch}}"
+                artifact_mode="${{matrix.mode}}"
+
+                if [ "${{matrix.os}}" = "windows-latest" ]; then
+                    artifact_os="windows"
+                    binary_path="${binary_path}.exe"
+                fi
+                if [ "${{matrix.os}}" = "ubuntu-latest" ]; then
+                    artifact_os="linux"
+                    if [ "${{matrix.mode}}" = "web" ]; then
+                        artifact_os="js"
+                        artifact_arch="web"
+                        artifact_mode="mini"
+                        binary_path="${binary_path}.js"
+                    fi
+                fi
+
+                cd arturo
+                git_hash=$(git rev-parse --short "$GITHUB_SHA")
+                git_stamp="${{ env.BRANCH_NAME}}.${git_hash}"
+                cd ..
+
+                artifact_name="arturo-${git_stamp}-${artifact_arch}-${artifact_os}-${artifact_mode}"
+
+                echo "BINARY_PATH=$binary_path" >> "$GITHUB_OUTPUT"
+                echo "ARTIFACT_NAME=$artifact_name" >> "$GITHUB_OUTPUT"
+
+            - name: Upload artifact
+              uses: 'actions/upload-artifact@v4'
+              with:
+                name: ${{ steps.artifact-details.outputs.ARTIFACT_NAME }}
+                path: ${{ steps.artifact-details.outputs.BINARY_PATH }}

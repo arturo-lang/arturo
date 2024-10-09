@@ -72,7 +72,7 @@ proc defineLibrary*() =
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "encode given value (default: base-64)",
+        description = "decode given value (default: base-64)",
         args        = {
             "value" : {String,Literal, PathLiteral}
         },
@@ -109,7 +109,7 @@ proc defineLibrary*() =
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "decode given value (default: base-64)",
+        description = "encode given value (default: base-64)",
         args        = {
             "value" : {String,Literal, PathLiteral}
         },
