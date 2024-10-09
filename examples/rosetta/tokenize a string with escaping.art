@@ -8,10 +8,11 @@ tokenize: function [s sep esc][
 			prints chr
 			escaping: 0
 		][
-			case [chr]
-				when? [=sep] [print ""]
-				when? [=esc] [escaping: 1]
-				else [prints chr]
+			when chr [
+				sep 	-> print ""
+				esc 	-> escaping: 1
+				else 	-> prints chr
+			]
 		]
 	]
 	print ""
