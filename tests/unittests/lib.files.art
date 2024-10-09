@@ -722,9 +722,9 @@ topic "zip & unzip - README"
 do [
 
     dir: createTestFolder "zip-unzip-readme"
-
-    zip ~"|dir|/dest.zip" [~"README.md"]; takes from repository's root
+    zip ~"|dir|/dest.zip" ["README.md"]; takes from repository's root
     ensure -> exists? ~"|dir|/dest.zip"
+
     print "zipped as dest.zip"
 
     unzip ~"|dir|" ~"|dir|/dest.zip"
