@@ -1866,7 +1866,7 @@ proc defineLibrary*() =
         rule        = PrefixPrecedence,
         description = "get size/length of given collection",
         args        = {
-            "collection": {String, Block, Range, Dictionary, Object, Null}
+            "collection": {String, Block, Range, Dictionary, Binary, Object, Null}
         },
         attrs       = NoAttrs,
         returns     = {Integer, Floating},
@@ -1895,6 +1895,8 @@ proc defineLibrary*() =
                 else: push(newInteger(sz))
             elif xKind == Block:
                 push(newInteger(x.a.len))
+            elif xKind == Binary:
+                push(newInteger(x.n.len))
             else: # Null
                 push(newInteger(0))
 
@@ -2689,9 +2691,9 @@ proc defineLibrary*() =
     #  same as with `contains?`
     #  labels: library, enhancement, open discussion
     builtin "in?",
-        alias       = unaliased,
+        alias       = element, 
         op          = opNop,
-        rule        = PrefixPrecedence,
+        rule        = InfixPrecedence,
         description = "check if value exists in given collection",
         args        = {
             "value"     : {Any},
@@ -2760,7 +2762,7 @@ proc defineLibrary*() =
                         let values = toSeq(y.d.values)
                         push(newLogical(values[at] == x))
                     of Object:
-                        if unlikely(x.magic.fetch(ContainsQM)):
+                        if unlikely(y.magic.fetch(ContainsQM)):
                             pushAttr("at", aAt)
                             mgk(@[y, x]) # already pushes value
                         else:
@@ -2792,7 +2794,7 @@ proc defineLibrary*() =
                             let values = toSeq(y.d.values)
                             push(newLogical(x in values))
                     of Object:
-                        if unlikely(x.magic.fetch(ContainsQM)):
+                        if unlikely(y.magic.fetch(ContainsQM)):
                             if hadAttr("deep"):
                                 pushAttr("deep", VTRUE)
 

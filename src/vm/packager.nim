@@ -246,8 +246,12 @@ proc removeLocalPackage(pkg: string, version: VVersion): bool =
         let specPath = SpecPackage.fmt
         removeDir(specPath)
 
-        let executableDest = BinFolder.fmt / pkg
-        discard tryRemoveFile(executableDest)
+        when defined(windows):
+            let executableDest = BinFolder.fmt / "{pkg}.bat".fmt
+            discard tryRemoveFile(executableDest)
+        else:
+            let executableDest = BinFolder.fmt / pkg
+            discard tryRemoveFile(executableDest)
     
     ShowSuccess()
 
@@ -560,8 +564,12 @@ proc processRemotePackage(pkg: string, verspec: VersionSpec, doLoad: bool = true
             let (packageLocation, _) = localPackage.get()
             if (let executableFile = packageLocation / executable.get(); executableFile.fileExists()):
                 createDir(BinFolder.fmt)
-                let executableDest = BinFolder.fmt / pkg
-                writeToFile(executableDest, "#!/usr/bin/env bash\narturo {executableFile} \"$@\"".fmt)
+                when defined(windows):
+                    let executableDest = BinFolder.fmt / "{pkg}.bat".fmt
+                    writeToFile(executableDest, "@echo off\narturo {executableFile} %*".fmt)
+                else:
+                    let executableDest = BinFolder.fmt / pkg
+                    writeToFile(executableDest, "#!/usr/bin/env bash\narturo {executableFile} \"$@\"".fmt)
                 setFilePermissions(executableDest, {fpUserRead, fpUserWrite, fpUserExec, fpGroupRead, fpGroupWrite, fpGroupExec, fpOthersRead, fpOthersWrite, fpOthersExec})
 
     try:
