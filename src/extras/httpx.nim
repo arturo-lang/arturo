@@ -106,7 +106,7 @@ type
     HttpxDefect* = ref object of Defect
         ## Defect raised when something HTTPX-specific fails
 
-const httpxDefaultServerName* = "Nim-HTTPX"
+const httpxDefaultServerName* = "Arturo-Server"
     ## The default server name sent in the Server header in responses.
     ## A custom name can be set by defining httpxServerName at compile time.
 

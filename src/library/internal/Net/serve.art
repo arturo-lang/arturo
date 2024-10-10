@@ -20,14 +20,12 @@ initServerInternal: function [serverRoutes][
 ]
 
 ; main request handler
-serveInternal: function [Request, verbose][
+serveInternal: function [Request][
     serverResponse: #[
-        serverBody: ""
-        serverPattern: ""
-        serverStatus: null
-        serverHeaders: ""
-        serverContentType: ""
-        serverBenchmark: 0.0
+        body: ""
+        status: null
+        headers: #[]
+        benchmark: 0.0
     ]
 
     customServerStatus: false
@@ -43,20 +41,18 @@ serveInternal: function [Request, verbose][
 
         if asContent: <= attr 'as   -> servedContent: asContent
 
-        serverResponse\serverContentType: servedContent
-
-        servedContent: "Content-Type: " ++ servedContent
-
-        servedHeaders: new @[servedContent]
+        servedHeaders: #[
+            "Content-Type": servedContent
+        ]
         extraHeaders: attr 'headers
         if not? null? extraHeaders ->
-            'servedHeaders ++ extraHeaders
+            extend 'servedHeaders extraHeaders
 
         extraStatus: attr 'status
         if not? null? extraStatus ->
-            serverResponse\serverStatus: extraStatus
+            serverResponse\status: extraStatus
 
-        serverResponse\serverHeaders: join.with:"\c\L" servedHeaders
+        serverResponse\headers: servedHeaders
         return str
     ]
 
@@ -85,27 +81,23 @@ serveInternal: function [Request, verbose][
             if not? empty? match Request\path "^"++pattern++"$" [
                 action: ROUTES\[Request\method]\[pattern]
 
-                serverResponse\serverPattern: pattern
                 if throws? [
                     (block? var'action)? [
-                        serverResponse\serverBody: do action
+                        serverResponse\body: do action
                     ][
-                        serverResponse\serverBody: callActionFunction var'action pattern
+                        serverResponse\body: callActionFunction var'action pattern
                     ]
-                    if null? serverResponse\serverStatus ->
-                        serverResponse\serverStatus: 200 ; OK
-                ] -> serverResponse\serverStatus: 500 ; Internal Server Error
+                    if null? serverResponse\status ->
+                        serverResponse\status: 200 ; OK
+                ] -> serverResponse\status: 500 ; Internal Server Error
             ]
         ]
     ]
 
-    serverResponse\serverBenchmark: benchmark.get getServerResponse
+    serverResponse\benchmark: benchmark.get getServerResponse
 
-    if null? serverResponse\serverStatus ->
-        serverResponse\serverStatus: 404 ; Not Found
-
-    if serverResponse\serverStatus <> 200 ->
-        serverResponse\serverContentType: "-"
+    if null? serverResponse\status ->
+        serverResponse\status: 404 ; Not Found
 
     return serverResponse
 ]
