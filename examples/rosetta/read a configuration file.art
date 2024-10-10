@@ -4,7 +4,7 @@ parseConfig: function [f][
                             'line [not? empty? line]
     result: #[]
 
-    fields: loop lines 'line [
+    loop lines 'line [
         field: first match line {/^[A-Z]+/}
         rest: strip replace line field ""
         parts: select map split.by:"," rest => strip 'part -> not? empty? part
