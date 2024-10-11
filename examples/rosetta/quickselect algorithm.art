@@ -14,6 +14,7 @@ quickselect: function [a k][
                 k: (k - size left) - 1
                 arr: new right
             ]
+        ]
     ]
 ]
 
