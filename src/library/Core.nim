@@ -1400,6 +1400,49 @@ proc defineLibrary*() =
             else:
                 push(FetchPathSym(x.p))
 
+    builtin "when",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "check conditions and execute corresponding block accordingly",
+        args        = {
+            "conditions"   : {Block}
+        },
+        attrs       = {
+            "any"   : ({Logical},"check all conditions regardless of success")
+        },
+        returns     = {Logical},
+        # TODO(Core/case) Add documentation example
+        #  labels: library, documentation, easy
+        example     = """
+        """:
+            #=======================================================
+            let withAny = (hadAttr("any"))
+            
+            prepareLeaklessOne("else")
+            SetSym("else", newLogical(true))
+
+            let stop = SP
+            execUnscoped(y)
+            let arr: ValueArray = sTopsFrom(stop)
+            SP = stop
+
+            #echo "unstacked " & $(arr.len) & " values..."
+
+            var i = 0
+            while i < arr.len-1:
+                #echo "trying " & $(i)
+                let item = arr[i]
+                if not (item.kind==Null or isFalse(item)):
+                    handleBranching:
+                        execUnscoped(arr[i+1])
+                    do:
+                        if not withAny:
+                            break
+                i += 2
+
+            finalizeLeaklessOne()
+
     # builtin "when",
     #     alias       = unaliased, 
     #     op          = opNop,
