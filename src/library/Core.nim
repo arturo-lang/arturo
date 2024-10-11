@@ -233,29 +233,67 @@ proc defineLibrary*() =
 
                     execMethod(fun, fid)
         
+    # builtin "case",
+    #     alias       = unaliased,
+    #     op          = opNop, 
+    #     rule        = PrefixPrecedence,
+    #     description = "initiate a case block to check for different cases",
+    #     args        = {
+    #         "predicate" : {Block,Null}
+    #     },
+    #     attrs       = NoAttrs,
+    #     returns     = {Nothing},
+    #     example     = """
+    #         a: 2
+    #         case [a]
+    #             when? [<2] -> print "a is less than 2"
+    #             when? [=2] -> print "a is 2"
+    #             else       -> print "a is greater than 2"
+    #     """:
+    #         #=======================================================
+    #         if xKind==Null:
+    #             push(newBlock())
+    #         else:
+    #             push(x)
+    #         push(newLogical(false))
+
     builtin "case",
-        alias       = unaliased,
-        op          = opNop, 
+        alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
-        description = "initiate a case block to check for different cases",
+        description = "match given argument to different values and execute corresponding block",
         args        = {
-            "predicate" : {Block,Null}
+            "argument"  : {Any},
+            "matches"   : {Block}
         },
         attrs       = NoAttrs,
-        returns     = {Nothing},
+        returns     = {Logical},
+        # TODO(Core/case) Add documentation example
+        #  labels: library, documentation, easy
         example     = """
-            a: 2
-            case [a]
-                when? [<2] -> print "a is less than 2"
-                when? [=2] -> print "a is 2"
-                else       -> print "a is greater than 2"
         """:
             #=======================================================
-            if xKind==Null:
-                push(newBlock())
-            else:
-                push(x)
-            push(newLogical(false))
+            prepareLeaklessOne("else")
+            SetSym("else", x)
+
+            let stop = SP
+            execUnscoped(y)
+            let arr: ValueArray = sTopsFrom(stop)
+            SP = stop
+
+            #echo "unstacked " & $(arr.len) & " values..."
+
+            var i = 0
+            while i < arr.len-1:
+                #echo "trying " & $(i)
+                if x == arr[i]:
+                    handleBranching:
+                        execUnscoped(arr[i+1])
+                    do:
+                        break
+                i += 2
+
+            finalizeLeaklessOne()
 
     builtin "coalesce",
         alias       = doublequestion, 
@@ -1362,43 +1400,43 @@ proc defineLibrary*() =
             else:
                 push(FetchPathSym(x.p))
 
-    builtin "when",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "match given argument to different values and execute corresponding block",
-        args        = {
-            "argument"  : {Any},
-            "matches"   : {Block}
-        },
-        attrs       = NoAttrs,
-        returns     = {Logical},
-        # TODO(Core/when) Add documentation example
-        #  labels: library, documentation, easy
-        example     = """
-        """:
-            #=======================================================
-            prepareLeaklessOne("else")
-            SetSym("else", x)
+    # builtin "when",
+    #     alias       = unaliased, 
+    #     op          = opNop,
+    #     rule        = PrefixPrecedence,
+    #     description = "match given argument to different values and execute corresponding block",
+    #     args        = {
+    #         "argument"  : {Any},
+    #         "matches"   : {Block}
+    #     },
+    #     attrs       = NoAttrs,
+    #     returns     = {Logical},
+    #     # TODO(Core/when) Add documentation example
+    #     #  labels: library, documentation, easy
+    #     example     = """
+    #     """:
+    #         #=======================================================
+    #         prepareLeaklessOne("else")
+    #         SetSym("else", x)
 
-            let stop = SP
-            execUnscoped(y)
-            let arr: ValueArray = sTopsFrom(stop)
-            SP = stop
+    #         let stop = SP
+    #         execUnscoped(y)
+    #         let arr: ValueArray = sTopsFrom(stop)
+    #         SP = stop
 
-            #echo "unstacked " & $(arr.len) & " values..."
+    #         #echo "unstacked " & $(arr.len) & " values..."
 
-            var i = 0
-            while i < arr.len-1:
-                #echo "trying " & $(i)
-                if x == arr[i]:
-                    handleBranching:
-                        execUnscoped(arr[i+1])
-                    do:
-                        break
-                i += 2
+    #         var i = 0
+    #         while i < arr.len-1:
+    #             #echo "trying " & $(i)
+    #             if x == arr[i]:
+    #                 handleBranching:
+    #                     execUnscoped(arr[i+1])
+    #                 do:
+    #                     break
+    #             i += 2
 
-            finalizeLeaklessOne()
+    #         finalizeLeaklessOne()
 
     builtin "while",
         alias       = unaliased, 
