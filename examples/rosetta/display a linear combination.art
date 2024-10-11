@@ -3,7 +3,7 @@
 linearCombination: function [coeffs][
     combo: new []
     loop.with:'i coeffs 'x [
-        when x [
+        case x [
             0       -> []
             1       -> 'combo ++ ~"e(|i+1|)"
             neg 1   -> 'combo ++ ~"-e(|i+1|)"

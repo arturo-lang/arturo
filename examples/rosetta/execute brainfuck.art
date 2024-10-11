@@ -47,7 +47,7 @@ StateIsValid: function [][
 interpret: function [].export:[DataPointer,InstructionPointer,Tape][
     while [StateIsValid][
         command: get split Code InstructionPointer
-        when command [
+        case command [
             "+" -> Tape\[DataPointer]: Tape\[DataPointer]+1
             "-" -> Tape\[DataPointer]: Tape\[DataPointer]-1
             ">" [

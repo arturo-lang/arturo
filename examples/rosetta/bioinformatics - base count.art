@@ -19,7 +19,7 @@ prettyPrint: function [in][
         print split.every:10 line
 
         loop split line 'ch [
-            when ch [
+            case ch [
                 "A" -> count\A: count\A + 1
                 "T" -> count\T: count\T + 1
                 "G" -> count\G: count\G + 1

@@ -1,7 +1,7 @@
 hq9: function [source][
     acc: 0
     loop split source 'ch [
-        when lower ch [
+        case lower ch [
             "h" -> print "Hello, world!"
             "q" -> print source
             "9" -> print "99 bottles here ..."

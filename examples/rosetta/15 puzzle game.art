@@ -112,7 +112,7 @@ validMovement?: $[
     movement :literal
 ][
     pos: game\playerPosition
-    when movement [
+    case movement [
         'up     -> return (not? in? pos [0..3])
         'down   -> return (not? in? pos [12..15])
         'left   -> return (not? in? pos [0 4 8 12])
