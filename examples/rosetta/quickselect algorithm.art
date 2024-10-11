@@ -7,9 +7,9 @@ quickselect: function [a k][
         left: select arr 'item -> item<pivot
         right: select arr 'item -> item>pivot
 
-        case [k]
-            when? [= size left]-> return pivot
-            when? [< size left]-> arr: new left
+        when [
+            k = size left -> return pivot
+            k < size left -> arr: new left
             else [
                 k: (k - size left) - 1
                 arr: new right

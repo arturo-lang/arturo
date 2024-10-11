@@ -13,7 +13,7 @@ while ø [
     inputOk: false
     while [not? inputOk][
         hle: strip input "How did I do? (h)igh, (l)ow, (=): "
-        when hle [
+        case hle [
             "h" [
                 switch rmin =< dec guess [rmax: dec guess, inputOk: true]
                     -> print "\tThat doesn't make any sense. I cannot find the number..."

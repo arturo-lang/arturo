@@ -3,8 +3,8 @@ frequencies: #[]
 
 inspectBlock: function [blk][
     loop blk 'item [
-        case []
-            when? [word? item][
+        when [
+            word? item [
                 sItem: to :string item
                 if set? sItem ->
                     if function? var sItem [
@@ -14,11 +14,10 @@ inspectBlock: function [blk][
                     ]
             ]
 
-            when? [or? block? item
-                       inline? item] ->
+            or? block? item
+                inline? item ->
                 inspectBlock item
-
-            else []
+        ]
     ]
 ]
 

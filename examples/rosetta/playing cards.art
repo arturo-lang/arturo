@@ -12,7 +12,7 @@ define :card [rank, suit][
     ]
 
     string: method [][
-        R: when this\rank [
+        R: case this\rank [
             1       -> 'A'
             11      -> 'J'
             12      -> 'Q'
