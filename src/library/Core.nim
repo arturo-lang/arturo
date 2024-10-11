@@ -1423,7 +1423,7 @@ proc defineLibrary*() =
             SetSym("else", newLogical(true))
 
             let stop = SP
-            execUnscoped(y)
+            execUnscoped(x)
             let arr: ValueArray = sTopsFrom(stop)
             SP = stop
 
