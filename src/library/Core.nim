@@ -473,11 +473,9 @@ proc defineLibrary*() =
         op          = opElse,
         rule        = PrefixPrecedence,
         description = "perform action, if last condition was not true",
-        args        = {
-            "otherwise" : {Block,Bytecode}
-        },
+        args        =  NoArgs,
         attrs       = NoAttrs,
-        returns     = {Nothing},
+        returns     = {Any},
         example     = """
             x: 2
             z: 3
@@ -490,9 +488,7 @@ proc defineLibrary*() =
             ]
         """:
             #=======================================================
-            let y = stack.pop() # pop the value of the previous operation (hopefully an 'if?' or 'when?')
-            if isFalse(y): 
-                execUnscoped(x)  
+            stack.push(VANY)
             
     builtin "ensure",
         alias       = unaliased, 
