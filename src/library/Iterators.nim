@@ -704,7 +704,7 @@ proc defineLibrary*() =
             ; => 3
         """:
             #=======================================================
-            doIterate(itLit=false, itCap=false, itInf=false, itCounter=false, itRolling=false, VFALSE):
+            doIterate(itLit=false, itCap=false, itInf=false, itCounter=false, itRolling=false, I0.copyValue):
                 var cntr = 0
             do:
                 if isTrue(stack.pop()):
