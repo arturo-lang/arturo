@@ -276,8 +276,8 @@ proc defineLibrary*() =
             #=======================================================
             let withAny = (hadAttr("any"))
             
-            prepareLeaklessOne("else")
-            SetSym("else", newLogical(true))
+            # prepareLeaklessOne("else")
+            # SetSym("else", newLogical(true))
 
             let stop = SP
             execUnscoped(x)
@@ -298,7 +298,7 @@ proc defineLibrary*() =
                             break
                 i += 2
 
-            finalizeLeaklessOne()
+            #finalizeLeaklessOne()
 
     builtin "coalesce",
         alias       = doublequestion, 
@@ -1417,8 +1417,8 @@ proc defineLibrary*() =
         example     = """
         """:
             #=======================================================
-            prepareLeaklessOne("else")
-            SetSym("else", x)
+            # prepareLeaklessOne("else")
+            # SetSym("else", x)
 
             let stop = SP
             execUnscoped(y)
@@ -1437,7 +1437,7 @@ proc defineLibrary*() =
                         break
                 i += 2
 
-            finalizeLeaklessOne()
+            #finalizeLeaklessOne()
 
     builtin "while",
         alias       = unaliased, 
