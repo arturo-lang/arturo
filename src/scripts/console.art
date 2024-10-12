@@ -179,8 +179,7 @@ lookup: function [what :string :literal :regex :type][
     unstack.discard size stack
 ]
 
-auto: #[complete: true, hints: true]
-Repl: #[verbose?: true]
+Repl: #[autocomplete?: true, hints?: true, verbose?: true]
 
 ; start the REPL
 
@@ -191,8 +190,8 @@ while [true] [
     indentation: ""
     
     command: [input.repl .history: historyPath]
-    if auto\complete -> append 'command [.complete: completions]
-    if auto\hints -> append 'command [.hint: hints]
+    if Repl\autocomplete? -> append 'command [.complete: completions]
+    if Repl\hints? -> append 'command [.hint: hints]
     append 'command ["$> "]
 
     inp: do command
