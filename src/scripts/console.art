@@ -184,6 +184,7 @@ lookup: function [what :string :literal :regex :type][
 ]
 
 auto: #[complete: true, hints: true]
+Repl: #[verbose?: true]
 
 ; start the REPL
 
@@ -212,8 +213,10 @@ while [true] [
 
         StackSize: size stack
 
-        if StackSize > 0 		[ Got: unstack 1 ]
-        if Got <> null 			[ print color #gray render.once "=> |Got|" ]
+        if Repl\verbose? [
+            if StackSize > 0 		[ Got: unstack 1 ]
+            if Got <> null 			[ print color #gray render.once "=> |Got|" ]
+        ]
 
         print ""
     ]
