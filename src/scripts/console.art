@@ -18,10 +18,8 @@ loop symbols [k,v][
 
         if not? empty? ats [
             'completions ++ map ats 'at [
-                if? :logical = first att\[at]\types ->
-                    join @[k "." at " "]
-                else ->
-                    join @[k "." at ": "]
+                (:logical = first att\[at]\types)?  -> join @[k "." at " "]
+                                                    -> join @[k "." at ": "]
             ]
         ]
     ]
@@ -133,20 +131,18 @@ lookup: function [what :string :literal :regex :type][
 
     results: new []
 
-    if? type? what [
+    (type? what)? [
         results: select sort keys symbols 'sym ->
             function?.builtin var sym
 
-        if? not? null? attr "returns" [
+        (null? attr "returns")? [
+            results: select results 'sym ->
+                contains? flatten values get info.get sym 'args what
+        ] [
             results: select results 'sym ->
                 contains? flatten get info.get sym 'returns what
         ]
-        else [
-            results: select results 'sym ->
-                contains? flatten values get info.get sym 'args what
-        ]
-    ]
-    else [
+    ] [ ; not? type? what
         results: (select sort keys symbols 'sym ->
             function? var sym) -- ["orange" "orangeBold" "PrintFList"]
 
@@ -184,6 +180,7 @@ lookup: function [what :string :literal :regex :type][
 ]
 
 auto: #[complete: true, hints: true]
+Repl: #[verbose?: true]
 
 ; start the REPL
 
@@ -212,8 +209,10 @@ while [true] [
 
         StackSize: size stack
 
-        if StackSize > 0 		[ Got: unstack 1 ]
-        if Got <> null 			[ print color #gray render.once "=> |Got|" ]
+        if Repl\verbose? [
+            if StackSize > 0 -> Got: unstack 1
+            if Got <> null   -> print color #gray render.once "=> |Got|"
+        ]
 
         print ""
     ]
