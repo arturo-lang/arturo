@@ -261,26 +261,23 @@ proc defineLibrary*() =
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "check conditions and execute corresponding block accordingly",
+        description = "match given argument to different values and execute corresponding block",
         args        = {
-            "conditions"   : {Block}
+            "argument"  : {Any},
+            "matches"   : {Block}
         },
-        attrs       = {
-            "any"   : ({Logical},"check all conditions regardless of success")
-        },
+        attrs       = NoAttrs,
         returns     = {Logical},
         # TODO(Core/case) Add documentation example
         #  labels: library, documentation, easy
         example     = """
         """:
             #=======================================================
-            let withAny = (hadAttr("any"))
-            
             # prepareLeaklessOne("else")
-            # SetSym("else", newLogical(true))
+            # SetSym("else", x)
 
             let stop = SP
-            execUnscoped(x)
+            execUnscoped(y)
             let arr: ValueArray = sTopsFrom(stop)
             SP = stop
 
@@ -289,13 +286,11 @@ proc defineLibrary*() =
             var i = 0
             while i < arr.len-1:
                 #echo "trying " & $(i)
-                let item = arr[i]
-                if not (item.kind==Null or isFalse(item)):
+                if x == arr[i]:
                     handleBranching:
                         execUnscoped(arr[i+1])
                     do:
-                        if not withAny:
-                            break
+                        break
                 i += 2
 
             #finalizeLeaklessOne()
@@ -1405,23 +1400,26 @@ proc defineLibrary*() =
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "match given argument to different values and execute corresponding block",
+        description = "check conditions and execute corresponding block accordingly",
         args        = {
-            "argument"  : {Any},
-            "matches"   : {Block}
+            "conditions"   : {Block}
         },
-        attrs       = NoAttrs,
+        attrs       = {
+            "any"   : ({Logical},"check all conditions regardless of success")
+        },
         returns     = {Logical},
         # TODO(Core/when) Add documentation example
         #  labels: library, documentation, easy
         example     = """
         """:
             #=======================================================
+            let withAny = (hadAttr("any"))
+            
             # prepareLeaklessOne("else")
-            # SetSym("else", x)
+            # SetSym("else", newLogical(true))
 
             let stop = SP
-            execUnscoped(y)
+            execUnscoped(x)
             let arr: ValueArray = sTopsFrom(stop)
             SP = stop
 
@@ -1430,11 +1428,13 @@ proc defineLibrary*() =
             var i = 0
             while i < arr.len-1:
                 #echo "trying " & $(i)
-                if x == arr[i]:
+                let item = arr[i]
+                if not (item.kind==Null or isFalse(item)):
                     handleBranching:
                         execUnscoped(arr[i+1])
                     do:
-                        break
+                        if not withAny:
+                            break
                 i += 2
 
             #finalizeLeaklessOne()
