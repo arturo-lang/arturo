@@ -11,22 +11,12 @@ dna: {
     GACCGGGGACTTGCATGATGGGAGCAGCTTTGTTAAACTACGAACGTAAT
 }
 
-prettyPrint: function [in][
-    count: #[ A: 0, T: 0, G: 0, C: 0 ]
-
-    loop.with:'i split.lines in 'line [
+prettyPrint: function [inp][
+    loop.with:'i split.lines inp 'line [
         prints [pad to :string i*50 3 ":"]
         print split.every:10 line
-
-        loop split line 'ch [
-            case ch [
-                "A" -> count\A: count\A + 1
-                "T" -> count\T: count\T + 1
-                "G" -> count\G: count\G + 1
-                "C" -> count\C: count\C + 1
-            ]
-        ]
     ]
+    count: tally inp
     print ["Total count => A:" count\A, "T:" count\T "G:" count\G "C:" count\C]
 ]
 
