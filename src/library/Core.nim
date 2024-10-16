@@ -232,30 +232,6 @@ proc defineLibrary*() =
                         fid = hash(fun)
 
                     execMethod(fun, fid)
-        
-    # builtin "case",
-    #     alias       = unaliased,
-    #     op          = opNop, 
-    #     rule        = PrefixPrecedence,
-    #     description = "initiate a case block to check for different cases",
-    #     args        = {
-    #         "predicate" : {Block,Null}
-    #     },
-    #     attrs       = NoAttrs,
-    #     returns     = {Nothing},
-    #     example     = """
-    #         a: 2
-    #         case [a]
-    #             when? [<2] -> print "a is less than 2"
-    #             when? [=2] -> print "a is 2"
-    #             else       -> print "a is greater than 2"
-    #     """:
-    #         #=======================================================
-    #         if xKind==Null:
-    #             push(newBlock())
-    #         else:
-    #             push(x)
-    #         push(newLogical(false))
 
     builtin "case",
         alias       = unaliased, 
