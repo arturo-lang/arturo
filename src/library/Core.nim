@@ -249,16 +249,11 @@ proc defineLibrary*() =
         example     = """
         """:
             #=======================================================
-            let stop = SP
-            execUnscoped(y)
-            let arr: ValueArray = sTopsFrom(stop)
-            SP = stop
-
             var i = 0
-            while i < arr.len-1:
-                if x == arr[i]:
+            while i < y.a.len-1:
+                if x == y.a[i]:
                     handleBranching:
-                        execUnscoped(arr[i+1])
+                        execUnscoped(y.a[i+1])
                     do:
                         break
                 i += 2
