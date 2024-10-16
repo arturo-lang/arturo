@@ -273,27 +273,19 @@ proc defineLibrary*() =
         example     = """
         """:
             #=======================================================
-            # prepareLeaklessOne("else")
-            # SetSym("else", x)
-
             let stop = SP
             execUnscoped(y)
             let arr: ValueArray = sTopsFrom(stop)
             SP = stop
 
-            #echo "unstacked " & $(arr.len) & " values..."
-
             var i = 0
             while i < arr.len-1:
-                #echo "trying " & $(i)
                 if x == arr[i]:
                     handleBranching:
                         execUnscoped(arr[i+1])
                     do:
                         break
                 i += 2
-
-            #finalizeLeaklessOne()
 
     builtin "coalesce",
         alias       = doublequestion, 
