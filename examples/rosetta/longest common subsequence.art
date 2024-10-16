@@ -10,10 +10,10 @@ lcs: function [a,b][
     [result, x, y]: @["", size a, size b]
 
     while [and? [x > 0][y > 0]][
-        if? ls\[x]\[y] = ls\[x-1]\[y] -> x: x-1
-        else [
-            if? ls\[x]\[y] = ls\[x]\[y-1] -> y: y-1
-            else [
+        switch ls\[x]\[y] = ls\[x-1]\[y] -> x: x-1
+        [
+            switch ls\[x]\[y] = ls\[x]\[y-1] -> y: y-1
+            [
                 result: a\[x-1] ++ result
                 x: x-1
                 y: y-1

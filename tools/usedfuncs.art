@@ -68,6 +68,6 @@ loop select list "examples/rosetta" 'x -> suffix? x ".art" 'scr [
 results: sort.values results
 inspect results
 
-; if? standalone? [
+; if standalone? [
 ;     inspect getFunctions arg\0
 ; ]

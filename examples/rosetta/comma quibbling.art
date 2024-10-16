@@ -1,9 +1,9 @@
 quibble: $[sequence :block][
-    if? 0 = size sequence
-    -> return "{}"
+    if 0 = size sequence
+        -> return "{}"
     
-    if? 1 = size sequence
-    -> return ~"{|sequence\0|}"
+    if 1 = size sequence
+        -> return ~"{|sequence\0|}"
     
     last: pop 'sequence
     return ~« {|join.with: ", " sequence| and |last|}

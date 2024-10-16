@@ -6,8 +6,8 @@ evolve: function [arr][
         b: ary\[i]
         c: ary\[i+1]
 
-        if? 2 = a+b+c -> 'ret ++ 1
-        else          -> 'ret ++ 0
+        switch 2 = a+b+c -> 'ret ++ 1
+                         -> 'ret ++ 0
     ]
     ret
 ]

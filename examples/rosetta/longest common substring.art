@@ -5,10 +5,9 @@ lcs: function [a,b][
     loop.with:'i a 'x [
         loop.with:'j b 'y [
             if x=y [
-                if? or? i=0 j=0 ->
-                    lengths\[i]\[j]: 0
-                else ->
-                    lengths\[i]\[j]: 1 + lengths\[i-1]\[j-1]
+                switch or? i=0 j=0 
+                    -> lengths\[i]\[j]: 0
+                    -> lengths\[i]\[j]: 1 + lengths\[i-1]\[j-1]
 
                 if greatestLength < lengths\[i]\[j] [
                     greatestLength: lengths\[i]\[j]

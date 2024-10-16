@@ -96,6 +96,7 @@ let
     VMAYBE*         = makeConst Value(kind: Logical, flags: ValueFlags(Maybe))        ## constant Maybe
 
     VNULL*          = makeConst Value(kind: Null)                                     ## constant Null
+    VANY*           = makeConst Value(kind: Any)                                      ## constant Any
 
     VEMPTYSTR*      = makeConst Value(kind: String, s: "")                                    ## constant ""
     VEMPTYARR*      = makeConst Value(kind: Block, a: @[], data: nil)                         ## constant []

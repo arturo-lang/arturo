@@ -13,11 +13,11 @@ tcount: 0
 
 loop words 'w [
     p: phone w
-    if? key? textonyms p [
+    switch key? textonyms p [
         textonyms\[p]: textonyms\[p] ++ w
         if 2 = size textonyms\[p] -> 'tcount + 1
     ]
-    else -> textonyms\[p]: @[w]
+    -> textonyms\[p]: @[w]
 ]
 
 print ~{

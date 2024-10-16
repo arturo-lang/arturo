@@ -3,8 +3,8 @@ vowels: ["a" "e" "i" "o" "u"]
 
 nofConsonants: function [w][
     cons: (split w) -- vowels
-    if? cons = unique cons -> return size cons
-    else -> return 0
+    switch cons = unique cons -> return size cons
+                              -> return 0
 ]
 
 freqs: array.of: 20 []

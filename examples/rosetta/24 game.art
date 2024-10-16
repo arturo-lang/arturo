@@ -28,11 +28,10 @@ result: 0
 while [result<>24][
     got: input "Enter an expression to form 24: "
     blo: to :block got
-    if? validExpression? blo [
+    switch validExpression? blo [
         result: do blo
         print ["The result is:" result]
-    ]
-    else [
+    ][
         print "Invalid expression. Please try again!"
     ]
     print ""

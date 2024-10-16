@@ -94,7 +94,7 @@ runSet: function [title,location].export:[supersuccess,supertotal,superskipped][
         expected: split.lines strip expected
 
         prints pad.right ((color #magenta "\n- Running: ") ++ truncate.preserve extract.filename script 40) 70
-        if? canExecute? script [
+        switch canExecute? script [
 
             ;tim: benchmark.get [
                 result: execute ~{|sys\binary| --no-color "|script|"}
@@ -114,20 +114,18 @@ runSet: function [title,location].export:[supersuccess,supertotal,superskipped][
             ;     tim: tim
             ; ]
 
-            if? result=expected [
+            switch result=expected [
 
                 prints color #green.bold "[   YES   ]"
                 success: success + 1
                 supersuccess: supersuccess + 1
-            ]
-            else [
+            ][
                 print "<-------------------"
                 print join.with:"\n" cleanResult
                 print "------------------->"
                 prints color #red "[  ERROR  ]"
             ]
-        ]
-        else [
+        ][
             prints color #orange.bold "[ SKIPPED ]"
             superskipped: superskipped + 1
             success: success + 1
@@ -168,8 +166,8 @@ print [color #cyan "|" "Tests executed:" supertotal "( skipped:" superskipped ")
 print [color #cyan "|" "Tests succeeded:" supersuccess color #cyan pad "|" 49 - size to :string supertotal]
 rate: to :string .format:".1f" 100 * supersuccess//supertotal
 print color #cyan "====================================================================="
-if? supersuccess=supertotal -> print [color #cyan "|" "Success rate:" color #green append rate "%" color #cyan pad "|" 51 - size rate]
-else -> print [color #cyan "|" "Success rate:" append rate "%" color #cyan pad "|" 51 - size rate]
+switch supersuccess=supertotal -> print [color #cyan "|" "Success rate:" color #green append rate "%" color #cyan pad "|" 51 - size rate]
+                               -> print [color #cyan "|" "Success rate:" append rate "%" color #cyan pad "|" 51 - size rate]
 printableTime: ~"|round.to: 2 to :floating scalar supertime| s"
 print [color #cyan "|" "Total time:" printableTime color #cyan pad "|" 54 - size to :string printableTime]
 print color #cyan "====================================================================="

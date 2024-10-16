@@ -232,30 +232,31 @@ proc defineLibrary*() =
                         fid = hash(fun)
 
                     execMethod(fun, fid)
-        
+
     builtin "case",
-        alias       = unaliased,
-        op          = opNop, 
+        alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
-        description = "initiate a case block to check for different cases",
+        description = "match given argument to different values and execute corresponding block",
         args        = {
-            "predicate" : {Block,Null}
+            "argument"  : {Any},
+            "matches"   : {Block}
         },
         attrs       = NoAttrs,
-        returns     = {Nothing},
+        returns     = {Logical},
+        # TODO(Core/case) Add documentation example
+        #  labels: library, documentation, easy
         example     = """
-            a: 2
-            case [a]
-                when? [<2] -> print "a is less than 2"
-                when? [=2] -> print "a is 2"
-                else       -> print "a is greater than 2"
         """:
             #=======================================================
-            if xKind==Null:
-                push(newBlock())
-            else:
-                push(x)
-            push(newLogical(false))
+            var i = 0
+            while i < y.a.len-1:
+                if x == y.a[i]:
+                    handleBranching:
+                        execUnscoped(y.a[i+1])
+                    do:
+                        break
+                i += 2
 
     builtin "coalesce",
         alias       = doublequestion, 
@@ -430,11 +431,9 @@ proc defineLibrary*() =
         op          = opElse,
         rule        = PrefixPrecedence,
         description = "perform action, if last condition was not true",
-        args        = {
-            "otherwise" : {Block,Bytecode}
-        },
+        args        = NoArgs,
         attrs       = NoAttrs,
-        returns     = {Nothing},
+        returns     = {Any},
         example     = """
             x: 2
             z: 3
@@ -447,9 +446,7 @@ proc defineLibrary*() =
             ]
         """:
             #=======================================================
-            let y = stack.pop() # pop the value of the previous operation (hopefully an 'if?' or 'when?')
-            if isFalse(y): 
-                execUnscoped(x)  
+            stack.push(VANY)
             
     builtin "ensure",
         alias       = unaliased, 
@@ -599,10 +596,9 @@ proc defineLibrary*() =
                 ;; }
 
                 mult?: attr 'mult
-                if? not? null? mult? ->
-                    return mult? * x + y
-                else ->
-                    return x + y
+                switch not? null? mult? 
+                    -> return mult? * x + y
+                    -> return x + y
             ]
 
             info'addThem
@@ -633,8 +629,8 @@ proc defineLibrary*() =
             ..........
             ; memoization
             fib: $[x].memoize[
-                if? x<2 [1]
-                else [(fib x-1) + (fib x-2)]
+                switch x<2 -> 1
+                           -> (fib x-1) + (fib x-2)
             ]
 
             loop 1..25 [x][
@@ -1362,6 +1358,41 @@ proc defineLibrary*() =
                 push(FetchSym(x.s))
             else:
                 push(FetchPathSym(x.p))
+
+    builtin "when",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "check conditions and execute corresponding block accordingly",
+        args        = {
+            "conditions"   : {Block}
+        },
+        attrs       = {
+            "any"   : ({Logical},"check all conditions regardless of success")
+        },
+        returns     = {Logical},
+        # TODO(Core/when) Add documentation example
+        #  labels: library, documentation, easy
+        example     = """
+        """:
+            #=======================================================
+            let withAny = (hadAttr("any"))
+            
+            let stop = SP
+            execUnscoped(x)
+            let arr: ValueArray = sTopsFrom(stop)
+            SP = stop
+
+            var i = 0
+            while i < arr.len-1:
+                let item = arr[i]
+                if not (item.kind==Null or isFalse(item)):
+                    handleBranching:
+                        execUnscoped(arr[i+1])
+                    do:
+                        if not withAny:
+                            break
+                i += 2
 
     builtin "while",
         alias       = unaliased, 

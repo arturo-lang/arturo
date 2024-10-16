@@ -7,11 +7,10 @@ lps: function [s][
         loop fst..dec size s 'lst [
             candidate: slice s fst lst
             if palindrome? candidate [
-                if? maxLength < size candidate [
+                switch maxLength < size candidate [
                     result: @[candidate]
                     maxLength: size candidate
-                ]
-                else [
+                ][
                     if maxLength = size candidate ->
                         'result ++ candidate
                 ]

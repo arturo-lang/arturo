@@ -52,6 +52,6 @@ getFunctions: function [scr][
     return @[ffs, non]
 ]
 
-if? standalone? [
+if standalone? [
     inspect getFunctions arg\0
 ]

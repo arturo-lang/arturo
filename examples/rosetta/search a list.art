@@ -3,6 +3,7 @@ haystack: [Zig Zag Wally Ronald Bush Krusty Charlie Bush Bozo]
 loop [Bush Washington] 'needle [
     i: index haystack needle
 
-    if? null? i     -> panic ~"|needle| is not in haystack"
-    else            -> print [i needle]
+    switch null? i    
+        -> panic ~"|needle| is not in haystack"
+        -> print [i needle]
 ]

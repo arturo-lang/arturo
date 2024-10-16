@@ -6,13 +6,12 @@ lookAndSay: function [n][
     currentCounter: 0
     currentCh: first previous
     loop previous 'ch [
-        if? currentCh <> ch [
+        switch currentCh <> ch [
             if not? zero? currentCounter ->
                 'result ++ (to :string currentCounter) ++ currentCh
             currentCounter: 1
             currentCh: ch
-        ]
-        else ->
+        ]->
             currentCounter: currentCounter + 1
     ]
     'result ++ (to :string currentCounter) ++ currentCh

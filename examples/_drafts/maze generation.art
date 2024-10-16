@@ -28,8 +28,8 @@ newMaze: function [w,h][
     ]
 
     connectCells: function [x1,y1,x2,y2][
-        if? x1=x2 -> set get horWalls x1 min @[y1 y2] false
-        else -> set get verWalls min @[x1 x2] y1 false
+        switch x1=x2 -> set get horWalls x1 min @[y1 y2] false
+                     -> set get verWalls min @[x1 x2] y1 false
     ]
 
     generateVisitCell: function [x,y][

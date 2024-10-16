@@ -73,11 +73,10 @@ k "boom" [l "zoom"]
 fibo: function [n][
 	q: 3*n
 	print ["in fibo" n ", q =" q]
-	if? n<2 [ 
+	switch n<2 [ 
 		print ["in fibo" n ", q =" q]
 		1
-	]
-	else [ 
+	][ 
 		ret: add fibo n-1 fibo n-2
 		print ["in fibo" n ", q =" q]
 		ret
@@ -105,10 +104,9 @@ do [
 		print [x a b y]
 	]
 
-	if? set? 'b [
+	switch set? 'b [
  		print [a b y x]
- 	]
- 	else [
+ 	][
  		print "b: not set -> NOT CORRECT"
  	]
 ]
@@ -125,10 +123,9 @@ loop [1 2 3 4] 'o [
 
 print ["j :" j]
 
-if? set? 'o [
+switch set? 'o [
 	print o
-]
-else [
+][
 	print "o: not set -> CORRECT"
 ]
 
@@ -146,17 +143,15 @@ loop [1 2 3 4] 'o [
 
 print ["j :" j]
 
-if? set? 'o [
+switch set? 'o [
 	print o
-]
-else [
+][
 	print "o: not set -> CORRECT"
 ]
 
-if? set? 'h [
+switch set? 'h [
 	print h
-]
-else [
+][
 	print "h: not set -> NOT CORRECT"
 ]
 
@@ -168,9 +163,8 @@ print map [1 2 3 4] 'm [
 	2*m
 ]
 
-if? set? 'm [
+switch set? 'm [
 	print m
-]
-else [
+][
 	print "m: not set -> CORRECT"
 ]

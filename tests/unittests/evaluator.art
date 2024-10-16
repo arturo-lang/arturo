@@ -2272,67 +2272,6 @@ supersection "OPTIMIZATIONS"
         ; end
 
     ;*****************************************************************
-    topic "if?-else"
-    ;*****************************************************************
-
-        byteCode [
-            if? x [return true]
-            else [return false]
-        ]
-        ; ================================
-        ;  DATA
-        ; ================================
-        ; 0: x :word
-
-        ; ================================
-        ;  CODE
-        ; ================================
-        ; load0
-        ; jmpifnot             @4
-        ; constbt
-        ; return
-        ; goto                 @2
-        ; constbf
-        ; return
-        ; end
-
-        byteCode [
-            print "before"
-            if? a <> 1 + 2 [print "here", return true]
-            else [print "there", return false]
-            print "after"
-        ]
-        ; ================================
-        ;  DATA
-        ; ================================
-        ; 0: before :string
-        ; 1: a :word
-        ; 2: here :string
-        ; 3: there :string
-        ; 4: after :string
-
-        ; ================================
-        ;  CODE
-        ; ================================
-        ; push0
-        ; print
-        ; consti3
-        ; load1
-        ; jmpifeq              @6
-        ; push2
-        ; print
-        ; constbt
-        ; return
-        ; goto                 @4
-        ; push3
-        ; print
-        ; constbf
-        ; return
-        ; push4
-        ; print
-        ; end
-
-    ;*****************************************************************
     topic "switch (`?`)"
     ;*****************************************************************
 

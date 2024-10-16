@@ -18,12 +18,11 @@ print "---"
 
 g: function [x][
     print "in g"
-    if? x<5 [
+    switch x<5 [
         print "x<5"
         return x
         print "after return - ERROR"
-    ]
-    else [
+    ][
         print "x>=5"
         return 2*x
         print "after return - ERROR"
@@ -45,12 +44,11 @@ print "---"
 
 h: function [z][
     print "in h"
-    if? z<5 [
+    switch z<5 [
         print "z<5"
         return z
         print "after return - ERROR"
-    ]
-    else [
+    ][
         if z=5 [
             print "z=5"
             return 3*z

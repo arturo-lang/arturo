@@ -27,8 +27,8 @@ loop [
     [p1, p2, r]: tr
     print ["Through points:\n  " getPoint p1 "\n  " getPoint p2]
     print ["and radius" (to :string r)++"," "you can construct the following circles:"]
-    if? string? cic: <= circles p1 p2 r -> print ["   ERROR:" cic]
-    else [
+    switch string? cic: <= circles p1 p2 r -> print ["   ERROR:" cic]
+    [
         [c1, c2]: cic
         print ["  " getCircle c1]
         print ["  " getCircle c2]
