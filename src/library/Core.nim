@@ -1407,19 +1407,13 @@ proc defineLibrary*() =
             #=======================================================
             let withAny = (hadAttr("any"))
             
-            # prepareLeaklessOne("else")
-            # SetSym("else", newLogical(true))
-
             let stop = SP
             execUnscoped(x)
             let arr: ValueArray = sTopsFrom(stop)
             SP = stop
 
-            #echo "unstacked " & $(arr.len) & " values..."
-
             var i = 0
             while i < arr.len-1:
-                #echo "trying " & $(i)
                 let item = arr[i]
                 if not (item.kind==Null or isFalse(item)):
                     handleBranching:
@@ -1428,8 +1422,6 @@ proc defineLibrary*() =
                         if not withAny:
                             break
                 i += 2
-
-            #finalizeLeaklessOne()
 
     builtin "while",
         alias       = unaliased, 
