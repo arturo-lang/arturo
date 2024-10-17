@@ -24,6 +24,8 @@
    * [Community](#community)
    * [FAQ](#faq)
    * [Contributing](#contributing)
+      * [Activity](#activity) 
+      * [How can I contribute?](#how-can-i-contribute) 
    * [Donations](#donations)
       * [How can I donate?](#how-can-i-donate)
       * [Sponsors](#sponsors)
@@ -166,6 +168,14 @@ So, the name is a subtle hommage to him; and also a hint as to what this program
 
 Contributing
 ------------------------------
+
+### Activity
+
+<p align="center">
+<img src="https://repobeats.axiom.co/api/embed/8c5035a3893bd66bdcc4e8295a6eee2ab8399b2f.svg">
+</p>
+
+### How can I contribute?
 
 Please read [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) for more details and the process for submitting pull requests.
 
