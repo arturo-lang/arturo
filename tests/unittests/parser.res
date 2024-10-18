@@ -4,3 +4,12 @@
         ?? :symbol
         ? :symbol
 ]
+[ :block
+        something? :label
+        something :word
+]
+[ :block
+        some? :literal
+        thing? :word
+        ? :symbol
+]
