@@ -242,21 +242,49 @@ proc defineLibrary*() =
             "argument"  : {Any},
             "matches"   : {Block}
         },
-        attrs       = NoAttrs,
+        attrs       = {
+            "match"   : ({Logical},"match to pattern")
+        },
         returns     = {Logical},
         # TODO(Core/case) Add documentation example
         #  labels: library, documentation, easy
         example     = """
         """:
             #=======================================================
+            let doMatch = hadAttr("match")
+
+            let stop = SP
+            execUnscoped(x)
+            let arr: ValueArray = sTopsFrom(stop)
+            SP = stop
+
             var i = 0
-            while i < y.a.len-1:
-                if x == y.a[i]:
-                    handleBranching:
-                        execUnscoped(y.a[i+1])
-                    do:
-                        break
-                i += 2
+            if unlikely(doMatch):
+                while i < y.a.len-1:
+                    var comparable: Value
+                    if y.a[i].kind == Block:
+                        let stop = SP
+                        execUnscoped(y.a[i])
+                        let pattern: ValueArray = sTopsFrom(stop)
+                        comparable = newBlock(pattern)
+                        SP = stop
+                    else:
+                        comparable {.cursor.} = y.a[i]
+                    
+                    if x == comparable:
+                        handleBranching:
+                            execUnscoped(y.a[i+1])
+                        do:
+                            break
+                    i += 2
+            else:
+                while i < y.a.len-1:
+                    if x == y.a[i]:
+                        handleBranching:
+                            execUnscoped(y.a[i+1])
+                        do:
+                            break
+                    i += 2
 
     builtin "coalesce",
         alias       = doublequestion, 
