@@ -508,6 +508,9 @@ template parseIdentifier(p: var Parser, alsoAddCurrent: bool) =
     while p.buf[pos] in PermittedIdentifiers_In:
         add(p.value, p.buf[pos])
         inc(pos)
+    if p.buf[pos] == QuestionMark:
+        add(p.value, QuestionMark)
+        inc(pos)
     p.bufpos = pos
 
 template parseNumber(p: var Parser) =
