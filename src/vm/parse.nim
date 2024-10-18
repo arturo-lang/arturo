@@ -62,6 +62,8 @@ const
     Backslash                   = '\\'
     Dash                        = '-'
 
+    QuestionMark                = '?'
+
     CR                          = '\c'
     LF                          = '\L'
     EOF                         = '\0'
