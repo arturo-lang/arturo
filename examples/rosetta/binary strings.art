@@ -16,8 +16,8 @@ y: z
 y: new z
 
 ; check if empty
-if? empty? x -> print "empty"
-else         -> print "not empty"
+switch empty? x -> print "empty"
+                -> print "not empty"
 
 ; append a string
 'x ++ "!"

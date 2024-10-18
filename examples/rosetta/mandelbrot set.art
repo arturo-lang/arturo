@@ -14,8 +14,8 @@ mandelbrot: function [settings][
         x: 0
         while [x < settings\width][
             X: settings\xStart + x * settings\xStep
-            if? inMandelbrot? to :complex @[X Y] -> prints "*"
-            else -> prints " "
+            switch inMandelbrot? to :complex @[X Y] -> prints "*"
+                                                    -> prints " "
             x: x + 1
         ]
         print ""

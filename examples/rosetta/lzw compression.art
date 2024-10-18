@@ -6,8 +6,8 @@ compress: function [str][
     result: []
     loop str 'c [
         wc: w ++ c
-        if? key? dict wc -> w: wc
-        else [
+        switch key? dict wc -> w: wc
+        [
             'result ++ dict\[w]
             dict\[wc]: size dict
             w: to :string c
@@ -30,10 +30,10 @@ decompress: function [compressed][
     result: w
     loop arr 'k [
         entry: ""
-        if? key? dict k -> entry: dict\[k]
-        else [
-            if? k = size dict -> entry: w ++ first w
-            else -> panic ~"Error with compressed: |k|"
+        switch key? dict k -> entry: dict\[k]
+        [
+            switch k = size dict -> entry: w ++ first w
+                                 -> panic ~"Error with compressed: |k|"
         ]
         'result ++ entry
         dict\[size dict]: w ++ first entry

@@ -10,7 +10,7 @@ d: 0
 dotWritten: false
 
 while [true][
-    if? (n*t) > (4*q)+r-t [
+    switch (n*t) > (4*q)+r-t [
         d: d+1
         prints n
         unless dotWritten [
@@ -24,8 +24,7 @@ while [true][
         n: ((10*(r + 3*q)) / t) - 10*n
         q: q*10
         r: nr
-    ]
-    else [
+    ][
         nr: (r + 2*q) * l
         nn: ((q*(2 + 7*k)) + r*l) / (t*l)
         q: q*k

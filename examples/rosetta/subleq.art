@@ -8,10 +8,10 @@ run: function [prog][
 
         ip: ip + 3
 
-        if? A = neg 1 -> mem\[B]: to :integer first input ""
-        else [
-            if? B = neg 1 -> prints to :char mem\[A]
-            else [
+        switch A = neg 1 -> mem\[B]: to :integer first input ""
+        [
+            switch B = neg 1 -> prints to :char mem\[A]
+            [
                 mem\[B]: mem\[B] - mem\[A]
                 if mem\[B] =< 0 -> ip: C
             ]

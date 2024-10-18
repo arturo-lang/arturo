@@ -93,7 +93,7 @@ loop functions [modl,lst][
 
     loop lst 'func [
         funcInfo:  info.get func
-        if? funcInfo\type = :function [
+        switch funcInfo\type = :function [
             attributes: funcInfo\attrs
             arguments: funcInfo\args
             funcInfo: remove.key funcInfo 'attrs
@@ -103,8 +103,7 @@ loop functions [modl,lst][
             funcInfo\examples: examples
             funcInfo\attributes: attributes
             funcInfo\arguments: arguments
-        ]
-        else [
+        ][
             funcInfo\returns: @[funcInfo\type]
         ]
         funcInfo: remove.key funcInfo 'address

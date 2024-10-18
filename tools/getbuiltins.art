@@ -3,8 +3,8 @@ builtins1: new []
 builtins2: new []
 
 loop symbols [k,v][
-    if? suffix? k "?" -> 'builtins1 ++ k
-    else -> 'builtins2 ++ k
+    switch suffix? k "?" -> 'builtins1 ++ k
+                         -> 'builtins2 ++ k
 ]
 
 map 'builtins1 => chop

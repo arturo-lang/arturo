@@ -70,12 +70,9 @@ proc defineLibrary*() =
         returns     = {Any,Null},
         example     = """
             multiply: function [x][
-                if? attr? "with" [ 
-                    x * attr "with"
-                ] 
-                else [ 
-                    2*x 
-                ]
+                switch attr? "with" 
+                    -> x * attr "with"
+                    -> 2*x 
             ]
             
             print multiply 5

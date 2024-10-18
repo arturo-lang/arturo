@@ -6,9 +6,8 @@ loop 99..1 'i [
     print ~"Take one down, pass it around!"
     if 1=i-1 -> s: ""
 
-    if? i>1 [
+    switch i>1 [
         print ~"|i-1| bottle|s| of beer on the wall!"
         print ""
-    ]
-    else -> print "No more bottles of beer on the wall!"
+    ] -> print "No more bottles of beer on the wall!"
 ]

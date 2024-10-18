@@ -735,19 +735,6 @@
 
 
         >--------------------------------------------------
-        > if?-else
-        >--------------------------------------------------
-
-        input: [if? x [return true] else [return false]] 
-        data: [x] 
-        code: [64 199 4 21 167 216 2 22 167 223] (10 bytes) 
-
-        input: [print "before" if? a <> 1 + 2 [print "here" return true] else [print "there" return false] print "after"] 
-        data: [before a here there after] 
-        code: [32 189 4 65 201 6 34 189 21 167 216 4 35 189 22 167 36 189 223] (19 bytes) 
-
-
-        >--------------------------------------------------
         > switch (`?`)
         >--------------------------------------------------
 
