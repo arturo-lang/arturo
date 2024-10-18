@@ -62,6 +62,8 @@ const
     Backslash                   = '\\'
     Dash                        = '-'
 
+    QuestionMark                = '?'
+
     CR                          = '\c'
     LF                          = '\L'
     EOF                         = '\0'
@@ -77,7 +79,7 @@ const
     Letters                     = {'a'..'z', 'A'..'Z'}
     PermittedIdentifiers_Start  = Letters + {'_'}
     PermittedColorChars         = Letters + Numbers
-    PermittedIdentifiers_In     = PermittedIdentifiers_Start + Numbers + {'?'}
+    PermittedIdentifiers_In     = PermittedIdentifiers_Start + Numbers
     PermittedQuantityChars      = Letters + Numbers + {'.', '/'}
     
     SemVerExtra                 = Letters + PermittedNumbers_Start + {'+', '-', '.'}
@@ -505,6 +507,9 @@ template parseIdentifier(p: var Parser, alsoAddCurrent: bool) =
     inc(pos)
     while p.buf[pos] in PermittedIdentifiers_In:
         add(p.value, p.buf[pos])
+        inc(pos)
+    if p.buf[pos] == QuestionMark:
+        add(p.value, QuestionMark)
         inc(pos)
     p.bufpos = pos
 
