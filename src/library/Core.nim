@@ -252,9 +252,9 @@ proc defineLibrary*() =
         """:
             #=======================================================
             let doMatch = hadAttr("match")
-
+           
             let stop = SP
-            execUnscoped(x)
+            execUnscoped(y)
             let arr: ValueArray = sTopsFrom(stop)
             SP = stop
 
