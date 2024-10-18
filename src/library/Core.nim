@@ -1631,6 +1631,11 @@ proc defineLibrary*() =
     # Constants
     #----------------------------
 
+    constant "any",
+        alias       = doubleasterisk,
+        description = "the ANY constant":
+            VANY
+
     constant "null",
         alias       = slashedzero,
         description = "the NULL constant":
