@@ -79,7 +79,7 @@ const
     Letters                     = {'a'..'z', 'A'..'Z'}
     PermittedIdentifiers_Start  = Letters + {'_'}
     PermittedColorChars         = Letters + Numbers
-    PermittedIdentifiers_In     = PermittedIdentifiers_Start + Numbers + {'?'}
+    PermittedIdentifiers_In     = PermittedIdentifiers_Start + Numbers
     PermittedQuantityChars      = Letters + Numbers + {'.', '/'}
     
     SemVerExtra                 = Letters + PermittedNumbers_Start + {'+', '-', '.'}
