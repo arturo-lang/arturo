@@ -260,28 +260,28 @@ proc defineLibrary*() =
 
             var i = 0
             if unlikely(doMatch):
-                while i < y.a.len-1:
-                    var comparable: Value
-                    if y.a[i].kind == Block:
+                while i < arr.a.len-1:
+                    var comparable {.cursor.}: Value 
+                    if arr.a[i].kind == Block:
                         let stop = SP
-                        execUnscoped(y.a[i])
+                        execUnscoped(arr.a[i])
                         let pattern: ValueArray = sTopsFrom(stop)
                         comparable = newBlock(pattern)
                         SP = stop
                     else:
-                        comparable {.cursor.} = y.a[i]
+                        comparable = arr.a[i]
                     
                     if x == comparable:
                         handleBranching:
-                            execUnscoped(y.a[i+1])
+                            execUnscoped(arr.a[i+1])
                         do:
                             break
                     i += 2
             else:
-                while i < y.a.len-1:
-                    if x == y.a[i]:
+                while i < arr.a.len-1:
+                    if x == arr.a[i]:
                         handleBranching:
-                            execUnscoped(y.a[i+1])
+                            execUnscoped(arr.a[i+1])
                         do:
                             break
                     i += 2
