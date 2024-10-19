@@ -1659,8 +1659,8 @@ proc defineLibrary*() =
     # Constants
     #----------------------------
 
-    constant "any",
-        alias       = doubleasterisk,
+    constant "_",
+        alias       = unaliased,
         description = "the ANY constant":
             VANY
 
