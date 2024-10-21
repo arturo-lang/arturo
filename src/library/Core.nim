@@ -52,7 +52,7 @@ when defined(BUNDLE):
 
 proc replacingAmpersands(va: Value, what: Value): Value =
     var theBlock = newBlock()
-    for v in y.a:
+    for v in va.a:
         if v.kind == Symbol and v.m == ampersand:
             theBlock.a.add(what)
         elif v.kind == Block:
