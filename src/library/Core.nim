@@ -243,7 +243,8 @@ proc defineLibrary*() =
             "matches"   : {Block}
         },
         attrs       = {
-            "match"   : ({Logical},"match to pattern")
+            "match"   : ({Logical},"match to pattern"),
+            "using"   : ({Logical},"replace given value in pattern")
         },
         returns     = {Logical},
         # TODO(Core/case) Add documentation example
@@ -252,9 +253,20 @@ proc defineLibrary*() =
         """:
             #=======================================================
             let doMatch = hadAttr("match")
+            let doUsing = hadAttr("using")
            
             let stop = SP
-            execUnscoped(y)
+            if not doUsing:
+                execUnscoped(y)
+            else:
+                var theBlock = newBlock()
+                for v in y.a:
+                    if v.kind == Symbol and v.m == ampersand:
+                        theBlock.add(x)
+                    else:
+                        theBlock.add(v)
+                execUnscoped(theBlock)
+                
             let arr: ValueArray = sTopsFrom(stop)
             SP = stop
 
