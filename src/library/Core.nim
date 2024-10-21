@@ -47,6 +47,21 @@ when defined(BUNDLE):
     import vm/bundle/resources
 
 #=======================================
+# Helpers
+#=======================================
+
+proc replacingAmpersands(va: Value, what: Value): Value =
+    var theBlock = newBlock()
+    for v in y.a:
+        if v.kind == Symbol and v.m == ampersand:
+            theBlock.a.add(what)
+        elif v.kind == Block:
+            theBlock.a.add(v.replacingAmpersands())
+        else:
+            theBlock.a.add(v)
+    return theBlock
+
+#=======================================
 # Definitions
 #=======================================
 
@@ -253,20 +268,9 @@ proc defineLibrary*() =
         """:
             #=======================================================
             let doMatch = hadAttr("match")
-            let doUsing = hadAttr("using")
            
             let stop = SP
-            if not doUsing:
-                execUnscoped(y)
-            else:
-                var theBlock = newBlock()
-                for v in y.a:
-                    if v.kind == Symbol and v.m == ampersand:
-                        theBlock.a.add(x)
-                    else:
-                        theBlock.a.add(v)
-                execUnscoped(theBlock)
-
+            execUnscoped(y)
             let arr: ValueArray = sTopsFrom(stop)
             SP = stop
 
@@ -1408,7 +1412,8 @@ proc defineLibrary*() =
             "conditions"   : {Block}
         },
         attrs       = {
-            "any"   : ({Logical},"check all conditions regardless of success")
+            "any"   : ({Logical},"check all conditions regardless of success"),
+            "has"   : ({Any}, "use given replacement value")
         },
         returns     = {Logical},
         # TODO(Core/when) Add documentation example
@@ -1419,7 +1424,12 @@ proc defineLibrary*() =
             let withAny = (hadAttr("any"))
             
             let stop = SP
-            execUnscoped(x)
+            var expected = Nothing
+            if unlikely(checkAttr("has")):
+                execUnscoped(x.replacingAmpersands(aHas))
+            else:
+                execUnscoped(x)
+
             let arr: ValueArray = sTopsFrom(stop)
             SP = stop
 
