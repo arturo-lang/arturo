@@ -180,6 +180,7 @@ enum {
 
 static int history_max_len = LINENOISE_DEFAULT_HISTORY_MAX_LEN;
 static int history_len = 0;
+static int history_index = 0;
 static char **history = NULL;
 
 /* Structure to contain the status of the current (being edited) line */
@@ -814,7 +815,7 @@ static linenoiseHintsCallback *hintsCallback = NULL;
 static linenoiseFreeHintsCallback *freeHintsCallback = NULL;
 static void *hintsUserdata = NULL;
 
-static void beep() {
+static void beep(void) {
 #ifdef USE_TERMIOS
     fprintf(stderr, "\x7");
     fflush(stderr);
@@ -1485,6 +1486,26 @@ static int skip_nonspace(struct current *current, int dir)
     return skip_space_nonspace(current, dir, 0);
 }
 
+static void set_history_index(struct current *current, int new_index)
+{
+    if (history_len > 1) {
+        /* Update the current history entry before to
+         * overwrite it with the next one. */
+        free(history[history_len - 1 - history_index]);
+        history[history_len - 1 - history_index] = strdup(sb_str(current->buf));
+        /* Show the new entry */
+        history_index = new_index;
+        if (history_index < 0) {
+            history_index = 0;
+        } else if (history_index >= history_len) {
+            history_index = history_len - 1;
+        } else {
+            set_current(current, history[history_len - 1 - history_index]);
+            refreshLine(current);
+        }
+    }
+}
+
 /**
  * Returns the keycode to process, or 0 if none.
  */
@@ -1521,20 +1542,32 @@ static int reverseIncrementalSearch(struct current *current)
             c = check_special(current->fd);
         }
 #endif
-        if (c == ctrl('P') || c == SPECIAL_UP) {
+        if (c == ctrl('R')) {
             /* Search for the previous (earlier) match */
             if (searchpos > 0) {
                 searchpos--;
             }
             skipsame = 1;
         }
-        else if (c == ctrl('N') || c == SPECIAL_DOWN) {
+        else if (c == ctrl('S')) {
             /* Search for the next (later) match */
             if (searchpos < history_len) {
                 searchpos++;
             }
             searchdir = 1;
             skipsame = 1;
+        }
+        else if (c == ctrl('P') || c == SPECIAL_UP) {
+            /* Exit Ctrl-R mode and go to the previous history line from the current search pos */
+            set_history_index(current, history_len - searchpos);
+            c = 0;
+            break;
+        }
+        else if (c == ctrl('N') || c == SPECIAL_DOWN) {
+            /* Exit Ctrl-R mode and go to the next history line from the current search pos */
+            set_history_index(current, history_len - searchpos - 2);
+            c = 0;
+            break;
         }
         else if (c >= ' ' && c <= '~') {
             /* >= here to allow for null terminator */
@@ -1565,6 +1598,7 @@ static int reverseIncrementalSearch(struct current *current)
                     continue;
                 }
                 /* Copy the matching line and set the cursor position */
+                history_index = history_len - 1 - searchpos;
                 set_current(current,history[searchpos]);
                 current->pos = utf8_strlen(history[searchpos], p - history[searchpos]);
                 break;
@@ -1580,25 +1614,25 @@ static int reverseIncrementalSearch(struct current *current)
     if (c == ctrl('G') || c == ctrl('C')) {
         /* ctrl-g terminates the search with no effect */
         set_current(current, "");
+        history_index = 0;
         c = 0;
     }
     else if (c == ctrl('J')) {
         /* ctrl-j terminates the search leaving the buffer in place */
+        history_index = 0;
         c = 0;
     }
-
     /* Go process the char normally */
     refreshLine(current);
     return c;
 }
 
 static int linenoiseEdit(struct current *current) {
-    int history_index = 0;
+    history_index = 0;
 
     refreshLine(current);
 
     while(1) {
-        int dir = -1;
         int c = fd_read(current);
 
 #ifndef NO_COMPLETION
@@ -1753,36 +1787,19 @@ static int linenoiseEdit(struct current *current) {
                 refreshLine(current);
             }
             break;
-        case SPECIAL_PAGE_UP:
-          dir = history_len - history_index - 1; /* move to start of history */
-          goto history_navigation;
-        case SPECIAL_PAGE_DOWN:
-          dir = -history_index; /* move to 0 == end of history, i.e. current */
-          goto history_navigation;
+        case SPECIAL_PAGE_UP: /* move to start of history */
+          set_history_index(current, history_len - 1);
+          break;
+        case SPECIAL_PAGE_DOWN: /* move to 0 == end of history, i.e. current */
+          set_history_index(current, 0);
+          break;
         case ctrl('P'):
         case SPECIAL_UP:
-            dir = 1;
-          goto history_navigation;
+            set_history_index(current, history_index + 1);
+            break;
         case ctrl('N'):
         case SPECIAL_DOWN:
-history_navigation:
-            if (history_len > 1) {
-                /* Update the current history entry before to
-                 * overwrite it with tne next one. */
-                free(history[history_len - 1 - history_index]);
-                history[history_len - 1 - history_index] = strdup(sb_str(current->buf));
-                /* Show the new entry */
-                history_index += dir;
-                if (history_index < 0) {
-                    history_index = 0;
-                    break;
-                } else if (history_index >= history_len) {
-                    history_index = history_len - 1;
-                    break;
-                }
-                set_current(current, history[history_len - 1 - history_index]);
-                refreshLine(current);
-            }
+            set_history_index(current, history_index - 1);
             break;
         case ctrl('A'): /* Ctrl+a, go to the start of the line */
         case SPECIAL_HOME:
