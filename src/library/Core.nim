@@ -262,11 +262,11 @@ proc defineLibrary*() =
                 var theBlock = newBlock()
                 for v in y.a:
                     if v.kind == Symbol and v.m == ampersand:
-                        theBlock.add(x)
+                        theBlock.a.add(x)
                     else:
-                        theBlock.add(v)
+                        theBlock.a.add(v)
                 execUnscoped(theBlock)
-                
+
             let arr: ValueArray = sTopsFrom(stop)
             SP = stop
 
