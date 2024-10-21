@@ -56,7 +56,7 @@ proc replacingAmpersands(va: Value, what: Value): Value =
         if v.kind == Symbol and v.m == ampersand:
             theBlock.a.add(what)
         elif v.kind == Block:
-            theBlock.a.add(v.replacingAmpersands())
+            theBlock.a.add(v.replacingAmpersands(what))
         else:
             theBlock.a.add(v)
     return theBlock
