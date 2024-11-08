@@ -284,8 +284,6 @@ proc defineLibrary*() =
         },
         attrs       = NoAttrs,
         returns     = {Logical},
-        # TODO(Core/case) Add documentation example
-        #  labels: library, documentation, easy
         example     = """
             x: 2
             case x [
