@@ -1422,7 +1422,6 @@ proc defineLibrary*() =
                 has = aHas
             
             let stop = SP
-            var expected = Nothing
 
             let arr: ValueArray = sTopsFrom(stop)
             SP = stop
