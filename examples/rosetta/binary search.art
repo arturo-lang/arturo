@@ -1,10 +1,10 @@
 binarySearch: function [arr,val,low,high][
     if high < low -> return ø
     mid: shr low+high 1
-    when [
-        val < arr\[mid]     -> return binarySearch arr val low mid-1
-        val > arr\[mid]     -> return binarySearch arr val mid+1 high
-        true                -> return mid
+    when.has: val [
+        [< arr\[mid]]   -> return binarySearch arr val low mid-1
+        [> arr\[mid]]   -> return binarySearch arr val mid+1 high
+        true            -> return mid
     ]
 ]
 

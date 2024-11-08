@@ -1,8 +1,8 @@
 loop 1..100 [x][
 	when [
-		0 = x%15 	-> print "FizzBuzz"
-		0 = x%3		-> print "Fizz"
-		0 = x%5  	-> print "Buzz"
-		true   		-> print x
+		zero? x % 15 	-> print "FizzBuzz"
+		zero? x % 3		-> print "Fizz"
+		zero? x % 5  	-> print "Buzz"
+		true   			-> print x
 	]
 ]

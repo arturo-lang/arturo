@@ -13,6 +13,14 @@ validCUSIP?: function [cusip][
             c = '#'         -> v: 38
         ]
 
+        ; when.has: c [
+        ;     [|numeric?]     -> v: to :integer to :string c
+        ;     [|in? alpha]    -> v: (index alpha c) + 1 + 9
+        ;     [= '*']         -> v: 36
+        ;     [= '@']         -> v: 37
+        ;     [= '#']         -> v: 38
+        ; ]
+
         if odd? i -> v: 2 * v
 
         s: s + (v / 10) + (v % 10)

@@ -2,10 +2,10 @@ n: random 1 10
 while ø [
     if throws? [
         num: to :integer input "Guess the number: " n
-        when [
-            num = n [print "\tWell Guessed! :)", exit]
-            num > n [print "\tHigher than the target..."]
-            num < n [print "\tLess than the target..."]
+        when.has: num [
+            [= n] [print "\tWell Guessed! :)", exit]
+            [> n] [print "\tHigher than the target..."]
+            [< n] [print "\tLess than the target..."]
         ]
     ][
         print "\tInvalid input!"
