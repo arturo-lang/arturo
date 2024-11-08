@@ -1418,11 +1418,11 @@ proc defineLibrary*() =
             #=======================================================
             let withAny = (hadAttr("any"))
             var has: Value = nil
-            if unlikely(checkAttr("has")):
+            if checkAttr("has"):
                 has = aHas
             
             let stop = SP
-
+            execUnscoped(x)
             let arr: ValueArray = sTopsFrom(stop)
             SP = stop
 
@@ -1431,21 +1431,27 @@ proc defineLibrary*() =
                 var item = arr[i]
 
                 if item.kind == Block:
+                    echo "item is block"
                     var blk = newBlock(item.a)
+                    echo "after blk="
 
                     if not has.isNil:
+                        echo "with has"
                         blk.a = @[has] & blk.a
+                        echo "after: with has"
 
                     execUnscoped(blk)
-
+                    echo "aqui"
                     item = stack.pop()
                 
+                echo "ahi"
                 if not (item.kind==Null or isFalse(item)):
                     handleBranching:
                         execUnscoped(arr[i+1])
                     do:
                         if not withAny:
                             break
+                echo "alla"
                 i += 2
 
     builtin "while",
