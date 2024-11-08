@@ -280,7 +280,7 @@ proc defineLibrary*() =
         description = "match given argument against different values and execute corresponding block",
         args        = {
             "argument"  : {Any},
-            "matches"   : {Block}
+            "matches"   : {Block, Dictionary}
         },
         attrs       = NoAttrs,
         returns     = {Logical},
@@ -289,19 +289,39 @@ proc defineLibrary*() =
         example     = """
         """:
             #=======================================================
-            let stop = SP
-            execUnscoped(y)
-            let arr: ValueArray = sTopsFrom(stop)
-            SP = stop
+            if likely(yKind == Block):
+                let stop = SP
+                execUnscoped(y)
+                let arr: ValueArray = sTopsFrom(stop)
+                SP = stop
 
-            var i = 0
-            while i < arr.len-1:
-                if x == arr[i]:
-                    handleBranching:
-                        execUnscoped(arr[i+1])
-                    do:
-                        break
-                i += 2
+                var i = 0
+                while i < arr.len-1:
+                    if x == arr[i]:
+                        handleBranching:
+                            execUnscoped(arr[i+1])
+                        do:
+                            break
+                    i += 2
+            else:
+                let gotValue: Value = nil
+                case xKind:
+                    of String, Word, Literal:
+                        gotValue = GetDictionaryKey(x, y.s, withError=false)
+                    else:
+                        gotValue = GetDictionaryKey(x, $(y), withError=false)
+                        
+                if gotValue.isNil:
+                    gotValue = GetDictionaryKey(x, "any", withError=false)
+                
+                if not gotValue.isNil:
+                    if gotValue.kind == Block:
+                        handleBranching:
+                            execUnscoped(gotValue)
+                        do:
+                            discard
+                    else:
+                        push(gotValue)
 
     builtin "coalesce",
         alias       = doublequestion, 
