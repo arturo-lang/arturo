@@ -287,6 +287,26 @@ proc defineLibrary*() =
         # TODO(Core/case) Add documentation example
         #  labels: library, documentation, easy
         example     = """
+            x: 2
+            case x [
+                1   -> print "x is one!"
+                2   -> print "x is two!"
+                any -> print "x is none of the above"
+            ]
+            ; x is two!
+            ..........
+            key: "one"
+            case key [
+                "one" 1,        ; we can also return
+                "two" 2         ; simple constant values directly
+            ]
+            ; => 2
+            ..........
+            case "hello" #[
+                hello: "hola"
+                adios: "goodbye"
+            ]
+            ; => "hola"
         """:
             #=======================================================
             if likely(yKind == Block):
