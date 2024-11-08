@@ -286,6 +286,8 @@ proc defineLibrary*() =
         returns     = {Logical},
         example     = """
             x: 2
+
+            ; the main block is always evaluated!
             case x [
                 1   -> print "x is one!"
                 2   -> print "x is two!"
@@ -1430,6 +1432,7 @@ proc defineLibrary*() =
         },
         returns     = {Logical},
         example     = """
+            ; the main block is always evaluated!
             when [
                 prime? 4 -> print "yes, 4 is prime - wait, what?!"
                 prime? 5 -> print "yes, 5 is prime
