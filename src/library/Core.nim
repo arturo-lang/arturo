@@ -470,6 +470,9 @@ proc defineLibrary*() =
             push(x)
             push(x)
 
+    # TODO(Core\else) should be marked as deprecated
+    #   https://github.com/arturo-lang/arturo/pull/1735
+    #  labels: library, → Core, deprecated
     builtin "else",
         alias       = unaliased, 
         op          = opElse,
