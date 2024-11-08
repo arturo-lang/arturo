@@ -3,7 +3,7 @@ rot13: function [c][
     when [
         in? lc 'a'..'m' -> return to :char (to :integer c) + 13
         in? lc 'n'..'z' -> return to :char (to :integer c) - 13
-        any             -> return c
+        true            -> return c
     ]
 ]
 

@@ -3,6 +3,6 @@ loop 1..100 [x][
 		0 = x%15 	-> print "FizzBuzz"
 		0 = x%3		-> print "Fizz"
 		0 = x%5  	-> print "Buzz"
-		any   		-> print x
+		true   		-> print x
 	]
 ]
