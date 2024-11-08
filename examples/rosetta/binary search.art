@@ -4,7 +4,7 @@ binarySearch: function [arr,val,low,high][
     when [
         val < arr\[mid]     -> return binarySearch arr val low mid-1
         val > arr\[mid]     -> return binarySearch arr val mid+1 high
-        any                 -> return mid
+        true                -> return mid
     ]
 ]
 

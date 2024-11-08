@@ -10,7 +10,7 @@ quickselect: function [a k][
         when [
             k = size left -> return pivot
             k < size left -> arr: new left
-            any  [
+            true  [
                 k: (k - size left) - 1
                 arr: new right
             ]

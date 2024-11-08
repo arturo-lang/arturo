@@ -13,7 +13,7 @@ while [0 <> size lst][
             when [
                 newSum < 13 -> 'nextList ++ @[newDigitSeq]
                 newSum = 13 -> 'result ++ @[to :integer join to [:string] newDigitSeq]
-                any         -> break
+                true        -> break
             ]
         ]
     ]
