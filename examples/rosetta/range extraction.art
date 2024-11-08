@@ -12,7 +12,7 @@ extractRange: function [inp][
             i: i + 1
         ]
         lst: items\[i]
-        'ranges ++ case lst-fst @[
+        'ranges ++ case lst-fst [
             0       -> ~"|fst|"
             1       -> ~"|fst|, |lst|"
             any     -> ~"|fst|-|lst|"

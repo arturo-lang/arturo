@@ -8,7 +8,7 @@ tokenize: function [s sep esc][
 			prints chr
 			escaping: 0
 		][
-			case chr @[
+			case chr [
 				sep 	-> print ""
 				esc 	-> escaping: 1
 				any  	-> prints chr

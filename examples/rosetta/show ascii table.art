@@ -1,5 +1,5 @@
 loop 32..127 'num [
-    k: case num @[
+    k: case num [
         32      -> "␠"
         127     -> "␡"
         any     -> to :string to :char num
