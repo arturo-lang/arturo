@@ -65,12 +65,6 @@ proc replacingAmpersands(va: Value, what: Value): Value =
 # Definitions
 #=======================================
 
-# TODO(Core\any) `_` could be aliased to `any`
-#  we should clean up word definitions and consider
-#  it a pure symbol first.
-#  https://github.com/arturo-lang/arturo/pull/1774
-#  labels: library, enhancement
-
 proc defineLibrary*() =
 
     #----------------------------
@@ -1687,6 +1681,11 @@ proc defineLibrary*() =
     # Constants
     #----------------------------
 
+    # TODO(Core\any) `_` could be aliased to `any`
+    #  we should clean up word definitions and consider
+    #  it a pure symbol first.
+    #  https://github.com/arturo-lang/arturo/pull/1774
+    # labels: library, enhancement
     constant "any",
         alias       = unaliased,
         description = "the ANY constant":
