@@ -1,10 +1,11 @@
 binarySearch: function [arr,val,low,high][
     if high < low -> return ø
     mid: shr low+high 1
-    case [val]
-        when? [< arr\[mid]] -> return binarySearch arr val low mid-1
-        when? [> arr\[mid]] -> return binarySearch arr val mid+1 high
-        else                -> return mid
+    when.has: val [
+        [< arr\[mid]]   -> return binarySearch arr val low mid-1
+        [> arr\[mid]]   -> return binarySearch arr val mid+1 high
+        true            -> return mid
+    ]
 ]
 
 ary: [
@@ -15,6 +16,6 @@ ary: [
 
 loop [0 42 45 24324 99999] 'v [
     i: binarySearch ary v 0 (size ary)-1
-    if? not? null? i    -> print ["found" v "at index:" i]
-    else                -> print [v "not found"]
+    switch not? null? i    -> print ["found" v "at index:" i]
+                           -> print [v "not found"]
 ]

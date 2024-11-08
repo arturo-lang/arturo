@@ -6,7 +6,6 @@ canHandleUnicode?: function [][
     ]
 ]
 
-if? canHandleUnicode? ->
-    print "Terminal handle unicode and U+25B3 is: △"
-else ->
-    print "Unicode is not supported on this terminal"
+switch canHandleUnicode? 
+    -> print "Terminal handle unicode and U+25B3 is: △"
+    -> print "Unicode is not supported on this terminal"

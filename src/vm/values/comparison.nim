@@ -121,6 +121,9 @@ proc `==`*(x: Value, y: Value): bool =
             else:
                 discard
 
+    if x.kind == Any or y.kind == Any:
+        return true
+
     if x.kind != y.kind:
         return false
 
@@ -327,6 +330,9 @@ proc `<`*(x: Value, y: Value): bool {.inline.}=
             else:
                 discard
 
+    if x.kind == Any or y.kind == Any:
+        return true
+
     if x.kind != y.kind:
         return false
 
@@ -399,6 +405,9 @@ proc `>`*(x: Value, y: Value): bool {.inline.}=
             of Quantity   || BigInteger:   (when GMP: return x.q             > y.bi)
             else:
                 discard
+
+    if x.kind == Any or y.kind == Any:
+        return true
 
     if x.kind != y.kind:
         return false
