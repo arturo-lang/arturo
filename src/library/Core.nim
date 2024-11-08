@@ -1422,7 +1422,7 @@ proc defineLibrary*() =
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "check conditions one by ones and execute corresponding block accordingly",
+        description = "check conditions one by one and execute corresponding block accordingly",
         args        = {
             "conditions"   : {Block}
         },
