@@ -1429,8 +1429,6 @@ proc defineLibrary*() =
             "has"   : ({Any}, "prepend given value to each of the conditions")
         },
         returns     = {Logical},
-        # TODO(Core/when) Add documentation example
-        #  labels: library, documentation, easy
         example     = """
             when [
                 prime? 4 -> print "yes, 4 is prime - wait, what?!"
