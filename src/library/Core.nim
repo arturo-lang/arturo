@@ -298,21 +298,25 @@ proc defineLibrary*() =
                 var i = 0
                 while i < arr.len-1:
                     if x == arr[i]:
-                        handleBranching:
-                            execUnscoped(arr[i+1])
-                        do:
-                            break
+                        let blk {.cursor.} = arr[i+1]
+                        if likely(blk.kind == Block):
+                            handleBranching:
+                                execUnscoped(arr[i+1])
+                            do:
+                                break
+                        else:
+                            push(blk)
                     i += 2
             else:
                 var gotValue: Value = nil
                 case xKind:
                     of String, Word, Literal:
-                        gotValue = GetDictionaryKey(x, y.s, withError=false)
+                        gotValue = GetDictionaryKey(y, x.s, withError=false)
                     else:
-                        gotValue = GetDictionaryKey(x, $(y), withError=false)
+                        gotValue = GetDictionaryKey(y, $(x), withError=false)
 
                 if gotValue.isNil:
-                    gotValue = GetDictionaryKey(x, "any", withError=false)
+                    gotValue = GetDictionaryKey(y, "any", withError=false)
                 
                 if not gotValue.isNil:
                     if gotValue.kind == Block:
