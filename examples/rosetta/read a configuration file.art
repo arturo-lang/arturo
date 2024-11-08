@@ -12,7 +12,7 @@ parseConfig: function [f][
         val: case size parts @[
             0       -> true
             1       -> first parts
-            else    -> parts
+            any     -> parts
         ]
 
         result\[lower field]: val

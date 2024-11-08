@@ -15,7 +15,7 @@ extractRange: function [inp][
         'ranges ++ case lst-fst @[
             0       -> ~"|fst|"
             1       -> ~"|fst|, |lst|"
-            else    -> ~"|fst|-|lst|"
+            any     -> ~"|fst|-|lst|"
         ]
         i: i + 1
     ]

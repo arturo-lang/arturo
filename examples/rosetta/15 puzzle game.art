@@ -117,7 +117,7 @@ validMovement?: $[
         'down   -> return (not? in? pos [12..15])
         'left   -> return (not? in? pos [0 4 8 12])
         'right  -> return (not? in? pos [3 7 11 15])
-        else    -> return false
+        any     -> return false
     ]
 ]
 
@@ -137,7 +137,7 @@ parseInput: $[inp :string][
         "s" -> return 'down
         "d" -> return 'right
         "q" -> return 'quit
-        else -> return inp
+        any -> return inp
     ]
 ]
 
@@ -178,7 +178,7 @@ movePlayer: $[
         'down   -> updateGame game position 4
         'left   -> updateGame game position neg 1
         'right  -> updateGame game position 1
-        else    -> panic "movement didn't check."
+        any    -> panic "movement didn't check."
     ]
 ]
 

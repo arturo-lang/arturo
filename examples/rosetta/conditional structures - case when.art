@@ -3,6 +3,6 @@ loop 1..5 'num [
         num < 2 -> print [num ": it's less than 2"]
         num = 2 -> print [num ": it's 2!"]
         num = 3 -> print [num ": it's 3!"]
-        else    -> print [num ": the number is too big"]
+        any     -> print [num ": the number is too big"]
     ]
 ]
