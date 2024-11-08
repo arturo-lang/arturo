@@ -39,7 +39,7 @@ performRandomModifications: function [seq,times][
                 result: insert result ind next
                 print ["inserting base" next "at position" ind]
             ]
-            else [
+            any [
                 ind: random 0 (size result)
                 previous: get result ind
                 result: remove result .index ind

@@ -9,7 +9,7 @@ loop 1..20000 'x [
     when [
         s < x   -> inc 'deficient
         s > x   -> inc 'abundant
-        else    -> inc 'perfect
+        any     -> inc 'perfect
     ]
 ]
 

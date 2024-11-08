@@ -28,7 +28,7 @@ while ø [
                 print "Thanks for keeping the score."
                 exit
             ]
-            else [
+            any  [
                 print "\tPlease, check your input; it doesn't appear to be correct!"
             ]
         ]

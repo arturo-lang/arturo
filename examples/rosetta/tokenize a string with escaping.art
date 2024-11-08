@@ -11,7 +11,7 @@ tokenize: function [s sep esc][
 			case chr @[
 				sep 	-> print ""
 				esc 	-> escaping: 1
-				else 	-> prints chr
+				any  	-> prints chr
 			]
 		]
 	]

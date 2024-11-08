@@ -3,7 +3,7 @@ if2: function [cond1 cond2 both one two none][
 		and? cond1 cond2 -> do both
 		cond1 			 -> do one
 		cond2 			 -> do two
-		else  			 -> do none
+		any   			 -> do none
 	]
 ]
 

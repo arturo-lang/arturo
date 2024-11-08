@@ -7,7 +7,7 @@ linearCombination: function [coeffs][
             0       -> []
             1       -> 'combo ++ ~"e(|i+1|)"
             neg 1   -> 'combo ++ ~"-e(|i+1|)"
-            else    -> 'combo ++ ~"|x|*e(|i+1|)"
+            any     -> 'combo ++ ~"|x|*e(|i+1|)"
         ]
     ]
     join.with: " + " 'combo
