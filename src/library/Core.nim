@@ -1420,18 +1420,42 @@ proc defineLibrary*() =
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "check conditions and execute corresponding block accordingly",
+        description = "check conditions one by ones and execute corresponding block accordingly",
         args        = {
             "conditions"   : {Block}
         },
         attrs       = {
-            "any"   : ({Logical},"check all conditions regardless of success"),
-            "has"   : ({Any}, "use given replacement value")
+            "any"   : ({Logical},"check all conditions, without breaking, regardless of success"),
+            "has"   : ({Any}, "prepend given value to each of the conditions")
         },
         returns     = {Logical},
         # TODO(Core/when) Add documentation example
         #  labels: library, documentation, easy
         example     = """
+            when [
+                prime? 4 -> print "yes, 4 is prime - wait, what?!"
+                prime? 5 -> print "yes, 5 is prime
+                prime? 7 -> print "yes, 6 is prime
+                true     -> print "none of the above was true"
+            ]
+            ; yes, 5 is prime
+            ..........
+            when.any [
+                prime? 4 -> print "yes, 4 is prime - wait, what?!"
+                prime? 5 -> print "yes, 5 is prime"
+                prime? 7 -> print "yes, 7 is prime"
+            ]
+            ; yes, 5 is prime
+            ; yes, 7 is prime
+            ..........
+            x: 2
+            when.has: x [
+                [=0] -> print "x is zero!"
+                [<1] -> print "x is less than 1"
+                [<4] -> print "x is less than 4"
+                true -> print "x is >= 4"
+            ]
+            ; x is less than 4
         """:
             #=======================================================
             let withAny = (hadAttr("any"))
