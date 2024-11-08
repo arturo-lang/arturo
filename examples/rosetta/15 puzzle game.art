@@ -112,17 +112,13 @@ validMovement?: $[
     movement :literal
 ][
     pos: game\playerPosition
-    case [movement]
-        when? [='up]
-            -> return (not? in? pos [0..3])
-        when? [='down]
-            -> return (not? in? pos [12..15])
-        when? [='left]
-            -> return (not? in? pos [0 4 8 12])
-        when? [='right]
-            -> return (not? in? pos [3 7 11 15])
-    else
-        -> return false
+    case movement [
+        'up     -> return (not? in? pos [0..3])
+        'down   -> return (not? in? pos [12..15])
+        'left   -> return (not? in? pos [0 4 8 12])
+        'right  -> return (not? in? pos [3 7 11 15])
+        any     -> return false
+    ]
 ]
 
 
@@ -135,13 +131,14 @@ validMovement?: $[
 ;; will be returned the same input as a :string
 parseInput: $[inp :string][
     lowerInp: lower inp
-    case [lowerInp]
-        when? [="w"] -> return 'up
-        when? [="a"] -> return 'left
-        when? [="s"] -> return 'down
-        when? [="d"] -> return 'right
-        when? [="q"] -> return 'quit
-    else -> return inp
+    case lowerInp [
+        "w" -> return 'up
+        "a" -> return 'left
+        "s" -> return 'down
+        "d" -> return 'right
+        "q" -> return 'quit
+        any -> return inp
+    ]
 ]
 
 ;; Moves the player in Game's Table
@@ -176,17 +173,13 @@ movePlayer: $[
         ] -> panic "'movement didn't checked."
     ]
 
-    case [movement]
-    when? [='up]
-        -> (updateGame game position (neg 4))
-    when? [='down]
-        -> (updateGame game position (4))
-    when? [='left]
-        -> (updateGame game position (neg 1))
-    when? [='right]
-        -> (updateGame game position (1))
-    else -> panic "'movement didn't checked."
-
+    case movement [
+        'up     -> updateGame game position neg 4
+        'down   -> updateGame game position 4
+        'left   -> updateGame game position neg 1
+        'right  -> updateGame game position 1
+        any    -> panic "movement didn't check."
+    ]
 ]
 
 endGame: $[
@@ -214,13 +207,12 @@ runGame: $[sampleTable :block][
             -> endGame "Exiting game..."
 
         validInp: validInput? command
-        if? validInp [
+        switch validInp [
             validMov: validMovement? game command
             (validMov)?
                 -> movePlayer game command
                 -> printWrongMovement command
-        ] else
-            -> printWrongInput command
+        ] -> printWrongInput command
 
         if sampleTable = game
             -> endGame "Congratulations! You won!"

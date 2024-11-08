@@ -6,10 +6,11 @@ properDivisors: function [n]->
 loop 1..20000 'x [
     s: sum properDivisors x
 
-    case [s]
-        when? [<x] -> inc 'deficient
-        when? [>x] -> inc 'abundant
-        else       -> inc 'perfect
+    when.has: s [
+        [< x]   -> inc 'deficient
+        [> x]   -> inc 'abundant
+        true    -> inc 'perfect
+    ]
 ]
 
 print ["Found" abundant "abundant," 

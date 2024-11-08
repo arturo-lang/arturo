@@ -210,7 +210,7 @@ while [true] [
 
         if Repl\verbose? [
             if StackSize > 0 -> Got: unstack 1
-            if Got <> null   -> print color #gray render.once "=> |Got|"
+            unless null? Got -> print color #gray render.once "=> |Got|"
         ]
 
         print ""
