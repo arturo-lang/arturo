@@ -248,59 +248,60 @@ proc defineLibrary*() =
 
                     execMethod(fun, fid)
 
+    # TODO(Core\case) could add `.match` option
+    #  that would actually allow us to match and 
+    #  extract pattern matches
+    #  Previous implementation:
+    #  ```
+    #  if unlikely(doMatch):
+    #      while i < arr.len-1:
+    #          var comparable {.cursor.}: Value 
+    #          if arr[i].kind == Block:
+    #              let stop = SP
+    #              execUnscoped(arr[i])
+    #              let pattern: ValueArray = sTopsFrom(stop)
+    #              comparable = newBlock(pattern)
+    #              SP = stop
+    #          else:
+    #              comparable = arr[i]
+    #          
+    #          if x == comparable:
+    #              handleBranching:
+    #                  execUnscoped(arr[i+1])
+    #              do:
+    #                  break
+    #          i += 2
+    #  ```
+    #  labels: library, new feature, 
     builtin "case",
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "match given argument to different values and execute corresponding block",
+        description = "match given argument against different values and execute corresponding block",
         args        = {
             "argument"  : {Any},
             "matches"   : {Block}
         },
-        attrs       = {
-            "match"   : ({Logical},"match to pattern"),
-            "using"   : ({Logical},"replace given value in pattern")
-        },
+        attrs       = NoAttrs,
         returns     = {Logical},
         # TODO(Core/case) Add documentation example
         #  labels: library, documentation, easy
         example     = """
         """:
             #=======================================================
-            let doMatch = hadAttr("match")
-           
             let stop = SP
             execUnscoped(y)
             let arr: ValueArray = sTopsFrom(stop)
             SP = stop
 
             var i = 0
-            if unlikely(doMatch):
-                while i < arr.len-1:
-                    var comparable {.cursor.}: Value 
-                    if arr[i].kind == Block:
-                        let stop = SP
-                        execUnscoped(arr[i])
-                        let pattern: ValueArray = sTopsFrom(stop)
-                        comparable = newBlock(pattern)
-                        SP = stop
-                    else:
-                        comparable = arr[i]
-                    
-                    if x == comparable:
-                        handleBranching:
-                            execUnscoped(arr[i+1])
-                        do:
-                            break
-                    i += 2
-            else:
-                while i < arr.len-1:
-                    if x == arr[i]:
-                        handleBranching:
-                            execUnscoped(arr[i+1])
-                        do:
-                            break
-                    i += 2
+            while i < arr.len-1:
+                if x == arr[i]:
+                    handleBranching:
+                        execUnscoped(arr[i+1])
+                    do:
+                        break
+                i += 2
 
     builtin "coalesce",
         alias       = doublequestion, 
@@ -472,7 +473,7 @@ proc defineLibrary*() =
 
     # TODO(Core\else) should be marked as deprecated
     #   https://github.com/arturo-lang/arturo/pull/1735
-    #  labels: library, → Core, deprecated
+    #  labels: library,→ Core, deprecated
     builtin "else",
         alias       = unaliased, 
         op          = opElse,
@@ -1524,7 +1525,7 @@ proc defineLibrary*() =
     #   ```
     #   if <= some condition [ ... ]#
     #   ```
-    #  labels: library, → Core, open discussion
+    #  labels: library,→ Core, open discussion
     builtin "if?",
         alias       = unaliased, 
         op          = opIfE,
@@ -1620,7 +1621,7 @@ proc defineLibrary*() =
 
     # TODO(Core\when?) should be marked as deprecated
     #   https://github.com/arturo-lang/arturo/pull/1735
-    #  labels: library, → Core, deprecated
+    #  labels: library,→ Core, deprecated
     builtin "when?",
         alias       = unaliased, 
         op          = opNop,
@@ -1669,7 +1670,7 @@ proc defineLibrary*() =
     #  we should clean up word definitions and consider
     #  it a pure symbol first.
     #  https://github.com/arturo-lang/arturo/pull/1774
-    # labels: library, enhancement
+    # labels: library,→ Core, enhancement
     constant "any",
         alias       = unaliased,
         description = "the ANY constant":
