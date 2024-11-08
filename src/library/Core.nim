@@ -1417,20 +1417,30 @@ proc defineLibrary*() =
         """:
             #=======================================================
             let withAny = (hadAttr("any"))
+            var has: Value = nil
+            if unlikely(checkAttr("has")):
+                has = aHas
             
             let stop = SP
             var expected = Nothing
-            if unlikely(checkAttr("has")):
-                execUnscoped(x.replacingAmpersands(aHas))
-            else:
-                execUnscoped(x)
 
             let arr: ValueArray = sTopsFrom(stop)
             SP = stop
 
             var i = 0
             while i < arr.len-1:
-                let item = arr[i]
+                var item = arr[i]
+
+                if item.kind == Block:
+                    var blk = newBlock(item.a)
+
+                    if not has.isNil:
+                        blk.a = @[has] & blk.a
+
+                    execUnscoped(blk)
+
+                    item = stack.pop()
+                
                 if not (item.kind==Null or isFalse(item)):
                     handleBranching:
                         execUnscoped(arr[i+1])
