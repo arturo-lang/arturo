@@ -304,13 +304,13 @@ proc defineLibrary*() =
                             break
                     i += 2
             else:
-                let gotValue: Value = nil
+                var gotValue: Value = nil
                 case xKind:
                     of String, Word, Literal:
                         gotValue = GetDictionaryKey(x, y.s, withError=false)
                     else:
                         gotValue = GetDictionaryKey(x, $(y), withError=false)
-                        
+
                 if gotValue.isNil:
                     gotValue = GetDictionaryKey(x, "any", withError=false)
                 
