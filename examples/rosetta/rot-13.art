@@ -1,8 +1,8 @@
 rot13: function [c][
     lc: lower c
-    when [
-        in? lc 'a'..'m' -> return to :char (to :integer c) + 13
-        in? lc 'n'..'z' -> return to :char (to :integer c) - 13
+    when.has: lc [
+        [|in? 'a'..'m'] -> return to :char (to :integer c) + 13
+        [|in? 'n'..'z'] -> return to :char (to :integer c) - 13
         true            -> return c
     ]
 ]

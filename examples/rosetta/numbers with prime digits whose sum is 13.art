@@ -10,10 +10,10 @@ while [0 <> size lst][
         loop pDigits 'n [
             newSum: currSum + n
             newDigitSeq: digitSeq ++ n
-            when [
-                newSum < 13 -> 'nextList ++ @[newDigitSeq]
-                newSum = 13 -> 'result ++ @[to :integer join to [:string] newDigitSeq]
-                true        -> break
+            when.has: newSum [
+                [< 13] -> 'nextList ++ @[newDigitSeq]
+                [= 13] -> 'result ++ @[to :integer join to [:string] newDigitSeq]
+                true   -> break
             ]
         ]
     ]

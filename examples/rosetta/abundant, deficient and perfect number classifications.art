@@ -6,9 +6,9 @@ properDivisors: function [n]->
 loop 1..20000 'x [
     s: sum properDivisors x
 
-    when [
-        s < x   -> inc 'deficient
-        s > x   -> inc 'abundant
+    when.has: s [
+        [< x]   -> inc 'deficient
+        [> x]   -> inc 'abundant
         true    -> inc 'perfect
     ]
 ]
