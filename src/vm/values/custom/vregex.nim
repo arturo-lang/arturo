@@ -62,6 +62,16 @@ proc `$`*(rx: VRegex): string =
     else:
         rx.pattern
 
+# TODO(VM/values/custom/vregex) show error if RegEx creation fails
+#  right now, if there is an error in the regex, the program
+#  just crashes
+#
+#  For example:
+#   ```
+#   to :regex "\w: (?\d+), \w: (?\d+)"
+#   ```
+#  labels: values, :regex, error handling
+
 proc newRegexObj*(pattern: string, flags: string = ""): VRegex =
     when defined(WEB):
         if flags == "":

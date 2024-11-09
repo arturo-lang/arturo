@@ -6,13 +6,13 @@ siftDown: function [items, start, ending][
         if and? ending > child + 1
                 a\[child+1] > a\[child] -> child: child + 1
 
-        if? a\[root] < a\[child][
+        switch a\[root] < a\[child][
             tmp: a\[child]
             a\[child]: a\[root]
             a\[root]: tmp
             root: child
         ]
-        else -> return a
+        -> return a
     ]
     return a
 ]
