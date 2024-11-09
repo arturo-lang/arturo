@@ -290,9 +290,8 @@ proc initProfiler*() =
 
         # TODO(VM/profiler) Completely remove or make it work "properly"
         #  labels: vm, benchmark, performance, bug
-        when true:
-            system.profilingRequestedHook = requestedHook
-            system.profilerHook = hook
+        system.profilingRequestedHook = requestedHook
+        system.profilerHook = hook
     else:
         discard 
 
