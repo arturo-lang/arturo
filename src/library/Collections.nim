@@ -116,34 +116,32 @@ proc defineLibrary*() =
                         InPlaced.a.add(y)
 
             template placedAppend() =
-                case xKind:
-                of String:
-                    if yKind == String:
-                        push(newString(x.s & y.s))
-                    elif yKind == Char:
-                        push(newString(x.s & $(y.c)))
-                of Char:
-                    if yKind == String:
-                        push(newString($(x.c) & y.s))
-                    elif yKind == Char:
-                        push(newString($(x.c) & $(y.c)))
-                of Binary:
-                    if yKind == Binary:
-                        push(newBinary(x.n & y.n))
-                    elif yKind == Integer:
-                        push(newBinary(x.n & numberToBinary(y.i)))
-                of Object:
-                    if x.magic.fetch(AppendM):
-                        mgk(@[x, y]) # value already pushed
-                    else:
-                        # TODO(Collections\append) no magic method for object values should be an error
-                        #  labels: library, oop, error handling
-                        discard
+                case getValuePair():
+                of String || String:    
+                    push(newString(x.s & y.s))
+                of String || Char:
+                    push(newString(x.s & $(y.c)))
+                of Char || String:
+                    push(newString($(x.c) & y.s))
+                of Char || Char:
+                    push(newString($(x.c) & $(y.c)))
+                of Binary || Binary:
+                    push(newBinary(x.n & y.n))
+                of Binary || Integer:
+                    push(newBinary(x.n & numberToBinary(y.i)))
                 else:
-                    if yKind==Block:
-                        push newBlock(x.a & y.a)
+                    if xKind ==  Object:
+                        if x.magic.fetch(AppendM):
+                            mgk(@[x, y]) # value already pushed
+                        else:
+                            # TODO(Collections\append) no magic method for object values should be an error
+                            #  labels: library, oop, error handling
+                            discard
                     else:
-                        push newBlock(x.a & y)
+                        if yKind==Block:
+                            push newBlock(x.a & y.a)
+                        else:
+                            push newBlock(x.a & y)
 
 
             if xKind in {Literal, PathLiteral}:
