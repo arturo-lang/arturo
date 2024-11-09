@@ -263,7 +263,7 @@ template hookOpProfiler*(name: string, actionContent: untyped): untyped =
         actionContent
 
 template hookProcProfiler*(name: string, actionContent: untyped): untyped =
-    when false:#defined(PROFILER):
+    when defined(PROFILER):
         var newRow = addMetricIfNotExists(name, "procs")
         newRow.runs += 1
         newRow.time += getMetric(actionContent)
