@@ -87,22 +87,23 @@ proc defineLibrary*() =
             #=======================================================
             template inplaceAppend() =
                 ensureInPlaceAny()
-                if InPlaced.kind == String:
+                case InPlaced.kind:
+                of String:
                     if yKind == String:
                         InPlaced.s &= y.s
                     elif yKind == Char:
                         InPlaced.s &= $(y.c)
-                elif InPlaced.kind == Char:
+                of Char:
                     if yKind == String:
                         SetInPlaceAny(newString($(InPlaced.c) & y.s))
                     elif yKind == Char:
                         SetInPlaceAny(newString($(InPlaced.c) & $(y.c)))
-                elif InPlaced.kind == Binary:
+                of Binary:
                     if yKind == Binary:
                         InPlaced.n &= y.n
                     elif yKind == Integer:
                         InPlaced.n &= numberToBinary(y.i)
-                elif InPlaced.kind == Object:
+                of Object:
                     if InPlaced.magic.fetch(AppendM):
                         pushAttr("inplace", VTRUE)
                         mgk(@[InPlaced, y])
@@ -115,21 +116,23 @@ proc defineLibrary*() =
                         InPlaced.a.add(y)
 
             template placedAppend() =
+                case xKind:
+                of String:
                     if yKind == String:
                         push(newString(x.s & y.s))
                     elif yKind == Char:
                         push(newString(x.s & $(y.c)))
-                elif xKind == Char:
+                of Char:
                     if yKind == String:
                         push(newString($(x.c) & y.s))
                     elif yKind == Char:
                         push(newString($(x.c) & $(y.c)))
-                elif xKind == Binary:
+                of Binary:
                     if yKind == Binary:
                         push(newBinary(x.n & y.n))
                     elif yKind == Integer:
                         push(newBinary(x.n & numberToBinary(y.i)))
-                elif xKind == Object:
+                of Object:
                     if x.magic.fetch(AppendM):
                         mgk(@[x, y]) # value already pushed
                     else:
