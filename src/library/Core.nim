@@ -402,6 +402,8 @@ proc defineLibrary*() =
             #=======================================================
             raise ContinueTriggered()
 
+    # TODO(Core\discard) could be assigned an individual *op*?
+    #  labels: library, enhancement
     builtin "discard",
         alias       = unaliased, 
         op          = opNop,
