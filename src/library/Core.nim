@@ -402,6 +402,21 @@ proc defineLibrary*() =
             #=======================================================
             raise ContinueTriggered()
 
+    builtin "discard",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "discard given value, without pushing it onto the stack",
+        args        = {
+            "value"         : {Any}
+        },
+        attrs       = NoAttrs,
+        returns     = {Nothing},
+        example     = """
+        """:
+            #=======================================================
+            discard
+
     # TODO(Core\do) not working well with Bytecode?
     #  labels: bug, critical, library, values
     builtin "do",
