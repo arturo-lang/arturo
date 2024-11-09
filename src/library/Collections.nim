@@ -85,7 +85,7 @@ proc defineLibrary*() =
             print b                   ; [1 2 3 4]
         """:
             #=======================================================
-            if xKind in {Literal, PathLiteral}:
+            template inplaceAppend() =
                 ensureInPlaceAny()
                 if InPlaced.kind == String:
                     if yKind == String:
@@ -113,8 +113,8 @@ proc defineLibrary*() =
                         InPlaced.a.add(y.a)
                     else:
                         InPlaced.a.add(y)
-            else:
-                if xKind == String:
+
+            template placedAppend() =
                     if yKind == String:
                         push(newString(x.s & y.s))
                     elif yKind == Char:
@@ -141,6 +141,13 @@ proc defineLibrary*() =
                         push newBlock(x.a & y.a)
                     else:
                         push newBlock(x.a & y)
+
+
+            if xKind in {Literal, PathLiteral}:
+                inplaceAppend()
+            else:
+                placedAppend()
+                
 
     builtin "array",
         alias       = at,
