@@ -32,7 +32,7 @@ serveInternal: function [Request, verbose][
 
     customServerStatus: false
 
-    send: function [str][
+    emit: function [str][
         servedContent: "text/plain"
 
         if not? null? attr 'css     -> servedContent: "text/css"
@@ -40,6 +40,8 @@ serveInternal: function [Request, verbose][
         if not? null? attr 'js      -> servedContent: "application/javascript"
         if not? null? attr 'json    -> servedContent: "application/json"
         if not? null? attr 'xml     -> servedContent: "application/xml"
+
+        if asContent: <= attr 'as   -> servedContent: asContent
 
         serverResponse\serverContentType: servedContent
 
@@ -75,7 +77,7 @@ serveInternal: function [Request, verbose][
             ]
         ]
 
-        send.html call var'actionFunc passedParams
+        call var'actionFunc passedParams
     ]
 
     getServerResponse: [
