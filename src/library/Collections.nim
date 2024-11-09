@@ -89,31 +89,31 @@ proc defineLibrary*() =
                 ensureInPlaceAny()
                 case InPlaced.kind:
                 of String:
-                    if yKind == String:
-                        InPlaced.s &= y.s
-                    elif yKind == Char:
-                        InPlaced.s &= $(y.c)
+                    case yKind:
+                    of String:      InPlaced.s &= y.s
+                    of Char:        InPlaced.s &= $(y.c)
+                    else:           discard
                 of Char:
-                    if yKind == String:
-                        SetInPlaceAny(newString($(InPlaced.c) & y.s))
-                    elif yKind == Char:
-                        SetInPlaceAny(newString($(InPlaced.c) & $(y.c)))
+                    case yKind:
+                    of String:      SetInPlaceAny(newString($(InPlaced.c) & y.s))
+                    of Char:        SetInPlaceAny(newString($(InPlaced.c) & $(y.c)))
+                    else:           discard
                 of Binary:
-                    if yKind == Binary:
-                        InPlaced.n &= y.n
-                    elif yKind == Integer:
-                        InPlaced.n &= numberToBinary(y.i)
+                    case yKind:
+                    of Binary:      InPlaced.n &= y.n
+                    of Integer:     InPlaced.n &= numberToBinary(y.i)
+                    else:           discard
+                of Block:
+                    if yKind == Block:
+                        Inplaced.a.add(y.a)
+                    else:
+                        Inplaced.a.add(y)
                 of Object:
                     if InPlaced.magic.fetch(AppendM):
                         pushAttr("inplace", VTRUE)
                         mgk(@[InPlaced, y])
-                    else:
-                        discard
                 else:
-                    if yKind == Block:
-                        InPlaced.a.add(y.a)
-                    else:
-                        InPlaced.a.add(y)
+                    discard
 
             template placedAppend() =
                 case getValuePair():
