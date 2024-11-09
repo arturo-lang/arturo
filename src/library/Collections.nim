@@ -117,31 +117,22 @@ proc defineLibrary*() =
 
             template placedAppend() =
                 case getValuePair():
-                of String || String:    
-                    push(newString(x.s & y.s))
-                of String || Char:
-                    push(newString(x.s & $(y.c)))
-                of Char || String:
-                    push(newString($(x.c) & y.s))
-                of Char || Char:
-                    push(newString($(x.c) & $(y.c)))
-                of Binary || Binary:
-                    push(newBinary(x.n & y.n))
-                of Binary || Integer:
-                    push(newBinary(x.n & numberToBinary(y.i)))
+                of String || String:    push newString(x.s & y.s)
+                of String || Char:      push newString(x.s & $(y.c))
+                of Char   || String:    push newString($(x.c) & y.s)
+                of Char   || Char:      push newString($(x.c) & $(y.c))
+                of Binary || Binary:    push newBinary(x.n & y.n)
+                of Binary || Integer:   push newBinary(x.n & numberToBinary(y.i))
+                of Block   || Block:    push newBlock(x.a & y.a)
                 else:
-                    if xKind ==  Object:
-                        if x.magic.fetch(AppendM):
+                    if xKind == Block:  push newBlock(x.a & y)
+                    elif xKind ==  Object and x.magic.fetch(AppendM):
                             mgk(@[x, y]) # value already pushed
-                        else:
-                            # TODO(Collections\append) no magic method for object values should be an error
-                            #  labels: library, oop, error handling
-                            discard
                     else:
-                        if yKind==Block:
-                            push newBlock(x.a & y.a)
-                        else:
-                            push newBlock(x.a & y)
+                        # TODO(Collections\append) no magic method for object values should be an error
+                        #  labels: library, oop, error handling
+                        discard
+                        
 
 
             if xKind in {Literal, PathLiteral}:
