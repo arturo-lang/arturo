@@ -403,7 +403,9 @@ proc defineLibrary*() =
             raise ContinueTriggered()
 
     # TODO(Core\discard) could be assigned an individual *op*?
-    #  labels: library, enhancement
+    #   this could potentially allow us to further optimize it, at a bytecode level.
+    #   for example, `push - opdiscard` could be reduced to... nothing at all ;-)
+    #  labels: library, bytecode, enhancement
     builtin "discard",
         alias       = unaliased, 
         op          = opNop,
