@@ -1240,7 +1240,7 @@ proc parseDataBlock*(blk: Value): Value =
 proc doParse*(input: string, isFile: bool = true): Value =
     ## Parse a string or file path
     ## and return the result as a Block of values
-    #hookProcProfiler("parse/doParse"):
+
     var p: Parser
 
     # open stream
