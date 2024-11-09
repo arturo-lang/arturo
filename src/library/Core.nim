@@ -402,6 +402,35 @@ proc defineLibrary*() =
             #=======================================================
             raise ContinueTriggered()
 
+    # TODO(Core\discard) could be assigned an individual *op*?
+    #   this could potentially allow us to further optimize it, at a bytecode level.
+    #   for example, `push - opdiscard` could be reduced to... nothing at all ;-)
+    #  labels: library, bytecode, enhancement
+    builtin "discard",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "discard given value, without pushing it onto the stack",
+        args        = {
+            "value"         : {Any}
+        },
+        attrs       = NoAttrs,
+        returns     = {Nothing},
+        example     = """
+            validInteger?: function [str][
+                not? throws? [
+                    discard to :integer str
+                    ; we don't really need the value here -
+                    ; we just want to see if the operation throws an error
+                ]
+            ]
+
+            print validInteger? "123"
+            ; true
+        """:
+            #=======================================================
+            discard
+
     # TODO(Core\do) not working well with Bytecode?
     #  labels: bug, critical, library, values
     builtin "do",
