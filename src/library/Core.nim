@@ -413,6 +413,16 @@ proc defineLibrary*() =
         attrs       = NoAttrs,
         returns     = {Nothing},
         example     = """
+            validInteger?: function [str][
+                not? throws? [
+                    discard to :integer str
+                    ; we don't really need the value here -
+                    ; we just want to see if the operation throws an error
+                ]
+            ]
+
+            print validInteger? "123"
+            ; true
         """:
             #=======================================================
             discard
