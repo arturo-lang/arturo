@@ -27,7 +27,7 @@ jobs:
     strategy:
       matrix:
         os:
-          - ubuntu-latest
+          - ubuntu-20.04
         version:
           - mini
           - full
