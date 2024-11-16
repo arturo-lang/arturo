@@ -183,7 +183,7 @@ proc defineLibrary*() =
             description = "perform HTTP request to url with given data and get response",
             args        = {
                 "url"   : {String},
-                "data"  : {Dictionary, Null}
+                "data"  : {Dictionary, String, Null}
             },
             attrs       = {
                 "get"           : ({Logical},"perform a GET request (default)"),
@@ -271,15 +271,21 @@ proc defineLibrary*() =
                         headers.add("Content-Type", "application/json")
                         body = jsonFromValue(y, pretty=false)
                     else:
-                        multipart = newMultipartData()
-                        for k,v in pairs(y.d):
-                            multipart[k] = $(v)
+                        if yKind == String:
+                            body = y.s
+                        else:
+                            multipart = newMultipartData()
+                            for k,v in pairs(y.d):
+                                multipart[k] = $(v)
                 else:
-                    if y != VNULL and (yKind==Dictionary and y.d.len!=0):
-                        var parts: seq[string]
-                        for k,v in pairs(y.d):
-                            parts.add(k & "=" & urlencode($(v)))
-                        url &= "?" & parts.join("&")
+                    if y != VNULL:
+                        if (yKind==Dictionary and y.d.len!=0):
+                            var parts: seq[string]
+                            for k,v in pairs(y.d):
+                                parts.add(k & "=" & urlencode($(v)))
+                            url &= "?" & parts.join("&")
+                        elif yKind==String:
+                            url &= "?" & y.s
 
                 var client: HttpClient
 
