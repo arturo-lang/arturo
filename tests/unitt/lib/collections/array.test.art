@@ -83,4 +83,27 @@ suite "array <source>" [
         ; actual: @./"array.example.art"
         ; assert -> equal? expected actual
     ]
+
+    test "array :block should evaluate it" [
+        data: [
+            append "Art" "uro"
+            join.with: " " ["is" "awesome!"]
+        ]
+
+        expected: ["Arturo" "is awesome!"]
+        actual: @data
+
+        assert -> notEqual? expected data
+        assert -> equal? expected actual
+    ]
+
+    test "array :any should wrap and evaluate it into a :block" [
+        data: [pi]
+        expected: [3.141592653589793]
+        actual: @data
+
+        assert -> notEqual? expected data
+        assert -> equal? expected actual
+    ]
+
 ]
