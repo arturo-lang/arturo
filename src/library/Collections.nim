@@ -194,31 +194,26 @@ proc defineLibrary*() =
                     result = safeRepeat(val, item.i)
                     val = newBlock(result.map((v)=>copyValue(v)))
 
-            proc array(source: Value, kind: ValueKind): seq | ValueArray {.inline.} =
-                case kind:
-                of Range:
-                    return toSeq(items(source.rng))
-                of Block:
-                    let stop = SP
-                    execUnscoped(source)
-                    let arr: ValueArray = sTopsFrom(stop)
-                    SP = stop
 
-                    return arr
-                of String:
-                    let stop = SP
-                    let (_{.inject.}, tp) = getSource(source.s)
+            proc array(source: VRange): seq =
+                return toSeq(items(source))
 
-                    if tp!=TextData:
-                        execUnscoped(doParse(source.s, isFile=false))
-                    else:
-                        Error_FileNotFound(source.s)
-                    let arr: ValueArray = sTopsFrom(stop)
-                    SP = stop
+            proc array(source: string): ValueArray =
+                let stop = SP
+                let (_{.inject.}, tp) = getSource(source)
 
-                    return arr
+                if tp != TextData:
+                    execUnscoped(doParse(source, isFile=false))
                 else:
-                    return @[source]
+                    Error_FileNotFound(source)
+                result = sTopsFrom(stop)
+                SP = stop
+
+            proc arrayFromBlock(source: Value): ValueArray =
+                let stop = SP
+                execUnscoped(source)
+                result = sTopsFrom(stop)
+                SP = stop
 
             if checkAttr("of"):
                 case aOf.kind:
@@ -227,7 +222,11 @@ proc defineLibrary*() =
                 else:
                     discard
             else:
-                push newBlock(array(x, xKind))
+                case xKind:
+                of Range: push newBlock(array(x.rng))
+                of Block: push newBlock(arrayFromBlock(x))
+                of String: push newBlock(array(x.s))
+                else: push newBlock(@[x])
 
     builtin "chop",
         alias       = unaliased,
