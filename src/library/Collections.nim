@@ -194,31 +194,31 @@ proc defineLibrary*() =
                     result = safeRepeat(val, item.i)
                     val = newBlock(result.map((v)=>copyValue(v)))
 
-            template array() =
+            proc array(source: Value): seq | ValueArray =
                 case xKind:
                 of Range:
-                    push(newBlock(toSeq(items(x.rng))))
+                    return toSeq(items(source.rng))
                 of Block:
                     let stop = SP
-                    execUnscoped(x)
+                    execUnscoped(source)
                     let arr: ValueArray = sTopsFrom(stop)
                     SP = stop
 
-                    push(newBlock(arr))
+                    return arr
                 of String:
                     let stop = SP
-                    let (_{.inject.}, tp) = getSource(x.s)
+                    let (_{.inject.}, tp) = getSource(source.s)
 
                     if tp!=TextData:
-                        execUnscoped(doParse(x.s, isFile=false))
+                        execUnscoped(doParse(source.s, isFile=false))
                     else:
-                        Error_FileNotFound(x.s)
+                        Error_FileNotFound(source.s)
                     let arr: ValueArray = sTopsFrom(stop)
                     SP = stop
 
-                    push(newBlock(arr))
+                    return arr
                 else:
-                    push(newBlock(@[x]))
+                    return @[source]
 
             if checkAttr("of"):
                 case aOf.kind:
@@ -227,7 +227,7 @@ proc defineLibrary*() =
                 else:
                     discard
             else:
-                array()
+                push newBlock(array(x))
 
     builtin "chop",
         alias       = unaliased,
