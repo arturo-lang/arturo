@@ -182,27 +182,24 @@ proc defineLibrary*() =
             ; => [[0 0 0 0] [0 0 0 0] [0 0 0 0]]
         """:
             #=======================================================
-            template arrayOf(source: Value, modifier: Value) =
-                case modifier.kind:
-                of Integer:
-                    let size = modifier.i
-                    let blk:ValueArray = safeRepeat(source, size)
-                    push newBlock(blk)
-                of Block:
-                    var val: Value = copyValue(source)
-                    var blk: ValueArray
 
-                    for item in modifier.a.reversed:
-                        requireValue(item, {Integer})
-                        blk = safeRepeat(val, item.i)
-                        val = newBlock(blk.map((v)=>copyValue(v)))
+            proc arrayOf(source: Value, size: int): ValueArray =
+                result = safeRepeat(source, size)
 
-                    push newBlock(blk)
-                else:
-                    discard
+            proc arrayOf(source: Value, matrixFormat: ValueArray): ValueArray = 
+                var val: Value = copyValue(source)
+
+                for item in matrixFormat.reversed:
+                    requireValue(item, {Integer})
+                    result = safeRepeat(val, item.i)
+                    val = newBlock(result.map((v)=>copyValue(v)))
 
             if checkAttr("of"):
-                x.arrayOf(aOf)
+                case aOf.kind:
+                of Integer: push newBlock(x.arrayOf(aOf.i))
+                of Block: push newBlock(x.arrayOf(aOf.a))
+                else:
+                    discard
             else:
                 case xKind:
                 of Range:
