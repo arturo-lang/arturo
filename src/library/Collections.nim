@@ -183,11 +183,12 @@ proc defineLibrary*() =
         """:
             #=======================================================
             if checkAttr("of"):
-                if aOf.kind == Integer:
+                case aOf.kind:
+                of Integer:
                     let size = aOf.i
                     let blk:ValueArray = safeRepeat(x, size)
                     push newBlock(blk)
-                else:
+                of Block:
                     var val: Value = copyValue(x)
                     var blk: ValueArray
 
@@ -197,31 +198,33 @@ proc defineLibrary*() =
                         val = newBlock(blk.map((v)=>copyValue(v)))
 
                     push newBlock(blk)
-            else:
-                if xKind==Range:
-                    push(newBlock(toSeq(items(x.rng))))
                 else:
-                    if xKind==Block:
-                        let stop = SP
-                        execUnscoped(x)
-                        let arr: ValueArray = sTopsFrom(stop)
-                        SP = stop
+                    discard
+            else:
+                case xKind:
+                of Range:
+                    push(newBlock(toSeq(items(x.rng))))
+                of Block:
+                    let stop = SP
+                    execUnscoped(x)
+                    let arr: ValueArray = sTopsFrom(stop)
+                    SP = stop
 
-                        push(newBlock(arr))
-                    elif xKind==String:
-                        let stop = SP
-                        let (_{.inject.}, tp) = getSource(x.s)
+                    push(newBlock(arr))
+                of String:
+                    let stop = SP
+                    let (_{.inject.}, tp) = getSource(x.s)
 
-                        if tp!=TextData:
-                            execUnscoped(doParse(x.s, isFile=false))
-                        else:
-                            Error_FileNotFound(x.s)
-                        let arr: ValueArray = sTopsFrom(stop)
-                        SP = stop
-
-                        push(newBlock(arr))
+                    if tp!=TextData:
+                        execUnscoped(doParse(x.s, isFile=false))
                     else:
-                        push(newBlock(@[x]))
+                        Error_FileNotFound(x.s)
+                    let arr: ValueArray = sTopsFrom(stop)
+                    SP = stop
+
+                    push(newBlock(arr))
+                else:
+                    push(newBlock(@[x]))
 
     builtin "chop",
         alias       = unaliased,
