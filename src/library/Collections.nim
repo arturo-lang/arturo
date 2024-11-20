@@ -194,13 +194,7 @@ proc defineLibrary*() =
                     result = safeRepeat(val, item.i)
                     val = newBlock(result.map((v)=>copyValue(v)))
 
-            if checkAttr("of"):
-                case aOf.kind:
-                of Integer: push newBlock(x.arrayOf(aOf.i))
-                of Block: push newBlock(x.arrayOf(aOf.a))
-                else:
-                    discard
-            else:
+            template array() =
                 case xKind:
                 of Range:
                     push(newBlock(toSeq(items(x.rng))))
@@ -225,6 +219,15 @@ proc defineLibrary*() =
                     push(newBlock(arr))
                 else:
                     push(newBlock(@[x]))
+
+            if checkAttr("of"):
+                case aOf.kind:
+                of Integer: push newBlock(x.arrayOf(aOf.i))
+                of Block: push newBlock(x.arrayOf(aOf.a))
+                else:
+                    discard
+            else:
+                array()
 
     builtin "chop",
         alias       = unaliased,
