@@ -215,6 +215,7 @@ proc defineLibrary*() =
                 result = sTopsFrom(stop)
                 SP = stop
 
+
             if checkAttr("of"):
                 case aOf.kind:
                 of Integer: push newBlock(x.arrayOf(aOf.i))
