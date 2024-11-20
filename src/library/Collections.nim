@@ -194,7 +194,7 @@ proc defineLibrary*() =
                     result = safeRepeat(val, item.i)
                     val = newBlock(result.map((v)=>copyValue(v)))
 
-            proc array(source: Value): seq | ValueArray =
+            proc array(source: Value): seq | ValueArray {.inline.} =
                 case xKind:
                 of Range:
                     return toSeq(items(source.rng))
