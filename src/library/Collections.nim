@@ -133,8 +133,6 @@ proc defineLibrary*() =
                         #  labels: library, oop, error handling
                         discard
                         
-
-
             if xKind in {Literal, PathLiteral}:
                 inplaceAppend()
             else:
