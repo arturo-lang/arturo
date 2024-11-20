@@ -182,17 +182,17 @@ proc defineLibrary*() =
             ; => [[0 0 0 0] [0 0 0 0] [0 0 0 0]]
         """:
             #=======================================================
-            template arrayOf(x: Value, aOf: Value) =
-                case aOf.kind:
+            template arrayOf(source: Value, modifier: Value) =
+                case modifier.kind:
                 of Integer:
-                    let size = aOf.i
-                    let blk:ValueArray = safeRepeat(x, size)
+                    let size = modifier.i
+                    let blk:ValueArray = safeRepeat(source, size)
                     push newBlock(blk)
                 of Block:
-                    var val: Value = copyValue(x)
+                    var val: Value = copyValue(source)
                     var blk: ValueArray
 
-                    for item in aOf.a.reversed:
+                    for item in modifier.a.reversed:
                         requireValue(item, {Integer})
                         blk = safeRepeat(val, item.i)
                         val = newBlock(blk.map((v)=>copyValue(v)))
