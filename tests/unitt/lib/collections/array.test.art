@@ -1,0 +1,66 @@
+import {unitt}!
+import relative {../../commons/functions}!
+
+suite "array.of: :integer" [
+
+    test "array.of: n returns a n-size :block" [
+        expected: ['done 'done 'done]
+        actual: array.of: 3 'done
+        assert -> equal? expected actual
+    ]
+
+    test "array.of: n returns a n-size :block even when the source is a :block" [
+        expected: [['done] ['done] ['done]]
+        actual: array.of: 3 ['done]
+        assert -> equal? expected actual
+    ]
+]
+
+
+suite "array.of: :block - n-dimensional arrays" [
+
+    test "array.of: [3 4] returns a 3x4 matrix :block" [
+        expected: [
+            [0 0 0 0]
+            [0 0 0 0]
+            [0 0 0 0]
+        ]
+
+        actual: array.of: [3, 4] 0
+        assert -> equal? expected actual
+    ]
+
+    test "array.of: [3 4] returns a 3x4 matrix :block preserving the :block source" [
+        expected: [
+            [[0] [0] [0] [0]]
+            [[0] [0] [0] [0]]
+            [[0] [0] [0] [0]]
+        ]
+
+        actual: array.of: [3, 4] [0]
+        assert -> equal? expected actual
+    ]
+    
+    test "array.of: [3 3 3] return a 3-dimensional array" [
+        expected: [
+            [
+                [:point :point :point] 
+                [:point :point :point] 
+                [:point :point :point]
+            ] 
+            [
+                [:point :point :point] 
+                [:point :point :point] 
+                [:point :point :point]
+            ] 
+            [
+                [:point :point :point] 
+                [:point :point :point] 
+                [:point :point :point]
+            ]
+        ]
+
+        actual: array.of: [3, 3, 3] :point
+        assert -> equal? expected actual
+    ]
+]
