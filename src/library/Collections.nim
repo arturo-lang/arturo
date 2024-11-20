@@ -182,7 +182,7 @@ proc defineLibrary*() =
             ; => [[0 0 0 0] [0 0 0 0] [0 0 0 0]]
         """:
             #=======================================================
-            if checkAttr("of"):
+            template arrayOf(x: Value, aOf: Value) =
                 case aOf.kind:
                 of Integer:
                     let size = aOf.i
@@ -200,6 +200,9 @@ proc defineLibrary*() =
                     push newBlock(blk)
                 else:
                     discard
+
+            if checkAttr("of"):
+                x.arrayOf(aOf)
             else:
                 case xKind:
                 of Range:
