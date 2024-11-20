@@ -194,8 +194,8 @@ proc defineLibrary*() =
                     result = safeRepeat(val, item.i)
                     val = newBlock(result.map((v)=>copyValue(v)))
 
-            proc array(source: Value): seq | ValueArray {.inline.} =
-                case xKind:
+            proc array(source: Value, kind: ValueKind): seq | ValueArray {.inline.} =
+                case kind:
                 of Range:
                     return toSeq(items(source.rng))
                 of Block:
@@ -227,7 +227,7 @@ proc defineLibrary*() =
                 else:
                     discard
             else:
-                push newBlock(array(x))
+                push newBlock(array(x, xKind))
 
     builtin "chop",
         alias       = unaliased,
