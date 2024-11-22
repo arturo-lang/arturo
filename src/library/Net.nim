@@ -259,7 +259,6 @@ proc defineLibrary*() =
                 var timeout: int = -1
                 if checkAttr("timeout"):
                     timeout = aTimeout.i
-                    echo "using a timeout: " & $(timeout)
 
                 var proxy: Proxy = nil
                 if checkAttr("proxy"):
@@ -309,7 +308,6 @@ proc defineLibrary*() =
                             headers = headers
                         )
                 else:
-                    echo "and just creating our http client, with a timeout: " & $(timeout)
                     client = newHttpClient(
                         userAgent = agent,
                         proxy = proxy, 
