@@ -259,6 +259,7 @@ proc defineLibrary*() =
                 var timeout: int = -1
                 if checkAttr("timeout"):
                     timeout = aTimeout.i
+                    echo "using a timeout: " & $(timeout)
 
                 var proxy: Proxy = nil
                 if checkAttr("proxy"):
@@ -308,6 +309,7 @@ proc defineLibrary*() =
                             headers = headers
                         )
                 else:
+                    echo "and just creating our http client, with a timeout: " & $(timeout)
                     client = newHttpClient(
                         userAgent = agent,
                         proxy = proxy, 
@@ -315,56 +317,59 @@ proc defineLibrary*() =
                         headers = headers
                     )
 
-                let response = client.request(url = url,
-                                            httpMethod = meth,
-                                            body = body,
-                                            multipart = multipart)
+                try:
+                    let response = client.request(url = url,
+                                                httpMethod = meth,
+                                                body = body,
+                                                multipart = multipart)
 
-                var ret: ValueDict = initOrderedTable[string,Value]()
-                ret["version"] = newString(response.version)
-                
-                ret["body"] = newString(response.body)
-                ret["headers"] = newDictionary()
+                    var ret: ValueDict = initOrderedTable[string,Value]()
+                    ret["version"] = newString(response.version)
+                    
+                    ret["body"] = newString(response.body)
+                    ret["headers"] = newDictionary()
 
-                if (hadAttr("raw")):
-                    ret["status"] = newString(response.status)
-
-                    for k,v in response.headers.table:
-                        ret["headers"].d[k] = newStringBlock(v)
-                else:
-                    try:
-                        let respStatus = (response.status.splitWhitespace())[0]
-                        ret["status"] = newInteger(respStatus)
-                    except CatchableError:
+                    if (hadAttr("raw")):
                         ret["status"] = newString(response.status)
 
-                    for k,v in response.headers.table:
-                        var val: Value
-                        if v.len==1:
-                            case k
-                                of "age","content-length": 
-                                    try:
-                                        val = newInteger(v[0])
-                                    except CatchableError:
-                                        val = newString(v[0])
-                                of "access-control-allow-credentials":
-                                    val = newLogical(v[0])
-                                of "date", "expires", "last-modified":
-                                    let dateParts = v[0].splitWhitespace()
-                                    let cleanDate = (dateParts[0..(dateParts.len-2)]).join(" ")
-                                    var dateFormat = "ddd, dd MMM YYYY HH:mm:ss"
-                                    let timeFormat = initTimeFormat(dateFormat)
-                                    try:
-                                        val = newDate(parse(cleanDate, timeFormat))
-                                    except CatchableError:
-                                        val = newString(v[0])
-                                else:
-                                    val = newString(v[0])
-                        else:
-                            val = newStringBlock(v)
-                        ret["headers"].d[k] = val
+                        for k,v in response.headers.table:
+                            ret["headers"].d[k] = newStringBlock(v)
+                    else:
+                        try:
+                            let respStatus = (response.status.splitWhitespace())[0]
+                            ret["status"] = newInteger(respStatus)
+                        except CatchableError:
+                            ret["status"] = newString(response.status)
 
-                push newDictionary(ret)
+                        for k,v in response.headers.table:
+                            var val: Value
+                            if v.len==1:
+                                case k
+                                    of "age","content-length": 
+                                        try:
+                                            val = newInteger(v[0])
+                                        except CatchableError:
+                                            val = newString(v[0])
+                                    of "access-control-allow-credentials":
+                                        val = newLogical(v[0])
+                                    of "date", "expires", "last-modified":
+                                        let dateParts = v[0].splitWhitespace()
+                                        let cleanDate = (dateParts[0..(dateParts.len-2)]).join(" ")
+                                        var dateFormat = "ddd, dd MMM YYYY HH:mm:ss"
+                                        let timeFormat = initTimeFormat(dateFormat)
+                                        try:
+                                            val = newDate(parse(cleanDate, timeFormat))
+                                        except CatchableError:
+                                            val = newString(v[0])
+                                    else:
+                                        val = newString(v[0])
+                            else:
+                                val = newStringBlock(v)
+                            ret["headers"].d[k] = val
+                
+                    push newDictionary(ret)
+                except CatchableError:
+                    push(VNULL)
 
         builtin "serve",
             alias       = unaliased, 
