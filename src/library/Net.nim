@@ -199,7 +199,7 @@ proc defineLibrary*() =
                 "certificate"   : ({String},"use SSL certificate at given path"),
                 "raw"           : ({Logical},"return raw response without processing")
             },
-            returns     = {Dictionary},
+            returns     = {Dictionary,Null},
             example     = """
             print request "https://httpbin.org/get" #[some:"arg" another: 123]
             ; [version:1.1 body:{
