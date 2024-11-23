@@ -194,7 +194,14 @@ print a + b
 
 <h4 id="rational">:rational</h4>
 
-As with complex numbers, rationals can be defined using `to`. And again, Arturo comes with full support for rational numbers and all the associated operations.
+The syntax for rational literals is simply a number followed by a colon, followed by a number (pretty much like you would normally represent a ratio).
+
+```red
+a: 1:2                   ; 1/2
+b: 3:4                   ; 3/4
+```
+
+As with complex numbers, rationals can also be defined using `to`. And again, Arturo comes with full support for rational numbers and all the associated operations.
 
 ```red
 a: to :rational [1 2]     ; 1/2
