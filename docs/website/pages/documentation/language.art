@@ -31,6 +31,7 @@ Here, you'll find everything you may need to know about the language (and perhap
        - [:block](#block)
        - [:dictionary](#dictionary)
        - [:function](#function)
+       - [:method](#method)
        - [:color](#color)
        - [:date](#date)
        - [:database](#database)
@@ -528,6 +529,96 @@ addThemUp: $[x,y][x+y]
 print addThemUp 2 3
 
 ; would print 5
+```
+
+<h4 id="method">:method</h4>
+
+Methods in Arturo are pretty much like functions. With a couple of asterisks:
+- They are meant to be used only inside a custom type (in `define`) or in a `module` context
+- We'd use them only when we want to have access to `this` (= in a few words, when we want to access other fields/functions/methods of the same object; if we don't need that, we could still use a function)
+
+A quick example:
+
+```red
+define :car [
+    init: method [; our constructor
+        brand :string
+        speed :quantity
+    ][ 
+        this\brand: brand
+        this\speed: speed
+    ]
+
+    distanceTravelled: method [inHours :quantity][
+        this\speed * inHours
+    ]
+]
+myCar: to :car ["Volvo" 100`km/h]!
+
+print ["In 2 hours, we'll have travelled:" myCar\distanceTravelled 2`h]
+```
+
+We may also have *magic methods*, that is: making our custom types accessible-to or "overloading" normal stdlib methods.
+
+For example, if we want to be able to `print` one of our custom objects, we'd first have to define a way that this custom object is meant to be converted to a string.
+For that, we'd define a `string` magic method:
+
+```
+```red
+define :car [
+    ; as previously
+
+    string: method [][
+        return "CAR :: " ++ \name
+    ]
+]
+myCar: to :car ["Volvo C30" 100`km/h]!
+
+print myCar ; this would print: CAR :: Volvo C30
+```
+
+**Supported Magic methods:**
+
+```
+get: method [what]          ; this\what
+set: method [what, value]   ; this\what: value
+
+changing: method []     ; object about to change
+changed: method []      ; object changed
+
+compare: method [that]  ; comparator definition (to compare between `this` and a second object)
+equal?: method [that]   ; this = that
+less?: method [that]    ; this < that
+greater?: method [that] ; this > that
+
+add: method [that]      ; this + that
+sub: method [that]      ; this - that
+mul: method [that]      ; this * that
+div: method [that]      ; this / that
+fdiv: method [that]     ; this // that
+mod: method [that]      ; this % that
+pow: method [that]      ; this ^ that
+
+inc: method []          ; inc this
+dec: method []          ; dec this
+
+neg: method []          ; neg this
+
+key?: method [key]          ; key? this key
+contains?: method [field]   ; contains? this field
+
+append: method [what]   ; this ++ what
+remove: method [what]   ; this -- what
+
+string: method []       ; to :string this
+integer: method []      ; to :integer this
+floating: method []     ; to :floating this
+rational: method []     ; to :rational this
+complex: method []      ; to :complex this
+quantity: method []     ; to :quantity this
+logical: method []      ; to :logical this
+block: method []        ; to :block this
+dictionary: method []   ; to :dictionary this
 ```
 
 <h4 id="color">:color</h4>
