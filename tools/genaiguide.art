@@ -73,4 +73,4 @@ loop data [lib, contents][
 ]
 
 unless empty? ppout ->
-    write ./"aiguide.md" ppout
+    ppout >> ./"aiguide.md"
