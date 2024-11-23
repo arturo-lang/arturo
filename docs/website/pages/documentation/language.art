@@ -6,11 +6,14 @@ Here, you'll find everything you may need to know about the language (and perhap
 ---
 
 - [Introduction](#introduction)
-- [The main components](#the-main-components)
+- [The basics](#the-basics)
    * [Words](#words)
    * [Labels](#labels)
    * [Symbols](#symbols)
-   * [Values](#values)
+   * [Attributes](#attributes)
+       - [:attribute](#attribute)
+       - [:attributeLabel](#attributeLabel)
+   * [More values](#more-values)
        - [:null](#null)
        - [:logical](#logical)
        - [:integer](#integer)
@@ -39,17 +42,15 @@ Here, you'll find everything you may need to know about the language (and perhap
        - [:database](#database)
        - [:binary](#binary)
        - [:bytecode](#bytecode)
-   * [Attributes](#attributes)
-       - [:attribute](#attribute)
-       - [:attributeLabel](#attributeLabel)
-- [Precedence and evaluation](#precedence-and-evaluation)
-   * [The right-to-left rule](#the-right-to-left-rule)
-- [Scope and rules](#scope-and-rules)
-   * [Blocks](#blocks)
-   * [Iterators](#iterators)
-   * [Functions](#functions)
-- [In-place variable modification](#in-place-variable-modification)
-   * [Using literals](#using-literals)
+- [Important concepts](#important-concepts)
+   * [Precedence and evaluation](#precedence-and-evaluation)
+       - [The right-to-left rule](#the-right-to-left-rule)
+   * [Scope and rules](#scope-and-rules)
+       - [Blocks](#blocks)
+       - [Iterators](#iterators)
+       - [Functions](#functions)
+   * [In-place variable modification](#in-place-variable-modification)
+       - [Using literals](#using-literals)
 - [Syntactic sugar](#syntactic-sugar)
    * [Right-arrow operator: `->`](#right-arrow-operator)
    * [Fat right-arrow operator: `=>`](#fat-right-arrow-operator)
@@ -75,11 +76,11 @@ Let's try to resume some key points of Arturo's no-syntax:
 
 As you can see, there is not much to learn from scratch here:
 
-Once you learn what the language [**main components**](#the-main-components) are & a few details about **[precedence and evaluation](#precedence-and-evaluation)**, then only with the [**Library Reference**](../library/) at hand (the built-in functions that are already there for you, available to use), you're pretty much ready to write *any* program. ;-)
+Once you learn what the language [**building blocks**](#the-basics) are & a few details about **[precedence and evaluation](#precedence-and-evaluation)**, then only with the [**Library Reference**](../library/) at hand (the built-in functions that are already there for you, available to use), you're pretty much ready to write *any* program. ;-)
 
 So, let's get to the gist of the matter!
 
-<h2 id="the-main-components">The main components</h2>
+<h2 id="the-basics">The basics</h2>
 
 <h3 id="words">Words</h3>
 
@@ -145,9 +146,51 @@ Some of the existing *aliases* in the built-in dictionary:
 <=, =>, <=>, <<=, =>>, <<=>>, <-, ->, <->, <<-, ->>, <<->>, -<, >-, >-<, -<<, >>-, >>-<<, <<, >>, <<<, >>>, <--, -->, <-->, <==, ==>, <==>, <~, ~>, <~>, |>, <|, <|>, =<, >=, <>, <:, -:, >:, ~, !, !!, ?, ??, @, #, ##, ###, ####, #####, ######, $, %, ^, &, *, **, -, --, =, ==, =~, +, ++, <, >, /, /%, //, \\, \\\\, |, |-, |=, .., ..., ./, :, ::, :=, ||, ∅, ∞, ∑, ∏, ∩, ∪, ⊂, ⊃, ⊆, ⊇, ∈, ∉, ∧, ∨, ⊻, ⊼, ¬ 
 ```
 
-> 💡 For the complete of recognized symbols in Arturo, you may have a look at <a href="https://github.com/arturo-lang/arturo/blob/master/src/vm/values/custom/vsymbol.nim " target="_blank">here</a>.
+<h3 id="attributes">Attributes</h3>
 
-<h3 id="values">Values</h3>
+Another interesting feature of Arturo is what we'll analyze here: attributes.
+
+Technically, *attributes* are nothing but an easy way of defining optional named parameters for functions - but which can however transcend between different function calls.
+
+There are two types: 
+
+ a. attributes   
+ b. attribute labels
+
+<h4 id="attribute">:attribute</h4>
+
+Attributes are actually optional on/off-type of values, set during a function call, that is there to denote some variation of the initial meaning of the function. To define an attribute, we'll be using a `.`(dot) followed by a normal word: `\.\w+`
+
+Let's say we used the function `split`, to split a string into parts:
+```red
+split "hello world"
+
+; => [`h` `e` `l` `l` `o` ` ` `w` `o` `r` `l` `d` ]
+```
+That does what it says: splits the string into an array of `:char`s.
+
+What if we want for example to split the string into words? For that, there is the `.words` attribute for the function `split`. So:
+
+```red
+split.words "hello world"
+
+; = ["hello" "world"]
+```
+> 💡 The order in which you pass the different attributes does <u>not</u> matter. Also, there is no issue at all whether you want to use spaces between them and the surrounding function call; Arturo will still be able to parse them and recognize them fine
+
+<h4 id="attributeLabel">:attributeLabel</h4>
+
+Attribute labels are pretty much like simple *attributes*, only they can also take a value. As it worked with *attributes*, we'll be using a `.`(dot) followed by a normal word, but now also followed by a `:`(colon) -- exactly like with normal *labels*, as we've seen above.
+
+Here's an example:
+
+```red
+split .every: 2 "hello world"
+
+; => ["he" "ll" "ow" "or" "ld"]
+```
+
+<h3 id="more-values">More Values</h3>
 
 Values are the very core of Arturo and are used to refer to pretty much all the different kinds of data you can have.
 
@@ -155,7 +198,7 @@ Values are the very core of Arturo and are used to refer to pretty much all the 
 
 We could split values into 2 categories: a) literal values - that is values you can directly define in your code and b) constructible - values that are created using some function.
 
-The complete list follows:
+The (hopefully) complete list follows:
 
 <h4 id="null">:null</h4>
 
@@ -771,51 +814,13 @@ inspect bcode
 ; ]
 ```
 
-<h3 id="attributes">Attributes</h3>
+<h2 id="important-concepts">Important concepts</h2>
 
-Another interesting feature of Arturo is what we'll analyze here: attributes.
+Here we are going to analyze a few aspects that make Arturo rather unique; or that - in any case - you should study a bit more in order to become a real... Arturo guru, in no time.
 
-Technically, *attributes* are nothing but an easy way of defining optional named parameters for functions - but which can however transcend between different function calls.
+So, let's get started...
 
-There are two types: 
-
- a. attributes   
- b. attribute labels
-
-<h4 id="attribute">:attribute</h4>
-
-Attributes are actually optional on/off-type of values, set during a function call, that is there to denote some variation of the initial meaning of the function. To define an attribute, we'll be using a `.`(dot) followed by a normal word: `\.\w+`
-
-Let's say we used the function `split`, to split a string into parts:
-```red
-split "hello world"
-
-; => [`h` `e` `l` `l` `o` ` ` `w` `o` `r` `l` `d` ]
-```
-That does what it says: splits the string into an array of `:char`s.
-
-What if we want for example to split the string into words? For that, there is the `.words` attribute for the function `split`. So:
-
-```red
-split.words "hello world"
-
-; = ["hello" "world"]
-```
-> 💡 The order in which you pass the different attributes does <u>not</u> matter. Also, there is no issue at all whether you want to use spaces between them and the surrounding function call; Arturo will still be able to parse them and recognize them fine
-
-<h4 id="attributeLabel">:attributeLabel</h4>
-
-Attribute labels are pretty much like simple *attributes*, only they can also take a value. As it worked with *attributes*, we'll be using a `.`(dot) followed by a normal word, but now also followed by a `:`(colon) -- exactly like with normal *labels*, as we've seen above.
-
-Here's an example:
-
-```red
-split .every: 2 "hello world"
-
-; => ["he" "ll" "ow" "or" "ld"]
-```
-
-<h2 id="precedence-and-evaluation">Precedence and Evaluation</h2>
+<h3 id="precedence-and-evaluation">Precedence and Evaluation</h3>
 
 The easiest way to explain precedence rules in Arturo is pretty much like it happened with our introduction: there are <u>no precedence rules</u> whatsoever.
 
@@ -823,7 +828,7 @@ So, in an expression like `2 * 3 + 4`, if you'd normally expect to get a result 
 
 But in order to understand why, you'd have to understand how evaluation in Arturo works.
 
-<h3 id="the-right-to-left-rule">The right-to-left rule</h3>
+<h4 id="the-right-to-left-rule">The right-to-left rule</h4>
 
 The main expression evaluation order of Arturo is *right-to-left*. But with a tiny asterisk: Your code *will* be evaluated from left to right, it is the expressions passed to your function calls that will be evaluated from right-to-left.
 
@@ -893,7 +898,7 @@ The correct code in that case would be:
 (to :string 3) ++ " <-- this is our number"
 ```
 
-<h2 id="scope-and-rules">Scope and rules</h2>
+<h3 id="scope-and-rules">Scope and rules</h3>
 
 Contrary to what you might expect, Arturo doesn't feature a traditional concept of *scope*. There are no real *local* or *global* variables, no *local* or *global* functions, no *local* or *global* blocks, no *local* or *global* anything.
 
@@ -901,7 +906,7 @@ Generally, if a variable has been previously declared at the moment and location
 
 But let's see a couple of concrete cases to make this clearer.
 
-<h3 id="blocks">Blocks</h3>
+<h4 id="blocks">Blocks</h4>
 
 Arturo doesn't have a block scope.
 
@@ -925,7 +930,7 @@ print x     ; prints 2 (the value of x has been changed)
 print y     ; prints 3 (the value of y is still available)
 ```
 
-<h3 id="iterators">Iterators</h3>
+<h4 id="iterators">Iterators</h4>
 
 Iterators (such as `loop`, `map`, etc) always work with a block as well. But in a special way.
 
@@ -944,7 +949,7 @@ print i    ; ERROR: variable not found
            ; (i is not available anymore)
 ```
 
-<h3 id="functions">Functions</h3>
+<h4 id="functions">Functions</h4>
 
 Functions are totally different. Why? Because they do have their own scope.
 
@@ -958,7 +963,7 @@ If we want to *export* a specific symbol to the outer scope, that is, make it av
 
 If we want to export *all* of the symbols - thus, practically making the function *scope-less*, we may use the `.inline` attribute.
 
-<h2 id="in-place-variable-modification">In-place variable modification</h2>
+<h3 id="in-place-variable-modification">In-place variable modification</h3>
 
 In Arturo, every time you pass a parameter to a function, you can rest assured that the value of that parameter won't change (unless it's a string, block or dictionary and you - consciously - decided to use `set` on it, in which case it does alter its inner structure).
 
@@ -984,7 +989,7 @@ And now, yes, `a` does contain the sorted version of the initial array.
 
 But, what if you want to perform the modification in-place, which is normally faster and without the need for intermediate variables? Literals come to the rescue!
 
-<h3 id="using-literals">Using literals</h3>
+<h4 id="using-literals">Using literals</h4>
 
 As we've already said, "literals" (`'i 'am 'a 'literal`) are nothing but string representations of a word, that is... the word itself. For that reason, they may come in very handy when you want to modify a variable in-place.
 
