@@ -680,14 +680,39 @@ Bytecode values cannot be constructed literally. However, you can create them in
 
 ```red
 ; let's create some Arturo bytecode from scratch 
-x: to :bytecode [
-    ["print"]     ; first block contains our constants
-    [1 112 155]   ; second block contains the opcodes to be executed,
-                  ; in this case: ConstI1 (0x01), Call (0x70), End (0x9B)
+bcode: to :bytecode [
+    loop 1..10 'x [
+        print x
+    ]
 ]
 
 ; and execute it!
-do x              ; this will simply print... 1
+do bcode          
+
+; we can also inspect it
+inspect bcode
+; [ :bytecode
+;         ================================
+;          DATA
+;         ================================
+;         0: [ :block
+;                 print :word
+;                 x :word
+;         ]
+;         1: x :literal
+; 
+;         ================================
+;          CODE
+;         ================================
+;         push0
+;         eol                  #4
+;         push1
+;         consti10
+;         consti1
+;         range
+;         loop
+;         end
+; ]
 ```
 
 <h3 id="attributes">Attributes</h3>
