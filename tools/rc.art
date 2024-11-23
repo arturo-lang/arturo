@@ -29,7 +29,7 @@ getTemplateRC: function [s][
         <pre>OUT</pre>
     }
 
-    write resPath s strip runScript s
+    strip runScript s >> resPath s
 
     replace templ ["SCR", "OUT"] @[read scrPath s, read resPath s]
 ]
@@ -46,8 +46,8 @@ case cmd [
     "n" [
         print color #cyan "creating new RC example...\n"
     
-        write scrPath scr ""
-        write resPath scr ""
+        "" >> scrPath scr
+        "" >> resPath scr
     ]
     "c" [
         print color #cyan "cleaning up RC res...\n"
