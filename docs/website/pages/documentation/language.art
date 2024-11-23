@@ -33,6 +33,7 @@ Here, you'll find everything you may need to know about the language (and perhap
        - [:inline](#inline)
        - [:block](#block)
        - [:dictionary](#dictionary)
+       - [:store](#store)
        - [:object](#object)
        - [:function](#function)
        - [:method](#method)
@@ -542,7 +543,8 @@ x: [
 
 <h4 id="dictionary">:dictionary</h4>
 
-Dictionaries in Arturo as what in other languages you'd call an *associative array* or *hash table*. If you want to create one, just give the `dictionary` function (or use the `#` alias) a block, with different labels, and it'll automatically convert it to a dictionary.
+Dictionaries in Arturo as what in other languages you'd call an *associative array* or *hash table*. In Arturo, it's practically the same, only with an added twist: they are *ordered* hash tables.
+If you want to create one, just give the `dictionary` function (or use the `#` alias) a block, with different labels, and it'll automatically convert it to a dictionary.
 
 ```red
 user: #[
@@ -558,6 +560,21 @@ What the `#` function here does is:
 - return a dictionary with the aforementioned words
 
 > 💡 As you can probably assume from the above definition, a dictionary block doesn't necessarily have to contain just labels and word definitions - it may contain whatever you want, even function calls; only it will return you back just a table with the defined words in there
+
+<h4 id="store">:store</h4>
+
+Now, that you've seen Dictionaries, imagine a dictionary that could actually save its contents to disk for every change you make to it.
+Or retrieve it from disk when you start your program again, offering you seamless integration with your data. And safety too.
+
+Well, that's exactly what Stores are. :)
+
+```red
+d: store "mystore" ; initialize your Store and 
+                   ; specify where you want to store it 
+                   ; (if the store already exists, it'll automatically load it)
+
+d\name: "John"     ; and you can use it as any normal dictionary
+```
 
 <h4 id="object">:object</h4>
 
