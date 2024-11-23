@@ -33,6 +33,7 @@ Here, you'll find everything you may need to know about the language (and perhap
        - [:inline](#inline)
        - [:block](#block)
        - [:dictionary](#dictionary)
+       - [:object](#object)
        - [:function](#function)
        - [:method](#method)
        - [:unit](#unit)
@@ -198,7 +199,7 @@ Values are the very core of Arturo and are used to refer to pretty much all the 
 
 We could split values into 2 categories: a) literal values - that is values you can directly define in your code and b) constructible - values that are created using some function.
 
-The (hopefully) complete list follows:
+The (hopefully) complete list follows.
 
 <h4 id="null">:null</h4>
 
@@ -556,6 +557,22 @@ What the `#` function here does is:
 - return a dictionary with the aforementioned words
 
 > 💡 As you can probably assume from the above definition, a dictionary block doesn't necessarily have to contain just labels and word definitions - it may contain whatever you want, even function calls; only it will return you back just a table with the defined words in there
+
+<h4 id="object">:object</h4>
+
+Object values are intimately related to custom types, as we have already seen above.
+
+And while Arturo isn't properly speaking a primarily Object-oriented language, it offers more than enough functionality that will cover most OOP needs.
+
+The normal way to create a new object, is by using `to` and a new custom type you have defined before:
+
+```red
+newClient: to :person ["John" "Doe"]!
+; yep, we've just created a new Object value!
+```
+
+Technically, Objects are nothing but supercharged Dictionaries that come with a twist:
+their functions (see: methods) can have access to its own fields and methods, *from within* - using `this`. But other than that, don't let them scare you out: it's just another tool in our toolkit! ;-)
 
 <h4 id="function">:function</h4>
 
