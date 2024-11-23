@@ -401,6 +401,17 @@ user\[x]: "Jane"
 print user\name ; ok, now it should print "Jane"
 ```
 
+> 💡 If you we are inside a custom type, an easy way to refer to fields of the same object is using `this`. However, Arturo comes with a shortcut: e.g. 
+> ```red
+> define :person [
+>    init: constructor [name :string]
+>    sayHello: method [][
+>        print ["Hello" \name] ; this is equivalent to `this\name`
+>    ]
+> ]
+> ```
+> which generally helps us write more better-looking code. :)
+
 <h4 id="inline">:inline</h4>
 
 *Inline*s in Arturo generally denote a list of words/symbols/values that are grouped and given some type of priority in evaluation. An *inline* block is denoted by `(...)` (parentheses).
