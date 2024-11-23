@@ -6,11 +6,14 @@ Here, you'll find everything you may need to know about the language (and perhap
 ---
 
 - [Introduction](#introduction)
-- [The main components](#the-main-components)
+- [The basics](#the-basics)
    * [Words](#words)
    * [Labels](#labels)
    * [Symbols](#symbols)
-   * [Values](#values)
+   * [Attributes](#attributes)
+       - [:attribute](#attribute)
+       - [:attributeLabel](#attributeLabel)
+   * [More values](#more-values)
        - [:null](#null)
        - [:logical](#logical)
        - [:integer](#integer)
@@ -21,34 +24,42 @@ Here, you'll find everything you may need to know about the language (and perhap
        - [:type](#type)
        - [:char](#char)
        - [:string](#string)
+       - [:range](#range)
        - [:regex](#regex)
-       - [:literal](#literal)
-       - [:symbolLiteral](#symbolLiteral)
        - [:path](#path)
        - [:pathLabel](#pathLabel)
+       - [:literal](#literal)
+       - [:symbolLiteral](#symbolLiteral)
+       - [:pathLiteral](#pathLiteral)
        - [:inline](#inline)
        - [:block](#block)
        - [:dictionary](#dictionary)
+       - [:store](#store)
+       - [:object](#object)
        - [:function](#function)
+       - [:method](#method)
+       - [:unit](#unit)
+       - [:quantity](#quantity)
        - [:color](#color)
        - [:date](#date)
        - [:database](#database)
+       - [:socket](#socket)
        - [:binary](#binary)
        - [:bytecode](#bytecode)
-   * [Attributes](#attributes)
-       - [:attribute](#attribute)
-       - [:attributeLabel](#attributeLabel)
-- [Precedence and evaluation](#precedence-and-evaluation)
-   * [The right-to-left rule](#the-right-to-left-rule)
-- [Scope and rules](#scope-and-rules)
-   * [Blocks](#blocks)
-   * [Iterators](#iterators)
-   * [Functions](#functions)
-- [In-place variable modification](#in-place-variable-modification)
-   * [Using literals](#using-literals)
+- [Important concepts](#important-concepts)
+   * [Precedence and evaluation](#precedence-and-evaluation)
+       - [The right-to-left rule](#the-right-to-left-rule)
+   * [Scope and rules](#scope-and-rules)
+       - [Blocks](#blocks)
+       - [Iterators](#iterators)
+       - [Functions](#functions)
+   * [In-place variable modification](#in-place-variable-modification)
+       - [Using literals](#using-literals)
 - [Syntactic sugar](#syntactic-sugar)
    * [Right-arrow operator: `->`](#right-arrow-operator)
    * [Fat right-arrow operator: `=>`](#fat-right-arrow-operator)
+   * [Double-colon operator: `::`](#double-colon-operator)
+   * [Exclamation-mark operator: `!`](#exclamation-mark-operator)
    * [Pipe operator: `|`](#pipe-operator)
 - [Conclusion](#conclusion)
 
@@ -69,11 +80,11 @@ Let's try to resume some key points of Arturo's no-syntax:
 
 As you can see, there is not much to learn from scratch here:
 
-Once you learn what the language [**main components**](#the-main-components) are & a few details about **[precedence and evaluation](#precedence-and-evaluation)**, then only with the [**Library Reference**](../library/) at hand (the built-in functions that are already there for you, available to use), you're pretty much ready to write *any* program. ;-)
+Once you learn what the language [**building blocks**](#the-basics) are & a few details about **[precedence and evaluation](#precedence-and-evaluation)**, then only with the [**Library Reference**](../library/) at hand (the built-in functions that are already there for you, available to use), you're pretty much ready to write *any* program. ;-)
 
 So, let's get to the gist of the matter!
 
-<h2 id="the-main-components">The main components</h2>
+<h2 id="the-basics">The basics</h2>
 
 <h3 id="words">Words</h3>
 
@@ -86,7 +97,7 @@ As with a real (spoken) language, every word has a specific meaning. And if you 
 In Arturo, a *word* may have 3 main different uses:
 
 - refer to a value (that is: a variable, e.g. `x + 2`)
-- refer to an action, which does something (that is: a function, e.g. `doSomething`) - Arturo comes with close to 150 already defined such words/functions
+- refer to an action, which does something (that is: a function, e.g. `doSomething`) - Arturo comes with hundreds already defined in its standard library
 - refer to nothing (that is: a word without meaning, as in the `[lorem ipsum]` example above)
 
 <h3 id="labels">Labels</h3>
@@ -133,9 +144,57 @@ Some of the existing *aliases* in the built-in dictionary:
 %ALIAS_LIST%
 </table>
 
-> 💡 For the complete of recognized symbols in Arturo, you may have a look at <a href="https://github.com/arturo-lang/arturo/blob/master/src/vm/values/custom/vsymbol.nim " target="_blank">here</a>.
+**All valid symbols**:
 
-<h3 id="values">Values</h3>
+```
+<=, =>, <=>, <<=, =>>, <<=>>, <-, ->, <->, <<-, ->>, <<->>, -<, >-, >-<, -<<, >>-, >>-<<, <<, >>, <<<, >>>, <--, -->, <-->, <==, ==>, <==>, <~, ~>, <~>, |>, <|, <|>, =<, >=, <>, <:, -:, >:, ~, !, !!, ?, ??, @, #, ##, ###, ####, #####, ######, $, %, ^, &, *, **, -, --, =, ==, =~, +, ++, <, >, /, /%, //, \\, \\\\, |, |-, |=, .., ..., ./, :, ::, :=, ||, ∅, ∞, ∑, ∏, ∩, ∪, ⊂, ⊃, ⊆, ⊇, ∈, ∉, ∧, ∨, ⊻, ⊼, ¬ 
+```
+
+<h3 id="attributes">Attributes</h3>
+
+Another interesting feature of Arturo is what we'll analyze here: attributes.
+
+Technically, *attributes* are nothing but an easy way of defining optional named parameters for functions - but which can however transcend between different function calls.
+
+There are two types: 
+
+ a. attributes   
+ b. attribute labels
+
+<h4 id="attribute">:attribute</h4>
+
+Attributes are actually optional on/off-type of values, set during a function call, that is there to denote some variation of the initial meaning of the function. To define an attribute, we'll be using a `.`(dot) followed by a normal word: `\.\w+`
+
+Let's say we used the function `split`, to split a string into parts:
+```red
+split "hello world"
+
+; => [`h` `e` `l` `l` `o` ` ` `w` `o` `r` `l` `d` ]
+```
+That does what it says: splits the string into an array of `:char`s.
+
+What if we want for example to split the string into words? For that, there is the `.words` attribute for the function `split`. So:
+
+```red
+split.words "hello world"
+
+; = ["hello" "world"]
+```
+> 💡 The order in which you pass the different attributes does <u>not</u> matter. Also, there is no issue at all whether you want to use spaces between them and the surrounding function call; Arturo will still be able to parse them and recognize them fine
+
+<h4 id="attributeLabel">:attributeLabel</h4>
+
+Attribute labels are pretty much like simple *attributes*, only they can also take a value. As it worked with *attributes*, we'll be using a `.`(dot) followed by a normal word, but now also followed by a `:`(colon) -- exactly like with normal *labels*, as we've seen above.
+
+Here's an example:
+
+```red
+split .every: 2 "hello world"
+
+; => ["he" "ll" "ow" "or" "ld"]
+```
+
+<h3 id="more-values">More Values</h3>
 
 Values are the very core of Arturo and are used to refer to pretty much all the different kinds of data you can have.
 
@@ -143,7 +202,7 @@ Values are the very core of Arturo and are used to refer to pretty much all the 
 
 We could split values into 2 categories: a) literal values - that is values you can directly define in your code and b) constructible - values that are created using some function.
 
-The complete list follows:
+The (hopefully) complete list follows.
 
 <h4 id="null">:null</h4>
 
@@ -194,7 +253,14 @@ print a + b
 
 <h4 id="rational">:rational</h4>
 
-As with complex numbers, rationals can be defined using `to`. And again, Arturo comes with full support for rational numbers and all the associated operations.
+The syntax for rational literals is simply a number followed by a colon, followed by a number (pretty much like you would normally represent a ratio).
+
+```red
+a: 1:2                   ; 1/2
+b: 3:4                   ; 3/4
+```
+
+As with complex numbers, rationals can also be defined using `to`. And again, Arturo comes with full support for rational numbers and all the associated operations.
 
 ```red
 a: to :rational [1 2]     ; 1/2
@@ -232,12 +298,23 @@ or
 if (type x) = :integer [ print "it's an integer!" ]
 ```
 
+> 💡 If you want to define your own custom types (think "classes" in OOP languages), we have `define` for that: e.g. 
+> ```red
+> define :person [
+>    init: method [name :string][
+>        \name: name 
+>    ]
+> ]
+> p: to :person ["John"]!
+> print p\name ; John
+> ```
+
 <h4 id="char">:char</h4>
 
-Characters in Arturo can be declared using backticks:  `` `\w` ``
+Characters in Arturo can be declared using single quotes:  `'\w'`
 
 ```red
-ch: `a`
+ch: 'a'
 ```
 
 <h4 id="string">:string</h4>
@@ -299,6 +376,27 @@ A string is nothing but a series of characters, seen as one unit. In Arturo, to 
 > ; my variable is: 2
 > ```
 
+<h4 id="range">:range</h4>
+
+Arturo comes with full support of lazy ranges.
+
+To create a range all you have to do is use the built-in `range` function (or its `..` infix equivalent):
+
+```red
+numbers: 1..10    ; contains all numbers from 1 to 10 (inclusive)
+downwards: 10..1  ; this is valid as well
+
+chars: 'a'..'z'   ; yes, we can actually have character ranges too
+```
+
+Ranges can be used in most functions as-is, e.g. Iterators, where we can take full advantage of their "lazy" nature: they are not evaluated until needed.
+
+However, you can still evaluate a lazy range into its corresponding block any time you want:
+
+```red
+@1..10 ; [1,2,3,4,5,6,7,8,9,10]
+```
+
 <h4 id="regex">:regex</h4>
 
 A regex value is nothing but a string containing a regular expression (that is then compiled and treated as such).
@@ -322,29 +420,6 @@ While we may - optionally - use any of the supported PCRE-compliant flags:
 match "Hello" {/he/i}             ; => ["He"]
 ```
 
-<h4 id="literal">:literal</h4>
-
-Literals in Arturo are just a way of referring to the *name* of a word or symbol. Think of it as the *string* version of a word, or like Ruby's *symbols*. 
-
-For example, the function `info` takes as an argument the name of the function for which you want some information. If you wrote like `info print`, the interpreter would execute the function `print` and try to... print something (which would not be there). If you wanted to refer to the *name* of the function -- that is: without actually calling it -- you would precede it with a `'` (single-quote): `'[\w+]`
-
-```red
-func: 'print
-info func
-```
-
-However, literals may be used for much more - e.g. modifying a passed parameter in-place, without having to re-assign the result of an operation to a new variable. To learn more, have a look at **[In-place variable modification](#in-place-variable-modification)**.
-
-<h4 id="symbolLiteral">:symbolLiteral</h4>
-
-Symbol literals are to symbols pretty much what literals are to words. That is: the "literal", unevaluated form of the symbol.
-
-To declare a symbol literal, we may follow the example of normal, literals: `single quote` + accompanied by the symbol in question:
-
-```red
-type '++        ; => :symbolliteral
-```
-
 <h4 id="path">:path</h4>
 
 Paths in Arturo are a way of defining some hierarchy between values, something along the lines of *parent* -> *child* -> *grandchild*. For this, in Arturo, we'd use a series of *values* or *words* delimited with a `\` (backslash). You can think of them as *indexes* in other programming languages.
@@ -357,7 +432,7 @@ or
 
 ```red
 x: "name"
-print user\(x)
+print user\[x]
 ```
 
 or
@@ -383,7 +458,55 @@ print user\name  ; will print "John"
 ; let's change this user's name
 user\name: "Jane"
 
+; we can also do it like that
+x: "name"
+user\[x]: "Jane"
+
 print user\name ; ok, now it should print "Jane"
+```
+
+> 💡 If you we are inside a custom type, an easy way to refer to fields of the same object is using `this`. However, Arturo comes with a shortcut: e.g. 
+> ```red
+> define :person [
+>    init: constructor [name :string]
+>    sayHello: method [][
+>        print ["Hello" \name] ; this is equivalent to `this\name`
+>    ]
+> ]
+> ```
+> which generally helps us write more better-looking code. :)
+
+<h4 id="literal">:literal</h4>
+
+Literals in Arturo are just a way of referring to the *name* of a word or symbol. Think of it as the *string* version of a word, or like Ruby's *symbols*. 
+
+For example, the function `info` takes as an argument the name of the function for which you want some information. If you wrote like `info print`, the interpreter would execute the function `print` and try to... print something (which would not be there). If you wanted to refer to the *name* of the function -- that is: without actually calling it -- you would precede it with a `'` (single-quote): `'[\w+]`
+
+```red
+func: 'print
+info func
+```
+
+However, literals may be used for much more - e.g. modifying a passed parameter in-place, without having to re-assign the result of an operation to a new variable. To learn more, have a look at **[In-place variable modification](#in-place-variable-modification)**.
+
+<h4 id="symbolLiteral">:symbolLiteral</h4>
+
+Symbol literals are to symbols pretty much what literals are to words. That is: the "literal", unevaluated form of the symbol.
+
+To declare a symbol literal, we may follow the example of normal, literals: `single quote` + accompanied by the symbol in question:
+
+```red
+type '++        ; => :symbolliteral
+```
+
+<h4 id="pathLiteral">:pathLiteral</h4>
+
+Now, that we've seen both "normal" literals and paths, I guess you can already imagine what Path Literals are about... :)
+
+And, yes, you guessed right:
+
+```red
+type 'this\is\a\path  ; => :pathliteral
 ```
 
 <h4 id="inline">:inline</h4>
@@ -431,7 +554,8 @@ x: [
 
 <h4 id="dictionary">:dictionary</h4>
 
-Dictionaries in Arturo as what in other languages you'd call an *associative array* or *hash table*. If you want to create one, just give the `dictionary` function (or use the `#` alias) a block, with different labels, and it'll automatically convert it to a dictionary.
+Dictionaries in Arturo as what in other languages you'd call an *associative array* or *hash table*. In Arturo, it's practically the same, only with an added twist: they are *ordered* hash tables.
+If you want to create one, just give the `dictionary` function (or use the `#` alias) a block, with different labels, and it'll automatically convert it to a dictionary.
 
 ```red
 user: #[
@@ -447,6 +571,37 @@ What the `#` function here does is:
 - return a dictionary with the aforementioned words
 
 > 💡 As you can probably assume from the above definition, a dictionary block doesn't necessarily have to contain just labels and word definitions - it may contain whatever you want, even function calls; only it will return you back just a table with the defined words in there
+
+<h4 id="store">:store</h4>
+
+Now, that you've seen Dictionaries, imagine a dictionary that could actually save its contents to disk for every change you make to it.
+Or retrieve it from disk when you start your program again, offering you seamless integration with your data. And safety too.
+
+Well, that's exactly what Stores are. :)
+
+```red
+d: store "mystore" ; initialize your Store and 
+                   ; specify where you want to store it 
+                   ; (if the store already exists, it'll automatically load it)
+
+d\name: "John"     ; and you can use it as any normal dictionary
+```
+
+<h4 id="object">:object</h4>
+
+Object values are intimately related to custom types, as we have already seen above.
+
+And while Arturo isn't properly speaking a primarily Object-oriented language, it offers more than enough functionality that will cover most OOP needs.
+
+The normal way to create a new object, is by using `to` and a new custom type you have defined before:
+
+```red
+newClient: to :person ["John" "Doe"]!
+; yep, we've just created a new Object value!
+```
+
+Technically, Objects are nothing but supercharged Dictionaries that come with a twist:
+their functions (see: methods) can have access to its own fields and methods, *from within* - using `this`. But other than that, don't let them scare you out: it's just another tool in our toolkit! ;-)
 
 <h4 id="function">:function</h4>
 
@@ -474,6 +629,148 @@ print addThemUp 2 3
 
 ; would print 5
 ```
+
+<h4 id="method">:method</h4>
+
+Methods in Arturo are pretty much like functions. With a couple of asterisks:
+- They are meant to be used only inside a custom type (in `define`) or in a `module` context
+- We'd use them only when we want to have access to `this` (= in a few words, when we want to access other fields/functions/methods of the same object; if we don't need that, we could still use a function)
+
+A quick example:
+
+```red
+define :car [
+    init: method [; our constructor
+        brand :string
+        speed :quantity
+    ][ 
+        this\brand: brand
+        this\speed: speed
+    ]
+
+    distanceTravelled: method [inHours :quantity][
+        this\speed * inHours
+    ]
+]
+myCar: to :car ["Volvo" 100`km/h]!
+
+print ["In 2 hours, we'll have travelled:" myCar\distanceTravelled 2`h]
+```
+
+We may also have *magic methods*, that is: making our custom types accessible-to or "overloading" normal stdlib methods.
+
+For example, if we want to be able to `print` one of our custom objects, we'd first have to define a way that this custom object is meant to be converted to a string.
+For that, we'd define a `string` magic method:
+
+```
+```red
+define :car [
+    ; as previously
+
+    string: method [][
+        return "CAR :: " ++ \name
+    ]
+]
+myCar: to :car ["Volvo C30" 100`km/h]!
+
+print myCar ; this would print: CAR :: Volvo C30
+```
+
+**Supported Magic methods:**
+
+```
+get: method [what]          ; this\what
+set: method [what, value]   ; this\what: value
+
+changing: method []     ; object about to change
+changed: method []      ; object changed
+
+compare: method [that]  ; comparator definition (to compare between `this` and a second object)
+equal?: method [that]   ; this = that
+less?: method [that]    ; this < that
+greater?: method [that] ; this > that
+
+add: method [that]      ; this + that
+sub: method [that]      ; this - that
+mul: method [that]      ; this * that
+div: method [that]      ; this / that
+fdiv: method [that]     ; this // that
+mod: method [that]      ; this % that
+pow: method [that]      ; this ^ that
+
+inc: method []          ; inc this
+dec: method []          ; dec this
+
+neg: method []          ; neg this
+
+key?: method [key]          ; key? this key
+contains?: method [field]   ; contains? this field
+
+append: method [what]   ; this ++ what
+remove: method [what]   ; this -- what
+
+string: method []       ; to :string this
+integer: method []      ; to :integer this
+floating: method []     ; to :floating this
+rational: method []     ; to :rational this
+complex: method []      ; to :complex this
+quantity: method []     ; to :quantity this
+logical: method []      ; to :logical this
+block: method []        ; to :block this
+dictionary: method []   ; to :dictionary this
+```
+
+<h4 id="unit">:unit</h4>
+
+Arturo has very advanced capabilities related to physical quantities, measurements and the related operations.
+
+And everything begins with the concept of *units*.
+
+To declare a Unit value, all you have to do is use a backtick, followed by the unit in question:
+
+```red
+Meters: `m 
+SquareMeters: `m2
+Becquerels: `Bq
+```
+
+The list of builtin, supported Units is quite... long:
+
+```
+m, s, K, g, A, mol, cd, USD, B, rad, sr, in, ft, yd, ftm, rod, mi, fur, nmi, ang, au, ly, px, pt, pc, sqin, sqft, ac, are, ha, barn, L, gal, bbl, qt, p, cup, floz, tbsp, tsp, bu, cord, min, h, day, wk, mo, yr, lb, slug, oz, ct, t, ton, lt, st, Da, gr, dwt, ozt, lbt, mps, kph, mph, kn, fps, mach, Gal, N, dyn, lbf, kgf, pdl, Pa, atm, bar, pz, Ba, mmHg, psi, Torr, J, Wh, cal, BTU, eV, erg, th, thm, W, hp, statA, abA, Bi, V, statV, abV, Ohm, statOhm, abOhm, S, C, statC, abC, Fr, F, Daraf, H, abH, Wb, Mx, T, G, degC, degF, degR, b, KiB, MiB, GiB, TiB, PiB, EiB, deg, grad, arcmin, arcsec, kat, Hz, Bq, Ci, Gy, Sv, R, P, St, rpm, clo, bps, lx, Lb, lm
+```
+
+We also support most world currencies, with their ISO 3-letter code, e.g. `USD`, `EUR`, etc.
+
+**Compound units:**
+
+If you want to define compound units, Arturo actually supports that natively:
+
+```red
+squareMeters: `m2
+kilometersPerHours: `km/h
+
+newtonDefinition: `kg.m/s2    ; yes, that's actually a N(ewton)
+```
+
+<h4 id="quantity">:quantity</h4>
+
+Now, as we've seen, Arturo's Unit values are quite powerful. So, how can we express a Quantity using units?
+
+Very simple: just add a number (a Rational literal works too) just in front of a unit:
+
+```red
+twoMeters: 2`m    ; yes, we've just expressed the notion of "2 meters"
+                  ; as a native Arturo value
+```
+
+And we can obviously use them in operations as every other value:
+
+```
+print 3`m + 4`yd    ; 6.6576 m
+```
+
+And, yes, no need to worry about compatibility: Arturo actually understands dimensional analysis! ;-)
 
 <h4 id="color">:color</h4>
 
@@ -512,6 +809,19 @@ print query db "SELECT * FROM users"
 print type db   ; would print: :database
 ```
 
+<h4 id="socket">:socket</h4>
+
+Another not-literally constructible (but still powerful) value type is the Socket.
+
+To use Socket values properly, just have a look into the Sockets library module.
+
+If you want to create one, just have a look at the quick example below, using `listen`:
+
+```red
+; start a server listening on port 18966
+server: listen 18966    ; and, yes, that's a socket!
+```
+
 <h4 id="binary">:binary</h4>
 
 Binary values are used to represent *binary* data, that is: an array of bytes. You cannot define them directly, however, you can sure convert other data to binary.
@@ -528,61 +838,48 @@ Bytecode values cannot be constructed literally. However, you can create them in
 
 ```red
 ; let's create some Arturo bytecode from scratch 
-x: to :bytecode [
-    ["print"]     ; first block contains our constants
-    [1 112 155]   ; second block contains the opcodes to be executed,
-                  ; in this case: ConstI1 (0x01), Call (0x70), End (0x9B)
+bcode: to :bytecode [
+    loop 1..10 'x [
+        print x
+    ]
 ]
 
 ; and execute it!
-do x              ; this will simply print... 1
+do bcode          
+
+; we can also inspect it
+inspect bcode
+; [ :bytecode
+;         ================================
+;          DATA
+;         ================================
+;         0: [ :block
+;                 print :word
+;                 x :word
+;         ]
+;         1: x :literal
+; 
+;         ================================
+;          CODE
+;         ================================
+;         push0
+;         eol                  #4
+;         push1
+;         consti10
+;         consti1
+;         range
+;         loop
+;         end
+; ]
 ```
 
-<h3 id="attributes">Attributes</h3>
+<h2 id="important-concepts">Important concepts</h2>
 
-Another interesting feature of Arturo is what we'll analyze here: attributes.
+Here we are going to analyze a few aspects that make Arturo rather unique; or that - in any case - you should study a bit more in order to become a real... Arturo guru, in no time.
 
-Technically, *attributes* are nothing but an easy way of defining optional named parameters for functions - but which can however transcend between different function calls.
+So, let's get started...
 
-There are two types: 
-
- a. attributes   
- b. attribute labels
-
-<h4 id="attribute">:attribute</h4>
-
-Attributes are actually optional on/off-type of values, set during a function call, that is there to denote some variation of the initial meaning of the function. To define an attribute, we'll be using a `.`(dot) followed by a normal word: `\.\w+`
-
-Let's say we used the function `split`, to split a string into parts:
-```red
-split "hello world"
-
-; => [`h` `e` `l` `l` `o` ` ` `w` `o` `r` `l` `d` ]
-```
-That does what it says: splits the string into an array of `:char`s.
-
-What if we want for example to split the string into words? For that, there is the `.words` attribute for the function `split`. So:
-
-```red
-split.words "hello world"
-
-; = ["hello" "world"]
-```
-> 💡 The order in which you pass the different attributes does <u>not</u> matter. Also, there is no issue at all whether you want to use spaces between them and the surrounding function call; Arturo will still be able to parse them and recognize them fine
-
-<h4 id="attributeLabel">:attributeLabel</h4>
-
-Attribute labels are pretty much like simple *attributes*, only they can also take a value. As it worked with *attributes*, we'll be using a `.`(dot) followed by a normal word, but now also followed by a `:`(colon) -- exactly like with normal *labels*, as we've seen above.
-
-Here's an example:
-
-```red
-split .every: 2 "hello world"
-
-; => ["he" "ll" "ow" "or" "ld"]
-```
-
-<h2 id="precedence-and-evaluation">Precedence and Evaluation</h2>
+<h3 id="precedence-and-evaluation">Precedence and Evaluation</h3>
 
 The easiest way to explain precedence rules in Arturo is pretty much like it happened with our introduction: there are <u>no precedence rules</u> whatsoever.
 
@@ -590,7 +887,7 @@ So, in an expression like `2 * 3 + 4`, if you'd normally expect to get a result 
 
 But in order to understand why, you'd have to understand how evaluation in Arturo works.
 
-<h3 id="the-right-to-left-rule">The right-to-left rule</h3>
+<h4 id="the-right-to-left-rule">The right-to-left rule</h4>
 
 The main expression evaluation order of Arturo is *right-to-left*. But with a tiny asterisk: Your code *will* be evaluated from left to right, it is the expressions passed to your function calls that will be evaluated from right-to-left.
 
@@ -643,7 +940,24 @@ or (giving precedence to the multiplication, artificially, using parentheses):
 (2 * 3) + 4
 ``` 
 
-<h2 id="scope-and-rules">Scope and rules</h2>
+**Another example:**
+
+Let's say we want to concatenate a number and a string into a new string.
+
+```red
+to :string 3 ++ " <-- this is our number"
+```
+
+The above example wouldn't work, because first it tries to concatenate `3` with a string (`" <-- this is our number`) and *then* performs `to :string`.
+While what we actually want is to *first* convert our number to a string and *then* concatenate the two strings.
+
+The correct code in that case would be:
+
+```red
+(to :string 3) ++ " <-- this is our number"
+```
+
+<h3 id="scope-and-rules">Scope and rules</h3>
 
 Contrary to what you might expect, Arturo doesn't feature a traditional concept of *scope*. There are no real *local* or *global* variables, no *local* or *global* functions, no *local* or *global* blocks, no *local* or *global* anything.
 
@@ -651,7 +965,7 @@ Generally, if a variable has been previously declared at the moment and location
 
 But let's see a couple of concrete cases to make this clearer.
 
-<h3 id="blocks">Blocks</h3>
+<h4 id="blocks">Blocks</h4>
 
 Arturo doesn't have a block scope.
 
@@ -675,7 +989,7 @@ print x     ; prints 2 (the value of x has been changed)
 print y     ; prints 3 (the value of y is still available)
 ```
 
-<h3 id="iterators">Iterators</h3>
+<h4 id="iterators">Iterators</h4>
 
 Iterators (such as `loop`, `map`, etc) always work with a block as well. But in a special way.
 
@@ -694,7 +1008,7 @@ print i    ; ERROR: variable not found
            ; (i is not available anymore)
 ```
 
-<h3 id="functions">Functions</h3>
+<h4 id="functions">Functions</h4>
 
 Functions are totally different. Why? Because they do have their own scope.
 
@@ -704,11 +1018,11 @@ The general idea is:
 - A variable previously declared outside of a function is available inside
 - The changes of an existing variable, inside a function, do not persist after the function
 
-If we want to *export* a specific symbol to the outer scope, that is, make it available outside of the function, we can use the `.export` option.
+If we want to *export* a specific symbol to the outer scope, that is, make it available outside the function, we can use the `.export:` attribute.
 
-If we want to export *all* of the symbols - thus, practically making the function *scope-less*, we may use the `.exportable` option.
+If we want to export *all* of the symbols - thus, practically making the function *scope-less*, we may use the `.inline` attribute.
 
-<h2 id="in-place-variable-modification">In-place variable modification</h2>
+<h3 id="in-place-variable-modification">In-place variable modification</h3>
 
 In Arturo, every time you pass a parameter to a function, you can rest assured that the value of that parameter won't change (unless it's a string, block or dictionary and you - consciously - decided to use `set` on it, in which case it does alter its inner structure).
 
@@ -734,7 +1048,7 @@ And now, yes, `a` does contain the sorted version of the initial array.
 
 But, what if you want to perform the modification in-place, which is normally faster and without the need for intermediate variables? Literals come to the rescue!
 
-<h3 id="using-literals">Using literals</h3>
+<h4 id="using-literals">Using literals</h4>
 
 As we've already said, "literals" (`'i 'am 'a 'literal`) are nothing but string representations of a word, that is... the word itself. For that reason, they may come in very handy when you want to modify a variable in-place.
 
@@ -878,6 +1192,53 @@ print select 1..10 => even?
 
 That's surely much more readable, isn't it?
 
+<h3 id="double-colon-operator">Double-colon operator: `::`</h3>
+
+The *double-colon* operator does something very simple: it wraps everything in a block - until the end of... the current block:
+
+```red
+do [
+    print :: 
+        "This is a number:"
+        123
+]
+```
+
+Is equivalent to:
+
+```red
+do [
+    print ["This is a number:" 123]
+]
+```
+
+<h3 id="exclamation-mark-operator">Exclamation-mark operator: `!`</h3>
+
+Explaining the *exclamation-mark* can be a bit tricky, but if you want the short version: 
+it wraps everything that follows in a `do` block (more or less).
+
+Or the shorter version:
+
+- Have you just created a new custom-type object? (e.g. `to :myObject []`)?
+- Have you imported an external package? (e.g. `import 'somePackage`)?
+
+Then just put `!` at the end of the statement (e.g. `import 'somePackage!`) and everything will work as you expect.
+
+**The long explanation:**
+
+Arturo, when parsing a block of code, has to know which symbols correspond to function calls and how many arguments they take. The exact same is valid for object methods. 
+
+When we create a new object (e.g. `p: to :person ["John"]`), if we attempt to use `p\someMethod` from the exact same block where this `p` value was initialized, there is no possible way to know beforehand that e.g. `someMethod` is a method. We'll know that only *after* `to :person ["John"]` has been executed. But then, it's already too late. So, how do we make sure that Arturo knows about the object before we attempt to call inner methods? By putting a "stopper" after the object creation, and that stopper is our beloved... `!`.
+
+> 💡 Technically we could achieve the same thing without the `!` sugar:
+> ```
+> p: to :person ["John"]
+> do [
+>     p\sayHello
+> ]
+> ```
+> That would work too, for all practical purposes. But: `!` is looking good. And it's also far more performant, based on the way it's implemented internally! ;-)
+
 
 <h3 id="pipe-operator">Pipe operator: `|`</h3>
 
@@ -896,11 +1257,11 @@ This equivalent to:
 ```red
 print 1..10
 ```
-Or a bit more elaborate example (using *pipes* and the `=>` operator):
+Or a bit more elaborate example (using *pipes* and the `->`/`=>` operators):
 
 ```red
-1..10 | map => 2*
-      | select => even?
+1..10 | map => [2 * &]
+      | select 'x -> even? x
       | print
 ```
 
