@@ -232,6 +232,17 @@ or
 if (type x) = :integer [ print "it's an integer!" ]
 ```
 
+> 💡 If you want to define your own custom types (think "classes" in OOP languages), we have `define` for that: e.g. 
+> ```red
+> define :person [
+>    init: method [name :string][
+>        \name: name 
+>    ]
+> ]
+> p: to :person ["John"]!
+> print p\name ; John
+> ```
+
 <h4 id="char">:char</h4>
 
 Characters in Arturo can be declared using backticks:  `` `\w` ``
