@@ -41,6 +41,7 @@ Here, you'll find everything you may need to know about the language (and perhap
        - [:color](#color)
        - [:date](#date)
        - [:database](#database)
+       - [:socket](#socket)
        - [:binary](#binary)
        - [:bytecode](#bytecode)
 - [Important concepts](#important-concepts)
@@ -778,6 +779,19 @@ db: open.sqlite "my.db"
 print query db "SELECT * FROM users"
 
 print type db   ; would print: :database
+```
+
+<h4 id="socket">:socket</h4>
+
+Another not-literally constructible (but still powerful) value type is the Socket.
+
+To use Socket values properly, just have a look into the Sockets library module.
+
+If you want to create one, just have a look at the quick example below, using `listen`:
+
+```red
+; start a server listening on port 18966
+server: listen 18966    ; and, yes, that's a socket!
 ```
 
 <h4 id="binary">:binary</h4>
