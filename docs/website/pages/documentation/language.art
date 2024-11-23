@@ -21,6 +21,7 @@ Here, you'll find everything you may need to know about the language (and perhap
        - [:type](#type)
        - [:char](#char)
        - [:string](#string)
+       - [:range](#range)
        - [:regex](#regex)
        - [:literal](#literal)
        - [:symbolLiteral](#symbolLiteral)
@@ -316,6 +317,27 @@ A string is nothing but a series of characters, seen as one unit. In Arturo, to 
 > ; prints: 
 > ; my variable is: 2
 > ```
+
+<h4 id="range">:range</h4>
+
+Arturo comes with full support of lazy ranges.
+
+To create a range all you have to do is use the built-in `range` function (or its `..` infix equivalent):
+
+```red
+numbers: 1..10    ; contains all numbers from 1 to 10 (inclusive)
+downwards: 10..1  ; this is valid as well
+
+chars: 'a'..'z'   ; yes, we can actually have character ranges too
+```
+
+Ranges can be used in most functions as-is, e.g. Iterators, where we can take full advantage of their "lazy" nature: they are not evaluated until needed.
+
+However, you can still evaluate a lazy range into its corresponding block any time you want:
+
+```red
+@1..10 ; [1,2,3,4,5,6,7,8,9,10]
+```
 
 <h4 id="regex">:regex</h4>
 
