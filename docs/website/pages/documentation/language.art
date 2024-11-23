@@ -357,7 +357,7 @@ or
 
 ```red
 x: "name"
-print user\(x)
+print user\[x]
 ```
 
 or
@@ -382,6 +382,10 @@ print user\name  ; will print "John"
 
 ; let's change this user's name
 user\name: "Jane"
+
+; we can also do it like that
+x: "name"
+user\[x]: "Jane"
 
 print user\name ; ok, now it should print "Jane"
 ```
