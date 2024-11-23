@@ -647,6 +647,23 @@ or (giving precedence to the multiplication, artificially, using parentheses):
 (2 * 3) + 4
 ``` 
 
+**Another example:**
+
+Let's say we want to concatenate a number and a string into a new string.
+
+```red
+to :string 3 ++ " <-- this is our number"
+```
+
+The above example wouldn't work, because first it tries to concatenate `3` with a string (`" <-- this is our number`) and *then* performs `to :string`.
+While what we actually want is to *first* convert our number to a string and *then* concatenate the two strings.
+
+The correct code in that case would be:
+
+```red
+(to :string 3) ++ " <-- this is our number"
+```
+
 <h2 id="scope-and-rules">Scope and rules</h2>
 
 Contrary to what you might expect, Arturo doesn't feature a traditional concept of *scope*. There are no real *local* or *global* variables, no *local* or *global* functions, no *local* or *global* blocks, no *local* or *global* anything.
