@@ -260,7 +260,7 @@ if (type x) = :integer [ print "it's an integer!" ]
 
 <h4 id="char">:char</h4>
 
-Characters in Arturo can be declared using backticks:  `` `\w` ``
+Characters in Arturo can be declared using single quotes:  `'\w'`
 
 ```red
 ch: 'a'
