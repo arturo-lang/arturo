@@ -725,9 +725,9 @@ The general idea is:
 - A variable previously declared outside of a function is available inside
 - The changes of an existing variable, inside a function, do not persist after the function
 
-If we want to *export* a specific symbol to the outer scope, that is, make it available outside of the function, we can use the `.export` option.
+If we want to *export* a specific symbol to the outer scope, that is, make it available outside the function, we can use the `.export:` attribute.
 
-If we want to export *all* of the symbols - thus, practically making the function *scope-less*, we may use the `.exportable` option.
+If we want to export *all* of the symbols - thus, practically making the function *scope-less*, we may use the `.inline` attribute.
 
 <h2 id="in-place-variable-modification">In-place variable modification</h2>
 
