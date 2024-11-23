@@ -32,6 +32,8 @@ Here, you'll find everything you may need to know about the language (and perhap
        - [:dictionary](#dictionary)
        - [:function](#function)
        - [:method](#method)
+       - [:unit](#unit)
+       - [:quantity](#quantity)
        - [:color](#color)
        - [:date](#date)
        - [:database](#database)
@@ -626,6 +628,58 @@ logical: method []      ; to :logical this
 block: method []        ; to :block this
 dictionary: method []   ; to :dictionary this
 ```
+
+<h4 id="unit">:unit</h4>
+
+Arturo has very advanced capabilities related to physical quantities, measurements and the related operations.
+
+And everything begins with the concept of *units*.
+
+To declare a Unit value, all you have to do is use a backtick, followed by the unit in question:
+
+```red
+Meters: `m 
+SquareMeters: `m2
+Becquerels: `Bq
+```
+
+The list of builtin, supported Units is quite... long:
+
+```
+m, s, K, g, A, mol, cd, USD, B, rad, sr, in, ft, yd, ftm, rod, mi, fur, nmi, ang, au, ly, px, pt, pc, sqin, sqft, ac, are, ha, barn, L, gal, bbl, qt, p, cup, floz, tbsp, tsp, bu, cord, min, h, day, wk, mo, yr, lb, slug, oz, ct, t, ton, lt, st, Da, gr, dwt, ozt, lbt, mps, kph, mph, kn, fps, mach, Gal, N, dyn, lbf, kgf, pdl, Pa, atm, bar, pz, Ba, mmHg, psi, Torr, J, Wh, cal, BTU, eV, erg, th, thm, W, hp, statA, abA, Bi, V, statV, abV, Ohm, statOhm, abOhm, S, C, statC, abC, Fr, F, Daraf, H, abH, Wb, Mx, T, G, degC, degF, degR, b, KiB, MiB, GiB, TiB, PiB, EiB, deg, grad, arcmin, arcsec, kat, Hz, Bq, Ci, Gy, Sv, R, P, St, rpm, clo, bps, lx, Lb, lm
+```
+
+We also support most world currencies, with their ISO 3-letter code, e.g. `USD`, `EUR`, etc.
+
+**Compound units:**
+
+If you want to define compound units, Arturo actually supports that natively:
+
+```red
+squareMeters: `m2
+kilometersPerHours: `km/h
+
+newtonDefinition: `kg.m/s2    ; yes, that's actually a N(ewton)
+```
+
+<h4 id="quantity">:quantity</h4>
+
+Now, as we've seen, Arturo's Unit values are quite powerful. So, how can we express a Quantity using units?
+
+Very simple: just add a number (a Rational literal works too) just in front of a unit:
+
+```red
+twoMeters: 2`m    ; yes, we've just expressed the notion of "2 meters"
+                  ; as a native Arturo value
+```
+
+And we can obviously use them in operations as every other value:
+
+```
+print 3`m + 4`yd    ; 6.6576 m
+```
+
+And, yes, no need to worry about compatibility: Arturo actually understands dimensional analysis! ;-)
 
 <h4 id="color">:color</h4>
 
