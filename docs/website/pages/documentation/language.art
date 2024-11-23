@@ -917,11 +917,11 @@ This equivalent to:
 ```red
 print 1..10
 ```
-Or a bit more elaborate example (using *pipes* and the `=>` operator):
+Or a bit more elaborate example (using *pipes* and the `->`/`=>` operators):
 
 ```red
-1..10 | map => 2*
-      | select => even?
+1..10 | map => [2 * &]
+      | select 'x -> even? x
       | print
 ```
 
