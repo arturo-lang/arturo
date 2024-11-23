@@ -662,7 +662,6 @@ We may also have *magic methods*, that is: making our custom types accessible-to
 For example, if we want to be able to `print` one of our custom objects, we'd first have to define a way that this custom object is meant to be converted to a string.
 For that, we'd define a `string` magic method:
 
-```
 ```red
 define :car [
     ; as previously
@@ -1231,7 +1230,7 @@ Arturo, when parsing a block of code, has to know which symbols correspond to fu
 When we create a new object (e.g. `p: to :person ["John"]`), if we attempt to use `p\someMethod` from the exact same block where this `p` value was initialized, there is no possible way to know beforehand that e.g. `someMethod` is a method. We'll know that only *after* `to :person ["John"]` has been executed. But then, it's already too late. So, how do we make sure that Arturo knows about the object before we attempt to call inner methods? By putting a "stopper" after the object creation, and that stopper is our beloved... `!`.
 
 > 💡 Technically we could achieve the same thing without the `!` sugar:
-> ```
+> ```red
 > p: to :person ["John"]
 > do [
 >     p\sayHello
