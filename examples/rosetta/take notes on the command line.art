@@ -4,5 +4,5 @@ switch empty? arg [
 ][
     output: (to :string now) ++ "\n" ++
             "\t" ++ (join.with:" " to [:string] arg) ++ "\n"
-    write.append notes output
+    write.append output notes
 ]
