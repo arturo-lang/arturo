@@ -149,8 +149,8 @@ loop funcs 'f [
     ]
 ]
 
-as.pretty.code sort unique modules >> "docs/website/data/libraryModules.art" 
-as.pretty.code funcList >> "docs/website/data/libraryFunctions.art" 
-as.pretty.code symbList >> "docs/website/data/librarySymbols.art" 
+(as.pretty.code sort unique modules) >> "docs/website/data/libraryModules.art" 
+(as.pretty.code funcList) >> "docs/website/data/libraryFunctions.art" 
+(as.pretty.code symbList) >> "docs/website/data/librarySymbols.art" 
 
 inspect funcList
