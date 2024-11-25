@@ -17,12 +17,12 @@ topic: $[topic :string] [
 ; ]
 
 createTempFolder: $[][
-    write.directory "temp/" null
+    write.directory null "temp/"
     print "Created: temp/"
 ]
 
 createTestFolder: $[topic][
-    write.directory ~"temp/|topic|" null
+    write.directory null ~"temp/|topic|"
     return ~"temp/|topic|"
 ]
 
@@ -43,7 +43,7 @@ do [
 
     dir: createTestFolder "copy"
 
-    write ~"|dir|/file.txt" "Hello, world!"
+    write "Hello, world!" ~"|dir|/file.txt"
     ensure -> exists? ~"|dir|/file.txt"
 
     ; ---------//---------//---------//
@@ -64,8 +64,8 @@ do [
     dir: createTestFolder "copy-empty-dir"
 
     folders: @["A" "B" "C"]
-    loop folders 'f -> write.directory ~"|dir|/input/|f|" null
-    write.directory ~"|dir|/dest" null
+    loop folders 'f -> write.directory null ~"|dir|/input/|f|"
+    write.directory null ~"|dir|/dest"
 
     ensure -> every? folders 'f -> exists? ~"|dir|/input/|f|"
     ensure -> exists? ~"|dir|/dest"
@@ -85,9 +85,9 @@ do [
     dir: createTestFolder "copy-filled-dir"
 
     folders: @["A" "B" "C"]
-    loop folders 'f -> write.directory ~"|dir|/input/|f|" null
-    loop folders 'f -> write ~"|dir|/input/|f|/file.txt" "."
-    write.directory ~"|dir|/dest" null
+    loop folders 'f -> write.directory null ~"|dir|/input/|f|"
+    loop folders 'f -> write "." ~"|dir|/input/|f|/file.txt"
+    write.directory null ~"|dir|/dest"
 
     ensure -> every? folders 'f -> exists? ~"|dir|/input/|f|/file.txt"
     ensure -> exists? ~"|dir|/dest"
@@ -109,7 +109,7 @@ do [
 
     dir: createTestFolder "delete"
 
-    write ~"|dir|/file.txt" "Hello, world!"
+    write "Hello, world!" ~"|dir|/file.txt"
 
     ensure -> exists? ~"|dir|/file.txt"
 
@@ -128,7 +128,7 @@ do [
     dir: createTestFolder "delete-empty-folders"
 
     folders: @["A" "B" "C"]
-    loop folders 'f -> write.directory ~"|dir|/|f|" null
+    loop folders 'f -> write.directory null ~"|dir|/|f|"
 
     ensure -> every? folders 'f
         -> exists? ~"|dir|/|f|"
@@ -147,8 +147,8 @@ do [
     dir: createTestFolder "delete-filled-dir"
 
     folders: @["A" "B" "C"]
-    loop folders 'f -> write.directory ~"|dir|/|f|" null
-    loop folders 'f -> write ~"|dir|/|f|/file.txt" "."
+    loop folders 'f -> write.directory null ~"|dir|/|f|"
+    loop folders 'f -> write "." ~"|dir|/|f|/file.txt"
 
     ensure -> every? folders 'f -> exists? ~"|dir|/|f|/file.txt"
 
@@ -168,8 +168,8 @@ do [
 
     dir: createTestFolder "move"
 
-    write.directory ~"|dir|/dest" null
-    write ~"|dir|/file.txt" "Hello, world!"
+    write.directory null ~"|dir|/dest"
+    write "Hello, world!" ~"|dir|/file.txt"
 
     ensure -> exists? ~"|dir|/file.txt"
     ensure -> not? exists? ~"|dir|/dest/file.txt"
@@ -190,8 +190,8 @@ do [
     dir: createTestFolder "move-empty-dir"
 
     folders: @["A" "B" "C"]
-    loop folders 'f -> write.directory ~"|dir|/input/|f|" null
-    write.directory ~"|dir|/dest" null
+    loop folders 'f -> write.directory null ~"|dir|/input/|f|"
+    write.directory null ~"|dir|/dest"
 
     ensure -> every? folders 'f
     -> and?
@@ -219,9 +219,9 @@ do [
     dir: createTestFolder "move-filled-dir"
 
     folders: @["A" "B" "C"]
-    loop folders 'f -> write.directory ~"|dir|/input/|f|" null
-    loop folders 'f -> write ~"|dir|/input/|f|/file.txt" "."
-    write.directory ~"|dir|/dest" null
+    loop folders 'f -> write.directory null ~"|dir|/input/|f|"
+    loop folders 'f -> write "." ~"|dir|/input/|f|/file.txt"
+    write.directory null ~"|dir|/dest"
 
     ensure -> every? folders 'f -> exists? ~"|dir|/input/|f|/file.txt"
 
@@ -247,7 +247,7 @@ topic "permissions" ; do
 
     dir: createTestFolder "permissions"
 
-    write ~"|dir|/file.txt" "Hello, world!"
+    write "Hello, world!" ~"|dir|/file.txt"
     ensure -> exists? ~"|dir|/file.txt"
 
     ; ---------//---------//---------//
@@ -262,7 +262,7 @@ topic "permissions" ; do
 ;
 ;     dir: createTestFolder "permissions-set"
 ;
-;     write ~"|dir|/file.txt" "Hello, world!"
+;     write "Hello, world!" ~"|dir|/file.txt"
 ;
 ;     ; action
 ;     permissions.set: #[others:#[write:false]] ~"|dir|/file.txt"
@@ -280,11 +280,11 @@ do [
 
     dir: createTestFolder "read"
 
-    write ~"|dir|/test.txt" {
+    write {
         Hello, world
         This is a multiline File.
         :)
-    }
+    } ~"|dir|/test.txt"
     ensure -> exists? ~"|dir|/test.txt"
 
     ; ---------//---------//---------//
@@ -299,7 +299,7 @@ do [
 
     dir: createTestFolder "read-lines"
 
-    write ~"|dir|/test.txt" {
+    write {
         The Language
         ------------------------------
 
@@ -315,7 +315,7 @@ do [
             according to the context
         - No reserved words or keywords -
             look for them as hard as you can; there are absolutely none
-    }
+    } ~"|dir|/test.txt"
 
     ensure -> exists? ~"|dir|/test.txt"
 
@@ -339,7 +339,7 @@ do [
         }
     }
 
-    write ~"|dir|/test.json" jsonSample
+    write jsonSample ~"|dir|/test.json"
 
     ensure -> exists? ~"|dir|/test.json"
 
@@ -358,12 +358,12 @@ do
 
     dir: createTestFolder "read-csv"
 
-    write ~"|dir|/test.csv" {
+    write {
         language, version, platform
         Arturo, 0.9.83, win10
         Python, 3.9, gnu/linux
         Ruby, 3.2.1, macOS
-    }
+    } ~"|dir|/test.csv"
 
     ensure -> exists? ~"|dir|/test.csv"
 
@@ -379,12 +379,12 @@ do
 
     dir: createTestFolder "read-csv-delimiter"
 
-    write ~"|dir|/test.csv" {
+    write {
         language; version; platform
         Arturo; 0.9.83; win10
         Python; 3.9; gnu/linux
         Ruby; 3.2.1; macOS
-    }
+    } ~"|dir|/test.csv"
 
     ensure -> exists? ~"|dir|/test.csv"
 
@@ -399,12 +399,12 @@ do [
 
     dir: createTestFolder "read-csv-headers"
 
-    write ~"|dir|/test.csv" {
+    write {
         language, version, platform
         Arturo, 0.9.83, win10
         Python, 3.9, gnu/linux
         Ruby, 3.2.1, macOS
-    }
+    } ~"|dir|/test.csv"
 
     ensure -> exists? ~"|dir|/test.csv"
 
@@ -438,7 +438,7 @@ topic "read.html" do
         </html>
     }
 
-    write ~"|dir|/test.html" htmlSample
+    write htmlSample ~"|dir|/test.html" 
 
     ensure -> exists? ~"|dir|/test.html"
 
@@ -477,7 +477,7 @@ topic "read.xml" do
         </languages>
     }
 
-    write ~"|dir|/test.xml" xmlSample
+    write xmlSample ~"|dir|/test.xml"
 
     ensure -> exists? ~"|dir|/test.xml"
 
@@ -515,7 +515,7 @@ topic "read.markdown" do
 
     }
 
-    write ~"|dir|/test.md" mdSample
+    write mdSample ~"|dir|/test.md"
 
     ensure -> exists? ~"|dir|/test.md"
 
@@ -547,7 +547,7 @@ topic "read.toml" do
         pkg-manager = "^0.2"
     }
 
-    write ~"|dir|/test.toml" tomlSample
+    write tomlSample ~"|dir|/test.toml"
 
     ensure -> exists? ~"|dir|/test.toml"
 
@@ -578,7 +578,7 @@ topic "read.toml -- from ini file" do
         pkg-manager = "^0.2"
     }
 
-    write ~"|dir|/test.ini" iniSample
+    write iniSample ~"|dir|/test.ini"
 
     ensure -> exists? ~"|dir|/test.ini"
 
@@ -601,7 +601,7 @@ topic "read.toml -- from ini file" do
 ;     code: [print 2 + 1]
 ;     bcode: to :bytecode code
 ;
-;     write.binary "test.bcode" bcode
+;     write.binary bcode "test.bcode"
 ;     print type read.bytecode "test.bcode"
 ;     ; :binary ??
 
@@ -611,9 +611,9 @@ topic "read.binary"
 do [
 
     dir: createTestFolder "read-bin"
-    write ~"|dir|/test.bin" {
+    write {
         Hello, World!
-    }
+    } ~"|dir|/test.bin"
 
     ensure -> exists? ~"|dir|/test.bin"
 
@@ -650,7 +650,7 @@ topic "rename"
 do [
 
     dir: createTestFolder "rename"
-    write ~"|dir|/file.txt" "Hello, world!"
+    write "Hello, world!" ~"|dir|/file.txt"
 
     ensure -> exists? ~"|dir|/file.txt"
 
@@ -668,8 +668,8 @@ do [
 
     dir: createTestFolder "rename-dir"
 
-    write.directory ~"|dir|/folder" null
-    write ~"|dir|/folder/file.txt" "."
+    write.directory null ~"|dir|/folder"
+    write "." ~"|dir|/folder/file.txt"
 
     ensure -> exists? ~"|dir|/folder/file.txt"
 
@@ -701,7 +701,7 @@ do [
 
     dir: createTestFolder "timestamp"
 
-    write ~"|dir|/file.txt" "Hello, world!"
+    write "Hello, world!" ~"|dir|/file.txt"
 
     ensure -> exists? ~"|dir|/file.txt"
 
@@ -765,7 +765,7 @@ topic "zip & unzip - destination"
 
     dir: createTestFolder "zip-unzip-file-dest"
 
-    write ~"|dir|/file.txt" "Hello, world!"
+    write "Hello, world!" ~"|dir|/file.txt"
     ensure -> exists? ~"|dir|/file.txt"
 
     ;; outputs me an empty .zip
@@ -806,11 +806,11 @@ topic "zip & unzip - destination"
 ;     execute "mkdir temp/folder{A,B,C}/{A,B,C}"
 ;
 ;     ; Using write because I can't redirect using `execute` function
-;     write "temp/folderA/A/file.txt" "Hello, world!"
-;     write "temp/folderB/B/file.txt" "Hello, world!"
-;     write "temp/folderC/C/file.txt" "Hello, world!"
-;     write "temp/folderA/file.txt" "Hello, world!"
-;     write "temp/file.txt" "Hello, world!"
+;     write "Hello, world!" "temp/folderA/A/file.txt"
+;     write "Hello, world!" "temp/folderB/B/file.txt"
+;     write "Hello, world!" "temp/folderC/C/file.txt"
+;     write "Hello, world!" "temp/folderA/file.txt"
+;     write "Hello, world!" "temp/file.txt"
 ;
 ;     ; 1st assertion
 ;     print execute "ls temp/**"
@@ -837,7 +837,7 @@ do [
 
     dir: createTestFolder "volume"
 
-    write ~"|dir|/test.bin" "Hello, World!"
+    write "Hello, World!" ~"|dir|/test.bin"
     ensure -> exists? ~"|dir|/test.bin"
 
     ; ---------//---------//---------//
@@ -853,7 +853,7 @@ do [
 
     dir: createTestFolder "write"
 
-    write ~"|dir|/file.txt" "Hello, world!"
+    write "Hello, world!" ~"|dir|/file.txt"
     ensure -> exists? ~"|dir|/file.txt"
 
     ; ---------//---------//---------//
@@ -867,13 +867,13 @@ do [
 
     dir: createTestFolder "write-append"
 
-    write ~"|dir|/file.txt" "Hello, world!"
+    write "Hello, world!" ~"|dir|/file.txt"
     ensure -> exists? ~"|dir|/file.txt"
     print read ~"|dir|/file.txt"
 
     ; ---------//---------//---------//
 
-    write.append ~"|dir|/file.txt" "\nFrom Arturo's World!"
+    write.append "\nFrom Arturo's World!" ~"|dir|/file.txt"
     print read.file ~"|dir|/file.txt"
 
 ]
@@ -885,8 +885,8 @@ do [
 
     ; ---------//---------//---------//
 
-    write.directory ~"|dir|/folder" null
-    write.directory ~"|dir|/directory" null
+    write.directory null ~"|dir|/folder"
+    write.directory null ~"|dir|/directory"
 
     ensure -> exists? ~"|dir|/folder"
     ensure -> exists? ~"|dir|/directory"
@@ -900,12 +900,12 @@ do [
 
     dir: createTestFolder "write-json"
 
-    write.json ~"|dir|/file.json" #[
+    write.json #[
         name: "Arturo",
         version: 1.9.83,
         build: "b/12",
         platform: "amd/win10"
-    ]
+    ] ~"|dir|/file.json"
 
     print read.file ~"|dir|/file.json"
 
@@ -917,12 +917,12 @@ do [
 
     dir: createTestFolder "write-c-json"
 
-    write.json.compact ~"|dir|/file.json" #[
+    write.json.compact #[
         name: "Arturo",
         version: 1.9.83,
         build: "b/12",
         platform: "amd/win10"
-    ]
+    ] ~"|dir|/file.json"
 
     print read.file ~"|dir|/file.json"
 
@@ -933,7 +933,7 @@ do [
 
     dir: createTestFolder "write-bin"
 
-    write.binary ~"|dir|/file.bin" "Hello, world!"
+    write.binary "Hello, world!" ~"|dir|/file.bin"
     print read.file ~"|dir|/file.bin"
 
 ]
@@ -949,7 +949,7 @@ do [
         print "file does not exist"
     ]
 
-    write ~"|dir|/file.txt" "Hello, world!"
+    write "Hello, world!" ~"|dir|/file.txt"
 
     if exists? ~"|dir|/file.txt" [
         print "file exists"
@@ -966,7 +966,7 @@ do [
         print "directory does not exist"
     ]
 
-    write.directory ~"|dir|/dir" null
+    write.directory null ~"|dir|/dir"
 
     if directory? ~"|dir|/dir" [
         print "directory exists"
