@@ -29,7 +29,7 @@ getTemplateRC: function [s][
         <pre>OUT</pre>
     }
 
-    strip runScript s >> resPath s
+    (strip runScript s) >> resPath s
 
     replace templ ["SCR", "OUT"] @[read scrPath s, read resPath s]
 ]
