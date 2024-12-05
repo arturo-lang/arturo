@@ -291,7 +291,7 @@ proc defineLibrary*() =
             ; just outputs a simple - unformatted - message
         """:
             #=======================================================
-            var code = 0
+            var code = 1
             if checkAttr("code"):
                 code = aCode.i
 
