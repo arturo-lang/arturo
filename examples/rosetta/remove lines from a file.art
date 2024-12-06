@@ -8,7 +8,7 @@ removeFileLines: function [filename, start, cnt][
     ]
 
     final: previous\[0..start-1] ++ previous\[start+cnt..dec size previous]
-    write filename join.with:"\n" final
+    (join.with:"\n" final) >> filename
 ]
 
 removeFileLines "myfile.txt" 3 10

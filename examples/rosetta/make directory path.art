@@ -1,1 +1,1 @@
-write.directory "path/to/some/directory" ø
+write.directory ø "path/to/some/directory"

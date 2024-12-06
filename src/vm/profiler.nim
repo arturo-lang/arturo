@@ -288,11 +288,8 @@ proc initProfiler*() =
             "optimizations": initOrderedTable[string, ProfilerDataRow]()
         }.toOrderedTable
 
-        # TODO(VM/profiler) Completely remove or make it work "properly"
-        #  labels: vm, benchmark, performance, bug
-        when false:
-            system.profilingRequestedHook = requestedHook
-            system.profilerHook = hook
+        system.profilingRequestedHook = requestedHook
+        system.profilerHook = hook
     else:
         discard 
 
