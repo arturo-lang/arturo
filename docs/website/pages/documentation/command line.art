@@ -11,12 +11,11 @@ The command line is where the whole journey starts: whether you want to try out 
    * [Start the interactive console](#start-the-interactive-console)
    * [Working with bytecode](#working-with-bytecode)
 - [Package manager](#package-manager)
-   * [List available modules](#list-available-modules)
-   * [List remote modules](#list-remote-modules)
-   * [Get module info](#get-module-info)
-   * [Install a new module](#install-a-new-module)
-   * [Uninstall a module](#uninstall-a-module)
-   * [Update existing modules](#update-existing-modules)
+   * [List available packages](#list-available-packages)
+   * [List remote packages](#list-remote-packages)
+   * [Install a new package](#install-a-new-package)
+   * [Uninstall a package](#uninstall-a-package)
+   * [Update all packages](#update-all-packages)
 
 ---
 
@@ -66,63 +65,54 @@ This will output a `path/to/your/script.art.bcode` file.
 arturo -x path/to/your/script.art.bcode
 ```
 
-<h3 id="package-manager">Package manager <span class="tag is-danger">Experimental</span></h3>
+<h3 id="package-manager">Package manager</h3>
 
 Although Arturo's philosophy is batteries-included - so you'll most likely need nothing that is not already included - Arturo also comes with a ready-to-use package manager, to make your life even easier.
 
-<h4 id="list-available-modules">List available modules</h4>
+<h4 id="list-available-packages">List available packages</h4>
 
-To list all available modules, just type:
-
-```bash
-arturo -m list
-```
-
-This will show you all the modules you have installed locally.
-
-It looks like this:
-
-![Module listing](https://arturo-lang.io/resources/images/module_list.png)
-
-<h4 id="list-remote-modules">List remote modules</h4>
-
-If you want to fetch a list of *all* modules available to download from the [official repository](https://github.com/arturo-lang/art-modules), just type:
+To list all available packages, just type:
 
 ```bash
-arturo -m remote
+arturo -p list
 ```
 
-<h4 id="get-module-info">Get module info</h4>
+This will show you all the packages you have installed locally.)
 
-Have you spotted a module you like and want to know more about it? That's easy:
+<h4 id="list-remote-packags">List remote packages</h4>
+
+If you want to fetch a list of *all* packages available to download from the [official repository](https://pkgr.art), just type:
 
 ```bash
-arturo -m info html
+arturo -p remote
 ```
 
-<h4 id="install-a-new-module">Install a new module</h4>
+<h4 id="install-a-new-package">Install a new package</h4>
 
-When you have finally decided you want to install a module, it's also easy:
+To install a package
 
 ```bash
-arturo -m install html
+arturo -p install grafito
 ```
 
-<h4 id="uninstall-a-module">Uninstall a module</h4>
+> 💡 If you do e.g. `import 'grafito!` from within the REPL or your Arturo script, if the package isn't already installed, it'll automatically be taken care of - so, nothing to worry about! ;-)
 
-In order to uninstall a module you have previously, you just have to type:
+
+<h4 id="uninstall-a-package">Uninstall a package</h4>
+
+In order to uninstall a package you have previously, you just have to type:
 
 ```bash
-arturo -m uninstall html
+arturo -p uninstall grafito
 ```
 
-<h4 id="update-existing-modules">Update existing modules</h4>
+<h4 id="update-all-packages">Update all packages</h4>
 
-If you want to update all of your local modules, there's no reason to uninstall/reinstall anything. Just type:
+If you want to update all of your local packages, there's no reason to uninstall/reinstall anything. Just type:
 
 ```bash
-arturo -m update
+arturo -p update
 ```
 
-And *all* of your modules will be automatically up-to-date.
+And *all* of your packages will be automatically up-to-date.
 }

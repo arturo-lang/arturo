@@ -1,7 +1,7 @@
 result: []
 
 queens: function [n, i, a, b, c][
-    if? i < n [
+    switch i < n [
         loop 1..n 'j [
             if all? @[
                 not? contains? a j
@@ -11,8 +11,7 @@ queens: function [n, i, a, b, c][
                 queens n, i+1, a ++ @[j], b ++ @[i+j], c ++ @[i-j]
                 
         ]
-    ]
-    else [
+    ][
         if n = size a ->
         'result ++ @[a]
     ]
