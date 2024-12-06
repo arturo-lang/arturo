@@ -342,6 +342,14 @@ proc defineLibrary*() =
                         #=======================================================
                         wv.evaluate(x.s)
 
+                ### ---> CREATE AS A TEMPLATE! ;-)
+                SetSym("WV", newDictionary({
+                    "setTitle": newBuiltin("", "", 0, 1, {"title":{String}}.toOrderedTable, NoAttrs.toOrderedTable, {Nothing}, "", opNop, proc () =
+                        require("setTitle", {"title":{String}})
+                        discard webview_set_title(wv, cstring(x.s))
+                    )
+                }.toOrderedTable))
+
                 wv.show()
                 
 #=======================================
