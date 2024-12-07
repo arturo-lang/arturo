@@ -35,6 +35,15 @@ when not defined(NODIALOGS):
     import helpers/dialogs
 
 #=======================================
+# Variables
+#=======================================
+
+when not defined(WEB):
+    var
+        ActiveWindow: Value = VNULL
+
+
+#=======================================
 # Definitions
 #=======================================
 
@@ -351,6 +360,21 @@ proc defineLibrary*() =
                 }.toOrderedTable))
 
                 wv.show()
+
+        builtin "window",
+            alias       = unaliased, 
+            op          = opNop,
+            rule        = PrefixPrecedence,
+            description = "the main webview window object",
+            args        = NoArgs,
+            attrs       = NoAttrs,
+            returns     = {Object,Null},
+            # TODO(Ui\window) add documentation example
+            #  labels: library, → Ui, documentation, easy
+            example     = """
+            """:
+                #=======================================================
+                push(ActiveWindow)
                 
 #=======================================
 # Add Library
