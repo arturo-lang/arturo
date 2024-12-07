@@ -26,13 +26,21 @@ when not defined(NOWEBVIEW):
 
     import helpers/webviews
 
-    import vm/[exec, parse]
+    import vm/[errors, exec, parse]
 
 when not defined(NOCLIPBOARD):
     import helpers/clipboard
 
 when not defined(NODIALOGS):
     import helpers/dialogs
+
+#=======================================
+# Variables
+#=======================================
+
+when (not defined(WEB)) and not defined(NOWEBVIEW):
+    var
+        ActiveWebview: Webview = nil
 
 #=======================================
 # Definitions
@@ -342,7 +350,27 @@ proc defineLibrary*() =
                         #=======================================================
                         wv.evaluate(x.s)
 
+                ActiveWebview = wv
+
                 wv.show()
+
+        constant "window",
+            alias       = unaliased,
+            description = "the main active window":
+                newDictionary({
+                    "setTitle": 
+                        adhoc("set window title",
+                            args = {
+                                "title": {String}
+                            },
+                            attrs = NoAttrs,
+                            returns = {Nothing},
+                            block:
+                                #=================
+                                if ActiveWebview.isNil: Error_NoActiveWindowFound()
+                                discard webview_set_title(ActiveWebview, cstring(x.s))
+                        )
+                }.toOrderedTable)
                 
 #=======================================
 # Add Library
