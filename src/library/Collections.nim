@@ -696,7 +696,9 @@ proc defineLibrary*() =
             "collection": {String, Block, Range, Dictionary, Object, Store, Date, Binary, Bytecode, Complex, Error, ErrorKind},
             "index"     : {Any}
         },
-        attrs       = NoAttrs,
+        attrs       = {
+            "safe"  : ({Logical}, "get value, overriding potential magic methods (only for Object values)")
+        },
         returns     = {Any},
         example     = """
             user: #[
@@ -806,14 +808,14 @@ proc defineLibrary*() =
                         of String, Word, Literal:
                             if (let got = GetObjectKey(x, y.s, withError=false); not got.isNil):
                                 push(got)
-                            elif x.magic.fetch(GetM):
+                            elif x.magic.fetch(GetM) and (not hadAttr("safe")):
                                 mgk(@[x, y]) # value already pushed
                             else:
                                 discard GetObjectKey(x, y.s) # Merely to trigger the error
                         else:
                             if (let got = GetObjectKey(x, $(y), withError=false); not got.isNil):
                                 push(got)
-                            elif x.magic.fetch(GetM):
+                            elif x.magic.fetch(GetM) and (not hadAttr("safe")):
                                 mgk(@[x, y]) # value already pushed
                             else:
                                 discard GetObjectKey(x, $(y)) # Merely to trigger the error
