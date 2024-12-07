@@ -1,0 +1,5 @@
+;; This file is used by array :string test
+;; 
+;; This should be parsed by `array` and return ["Arturo" "is perfect!"]
+append "Art" "uro"
+join.with: " " ["is" "perfect!"]
