@@ -181,7 +181,7 @@ template builtin*(n: string, alias: VSymbol, op: OpCode, rule: PrecedenceKind, d
                 name: newWord(n)
             )
 
-template adhoc*(n: string, description: string, args: untyped, attrs: static openArray[(string,(set[ValueKind],string))], returns: ValueSpec, act: untyped): Value =
+template adhoc*(description: string, args: untyped, attrs: static openArray[(string,(set[ValueKind],string))], returns: ValueSpec, act: untyped): untyped =
     ## create new builtin, but not in the global namespace;
     ## mainly used to create function in custom
     ## dictionaries or objects at runtime,
@@ -203,13 +203,12 @@ template adhoc*(n: string, description: string, args: untyped, attrs: static ope
             "", 
             opNop,
             proc () =
-                require(n, args)
+                require("", args)
 
                 when attrs != NoAttrs:
                     addAttrTypes(attrs)
 
-                hookFunctionProfiler(n):
-                    act
+                act
         )
 
 # TODO(VM/lib) Merge constants and builtin's?
