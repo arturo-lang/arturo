@@ -732,6 +732,13 @@ proc defineLibrary*() =
             print a\real                  ; 1.0
             print a\imaginary             ; 2.0
             print a\1                     ; 2.0
+            ..........
+            define :person [
+                get: method [what][
+                    (key? this what)? -> get.safe this what     ; if the key exists, return the value
+                                      -> "DEFAULT"              ; otherwise, do something else
+                ]
+            ]
         """:
             #=======================================================
             case xKind:
