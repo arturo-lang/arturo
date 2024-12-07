@@ -1758,6 +1758,15 @@ proc defineLibrary*() =
             str\0: `x`
             print str
             ; xello
+            ..........
+            define :person [
+                set: method [what, value][
+                    ; do some processing...
+
+                    set.safe this what value
+                    ; and actually set the value internally
+                ]
+            ]
         """:
             #=======================================================
             case xKind:
