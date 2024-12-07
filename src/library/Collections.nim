@@ -1725,7 +1725,9 @@ proc defineLibrary*() =
             "index"     : {Any},
             "value"     : {Any}
         },
-        attrs       = NoAttrs,
+        attrs       = {
+            "safe"  : ({Logical}, "set value, overriding potential magic methods (only for Object values)")
+        },
         returns     = {Nothing},
         example     = """
             myDict: #[
@@ -1799,7 +1801,7 @@ proc defineLibrary*() =
                 of Object:
                     if unlikely(x.magic.fetch(ChangingM)):
                         mgk(@[x, y])
-                    if (x.magic.fetch(SetM) and (y.kind in {String,Word,Literal,Label}) and (y.s notin toSeq(x.proto.fields.keys()))):
+                    if (x.magic.fetch(SetM) and (not hadAttr("safe")) and (y.kind in {String,Word,Literal,Label}) and (y.s notin toSeq(x.proto.fields.keys()))):
                         mgk(@[x, y, z])
                     else:
                         case yKind:
