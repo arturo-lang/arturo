@@ -38,7 +38,7 @@ when not defined(NODIALOGS):
 # Variables
 #=======================================
 
-when not defined(WEB):
+when (not defined(WEB)) and not defined(NOWEBVIEW):
     var
         ActiveWebview: Webview = nil
 
