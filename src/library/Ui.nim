@@ -26,7 +26,7 @@ when not defined(NOWEBVIEW):
 
     import helpers/webviews
 
-    import vm/[exec, parse]
+    import vm/[errors, exec, parse]
 
 when not defined(NOCLIPBOARD):
     import helpers/clipboard
@@ -40,8 +40,7 @@ when not defined(NODIALOGS):
 
 when not defined(WEB):
     var
-        ActiveWindow: Value = VNULL
-
+        ActiveWebview: Webview = nil
 
 #=======================================
 # Definitions
@@ -351,30 +350,27 @@ proc defineLibrary*() =
                         #=======================================================
                         wv.evaluate(x.s)
 
-                ### ---> CREATE AS A TEMPLATE! ;-)
-                SetSym("WV", newDictionary({
-                    "setTitle": newBuiltin("", "", 0, 1, {"title":{String}}.toOrderedTable, NoAttrs.toOrderedTable, {Nothing}, "", opNop, proc () =
-                        require("setTitle", {"title":{String}})
-                        discard webview_set_title(wv, cstring(x.s))
-                    )
-                }.toOrderedTable))
+                ActiveWebview = wv
 
                 wv.show()
 
-        builtin "window",
-            alias       = unaliased, 
-            op          = opNop,
-            rule        = PrefixPrecedence,
-            description = "the main webview window object",
-            args        = NoArgs,
-            attrs       = NoAttrs,
-            returns     = {Object,Null},
-            # TODO(Ui\window) add documentation example
-            #  labels: library, → Ui, documentation, easy
-            example     = """
-            """:
-                #=======================================================
-                push(ActiveWindow)
+        constant "window",
+            alias       = unaliased,
+            description = "the main active window":
+                newDictionary({
+                    "setTitle": 
+                        adhoc("set window title",
+                            args = {
+                                "title": {String}
+                            },
+                            attrs = NoAttrs,
+                            returns = {Nothing},
+                            block:
+                                #=================
+                                if ActiveWebview.isNil: Error_NoActiveWindowFound()
+                                discard webview_set_title(ActiveWebview, cstring(x.s))
+                        )
+                }.toOrderedTable)
                 
 #=======================================
 # Add Library
