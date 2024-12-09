@@ -815,14 +815,14 @@ proc defineLibrary*() =
                         of String, Word, Literal:
                             if (let got = GetObjectKey(x, y.s, withError=false); not got.isNil):
                                 push(got)
-                            elif x.magic.fetch(GetM) and (not hadAttr("safe")):
+                            elif x.magic.fetch(GetM) and (not hadAttr("field")):
                                 mgk(@[x, y]) # value already pushed
                             else:
                                 discard GetObjectKey(x, y.s) # Merely to trigger the error
                         else:
                             if (let got = GetObjectKey(x, $(y), withError=false); not got.isNil):
                                 push(got)
-                            elif x.magic.fetch(GetM) and (not hadAttr("safe")):
+                            elif x.magic.fetch(GetM) and (not hadAttr("field")):
                                 mgk(@[x, y]) # value already pushed
                             else:
                                 discard GetObjectKey(x, $(y)) # Merely to trigger the error
@@ -1821,7 +1821,7 @@ proc defineLibrary*() =
                 of Object:
                     if unlikely(x.magic.fetch(ChangingM)):
                         mgk(@[x, y])
-                    if (x.magic.fetch(SetM) and (not hadAttr("safe")) and (y.kind in {String,Word,Literal,Label}) and (y.s notin toSeq(x.proto.fields.keys()))):
+                    if (x.magic.fetch(SetM) and (not hadAttr("field")) and (y.kind in {String,Word,Literal,Label}) and (y.s notin toSeq(x.proto.fields.keys()))):
                         mgk(@[x, y, z])
                     else:
                         case yKind:
