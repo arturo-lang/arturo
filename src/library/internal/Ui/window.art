@@ -1,0 +1,58 @@
+define :__webviewWindow [
+    _isVisible: true
+    _isFullscreen: false
+    _isMaximized: false
+    _winTitle: ""
+    
+    ; placeholders
+    _show: function [][]
+    _hide: function [][]
+    _fullscreen: function [][]
+    _unfullscreen: function [][]
+    _maximize: function [][]
+    _unmaximize: function [][]
+    ;_settitle: function [t][]
+    
+    close: function [][]
+    evaluate: function [code][]
+
+    get: method [what][
+        print [">> IN GET:" what]
+        case what [
+            'visible?       -> return get.safe this '_isVisible
+            'fullscreen?    -> return get.safe this '_isFullscreen
+            'maximized?     -> return get.safe this '_isMaximized
+            'title          -> return get.safe this '_winTitle
+            any             -> throw "Unrecognized field"
+        ]
+    ]
+
+    set: method [what, value][
+        print ["<< IN SET:" what "to:" value]
+        case what [
+            'visible?       [
+                set.safe this '_isVisible value
+                (value)? -> \show
+                         -> \hide
+            ]
+            'fullscreen?    [
+                set.safe this '_isFullscreen value
+                (value)? -> \fullscreen
+                         -> \unfullscreen
+            ]
+            'maximized?    [
+                set.safe this '_isMaximized value
+                (value)? -> \maximize
+                         -> \unmaximize
+            ]
+            'title          [
+                print "set accessor for 'title"
+                print ["_wintitle was:" get.safe this '_winTitle]
+                set.safe this '_winTitle value
+                print ["_wintitle is:" get.safe this '_winTitle]
+                print "calling internal method"
+                \_settitle value
+            ]
+        ]
+    ]
+]
