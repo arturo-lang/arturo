@@ -22,17 +22,26 @@
 import vm/lib
 
 when not defined(NOWEBVIEW):
-    import algorithm, hashes, tables
+    import algorithm, hashes, os, tables
 
+    import helpers/objects
     import helpers/webviews
 
-    import vm/[exec, parse]
+    import vm/[errors, exec, parse, values/custom/verror]
 
 when not defined(NOCLIPBOARD):
     import helpers/clipboard
 
 when not defined(NODIALOGS):
     import helpers/dialogs
+
+#=======================================
+# Variables
+#=======================================
+
+when (not defined(WEB)) and not defined(NOWEBVIEW):
+    var
+        ActiveWindow: Value = VNULL
 
 #=======================================
 # Definitions
@@ -314,12 +323,19 @@ proc defineLibrary*() =
                                 if SP > prevSP:
                                     result = stack.pop()
                         elif call==ExecuteCode:
-                            let parsed = doParse(value.s, isFile=false)
-                            let prevSP = SP
-                            if not isNil(parsed):
-                                execUnscoped(parsed)
-                            if SP > prevSP:
-                                result = stack.pop()
+                            try:
+                                let parsed = doParse(value.s, isFile=false)
+                                let prevSP = SP
+                                if not isNil(parsed):
+                                    execUnscoped(parsed)
+                                if SP > prevSP:
+                                    result = stack.pop()
+                            except VError as e:
+                                showError(e)
+                            except CatchableError, Defect:
+                                let e = getCurrentException()
+                                showError(VError(e))
+                            
                         elif call==WebviewEvent:
                             if (let onEvent = on.getOrDefault(value.s, nil); not onEvent.isNil):
                                 execUnscoped(onEvent)
@@ -342,7 +358,46 @@ proc defineLibrary*() =
                         #=======================================================
                         wv.evaluate(x.s)
 
+                # necessary so that "__webviewWindow" is available
+                execInternal("Ui/window")
+
+                let emptyvarr: ValueArray = @[]
+                ActiveWindow = generateNewObject(getType("__webviewWindow"),emptyvarr)
+                ActiveWindow.o["title"] = newString(title)
+                ActiveWindow.o["_settitle"] = adhoc("set window title",
+                        args = {
+                            "title": {String}
+                        },
+                        attrs = NoAttrs,
+                        returns = {Nothing},
+                        block:
+                            #=================
+                            echo "in internal method"
+                            echo "Result:" & $(webview_set_title(wv, cstring(x.s)))
+                    )
+
+                SetSym("window", ActiveWindow)
+
                 wv.show()
+
+        constant "window",
+            alias       = unaliased,
+            description = "the main active window":
+                ActiveWindow
+                # newDictionary({
+                #     "setTitle": 
+                #         adhoc("set window title",
+                #             args = {
+                #                 "title": {String}
+                #             },
+                #             attrs = NoAttrs,
+                #             returns = {Nothing},
+                #             block:
+                #                 #=================
+                #                 if ActiveWebview.isNil: Error_NoActiveWindowFound()
+                #                 discard webview_set_title(ActiveWebview, cstring(x.s))
+                #         )
+                # }.toOrderedTable)
                 
 #=======================================
 # Add Library
