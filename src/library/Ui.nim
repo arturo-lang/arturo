@@ -363,7 +363,7 @@ proc defineLibrary*() =
 
                 let emptyvarr: ValueArray = @[]
                 ActiveWindow = generateNewObject(getType("__webviewWindow"),emptyvarr)
-                ActiveWindow.o["_winTitle"] = newString(title)
+                ActiveWindow.o["title"] = newString(title)
                 ActiveWindow.o["_settitle"] = adhoc("set window title",
                         args = {
                             "title": {String}
