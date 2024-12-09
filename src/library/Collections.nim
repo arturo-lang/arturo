@@ -697,7 +697,7 @@ proc defineLibrary*() =
             "index"     : {Any}
         },
         attrs       = {
-            "safe"  : ({Logical}, "get value, overriding potential magic methods (only for Object values)")
+            "field" : ({Logical}, "get field value, overriding type magic methods")
         },
         returns     = {Any},
         example     = """
@@ -735,7 +735,7 @@ proc defineLibrary*() =
             ..........
             define :person [
                 get: method [what][
-                    (key? this what)? -> get.safe this what     ; if the key exists, return the value
+                    (key? this what)? -> get.field this what    ; if the key exists, return the value
                                       -> "DEFAULT"              ; otherwise, do something else
                 ]
             ]
