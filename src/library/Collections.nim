@@ -1737,7 +1737,7 @@ proc defineLibrary*() =
             "value"     : {Any}
         },
         attrs       = {
-            "safe"  : ({Logical}, "set value, overriding potential magic methods (only for Object values)")
+            "field" : ({Logical}, "set field value, overriding type magic methods")
         },
         returns     = {Nothing},
         example     = """
@@ -1765,7 +1765,7 @@ proc defineLibrary*() =
                 set: method [what, value][
                     ; do some processing...
 
-                    set.safe this what value
+                    set.field this what value
                     ; and actually set the value internally
                 ]
             ]
