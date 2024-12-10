@@ -391,6 +391,36 @@ proc defineLibrary*() =
                             #=================
                            wv.getWindow().unmaximize()
                     )
+                ActiveWindow.o["_fullscreen"] = adhoc("fullscreen window",
+                        args = NoArgs,
+                        attrs = NoAttrs,
+                        returns = {Nothing},
+                        block:
+                            #=================
+                           wv.getWindow().fullscreen()
+                    )
+                ActiveWindow.o["_unfullscreen"] = adhoc("unfullscreen window",
+                        args = NoArgs,
+                        attrs = NoAttrs,
+                        returns = {Nothing},
+                        block:
+                            #=================
+                           wv.getWindow().unfullscreen()
+                ActiveWindow.o["_show"] = adhoc("show window",
+                        args = NoArgs,
+                        attrs = NoAttrs,
+                        returns = {Nothing},
+                        block:
+                            #=================
+                           wv.getWindow().show()
+                    )
+                ActiveWindow.o["_hide"] = adhoc("hide window",
+                        args = NoArgs,
+                        attrs = NoAttrs,
+                        returns = {Nothing},
+                        block:
+                            #=================
+                           wv.getWindow().hide()
 
                 SetSym("window", ActiveWindow)
 

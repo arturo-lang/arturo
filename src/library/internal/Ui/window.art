@@ -63,12 +63,12 @@ define :__webviewWindow [
     changed: method [what][
         case what [
             'visible?       [
-                \visible? ? -> \show
-                            -> \hide
+                \visible? ? -> \_show
+                            -> \_hide
             ]
             'fullscreen?    [
-                \fullscreen? ? -> \fullscreen
-                               -> \unfullscreen
+                \fullscreen? ? -> \_fullscreen
+                               -> \_unfullscreen
             ]
             'maximized?     [
                 \maximized? ? -> \_maximize
