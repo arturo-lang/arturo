@@ -423,6 +423,14 @@ proc defineLibrary*() =
                             #=================
                            wv.getWindow().hide()
                     )
+                ActiveWindow.o["_close"] = adhoc("close window",
+                        args = NoArgs,
+                        attrs = NoAttrs,
+                        returns = {Nothing},
+                        block:
+                            #=================
+                           push(newLogical(wv.webview_terminate() == OK))
+                    )
                 SetSym("window", ActiveWindow)
 
                 wv.show()
