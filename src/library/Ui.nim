@@ -26,6 +26,7 @@ when not defined(NOWEBVIEW):
 
     import helpers/objects
     import helpers/webviews
+    import helpers/windows
 
     import vm/[errors, exec, parse, values/custom/verror]
 
