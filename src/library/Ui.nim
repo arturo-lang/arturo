@@ -406,6 +406,7 @@ proc defineLibrary*() =
                         block:
                             #=================
                            wv.getWindow().unfullscreen()
+                    )
                 ActiveWindow.o["_show"] = adhoc("show window",
                         args = NoArgs,
                         attrs = NoAttrs,
@@ -421,7 +422,7 @@ proc defineLibrary*() =
                         block:
                             #=================
                            wv.getWindow().hide()
-
+                    )
                 SetSym("window", ActiveWindow)
 
                 wv.show()
