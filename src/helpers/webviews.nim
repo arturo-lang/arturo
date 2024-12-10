@@ -224,6 +224,8 @@ when not defined(NOWEBVIEW):
                         mainWebview.getWindow().fullscreen()
                     of "window.unfullscreen":
                         mainWebview.getWindow().unfullscreen()
+                    of "window.close":
+                        discard mainWebview.webview_terminate()
                     else:
                         discard
             else:
