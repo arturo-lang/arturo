@@ -18,7 +18,7 @@ define :__webviewWindow [
     ;_settitle: function [t][]
     
     close: function [][\_close]
-    evaluate: function [code][]
+    evaluate: function [code][\_eval code]
 
     ; get: method [what][
     ;     print [">> IN GET:" what]
