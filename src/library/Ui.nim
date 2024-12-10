@@ -431,6 +431,17 @@ proc defineLibrary*() =
                             #=================
                            push(newLogical(wv.webview_terminate() == OK))
                     )
+
+                ActiveWindow.o["_eval"] = adhoc("evaluate code",
+                        args = {
+                            "code": {String}
+                        },
+                        attrs = NoAttrs,
+                        returns = {Nothing},
+                        block:
+                            #=================
+                           wv.evaluate(x.s)
+                    )
                 SetSym("window", ActiveWindow)
 
                 wv.show()
