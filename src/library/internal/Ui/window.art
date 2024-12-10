@@ -17,7 +17,7 @@ define :__webviewWindow [
     _unmaximize: function [][]
     ;_settitle: function [t][]
     
-    close: function [][]
+    close: function [][\_close]
     evaluate: function [code][]
 
     ; get: method [what][
