@@ -71,11 +71,11 @@ define :__webviewWindow [
                                -> \unfullscreen
             ]
             'maximized?     [
-                \maximized? ? -> \maximize
-                              -> \unmaximize
+                \maximized? ? -> \_maximize
+                              -> \_unmaximize
             ]
             'title          [
-                \_settitle \title
+                \_setTitle \title
             ]
         ]
     ]

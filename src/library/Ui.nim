@@ -364,7 +364,7 @@ proc defineLibrary*() =
                 let emptyvarr: ValueArray = @[]
                 ActiveWindow = generateNewObject(getType("__webviewWindow"),emptyvarr)
                 ActiveWindow.o["title"] = newString(title)
-                ActiveWindow.o["_settitle"] = adhoc("set window title",
+                ActiveWindow.o["_setTitle"] = adhoc("set window title",
                         args = {
                             "title": {String}
                         },
@@ -372,8 +372,23 @@ proc defineLibrary*() =
                         returns = {Nothing},
                         block:
                             #=================
-                            echo "in internal method"
-                            echo "Result:" & $(webview_set_title(wv, cstring(x.s)))
+                            push(newLogical(webview_set_title(wv, cstring(x.s)) == OK))
+                    )
+                ActiveWindow.o["_maximize"] = adhoc("maximize window",
+                        args = NoArgs,
+                        attrs = NoAttrs,
+                        returns = {Nothing},
+                        block:
+                            #=================
+                           wv.getWindow().maximize()
+                    )
+                ActiveWindow.o["_unmaximize"] = adhoc("unmaximize window",
+                        args = NoArgs,
+                        attrs = NoAttrs,
+                        returns = {Nothing},
+                        block:
+                            #=================
+                           wv.getWindow().unmaximize()
                     )
 
                 SetSym("window", ActiveWindow)
