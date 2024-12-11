@@ -27,6 +27,9 @@
     #include <gdiplus.h>
     #pragma comment(lib, "Gdiplus.lib")
 
+    #include <Shlwapi.h>      
+    #pragma comment(lib, "Shlwapi.lib")
+
     #define WINDOW_TYPE HWND
 
 #endif
