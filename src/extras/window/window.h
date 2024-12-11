@@ -46,6 +46,8 @@ void unfullscreen_window(void* windowHandle);
 void set_topmost_window(void* windowHandle);
 void unset_topmost_window(void* windowHandle);
 
+void focus_window(void* windowHandle);
+
 void make_borderless_window(void* windowHandle);
 
 #ifdef __cplusplus

@@ -241,6 +241,16 @@ void unset_topmost_window(void* windowHandle){
     #endif
 }
 
+void focus_window(void* windowHandle) {
+    #if defined(__linux__) || defined(__FreeBSD__)
+        gtk_window_present(GTK_WINDOW((WINDOW_TYPE)windowHandle));
+    #elif defined(__APPLE__)
+        [(WINDOW_TYPE)windowHandle orderFront:nil];
+    #elif defined(_WIN32)
+        SetForegroundWindow((WINDOW_TYPE)windowHandle);
+    #endif
+}
+
 void make_borderless_window(void* windowHandle){
     #if defined(__linux__) || defined(__FreeBSD__)
         gtk_window_set_decorated(GTK_WINDOW((WINDOW_TYPE)windowHandle), false);
