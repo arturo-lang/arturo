@@ -31,6 +31,10 @@ bool is_maximized_window(void* windowHandle);
 void maximize_window(void* windowHandle);
 void unmaximize_window(void* windowHandle);
 
+bool is_minimized_window(void* windowHandle);
+void minimize_window(void* windowHandle);
+void unminimize_window(void* windowHandle);
+
 bool is_visible_window(void* windowHandle);
 void show_window(void* windowHandle);
 void hide_window(void* windowHandle);
