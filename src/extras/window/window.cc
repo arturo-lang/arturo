@@ -137,11 +137,13 @@ void set_window_min_size(void* windowHandle, struct WindowSize size) {
     #elif defined(_WIN32)
         RECT rect;
         GetWindowRect((WINDOW_TYPE)windowHandle, &rect);
+        LONG currentWidth = rect.right - rect.left;
+        LONG currentHeight = rect.bottom - rect.top;
         SetWindowPos((WINDOW_TYPE)windowHandle, 
                     NULL,
                     rect.left, rect.top,
-                    std::max(size.width, rect.right - rect.left),
-                    std::max(size.height, rect.bottom - rect.top),
+                    (LONG)std::max((LONG)size.width, currentWidth),
+                    (LONG)std::max((LONG)size.height, currentHeight),
                     SWP_NOMOVE | SWP_NOZORDER);
         SetWindowLongPtr((WINDOW_TYPE)windowHandle, 
                         GWLP_USERDATA, 
@@ -185,11 +187,13 @@ void set_window_max_size(void* windowHandle, struct WindowSize size) {
     #elif defined(_WIN32)
         RECT rect;
         GetWindowRect((WINDOW_TYPE)windowHandle, &rect);
+        LONG currentWidth = rect.right - rect.left;
+        LONG currentHeight = rect.bottom - rect.top;
         SetWindowPos((WINDOW_TYPE)windowHandle, 
                     NULL,
                     rect.left, rect.top,
-                    std::min(size.width, rect.right - rect.left),
-                    std::min(size.height, rect.bottom - rect.top),
+                    (LONG)std::min((LONG)size.width, currentWidth),
+                    (LONG)std::min((LONG)size.height, currentHeight),
                     SWP_NOMOVE | SWP_NOZORDER);
     #endif
 }
