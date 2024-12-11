@@ -30,7 +30,10 @@
 #endif
 
 #if defined(__APPLE__)
-    
+// Helpers to avoid too much typing with the Objective C runtime
+inline SEL operator"" _sel(const char *s, size_t) { 
+    return sel_registerName(s); 
+}
 #endif
 
 bool isFullscreen = false;
