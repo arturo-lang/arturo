@@ -34,6 +34,12 @@ proc isFullscreen(w: Window): bool =
 # Methods
 #=======================================
 
+proc getSize*(w: Window): WindowSize =
+    get_window_size(w)
+
+proc setSize*(w: Window, sz: WindowSize) =
+    set_window_size(w, sz)
+
 proc maximize*(w: Window) =
     if not w.isMaximized():
         maximize_window(w)
