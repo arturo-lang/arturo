@@ -240,6 +240,31 @@ void set_window_position(void* windowHandle, struct WindowPosition position) {
     #endif
 }
 
+void center_window(void* windowHandle) {
+    struct WindowSize windowSize = get_window_size(windowHandle);
+    struct WindowPosition centerPos = {0, 0};
+    
+    #if defined(__linux__) || defined(__FreeBSD__)
+        GdkRectangle workArea;
+        gdk_monitor_get_workarea(
+            gdk_display_get_primary_monitor(gdk_display_get_default()),
+            &workArea);
+        centerPos.x = (workArea.width - windowSize.width) / 2;
+        centerPos.y = (workArea.height - windowSize.height) / 2;
+    #elif defined(__APPLE__)
+        auto displayId = CGMainDisplayID();
+        centerPos.x = (CGDisplayPixelsWide(displayId) - windowSize.width) / 2;
+        centerPos.y = (CGDisplayPixelsHigh(displayId) - windowSize.height) / 2;
+    #elif defined(_WIN32)
+        RECT screen;
+        GetWindowRect(GetDesktopWindow(), &screen);
+        centerPos.x = ((screen.right - screen.left) - windowSize.width) / 2;
+        centerPos.y = ((screen.bottom - screen.top) - windowSize.height) / 2;
+    #endif
+
+    set_window_position(windowHandle, centerPos);
+}
+
 bool is_maximized_window(void* windowHandle){
     #if defined(__linux__) || defined(__FreeBSD__)
         return gtk_window_is_maximized(GTK_WINDOW((WINDOW_TYPE)windowHandle)) == 1;
