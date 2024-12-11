@@ -40,6 +40,12 @@ struct WindowPosition {
 struct WindowSize get_window_size(void* windowHandle);
 void set_window_size(void* windowHandle, struct WindowSize size);
 
+struct WindowSize get_window_min_size(void* windowHandle);
+void set_window_min_size(void* windowHandle, struct WindowSize size);
+
+struct WindowSize get_window_max_size(void* windowHandle);
+void set_window_max_size(void* windowHandle, struct WindowSize size);
+
 struct WindowPosition get_window_position(void* windowHandle);
 void set_window_position(void* windowHandle, struct WindowPosition position);
 

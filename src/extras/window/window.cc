@@ -87,6 +87,111 @@ void set_window_size(void* windowHandle, struct WindowSize size) {
     #endif
 }
 
+struct WindowSize get_window_min_size(void* windowHandle) {
+    struct WindowSize size = {0, 0};
+    
+    #if defined(__linux__) || defined(__FreeBSD__)
+        GdkGeometry hints;
+        GdkWindowHints hints_mask;
+        gtk_window_get_geometry_hints(GTK_WINDOW((WINDOW_TYPE)windowHandle),
+                                    NULL,
+                                    &hints,
+                                    &hints_mask);
+        if (hints_mask & GDK_HINT_MIN_SIZE) {
+            size.width = hints.min_width;
+            size.height = hints.min_height;
+        }
+    #elif defined(__APPLE__)
+        NSSize minSize = [(WINDOW_TYPE)windowHandle minSize];
+        size.width = minSize.width;
+        size.height = minSize.height;
+    #elif defined(_WIN32)
+        WindowSize* storedSize = (WindowSize*)GetWindowLongPtr((WINDOW_TYPE)windowHandle, GWLP_USERDATA);
+        if (storedSize) {
+            size = *storedSize;
+        }
+    #endif
+    
+    return size;
+}
+
+void set_window_min_size(void* windowHandle, struct WindowSize size) {
+    #if defined(__linux__) || defined(__FreeBSD__)
+        GdkGeometry hints;
+        hints.min_width = size.width;
+        hints.min_height = size.height;
+        gtk_window_set_geometry_hints(GTK_WINDOW((WINDOW_TYPE)windowHandle),
+                                    NULL,
+                                    &hints,
+                                    GDK_HINT_MIN_SIZE);
+    #elif defined(__APPLE__)
+        NSSize minSize = NSMakeSize(size.width, size.height);
+        [(WINDOW_TYPE)windowHandle setMinSize:minSize];
+    #elif defined(_WIN32)
+        RECT rect;
+        GetWindowRect((WINDOW_TYPE)windowHandle, &rect);
+        SetWindowPos((WINDOW_TYPE)windowHandle, 
+                    NULL,
+                    rect.left, rect.top,
+                    max(size.width, rect.right - rect.left),
+                    max(size.height, rect.bottom - rect.top),
+                    SWP_NOMOVE | SWP_NOZORDER);
+        SetWindowLongPtr((WINDOW_TYPE)windowHandle, 
+                        GWLP_USERDATA, 
+                        (LONG_PTR)&size);
+    #endif
+}
+
+struct WindowSize get_window_max_size(void* windowHandle) {
+    struct WindowSize size = {0, 0};
+    
+    #if defined(__linux__) || defined(__FreeBSD__)
+        GdkGeometry hints;
+        GdkWindowHints hints_mask;
+        gtk_window_get_geometry_hints(GTK_WINDOW((WINDOW_TYPE)windowHandle),
+                                    NULL,
+                                    &hints,
+                                    &hints_mask);
+        if (hints_mask & GDK_HINT_MAX_SIZE) {
+            size.width = hints.max_width;
+            size.height = hints.max_height;
+        }
+    #elif defined(__APPLE__)
+        NSSize maxSize = [(WINDOW_TYPE)windowHandle maxSize];
+        size.width = maxSize.width;
+        size.height = maxSize.height;
+    #elif defined(_WIN32)
+        // Windows doesn't store max size directly, would need additional storage mechanism
+        // Returns 0,0 for now
+    #endif
+    
+    return size;
+}
+
+void set_window_max_size(void* windowHandle, struct WindowSize size) {
+    #if defined(__linux__) || defined(__FreeBSD__)
+        GdkGeometry hints;
+        hints.max_width = size.width;
+        hints.max_height = size.height;
+        gtk_window_set_geometry_hints(GTK_WINDOW((WINDOW_TYPE)windowHandle),
+                                    NULL,
+                                    &hints,
+                                    GDK_HINT_MAX_SIZE);
+    #elif defined(__APPLE__)
+        NSSize maxSize = NSMakeSize(size.width, size.height);
+        [(WINDOW_TYPE)windowHandle setMaxSize:maxSize];
+    #elif defined(_WIN32)
+        RECT rect;
+        GetWindowRect((WINDOW_TYPE)windowHandle, &rect);
+        SetWindowPos((WINDOW_TYPE)windowHandle, 
+                    NULL,
+                    rect.left, rect.top,
+                    min(size.width, rect.right - rect.left),
+                    min(size.height, rect.bottom - rect.top),
+                    SWP_NOMOVE | SWP_NOZORDER);
+    #endif
+}
+
 struct WindowPosition get_window_position(void* windowHandle) {
     struct WindowPosition pos = {0, 0};
     
