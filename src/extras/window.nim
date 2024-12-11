@@ -51,6 +51,9 @@ type
 proc is_maximized_window*(w: Window): bool {.importc.}
 proc maximize_window*(w: Window) {.importc.}
 proc unmaximize_window*(w: Window) {.importc.}
+proc is_minimized_window*(w: Window): bool {.importc.}
+proc minimize_window*(w: Window) {.importc.}
+proc unminimize_window*(w: Window) {.importc.}
 proc is_visible_window*(w: Window): bool {.importc.}
 proc show_window*(w: Window) {.importc.}
 proc hide_window*(w: Window) {.importc.}
