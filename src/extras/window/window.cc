@@ -71,6 +71,40 @@ void unmaximize_window(void* windowHandle){
     #endif
 }
 
+bool is_minimized_window(void* windowHandle) {
+    #if defined(__linux__) || defined(__FreeBSD__)
+        // GTK doesn't have a direct "is minimized" check
+        // We'd need to check the window state
+        GdkWindow *gdk_window = gtk_widget_get_window((WINDOW_TYPE)windowHandle);
+        GdkWindowState state = gdk_window_get_state(gdk_window);
+        return (state & GDK_WINDOW_STATE_ICONIFIED) != 0;
+    #elif defined(__APPLE__)
+        return [(WINDOW_TYPE)windowHandle isMiniaturized];
+    #elif defined(_WIN32)
+        return IsIconic((WINDOW_TYPE)windowHandle) == 1;
+    #endif
+}
+
+void minimize_window(void* windowHandle) {
+    #if defined(__linux__) || defined(__FreeBSD__)
+        gtk_window_iconify(GTK_WINDOW((WINDOW_TYPE)windowHandle));
+    #elif defined(__APPLE__)
+        [(WINDOW_TYPE)windowHandle miniaturize:nil];
+    #elif defined(_WIN32)
+        ShowWindow((WINDOW_TYPE)windowHandle, SW_MINIMIZE);
+    #endif
+}
+
+void unminimize_window(void* windowHandle) {
+    #if defined(__linux__) || defined(__FreeBSD__)
+        gtk_window_deiconify(GTK_WINDOW((WINDOW_TYPE)windowHandle));
+    #elif defined(__APPLE__)
+        [(WINDOW_TYPE)windowHandle deminiaturize:nil];
+    #elif defined(_WIN32)
+        ShowWindow((WINDOW_TYPE)windowHandle, SW_RESTORE);
+    #endif
+}
+
 bool is_visible_window(void* windowHandle){
     #if defined(__linux__) || defined(__FreeBSD__)
         return gtk_widget_is_visible((WINDOW_TYPE)windowHandle) == 1;
