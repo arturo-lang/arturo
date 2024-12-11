@@ -40,6 +40,12 @@ proc getSize*(w: Window): WindowSize =
 proc setSize*(w: Window, sz: WindowSize) =
     set_window_size(w, sz)
 
+proc getPosition*(w: Window): WindowPosition =
+    get_window_position(w)
+
+proc setPosition*(w: Window, pos: WindowPosition) =
+    set_window_position(w, pos)
+
 proc maximize*(w: Window) =
     if not w.isMaximized():
         maximize_window(w)
