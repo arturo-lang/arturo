@@ -1,24 +1,8 @@
 define :__webviewWindow [
-    visible?: true
-    fullscreen?: false
-    maximized?: false
     title: ""
-    ; _isVisible: true
-    ; _isFullscreen: false
-    ; _isMaximized: false
-    ; _winTitle: ""
-    
-    ; placeholders
-    _show: function [][]
-    _hide: function [][]
-    _fullscreen: function [][]
-    _unfullscreen: function [][]
-    _maximize: function [][]
-    _unmaximize: function [][]
-    ;_settitle: function [t][]
-    
-    close: function [][\_close]
-    evaluate: function [code][\_eval code]
+    maximized?: false
+    fullscreen?: false
+    visible?: true
 
     changed: method [what][
         case what [
