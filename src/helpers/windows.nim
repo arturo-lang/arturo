@@ -72,5 +72,8 @@ proc topmost*(w: Window) =
 proc untopmost*(w: Window) =
     unset_topmost_window(w)
 
+proc focus*(w: Window) =
+    focus_window(w)
+
 proc makeBorderless*(w: Window) =
     make_borderless_window(w)
