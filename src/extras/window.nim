@@ -46,6 +46,10 @@ type
         width*: int
         height*: int
 
+    WindowPosition* {.importc: "struct WindowPosition", bycopy.} = object
+        x*: int
+        y*: int
+
 #=======================================
 # Function prototypes
 #=======================================
