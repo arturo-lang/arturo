@@ -41,7 +41,7 @@ bool isFullscreen = false;
     RECT previousRect;
 #endif
 
-WindowSize get_window_size(void* windowHandle) {
+struct WindowSize get_window_size(void* windowHandle) {
     WindowSize size = {0, 0};
     
     #if defined(__linux__) || defined(__FreeBSD__)
@@ -68,7 +68,7 @@ WindowSize get_window_size(void* windowHandle) {
     return size;
 }
 
-void set_window_size(void* windowHandle, WindowSize size) {
+void set_window_size(void* windowHandle, struct WindowSize size) {
     #if defined(__linux__) || defined(__FreeBSD__)
         gtk_window_resize(GTK_WINDOW((WINDOW_TYPE)windowHandle), 
                          size.width, size.height);
