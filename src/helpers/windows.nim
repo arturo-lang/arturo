@@ -21,6 +21,9 @@ export window
 proc isMaximized(w: Window): bool =
     is_maximized_window(w)
 
+proc isMinimized(w: Window): bool =
+    is_minimized_window(w)
+
 proc isVisible(w: Window): bool =
     is_visible_window(w)
 
@@ -38,6 +41,14 @@ proc maximize*(w: Window) =
 proc unmaximize*(w: Window) =
     if w.isMaximized():
         unmaximize_window(w)
+
+proc minimize*(w: Window) =
+    if not w.isMinimized():
+        minimize_window(w)
+
+proc unminimize*(w: Window) =
+    if w.isMinimized():
+        unminimize_window(w)
 
 proc show*(w: Window) =
     if not w.isVisible():
