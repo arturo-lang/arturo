@@ -2,6 +2,7 @@ define :__webviewWindow [
     title: ""
     maximized?: false
     fullscreen?: false
+    topmost?: false
     visible?: true
 
     changed: method [what][
@@ -17,6 +18,10 @@ define :__webviewWindow [
             'maximized?     [
                 \maximized? ? -> \_maximize
                               -> \_unmaximize
+            ]
+            'topmost?       [
+                \topmost?   ? -> \_topmost
+                              -> \_untopmost
             ]
             'title          [
                 \_setTitle \title
