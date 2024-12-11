@@ -27,15 +27,21 @@
 extern "C" {
 #endif
 
-// Add this structure to hold width/height
 struct WindowSize {
     int width;
     int height;
 };
 
-// Add these two function declarations
+struct WindowPosition {
+    int x;
+    int y;
+};
+
 struct WindowSize get_window_size(void* windowHandle);
 void set_window_size(void* windowHandle, struct WindowSize size);
+
+struct WindowPosition get_window_position(void* windowHandle);
+void set_window_position(void* windowHandle, struct WindowPosition position);
 
 bool is_maximized_window(void* windowHandle);
 void maximize_window(void* windowHandle);
