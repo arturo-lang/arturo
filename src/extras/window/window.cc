@@ -33,8 +33,11 @@
 
 #if defined(__APPLE__)
 // Helpers to avoid too much typing with the Objective C runtime
-inline SEL operator"" _sel(const char *s, size_t) { 
-    return sel_registerName(s); 
+inline id operator"" _cls(const char *s, size_t) { return (id)objc_getClass(s); }
+inline SEL operator"" _sel(const char *s, size_t) { return sel_registerName(s); }
+inline id operator"" _str(const char *s, size_t) {
+    return ((id(*)(id, SEL, const char *))objc_msgSend)(
+        "NSString"_cls, "stringWithUTF8String:"_sel, s);
 }
 #endif
 
