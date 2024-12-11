@@ -33,7 +33,7 @@ elif defined(macosx):
     {.passL: "-framework AppKit".}
 elif defined(windows):
     {.compile("window/window.cc", "-std=c++17").}
-    {.passL: """-std=c++17""".} # version.lib shell32.lib gdiplus.lib
+    {.passL: """-std=c++17 -lgdiplus -lshlwapi""".} # version.lib shell32.lib gdiplus.lib
 
 #=======================================
 # Types
