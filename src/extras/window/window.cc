@@ -44,6 +44,11 @@ bool isFullscreen = false;
     RECT previousRect;
 #endif
 
+#if defined(__linux__) || defined(__FreeBSD__)
+static std::map<GtkWidget*, struct WindowSize> minSizes;
+static std::map<GtkWidget*, struct WindowSize> maxSizes;
+#endif
+
 struct WindowSize get_window_size(void* windowHandle) {
     WindowSize size = {0, 0};
     
@@ -91,15 +96,9 @@ struct WindowSize get_window_min_size(void* windowHandle) {
     struct WindowSize size = {0, 0};
     
     #if defined(__linux__) || defined(__FreeBSD__)
-        GdkGeometry hints;
-        GdkWindowHints hints_mask;
-        gtk_window_get_geometry_hints(GTK_WINDOW((WINDOW_TYPE)windowHandle),
-                                    NULL,
-                                    &hints,
-                                    &hints_mask);
-        if (hints_mask & GDK_HINT_MIN_SIZE) {
-            size.width = hints.min_width;
-            size.height = hints.min_height;
+        auto it = minSizes.find((GtkWidget*)windowHandle);
+        if (it != minSizes.end()) {
+            size = it->second;
         }
     #elif defined(__APPLE__)
         NSSize minSize = [(WINDOW_TYPE)windowHandle minSize];
@@ -124,6 +123,7 @@ void set_window_min_size(void* windowHandle, struct WindowSize size) {
                                     NULL,
                                     &hints,
                                     GDK_HINT_MIN_SIZE);
+        minSizes[(GtkWidget*)windowHandle] = size;  // Store the value
     #elif defined(__APPLE__)
         NSSize minSize = NSMakeSize(size.width, size.height);
         [(WINDOW_TYPE)windowHandle setMinSize:minSize];
@@ -146,15 +146,9 @@ struct WindowSize get_window_max_size(void* windowHandle) {
     struct WindowSize size = {0, 0};
     
     #if defined(__linux__) || defined(__FreeBSD__)
-        GdkGeometry hints;
-        GdkWindowHints hints_mask;
-        gtk_window_get_geometry_hints(GTK_WINDOW((WINDOW_TYPE)windowHandle),
-                                    NULL,
-                                    &hints,
-                                    &hints_mask);
-        if (hints_mask & GDK_HINT_MAX_SIZE) {
-            size.width = hints.max_width;
-            size.height = hints.max_height;
+        auto it = maxSizes.find((GtkWidget*)windowHandle);
+        if (it != maxSizes.end()) {
+            size = it->second;
         }
     #elif defined(__APPLE__)
         NSSize maxSize = [(WINDOW_TYPE)windowHandle maxSize];
@@ -177,6 +171,7 @@ void set_window_max_size(void* windowHandle, struct WindowSize size) {
                                     NULL,
                                     &hints,
                                     GDK_HINT_MAX_SIZE);
+        maxSizes[(GtkWidget*)windowHandle] = size;  // Store the value
     #elif defined(__APPLE__)
         NSSize maxSize = NSMakeSize(size.width, size.height);
         [(WINDOW_TYPE)windowHandle setMaxSize:maxSize];
