@@ -1,12 +1,11 @@
 #=======================================================
-# nim-portable-dialogs
-# Sam Hocevar's Portable File Dialogs wrapper
-# for Nim
+# Windows management
+# and utilities
 #
 # (c) 2024 Yanis Zafirópulos
 # 
 # @license: see LICENSE file
-# @file: extras/pfd.nim
+# @file: extras/windows.nim
 #=======================================================
 
 #=======================================
