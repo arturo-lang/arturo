@@ -393,7 +393,7 @@ proc defineLibrary*() =
                     wv.getWindow().unset_topmost_window()
 
                 ActiveWindow.o["_setSize"] = adhocPrivate({"size": {Block}}, NoAttrs):
-                    wv.getWindow().set_window_size(WindowSize(x: x.a[0].i, y: x.a[1].i))
+                    wv.getWindow().set_window_size(WindowSize(width: x.a[0].i, height: x.a[1].i))
 
                 ActiveWindow.o["_show"] = adhocPrivate(NoArgs, NoAttrs):
                     wv.getWindow().show()
