@@ -135,8 +135,8 @@ void set_window_min_size(void* windowHandle, struct WindowSize size) {
         SetWindowPos((WINDOW_TYPE)windowHandle, 
                     NULL,
                     rect.left, rect.top,
-                    max(size.width, rect.right - rect.left),
-                    max(size.height, rect.bottom - rect.top),
+                    std::max(size.width, rect.right - rect.left),
+                    std::max(size.height, rect.bottom - rect.top),
                     SWP_NOMOVE | SWP_NOZORDER);
         SetWindowLongPtr((WINDOW_TYPE)windowHandle, 
                         GWLP_USERDATA, 
