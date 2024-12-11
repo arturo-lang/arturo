@@ -58,6 +58,8 @@ type
 
 proc get_window_size*(w: Window): WindowSize {.importc.}
 proc set_window_size*(w: Window, size: WindowSize) {.importc.}
+proc get_window_position*(w: Window): WindowPosition {.importc.}
+proc set_window_position*(w: Window, position: WindowPosition) {.importc.}
 proc is_maximized_window*(w: Window): bool {.importc.}
 proc maximize_window*(w: Window) {.importc.}
 proc unmaximize_window*(w: Window) {.importc.}
