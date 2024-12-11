@@ -87,6 +87,54 @@ void set_window_size(void* windowHandle, struct WindowSize size) {
     #endif
 }
 
+struct WindowPosition get_window_position(void* windowHandle) {
+    struct WindowPosition pos = {0, 0};
+    
+    #if defined(__linux__) || defined(__FreeBSD__)
+        gdk_window_get_root_origin(gtk_widget_get_window((WINDOW_TYPE)windowHandle), 
+                                  &pos.x, &pos.y);
+    #elif defined(__APPLE__)
+        long winId = ((long(*)(id, SEL))objc_msgSend)((WINDOW_TYPE)windowHandle, "windowNumber"_sel);
+        auto winInfoArray = CGWindowListCopyWindowInfo(kCGWindowListOptionIncludingWindow, winId);
+        auto winInfo = CFArrayGetValueAtIndex(winInfoArray, 0);
+        auto winBounds = CFDictionaryGetValue((CFDictionaryRef) winInfo, kCGWindowBounds);
+
+        CGRect winPos;
+        CGRectMakeWithDictionaryRepresentation((CFDictionaryRef) winBounds, &winPos);
+        
+        pos.x = winPos.origin.x;
+        pos.y = winPos.origin.y;
+    #elif defined(_WIN32)
+        RECT rect;
+        GetWindowRect((WINDOW_TYPE)windowHandle, &rect);
+        pos.x = rect.left;
+        pos.y = rect.top;
+    #endif
+    
+    return pos;
+}
+
+void set_window_position(void* windowHandle, struct WindowPosition position) {
+    #if defined(__linux__) || defined(__FreeBSD__)
+        gtk_window_move(GTK_WINDOW((WINDOW_TYPE)windowHandle), 
+                       position.x, position.y);
+    #elif defined(__APPLE__)
+        auto displayId = CGMainDisplayID();
+        int height = CGDisplayPixelsHigh(displayId);
+        ((void (*)(id, SEL, CGPoint))objc_msgSend)(
+            (WINDOW_TYPE)windowHandle, "setFrameTopLeftPoint:"_sel,
+            CGPointMake(position.x, height - position.y));
+    #elif defined(_WIN32)
+        RECT rect;
+        GetWindowRect((WINDOW_TYPE)windowHandle, &rect);
+        MoveWindow((WINDOW_TYPE)windowHandle, 
+                   position.x, position.y,
+                   rect.right - rect.left,
+                   rect.bottom - rect.top, 
+                   TRUE);
+    #endif
+}
+
 bool is_maximized_window(void* windowHandle){
     #if defined(__linux__) || defined(__FreeBSD__)
         return gtk_window_is_maximized(GTK_WINDOW((WINDOW_TYPE)windowHandle)) == 1;
