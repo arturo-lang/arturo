@@ -6,6 +6,7 @@
 #ifndef __WINDOW_H
 #define __WINDOW_H
 
+#include <cstddef>
 #include <stdbool.h>
 
 #ifdef __cplusplus
