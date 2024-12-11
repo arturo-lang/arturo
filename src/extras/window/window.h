@@ -6,8 +6,8 @@
 #ifndef __WINDOW_H
 #define __WINDOW_H
 
-#include <cstddef>
 #include <stdbool.h>
+#include <stddef.h>
 
 #ifdef __cplusplus
 extern "C" {
