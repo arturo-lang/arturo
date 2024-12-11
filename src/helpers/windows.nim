@@ -40,6 +40,18 @@ proc getSize*(w: Window): WindowSize =
 proc setSize*(w: Window, sz: WindowSize) =
     set_window_size(w, sz)
 
+proc getMinSize*(w: Window): WindowSize =
+    get_window_min_size(w)
+
+proc setMinSize*(w: Window, sz: WindowSize) =
+    set_window_min_size(w, sz)
+
+proc getMaxSize*(w: Window): WindowSize =
+    get_window_max_size(w)
+
+proc setMaxSize*(w: Window, sz: WindowSize) =
+    set_window_max_size(w, sz)
+
 proc getPosition*(w: Window): WindowPosition =
     get_window_position(w)
 
