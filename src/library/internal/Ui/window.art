@@ -23,6 +23,9 @@ define :__webviewWindow [
                 \topmost?   ? -> \_topmost
                               -> \_untopmost
             ]
+            'size           [
+                \_setSize \size
+            ]
             'title          [
                 \_setTitle \title
             ]
