@@ -368,6 +368,7 @@ proc defineLibrary*() =
                 ActiveWindow.o["title"] = newString(title)
                 ActiveWindow.o["fullscreen?"] = newLogical(fullscreen)
                 ActiveWindow.o["maximized?"] = newLogical(maximized)
+                ActiveWindow.o["topmost?"] = newLogical(topmost)
                 
                 ActiveWindow.o["_setTitle"] = adhocPrivate({"title": {String}}, NoAttrs):
                     push(newLogical(webview_set_title(wv, cstring(x.s)) == OK))
@@ -383,6 +384,12 @@ proc defineLibrary*() =
             
                 ActiveWindow.o["_unfullscreen"] = adhocPrivate(NoArgs, NoAttrs):
                     wv.getWindow().unfullscreen()
+
+                ActiveWindow.o["_topmost"] = adhocPrivate(NoArgs, NoAttrs):
+                    wv.getWindow().set_topmost_window()
+            
+                ActiveWindow.o["_untopmost"] = adhocPrivate(NoArgs, NoAttrs):
+                    wv.getWindow().unset_topmost_window()
 
                 ActiveWindow.o["_show"] = adhocPrivate(NoArgs, NoAttrs):
                     wv.getWindow().show()
