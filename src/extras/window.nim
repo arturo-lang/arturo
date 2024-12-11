@@ -42,6 +42,10 @@ elif defined(windows):
 type
     Window* = distinct pointer
 
+    WindowSize* {.importc: "struct WindowSize", bycopy.} = object
+        width*: int
+        height*: int
+
 #=======================================
 # Function prototypes
 #=======================================
