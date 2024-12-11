@@ -41,6 +41,49 @@ bool isFullscreen = false;
     RECT previousRect;
 #endif
 
+WindowSize get_window_size(void* windowHandle) {
+    WindowSize size = {0, 0};
+    
+    #if defined(__linux__) || defined(__FreeBSD__)
+        gtk_window_get_size(GTK_WINDOW((WINDOW_TYPE)windowHandle),
+                           &size.width, &size.height);
+    #elif defined(__APPLE__)
+        long winId = ((long(*)(id, SEL))objc_msgSend)((WINDOW_TYPE)windowHandle, "windowNumber"_sel);
+        auto winInfoArray = CGWindowListCopyWindowInfo(kCGWindowListOptionIncludingWindow, winId);
+        auto winInfo = CFArrayGetValueAtIndex(winInfoArray, 0);
+        auto winBounds = CFDictionaryGetValue((CFDictionaryRef) winInfo, kCGWindowBounds);
+
+        CGRect winPos;
+        CGRectMakeWithDictionaryRepresentation((CFDictionaryRef) winBounds, &winPos);
+        
+        size.width = winPos.size.width;
+        size.height = winPos.size.height;
+    #elif defined(_WIN32)
+        RECT rect;
+        GetWindowRect((WINDOW_TYPE)windowHandle, &rect);
+        size.width = rect.right - rect.left;
+        size.height = rect.bottom - rect.top;
+    #endif
+    
+    return size;
+}
+
+void set_window_size(void* windowHandle, WindowSize size) {
+    #if defined(__linux__) || defined(__FreeBSD__)
+        gtk_window_resize(GTK_WINDOW((WINDOW_TYPE)windowHandle), 
+                         size.width, size.height);
+    #elif defined(__APPLE__)
+        NSRect frame = [(WINDOW_TYPE)windowHandle frame];
+        frame.size.width = size.width;
+        frame.size.height = size.height;
+        [(WINDOW_TYPE)windowHandle setFrame:frame display:YES];
+    #elif defined(_WIN32)
+        SetWindowPos((WINDOW_TYPE)windowHandle, NULL, 0, 0, 
+                     size.width, size.height, 
+                     SWP_NOMOVE | SWP_NOZORDER);
+    #endif
+}
+
 bool is_maximized_window(void* windowHandle){
     #if defined(__linux__) || defined(__FreeBSD__)
         return gtk_window_is_maximized(GTK_WINDOW((WINDOW_TYPE)windowHandle)) == 1;
