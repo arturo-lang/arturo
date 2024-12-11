@@ -104,3 +104,13 @@ proc focus*(w: Window) =
 
 proc makeBorderless*(w: Window) =
     make_borderless_window(w)
+
+proc setIcon*(w: Window, data: seq[uint8]) =
+  set_window_icon(w, cast[ptr uint8](data[0].unsafeAddr), data.len.csize_t)
+
+proc setIcon*(w: Window, path: string) =
+    try:
+        let data = readFile(path)
+        set_window_icon(w, cast[ptr uint8](data[0].unsafeAddr), data.len.csize_t)
+    except IOError:
+        raise newException(IOError, "Failed to load icon from: " & path)
