@@ -183,8 +183,8 @@ void set_window_max_size(void* windowHandle, struct WindowSize size) {
         SetWindowPos((WINDOW_TYPE)windowHandle, 
                     NULL,
                     rect.left, rect.top,
-                    min(size.width, rect.right - rect.left),
-                    min(size.height, rect.bottom - rect.top),
+                    std::min(size.width, rect.right - rect.left),
+                    std::min(size.height, rect.bottom - rect.top),
                     SWP_NOMOVE | SWP_NOZORDER);
     #endif
 }
