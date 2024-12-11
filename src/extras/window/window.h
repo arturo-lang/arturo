@@ -34,8 +34,8 @@ struct WindowSize {
 };
 
 // Add these two function declarations
-WindowSize get_window_size(void* windowHandle);
-void set_window_size(void* windowHandle, WindowSize size);
+struct WindowSize get_window_size(void* windowHandle);
+void set_window_size(void* windowHandle, struct WindowSize size);
 
 bool is_maximized_window(void* windowHandle);
 void maximize_window(void* windowHandle);
