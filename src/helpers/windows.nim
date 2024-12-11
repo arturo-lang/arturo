@@ -21,6 +21,9 @@ export window
 proc isMaximized(w: Window): bool =
     is_maximized_window(w)
 
+proc isMinimized(w: Window): bool =
+    is_minimized_window(w)
+
 proc isVisible(w: Window): bool =
     is_visible_window(w)
 
@@ -31,6 +34,33 @@ proc isFullscreen(w: Window): bool =
 # Methods
 #=======================================
 
+proc getSize*(w: Window): WindowSize =
+    get_window_size(w)
+
+proc setSize*(w: Window, sz: WindowSize) =
+    set_window_size(w, sz)
+
+proc getMinSize*(w: Window): WindowSize =
+    get_window_min_size(w)
+
+proc setMinSize*(w: Window, sz: WindowSize) =
+    set_window_min_size(w, sz)
+
+proc getMaxSize*(w: Window): WindowSize =
+    get_window_max_size(w)
+
+proc setMaxSize*(w: Window, sz: WindowSize) =
+    set_window_max_size(w, sz)
+
+proc getPosition*(w: Window): WindowPosition =
+    get_window_position(w)
+
+proc setPosition*(w: Window, pos: WindowPosition) =
+    set_window_position(w, pos)
+
+proc centerWindow*(w: Window) =
+    center_window(w)
+
 proc maximize*(w: Window) =
     if not w.isMaximized():
         maximize_window(w)
@@ -38,6 +68,14 @@ proc maximize*(w: Window) =
 proc unmaximize*(w: Window) =
     if w.isMaximized():
         unmaximize_window(w)
+
+proc minimize*(w: Window) =
+    if not w.isMinimized():
+        minimize_window(w)
+
+proc unminimize*(w: Window) =
+    if w.isMinimized():
+        unminimize_window(w)
 
 proc show*(w: Window) =
     if not w.isVisible():
@@ -61,5 +99,18 @@ proc topmost*(w: Window) =
 proc untopmost*(w: Window) =
     unset_topmost_window(w)
 
+proc focus*(w: Window) =
+    focus_window(w)
+
 proc makeBorderless*(w: Window) =
     make_borderless_window(w)
+
+proc setIcon*(w: Window, data: seq[uint8]) =
+  set_window_icon(w, cast[ptr uint8](data[0].unsafeAddr), data.len.csize_t)
+
+proc setIcon*(w: Window, path: string) =
+    try:
+        let data = readFile(path)
+        set_window_icon(w, cast[ptr uint8](data[0].unsafeAddr), data.len.csize_t)
+    except IOError:
+        raise newException(IOError, "Failed to load icon from: " & path)

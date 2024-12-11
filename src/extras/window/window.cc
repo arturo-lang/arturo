@@ -1,5 +1,7 @@
-// Roughly based-on/inspired-by:
+// Initially based-on/inspired-by:
 // https://github.com/neutralinojs/neutralinojs/blob/main/api/window/window.cpp
+// MIT License
+// Copyright (c) 2021 Neutralinojs and contributors.
 
 #include "window.h"
 
@@ -25,12 +27,21 @@
     #include <gdiplus.h>
     #pragma comment(lib, "Gdiplus.lib")
 
+    #include <Shlwapi.h>      
+    #pragma comment(lib, "Shlwapi.lib")
+
     #define WINDOW_TYPE HWND
 
 #endif
 
 #if defined(__APPLE__)
-    
+// Helpers to avoid too much typing with the Objective C runtime
+inline id operator"" _cls(const char *s, size_t) { return (id)objc_getClass(s); }
+inline SEL operator"" _sel(const char *s, size_t) { return sel_registerName(s); }
+inline id operator"" _str(const char *s, size_t) {
+    return ((id(*)(id, SEL, const char *))objc_msgSend)(
+        "NSString"_cls, "stringWithUTF8String:"_sel, s);
+}
 #endif
 
 bool isFullscreen = false;
@@ -40,6 +51,228 @@ bool isFullscreen = false;
     DWORD previousStyleX;
     RECT previousRect;
 #endif
+
+#if defined(__linux__) || defined(__FreeBSD__)
+#include <map>
+
+static std::map<GtkWidget*, struct WindowSize> minSizes;
+static std::map<GtkWidget*, struct WindowSize> maxSizes;
+#endif
+
+struct WindowSize get_window_size(void* windowHandle) {
+    WindowSize size = {0, 0};
+    
+    #if defined(__linux__) || defined(__FreeBSD__)
+        gtk_window_get_size(GTK_WINDOW((WINDOW_TYPE)windowHandle),
+                           &size.width, &size.height);
+    #elif defined(__APPLE__)
+        long winId = ((long(*)(id, SEL))objc_msgSend)((WINDOW_TYPE)windowHandle, "windowNumber"_sel);
+        auto winInfoArray = CGWindowListCopyWindowInfo(kCGWindowListOptionIncludingWindow, winId);
+        auto winInfo = CFArrayGetValueAtIndex(winInfoArray, 0);
+        auto winBounds = CFDictionaryGetValue((CFDictionaryRef) winInfo, kCGWindowBounds);
+
+        CGRect winPos;
+        CGRectMakeWithDictionaryRepresentation((CFDictionaryRef) winBounds, &winPos);
+        
+        size.width = winPos.size.width;
+        size.height = winPos.size.height;
+    #elif defined(_WIN32)
+        RECT rect;
+        GetWindowRect((WINDOW_TYPE)windowHandle, &rect);
+        size.width = rect.right - rect.left;
+        size.height = rect.bottom - rect.top;
+    #endif
+    
+    return size;
+}
+
+void set_window_size(void* windowHandle, struct WindowSize size) {
+    #if defined(__linux__) || defined(__FreeBSD__)
+        gtk_window_resize(GTK_WINDOW((WINDOW_TYPE)windowHandle), 
+                         size.width, size.height);
+    #elif defined(__APPLE__)
+        NSRect frame = [(WINDOW_TYPE)windowHandle frame];
+        frame.size.width = size.width;
+        frame.size.height = size.height;
+        [(WINDOW_TYPE)windowHandle setFrame:frame display:YES];
+    #elif defined(_WIN32)
+        SetWindowPos((WINDOW_TYPE)windowHandle, NULL, 0, 0, 
+                     size.width, size.height, 
+                     SWP_NOMOVE | SWP_NOZORDER);
+    #endif
+}
+
+struct WindowSize get_window_min_size(void* windowHandle) {
+    struct WindowSize size = {0, 0};
+    
+    #if defined(__linux__) || defined(__FreeBSD__)
+        auto it = minSizes.find((GtkWidget*)windowHandle);
+        if (it != minSizes.end()) {
+            size = it->second;
+        }
+    #elif defined(__APPLE__)
+        NSSize minSize = [(WINDOW_TYPE)windowHandle minSize];
+        size.width = minSize.width;
+        size.height = minSize.height;
+    #elif defined(_WIN32)
+        WindowSize* storedSize = (WindowSize*)GetWindowLongPtr((WINDOW_TYPE)windowHandle, GWLP_USERDATA);
+        if (storedSize) {
+            size = *storedSize;
+        }
+    #endif
+    
+    return size;
+}
+
+void set_window_min_size(void* windowHandle, struct WindowSize size) {
+    #if defined(__linux__) || defined(__FreeBSD__)
+        GdkGeometry hints;
+        hints.min_width = size.width;
+        hints.min_height = size.height;
+        gtk_window_set_geometry_hints(GTK_WINDOW((WINDOW_TYPE)windowHandle),
+                                    NULL,
+                                    &hints,
+                                    GDK_HINT_MIN_SIZE);
+        minSizes[(GtkWidget*)windowHandle] = size;  // Store the value
+    #elif defined(__APPLE__)
+        NSSize minSize = NSMakeSize(size.width, size.height);
+        [(WINDOW_TYPE)windowHandle setMinSize:minSize];
+    #elif defined(_WIN32)
+        RECT rect;
+        GetWindowRect((WINDOW_TYPE)windowHandle, &rect);
+        LONG currentWidth = rect.right - rect.left;
+        LONG currentHeight = rect.bottom - rect.top;
+        SetWindowPos((WINDOW_TYPE)windowHandle, 
+                    NULL,
+                    rect.left, rect.top,
+                    (LONG)std::max((LONG)size.width, currentWidth),
+                    (LONG)std::max((LONG)size.height, currentHeight),
+                    SWP_NOMOVE | SWP_NOZORDER);
+        SetWindowLongPtr((WINDOW_TYPE)windowHandle, 
+                        GWLP_USERDATA, 
+                        (LONG_PTR)&size);
+    #endif
+}
+
+struct WindowSize get_window_max_size(void* windowHandle) {
+    struct WindowSize size = {0, 0};
+    
+    #if defined(__linux__) || defined(__FreeBSD__)
+        auto it = maxSizes.find((GtkWidget*)windowHandle);
+        if (it != maxSizes.end()) {
+            size = it->second;
+        }
+    #elif defined(__APPLE__)
+        NSSize maxSize = [(WINDOW_TYPE)windowHandle maxSize];
+        size.width = maxSize.width;
+        size.height = maxSize.height;
+    #elif defined(_WIN32)
+        // Windows doesn't store max size directly, would need additional storage mechanism
+        // Returns 0,0 for now
+    #endif
+    
+    return size;
+}
+
+void set_window_max_size(void* windowHandle, struct WindowSize size) {
+    #if defined(__linux__) || defined(__FreeBSD__)
+        GdkGeometry hints;
+        hints.max_width = size.width;
+        hints.max_height = size.height;
+        gtk_window_set_geometry_hints(GTK_WINDOW((WINDOW_TYPE)windowHandle),
+                                    NULL,
+                                    &hints,
+                                    GDK_HINT_MAX_SIZE);
+        maxSizes[(GtkWidget*)windowHandle] = size;  // Store the value
+    #elif defined(__APPLE__)
+        NSSize maxSize = NSMakeSize(size.width, size.height);
+        [(WINDOW_TYPE)windowHandle setMaxSize:maxSize];
+    #elif defined(_WIN32)
+        RECT rect;
+        GetWindowRect((WINDOW_TYPE)windowHandle, &rect);
+        LONG currentWidth = rect.right - rect.left;
+        LONG currentHeight = rect.bottom - rect.top;
+        SetWindowPos((WINDOW_TYPE)windowHandle, 
+                    NULL,
+                    rect.left, rect.top,
+                    (LONG)std::min((LONG)size.width, currentWidth),
+                    (LONG)std::min((LONG)size.height, currentHeight),
+                    SWP_NOMOVE | SWP_NOZORDER);
+    #endif
+}
+
+struct WindowPosition get_window_position(void* windowHandle) {
+    struct WindowPosition pos = {0, 0};
+    
+    #if defined(__linux__) || defined(__FreeBSD__)
+        gdk_window_get_root_origin(gtk_widget_get_window((WINDOW_TYPE)windowHandle), 
+                                  &pos.x, &pos.y);
+    #elif defined(__APPLE__)
+        long winId = ((long(*)(id, SEL))objc_msgSend)((WINDOW_TYPE)windowHandle, "windowNumber"_sel);
+        auto winInfoArray = CGWindowListCopyWindowInfo(kCGWindowListOptionIncludingWindow, winId);
+        auto winInfo = CFArrayGetValueAtIndex(winInfoArray, 0);
+        auto winBounds = CFDictionaryGetValue((CFDictionaryRef) winInfo, kCGWindowBounds);
+
+        CGRect winPos;
+        CGRectMakeWithDictionaryRepresentation((CFDictionaryRef) winBounds, &winPos);
+        
+        pos.x = winPos.origin.x;
+        pos.y = winPos.origin.y;
+    #elif defined(_WIN32)
+        RECT rect;
+        GetWindowRect((WINDOW_TYPE)windowHandle, &rect);
+        pos.x = rect.left;
+        pos.y = rect.top;
+    #endif
+    
+    return pos;
+}
+
+void set_window_position(void* windowHandle, struct WindowPosition position) {
+    #if defined(__linux__) || defined(__FreeBSD__)
+        gtk_window_move(GTK_WINDOW((WINDOW_TYPE)windowHandle), 
+                       position.x, position.y);
+    #elif defined(__APPLE__)
+        auto displayId = CGMainDisplayID();
+        int height = CGDisplayPixelsHigh(displayId);
+        ((void (*)(id, SEL, CGPoint))objc_msgSend)(
+            (WINDOW_TYPE)windowHandle, "setFrameTopLeftPoint:"_sel,
+            CGPointMake(position.x, height - position.y));
+    #elif defined(_WIN32)
+        RECT rect;
+        GetWindowRect((WINDOW_TYPE)windowHandle, &rect);
+        MoveWindow((WINDOW_TYPE)windowHandle, 
+                   position.x, position.y,
+                   rect.right - rect.left,
+                   rect.bottom - rect.top, 
+                   TRUE);
+    #endif
+}
+
+void center_window(void* windowHandle) {
+    struct WindowSize windowSize = get_window_size(windowHandle);
+    struct WindowPosition centerPos = {0, 0};
+    
+    #if defined(__linux__) || defined(__FreeBSD__)
+        GdkRectangle workArea;
+        gdk_monitor_get_workarea(
+            gdk_display_get_primary_monitor(gdk_display_get_default()),
+            &workArea);
+        centerPos.x = (workArea.width - windowSize.width) / 2;
+        centerPos.y = (workArea.height - windowSize.height) / 2;
+    #elif defined(__APPLE__)
+        auto displayId = CGMainDisplayID();
+        centerPos.x = (CGDisplayPixelsWide(displayId) - windowSize.width) / 2;
+        centerPos.y = (CGDisplayPixelsHigh(displayId) - windowSize.height) / 2;
+    #elif defined(_WIN32)
+        RECT screen;
+        GetWindowRect(GetDesktopWindow(), &screen);
+        centerPos.x = ((screen.right - screen.left) - windowSize.width) / 2;
+        centerPos.y = ((screen.bottom - screen.top) - windowSize.height) / 2;
+    #endif
+
+    set_window_position(windowHandle, centerPos);
+}
 
 bool is_maximized_window(void* windowHandle){
     #if defined(__linux__) || defined(__FreeBSD__)
@@ -66,6 +299,40 @@ void unmaximize_window(void* windowHandle){
         gtk_window_unmaximize(GTK_WINDOW((WINDOW_TYPE)windowHandle));
     #elif defined(__APPLE__)
         [(WINDOW_TYPE)windowHandle zoom:nil];
+    #elif defined(_WIN32)
+        ShowWindow((WINDOW_TYPE)windowHandle, SW_RESTORE);
+    #endif
+}
+
+bool is_minimized_window(void* windowHandle) {
+    #if defined(__linux__) || defined(__FreeBSD__)
+        // GTK doesn't have a direct "is minimized" check
+        // We'd need to check the window state
+        GdkWindow *gdk_window = gtk_widget_get_window((WINDOW_TYPE)windowHandle);
+        GdkWindowState state = gdk_window_get_state(gdk_window);
+        return (state & GDK_WINDOW_STATE_ICONIFIED) != 0;
+    #elif defined(__APPLE__)
+        return [(WINDOW_TYPE)windowHandle isMiniaturized];
+    #elif defined(_WIN32)
+        return IsIconic((WINDOW_TYPE)windowHandle) == 1;
+    #endif
+}
+
+void minimize_window(void* windowHandle) {
+    #if defined(__linux__) || defined(__FreeBSD__)
+        gtk_window_iconify(GTK_WINDOW((WINDOW_TYPE)windowHandle));
+    #elif defined(__APPLE__)
+        [(WINDOW_TYPE)windowHandle miniaturize:nil];
+    #elif defined(_WIN32)
+        ShowWindow((WINDOW_TYPE)windowHandle, SW_MINIMIZE);
+    #endif
+}
+
+void unminimize_window(void* windowHandle) {
+    #if defined(__linux__) || defined(__FreeBSD__)
+        gtk_window_deiconify(GTK_WINDOW((WINDOW_TYPE)windowHandle));
+    #elif defined(__APPLE__)
+        [(WINDOW_TYPE)windowHandle deminiaturize:nil];
     #elif defined(_WIN32)
         ShowWindow((WINDOW_TYPE)windowHandle, SW_RESTORE);
     #endif
@@ -207,6 +474,16 @@ void unset_topmost_window(void* windowHandle){
     #endif
 }
 
+void focus_window(void* windowHandle) {
+    #if defined(__linux__) || defined(__FreeBSD__)
+        gtk_window_present(GTK_WINDOW((WINDOW_TYPE)windowHandle));
+    #elif defined(__APPLE__)
+        [(WINDOW_TYPE)windowHandle orderFront:nil];
+    #elif defined(_WIN32)
+        SetForegroundWindow((WINDOW_TYPE)windowHandle);
+    #endif
+}
+
 void make_borderless_window(void* windowHandle){
     #if defined(__linux__) || defined(__FreeBSD__)
         gtk_window_set_decorated(GTK_WINDOW((WINDOW_TYPE)windowHandle), false);
@@ -225,6 +502,46 @@ void make_borderless_window(void* windowHandle){
             0, 
             SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED
         );
+    #endif
+}
+
+void set_window_icon(void* windowHandle, const unsigned char* iconData, size_t iconDataSize) {
+    #if defined(__linux__) || defined(__FreeBSD__)
+        GdkPixbufLoader* loader = gdk_pixbuf_loader_new();
+        gdk_pixbuf_loader_write(loader, iconData, iconDataSize, NULL);
+        gdk_pixbuf_loader_close(loader, NULL);
+        GdkPixbuf* icon = gdk_pixbuf_loader_get_pixbuf(loader);
+        gtk_window_set_icon(GTK_WINDOW((WINDOW_TYPE)windowHandle), icon);
+        g_object_unref(loader);
+
+    #elif defined(__APPLE__)
+        id nsData = ((id (*)(id, SEL, const unsigned char*, NSUInteger))objc_msgSend)(
+            "NSData"_cls,
+            "dataWithBytes:length:"_sel,
+            iconData,
+            iconDataSize
+        );
+        
+        id image = ((id (*)(id, SEL))objc_msgSend)("NSImage"_cls, "alloc"_sel);
+        ((void (*)(id, SEL, id))objc_msgSend)(image, "initWithData:"_sel, nsData);
+        
+        ((void (*)(id, SEL, id))objc_msgSend)((WINDOW_TYPE)windowHandle,
+                "setRepresentedImage:"_sel, image);
+
+    #elif defined(_WIN32)
+        HICON icon = NULL;
+        IStream* stream = SHCreateMemStream(iconData, iconDataSize);
+        if (stream) {
+            Gdiplus::Bitmap* bitmap = Gdiplus::Bitmap::FromStream(stream);
+            bitmap->GetHICON(&icon);
+            delete bitmap;
+            stream->Release();
+        }
+        
+        if (icon) {
+            SendMessage((HWND)windowHandle, WM_SETICON, ICON_SMALL, (LPARAM)icon);
+            SendMessage((HWND)windowHandle, WM_SETICON, ICON_BIG, (LPARAM)icon);
+        }
     #endif
 }
 
