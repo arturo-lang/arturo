@@ -45,6 +45,8 @@ bool isFullscreen = false;
 #endif
 
 #if defined(__linux__) || defined(__FreeBSD__)
+#include <map>
+
 static std::map<GtkWidget*, struct WindowSize> minSizes;
 static std::map<GtkWidget*, struct WindowSize> maxSizes;
 #endif
