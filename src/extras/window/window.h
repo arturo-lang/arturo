@@ -49,6 +49,8 @@ void set_window_max_size(void* windowHandle, struct WindowSize size);
 struct WindowPosition get_window_position(void* windowHandle);
 void set_window_position(void* windowHandle, struct WindowPosition position);
 
+void center_window(void* windowHandle);
+
 bool is_maximized_window(void* windowHandle);
 void maximize_window(void* windowHandle);
 void unmaximize_window(void* windowHandle);
