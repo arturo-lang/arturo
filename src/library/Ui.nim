@@ -357,6 +357,7 @@ proc defineLibrary*() =
                     example     = """
                     """:
                         #=======================================================
+                        echo "in old eval: " & $(x.s)
                         wv.evaluate(x.s)
 
                 # necessary so that "__webviewWindow" is available
@@ -365,83 +366,36 @@ proc defineLibrary*() =
                 let emptyvarr: ValueArray = @[]
                 ActiveWindow = generateNewObject(getType("__webviewWindow"),emptyvarr)
                 ActiveWindow.o["title"] = newString(title)
-                ActiveWindow.o["_setTitle"] = adhoc("set window title",
-                        args = {
-                            "title": {String}
-                        },
-                        attrs = NoAttrs,
-                        returns = {Nothing},
-                        block:
-                            #=================
-                            push(newLogical(webview_set_title(wv, cstring(x.s)) == OK))
-                    )
-                ActiveWindow.o["_maximize"] = adhoc("maximize window",
-                        args = NoArgs,
-                        attrs = NoAttrs,
-                        returns = {Nothing},
-                        block:
-                            #=================
-                           wv.getWindow().maximize()
-                    )
-                ActiveWindow.o["_unmaximize"] = adhoc("unmaximize window",
-                        args = NoArgs,
-                        attrs = NoAttrs,
-                        returns = {Nothing},
-                        block:
-                            #=================
-                           wv.getWindow().unmaximize()
-                    )
-                ActiveWindow.o["_fullscreen"] = adhoc("fullscreen window",
-                        args = NoArgs,
-                        attrs = NoAttrs,
-                        returns = {Nothing},
-                        block:
-                            #=================
-                           wv.getWindow().fullscreen()
-                    )
-                ActiveWindow.o["_unfullscreen"] = adhoc("unfullscreen window",
-                        args = NoArgs,
-                        attrs = NoAttrs,
-                        returns = {Nothing},
-                        block:
-                            #=================
-                           wv.getWindow().unfullscreen()
-                    )
-                ActiveWindow.o["_show"] = adhoc("show window",
-                        args = NoArgs,
-                        attrs = NoAttrs,
-                        returns = {Nothing},
-                        block:
-                            #=================
-                           wv.getWindow().show()
-                    )
-                ActiveWindow.o["_hide"] = adhoc("hide window",
-                        args = NoArgs,
-                        attrs = NoAttrs,
-                        returns = {Nothing},
-                        block:
-                            #=================
-                           wv.getWindow().hide()
-                    )
-                ActiveWindow.o["_close"] = adhoc("close window",
-                        args = NoArgs,
-                        attrs = NoAttrs,
-                        returns = {Nothing},
-                        block:
-                            #=================
-                           push(newLogical(wv.webview_terminate() == OK))
-                    )
+                ActiveWindow.o["fullscreen?"] = newLogical(fullscreen)
+                ActiveWindow.o["maximized?"] = newLogical(maximized)
+                
+                ActiveWindow.o["_setTitle"] = adhocPrivate({"title": {String}}, NoAttrs):
+                    push(newLogical(webview_set_title(wv, cstring(x.s)) == OK))
 
-                ActiveWindow.o["_eval"] = adhoc("evaluate code",
-                        args = {
-                            "code": {String}
-                        },
-                        attrs = NoAttrs,
-                        returns = {Nothing},
-                        block:
-                            #=================
-                           wv.evaluate(x.s)
-                    )
+                ActiveWindow.o["_maximize"] = adhocPrivate(NoArgs, NoAttrs):
+                    wv.getWindow().maximize()
+                
+                ActiveWindow.o["_unmaximize"] = adhocPrivate(NoArgs, NoAttrs):
+                    wv.getWindow().unmaximize()
+            
+                ActiveWindow.o["_fullscreen"] = adhocPrivate(NoArgs, NoAttrs):
+                    wv.getWindow().fullscreen()
+            
+                ActiveWindow.o["_unfullscreen"] = adhocPrivate(NoArgs, NoAttrs):
+                    wv.getWindow().unfullscreen()
+
+                ActiveWindow.o["_show"] = adhocPrivate(NoArgs, NoAttrs):
+                    wv.getWindow().show()
+                    
+                ActiveWindow.o["_hide"] = adhocPrivate(NoArgs, NoAttrs):
+                    wv.getWindow().hide()
+                
+                ActiveWindow.o["close"] = adhocPrivate(NoArgs, NoAttrs):
+                    push(newLogical(wv.webview_terminate() == OK))
+
+                ActiveWindow.o["evaluate"] = adhocPrivate({"code": {String}}, NoAttrs):
+                    wv.evaluate(x.s)
+
                 SetSym("window", ActiveWindow)
 
                 wv.show()
