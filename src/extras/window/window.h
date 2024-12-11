@@ -1,27 +1,12 @@
-// Roughly based-on/inspired-by:
+// Initially based-on/inspired-by:
 // https://github.com/neutralinojs/neutralinojs/blob/main/api/window/window.cpp
+// MIT License
+// Copyright (c) 2021 Neutralinojs and contributors.
 
 #ifndef __WINDOW_H
 #define __WINDOW_H
 
 #include <stdbool.h>
-
-// #if defined(__linux__) || defined(__FreeBSD__)
-//     #include <gtk/gtk.h>
-
-//     #define WINDOW_TYPE GtkWidget*
-
-// #elif defined(__APPLE__)
-//     #include <objc/objc-runtime.h>
-
-//     #define WINDOW_TYPE id
-
-// #elif defined(_WIN32)
-//     #define _WINSOCKAPI_
-//     #include <windows.h>
-
-//     #define WINDOW_TYPE HWND
-// #endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -73,6 +58,8 @@ void unset_topmost_window(void* windowHandle);
 void focus_window(void* windowHandle);
 
 void make_borderless_window(void* windowHandle);
+
+void set_window_icon(void* windowHandle, const unsigned char* iconData, size_t iconDataSize);
 
 #ifdef __cplusplus
 }
