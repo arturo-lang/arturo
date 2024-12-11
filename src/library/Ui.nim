@@ -400,6 +400,9 @@ proc defineLibrary*() =
                 ActiveWindow.o["close"] = adhocPrivate(NoArgs, NoAttrs):
                     push(newLogical(wv.webview_terminate() == OK))
 
+                ActiveWindow.o["focus"] = adhocPrivate(NoArgs, NoAttrs):
+                    wv.getWindow().focus()
+
                 ActiveWindow.o["evaluate"] = adhocPrivate({"code": {String}}, NoAttrs):
                     wv.evaluate(x.s)
 
