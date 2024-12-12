@@ -101,6 +101,12 @@ proc focus*(w: Window) =
 proc makeBorderless*(w: Window) =
     make_borderless_window(w)
 
+proc setClosable*(w: Window, c: bool) =
+    set_closable_window(w, c)
+
+proc isClosable*(w: Window): bool =
+    is_closable_window(w)
+
 proc setMaximizable*(w: Window, m: bool) =
     set_maximizable_window(w, m)
 

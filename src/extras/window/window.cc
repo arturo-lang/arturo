@@ -505,6 +505,53 @@ void make_borderless_window(void* windowHandle){
     #endif
 }
 
+void set_closable_window(void* windowHandle, bool closable) {
+    #if defined(__linux__) || defined(__FreeBSD__)
+        GdkWMFunction funcs = (GdkWMFunction)(GDK_FUNC_ALL);
+        if (!closable) {
+            funcs = (GdkWMFunction)(GDK_FUNC_ALL & ~GDK_FUNC_CLOSE);
+        }
+        gtk_window_set_functions(GTK_WINDOW((WINDOW_TYPE)windowHandle), funcs);
+        
+        // Also handle the close button in the window decorations
+        gtk_window_set_deletable(GTK_WINDOW((WINDOW_TYPE)windowHandle), closable);
+    #elif defined(__APPLE__)
+        if (!closable) {
+            [(WINDOW_TYPE)windowHandle setStyleMask:[(WINDOW_TYPE)windowHandle styleMask] & ~NSWindowStyleMaskClosable];
+        } else {
+            [(WINDOW_TYPE)windowHandle setStyleMask:[(WINDOW_TYPE)windowHandle styleMask] | NSWindowStyleMaskClosable];
+        }
+    #elif defined(_WIN32)
+        HMENU hMenu = GetSystemMenu((WINDOW_TYPE)windowHandle, FALSE);
+        if (!closable) {
+            EnableMenuItem(hMenu, SC_CLOSE, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
+            LONG style = GetWindowLong((WINDOW_TYPE)windowHandle, GWL_STYLE);
+            style &= ~WS_SYSMENU;
+            SetWindowLong((WINDOW_TYPE)windowHandle, GWL_STYLE, style);
+        } else {
+            EnableMenuItem(hMenu, SC_CLOSE, MF_BYCOMMAND | MF_ENABLED);
+            LONG style = GetWindowLong((WINDOW_TYPE)windowHandle, GWL_STYLE);
+            style |= WS_SYSMENU;
+            SetWindowLong((WINDOW_TYPE)windowHandle, GWL_STYLE, style);
+        }
+        SetWindowPos((WINDOW_TYPE)windowHandle, 
+                     NULL, 0, 0, 0, 0,
+                     SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
+    #endif
+}
+
+bool is_closable_window(void* windowHandle) {
+    #if defined(__linux__) || defined(__FreeBSD__)
+        return gtk_window_get_deletable(GTK_WINDOW((WINDOW_TYPE)windowHandle));
+    #elif defined(__APPLE__)
+        return ([(WINDOW_TYPE)windowHandle styleMask] & NSWindowStyleMaskClosable) != 0;
+    #elif defined(_WIN32)
+        HMENU hMenu = GetSystemMenu((WINDOW_TYPE)windowHandle, FALSE);
+        UINT state = GetMenuState(hMenu, SC_CLOSE, MF_BYCOMMAND);
+        return !(state & MF_DISABLED);
+    #endif
+}
+
 void set_maximizable_window(void* windowHandle, bool maximizable) {
     #if defined(__linux__) || defined(__FreeBSD__)
         GdkWindowHints hints = (GdkWindowHints)(GDK_HINT_MAX_SIZE);
