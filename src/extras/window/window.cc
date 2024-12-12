@@ -474,13 +474,40 @@ void unset_topmost_window(void* windowHandle){
     #endif
 }
 
-void focus_window(void* windowHandle) {
+void set_focused_window(void* windowHandle, bool focused) {
     #if defined(__linux__) || defined(__FreeBSD__)
-        gtk_window_present(GTK_WINDOW((WINDOW_TYPE)windowHandle));
+        if (focused) {
+            gtk_window_present(GTK_WINDOW((WINDOW_TYPE)windowHandle));
+        } else {
+            GtkWidget* otherWindow = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+            gtk_window_present(GTK_WINDOW(otherWindow));
+            gtk_widget_destroy(otherWindow);
+        }
     #elif defined(__APPLE__)
-        [(WINDOW_TYPE)windowHandle orderFront:nil];
+        if (focused) {
+            [(WINDOW_TYPE)windowHandle makeKeyAndOrderFront:nil];
+        } else {
+            [(WINDOW_TYPE)windowHandle orderOut:nil];
+            [(WINDOW_TYPE)windowHandle orderBack:nil];
+        }
     #elif defined(_WIN32)
-        SetForegroundWindow((WINDOW_TYPE)windowHandle);
+        if (focused) {
+            SetForegroundWindow((WINDOW_TYPE)windowHandle);
+            SetActiveWindow((WINDOW_TYPE)windowHandle);
+        } else {
+            SetWindowPos((WINDOW_TYPE)windowHandle, HWND_BOTTOM, 0, 0, 0, 0, 
+                        SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+        }
+    #endif
+}
+
+bool is_focused_window(void* windowHandle) {
+    #if defined(__linux__) || defined(__FreeBSD__)
+        return gtk_window_is_active(GTK_WINDOW((WINDOW_TYPE)windowHandle));
+    #elif defined(__APPLE__)
+        return [(WINDOW_TYPE)windowHandle isKeyWindow];
+    #elif defined(_WIN32)
+        return GetForegroundWindow() == (WINDOW_TYPE)windowHandle;
     #endif
 }
 
