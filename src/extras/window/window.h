@@ -60,6 +60,9 @@ void focus_window(void* windowHandle);
 
 void make_borderless_window(void* windowHandle);
 
+void set_maximizable_window(void* windowHandle, bool maximizable);
+bool is_maximizable_window(void* windowHandle);
+
 #ifdef __cplusplus
 }
 #endif
