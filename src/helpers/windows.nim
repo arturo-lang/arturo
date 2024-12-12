@@ -15,21 +15,47 @@ import extras/window
 export window
 
 #=======================================
-# Helpers
-#=======================================
-
-proc isMaximized(w: Window): bool =
-    is_maximized_window(w)
-
-proc isVisible(w: Window): bool =
-    is_visible_window(w)
-
-proc isFullscreen(w: Window): bool =
-    is_fullscreen_window(w)
-
-#=======================================
 # Methods
 #=======================================
+
+proc isMaximized*(w: Window): bool =
+    is_maximized_window(w)
+
+proc isMinimized*(w: Window): bool =
+    is_minimized_window(w)
+
+proc isVisible*(w: Window): bool =
+    is_visible_window(w)
+
+proc isFullscreen*(w: Window): bool =
+    is_fullscreen_window(w)
+
+proc getSize*(w: Window): WindowSize =
+    get_window_size(w)
+
+proc setSize*(w: Window, sz: WindowSize) =
+    set_window_size(w, sz)
+
+proc getMinSize*(w: Window): WindowSize =
+    get_window_min_size(w)
+
+proc setMinSize*(w: Window, sz: WindowSize) =
+    set_window_min_size(w, sz)
+
+proc getMaxSize*(w: Window): WindowSize =
+    get_window_max_size(w)
+
+proc setMaxSize*(w: Window, sz: WindowSize) =
+    set_window_max_size(w, sz)
+
+proc getPosition*(w: Window): WindowPosition =
+    get_window_position(w)
+
+proc setPosition*(w: Window, pos: WindowPosition) =
+    set_window_position(w, pos)
+
+proc center*(w: Window) =
+    center_window(w)
 
 proc maximize*(w: Window) =
     if not w.isMaximized():
@@ -38,6 +64,14 @@ proc maximize*(w: Window) =
 proc unmaximize*(w: Window) =
     if w.isMaximized():
         unmaximize_window(w)
+
+proc minimize*(w: Window) =
+    if not w.isMinimized():
+        minimize_window(w)
+
+proc unminimize*(w: Window) =
+    if w.isMinimized():
+        unminimize_window(w)
 
 proc show*(w: Window) =
     if not w.isVisible():
@@ -61,5 +95,29 @@ proc topmost*(w: Window) =
 proc untopmost*(w: Window) =
     unset_topmost_window(w)
 
+proc setFocused*(w: Window, f: bool) =
+    set_focused_window(w, f)
+
+proc isFocused*(w: Window): bool =
+    is_focused_window(w)
+
 proc makeBorderless*(w: Window) =
     make_borderless_window(w)
+
+proc setClosable*(w: Window, c: bool) =
+    set_closable_window(w, c)
+
+proc isClosable*(w: Window): bool =
+    is_closable_window(w)
+
+proc setMaximizable*(w: Window, m: bool) =
+    set_maximizable_window(w, m)
+
+proc isMaximizable*(w: Window): bool =
+    is_maximizable_window(w)
+
+proc setMinimizable*(w: Window, m: bool) =
+    set_minimizable_window(w, m)
+
+proc isMinimizable*(w: Window): bool =
+    is_minimizable_window(w)

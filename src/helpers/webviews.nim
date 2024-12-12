@@ -35,7 +35,6 @@ when not defined(NOWEBVIEW):
         WebviewCallKind* = enum
             FunctionCall,
             ExecuteCode,
-            BackendAction,
             WebviewEvent,
             UnrecognizedCall
 
@@ -205,30 +204,13 @@ when not defined(NOWEBVIEW):
                 of "call"   : callKind = FunctionCall
                 of "exec"   : callKind = ExecuteCode
                 of "event"  : callKind = WebviewEvent
-                of "action" : callKind = BackendAction
                 else        : 
                     res = 1
                     callKind = UnrecognizedCall
 
-            if callKind == BackendAction:
-                case value.s:
-                    of "window.maximize":
-                        mainWebview.getWindow().maximize()
-                    of "window.unmaximize":
-                        mainWebview.getWindow().unmaximize()
-                    of "window.show":
-                        mainWebview.getWindow().show()
-                    of "window.hide":
-                        mainWebview.getWindow().hide()
-                    of "window.fullscreen":
-                        mainWebview.getWindow().fullscreen()
-                    of "window.unfullscreen":
-                        mainWebview.getWindow().unfullscreen()
-                    else:
-                        discard
-            else:
-                if callKind != UnrecognizedCall:
-                    returned = jsonFromValue(mainCallHandler(callKind, value), pretty=false).cstring
+
+            if callKind != UnrecognizedCall:
+                returned = jsonFromValue(mainCallHandler(callKind, value), pretty=false).cstring
 
             discard webview_return(mainWebview, cast[cstring](seq), res.cint, returned)
 
