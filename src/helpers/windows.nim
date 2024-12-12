@@ -15,24 +15,20 @@ import extras/window
 export window
 
 #=======================================
-# Helpers
-#=======================================
-
-proc isMaximized(w: Window): bool =
-    is_maximized_window(w)
-
-proc isMinimized(w: Window): bool =
-    is_minimized_window(w)
-
-proc isVisible(w: Window): bool =
-    is_visible_window(w)
-
-proc isFullscreen(w: Window): bool =
-    is_fullscreen_window(w)
-
-#=======================================
 # Methods
 #=======================================
+
+proc isMaximized*(w: Window): bool =
+    is_maximized_window(w)
+
+proc isMinimized*(w: Window): bool =
+    is_minimized_window(w)
+
+proc isVisible*(w: Window): bool =
+    is_visible_window(w)
+
+proc isFullscreen*(w: Window): bool =
+    is_fullscreen_window(w)
 
 proc getSize*(w: Window): WindowSize =
     get_window_size(w)

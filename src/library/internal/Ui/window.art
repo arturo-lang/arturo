@@ -1,12 +1,13 @@
 define :__webviewWindow [
     title: ""
-    maximized?: false
     maximizable?: true
+    minimizable?: true
     fullscreen?: false
     topmost?: false
     visible?: true
 
     get: method [what][
+        print ["intercepting:" what]
         case what [
             'size [
                 \_getSize
@@ -19,6 +20,12 @@ define :__webviewWindow [
             ]
             'position [
                 \_getPosition
+            ]
+            'maximized? [
+                \_isMaximized
+            ]
+            'minimized? [
+                \_isMinimized
             ]
             any [
                 get.field this 'what
@@ -47,21 +54,24 @@ define :__webviewWindow [
             'visible?       [
                 set.field this 'visible? value
                 value ? -> \_show
-                            -> \_hide
+                        -> \_hide
             ]
             'fullscreen?    [
                 set.field this 'fullscreen? value
                 value ? -> \_fullscreen
-                               -> \_unfullscreen
+                        -> \_unfullscreen
             ]
             'maximized?     [
-                set.field this 'maximized? value
                 value ? -> \_maximize
-                              -> \_unmaximize
+                        -> \_unmaximize
             ]
             'maximizable?   [
                 set.field this 'maximizable? value
                 \_setMaximizable value
+            ]
+            'minimized?     [
+                value ? -> \_minimize
+                        -> \_unminimize
             ]
             'minimizable?   [
                 set.field this 'minimizable? value
@@ -69,8 +79,8 @@ define :__webviewWindow [
             ]
             'topmost?       [
                 set.field this 'topmost? value
-                value   ? -> \_topmost
-                              -> \_untopmost
+                value ? -> \_topmost
+                        -> \_untopmost
             ]
             
         ]
