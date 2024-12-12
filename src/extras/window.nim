@@ -81,5 +81,7 @@ proc set_topmost_window*(w: Window) {.importc.}
 proc unset_topmost_window*(w: Window) {.importc.}
 proc focus_window*(w: Window) {.importc.}
 proc make_borderless_window*(w: Window) {.importc.}
+proc set_maximizable_window*(w: Window, maximizable: bool) {.importc.}
+proc is_maximizable_window*(w: Window): bool {.importc.}
 
 {.pop.}
