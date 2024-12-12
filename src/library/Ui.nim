@@ -366,13 +366,15 @@ proc defineLibrary*() =
                 let emptyvarr: ValueArray = @[]
                 ActiveWindow = generateNewObject(getType("__webviewWindow"),emptyvarr)
                 ActiveWindow.o["title"] = newString(title)
-                ActiveWindow.o["fullscreen?"] = newLogical(fullscreen)
                 ActiveWindow.o["maximizable?"] = newLogical(true)
                 ActiveWindow.o["minimizable?"] = newLogical(true)
                 ActiveWindow.o["topmost?"] = newLogical(topmost)
 
                 ActiveWindow.o["_setTitle"] = adhocPrivate({"title": {String}}, NoAttrs):
                     push(newLogical(webview_set_title(wv, cstring(x.s)) == OK))
+
+                ActiveWindow.o["_isFullscreen"] = adhocPrivate(NoArgs, NoAttrs):
+                    push(newLogical(wv.getWindow().isFullscreen()))
 
                 ActiveWindow.o["_isMaximized"] = adhocPrivate(NoArgs, NoAttrs):
                     push(newLogical(wv.getWindow().isMaximized()))
