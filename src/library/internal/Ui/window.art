@@ -2,7 +2,6 @@ define :__webviewWindow [
     title: ""
     maximizable?: true
     minimizable?: true
-    fullscreen?: false
     topmost?: false
     visible?: true
 
@@ -20,6 +19,9 @@ define :__webviewWindow [
             ]
             'position [
                 \_getPosition
+            ]
+            'fullscreen? [
+                \_isFullscreen
             ]
             'maximized? [
                 \_isMaximized
@@ -57,7 +59,6 @@ define :__webviewWindow [
                         -> \_hide
             ]
             'fullscreen?    [
-                set.field this 'fullscreen? value
                 value ? -> \_fullscreen
                         -> \_unfullscreen
             ]
