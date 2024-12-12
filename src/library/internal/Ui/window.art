@@ -1,6 +1,7 @@
 define :__webviewWindow [
     title: ""
     maximized?: false
+    maximizable?: true
     fullscreen?: false
     topmost?: false
     visible?: true
@@ -43,27 +44,52 @@ define :__webviewWindow [
                 set.field this 'title value
                 \_setTitle value
             ]
-        ]
-    ]
-
-    changed: method [what][
-        case what [
             'visible?       [
-                \visible? ? -> \_show
+                set.field this 'visible? value
+                value ? -> \_show
                             -> \_hide
             ]
             'fullscreen?    [
-                \fullscreen? ? -> \_fullscreen
+                set.field this 'fullscreen? value
+                value ? -> \_fullscreen
                                -> \_unfullscreen
             ]
             'maximized?     [
-                \maximized? ? -> \_maximize
+                set.field this 'maximized? value
+                value ? -> \_maximize
                               -> \_unmaximize
             ]
+            'maximizable?   [
+                set.field this 'maximizable? value
+                \_setMaximizable value
+            ]
             'topmost?       [
-                \topmost?   ? -> \_topmost
+                set.field this 'topmost? value
+                value   ? -> \_topmost
                               -> \_untopmost
             ]
+            
         ]
     ]
+
+    ; changed: method [what][
+    ;     case what [
+    ;         'visible?       [
+    ;             \visible? ? -> \_show
+    ;                         -> \_hide
+    ;         ]
+    ;         'fullscreen?    [
+    ;             \fullscreen? ? -> \_fullscreen
+    ;                            -> \_unfullscreen
+    ;         ]
+    ;         'maximized?     [
+    ;             \maximized? ? -> \_maximize
+    ;                           -> \_unmaximize
+    ;         ]
+    ;         'topmost?       [
+    ;             \topmost?   ? -> \_topmost
+    ;                           -> \_untopmost
+    ;         ]
+    ;     ]
+    ; ]
 ]
