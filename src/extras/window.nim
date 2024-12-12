@@ -79,7 +79,8 @@ proc fullscreen_window*(w: Window) {.importc.}
 proc unfullscreen_window*(w: Window) {.importc.}
 proc set_topmost_window*(w: Window) {.importc.}
 proc unset_topmost_window*(w: Window) {.importc.}
-proc focus_window*(w: Window) {.importc.}
+proc set_focused_window*(w: Window, focused: bool) {.importc.}
+proc is_focused_window*(w: Window): bool {.importc.}
 proc make_borderless_window*(w: Window) {.importc.}
 proc set_closable_window*(w: Window, closable: bool) {.importc.}
 proc is_closable_window*(w: Window): bool {.importc.}
