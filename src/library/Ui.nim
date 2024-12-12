@@ -323,21 +323,6 @@ proc defineLibrary*() =
 
                                 if SP > prevSP:
                                     result = stack.pop()
-                                    
-                        elif call==MethodInvocation:
-                            if SymExists(value.d["object"].s) and GetSym(value.d["object"].s).kind in {Dictionary,Object}:
-                                let prevSP = SP
-                                let obj = GetSym(value.d["object"].s)
-                                let meth = obj.o[value.d["method"].s]
-                                
-                                for v in value.d["args"].a.reversed:
-                                    push(v)
-
-                                let fid = hash(value.d["method"].s)
-                                execMethod(meth, fid)
-
-                                if SP > prevSP:
-                                    result = stack.pop()
 
                         elif call==ExecuteCode:
                             try:
