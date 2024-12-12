@@ -446,6 +446,9 @@ proc defineLibrary*() =
                 ActiveWindow.o["_hide"] = adhocPrivate(NoArgs, NoAttrs):
                     wv.getWindow().hide()
 
+                ActiveWindow.o["_setClosable"] = adhocPrivate({"val": {Logical}}, NoAttrs):
+                    wv.getWindow().setClosable(isTrue(x))
+
                 ActiveWindow.o["_setMaximizable"] = adhocPrivate({"val": {Logical}}, NoAttrs):
                     wv.getWindow().setMaximizable(isTrue(x))
 

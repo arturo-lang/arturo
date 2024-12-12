@@ -1,5 +1,6 @@
 define :__webviewWindow [
     title: ""
+    closable?: true
     maximizable?: true
     minimizable?: true
     topmost?: false
@@ -61,6 +62,10 @@ define :__webviewWindow [
             'fullscreen?    [
                 value ? -> \_fullscreen
                         -> \_unfullscreen
+            ]
+            'closable?      [
+                set.field this 'closable? value
+                \_setClosable value
             ]
             'maximized?     [
                 value ? -> \_maximize
