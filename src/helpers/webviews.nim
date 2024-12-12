@@ -34,7 +34,6 @@ when not defined(NOWEBVIEW):
     type
         WebviewCallKind* = enum
             FunctionCall,
-            MethodInvocation,
             ExecuteCode,
             WebviewEvent,
             UnrecognizedCall
@@ -203,7 +202,6 @@ when not defined(NOWEBVIEW):
 
             case mode:
                 of "call"   : callKind = FunctionCall
-                of "invoke" : callKind = MethodInvocation
                 of "exec"   : callKind = ExecuteCode
                 of "event"  : callKind = WebviewEvent
                 else        : 
