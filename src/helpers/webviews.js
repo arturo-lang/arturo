@@ -11,15 +11,19 @@ if (typeof arturo === 'undefined') {
             }))
         },
 
+        // invoke a specific method
+        invoke: (object, method, ...args)=>{
+            return window.callback("invoke", JSON.stringify({
+                "object": object,
+                "method": method,
+                "args": args
+            }))
+        },
+
         // execute arbitrary arturo code 
         // in backend
         exec: (code)=>{
             return window.callback("exec", JSON.stringify(code))
-        },
-
-        // invoke a specific backend action
-        invoke: (action)=>{
-            return window.callback("action", JSON.stringify(action))
         }
     }
 }
