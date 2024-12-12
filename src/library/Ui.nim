@@ -421,20 +421,6 @@ proc defineLibrary*() =
             alias       = unaliased,
             description = "the main active window":
                 ActiveWindow
-                # newDictionary({
-                #     "setTitle": 
-                #         adhoc("set window title",
-                #             args = {
-                #                 "title": {String}
-                #             },
-                #             attrs = NoAttrs,
-                #             returns = {Nothing},
-                #             block:
-                #                 #=================
-                #                 if ActiveWebview.isNil: Error_NoActiveWindowFound()
-                #                 discard webview_set_title(ActiveWebview, cstring(x.s))
-                #         )
-                # }.toOrderedTable)
                 
 #=======================================
 # Add Library
