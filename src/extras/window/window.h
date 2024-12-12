@@ -82,24 +82,22 @@ bool is_minimizable_window(void* windowHandle);
 // Menus
 //------------------------------
 
-// Forward declarations
-typedef struct MenuItem MenuItem;
-typedef struct Menu Menu;
-
 // Callback type for menu actions
 typedef void (*MenuActionCallback)(void* userData);
 
-struct MenuItem {
+typedef struct MenuItem {
     char* label;                  // Display text
     char* shortcut;              // Optional keyboard shortcut (platform-specific format)
     bool enabled;                // Whether the item is clickable
     bool checked;                // For checkable menu items
-    MenuActionCallback action;   // Callback when item is selected
+    MenuActionCallback action;    // Callback when item is selected
     void* userData;              // User data passed to callback
     Menu* submenu;               // Optional submenu (NULL if none)
 };
 
-struct Menu {
+} MenuItem;
+
+typedef struct Menu {
     char* title;                 // Menu title (shown in menu bar)
     MenuItem* items;             // Array of menu items
     size_t itemCount;            // Number of items in menu
