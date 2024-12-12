@@ -679,12 +679,6 @@ func Error_CompatibleBrowserCouldNotOpenWindow*() =
             Could not open a Chrome-compatible browser window
         """
 
-func Error_NoActiveWindowFound*() =
-    panic:
-        toError UIErr, """
-            Could not find an active webview window
-        """
-
 #------------------------
 # Name Errors
 #------------------------
