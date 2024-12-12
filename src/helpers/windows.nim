@@ -110,3 +110,9 @@ proc setMaximizable*(w: Window, m: bool) =
 
 proc isMaximizable*(w: Window): bool =
     is_maximizable_window(w)
+
+proc setMinimizable*(w: Window, m: bool) =
+    set_minimizable_window(w, m)
+
+proc isMinimizable*(w: Window): bool =
+    is_minimizable_window(w)

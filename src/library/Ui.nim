@@ -371,6 +371,7 @@ proc defineLibrary*() =
                 ActiveWindow.o["topmost?"] = newLogical(topmost)
 
                 ActiveWindow.o["maximizable?"] = newLogical(true)
+                ActiveWindow.o["minimizable?"] = newLogical(true)
 
                 ActiveWindow.o["_setTitle"] = adhocPrivate({"title": {String}}, NoAttrs):
                     push(newLogical(webview_set_title(wv, cstring(x.s)) == OK))
@@ -432,6 +433,9 @@ proc defineLibrary*() =
 
                 ActiveWindow.o["_setMaximizable"] = adhocPrivate({"val": {Logical}}, NoAttrs):
                     wv.getWindow().setMaximizable(isTrue(x))
+
+                ActiveWindow.o["_setMinimizable"] = adhocPrivate({"val": {Logical}}, NoAttrs):
+                    wv.getWindow().setMinimizable(isTrue(x))
                 
                 ActiveWindow.o["close"] = adhocPrivate(NoArgs, NoAttrs):
                     push(newLogical(wv.webview_terminate() == OK))

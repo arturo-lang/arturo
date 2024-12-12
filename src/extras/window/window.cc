@@ -557,6 +557,48 @@ bool is_maximizable_window(void* windowHandle) {
     #endif
 }
 
+void set_minimizable_window(void* windowHandle, bool minimizable) {
+    #if defined(__linux__) || defined(__FreeBSD__)
+        // GTK doesn't have direct minimizable control
+        // We can use hints to remove the minimize button
+        GdkWMFunction funcs = (GdkWMFunction)(GDK_FUNC_ALL);
+        if (!minimizable) {
+            funcs = (GdkWMFunction)(GDK_FUNC_ALL & ~GDK_FUNC_MINIMIZE);
+        }
+        gtk_window_set_functions(GTK_WINDOW((WINDOW_TYPE)windowHandle), funcs);
+    #elif defined(__APPLE__)
+        if (!minimizable) {
+            [(WINDOW_TYPE)windowHandle setStyleMask:[(WINDOW_TYPE)windowHandle styleMask] & ~NSWindowStyleMaskMiniaturizable];
+        } else {
+            [(WINDOW_TYPE)windowHandle setStyleMask:[(WINDOW_TYPE)windowHandle styleMask] | NSWindowStyleMaskMiniaturizable];
+        }
+    #elif defined(_WIN32)
+        LONG style = GetWindowLong((WINDOW_TYPE)windowHandle, GWL_STYLE);
+        if (!minimizable) {
+            style &= ~WS_MINIMIZEBOX;
+        } else {
+            style |= WS_MINIMIZEBOX;
+        }
+        SetWindowLong((WINDOW_TYPE)windowHandle, GWL_STYLE, style);
+        SetWindowPos((WINDOW_TYPE)windowHandle, 
+                     NULL, 0, 0, 0, 0,
+                     SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
+    #endif
+}
+
+bool is_minimizable_window(void* windowHandle) {
+    #if defined(__linux__) || defined(__FreeBSD__)
+        // GTK doesn't provide direct access to window functions
+        // Would need to track state separately
+        return true;
+    #elif defined(__APPLE__)
+        return ([(WINDOW_TYPE)windowHandle styleMask] & NSWindowStyleMaskMiniaturizable) != 0;
+    #elif defined(_WIN32)
+        LONG style = GetWindowLong((WINDOW_TYPE)windowHandle, GWL_STYLE);
+        return (style & WS_MINIMIZEBOX) != 0;
+    #endif
+}
+
 #ifndef WIN32_LEAN_AND_MEAN
     #define WIN32_LEAN_AND_MEAN 1
 #endif

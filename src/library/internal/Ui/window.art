@@ -63,6 +63,10 @@ define :__webviewWindow [
                 set.field this 'maximizable? value
                 \_setMaximizable value
             ]
+            'minimizable?   [
+                set.field this 'minimizable? value
+                \_setMinimizable value
+            ]
             'topmost?       [
                 set.field this 'topmost? value
                 value   ? -> \_topmost

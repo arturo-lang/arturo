@@ -63,6 +63,9 @@ void make_borderless_window(void* windowHandle);
 void set_maximizable_window(void* windowHandle, bool maximizable);
 bool is_maximizable_window(void* windowHandle);
 
+void set_minimizable_window(void* windowHandle, bool minimizable);
+bool is_minimizable_window(void* windowHandle);
+
 #ifdef __cplusplus
 }
 #endif
