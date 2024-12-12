@@ -2545,6 +2545,7 @@ private:
                         auto window =
                             objc::msg_send<id>(notification, "object"_sel);
                         auto w = get_associated_webview(self);
+                        printf("windowWillClose: triggered");
                         w->on_window_will_close(self, window);
                       }),
                       "v@:@");
