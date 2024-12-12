@@ -538,7 +538,7 @@ void set_closable_window(void* windowHandle, bool closable) {
         if (!closable) {
             funcs = (GdkWMFunction)(GDK_FUNC_ALL & ~GDK_FUNC_CLOSE);
         }
-        gtk_window_set_functions(GTK_WINDOW((WINDOW_TYPE)windowHandle), funcs);
+        gdk_window_set_functions(GTK_WINDOW((WINDOW_TYPE)windowHandle), funcs);
         
         // Also handle the close button in the window decorations
         gtk_window_set_deletable(GTK_WINDOW((WINDOW_TYPE)windowHandle), closable);
@@ -639,7 +639,7 @@ void set_minimizable_window(void* windowHandle, bool minimizable) {
         if (!minimizable) {
             funcs = (GdkWMFunction)(GDK_FUNC_ALL & ~GDK_FUNC_MINIMIZE);
         }
-        gtk_window_set_functions(GTK_WINDOW((WINDOW_TYPE)windowHandle), funcs);
+        gdk_window_set_functions(GTK_WINDOW((WINDOW_TYPE)windowHandle), funcs);
     #elif defined(__APPLE__)
         if (!minimizable) {
             [(WINDOW_TYPE)windowHandle setStyleMask:[(WINDOW_TYPE)windowHandle styleMask] & ~NSWindowStyleMaskMiniaturizable];
