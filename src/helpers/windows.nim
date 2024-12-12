@@ -58,7 +58,7 @@ proc getPosition*(w: Window): WindowPosition =
 proc setPosition*(w: Window, pos: WindowPosition) =
     set_window_position(w, pos)
 
-proc centerWindow*(w: Window) =
+proc center*(w: Window) =
     center_window(w)
 
 proc maximize*(w: Window) =

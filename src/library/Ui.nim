@@ -392,18 +392,21 @@ proc defineLibrary*() =
                     wv.getWindow().unset_topmost_window()
 
                 ActiveWindow.o["_getSize"] = adhocPrivate(NoArgs, NoAttrs):
-                    let sz = wv.getWindow().get_window_size()
+                    let sz = wv.getWindow().getSize()
                     push(newBlock(@[newInteger(sz.width), newInteger(sz.height)]))
 
                 ActiveWindow.o["_setSize"] = adhocPrivate({"size": {Block}}, NoAttrs):
-                    wv.getWindow().set_window_size(WindowSize(width: x.a[0].i, height: x.a[1].i))
+                    wv.getWindow().setSize(WindowSize(width: x.a[0].i, height: x.a[1].i))
 
                 ActiveWindow.o["_getPosition"] = adhocPrivate(NoArgs, NoAttrs):
-                    let pos = wv.getWindow().get_window_position()
+                    let pos = wv.getWindow().getPosition()
                     push(newBlock(@[newInteger(pos.x), newInteger(pos.y)]))
 
                 ActiveWindow.o["_setPosition"] = adhocPrivate({"pos": {Block}}, NoAttrs):
-                    wv.getWindow().set_window_position(WindowPosition(x: x.a[0].i, y: x.a[1].i))
+                    wv.getWindow().setPosition(WindowPosition(x: x.a[0].i, y: x.a[1].i))
+
+                ActiveWindow.o["center"] = adhocPrivate(NoArgs, NoAttrs):
+                    wv.getWindow().center()
 
                 ActiveWindow.o["_show"] = adhocPrivate(NoArgs, NoAttrs):
                     wv.getWindow().show()
