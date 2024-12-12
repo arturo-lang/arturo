@@ -534,14 +534,18 @@ void make_borderless_window(void* windowHandle){
 
 void set_closable_window(void* windowHandle, bool closable) {
     #if defined(__linux__) || defined(__FreeBSD__)
-        GdkWMFunction funcs = (GdkWMFunction)(GDK_FUNC_ALL);
-        if (!closable) {
-            funcs = (GdkWMFunction)(GDK_FUNC_ALL & ~GDK_FUNC_CLOSE);
-        }
-        gdk_window_set_functions(GTK_WINDOW((WINDOW_TYPE)windowHandle), funcs);
-        
-        // Also handle the close button in the window decorations
+        // Handle the close button in the window decorations
         gtk_window_set_deletable(GTK_WINDOW((WINDOW_TYPE)windowHandle), closable);
+        
+        // Disable window manager functions if needed
+        GdkWindow* gdk_window = gtk_widget_get_window((WINDOW_TYPE)windowHandle);
+        if (gdk_window != NULL) {
+            GdkWMFunction funcs = (GdkWMFunction)(GDK_FUNC_ALL);
+            if (!closable) {
+                funcs = (GdkWMFunction)(GDK_FUNC_ALL & ~GDK_FUNC_CLOSE);
+            }
+            gdk_window_set_functions(gdk_window, funcs);
+        }
     #elif defined(__APPLE__)
         if (!closable) {
             [(WINDOW_TYPE)windowHandle setStyleMask:[(WINDOW_TYPE)windowHandle styleMask] & ~NSWindowStyleMaskClosable];
@@ -639,7 +643,8 @@ void set_minimizable_window(void* windowHandle, bool minimizable) {
         if (!minimizable) {
             funcs = (GdkWMFunction)(GDK_FUNC_ALL & ~GDK_FUNC_MINIMIZE);
         }
-        gdk_window_set_functions(GTK_WINDOW((WINDOW_TYPE)windowHandle), funcs);
+        GdkWindow* gdk_window = gtk_widget_get_window((WINDOW_TYPE)windowHandle);
+        gdk_window_set_functions(gdk_window, funcs);
     #elif defined(__APPLE__)
         if (!minimizable) {
             [(WINDOW_TYPE)windowHandle setStyleMask:[(WINDOW_TYPE)windowHandle styleMask] & ~NSWindowStyleMaskMiniaturizable];
