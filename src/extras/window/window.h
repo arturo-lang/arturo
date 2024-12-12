@@ -60,8 +60,6 @@ void focus_window(void* windowHandle);
 
 void make_borderless_window(void* windowHandle);
 
-void set_window_icon(void* windowHandle, const unsigned char* iconData, size_t iconDataSize);
-
 #ifdef __cplusplus
 }
 #endif
