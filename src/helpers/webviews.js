@@ -15,6 +15,7 @@ if (typeof arturo === 'undefined') {
         },
 
         // window state management
+        // this could be part of Águila!!
         window: {
             // Minimized state
             get minimized() {
