@@ -505,6 +505,58 @@ void make_borderless_window(void* windowHandle){
     #endif
 }
 
+void set_maximizable_window(void* windowHandle, bool maximizable) {
+    #if defined(__linux__) || defined(__FreeBSD__)
+        GdkWindowHints hints = (GdkWindowHints)(GDK_HINT_MAX_SIZE);
+        GdkGeometry geometry = {};
+        
+        if (!maximizable) {
+            WindowSize current = get_window_size(windowHandle);
+            geometry.max_width = current.width;
+            geometry.max_height = current.height;
+        } else {
+            geometry.max_width = G_MAXINT;
+            geometry.max_height = G_MAXINT;
+        }
+        
+        gtk_window_set_geometry_hints(GTK_WINDOW((WINDOW_TYPE)windowHandle),
+                                    NULL,
+                                    &geometry,
+                                    hints);
+    #elif defined(__APPLE__)
+        if (!maximizable) {
+            [(WINDOW_TYPE)windowHandle setStyleMask:[(WINDOW_TYPE)windowHandle styleMask] & ~NSWindowStyleMaskResizable];
+        } else {
+            [(WINDOW_TYPE)windowHandle setStyleMask:[(WINDOW_TYPE)windowHandle styleMask] | NSWindowStyleMaskResizable];
+        }
+    #elif defined(_WIN32)
+        LONG style = GetWindowLong((WINDOW_TYPE)windowHandle, GWL_STYLE);
+        if (!maximizable) {
+            style &= ~WS_MAXIMIZEBOX;
+        } else {
+            style |= WS_MAXIMIZEBOX;
+        }
+        SetWindowLong((WINDOW_TYPE)windowHandle, GWL_STYLE, style);
+        SetWindowPos((WINDOW_TYPE)windowHandle, 
+                     NULL, 0, 0, 0, 0,
+                     SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
+    #endif
+}
+
+bool is_maximizable_window(void* windowHandle) {
+    #if defined(__linux__) || defined(__FreeBSD__)
+        // For GTK, check if max size is set to current size
+        WindowSize maxSize = get_window_max_size(windowHandle);
+        WindowSize currentSize = get_window_size(windowHandle);
+        return maxSize.width == 0 || maxSize.width > currentSize.width;
+    #elif defined(__APPLE__)
+        return ([(WINDOW_TYPE)windowHandle styleMask] & NSWindowStyleMaskResizable) != 0;
+    #elif defined(_WIN32)
+        LONG style = GetWindowLong((WINDOW_TYPE)windowHandle, GWL_STYLE);
+        return (style & WS_MAXIMIZEBOX) != 0;
+    #endif
+}
+
 #ifndef WIN32_LEAN_AND_MEAN
     #define WIN32_LEAN_AND_MEAN 1
 #endif
