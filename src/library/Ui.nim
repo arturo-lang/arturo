@@ -398,6 +398,20 @@ proc defineLibrary*() =
                 ActiveWindow.o["_setSize"] = adhocPrivate({"size": {Block}}, NoAttrs):
                     wv.getWindow().setSize(WindowSize(width: x.a[0].i, height: x.a[1].i))
 
+                ActiveWindow.o["_getMinSize"] = adhocPrivate(NoArgs, NoAttrs):
+                    let sz = wv.getWindow().getMinSize()
+                    push(newBlock(@[newInteger(sz.width), newInteger(sz.height)]))
+
+                ActiveWindow.o["_setMinSize"] = adhocPrivate({"size": {Block}}, NoAttrs):
+                    wv.getWindow().setMinSize(WindowSize(width: x.a[0].i, height: x.a[1].i))
+
+                ActiveWindow.o["_getMaxSize"] = adhocPrivate(NoArgs, NoAttrs):
+                    let sz = wv.getWindow().getMaxSize()
+                    push(newBlock(@[newInteger(sz.width), newInteger(sz.height)]))
+
+                ActiveWindow.o["_setMaxSize"] = adhocPrivate({"size": {Block}}, NoAttrs):
+                    wv.getWindow().setMaxSize(WindowSize(width: x.a[0].i, height: x.a[1].i))
+
                 ActiveWindow.o["_getPosition"] = adhocPrivate(NoArgs, NoAttrs):
                     let pos = wv.getWindow().getPosition()
                     push(newBlock(@[newInteger(pos.x), newInteger(pos.y)]))

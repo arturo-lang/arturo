@@ -10,6 +10,12 @@ define :__webviewWindow [
             'size [
                 \_getSize
             ]
+            'minSize [
+                \_getMinSize
+            ]
+            'maxSize [
+                \_getMaxSize
+            ]
             'position [
                 \_getPosition
             ]
@@ -23,6 +29,12 @@ define :__webviewWindow [
         case what [
             'size           [
                 \_setSize value
+            ]
+            'minSize        [
+                \_setMinSize value
+            ]
+            'maxsize        [
+                \_setMaxSize value
             ]
             'position       [
                 \_setPosition value
