@@ -12,6 +12,10 @@
 // Copyright (c) 2021 Neutralinojs and contributors.
 
 #include "window.h"
+#include <cstring>
+#include <cstdlib>
+#include <map>
+#include <string>
 
 #if defined(__linux__) || defined(__FreeBSD__)
     #include <gtk/gtk.h>
@@ -34,11 +38,31 @@
     #include <windows.h>
     #include <gdiplus.h>
     #pragma comment(lib, "Gdiplus.lib")
-
     #include <Shlwapi.h>      
     #pragma comment(lib, "Shlwapi.lib")
 
     #define WINDOW_TYPE HWND
+
+    // Windows-specific callback storage
+    namespace {
+        std::map<int, MenuActionCallback> menuCallbacks;
+        std::map<int, void*> menuUserData;
+        WNDPROC originalWndProc = nullptr;
+
+        LRESULT CALLBACK MenuWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+            if (msg == WM_COMMAND) {
+                int cmdId = LOWORD(wParam);
+                auto callbackIt = menuCallbacks.find(cmdId);
+                auto userDataIt = menuUserData.find(cmdId);
+                
+                if (callbackIt != menuCallbacks.end() && userDataIt != menuUserData.end()) {
+                    callbackIt->second(userDataIt->second);
+                    return 0;
+                }
+            }
+            return CallWindowProc(originalWndProc, hwnd, msg, wParam, lParam);
+        }
+    }
 
 #endif
 
@@ -745,7 +769,7 @@ MenuItem* add_menu_item(Menu* menu, const char* label, MenuActionCallback action
     return item;
 }
 
-void set_window_menu(void* windowHandle, Menu** menus, size_t menuCount) {
+void set_window_menu(void* windowHandle, struct Menu** menus, size_t menuCount) {
     #if defined(__linux__) || defined(__FreeBSD__)
         GtkWidget* menuBar = gtk_menu_bar_new();
         
@@ -947,26 +971,6 @@ void set_window_menu(void* windowHandle, Menu** menus, size_t menuCount) {
         [NSApp setMainMenu:mainMenu];
         
     #elif defined(_WIN32)
-        // Static maps to store callbacks and user data
-        static std::map<int, MenuActionCallback> menuCallbacks;
-        static std::map<int, void*> menuUserData;
-        
-        // Static window procedure to handle menu commands
-        static WNDPROC originalWndProc = nullptr;
-        static LRESULT CALLBACK MenuWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
-            if (msg == WM_COMMAND) {
-                int cmdId = LOWORD(wParam);
-                auto callbackIt = menuCallbacks.find(cmdId);
-                auto userDataIt = menuUserData.find(cmdId);
-                
-                if (callbackIt != menuCallbacks.end() && userDataIt != menuUserData.end()) {
-                    callbackIt->second(userDataIt->second);
-                    return 0;
-                }
-            }
-            return CallWindowProc(originalWndProc, hwnd, msg, wParam, lParam);
-        }
-        
         HMENU hMenuBar = CreateMenu();
         
         // Set up window procedure if not already done
