@@ -96,7 +96,7 @@ proc untopmost*(w: Window) =
     unset_topmost_window(w)
 
 proc setFocused*(w: Window, f: bool) =
-    set_focused_window(w, c)
+    set_focused_window(w, f)
 
 proc isFocused*(w: Window): bool =
     is_focused_window(w)
