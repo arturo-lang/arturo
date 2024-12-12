@@ -1,9 +1,9 @@
 define :__webviewWindow [
     title: ""
-    maximized?: false
-    fullscreen?: false
+    closable?: true
+    maximizable?: true
+    minimizable?: true
     topmost?: false
-    visible?: true
 
     get: method [what][
         case what [
@@ -18,6 +18,21 @@ define :__webviewWindow [
             ]
             'position [
                 \_getPosition
+            ]
+            'visible? [
+                \_isVisible
+            ]
+            'focused? [
+                \_isFocused
+            ]
+            'fullscreen? [
+                \_isFullscreen
+            ]
+            'maximized? [
+                \_isMaximized
+            ]
+            'minimized? [
+                \_isMinimized
             ]
             any [
                 get.field this 'what
@@ -43,27 +58,64 @@ define :__webviewWindow [
                 set.field this 'title value
                 \_setTitle value
             ]
+            'visible?       [
+                value ? -> \_show
+                        -> \_hide
+            ]
+            'focused?     [
+                \_setFocused value
+            ]
+            'fullscreen?    [
+                value ? -> \_fullscreen
+                        -> \_unfullscreen
+            ]
+            'closable?      [
+                set.field this 'closable? value
+                \_setClosable value
+            ]
+            'maximized?     [
+                value ? -> \_maximize
+                        -> \_unmaximize
+            ]
+            'maximizable?   [
+                set.field this 'maximizable? value
+                \_setMaximizable value
+            ]
+            'minimized?     [
+                value ? -> \_minimize
+                        -> \_unminimize
+            ]
+            'minimizable?   [
+                set.field this 'minimizable? value
+                \_setMinimizable value
+            ]
+            'topmost?       [
+                set.field this 'topmost? value
+                value ? -> \_topmost
+                        -> \_untopmost
+            ]
+            
         ]
     ]
 
-    changed: method [what][
-        case what [
-            'visible?       [
-                \visible? ? -> \_show
-                            -> \_hide
-            ]
-            'fullscreen?    [
-                \fullscreen? ? -> \_fullscreen
-                               -> \_unfullscreen
-            ]
-            'maximized?     [
-                \maximized? ? -> \_maximize
-                              -> \_unmaximize
-            ]
-            'topmost?       [
-                \topmost?   ? -> \_topmost
-                              -> \_untopmost
-            ]
-        ]
-    ]
+    ; changed: method [what][
+    ;     case what [
+    ;         'visible?       [
+    ;             \visible? ? -> \_show
+    ;                         -> \_hide
+    ;         ]
+    ;         'fullscreen?    [
+    ;             \fullscreen? ? -> \_fullscreen
+    ;                            -> \_unfullscreen
+    ;         ]
+    ;         'maximized?     [
+    ;             \maximized? ? -> \_maximize
+    ;                           -> \_unmaximize
+    ;         ]
+    ;         'topmost?       [
+    ;             \topmost?   ? -> \_topmost
+    ;                           -> \_untopmost
+    ;         ]
+    ;     ]
+    ; ]
 ]

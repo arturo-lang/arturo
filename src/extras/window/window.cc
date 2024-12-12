@@ -474,13 +474,40 @@ void unset_topmost_window(void* windowHandle){
     #endif
 }
 
-void focus_window(void* windowHandle) {
+void set_focused_window(void* windowHandle, bool focused) {
     #if defined(__linux__) || defined(__FreeBSD__)
-        gtk_window_present(GTK_WINDOW((WINDOW_TYPE)windowHandle));
+        if (focused) {
+            gtk_window_present(GTK_WINDOW((WINDOW_TYPE)windowHandle));
+        } else {
+            GtkWidget* otherWindow = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+            gtk_window_present(GTK_WINDOW(otherWindow));
+            gtk_widget_destroy(otherWindow);
+        }
     #elif defined(__APPLE__)
-        [(WINDOW_TYPE)windowHandle orderFront:nil];
+        if (focused) {
+            [(WINDOW_TYPE)windowHandle makeKeyAndOrderFront:nil];
+        } else {
+            [(WINDOW_TYPE)windowHandle orderOut:nil];
+            [(WINDOW_TYPE)windowHandle orderBack:nil];
+        }
     #elif defined(_WIN32)
-        SetForegroundWindow((WINDOW_TYPE)windowHandle);
+        if (focused) {
+            SetForegroundWindow((WINDOW_TYPE)windowHandle);
+            SetActiveWindow((WINDOW_TYPE)windowHandle);
+        } else {
+            SetWindowPos((WINDOW_TYPE)windowHandle, HWND_BOTTOM, 0, 0, 0, 0, 
+                        SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+        }
+    #endif
+}
+
+bool is_focused_window(void* windowHandle) {
+    #if defined(__linux__) || defined(__FreeBSD__)
+        return gtk_window_is_active(GTK_WINDOW((WINDOW_TYPE)windowHandle));
+    #elif defined(__APPLE__)
+        return [(WINDOW_TYPE)windowHandle isKeyWindow];
+    #elif defined(_WIN32)
+        return GetForegroundWindow() == (WINDOW_TYPE)windowHandle;
     #endif
 }
 
@@ -502,6 +529,152 @@ void make_borderless_window(void* windowHandle){
             0, 
             SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED
         );
+    #endif
+}
+
+void set_closable_window(void* windowHandle, bool closable) {
+    #if defined(__linux__) || defined(__FreeBSD__)
+        // Handle the close button in the window decorations
+        gtk_window_set_deletable(GTK_WINDOW((WINDOW_TYPE)windowHandle), closable);
+        
+        // Disable window manager functions if needed
+        GdkWindow* gdk_window = gtk_widget_get_window((WINDOW_TYPE)windowHandle);
+        if (gdk_window != NULL) {
+            GdkWMFunction funcs = (GdkWMFunction)(GDK_FUNC_ALL);
+            if (!closable) {
+                funcs = (GdkWMFunction)(GDK_FUNC_ALL & ~GDK_FUNC_CLOSE);
+            }
+            gdk_window_set_functions(gdk_window, funcs);
+        }
+    #elif defined(__APPLE__)
+        if (!closable) {
+            [(WINDOW_TYPE)windowHandle setStyleMask:[(WINDOW_TYPE)windowHandle styleMask] & ~NSWindowStyleMaskClosable];
+        } else {
+            [(WINDOW_TYPE)windowHandle setStyleMask:[(WINDOW_TYPE)windowHandle styleMask] | NSWindowStyleMaskClosable];
+        }
+    #elif defined(_WIN32)
+        HMENU hMenu = GetSystemMenu((WINDOW_TYPE)windowHandle, FALSE);
+        if (!closable) {
+            EnableMenuItem(hMenu, SC_CLOSE, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
+            LONG style = GetWindowLong((WINDOW_TYPE)windowHandle, GWL_STYLE);
+            style &= ~WS_SYSMENU;
+            SetWindowLong((WINDOW_TYPE)windowHandle, GWL_STYLE, style);
+        } else {
+            EnableMenuItem(hMenu, SC_CLOSE, MF_BYCOMMAND | MF_ENABLED);
+            LONG style = GetWindowLong((WINDOW_TYPE)windowHandle, GWL_STYLE);
+            style |= WS_SYSMENU;
+            SetWindowLong((WINDOW_TYPE)windowHandle, GWL_STYLE, style);
+        }
+        SetWindowPos((WINDOW_TYPE)windowHandle, 
+                     NULL, 0, 0, 0, 0,
+                     SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
+    #endif
+}
+
+bool is_closable_window(void* windowHandle) {
+    #if defined(__linux__) || defined(__FreeBSD__)
+        return gtk_window_get_deletable(GTK_WINDOW((WINDOW_TYPE)windowHandle));
+    #elif defined(__APPLE__)
+        return ([(WINDOW_TYPE)windowHandle styleMask] & NSWindowStyleMaskClosable) != 0;
+    #elif defined(_WIN32)
+        HMENU hMenu = GetSystemMenu((WINDOW_TYPE)windowHandle, FALSE);
+        UINT state = GetMenuState(hMenu, SC_CLOSE, MF_BYCOMMAND);
+        return !(state & MF_DISABLED);
+    #endif
+}
+
+void set_maximizable_window(void* windowHandle, bool maximizable) {
+    #if defined(__linux__) || defined(__FreeBSD__)
+        GdkWindowHints hints = (GdkWindowHints)(GDK_HINT_MAX_SIZE);
+        GdkGeometry geometry = {};
+        
+        if (!maximizable) {
+            WindowSize current = get_window_size(windowHandle);
+            geometry.max_width = current.width;
+            geometry.max_height = current.height;
+        } else {
+            geometry.max_width = G_MAXINT;
+            geometry.max_height = G_MAXINT;
+        }
+        
+        gtk_window_set_geometry_hints(GTK_WINDOW((WINDOW_TYPE)windowHandle),
+                                    NULL,
+                                    &geometry,
+                                    hints);
+    #elif defined(__APPLE__)
+        if (!maximizable) {
+            [(WINDOW_TYPE)windowHandle setStyleMask:[(WINDOW_TYPE)windowHandle styleMask] & ~NSWindowStyleMaskResizable];
+        } else {
+            [(WINDOW_TYPE)windowHandle setStyleMask:[(WINDOW_TYPE)windowHandle styleMask] | NSWindowStyleMaskResizable];
+        }
+    #elif defined(_WIN32)
+        LONG style = GetWindowLong((WINDOW_TYPE)windowHandle, GWL_STYLE);
+        if (!maximizable) {
+            style &= ~WS_MAXIMIZEBOX;
+        } else {
+            style |= WS_MAXIMIZEBOX;
+        }
+        SetWindowLong((WINDOW_TYPE)windowHandle, GWL_STYLE, style);
+        SetWindowPos((WINDOW_TYPE)windowHandle, 
+                     NULL, 0, 0, 0, 0,
+                     SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
+    #endif
+}
+
+bool is_maximizable_window(void* windowHandle) {
+    #if defined(__linux__) || defined(__FreeBSD__)
+        // For GTK, check if max size is set to current size
+        WindowSize maxSize = get_window_max_size(windowHandle);
+        WindowSize currentSize = get_window_size(windowHandle);
+        return maxSize.width == 0 || maxSize.width > currentSize.width;
+    #elif defined(__APPLE__)
+        return ([(WINDOW_TYPE)windowHandle styleMask] & NSWindowStyleMaskResizable) != 0;
+    #elif defined(_WIN32)
+        LONG style = GetWindowLong((WINDOW_TYPE)windowHandle, GWL_STYLE);
+        return (style & WS_MAXIMIZEBOX) != 0;
+    #endif
+}
+
+void set_minimizable_window(void* windowHandle, bool minimizable) {
+    #if defined(__linux__) || defined(__FreeBSD__)
+        // GTK doesn't have direct minimizable control
+        // We can use hints to remove the minimize button
+        GdkWMFunction funcs = (GdkWMFunction)(GDK_FUNC_ALL);
+        if (!minimizable) {
+            funcs = (GdkWMFunction)(GDK_FUNC_ALL & ~GDK_FUNC_MINIMIZE);
+        }
+        GdkWindow* gdk_window = gtk_widget_get_window((WINDOW_TYPE)windowHandle);
+        gdk_window_set_functions(gdk_window, funcs);
+    #elif defined(__APPLE__)
+        if (!minimizable) {
+            [(WINDOW_TYPE)windowHandle setStyleMask:[(WINDOW_TYPE)windowHandle styleMask] & ~NSWindowStyleMaskMiniaturizable];
+        } else {
+            [(WINDOW_TYPE)windowHandle setStyleMask:[(WINDOW_TYPE)windowHandle styleMask] | NSWindowStyleMaskMiniaturizable];
+        }
+    #elif defined(_WIN32)
+        LONG style = GetWindowLong((WINDOW_TYPE)windowHandle, GWL_STYLE);
+        if (!minimizable) {
+            style &= ~WS_MINIMIZEBOX;
+        } else {
+            style |= WS_MINIMIZEBOX;
+        }
+        SetWindowLong((WINDOW_TYPE)windowHandle, GWL_STYLE, style);
+        SetWindowPos((WINDOW_TYPE)windowHandle, 
+                     NULL, 0, 0, 0, 0,
+                     SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
+    #endif
+}
+
+bool is_minimizable_window(void* windowHandle) {
+    #if defined(__linux__) || defined(__FreeBSD__)
+        // GTK doesn't provide direct access to window functions
+        // Would need to track state separately
+        return true;
+    #elif defined(__APPLE__)
+        return ([(WINDOW_TYPE)windowHandle styleMask] & NSWindowStyleMaskMiniaturizable) != 0;
+    #elif defined(_WIN32)
+        LONG style = GetWindowLong((WINDOW_TYPE)windowHandle, GWL_STYLE);
+        return (style & WS_MINIMIZEBOX) != 0;
     #endif
 }
 

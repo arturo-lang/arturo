@@ -366,18 +366,39 @@ proc defineLibrary*() =
                 let emptyvarr: ValueArray = @[]
                 ActiveWindow = generateNewObject(getType("__webviewWindow"),emptyvarr)
                 ActiveWindow.o["title"] = newString(title)
-                ActiveWindow.o["fullscreen?"] = newLogical(fullscreen)
-                ActiveWindow.o["maximized?"] = newLogical(maximized)
+                ActiveWindow.o["maximizable?"] = newLogical(true)
+                ActiveWindow.o["minimizable?"] = newLogical(true)
                 ActiveWindow.o["topmost?"] = newLogical(topmost)
 
                 ActiveWindow.o["_setTitle"] = adhocPrivate({"title": {String}}, NoAttrs):
                     push(newLogical(webview_set_title(wv, cstring(x.s)) == OK))
+
+                ActiveWindow.o["_isVisible"] = adhocPrivate(NoArgs, NoAttrs):
+                    push(newLogical(wv.getWindow().isVisible()))
+
+                ActiveWindow.o["_isFocused"] = adhocPrivate(NoArgs, NoAttrs):
+                    push(newLogical(wv.getWindow().isFocused()))
+
+                ActiveWindow.o["_isFullscreen"] = adhocPrivate(NoArgs, NoAttrs):
+                    push(newLogical(wv.getWindow().isFullscreen()))
+
+                ActiveWindow.o["_isMaximized"] = adhocPrivate(NoArgs, NoAttrs):
+                    push(newLogical(wv.getWindow().isMaximized()))
 
                 ActiveWindow.o["_maximize"] = adhocPrivate(NoArgs, NoAttrs):
                     wv.getWindow().maximize()
                 
                 ActiveWindow.o["_unmaximize"] = adhocPrivate(NoArgs, NoAttrs):
                     wv.getWindow().unmaximize()
+
+                ActiveWindow.o["_isMinimized"] = adhocPrivate(NoArgs, NoAttrs):
+                    push(newLogical(wv.getWindow().isMinimized()))
+
+                ActiveWindow.o["_minimize"] = adhocPrivate(NoArgs, NoAttrs):
+                    wv.getWindow().minimize()
+                
+                ActiveWindow.o["_unminimize"] = adhocPrivate(NoArgs, NoAttrs):
+                    wv.getWindow().unminimize()
             
                 ActiveWindow.o["_fullscreen"] = adhocPrivate(NoArgs, NoAttrs):
                     wv.getWindow().fullscreen()
@@ -427,12 +448,21 @@ proc defineLibrary*() =
                     
                 ActiveWindow.o["_hide"] = adhocPrivate(NoArgs, NoAttrs):
                     wv.getWindow().hide()
+
+                ActiveWindow.o["_setFocused"] = adhocPrivate({"val": {Logical}}, NoAttrs):
+                    wv.getWindow().setFocused(isTrue(x))
+
+                ActiveWindow.o["_setClosable"] = adhocPrivate({"val": {Logical}}, NoAttrs):
+                    wv.getWindow().setClosable(isTrue(x))
+
+                ActiveWindow.o["_setMaximizable"] = adhocPrivate({"val": {Logical}}, NoAttrs):
+                    wv.getWindow().setMaximizable(isTrue(x))
+
+                ActiveWindow.o["_setMinimizable"] = adhocPrivate({"val": {Logical}}, NoAttrs):
+                    wv.getWindow().setMinimizable(isTrue(x))
                 
                 ActiveWindow.o["close"] = adhocPrivate(NoArgs, NoAttrs):
                     push(newLogical(wv.webview_terminate() == OK))
-
-                ActiveWindow.o["focus"] = adhocPrivate(NoArgs, NoAttrs):
-                    wv.getWindow().focus()
 
                 ActiveWindow.o["evaluate"] = adhocPrivate({"code": {String}}, NoAttrs):
                     wv.evaluate(x.s)
