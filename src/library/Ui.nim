@@ -398,6 +398,13 @@ proc defineLibrary*() =
                 ActiveWindow.o["_setSize"] = adhocPrivate({"size": {Block}}, NoAttrs):
                     wv.getWindow().set_window_size(WindowSize(width: x.a[0].i, height: x.a[1].i))
 
+                ActiveWindow.o["_getPosition"] = adhocPrivate(NoArgs, NoAttrs):
+                    let pos = wv.getWindow().get_window_position()
+                    push(newBlock(@[newInteger(pos.x), newInteger(pos.y)]))
+
+                ActiveWindow.o["_setPosition"] = adhocPrivate({"pos": {Block}}, NoAttrs):
+                    wv.getWindow().set_window_position(WindowSize(x: x.a[0].i, y: x.a[1].i))
+
                 ActiveWindow.o["_show"] = adhocPrivate(NoArgs, NoAttrs):
                     wv.getWindow().show()
                     
