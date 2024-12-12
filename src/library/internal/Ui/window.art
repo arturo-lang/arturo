@@ -5,6 +5,29 @@ define :__webviewWindow [
     topmost?: false
     visible?: true
 
+    get: method [what][
+        case what [
+            'size [
+                \_getSize
+            ]
+            any [
+                get.field this 'what
+            ]
+        ]
+    ]
+
+    set: method [what, value][
+        case what [
+            'size           [
+                \_setSize value
+            ]
+            'title          [
+                set.field this 'title value
+                \_setTitle value
+            ]
+        ]
+    ]
+
     changed: method [what][
         case what [
             'visible?       [
@@ -22,12 +45,6 @@ define :__webviewWindow [
             'topmost?       [
                 \topmost?   ? -> \_topmost
                               -> \_untopmost
-            ]
-            'size           [
-                \_setSize \size
-            ]
-            'title          [
-                \_setTitle \title
             ]
         ]
     ]
