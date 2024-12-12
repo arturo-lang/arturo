@@ -403,7 +403,7 @@ proc defineLibrary*() =
                     push(newBlock(@[newInteger(pos.x), newInteger(pos.y)]))
 
                 ActiveWindow.o["_setPosition"] = adhocPrivate({"pos": {Block}}, NoAttrs):
-                    wv.getWindow().set_window_position(WindowSize(x: x.a[0].i, y: x.a[1].i))
+                    wv.getWindow().set_window_position(WindowPosition(x: x.a[0].i, y: x.a[1].i))
 
                 ActiveWindow.o["_show"] = adhocPrivate(NoArgs, NoAttrs):
                     wv.getWindow().show()
