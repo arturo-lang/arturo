@@ -367,9 +367,7 @@ proc defineLibrary*() =
                 ActiveWindow = generateNewObject(getType("__webviewWindow"),emptyvarr)
                 ActiveWindow.o["title"] = newString(title)
                 ActiveWindow.o["fullscreen?"] = newLogical(fullscreen)
-                #ActiveWindow.o["maximized?"] = newLogical(maximized)
                 ActiveWindow.o["maximizable?"] = newLogical(true)
-                #ActiveWindow.o["minimized?"] = newLogical(false)
                 ActiveWindow.o["minimizable?"] = newLogical(true)
                 ActiveWindow.o["topmost?"] = newLogical(topmost)
 
