@@ -56,9 +56,19 @@ void unfullscreen_window(void* windowHandle);
 void set_topmost_window(void* windowHandle);
 void unset_topmost_window(void* windowHandle);
 
-void focus_window(void* windowHandle);
+void set_focused_window(void* windowHandle, bool focused);
+bool is_focused_window(void* windowHandle);
 
 void make_borderless_window(void* windowHandle);
+
+void set_closable_window(void* windowHandle, bool closable);
+bool is_closable_window(void* windowHandle);
+
+void set_maximizable_window(void* windowHandle, bool maximizable);
+bool is_maximizable_window(void* windowHandle);
+
+void set_minimizable_window(void* windowHandle, bool minimizable);
+bool is_minimizable_window(void* windowHandle);
 
 #ifdef __cplusplus
 }
