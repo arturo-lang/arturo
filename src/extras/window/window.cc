@@ -686,6 +686,169 @@ bool is_minimizable_window(void* windowHandle) {
     #endif
 }
 
+//------------------------------
+// Menus
+//------------------------------
+
+#if defined(__linux__) || defined(__FreeBSD__)
+    #include <map>
+    static std::map<GtkMenuItem*, MenuActionCallback> menuCallbacks;
+    static std::map<GtkMenuItem*, void*> menuUserData;
+
+    void menu_item_activated(GtkMenuItem* menuItem, gpointer user_data) {
+        auto callbackIt = menuCallbacks.find(menuItem);
+        auto userDataIt = menuUserData.find(menuItem);
+        if (callbackIt != menuCallbacks.end() && userDataIt != menuUserData.end()) {
+            callbackIt->second(userDataIt->second);
+        }
+    }
+#endif
+
+Menu* create_menu(const char* title) {
+    Menu* menu = new Menu();
+    menu->title = strdup(title);
+    menu->items = nullptr;
+    menu->itemCount = 0;
+    return menu;
+}
+
+void free_menu(Menu* menu) {
+    if (!menu) return;
+    
+    free(menu->title);
+    for (size_t i = 0; i < menu->itemCount; i++) {
+        free(menu->items[i].label);
+        if (menu->items[i].shortcut) free(menu->items[i].shortcut);
+        if (menu->items[i].submenu) free_menu(menu->items[i].submenu);
+    }
+    delete[] menu->items;
+    delete menu;
+}
+
+MenuItem* add_menu_item(Menu* menu, const char* label, MenuActionCallback action) {
+    MenuItem* newItems = new MenuItem[menu->itemCount + 1];
+    if (menu->itemCount > 0) {
+        memcpy(newItems, menu->items, menu->itemCount * sizeof(MenuItem));
+        delete[] menu->items;
+    }
+    menu->items = newItems;
+    
+    MenuItem* item = &menu->items[menu->itemCount++];
+    item->label = strdup(label);
+    item->shortcut = nullptr;
+    item->enabled = true;
+    item->checked = false;
+    item->action = action;
+    item->userData = nullptr;
+    item->submenu = nullptr;
+    
+    return item;
+}
+
+void set_window_menu(void* windowHandle, Menu** menus, size_t menuCount) {
+    #if defined(__linux__) || defined(__FreeBSD__)
+        GtkWidget* menuBar = gtk_menu_bar_new();
+        
+        for (size_t i = 0; i < menuCount; i++) {
+            GtkWidget* menuItem = gtk_menu_item_new_with_label(menus[i]->title);
+            GtkWidget* subMenu = gtk_menu_new();
+            
+            for (size_t j = 0; j < menus[i]->itemCount; j++) {
+                MenuItem* item = &menus[i]->items[j];
+                
+                GtkWidget* subMenuItem;
+                if (strcmp(item->label, "-") == 0) {
+                    subMenuItem = gtk_separator_menu_item_new();
+                } else {
+                    subMenuItem = gtk_menu_item_new_with_label(item->label);
+                    if (item->action) {
+                        menuCallbacks[GTK_MENU_ITEM(subMenuItem)] = item->action;
+                        menuUserData[GTK_MENU_ITEM(subMenuItem)] = item->userData;
+                        g_signal_connect(subMenuItem, "activate",
+                                       G_CALLBACK(menu_item_activated), nullptr);
+                    }
+                }
+                
+                gtk_menu_shell_append(GTK_MENU_SHELL(subMenu), subMenuItem);
+            }
+            
+            gtk_menu_item_set_submenu(GTK_MENU_ITEM(menuItem), subMenu);
+            gtk_menu_shell_append(GTK_MENU_SHELL(menuBar), menuItem);
+        }
+        
+        gtk_widget_show_all(menuBar);
+        gtk_container_add(GTK_CONTAINER((WINDOW_TYPE)windowHandle), menuBar);
+        
+    #elif defined(__APPLE__)
+        NSMenu* mainMenu = [[NSMenu alloc] init];
+        
+        for (size_t i = 0; i < menuCount; i++) {
+            NSMenuItem* menuItem = [[NSMenuItem alloc] init];
+            NSMenu* subMenu = [[NSMenu alloc] initWithTitle:@(menus[i]->title)];
+            [menuItem setSubmenu:subMenu];
+            
+            for (size_t j = 0; j < menus[i]->itemCount; j++) {
+                MenuItem* item = &menus[i]->items[j];
+                
+                if (strcmp(item->label, "-") == 0) {
+                    [subMenu addItem:[NSMenuItem separatorItem]];
+                } else {
+                    NSMenuItem* nsItem = [[NSMenuItem alloc] 
+                        initWithTitle:@(item->label)
+                        action:@selector(menuItemSelected:)
+                        keyEquivalent:@""];
+                        
+                    if (item->action) {
+                        // Store callback in associated object
+                        objc_setAssociatedObject(nsItem, 
+                            "callback",
+                            [^{ item->action(item->userData); } copy],
+                            OBJC_ASSOCIATION_RETAIN);
+                    }
+                    
+                    [subMenu addItem:nsItem];
+                }
+            }
+            
+            [mainMenu addItem:menuItem];
+        }
+        
+        [NSApp setMainMenu:mainMenu];
+        
+    #elif defined(_WIN32)
+        HMENU hMenuBar = CreateMenu();
+        
+        for (size_t i = 0; i < menuCount; i++) {
+            HMENU hMenu = CreatePopupMenu();
+            
+            for (size_t j = 0; j < menus[i]->itemCount; j++) {
+                MenuItem* item = &menus[i]->items[j];
+                
+                if (strcmp(item->label, "-") == 0) {
+                    AppendMenuW(hMenu, MF_SEPARATOR, 0, NULL);
+                } else {
+                    // Generate unique command ID for this menu item
+                    int cmdId = 1000 + (i * 100) + j;  // Assuming max 100 items per menu
+                    
+                    AppendMenuW(hMenu, MF_STRING, cmdId, 
+                               std::wstring(item->label, item->label + strlen(item->label)).c_str());
+                               
+                    // Store callback in a map
+                    if (item->action) {
+                        // You'll need to implement a way to store and retrieve callbacks
+                        // Could use a static map of command IDs to callbacks
+                    }
+                }
+            }
+            
+            AppendMenuW(hMenuBar, MF_POPUP, (UINT_PTR)hMenu, 
+                       std::wstring(menus[i]->title, menus[i]->title + strlen(menus[i]->title)).c_str());
+        }
+        
+        SetMenu((WINDOW_TYPE)windowHandle, hMenuBar);
+    #endif
+}
+
 #ifndef WIN32_LEAN_AND_MEAN
     #define WIN32_LEAN_AND_MEAN 1
 #endif
