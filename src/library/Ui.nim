@@ -376,6 +376,9 @@ proc defineLibrary*() =
                 ActiveWindow.o["_isVisible"] = adhocPrivate(NoArgs, NoAttrs):
                     push(newLogical(wv.getWindow().isVisible()))
 
+                ActiveWindow.o["_isFocused"] = adhocPrivate(NoArgs, NoAttrs):
+                    push(newLogical(wv.getWindow().isFocused()))
+
                 ActiveWindow.o["_isFullscreen"] = adhocPrivate(NoArgs, NoAttrs):
                     push(newLogical(wv.getWindow().isFullscreen()))
 
@@ -446,6 +449,9 @@ proc defineLibrary*() =
                 ActiveWindow.o["_hide"] = adhocPrivate(NoArgs, NoAttrs):
                     wv.getWindow().hide()
 
+                ActiveWindow.o["_setFocused"] = adhocPrivate({"val": {Logical}}, NoAttrs):
+                    wv.getWindow().setFocused(isTrue(x))
+
                 ActiveWindow.o["_setClosable"] = adhocPrivate({"val": {Logical}}, NoAttrs):
                     wv.getWindow().setClosable(isTrue(x))
 
@@ -457,9 +463,6 @@ proc defineLibrary*() =
                 
                 ActiveWindow.o["close"] = adhocPrivate(NoArgs, NoAttrs):
                     push(newLogical(wv.webview_terminate() == OK))
-
-                ActiveWindow.o["focus"] = adhocPrivate(NoArgs, NoAttrs):
-                    wv.getWindow().focus()
 
                 ActiveWindow.o["evaluate"] = adhocPrivate({"code": {String}}, NoAttrs):
                     wv.evaluate(x.s)
