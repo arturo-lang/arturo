@@ -1,3 +1,11 @@
+//=======================================================
+// Arturo
+// Programming Language + Bytecode VM compiler
+// (c) 2019-2024 Yanis Zafirópulos
+//
+// @file: extras/window/window.cc
+//=======================================================
+
 // Initially based-on/inspired-by:
 // https://github.com/neutralinojs/neutralinojs/blob/main/api/window/window.cpp
 // MIT License
