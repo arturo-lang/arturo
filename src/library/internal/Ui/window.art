@@ -3,10 +3,8 @@ define :__webviewWindow [
     maximizable?: true
     minimizable?: true
     topmost?: false
-    visible?: true
 
     get: method [what][
-        print ["intercepting:" what]
         case what [
             'size [
                 \_getSize
@@ -19,6 +17,9 @@ define :__webviewWindow [
             ]
             'position [
                 \_getPosition
+            ]
+            'visible? [
+                \_isVisible
             ]
             'fullscreen? [
                 \_isFullscreen
@@ -54,7 +55,6 @@ define :__webviewWindow [
                 \_setTitle value
             ]
             'visible?       [
-                set.field this 'visible? value
                 value ? -> \_show
                         -> \_hide
             ]

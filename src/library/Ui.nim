@@ -373,6 +373,9 @@ proc defineLibrary*() =
                 ActiveWindow.o["_setTitle"] = adhocPrivate({"title": {String}}, NoAttrs):
                     push(newLogical(webview_set_title(wv, cstring(x.s)) == OK))
 
+                ActiveWindow.o["_isVisible"] = adhocPrivate(NoArgs, NoAttrs):
+                    push(newLogical(wv.getWindow().isVisible()))
+
                 ActiveWindow.o["_isFullscreen"] = adhocPrivate(NoArgs, NoAttrs):
                     push(newLogical(wv.getWindow().isFullscreen()))
 
