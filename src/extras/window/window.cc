@@ -505,46 +505,6 @@ void make_borderless_window(void* windowHandle){
     #endif
 }
 
-void set_window_icon(void* windowHandle, const unsigned char* iconData, size_t iconDataSize) {
-    #if defined(__linux__) || defined(__FreeBSD__)
-        GdkPixbufLoader* loader = gdk_pixbuf_loader_new();
-        gdk_pixbuf_loader_write(loader, iconData, iconDataSize, NULL);
-        gdk_pixbuf_loader_close(loader, NULL);
-        GdkPixbuf* icon = gdk_pixbuf_loader_get_pixbuf(loader);
-        gtk_window_set_icon(GTK_WINDOW((WINDOW_TYPE)windowHandle), icon);
-        g_object_unref(loader);
-
-    #elif defined(__APPLE__)
-        id nsData = ((id (*)(id, SEL, const unsigned char*, NSUInteger))objc_msgSend)(
-            "NSData"_cls,
-            "dataWithBytes:length:"_sel,
-            iconData,
-            iconDataSize
-        );
-        
-        id image = ((id (*)(id, SEL))objc_msgSend)("NSImage"_cls, "alloc"_sel);
-        ((void (*)(id, SEL, id))objc_msgSend)(image, "initWithData:"_sel, nsData);
-        
-        ((void (*)(id, SEL, id))objc_msgSend)((WINDOW_TYPE)windowHandle,
-                "setRepresentedImage:"_sel, image);
-
-    #elif defined(_WIN32)
-        HICON icon = NULL;
-        IStream* stream = SHCreateMemStream(iconData, iconDataSize);
-        if (stream) {
-            Gdiplus::Bitmap* bitmap = Gdiplus::Bitmap::FromStream(stream);
-            bitmap->GetHICON(&icon);
-            delete bitmap;
-            stream->Release();
-        }
-        
-        if (icon) {
-            SendMessage((HWND)windowHandle, WM_SETICON, ICON_SMALL, (LPARAM)icon);
-            SendMessage((HWND)windowHandle, WM_SETICON, ICON_BIG, (LPARAM)icon);
-        }
-    #endif
-}
-
 #ifndef WIN32_LEAN_AND_MEAN
     #define WIN32_LEAN_AND_MEAN 1
 #endif
