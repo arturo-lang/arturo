@@ -82,41 +82,43 @@ bool is_minimizable_window(void* windowHandle);
 // Menus
 //------------------------------
 
+// Forward declarations
+struct MenuItem;
+struct Menu;
+
 // Callback type for menu actions
 typedef void (*MenuActionCallback)(void* userData);
 
-typedef struct MenuItem {
+struct MenuItem {
     char* label;                  // Display text
     char* shortcut;              // Optional keyboard shortcut (platform-specific format)
     bool enabled;                // Whether the item is clickable
     bool checked;                // For checkable menu items
     MenuActionCallback action;    // Callback when item is selected
     void* userData;              // User data passed to callback
-    Menu* submenu;               // Optional submenu (NULL if none)
+    struct Menu* submenu;        // Optional submenu (NULL if none)
 };
 
-} MenuItem;
-
-typedef struct Menu {
+struct Menu {
     char* title;                 // Menu title (shown in menu bar)
-    MenuItem* items;             // Array of menu items
+    struct MenuItem* items;      // Array of menu items
     size_t itemCount;            // Number of items in menu
 };
 
 // Menu management functions
-Menu* create_menu(const char* title);
-void free_menu(Menu* menu);
+struct Menu* create_menu(const char* title);
+void free_menu(struct Menu* menu);
 
-MenuItem* add_menu_item(Menu* menu, const char* label, MenuActionCallback action);
-MenuItem* add_menu_separator(Menu* menu);
-MenuItem* add_submenu(Menu* menu, const char* label, Menu* submenu);
+struct MenuItem* add_menu_item(struct Menu* menu, const char* label, MenuActionCallback action);
+struct MenuItem* add_menu_separator(struct Menu* menu);
+struct MenuItem* add_submenu(struct Menu* menu, const char* label, struct Menu* submenu);
 
-void set_menu_item_enabled(MenuItem* item, bool enabled);
-void set_menu_item_checked(MenuItem* item, bool checked);
-void set_menu_item_shortcut(MenuItem* item, const char* shortcut);
+void set_menu_item_enabled(struct MenuItem* item, bool enabled);
+void set_menu_item_checked(struct MenuItem* item, bool checked);
+void set_menu_item_shortcut(struct MenuItem* item, const char* shortcut);
 
 // Window menu bar functions
-void set_window_menu(void* windowHandle, Menu** menus, size_t menuCount);
+void set_window_menu(void* windowHandle, struct Menu** menus, size_t menuCount);
 void remove_window_menu(void* windowHandle);
 
 #ifdef __cplusplus
