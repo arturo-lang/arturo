@@ -10,6 +10,9 @@ define :__webviewWindow [
             'size [
                 \_getSize
             ]
+            'position [
+                \_getPosition
+            ]
             any [
                 get.field this 'what
             ]
@@ -20,6 +23,9 @@ define :__webviewWindow [
         case what [
             'size           [
                 \_setSize value
+            ]
+            'position       [
+                \_setPosition value
             ]
             'title          [
                 set.field this 'title value
