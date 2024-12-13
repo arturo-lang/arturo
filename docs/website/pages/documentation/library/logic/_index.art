@@ -66,3 +66,14 @@ any? conditions     ; => true
 
 > [!TIP]
 > Combining conditions in blocks with `and?` and `or?` (or more than one condition inside `all?` or `any?` blocks) is more efficient than checking them separately!
+
+### Advanced Logical Operations
+
+```red
+a: true
+b: false
+
+print nand? a b    ; true  = not (a and b)
+print nor? a b     ; false = not (a or b)
+print xnor? a b    ; false = not (a xor b)
+```
