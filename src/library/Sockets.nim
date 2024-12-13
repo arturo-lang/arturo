@@ -59,7 +59,7 @@ proc defineLibrary*() =
             attrs       = NoAttrs,
             returns     = {Socket},
             example     = """
-            server: listen.blocking 18966
+            server: listen 18966
             print "started server connection..."
 
             client: accept server
@@ -175,7 +175,7 @@ proc defineLibrary*() =
             },
             returns     = {String},
             example     = """
-            server: listen.blocking 18966
+            server: listen 18966
             print "started server connection..."
 
             client: accept server
