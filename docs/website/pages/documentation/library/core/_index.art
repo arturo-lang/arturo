@@ -121,19 +121,6 @@ print calculate 10      ; 100
 ; but `pwr` wouldn't be available here...
 ```
 
-### Error Handling
-
-```red
-; try pattern
-result: try [
-    ; dangerousOperation
-]
-
-; ensure condition
-ensure -> x>0 
-ensure.that:"value must be positive" -> x>0
-```
-
 ## Common Patterns
 
 ### Safe Operations
