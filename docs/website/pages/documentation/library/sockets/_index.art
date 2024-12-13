@@ -1,7 +1,7 @@
 description: « High-level socket interface and relevant socket communication methods
 overview: ---
 
-Arturo's Sockets module provides a straightforward way to handle network communication using TCP/UDP sockets. Rather than dealing with low-level details, you can focus on building networked applications with just a few simple functions.
+The Sockets module provides a straightforward way to handle network communication using TCP/UDP sockets. Rather than dealing with low-level details, you can focus on building networked applications with just a few simple functions.
 
 ## Key Concepts
 
