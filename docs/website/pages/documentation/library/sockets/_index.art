@@ -9,7 +9,6 @@ Arturo's Sockets module provides a straightforward way to handle network communi
 - Client sockets connect to servers
 - Messages can be sent/received as strings
 - Both TCP (default) and UDP protocols are supported
-- Non-blocking operation is available
 
 ## Basic Usage
 
@@ -18,9 +17,6 @@ Arturo's Sockets module provides a straightforward way to handle network communi
 ```red
 server: listen 8000
 print "Server listening on port 8000..."
-
-; for non-blocking operation:
-; server: listen.blocking 8000
 ```
 
 > [!IMPORTANT]  
@@ -76,7 +72,7 @@ And its corresponding client:
 
 ```red
 ; client.art
-client: connect .to:"localhost" 8000
+client: connect.to:"localhost" 8000
 send client "hello server!"
 print receive client
 unplug client
