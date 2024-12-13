@@ -1,2 +1,68 @@
 description: « Logical operations (AND, OR, XOR, etc), helpers and constants for boolean values
 overview: ---
+
+The Logic module provides boolean operations and logical value manipulation. Beyond traditional true/false operations, it includes support for ternary logic with `maybe` and optimized evaluation strategies.
+
+## Key Concepts
+
+- Three-valued logic: `true`, `false`, and `maybe`
+- Standard boolean operations (AND, OR, XOR, etc.)
+- Short-circuit evaluation for improved performance
+
+## Basic Usage
+
+### Basic Logical Values
+
+```red
+print true?  true     ; true
+print false? false    ; true
+print true?  maybe    ; maybe
+```
+
+### Logical Operations
+
+```red
+and? true true      ; true
+or?  true false     ; true
+xor? true true      ; false
+
+; with maybe
+and? true maybe     ; maybe
+or?  true maybe     ; true
+```
+
+### Short-Circuit Evaluation
+
+```red
+; if first block is false,
+; the second one won't be evaluated 
+if and? [1=2][print "never runs"] -> 
+    print "not true"
+
+; if first block is true,
+; the second one won't be evaluated 
+if or? [1=1][print "never runs"] -> 
+    print "was true"
+
+; was true
+```
+
+> [!NOTE]
+> Using blocks with `and?` and `or?` enables short-circuit evaluation. In a few words: blocks are only evaluated when needed.
+
+## Common Patterns
+
+### Testing Multiple Conditions
+
+```red
+conditions: @[true false true true]
+
+; check if all conditions are true
+all? conditions     ; => false
+
+; check if any condition is true
+any? conditions     ; => true
+```
+
+> [!TIP]
+> Combining conditions in blocks with `and?` and `or?` (or more than one condition inside `all?` or `any?` blocks) is more efficient than checking them separately!
