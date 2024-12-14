@@ -1,0 +1,28 @@
+name: "thermalConductivity?"
+type: :function
+description: "checks if given quantity describes Thermal Conductivity"
+module: "macros"
+returns: [
+                :logical
+        ]
+line: 715
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/macros.nim#L715"
+examples: [
+                {
+                        thermalConductivity? 3`W/m.K
+                        ; => true
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        value: [
+                        :quantity
+                ]
+        ]
+related: [
+                "Macros/thermalInsulance?"
+                 "Macros/permittivity?"
+                 "Macros/permeability?"
+                 "Macros/angularVelocity?"
+        ]

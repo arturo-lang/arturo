@@ -1,0 +1,28 @@
+name: "power?"
+type: :function
+description: "checks if given quantity describes Power"
+module: "macros"
+returns: [
+                :logical
+        ]
+line: 715
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/macros.nim#L715"
+examples: [
+                {
+                        power? 5`W
+                        ; => true
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        value: [
+                        :quantity
+                ]
+        ]
+related: [
+                "Macros/jerk?"
+                 "Macros/force?"
+                 "Macros/potential?"
+                 "Macros/energy?"
+        ]

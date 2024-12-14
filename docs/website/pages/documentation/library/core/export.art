@@ -1,0 +1,33 @@
+name: "export"
+type: :function
+description: "export given container children to current scope"
+module: "Core"
+returns: [
+                :nothing
+        ]
+line: 610
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Core.nim#L610"
+examples: [
+                ""
+        ]
+attributes: #[
+        all: #[
+                types: [
+                                :logical
+                        ]
+                description: "export everything, regardless of whether it\'s been marked as public (makes sense only for modules)"
+                ]
+        ]
+arguments: #[
+        module: [
+                        :dictionary
+                         :object
+                         :module
+                ]
+        ]
+related: [
+                "Core/ensure"
+                 "Core/return"
+                 "Core/module"
+                 "Core/import"
+        ]

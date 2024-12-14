@@ -1,0 +1,33 @@
+name: "past?"
+type: :function
+description: "check if given date is in the past"
+module: "Dates"
+returns: [
+                :logical
+        ]
+line: 272
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Dates.nim#L272"
+examples: [
+                {
+                        pastDate: before.weeks:2 now
+                        futureDate: after.weeks:1 now
+                        
+                        print past? futureDate      ; false
+                        print past? pastDate        ; true
+                        
+                        print past? now             ; true ("now" has already become past...)
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        date: [
+                        :date
+                ]
+        ]
+related: [
+                "Dates/future?"
+                 "Dates/today?"
+                 "Dates/tuesday?"
+                 "Dates/sunday?"
+        ]

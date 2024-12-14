@@ -1,0 +1,28 @@
+name: "magneticFieldStrength?"
+type: :function
+description: "checks if given quantity describes Magnetic Field Strength"
+module: "macros"
+returns: [
+                :logical
+        ]
+line: 715
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/macros.nim#L715"
+examples: [
+                {
+                        magneticFieldStrength? 3`A/m
+                        ; => true
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        value: [
+                        :quantity
+                ]
+        ]
+related: [
+                "Macros/magneticFlux?"
+                 "Macros/magneticFluxDensity?"
+                 "Macros/electricField?"
+                 "Macros/momentofInertia?"
+        ]

@@ -1,0 +1,18 @@
+name: "packageError"
+type: :errorkind
+description: "a package error"
+module: "Exceptions"
+example: [
+                ""
+        ]
+line: 217
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Exceptions.nim#L217"
+returns: [
+                :errorkind
+        ]
+related: [
+                "Exceptions/typeError"
+                 "Exceptions/nameError"
+                 "Exceptions/valueError"
+                 "Exceptions/indexError"
+        ]

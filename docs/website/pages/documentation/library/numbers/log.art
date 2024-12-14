@@ -1,0 +1,37 @@
+name: "log"
+type: :function
+description: "calculate the logarithm of value using given base"
+module: "Numbers"
+returns: [
+                :floating
+        ]
+line: 927
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L927"
+examples: [
+                {
+                        print log 9 3           ; 2.0
+                        print log 32.0 2.0      ; 5.0
+                        print log 0.0 2         ; -inf
+                        print log 100.0 10.0    ; 2.0
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        value: [
+                        :integer
+                         :floating
+                         :rational
+                ]
+        base: [
+                        :integer
+                         :floating
+                         :rational
+                ]
+        ]
+related: [
+                "Numbers/ln"
+                 "Numbers/product"
+                 "Numbers/cos"
+                 "Numbers/angle"
+        ]

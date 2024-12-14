@@ -1,0 +1,49 @@
+name: "conforms?"
+type: :function
+description: "check if given quantities/units are compatible"
+module: "Quantities"
+returns: [
+                :logical
+        ]
+alias: ":="
+infix?: true
+line: 280
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Quantities.nim#L280"
+examples: [
+                {
+                        conforms? 3`m `m                ; => true
+                        conforms? 4`m `cm               ; => true
+                        
+                        4`yd := 5`m                     ; => true
+                        5`m := `s                       ; => false
+                }
+                 {
+                        givenValue: 6`yd/s      
+                        
+                        conforms? givenValue `m         ; => false
+                        conforms? givenValue `km/h      ; => true
+                }
+                 {
+                        3`m := 4`m                      ; => true
+                        5`W := 5`N                      ; => false
+                        5`W := 3`J/s                    ; => true
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        a: [
+                        :unit
+                         :quantity
+                ]
+        b: [
+                        :unit
+                         :quantity
+                ]
+        ]
+related: [
+                "Strings/lower?"
+                 "Strings/numeric?"
+                 "Macros/potential?"
+                 "Dates/future?"
+        ]

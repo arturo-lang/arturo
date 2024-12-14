@@ -1,0 +1,28 @@
+name: "magneticFluxDensity?"
+type: :function
+description: "checks if given quantity describes Magnetic Flux Density"
+module: "macros"
+returns: [
+                :logical
+        ]
+line: 715
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/macros.nim#L715"
+examples: [
+                {
+                        magneticFluxDensity? 6`T
+                        ; => true
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        value: [
+                        :quantity
+                ]
+        ]
+related: [
+                "Macros/magneticFlux?"
+                 "Macros/magneticFieldStrength?"
+                 "Macros/currentDensity?"
+                 "Macros/heatFlux?"
+        ]

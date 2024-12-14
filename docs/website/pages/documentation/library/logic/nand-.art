@@ -1,0 +1,41 @@
+name: "nand?"
+type: :function
+description: "return the logical NAND for the given values"
+module: "Logic"
+returns: [
+                :logical
+        ]
+alias: "\xE2\x8A\xBC"
+infix?: true
+line: 183
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Logic.nim#L183"
+examples: [
+                {
+                        x: 2
+                        y: 3
+                        
+                        switch nand? x=2 y=3 
+                            -> print "yep, that's correct!"
+                            -> print "nope, that's not correct
+                        
+                        ; nope, that's not correct
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        valueA: [
+                        :logical
+                         :block
+                ]
+        valueB: [
+                        :logical
+                         :block
+                ]
+        ]
+related: [
+                "Logic/and?"
+                 "Logic/nor?"
+                 "Logic/xnor?"
+                 "Logic/xor?"
+        ]

@@ -1,0 +1,66 @@
+name: "script"
+type: :function
+description: "get embedded information about the current script"
+module: "System"
+returns: [
+                :dictionary
+        ]
+line: 400
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/System.nim#L400"
+examples: [
+                {
+                        ;; author: {Me :P}
+                        ;; year: 2023
+                        ;; license: Some License
+                        ;; 
+                        ;; description: {
+                        ;;      This is an example of documentation.
+                        ;;
+                        ;;      You can get this by using ``script``.
+                        ;; }
+                        ;;
+                        ;; hint: {
+                        ;;      Notice that we use `;;` for documentation,
+                        ;;      while the single `;` is just a comment, 
+                        ;;      that will be ignored.   
+                        ;; }
+                        ;;
+                        ;; export: [
+                        ;;    'myFun
+                        ;;    'otherFun
+                        ;;    'someConst
+                        ;; ]
+                        ;;
+                        
+                        inspect script
+                        ; [ :dictionary
+                        ;         author       :        Me :P :string
+                        ;         year         :        2023 :integer
+                        ;         license      :        [ :block
+                        ;                 Some :string
+                        ;                 License :string
+                        ;         ]
+                        ;         description  :        This is an example of documentation.
+                        ;  
+                        ; You can get this by using ``script``. :string
+                        ;         hint         :        Notice that we use `;;` for documentation,
+                        ; while the single `;` is just a comment, 
+                        ; that will be ignored. :string
+                        ;         export       :        [ :block
+                        ;                 myFun :string
+                        ;                 otherFun :string
+                        ;                 someConst :string
+                        ;         ]
+                        ; ]
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        ]
+related: [
+                "System/sys"
+                 "System/process"
+                 "System/args"
+                 "System/arg"
+        ]

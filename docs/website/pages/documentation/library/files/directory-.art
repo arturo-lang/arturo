@@ -1,0 +1,29 @@
+name: "directory?"
+type: :function
+description: "check if given path exists and corresponds to a directory"
+module: "Files"
+returns: [
+                :logical
+        ]
+line: 568
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Files.nim#L568"
+examples: [
+                {
+                        if directory? "src" [ 
+                            print "directory exists!" 
+                        ]
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        path: [
+                        :string
+                ]
+        ]
+related: [
+                "Files/file?"
+                 "Files/symlink?"
+                 "Files/exists?"
+                 "Files/hidden?"
+        ]

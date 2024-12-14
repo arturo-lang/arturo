@@ -1,0 +1,79 @@
+name: "input"
+type: :function
+description: "print prompt and get user input. If the prompt is \xC3\xB8, get a single character"
+module: "Io"
+returns: [
+                :char
+                 :string
+        ]
+line: 184
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Io.nim#L184"
+examples: [
+                {
+                        name: input "What is your name? "
+                        ; (user enters his name: Bob)
+                        
+                        print ["Hello" name "!"]
+                        ; Hello Bob!
+                }
+                 {
+                        ; creating a simple REPL
+                        while [true][ 
+                            inp: input.repl 
+                                      .history: "myhistory.txt"
+                                      .complete:["Hello there", "Hello world!"] 
+                                      .hint:#[he: "perhaps you want to say hello?"] 
+                                      "## "
+                        
+                            print ["got:" inp] 
+                        ]
+                        ; will show a REPL-like interface, with arrow navigation enabled
+                        ; show previous entries with arrow-up, store entries in
+                        ; a recoverable file and also use autocompletions and hints
+                        ; based on give reference
+                }
+                 {
+                        character: input ø
+                        ; (User types a key, for example "A")
+                        print character
+                        ; A
+                }
+        ]
+attributes: #[
+        repl: #[
+                types: [
+                                :logical
+                        ]
+                description: "get input as if in a REPL"
+                ]
+        history: #[
+                types: [
+                                :string
+                        ]
+                description: "set path for saving history"
+                ]
+        complete: #[
+                types: [
+                                :block
+                        ]
+                description: "use given array for auto-completions"
+                ]
+        hint: #[
+                types: [
+                                :dictionary
+                        ]
+                description: "use given dictionary for typing hints"
+                ]
+        ]
+arguments: #[
+        prompt: [
+                        :null
+                         :string
+                ]
+        ]
+related: [
+                "Io/prints"
+                 "Io/print"
+                 "Ui/popup"
+                 "Paths/relative"
+        ]

@@ -1,0 +1,36 @@
+name: "coalesce"
+type: :function
+description: "if first value is null or false, return second value; otherwise return the first one"
+module: "Core"
+returns: [
+                :any
+        ]
+alias: "??"
+infix?: true
+line: 350
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Core.nim#L350"
+examples: [
+                {
+                        ; Note that 'attr returns null if it has no attribute          
+                        print coalesce attr "myAttr" "attr not found"
+                        print (attr "myAttr") ?? "attr not found"
+                        
+                        print (myData) ?? defaultData
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        value: [
+                        :any
+                ]
+        alternative: [
+                        :any
+                ]
+        ]
+related: [
+                "Core/case"
+                 "Core/switch"
+                 "Core/while"
+                 "Core/unless"
+        ]

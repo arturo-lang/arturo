@@ -1,0 +1,36 @@
+name: "spin"
+type: :function
+description: "spin color around the hue wheel by given amount"
+module: "Colors"
+returns: [
+                :color
+        ]
+line: 279
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Colors.nim#L279"
+examples: [
+                {
+                        spin #red 90            ; => #80FF00
+                        spin #red 180           ; => #00FFFF
+                        
+                        spin #123456 45         ; => #231256
+                        spin #123456 360        ; => #123456
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        color: [
+                        :literal
+                         :pathliteral
+                         :color
+                ]
+        amount: [
+                        :integer
+                ]
+        ]
+related: [
+                "Colors/invert"
+                 "Colors/blend"
+                 "Colors/palette"
+                 "Colors/lighten"
+        ]

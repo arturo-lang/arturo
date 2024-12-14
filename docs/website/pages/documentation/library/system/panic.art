@@ -1,0 +1,46 @@
+name: "panic"
+type: :function
+description: "exit program with error message"
+module: "System"
+returns: [
+                :logical
+        ]
+line: 271
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/System.nim#L271"
+examples: [
+                {
+                        panic.unstyled "oops! that was wrong"
+                        ; quits with the default exit code (= 1) and
+                        ; just outputs a simple - unformatted - message
+                }
+                 {
+                        panic.code:0 "something went terribly wrong. quitting..."
+                        ; quits without an error code but still
+                        ; prints a properly formatted error with the given message
+                }
+        ]
+attributes: #[
+        code: #[
+                types: [
+                                :integer
+                        ]
+                description: "return given exit code (default: 1)"
+                ]
+        unstyled: #[
+                types: [
+                                :logical
+                        ]
+                description: "don\'t use default error template"
+                ]
+        ]
+arguments: #[
+        message: [
+                        :string
+                ]
+        ]
+related: [
+                "System/exit"
+                 "System/process"
+                 "System/pause"
+                 "System/path"
+        ]

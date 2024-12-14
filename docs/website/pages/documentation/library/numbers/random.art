@@ -1,0 +1,33 @@
+name: "random"
+type: :function
+description: "get a random integer between given limits"
+module: "Numbers"
+returns: [
+                :integer
+                 :floating
+        ]
+line: 1049
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L1049"
+examples: [
+                "rnd: random 0 60          ; rnd: (a random number between 0 and 60)"
+        ]
+attributes: #[
+        ]
+arguments: #[
+        lowerLimit: [
+                        :integer
+                         :floating
+                         :rational
+                ]
+        upperLimit: [
+                        :integer
+                         :floating
+                         :rational
+                ]
+        ]
+related: [
+                "Numbers/denominator"
+                 "Numbers/asin"
+                 "Numbers/acos"
+                 "Numbers/atan"
+        ]

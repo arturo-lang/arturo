@@ -1,0 +1,18 @@
+name: "avogadroConstant"
+type: :quantity
+description: "the number of atoms in 12 grams of carbon-12"
+module: "Quantities"
+example: [
+                ""
+        ]
+line: 715
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Quantities.nim#L715"
+returns: [
+                :quantity
+        ]
+related: [
+                "Quantities/molarGasConstant"
+                 "Quantities/protonMassEnergy"
+                 "Quantities/planckConstant"
+                 "Quantities/protonMass"
+        ]

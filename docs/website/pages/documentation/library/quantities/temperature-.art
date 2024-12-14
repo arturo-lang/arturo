@@ -1,0 +1,28 @@
+name: "temperature?"
+type: :function
+description: "checks if given quantity describes Temperature"
+module: "macros"
+returns: [
+                :logical
+        ]
+line: 715
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/macros.nim#L715"
+examples: [
+                {
+                        temperature? 6`oC
+                        ; => true
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        value: [
+                        :quantity
+                ]
+        ]
+related: [
+                "Macros/pressure?"
+                 "Macros/permeability?"
+                 "Macros/acceleration?"
+                 "Macros/energy?"
+        ]

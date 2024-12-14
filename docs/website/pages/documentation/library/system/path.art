@@ -1,0 +1,25 @@
+name: "path"
+type: :function
+description: "get path information"
+module: "System"
+returns: [
+                :dictionary
+        ]
+line: 307
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/System.nim#L307"
+examples: [
+                {
+                        path
+                                ; => [current:C:\Users\me\my-proj home:C:\Users\me\ temp:C:\Users\me\AppData\Local\Temp\
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        ]
+related: [
+                "System/exit"
+                 "System/panic"
+                 "System/pause"
+                 "System/arg"
+        ]

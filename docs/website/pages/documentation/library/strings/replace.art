@@ -1,0 +1,47 @@
+name: "replace"
+type: :function
+description: "replace every matched substring/s by given replacement string and return result"
+module: "Strings"
+returns: [
+                :string
+                 :nothing
+        ]
+line: 724
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Strings.nim#L724"
+examples: [
+                {
+                        replace "hello" "l" "x"         ; => "hexxo"
+                }
+                 {
+                        str: "hello"
+                        replace 'str "l" "x"            ; str: "hexxo"
+                }
+                 {
+                        replace "hello" ["h" "l"] "x"           ; => "xexxo"
+                        replace "hello" ["h" "o"] ["x" "z"]     ; => "xellz"
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        string: [
+                        :string
+                         :literal
+                         :pathliteral
+                ]
+        match: [
+                        :string
+                         :regex
+                         :block
+                ]
+        replacement: [
+                        :string
+                         :block
+                ]
+        ]
+related: [
+                "Strings/translate"
+                 "Strings/levenshtein"
+                 "Strings/jaro"
+                 "Strings/render"
+        ]

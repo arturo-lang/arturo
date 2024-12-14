@@ -1,0 +1,86 @@
+name: "define"
+type: :function
+description: "define new type with given prototype"
+module: "Types"
+returns: [
+                :nothing
+        ]
+line: 93
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Types.nim#L93"
+examples: [
+                {
+                        ; define a simple type
+                        define :person [name surname]
+                        
+                        ; and create an object
+                        someone: to :person ["John" "Doe"]
+                        print someone       ; [name:John surname:Doe]
+                }
+                 {
+                        ; define a simple type
+                        define :person [name surname]
+                        
+                        ; and create an object
+                        ; using a dictionary with field values
+                        someone: to :person #[surname: "Doe", name: "John"]
+                        print someone       ; [name:John surname:Doe]
+                }
+                 {
+                        ; define a new type
+                        ; with custom constructor
+                        
+                        define :person [
+                            init: method [name, surname, age][
+                                this\name: name
+                                this\surname: surname
+                                this\dob: now\year - age
+                            ]
+                        ]
+                        
+                        ; create an object
+                        jd: to :person ["John" "Doe" 38]
+                        print jd            ; [name:John surname:Doe dob:1986]
+                }
+                 {
+                        ; define type with overloaded
+                        ; magic methods
+                        define :natural [
+                            init: constructor [value]
+                        
+                            ; custom `+` overload
+                            add: method [x :integer :natural][
+                                (integer? x)? -> this\value + x
+                                              -> to :natural @[this\value + x\value]
+                            ]
+                        
+                            ; custom `to :string` overload
+                            string: method [][
+                                to :string this\value
+                            ]
+                        ]
+                        
+                        ; create two new 'natural' numbers
+                        n1: to :natural @[3]
+                        n2: to :natural @[5]
+                        
+                        print n1 + n2           ; 8
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        type: [
+                        :type
+                ]
+        prototype: [
+                        :type
+                         :dictionary
+                         :block
+                ]
+        ]
+related: [
+                "Types/is"
+                 "Types/sortable"
+                 "Types/defined?"
+                 "Types/type"
+        ]

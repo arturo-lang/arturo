@@ -1,0 +1,28 @@
+name: "massFlowRate?"
+type: :function
+description: "checks if given quantity describes Mass Flow Rate"
+module: "macros"
+returns: [
+                :logical
+        ]
+line: 715
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/macros.nim#L715"
+examples: [
+                {
+                        massFlowRate? 5`kg/s
+                        ; => true
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        value: [
+                        :quantity
+                ]
+        ]
+related: [
+                "Macros/moleFlowRate?"
+                 "Macros/mass?"
+                 "Macros/elastance?"
+                 "Macros/resistance?"
+        ]

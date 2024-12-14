@@ -1,0 +1,18 @@
+name: "gravitationalConstant"
+type: :quantity
+description: "the gravitational constant"
+module: "Quantities"
+example: [
+                ""
+        ]
+line: 715
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Quantities.nim#L715"
+returns: [
+                :quantity
+        ]
+related: [
+                "Quantities/molarGasConstant"
+                 "Quantities/boltzmannConstant"
+                 "Quantities/classicalElectronRadius"
+                 "Quantities/vonKlitzingConstant"
+        ]

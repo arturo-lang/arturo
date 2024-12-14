@@ -1,0 +1,69 @@
+name: "specify"
+type: :function
+description: "define new user unit"
+module: "Quantities"
+returns: [
+                :literal
+        ]
+line: 177
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Quantities.nim#L177"
+examples: [
+                {
+                        specify 'nauMile 1.1508`mi
+                        
+                        print 2`nauMile                ; 2 nauMile
+                        print 3`nauMile --> `km        ; 5.5560992256 km
+                }
+                 {
+                        specify.symbol:"NM" 'nauMile 1.1508`mi
+                        
+                        print 2`nauMile                ; 2 NM
+                }
+                 {
+                        specify.describes:"coding speed" 'lph `lines/h
+                        
+                        print 100`lph                   ; 100 lph
+                        print property 100`lph          ; coding speed
+                }
+                 {
+                        specify.property "sweetness" `tspSugar
+                        
+                        print property 3`tspSugar       ; sweetness
+                }
+        ]
+attributes: #[
+        symbol: #[
+                types: [
+                                :string
+                        ]
+                description: "define main unit symbol"
+                ]
+        describes: #[
+                types: [
+                                :string
+                        ]
+                description: "set corresponding property for new unit"
+                ]
+        property: #[
+                types: [
+                                :logical
+                        ]
+                description: "define a new property"
+                ]
+        ]
+arguments: #[
+        name: [
+                        :string
+                         :literal
+                ]
+        value: [
+                        :unit
+                         :quantity
+                ]
+        ]
+related: [
+                "Quantities/inverseConductanceQuantum"
+                 "Quantities/josephsonConstant"
+                 "Quantities/speedOfLight"
+                 "Quantities/units"
+        ]

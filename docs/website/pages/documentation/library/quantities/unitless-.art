@@ -1,0 +1,28 @@
+name: "unitless?"
+type: :function
+description: "checks if given quantity describes Unitless"
+module: "macros"
+returns: [
+                :logical
+        ]
+line: 715
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/macros.nim#L715"
+examples: [
+                {
+                        unitless? 6`items
+                        ; => true
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        value: [
+                        :quantity
+                ]
+        ]
+related: [
+                "Macros/angle?"
+                 "Macros/density?"
+                 "Quantities/conforms?"
+                 "Macros/resistance?"
+        ]

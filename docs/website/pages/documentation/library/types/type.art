@@ -1,0 +1,28 @@
+name: "type"
+type: :function
+description: "get type of given value"
+module: "Types"
+returns: [
+                :type
+        ]
+line: 448
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Types.nim#L448"
+examples: [
+                {
+                        print type 18966          ; :integer
+                        print type "hello world"  ; :string
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        value: [
+                        :any
+                ]
+        ]
+related: [
+                "Types/to"
+                 "Types/define"
+                 "Types/type?"
+                 "Quantities/speedOfLight"
+        ]

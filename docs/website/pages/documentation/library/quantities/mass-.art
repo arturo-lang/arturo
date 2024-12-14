@@ -1,0 +1,28 @@
+name: "mass?"
+type: :function
+description: "checks if given quantity describes Mass"
+module: "macros"
+returns: [
+                :logical
+        ]
+line: 715
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/macros.nim#L715"
+examples: [
+                {
+                        mass? 4`kg
+                        ; => true
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        value: [
+                        :quantity
+                ]
+        ]
+related: [
+                "Macros/massFlowRate?"
+                 "Macros/area?"
+                 "Macros/snap?"
+                 "Macros/salary?"
+        ]

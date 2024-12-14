@@ -1,0 +1,33 @@
+name: "floor"
+type: :function
+description: "calculate the largest integer not greater than given value"
+module: "Numbers"
+returns: [
+                :integer
+        ]
+line: 765
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L765"
+examples: [
+                {
+                        print floor 2.1                     ; 2
+                        print floor 2.9                     ; 2
+                        print floor neg 3.5                 ; -4
+                        print floor 4                       ; 4
+                        print floor to :rational @[neg 7 2] ; -4
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        value: [
+                        :integer
+                         :floating
+                         :rational
+                ]
+        ]
+related: [
+                "Numbers/log"
+                 "Numbers/ln"
+                 "Numbers/factorial"
+                 "Numbers/hypot"
+        ]

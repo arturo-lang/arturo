@@ -1,0 +1,28 @@
+name: "unit?"
+type: :function
+description: "checks if given value is of type :unit"
+module: "Types"
+returns: [
+                :logical
+        ]
+line: 1282
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Types.nim#L1282"
+examples: [
+                {
+                        unit? `m
+                        ; => true
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        value: [
+                        :any
+                ]
+        ]
+related: [
+                "Types/function?"
+                 "Types/quantity?"
+                 "Types/integer?"
+                 "Types/null?"
+        ]

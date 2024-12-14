@@ -1,0 +1,40 @@
+name: "methods"
+type: :function
+description: "get list of methods for given object or module"
+module: "Reflection"
+returns: [
+                :block
+        ]
+line: 247
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Reflection.nim#L247"
+examples: [
+                {
+                        define :cat [
+                            init: method [nick][
+                                this\nick: join.with: " " @["Mr." capitalize nick]
+                            ]
+                        
+                            meow: method [][
+                                print [this\nick ":" "'meow!'"]
+                            ]
+                        ]
+                        
+                        snowflake: to :cat ["snowflake"]
+                        methods snowflake
+                        ; => [init meow]
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        object: [
+                        :object
+                         :module
+                ]
+        ]
+related: [
+                "Reflection/attrs"
+                 "Reflection/symbols"
+                 "Reflection/arity"
+                 "Reflection/attr"
+        ]

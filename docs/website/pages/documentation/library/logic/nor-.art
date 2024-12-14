@@ -1,0 +1,39 @@
+name: "nor?"
+type: :function
+description: "return the logical NOR for the given values"
+module: "Logic"
+returns: [
+                :logical
+        ]
+line: 231
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Logic.nim#L231"
+examples: [
+                {
+                        x: 2
+                        y: 3
+                        
+                        switch nor? x>2 y=3
+                            -> print "yep, that's correct!"
+                            -> print "nope, that's not correct
+                        
+                        ; nope, that's not correct
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        valueA: [
+                        :logical
+                         :block
+                ]
+        valueB: [
+                        :logical
+                         :block
+                ]
+        ]
+related: [
+                "Logic/xnor?"
+                 "Logic/or?"
+                 "Logic/xor?"
+                 "Logic/and?"
+        ]

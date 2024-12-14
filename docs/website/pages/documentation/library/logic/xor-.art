@@ -1,0 +1,41 @@
+name: "xor?"
+type: :function
+description: "return the logical XOR for the given values"
+module: "Logic"
+returns: [
+                :logical
+        ]
+alias: "\xE2\x8A\xBB"
+infix?: true
+line: 411
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Logic.nim#L411"
+examples: [
+                {
+                        x: 2
+                        y: 3
+                        
+                        switch xor? x=2 y=3
+                            -> print "yep, that's correct!"
+                            -> print "nope, that's not correct
+                        
+                        ; nope, that's not correct
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        valueA: [
+                        :logical
+                         :block
+                ]
+        valueB: [
+                        :logical
+                         :block
+                ]
+        ]
+related: [
+                "Logic/xnor?"
+                 "Logic/or?"
+                 "Logic/nor?"
+                 "Logic/and?"
+        ]

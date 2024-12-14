@@ -1,0 +1,25 @@
+name: "terminal"
+type: :function
+description: "get info about terminal"
+module: "Io"
+returns: [
+                :dictionary
+        ]
+line: 344
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Io.nim#L344"
+examples: [
+                {
+                        print terminal      ; [width:107 height:34]
+                        terminal\width      ; => 107
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        ]
+related: [
+                "Io/prints"
+                 "Io/clear"
+                 "Io/print"
+                 "Io/color"
+        ]

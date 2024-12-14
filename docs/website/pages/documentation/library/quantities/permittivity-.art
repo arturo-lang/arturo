@@ -1,0 +1,28 @@
+name: "permittivity?"
+type: :function
+description: "checks if given quantity describes Permittivity"
+module: "macros"
+returns: [
+                :logical
+        ]
+line: 715
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/macros.nim#L715"
+examples: [
+                {
+                        permittivity? 3`F/m
+                        ; => true
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        value: [
+                        :quantity
+                ]
+        ]
+related: [
+                "Macros/resistivity?"
+                 "Macros/permeability?"
+                 "Macros/density?"
+                 "Macros/thermalConductivity?"
+        ]

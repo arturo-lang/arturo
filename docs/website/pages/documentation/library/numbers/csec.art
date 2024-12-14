@@ -1,0 +1,38 @@
+name: "csec"
+type: :function
+description: "calculate the cosecant of given angle"
+module: "Numbers"
+returns: [
+                :floating
+                 :complex
+        ]
+line: 516
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L516"
+examples: [
+                {
+                        print csec 0                ; inf
+                        print csec 0.3              ; 3.383863361824123
+                        print csec 1.0              ; 1.188395105778121
+                }
+                 {
+                        csec to :complex [1 1]  
+                        ; => 0.6215180171704283-0.3039310016284264i
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        angle: [
+                        :integer
+                         :floating
+                         :complex
+                         :rational
+                         :quantity
+                ]
+        ]
+related: [
+                "Numbers/sec"
+                 "Numbers/cos"
+                 "Numbers/acsec"
+                 "Numbers/csech"
+        ]

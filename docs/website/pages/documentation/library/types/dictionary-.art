@@ -1,0 +1,28 @@
+name: "dictionary?"
+type: :function
+description: "checks if given value is of type :dictionary"
+module: "Types"
+returns: [
+                :logical
+        ]
+line: 697
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Types.nim#L697"
+examples: [
+                {
+                        print dictionary? #[name: "John"]   ; true
+                        print dictionary? 123               ; false
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        value: [
+                        :any
+                ]
+        ]
+related: [
+                "Types/binary?"
+                 "Types/rational?"
+                 "Types/function?"
+                 "Types/literal?"
+        ]

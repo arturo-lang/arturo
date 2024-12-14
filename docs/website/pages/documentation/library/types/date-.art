@@ -1,0 +1,28 @@
+name: "date?"
+type: :function
+description: "checks if given value is of type :date"
+module: "Types"
+returns: [
+                :logical
+        ]
+line: 634
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Types.nim#L634"
+examples: [
+                {
+                        print date? now             ; true
+                        print date? "hello"         ; false
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        value: [
+                        :any
+                ]
+        ]
+related: [
+                "Types/path?"
+                 "Types/store?"
+                 "Types/range?"
+                 "Types/label?"
+        ]

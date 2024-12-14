@@ -1,0 +1,39 @@
+name: "range"
+type: :function
+description: "get list of values in given range (inclusive)"
+module: "Collections"
+returns: [
+                :range
+        ]
+alias: ".."
+infix?: true
+line: 1392
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Collections.nim#L1392"
+examples: [
+                ""
+        ]
+attributes: #[
+        step: #[
+                types: [
+                                :integer
+                        ]
+                description: "use step between range values"
+                ]
+        ]
+arguments: #[
+        from: [
+                        :integer
+                         :char
+                ]
+        to: [
+                        :integer
+                         :floating
+                         :char
+                ]
+        ]
+related: [
+                "Collections/values"
+                 "Collections/index"
+                 "Collections/insert"
+                 "Collections/slice"
+        ]

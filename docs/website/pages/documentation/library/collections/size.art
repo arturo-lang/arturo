@@ -1,0 +1,45 @@
+name: "size"
+type: :function
+description: "get size/length of given collection"
+module: "Collections"
+returns: [
+                :integer
+                 :floating
+        ]
+line: 1883
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Collections.nim#L1883"
+examples: [
+                {
+                        arr: ["one" "two" "three"]
+                        print size arr                ; 3
+                }
+                 {
+                        dict: #[name: "John", surname: "Doe"]
+                        print size dict               ; 2
+                }
+                 {
+                        str: "some text"
+                        print size str                ; 9
+                        
+                        print size "你好!"              ; 3
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        collection: [
+                        :null
+                         :string
+                         :binary
+                         :dictionary
+                         :object
+                         :block
+                         :range
+                ]
+        ]
+related: [
+                "Collections/slice"
+                 "Collections/values"
+                 "Collections/shuffle"
+                 "Collections/unique"
+        ]

@@ -1,0 +1,51 @@
+name: "mod"
+type: :function
+description: "calculate the modulo of given values and return result"
+module: "Arithmetic"
+returns: [
+                :integer
+                 :floating
+                 :rational
+                 :quantity
+                 :object
+                 :nothing
+        ]
+alias: "%"
+infix?: true
+line: 163
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Arithmetic.nim#L163"
+examples: [
+                {
+                        print mod 5 2      ; 1
+                        print 9 % 3        ; 0
+                }
+                 {
+                        a: 8
+                        mod 'a 3           ; a: 2
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        valueA: [
+                        :integer
+                         :floating
+                         :rational
+                         :literal
+                         :pathliteral
+                         :quantity
+                         :object
+                ]
+        valueB: [
+                        :integer
+                         :floating
+                         :rational
+                         :quantity
+                ]
+        ]
+related: [
+                "Arithmetic/pow"
+                 "Arithmetic/mul"
+                 "Arithmetic/add"
+                 "Arithmetic/fdiv"
+        ]

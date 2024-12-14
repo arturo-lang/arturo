@@ -1,0 +1,29 @@
+name: "file?"
+type: :function
+description: "check if given path exists and corresponds to a file"
+module: "Files"
+returns: [
+                :logical
+        ]
+line: 608
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Files.nim#L608"
+examples: [
+                {
+                        if file? "somefile.txt" [ 
+                            print "file exists!" 
+                        ]
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        path: [
+                        :string
+                ]
+        ]
+related: [
+                "Files/symlink?"
+                 "Files/directory?"
+                 "Files/hidden?"
+                 "Files/exists?"
+        ]

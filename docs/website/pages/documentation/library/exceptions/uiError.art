@@ -1,0 +1,18 @@
+name: "uiError"
+type: :errorkind
+description: "a UI error"
+module: "Exceptions"
+example: [
+                ""
+        ]
+line: 242
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Exceptions.nim#L242"
+returns: [
+                :errorkind
+        ]
+related: [
+                "Exceptions/vmError"
+                 "Exceptions/syntaxError"
+                 "Exceptions/typeError"
+                 "Exceptions/nameError"
+        ]

@@ -1,0 +1,28 @@
+name: "currency?"
+type: :function
+description: "checks if given quantity describes Currency"
+module: "macros"
+returns: [
+                :logical
+        ]
+line: 715
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/macros.nim#L715"
+examples: [
+                {
+                        currency? 4`USD
+                        ; => true
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        value: [
+                        :quantity
+                ]
+        ]
+related: [
+                "Macros/current?"
+                 "Macros/currentDensity?"
+                 "Macros/frequency?"
+                 "Macros/charge?"
+        ]

@@ -1,0 +1,40 @@
+name: "blend"
+type: :function
+description: "blend given colors and get result"
+module: "Colors"
+returns: [
+                :color
+        ]
+line: 39
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Colors.nim#L39"
+examples: [
+                "blend #red #CCCCCC                  ; => #E66666"
+                 {
+                        blend .balance: 0.75 #red #CCCCCC   
+                        ; => #D99999
+                }
+        ]
+attributes: #[
+        balance: #[
+                types: [
+                                :floating
+                        ]
+                description: "use different mix of color (0.0-1.0, default:0.5)"
+                ]
+        ]
+arguments: #[
+        colorA: [
+                        :literal
+                         :pathliteral
+                         :color
+                ]
+        colorB: [
+                        :color
+                ]
+        ]
+related: [
+                "Colors/darken"
+                 "Colors/palette"
+                 "Colors/spin"
+                 "Colors/invert"
+        ]

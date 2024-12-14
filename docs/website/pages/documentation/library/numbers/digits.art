@@ -1,0 +1,47 @@
+name: "digits"
+type: :function
+description: "convert a number into an array of digits or an array of digits back into a number"
+module: "Numbers"
+returns: [
+                :block
+        ]
+line: 633
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L633"
+examples: [
+                {
+                        digits 123
+                        ; => [1 2 3]
+                        
+                        digits [1 2 3]
+                        ; => 123
+                        
+                        digits 0
+                        ; => [0]
+                        
+                        digits neg 12345
+                        ; => [1 2 3 4 5]
+                        
+                        ; digits 1231231231231231231231231231023
+                        ; => [1 2 3 1 2 3 1 2 3 1 2 3 1 2 3 1 2 3 1 2 3 1 2 3 1 2 3 1 0 2 3]
+                }
+        ]
+attributes: #[
+        base: #[
+                types: [
+                                :integer
+                        ]
+                description: "use given based (default: 10)"
+                ]
+        ]
+arguments: #[
+        number: [
+                        :integer
+                         :block
+                ]
+        ]
+related: [
+                "Numbers/infinite"
+                 "Numbers/gcd"
+                 "Numbers/denominator"
+                 "Numbers/factors"
+        ]

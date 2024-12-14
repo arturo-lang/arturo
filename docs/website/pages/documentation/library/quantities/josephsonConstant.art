@@ -1,0 +1,18 @@
+name: "josephsonConstant"
+type: :quantity
+description: "The inverse of the flux quantum"
+module: "Quantities"
+example: [
+                ""
+        ]
+line: 715
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Quantities.nim#L715"
+returns: [
+                :quantity
+        ]
+related: [
+                "Quantities/molarGasConstant"
+                 "Quantities/speedOfLight"
+                 "Quantities/classicalElectronRadius"
+                 "Quantities/magneticFluxQuantum"
+        ]

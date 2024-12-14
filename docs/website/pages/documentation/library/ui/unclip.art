@@ -1,0 +1,29 @@
+name: "unclip"
+type: :function
+description: "get clipboard content"
+module: "Ui"
+returns: [
+                :string
+        ]
+line: 206
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Ui.nim#L206"
+examples: [
+                {
+                        ; paste something into the clipboard (optionally)
+                        clip "this is something to be pasted into the clipboard"
+                        
+                        ; now, let's fetch whatever there is in the clipboard
+                        unclip 
+                        ; => "this is something to be pasted into the clipboard"
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        ]
+related: [
+                "Ui/clip"
+                 "Ui/popup"
+                 "Ui/dialog"
+                 "Logic/true"
+        ]

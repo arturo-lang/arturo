@@ -1,0 +1,28 @@
+name: "pathLiteral?"
+type: :function
+description: "checks if given value is of type :pathLiteral"
+module: "Types"
+returns: [
+                :logical
+        ]
+line: 1075
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Types.nim#L1075"
+examples: [
+                {
+                        pathLiteral? 'a\b\c
+                        ; => true
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        value: [
+                        :any
+                ]
+        ]
+related: [
+                "Types/pathLabel?"
+                 "Types/attributeLabel?"
+                 "Types/path?"
+                 "Types/literal?"
+        ]

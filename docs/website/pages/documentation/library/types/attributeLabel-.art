@@ -1,0 +1,28 @@
+name: "attributeLabel?"
+type: :function
+description: "checks if given value is of type :attributeLabel"
+module: "Types"
+returns: [
+                :logical
+        ]
+line: 489
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Types.nim#L489"
+examples: [
+                {
+                        attributeLabel? first [.something: x]
+                        ; => true
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        value: [
+                        :any
+                ]
+        ]
+related: [
+                "Types/attribute?"
+                 "Types/pathLiteral?"
+                 "Types/pathLabel?"
+                 "Types/rational?"
+        ]

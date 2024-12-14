@@ -1,0 +1,31 @@
+name: "standalone?"
+type: :function
+description: "checks if current script runs from the command-line"
+module: "Reflection"
+returns: [
+                :logical
+        ]
+line: 367
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Reflection.nim#L367"
+examples: [
+                {
+                        doSomething: function [x][
+                            print ["I'm doing something with" x]
+                        ]
+                        
+                        if standalone? [
+                            print "It's running from command line and not included."
+                            print "Nothing to do!"
+                        ]
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        ]
+related: [
+                "Reflection/attr?"
+                 "Types/inline?"
+                 "Macros/conductance?"
+                 "Macros/inductance?"
+        ]

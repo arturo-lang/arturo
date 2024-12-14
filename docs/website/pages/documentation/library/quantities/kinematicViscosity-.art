@@ -1,0 +1,28 @@
+name: "kinematicViscosity?"
+type: :function
+description: "checks if given quantity describes Kinematic Viscosity"
+module: "macros"
+returns: [
+                :logical
+        ]
+line: 715
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/macros.nim#L715"
+examples: [
+                {
+                        kinematicViscosity? 5`m2/s
+                        ; => true
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        value: [
+                        :quantity
+                ]
+        ]
+related: [
+                "Macros/resistivity?"
+                 "Quantities/conforms?"
+                 "Macros/permittivity?"
+                 "Macros/luminosity?"
+        ]

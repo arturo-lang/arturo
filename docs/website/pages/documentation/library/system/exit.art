@@ -1,0 +1,22 @@
+name: "exit"
+type: :function
+description: "exit program"
+module: "System"
+returns: [
+                :nothing
+        ]
+line: 252
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/System.nim#L252"
+examples: [
+                "exit              ; (terminates the program)"
+        ]
+attributes: #[
+        ]
+arguments: #[
+        ]
+related: [
+                "System/panic"
+                 "System/path"
+                 "System/env"
+                 "System/execute"
+        ]

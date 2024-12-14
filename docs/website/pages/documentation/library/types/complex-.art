@@ -1,0 +1,30 @@
+name: "complex?"
+type: :function
+description: "checks if given value is of type :complex"
+module: "Types"
+returns: [
+                :logical
+        ]
+line: 598
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Types.nim#L598"
+examples: [
+                {
+                        c: to :complex [1 2]
+                        print complex? c            ; true
+                        
+                        print complex? 123          ; false
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        value: [
+                        :any
+                ]
+        ]
+related: [
+                "Types/color?"
+                 "Types/type?"
+                 "Types/block?"
+                 "Types/store?"
+        ]
