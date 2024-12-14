@@ -144,7 +144,7 @@
 
                     <hr>
 
-                    <||= githubMarkdown W\overview ||>
+                    <||= replace githubMarkdown replace W\overview ["<||=" "<||" "||>"] ["$%%=" "$%%" "%%$"] ["$%%=" "$%%" "%%$"] ["<||=" "<||" "||>"]   ||>
 
                 </div>
             </div>
