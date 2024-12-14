@@ -3,16 +3,16 @@ overview: ---
 
 The Sets module provides functions for performing set theory operations on blocks. It includes all standard set operations and set relationship tests.
 
-## Key Concepts
+### Key Concepts
 
 - Sets are represented using blocks (duplicate values are handled automatically)
 - Standard set operations (union, intersection, difference)
 - Set relationship tests (subset, superset)
 - Support for powerset generation
 
-## Basic Usage
+### Basic Usage
 
-### Basic Set Operations
+#### Basic Set Operations
 
 ```red
 A: [1 2 3 4]
@@ -23,7 +23,7 @@ intersection A B        ; => [3 4]
 difference A B          ; => [1 2]
 ```
 
-### Set Relationships
+#### Set Relationships
 
 ```red
 X: [1 2 3]
@@ -41,7 +41,7 @@ disjoint? X Y           ; false
 > [!NOTE]
 > A proper subset/superset means that one set must be strictly smaller/larger than the other - they cannot be equal.
 
-### Powerset Generation
+#### Powerset Generation
 
 ```red
 print powerset [1 2 3]       
@@ -51,9 +51,9 @@ print powerset [1 2 3]
 > [!NOTE]
 > The powerset contains all possible subsets of a set, including the empty set and the set itself.
 
-## Common Patterns
+### Common Patterns
 
-### Symmetric Difference
+#### Symmetric Difference
 
 ```red
 A: [1 2 3 4]
@@ -63,7 +63,7 @@ B: [3 4 5 6]
 print difference.symmetric A B  ; 1 2 5 6
 ```
 
-### Set Operations with Multiple Sets
+#### Set Operations with Multiple Sets
 
 ```red
 sets: [[1 2] [2 3] [3 4]]

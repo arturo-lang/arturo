@@ -3,7 +3,7 @@ overview: ---
 
 The Quantities module provides comprehensive support for physical quantities and units. It includes a wide range of physical properties, SI units, derived units, and constants, with automatic unit conversion and dimensional analysis.
 
-## Key Concepts
+### Key Concepts
 
 - Physical quantities with units (like "5 meters" or "72 kilometers per hour")
 - Support for all SI base units and derived units
@@ -12,9 +12,9 @@ The Quantities module provides comprehensive support for physical quantities and
 - Dimensional analysis
 - Support for currency units
 
-## Basic Usage
+### Basic Usage
 
-### Creating Quantities
+#### Creating Quantities
 
 ```red
 ; basic quantities
@@ -28,7 +28,7 @@ force: 10`N             ; 10 newtons
 energy: 50`kWh          ; 50 kilowatt-hours
 ```
 
-### Unit Conversions
+#### Unit Conversions
 
 ```red
 dist: 5`km
@@ -44,7 +44,7 @@ temp: 25`degC
 print temp --> `degF            ; 77°F
 ```
 
-### Unit Compatibility
+#### Unit Compatibility
 
 ```red
 length1: 5`m
@@ -62,7 +62,7 @@ distance: speed * time
 print distance                 ; 250 km
 ```
 
-### Working with Currencies
+#### Working with Currencies
 
 ```red
 price: 50`USD
@@ -75,9 +75,9 @@ yearly: salary * 12
 print yearly                   ; 60000 $/mo
 ```
 
-## Common Patterns
+### Common Patterns
 
-### Complex Unit Calculations
+#### Complex Unit Calculations
 
 ```red
 ; calculating power
@@ -94,7 +94,7 @@ cost: price * (energy --> `kWh)
 print cost                     ; 0.33 $
 ```
 
-### Using Physical Constants
+#### Using Physical Constants
 
 ```red
 ; gravitational force
@@ -106,7 +106,7 @@ force: G * m1 * m2 / (r * r)
 print to :floating force        ; 736.2513565961324
 ```
 
-## Available Properties
+### Available Properties
 
 Physical quantities in Arturo are classified by their properties. Here are some key properties and their dimensions:
 
@@ -128,7 +128,7 @@ Physical quantities in Arturo are classified by their properties. Here are some 
 > [!NOTE]
 > There are many more properties available. Use `property` to inspect any quantity's dimensional formula.
 
-## Prefixes
+### Prefixes
 
 Metric prefixes are supported for most units:
 
@@ -150,9 +150,9 @@ Metric prefixes are supported for most units:
 > [!NOTE]
 > Most units that allow prefixes can use any SI prefix (from atto- to exa-). Prefixes change the unit by the corresponding power of 10.
 
-## Supported Units
+### Supported Units
 
-### Base SI Units
+#### Base SI Units
 | Unit | Symbol | Property | Example |
 |------|---------|----------|----------|
 | meter | m | Length | `5`m |
@@ -163,7 +163,7 @@ Metric prefixes are supported for most units:
 | mole | mol | Substance | `1`mol |
 | candela | cd | Luminosity | `100`cd |
 
-### Length Units
+#### Length Units
 | Unit | Symbol | Definition | Note |
 |------|--------|------------|------|
 | inch | in | 127/5000 m | |
@@ -177,14 +177,14 @@ Metric prefixes are supported for most units:
 | pixel | px | 1/96 in | |
 | point | pt | 1/72 in | |
 
-### Area Units
+#### Area Units
 | Unit | Symbol | Definition |
 |------|---------|------------|
 | acre | ac | 4840 yd² |
 | hectare | ha | 10000 m² |
 | barn | b | 100 ftm² |
 
-### Volume Units
+#### Volume Units
 | Unit | Symbol | Definition |
 |------|---------|------------|
 | liter | L | 1000 cm³ |
@@ -197,7 +197,7 @@ Metric prefixes are supported for most units:
 | bushel | bu | 2150.42 in³ |
 | cord | cord | 128 ft³ |
 
-### Mass Units
+#### Mass Units
 | Unit | Symbol | Definition |
 |------|---------|------------|
 | pound | lb | 0.45359237 kg |
@@ -208,7 +208,7 @@ Metric prefixes are supported for most units:
 | carat | ct | 0.2 g |
 | grain | gr | 64.79891 mg |
 
-### Time Units
+#### Time Units
 | Unit | Symbol | Definition |
 |------|---------|------------|
 | minute | min | 60 s |
@@ -218,7 +218,7 @@ Metric prefixes are supported for most units:
 | month | mo | 2629746 s |
 | year | yr | 31556952 s |
 
-### Speed Units
+#### Speed Units
 | Unit | Symbol | Definition |
 |------|---------|------------|
 | kilometers per hour | km/h | 1000/3600 m/s |
@@ -226,14 +226,14 @@ Metric prefixes are supported for most units:
 | knot | kn | 1852/3600 m/s |
 | mach | mach | 340.29 m/s |
 
-### Force Units
+#### Force Units
 | Unit | Symbol | Definition |
 |------|---------|------------|
 | newton | N | 1 kg·m/s² |
 | dyne | dyn | 10⁻⁵ N |
 | pound-force | lbf | 4.44822 N |
 
-### Pressure Units
+#### Pressure Units
 | Unit | Symbol | Definition |
 |------|---------|------------|
 | pascal | Pa | 1 N/m² |
@@ -242,7 +242,7 @@ Metric prefixes are supported for most units:
 | torr | Torr | 133.3224 Pa |
 | psi | psi | 6894.76 Pa |
 
-### Energy Units
+#### Energy Units
 | Unit | Symbol | Definition |
 |------|---------|------------|
 | joule | J | 1 N·m |
@@ -251,13 +251,13 @@ Metric prefixes are supported for most units:
 | electron volt | eV | 1.602e-19 J |
 | BTU | BTU | 1055.06 J |
 
-### Power Units
+#### Power Units
 | Unit | Symbol | Definition |
 |------|---------|------------|
 | watt | W | 1 J/s |
 | horsepower | hp | 745.7 W |
 
-### Electric Units
+#### Electric Units
 | Unit | Symbol | Definition |
 |------|---------|------------|
 | volt | V | 1 W/A |
@@ -267,7 +267,7 @@ Metric prefixes are supported for most units:
 | weber | Wb | 1 V·s |
 | tesla | T | 1 Wb/m² |
 
-### Angle Units
+#### Angle Units
 | Unit | Symbol | Definition |
 |------|---------|------------|
 | radian | rad | base unit |
@@ -275,14 +275,14 @@ Metric prefixes are supported for most units:
 | arcminute | ' | π/10800 rad |
 | arcsecond | " | π/648000 rad |
 
-### Radiation Units
+#### Radiation Units
 | Unit | Symbol | Definition |
 |------|---------|------------|
 | becquerel | Bq | 1/s |
 | gray | Gy | 1 J/kg |
 | sievert | Sv | 1 J/kg |
 
-### Information Units
+#### Information Units
 | Unit | Symbol | Definition |
 |------|---------|------------|
 | byte | B | base unit |

@@ -5,7 +5,7 @@ overview: ---
 
 The Crypto module provides basic cryptographic functions and encoding utilities. It includes support for hashing, CRC calculation, and various encoding/decoding operations.
 
-## Key Concepts
+### Key Concepts
 
 - Hash calculation (MD5, SHA1)
 - CRC32 polynomial calculation
@@ -13,9 +13,9 @@ The Crypto module provides basic cryptographic functions and encoding utilities.
 - URL encoding/decoding
 - Character encoding conversion
 
-## Basic Usage
+### Basic Usage
 
-### Hashing
+#### Hashing
 
 ```red
 ; calculate MD5 digest (default)
@@ -31,7 +31,7 @@ print crc "hello world"             ; 0d4a1185
 > [!IMPORTANT]
 > The Crypto module provides basic cryptographic functions. For serious cryptographic needs, consider using specialized libraries.
 
-### Base64 Encoding/Decoding
+#### Base64 Encoding/Decoding
 
 ```red
 ; encoding
@@ -43,7 +43,7 @@ decoded: decode encoded             ; Hello World!
 print decoded
 ```
 
-### URL Encoding/Decoding
+#### URL Encoding/Decoding
 
 ```red
 ; encode URL
@@ -66,7 +66,7 @@ fullEncoded: encode.url.slashes "/path/to/resource"
 ; %2Fpath%2Fto%2Fresource
 ```
 
-### Character Encoding Conversion
+#### Character Encoding Conversion
 
 ```red
 ; convert between character encodings
@@ -74,9 +74,9 @@ text: "Hello världen"           ; text with non-ASCII characters
 converted: encode .from:"UTF-8" .to: "ISO-8859-1" text
 ```
 
-## Common Patterns
+### Common Patterns
 
-### Password Hashing
+#### Password Hashing
 
 ```red
 hashPassword: function [password][
@@ -94,7 +94,7 @@ print ["Hashed password:" hashed]
 ; Hashed password: 81ea5410f1cb78c81cbb6dbd678782f80f9150f5 
 ```
 
-### Safe URL Building
+#### Safe URL Building
 
 ```red
 buildUrl: function [baseUrl parameters][

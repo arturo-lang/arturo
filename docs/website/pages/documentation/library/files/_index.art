@@ -3,7 +3,7 @@ overview: ---
 
 The Files module provides powerful functions for file operations, with intelligent handling of different data sources and formats. Its flexibility allows seamless interaction with local files, URLs, and direct content.
 
-## Key Concepts
+### Key Concepts
 
 - Smart source detection (URLs, files, direct content)
 - Support for multiple file formats (JSON, CSV, XML, etc.)
@@ -11,9 +11,9 @@ The Files module provides powerful functions for file operations, with intellige
 - Directory handling and path manipulation
 - Automatic format detection and parsing
 
-## Basic Usage
+### Basic Usage
 
-### Reading Content
+#### Reading Content
 
 `read` intelligently handles different types of sources:
 
@@ -27,7 +27,7 @@ content: read "some direct content"     ; use string directly
 content: read.file "some text.txt"      ; error if file doesn't exist
 ```
 
-### Writing Content
+#### Writing Content
 
 ```red
 ; basic writing
@@ -40,7 +40,7 @@ write "some content" "output.txt"
 write.append "more content" "output.txt"
 ```
 
-### Format Parsing & Generation
+#### Format Parsing & Generation
 
 ```red
 ; reading & parsing JSON from any source
@@ -63,7 +63,7 @@ content: read.toml "config.toml"         ; parse TOML
 > [!TIP]
 > The format functions (like `.json`, `.csv`) work the same way regardless of source - local file, URL, or direct content.
 
-### File System Operations
+#### File System Operations
 
 ```red
 ; check existence
@@ -81,9 +81,9 @@ copy.directory "src" "dest"
 delete.directory "olddir"
 ```
 
-## Common Patterns
+### Common Patterns
 
-### Working with Paths
+#### Working with Paths
 
 ```red
 path: "photos/vacation/beach.jpg"
@@ -97,7 +97,7 @@ print normalize "./folder/../file.txt"  ; file.txt
 print normalize "~/documents"           ; expands home directory
 ```
 
-### Reading Files Safely
+#### Reading Files Safely
 
 ```red
 ; handle potential missing files
@@ -111,7 +111,7 @@ if throws? [
 ]-> print "File not found!"
 ```
 
-### Bulk Operations
+#### Bulk Operations
 
 ```red
 ; list files in directory

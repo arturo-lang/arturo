@@ -3,7 +3,7 @@ overview: ---
 
 The Net module provides functionality for network operations, including HTTP requests, file downloads, mail sending, and web serving capabilities.
 
-## Key Concepts
+### Key Concepts
 
 - HTTP requests (GET, POST, PUT, PATCH, DELETE)
 - File downloads
@@ -11,9 +11,9 @@ The Net module provides functionality for network operations, including HTTP req
 - Web server functionality
 - Browser integration
 
-## Basic Usage
+### Basic Usage
 
-### HTTP Requests
+#### HTTP Requests
 
 ```red
 ; basic GET request
@@ -39,7 +39,7 @@ response: request.delete "https://api.example.com/users/1" ø
 > [!IMPORTANT]
 > When making HTTP requests, always handle potential network errors and timeouts appropriately.
 
-### File Downloads
+#### File Downloads
 
 ```red
 ; download file
@@ -49,7 +49,7 @@ download "https://example.com/file.pdf"
 download.as:"local.pdf" "https://example.com/file.pdf"
 ```
 
-### Sending Emails
+#### Sending Emails
 
 ```red
 ; basic email
@@ -64,16 +64,16 @@ mail .using: #[
 ] "recipient@email.com" "Meeting reminder" "Don't forget our meeting tomorrow!" 
 ```
 
-### Opening URLs
+#### Opening URLs
 
 ```red
 ; open URL in default browser
 browse "https://arturo-lang.io"
 ```
 
-## Common Patterns
+### Common Patterns
 
-### Simple REST API Client
+#### Simple REST API Client
 
 ```red
 define :apiClient [
@@ -103,7 +103,7 @@ response: apiClient\get "/users"
 newUser: apiClient\post "/users" #[name: "John" email: "john@email.com"]
 ```
 
-### Mini Web Server
+#### Mini Web Server
 
 ```red
 ; create a simple web server

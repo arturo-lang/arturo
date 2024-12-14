@@ -3,7 +3,7 @@ overview: ---
 
 The UI module provides functionality for creating basic desktop interactions, managing clipboard content, and displaying web-based user interfaces through webviews.
 
-## Key Concepts
+### Key Concepts
 
 - System dialogs and alerts
 - Clipboard operations
@@ -11,9 +11,9 @@ The UI module provides functionality for creating basic desktop interactions, ma
 - File selection dialogs
 - User notifications
 
-## Basic Usage
+### Basic Usage
 
-### System Dialogs
+#### System Dialogs
 
 ```red
 ; basic popup
@@ -30,7 +30,7 @@ response: popup.okCancel "Confirm" "Proceed?"
 response: popup.retryCancel "Failed" "Try again?"
 ```
 
-### System Notifications
+#### System Notifications
 
 ```red
 ; basic notification
@@ -42,7 +42,7 @@ alert.warning "Warning" "Battery low"
 alert.error "Error" "Update failed"
 ```
 
-### File Selection
+#### File Selection
 
 ```red
 ; select file
@@ -55,7 +55,7 @@ folder: dialog.folder "Select folder"
 config: dialog .path: "~/Documents" "Select config"
 ```
 
-### Clipboard Operations
+#### Clipboard Operations
 
 ```red
 ; set clipboard content
@@ -66,7 +66,7 @@ text: unclip
 print ["Clipboard contains:" text]
 ```
 
-### WebView Interface
+#### WebView Interface
 
 ```red
 ; basic webview with HTML content
@@ -101,9 +101,9 @@ webview
 > WebView's `.debug` attribute opens Chrome's DevTools for easier development and debugging.
 
 
-## Common Patterns
+### Common Patterns
 
-### Interactive Dialog Flow
+#### Interactive Dialog Flow
 
 ```red
 getUserInput: function [default][
@@ -125,7 +125,7 @@ config: getUserInput "config.ini"
 > [!NOTE]
 > Dialog or popup buttons, behavior and general look'n'feel might vary slightly depending on the operating system.
 
-### Clipboard Manager
+#### Clipboard Manager
 
 ```red
 define :clipboardManager [

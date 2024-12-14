@@ -3,16 +3,16 @@ overview: ---
 
 The Databases module offers straightforward database operations with built-in SQLite support. It provides a simple yet powerful interface for managing databases directly from your Arturo code.
 
-## Key Concepts
+### Key Concepts
 
 - Native SQLite support
 - Simple database connection management
 - Parametrized queries
 - Query results as blocks of rows
 
-## Basic Usage
+### Basic Usage
 
-### Opening & Closing Connections
+#### Opening & Closing Connections
 
 ```red
 ; create/open database
@@ -22,7 +22,7 @@ db: open.sqlite "mydata.db"
 close db
 ```
 
-### Simple Queries
+#### Simple Queries
 
 ```red
 query db {!sql
@@ -43,7 +43,7 @@ print users   ; [1 John 25]
 > [!TIP]
 > If you are using a text editor that supports this syntax (e.g. VSCode), using `!sql` in front of `{..}`-enclosed blocks will enable proper SQL highlighting. Totally non-compulsory, but still very handy!
 
-### Parametrized Queries
+#### Parametrized Queries
 
 ```red
 ; safer way to insert data with parameters
@@ -62,9 +62,9 @@ loop results 'user ->
 > [!IMPORTANT]
 > Always use parametrized queries when dealing with user input to prevent SQL injection attacks.
 
-## Common Patterns
+### Common Patterns
 
-### Transaction Handling
+#### Transaction Handling
 
 ```red
 ; do multiple operations
@@ -78,7 +78,7 @@ query db [
 
 ```
 
-### Getting Last Insert ID
+#### Getting Last Insert ID
 
 ```red
 ; insert and get the ID

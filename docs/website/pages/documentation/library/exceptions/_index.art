@@ -6,16 +6,16 @@ The Exceptions module provides error handling functionality and predefined error
 > [!IMPORTANT]
 > The error handling system in Arturo is still evolving. The functionality described in this module should be considered transitional and may change in future versions as the error handling system matures.
 
-## Key Concepts
+### Key Concepts
 
 - Error throwing and catching
 - Predefined error types
 - Error assertions
 - Error testing capabilities
 
-## Basic Usage
+### Basic Usage
 
-### Error Handling
+#### Error Handling
 
 ```red
 ; basic try-catch pattern
@@ -28,7 +28,7 @@ if error? err: <= try [
 ]
 ```
 
-### Throwing Errors
+#### Throwing Errors
 
 ```red
 ; throw generic error
@@ -41,7 +41,7 @@ throw.as:valueError "Invalid input provided"
 throw "User not found: %id=123"
 ```
 
-### Error Testing
+#### Error Testing
 
 ```red
 ; test if operation throws an error
@@ -50,7 +50,7 @@ if throws? [
 ] -> print "Operation has thrown an error"
 ```
 
-## Predefined Error Types
+### Predefined Error Types
 
 ```red
 ; available error types

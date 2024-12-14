@@ -3,7 +3,7 @@ overview: ---
 
 The Strings module provides comprehensive functionality for string manipulation, from basic operations to advanced templating. It handles strings as Unicode character collections and offers powerful pattern matching capabilities.
 
-## Key Concepts
+### Key Concepts
 
 - Full Unicode support
 - String interpolation and templating
@@ -11,9 +11,9 @@ The Strings module provides comprehensive functionality for string manipulation,
 - Pattern matching and substitution
 - Case conversion and manipulation
 
-## Basic Usage
+### Basic Usage
 
-### String Creation
+#### String Creation
 
 ```red
 ; basic strings
@@ -44,7 +44,7 @@ is part of the string
 ------
 ```
 
-### Basic Operations
+#### Basic Operations
 
 ```red
 ; concatenation
@@ -66,7 +66,7 @@ strip.start "  hi"          ; hi
 strip.end "hi  "            ; hi
 ```
 
-### Pattern Matching
+#### Pattern Matching
 
 ```red
 text: "hello world"
@@ -87,9 +87,9 @@ result: replace "Date: 2024" {/\d+/} "2025"
 print result                ; Date: 2025
 ```
 
-## Common Patterns
+### Common Patterns
 
-### String Manipulation
+#### String Manipulation
 
 ```red
 ; word wrapping
@@ -108,7 +108,7 @@ print pad.right "Price:" 10         ; Price:
 print pad.center "Title" 20         ; -------Title--------
 ```
 
-### Working with Parts
+#### Working with Parts
 
 ```red
 text: "hello world"
@@ -126,11 +126,11 @@ print join.with:", " ["a" "b" "c"]      ; a, b, c
 print slice text 0 4                    ; hello
 ```
 
-## String Templates
+### String Templates
 
 Arturo's templating system uses pipe characters (`|...|`) for interpolation:
 
-### Simple Interpolation
+#### Simple Interpolation
 
 ```red
 name: "Bill"
@@ -144,7 +144,7 @@ print ~"I am |age| years old"           ; I am 38 years old
 print ~"Next year I'll be |age + 1|"    ; Next year I'll be 39
 ```
 
-### Conditional Templates
+#### Conditional Templates
 
 ```red
 age: 30
@@ -160,7 +160,7 @@ print render.template template
 ; You can enter the club
 ```
 
-### Loops in Templates
+#### Loops in Templates
 
 ```red
 items: ["apple" "banana" "orange"]
@@ -188,7 +188,7 @@ print render.template template
 ; </ul>
 ```
 
-### Advanced Template Features
+#### Advanced Template Features
 
 ```red
 users: @[

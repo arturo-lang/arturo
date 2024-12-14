@@ -3,16 +3,16 @@ overview: ---
 
 The Sockets module provides a straightforward way to handle network communication using TCP/UDP sockets. Rather than dealing with low-level details, you can focus on building networked applications with just a few simple functions.
 
-## Key Concepts
+### Key Concepts
 
 - Server sockets listen for incoming connections
 - Client sockets connect to servers
 - Messages can be sent/received as strings
 - Both TCP (default) and UDP protocols are supported
 
-## Basic Usage
+### Basic Usage
 
-### Creating a Server
+#### Creating a Server
 
 ```red
 server: listen 8000
@@ -22,7 +22,7 @@ print "Server listening on port 8000..."
 > [!IMPORTANT]  
 > Always remember to `unplug` your sockets when you're done with them to free up system resources.
 
-### Accepting Connections & Handling Messages
+#### Accepting Connections & Handling Messages
 
 ```red
 ; accept new client
@@ -38,7 +38,7 @@ message: receive.timeout:1000 client    ; timeout after 1 second if no message
 > [!CAUTION]
 > Watch out for message sizes when using receive: for large ones, consider implementing a chunking strategy or using a protocol with clear message boundaries.
 
-### Using UDP
+#### Using UDP
 
 When you need faster, connectionless communication:
 
@@ -49,9 +49,9 @@ server: listen.udp 8000
 > [!WARNING]  
 > UDP messages may arrive out of order or not at all. Only use UDP when your application can handle message loss.
 
-## Common Patterns
+### Common Patterns
 
-### Echo Server
+#### Echo Server
 
 A minimal TCP server that echoes back messages:
 
@@ -78,7 +78,7 @@ print receive client
 unplug client
 ```
 
-### Multi-Client Chat Server
+#### Multi-Client Chat Server
 
 A more complete example showing how to handle multiple clients:
 

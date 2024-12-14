@@ -3,7 +3,7 @@ overview: ---
 
 The Paths module provides functionality for manipulating file system paths and extracting components from paths and URLs.
 
-## Key Concepts
+### Key Concepts
 
 - Path manipulation and normalization
 - Path component extraction
@@ -11,9 +11,9 @@ The Paths module provides functionality for manipulating file system paths and e
 - Path type checking
 - Relative path handling
 
-## Basic Usage
+### Basic Usage
 
-### Path Components
+#### Path Components
 
 ```red
 path: "photos/vacation/beach.jpg"
@@ -29,7 +29,7 @@ absolute? "/Users"              ; => true
 absolute? "photos/img.jpg"      ; => false
 ```
 
-### URL Components
+#### URL Components
 
 ```red
 url: "https://example.com:8080/path/page.html?q=term#section"
@@ -43,7 +43,7 @@ print extract.query url         ; q=term
 print extract.anchor url        ; section
 ```
 
-### Path Normalization
+#### Path Normalization
 
 ```red
 ; normalize paths (resolve . and ..)
@@ -56,7 +56,7 @@ print normalize.executable "script"         ; ./script
 print normalize.tilde "~/code"              ; /home/user/code
 ```
 
-### Relative Paths
+#### Relative Paths
 
 ```red
 ; get path relative to current script
@@ -66,9 +66,9 @@ read relative "some/file.txt"           ; based on script location
 read ./"some/file.txt"
 ```
 
-## Common Patterns
+### Common Patterns
 
-### Path Building
+#### Path Building
 
 ```red
 pathBuilder: function [components][
@@ -87,7 +87,7 @@ print fullPath
 ; /home/user/documents/file.txt
 ```
 
-### URL Parsing Helper
+#### URL Parsing Helper
 
 ```red
 parseUrl: function [url][
@@ -108,7 +108,7 @@ print ["API Version:" components\endpoint]
 ; API Version: /v1/users 
 ```
 
-### Working with Extensions
+#### Working with Extensions
 
 ```red
 getFileType: function [filepath][
@@ -126,7 +126,7 @@ getFileType: function [filepath][
 print getFileType "document.txt"    ; text file
 ```
 
-### Path Checks
+#### Path Checks
 
 ```red
 validatePath: function [filepath][

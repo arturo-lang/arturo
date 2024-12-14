@@ -3,7 +3,7 @@ overview: ---
 
 The Numbers module extends Arturo's numerical capabilities beyond basic arithmetic, offering advanced mathematical functions, number theory operations, and trigonometric calculations.
 
-## Key Concepts
+### Key Concepts
 
 - Full support for complex numbers and mathematical constants
 - Advanced mathematical functions (logarithms, exponentials)
@@ -11,9 +11,9 @@ The Numbers module extends Arturo's numerical capabilities beyond basic arithmet
 - Number theory functions (factors, primes)
 - Random number generation
 
-## Basic Usage
+### Basic Usage
 
-### Mathematical Constants
+#### Mathematical Constants
 
 ```red
 pi              ; => 3.141592653589793
@@ -21,7 +21,7 @@ epsilon         ; => 2.718281828459045
 tau             ; => 6.283185307179586
 ```
 
-### Mathematical Functions
+#### Mathematical Functions
 
 ```red
 ; exponentials and logarithms
@@ -36,7 +36,7 @@ round 3.14      ; => 3.0
 abs neg 42      ; => 42
 ```
 
-### Complex Numbers
+#### Complex Numbers
 
 ```red
 z: to :complex [3 4]    ; 3.0+4.0i
@@ -50,7 +50,7 @@ print z * w             ; -1.0+7.0i
 > [!NOTE]
 > Complex numbers are created using `to` with a block containing the real and imaginary parts.
 
-### Number Theory
+#### Number Theory
 
 ```red
 ; prime numbers
@@ -65,9 +65,9 @@ print gcd [24 36]   ; 12
 print lcm [4 6]     ; 12
 ```
 
-## Common Patterns
+### Common Patterns
 
-### Working with Angles
+#### Working with Angles
 
 ```red
 ang: pi/6                       ; 30 degrees
@@ -81,7 +81,7 @@ print tan ang                   ; 0.577350269189626
 print asin 0.5                  ; 0.523598775598299
 ```
 
-### Random Number Generation
+#### Random Number Generation
 
 ```red
 ; random integer in range (inclusive)

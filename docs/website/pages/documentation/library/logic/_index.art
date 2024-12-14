@@ -3,15 +3,15 @@ overview: ---
 
 The Logic module provides boolean operations and logical value manipulation. Beyond traditional true/false operations, it includes support for ternary logic with `maybe` and optimized evaluation strategies.
 
-## Key Concepts
+### Key Concepts
 
 - Three-valued logic: `true`, `false`, and `maybe`
 - Standard boolean operations (AND, OR, XOR, etc.)
 - Short-circuit evaluation for improved performance
 
-## Basic Usage
+### Basic Usage
 
-### Basic Logical Values
+#### Basic Logical Values
 
 ```red
 print true?  true     ; true
@@ -19,7 +19,7 @@ print false? false    ; true
 print true?  maybe    ; maybe
 ```
 
-### Logical Operations
+#### Logical Operations
 
 ```red
 and? true true      ; true
@@ -31,7 +31,7 @@ and? true maybe     ; maybe
 or?  true maybe     ; true
 ```
 
-### Short-Circuit Evaluation
+#### Short-Circuit Evaluation
 
 ```red
 ; if first block is false,
@@ -50,9 +50,9 @@ if or? [1=1][print "never runs"] ->
 > [!NOTE]
 > Using blocks with `and?` and `or?` enables short-circuit evaluation. In a few words: blocks are only evaluated when needed.
 
-## Common Patterns
+### Common Patterns
 
-### Testing Multiple Conditions
+#### Testing Multiple Conditions
 
 ```red
 conditions: @[true false true true]
@@ -67,7 +67,7 @@ any? conditions     ; => true
 > [!TIP]
 > Combining conditions in blocks with `and?` and `or?` (or more than one condition inside `all?` or `any?` blocks) is more efficient than checking them separately!
 
-### Advanced Logical Operations
+#### Advanced Logical Operations
 
 ```red
 a: true

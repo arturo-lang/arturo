@@ -3,16 +3,16 @@ overview: ---
 
 The Statistics module provides essential functions for statistical analysis of numerical data. From basic averages to more complex statistical measures like variance and kurtosis, it offers everything you need for common statistical operations.
 
-## Key Concepts
+### Key Concepts
 
 - Works with collections of numbers (blocks and ranges)
 - Supports both population and sample statistics
 - All operations handle integer, floating and rational numbers
 - Results are always returned as floating-point numbers for maximum precision
 
-## Basic Usage
+### Basic Usage
 
-### Getting Averages and Medians
+#### Getting Averages and Medians
 
 ```red
 data: [1 2 3 5 7]
@@ -27,7 +27,7 @@ print average 1..100  ; 50.5
 > [!NOTE]
 > `average` and `median` both require the data to be numeric. For mixed data types, make sure to filter non-numeric values first.
 
-### Calculating Variance and Standard Deviation
+#### Calculating Variance and Standard Deviation
 
 ```red
 numbers: [2 4 4 4 5 5 7 9]
@@ -44,7 +44,7 @@ print variance.sample numbers   ; 4.571428571428571
 > [!TIP]
 > Use sample statistics (with the `.sample` attribute) when working with data that represents a subset of a larger population.
 
-### Distribution Analysis
+#### Distribution Analysis
 
 ```red
 data: [1 2 2 3 3 3 4 4 5]
@@ -58,9 +58,9 @@ print round.to:3 skewness.sample data  ; 0.0
 print round.to:3 kurtosis.sample data  ; -0.286
 ```
 
-## Common Patterns
+### Common Patterns
 
-### Basic Statistical Summary
+#### Basic Statistical Summary
 
 A common task is getting a quick overview of your data:
 
@@ -72,7 +72,7 @@ print ["Deviation: ±" deviation data]
 print ["Range:" min data ".." max data]
 ```
 
-### Outlier Detection
+#### Outlier Detection
 
 Using standard deviations to find potential outliers:
 

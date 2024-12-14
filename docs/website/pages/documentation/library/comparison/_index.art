@@ -3,16 +3,16 @@ overview: ---
 
 The Comparison module provides functions for comparing values of any type. Beyond basic equality checks, it includes ordering operations and advanced comparison features.
 
-## Key Concepts
+### Key Concepts
 
 - Works with all value types
 - Consistent behavior across different types
 - Support for both equality and ordering
 - Range checking with `between?`
 
-## Basic Usage
+### Basic Usage
 
-### Simple Comparisons
+#### Simple Comparisons
 
 ```red
 ; equality
@@ -26,7 +26,7 @@ print "abc" <> "def"     ; true
 print 2.0 <> 2           ; false
 ```
 
-### Ordering
+#### Ordering
 
 ```red
 ; less/greater than
@@ -41,7 +41,7 @@ print 3 >= 2             ; true
 > [!NOTE]
 > The ordering operators work with numbers, strings, dates, and any type that defines ordering.
 
-### Range Checking
+#### Range Checking
 
 ```red
 ; check if value is in range (inclusive)
@@ -55,9 +55,9 @@ between? 5 1 10         ; => true
 > [!TIP]
 > Another way to check if a value is within a given range would be `contains?` - or its reversed equivalent - `in?`.
 
-## Common Patterns
+### Common Patterns
 
-### Custom Sorting
+#### Custom Sorting
 
 The `compare` function returns -1, 0, or 1 and is useful for custom sorting:
 
@@ -70,7 +70,7 @@ print ["A comes" (result < 0)? -> "before" -> "after" "B"]
 ; A comes before B
 ```
 
-### Identity vs Equality
+#### Identity vs Equality
 
 ```red
 x: 1`N

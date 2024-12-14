@@ -3,7 +3,7 @@ overview: ---
 
 The Core module provides the fundamental building blocks of Arturo: functions for control flow, variable assignment, function definition, and basic program structure.
 
-## Key Concepts
+### Key Concepts
 
 - Variable and symbol management
 - Control flow and conditionals
@@ -11,9 +11,9 @@ The Core module provides the fundamental building blocks of Arturo: functions fo
 - Scope management and modules
 - Basic constants (null, any)
 
-## Basic Usage
+### Basic Usage
 
-### Variable Assignment
+#### Variable Assignment
 
 ```red
 ; basic assignment
@@ -24,7 +24,7 @@ let 'x 5            ; alternative syntax
 [a,b,c]: 1,2,3      ; assign multiple values
 ```
 
-### Conditionals
+#### Conditionals
 
 Arturo provides several ways to handle conditional execution:
 
@@ -80,7 +80,7 @@ when.has: x [
 > [!NOTE]
 > The `->` arrow operator can be used to wrap a single expression in a block, making code more readable.
 
-### Function Definition
+#### Function Definition
 
 ```red
 ; basic function
@@ -97,7 +97,7 @@ multiply: $[x y][
 double: $[x]-> x * 2
 ```
 
-### Modules
+#### Modules
 
 Modules are a way of isolating pieces of code so that we can expose only the functions we need, while still safeguarding parts of the internal implementation.
 
@@ -121,9 +121,9 @@ print calculate 10      ; 100
 ; but `pwr` wouldn't be available here...
 ```
 
-## Common Patterns
+### Common Patterns
 
-### Safe Operations
+#### Safe Operations
 
 ```red
 ; coalesce operator
@@ -140,7 +140,7 @@ counter: 0
 'counter + 1                    ; in-place increment
 ```
 
-### Loop Control
+#### Loop Control
 
 ```red
 ; break from loop

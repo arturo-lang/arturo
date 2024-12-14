@@ -3,16 +3,16 @@ overview: ---
 
 The Dates module provides functionality for working with dates and times. Dates are handled as dictionary-like values, making it easy to access and work with individual components.
 
-## Key Concepts
+### Key Concepts
 
 - Dates are dictionary-like values with accessible components
 - Easy date arithmetic with `before` and `after`
 - Various time unit granularities (from nanoseconds to years)
 - Convenient date checks (weekdays, past/future, leaps)
 
-## Basic Usage
+### Basic Usage
 
-### Creating Dates
+#### Creating Dates
 
 ```red
 ; get current date/time
@@ -28,7 +28,7 @@ print current\minute]           ; 30
 print current\second]           ; 45
 ```
 
-### Date Arithmetic
+#### Date Arithmetic
 
 ```red
 date: now
@@ -47,7 +47,7 @@ lastYear: before.years:1 date
 meeting: after .hours:2 .minutes:30 date
 ```
 
-### Date Checks
+#### Date Checks
 
 ```red
 today: now
@@ -67,9 +67,9 @@ print leap? 2024                ; true
 print leap? today\year          ; true (if still 2024!)
 ```
 
-## Common Patterns
+### Common Patterns
 
-### Working with Time Intervals
+#### Working with Time Intervals
 
 ```red
 start: now
@@ -93,7 +93,7 @@ loop 0..10 'day [
 ; Day 10 : 23 
 ```
 
-### Date Formatting and Parsing
+#### Date Formatting and Parsing
 
 Converting dates to strings and parsing strings into dates is done using format patterns:
 
@@ -113,7 +113,7 @@ meeting: to :date .format:"yyyy-MM-dd" "2024-03-15"
 > [!NOTE]
 > When parsing dates from strings, make sure your format pattern matches exactly the structure of your input string.
 
-#### Format Patterns
+##### Format Patterns
 
 | Pattern | Description | Example |
 |---------|-------------|---------|
