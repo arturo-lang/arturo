@@ -1,0 +1,28 @@
+name: "binary?"
+type: :function
+description: "checks if given value is of type :binary"
+module: "Types"
+returns: [
+                :logical
+        ]
+line: 506
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Types.nim#L506"
+examples: [
+                {
+                        binary? to :binary "string"
+                        ; => true
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        value: [
+                        :any
+                ]
+        ]
+related: [
+                "Types/dictionary?"
+                 "Types/char?"
+                 "Types/integer?"
+                 "Types/quantity?"
+        ]

@@ -1,0 +1,31 @@
+name: "crc"
+type: :function
+description: "calculate the CRC32 polynomial of given string"
+module: "Crypto"
+returns: [
+                :string
+                 :nothing
+        ]
+line: 50
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Crypto.nim#L50"
+examples: [
+                {
+                        print crc "The quick brown fox jumps over the lazy dog"
+                        ; 414FA339
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        value: [
+                        :string
+                         :literal
+                         :pathliteral
+                ]
+        ]
+related: [
+                "Numbers/csech"
+                 "Numbers/csec"
+                 "Numbers/cosh"
+                 "Numbers/acsech"
+        ]

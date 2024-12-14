@@ -1,0 +1,45 @@
+name: "product"
+type: :function
+description: "calculate the product of all values in given list"
+module: "Numbers"
+returns: [
+                :integer
+                 :floating
+                 :rational
+        ]
+alias: "\xE2\x88\x8F"
+infix?: false
+line: 1009
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L1009"
+examples: [
+                {
+                        print product [3 4]       ; 12
+                        print product [1 2 4 6]   ; 48
+                        print product []          ; 1
+                }
+                 "print product 1..10       ; 3628800"
+                 {
+                        product.cartesian [[A B C][D E]]
+                        ; => [[A D] [A E] [B D] [B E] [C D] [C E]]
+                }
+        ]
+attributes: #[
+        cartesian: #[
+                types: [
+                                :logical
+                        ]
+                description: "return the cartesian product of given sublists"
+                ]
+        ]
+arguments: #[
+        collection: [
+                        :block
+                         :range
+                ]
+        ]
+related: [
+                "Numbers/log"
+                 "Numbers/exp"
+                 "Numbers/factorial"
+                 "Numbers/acsec"
+        ]

@@ -1,0 +1,55 @@
+name: "div"
+type: :function
+description: "perform integer division between given values and return result"
+module: "Arithmetic"
+returns: [
+                :integer
+                 :floating
+                 :complex
+                 :rational
+                 :quantity
+                 :object
+                 :nothing
+        ]
+alias: "/"
+infix?: true
+line: 80
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Arithmetic.nim#L80"
+examples: [
+                {
+                        print div 5 2      ; 2
+                        print 9 / 3        ; 3
+                }
+                 {
+                        a: 6
+                        div 'a 3           ; a: 2
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        valueA: [
+                        :integer
+                         :floating
+                         :complex
+                         :rational
+                         :literal
+                         :pathliteral
+                         :quantity
+                         :object
+                ]
+        valueB: [
+                        :integer
+                         :floating
+                         :complex
+                         :rational
+                         :quantity
+                         :object
+                ]
+        ]
+related: [
+                "Arithmetic/divmod"
+                 "Arithmetic/fdiv"
+                 "Arithmetic/neg"
+                 "Arithmetic/dec"
+        ]

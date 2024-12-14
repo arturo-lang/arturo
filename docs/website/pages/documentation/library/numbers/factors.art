@@ -1,0 +1,38 @@
+name: "factors"
+type: :function
+description: "get list of factors for given integer"
+module: "Numbers"
+returns: [
+                :block
+        ]
+line: 723
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L723"
+examples: [
+                "factors 16                                  ; => [1 2 4 8 16]"
+                 {
+                        factors.prime 48                            ; => [2 2 2 2 3]
+                        unique factors.prime 48                     ; => [2 3]
+                        
+                        factors.prime 18446744073709551615123120
+                        ; => [2 2 2 2 3 5 61 141529 26970107 330103811]
+                }
+        ]
+attributes: #[
+        prime: #[
+                types: [
+                                :logical
+                        ]
+                description: "prime factorization"
+                ]
+        ]
+arguments: #[
+        number: [
+                        :integer
+                ]
+        ]
+related: [
+                "Numbers/factorial"
+                 "Numbers/acos"
+                 "Numbers/abs"
+                 "Numbers/acosh"
+        ]

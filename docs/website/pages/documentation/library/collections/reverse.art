@@ -1,0 +1,45 @@
+name: "reverse"
+type: :function
+description: "reverse given collection"
+module: "Collections"
+returns: [
+                :string
+                 :block
+                 :nothing
+        ]
+line: 1620
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Collections.nim#L1620"
+examples: [
+                {
+                        print reverse [1 2 3 4]           ; 4 3 2 1
+                        print reverse "Hello World"       ; dlroW olleH
+                }
+                 {
+                        str: "my string"
+                        reverse 'str
+                        print str                         ; gnirts ym
+                }
+        ]
+attributes: #[
+        exact: #[
+                types: [
+                                :logical
+                        ]
+                description: "make sure the reverse range contains the same elements"
+                ]
+        ]
+arguments: #[
+        collection: [
+                        :string
+                         :literal
+                         :pathliteral
+                         :block
+                         :range
+                ]
+        ]
+related: [
+                "Collections/remove"
+                 "Collections/empty"
+                 "Collections/prepend"
+                 "Collections/drop"
+        ]

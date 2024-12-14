@@ -1,0 +1,33 @@
+name: "min"
+type: :function
+description: "get minimum element in given collection"
+module: "Collections"
+returns: [
+                :null
+                 :any
+        ]
+line: 1152
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Collections.nim#L1152"
+examples: [
+                "print min [4 2 8 5 1 9]       ; 1"
+        ]
+attributes: #[
+        index: #[
+                types: [
+                                :logical
+                        ]
+                description: "retrieve index of minimum element"
+                ]
+        ]
+arguments: #[
+        collection: [
+                        :block
+                         :range
+                ]
+        ]
+related: [
+                "Collections/max"
+                 "Collections/index"
+                 "Collections/sample"
+                 "Collections/insert"
+        ]

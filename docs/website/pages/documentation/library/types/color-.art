@@ -1,0 +1,30 @@
+name: "color?"
+type: :function
+description: "checks if given value is of type :color"
+module: "Types"
+returns: [
+                :logical
+        ]
+line: 579
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Types.nim#L579"
+examples: [
+                {
+                        print color? #FF0000        ; true
+                        print color? #green         ; true
+                        
+                        print color? 123            ; false
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        value: [
+                        :any
+                ]
+        ]
+related: [
+                "Types/char?"
+                 "Types/word?"
+                 "Types/complex?"
+                 "Types/store?"
+        ]

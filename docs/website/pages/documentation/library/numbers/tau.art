@@ -1,0 +1,18 @@
+name: "tau"
+type: :floating
+description: "the number tau, mathematical constant"
+module: "Numbers"
+example: [
+                ""
+        ]
+line: 1495
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L1495"
+returns: [
+                :floating
+        ]
+related: [
+                "Numbers/pi"
+                 "Numbers/tan"
+                 "Numbers/tanh"
+                 "Numbers/ctan"
+        ]

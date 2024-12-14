@@ -1,0 +1,29 @@
+name: "regex?"
+type: :function
+description: "checks if given value is of type :regex"
+module: "Types"
+returns: [
+                :logical
+        ]
+line: 1159
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Types.nim#L1159"
+examples: [
+                {
+                        print regex? {/[a-z]+/}     ; true
+                        print regex? "[a-z]+"       ; false
+                        print regex? 123            ; false
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        value: [
+                        :any
+                ]
+        ]
+related: [
+                "Types/range?"
+                 "Types/integer?"
+                 "Types/complex?"
+                 "Types/store?"
+        ]

@@ -1,0 +1,28 @@
+name: "salary?"
+type: :function
+description: "checks if given quantity describes Salary"
+module: "macros"
+returns: [
+                :logical
+        ]
+line: 715
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/macros.nim#L715"
+examples: [
+                {
+                        salary? 3`USD/h
+                        ; => true
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        value: [
+                        :quantity
+                ]
+        ]
+related: [
+                "Macros/snap?"
+                 "Macros/area?"
+                 "Macros/energy?"
+                 "Macros/charge?"
+        ]

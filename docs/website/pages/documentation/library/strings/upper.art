@@ -1,0 +1,41 @@
+name: "upper"
+type: :function
+description: "convert given string to uppercase"
+module: "Strings"
+returns: [
+                :char
+                 :string
+                 :nothing
+        ]
+line: 891
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Strings.nim#L891"
+examples: [
+                {
+                        print upper "hello World, 你好!"       ; "HELLO WORLD, 你好!"
+                }
+                 {
+                        str: "hello World, 你好!"
+                        upper 'str                           ; str: "HELLO WORLD, 你好!"
+                }
+                 {
+                        ch: `a`
+                        upper ch    
+                        ; => `A`
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        string: [
+                        :char
+                         :string
+                         :literal
+                         :pathliteral
+                ]
+        ]
+related: [
+                "Strings/lower"
+                 "Strings/capitalize"
+                 "Strings/upper?"
+                 "Strings/render"
+        ]

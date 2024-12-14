@@ -1,0 +1,38 @@
+name: "sech"
+type: :function
+description: "calculate the hyperbolic secant of given angle"
+module: "Numbers"
+returns: [
+                :floating
+                 :complex
+        ]
+line: 1150
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L1150"
+examples: [
+                {
+                        print sech 0                ; 1.0
+                        print sech 0.3              ; 0.9566279119002483
+                        print sech 1.0              ; 0.6480542736638855
+                }
+                 {
+                        sech to :complex [1 1]
+                        ; => 0.4983370305551868-0.5910838417210451i
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        angle: [
+                        :integer
+                         :floating
+                         :complex
+                         :rational
+                         :quantity
+                ]
+        ]
+related: [
+                "Numbers/csech"
+                 "Numbers/sinh"
+                 "Numbers/asech"
+                 "Numbers/cosh"
+        ]

@@ -1,0 +1,34 @@
+name: "unset"
+type: :function
+description: "undefine given symbol, if already defined"
+module: "Core"
+returns: [
+                :nothing
+        ]
+line: 1313
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Core.nim#L1313"
+examples: [
+                {
+                        a: 2
+                        print a
+                        ; 2
+                        
+                        unset 'a
+                        print a
+                        ; will throw an error
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        symbol: [
+                        :string
+                         :literal
+                ]
+        ]
+related: [
+                "Core/unless"
+                 "Core/function"
+                 "Core/new"
+                 "Core/case"
+        ]

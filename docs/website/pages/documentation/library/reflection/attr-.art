@@ -1,0 +1,43 @@
+name: "attr?"
+type: :function
+description: "check if given attribute exists"
+module: "Reflection"
+returns: [
+                :logical
+        ]
+line: 332
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Reflection.nim#L332"
+examples: [
+                {
+                        greet: function [x][
+                            switch attr? 'later
+                              -> ~"|x| I'm afraid, I'll greet you later"
+                              -> ~"Hello, |x|!"
+                        ]
+                        
+                        greet "John"
+                        ; => Hello, John!
+                        
+                        greet.later "John"
+                        ; => John I'm afraid, I'll greet you later!
+                        
+                        ; Have in mind that `attr?` won't pop your attribute's stack
+                        
+                        greet "Joe"
+                        ; => Joe I'm afraid, I'll greet you later!
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        name: [
+                        :string
+                         :literal
+                ]
+        ]
+related: [
+                "Reflection/attr"
+                 "Dates/past?"
+                 "Types/attribute?"
+                 "Reflection/attrs"
+        ]

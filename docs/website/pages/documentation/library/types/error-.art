@@ -1,0 +1,28 @@
+name: "error?"
+type: :function
+description: "checks if given value is of type :error"
+module: "Types"
+returns: [
+                :logical
+        ]
+line: 714
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Types.nim#L714"
+examples: [
+                {
+                        error? try -> throw "Some Error"
+                        ; => true
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        value: [
+                        :any
+                ]
+        ]
+related: [
+                "Types/errorKind?"
+                 "Types/version?"
+                 "Types/method?"
+                 "Types/store?"
+        ]

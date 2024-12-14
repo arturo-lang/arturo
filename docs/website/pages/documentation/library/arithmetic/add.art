@@ -1,0 +1,58 @@
+name: "add"
+type: :function
+description: "add given values and return result"
+module: "Arithmetic"
+returns: [
+                :integer
+                 :floating
+                 :complex
+                 :rational
+                 :quantity
+                 :color
+                 :object
+                 :nothing
+        ]
+alias: "+"
+infix?: true
+line: 40
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Arithmetic.nim#L40"
+examples: [
+                {
+                        print add 1 2      ; 3
+                        print 1 + 3        ; 4
+                }
+                 {
+                        a: 4
+                        add 'a 1           ; a: 5
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        valueA: [
+                        :integer
+                         :floating
+                         :complex
+                         :rational
+                         :literal
+                         :pathliteral
+                         :quantity
+                         :color
+                         :object
+                ]
+        valueB: [
+                        :integer
+                         :floating
+                         :complex
+                         :rational
+                         :quantity
+                         :color
+                         :object
+                ]
+        ]
+related: [
+                "Arithmetic/fdiv"
+                 "Arithmetic/mod"
+                 "Arithmetic/sub"
+                 "Arithmetic/divmod"
+        ]

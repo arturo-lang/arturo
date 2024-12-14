@@ -1,0 +1,33 @@
+name: "ascii?"
+type: :function
+description: "check if given character/string is in ASCII"
+module: "Strings"
+returns: [
+                :logical
+        ]
+line: 966
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Strings.nim#L966"
+examples: [
+                "ascii? `d`              ; true"
+                 {
+                        ascii? `😀`             ; false
+                        
+                        ascii? "hello world"    ; true
+                        ascii? "Hællø wœrld"    ; false
+                        ascii? "Γειά!"          ; false
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        string: [
+                        :char
+                         :string
+                ]
+        ]
+related: [
+                "Strings/numeric?"
+                 "Strings/match?"
+                 "Strings/suffix?"
+                 "Strings/lower?"
+        ]

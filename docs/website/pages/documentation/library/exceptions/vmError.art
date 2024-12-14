@@ -1,0 +1,18 @@
+name: "vmError"
+type: :errorkind
+description: "a VM error"
+module: "Exceptions"
+example: [
+                ""
+        ]
+line: 252
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Exceptions.nim#L252"
+returns: [
+                :errorkind
+        ]
+related: [
+                "Exceptions/uiError"
+                 "Exceptions/nameError"
+                 "Exceptions/syntaxError"
+                 "Exceptions/typeError"
+        ]

@@ -1,0 +1,72 @@
+name: "write"
+type: :function
+description: "write content to file at given path"
+module: "Files"
+returns: [
+                :nothing
+        ]
+alias: ">>"
+infix?: true
+line: 494
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Files.nim#L494"
+examples: [
+                {
+                        ; write some string data to given file path
+                        write "Hello world!" "somefile.txt"
+                }
+                 {
+                        ; we can also write any type of data as JSON
+                        write.json myData "data.json"
+                }
+                 {
+                        ; append to an existing file
+                        write.append "Yes, Hello again!" "somefile.txt"
+                }
+        ]
+attributes: #[
+        append: #[
+                types: [
+                                :logical
+                        ]
+                description: "append to given file"
+                ]
+        directory: #[
+                types: [
+                                :logical
+                        ]
+                description: "create directory at path"
+                ]
+        json: #[
+                types: [
+                                :logical
+                        ]
+                description: "write value as Json"
+                ]
+        compact: #[
+                types: [
+                                :logical
+                        ]
+                description: "produce compact, non-prettified Json code"
+                ]
+        binary: #[
+                types: [
+                                :logical
+                        ]
+                description: "write as binary"
+                ]
+        ]
+arguments: #[
+        content: [
+                        :any
+                ]
+        file: [
+                        :null
+                         :string
+                ]
+        ]
+related: [
+                "Files/move"
+                 "Files/volume"
+                 "Files/rename"
+                 "Files/zip"
+        ]

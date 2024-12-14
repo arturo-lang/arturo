@@ -1,0 +1,28 @@
+name: "speed?"
+type: :function
+description: "checks if given quantity describes Speed"
+module: "macros"
+returns: [
+                :logical
+        ]
+line: 715
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/macros.nim#L715"
+examples: [
+                {
+                        speed? 6`m/s
+                        ; => true
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        value: [
+                        :quantity
+                ]
+        ]
+related: [
+                "Macros/snap?"
+                 "Macros/power?"
+                 "Macros/energy?"
+                 "Macros/area?"
+        ]

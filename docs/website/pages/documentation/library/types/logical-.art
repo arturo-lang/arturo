@@ -1,0 +1,33 @@
+name: "logical?"
+type: :function
+description: "checks if given value is of type :logical"
+module: "Types"
+returns: [
+                :logical
+        ]
+line: 957
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Types.nim#L957"
+examples: [
+                {
+                        print logical? true         ; true
+                        print logical? false        ; true
+                        print logical? maybe        ; true
+                }
+                 {
+                        print logical? 1=1          ; true
+                        print logical? 123          ; false
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        value: [
+                        :any
+                ]
+        ]
+related: [
+                "Types/literal?"
+                 "Types/block?"
+                 "Types/floating?"
+                 "Types/label?"
+        ]

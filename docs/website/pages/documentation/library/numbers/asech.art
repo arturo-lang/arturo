@@ -1,0 +1,38 @@
+name: "asech"
+type: :function
+description: "calculate the inverse hyperbolic secant of given angle"
+module: "Numbers"
+returns: [
+                :floating
+                 :complex
+        ]
+line: 262
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L262"
+examples: [
+                {
+                        print asech 0               ; inf
+                        print asech 0.45            ; 1.436685652839686
+                        print asech 1               ; 0.0
+                }
+                 {
+                        asech to :complex @[pi 1]
+                        ; => 0.09591398081723221-1.278970729150485i
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        angle: [
+                        :integer
+                         :floating
+                         :complex
+                         :rational
+                         :quantity
+                ]
+        ]
+related: [
+                "Numbers/acsech"
+                 "Numbers/asinh"
+                 "Numbers/actanh"
+                 "Numbers/acosh"
+        ]

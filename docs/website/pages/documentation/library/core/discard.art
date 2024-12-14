@@ -1,0 +1,36 @@
+name: "discard"
+type: :function
+description: "discard given value, without pushing it onto the stack"
+module: "Core"
+returns: [
+                :nothing
+        ]
+line: 409
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Core.nim#L409"
+examples: [
+                {
+                        validInteger?: function [str][
+                            not? throws? [
+                                discard to :integer str
+                                ; we don't really need the value here -
+                                ; we just want to see if the operation throws an error
+                            ]
+                        ]
+                        
+                        print validInteger? "123"
+                        ; true
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        value: [
+                        :any
+                ]
+        ]
+related: [
+                "Core/ensure"
+                 "Core/until"
+                 "Core/else"
+                 "Core/case"
+        ]

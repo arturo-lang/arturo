@@ -1,0 +1,34 @@
+name: "sum"
+type: :function
+description: "calculate the sum of all values in given list"
+module: "Numbers"
+returns: [
+                :integer
+                 :floating
+                 :rational
+        ]
+alias: "\xE2\x88\x91"
+infix?: false
+line: 1245
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L1245"
+examples: [
+                {
+                        print sum [3 4]           ; 7
+                        print sum [1 2 4 6]       ; 13
+                }
+                 "print sum 1..10           ; 55"
+        ]
+attributes: #[
+        ]
+arguments: #[
+        collection: [
+                        :block
+                         :range
+                ]
+        ]
+related: [
+                "Numbers/sin"
+                 "Numbers/sec"
+                 "Numbers/gamma"
+                 "Numbers/asin"
+        ]

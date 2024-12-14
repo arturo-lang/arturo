@@ -1,0 +1,56 @@
+name: "args"
+type: :function
+description: "get all command-line arguments parsed as a dictionary"
+module: "System"
+returns: [
+                :dictionary
+        ]
+line: 72
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/System.nim#L72"
+examples: [
+                {
+                        ; called with: 1 two 3
+                        args         
+                        ; => #[
+                        ;     1 
+                        ;     "two"
+                        ;     3
+                        ; ]
+                }
+                 {
+                        ; called with switches: -c -b
+                        args 
+                        ; => #[
+                        ;     c : true
+                        ;     b : true
+                        ;     values: []
+                        ; ]
+                        
+                        ; called with switches: -c -b and values: 1 two 3
+                        args
+                        ; => #[
+                        ;     c : true
+                        ;     b : true
+                        ;     values: [1 "two" 3]
+                        ; ]
+                }
+                 {
+                        ; called with named parameters: -c:2 --name:newname myfile.txt
+                        args
+                        ; => #[
+                        ;     c : 2
+                        ;     name : "newname"
+                        ;     values: ["myfile.txt"]
+                        ; ]
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        ]
+related: [
+                "System/arg"
+                 "System/process"
+                 "System/pause"
+                 "System/sys"
+        ]

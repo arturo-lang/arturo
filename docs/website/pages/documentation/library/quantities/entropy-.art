@@ -1,0 +1,28 @@
+name: "entropy?"
+type: :function
+description: "checks if given quantity describes Entropy"
+module: "macros"
+returns: [
+                :logical
+        ]
+line: 715
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/macros.nim#L715"
+examples: [
+                {
+                        entropy? 5`J/K
+                        ; => true
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        value: [
+                        :quantity
+                ]
+        ]
+related: [
+                "Macros/energy?"
+                 "Macros/density?"
+                 "Macros/snap?"
+                 "Macros/length?"
+        ]

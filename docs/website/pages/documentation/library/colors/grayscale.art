@@ -1,0 +1,32 @@
+name: "grayscale"
+type: :function
+description: "convert color to grayscale"
+module: "Colors"
+returns: [
+                :color
+        ]
+line: 117
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Colors.nim#L117"
+examples: [
+                {
+                        grayscale #red              ; => #808080
+                        grayscale #green            ; => #404040
+                        
+                        grayscale #FF44CC           ; => #A2A2A2
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        color: [
+                        :literal
+                         :pathliteral
+                         :color
+                ]
+        ]
+related: [
+                "Colors/saturate"
+                 "Colors/desaturate"
+                 "Colors/invert"
+                 "Colors/lighten"
+        ]

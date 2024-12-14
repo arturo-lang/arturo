@@ -1,0 +1,39 @@
+name: "translate"
+type: :function
+description: "takes a dictionary of translations and replaces each instance sequentially"
+module: "Strings"
+returns: [
+                :string
+                 :nothing
+        ]
+line: 817
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Strings.nim#L817"
+examples: [
+                {
+                        print translate "the brown fox jumped over the lazy dog" #[
+                            brown: "green" 
+                            fox: "wolf" 
+                            jumped:"flew" 
+                            dog:"cat"
+                        ]
+                        ; the green wolf flew over the lazy cat
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        string: [
+                        :string
+                         :literal
+                         :pathliteral
+                ]
+        translations: [
+                        :dictionary
+                ]
+        ]
+related: [
+                "Strings/replace"
+                 "Strings/outdent"
+                 "Strings/alphabet"
+                 "Strings/levenshtein"
+        ]

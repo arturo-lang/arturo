@@ -1,0 +1,44 @@
+name: "between?"
+type: :function
+description: "check if given value is between the given values (inclusive)"
+module: "Comparison"
+returns: [
+                :logical
+        ]
+alias: "<=>"
+infix?: true
+line: 82
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Comparison.nim#L82"
+examples: [
+                {
+                        between? 1 2 3      ; => false
+                        between? 2 0 3      ; => true
+                        between? 3 2 3      ; => true
+                        between? 3 3 2      ; => true
+                        
+                        1 <=> 2 3           ; => false
+                        1 <=> 3 2           ; => false
+                        2 <=> 0 3           ; => true
+                        2 <=> 3 0           ; => true
+                        3 <=> 2 3           ; => true
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        value: [
+                        :any
+                ]
+        rangeFrom: [
+                        :any
+                ]
+        rangeTo: [
+                        :any
+                ]
+        ]
+related: [
+                "Comparison/same?"
+                 "Comparison/greater?"
+                 "Comparison/less?"
+                 "Comparison/lessOrEqual?"
+        ]

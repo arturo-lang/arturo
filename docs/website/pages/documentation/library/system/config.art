@@ -1,0 +1,41 @@
+name: "config"
+type: :function
+description: "get local or global configuration"
+module: "System"
+returns: [
+                :store
+        ]
+line: 117
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/System.nim#L117"
+examples: [
+                {
+                        ; `config` searches for `config.art` into your current directory. 
+                            ; if not found, it returns from `~/.arturo/stores/config.art`
+                        
+                            config
+                            ; => []
+                            ; `config.art` is empty at first, but we can change this manually
+                        
+                            write.append path\home ++ normalize ".arturo/stores/config.art" 
+                                         "language: {Arturo}"
+                            config
+                            ; => []
+                            
+                            ; this stills empty, but now try to relaunch Arturo:
+                            exit
+                }
+                 {
+                            config
+                            ; => [language:Arturo]
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        ]
+related: [
+                "System/process"
+                 "System/script"
+                 "System/env"
+                 "System/panic"
+        ]

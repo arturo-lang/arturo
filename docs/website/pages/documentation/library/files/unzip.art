@@ -1,0 +1,30 @@
+name: "unzip"
+type: :function
+description: "unzip given archive to destination"
+module: "Files"
+returns: [
+                :nothing
+        ]
+line: 455
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Files.nim#L455"
+examples: [
+                {
+                        unzip "folder" "archive.zip"
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        destination: [
+                        :string
+                ]
+        original: [
+                        :string
+                ]
+        ]
+related: [
+                "Files/symlink"
+                 "Files/zip"
+                 "Files/rename"
+                 "Files/write"
+        ]

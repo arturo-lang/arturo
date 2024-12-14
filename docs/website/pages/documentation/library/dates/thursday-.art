@@ -1,0 +1,25 @@
+name: "thursday?"
+type: :function
+description: "check if given date is a Thursday"
+module: "Dates"
+returns: [
+                :logical
+        ]
+line: 326
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Dates.nim#L326"
+examples: [
+                "print thursday? now     ; false"
+        ]
+attributes: #[
+        ]
+arguments: #[
+        date: [
+                        :date
+                ]
+        ]
+related: [
+                "Dates/tuesday?"
+                 "Dates/saturday?"
+                 "Dates/sunday?"
+                 "Dates/friday?"
+        ]

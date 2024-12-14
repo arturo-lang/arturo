@@ -1,0 +1,18 @@
+name: "planckMass"
+type: :quantity
+description: "the mass of the Planck scale"
+module: "Quantities"
+example: [
+                ""
+        ]
+line: 715
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Quantities.nim#L715"
+returns: [
+                :quantity
+        ]
+related: [
+                "Quantities/planckTime"
+                 "Quantities/tauMass"
+                 "Quantities/electronMass"
+                 "Quantities/helionMass"
+        ]

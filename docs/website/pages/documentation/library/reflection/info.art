@@ -1,0 +1,69 @@
+name: "info"
+type: :function
+description: "print info for given symbol"
+module: "Reflection"
+returns: [
+                :dictionary
+                 :nothing
+        ]
+line: 153
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Reflection.nim#L153"
+examples: [
+                {
+                        info 'print
+                        
+                        ; |--------------------------------------------------------------------------------
+                        ; |          print  :function                                                   Io
+                        ; |--------------------------------------------------------------------------------
+                        ; |                 print given value to screen with newline
+                        ; |--------------------------------------------------------------------------------
+                        ; |          usage  print value :any
+                        ; |
+                        ; |        options  .lines -> print each value in block in a new line
+                        ; |
+                        ; |        returns  :nothing
+                        ; |--------------------------------------------------------------------------------
+                }
+                 {
+                        info '++
+                        
+                        ; |--------------------------------------------------------------------------------
+                        ; |         append  :function                                          0x107555A10
+                        ; |          alias  ++
+                        ; |--------------------------------------------------------------------------------
+                        ; |                 append value to given collection
+                        ; |--------------------------------------------------------------------------------
+                        ; |          usage  append collection :char :string :literal :block
+                        ; |                        value :any
+                        ; |
+                        ; |        returns  :string :block :nothing
+                        ; |--------------------------------------------------------------------------------
+                }
+                 {
+                        print info.get 'print
+                        ; [name:print address:0x1028B3410 type::function module:Io args:[value:[:any]] attrs:[] returns:[:nothing] description:print given value to screen with newline example:print "Hello world!"          ; Hello world!]
+                }
+        ]
+attributes: #[
+        get: #[
+                types: [
+                                :logical
+                        ]
+                description: "get information as dictionary"
+                ]
+        ]
+arguments: #[
+        symbol: [
+                        :string
+                         :word
+                         :literal
+                         :pathliteral
+                         :symbolliteral
+                ]
+        ]
+related: [
+                "Reflection/inspect"
+                 "Reflection/symbols"
+                 "Reflection/methods"
+                 "Core/if"
+        ]

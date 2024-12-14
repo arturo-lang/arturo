@@ -1,0 +1,18 @@
+name: "typeError"
+type: :errorkind
+description: "a type error"
+module: "Exceptions"
+example: [
+                ""
+        ]
+line: 237
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Exceptions.nim#L237"
+returns: [
+                :errorkind
+        ]
+related: [
+                "Exceptions/systemError"
+                 "Exceptions/packageError"
+                 "Exceptions/nameError"
+                 "Exceptions/valueError"
+        ]

@@ -1,0 +1,28 @@
+name: "pressure?"
+type: :function
+description: "checks if given quantity describes Pressure"
+module: "macros"
+returns: [
+                :logical
+        ]
+line: 715
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/macros.nim#L715"
+examples: [
+                {
+                        pressure? 6`Pa
+                        ; => true
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        value: [
+                        :quantity
+                ]
+        ]
+related: [
+                "Macros/resistance?"
+                 "Macros/frequency?"
+                 "Macros/power?"
+                 "Macros/temperature?"
+        ]

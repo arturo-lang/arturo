@@ -1,0 +1,29 @@
+name: "today?"
+type: :function
+description: "check if given date is today"
+module: "Dates"
+returns: [
+                :logical
+        ]
+line: 342
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Dates.nim#L342"
+examples: [
+                {
+                        print today? now                    ; true
+                        
+                        print today? after.hours: 24 now    ; false
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        date: [
+                        :date
+                ]
+        ]
+related: [
+                "Dates/monday?"
+                 "Dates/tuesday?"
+                 "Dates/sunday?"
+                 "Dates/friday?"
+        ]

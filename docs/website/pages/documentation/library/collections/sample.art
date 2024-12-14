@@ -1,0 +1,31 @@
+name: "sample"
+type: :function
+description: "get a random element from given collection"
+module: "Collections"
+returns: [
+                :null
+                 :any
+        ]
+line: 1704
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Collections.nim#L1704"
+examples: [
+                {
+                        sample [1 2 3]        ; (return a random number from 1 to 3)
+                        print sample ["apple" "appricot" "banana"]
+                        ; apple
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        collection: [
+                        :block
+                         :range
+                ]
+        ]
+related: [
+                "Collections/max"
+                 "Collections/min"
+                 "Collections/chop"
+                 "Collections/values"
+        ]

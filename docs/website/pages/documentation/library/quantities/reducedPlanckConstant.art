@@ -1,0 +1,18 @@
+name: "reducedPlanckConstant"
+type: :quantity
+description: "the ratio of the energy of a photon to its frequency"
+module: "Quantities"
+example: [
+                ""
+        ]
+line: 715
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Quantities.nim#L715"
+returns: [
+                :quantity
+        ]
+related: [
+                "Quantities/planckConstant"
+                 "Quantities/boltzmannConstant"
+                 "Quantities/inverseConductanceQuantum"
+                 "Quantities/bohrRadius"
+        ]

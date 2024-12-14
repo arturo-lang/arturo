@@ -1,0 +1,34 @@
+name: "listen"
+type: :function
+description: "start listening on given port and return new socket"
+module: "Sockets"
+returns: [
+                :socket
+        ]
+line: 127
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Sockets.nim#L127"
+examples: [
+                {
+                        ; start a server listening on port 18966
+                        server: listen 18966
+                }
+        ]
+attributes: #[
+        udp: #[
+                types: [
+                                :logical
+                        ]
+                description: "use UDP instead of TCP"
+                ]
+        ]
+arguments: #[
+        port: [
+                        :integer
+                ]
+        ]
+related: [
+                "Sockets/accept"
+                 "Sockets/connect"
+                 "Sockets/send"
+                 "Sockets/receive"
+        ]

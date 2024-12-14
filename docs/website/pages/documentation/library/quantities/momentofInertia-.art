@@ -1,0 +1,28 @@
+name: "momentofInertia?"
+type: :function
+description: "checks if given quantity describes Moment of Inertia"
+module: "macros"
+returns: [
+                :logical
+        ]
+line: 715
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/macros.nim#L715"
+examples: [
+                {
+                        momentofInertia? 4`kg.m2
+                        ; => true
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        value: [
+                        :quantity
+                ]
+        ]
+related: [
+                "Macros/momentum?"
+                 "Quantities/conforms?"
+                 "Macros/information?"
+                 "Macros/potential?"
+        ]

@@ -1,0 +1,28 @@
+name: "substance?"
+type: :function
+description: "checks if given quantity describes Substance"
+module: "macros"
+returns: [
+                :logical
+        ]
+line: 715
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/macros.nim#L715"
+examples: [
+                {
+                        substance? 4`mol
+                        ; => true
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        value: [
+                        :quantity
+                ]
+        ]
+related: [
+                "Macros/resistance?"
+                 "Macros/elastance?"
+                 "Macros/inductance?"
+                 "Macros/current?"
+        ]

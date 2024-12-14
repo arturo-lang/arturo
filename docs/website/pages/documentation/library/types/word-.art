@@ -1,0 +1,28 @@
+name: "word?"
+type: :function
+description: "checks if given value is of type :word"
+module: "Types"
+returns: [
+                :logical
+        ]
+line: 1316
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Types.nim#L1316"
+examples: [
+                {
+                        word? first [something x]
+                        ; => true
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        value: [
+                        :any
+                ]
+        ]
+related: [
+                "Types/store?"
+                 "Types/color?"
+                 "Types/char?"
+                 "Types/error?"
+        ]

@@ -1,0 +1,28 @@
+name: "density?"
+type: :function
+description: "checks if given quantity describes Density"
+module: "macros"
+returns: [
+                :logical
+        ]
+line: 715
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/macros.nim#L715"
+examples: [
+                {
+                        density? 4`kg/m3
+                        ; => true
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        value: [
+                        :quantity
+                ]
+        ]
+related: [
+                "Macros/areaDensity?"
+                 "Macros/resistivity?"
+                 "Macros/entropy?"
+                 "Macros/length?"
+        ]

@@ -1,0 +1,28 @@
+name: "specificVolume?"
+type: :function
+description: "checks if given quantity describes Specific Volume"
+module: "macros"
+returns: [
+                :logical
+        ]
+line: 715
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/macros.nim#L715"
+examples: [
+                {
+                        specificVolume? 5`m3/kg
+                        ; => true
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        value: [
+                        :quantity
+                ]
+        ]
+related: [
+                "Quantities/conforms?"
+                 "Macros/speed?"
+                 "Macros/electricField?"
+                 "Macros/surfaceTension?"
+        ]

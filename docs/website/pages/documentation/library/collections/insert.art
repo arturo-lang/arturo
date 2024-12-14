@@ -1,0 +1,53 @@
+name: "insert"
+type: :function
+description: "insert value in collection at given index"
+module: "Collections"
+returns: [
+                :string
+                 :dictionary
+                 :block
+                 :nothing
+        ]
+line: 969
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Collections.nim#L969"
+examples: [
+                {
+                        insert [1 2 3 4] 0 "zero"
+                        ; => ["zero" 1 2 3 4]
+                        
+                        print insert "heo" 2 "ll"
+                        ; hello
+                }
+                 {
+                        dict: #[
+                            name: John
+                        ]
+                        
+                        insert 'dict 'name "Jane"
+                        ; dict: [name: "Jane"]
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        collection: [
+                        :string
+                         :literal
+                         :pathliteral
+                         :dictionary
+                         :block
+                ]
+        index: [
+                        :integer
+                         :string
+                ]
+        value: [
+                        :any
+                ]
+        ]
+related: [
+                "Collections/index"
+                 "Collections/min"
+                 "Collections/slice"
+                 "Collections/set"
+        ]

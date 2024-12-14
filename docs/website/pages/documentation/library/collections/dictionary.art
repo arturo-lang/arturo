@@ -1,0 +1,78 @@
+name: "dictionary"
+type: :function
+description: "create dictionary from given block or file, by getting all internal symbols"
+module: "Collections"
+returns: [
+                :dictionary
+        ]
+alias: "#"
+infix?: false
+line: 401
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Collections.nim#L401"
+examples: [
+                {
+                        none: #[]               ; none: []
+                        a: #[
+                            name: "John"
+                            age: 34
+                        ]
+                        ; a: [name: "John", age: 34]
+                        
+                        d: #[
+                            name: "John"
+                            print "we are in the block"
+                            age: 34
+                            print "yep"
+                        ]
+                        ; we are in the block
+                        ; yep
+                        ; d: [name: "John", age: 34]
+                }
+                 {
+                        inspect fromBlock: #.raw [a b c d]
+                        ; [ :dictionary
+                        ;         a  :        b :word
+                        ;         c  :        d :word
+                        ; ]
+                }
+                 {
+                        e: #.lower [
+                            Name: "John"
+                            suRnaMe: "Doe"
+                            AGE: 35
+                        ]
+                        ; e: [name:John, surname:Doe, age:35]
+                }
+        ]
+attributes: #[
+        with: #[
+                types: [
+                                :block
+                        ]
+                description: "embed given symbols"
+                ]
+        raw: #[
+                types: [
+                                :logical
+                        ]
+                description: "create dictionary from raw block"
+                ]
+        lower: #[
+                types: [
+                                :logical
+                        ]
+                description: "automatically convert all keys to lowercase"
+                ]
+        ]
+arguments: #[
+        source: [
+                        :string
+                         :block
+                ]
+        ]
+related: [
+                "Collections/couple"
+                 "Collections/array"
+                 "Collections/combine"
+                 "Collections/flatten"
+        ]

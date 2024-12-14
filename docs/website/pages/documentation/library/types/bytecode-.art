@@ -1,0 +1,31 @@
+name: "bytecode?"
+type: :function
+description: "checks if given value is of type :bytecode"
+module: "Types"
+returns: [
+                :logical
+        ]
+line: 542
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Types.nim#L542"
+examples: [
+                {
+                        code: [print 1 + 2]
+                        bcode: to :bytecode code
+                        
+                        print bytecode? bcode      ; true
+                        print bytecode? code       ; false
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        value: [
+                        :any
+                ]
+        ]
+related: [
+                "Types/method?"
+                 "Types/integer?"
+                 "Types/store?"
+                 "Types/block?"
+        ]

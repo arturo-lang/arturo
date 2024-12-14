@@ -1,0 +1,29 @@
+name: "floating?"
+type: :function
+description: "checks if given value is of type :floating"
+module: "Types"
+returns: [
+                :logical
+        ]
+line: 873
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Types.nim#L873"
+examples: [
+                {
+                        print floating? 3.14        ; true
+                        print floating? 123         ; false
+                        print floating? "hello"     ; false
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        value: [
+                        :any
+                ]
+        ]
+related: [
+                "Types/string?"
+                 "Types/function?"
+                 "Types/logical?"
+                 "Types/rational?"
+        ]

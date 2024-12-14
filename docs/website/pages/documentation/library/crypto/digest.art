@@ -1,0 +1,41 @@
+name: "digest"
+type: :function
+description: "get digest for given value (default: MD5)"
+module: "Crypto"
+returns: [
+                :string
+                 :nothing
+        ]
+line: 183
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Crypto.nim#L183"
+examples: [
+                {
+                        print digest "Hello world"
+                        ; 3e25960a79dbc69b674cd4ec67a72c62
+                }
+                 {
+                        print digest.sha "Hello world"
+                        ; 7b502c3a1f48c8609ae212cdfb639dee39673f5e
+                }
+        ]
+attributes: #[
+        sha: #[
+                types: [
+                                :logical
+                        ]
+                description: "use SHA1"
+                ]
+        ]
+arguments: #[
+        value: [
+                        :string
+                         :literal
+                         :pathliteral
+                ]
+        ]
+related: [
+                "Crypto/hash"
+                 "Crypto/decode"
+                 "Crypto/encode"
+                 "Arithmetic/dec"
+        ]

@@ -1,0 +1,43 @@
+name: "with"
+type: :function
+description: "create closure-style block by embedding given words"
+module: "Core"
+returns: [
+                :block
+        ]
+line: 1578
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Core.nim#L1578"
+examples: [
+                {
+                        f: function [x][
+                            with [x][
+                                "the multiple of" x "is" 2*x
+                            ]
+                        ]
+                        
+                        multiplier: f 10
+                        
+                        print multiplier
+                        ; the multiple of 10 is 20
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        embed: [
+                        :string
+                         :word
+                         :literal
+                         :dictionary
+                         :block
+                ]
+        body: [
+                        :block
+                ]
+        ]
+related: [
+                "Core/method"
+                 "Core/switch"
+                 "Core/function"
+                 "Core/let"
+        ]

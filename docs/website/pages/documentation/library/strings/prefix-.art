@@ -1,0 +1,32 @@
+name: "prefix?"
+type: :function
+description: "check if string starts with given prefix"
+module: "Strings"
+returns: [
+                :logical
+        ]
+line: 1105
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Strings.nim#L1105"
+examples: [
+                {
+                        prefix? "hello" "he"          ; => true
+                        prefix? "boom" "he"           ; => false
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        string: [
+                        :string
+                ]
+        prefix: [
+                        :string
+                         :regex
+                ]
+        ]
+related: [
+                "Strings/suffix?"
+                 "Strings/upper?"
+                 "Strings/numeric?"
+                 "Strings/lower?"
+        ]

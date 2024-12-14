@@ -1,0 +1,31 @@
+name: "leap?"
+type: :function
+description: "check if given year is a leap year"
+module: "Dates"
+returns: [
+                :logical
+        ]
+line: 234
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Dates.nim#L234"
+examples: [
+                {
+                        print leap? now     ; false
+                        
+                        print map 2019..2021 => leap? 
+                        ; false true false
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        year: [
+                        :integer
+                         :date
+                ]
+        ]
+related: [
+                "Dates/tuesday?"
+                 "Dates/past?"
+                 "Dates/friday?"
+                 "Dates/wednesday?"
+        ]
