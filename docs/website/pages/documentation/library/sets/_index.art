@@ -38,8 +38,7 @@ intersect? X Y          ; true
 disjoint? X Y           ; false
 ```
 
-> [!NOTE]
-> A proper subset/superset means that one set must be strictly smaller/larger than the other - they cannot be equal.
+> [!NOTE] A proper subset/superset means that one set must be strictly smaller/larger than the other - they cannot be equal.
 
 #### Powerset Generation
 
@@ -48,8 +47,7 @@ print powerset [1 2 3]
 ; [] [1] [2] [1 2] [3] [1 3] [2 3] [1 2 3] 
 ```
 
-> [!NOTE]
-> The powerset contains all possible subsets of a set, including the empty set and the set itself.
+> [!NOTE] The powerset contains all possible subsets of a set, including the empty set and the set itself.
 
 ### Common Patterns
 

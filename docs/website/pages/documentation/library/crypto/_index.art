@@ -28,8 +28,7 @@ print digest.sha "hello world"      ; 2aae6c35c94fcfb415dbe95f408b9ce91ee846ed
 print crc "hello world"             ; 0d4a1185
 ```
 
-> [!IMPORTANT]
-> The Crypto module provides basic cryptographic functions. For serious cryptographic needs, consider using specialized libraries.
+> [!IMPORTANT] The Crypto module provides basic cryptographic functions. For serious cryptographic needs, consider using specialized libraries.
 
 #### Base64 Encoding/Decoding
 
@@ -119,5 +118,4 @@ print url
 ; https://api.example.com/search?q=search%20term&lang=en-US&page=1
 ```
 
-> [!TIP]
-> When working with URLs, always encode user inputs to prevent injection attacks and ensure proper URL formatting.
+> [!TIP] When working with URLs, always encode user inputs to prevent injection attacks and ensure proper URL formatting.

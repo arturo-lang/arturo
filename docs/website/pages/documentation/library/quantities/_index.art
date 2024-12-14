@@ -125,8 +125,7 @@ Physical quantities in Arturo are classified by their properties. Here are some 
 | Energy | L²·M·T⁻² | `100`J |
 | Power | L²·M·T⁻³ | `1000`W |
 
-> [!NOTE]
-> There are many more properties available. Use `property` to inspect any quantity's dimensional formula.
+> [!NOTE] There are many more properties available. Use `property` to inspect any quantity's dimensional formula.
 
 ### Prefixes
 
@@ -147,8 +146,7 @@ Metric prefixes are supported for most units:
 | peta | P | 10¹⁵ |
 | exa | E | 10¹⁸ |
 
-> [!NOTE]
-> Most units that allow prefixes can use any SI prefix (from atto- to exa-). Prefixes change the unit by the corresponding power of 10.
+> [!NOTE] Most units that allow prefixes can use any SI prefix (from atto- to exa-). Prefixes change the unit by the corresponding power of 10.
 
 ### Supported Units
 
@@ -292,7 +290,6 @@ Metric prefixes are supported for most units:
 | gibibyte | GiB | 1024 MiB |
 | tebibyte | TiB | 1024 GiB |
 
-> [!TIP]
-> Arturo supports many world currencies including: AED, ALL, ARS, AUD, BGN, BHD, BND, BOB, BRL, BWP, CAD, CHF, CLP, CNY, COP, CRC, CZK, DKK, DOP, DZD, EGP, ETB, EUR, FJD, GBP, HKD, HNL, HRK, HUF, IDR, ILS, INR, IRR, ISK, JMD, JOD, JPY, KES, KRW, KWD, KYD, KZT, LBP, LKR, MAD, MDL, MKD, MXN, MUR, MYR, NAD, NGN, NIO, NOK, NPR, NZD, OMR, PAB, PEN, PGK, PHP, PKR, PLN, PYG, QAR, RON, RSD, RUB, SAR, SCR, SEK, SGD, SLL, SOS, SVC, THB, TND, TRY, TTD, TWD, TZS, UAH, UGX, UYU, UZS, VES, VND, XAF, XOF, YER, ZAR, ZMW.
+> [!TIP] Arturo supports many world currencies including: AED, ALL, ARS, AUD, BGN, BHD, BND, BOB, BRL, BWP, CAD, CHF, CLP, CNY, COP, CRC, CZK, DKK, DOP, DZD, EGP, ETB, EUR, FJD, GBP, HKD, HNL, HRK, HUF, IDR, ILS, INR, IRR, ISK, JMD, JOD, JPY, KES, KRW, KWD, KYD, KZT, LBP, LKR, MAD, MDL, MKD, MXN, MUR, MYR, NAD, NGN, NIO, NOK, NPR, NZD, OMR, PAB, PEN, PGK, PHP, PKR, PLN, PYG, QAR, RON, RSD, RUB, SAR, SCR, SEK, SGD, SLL, SOS, SVC, THB, TND, TRY, TTD, TWD, TZS, UAH, UGX, UYU, UZS, VES, VND, XAF, XOF, YER, ZAR, ZMW.
 > 
 > Cryptocurrency codes are also supported: BTC (Bitcoin), ETH (Ethereum), BNB (Binance Coin).

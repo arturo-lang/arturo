@@ -158,8 +158,7 @@ printStatus "warning" "Disk space low"
 printStatus "error" "Connection failed"
 ```
 
-> [!TIP]
-> When working with colors, remember that not all terminals support all color features. You might want to check terminal capabilities first.
+> [!TIP] When working with colors, remember that not all terminals support all color features. You might want to check terminal capabilities first.
 
 #### Terminal Information
 

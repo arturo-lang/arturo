@@ -94,11 +94,9 @@ webview
 }
 ```
 
-> [!TIP]
-> If you are using a text editor that supports this syntax (e.g. VSCode), using `!html` in front of `{..}`-enclosed blocks will enable proper HTML highlighting.
+> [!TIP] If you are using a text editor that supports this syntax (e.g. VSCode), using `!html` in front of `{..}`-enclosed blocks will enable proper HTML highlighting.
 
-> [!TIP]
-> WebView's `.debug` attribute opens Chrome's DevTools for easier development and debugging.
+> [!TIP] WebView's `.debug` attribute opens Chrome's DevTools for easier development and debugging.
 
 
 ### Common Patterns
@@ -122,8 +120,7 @@ getUserInput: function [default][
 config: getUserInput "config.ini"
 ```
 
-> [!NOTE]
-> Dialog or popup buttons, behavior and general look'n'feel might vary slightly depending on the operating system.
+> [!NOTE] Dialog or popup buttons, behavior and general look'n'feel might vary slightly depending on the operating system.
 
 #### Clipboard Manager
 

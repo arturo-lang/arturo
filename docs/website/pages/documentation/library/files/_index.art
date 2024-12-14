@@ -60,8 +60,7 @@ content: read.markdown "doc.md"          ; convert to HTML
 content: read.toml "config.toml"         ; parse TOML
 ```
 
-> [!TIP]
-> The format functions (like `.json`, `.csv`) work the same way regardless of source - local file, URL, or direct content.
+> [!TIP] The format functions (like `.json`, `.csv`) work the same way regardless of source - local file, URL, or direct content.
 
 #### File System Operations
 

@@ -71,8 +71,7 @@ mul 'x 2                 ; x is now 16
 print x                  ; 16
 ```
 
-> [!NOTE]
-> Using literals (e.g., `'x`) performs operations in-place, modifying the original value.
+> [!NOTE] Using literals (e.g., `'x`) performs operations in-place, modifying the original value.
 
 ### Common Patterns
 
@@ -125,5 +124,4 @@ t: 3 * 3`km             ; 9 kilometers (quantity)
 u: 2`m * 3`m            ; 6 sq.meters (quantity)
 ```
 
-> [!NOTE]
-> When operating with different numeric types, Arturo automatically promotes to the most precise type needed.
+> [!NOTE] When operating with different numeric types, Arturo automatically promotes to the most precise type needed.

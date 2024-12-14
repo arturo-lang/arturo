@@ -49,8 +49,7 @@ print shl num 2     ; 32 (100000)
 print shr num 1     ; 4  (100)
 ```
 
-> [!NOTE]
-> Shift operations are equivalent to multiplication or division by powers of 2.
+> [!NOTE] Shift operations are equivalent to multiplication or division by powers of 2.
 
 ### Common Patterns
 

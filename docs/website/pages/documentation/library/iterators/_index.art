@@ -44,8 +44,7 @@ loop user [key value]->
 ; age -> 30 
 ```
 
-> [!NOTE]
-> Iterator functions work uniformly with all collection types:
+> [!NOTE] Iterator functions work uniformly with all collection types:
 > - Blocks: `loop [1 2 3] 'x [...]`
 > - Dictionaries: `loop #[a:1 b:2] [k v] [...]`
 > - Strings: `loop "hello" 'c [...]`
@@ -149,8 +148,7 @@ print.lines map sorted 'u -> u\name
 ; John
 ```
 
-> [!TIP]
-> The arrow operator (`=>`) is particularly useful with iterators for creating concise, readable code. For example: `map nums => [& * 2]` instead of `map nums 'x -> x * 2`
+> [!TIP] The arrow operator (`=>`) is particularly useful with iterators for creating concise, readable code. For example: `map nums => [& * 2]` instead of `map nums 'x -> x * 2`
 
 #### Working with Nested Data
 
@@ -204,5 +202,4 @@ print.lines result
 ; items @ $699.0
 ```
 
-> [!TIP]
-> Using pipes (|) can make complex data transformations more readable by breaking them into clear, sequential steps.
+> [!TIP] Using pipes (|) can make complex data transformations more readable by breaking them into clear, sequential steps.
