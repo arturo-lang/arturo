@@ -1,0 +1,4 @@
+loop select filter list.recursive ./"pages/documentation/library" => [suffix? & "_index.art"] => [suffix? & ".art"] 'f [
+    print f
+    delete f
+]

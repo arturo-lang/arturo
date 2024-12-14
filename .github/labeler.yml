@@ -1,5 +1,5 @@
 3rd-party:
-  - src/extras/*
+  - src/extras/**
 
 ast:
   - src/vm/ast.nim
@@ -27,8 +27,7 @@ command line:
 documentation:
   - examples/projecteuler/*
   - examples/rosetta/*
-  - docs/*
-  - docs/wiki/*
+  - docs/**
 
 error handling: 
   - src/vm/errors.nim
@@ -50,7 +49,7 @@ installer:
   - src/scripts/update.art
 
 library:
-  - src/library/*
+  - src/library/**
 
 "→ Arithmetic":
   - src/library/Arithmetic.nim
@@ -146,14 +145,13 @@ ui:
   - src/library/Ui.nim
 
 unit-test:
-  - tests/errors/*
-  - tests/unittests/*
+  - tests/errors/**
+  - tests/unittests/**
   - tests/web/*
 
 values:
   - src/vm/values/*
-  - src/vm/values/custom/*
-  - src/vm/values/custom/quantities/*
+  - src/vm/values/custom/**
 
 vm:
   - src/vm/*
