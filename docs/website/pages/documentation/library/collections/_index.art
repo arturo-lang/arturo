@@ -3,7 +3,7 @@ overview: ---
 
 The Collections module provides a unified interface for working with different types of collections: blocks, dictionaries, and strings. Most operations work seamlessly across all collection types, making it easy to manipulate data regardless of its structure.
 
-## Key Concepts
+### Key Concepts
 
 - Unified operations across blocks, dictionaries, and strings
 - Support for both mutable and immutable operations
@@ -12,9 +12,9 @@ The Collections module provides a unified interface for working with different t
 - Lazy evaluation with ranges
 - Flexible combination and permutation generation
 
-## Basic Usage
+### Basic Usage
 
-### Creating Collections
+#### Creating Collections
 
 ```red
 ; blocks (arrays)
@@ -38,7 +38,7 @@ print @evens     ; 2 3 4 5 6 7 8 9 10
 > [!NOTE]
 > Dictionaries in Arturo maintain insertion order, unlike hash tables in many other languages.
 
-### Basic Operations
+#### Basic Operations
 
 ```red
 lst: [1 2 3]
@@ -62,7 +62,7 @@ print lst\2         ; 4
 > [!IMPORTANT]
 > Using the literal form (e.g., `'lst`) modifies the collection in place, while using the value directly returns a new collection.
 
-### Collection Indexing
+#### Collection Indexing
 
 ```red
 ; basic array indexing
@@ -90,7 +90,7 @@ print user\[field]          ; Doe
 > [!NOTE]
 > Indexing with `\` works uniformly across all collection types. Use a block after `\` when you need to evaluate an expression to get the index or field name.
 
-### Collection Information
+#### Collection Information
 
 ```red
 data: [1 2 2 3 3 3]
@@ -101,9 +101,9 @@ contains? data 2    ; => true
 index data 3        ; => 2
 ```
 
-## Common Patterns
+### Common Patterns
 
-### Collection Transformation
+#### Collection Transformation
 
 ```red
 ; flatten nested structure
@@ -119,7 +119,7 @@ print unique duplicates     ; 1 2 3
 print reverse [1 2 3]       ; 3 2 1
 ```
 
-### Working with Dictionaries
+#### Working with Dictionaries
 
 ```red
 user: #[
@@ -141,7 +141,7 @@ print complete
 ; [name:John age:30 city:London job:Developer]
 ```
 
-### Working with Strings
+#### Working with Strings
 
 ```red
 text: "Hello 世界"      ; unicode string
@@ -171,7 +171,7 @@ loop text 'c ->
 > [!NOTE]
 > Strings in Arturo are always Unicode-aware. When indexing or iterating, you're working with actual characters, not bytes.
 
-### Combinations & Permutations
+#### Combinations & Permutations
 
 ```red
 items: [1 2 3]
@@ -188,7 +188,7 @@ permutate items
 > [!TIP]
 > Use the `.repeated` attribute with `combine` or `permutate` when you want to allow elements to be used multiple times.
 
-### Efficient Range Operations
+#### Efficient Range Operations
 
 ```red
 ; create a range of numbers
@@ -203,9 +203,9 @@ nums\42             ; => 42
 > [!NOTE]
 > Ranges are lazy - they don't generate all values until needed, making them very memory-efficient for large sequences.
 
-### Advanced Examples
+#### Advanced Examples
 
-#### Working with Nested Data
+##### Working with Nested Data
 
 ```red
 users: #[
@@ -233,7 +233,7 @@ allTags: unique flatten map users\active 'usr -> usr\tags
 ; admin dev
 ```
 
-#### Managing a Priority Queue
+##### Managing a Priority Queue
 
 ```red
 tasks: []

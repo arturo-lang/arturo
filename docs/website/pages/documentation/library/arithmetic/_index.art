@@ -3,7 +3,7 @@ overview: ---
 
 The Arithmetic module provides basic mathematical operations that work seamlessly across different numeric types - integers, floating-point numbers, complex numbers, and rationals.
 
-## Key Concepts
+### Key Concepts
 
 - Operations work with multiple numeric types
 - Support for in-place modifications
@@ -11,9 +11,9 @@ The Arithmetic module provides basic mathematical operations that work seamlessl
 - Automatic type promotion when needed
 - All operators available as infix symbols
 
-## Basic Usage
+### Basic Usage
 
-### Basic Operations
+#### Basic Operations
 
 ```red
 ; addition
@@ -35,7 +35,7 @@ print div 10 3          ; 3
 print fdiv 10 3         ; 3.333333333333333
 ```
 
-### Working with Different Types
+#### Working with Different Types
 
 ```red
 ; integer + floating
@@ -52,7 +52,7 @@ b: 3:4                  ; 3/4
 print a + b             ; 5/4
 ```
 
-### In-place Modifications
+#### In-place Modifications
 
 ```red
 x: 5
@@ -74,9 +74,9 @@ print x                  ; 16
 > [!NOTE]
 > Using literals (e.g., `'x`) performs operations in-place, modifying the original value.
 
-## Common Patterns
+### Common Patterns
 
-### Division and Remainder
+#### Division and Remainder
 
 ```red
 ; integer division with remainder
@@ -88,7 +88,7 @@ print ["17 ÷ 5 =" quotient "remainder" remainder]
 print fdiv 17 5             ; 3.4
 ```
 
-### Working with Quantities
+#### Working with Quantities
 
 ```red
 distance: 100`m         ; 100 meters
@@ -98,7 +98,7 @@ speed: fdiv distance time
 print speed             ; 20 m/s
 ```
 
-### Type Conversions & Promotions
+#### Type Conversions & Promotions
 
 ```red
 ; integer → floating

@@ -3,16 +3,16 @@ overview: ---
 
 The Reflection module provides tools for runtime introspection and program analysis. From inspecting variables to benchmarking code, it offers comprehensive capabilities for understanding and analyzing your program's behavior.
 
-## Key Concepts
+### Key Concepts
 
 - Runtime information retrieval
 - Symbol and attribute inspection
 - Performance measurement
 - Stack examination
 
-## Basic Usage
+### Basic Usage
 
-### Inspecting Values
+#### Inspecting Values
 
 ```red
 value: [1 2 #[name: "John"] [nested block]]
@@ -28,7 +28,7 @@ info.get 'print  ; returns info as dictionary
 print stack      ; shows current value stack (as a block)
 ```
 
-### Working with Attributes
+#### Working with Attributes
 
 ```red
 doSth function [x][
@@ -44,7 +44,7 @@ doSth function [x][
 ]
 ```
 
-### Symbol Management
+#### Symbol Management
 
 ```red
 ; get all defined symbols
@@ -59,7 +59,7 @@ funcs: arity        ; get dictionary of function arities
 print arity\add     ; 2 (which is the number of parameters `add` takes ;-)) 
 ```
 
-### Performance Measurement
+#### Performance Measurement
 
 ```red
 ; basic benchmarking
@@ -85,9 +85,9 @@ loop 1..100 'run [
 average: total / 100
 ```
 
-## Common Patterns
+### Common Patterns
 
-### Function Analysis
+#### Function Analysis
 
 ```red
 ; get complete function information
@@ -110,7 +110,7 @@ analyzeFunction 'split
 ; Returns: [:block :nothing] 
 ```
 
-### Performance Profiling
+#### Performance Profiling
 
 ```red
 ; simple profiling helper
@@ -136,10 +136,9 @@ profile "array sorting" [
 ]
 ```
 
-> [!TIP]
-> When benchmarking, always run multiple iterations to get stable results and consider system load variations.
+> [!TIP] When benchmarking, always run multiple iterations to get stable results and consider system load variations.
 
-### Runtime Information
+#### Runtime Information
 
 ```red
 ; check execution context

@@ -3,7 +3,7 @@ overview: ---
 
 The Io module provides functionality for terminal input/output operations, cursor manipulation, and console formatting. It offers both basic printing capabilities and advanced terminal controls.
 
-## Key Concepts
+### Key Concepts
 
 - Terminal input/output operations
 - Colored text output
@@ -11,9 +11,9 @@ The Io module provides functionality for terminal input/output operations, curso
 - Terminal information retrieval
 - Multi-line input handling
 
-## Basic Usage
+### Basic Usage
 
-### Output Operations
+#### Output Operations
 
 ```red
 ; basic printing (with newline)
@@ -31,7 +31,7 @@ print.lines ["one" "two" "three"]
 ; three
 ```
 
-### Input Operations
+#### Input Operations
 
 ```red
 ; basic input with prompt
@@ -44,7 +44,7 @@ ch: input ø    ; returns single character without echo
 cmd: input.repl ">> "
 ```
 
-### Colored Output
+#### Colored Output
 
 ```red
 ; using color function
@@ -61,7 +61,7 @@ print "all red"
 print color.bold.underline #blue "Highlighted"
 ```
 
-### Cursor Control
+#### Cursor Control
 
 ```red
 ; hide/show cursor
@@ -80,9 +80,9 @@ print "Z"
 clear
 ```
 
-## Common Patterns
+### Common Patterns
 
-### Progress Indicators
+#### Progress Indicators
 
 ```red
 ; simple progress indicator
@@ -102,7 +102,7 @@ loop 1..20 'i [
 print ""
 ```
 
-### Interactive Menus
+#### Interactive Menus
 
 ```red
 clearMenu: function [][
@@ -138,7 +138,7 @@ choice: showMenu ["Start" "Settings" "Exit"]
 print ["Selection:" choice]
 ```
 
-### Status Updates
+#### Status Updates
 
 ```red
 ; colorful status messages
@@ -161,7 +161,7 @@ printStatus "error" "Connection failed"
 > [!TIP]
 > When working with colors, remember that not all terminals support all color features. You might want to check terminal capabilities first.
 
-### Terminal Information
+#### Terminal Information
 
 ```red
 ; get terminal information

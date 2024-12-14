@@ -3,7 +3,7 @@ overview: ---
 
 The Colors module provides comprehensive color handling capabilities. It includes support for RGB colors, color manipulations, and a rich set of predefined color names.
 
-## Key Concepts
+### Key Concepts
 
 - RGB color representation
 - Color manipulation (blending, saturation, etc.)
@@ -11,9 +11,9 @@ The Colors module provides comprehensive color handling capabilities. It include
 - Over 350 predefined color names
 - Color space conversions (RGB, HSL, HSV)
 
-## Basic Usage
+### Basic Usage
 
-### Creating Colors
+#### Creating Colors
 
 ```red
 ; using hex notation
@@ -33,7 +33,7 @@ extract.blue #0000ff     ; => 255
 extract.alpha #ff0000ff  ; => 255
 ```
 
-### Color Operations
+#### Color Operations
 
 ```red
 ; lighten/darken
@@ -52,7 +52,7 @@ customMix: blend.balance:0.7 #red #blue     ; 70-30 mix (= #4D00B3)
 opposite: invert #white        ; #black
 ```
 
-### Color Space Conversions
+#### Color Space Conversions
 
 ```red
 col: #magenta       ; #FF00FF
@@ -68,7 +68,7 @@ hsv: extract.hsv col        ; #[hue:300 saturation:1.0 value:1.0]
 newColor: to :color .hsv [300, 1.0 1.0]     ; #FF00FF (yep, #magenta!)
 ```
 
-### Color Palettes
+#### Color Palettes
 
 ```red
 baseColor: #4169e1          ; royal blue
@@ -87,43 +87,43 @@ print palette.analogous baseColor
 ; #41C9E1 #41A9E1 #4189E1 #4169E1 #4149E1 #5941E1
 ```
 
-## Predefined Colors
+### Predefined Colors
 
 > [!NOTE]
 > Colors can be referenced using their names in various formats. For example, `deep sea blue` can be written as `#deepSeaBlue`, `#deepsea` or even just `#deep`.
 
 Here are some of the most commonly used colors organized by hue:
 
-### Reds
+#### Reds
 - `#red`, `#crimson`, `#darkRed`, `#fireEngineRed`, `#cherryRed`
 - `#ruby`, `#burgundy`, `#bloodRed`, `#lavaRed`
 
-### Blues
+#### Blues
 - `#blue`, `#navy`, `#royalBlue`, `#skyBlue`, `#azureBlue`
 - `#cobaltBlue`, `#cornflowerBlue`, `#denimBlue`, `#deepSeaBlue`
 
-### Greens
+#### Greens
 - `#green`, `#emerald`, `#forestGreen`, `#limeGreen`, `#seaGreen`
 - `#oliveGreen`, `#sageGreen`, `#mintGreen`, `#jade`
 
-### Purples
+#### Purples
 - `#purple`, `#violet`, `#plum`, `#lavender`, `#mauve`
 - `#orchid`, `#royalPurple`, `#deepPurple`, `#amethyst`
 
-### Yellows & Oranges
+#### Yellows & Oranges
 - `#yellow`, `#gold`, `#amber`, `#mustard`, `#canary`
 - `#orange`, `#tangerine`, `#coral`, `#peach`
 
-### Neutrals
+#### Neutrals
 - `#white`, `#black`, `#gray`, `#silver`
 - `#beige`, `#tan`, `#brown`, `#taupe`
 
 > [!TIP]
 > The complete list of colors can be found in the [Arturo repository](https://github.com/arturo-lang/arturo/blob/master/src/vm/values/custom/vcolor.nim#L41-L618), although it would be most likely safe to say that any [W3C color name recognized](https://www.w3schools.com/tags/ref_colornames.asp) is also recognized by Arturo too.
 
-## Common Patterns
+### Common Patterns
 
-### Working with Alpha
+#### Working with Alpha
 
 ```red
 ; full opacity

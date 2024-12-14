@@ -3,7 +3,7 @@ overview: ---
 
 The System module provides access to operating system functionality, environment variables, process management, and system information.
 
-## Key Concepts
+### Key Concepts
 
 - Environment variable access
 - System information retrieval
@@ -11,9 +11,9 @@ The System module provides access to operating system functionality, environment
 - Command-line argument handling
 - Configuration management
 
-## Basic Usage
+### Basic Usage
 
-### System Information
+#### System Information
 
 ```red
 ; get system information
@@ -34,7 +34,7 @@ print ["PID:" proc\id]
 ; PID: 92123 
 ```
 
-### Environment Variables
+#### Environment Variables
 
 ```red
 ; access environment variables
@@ -47,7 +47,7 @@ if key? env 'ARTURO_HOME ->
     print ["Arturo home:" env\ARTURO_HOME]
 ```
 
-### Command Execution
+#### Command Execution
 
 ```red
 ; simple command execution
@@ -73,7 +73,7 @@ execute.directly "echo 'hello' > output.txt"
 > [!TIP]
 > Use `execute.code` when you need to check if a command succeeded, and `execute.async` for long-running processes that shouldn't block.
 
-### Command-line Arguments
+#### Command-line Arguments
 
 ```red
 ; access command line arguments
@@ -94,9 +94,9 @@ inspect args
 ; ]
 ```
 
-## Common Patterns
+### Common Patterns
 
-### Process Management
+#### Process Management
 
 ```red
 define :processManager [
@@ -125,7 +125,7 @@ pause 1000
 processManager\stop pid
 ```
 
-### Configuration Management
+#### Configuration Management
 
 ```red
 ; example configuration helper
@@ -141,7 +141,7 @@ port: getConfig 'server_port 8080
 host: getConfig 'server_host "localhost"
 ```
 
-### Path Management
+#### Path Management
 
 ```red
 ; get path information
@@ -150,7 +150,7 @@ print ["Home dir:" path\home]
 print ["Temp dir:" path\temp]
 ```
 
-### System Checks
+#### System Checks
 
 ```red
 ; check for administrator/root privileges

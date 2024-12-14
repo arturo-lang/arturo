@@ -3,7 +3,7 @@ overview: ---
 
 The Types module provides the foundation for Arturo's type system, including type checking, custom type definitions, and object-oriented programming capabilities.
 
-## Key Concepts
+### Key Concepts
 
 - Basic type checking
 - Custom type definitions
@@ -12,9 +12,9 @@ The Types module provides the foundation for Arturo's type system, including typ
 - Magic methods for operator overloading
 - Inheritance and composition
 
-## Basic Usage
+### Basic Usage
 
-### Type Checking
+#### Type Checking
 
 ```red
 ; basic type checks
@@ -31,7 +31,7 @@ print is? :integer 42       ; true
 print is? :string "hi"      ; true
 ```
 
-### Custom Types
+#### Custom Types
 
 ```red
 ; define new type
@@ -65,7 +65,7 @@ print john
 > ]
 > ```
 
-### Inheritance
+#### Inheritance
 
 ```red
 ; base type
@@ -99,7 +99,7 @@ print fido\species    ; canis
 fido\speak           ; woof!
 ```
 
-### Type Conversions
+#### Type Conversions
 
 ```red
 ; basic conversions
@@ -111,7 +111,7 @@ flt: to :floating "3.14"    ; 3.14
 date: to :date .format:"yyyy-MM-dd" "2024-01-15"
 ```
 
-## Magic Methods
+### Magic Methods
 
 Magic methods allow you to customize how your types behave with various operations.
 
@@ -153,9 +153,9 @@ Magic methods allow you to customize how your types behave with various operatio
 > [!TIP]
 > Magic methods are optional - implement only those that make sense for your type's behavior. Also, remember that when implementing magic methods, they affect how your type behaves with standard operators and functions throughout Arturo.
 
-## Common Patterns
+### Common Patterns
 
-### Implementing Comparable Objects
+#### Implementing Comparable Objects
 
 ```red
 define :score [
@@ -190,7 +190,7 @@ print sort scores
 > ;...
 > ```
 
-### Custom Collections
+#### Custom Collections
 
 ```red
 define :stack [
@@ -225,7 +225,7 @@ s\push 2
 print s\pop     ; 2
 ```
 
-### Property Change Notifications
+#### Property Change Notifications
 
 ```red
 define :observable [
