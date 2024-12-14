@@ -47,8 +47,7 @@ w: to :complex [1 1]    ; 1.0+1.0i
 print z * w             ; -1.0+7.0i
 ```
 
-> [!NOTE]
-> Complex numbers are created using `to` with a block containing the real and imaginary parts.
+> [!NOTE] Complex numbers are created using `to` with a block containing the real and imaginary parts.
 
 #### Number Theory
 

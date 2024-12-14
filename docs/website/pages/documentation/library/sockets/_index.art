@@ -35,8 +35,7 @@ send client "hello!"
 message: receive.timeout:1000 client    ; timeout after 1 second if no message
 ```
 
-> [!CAUTION]
-> Watch out for message sizes when using receive: for large ones, consider implementing a chunking strategy or using a protocol with clear message boundaries.
+> [!CAUTION] Watch out for message sizes when using receive: for large ones, consider implementing a chunking strategy or using a protocol with clear message boundaries.
 
 #### Using UDP
 

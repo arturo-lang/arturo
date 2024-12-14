@@ -3,8 +3,7 @@ overview: ---
 
 The Exceptions module provides error handling functionality and predefined error types. It enables robust error management and graceful failure handling in your applications.
 
-> [!IMPORTANT]
-> The error handling system in Arturo is still evolving. The functionality described in this module should be considered transitional and may change in future versions as the error handling system matures.
+> [!IMPORTANT] The error handling system in Arturo is still evolving. The functionality described in this module should be considered transitional and may change in future versions as the error handling system matures.
 
 ### Key Concepts
 

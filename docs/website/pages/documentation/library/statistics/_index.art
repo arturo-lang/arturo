@@ -24,8 +24,7 @@ med: median data      ; => 3
 print average 1..100  ; 50.5
 ```
 
-> [!NOTE]
-> `average` and `median` both require the data to be numeric. For mixed data types, make sure to filter non-numeric values first.
+> [!NOTE] `average` and `median` both require the data to be numeric. For mixed data types, make sure to filter non-numeric values first.
 
 #### Calculating Variance and Standard Deviation
 
@@ -41,8 +40,7 @@ print deviation.sample numbers  ; 2.138089935299395
 print variance.sample numbers   ; 4.571428571428571
 ```
 
-> [!TIP]
-> Use sample statistics (with the `.sample` attribute) when working with data that represents a subset of a larger population.
+> [!TIP] Use sample statistics (with the `.sample` attribute) when working with data that represents a subset of a larger population.
 
 #### Distribution Analysis
 

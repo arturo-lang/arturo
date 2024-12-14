@@ -77,8 +77,7 @@ when.has: x [
 ]
 ```
 
-> [!NOTE]
-> The `->` arrow operator can be used to wrap a single expression in a block, making code more readable.
+> [!NOTE] The `->` arrow operator can be used to wrap a single expression in a block, making code more readable.
 
 #### Function Definition
 

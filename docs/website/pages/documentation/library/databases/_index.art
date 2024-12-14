@@ -40,8 +40,7 @@ users: query db "SELECT * FROM users"
 print users   ; [1 John 25]
 ```
 
-> [!TIP]
-> If you are using a text editor that supports this syntax (e.g. VSCode), using `!sql` in front of `{..}`-enclosed blocks will enable proper SQL highlighting. Totally non-compulsory, but still very handy!
+> [!TIP] If you are using a text editor that supports this syntax (e.g. VSCode), using `!sql` in front of `{..}`-enclosed blocks will enable proper SQL highlighting. Totally non-compulsory, but still very handy!
 
 #### Parametrized Queries
 
@@ -59,8 +58,7 @@ loop results 'user ->
 ; User: Alice Age: 30 
 ```
 
-> [!IMPORTANT]
-> Always use parametrized queries when dealing with user input to prevent SQL injection attacks.
+> [!IMPORTANT] Always use parametrized queries when dealing with user input to prevent SQL injection attacks.
 
 ### Common Patterns
 
@@ -73,8 +71,7 @@ query db [
     "UPDATE users SET age = 31 WHERE name = 'Alice'"
 ]
 
-> [!NOTE]
-> This method of performing multiple operations is the equivalent of using `BEGIN TRANSACTION` blocks in SQL, although in much more... practical and Arturo-friendly way! ;-)
+> [!NOTE] This method of performing multiple operations is the equivalent of using `BEGIN TRANSACTION` blocks in SQL, although in much more... practical and Arturo-friendly way! ;-)
 
 ```
 

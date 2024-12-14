@@ -35,8 +35,7 @@ evens: 2..10
 print @evens     ; 2 3 4 5 6 7 8 9 10
 ```
 
-> [!NOTE]
-> Dictionaries in Arturo maintain insertion order, unlike hash tables in many other languages.
+> [!NOTE] Dictionaries in Arturo maintain insertion order, unlike hash tables in many other languages.
 
 #### Basic Operations
 
@@ -59,8 +58,7 @@ print last lst      ; 6
 print lst\2         ; 4
 ```
 
-> [!IMPORTANT]
-> Using the literal form (e.g., `'lst`) modifies the collection in place, while using the value directly returns a new collection.
+> [!IMPORTANT] Using the literal form (e.g., `'lst`) modifies the collection in place, while using the value directly returns a new collection.
 
 #### Collection Indexing
 
@@ -87,8 +85,7 @@ print user\name             ; John
 field: 'surname             ; using a literal
 print user\[field]          ; Doe
 
-> [!NOTE]
-> Indexing with `\` works uniformly across all collection types. Use a block after `\` when you need to evaluate an expression to get the index or field name.
+> [!NOTE] Indexing with `\` works uniformly across all collection types. Use a block after `\` when you need to evaluate an expression to get the index or field name.
 
 #### Collection Information
 
@@ -168,8 +165,7 @@ loop text 'c ->
 ; char: 界
 ```
 
-> [!NOTE]
-> Strings in Arturo are always Unicode-aware. When indexing or iterating, you're working with actual characters, not bytes.
+> [!NOTE] Strings in Arturo are always Unicode-aware. When indexing or iterating, you're working with actual characters, not bytes.
 
 #### Combinations & Permutations
 
@@ -185,8 +181,7 @@ permutate items
 ; => [[1 2 3] [1 3 2] [2 1 3] [2 3 1] [3 1 2] [3 2 1]]
 ```
 
-> [!TIP]
-> Use the `.repeated` attribute with `combine` or `permutate` when you want to allow elements to be used multiple times.
+> [!TIP] Use the `.repeated` attribute with `combine` or `permutate` when you want to allow elements to be used multiple times.
 
 #### Efficient Range Operations
 
@@ -200,8 +195,7 @@ last nums           ; => 1000
 nums\42             ; => 42
 ```
 
-> [!NOTE]
-> Ranges are lazy - they don't generate all values until needed, making them very memory-efficient for large sequences.
+> [!NOTE] Ranges are lazy - they don't generate all values until needed, making them very memory-efficient for large sequences.
 
 #### Advanced Examples
 

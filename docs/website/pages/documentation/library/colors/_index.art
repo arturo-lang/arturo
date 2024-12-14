@@ -89,8 +89,7 @@ print palette.analogous baseColor
 
 ### Predefined Colors
 
-> [!NOTE]
-> Colors can be referenced using their names in various formats. For example, `deep sea blue` can be written as `#deepSeaBlue`, `#deepsea` or even just `#deep`.
+> [!NOTE] Colors can be referenced using their names in various formats. For example, `deep sea blue` can be written as `#deepSeaBlue`, `#deepsea` or even just `#deep`.
 
 Here are some of the most commonly used colors organized by hue:
 
@@ -118,8 +117,7 @@ Here are some of the most commonly used colors organized by hue:
 - `#white`, `#black`, `#gray`, `#silver`
 - `#beige`, `#tan`, `#brown`, `#taupe`
 
-> [!TIP]
-> The complete list of colors can be found in the [Arturo repository](https://github.com/arturo-lang/arturo/blob/master/src/vm/values/custom/vcolor.nim#L41-L618), although it would be most likely safe to say that any [W3C color name recognized](https://www.w3schools.com/tags/ref_colornames.asp) is also recognized by Arturo too.
+> [!TIP] The complete list of colors can be found in the [Arturo repository](https://github.com/arturo-lang/arturo/blob/master/src/vm/values/custom/vcolor.nim#L41-L618), although it would be most likely safe to say that any [W3C color name recognized](https://www.w3schools.com/tags/ref_colornames.asp) is also recognized by Arturo too.
 
 ### Common Patterns
 

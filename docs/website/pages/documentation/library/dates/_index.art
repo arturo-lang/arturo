@@ -110,8 +110,7 @@ meeting: to :date .format:"yyyy-MM-dd" "2024-03-15"
 ; 2024-03-15T00:00:00+01:00
 ```
 
-> [!NOTE]
-> When parsing dates from strings, make sure your format pattern matches exactly the structure of your input string.
+> [!NOTE] When parsing dates from strings, make sure your format pattern matches exactly the structure of your input string.
 
 ##### Format Patterns
 
@@ -153,8 +152,7 @@ print to :string .format:"HH:mm:ss.fff" date        ; 14:30:45.123
 print to :string .format:"h:mm tt" date             ; 2:30 PM
 ```
 
-> [!TIP]
-> For common use cases, you might want to create helper functions with your preferred format patterns:
+> [!TIP] For common use cases, you might want to create helper functions with your preferred format patterns:
 > ```red
 > formatDate: function [dt][
 >     to :string .format:"yyyy-MM-dd" dt

@@ -38,8 +38,7 @@ print 2 =< 2             ; true
 print 3 >= 2             ; true
 ```
 
-> [!NOTE]
-> The ordering operators work with numbers, strings, dates, and any type that defines ordering.
+> [!NOTE] The ordering operators work with numbers, strings, dates, and any type that defines ordering.
 
 #### Range Checking
 
@@ -52,8 +51,7 @@ print 3 >= 2             ; true
 between? 5 1 10         ; => true
 ```
 
-> [!TIP]
-> Another way to check if a value is within a given range would be `contains?` - or its reversed equivalent - `in?`.
+> [!TIP] Another way to check if a value is within a given range would be `contains?` - or its reversed equivalent - `in?`.
 
 ### Common Patterns
 

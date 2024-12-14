@@ -47,8 +47,7 @@ if or? [1=1][print "never runs"] ->
 ; was true
 ```
 
-> [!NOTE]
-> Using blocks with `and?` and `or?` enables short-circuit evaluation. In a few words: blocks are only evaluated when needed.
+> [!NOTE] Using blocks with `and?` and `or?` enables short-circuit evaluation. In a few words: blocks are only evaluated when needed.
 
 ### Common Patterns
 
@@ -64,8 +63,7 @@ all? conditions     ; => false
 any? conditions     ; => true
 ```
 
-> [!TIP]
-> Combining conditions in blocks with `and?` and `or?` (or more than one condition inside `all?` or `any?` blocks) is more efficient than checking them separately!
+> [!TIP] Combining conditions in blocks with `and?` and `or?` (or more than one condition inside `all?` or `any?` blocks) is more efficient than checking them separately!
 
 #### Advanced Logical Operations
 

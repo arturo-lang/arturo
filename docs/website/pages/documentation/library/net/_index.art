@@ -36,8 +36,7 @@ response: request.patch "https://api.example.com/users/1" data
 response: request.delete "https://api.example.com/users/1" ø
 ```
 
-> [!IMPORTANT]
-> When making HTTP requests, always handle potential network errors and timeouts appropriately.
+> [!IMPORTANT] When making HTTP requests, always handle potential network errors and timeouts appropriately.
 
 #### File Downloads
 
@@ -133,5 +132,4 @@ serve.verbose [
 ]
 ```
 
-> [!TIP]
-> The serve function can also open Chrome in app mode with `.chrome` for a more app-like experience.
+> [!TIP] The serve function can also open Chrome in app mode with `.chrome` for a more app-like experience.

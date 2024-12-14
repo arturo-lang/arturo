@@ -70,8 +70,7 @@ print ["Started process:" pid]
 execute.directly "echo 'hello' > output.txt"
 ```
 
-> [!TIP]
-> Use `execute.code` when you need to check if a command succeeded, and `execute.async` for long-running processes that shouldn't block.
+> [!TIP] Use `execute.code` when you need to check if a command succeeded, and `execute.async` for long-running processes that shouldn't block.
 
 #### Command-line Arguments
 
