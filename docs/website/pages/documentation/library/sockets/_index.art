@@ -19,8 +19,7 @@ server: listen 8000
 print "Server listening on port 8000..."
 ```
 
-> [!IMPORTANT]  
-> Always remember to `unplug` your sockets when you're done with them to free up system resources.
+> [!IMPORTANT] Always remember to `unplug` your sockets when you're done with them to free up system resources.
 
 #### Accepting Connections & Handling Messages
 
@@ -45,8 +44,7 @@ When you need faster, connectionless communication:
 server: listen.udp 8000
 ```
 
-> [!WARNING]  
-> UDP messages may arrive out of order or not at all. Only use UDP when your application can handle message loss.
+> [!WARNING] UDP messages may arrive out of order or not at all. Only use UDP when your application can handle message loss.
 
 ### Common Patterns
 
