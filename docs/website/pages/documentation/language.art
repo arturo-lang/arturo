@@ -106,11 +106,11 @@ A label is nothing but Arturo's way of assigning meaning (to be read as a value)
 
 So, let's say you want to give a new meaning to the word `x`:
 
-```red
+```arturo
 x: 2
 ```
 That was it: from now on, `x` will mean `2` (until and if it's changed). So if you follow the above statement with:
-```red
+```arturo
 print x
 ```
 ...Arturo will print `2` for you.
@@ -123,7 +123,7 @@ Hence, let's take the function <code><a href="../library/arithmetic/add">add</a>
 
 So, you may write:
 
-```red
+```arturo
 print add 2 3
 ```
 and Arturo will print out `5` for you.
@@ -132,7 +132,7 @@ Now, if you don't want to use the <code><a href="../library/arithmetic/add">add<
 
 So, you could just as well write:
 
-```red
+```arturo
 print 2 + 3
 ```
 Only, this time you're expressing it more like you would in a normal math expression: with *infix notation*.
@@ -257,7 +257,7 @@ There are two types:
 Attributes are actually optional on/off-type of values, set during a function call, that is there to denote some variation of the initial meaning of the function. To define an attribute, we'll be using a `.`(dot) followed by a normal word: `\.\w+`
 
 Let's say we used the function <code><a href="../library/collections/split">split</a></code>, to split a string into parts:
-```red
+```arturo
 split "hello world"
 
 ; => [`h` `e` `l` `l` `o` ` ` `w` `o` `r` `l` `d` ]
@@ -266,7 +266,7 @@ That does what it says: splits the string into an array of `:char`s.
 
 What if we want for example to split the string into words? For that, there is the `.words` attribute for the function <code><a href="../library/collections/split">split</a></code>. So:
 
-```red
+```arturo
 split.words "hello world"
 
 ; = ["hello" "world"]
@@ -279,7 +279,7 @@ Attribute labels are pretty much like simple *attributes*, only they can also ta
 
 Here's an example:
 
-```red
+```arturo
 split .every: 2 "hello world"
 
 ; => ["he" "ll" "ow" "or" "ld"]
@@ -299,7 +299,7 @@ The (hopefully) complete list follows.
 
 Null values generally denote *nothing* and it's mostly used as a return value by functions to inform us that something went wrong. If you want to set it as a  value, you may just use the *word* <code><a href="../library/core/null">null</a></code>, like:
 
-```red
+```arturo
 x: null
 ```
 
@@ -307,7 +307,7 @@ x: null
 
 Logicals are Arturo's logical values. They are like normal boolean values (true, false), with a twist: they fully support ternary logic and an additional <code><a href="../library/logic/maybe">maybe</a></code> value.
 
-```red
+```arturo
 x: true
 y: false
 z: maybe
@@ -317,7 +317,7 @@ z: maybe
 
 Integers represent positive or negative integers. When they are declared they are comprised only by digits (`[0-9]+`) and they can be as long as you want - Arturo does support big numbers.
 
-```red
+```arturo
 x: 2
 y: 876528347613438247982374913423423947329
 ```
@@ -326,7 +326,7 @@ y: 876528347613438247982374913423423947329
 
 Floating values are basically floating-point numbers, that is: decimals. They begin with an initial all-digit part, followed by a `.` (dot) and another all-digit part: `[0-9]+\.[0-9]+`
 
-```red
+```arturo
 pi: 3.14159
 ```
 
@@ -334,7 +334,7 @@ pi: 3.14159
 
 Even though there is no special syntax for defining a complex number, you can always create one using <code><a href="../library/types/to">to</a></code>. Arturo comes with full support for complex numbers and all the associated operations.
 
-```red
+```arturo
 a: to :complex [1 2]      ; a: 1.0+2.0i
 b: to :complex @[pi pi]   ; b: 3.141592653589793+3.141592653589793i
 
@@ -346,14 +346,14 @@ print a + b
 
 The syntax for rational literals is simply a number followed by a colon, followed by a number (pretty much like you would normally represent a ratio).
 
-```red
+```arturo
 a: 1:2                   ; 1/2
 b: 3:4                   ; 3/4
 ```
 
 As with complex numbers, rationals can also be defined using <code><a href="../library/types/to">to</a></code>. And again, Arturo comes with full support for rational numbers and all the associated operations.
 
-```red
+```arturo
 a: to :rational [1 2]     ; 1/2
 b: to :rational [3 4]     ; 3/4
 
@@ -365,7 +365,7 @@ print a + b
 
 Version values are nothing but a fancy and portable way of defining SemVer-compliant versions (e.g. for packaging an application). The rule is rather simple: it has three numeric parts, separated by a `.` (dot) and an optional part with build or prerelease information.
 
-```red
+```arturo
 package: 1.0.3
 
 if package > 1.0.0 -> print "yep, the version is right!"
@@ -373,7 +373,7 @@ if package > 1.0.0 -> print "yep, the version is right!"
 
 or
 
-```red
+```arturo
 version: 1.2.3-rc1+build123
 ```
 
@@ -381,16 +381,16 @@ version: 1.2.3-rc1+build123
 
 Type is a value representing another... type. To specify a type value, the format is a `:` (colon) followed by a word - the type's name: `:\w+`
 
-```red
+```arturo
 myType: :integer
 ```
 or
-```red
+```arturo
 if (type x) = :integer [ print "it's an integer!" ]
 ```
 
 > 💡 If you want to define your own custom types (think "classes" in OOP languages), we have <code><a href="../library/types/define">define</a></code> for that: e.g. 
-> ```red
+> ```arturo
 > define :person [
 >    init: method [name :string][
 >        \name: name 
@@ -404,7 +404,7 @@ if (type x) = :integer [ print "it's an integer!" ]
 
 Characters in Arturo can be declared using single quotes:  `'\w'`
 
-```red
+```arturo
 ch: 'a'
 ```
 
@@ -420,7 +420,7 @@ A string is nothing but a series of characters, seen as one unit. In Arturo, to 
 **Multi-line strings**
 
 - using curly-brace blocks (the result will be stripped and un-indented):
-  ```red
+  ```arturo
   x: {
       this is yet
       another
@@ -434,7 +434,7 @@ A string is nothing but a series of characters, seen as one unit. In Arturo, to 
   ```
 
 - using verbatim curly-brace blocks (the result will remain exactly as-is):
-  ```red
+  ```arturo
   x: {:
     this is yet
       another
@@ -447,7 +447,7 @@ A string is nothing but a series of characters, seen as one unit. In Arturo, to 
   :}
   ```
 - using dash notation (where everything after the line, until the end of the file, is a string - stripped and un-indented):
-  ```red
+  ```arturo
   x: 
   ------
   this is the last very
@@ -459,7 +459,7 @@ A string is nothing but a series of characters, seen as one unit. In Arturo, to 
   ```
 
 > 💡 If you want your string to contain sub-expressions that will be evaluated on the fly - that is *string interpolation* - all you have to do is include your code inside the string within pipe-bars and then call the function <code><a href="../library/string/render">render</a></code> (or `~`) to process it accordingly: e.g. 
-> ```red
+> ```arturo
 > x: 2
 > print ~"my variable is: |x|"
 > 
@@ -473,7 +473,7 @@ Arturo comes with full support of lazy ranges.
 
 To create a range all you have to do is use the built-in <code><a href="../library/collections/range">range</a></code> function (or its `..` infix equivalent):
 
-```red
+```arturo
 numbers: 1..10    ; contains all numbers from 1 to 10 (inclusive)
 downwards: 10..1  ; this is valid as well
 
@@ -484,7 +484,7 @@ Ranges can be used in most functions as-is, e.g. Iterators, where we can take fu
 
 However, you can still evaluate a lazy range into its corresponding block any time you want:
 
-```red
+```arturo
 @1..10 ; [1,2,3,4,5,6,7,8,9,10]
 ```
 
@@ -494,7 +494,7 @@ A regex value is nothing but a string containing a regular expression (that is t
 
 The normal syntax is `{/regex/}`:
 
-```red
+```arturo
 type {/[A-Z]/}                    ; => :regex
 
 replace "HelLo" {/[A-Z]/} "X"     ; here we replace all capital letters
@@ -507,7 +507,7 @@ While we may - optionally - use any of the supported PCRE-compliant flags:
 - `m`: multiline
 - `s`: dot-all
 
-```red
+```arturo
 match "Hello" {/he/i}             ; => ["He"]
 ```
 
@@ -515,20 +515,20 @@ match "Hello" {/he/i}             ; => ["He"]
 
 Paths in Arturo are a way of defining some hierarchy between values, something along the lines of *parent* -> *child* -> *grandchild*. For this, in Arturo, we'd use a series of *values* or *words* delimited with a `\` (backslash). You can think of them as *indexes* in other programming languages.
 
-```red
+```arturo
 print user\name
 ```
 
 or
 
-```red
+```arturo
 x: "name"
 print user\[x]
 ```
 
 or
 
-```red
+```arturo
 myArray: ["zero" "one" "two" "three"]
 print myArray\1
 
@@ -539,7 +539,7 @@ print myArray\1
 
 If paths are the way of defining some hierarchy between values, with *pathLabel*s we are also able to assign values to some specific path.
 
-```red
+```arturo
 user: #[
     name: "John"
     surname: "Doe"
@@ -557,7 +557,7 @@ print user\name ; ok, now it should print "Jane"
 ```
 
 > 💡 If you we are inside a custom type, an easy way to refer to fields of the same object is using `this`. However, Arturo comes with a shortcut: e.g. 
-> ```red
+> ```arturo
 > define :person [
 >    init: constructor [name :string]
 >    sayHello: method [][
@@ -573,7 +573,7 @@ Literals in Arturo are just a way of referring to the *name* of a word or symbol
 
 For example, the function <code><a href="../library/reflection/info">info</a></code> takes as an argument the name of the function for which you want some information. If you wrote like `info print`, the interpreter would execute the function <code><a href="../library/io/print">print</a></code> and try to... print something (which would not be there). If you wanted to refer to the *name* of the function -- that is: without actually calling it -- you would precede it with a `'` (single-quote): `'[\w+]`
 
-```red
+```arturo
 func: 'print
 info func
 ```
@@ -586,7 +586,7 @@ Symbol literals are to symbols pretty much what literals are to words. That is: 
 
 To declare a symbol literal, we may follow the example of normal, literals: `single quote` + accompanied by the symbol in question:
 
-```red
+```arturo
 type '++        ; => :symbolliteral
 ```
 
@@ -596,7 +596,7 @@ Now, that we've seen both "normal" literals and paths, I guess you can already i
 
 And, yes, you guessed right:
 
-```red
+```arturo
 type 'this\is\a\path  ; => :pathliteral
 ```
 
@@ -604,13 +604,13 @@ type 'this\is\a\path  ; => :pathliteral
 
 *Inline*s in Arturo generally denote a list of words/symbols/values that are grouped and given some type of priority in evaluation. An *inline* block is denoted by `(...)` (parentheses).
 
-```red
+```arturo
 print (2+3)*4
 ```
 
 Please note though that, apart from precedence, `:inline` is a value type on its own:
 
-```red
+```arturo
 a: [(one) two three]
 print type a\0      ; that is: (one)
 
@@ -623,7 +623,7 @@ Blocks are a fundamental part of Arturo.
 
 As we've already said, it's just a `[...]` (square-bracket enclosed) block of words/symbols/values that - in contrast with *inline* blocks above which are evaluated in-place - are <u>not evaluated</u> until it's necessary.
 
-```red
+```arturo
 myBlock: [one two three]
 anArray: [1 2 3 4 5]
 anotherArray: ["zero" 1 "two" 3 "cuatro"]
@@ -631,7 +631,7 @@ anotherArray: ["zero" 1 "two" 3 "cuatro"]
 
 As you can see, blocks can contain practically anything: any word, any symbol, and any value. Of course, they can contain other blocks too:
 
-```red
+```arturo
 x: [
    1 2 [
        3 4 [
@@ -648,7 +648,7 @@ x: [
 Dictionaries in Arturo as what in other languages you'd call an *associative array* or *hash table*. In Arturo, it's practically the same, only with an added twist: they are *ordered* hash tables.
 If you want to create one, just give the <code><a href="../library/collections/dictionary">dictionary</a></code> function (or use the `#` alias) a block, with different labels, and it'll automatically convert it to a dictionary.
 
-```red
+```arturo
 user: #[
      name: "John"
      surname: "Doe"
@@ -670,7 +670,7 @@ Or retrieve it from disk when you start your program again, offering you seamles
 
 Well, that's exactly what Stores are. :)
 
-```red
+```arturo
 d: store "mystore" ; initialize your Store and 
                    ; specify where you want to store it 
                    ; (if the store already exists, it'll automatically load it)
@@ -686,7 +686,7 @@ And while Arturo isn't properly speaking a primarily Object-oriented language, i
 
 The normal way to create a new object, is by using <code><a href="../library/types/to">to</a></code> and a new custom type you have defined before:
 
-```red
+```arturo
 newClient: to :person ["John" "Doe"]!
 ; yep, we've just created a new Object value!
 ```
@@ -701,7 +701,7 @@ Functions are another important value type in Arturo - and yes, you heard right:
 To define a function, all you have to do is call the <code><a href="../library/core/function">function</a></code>... function (or use the `$` alias) followed by two parameters:
 - the parameters' names (this can be either a literal, e.g. `'x` - if it's just one argument - or a block, e.g. `[x y]`. If you want to use commas, for readability, like `[x,y]` you are free to do so: Arturo will simply ignore them.
 
-```red
+```arturo
 multiply: function [x y][
      x * y
 ]
@@ -713,7 +713,7 @@ print multiply 2 3
 
 or
 
-```red
+```arturo
 addThemUp: $[x,y][x+y]
 
 print addThemUp 2 3
@@ -729,7 +729,7 @@ Methods in Arturo are pretty much like functions. With a couple of asterisks:
 
 A quick example:
 
-```red
+```arturo
 define :car [
     init: method [; our constructor
         brand :string
@@ -753,7 +753,7 @@ We may also have *magic methods*, that is: making our custom types accessible-to
 For example, if we want to be able to <code><a href="../library/io/print">print</a></code> one of our custom objects, we'd first have to define a way that this custom object is meant to be converted to a string.
 For that, we'd define a `string` magic method:
 
-```red
+```arturo
 define :car [
     ; as previously
 
@@ -818,7 +818,7 @@ And everything begins with the concept of *units*.
 
 To declare a Unit value, all you have to do is use a backtick, followed by the unit in question:
 
-```red
+```arturo
 Meters: `m 
 SquareMeters: `m2
 Becquerels: `Bq
@@ -836,7 +836,7 @@ We also support most world currencies, with their ISO 3-letter code, e.g. `USD`,
 
 If you want to define compound units, Arturo actually supports that natively:
 
-```red
+```arturo
 squareMeters: `m2
 kilometersPerHours: `km/h
 
@@ -849,7 +849,7 @@ Now, as we've seen, Arturo's Unit values are quite powerful. So, how can we expr
 
 Very simple: just add a number (a Rational literal works too) just in front of a unit:
 
-```red
+```arturo
 twoMeters: 2`m    ; yes, we've just expressed the notion of "2 meters"
                   ; as a native Arturo value
 ```
@@ -866,7 +866,7 @@ And, yes, no need to worry about compatibility: Arturo actually understands dime
 
 Colors can be easily defined using the `#xxxxxx` syntax, where *xxxxxx* is either the RGB value of the color in hex, or its common-name alias, like `#red`, `#green` or `#blue`:
 
-```red
+```arturo
 color1: #red
 color2: #0077BB
 
@@ -877,7 +877,7 @@ print color1 + color2
 
 Dates in Arturo are a distinct type of value. If you want to create one, you'll have to use one of the corresponding functions. For example, the function <code><a href="../library/dates/now">now</a></code> returns a `:date` object, representing the current point in time. And it can be handled pretty much like you would handle a `:dictionary`.
 
-```red
+```arturo
 print now
 
 ; would print 2020-10-26T10:27:14+01:00
@@ -891,7 +891,7 @@ print now\year
 
 Database values cannot be constructed literally. However, using the function <code><a href="../library/databases/open">open</a></code>, you can create a database value and then use it to query the database in question and much more.
 
-```red
+```arturo
 db: open.sqlite "my.db"
 
 print query db "SELECT * FROM users"
@@ -907,7 +907,7 @@ To use Socket values properly, just have a look into the Sockets library module.
 
 If you want to create one, just have a look at the quick example below, using <code><a href="../library/sockets/listen">listen</a></code>:
 
-```red
+```arturo
 ; start a server listening on port 18966
 server: listen 18966    ; and, yes, that's a socket!
 ```
@@ -916,7 +916,7 @@ server: listen 18966    ; and, yes, that's a socket!
 
 Binary values are used to represent *binary* data, that is: an array of bytes. You cannot define them directly, however, you can sure convert other data to binary.
 
-```red
+```arturo
 print to :binary "Hello world!"
 
 ; would print 4865 6C6C 6F20 776F 726C 6421
@@ -926,7 +926,7 @@ print to :binary "Hello world!"
 
 Bytecode values cannot be constructed literally. However, you can create them indirectly, e.g. using the function <code><a href="../library/types/to">to</a></code>.
 
-```red
+```arturo
 ; let's create some Arturo bytecode from scratch 
 bcode: to :bytecode [
     loop 1..10 'x [
@@ -983,7 +983,7 @@ The main expression evaluation order of Arturo is *right-to-left*. But with a ti
 
 Let's take a very simple example:
 
-```red
+```arturo
 print add 1 2 
 print "Done"
 ```
@@ -1005,14 +1005,14 @@ What you have to understand here is that evaluation within an expression will *a
 
 Re-visiting our previous, seemingly paradoxical, example:
 
-```red
+```arturo
 2 * 3 + 4
 ```
 > 💡 Remember: our `+` and `*` operators are nothing but simple *infix* aliases to the functions <code><a href="../library/arithmetic/add">add</a></code> and <code><a href="../library/arithmetic/mul">mul</a></code> respectively -- nothing more!
 
 This is as if we had written (moving the operators in front):
 
-```red
+```arturo
 * 2 + 3 4
 ```
 
@@ -1020,13 +1020,13 @@ which practically means: FIRST add 3 and 4 and THEN take the result and multiply
 
 If this is not what intended, then the right way in Arturo would be, either:
 
-```red
+```arturo
 4 + 2 * 3
 ```
 
 or (giving precedence to the multiplication, artificially, using parentheses): 
 
-```red
+```arturo
 (2 * 3) + 4
 ``` 
 
@@ -1034,7 +1034,7 @@ or (giving precedence to the multiplication, artificially, using parentheses):
 
 Let's say we want to concatenate a number and a string into a new string.
 
-```red
+```arturo
 to :string 3 ++ " <-- this is our number"
 ```
 
@@ -1043,7 +1043,7 @@ While what we actually want is to *first* convert our number to a string and *th
 
 The correct code in that case would be:
 
-```red
+```arturo
 (to :string 3) ++ " <-- this is our number"
 ```
 
@@ -1065,7 +1065,7 @@ In a few words, this means:
 - A variable previously declared outside of a block is available inside
 - The changes of an existing variable, inside a block, persist after the block
 
-```red
+```arturo
 x: 1    ; here, we declare a variable x
         ; and set it to 1
 do [
@@ -1087,7 +1087,7 @@ Basically, the logic is identical to the one of blocks, but with a slight differ
 - the *injected* variables (e.g. the iteration arguments), are available only inside the block, but not after the iteration is over
 - any previous value is "protected" and restored if needed
 
-```red
+```arturo
 x: 3
 loop.with:'i ["one" "two" "three"] 'x [
   print i  ; prints 0, 1, 2,...
@@ -1118,7 +1118,7 @@ In Arturo, every time you pass a parameter to a function, you can rest assured t
 
 So, basically, you when do this...
 
-```red
+```arturo
 a: [1 5 2 4 3]
 sort a
 ```
@@ -1129,7 +1129,7 @@ So, what would you do if you wanted to get the array back, but sorted?
 
 The simple - and most obvious - way would be to re-assign the returned result from <code><a href="../library/collections/sort">sort</a></code>:
 
-```red
+```arturo
 a: [1 5 2 4 3]
 a: sort a
 ```
@@ -1144,7 +1144,7 @@ As we've already said, "literals" (`'i 'am 'a 'literal`) are nothing but string 
 
 Let's revisit the above example and what the syntax of <code><a href="../library/collections/sort">sort</a></code> is:
 
-```red
+```arturo
 sort collection :literal :dictionary :block
 ```
 
@@ -1152,7 +1152,7 @@ As we can see, <code><a href="../library/collections/sort">sort</a></code> takes
 
 Why pass a literal? Simply because this turns in-place modification on! Let's have a look:
 
-```red
+```arturo
 a: [1 5 2 4 3]
 sort 'a         ; yep, now a *has* been sorted in-place!
 ```
@@ -1162,7 +1162,7 @@ And this is *very powerful*: in Arturo, most of the built-in functions in the li
 > ⚠️ **Word of caution:**
 > Values in Arturo are always passed by reference - unless they are constant/readonly values. So if you want to assign one variable to another and then modify one of them in-place, make sure you use <code><a href="../library/core/new">new</a></code>; otherwise, both values will change!
 >
-> ```red
+> ```arturo
 > a: 1
 > b: a
 > inc 'a    ; both a and b are now 2
@@ -1186,12 +1186,12 @@ The function of the right operator is rather straightforward: basically, it wrap
 
 Let's take a simple example.
 
-```red
+```arturo
 x: -> 2
 ```
 This is 100% equivalent to:
 
-```red
+```arturo
 x: [2]
 ```
 
@@ -1199,12 +1199,12 @@ You can also use the right-arrow operator to make many common constructs far mor
 
 For example:
 
-```red
+```arturo
 if x=2 -> print "x was 2!"
 ```
 is the same as writing:
 
-```red
+```arturo
 if x=2 [ print "x was 2!" ]
 ```
 
@@ -1212,7 +1212,7 @@ As you can see, it can be pretty handy. Just remember that `->` can wrap only <u
 
 For example:
 
-```red
+```arturo
 x: -> 2 3
 ```
 
@@ -1220,13 +1220,13 @@ This doesn't result in `x: [2 3]` but in `x: [2] 3`
 
 Another interesting way of making use of the power of the *right-arrow operator*:
 
-```red
+```arturo
 loop 1..10 'x -> print x
 ```
 
 which is the same as writing (only much more elegant):
 
-```red
+```arturo
 loop 1..10 'x [ print x ]
 ```
 
@@ -1238,13 +1238,13 @@ If `->` was used to wrap the following terminal into a block, the `=>` operator 
 
 Let's take this simple example:
 
-```red
+```arturo
 x: $ => add
 ```
 
 This is equivalent to writing:
 
-```red
+```arturo
 x: $[x,y][add x y]
 ```
 
@@ -1252,7 +1252,7 @@ Basically, it reads the following word, and if it's a function, pushes all its n
 
 The same could work with a block argument, where `&` can be used as a placeholder for the needed anonymous variables:
 
-```red
+```arturo
 x: $ => [add & &]
 ```
 
@@ -1264,19 +1264,19 @@ As you can already imagine, this is perfect for easily defining functions or act
 
 For example, to print an array of the even numbers between 1 and 10:
 
-```red
+```arturo
 print select 1..10 'x [even? x]
 ```
 
 This could be easily written as (using the `->` operator):
 
-```red
+```arturo
 print select 1..10 'x -> even? x
 ```
 
 But pushing the limits more, we can also use the `=>` operator:
 
-```red
+```arturo
 print select 1..10 => even?
 ```
 
@@ -1286,7 +1286,7 @@ That's surely much more readable, isn't it?
 
 The *double-colon* operator does something very simple: it wraps everything in a block - until the end of... the current block:
 
-```red
+```arturo
 do [
     print :: 
         "This is a number:"
@@ -1296,7 +1296,7 @@ do [
 
 Is equivalent to:
 
-```red
+```arturo
 do [
     print ["This is a number:" 123]
 ]
@@ -1321,7 +1321,7 @@ Arturo, when parsing a block of code, has to know which symbols correspond to fu
 When we create a new object (e.g. `p: to :person ["John"]`), if we attempt to use `p\someMethod` from the exact same block where this `p` value was initialized, there is no possible way to know beforehand that e.g. `someMethod` is a method. We'll know that only *after* `to :person ["John"]` has been executed. But then, it's already too late. So, how do we make sure that Arturo knows about the object before we attempt to call inner methods? By putting a "stopper" after the object creation, and that stopper is our beloved... `!`.
 
 > 💡 Technically we could achieve the same thing without the `!` sugar:
-> ```red
+> ```arturo
 > p: to :person ["John"]
 > do [
 >     p\sayHello
@@ -1338,18 +1338,18 @@ The *pipe* operator is an easy way of reversing the default *prefix* notation of
 
 Let's take this simple example:
 
-```red
+```arturo
 1..10 | print
 ```
 
 This equivalent to:
 
-```red
+```arturo
 print 1..10
 ```
 Or a bit more elaborate example (using *pipes* and the `->`/`=>` operators):
 
-```red
+```arturo
 1..10 | map => [2 * &]
       | select 'x -> even? x
       | print
@@ -1357,7 +1357,7 @@ Or a bit more elaborate example (using *pipes* and the `->`/`=>` operators):
 
 which would be like writing:
 
-```red
+```arturo
 print select map 1..10 'x [2*x] 'x [even? x] 
 ```
 
