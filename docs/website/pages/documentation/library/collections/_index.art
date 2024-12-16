@@ -84,6 +84,7 @@ print user\name             ; John
 ; dynamic dictionary field access
 field: 'surname             ; using a literal
 print user\[field]          ; Doe
+```
 
 > [!NOTE] Indexing with `\` works uniformly across all collection types. Use a block after `\` when you need to evaluate an expression to get the index or field name.
 
