@@ -14,7 +14,7 @@ The Databases module offers straightforward database operations with built-in SQ
 
 #### Opening & Closing Connections
 
-```red
+```arturo
 ; create/open database
 db: open.sqlite "mydata.db"
 
@@ -24,7 +24,7 @@ close db
 
 #### Simple Queries
 
-```red
+```arturo
 query db {!sql
     CREATE TABLE users (
         id INTEGER PRIMARY KEY, 
@@ -44,7 +44,7 @@ print users   ; [1 John 25]
 
 #### Parametrized Queries
 
-```red
+```arturo
 ; safer way to insert data with parameters
 age: 30
 name: "Alice"
@@ -64,7 +64,7 @@ loop results 'user ->
 
 #### Transaction Handling
 
-```red
+```arturo
 ; do multiple operations
 query db [
     "INSERT INTO users (name, age) VALUES ('Bob', 35)"
@@ -77,7 +77,7 @@ query db [
 
 #### Getting Last Insert ID
 
-```red
+```arturo
 ; insert and get the ID
 query.id.with: ["Carol" 28] db {!sql 
     INSERT INTO users (name, age) VALUES (?,?)
