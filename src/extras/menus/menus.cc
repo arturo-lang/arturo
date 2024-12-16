@@ -70,6 +70,19 @@ inline id operator"" _str(const char *s, size_t) {
     return ((id(*)(id, SEL, const char *))objc_msgSend)(
         "NSString"_cls, "stringWithUTF8String:"_sel, s);
 }
+
+@interface MenuActionHandler : NSObject
+- (void)menuItemSelected:(NSMenuItem*)sender;
+@end
+
+@implementation MenuActionHandler
+- (void)menuItemSelected:(NSMenuItem*)sender {
+    void (^callback)(void) = objc_getAssociatedObject(sender, "callback");
+    if (callback) callback();
+}
+@end
+
+static MenuActionHandler* actionHandler = nil;
 #endif
 
 #if defined(__linux__) || defined(__FreeBSD__)
@@ -118,9 +131,9 @@ MenuItem* add_menu_item(Menu* menu, const char* label, MenuActionCallback action
     MenuItem* item = &menu->items[menu->itemCount++];
     item->label = strdup(label);
     item->shortcut = nullptr;
-    item->enabled = true;
+    item->enabled = true          // <-- THIS IS IMPORTANT
     item->checked = false;
-    item->action = action;
+    item->action = action;        // <-- AND THIS
     item->userData = nullptr;
     item->submenu = nullptr;
     
@@ -343,9 +356,12 @@ void set_window_menu(void* windowHandle, struct Menu** menus, size_t menuCount) 
                     if (item->action) {
                         // Store callback in associated object
                         objc_setAssociatedObject(nsItem, 
-                            "callback",
+                            @"callback",  // <-- Change: Use @ for Objective-C string literal
                             [^{ item->action(item->userData); } copy],
                             OBJC_ASSOCIATION_RETAIN);
+                            
+                        // NEW: Set target to handle the action
+                        [nsItem setTarget:NSApp];
                     }
                     
                     [subMenu addItem:nsItem];
