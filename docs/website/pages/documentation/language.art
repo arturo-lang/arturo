@@ -137,18 +137,109 @@ print 2 + 3
 ```
 Only, this time you're expressing it more like you would in a normal math expression: with *infix notation*.
 
-Some of the existing *aliases* in the built-in dictionary:
+Here is the complete list of symbols recognized in Arturo, along with their predefined usage - if any:
 
-<table>
-<tr><th>Symbol</th><th>Aliased word</th></tr>
-%ALIAS_LIST%
+<table><tr><th>Symbol</th><th>Usage</th></tr>
+<tr><td><code>&lt;=</code></td><td><i>alias of</i> <code><a href="../library/core/dup">dup</a></code> (prefix)</td></tr>
+<tr><td><code>=&gt;</code></td><td><a href="#fat-right-arrow-operator">syntactic sugar</a></td></tr>
+<tr><td><code>&lt;=&gt;</code></td><td><i>alias of</i> <code><a href="../library/comparison/between-">between?</a></code> (infix)</td></tr>
+<tr><td><code>&lt;&lt;=</code></td><td>-</td></tr>
+<tr><td><code>=&gt;&gt;</code></td><td>-</td></tr>
+<tr><td><code>&lt;&lt;=&gt;&gt;</code></td><td>-</td></tr>
+<tr><td><code>&lt;-</code></td><td>-</td></tr>
+<tr><td><code>-&gt;</code></td><td><a href="#right-arrow-operator">syntactic sugar</a></td></tr>
+<tr><td><code>&lt;-&gt;</code></td><td>-</td></tr>
+<tr><td><code>&lt;&lt;-</code></td><td>-</td></tr>
+<tr><td><code>-&gt;&gt;</code></td><td>-</td></tr>
+<tr><td><code>&lt;&lt;-&gt;&gt;</code></td><td>-</td></tr>
+<tr><td><code>-&lt;</code></td><td>-</td></tr>
+<tr><td><code>&gt;-</code></td><td>-</td></tr>
+<tr><td><code>&gt;-&lt;</code></td><td>-</td></tr>
+<tr><td><code>-&lt;&lt;</code></td><td>-</td></tr>
+<tr><td><code>&gt;&gt;-</code></td><td>-</td></tr>
+<tr><td><code>&gt;&gt;-&lt;&lt;</code></td><td>-</td></tr>
+<tr><td><code>&lt;&lt;</code></td><td><i>alias of</i> <code><a href="../library/files/read">read</a></code> (prefix)</td></tr>
+<tr><td><code>&gt;&gt;</code></td><td><i>alias of</i> <code><a href="../library/files/write">write</a></code> (infix)</td></tr>
+<tr><td><code>&lt;&lt;&lt;</code></td><td>-</td></tr>
+<tr><td><code>&gt;&gt;&gt;</code></td><td>-</td></tr>
+<tr><td><code>&lt;--</code></td><td>-</td></tr>
+<tr><td><code>--&gt;</code></td><td><i>alias of</i> <code><a href="../library/quantities/convert">convert</a></code> (infix)</td></tr>
+<tr><td><code>&lt;--&gt;</code></td><td>-</td></tr>
+<tr><td><code>&lt;==</code></td><td>-</td></tr>
+<tr><td><code>==&gt;</code></td><td>-</td></tr>
+<tr><td><code>&lt;==&gt;</code></td><td>-</td></tr>
+<tr><td><code>&lt;~</code></td><td>-</td></tr>
+<tr><td><code>~&gt;</code></td><td>-</td></tr>
+<tr><td><code>&lt;~&gt;</code></td><td>-</td></tr>
+<tr><td><code>|&gt;</code></td><td>-</td></tr>
+<tr><td><code>&lt;|</code></td><td>-</td></tr>
+<tr><td><code>&lt;|&gt;</code></td><td>-</td></tr>
+<tr><td><code>=&lt;</code></td><td><i>alias of</i> <code><a href="../library/comparison/lessOrEqual-">lessOrEqual?</a></code> (infix)</td></tr>
+<tr><td><code>&gt;=</code></td><td><i>alias of</i> <code><a href="../library/comparison/greaterOrEqual-">greaterOrEqual?</a></code> (infix)</td></tr>
+<tr><td><code>&lt;&gt;</code></td><td><i>alias of</i> <code><a href="../library/comparison/notEqual-">notEqual?</a></code> (infix)</td></tr>
+<tr><td><code>&lt;:</code></td><td>-</td></tr>
+<tr><td><code>-:</code></td><td>-</td></tr>
+<tr><td><code>&gt;:</code></td><td>-</td></tr>
+<tr><td><code>~</code></td><td><i>alias of</i> <code><a href="../library/strings/render">render</a></code> (prefix)</td></tr>
+<tr><td><code>!</code></td><td><a href="#exclamation-mark-operator">syntactic sugar</a></td></tr>
+<tr><td><code>!!</code></td><td>-</td></tr>
+<tr><td><code>?</code></td><td><i>alias of</i> <code><a href="../library/core/switch">switch</a></code> (infix)</td></tr>
+<tr><td><code>??</code></td><td><i>alias of</i> <code><a href="../library/core/coalesce">coalesce</a></code> (infix)</td></tr>
+<tr><td><code>@</code></td><td><i>alias of</i> <code><a href="../library/collections/array">array</a></code> (prefix)</td></tr>
+<tr><td><code>#</code></td><td><i>alias of</i> <code><a href="../library/collections/dictionary">dictionary</a></code> (prefix)</td></tr>
+<tr><td><code>##</code></td><td>-</td></tr>
+<tr><td><code>###</code></td><td>-</td></tr>
+<tr><td><code>####</code></td><td>-</td></tr>
+<tr><td><code>#####</code></td><td>-</td></tr>
+<tr><td><code>######</code></td><td>-</td></tr>
+<tr><td><code>$</code></td><td><i>alias of</i> <code><a href="../library/core/function">function</a></code> (prefix)</td></tr>
+<tr><td><code>%</code></td><td><i>alias of</i> <code><a href="../library/arithmetic/mod">mod</a></code> (infix)</td></tr>
+<tr><td><code>^</code></td><td><i>alias of</i> <code><a href="../library/arithmetic/pow">pow</a></code> (infix)</td></tr>
+<tr><td><code>&amp;</code></td><td>-</td></tr>
+<tr><td><code>*</code></td><td><i>alias of</i> <code><a href="../library/arithmetic/mul">mul</a></code> (infix)</td></tr>
+<tr><td><code>**</code></td><td>-</td></tr>
+<tr><td><code>-</code></td><td><i>alias of</i> <code><a href="../library/arithmetic/sub">sub</a></code> (infix)</td></tr>
+<tr><td><code>--</code></td><td><i>alias of</i> <code><a href="../library/collections/remove">remove</a></code> (infix)</td></tr>
+<tr><td><code>=</code></td><td><i>alias of</i> <code><a href="../library/comparison/equal-">equal?</a></code> (infix)</td></tr>
+<tr><td><code>==</code></td><td>-</td></tr>
+<tr><td><code>=~</code></td><td>-</td></tr>
+<tr><td><code>+</code></td><td><i>alias of</i> <code><a href="../library/arithmetic/add">add</a></code> (infix)</td></tr>
+<tr><td><code>++</code></td><td><i>alias of</i> <code><a href="../library/collections/append">append</a></code> (infix)</td></tr>
+<tr><td><code>&lt;</code></td><td><i>alias of</i> <code><a href="../library/comparison/less-">less?</a></code> (infix)</td></tr>
+<tr><td><code>&gt;</code></td><td><i>alias of</i> <code><a href="../library/comparison/greater-">greater?</a></code> (infix)</td></tr>
+<tr><td><code>/</code></td><td><i>alias of</i> <code><a href="../library/arithmetic/div">div</a></code> (infix)</td></tr>
+<tr><td><code>/%</code></td><td><i>alias of</i> <code><a href="../library/arithmetic/divmod">divmod</a></code> (infix)</td></tr>
+<tr><td><code>//</code></td><td><i>alias of</i> <code><a href="../library/arithmetic/fdiv">fdiv</a></code> (infix)</td></tr>
+<tr><td><code>\</code></td><td>-</td></tr>
+<tr><td><code>\\</code></td><td>-</td></tr>
+<tr><td><code>|</code></td><td><a href="#pipe-operator">syntactic sugar</a></td></tr>
+<tr><td><code>|-</code></td><td>-</td></tr>
+<tr><td><code>|=</code></td><td>-</td></tr>
+<tr><td><code>..</code></td><td><i>alias of</i> <code><a href="../library/collections/range">range</a></code> (infix)</td></tr>
+<tr><td><code>...</code></td><td>-</td></tr>
+<tr><td><code>./</code></td><td><i>alias of</i> <code><a href="../library/paths/relative">relative</a></code> (prefix)</td></tr>
+<tr><td><code>:</code></td><td><i>alias of</i> <code><a href="../library/core/let">let</a></code> (infix)</td></tr>
+<tr><td><code>::</code></td><td><a href="#double-colon-operator">syntactic sugar</a></td></tr>
+<tr><td><code>:=</code></td><td><i>alias of</i> <code><a href="../library/quantities/conforms-">conforms?</a></code> (infix)</td></tr>
+<tr><td><code>||</code></td><td>-</td></tr>
+<tr><td><code>∅</code></td><td><i>alias of</i> <code><a href="../library/core/null">null</a></code></td></tr>
+<tr><td><code>∞</code></td><td><i>alias of</i> <code><a href="../library/numbers/infinite">infinite</a></code></td></tr> 
+<tr><td><code>∑</code></td><td><i>alias of</i> <code><a href="../library/numbers/sum">sum</a></code> (prefix)</td></tr>
+<tr><td><code>∏</code></td><td><i>alias of</i> <code><a href="../library/numbers/product">product</a></code> (prefix)</td></tr>
+<tr><td><code>∩</code></td><td><i>alias of</i> <code><a href="../library/sets/intersection">intersection</a></code> (infix)</td></tr>
+<tr><td><code>∪</code></td><td><i>alias of</i> <code><a href="../library/sets/union">union</a></code> (infix)</td></tr>
+<tr><td><code>⊂</code></td><td>-</td></tr>
+<tr><td><code>⊃</code></td><td>-</td></tr>
+<tr><td><code>⊆</code></td><td><i>alias of</i> <code><a href="../library/sets/subset-">subset?</a></code> (infix)</td></tr>
+<tr><td><code>⊇</code></td><td><i>alias of</i> <code><a href="../library/sets/superset-">superset?</a></code> (infix)</td></tr>
+<tr><td><code>∈</code></td><td><i>alias of</i> <code><a href="../library/collections/in-">in?</a></code> (infix)</td></tr>
+<tr><td><code>∉</code></td><td>-</td></tr>
+<tr><td><code>∧</code></td><td><i>alias of</i> <code><a href="../library/logic/and-">and?</a></code> (infix)</td></tr>
+<tr><td><code>∨</code></td><td><i>alias of</i> <code><a href="../library/logic/or-">or?</a></code> (infix)</td></tr>
+<tr><td><code>⊻</code></td><td><i>alias of</i> <code><a href="../library/logic/xor-">xor?</a></code> (infix)</td></tr>
+<tr><td><code>⊼</code></td><td><i>alias of</i> <code><a href="../library/logic/nand-">nand?</a></code> (infix)</td></tr>
+<tr><td><code>¬</code></td><td><i>alias of</i> <code><a href="../library/logic/not-">not?</a></code> (prefix)</td></tr>
 </table>
-
-**All valid symbols**:
-
-```
-<=, =>, <=>, <<=, =>>, <<=>>, <-, ->, <->, <<-, ->>, <<->>, -<, >-, >-<, -<<, >>-, >>-<<, <<, >>, <<<, >>>, <--, -->, <-->, <==, ==>, <==>, <~, ~>, <~>, |>, <|, <|>, =<, >=, <>, <:, -:, >:, ~, !, !!, ?, ??, @, #, ##, ###, ####, #####, ######, $, %, ^, &, *, **, -, --, =, ==, =~, +, ++, <, >, /, /%, //, \\, \\\\, |, |-, |=, .., ..., ./, :, ::, :=, ||, ∅, ∞, ∑, ∏, ∩, ∪, ⊂, ⊃, ⊆, ⊇, ∈, ∉, ∧, ∨, ⊻, ⊼, ¬ 
-```
 
 <h3 id="attributes">Attributes</h3>
 
