@@ -43,27 +43,6 @@
 
     #define WINDOW_TYPE HWND
 
-    // Windows-specific callback storage
-    namespace {
-        std::map<int, MenuActionCallback> menuCallbacks;
-        std::map<int, void*> menuUserData;
-        WNDPROC originalWndProc = nullptr;
-
-        LRESULT CALLBACK MenuWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
-            if (msg == WM_COMMAND) {
-                int cmdId = LOWORD(wParam);
-                auto callbackIt = menuCallbacks.find(cmdId);
-                auto userDataIt = menuUserData.find(cmdId);
-                
-                if (callbackIt != menuCallbacks.end() && userDataIt != menuUserData.end()) {
-                    callbackIt->second(userDataIt->second);
-                    return 0;
-                }
-            }
-            return CallWindowProc(originalWndProc, hwnd, msg, wParam, lParam);
-        }
-    }
-
 #endif
 
 #if defined(__APPLE__)
