@@ -15,7 +15,7 @@ The Colors module provides comprehensive color handling capabilities. It include
 
 #### Creating Colors
 
-```red
+```arturo
 ; using hex notation
 color1: #f00            ; short RGB
 color2: #ff0000         ; full RGB
@@ -35,7 +35,7 @@ extract.alpha #ff0000ff  ; => 255
 
 #### Color Operations
 
-```red
+```arturo
 ; lighten/darken
 dark: darken #red 0.3          ; 30% darker (= #B20000)
 light: lighten #emerald 0.2    ; 20% lighter (= #60F090)
@@ -54,7 +54,7 @@ opposite: invert #white        ; #black
 
 #### Color Space Conversions
 
-```red
+```arturo
 col: #magenta       ; #FF00FF
 
 ; get HSL representation
@@ -70,7 +70,7 @@ newColor: to :color .hsv [300, 1.0 1.0]     ; #FF00FF (yep, #magenta!)
 
 #### Color Palettes
 
-```red
+```arturo
 baseColor: #4169e1          ; royal blue
 
 ; generate different palettes
@@ -123,7 +123,7 @@ Here are some of the most commonly used colors organized by hue:
 
 #### Working with Alpha
 
-```red
+```arturo
 ; full opacity
 solid: #ff0000ff      ; red, 100% opaque
 

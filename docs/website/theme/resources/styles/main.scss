@@ -12,6 +12,12 @@ $dark-purple2: #3f0c40;
 $dark-fg: #EEE;
 $dark-fg2: #BAB;
 
+html,body {
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    letter-spacing: -0.39px;
+}
+
 a:hover {
     color: #3273dc;
     border-bottom:1px solid #3273dc;

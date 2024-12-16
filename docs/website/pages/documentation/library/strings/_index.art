@@ -15,7 +15,7 @@ The Strings module provides comprehensive functionality for string manipulation,
 
 #### String Creation
 
-```red
+```arturo
 ; basic strings
 str: "hello world"
 
@@ -46,7 +46,7 @@ is part of the string
 
 #### Basic Operations
 
-```red
+```arturo
 ; concatenation
 full: "hello " ++ "world"    ; hello world
 
@@ -68,7 +68,7 @@ strip.end "hi  "            ; hi
 
 #### Pattern Matching
 
-```red
+```arturo
 text: "hello world"
 
 ; using regex
@@ -91,7 +91,7 @@ print result                ; Date: 2025
 
 #### String Manipulation
 
-```red
+```arturo
 ; word wrapping
 text: "This is a very long line that needs to be wrapped"
 print wordwrap.at:20 text
@@ -110,7 +110,7 @@ print pad.center "Title" 20         ; -------Title--------
 
 #### Working with Parts
 
-```red
+```arturo
 text: "hello world"
 
 ; splitting
@@ -132,7 +132,7 @@ Arturo's templating system uses pipe characters (`|...|`) for interpolation:
 
 #### Simple Interpolation
 
-```red
+```arturo
 name: "Bill"
 age: 38
 
@@ -146,7 +146,7 @@ print ~"Next year I'll be |age + 1|"    ; Next year I'll be 39
 
 #### Conditional Templates
 
-```red
+```arturo
 age: 30
 template: {
     <||= (age > 21)? [ ||>
@@ -162,7 +162,7 @@ print render.template template
 
 #### Loops in Templates
 
-```red
+```arturo
 items: ["apple" "banana" "orange"]
 template: {
     <ul>
@@ -190,7 +190,7 @@ print render.template template
 
 #### Advanced Template Features
 
-```red
+```arturo
 users: @[
     #[name: "John" role: "admin"]
     #[name: "Alice" role: "user"]

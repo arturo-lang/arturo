@@ -14,7 +14,7 @@ The Bitwise module provides functions for bit-level operations on integer values
 
 #### Boolean Operations
 
-```red
+```arturo
 x: 5    ; binary: 101
 y: 3    ; binary: 011
 
@@ -28,7 +28,7 @@ not x         ; => -6 (complement of 101)
 
 #### Advanced Operations
 
-```red
+```arturo
 a: 12   ; binary: 1100
 b: 9    ; binary: 1001
 
@@ -39,7 +39,7 @@ xnor a b      ; => -6
 
 #### Bit Shifting
 
-```red
+```arturo
 num: 8   ; binary: 1000
 
 ; left shift (multiply by 2^n)
@@ -55,7 +55,7 @@ print shr num 1     ; 4  (100)
 
 #### Checking Individual Bits
 
-```red
+```arturo
 value: 42          ; binary: 101010
 mask: shl 1 3      ; binary: 001000
 
@@ -65,7 +65,7 @@ if and value mask ->
 
 #### Setting and Clearing Bits
 
-```red
+```arturo
 number: 10         ; binary: 1010
 pos: 2
 

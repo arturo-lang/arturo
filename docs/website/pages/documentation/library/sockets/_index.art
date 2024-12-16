@@ -14,7 +14,7 @@ The Sockets module provides a straightforward way to handle network communicatio
 
 #### Creating a Server
 
-```red
+```arturo
 server: listen 8000
 print "Server listening on port 8000..."
 ```
@@ -23,7 +23,7 @@ print "Server listening on port 8000..."
 
 #### Accepting Connections & Handling Messages
 
-```red
+```arturo
 ; accept new client
 client: accept server
 
@@ -40,7 +40,7 @@ message: receive.timeout:1000 client    ; timeout after 1 second if no message
 
 When you need faster, connectionless communication:
 
-```red
+```arturo
 server: listen.udp 8000
 ```
 
@@ -52,7 +52,7 @@ server: listen.udp 8000
 
 A minimal TCP server that echoes back messages:
 
-```red
+```arturo
 ; server.art
 server: listen 8000
 
@@ -67,7 +67,7 @@ while [true][
 
 And its corresponding client:
 
-```red
+```arturo
 ; client.art
 client: connect.to:"localhost" 8000
 send client "hello server!"
@@ -79,7 +79,7 @@ unplug client
 
 A more complete example showing how to handle multiple clients:
 
-```red
+```arturo
 server: listen 8000
 clients: []
 

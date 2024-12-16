@@ -15,7 +15,7 @@ The Net module provides functionality for network operations, including HTTP req
 
 #### HTTP Requests
 
-```red
+```arturo
 ; basic GET request
 response: request "https://api.example.com/data" ø
 print response\body
@@ -40,7 +40,7 @@ response: request.delete "https://api.example.com/users/1" ø
 
 #### File Downloads
 
-```red
+```arturo
 ; download file
 download "https://example.com/file.pdf"
 
@@ -50,7 +50,7 @@ download.as:"local.pdf" "https://example.com/file.pdf"
 
 #### Sending Emails
 
-```red
+```arturo
 ; basic email
 mail "recipient@email.com" "Hello!" "This is the message body"
 
@@ -65,7 +65,7 @@ mail .using: #[
 
 #### Opening URLs
 
-```red
+```arturo
 ; open URL in default browser
 browse "https://arturo-lang.io"
 ```
@@ -74,7 +74,7 @@ browse "https://arturo-lang.io"
 
 #### Simple REST API Client
 
-```red
+```arturo
 define :apiClient [
     init: constructor [baseUrl token]
 
@@ -104,7 +104,7 @@ newUser: apiClient\post "/users" #[name: "John" email: "john@email.com"]
 
 #### Mini Web Server
 
-```red
+```arturo
 ; create a simple web server
 ; create a simple web server
 serve.verbose [

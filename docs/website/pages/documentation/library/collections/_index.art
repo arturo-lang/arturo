@@ -16,7 +16,7 @@ The Collections module provides a unified interface for working with different t
 
 #### Creating Collections
 
-```red
+```arturo
 ; blocks (arrays)
 numbers: [1 2 3 4 5]
 mixed: ["hello" 42 true]
@@ -39,7 +39,7 @@ print @evens     ; 2 3 4 5 6 7 8 9 10
 
 #### Basic Operations
 
-```red
+```arturo
 lst: [1 2 3]
 
 ; adding/removing elements
@@ -62,7 +62,7 @@ print lst\2         ; 4
 
 #### Collection Indexing
 
-```red
+```arturo
 ; basic array indexing
 colors: ["red" "green" "blue"]
 print colors\0              ; red (first element)
@@ -84,12 +84,13 @@ print user\name             ; John
 ; dynamic dictionary field access
 field: 'surname             ; using a literal
 print user\[field]          ; Doe
+```
 
 > [!NOTE] Indexing with `\` works uniformly across all collection types. Use a block after `\` when you need to evaluate an expression to get the index or field name.
 
 #### Collection Information
 
-```red
+```arturo
 data: [1 2 2 3 3 3]
 
 size data           ; => 6
@@ -102,7 +103,7 @@ index data 3        ; => 2
 
 #### Collection Transformation
 
-```red
+```arturo
 ; flatten nested structure
 nested: [[1 2] [3 4] [5 6]]
 flat: flatten nested
@@ -118,7 +119,7 @@ print reverse [1 2 3]       ; 3 2 1
 
 #### Working with Dictionaries
 
-```red
+```arturo
 user: #[
     name: "John"
     age: 30
@@ -140,7 +141,7 @@ print complete
 
 #### Working with Strings
 
-```red
+```arturo
 text: "Hello 世界"      ; unicode string
 
 ; strings are like character arrays
@@ -169,7 +170,7 @@ loop text 'c ->
 
 #### Combinations & Permutations
 
-```red
+```arturo
 items: [1 2 3]
 
 ; specific size combinations
@@ -185,7 +186,7 @@ permutate items
 
 #### Efficient Range Operations
 
-```red
+```arturo
 ; create a range of numbers
 nums: 1..1000
 
@@ -201,7 +202,7 @@ nums\42             ; => 42
 
 ##### Working with Nested Data
 
-```red
+```arturo
 users: #[
     active: @[
         #[name: "John" score: 42 tags: ["admin" "dev"]]
@@ -229,7 +230,7 @@ allTags: unique flatten map users\active 'usr -> usr\tags
 
 ##### Managing a Priority Queue
 
-```red
+```arturo
 tasks: []
 
 ; add tasks with priorities

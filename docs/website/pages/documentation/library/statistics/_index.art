@@ -14,7 +14,7 @@ The Statistics module provides essential functions for statistical analysis of n
 
 #### Getting Averages and Medians
 
-```red
+```arturo
 data: [1 2 3 5 7]
 
 avg: average data     ; => 3.6
@@ -28,7 +28,7 @@ print average 1..100  ; 50.5
 
 #### Calculating Variance and Standard Deviation
 
-```red
+```arturo
 numbers: [2 4 4 4 5 5 7 9]
 
 ; population statistics (default)
@@ -44,7 +44,7 @@ print variance.sample numbers   ; 4.571428571428571
 
 #### Distribution Analysis
 
-```red
+```arturo
 data: [1 2 2 3 3 3 4 4 5]
 
 ; check how the distribution leans
@@ -62,7 +62,7 @@ print round.to:3 kurtosis.sample data  ; -0.286
 
 A common task is getting a quick overview of your data:
 
-```red
+```arturo
 data: [12 15 18 22 25 28 32]
 
 print ["Average:" average data]
@@ -74,7 +74,7 @@ print ["Range:" min data ".." max data]
 
 Using standard deviations to find potential outliers:
 
-```red
+```arturo
 scores: [75 78 82 85 85 86 89 91 92 97 98 135]
 avg: average scores
 dev: deviation scores

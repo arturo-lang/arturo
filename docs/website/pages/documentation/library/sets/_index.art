@@ -14,7 +14,7 @@ The Sets module provides functions for performing set theory operations on block
 
 #### Basic Set Operations
 
-```red
+```arturo
 A: [1 2 3 4]
 B: [3 4 5 6]
 
@@ -25,7 +25,7 @@ difference A B          ; => [1 2]
 
 #### Set Relationships
 
-```red
+```arturo
 X: [1 2 3]
 Y: [1 2 3 4]
 
@@ -42,7 +42,7 @@ disjoint? X Y           ; false
 
 #### Powerset Generation
 
-```red
+```arturo
 print powerset [1 2 3]       
 ; [] [1] [2] [1 2] [3] [1 3] [2 3] [1 2 3] 
 ```
@@ -53,7 +53,7 @@ print powerset [1 2 3]
 
 #### Symmetric Difference
 
-```red
+```arturo
 A: [1 2 3 4]
 B: [3 4 5 6]
 
@@ -63,7 +63,7 @@ print difference.symmetric A B  ; 1 2 5 6
 
 #### Set Operations with Multiple Sets
 
-```red
+```arturo
 sets: [[1 2] [2 3] [3 4]]
 
 result: fold sets => intersection

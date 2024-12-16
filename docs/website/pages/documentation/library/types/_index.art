@@ -16,7 +16,7 @@ The Types module provides the foundation for Arturo's type system, including typ
 
 #### Type Checking
 
-```red
+```arturo
 ; basic type checks
 print type 42               ; :integer
 print type "hello"          ; :string
@@ -33,7 +33,7 @@ print is? :string "hi"      ; true
 
 #### Custom Types
 
-```red
+```arturo
 ; define new type
 define :person [
     ; constructor
@@ -56,7 +56,7 @@ print john
 ```
 
 > [!TIP] Within methods, you can use `\field` as a shortcut for `this\field`. This makes code more concise and readable. For example:
-> ```red
+> ```arturo
 > string: method [][
 >     ; these are equivalent:
 >     print this\name        ; explicit
@@ -66,7 +66,7 @@ print john
 
 #### Inheritance
 
-```red
+```arturo
 ; base type
 define :animal [
     init: method [species][
@@ -100,7 +100,7 @@ fido\speak           ; woof!
 
 #### Type Conversions
 
-```red
+```arturo
 ; basic conversions
 str: to :string 42          ; "42"
 num: to :integer "42"       ; 42
@@ -155,7 +155,7 @@ Magic methods allow you to customize how your types behave with various operatio
 
 #### Implementing Comparable Objects
 
-```red
+```arturo
 define :score [
     init: method [value][
         \value: value
@@ -181,7 +181,7 @@ print sort scores
 ```
 
 > [!TIP] For simple comparisons based on a single field, you can use the sortable helper instead of implementing a full `compare` method. In the above example, for instance:
-> ```red
+> ```arturo
 > ;...
 > compare: sortable 'value
 > ;...
@@ -189,7 +189,7 @@ print sort scores
 
 #### Custom Collections
 
-```red
+```arturo
 define :stack [
     init: method [][
         \items: []
@@ -224,7 +224,7 @@ print s\pop     ; 2
 
 #### Property Change Notifications
 
-```red
+```arturo
 define :observable [
     init: method [value][
         \value: value

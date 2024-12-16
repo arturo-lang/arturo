@@ -15,7 +15,7 @@ The Io module provides functionality for terminal input/output operations, curso
 
 #### Output Operations
 
-```red
+```arturo
 ; basic printing (with newline)
 print "Hello world"
 print ["Multiple" "values" "joined"]   ; Multiple values joined
@@ -33,7 +33,7 @@ print.lines ["one" "two" "three"]
 
 #### Input Operations
 
-```red
+```arturo
 ; basic input with prompt
 name: input "What's your name? "
 
@@ -46,7 +46,7 @@ cmd: input.repl ">> "
 
 #### Colored Output
 
-```red
+```arturo
 ; using color function
 print color #red "Error!"
 print color.bold #blue "Important"
@@ -63,7 +63,7 @@ print color.bold.underline #blue "Highlighted"
 
 #### Cursor Control
 
-```red
+```arturo
 ; hide/show cursor
 cursor false      ; hide cursor
 cursor true       ; show cursor
@@ -84,7 +84,7 @@ clear
 
 #### Progress Indicators
 
-```red
+```arturo
 ; simple progress indicator
 loop 1..5 'i [
     prints "."
@@ -104,7 +104,7 @@ print ""
 
 #### Interactive Menus
 
-```red
+```arturo
 clearMenu: function [][
     clear
     cursor false
@@ -140,7 +140,7 @@ print ["Selection:" choice]
 
 #### Status Updates
 
-```red
+```arturo
 ; colorful status messages
 printStatus: function [kind message][
     case kind [
@@ -162,7 +162,7 @@ printStatus "error" "Connection failed"
 
 #### Terminal Information
 
-```red
+```arturo
 ; get terminal information
 print ["Width:" terminal\width]
 print ["Height:" terminal\height]

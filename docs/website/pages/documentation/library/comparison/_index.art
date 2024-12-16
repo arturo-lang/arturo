@@ -14,7 +14,7 @@ The Comparison module provides functions for comparing values of any type. Beyon
 
 #### Simple Comparisons
 
-```red
+```arturo
 ; equality
 print 2 = 2              ; true
 print "abc" = "abc"      ; true
@@ -28,7 +28,7 @@ print 2.0 <> 2           ; false
 
 #### Ordering
 
-```red
+```arturo
 ; less/greater than
 print 2 < 3              ; true
 print 3 > 2              ; true
@@ -42,7 +42,7 @@ print 3 >= 2             ; true
 
 #### Range Checking
 
-```red
+```arturo
 ; check if value is in range (inclusive)
 5 <=> 1 10              ; => true
 'm' <=> 'a' 'z'         ; => true
@@ -59,7 +59,7 @@ between? 5 1 10         ; => true
 
 The `compare` function returns -1, 0, or 1 and is useful for custom sorting:
 
-```red
+```arturo
 a: "hello"
 b: "world"
 
@@ -70,7 +70,7 @@ print ["A comes" (result < 0)? -> "before" -> "after" "B"]
 
 #### Identity vs Equality
 
-```red
+```arturo
 x: 1`N
 y: 1`kg.m/s2    ; actually, that's the definition of 1 Newton!
 
