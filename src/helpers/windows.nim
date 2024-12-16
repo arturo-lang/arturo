@@ -11,6 +11,7 @@
 #=======================================
 
 import extras/window
+import extras/menus
 
 export window
 
