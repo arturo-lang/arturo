@@ -15,7 +15,7 @@ The System module provides access to operating system functionality, environment
 
 #### System Information
 
-```red
+```arturo
 ; get system information
 print ["OS:" sys\os]              
 print ["CPU Arch:" sys\cpu\arch]
@@ -36,7 +36,7 @@ print ["PID:" proc\id]
 
 #### Environment Variables
 
-```red
+```arturo
 ; access environment variables
 vars: env
 print ["PATH:" env\PATH]
@@ -49,7 +49,7 @@ if key? env 'ARTURO_HOME ->
 
 #### Command Execution
 
-```red
+```arturo
 ; simple command execution
 result: execute "ls -l"
 print result
@@ -74,7 +74,7 @@ execute.directly "echo 'hello' > output.txt"
 
 #### Command-line Arguments
 
-```red
+```arturo
 ; access command line arguments
 arg ; get raw arguments list as a block
     ; arg\0 -> first argument
@@ -97,7 +97,7 @@ inspect args
 
 #### Process Management
 
-```red
+```arturo
 define :processManager [
     start: function [command][
         pid: execute.async command
@@ -126,7 +126,7 @@ processManager\stop pid
 
 #### Configuration Management
 
-```red
+```arturo
 ; example configuration helper
 getConfig: function [key defaultValue][
     if key? config key -> 
@@ -142,7 +142,7 @@ host: getConfig 'server_host "localhost"
 
 #### Path Management
 
-```red
+```arturo
 ; get path information
 print ["Current dir:" path\current]
 print ["Home dir:" path\home]
@@ -151,7 +151,7 @@ print ["Temp dir:" path\temp]
 
 #### System Checks
 
-```red
+```arturo
 ; check for administrator/root privileges
 if superuser? -> 
     print "Running with elevated privileges"

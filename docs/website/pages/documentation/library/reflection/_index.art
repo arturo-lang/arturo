@@ -14,7 +14,7 @@ The Reflection module provides tools for runtime introspection and program analy
 
 #### Inspecting Values
 
-```red
+```arturo
 value: [1 2 #[name: "John"] [nested block]]
 
 ; detailed inspection
@@ -30,7 +30,7 @@ print stack      ; shows current value stack (as a block)
 
 #### Working with Attributes
 
-```red
+```arturo
 doSth function [x][
     ; check if attribute exists
     if attr? 'verbose -> 
@@ -46,7 +46,7 @@ doSth function [x][
 
 #### Symbol Management
 
-```red
+```arturo
 ; get all defined symbols
 syms: symbols       ; returns dictionary of all symbols
 
@@ -61,7 +61,7 @@ print arity\add     ; 2 (which is the number of parameters `add` takes ;-))
 
 #### Performance Measurement
 
-```red
+```arturo
 ; basic benchmarking
 benchmark [
     loop 1..1000 'x [
@@ -89,7 +89,7 @@ average: total / 100
 
 #### Function Analysis
 
-```red
+```arturo
 ; get complete function information
 analyzeFunction: function [funcName][
     info: info.get funcName
@@ -112,7 +112,7 @@ analyzeFunction 'split
 
 #### Performance Profiling
 
-```red
+```arturo
 ; simple profiling helper
 profile: function [label operation][
     print ["Profiling:" label]
@@ -140,7 +140,7 @@ profile "array sorting" [
 
 #### Runtime Information
 
-```red
+```arturo
 ; check execution context
 if standalone? [
     ; very useful in the case of "importable" modules/packages
