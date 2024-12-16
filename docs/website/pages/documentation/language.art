@@ -119,7 +119,7 @@ print x
 
 As the mere word says, *symbols* are used to symbolize something, mainly as an alias to an existing *word* - although, by convention, as *infix* operators.
 
-Hence, let's take the function `add`. This takes two parameters, adds them up, and returns the result.
+Hence, let's take the function <code><a href="../library/arithmetic/add">add</a></code>. This takes two parameters, adds them up, and returns the result.
 
 So, you may write:
 
@@ -128,7 +128,7 @@ print add 2 3
 ```
 and Arturo will print out `5` for you.
 
-Now, if you don't want to use the `add` function (and *prefix notation*, which is the standard for *all* function calls), there is a *symbol-alias* for that: `+`
+Now, if you don't want to use the <code><a href="../library/arithmetic/add">add</a></code> function (and *prefix notation*, which is the standard for *all* function calls), there is a *symbol-alias* for that: `+`
 
 So, you could just as well write:
 
@@ -256,7 +256,7 @@ There are two types:
 
 Attributes are actually optional on/off-type of values, set during a function call, that is there to denote some variation of the initial meaning of the function. To define an attribute, we'll be using a `.`(dot) followed by a normal word: `\.\w+`
 
-Let's say we used the function `split`, to split a string into parts:
+Let's say we used the function <code><a href="../library/collections/split">split</a></code>, to split a string into parts:
 ```red
 split "hello world"
 
@@ -264,7 +264,7 @@ split "hello world"
 ```
 That does what it says: splits the string into an array of `:char`s.
 
-What if we want for example to split the string into words? For that, there is the `.words` attribute for the function `split`. So:
+What if we want for example to split the string into words? For that, there is the `.words` attribute for the function <code><a href="../library/collections/split">split</a></code>. So:
 
 ```red
 split.words "hello world"
@@ -297,7 +297,7 @@ The (hopefully) complete list follows.
 
 <h4 id="null">:null</h4>
 
-Null values generally denote *nothing* and it's mostly used as a return value by functions to inform us that something went wrong. If you want to set it as a  value, you may just use the *word* `null`, like:
+Null values generally denote *nothing* and it's mostly used as a return value by functions to inform us that something went wrong. If you want to set it as a  value, you may just use the *word* <code><a href="../library/core/null">null</a></code>, like:
 
 ```red
 x: null
@@ -305,7 +305,7 @@ x: null
 
 <h4 id="logical">:logical</h4>
 
-Logicals are Arturo's logical values. They are like normal boolean values (true, false), with a twist: they fully support ternary logic and an additional `maybe` value.
+Logicals are Arturo's logical values. They are like normal boolean values (true, false), with a twist: they fully support ternary logic and an additional <code><a href="../library/logic/maybe">maybe</a></code> value.
 
 ```red
 x: true
@@ -332,7 +332,7 @@ pi: 3.14159
 
 <h4 id="complex">:complex</h4>
 
-Even though there is no special syntax for defining a complex number, you can always create one using `to`. Arturo comes with full support for complex numbers and all the associated operations.
+Even though there is no special syntax for defining a complex number, you can always create one using <code><a href="../library/types/to">to</a></code>. Arturo comes with full support for complex numbers and all the associated operations.
 
 ```red
 a: to :complex [1 2]      ; a: 1.0+2.0i
@@ -351,7 +351,7 @@ a: 1:2                   ; 1/2
 b: 3:4                   ; 3/4
 ```
 
-As with complex numbers, rationals can also be defined using `to`. And again, Arturo comes with full support for rational numbers and all the associated operations.
+As with complex numbers, rationals can also be defined using <code><a href="../library/types/to">to</a></code>. And again, Arturo comes with full support for rational numbers and all the associated operations.
 
 ```red
 a: to :rational [1 2]     ; 1/2
@@ -389,7 +389,7 @@ or
 if (type x) = :integer [ print "it's an integer!" ]
 ```
 
-> 💡 If you want to define your own custom types (think "classes" in OOP languages), we have `define` for that: e.g. 
+> 💡 If you want to define your own custom types (think "classes" in OOP languages), we have <code><a href="../library/types/define">define</a></code> for that: e.g. 
 > ```red
 > define :person [
 >    init: method [name :string][
@@ -458,7 +458,7 @@ A string is nothing but a series of characters, seen as one unit. In Arturo, to 
   line
   ```
 
-> 💡 If you want your string to contain sub-expressions that will be evaluated on the fly - that is *string interpolation* - all you have to do is include your code inside the string within pipe-bars and then call the function `render` (or `~`) to process it accordingly: e.g. 
+> 💡 If you want your string to contain sub-expressions that will be evaluated on the fly - that is *string interpolation* - all you have to do is include your code inside the string within pipe-bars and then call the function <code><a href="../library/string/render">render</a></code> (or `~`) to process it accordingly: e.g. 
 > ```red
 > x: 2
 > print ~"my variable is: |x|"
@@ -471,7 +471,7 @@ A string is nothing but a series of characters, seen as one unit. In Arturo, to 
 
 Arturo comes with full support of lazy ranges.
 
-To create a range all you have to do is use the built-in `range` function (or its `..` infix equivalent):
+To create a range all you have to do is use the built-in <code><a href="../library/collections/range">range</a></code> function (or its `..` infix equivalent):
 
 ```red
 numbers: 1..10    ; contains all numbers from 1 to 10 (inclusive)
@@ -571,7 +571,7 @@ print user\name ; ok, now it should print "Jane"
 
 Literals in Arturo are just a way of referring to the *name* of a word or symbol. Think of it as the *string* version of a word, or like Ruby's *symbols*. 
 
-For example, the function `info` takes as an argument the name of the function for which you want some information. If you wrote like `info print`, the interpreter would execute the function `print` and try to... print something (which would not be there). If you wanted to refer to the *name* of the function -- that is: without actually calling it -- you would precede it with a `'` (single-quote): `'[\w+]`
+For example, the function <code><a href="../library/reflection/info">info</a></code> takes as an argument the name of the function for which you want some information. If you wrote like `info print`, the interpreter would execute the function <code><a href="../library/io/print">print</a></code> and try to... print something (which would not be there). If you wanted to refer to the *name* of the function -- that is: without actually calling it -- you would precede it with a `'` (single-quote): `'[\w+]`
 
 ```red
 func: 'print
@@ -646,7 +646,7 @@ x: [
 <h4 id="dictionary">:dictionary</h4>
 
 Dictionaries in Arturo as what in other languages you'd call an *associative array* or *hash table*. In Arturo, it's practically the same, only with an added twist: they are *ordered* hash tables.
-If you want to create one, just give the `dictionary` function (or use the `#` alias) a block, with different labels, and it'll automatically convert it to a dictionary.
+If you want to create one, just give the <code><a href="../library/collections/dictionary">dictionary</a></code> function (or use the `#` alias) a block, with different labels, and it'll automatically convert it to a dictionary.
 
 ```red
 user: #[
@@ -684,7 +684,7 @@ Object values are intimately related to custom types, as we have already seen ab
 
 And while Arturo isn't properly speaking a primarily Object-oriented language, it offers more than enough functionality that will cover most OOP needs.
 
-The normal way to create a new object, is by using `to` and a new custom type you have defined before:
+The normal way to create a new object, is by using <code><a href="../library/types/to">to</a></code> and a new custom type you have defined before:
 
 ```red
 newClient: to :person ["John" "Doe"]!
@@ -698,7 +698,7 @@ their functions (see: methods) can have access to its own fields and methods, *f
 
 Functions are another important value type in Arturo - and yes, you heard right: *functions* a *value* too. You can assign them to a word/variable, pass them around, re-define them and whatever you want with them, pretty much as you would do with another value, let's say a number.
 
-To define a function, all you have to do is call the `function`... function (or use the `$` alias) followed by two parameters:
+To define a function, all you have to do is call the <code><a href="../library/core/function">function</a></code>... function (or use the `$` alias) followed by two parameters:
 - the parameters' names (this can be either a literal, e.g. `'x` - if it's just one argument - or a block, e.g. `[x y]`. If you want to use commas, for readability, like `[x,y]` you are free to do so: Arturo will simply ignore them.
 
 ```red
@@ -724,7 +724,7 @@ print addThemUp 2 3
 <h4 id="method">:method</h4>
 
 Methods in Arturo are pretty much like functions. With a couple of asterisks:
-- They are meant to be used only inside a custom type (in `define`) or in a `module` context
+- They are meant to be used only inside a custom type (in <code><a href="../library/types/define">define</a></code>) or in a <code><a href="../library/core/module">module</a></code> context
 - We'd use them only when we want to have access to `this` (= in a few words, when we want to access other fields/functions/methods of the same object; if we don't need that, we could still use a function)
 
 A quick example:
@@ -750,7 +750,7 @@ print ["In 2 hours, we'll have travelled:" myCar\distanceTravelled 2`h]
 
 We may also have *magic methods*, that is: making our custom types accessible-to or "overloading" normal stdlib methods.
 
-For example, if we want to be able to `print` one of our custom objects, we'd first have to define a way that this custom object is meant to be converted to a string.
+For example, if we want to be able to <code><a href="../library/io/print">print</a></code> one of our custom objects, we'd first have to define a way that this custom object is meant to be converted to a string.
 For that, we'd define a `string` magic method:
 
 ```red
@@ -875,7 +875,7 @@ print color1 + color2
 
 <h4 id="date">:date</h4>
 
-Dates in Arturo are a distinct type of value. If you want to create one, you'll have to use one of the corresponding functions. For example, the function `now` returns a `:date` object, representing the current point in time. And it can be handled pretty much like you would handle a `:dictionary`.
+Dates in Arturo are a distinct type of value. If you want to create one, you'll have to use one of the corresponding functions. For example, the function <code><a href="../library/dates/now">now</a></code> returns a `:date` object, representing the current point in time. And it can be handled pretty much like you would handle a `:dictionary`.
 
 ```red
 print now
@@ -889,7 +889,7 @@ print now\year
 
 <h4 id="database">:database</h4>
 
-Database values cannot be constructed literally. However, using the function `open`, you can create a database value and then use it to query the database in question and much more.
+Database values cannot be constructed literally. However, using the function <code><a href="../library/databases/open">open</a></code>, you can create a database value and then use it to query the database in question and much more.
 
 ```red
 db: open.sqlite "my.db"
@@ -905,7 +905,7 @@ Another not-literally constructible (but still powerful) value type is the Socke
 
 To use Socket values properly, just have a look into the Sockets library module.
 
-If you want to create one, just have a look at the quick example below, using `listen`:
+If you want to create one, just have a look at the quick example below, using <code><a href="../library/sockets/listen">listen</a></code>:
 
 ```red
 ; start a server listening on port 18966
@@ -924,7 +924,7 @@ print to :binary "Hello world!"
 
 <h4 id="bytecode">:bytecode</h4>
 
-Bytecode values cannot be constructed literally. However, you can create them indirectly, e.g. using the function `to`.
+Bytecode values cannot be constructed literally. However, you can create them indirectly, e.g. using the function <code><a href="../library/types/to">to</a></code>.
 
 ```red
 ; let's create some Arturo bytecode from scratch 
@@ -988,16 +988,16 @@ print add 1 2
 print "Done"
 ```
 
-As you would expect, the first function to be executed is the first `print` function and then the second one. Nothing new here.
+As you would expect, the first function to be executed is the first <code><a href="../library/io/print">print</a></code> function and then the second one. Nothing new here.
 
-Now let's take the first `print`. How is it working?
+Now let's take the first <code><a href="../library/io/print">print</a></code>. How is it working?
 
 Let's see:
 
 - First, the value `2 ` is pushed onto the stack
 - Then, we push the value `1  `
-- Then, we execute the function `add`: it pops two values from the stack, adds them up, and pushes the result (`3`) back onto the stack
-- Finally, we execute the function `print`: it pops the top value from the stack (`3`) and prints it.
+- Then, we execute the function <code><a href="../library/arithmetic/add">add</a></code>: it pops two values from the stack, adds them up, and pushes the result (`3`) back onto the stack
+- Finally, we execute the function <code><a href="../library/io/print">print</a></code>: it pops the top value from the stack (`3`) and prints it.
 
 Then, execution would move on and... `print "Done."`
 
@@ -1008,7 +1008,7 @@ Re-visiting our previous, seemingly paradoxical, example:
 ```red
 2 * 3 + 4
 ```
-> 💡 Remember: our `+` and `*` operators are nothing but simple *infix* aliases to the functions `add` and `mul` respectively -- nothing more!
+> 💡 Remember: our `+` and `*` operators are nothing but simple *infix* aliases to the functions <code><a href="../library/arithmetic/add">add</a></code> and <code><a href="../library/arithmetic/mul">mul</a></code> respectively -- nothing more!
 
 This is as if we had written (moving the operators in front):
 
@@ -1081,7 +1081,7 @@ print y     ; prints 3 (the value of y is still available)
 
 <h4 id="iterators">Iterators</h4>
 
-Iterators (such as `loop`, `map`, etc) always work with a block as well. But in a special way.
+Iterators (such as <code><a href="../library/iterators/loop">loop</a></code>, <code><a href="../library/iterators/map">map</a></code>, etc) always work with a block as well. But in a special way.
 
 Basically, the logic is identical to the one of blocks, but with a slight difference: 
 - the *injected* variables (e.g. the iteration arguments), are available only inside the block, but not after the iteration is over
@@ -1114,7 +1114,7 @@ If we want to export *all* of the symbols - thus, practically making the functio
 
 <h3 id="in-place-variable-modification">In-place variable modification</h3>
 
-In Arturo, every time you pass a parameter to a function, you can rest assured that the value of that parameter won't change (unless it's a string, block or dictionary and you - consciously - decided to use `set` on it, in which case it does alter its inner structure).
+In Arturo, every time you pass a parameter to a function, you can rest assured that the value of that parameter won't change (unless it's a string, block or dictionary and you - consciously - decided to use <code><a href="../library/collections/set">set</a></code> on it, in which case it does alter its inner structure).
 
 So, basically, you when do this...
 
@@ -1127,7 +1127,7 @@ sort a
 
 So, what would you do if you wanted to get the array back, but sorted?
 
-The simple - and most obvious - way would be to re-assign the returned result from `sort`:
+The simple - and most obvious - way would be to re-assign the returned result from <code><a href="../library/collections/sort">sort</a></code>:
 
 ```red
 a: [1 5 2 4 3]
@@ -1142,13 +1142,13 @@ But, what if you want to perform the modification in-place, which is normally fa
 
 As we've already said, "literals" (`'i 'am 'a 'literal`) are nothing but string representations of a word, that is... the word itself. For that reason, they may come in very handy when you want to modify a variable in-place.
 
-Let's revisit the above example and what the syntax of `sort` is:
+Let's revisit the above example and what the syntax of <code><a href="../library/collections/sort">sort</a></code> is:
 
 ```red
 sort collection :literal :dictionary :block
 ```
 
-As we can see, `sort` takes one parameter (*collection*) which is either a `:dictionary` or `:block` OR a `:literal`.
+As we can see, <code><a href="../library/collections/sort">sort</a></code> takes one parameter (*collection*) which is either a `:dictionary` or `:block` OR a `:literal`.
 
 Why pass a literal? Simply because this turns in-place modification on! Let's have a look:
 
@@ -1157,10 +1157,10 @@ a: [1 5 2 4 3]
 sort 'a         ; yep, now a *has* been sorted in-place!
 ```
 
-And this is *very powerful*: in Arturo, most of the built-in functions in the library come with this feature included. Practically, whenever you see a function taking a literal first parameter, that means you can use it for in-place modifying a variable (yes, even `add` works like that!).
+And this is *very powerful*: in Arturo, most of the built-in functions in the library come with this feature included. Practically, whenever you see a function taking a literal first parameter, that means you can use it for in-place modifying a variable (yes, even <code><a href="../library/arithmetic/add">add</a></code> works like that!).
 
 > ⚠️ **Word of caution:**
-> Values in Arturo are always passed by reference - unless they are constant/readonly values. So if you want to assign one variable to another and then modify one of them in-place, make sure you use `new`; otherwise, both values will change!
+> Values in Arturo are always passed by reference - unless they are constant/readonly values. So if you want to assign one variable to another and then modify one of them in-place, make sure you use <code><a href="../library/core/new">new</a></code>; otherwise, both values will change!
 >
 > ```red
 > a: 1
@@ -1305,7 +1305,7 @@ do [
 <h3 id="exclamation-mark-operator">Exclamation-mark operator: `!`</h3>
 
 Explaining the *exclamation-mark* can be a bit tricky, but if you want the short version: 
-it wraps everything that follows in a `do` block (more or less).
+it wraps everything that follows in a <code><a href="../library/core/do">do</a></code> block (more or less).
 
 Or the shorter version:
 
