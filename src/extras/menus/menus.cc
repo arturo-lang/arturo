@@ -72,14 +72,6 @@ inline id operator"" _str(const char *s, size_t) {
 }
 #endif
 
-bool isFullscreen = false;
-
-#if defined(_WIN32)
-    DWORD previousStyle;
-    DWORD previousStyleX;
-    RECT previousRect;
-#endif
-
 #if defined(__linux__) || defined(__FreeBSD__)
 #include <map>
 
