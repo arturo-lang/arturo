@@ -50,22 +50,6 @@ type
         x*: int
         y*: int
 
-    MenuActionCallback* = proc(userData: pointer) {.cdecl.}
-
-    MenuItem* {.importc: "struct MenuItem", bycopy.} = object
-        label*: cstring
-        shortcut*: cstring
-        enabled*: bool
-        checked*: bool
-        action*: MenuActionCallback
-        userData*: pointer
-        submenu*: Menu
-
-    Menu* {.importc: "struct Menu", bycopy.} = object
-        title*: cstring
-        items*: ptr MenuItem
-        itemCount*: csize_t
-
 #=======================================
 # Function prototypes
 #=======================================
