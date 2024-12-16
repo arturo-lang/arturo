@@ -131,9 +131,9 @@ MenuItem* add_menu_item(Menu* menu, const char* label, MenuActionCallback action
     MenuItem* item = &menu->items[menu->itemCount++];
     item->label = strdup(label);
     item->shortcut = nullptr;
-    item->enabled = true          // <-- THIS IS IMPORTANT
+    item->enabled = true;          
     item->checked = false;
-    item->action = action;        // <-- AND THIS
+    item->action = action;  
     item->userData = nullptr;
     item->submenu = nullptr;
     
