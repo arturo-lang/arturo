@@ -127,6 +127,35 @@ MenuItem* add_menu_item(Menu* menu, const char* label, MenuActionCallback action
     return item;
 }
 
+MenuItem* add_menu_separator(Menu* menu) {
+    return add_menu_item(menu, "-", NULL);  // We use "-" as a special marker for separators
+}
+
+MenuItem* add_submenu(Menu* menu, const char* label, Menu* submenu) {
+    MenuItem* item = add_menu_item(menu, label, NULL);
+    item->submenu = submenu;
+    return item;
+}
+
+void set_menu_item_enabled(MenuItem* item, bool enabled) {
+    if (item) {
+        item->enabled = enabled;
+    }
+}
+
+void set_menu_item_checked(MenuItem* item, bool checked) {
+    if (item) {
+        item->checked = checked;
+    }
+}
+
+void set_menu_item_shortcut(MenuItem* item, const char* shortcut) {
+    if (item) {
+        if (item->shortcut) free(item->shortcut);
+        item->shortcut = shortcut ? strdup(shortcut) : NULL;
+    }
+}
+
 void set_window_menu(void* windowHandle, struct Menu** menus, size_t menuCount) {
     #if defined(__linux__) || defined(__FreeBSD__)
         GtkWidget* menuBar = gtk_menu_bar_new();
