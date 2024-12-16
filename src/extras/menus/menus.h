@@ -3,11 +3,11 @@
 // Programming Language + Bytecode VM compiler
 // (c) 2019-2024 Yanis Zafirópulos
 //
-// @file: extras/window/window.h
+// @file: extras/menus/menus.h
 //=======================================================
 
-#ifndef __WINDOW_H
-#define __WINDOW_H
+#ifndef __MENUS_H
+#define __MENUS_H
 
 #include <stdbool.h>
 #include <stddef.h>
@@ -59,4 +59,4 @@ void remove_window_menu(void* windowHandle);
 }
 #endif
 
-#endif /* WINDOW_H */
+#endif /* MENUS_H */
