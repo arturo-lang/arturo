@@ -33,7 +33,11 @@ loop data [lib, contents][
         desc: # ~"docs/website/pages/documentation/library/|lower lib|/_index.art"
         pprint desc\description
         pprint "\n----\n"
-        pprint desc\overview
+        ovv: desc\overview
+        ovv: replace ovv {/(?<!#)#{5}(?!#)/} "######" 
+        ovv: replace ovv {/(?<!#)#{4}(?!#)/} "#####" 
+        ovv: replace ovv {/(?<!#)#{3}(?!#)/} "####" 
+        pprint ovv
         pprint "\n----\n"
         loop contents 'content [
             aliased: ""
