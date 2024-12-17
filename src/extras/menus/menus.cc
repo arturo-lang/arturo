@@ -83,6 +83,11 @@ inline id operator"" _str(const char *s, size_t) {
 @end
 
 static MenuActionHandler* actionHandler = nil;
+
+static void menuItemCallback(id self, SEL cmd, id sender) {
+    void (^callback)(void) = objc_getAssociatedObject(sender, "callback");
+    if (callback) callback();
+}
 #endif
 
 #if defined(__linux__) || defined(__FreeBSD__)
@@ -348,20 +353,27 @@ void set_window_menu(void* windowHandle, struct Menu** menus, size_t menuCount) 
                 if (strcmp(item->label, "-") == 0) {
                     [subMenu addItem:[NSMenuItem separatorItem]];
                 } else {
+                    static Class menuHandlerClass = nil;
+                    static id menuHandler = nil;
+                    
+                    if (!menuHandlerClass) {
+                        menuHandlerClass = objc_allocateClassPair([NSObject class], "MenuHandler", 0);
+                        class_addMethod(menuHandlerClass, @selector(menuItemSelected:), (IMP)menuItemCallback, "v@:@");
+                        objc_registerClassPair(menuHandlerClass);
+                        menuHandler = [[menuHandlerClass alloc] init];
+                    }
+
                     NSMenuItem* nsItem = [[NSMenuItem alloc] 
                         initWithTitle:@(item->label)
                         action:@selector(menuItemSelected:)
                         keyEquivalent:@""];
                         
                     if (item->action) {
-                        // Store callback in associated object
                         objc_setAssociatedObject(nsItem, 
-                            @"callback",  // <-- Change: Use @ for Objective-C string literal
+                            "callback",
                             [^{ item->action(item->userData); } copy],
                             OBJC_ASSOCIATION_RETAIN);
-                            
-                        // NEW: Set target to handle the action
-                        [nsItem setTarget:NSApp];
+                        [nsItem setTarget:menuHandler];
                     }
                     
                     [subMenu addItem:nsItem];
