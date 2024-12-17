@@ -1,1 +1,1 @@
-write "/dev/lp0" "Hello World\n"
+"Hello World\n" >> "/dev/lp0"

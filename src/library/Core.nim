@@ -88,13 +88,13 @@ proc defineLibrary*() =
             addThem: function [x, y][
                 x + y
             ]
-            alias --> 'addThem
+            alias '--> 'addThem!
     
             print --> 2 3
             ; 5
             ..........
             multiplyThem: function [x, y][ x * y ]
-            alias.infix {<=>} 'multiplyThem
+            alias.infix {<=>} 'multiplyThem!
 
             print 2 <=> 3
             ; 6
@@ -1738,6 +1738,7 @@ proc defineLibrary*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
+            ; DEPRECATED!
             a: 2
             case [a]
                 when? [<2] -> print "a is less than 2"
