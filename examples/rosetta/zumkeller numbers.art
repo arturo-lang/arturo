@@ -1,6 +1,11 @@
+prettyPrint: function [data,cols,padding][
+    data | split.every: cols
+         | map => [join map & 'x -> pad to :string x padding]
+         | print.lines
+]
+
 zumkeller?: function [n][
     divSum: sum divs: <= factors n
-    
     if nand? [even? divSum][divSum >= 2*n] -> return false
         
     half: divSum/2
@@ -15,12 +20,8 @@ zumkeller?: function [n][
 
 print "First 220 Zumkeller numbers:"
 (1..∞) | select.first: 220 => zumkeller?
-       | split.every: 14
-       | map => [join map & 'x -> pad to :string x 4]
-       | print.lines
-print ""
-print "First 40 odd Zumkeller numbers:"
+       | prettyPrint 14 4
+
+print "\nFirst 40 odd Zumkeller numbers:"
 (1..∞) | select.first: 40 'n -> and? [odd? n][zumkeller? n]
-       | split.every: 10
-       | map => [join map & 'x -> pad to :string x 6]
-       | print.lines
+       | prettyPrint 10 6
