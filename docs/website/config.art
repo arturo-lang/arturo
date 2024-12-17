@@ -11,9 +11,8 @@ rules: [
             lower replace replace location "?" "-" " " "-"
         ]
         template: function [f][
-            case [not? empty? match f]
-                when? -> {index\.art} -> return "theme/index.html"
-                else                  -> return "theme/function.html"
+            (not? empty? match f {index\.art})? -> return "theme/index.html"
+                                                -> return "theme/function.html"
         ]
 
         pre: function [f,d][

@@ -183,7 +183,7 @@ proc defineLibrary*() =
             description = "perform HTTP request to url with given data and get response",
             args        = {
                 "url"   : {String},
-                "data"  : {Dictionary, Null}
+                "data"  : {Dictionary, String, Null}
             },
             attrs       = {
                 "get"           : ({Logical},"perform a GET request (default)"),
@@ -199,7 +199,7 @@ proc defineLibrary*() =
                 "certificate"   : ({String},"use SSL certificate at given path"),
                 "raw"           : ({Logical},"return raw response without processing")
             },
-            returns     = {Dictionary},
+            returns     = {Dictionary,Null},
             example     = """
             print request "https://httpbin.org/get" #[some:"arg" another: 123]
             ; [version:1.1 body:{
@@ -271,15 +271,21 @@ proc defineLibrary*() =
                         headers.add("Content-Type", "application/json")
                         body = jsonFromValue(y, pretty=false)
                     else:
-                        multipart = newMultipartData()
-                        for k,v in pairs(y.d):
-                            multipart[k] = $(v)
+                        if yKind == String:
+                            body = y.s
+                        else:
+                            multipart = newMultipartData()
+                            for k,v in pairs(y.d):
+                                multipart[k] = $(v)
                 else:
-                    if y != VNULL and (yKind==Dictionary and y.d.len!=0):
-                        var parts: seq[string]
-                        for k,v in pairs(y.d):
-                            parts.add(k & "=" & urlencode($(v)))
-                        url &= "?" & parts.join("&")
+                    if y != VNULL:
+                        if (yKind==Dictionary and y.d.len!=0):
+                            var parts: seq[string]
+                            for k,v in pairs(y.d):
+                                parts.add(k & "=" & urlencode($(v)))
+                            url &= "?" & parts.join("&")
+                        elif yKind==String:
+                            url &= "?" & y.s
 
                 var client: HttpClient
 
@@ -309,56 +315,59 @@ proc defineLibrary*() =
                         headers = headers
                     )
 
-                let response = client.request(url = url,
-                                            httpMethod = meth,
-                                            body = body,
-                                            multipart = multipart)
+                try:
+                    let response = client.request(url = url,
+                                                httpMethod = meth,
+                                                body = body,
+                                                multipart = multipart)
 
-                var ret: ValueDict = initOrderedTable[string,Value]()
-                ret["version"] = newString(response.version)
-                
-                ret["body"] = newString(response.body)
-                ret["headers"] = newDictionary()
+                    var ret: ValueDict = initOrderedTable[string,Value]()
+                    ret["version"] = newString(response.version)
+                    
+                    ret["body"] = newString(response.body)
+                    ret["headers"] = newDictionary()
 
-                if (hadAttr("raw")):
-                    ret["status"] = newString(response.status)
-
-                    for k,v in response.headers.table:
-                        ret["headers"].d[k] = newStringBlock(v)
-                else:
-                    try:
-                        let respStatus = (response.status.splitWhitespace())[0]
-                        ret["status"] = newInteger(respStatus)
-                    except CatchableError:
+                    if (hadAttr("raw")):
                         ret["status"] = newString(response.status)
 
-                    for k,v in response.headers.table:
-                        var val: Value
-                        if v.len==1:
-                            case k
-                                of "age","content-length": 
-                                    try:
-                                        val = newInteger(v[0])
-                                    except CatchableError:
-                                        val = newString(v[0])
-                                of "access-control-allow-credentials":
-                                    val = newLogical(v[0])
-                                of "date", "expires", "last-modified":
-                                    let dateParts = v[0].splitWhitespace()
-                                    let cleanDate = (dateParts[0..(dateParts.len-2)]).join(" ")
-                                    var dateFormat = "ddd, dd MMM YYYY HH:mm:ss"
-                                    let timeFormat = initTimeFormat(dateFormat)
-                                    try:
-                                        val = newDate(parse(cleanDate, timeFormat))
-                                    except CatchableError:
-                                        val = newString(v[0])
-                                else:
-                                    val = newString(v[0])
-                        else:
-                            val = newStringBlock(v)
-                        ret["headers"].d[k] = val
+                        for k,v in response.headers.table:
+                            ret["headers"].d[k] = newStringBlock(v)
+                    else:
+                        try:
+                            let respStatus = (response.status.splitWhitespace())[0]
+                            ret["status"] = newInteger(respStatus)
+                        except CatchableError:
+                            ret["status"] = newString(response.status)
 
-                push newDictionary(ret)
+                        for k,v in response.headers.table:
+                            var val: Value
+                            if v.len==1:
+                                case k
+                                    of "age","content-length": 
+                                        try:
+                                            val = newInteger(v[0])
+                                        except CatchableError:
+                                            val = newString(v[0])
+                                    of "access-control-allow-credentials":
+                                        val = newLogical(v[0])
+                                    of "date", "expires", "last-modified":
+                                        let dateParts = v[0].splitWhitespace()
+                                        let cleanDate = (dateParts[0..(dateParts.len-2)]).join(" ")
+                                        var dateFormat = "ddd, dd MMM YYYY HH:mm:ss"
+                                        let timeFormat = initTimeFormat(dateFormat)
+                                        try:
+                                            val = newDate(parse(cleanDate, timeFormat))
+                                        except CatchableError:
+                                            val = newString(v[0])
+                                    else:
+                                        val = newString(v[0])
+                            else:
+                                val = newStringBlock(v)
+                            ret["headers"].d[k] = val
+                
+                    push newDictionary(ret)
+                except CatchableError:
+                    push(VNULL)
 
         builtin "serve",
             alias       = unaliased, 
