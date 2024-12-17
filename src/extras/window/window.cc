@@ -12,6 +12,10 @@
 // Copyright (c) 2021 Neutralinojs and contributors.
 
 #include "window.h"
+#include <cstring>
+#include <cstdlib>
+#include <map>
+#include <string>
 
 #if defined(__linux__) || defined(__FreeBSD__)
     #include <gtk/gtk.h>
@@ -34,7 +38,6 @@
     #include <windows.h>
     #include <gdiplus.h>
     #pragma comment(lib, "Gdiplus.lib")
-
     #include <Shlwapi.h>      
     #pragma comment(lib, "Shlwapi.lib")
 

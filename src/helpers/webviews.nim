@@ -219,8 +219,23 @@ when not defined(NOWEBVIEW):
         discard result.webview_bind("callback", handler, cast[pointer](0))
 
     proc show*(w: Webview) =
-        when defined(macosx):
-            generateDefaultMainMenu()
+        # when defined(macosx):
+        #     generateDefaultMainMenu()
+
+        let fileMenu = newMenuBar("File")
+        discard fileMenu.addItem("New") do (userData: pointer):
+            echo "New file"
+        discard fileMenu.addItem("Open")
+        discard fileMenu.addSeparator()
+        discard fileMenu.addItem("Exit")
+
+        # Create Edit menu
+        let editMenu = newMenuBar("Edit")
+        let undoItem = editMenu.addItem("Undo")
+        undoItem.setShortcut("Ctrl+Z")
+
+        # Set the menu bar
+        w.getWindow().setMenuBar([fileMenu, editMenu])
 
         discard webview_run(w)
         discard webview_destroy(w)

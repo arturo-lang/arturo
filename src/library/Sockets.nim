@@ -59,7 +59,7 @@ proc defineLibrary*() =
             attrs       = NoAttrs,
             returns     = {Socket},
             example     = """
-            server: listen.blocking 18966
+            server: listen 18966
             print "started server connection..."
 
             client: accept server
@@ -133,7 +133,6 @@ proc defineLibrary*() =
                 "port"  : {Integer}
             },
             attrs       = {
-                "blocking"  : ({Logical},"set blocking mode (default: false)"),
                 "udp"       : ({Logical},"use UDP instead of TCP")
             },
             returns     = {Socket},
@@ -144,7 +143,7 @@ proc defineLibrary*() =
                 #=======================================================
                 when defined(SAFE): Error_OperationNotPermitted("listen")
 
-                let blocking = hadAttr("blocking")
+                let blocking = true
                 let protocol = 
                     if hadAttr("udp"): IPPROTO_UDP
                     else: IPPROTO_TCP
@@ -176,7 +175,7 @@ proc defineLibrary*() =
             },
             returns     = {String},
             example     = """
-            server: listen.blocking 18966
+            server: listen 18966
             print "started server connection..."
 
             client: accept server
