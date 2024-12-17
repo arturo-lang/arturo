@@ -1,71 +1,12 @@
-; Helper function to check if two numbers are coprime
-coprime?: function [a b][
-    1 = gcd @[a b]
+zsigmondy: function [a b num][
+    map num 'n ->
+        first select.first reverse factors (a^n)-(b^n) 'x ->
+            every? n-1 'm ->
+                one? gcd @[x (a^m)-(b^m)]
 ]
 
-; Main Zsigmondy function to calculate Zsigmondy number for given n, a, b
-zsigmondy: function [n a b][
-    ensure -> a > b    ; ensure a > b as in Python version
-    
-    ; For each m from 1 to n-1 (exclusive), calculate a^m - b^m
-    values: []
-    loop 1..n-1 'm [
-        'values ++ ((pow a m) - (pow b m))
-    ]
-    
-    ; Calculate a^n - b^n
-    diff: (pow a n) - (pow b n)
-    
-    ; Get all divisors of this difference
-    divs: factors diff
-    
-    candidate: 1
-    loop divs 'd [
-        coprimeToAll?: true
-        loop values 'v [
-            if not? coprime? d v [
-                coprimeToAll?: false 
-                break
-            ]
-        ]
-        if and? coprimeToAll? d > candidate [
-            candidate: d
-        ]
-    ]
-    
-    return candidate
-]
-
-; Function to generate sequence of Zsigmondy numbers
-zsigmondySeq: function [a b n][
-    result: []
-    loop 1..n 'i [
-        'result ++ zsigmondy i a b
-    ]
-    return result
-]
-
-; Calculate requested sequences
-n: 20  ; We'll calculate first 20 numbers for each sequence as in Python
-
-pairs: @[
-    [2 1]
-    [3 1]
-    [4 1]
-    [5 1]
-    [6 1]
-    [7 1]
-    [3 2]
-    [5 3]
-    [7 3]
-    [7 5]
-]
-
-print "Zsigmondy Number Sequences:"
-print "=========================="
-
-loop pairs 'pair [
+n: 20
+loop [[2 1][3 1][4 1][5 1][6 1][7 1][3 2][5 3][7 3][7 5]] 'pair [
     [a,b]: pair
-    print ["Zsigmondy(n," a "," b "):" join.with:", " zsigmondySeq a b n]
-    print ""
+    print ["Zsigmondy(" n "," a "," b "):" join.with:", " zsigmondy a b n "\n"]
 ]
