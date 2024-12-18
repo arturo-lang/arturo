@@ -1,0 +1,71 @@
+small: [
+    "zero" "one" "two" "three" "four" "five" "six" "seven" "eight" "nine" "ten" 
+    "eleven" "twelve" "thirteen" "fourteen" "fifteen" "sixteen" "seventeen" 
+    "eighteen" "nineteen"
+]
+
+tens: [
+    "wrong" "wrong" "twenty" "thirty" "forty" 
+    "fifty" "sixty" "seventy" "eighty" "ninety"
+]
+
+prefixes: ["m" "b" "tr" "quadr" "quint" "sext" "sept" "oct" "non" "dec"]
+big: ["" "thousand"] ++ map prefixes 'p -> p ++ "illion"
+
+getOrdinal: function [numstr][
+    return when.has:numstr [
+        [|suffix? "one"] -> replace numstr {/one$/} {first}
+        [|suffix? "two"] -> replace numstr {/two$/} {second}
+        [|suffix? "three"] -> replace numstr {/three$/} {third}
+        [|suffix? "four"] -> replace numstr {/four$/} {forth}
+        [|suffix? "five"] -> replace numstr {/five$/} {fifth}
+        [|suffix? "y"] -> replace numstr {/y$/} {ieth}
+        true -> numstr ++ "th"
+    ]
+]
+
+wordify: function [number :integer][
+    if number < 0 ->
+        return "negative " ++ neg number
+
+    if number < 20 ->
+        return small\[number]
+
+    if number < 100 [
+        [d m]: divmod number 10
+        return tens\[d] ++ (zero? m)? -> "" -> "-" ++ wordify m
+    ]
+
+    if number < 1000 [
+        [d m]: divmod number 100
+        return (~{|small\[d]| hundred}) ++ (zero? m)? -> "" -> " and " ++ wordify m
+    ]
+
+    chunks: []
+    n: number
+    while [not? zero? n][
+        [n remainder]: divmod n 1000
+        'chunks ++ remainder
+    ]
+
+    if (size chunks) > size big ->
+        return "integer value too large"
+
+    words: []
+    loop.with:'i chunks 'ch [
+        scale: big\[i]
+        unless zero? ch [
+            chunkStr: wordify ch
+            'words ++ (empty? scale)? -> chunkStr
+                                      -> ~"|chunkStr| |scale|"
+        ]
+    ]
+
+    return join.with:", " reverse words
+]
+
+loop @[
+    0,1,4,5,10,15,18,25,83,140,300,678,1024,
+    45039,123456,91740274651983
+] 'num ->
+    print [pad to :string num 15, join.with: "\n"++ (repeat " " 16) split.lines wordwrap.at: 40 getOrdinal wordify num]

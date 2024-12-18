@@ -1,0 +1,24 @@
+; Base Animal type
+define :animal [
+    init: constructor [name :string]
+]
+
+; Dog type inheriting from Animal
+define :dog is :animal [
+    ; ...
+]
+
+; Cat type inheriting from Animal 
+define :cat is :animal [
+    ; ...
+]
+
+; Lab type inheriting from Dog
+define :lab is :dog [
+    ; ...
+]
+
+; Collie type inheriting from Dog
+define :collie is :dog [
+    ; ...
+]

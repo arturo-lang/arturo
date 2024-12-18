@@ -1,0 +1,12 @@
+zsigmondy: function [a b num][
+    map num 'n ->
+        first select.first reverse factors (a^n)-(b^n) 'x ->
+            every? n-1 'm ->
+                one? gcd @[x (a^m)-(b^m)]
+]
+
+n: 20
+loop [[2 1][3 1][4 1][5 1][6 1][7 1][3 2][5 3][7 3][7 5]] 'pair [
+    [a,b]: pair
+    print ["Zsigmondy(" n "," a "," b "):" join.with:", " zsigmondy a b n "\n"]
+]
