@@ -220,7 +220,7 @@ License
 
 MIT License
 
-Copyright (c) 2019-2024 Yanis Zafirópulos (aka Dr.Kameleon)
+Copyright (c) 2019-2025 Yanis Zafirópulos (aka Dr.Kameleon)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
