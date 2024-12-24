@@ -464,7 +464,7 @@ proc defineLibrary*() =
             inspect sys
             ;[ :dictionary
             ;        author     :        Yanis Zafirópulos :string
-            ;        copyright  :        (c) 2019-2024 :string
+            ;        copyright  :        (c) 2019-2025 :string
             ;        version    :        0.9.84-alpha+3126 :version
             ;        built      :        [ :date
             ;                hour        :                16 :integer
