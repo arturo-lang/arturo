@@ -85,62 +85,59 @@ proc defineLibrary*() =
             print b                   ; [1 2 3 4]
         """:
             #=======================================================
-            if xKind in {Literal, PathLiteral}:
+            template inplaceAppend() =
                 ensureInPlaceAny()
-                if InPlaced.kind == String:
-                    if yKind == String:
-                        InPlaced.s &= y.s
-                    elif yKind == Char:
-                        InPlaced.s &= $(y.c)
-                elif InPlaced.kind == Char:
-                    if yKind == String:
-                        SetInPlaceAny(newString($(InPlaced.c) & y.s))
-                    elif yKind == Char:
-                        SetInPlaceAny(newString($(InPlaced.c) & $(y.c)))
-                elif InPlaced.kind == Binary:
-                    if yKind == Binary:
-                        InPlaced.n &= y.n
-                    elif yKind == Integer:
-                        InPlaced.n &= numberToBinary(y.i)
-                elif InPlaced.kind == Object:
+                case InPlaced.kind:
+                of String:
+                    case yKind:
+                    of String:      InPlaced.s &= y.s
+                    of Char:        InPlaced.s &= $(y.c)
+                    else:           discard
+                of Char:
+                    case yKind:
+                    of String:      SetInPlaceAny(newString($(InPlaced.c) & y.s))
+                    of Char:        SetInPlaceAny(newString($(InPlaced.c) & $(y.c)))
+                    else:           discard
+                of Binary:
+                    case yKind:
+                    of Binary:      InPlaced.n &= y.n
+                    of Integer:     InPlaced.n &= numberToBinary(y.i)
+                    else:           discard
+                of Block:
+                    if yKind == Block:
+                        Inplaced.a.add(y.a)
+                    else:
+                        Inplaced.a.add(y)
+                of Object:
                     if InPlaced.magic.fetch(AppendM):
                         pushAttr("inplace", VTRUE)
                         mgk(@[InPlaced, y])
-                    else:
-                        discard
                 else:
-                    if yKind == Block:
-                        InPlaced.a.add(y.a)
-                    else:
-                        InPlaced.a.add(y)
-            else:
-                if xKind == String:
-                    if yKind == String:
-                        push(newString(x.s & y.s))
-                    elif yKind == Char:
-                        push(newString(x.s & $(y.c)))
-                elif xKind == Char:
-                    if yKind == String:
-                        push(newString($(x.c) & y.s))
-                    elif yKind == Char:
-                        push(newString($(x.c) & $(y.c)))
-                elif xKind == Binary:
-                    if yKind == Binary:
-                        push(newBinary(x.n & y.n))
-                    elif yKind == Integer:
-                        push(newBinary(x.n & numberToBinary(y.i)))
-                elif xKind == Object:
-                    if x.magic.fetch(AppendM):
-                        mgk(@[x, y]) # value already pushed
+                    discard
+
+            template placedAppend() =
+                case getValuePair():
+                of String || String:    push newString(x.s & y.s)
+                of String || Char:      push newString(x.s & $(y.c))
+                of Char   || String:    push newString($(x.c) & y.s)
+                of Char   || Char:      push newString($(x.c) & $(y.c))
+                of Binary || Binary:    push newBinary(x.n & y.n)
+                of Binary || Integer:   push newBinary(x.n & numberToBinary(y.i))
+                of Block   || Block:    push newBlock(x.a & y.a)
+                else:
+                    if xKind == Block:  push newBlock(x.a & y)
+                    elif xKind ==  Object and x.magic.fetch(AppendM):
+                            mgk(@[x, y]) # value already pushed
                     else:
                         # TODO(Collections\append) no magic method for object values should be an error
                         #  labels: library, oop, error handling
                         discard
-                else:
-                    if yKind==Block:
-                        push newBlock(x.a & y.a)
-                    else:
-                        push newBlock(x.a & y)
+                        
+            if xKind in {Literal, PathLiteral}:
+                inplaceAppend()
+            else:
+                placedAppend()
+                
 
     builtin "array",
         alias       = at,
@@ -185,46 +182,52 @@ proc defineLibrary*() =
             ; => [[0 0 0 0] [0 0 0 0] [0 0 0 0]]
         """:
             #=======================================================
+
+            proc arrayOf(source: Value, size: int): ValueArray =
+                result = safeRepeat(source, size)
+
+            proc arrayOf(source: Value, matrixFormat: ValueArray): ValueArray = 
+                var val: Value = copyValue(source)
+
+                for item in matrixFormat.reversed:
+                    requireValue(item, {Integer})
+                    result = safeRepeat(val, item.i)
+                    val = newBlock(result.map((v)=>copyValue(v)))
+
+
+            proc array(source: VRange): seq =
+                return toSeq(items(source))
+
+            proc array(source: string): ValueArray =
+                let stop = SP
+                let (_{.inject.}, tp) = getSource(source)
+
+                if tp != TextData:
+                    execUnscoped(doParse(source, isFile=false))
+                else:
+                    Error_FileNotFound(source)
+                result = sTopsFrom(stop)
+                SP = stop
+
+            proc arrayFromBlock(source: Value): ValueArray =
+                let stop = SP
+                execUnscoped(source)
+                result = sTopsFrom(stop)
+                SP = stop
+
+
             if checkAttr("of"):
-                if aOf.kind == Integer:
-                    let size = aOf.i
-                    let blk:ValueArray = safeRepeat(x, size)
-                    push newBlock(blk)
+                case aOf.kind:
+                of Integer: push newBlock(x.arrayOf(aOf.i))
+                of Block: push newBlock(x.arrayOf(aOf.a))
                 else:
-                    var val: Value = copyValue(x)
-                    var blk: ValueArray
-
-                    for item in aOf.a.reversed:
-                        requireValue(item, {Integer})
-                        blk = safeRepeat(val, item.i)
-                        val = newBlock(blk.map((v)=>copyValue(v)))
-
-                    push newBlock(blk)
+                    discard
             else:
-                if xKind==Range:
-                    push(newBlock(toSeq(items(x.rng))))
-                else:
-                    if xKind==Block:
-                        let stop = SP
-                        execUnscoped(x)
-                        let arr: ValueArray = sTopsFrom(stop)
-                        SP = stop
-
-                        push(newBlock(arr))
-                    elif xKind==String:
-                        let stop = SP
-                        let (_{.inject.}, tp) = getSource(x.s)
-
-                        if tp!=TextData:
-                            execUnscoped(doParse(x.s, isFile=false))
-                        else:
-                            Error_FileNotFound(x.s)
-                        let arr: ValueArray = sTopsFrom(stop)
-                        SP = stop
-
-                        push(newBlock(arr))
-                    else:
-                        push(newBlock(@[x]))
+                case xKind:
+                of Range: push newBlock(array(x.rng))
+                of Block: push newBlock(arrayFromBlock(x))
+                of String: push newBlock(array(x.s))
+                else: push newBlock(@[x])
 
     builtin "chop",
         alias       = unaliased,
