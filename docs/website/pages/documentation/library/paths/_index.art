@@ -15,7 +15,7 @@ The Paths module provides functionality for manipulating file system paths and e
 
 #### Path Components
 
-```red
+```arturo
 path: "photos/vacation/beach.jpg"
 
 ; extract components
@@ -31,7 +31,7 @@ absolute? "photos/img.jpg"      ; => false
 
 #### URL Components
 
-```red
+```arturo
 url: "https://example.com:8080/path/page.html?q=term#section"
 
 ; extract URL parts
@@ -45,7 +45,7 @@ print extract.anchor url        ; section
 
 #### Path Normalization
 
-```red
+```arturo
 ; normalize paths (resolve . and ..)
 print normalize "./folder/../file.txt"      ; file.txt
 
@@ -58,7 +58,7 @@ print normalize.tilde "~/code"              ; /home/user/code
 
 #### Relative Paths
 
-```red
+```arturo
 ; get path relative to current script
 read relative "some/file.txt"           ; based on script location
 
@@ -70,7 +70,7 @@ read ./"some/file.txt"
 
 #### Path Building
 
-```red
+```arturo
 pathBuilder: function [components][
     path: "/"
     loop components 'comp [
@@ -89,7 +89,7 @@ print fullPath
 
 #### URL Parsing Helper
 
-```red
+```arturo
 parseUrl: function [url][
     extracted: extract url
     #[
@@ -110,7 +110,7 @@ print ["API Version:" components\endpoint]
 
 #### Working with Extensions
 
-```red
+```arturo
 getFileType: function [filepath][
     ext: extract.extension filepath
     case ext [
@@ -128,7 +128,7 @@ print getFileType "document.txt"    ; text file
 
 #### Path Checks
 
-```red
+```arturo
 validatePath: function [filepath][
     p: filepath
     if not? absolute? p ->

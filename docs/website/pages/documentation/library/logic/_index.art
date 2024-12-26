@@ -13,7 +13,7 @@ The Logic module provides boolean operations and logical value manipulation. Bey
 
 #### Basic Logical Values
 
-```red
+```arturo
 print true?  true     ; true
 print false? false    ; true
 print true?  maybe    ; maybe
@@ -21,7 +21,7 @@ print true?  maybe    ; maybe
 
 #### Logical Operations
 
-```red
+```arturo
 and? true true      ; true
 or?  true false     ; true
 xor? true true      ; false
@@ -33,7 +33,7 @@ or?  true maybe     ; true
 
 #### Short-Circuit Evaluation
 
-```red
+```arturo
 ; if first block is false,
 ; the second one won't be evaluated 
 if and? [1=2][print "never runs"] -> 
@@ -53,7 +53,7 @@ if or? [1=1][print "never runs"] ->
 
 #### Testing Multiple Conditions
 
-```red
+```arturo
 conditions: @[true false true true]
 
 ; check if all conditions are true
@@ -67,7 +67,7 @@ any? conditions     ; => true
 
 #### Advanced Logical Operations
 
-```red
+```arturo
 a: true
 b: false
 

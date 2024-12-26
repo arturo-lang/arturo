@@ -15,7 +15,7 @@ The UI module provides functionality for creating basic desktop interactions, ma
 
 #### System Dialogs
 
-```red
+```arturo
 ; basic popup
 result: popup "Warning" "Are you sure?"
 
@@ -32,7 +32,7 @@ response: popup.retryCancel "Failed" "Try again?"
 
 #### System Notifications
 
-```red
+```arturo
 ; basic notification
 alert "Title" "Message"
 
@@ -44,7 +44,7 @@ alert.error "Error" "Update failed"
 
 #### File Selection
 
-```red
+```arturo
 ; select file
 file: dialog "Select file"
 
@@ -57,7 +57,7 @@ config: dialog .path: "~/Documents" "Select config"
 
 #### Clipboard Operations
 
-```red
+```arturo
 ; set clipboard content
 clip "text to copy"
 
@@ -68,7 +68,7 @@ print ["Clipboard contains:" text]
 
 #### WebView Interface
 
-```red
+```arturo
 ; basic webview with HTML content
 webview {
     <html>
@@ -103,7 +103,7 @@ webview
 
 #### Interactive Dialog Flow
 
-```red
+```arturo
 getUserInput: function [default][
     response: popup.okCancel "Input needed" "Use default settings?"
     if response -> 
@@ -124,7 +124,7 @@ config: getUserInput "config.ini"
 
 #### Clipboard Manager
 
-```red
+```arturo
 define :clipboardManager [
     history: []
     
