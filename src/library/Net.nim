@@ -405,6 +405,30 @@ proc defineLibrary*() =
             ; run the app and go to localhost:18966 - that was it!
             ; the app will respond to GET requests to "/" or "/post?id=..."
             ; and also POST requests to "/getinfo" with an 'id' parameter
+            ..........
+            serve $[req][
+                inspect req
+                ;[ :dictionary
+                ;    method   :        GET :string
+                ;    path     :        / :string
+                ;    uri      :        / :string
+                ;    body     :         :string
+                ;    query    :        [ :dictionary
+                ;    ]
+                ;    headers  :        [ :dictionary
+                ;        ...
+                ;    ]
+
+                ; we have to return either a string
+                ; or a dictionary like:
+                #[
+                    body: "..."
+                    status: 200
+                    headers: #[
+                        ;...
+                    ]
+                ]
+            ]
             """:
                 #=======================================================
                 when defined(SAFE): Error_OperationNotPermitted("serve")
