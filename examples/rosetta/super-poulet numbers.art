@@ -1,0 +1,13 @@
+pseudoprime?: function [n][
+    some? 1..21 'b ->
+        and? [not? prime? n]
+             [one? powmod b n-1 n]
+]
+
+(1..∞) | select.first:20 'n -> 
+            and? [pseudoprime? n]
+                 [every? factors n 'f ->
+                    zero? ((2^f)-2) % f]
+       | split.every:10
+       | map => [join map & 'r -> pad to :string r 6]
+       | print.lines

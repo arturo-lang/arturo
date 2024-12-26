@@ -1,0 +1,27 @@
+prettyPrint: function [data,cols,padding][
+    data | split.every: cols
+         | map => [join map & 'x -> pad to :string x padding]
+         | print.lines
+]
+
+zumkeller?: function [n][
+    divSum: sum divs: <= factors n
+    if nand? [even? divSum][divSum >= 2*n] -> return false
+        
+    half: divSum/2
+    loop 1..(size divs)/2 'combiSize [
+        if some? combine.by:combiSize divs 'combo ->
+            half = sum combo -> 
+                return true
+    ]
+
+    return false
+]
+
+print "First 220 Zumkeller numbers:"
+(1..∞) | select.first: 220 => zumkeller?
+       | prettyPrint 14 4
+
+print "\nFirst 40 odd Zumkeller numbers:"
+(1..∞) | select.first: 40 'n -> and? [odd? n][zumkeller? n]
+       | prettyPrint 10 6
