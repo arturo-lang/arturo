@@ -1,0 +1,47 @@
+semiperfect?: function [facts number].memoize [
+    sumAll: sum facts
+
+    if sumAll = number -> return true        
+    if sumAll < number -> return false       
+    
+    current: first facts                   
+    remaining: drop facts                  
+    
+    if number < current -> return semiperfect? remaining number    
+    if number = current -> return true                          
+    
+    if semiperfect? remaining number-current -> return true
+    return semiperfect? remaining number
+]
+
+findWeirdNumbers: function [limit][
+    sieve: repeat false limit
+    
+    loop 2..limit-1 'num [
+        unless sieve\[num][
+            divisors: (factors num) -- num
+            sumDivisors: sum divisors
+            
+            (sumDivisors =< num)? [
+                sieve\[num]: true
+            ][
+                if semiperfect? divisors num [
+                    j: num
+                    while [j < limit][
+                        sieve\[j]: true
+                        j: j + num
+                    ]
+                ]
+            ]
+        ]
+    ]
+    
+    return drop.times:2 sieve
+]
+
+print "The first 25 weird numbers:"
+
+(findWeirdNumbers 17000) | map.with:'i 'x -> @[i+2,x]
+                         | select.first: 25 => [not? last &]
+                         | map => [first &]
+                         | print

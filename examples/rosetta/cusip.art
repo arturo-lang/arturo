@@ -5,13 +5,13 @@ validCUSIP?: function [cusip][
     loop.with:'i chop cusip 'c [
         v: 0
 
-        case ø
-            when? [numeric? c] -> v: to :integer to :string c
-            when? [in? c alpha] -> v: (index alpha c) + 1 + 9
-            when? [c = '*'] -> v: 36
-            when? [c = '@'] -> v: 37
-            when? [c = '#'] -> v: 38
-            else []
+        when.has: c [
+            [|numeric?]     -> v: to :integer to :string c
+            [|in? alpha]    -> v: (index alpha c) + 1 + 9
+            [= '*']         -> v: 36
+            [= '@']         -> v: 37
+            [= '#']         -> v: 38
+        ]
 
         if odd? i -> v: 2 * v
 

@@ -253,13 +253,12 @@ proc defineLibrary*() =
             webview .width:  200 
                     .height: 300
                     .title:  "My webview app"
+            ; (opens a webview with given attributes)
             ---
                 <h1>This is my webpage</h1>
                 <p>
                     This is some content
                 </p>
-            ---
-            ; (opens a webview with given attributes)
             """:
                 #=======================================================
                 var title = "Arturo"

@@ -1,0 +1,10 @@
+pseudoprime?: function [n, b][
+    and? [not? prime? n]
+         [one? powmod b n-1 n]
+]
+
+loop 1..20 'base [
+    print ["- Base" base]
+    print ["\tFirst 20 pseudoprimes:" join.with:" " to [:string] select.first:20 1..∞ => [pseudoprime? & base]]
+    print ["\tUp to 12000:" enumerate 1..12000 => [pseudoprime? & base]]
+]
