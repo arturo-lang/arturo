@@ -1,0 +1,10 @@
+define :person [
+    init: constructor [name surname]
+
+    sayHello: method [][
+        print ["Hello" \name "!"]
+    ]
+]
+
+p: to :person ["John" "Doe"]!
+print.lines methods p

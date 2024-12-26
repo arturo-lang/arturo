@@ -1,0 +1,72 @@
+;------------------------------------------
+; Configuration
+;------------------------------------------
+
+API_URL: "https://rosettacode.org/w/api.php"
+
+;------------------------------------------
+; Helper Functions
+;------------------------------------------
+
+fetchCategory: function [category][
+    results: []
+    continue: ""
+    
+    while ø [
+        ; build query parameters
+        params: #[
+            action: "query"
+            list: "categorymembers"
+            cmtitle: ~"Category:|category|"
+            cmlimit: "500"
+            format: "json"
+        ]
+        
+        ; add continue parameter if we have one
+        unless empty? continue ->
+            params\cmcontinue: continue
+
+        ; perform API request
+        response: request API_URL params
+        body: read.json response\body
+        
+        ; extract page titles and add to results
+        'results ++ map body\query\categorymembers 'page ->
+            page\title
+            
+        ; check if we need to continue
+        switch key? body 'continue 
+            -> continue: body\continue\cmcontinue
+            -> break
+    ]
+    
+    return results
+]
+
+getUnimplementedTasks: function [language][
+    print "Fetching all programming tasks..."
+    allTasks: fetchCategory "Programming_Tasks"
+    
+    print ~"Fetching tasks implemented in |language|..."
+    languageTasks: fetchCategory language
+    
+    print "Finding unimplemented tasks..."
+    return difference allTasks languageTasks
+]
+
+;------------------------------------------
+; Main Program
+;------------------------------------------
+
+if standalone? [
+    if empty? arg ->
+        panic "Usage: rosetta-tasks <language>"
+
+    language: capitalize arg\0
+    tasks: getUnimplementedTasks language
+    
+    print ~"\nFound |size tasks| unimplemented tasks for |language|:\n"
+
+    print.lines sort map tasks 'task ->
+        "• " ++ task
+]

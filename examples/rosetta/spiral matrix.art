@@ -8,12 +8,11 @@ spiralMatrix: function [n][
 
         [nx,ny]: @[x+dx, y+dy]
 
-        if? and? [and? [nx <=> 0 n-1][ny <=> 0 n-1]][
+        switch and? [and? [nx <=> 0 n-1][ny <=> 0 n-1]][
             null? m\[ny]\[nx]
         ][
             [x,y]: @[nx, ny]
-        ]
-        else [
+        ][
             bdx: dx
             [dx, dy]: @[neg dy, bdx]
             [x, y]: @[x+dx, y+dy]

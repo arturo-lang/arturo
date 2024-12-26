@@ -46,9 +46,9 @@ chooseAsset: $[][
 	base: 0
 	if? 'mini = release -> base: 1
 
-	case [sys\os]
-		when? [ = "macosx" ] -> return base + 0
-		when? [ = "linux"  ] -> return base + 2
+	case sys\os [
+		"macos"  	-> return base + 0
+		"linux"  	-> return base + 2
 		else -> panic unsupportedOS sys\os
 ]
 

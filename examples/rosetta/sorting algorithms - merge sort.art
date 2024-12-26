@@ -19,11 +19,10 @@ merge: function [a,b,left,middle,right][
     i: left
 
     while [and? l < leftLen r < leftLen + rightLen][
-        if? b\[l] < b\[r] [
+        switch b\[l] < b\[r] [
             a\[i]: b\[l]
             l: l + 1
-        ] 
-        else [
+        ][
             a\[i]: b\[r]
             r: r + 1
         ]

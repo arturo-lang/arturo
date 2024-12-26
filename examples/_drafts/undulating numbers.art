@@ -1,0 +1,28 @@
+undulating?: function [n][
+    ds: digits n
+    if 2 <> size unique ds -> return false
+    return (size ds) = size chunk ds => [&]
+]
+
+print « 3 digit Undulating Numbers in base 10:
+
+(100..999) | select => undulating?
+           | split.every:9
+           | map => [join map & 'x -> pad to :string x 4]
+           | print.lines
+
+print ""
+print « 4 digit Undulating Numbers in base 10:
+
+(1000..9999) | select => undulating?
+             | split.every:9
+             | map => [join map & 'x -> pad to :string x 5]
+             | print.lines
+
+print ""
+print « Prime 3 digit Undulating Numbers in base 10:
+
+(100..999) | select 'x [and? undulating? x prime? x]
+           | split.every:9
+           | map => [join map & 'x -> pad to :string x 4]
+           | print.lines

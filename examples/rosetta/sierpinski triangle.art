@@ -3,8 +3,8 @@ sierpinski: function [order][
     loop (s-1)..0 'y [
         do.times: y -> prints " "
         loop 0..dec s-y 'x [
-            if? zero? and x y -> prints "* "
-            else -> prints "  "
+            switch zero? and x y -> prints "* "
+                                 -> prints "  "
         ]
         print ""
     ]
