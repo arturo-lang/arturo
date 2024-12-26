@@ -472,21 +472,6 @@ proc defineLibrary*() =
                                 "headers": newStringDictionary(reqHeaders, collapseBlocks=true)
                             }.toOrderedTable)
 
-                                                # show request info
-                        # if we're on .verbose mode
-                        
-                        # if verbose:
-                        #     # requestPattern = responseDict.getOrDefault("pattern", newString(initialReqPath))
-                        #     # var serverPattern = " "
-                        #     # if requestPattern.s != initialReqPath and requestPattern.s != "":
-                        #     #     serverPattern = " -> " & requestPattern.s & " "
-
-                        #     echo bold(whiteColor) & "<<" & resetColor & " " & 
-                        #          fg(whiteColor) & "[" & $(now()) & "] " &
-                        #          bold(whiteColor) & ($(reqAction)).toUpperAscii() & " " & initialReqPath & 
-                        #          resetColor
-
-
                         # the response
                         var responseDict: ValueDict = {
                             "body": newString(""),
