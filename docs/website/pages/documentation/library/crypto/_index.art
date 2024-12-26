@@ -17,7 +17,7 @@ The Crypto module provides basic cryptographic functions and encoding utilities.
 
 #### Hashing
 
-```red
+```arturo
 ; calculate MD5 digest (default)
 print digest "hello world"          ; 5eb63bbbe01eeed093cb22bb8f5acdc3
 
@@ -32,7 +32,7 @@ print crc "hello world"             ; 0d4a1185
 
 #### Base64 Encoding/Decoding
 
-```red
+```arturo
 ; encoding
 encoded: encode "Hello World!"      ; SGVsbG8gV29ybGQh
 print encoded
@@ -44,7 +44,7 @@ print decoded
 
 #### URL Encoding/Decoding
 
-```red
+```arturo
 ; encode URL
 url: "https://example.com/path with spaces?q=test+1"
 encoded: encode.url url
@@ -67,7 +67,7 @@ fullEncoded: encode.url.slashes "/path/to/resource"
 
 #### Character Encoding Conversion
 
-```red
+```arturo
 ; convert between character encodings
 text: "Hello världen"           ; text with non-ASCII characters
 converted: encode .from:"UTF-8" .to: "ISO-8859-1" text
@@ -77,7 +77,7 @@ converted: encode .from:"UTF-8" .to: "ISO-8859-1" text
 
 #### Password Hashing
 
-```red
+```arturo
 hashPassword: function [password][
     ; combine password with... salt and hash
     salt: "somesalt"
@@ -95,7 +95,7 @@ print ["Hashed password:" hashed]
 
 #### Safe URL Building
 
-```red
+```arturo
 buildUrl: function [baseUrl parameters][
     query: map parameters [key value][
         key ++ "=" ++ encode.url value

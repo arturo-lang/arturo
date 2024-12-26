@@ -15,7 +15,7 @@ The Arithmetic module provides basic mathematical operations that work seamlessl
 
 #### Basic Operations
 
-```red
+```arturo
 ; addition
 print 2 + 3             ; 5
 print add 2 3           ; 5
@@ -37,7 +37,7 @@ print fdiv 10 3         ; 3.333333333333333
 
 #### Working with Different Types
 
-```red
+```arturo
 ; integer + floating
 print 2 + 3.81          ; 5.81
 
@@ -54,7 +54,7 @@ print a + b             ; 5/4
 
 #### In-place Modifications
 
-```red
+```arturo
 x: 5
 
 ; increment
@@ -77,7 +77,7 @@ print x                  ; 16
 
 #### Division and Remainder
 
-```red
+```arturo
 ; integer division with remainder
 [quotient remainder]: divmod 17 5
 print ["17 ÷ 5 =" quotient "remainder" remainder]    
@@ -89,7 +89,7 @@ print fdiv 17 5             ; 3.4
 
 #### Working with Quantities
 
-```red
+```arturo
 distance: 100`m         ; 100 meters
 time: 5`s               ; 5 seconds
 
@@ -99,7 +99,7 @@ print speed             ; 20 m/s
 
 #### Type Conversions & Promotions
 
-```red
+```arturo
 ; integer → floating
 a: 5 + 3.41             ; 8.41 (floating)
 b: 2 * 3.5              ; 7.0 (floating)
