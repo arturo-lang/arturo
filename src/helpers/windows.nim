@@ -218,17 +218,15 @@ proc setShortcut*(item: MenuBarItem, shortcut: string) =
     if item.kind == mbkItem:
         item.shortcut = shortcut
 
+# Change the setMenuBar converter
 proc setMenuBar*(w: Window, menus: openArray[MenuBar]) =
-    # Convert our high-level menu structure to C-style menus
     var cMenus = newSeq[ptr Menu](menus.len)
     
     for i, menu in menus:
-        # Create the C menu
         cMenus[i] = create_menu(menu.title.cstring)
         
-        # Add all items
         for item in menu.items:
-            case item.kind:
+            case item.kind
             of mbkItem:
                 if item.action != nil:
                     menuCallbacks[item.userData] = item.action
@@ -237,19 +235,26 @@ proc setMenuBar*(w: Window, menus: openArray[MenuBar]) =
                     item.label.cstring,
                     if item.action != nil: menuCallbackWrapper else: nil)
                 
-                if item.shortcut.len > 0:
-                    set_menu_item_shortcut(cItem, item.shortcut.cstring)
-                set_menu_item_enabled(cItem, item.enabled)
-                set_menu_item_checked(cItem, item.checked)
-                
+                # Only enable if there's an action
+                set_menu_item_enabled(cItem, item.action != nil)
+            
             of mbkSeparator:
                 discard add_menu_separator(cMenus[i])
                 
             of mbkSubmenu:
-                let cSubmenu = create_menu(item.submenuLabel.cstring)
-                discard add_submenu(cMenus[i], item.submenuLabel.cstring, cSubmenu)
-    
-    # Set the menu bar
+                let submenuPtr = create_menu(item.submenu.title.cstring)
+                
+                for subitem in item.submenu.items:
+                    if subitem.action != nil:
+                        menuCallbacks[subitem.userData] = subitem.action
+                    let subitemPtr = add_menu_item(submenuPtr,
+                        subitem.label.cstring,
+                        if subitem.action != nil: menuCallbackWrapper else: nil)
+                    # Only enable submenu items with actions
+                    set_menu_item_enabled(subitemPtr, subitem.action != nil)
+                
+                discard add_submenu(cMenus[i], item.submenuLabel.cstring, submenuPtr)
+
     set_window_menu(w, cast[ptr ptr Menu](addr cMenus[0]), cMenus.len.csize_t)
 
 proc removeMenuBar*(w: Window) =
