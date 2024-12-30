@@ -1433,6 +1433,15 @@ proc defineLibrary*() =
         attrs       = NoAttrs,
         returns     = {Nothing},
         example     = """
+            p: #[name: "John" surname: "Doe" age: 38]
+            using p [
+                print \name             ; access our
+                print \age              ; fields directly
+
+                \surname: "Smith"       ; or change their value
+            ]
+            ; John
+            ; 38
         """:
             #=======================================================
             prepareLeaklessOne("this")
