@@ -224,7 +224,7 @@ when not defined(NOWEBVIEW):
         
 
         # Create File menu
-        let fileMenu = newMenuBar("File")
+        let fileMenu = newMenu("File")
         discard fileMenu.addItem("New") do (userData: pointer):
             echo "New file"
         discard fileMenu.addItem("Open")
@@ -247,12 +247,12 @@ when not defined(NOWEBVIEW):
         discard fileMenu.addItem("Exit")
 
         # Create Edit menu
-        let editMenu = newMenuBar("Edit")
+        let editMenu = newMenu("Edit")
         let undoItem = editMenu.addItem("Undo")
         undoItem.setShortcut("Ctrl+Z")
 
         # Set the menu bar
-        w.getWindow().setMenuBar([fileMenu, editMenu])
+        w.getWindow().setMenus([fileMenu, editMenu])
 
         discard webview_run(w)
         discard webview_destroy(w)
