@@ -221,12 +221,29 @@ when not defined(NOWEBVIEW):
     proc show*(w: Webview) =
         # when defined(macosx):
         #     generateDefaultMainMenu()
+        
 
+        # Create File menu
         let fileMenu = newMenuBar("File")
         discard fileMenu.addItem("New") do (userData: pointer):
             echo "New file"
         discard fileMenu.addItem("Open")
         discard fileMenu.addSeparator()
+
+        # Create Share menu
+        let shareMenu = newMenu()  # Using newMenu() for submenu
+
+        # Add items to Share menu using the proper Nim API
+        discard shareMenu.addItem("Facebook") do (userData: pointer):
+            echo "Shared to Facebook"
+        discard shareMenu.addItem("Twitter") do (userData: pointer):
+            echo "Shared to Twitter"
+        discard shareMenu.addItem("Instagram") do (userData: pointer):
+            echo "Shared to Instagram"
+
+        # Add Share submenu to File menu
+        discard fileMenu.addSubmenu("Share", shareMenu)
+
         discard fileMenu.addItem("Exit")
 
         # Create Edit menu
