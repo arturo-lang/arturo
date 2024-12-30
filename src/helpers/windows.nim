@@ -168,6 +168,13 @@ proc newMenuBar*(title: string): MenuBar =
         items: @[]
     )
 
+proc newMenu*(): MenuBar =
+    ## Creates a new menu (not a menubar) that can be used as a submenu
+    result = MenuBar(
+        title: "",  # Submenus don't need a title in the same way as menubars
+        items: @[]
+    )
+
 proc addItem*(menu: MenuBar, label: string, action: MenuBarAction = nil, userData: pointer = nil): MenuBarItem =
     result = MenuBarItem(
         kind: mbkItem,

@@ -3,15 +3,15 @@
 // Programming Language + Bytecode VM compiler
 // (c) 2019-2024 Yanis Zafirópulos
 //
-// @file: extras/menus/menu.cc
+// @file: extras/menus/menus.cc
 //=======================================================
 
 #include "menus.h"
-
 #include <cstring>
 #include <cstdlib>
 #include <map>
 #include <string>
+#include <functional>
 
 #if defined(__linux__) || defined(__FreeBSD__)
     #include <gtk/gtk.h>
@@ -26,6 +26,32 @@
 
     #define WINDOW_TYPE id
 
+    // Helpers to avoid too much typing with the Objective C runtime
+    inline id operator"" _cls(const char *s, size_t) { return (id)objc_getClass(s); }
+    inline SEL operator"" _sel(const char *s, size_t) { return sel_registerName(s); }
+    inline id operator"" _str(const char *s, size_t) {
+        return ((id(*)(id, SEL, const char *))objc_msgSend)(
+            "NSString"_cls, "stringWithUTF8String:"_sel, s);
+    }
+
+    @interface MenuActionHandler : NSObject
+    - (void)menuItemSelected:(NSMenuItem*)sender;
+    @end
+
+    @implementation MenuActionHandler
+    - (void)menuItemSelected:(NSMenuItem*)sender {
+        void (^callback)(void) = objc_getAssociatedObject(sender, "callback");
+        if (callback) callback();
+    }
+    @end
+
+    static MenuActionHandler* actionHandler = nil;
+
+    static void menuItemCallback(id self, SEL cmd, id sender) {
+        void (^callback)(void) = objc_getAssociatedObject(sender, "callback");
+        if (callback) callback();
+    }
+
 #elif defined(_WIN32)
     #define _WINSOCKAPI_
     #ifdef WIN32_LEAN_AND_MEAN
@@ -39,7 +65,6 @@
 
     #define WINDOW_TYPE HWND
 
-    // Windows-specific callback storage
     namespace {
         std::map<int, MenuActionCallback> menuCallbacks;
         std::map<int, void*> menuUserData;
@@ -59,43 +84,13 @@
             return CallWindowProc(originalWndProc, hwnd, msg, wParam, lParam);
         }
     }
-
-#endif
-
-#if defined(__APPLE__)
-// Helpers to avoid too much typing with the Objective C runtime
-inline id operator"" _cls(const char *s, size_t) { return (id)objc_getClass(s); }
-inline SEL operator"" _sel(const char *s, size_t) { return sel_registerName(s); }
-inline id operator"" _str(const char *s, size_t) {
-    return ((id(*)(id, SEL, const char *))objc_msgSend)(
-        "NSString"_cls, "stringWithUTF8String:"_sel, s);
-}
-
-@interface MenuActionHandler : NSObject
-- (void)menuItemSelected:(NSMenuItem*)sender;
-@end
-
-@implementation MenuActionHandler
-- (void)menuItemSelected:(NSMenuItem*)sender {
-    void (^callback)(void) = objc_getAssociatedObject(sender, "callback");
-    if (callback) callback();
-}
-@end
-
-static MenuActionHandler* actionHandler = nil;
-
-static void menuItemCallback(id self, SEL cmd, id sender) {
-    void (^callback)(void) = objc_getAssociatedObject(sender, "callback");
-    if (callback) callback();
-}
 #endif
 
 #if defined(__linux__) || defined(__FreeBSD__)
-    #include <map>
     static std::map<GtkMenuItem*, MenuActionCallback> menuCallbacks;
     static std::map<GtkMenuItem*, void*> menuUserData;
 
-    void menu_item_activated(GtkMenuItem* menuItem, gpointer user_data) {
+    static void menu_item_activated(GtkMenuItem* menuItem, gpointer user_data) {
         auto callbackIt = menuCallbacks.find(menuItem);
         auto userDataIt = menuUserData.find(menuItem);
         if (callbackIt != menuCallbacks.end() && userDataIt != menuUserData.end()) {
@@ -136,9 +131,9 @@ MenuItem* add_menu_item(Menu* menu, const char* label, MenuActionCallback action
     MenuItem* item = &menu->items[menu->itemCount++];
     item->label = strdup(label);
     item->shortcut = nullptr;
-    item->enabled = true;          
+    item->enabled = true;
     item->checked = false;
-    item->action = action;  
+    item->action = action;
     item->userData = nullptr;
     item->submenu = nullptr;
     
@@ -146,11 +141,11 @@ MenuItem* add_menu_item(Menu* menu, const char* label, MenuActionCallback action
 }
 
 MenuItem* add_menu_separator(Menu* menu) {
-    return add_menu_item(menu, "-", NULL);  // We use "-" as a special marker for separators
+    return add_menu_item(menu, "-", nullptr);
 }
 
 MenuItem* add_submenu(Menu* menu, const char* label, Menu* submenu) {
-    MenuItem* item = add_menu_item(menu, label, NULL);
+    MenuItem* item = add_menu_item(menu, label, nullptr);
     item->submenu = submenu;
     return item;
 }
@@ -170,280 +165,283 @@ void set_menu_item_checked(MenuItem* item, bool checked) {
 void set_menu_item_shortcut(MenuItem* item, const char* shortcut) {
     if (item) {
         if (item->shortcut) free(item->shortcut);
-        item->shortcut = shortcut ? strdup(shortcut) : NULL;
+        item->shortcut = shortcut ? strdup(shortcut) : nullptr;
     }
 }
 
 void set_window_menu(void* windowHandle, struct Menu** menus, size_t menuCount) {
-    #if defined(__linux__) || defined(__FreeBSD__)
-        GtkWidget* menuBar = gtk_menu_bar_new();
+#if defined(__linux__) || defined(__FreeBSD__)
+    auto create_gtk_menu = [&](Menu* menu) -> GtkWidget* {
+        GtkWidget* gtkMenu = gtk_menu_new();
         
-        for (size_t i = 0; i < menuCount; i++) {
-            GtkWidget* menuItem = gtk_menu_item_new_with_label(menus[i]->title);
-            GtkWidget* subMenu = gtk_menu_new();
+        for (size_t j = 0; j < menu->itemCount; j++) {
+            MenuItem* item = &menu->items[j];
+            GtkWidget* menuItem;
             
-            for (size_t j = 0; j < menus[i]->itemCount; j++) {
-                MenuItem* item = &menus[i]->items[j];
-                
-                GtkWidget* subMenuItem;
-                if (strcmp(item->label, "-") == 0) {
-                    subMenuItem = gtk_separator_menu_item_new();
-                } else {
-                    subMenuItem = gtk_menu_item_new_with_label(item->label);
-                    if (item->action) {
-                        menuCallbacks[GTK_MENU_ITEM(subMenuItem)] = item->action;
-                        menuUserData[GTK_MENU_ITEM(subMenuItem)] = item->userData;
-                        g_signal_connect(subMenuItem, "activate",
-                                       G_CALLBACK(menu_item_activated), nullptr);
-                    }
+            if (strcmp(item->label, "-") == 0) {
+                menuItem = gtk_separator_menu_item_new();
+            } else {
+                menuItem = gtk_menu_item_new_with_label(item->label);
+                if (item->submenu) {
+                    GtkWidget* subMenu = create_gtk_menu(item->submenu);
+                    gtk_menu_item_set_submenu(GTK_MENU_ITEM(menuItem), subMenu);
+                } else if (item->action) {
+                    menuCallbacks[GTK_MENU_ITEM(menuItem)] = item->action;
+                    menuUserData[GTK_MENU_ITEM(menuItem)] = item->userData;
+                    g_signal_connect(menuItem, "activate",
+                                   G_CALLBACK(menu_item_activated), nullptr);
                 }
-                
-                gtk_menu_shell_append(GTK_MENU_SHELL(subMenu), subMenuItem);
+                gtk_widget_set_sensitive(menuItem, item->enabled);
             }
             
-            gtk_menu_item_set_submenu(GTK_MENU_ITEM(menuItem), subMenu);
-            gtk_menu_shell_append(GTK_MENU_SHELL(menuBar), menuItem);
+            gtk_menu_shell_append(GTK_MENU_SHELL(gtkMenu), menuItem);
         }
-        
-        gtk_widget_show_all(menuBar);
-        gtk_container_add(GTK_CONTAINER((WINDOW_TYPE)windowHandle), menuBar);
-        
-    #elif defined(__APPLE__)
-        NSMenu* mainMenu = [[NSMenu alloc] init];
-        
-        // Add Application Menu (first menu in the menu bar)
-        NSMenuItem* appMenuItem = [[NSMenuItem alloc] init];
-        NSMenu* appMenu = [[NSMenu alloc] init];
-        NSString* appName = [[NSProcessInfo processInfo] processName];
-        
-        // About Item
-        NSMenuItem* aboutItem = [[NSMenuItem alloc]
-            initWithTitle:[NSString stringWithFormat:@"About %@", appName]
-            action:@selector(orderFrontStandardAboutPanel:)
-            keyEquivalent:@""];
-        [aboutItem setTarget:NSApp];
-        [appMenu addItem:aboutItem];
-        
-        // Separator
-        [appMenu addItem:[NSMenuItem separatorItem]];
-        
-        // Preferences
-        NSMenuItem* prefsItem = [[NSMenuItem alloc]
-            initWithTitle:@"Preferences…"
-            action:@selector(showPreferences:)
-            keyEquivalent:@","];
-        [appMenu addItem:prefsItem];
-        
-        // Services
-        NSMenuItem* servicesItem = [[NSMenuItem alloc] init];
-        NSMenu* servicesMenu = [[NSMenu alloc] initWithTitle:@"Services"];
-        [servicesItem setSubmenu:servicesMenu];
-        [appMenu addItem:servicesItem];
-        [NSApp setServicesMenu:servicesMenu];
-        
-        [appMenu addItem:[NSMenuItem separatorItem]];
-        
-        // Hide/Show items
-        NSMenuItem* hideItem = [[NSMenuItem alloc]
-            initWithTitle:[NSString stringWithFormat:@"Hide %@", appName]
-            action:@selector(hide:)
-            keyEquivalent:@"h"];
-        [hideItem setTarget:NSApp];
-        [appMenu addItem:hideItem];
-        
-        NSMenuItem* hideOthersItem = [[NSMenuItem alloc]
-            initWithTitle:@"Hide Others"
-            action:@selector(hideOtherApplications:)
-            keyEquivalent:@"h"];
-        [hideOthersItem setKeyEquivalentModifierMask:NSEventModifierFlagCommand | NSEventModifierFlagOption];
-        [hideOthersItem setTarget:NSApp];
-        [appMenu addItem:hideOthersItem];
-        
-        NSMenuItem* showAllItem = [[NSMenuItem alloc]
-            initWithTitle:@"Show All"
-            action:@selector(unhideAllApplications:)
-            keyEquivalent:@""];
-        [showAllItem setTarget:NSApp];
-        [appMenu addItem:showAllItem];
-        
-        [appMenu addItem:[NSMenuItem separatorItem]];
-        
-        // Quit
-        NSMenuItem* quitItem = [[NSMenuItem alloc]
-            initWithTitle:[NSString stringWithFormat:@"Quit %@", appName]
-            action:@selector(terminate:)
-            keyEquivalent:@"q"];
-        [quitItem setTarget:NSApp];
-        [appMenu addItem:quitItem];
-        
-        [appMenuItem setSubmenu:appMenu];
-        [mainMenu addItem:appMenuItem];
-        
-        // Add Edit menu with standard items if not already present
-        bool hasEditMenu = false;
-        for (size_t i = 0; i < menuCount; i++) {
-            if (strcmp(menus[i]->title, "Edit") == 0) {
-                hasEditMenu = true;
-                break;
-            }
-        }
-        
-        if (!hasEditMenu) {
-            NSMenuItem* editMenuItem = [[NSMenuItem alloc] init];
-            NSMenu* editMenu = [[NSMenu alloc] initWithTitle:@"Edit"];
-            
-            // Standard Edit menu items
-            NSMenuItem* undoItem = [[NSMenuItem alloc]
-                initWithTitle:@"Undo"
-                action:@selector(undo:)
-                keyEquivalent:@"z"];
-            [editMenu addItem:undoItem];
-            
-            NSMenuItem* redoItem = [[NSMenuItem alloc]
-                initWithTitle:@"Redo"
-                action:@selector(redo:)
-                keyEquivalent:@"Z"];
-            [editMenu addItem:redoItem];
-            
-            [editMenu addItem:[NSMenuItem separatorItem]];
-            
-            NSMenuItem* cutItem = [[NSMenuItem alloc]
-                initWithTitle:@"Cut"
-                action:@selector(cut:)
-                keyEquivalent:@"x"];
-            [editMenu addItem:cutItem];
-            
-            NSMenuItem* copyItem = [[NSMenuItem alloc]
-                initWithTitle:@"Copy"
-                action:@selector(copy:)
-                keyEquivalent:@"c"];
-            [editMenu addItem:copyItem];
-            
-            NSMenuItem* pasteItem = [[NSMenuItem alloc]
-                initWithTitle:@"Paste"
-                action:@selector(paste:)
-                keyEquivalent:@"v"];
-            [editMenu addItem:pasteItem];
-            
-            NSMenuItem* deleteItem = [[NSMenuItem alloc]
-                initWithTitle:@"Delete"
-                action:@selector(delete:)
-                keyEquivalent:@""];
-            [editMenu addItem:deleteItem];
-            
-            NSMenuItem* selectAllItem = [[NSMenuItem alloc]
-                initWithTitle:@"Select All"
-                action:@selector(selectAll:)
-                keyEquivalent:@"a"];
-            [editMenu addItem:selectAllItem];
-            
-            [editMenuItem setSubmenu:editMenu];
-            [mainMenu addItem:editMenuItem];
-        }
-        
-        // Add user-defined menus
-        for (size_t i = 0; i < menuCount; i++) {
-            NSMenuItem* menuItem = [[NSMenuItem alloc] init];
-            NSMenu* subMenu = [[NSMenu alloc] initWithTitle:@(menus[i]->title)];
-            [menuItem setSubmenu:subMenu];
-            
-            for (size_t j = 0; j < menus[i]->itemCount; j++) {
-                MenuItem* item = &menus[i]->items[j];
-                
-                if (strcmp(item->label, "-") == 0) {
-                    [subMenu addItem:[NSMenuItem separatorItem]];
-                } else {
-                    static Class menuHandlerClass = nil;
-                    static id menuHandler = nil;
-                    
-                    if (!menuHandlerClass) {
-                        menuHandlerClass = objc_allocateClassPair([NSObject class], "MenuHandler", 0);
-                        class_addMethod(menuHandlerClass, @selector(menuItemSelected:), (IMP)menuItemCallback, "v@:@");
-                        objc_registerClassPair(menuHandlerClass);
-                        menuHandler = [[menuHandlerClass alloc] init];
-                    }
+        return gtkMenu;
+    };
 
-                    NSMenuItem* nsItem = [[NSMenuItem alloc] 
-                        initWithTitle:@(item->label)
-                        action:@selector(menuItemSelected:)
-                        keyEquivalent:@""];
-                        
+    GtkWidget* menuBar = gtk_menu_bar_new();
+    
+    for (size_t i = 0; i < menuCount; i++) {
+        GtkWidget* menuItem = gtk_menu_item_new_with_label(menus[i]->title);
+        GtkWidget* subMenu = create_gtk_menu(menus[i]);
+        gtk_menu_item_set_submenu(GTK_MENU_ITEM(menuItem), subMenu);
+        gtk_menu_shell_append(GTK_MENU_SHELL(menuBar), menuItem);
+    }
+    
+    gtk_widget_show_all(menuBar);
+    gtk_container_add(GTK_CONTAINER((WINDOW_TYPE)windowHandle), menuBar);
+
+#elif defined(__APPLE__)
+    NSMenu* mainMenu = [[NSMenu alloc] init];
+    
+    // Add Application Menu (first menu in the menu bar)
+    NSMenuItem* appMenuItem = [[NSMenuItem alloc] init];
+    NSMenu* appMenu = [[NSMenu alloc] init];
+    NSString* appName = [[NSProcessInfo processInfo] processName];
+    
+    // About Item
+    NSMenuItem* aboutItem = [[NSMenuItem alloc]
+        initWithTitle:[NSString stringWithFormat:@"About %@", appName]
+        action:@selector(orderFrontStandardAboutPanel:)
+        keyEquivalent:@""];
+    [aboutItem setTarget:NSApp];
+    [appMenu addItem:aboutItem];
+    
+    // Separator
+    [appMenu addItem:[NSMenuItem separatorItem]];
+    
+    // Preferences
+    NSMenuItem* prefsItem = [[NSMenuItem alloc]
+        initWithTitle:@"Preferences…"
+        action:@selector(showPreferences:)
+        keyEquivalent:@","];
+    [appMenu addItem:prefsItem];
+    
+    // Services
+    NSMenuItem* servicesItem = [[NSMenuItem alloc] init];
+    NSMenu* servicesMenu = [[NSMenu alloc] initWithTitle:@"Services"];
+    [servicesItem setSubmenu:servicesMenu];
+    [appMenu addItem:servicesItem];
+    [NSApp setServicesMenu:servicesMenu];
+    
+    [appMenu addItem:[NSMenuItem separatorItem]];
+    
+    // Hide/Show items
+    NSMenuItem* hideItem = [[NSMenuItem alloc]
+        initWithTitle:[NSString stringWithFormat:@"Hide %@", appName]
+        action:@selector(hide:)
+        keyEquivalent:@"h"];
+    [hideItem setTarget:NSApp];
+    [appMenu addItem:hideItem];
+    
+    NSMenuItem* hideOthersItem = [[NSMenuItem alloc]
+        initWithTitle:@"Hide Others"
+        action:@selector(hideOtherApplications:)
+        keyEquivalent:@"h"];
+    [hideOthersItem setKeyEquivalentModifierMask:NSEventModifierFlagCommand | NSEventModifierFlagOption];
+    [hideOthersItem setTarget:NSApp];
+    [appMenu addItem:hideOthersItem];
+    
+    NSMenuItem* showAllItem = [[NSMenuItem alloc]
+        initWithTitle:@"Show All"
+        action:@selector(unhideAllApplications:)
+        keyEquivalent:@""];
+    [showAllItem setTarget:NSApp];
+    [appMenu addItem:showAllItem];
+    
+    [appMenu addItem:[NSMenuItem separatorItem]];
+    
+    // Quit
+    NSMenuItem* quitItem = [[NSMenuItem alloc]
+        initWithTitle:[NSString stringWithFormat:@"Quit %@", appName]
+        action:@selector(terminate:)
+        keyEquivalent:@"q"];
+    [quitItem setTarget:NSApp];
+    [appMenu addItem:quitItem];
+    
+    [appMenuItem setSubmenu:appMenu];
+    [mainMenu addItem:appMenuItem];
+    
+    // Create menu handler class if not already created
+    static Class menuHandlerClass = nil;
+    static id menuHandler = nil;
+    
+    if (!menuHandlerClass) {
+        menuHandlerClass = objc_allocateClassPair([NSObject class], "MenuHandler", 0);
+        class_addMethod(menuHandlerClass, @selector(menuItemSelected:), (IMP)menuItemCallback, "v@:@");
+        objc_registerClassPair(menuHandlerClass);
+        menuHandler = [[menuHandlerClass alloc] init];
+    }
+
+    std::function<NSMenu*(Menu*, bool)> create_ns_menu;
+    create_ns_menu = [&](Menu* menu, bool isSubmenu) -> NSMenu* {
+        printf("Creating menu: %s (submenu: %d)\n", menu->title, isSubmenu);
+        NSMenu* nsMenu = [[NSMenu alloc] initWithTitle:@(menu->title)];
+        [nsMenu setAutoenablesItems:NO];
+        
+        for (size_t j = 0; j < menu->itemCount; j++) {
+            MenuItem* item = &menu->items[j];
+            
+            if (strcmp(item->label, "-") == 0) {
+                printf("  Adding separator\n");
+                [nsMenu addItem:[NSMenuItem separatorItem]];
+            } else {
+                printf("  Adding item: %s (has submenu: %d)\n", 
+                       item->label, 
+                       item->submenu != nullptr);
+                
+                NSMenuItem* nsItem = [[NSMenuItem alloc] 
+                    initWithTitle:@(item->label)
+                    action:nil
+                    keyEquivalent:@""];
+                
+                if (item->submenu) {
+                    printf("    Creating submenu for: %s\n", item->label);
+                    printf("    Submenu title: %s\n", item->submenu->title);
+                    printf("    Submenu item count: %zu\n", item->submenu->itemCount);
+                    
+                    NSMenu* subMenu = create_ns_menu(item->submenu, true);
+                    [subMenu setTitle:@(item->label)];
+                    [nsItem setSubmenu:subMenu];
+                    [nsItem setEnabled:YES];
+                    
+                    printf("    Submenu created and attached\n");
+                } else {
                     if (item->action) {
+                        printf("    Setting action for: %s\n", item->label);
                         objc_setAssociatedObject(nsItem, 
                             "callback",
                             [^{ item->action(item->userData); } copy],
                             OBJC_ASSOCIATION_RETAIN);
                         [nsItem setTarget:menuHandler];
+                        [nsItem setAction:@selector(menuItemSelected:)];
                     }
-                    
-                    [subMenu addItem:nsItem];
+                    [nsItem setEnabled:item->enabled];
                 }
-            }
-            
-            [mainMenu addItem:menuItem];
-        }
-        
-        [NSApp setMainMenu:mainMenu];
-        
-    #elif defined(_WIN32)
-        HMENU hMenuBar = CreateMenu();
-        
-        // Set up window procedure if not already done
-        if (!originalWndProc) {
-            originalWndProc = (WNDPROC)SetWindowLongPtr(
-                (WINDOW_TYPE)windowHandle,
-                GWLP_WNDPROC,
-                (LONG_PTR)MenuWindowProc
-            );
-        }
-        
-        // Clear existing callbacks (in case menu is being reset)
-        menuCallbacks.clear();
-        menuUserData.clear();
-        
-        for (size_t i = 0; i < menuCount; i++) {
-            HMENU hMenu = CreatePopupMenu();
-            
-            for (size_t j = 0; j < menus[i]->itemCount; j++) {
-                MenuItem* item = &menus[i]->items[j];
                 
-                if (strcmp(item->label, "-") == 0) {
-                    AppendMenuW(hMenu, MF_SEPARATOR, 0, NULL);
+                [nsMenu addItem:nsItem];
+            }
+        }
+        return nsMenu;
+    };
+
+    // Add user-defined menus
+    for (size_t i = 0; i < menuCount; i++) {
+        NSMenuItem* menuItem = [[NSMenuItem alloc] init];
+        [menuItem setTitle:@(menus[i]->title)];  // Set the title for the main menu item
+        NSMenu* menu = create_ns_menu(menus[i], false);
+        [menu setTitle:@(menus[i]->title)];  // Set the title for the menu
+        [menuItem setSubmenu:menu];
+        [menuItem setEnabled:YES];
+        [mainMenu addItem:menuItem];
+    }
+    
+    [NSApp setMainMenu:mainMenu];
+
+#elif defined(_WIN32)
+    HMENU hMenuBar = CreateMenu();
+    
+    // Set up window procedure if not already done
+    if (!originalWndProc) {
+        originalWndProc = (WNDPROC)SetWindowLongPtr(
+            (WINDOW_TYPE)windowHandle,
+            GWLP_WNDPROC,
+            (LONG_PTR)MenuWindowProc
+        );
+    }
+    
+    menuCallbacks.clear();
+    menuUserData.clear();
+    
+    std::function<HMENU(Menu*, int&)> create_windows_menu = [&](Menu* menu, int& cmdId) -> HMENU {
+        HMENU hMenu = CreatePopupMenu();
+        
+        for (size_t j = 0; j < menu->itemCount; j++) {
+            MenuItem* item = &menu->items[j];
+            
+            if (strcmp(item->label, "-") == 0) {
+                AppendMenuW(hMenu, MF_SEPARATOR, 0, NULL);
+            } else {
+                int len = MultiByteToWideChar(CP_UTF8, 0, item->label, -1, NULL, 0);
+                std::wstring wLabel(len, 0);
+                MultiByteToWideChar(CP_UTF8, 0, item->label, -1, &wLabel[0], len);
+                
+                UINT flags = MF_STRING;
+                if (!item->enabled) flags |= MF_GRAYED;
+                if (item->checked) flags |= MF_CHECKED;
+                
+                if (item->submenu) {
+                    HMENU hSubMenu = create_windows_menu(item->submenu, cmdId);
+                    AppendMenuW(hMenu, flags | MF_POPUP, (UINT_PTR)hSubMenu, wLabel.c_str());
                 } else {
-                    // Generate unique command ID for this menu item
-                    int cmdId = 1000 + (i * 100) + j;  // Assuming max 100 items per menu
-                    
-                    // Convert label to wide string
-                    int len = MultiByteToWideChar(CP_UTF8, 0, item->label, -1, NULL, 0);
-                    std::wstring wLabel(len, 0);
-                    MultiByteToWideChar(CP_UTF8, 0, item->label, -1, &wLabel[0], len);
-                    
-                    UINT flags = MF_STRING;
-                    if (!item->enabled) flags |= MF_GRAYED;
-                    if (item->checked) flags |= MF_CHECKED;
-                    
+                    cmdId++;
                     AppendMenuW(hMenu, flags, cmdId, wLabel.c_str());
                     
-                    // Store callback and user data
                     if (item->action) {
                         menuCallbacks[cmdId] = item->action;
                         menuUserData[cmdId] = item->userData;
                     }
                 }
             }
-            
-            // Convert menu title to wide string
-            int len = MultiByteToWideChar(CP_UTF8, 0, menus[i]->title, -1, NULL, 0);
-            std::wstring wTitle(len, 0);
-            MultiByteToWideChar(CP_UTF8, 0, menus[i]->title, -1, &wTitle[0], len);
-            
-            AppendMenuW(hMenuBar, MF_POPUP, (UINT_PTR)hMenu, wTitle.c_str());
         }
+        return hMenu;
+    };
+
+    int cmdId = 1000;  // Starting ID for menu items
+    for (size_t i = 0; i < menuCount; i++) {
+        int len = MultiByteToWideChar(CP_UTF8, 0, menus[i]->title, -1, NULL, 0);
+        std::wstring wTitle(len, 0);
+        MultiByteToWideChar(CP_UTF8, 0, menus[i]->title, -1, &wTitle[0], len);
         
-        SetMenu((WINDOW_TYPE)windowHandle, hMenuBar);
-    #endif
+        HMENU hMenu = create_windows_menu(menus[i], cmdId);
+        AppendMenuW(hMenuBar, MF_POPUP, (UINT_PTR)hMenu, wTitle.c_str());
+    }
+    
+    SetMenu((WINDOW_TYPE)windowHandle, hMenuBar);
+#endif
 }
 
-#ifndef WIN32_LEAN_AND_MEAN
-    #define WIN32_LEAN_AND_MEAN 1
+void remove_window_menu(void* windowHandle) {
+#if defined(__linux__) || defined(__FreeBSD__)
+    // For GTK, we need to remove all children from the container
+    GtkWidget* container = GTK_WIDGET(windowHandle);
+    GList* children = gtk_container_get_children(GTK_CONTAINER(container));
+    
+    for(GList* iter = children; iter != NULL; iter = g_list_next(iter)) {
+        gtk_container_remove(GTK_CONTAINER(container), GTK_WIDGET(iter->data));
+    }
+    
+    g_list_free(children);
+    menuCallbacks.clear();
+    menuUserData.clear();
+    
+#elif defined(__APPLE__)
+    [NSApp setMainMenu:nil];
+    
+#elif defined(_WIN32)
+    SetMenu((HWND)windowHandle, NULL);
+    DrawMenuBar((HWND)windowHandle);
+    menuCallbacks.clear();
+    menuUserData.clear();
 #endif
+}
