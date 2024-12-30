@@ -1421,6 +1421,38 @@ proc defineLibrary*() =
                 do:
                     discard
 
+    builtin "using",
+        alias       = unaliased,
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "execute block with a pre-defined given `this` value",
+        args        = {
+            "this"  : {Any},
+            "body"  : {Block}
+        },
+        attrs       = NoAttrs,
+        returns     = {Nothing},
+        example     = """
+            p: #[name: "John" surname: "Doe" age: 38]
+            using p [
+                print \name             ; access our
+                print \age              ; fields directly
+
+                \surname: "Smith"       ; or change their value
+            ]
+            ; John
+            ; 38
+        """:
+            #=======================================================
+            prepareLeaklessOne("this")
+
+            SetSym("this", x, safe=true)
+
+            let evaled: Translation = doEval(y, useStored=false)
+            execUnscoped(evaled)
+
+            finalizeLeaklessOne()
+
     builtin "var",
         alias       = unaliased, 
         op          = opNop,
