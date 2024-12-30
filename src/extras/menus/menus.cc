@@ -171,7 +171,11 @@ void set_menu_item_shortcut(MenuItemObj* item, const char* shortcut) {
 
 void set_window_menu(void* windowHandle, struct MenuObj** menus, size_t menuCount) {
 #if defined(__linux__) || defined(__FreeBSD__)
-    auto create_gtk_menu = [&](MenuObj* menu) -> GtkWidget* {
+    // Define function type first
+    std::function<GtkWidget*(MenuObj*)> create_gtk_menu;
+    
+    // Then implement it
+    create_gtk_menu = [&](MenuObj* menu) -> GtkWidget* {
         GtkWidget* gtkMenu = gtk_menu_new();
         
         for (size_t j = 0; j < menu->itemCount; j++) {
@@ -191,7 +195,7 @@ void set_window_menu(void* windowHandle, struct MenuObj** menus, size_t menuCoun
                     g_signal_connect(menuItem, "activate",
                                    G_CALLBACK(menu_item_activated), nullptr);
                 }
-                gtk_widget_set_sensitive(menuItem, item->enabled);
+                gtk_widget_set_sensitive(menuItem, item->action != nil);
             }
             
             gtk_menu_shell_append(GTK_MENU_SHELL(gtkMenu), menuItem);
