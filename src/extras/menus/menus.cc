@@ -195,7 +195,7 @@ void set_window_menu(void* windowHandle, struct MenuObj** menus, size_t menuCoun
                     g_signal_connect(menuItem, "activate",
                                    G_CALLBACK(menu_item_activated), nullptr);
                 }
-                gtk_widget_set_sensitive(menuItem, item->action != nil);
+                gtk_widget_set_sensitive(menuItem, item->action != nullptr);
             }
             
             gtk_menu_shell_append(GTK_MENU_SHELL(gtkMenu), menuItem);
