@@ -44,18 +44,18 @@ elif defined(windows):
 type
     MenuActionCallback* = proc(userData: pointer) {.cdecl.}
 
-    MenuItem* {.importc: "struct MenuItem", bycopy.} = object
+    MenuItemObj* {.importc: "struct MenuItemObj", bycopy.} = object
         label*: cstring
         shortcut*: cstring
         enabled*: bool
         checked*: bool
         action*: MenuActionCallback
         userData*: pointer
-        submenu*: Menu
+        submenu*: MenuObj
 
-    Menu* {.importc: "struct Menu", bycopy.} = object
+    MenuObj* {.importc: "struct MenuObj", bycopy.} = object
         title*: cstring
-        items*: ptr MenuItem
+        items*: ptr MenuItemObj
         itemCount*: csize_t
 
 #=======================================
@@ -64,20 +64,20 @@ type
 
 {.push header: "menus/menus.h", cdecl.}
 
-# Menu management functions
-proc create_menu*(title: cstring): ptr Menu {.importc.}
-proc free_menu*(menu: ptr Menu) {.importc.}
+# MenuObj management functions
+proc create_menu*(title: cstring): ptr MenuObj {.importc.}
+proc free_menu*(menu: ptr MenuObj) {.importc.}
 
-proc add_menu_item*(menu: ptr Menu, label: cstring, action: MenuActionCallback): ptr MenuItem {.importc.}
-proc add_menu_separator*(menu: ptr Menu): ptr MenuItem {.importc.}
-proc add_submenu*(menu: ptr Menu, label: cstring, submenu: ptr Menu): ptr MenuItem {.importc.}
+proc add_menu_item*(menu: ptr MenuObj, label: cstring, action: MenuActionCallback): ptr MenuItemObj {.importc.}
+proc add_menu_separator*(menu: ptr MenuObj): ptr MenuItemObj {.importc.}
+proc add_submenu*(menu: ptr MenuObj, label: cstring, submenu: ptr MenuObj): ptr MenuItemObj {.importc.}
 
-proc set_menu_item_enabled*(item: ptr MenuItem, enabled: bool) {.importc.}
-proc set_menu_item_checked*(item: ptr MenuItem, checked: bool) {.importc.}
-proc set_menu_item_shortcut*(item: ptr MenuItem, shortcut: cstring) {.importc.}
+proc set_menu_item_enabled*(item: ptr MenuItemObj, enabled: bool) {.importc.}
+proc set_menu_item_checked*(item: ptr MenuItemObj, checked: bool) {.importc.}
+proc set_menu_item_shortcut*(item: ptr MenuItemObj, shortcut: cstring) {.importc.}
 
 # Window menu bar functions
-proc set_window_menu*(window: Window, menus: ptr ptr Menu, menuCount: csize_t) {.importc.}
+proc set_window_menu*(window: Window, menus: ptr ptr MenuObj, menuCount: csize_t) {.importc.}
 proc remove_window_menu*(window: Window) {.importc.}
 
 {.pop.}

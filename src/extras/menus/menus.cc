@@ -99,15 +99,15 @@
     }
 #endif
 
-Menu* create_menu(const char* title) {
-    Menu* menu = new Menu();
+MenuObj* create_menu(const char* title) {
+    MenuObj* menu = new MenuObj();
     menu->title = strdup(title);
     menu->items = nullptr;
     menu->itemCount = 0;
     return menu;
 }
 
-void free_menu(Menu* menu) {
+void free_menu(MenuObj* menu) {
     if (!menu) return;
     
     free(menu->title);
@@ -120,15 +120,15 @@ void free_menu(Menu* menu) {
     delete menu;
 }
 
-MenuItem* add_menu_item(Menu* menu, const char* label, MenuActionCallback action) {
-    MenuItem* newItems = new MenuItem[menu->itemCount + 1];
+MenuItemObj* add_menu_item(MenuObj* menu, const char* label, MenuActionCallback action) {
+    MenuItemObj* newItems = new MenuItemObj[menu->itemCount + 1];
     if (menu->itemCount > 0) {
-        memcpy(newItems, menu->items, menu->itemCount * sizeof(MenuItem));
+        memcpy(newItems, menu->items, menu->itemCount * sizeof(MenuItemObj));
         delete[] menu->items;
     }
     menu->items = newItems;
     
-    MenuItem* item = &menu->items[menu->itemCount++];
+    MenuItemObj* item = &menu->items[menu->itemCount++];
     item->label = strdup(label);
     item->shortcut = nullptr;
     item->enabled = true;
@@ -140,42 +140,42 @@ MenuItem* add_menu_item(Menu* menu, const char* label, MenuActionCallback action
     return item;
 }
 
-MenuItem* add_menu_separator(Menu* menu) {
+MenuItemObj* add_menu_separator(MenuObj* menu) {
     return add_menu_item(menu, "-", nullptr);
 }
 
-MenuItem* add_submenu(Menu* menu, const char* label, Menu* submenu) {
-    MenuItem* item = add_menu_item(menu, label, nullptr);
+MenuItemObj* add_submenu(MenuObj* menu, const char* label, MenuObj* submenu) {
+    MenuItemObj* item = add_menu_item(menu, label, nullptr);
     item->submenu = submenu;
     return item;
 }
 
-void set_menu_item_enabled(MenuItem* item, bool enabled) {
+void set_menu_item_enabled(MenuItemObj* item, bool enabled) {
     if (item) {
         item->enabled = enabled;
     }
 }
 
-void set_menu_item_checked(MenuItem* item, bool checked) {
+void set_menu_item_checked(MenuItemObj* item, bool checked) {
     if (item) {
         item->checked = checked;
     }
 }
 
-void set_menu_item_shortcut(MenuItem* item, const char* shortcut) {
+void set_menu_item_shortcut(MenuItemObj* item, const char* shortcut) {
     if (item) {
         if (item->shortcut) free(item->shortcut);
         item->shortcut = shortcut ? strdup(shortcut) : nullptr;
     }
 }
 
-void set_window_menu(void* windowHandle, struct Menu** menus, size_t menuCount) {
+void set_window_menu(void* windowHandle, struct MenuObj** menus, size_t menuCount) {
 #if defined(__linux__) || defined(__FreeBSD__)
-    auto create_gtk_menu = [&](Menu* menu) -> GtkWidget* {
+    auto create_gtk_menu = [&](MenuObj* menu) -> GtkWidget* {
         GtkWidget* gtkMenu = gtk_menu_new();
         
         for (size_t j = 0; j < menu->itemCount; j++) {
-            MenuItem* item = &menu->items[j];
+            MenuItemObj* item = &menu->items[j];
             GtkWidget* menuItem;
             
             if (strcmp(item->label, "-") == 0) {
@@ -214,7 +214,7 @@ void set_window_menu(void* windowHandle, struct Menu** menus, size_t menuCount) 
 #elif defined(__APPLE__)
     NSMenu* mainMenu = [[NSMenu alloc] init];
     
-    // Add Application Menu (first menu in the menu bar)
+    // Add Application MenuObj (first menu in the menu bar)
     NSMenuItem* appMenuItem = [[NSMenuItem alloc] init];
     NSMenu* appMenu = [[NSMenu alloc] init];
     NSString* appName = [[NSProcessInfo processInfo] processName];
@@ -293,14 +293,14 @@ void set_window_menu(void* windowHandle, struct Menu** menus, size_t menuCount) 
         menuHandler = [[menuHandlerClass alloc] init];
     }
 
-    std::function<NSMenu*(Menu*, bool)> create_ns_menu;
-    create_ns_menu = [&](Menu* menu, bool isSubmenu) -> NSMenu* {
+    std::function<NSMenu*(MenuObj*, bool)> create_ns_menu;
+    create_ns_menu = [&](MenuObj* menu, bool isSubmenu) -> NSMenu* {
         printf("Creating menu: %s (submenu: %d)\n", menu->title, isSubmenu);
         NSMenu* nsMenu = [[NSMenu alloc] initWithTitle:@(menu->title)];
         [nsMenu setAutoenablesItems:NO];
         
         for (size_t j = 0; j < menu->itemCount; j++) {
-            MenuItem* item = &menu->items[j];
+            MenuItemObj* item = &menu->items[j];
             
             if (strcmp(item->label, "-") == 0) {
                 printf("  Adding separator\n");
@@ -373,11 +373,11 @@ void set_window_menu(void* windowHandle, struct Menu** menus, size_t menuCount) 
     menuCallbacks.clear();
     menuUserData.clear();
     
-    std::function<HMENU(Menu*, int&)> create_windows_menu = [&](Menu* menu, int& cmdId) -> HMENU {
+    std::function<HMENU(MenuObj*, int&)> create_windows_menu = [&](MenuObj* menu, int& cmdId) -> HMENU {
         HMENU hMenu = CreatePopupMenu();
         
         for (size_t j = 0; j < menu->itemCount; j++) {
-            MenuItem* item = &menu->items[j];
+            MenuItemObj* item = &menu->items[j];
             
             if (strcmp(item->label, "-") == 0) {
                 AppendMenuW(hMenu, MF_SEPARATOR, 0, NULL);

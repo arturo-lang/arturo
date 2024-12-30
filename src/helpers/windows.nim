@@ -18,31 +18,31 @@ import extras/menus
 export window, menus
 
 type
-    MenuBarAction* = proc(userData: pointer) {.closure.}
+    MenuAction* = proc(userData: pointer) {.closure.}
 
-    MenuBarItemKind* = enum
-        mbkItem
-        mbkSeparator
-        mbkSubmenu
+    MenuItemKind* = enum
+        NormalItem
+        SeparatorItem
+        SubmenuItem
 
-    MenuBarItem* = ref object
-        case kind*: MenuBarItemKind
-        of mbkItem:
+    MenuItem* = ref object
+        case kind*: MenuItemKind
+        of NormalItem:
             label*: string
             shortcut*: string
             enabled*: bool
             checked*: bool
-            action*: MenuBarAction
+            action*: MenuAction
             userData*: pointer
-        of mbkSeparator:
+        of SeparatorItem:
             discard
-        of mbkSubmenu:
+        of SubmenuItem:
             submenuLabel*: string
-            submenu*: MenuBar
+            submenu*: Menu
 
-    MenuBar* = ref object
+    Menu* = ref object
         title*: string
-        items*: seq[MenuBarItem]
+        items*: seq[MenuItem]
 
 #=======================================
 # Methods
@@ -155,29 +155,22 @@ proc isMinimizable*(w: Window): bool =
 #---------------------
 
 # At the top of the module, we'll need a way to store our closures
-var menuCallbacks = newTable[pointer, MenuBarAction]()
+var menuCallbacks = newTable[pointer, MenuAction]()
 
 # Helper to create a C-compatible callback
 proc menuCallbackWrapper(userData: pointer) {.cdecl.} =
     if menuCallbacks.hasKey(userData):
         menuCallbacks[userData](userData)
 
-proc newMenuBar*(title: string): MenuBar =
-    result = MenuBar(
+proc newMenu*(title: string = ""): Menu =
+    result = Menu(
         title: title,
         items: @[]
     )
 
-proc newMenu*(): MenuBar =
-    ## Creates a new menu (not a menubar) that can be used as a submenu
-    result = MenuBar(
-        title: "",  # Submenus don't need a title in the same way as menubars
-        items: @[]
-    )
-
-proc addItem*(menu: MenuBar, label: string, action: MenuBarAction = nil, userData: pointer = nil): MenuBarItem =
-    result = MenuBarItem(
-        kind: mbkItem,
+proc addItem*(menu: Menu, label: string, action: MenuAction = nil, userData: pointer = nil): MenuItem =
+    result = MenuItem(
+        kind: NormalItem,
         label: label,
         enabled: true,
         checked: false,
@@ -186,48 +179,47 @@ proc addItem*(menu: MenuBar, label: string, action: MenuBarAction = nil, userDat
     )
     menu.items.add(result)
 
-proc addSeparator*(menu: MenuBar): MenuBarItem =
-    result = MenuBarItem(kind: mbkSeparator)
+proc addSeparator*(menu: Menu): MenuItem =
+    result = MenuItem(kind: SeparatorItem)
     menu.items.add(result)
 
-proc addSubmenu*(menu: MenuBar, label: string, submenu: MenuBar): MenuBarItem =
-    result = MenuBarItem(
-        kind: mbkSubmenu,
+proc addSubmenu*(menu: Menu, label: string, submenu: Menu): MenuItem =
+    result = MenuItem(
+        kind: SubmenuItem,
         submenuLabel: label,
         submenu: submenu
     )
     menu.items.add(result)
 
-proc enable*(item: MenuBarItem) =
-    if item.kind == mbkItem:
+proc enable*(item: MenuItem) =
+    if item.kind == NormalItem:
         item.enabled = true
 
-proc disable*(item: MenuBarItem) =
-    if item.kind == mbkItem:
+proc disable*(item: MenuItem) =
+    if item.kind == NormalItem:
         item.enabled = false
 
-proc check*(item: MenuBarItem) =
-    if item.kind == mbkItem:
+proc check*(item: MenuItem) =
+    if item.kind == NormalItem:
         item.checked = true
 
-proc uncheck*(item: MenuBarItem) =
-    if item.kind == mbkItem:
+proc uncheck*(item: MenuItem) =
+    if item.kind == NormalItem:
         item.checked = false
 
-proc setShortcut*(item: MenuBarItem, shortcut: string) =
-    if item.kind == mbkItem:
+proc setShortcut*(item: MenuItem, shortcut: string) =
+    if item.kind == NormalItem:
         item.shortcut = shortcut
 
-# Change the setMenuBar converter
-proc setMenuBar*(w: Window, menus: openArray[MenuBar]) =
-    var cMenus = newSeq[ptr Menu](menus.len)
+proc setMenus*(w: Window, menus: openArray[Menu]) =
+    var cMenus = newSeq[ptr MenuObj](menus.len)
     
     for i, menu in menus:
         cMenus[i] = create_menu(menu.title.cstring)
         
         for item in menu.items:
             case item.kind
-            of mbkItem:
+            of NormalItem:
                 if item.action != nil:
                     menuCallbacks[item.userData] = item.action
                     
@@ -238,10 +230,10 @@ proc setMenuBar*(w: Window, menus: openArray[MenuBar]) =
                 # Only enable if there's an action
                 set_menu_item_enabled(cItem, item.action != nil)
             
-            of mbkSeparator:
+            of SeparatorItem:
                 discard add_menu_separator(cMenus[i])
                 
-            of mbkSubmenu:
+            of SubmenuItem:
                 let submenuPtr = create_menu(item.submenu.title.cstring)
                 
                 for subitem in item.submenu.items:
@@ -255,7 +247,7 @@ proc setMenuBar*(w: Window, menus: openArray[MenuBar]) =
                 
                 discard add_submenu(cMenus[i], item.submenuLabel.cstring, submenuPtr)
 
-    set_window_menu(w, cast[ptr ptr Menu](addr cMenus[0]), cMenus.len.csize_t)
+    set_window_menu(w, cast[ptr ptr MenuObj](addr cMenus[0]), cMenus.len.csize_t)
 
 proc removeMenuBar*(w: Window) =
     remove_window_menu(w)
