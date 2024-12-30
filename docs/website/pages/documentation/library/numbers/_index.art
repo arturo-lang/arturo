@@ -15,7 +15,7 @@ The Numbers module extends Arturo's numerical capabilities beyond basic arithmet
 
 #### Mathematical Constants
 
-```red
+```arturo
 pi              ; => 3.141592653589793
 epsilon         ; => 2.718281828459045
 tau             ; => 6.283185307179586
@@ -23,7 +23,7 @@ tau             ; => 6.283185307179586
 
 #### Mathematical Functions
 
-```red
+```arturo
 ; exponentials and logarithms
 exp 1           ; => 2.718281828459045
 ln 10           ; => 2.302585092994046
@@ -38,7 +38,7 @@ abs neg 42      ; => 42
 
 #### Complex Numbers
 
-```red
+```arturo
 z: to :complex [3 4]    ; 3.0+4.0i
 print abs z             ; 5.0
 print angle z           ; 0.927295218001612
@@ -51,7 +51,7 @@ print z * w             ; -1.0+7.0i
 
 #### Number Theory
 
-```red
+```arturo
 ; prime numbers
 prime? 17           ; => true
 
@@ -68,7 +68,7 @@ print lcm [4 6]     ; 12
 
 #### Working with Angles
 
-```red
+```arturo
 ang: pi/6                       ; 30 degrees
 
 ; trigonometric functions
@@ -82,7 +82,7 @@ print asin 0.5                  ; 0.523598775598299
 
 #### Random Number Generation
 
-```red
+```arturo
 ; random integer in range (inclusive)
 print random 1 6    ; dice roll...
 

@@ -17,7 +17,7 @@ The Files module provides powerful functions for file operations, with intellige
 
 `read` intelligently handles different types of sources:
 
-```red
+```arturo
 ; reading from different sources
 content: read "hello.txt"               ; read local file
 content: read "https://api.com/data"    ; download from URL
@@ -29,7 +29,7 @@ content: read.file "some text.txt"      ; error if file doesn't exist
 
 #### Writing Content
 
-```red
+```arturo
 ; basic writing
 write "some content" "output.txt"
 
@@ -42,7 +42,7 @@ write.append "more content" "output.txt"
 
 #### Format Parsing & Generation
 
-```red
+```arturo
 ; reading & parsing JSON from any source
 data: read.json "data.json"              ; from local file
 data: read.json "https://api.com/data"   ; from URL
@@ -64,7 +64,7 @@ content: read.toml "config.toml"         ; parse TOML
 
 #### File System Operations
 
-```red
+```arturo
 ; check existence
 print exists? "file.txt"      ; => true/false
 print file? "file.txt"        ; => true/false
@@ -84,7 +84,7 @@ delete.directory "olddir"
 
 #### Working with Paths
 
-```red
+```arturo
 path: "photos/vacation/beach.jpg"
 
 print extract.directory path    ; photos/vacation
@@ -98,7 +98,7 @@ print normalize "~/documents"           ; expands home directory
 
 #### Reading Files Safely
 
-```red
+```arturo
 ; handle potential missing files
 if exists? "config.json" [
     settings: read.json "config.json"
@@ -112,7 +112,7 @@ if throws? [
 
 #### Bulk Operations
 
-```red
+```arturo
 ; list files in directory
 files: list "documents"
 files: list.recursive "documents"    ; include subdirectories
