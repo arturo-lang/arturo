@@ -295,7 +295,6 @@ void set_window_menu(void* windowHandle, struct MenuObj** menus, size_t menuCoun
 
     std::function<NSMenu*(MenuObj*, bool)> create_ns_menu;
     create_ns_menu = [&](MenuObj* menu, bool isSubmenu) -> NSMenu* {
-        printf("Creating menu: %s (submenu: %d)\n", menu->title, isSubmenu);
         NSMenu* nsMenu = [[NSMenu alloc] initWithTitle:@(menu->title)];
         [nsMenu setAutoenablesItems:NO];
         
@@ -303,32 +302,20 @@ void set_window_menu(void* windowHandle, struct MenuObj** menus, size_t menuCoun
             MenuItemObj* item = &menu->items[j];
             
             if (strcmp(item->label, "-") == 0) {
-                printf("  Adding separator\n");
                 [nsMenu addItem:[NSMenuItem separatorItem]];
             } else {
-                printf("  Adding item: %s (has submenu: %d)\n", 
-                       item->label, 
-                       item->submenu != nullptr);
-                
                 NSMenuItem* nsItem = [[NSMenuItem alloc] 
                     initWithTitle:@(item->label)
                     action:nil
                     keyEquivalent:@""];
                 
                 if (item->submenu) {
-                    printf("    Creating submenu for: %s\n", item->label);
-                    printf("    Submenu title: %s\n", item->submenu->title);
-                    printf("    Submenu item count: %zu\n", item->submenu->itemCount);
-                    
                     NSMenu* subMenu = create_ns_menu(item->submenu, true);
                     [subMenu setTitle:@(item->label)];
                     [nsItem setSubmenu:subMenu];
                     [nsItem setEnabled:YES];
-                    
-                    printf("    Submenu created and attached\n");
                 } else {
                     if (item->action) {
-                        printf("    Setting action for: %s\n", item->label);
                         objc_setAssociatedObject(nsItem, 
                             "callback",
                             [^{ item->action(item->userData); } copy],
