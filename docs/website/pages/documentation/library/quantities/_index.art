@@ -16,7 +16,7 @@ The Quantities module provides comprehensive support for physical quantities and
 
 #### Creating Quantities
 
-```red
+```arturo
 ; basic quantities
 distance: 100`m         ; 100 meters
 time: 9.5`s             ; 9.5 seconds
@@ -30,7 +30,7 @@ energy: 50`kWh          ; 50 kilowatt-hours
 
 #### Unit Conversions
 
-```red
+```arturo
 dist: 5`km
 print convert dist `m           ; 5000 m
 
@@ -46,7 +46,7 @@ print temp --> `degF            ; 77°F
 
 #### Unit Compatibility
 
-```red
+```arturo
 length1: 5`m
 length2: 3`km
 
@@ -64,7 +64,7 @@ print distance                 ; 250 km
 
 #### Working with Currencies
 
-```red
+```arturo
 price: 50`USD
 euros: price --> `EUR
 print euros                    ; 47.77 € (depends on the current
@@ -79,7 +79,7 @@ print yearly                   ; 60000 $/mo
 
 #### Complex Unit Calculations
 
-```red
+```arturo
 ; calculating power
 voltage: 220`V
 current: 5`A
@@ -96,7 +96,7 @@ print cost                     ; 0.33 $
 
 #### Using Physical Constants
 
-```red
+```arturo
 ; gravitational force
 G: gravitationalConstant
 m1: 5.97e24`kg                  ; mass of Earth

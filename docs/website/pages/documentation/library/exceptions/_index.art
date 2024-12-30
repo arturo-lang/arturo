@@ -16,7 +16,7 @@ The Exceptions module provides error handling functionality and predefined error
 
 #### Error Handling
 
-```red
+```arturo
 ; basic try-catch pattern
 if error? err: <= try [
     ; some risky operation
@@ -29,7 +29,7 @@ if error? err: <= try [
 
 #### Throwing Errors
 
-```red
+```arturo
 ; throw generic error
 throw "Something went wrong"
 
@@ -42,7 +42,7 @@ throw "User not found: %id=123"
 
 #### Error Testing
 
-```red
+```arturo
 ; test if operation throws an error
 if throws? [
     10 / 0
@@ -51,7 +51,7 @@ if throws? [
 
 ### Predefined Error Types
 
-```red
+```arturo
 ; available error types
 nameError           ; when symbol not found
 typeError           ; when type mismatch
