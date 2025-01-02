@@ -181,6 +181,44 @@ template builtin*(n: string, alias: VSymbol, op: OpCode, rule: PrecedenceKind, d
                 name: newWord(n)
             )
 
+template adhoc*(description: string, args: untyped, attrs: static openArray[(string,(set[ValueKind],string))], returns: ValueSpec, act: untyped): untyped =
+    ## create new builtin, but not in the global namespace;
+    ## mainly used to create function in custom
+    ## dictionaries or objects at runtime,
+    ## e.g. `window` methods 
+
+    when args.len==1 and args==NoArgs:  
+        const argsLen = 0
+    else:                               
+        const argsLen = static args.len
+
+    newBuiltin(
+            when not defined(WEB): description else: "",
+            "",
+            0,
+            static argsLen, 
+            when not defined(WEB): args.toOrderedTable else: initOrderedTable[string,ValueSpec](),
+            when not defined(WEB): attrs.toOrderedTable else: initOrderedTable[string,(ValueSpec,string)](),
+            returns, 
+            "", 
+            opNop,
+            proc () =
+                require("", args)
+
+                when attrs != NoAttrs:
+                    addAttrTypes(attrs)
+
+                act
+        )
+
+template adhocPrivate*(args: untyped, attrs: static openArray[(string,(set[ValueKind],string))], act: untyped): untyped =
+    ## create new "internal" builtin, but not in the global namespace;
+    ## mainly used to create function in custom
+    ## dictionaries or objects at runtime,
+    ## e.g. `window` methods 
+    ## these ones are not meant to be documented in code.
+    adhoc("", args, attrs, {Nothing}, act)
+
 # TODO(VM/lib) Merge constants and builtin's?
 #  Do we really - really - need another "constant" type? I doubt it whether it makes any serious performance difference, with the only exception being constants like `true`, `false`, etc.
 #  But then, it also over-complicates documentation generation for constants.

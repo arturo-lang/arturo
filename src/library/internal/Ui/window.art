@@ -1,0 +1,121 @@
+define :__webviewWindow [
+    title: ""
+    closable?: true
+    maximizable?: true
+    minimizable?: true
+    topmost?: false
+
+    get: method [what][
+        case what [
+            'size [
+                \_getSize
+            ]
+            'minSize [
+                \_getMinSize
+            ]
+            'maxSize [
+                \_getMaxSize
+            ]
+            'position [
+                \_getPosition
+            ]
+            'visible? [
+                \_isVisible
+            ]
+            'focused? [
+                \_isFocused
+            ]
+            'fullscreen? [
+                \_isFullscreen
+            ]
+            'maximized? [
+                \_isMaximized
+            ]
+            'minimized? [
+                \_isMinimized
+            ]
+            any [
+                get.field this 'what
+            ]
+        ]
+    ]
+
+    set: method [what, value][
+        case what [
+            'size           [
+                \_setSize value
+            ]
+            'minSize        [
+                \_setMinSize value
+            ]
+            'maxsize        [
+                \_setMaxSize value
+            ]
+            'position       [
+                \_setPosition value
+            ]
+            'title          [
+                set.field this 'title value
+                \_setTitle value
+            ]
+            'visible?       [
+                value ? -> \_show
+                        -> \_hide
+            ]
+            'focused?     [
+                \_setFocused value
+            ]
+            'fullscreen?    [
+                value ? -> \_fullscreen
+                        -> \_unfullscreen
+            ]
+            'closable?      [
+                set.field this 'closable? value
+                \_setClosable value
+            ]
+            'maximized?     [
+                value ? -> \_maximize
+                        -> \_unmaximize
+            ]
+            'maximizable?   [
+                set.field this 'maximizable? value
+                \_setMaximizable value
+            ]
+            'minimized?     [
+                value ? -> \_minimize
+                        -> \_unminimize
+            ]
+            'minimizable?   [
+                set.field this 'minimizable? value
+                \_setMinimizable value
+            ]
+            'topmost?       [
+                set.field this 'topmost? value
+                value ? -> \_topmost
+                        -> \_untopmost
+            ]
+            
+        ]
+    ]
+
+    ; changed: method [what][
+    ;     case what [
+    ;         'visible?       [
+    ;             \visible? ? -> \_show
+    ;                         -> \_hide
+    ;         ]
+    ;         'fullscreen?    [
+    ;             \fullscreen? ? -> \_fullscreen
+    ;                            -> \_unfullscreen
+    ;         ]
+    ;         'maximized?     [
+    ;             \maximized? ? -> \_maximize
+    ;                           -> \_unmaximize
+    ;         ]
+    ;         'topmost?       [
+    ;             \topmost?   ? -> \_topmost
+    ;                           -> \_untopmost
+    ;         ]
+    ;     ]
+    ; ]
+]
