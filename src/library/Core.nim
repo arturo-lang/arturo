@@ -1496,8 +1496,8 @@ proc defineLibrary*() =
             ; the main block is always evaluated!
             when [
                 prime? 4 -> print "yes, 4 is prime - wait, what?!"
-                prime? 5 -> print "yes, 5 is prime
-                prime? 7 -> print "yes, 6 is prime
+                prime? 5 -> print "yes, 5 is prime"
+                prime? 7 -> print "yes, 6 is prime"
                 true     -> print "none of the above was true"
             ]
             ; yes, 5 is prime
