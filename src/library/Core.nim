@@ -1496,8 +1496,8 @@ proc defineLibrary*() =
             ; the main block is always evaluated!
             when [
                 prime? 4 -> print "yes, 4 is prime - wait, what?!"
-                prime? 5 -> print "yes, 5 is prime
-                prime? 7 -> print "yes, 6 is prime
+                prime? 5 -> print "yes, 5 is prime"
+                prime? 7 -> print "yes, 6 is prime"
                 true     -> print "none of the above was true"
             ]
             ; yes, 5 is prime
@@ -1518,6 +1518,22 @@ proc defineLibrary*() =
                 true -> print "x is >= 4"
             ]
             ; x is less than 4
+            ..........
+            f: function [x][
+                print ["called F with:" x]
+                return odd? x
+            ]
+            ; short-circuiting:
+            ; conditions are not evaluated unless needed
+            when [
+                [f 10]-> print "F 10"
+                [f 11]-> print "F 11"
+                [f 12]-> print "F 12"
+            ]
+            ; called F with: 10 
+            ; called F with: 11 
+            ; F 11
+
         """:
             #=======================================================
             let withAny = (hadAttr("any"))
