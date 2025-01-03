@@ -1518,7 +1518,7 @@ proc defineLibrary*() =
                 true -> print "x is >= 4"
             ]
             ; x is less than 4
-            ....
+            ..........
             f: function [x][
                 print ["called F with:" x]
                 return odd? x
