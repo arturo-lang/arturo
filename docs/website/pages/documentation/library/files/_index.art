@@ -82,20 +82,6 @@ delete.directory "olddir"
 
 ### Common Patterns
 
-#### Working with Paths
-
-```arturo
-path: "photos/vacation/beach.jpg"
-
-print extract.directory path    ; photos/vacation
-print extract.filename path     ; beach.jpg
-print extract.extension path    ; jpg
-
-; normalize paths
-print normalize "./folder/../file.txt"  ; file.txt
-print normalize "~/documents"           ; expands home directory
-```
-
 #### Reading Files Safely
 
 ```arturo
