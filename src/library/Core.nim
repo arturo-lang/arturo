@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2024 Yanis Zafirópulos
+# (c) 2019-2025 Yanis Zafirópulos
 #
 # @file: library/Core.nim
 #=======================================================
@@ -47,6 +47,21 @@ when defined(BUNDLE):
     import vm/bundle/resources
 
 #=======================================
+# Helpers
+#=======================================
+
+proc replacingAmpersands(va: Value, what: Value): Value =
+    var theBlock = newBlock()
+    for v in va.a:
+        if v.kind == Symbol and v.m == ampersand:
+            theBlock.a.add(what)
+        elif v.kind == Block:
+            theBlock.a.add(v.replacingAmpersands(what))
+        else:
+            theBlock.a.add(v)
+    return theBlock
+
+#=======================================
 # Definitions
 #=======================================
 
@@ -73,13 +88,13 @@ proc defineLibrary*() =
             addThem: function [x, y][
                 x + y
             ]
-            alias --> 'addThem
+            alias '--> 'addThem!
     
             print --> 2 3
             ; 5
             ..........
             multiplyThem: function [x, y][ x * y ]
-            alias.infix {<=>} 'multiplyThem
+            alias.infix {<=>} 'multiplyThem!
 
             print 2 <=> 3
             ; 6
@@ -232,30 +247,105 @@ proc defineLibrary*() =
                         fid = hash(fun)
 
                     execMethod(fun, fid)
-        
+
+    # TODO(Core\case) could add `.match` option
+    #  that would actually allow us to match and 
+    #  extract pattern matches
+    #  Previous implementation:
+    #  ```
+    #  if unlikely(doMatch):
+    #      while i < arr.len-1:
+    #          var comparable {.cursor.}: Value 
+    #          if arr[i].kind == Block:
+    #              let stop = SP
+    #              execUnscoped(arr[i])
+    #              let pattern: ValueArray = sTopsFrom(stop)
+    #              comparable = newBlock(pattern)
+    #              SP = stop
+    #          else:
+    #              comparable = arr[i]
+    #          
+    #          if x == comparable:
+    #              handleBranching:
+    #                  execUnscoped(arr[i+1])
+    #              do:
+    #                  break
+    #          i += 2
+    #  ```
+    #  labels: library, new feature, 
     builtin "case",
-        alias       = unaliased,
-        op          = opNop, 
+        alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
-        description = "initiate a case block to check for different cases",
+        description = "match given argument against different values and execute corresponding block",
         args        = {
-            "predicate" : {Block,Null}
+            "argument"  : {Any},
+            "matches"   : {Block, Dictionary}
         },
         attrs       = NoAttrs,
-        returns     = {Nothing},
+        returns     = {Logical},
         example     = """
-            a: 2
-            case [a]
-                when? [<2] -> print "a is less than 2"
-                when? [=2] -> print "a is 2"
-                else       -> print "a is greater than 2"
+            x: 2
+
+            ; the main block is always evaluated!
+            case x [
+                1   -> print "x is one!"
+                2   -> print "x is two!"
+                any -> print "x is none of the above"
+            ]
+            ; x is two!
+            ..........
+            key: "one"
+            case key [
+                "one" 1,        ; we can also return
+                "two" 2         ; simple constant values directly
+            ]
+            ; => 2
+            ..........
+            case "hello" #[
+                hello: "hola"
+                adios: "goodbye"
+            ]
+            ; => "hola"
         """:
             #=======================================================
-            if xKind==Null:
-                push(newBlock())
+            if likely(yKind == Block):
+                let stop = SP
+                execUnscoped(y)
+                let arr: ValueArray = sTopsFrom(stop)
+                SP = stop
+
+                var i = 0
+                while i < arr.len-1:
+                    if x == arr[i]:
+                        let blk {.cursor.} = arr[i+1]
+                        if likely(blk.kind == Block):
+                            handleBranching:
+                                execUnscoped(arr[i+1])
+                            do:
+                                break
+                        else:
+                            push(blk)
+                    i += 2
             else:
-                push(x)
-            push(newLogical(false))
+                var gotValue: Value = nil
+                case xKind:
+                    of String, Word, Literal:
+                        gotValue = GetDictionaryKey(y, x.s, withError=false)
+                    else:
+                        gotValue = GetDictionaryKey(y, $(x), withError=false)
+
+                if gotValue.isNil:
+                    gotValue = GetDictionaryKey(y, "any", withError=false)
+                
+                if not gotValue.isNil:
+                    if gotValue.kind == Block:
+                        handleBranching:
+                            execUnscoped(gotValue)
+                        do:
+                            discard
+                    else:
+                        push(gotValue)
 
     builtin "coalesce",
         alias       = doublequestion, 
@@ -311,6 +401,35 @@ proc defineLibrary*() =
         """:
             #=======================================================
             raise ContinueTriggered()
+
+    # TODO(Core\discard) could be assigned an individual *op*?
+    #   this could potentially allow us to further optimize it, at a bytecode level.
+    #   for example, `push - opdiscard` could be reduced to... nothing at all ;-)
+    #  labels: library, bytecode, enhancement
+    builtin "discard",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "discard given value, without pushing it onto the stack",
+        args        = {
+            "value"         : {Any}
+        },
+        attrs       = NoAttrs,
+        returns     = {Nothing},
+        example     = """
+            validInteger?: function [str][
+                not? throws? [
+                    discard to :integer str
+                    ; we don't really need the value here -
+                    ; we just want to see if the operation throws an error
+                ]
+            ]
+
+            print validInteger? "123"
+            ; true
+        """:
+            #=======================================================
+            discard
 
     # TODO(Core\do) not working well with Bytecode?
     #  labels: bug, critical, library, values
@@ -425,6 +544,9 @@ proc defineLibrary*() =
             push(x)
             push(x)
 
+    # TODO(Core\else) should be marked as deprecated
+    #   https://github.com/arturo-lang/arturo/pull/1735
+    #  labels: library,→ Core, deprecated
     builtin "else",
         alias       = unaliased, 
         op          = opElse,
@@ -599,10 +721,9 @@ proc defineLibrary*() =
                 ;; }
 
                 mult?: attr 'mult
-                if? not? null? mult? ->
-                    return mult? * x + y
-                else ->
-                    return x + y
+                switch not? null? mult? 
+                    -> return mult? * x + y
+                    -> return x + y
             ]
 
             info'addThem
@@ -633,8 +754,8 @@ proc defineLibrary*() =
             ..........
             ; memoization
             fib: $[x].memoize[
-                if? x<2 [1]
-                else [(fib x-1) + (fib x-2)]
+                switch x<2 -> 1
+                           -> (fib x-1) + (fib x-2)
             ]
 
             loop 1..25 [x][
@@ -693,43 +814,6 @@ proc defineLibrary*() =
             let condition = not (xKind==Null or isFalse(x))
             if condition: 
                 execUnscoped(y)
-
-    builtin "if?",
-        alias       = unaliased, 
-        op          = opIfE,
-        rule        = PrefixPrecedence,
-        description = "perform action, if given condition is not false or null and return condition result",
-        args        = {
-            "condition" : {Any},
-            "action"    : {Block}
-        },
-        attrs       = NoAttrs,
-        returns     = {Logical},
-        example     = """
-            x: 2
-            
-            result: if? x=2 -> print "yes, that's right!"
-            ; yes, that's right!
-            
-            print result
-            ; true
-            ..........
-            x: 2
-            z: 3
-            
-            if? x>z [
-                print "x was greater than z"
-            ]
-            else [
-                print "nope, x was not greater than z"
-            ]
-        """:
-            #=======================================================
-            let condition = not (xKind==Null or isFalse(x))
-            if condition: 
-                execUnscoped(y)
-
-            push(newLogical(condition))
 
     when (not defined(MINI)) or defined(BUNDLE):
         # TODO(Core/__VerbosePackager) Find an elegant way to inject hidden functions
@@ -1337,6 +1421,38 @@ proc defineLibrary*() =
                 do:
                     discard
 
+    builtin "using",
+        alias       = unaliased,
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "execute block with a pre-defined given `this` value",
+        args        = {
+            "this"  : {Any},
+            "body"  : {Block}
+        },
+        attrs       = NoAttrs,
+        returns     = {Nothing},
+        example     = """
+            p: #[name: "John" surname: "Doe" age: 38]
+            using p [
+                print \name             ; access our
+                print \age              ; fields directly
+
+                \surname: "Smith"       ; or change their value
+            ]
+            ; John
+            ; 38
+        """:
+            #=======================================================
+            prepareLeaklessOne("this")
+
+            SetSym("this", x, safe=true)
+
+            let evaled: Translation = doEval(y, useStored=false)
+            execUnscoped(evaled)
+
+            finalizeLeaklessOne()
+
     builtin "var",
         alias       = unaliased, 
         op          = opNop,
@@ -1362,6 +1478,94 @@ proc defineLibrary*() =
                 push(FetchSym(x.s))
             else:
                 push(FetchPathSym(x.p))
+
+    builtin "when",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "check conditions one by one and execute corresponding block accordingly",
+        args        = {
+            "conditions"   : {Block}
+        },
+        attrs       = {
+            "any"   : ({Logical},"check all conditions, without breaking, regardless of success"),
+            "has"   : ({Any}, "prepend given value to each of the conditions")
+        },
+        returns     = {Logical},
+        example     = """
+            ; the main block is always evaluated!
+            when [
+                prime? 4 -> print "yes, 4 is prime - wait, what?!"
+                prime? 5 -> print "yes, 5 is prime"
+                prime? 7 -> print "yes, 6 is prime"
+                true     -> print "none of the above was true"
+            ]
+            ; yes, 5 is prime
+            ..........
+            when.any [
+                prime? 4 -> print "yes, 4 is prime - wait, what?!"
+                prime? 5 -> print "yes, 5 is prime"
+                prime? 7 -> print "yes, 7 is prime"
+            ]
+            ; yes, 5 is prime
+            ; yes, 7 is prime
+            ..........
+            x: 2
+            when.has: x [
+                [=0] -> print "x is zero!"
+                [<1] -> print "x is less than 1"
+                [<4] -> print "x is less than 4"
+                true -> print "x is >= 4"
+            ]
+            ; x is less than 4
+            ..........
+            f: function [x][
+                print ["called F with:" x]
+                return odd? x
+            ]
+            ; short-circuiting:
+            ; conditions are not evaluated unless needed
+            when [
+                [f 10]-> print "F 10"
+                [f 11]-> print "F 11"
+                [f 12]-> print "F 12"
+            ]
+            ; called F with: 10 
+            ; called F with: 11 
+            ; F 11
+
+        """:
+            #=======================================================
+            let withAny = (hadAttr("any"))
+            var has: Value = nil
+            if checkAttr("has"):
+                has = aHas
+            
+            let stop = SP
+            execUnscoped(x)
+            let arr: ValueArray = sTopsFrom(stop)
+            SP = stop
+
+            var i = 0
+            while i < arr.len-1:
+                var item = arr[i]
+
+                if item.kind == Block:
+                    var blk = newBlock(item.a)
+
+                    if not has.isNil:
+                        blk.a = @[has] & blk.a
+
+                    execUnscoped(blk)
+                    item = stack.pop()
+                
+                if not (item.kind==Null or isFalse(item)):
+                    handleBranching:
+                        execUnscoped(arr[i+1])
+                    do:
+                        if not withAny:
+                            break
+                i += 2
 
     builtin "while",
         alias       = unaliased, 
@@ -1463,6 +1667,17 @@ proc defineLibrary*() =
     # Predicates
     #----------------------------
 
+    # TODO(Core\if?) do we get rid of this?
+    #   obviously, this is not needed and it is not
+    #   meant to be used as a substitute for if-else
+    #   however, does it make sense to keep a version
+    #   of `if` that also returns whether the condition
+    #   succeeded or not? why? (or "why not?")
+    #   btw, an almost identical solution would be:
+    #   ```
+    #   if <= some condition [ ... ]#
+    #   ```
+    #  labels: library,→ Core, open discussion
     builtin "if?",
         alias       = unaliased, 
         op          = opIfE,
@@ -1556,6 +1771,9 @@ proc defineLibrary*() =
 
             push(newLogical(condition))
 
+    # TODO(Core\when?) should be marked as deprecated
+    #   https://github.com/arturo-lang/arturo/pull/1735
+    #  labels: library,→ Core, deprecated
     builtin "when?",
         alias       = unaliased, 
         op          = opNop,
@@ -1568,6 +1786,7 @@ proc defineLibrary*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
+            ; DEPRECATED!
             a: 2
             case [a]
                 when? [<2] -> print "a is less than 2"
@@ -1599,6 +1818,16 @@ proc defineLibrary*() =
     #----------------------------
     # Constants
     #----------------------------
+
+    # TODO(Core\any) `_` could be aliased to `any`
+    #  we should clean up word definitions and consider
+    #  it a pure symbol first.
+    #  https://github.com/arturo-lang/arturo/pull/1774
+    # labels: library,→ Core, enhancement
+    constant "any",
+        alias       = unaliased,
+        description = "the ANY constant":
+            VANY
 
     constant "null",
         alias       = slashedzero,

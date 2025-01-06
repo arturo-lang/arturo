@@ -1,0 +1,15 @@
+vampire?: function [n][
+    f: (factors n)-- n
+    i: 0
+    ds: sort digits n
+    while [i < (size f)/2][
+        d: n / f\[i]
+        if and? [contains? f d]
+                [ds = sort (digits f\[i]) ++ digits d] -> return @[n, f\[i], d]
+        i: i + 1
+    ]
+    return []
+]
+
+print select 1000..9999 => [not? empty? vampire? &]
+print select 100000..999999 => [not? empty? vampire? &]

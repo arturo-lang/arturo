@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2024 Yanis Zafirópulos
+# (c) 2019-2025 Yanis Zafirópulos
 #
 # @file: vm/values/comparison.nim
 #=======================================================
@@ -120,6 +120,9 @@ proc `==`*(x: Value, y: Value): bool =
             of ErrorKind  || Error     : return x.errkind  == y.err.kind
             else:
                 discard
+
+    if x.kind == Any or y.kind == Any:
+        return true
 
     if x.kind != y.kind:
         return false
@@ -327,6 +330,9 @@ proc `<`*(x: Value, y: Value): bool {.inline.}=
             else:
                 discard
 
+    if x.kind == Any or y.kind == Any:
+        return true
+
     if x.kind != y.kind:
         return false
 
@@ -399,6 +405,9 @@ proc `>`*(x: Value, y: Value): bool {.inline.}=
             of Quantity   || BigInteger:   (when GMP: return x.q             > y.bi)
             else:
                 discard
+
+    if x.kind == Any or y.kind == Any:
+        return true
 
     if x.kind != y.kind:
         return false

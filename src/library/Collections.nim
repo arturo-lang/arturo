@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2024 Yanis Zafirópulos
+# (c) 2019-2025 Yanis Zafirópulos
 #
 # @file: library/Collections.nim
 #=======================================================
@@ -699,7 +699,9 @@ proc defineLibrary*() =
             "collection": {String, Block, Range, Dictionary, Object, Store, Date, Binary, Bytecode, Complex, Error, ErrorKind},
             "index"     : {Any}
         },
-        attrs       = NoAttrs,
+        attrs       = {
+            "safe"  : ({Logical}, "get value, overriding potential magic methods (only for Object values)")
+        },
         returns     = {Any},
         example     = """
             user: #[
@@ -733,6 +735,13 @@ proc defineLibrary*() =
             print a\real                  ; 1.0
             print a\imaginary             ; 2.0
             print a\1                     ; 2.0
+            ..........
+            define :person [
+                get: method [what][
+                    (key? this what)? -> get.safe this what     ; if the key exists, return the value
+                                      -> "DEFAULT"              ; otherwise, do something else
+                ]
+            ]
         """:
             #=======================================================
             case xKind:
@@ -809,14 +818,14 @@ proc defineLibrary*() =
                         of String, Word, Literal:
                             if (let got = GetObjectKey(x, y.s, withError=false); not got.isNil):
                                 push(got)
-                            elif x.magic.fetch(GetM):
+                            elif x.magic.fetch(GetM) and (not hadAttr("safe")):
                                 mgk(@[x, y]) # value already pushed
                             else:
                                 discard GetObjectKey(x, y.s) # Merely to trigger the error
                         else:
                             if (let got = GetObjectKey(x, $(y), withError=false); not got.isNil):
                                 push(got)
-                            elif x.magic.fetch(GetM):
+                            elif x.magic.fetch(GetM) and (not hadAttr("safe")):
                                 mgk(@[x, y]) # value already pushed
                             else:
                                 discard GetObjectKey(x, $(y)) # Merely to trigger the error
@@ -1728,7 +1737,9 @@ proc defineLibrary*() =
             "index"     : {Any},
             "value"     : {Any}
         },
-        attrs       = NoAttrs,
+        attrs       = {
+            "safe"  : ({Logical}, "set value, overriding potential magic methods (only for Object values)")
+        },
         returns     = {Nothing},
         example     = """
             myDict: #[
@@ -1750,6 +1761,15 @@ proc defineLibrary*() =
             str\0: `x`
             print str
             ; xello
+            ..........
+            define :person [
+                set: method [what, value][
+                    ; do some processing...
+
+                    set.safe this what value
+                    ; and actually set the value internally
+                ]
+            ]
         """:
             #=======================================================
             case xKind:
@@ -1802,7 +1822,7 @@ proc defineLibrary*() =
                 of Object:
                     if unlikely(x.magic.fetch(ChangingM)):
                         mgk(@[x, y])
-                    if (x.magic.fetch(SetM) and (y.kind in {String,Word,Literal,Label}) and (y.s notin toSeq(x.proto.fields.keys()))):
+                    if (x.magic.fetch(SetM) and (not hadAttr("safe")) and (y.kind in {String,Word,Literal,Label}) and (y.s notin toSeq(x.proto.fields.keys()))):
                         mgk(@[x, y, z])
                     else:
                         case yKind:

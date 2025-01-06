@@ -1,4 +1,4 @@
 source: read "input.txt"
-write "output.txt" source
+source >> "output.txt"
  
 print source
