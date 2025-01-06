@@ -77,12 +77,6 @@ suite "array <source>" [
         assert -> equal? [1 3 5] @range.step: 2 1 5
         assert -> equal? ['a' 'c'] @range.step: 2 'a' 'c'
     ]
-    
-    test.skip "array :string should return a parsed :block from file" [
-        ; expected: ["Arturo" "is perfect!"]
-        ; actual: @./"array.example.art"
-        ; assert -> equal? expected actual
-    ]
 
     test "array :block should evaluate it" [
         data: [
@@ -106,4 +100,16 @@ suite "array <source>" [
         assert -> equal? expected actual
     ]
 
+]
+
+;; I had to put this test here,
+;; so `@` won't try to get the file from `unitt`'s path
+test "array :string should return a parsed :block from file" [
+    expected: ["Arturo" "is perfect!"]
+    actual: @{
+        append "Art" "uro"
+        join.with: " " ["is" "perfect!"]
+    }
+
+    assert -> equal? expected actual
 ]
