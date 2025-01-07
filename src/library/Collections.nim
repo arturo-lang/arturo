@@ -200,12 +200,10 @@ proc defineLibrary*() =
 
             proc array(source: string): ValueArray =
                 let stop = SP
-                let (_{.inject.}, tp) = getSource(source)
+                let (src, tp) = getSource(source)
 
-                if tp != TextData:
-                    execUnscoped(doParse(source, isFile=false))
-                else:
-                    Error_FileNotFound(source)
+                execUnscoped(doParse(src, isFile=false))
+
                 result = sTopsFrom(stop)
                 SP = stop
 
