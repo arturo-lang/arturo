@@ -3,7 +3,7 @@
 # GMP BigNum library wrapper
 # for Nim
 #
-# (c) 2024 Yanis Zafirópulos
+# (c) 2019-2025 Yanis Zafirópulos
 # 
 # @license: see LICENSE file
 # @file: extras/gmp.nim

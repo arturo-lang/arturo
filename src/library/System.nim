@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2024 Yanis Zafirópulos
+# (c) 2019-2025 Yanis Zafirópulos
 #
 # @file: library/Shell.nim
 #=======================================================
@@ -277,21 +277,21 @@ proc defineLibrary*() =
             "message"   : {String}
         },
         attrs       = {
-            "code"      : ({Integer},"return given exit code"),
+            "code"      : ({Integer},"return given exit code (default: 1)"),
             "unstyled"  : ({Logical},"don't use default error template")
         },
         returns     = {Logical},
         example     = """
-            panic.code:1 "something went terribly wrong. quitting..."
-            ; quits with the given code and 
-            ; prints a properly format error with the given message
-            ..........
             panic.unstyled "oops! that was wrong"
-            ; quits with the default exit code (= 0) and
+            ; quits with the default exit code (= 1) and
             ; just outputs a simple - unformatted - message
+            ..........
+            panic.code:0 "something went terribly wrong. quitting..."
+            ; quits without an error code but still
+            ; prints a properly formatted error with the given message
         """:
             #=======================================================
-            var code = 0
+            var code = 1
             if checkAttr("code"):
                 code = aCode.i
 
@@ -464,7 +464,7 @@ proc defineLibrary*() =
             inspect sys
             ;[ :dictionary
             ;        author     :        Yanis Zafirópulos :string
-            ;        copyright  :        (c) 2019-2024 :string
+            ;        copyright  :        (c) 2019-2025 :string
             ;        version    :        0.9.84-alpha+3126 :version
             ;        built      :        [ :date
             ;                hour        :                16 :integer

@@ -4,8 +4,8 @@ mobius: function [n][
     f: factors.prime n
 
     if f <> unique f -> return 0
-    if? odd? size f -> return neg 1
-    else -> return 1
+    switch odd? size f -> return neg 1
+                       -> return 1
 ]
 
 loop split.every:20 map 0..199 => mobius 'a ->

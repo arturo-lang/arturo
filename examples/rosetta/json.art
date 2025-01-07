@@ -11,4 +11,4 @@ object: #[
 	married: false
 ]
 
-print write.json ø object 
+print write.json object ø

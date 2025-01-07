@@ -1,8 +1,10 @@
 rot13: function [c][
-    case [in? lower c]
-        when? -> 'a'..'m' -> return to :char (to :integer c) + 13
-        when? -> 'n'..'z' -> return to :char (to :integer c) - 13
-        else  -> return c
+    lc: lower c
+    when.has: lc [
+        [|in? 'a'..'m'] -> return to :char (to :integer c) + 13
+        [|in? 'n'..'z'] -> return to :char (to :integer c) - 13
+        true            -> return c
+    ]
 ]
 
 loop "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz" 'ch 
