@@ -1,0 +1,12 @@
+;; Test @ being read from some file,
+;; in this case, ``array.example.art``.
+
+import {unitt}!
+
+exampleFile: ./"array.example.art"
+
+test "Array can read files (array.example.art)" [
+    expected: [1 2 3]
+    actual: @exampleFile
+    assert -> expected = actual 
+]
