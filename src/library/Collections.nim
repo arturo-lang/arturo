@@ -361,7 +361,7 @@ proc defineLibrary*() =
         rule        = PrefixPrecedence,
         description = "get combination of elements in given collections as array of tuples",
         args        = {
-            "collectionA"   : {Block},
+            "collectionA"   : {Block, Literal, PathLiteral},
             "collectionB"   : {Block}
         },
         attrs       = NoAttrs,
@@ -371,7 +371,15 @@ proc defineLibrary*() =
             ; => [["one" 1] ["two" 2] ["three" 3]]
         """:
             #=======================================================
-            push(newBlock(zip(x.a, y.a).map((z)=>newBlock(@[z[0], z[1]]))))
+            proc couple(left: ValueArray, right: ValueArray): ValueArray =
+                zip(left, right)
+                    .map((element) => newBlock(@[element[0], element[1]]))
+
+            if xKind in {Literal, PathLiteral}:
+                ensureInPlaceAny()
+                InPlaced.a = couple(Inplaced.a, y.a)
+            else:
+                push newBlock couple(x.a, y.a)
 
     builtin "decouple",
         alias       = unaliased,
