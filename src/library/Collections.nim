@@ -368,7 +368,7 @@ proc defineLibrary*() =
         returns     = {Block},
         example     = """
             couple ["one" "two" "three"] [1 2 3]
-            ; => [[1 "one"] [2 "two"] [3 "three"]]
+            ; => [["one" 1] ["two" 2] ["three" 3]]
         """:
             #=======================================================
             push(newBlock(zip(x.a, y.a).map((z)=>newBlock(@[z[0], z[1]]))))
