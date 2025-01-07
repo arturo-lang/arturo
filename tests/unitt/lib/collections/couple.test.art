@@ -15,15 +15,12 @@ test "keeps the order" [
     assert -> expected = actual
 ]
 
-;; unitt needs to be updated to skip before-hand,
-;; So I can add tests for features that does not exists yet.
-
-; test.skip "inplace-equivalence" [
-;     left: ["one" "two" "three"]
-;     right: [1 2 3]
+test "inplace-equivalence" [
+    left: ["one" "two" "three"]
+    right: [1 2 3]
     
-;     [reference inplaced]: 
-;         inplaceEquivalence left 'couple @[right]
+    [reference inplaced]: 
+        inplaceEquivalence left 'couple @[right]
     
-;     assert -> reference = inplaced
-; ]
+    assert -> reference = inplaced
+]
