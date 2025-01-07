@@ -399,13 +399,19 @@ proc defineLibrary*() =
             ; => ["one" "two" "three"] [1 2 3]
         """:
             #=======================================================
+            proc decouple(value: ValueArray): ValueArray =
+                let res = value.map(couple => (
+                    couple.requireValue({Block, Inline}); 
+                    (couple.a[0], couple.a[1])
+                )).unzip()
+
+                @[newBlock(res[0]), newBlock(res[1])]
+
             if xKind in {Literal, PathLiteral}:
                 ensureInPlaceAny()
-                let res = unzip(InPlaced.a.map((w)=>(requireValue(w,{Block,Inline});(w.a[0], w.a[1]))))
-                InPlaced.a = @[newBlock(res[0]), newBlock(res[1])]
+                InPlaced.a = decouple(Inplaced.a)
             else:
-                let res = unzip(x.a.map((z)=>(requireValue(z,{Block,Inline});(z.a[0], z.a[1]))))
-                push(newBlock(@[newBlock(res[0]), newBlock(res[1])]))
+                push newBlock(decouple(x.a))
 
     builtin "dictionary",
         alias       = sharp,
