@@ -115,7 +115,7 @@ suite "inject fields with `.with`" [
             country: "Spain"
         ]
 
-        actual: locationzcountry
+        actual: location\country
         assert -> "Spain" = location\country
     ]
 
