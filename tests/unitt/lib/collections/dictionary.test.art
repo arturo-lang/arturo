@@ -1,2 +1,42 @@
 import {unitt}!
 
+suite "storage and access" [
+
+    suite "simple dictionary" [
+        person: #[
+            name: "John"
+            surname: "Doe"
+            age: 35
+        ]
+
+        test "should store all fields" [
+            assert -> "John" = person\name
+            assert -> "Doe" = person\surname
+            assert -> 35 = person\age
+        ]
+    ]
+
+    suite "nested dictionary" [
+        resident: #[
+            fullname: "John Doe"
+            location: #[
+                country: "Brazil"
+                city: "São Paulo"
+            ]
+        ]
+
+        test "should access 1-depth values" [
+            expectedLocation: #[country: "Brazil" city: "São Paulo"]
+
+            assert -> "John Doe" = resident\fullname
+            assert -> expectedLocation = resident\location
+        ]
+
+        test "should access n-depth values" [
+            assert -> "Brazil" = resident\location\country
+            assert -> "São Paulo" = resident\location\city
+        ]
+
+    ]
+]
+

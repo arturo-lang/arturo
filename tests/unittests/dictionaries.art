@@ -1,36 +1,3 @@
-; SIMPLE DICTIONARY
-
-print #[
-	name: "John"
-	surname: "Doe"
-	age: 35
-]
-
-di: #[
-	name: "John"
-	surname: "Doe"
-	age: 35
-]
-
-print di
-
-; NESTED DICTIONARY
-; + VARIABLE REFERENCES
-; the inner (dictionary) scope 
-; should be able to read external variables
-
-cntr: "Spain"
-
-ei: #[
-	name: "John"
-	surname: "Doe"
-	location: #[
-		country: cntr
-	]
-]
-
-print ei
-
 ; DICTIONARY
 ; + VARIABLE REFERENCES
 ; the inner - dictionary - scope 
