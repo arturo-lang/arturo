@@ -140,3 +140,32 @@ suite "inject fields with `.with`" [
     ]
 
 ]
+
+
+suite "construction from raw" [
+
+    test "should store all keys & values in order" [
+        actual: dictionary.raw [name "John" surname "Doe" age 35]
+
+        actualKeys: keys actual
+        assert -> [name surname age] = actualKeys
+        
+        actualValues: values actual
+        assert -> ["John" "Doe" 35] = actualValues
+    ]
+    
+    test "should not evaluate :block" [
+        ; External variables
+        name: "nome"
+        john: "Jane"
+
+        actual: dictionary.raw [name john]
+
+        assert -> in? "name" keys actual
+        assert -> in? (to :word "john") values actual
+        
+        assert -> not? in? "nome" keys actual
+        assert -> not? in? "Jane" values actual
+    ]
+
+]
