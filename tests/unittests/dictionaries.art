@@ -1,20 +1,4 @@
 ; DICTIONARY 
-; IN A BLOCK
-
-do [ 
-    b: #[
-        some: "value"
-    ]
-    print b
-]
-
-switch set? 'b [
-	print b
-][
-	print "b: not set -> NOT CORRECT"
-]
-
-; DICTIONARY 
 ; RETURNED FROM A FUNCTION
 
 getUser: function [x][

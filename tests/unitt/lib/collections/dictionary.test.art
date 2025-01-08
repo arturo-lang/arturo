@@ -93,6 +93,15 @@ suite "scope and evaluation" [
         assert -> 3 = actual
     ]
 
+    test "should be accessible after a block evaluation" [
+        do -> example: #[some: "value"]
+        
+        assert -> set? 'example
+
+        actual: example\some
+        assert -> "value" = example\some
+    ]
+
 ]
 
 suite "inject fields with `.with`" [
