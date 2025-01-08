@@ -48,6 +48,13 @@ suite "storage and access" [
             assert -> "Brazil" = actualCountry
         ]
 
+        test "should store keys as lower when .lower" [
+            example: #.lower [USERNAME: "Rick"]
+            
+            actual: keys example
+            assert -> ["username"] = actual 
+        ]
+
     ]
 ]
 
