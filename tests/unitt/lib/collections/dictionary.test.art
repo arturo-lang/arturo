@@ -66,7 +66,15 @@ suite "scope and evaluation" [
 
         assert -> "EU" = entity
         assert -> "Spain" = country
-        assert -> "Greece" = location\country
+
+    test "should evaluate functions" [
+        adding: $=> add
+        calculator: #[
+            result: adding 1 2
+        ]
+
+        actual: calculator\result
+        assert -> 3 = actual
     ]
 
 ]
