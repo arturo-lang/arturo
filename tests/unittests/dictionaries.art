@@ -1,16 +1,3 @@
-; DICTIONARY
-; + EMBEDDED VARIABLES
-; the dictionary should be able 
-; to inject outer fields/variable
-; (with the same name and value)
-
-location: #.with:['entity][
-	continent: "Europe"
-	country: "Spain"
-]
-
-print location
-
 ; DICTIONARY 
 ; IN A BLOCK
 

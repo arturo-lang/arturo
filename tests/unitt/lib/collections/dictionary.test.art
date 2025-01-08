@@ -94,3 +94,40 @@ suite "scope and evaluation" [
     ]
 
 ]
+
+suite "inject fields with `.with`" [
+
+    test "should contain \entity field" [
+        entity: "EU"
+        
+        location: dictionary.with: [entity][
+            country: "Spain"
+        ]
+
+        actual: location\entity
+        assert -> "EU" = location\entity
+    ]
+
+    test "should keep other fields" [
+        entity: "EU"
+        
+        location: dictionary.with: [entity][
+            country: "Spain"
+        ]
+
+        actual: locationzcountry
+        assert -> "Spain" = location\country
+    ]
+
+    test "should accept [:literal]" [
+        entity: "EU"
+        
+        location: dictionary.with: ['entity][
+            country: "Spain"
+        ]
+
+        actual: location\entity
+        assert -> "EU" = location\entity
+    ]
+
+]
