@@ -10,9 +10,14 @@ suite "storage and access" [
         ]
 
         test "should store all fields" [
-            assert -> "John" = person\name
-            assert -> "Doe" = person\surname
-            assert -> 35 = person\age
+            actualName: person\name
+            assert -> "John" = actualName
+
+            actualSurname: person\surname
+            assert -> "Doe" = actualSurname
+
+            actualAge: person\age
+            assert -> 35 = actualAge
         ]
     ]
 
@@ -28,13 +33,19 @@ suite "storage and access" [
         test "should access 1-depth values" [
             expectedLocation: #[country: "Brazil" city: "São Paulo"]
 
-            assert -> "John Doe" = resident\fullname
-            assert -> expectedLocation = resident\location
+            actualFullname: resident\fullname
+            assert -> "John Doe" = actualFullname
+
+            actualLocation: resident\location
+            assert -> expectedLocation = actualLocation
         ]
 
         test "should access n-depth values" [
-            assert -> "Brazil" = resident\location\country
-            assert -> "São Paulo" = resident\location\city
+            actualCity: resident\location\city
+            assert -> "São Paulo" = actualCity
+
+            actualCountry: resident\location\country
+            assert -> "Brazil" = actualCountry
         ]
 
     ]
@@ -51,7 +62,8 @@ suite "scope and evaluation" [
             city: "Madrid"
         ]
 
-        assert -> country = resident\country
+        actual: resident\country
+        assert -> country = actual
     ]
 
     test "should not alter outside values with same label" [
@@ -66,6 +78,10 @@ suite "scope and evaluation" [
 
         assert -> "EU" = entity
         assert -> "Spain" = country
+        
+        actual: location\country
+        assert -> "Greece" = actual
+    ]
 
     test "should evaluate functions" [
         adding: $=> add
