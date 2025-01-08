@@ -148,7 +148,7 @@ suite "construction from raw" [
         actual: dictionary.raw [name "John" surname "Doe" age 35]
 
         actualKeys: keys actual
-        assert -> [name surname age] = actualKeys
+        assert -> ["name" "surname" "age"] = actualKeys
         
         actualValues: values actual
         assert -> ["John" "Doe" 35] = actualValues
