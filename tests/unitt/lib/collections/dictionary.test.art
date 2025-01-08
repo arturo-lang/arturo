@@ -40,3 +40,33 @@ suite "storage and access" [
     ]
 ]
 
+suite "scope and evaluation" [
+
+    test "should read out-of-scope variables" [
+        country: "Spain"    ; out-of-scope variable
+
+        resident: #[
+            fullname: "John Doe"
+            country: country
+            city: "Madrid"
+        ]
+
+        assert -> country = resident\country
+    ]
+
+    test "should not alter outside values with same label" [
+        country: "Spain"
+        entity: "EU"
+
+        location: #[
+            continent: "Europe"
+            country: "Greece"
+            entity: entity
+        ]
+
+        assert -> "EU" = entity
+        assert -> "Spain" = country
+        assert -> "Greece" = location\country
+    ]
+
+]

@@ -1,21 +1,4 @@
 ; DICTIONARY
-; + VARIABLE REFERENCES
-; the inner - dictionary - scope 
-; should be able to read external variables
-; but not be confused or altered them
-
-country: "Spain"
-entity: "EU"
-
-location: #[
-	continent: "Europe"
-	country: "Greece"
-	entity: entity
-]
-
-print location
-
-; DICTIONARY
 ; + EMBEDDED VARIABLES
 ; the dictionary should be able 
 ; to inject outer fields/variable
