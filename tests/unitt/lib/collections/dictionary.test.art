@@ -146,6 +146,14 @@ suite "inject fields with `.with`" [
         assert -> "EU" = location\entity
     ]
 
+    test "should store injected keys as lower when .lower" [
+        ENTITY: "EU"
+        example: #.lower.with: [ENTITY][]
+
+        actual: keys example
+        assert -> ["entity"] = actual 
+    ]
+
 ]
 
 
