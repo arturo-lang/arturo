@@ -169,3 +169,27 @@ suite "construction from raw" [
     ]
 
 ]
+
+suite "dictionary from function" [
+
+    test "should return dictionary" [
+        returnsDict: $[][
+            #[some: "value"]
+        ]
+
+        assert -> (#[some: "value"]) = returnsDict
+        
+        actual: returnsDict
+        actualField: actual\some
+        assert -> "value" = actualField 
+    ]
+
+    test "should access field direclty for 0-arity" [
+        returnsDict: $[][
+            #[some: "value"]
+        ]
+
+        assert -> "value" = returnsDict\some
+    ]
+
+]
