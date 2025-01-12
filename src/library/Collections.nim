@@ -1977,6 +1977,22 @@ proc defineLibrary*() =
             b: ["one" "two" "three"]
             sort 'b
             print b                       ; one three two
+            ..........
+            ; Creating a Priority Queue
+            tasks: []
+
+            ; add tasks with priorities
+            'tasks ++ #[priority: 3 task: "Low priority"]
+            'tasks ++ #[priority: 1 task: "Urgent!"]
+            'tasks ++ #[priority: 2 task: "Important"]
+
+            ; sort by priority
+            sorted: sort.by: 'priority tasks
+            loop sorted 'item ->
+                print [item\priority ":" item\task]
+            ; 1 : Urgent!
+            ; 2 : Important
+            ; 3 : Low priority
         """:
             #=======================================================
             var sortOrdering = SortOrder.Ascending
