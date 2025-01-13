@@ -1,7 +1,4 @@
 
->> couple
-[+] passed!
-
 >> decouple
 [+] passed!
 [+] passed!
