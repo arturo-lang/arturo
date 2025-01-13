@@ -101,3 +101,5 @@ suite "array <source>" [
     ]
 
 ]
+
+; todo(Collections\array) add file reading tests from #1786
