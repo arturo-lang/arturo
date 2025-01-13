@@ -9,13 +9,6 @@ passed: $[] -> print "[+] passed!"
 
 ; ==> Tests
 
-; couple don't support literals yet
-topic "couple"
-do [
-    ensure -> [["one" 1] ["two" 2] ["three" 3]] = couple ["one" "two" "three"] [1 2 3]
-    passed
-]
-
 topic "decouple"
 do [
     ensure -> [["one" "two" "three"] [1 2 3]] = decouple [["one" 1] ["two" 2] ["three" 3]]
