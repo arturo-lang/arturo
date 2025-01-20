@@ -1336,7 +1336,7 @@ proc defineLibrary*() =
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "pop top <number> values from stack",
+        description = "pop top N values from stack",
         args        = {
             "number"    : {Integer}
         },
