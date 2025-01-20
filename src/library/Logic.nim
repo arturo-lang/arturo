@@ -317,7 +317,7 @@ proc defineLibrary*() =
             y: 4
             
             if or? x=2 y>5 [
-                print "yep, that's correct!"]
+                print "yep, that's correct!"
             ]
             
             ; yep, that's correct!
