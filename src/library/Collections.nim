@@ -2380,7 +2380,7 @@ proc defineLibrary*() =
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "keep first <number> of elements from given collection and return the remaining ones",
+        description = "keep first N elements from given collection and return the remaining ones",
         args        = {
             "collection": {String, Block, Range, Literal, PathLiteral},
             "number"    : {Integer}
