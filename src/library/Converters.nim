@@ -90,6 +90,10 @@ proc defineLibrary*() =
             ;         hello :literal
             ;         world :literal
             ; ]
+            ..........
+            example: "Hello, world"
+            example                 ; => Hello, world
+            as.code example         ; => "Hello, world"
         """:
             #=======================================================
             if (hadAttr("binary")):
