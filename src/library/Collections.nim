@@ -2578,8 +2578,7 @@ proc defineLibrary*() =
                 surname: "Doe"
             ]
 
-            values user
-            => ["John" "Doe"]
+            values user     ; => ["John" "Doe"]
         """:
             #=======================================================
             if xKind == Block:
