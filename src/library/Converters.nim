@@ -94,6 +94,15 @@ proc defineLibrary*() =
             example: "Hello, world"
             example                 ; => Hello, world
             as.code example         ; => "Hello, world"
+            ..........
+            as.code #[name: "John" surname: "Doe"]
+            ; => #[name: "John" surname: "Doe" ]
+            
+            as.code.pretty #[name: "John" surname: "Doe"]
+            ; => #[
+            ;         name: "John"
+            ;         surname: "Doe"
+            ; ]
         """:
             #=======================================================
             if (hadAttr("binary")):
