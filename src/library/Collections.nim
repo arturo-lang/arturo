@@ -2044,6 +2044,9 @@ proc defineLibrary*() =
             ..........
             sort.sensitive ["c" "C" "CoffeeScript" "nim" "Arturo" "coffeescript" "arturo" "Nim"]
             ; => ["Arturo" "C" "CoffeeScript" "Nim" "arturo" "c" "coffeescript" "nim"]
+            ..........
+            sort.values #[ name: "John" surname: "Doe" age: 35 income: 5000]
+            ; => #[age: 35 income: 5000 surname: "Doe" name: "John" ]
         """:
             #=======================================================
             var sortOrdering = SortOrder.Ascending
