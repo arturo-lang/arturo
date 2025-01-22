@@ -442,6 +442,14 @@ proc defineLibrary*() =
                 AGE: 35
             ]
             ; e: [name:John, surname:Doe, age:35]
+            ..........
+            entity: "EU"
+
+            location: dictionary.with: [entity][
+                country: "Spain"
+            ]
+
+            print location\entity   ; => EU
         """:
             #=======================================================
             var dict: ValueDict
