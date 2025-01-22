@@ -1488,6 +1488,8 @@ proc defineLibrary*() =
             remove 'str "str"
             print str                 ; mying
             ..........
+            remove.key #[name: "John" surname: "Doe"] "surname" ; => #[name: "John"]
+            ..........
             print remove.once "hello" "l"
             ; helo
             
