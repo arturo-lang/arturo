@@ -2214,6 +2214,12 @@ proc defineLibrary*() =
             split "hello"                 ; => [`h` `e` `l` `l` `o`]
             ..........
             split.words "hello world"     ; => ["hello" "world"]
+            split.by: "," "hello,world"   ; => ["hello" "world"]
+            split.lines "hello\nworld"    ; => ["hello" "world"]
+            split.path "/usr/bin"         ; => ["usr" "bin"]
+
+            ; windows only:
+            split.path "\\usr\\bin"       ; => ["usr" "bin"]
             ..........
             split.every: 2 "helloworld"
             ; => ["he" "ll" "ow" "or" "ld"]
