@@ -2037,6 +2037,10 @@ proc defineLibrary*() =
             ; 1 : Urgent!
             ; 2 : Important
             ; 3 : Low priority
+            ..........
+            spanishWords: ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
+            sort.as: 'es spanishWords
+            ; => ["ábaco" "aberración" "abismo" "dos" "perversión" "tres" "uno" "Uno"]
         """:
             #=======================================================
             var sortOrdering = SortOrder.Ascending
