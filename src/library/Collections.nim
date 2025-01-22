@@ -1483,6 +1483,7 @@ proc defineLibrary*() =
         example     = """
             remove "hello" "l"        ; => "heo"
             print "hello" -- "l"      ; heo
+            remove [1 2 3 4] 4        ; => [1 2 3]
             ..........
             str: "mystring"
             remove 'str "str"
@@ -1496,8 +1497,6 @@ proc defineLibrary*() =
             ; Remove each element of given block from collection once
             remove.once  [1 2 [1 2] 3 4 1 2 [1 2] 3 4]  [1 2]
             ; [[1 2] 3 4 1 2 [1 2] 3 4]
-            ..........
-            remove [1 2 3 4] 4        ; => [1 2 3]
             ..........
             remove.instance [1 [6 2] 5 3 [6 2] 4 5 6] [6 2]  ; => [1 5 3 4 5 6]
             remove.instance.once [1 [6 2] 5 3 [6 2] 4 5 6] [6 2]  ; => [1 5 3 [6 2] 4 5 6]
