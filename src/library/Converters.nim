@@ -84,6 +84,12 @@ proc defineLibrary*() =
             print as.binary 123           ; 1111011
             print as.octal 123            ; 173
             print as.hex 123              ; 7b
+            ..........
+            inspect as.agnostic [hello world]
+            ; [ :block
+            ;         hello :literal
+            ;         world :literal
+            ; ]
         """:
             #=======================================================
             if (hadAttr("binary")):
