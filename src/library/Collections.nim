@@ -1501,11 +1501,11 @@ proc defineLibrary*() =
             remove.index: 2 "Ruby" "u"  ; => Rby
             remove.index: 2 "Ruby" "a"  ; => Ruby
             ..........
-            remove.instance [1 [6 2] 5 3 [6 2] 4 5 6] [6 2]  ; => [1 5 3 4 5 6]
-            remove.instance.once [1 [6 2] 5 3 [6 2] 4 5 6] [6 2]  ; => [1 5 3 [6 2] 4 5 6]
-            ..........
             remove.prefix "--empty --flag" "--"         ; => "empty --flag"
             remove.suffix "test.txt file.txt" ".txt"   ; => "test.txt file"
+            ..........
+            remove.instance [1 [6 2] 5 3 [6 2] 4 5 6] [6 2]  ; => [1 5 3 4 5 6]
+            remove.instance.once [1 [6 2] 5 3 [6 2] 4 5 6] [6 2]  ; => [1 5 3 [6 2] 4 5 6]
         """:
             #=======================================================
             if xKind in {Literal, PathLiteral}:
