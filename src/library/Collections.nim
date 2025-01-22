@@ -2559,6 +2559,8 @@ proc defineLibrary*() =
             arr: [1 2 4 1 3 2]
             unique 'arr
             print arr                     ; 1 2 4 3
+            ..........
+            unique.id "user-"   ; => user-67915b7a409e222b2f9a6bed
         """:
             #=======================================================
             if (hadAttr("id")):
