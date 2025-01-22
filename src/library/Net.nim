@@ -382,7 +382,7 @@ proc defineLibrary*() =
                 "routes"    : {Block, Function}
             },
             attrs       = {
-                "port"      : ({Integer},"use given port"),
+                "port"      : ({Integer},"use given port. Default: 18966"),
                 "silent"    : ({Logical},"don't print info log"),
                 "chrome"    : ({Logical},"open in Chrome windows as an app")
             },
