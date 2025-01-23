@@ -619,8 +619,6 @@ proc defineLibrary*() =
             "all"   : ({Logical},"export everything, regardless of whether it's been marked as public (makes sense only for modules)")
         },
         returns     = {Nothing},
-        # TODO(Core\export) add documentation example
-        #  labels: library, documentation, easy
         example     = """
         greeting: module [
             greet: method.public [user :string][
