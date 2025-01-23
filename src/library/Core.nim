@@ -622,6 +622,54 @@ proc defineLibrary*() =
         # TODO(Core\export) add documentation example
         #  labels: library, documentation, easy
         example     = """
+        greeting: module [
+            greet: method.public [user :string][
+                print ~"Hello, |user|!"
+            ]
+        ]
+
+        export greeting!
+
+        greet "Anonymous"   ; Hello, Anonymous!
+        ..........
+        ; You can't use private methods
+        greeting: module [
+            greet: method [user :string][
+                print ~"Bye, bye, |user|!"
+            ]
+        ]
+
+        export greeting!
+
+        greet "Anonymous"
+        ; Cannot resolve requested value
+        ;
+        ; Identifier not found: 
+        ;     greet
+        ;
+        ; ┃ File: example.art
+        ; ┃ Line: 9
+        ; ┃ 
+        ; ┃    7 ║  ]
+        ; ┃    8 ║  
+        ; ┃    9 ║► export greeting!
+        ; ┃   10 ║  
+        ; ┃   11 ║  greet "Anonymous"
+        ; 
+        ; Hint: Perhaps you meant... greeting ?
+        ;                     or... repeat ?
+        ;                     or... greater? ?
+        ..........
+        ; You can export private functions using the `.all` attribute
+        greeting: module [
+            greet: method [user :string][
+                print ~"Bye, bye, |user|!"
+            ]
+        ]
+
+        export.all greeting!
+
+        greet "Anonymous" ; Bye, bye, Anonymous!
         """:
             #=======================================================
             let exportAll = hadAttr("all")
