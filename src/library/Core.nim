@@ -1221,6 +1221,31 @@ proc defineLibrary*() =
         # TODO(Core\module) add documentation example
         #  labels: library, documentation, easy
         example     = """
+        ui: module [
+
+            namedRule: method [title :string width :integer][
+                title: ~" |title| "
+                pad.center.with: '=' title width
+            ]
+
+            section: method.public [title :string content :string width :integer][
+                ~{
+                    |\namedRule title width|
+                    |content|
+                    |\namedRule title width|
+                }
+            ]
+        ]
+
+        export ui!
+
+        print section "Hello" "World" 50
+        ; ===================== Hello ======================
+        ; World
+        ; ===================== Hello ======================
+        print set? 'ui          ; true
+        print set? 'namedRule   ; false
+        print set? 'section     ; true
         """:
             #=======================================================
             var definitions: ValueDict = newOrderedTable[string,Value]()
