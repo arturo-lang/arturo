@@ -375,7 +375,7 @@ proc defineLibrary*() =
 
             print "done. let's continue..."
             ..........
-            print "waiting for 2 seconds
+            print "waiting for 2 seconds"
 
             pause 2:s       ; let's sleep for a while
 
