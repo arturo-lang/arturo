@@ -1246,6 +1246,32 @@ proc defineLibrary*() =
         print set? 'ui          ; true
         print set? 'namedRule   ; false
         print set? 'section     ; true
+        ..........
+        ui: [
+
+            init: method [symbol :char][
+                \symbol: symbol
+            ]
+
+            namedRule: method [title :string width :integer][
+                title: ~" |title| "
+                pad.center.with: \symbol title width
+            ]
+
+            section: method.public [title :string content :string width :integer][
+                ~{
+                    |\namedRule title width|
+                    |content|
+                    |\namedRule title width|
+                }
+            ]
+        ]
+
+        export module.with: ['~'] ui!  
+        print section "Example" "This is an example" 40
+        ; ~~~~~~~~~~~~~~~ Example ~~~~~~~~~~~~~~~~
+        ; This is an example
+        ; ~~~~~~~~~~~~~~~ Example ~~~~~~~~~~~~~~~~
         """:
             #=======================================================
             var definitions: ValueDict = newOrderedTable[string,Value]()
