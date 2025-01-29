@@ -363,7 +363,7 @@ proc defineLibrary*() =
         example     = """
             to :integer "2020"            ; 2020
 
-            to :integer `A`               ; 65
+            to :integer 'A'               ; 65
             to :char 65                   ; `A`
 
             to :integer 4.3               ; 4
@@ -409,7 +409,7 @@ proc defineLibrary*() =
             ; ["1" "2" "3" "4"]
 
             to [:char] "hello"
-            ; [`h` `e` `l` `l` `o`]
+            ; ['h' 'e' 'l' 'l' 'o']
             ..........
             define :person [name surname age][]
 
