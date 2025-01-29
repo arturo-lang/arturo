@@ -904,9 +904,9 @@ proc defineLibrary*() =
             str: "hello World, 你好!"
             upper 'str                           ; str: "HELLO WORLD, 你好!"
             ..........
-            ch: `a`
+            ch: 'a'
             upper ch    
-            ; => `A`                     
+            ; => 'A'                     
         """:
             #=======================================================
             if xKind==String: push(newString(x.s.toUpper()))
