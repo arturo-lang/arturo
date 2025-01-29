@@ -570,7 +570,7 @@ proc defineLibrary*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
-            print char? `a`         ; true
+            print char? 'a'         ; true
             print char? 123         ; false
         """:
             #=======================================================
