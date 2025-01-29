@@ -364,7 +364,7 @@ proc defineLibrary*() =
             to :integer "2020"            ; 2020
 
             to :integer 'A'               ; 65
-            to :char 65                   ; `A`
+            to :char 65                   ; 'A'
 
             to :integer 4.3               ; 4
             to :floating 4                ; 4.0
