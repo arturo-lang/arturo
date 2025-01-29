@@ -366,9 +366,9 @@ proc defineLibrary*() =
             str: "hello World, 你好!"
             lower 'str                           ; str: "hello world, 你好!"
             ..........
-            ch: `A`
+            ch: 'A'
             lower ch    
-            ; => `a`  
+            ; => 'a'  
         """:
             #=======================================================
             if xKind==String: push(newString(x.s.toLower()))
