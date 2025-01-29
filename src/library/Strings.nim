@@ -974,9 +974,9 @@ proc defineLibrary*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
-            ascii? `d`              ; true
+            ascii? 'd'              ; true
             ..........
-            ascii? `😀`             ; false
+            ascii? '😀'             ; false
 
             ascii? "hello world"    ; true
             ascii? "Hællø wœrld"    ; false
