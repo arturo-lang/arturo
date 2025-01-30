@@ -25,8 +25,6 @@ when defined(linux):
     const
         webkitVersion {.strdefine.} = "empty"
     {.compile("window/window.cc", staticExec("pkg-config --cflags gtk+-3.0 webkit2gtk-" & webkitVersion)).}
-    static:
-        echo "FILE: " & "pkg-config --cflags gtk+-3.0 webkit2gtk-" & webkitVersion
     {.passC: staticExec("pkg-config --cflags gtk+-3.0 webkit2gtk-" & webkitVersion) .}
     {.passL: staticExec("pkg-config --libs gtk+-3.0 webkit2gtk-"  & webkitVersion) .}
 elif defined(freebsd) or defined(netbsd) or defined(openbsd):
