@@ -74,9 +74,6 @@ proc configWebkit() =
     
         return ""
 
-    static:
-        echo "Webkit version found: " & $(getWebkitVersion())
-
     switch "define", "webkitVersion=" & getWebkitVersion()
 
 proc configWinSSL() =
