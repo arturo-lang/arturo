@@ -77,7 +77,7 @@ proc configWebkit() =
     static:
         echo "Webkit version found: " & $(getWebkitVersion())
 
-    switch "define", "webkitVersion=\"" & getWebkitVersion() & '"'
+    switch "define", "webkitVersion=" & getWebkitVersion()
 
 proc configWinSSL() =
     --define:"noOpenSSLHacks"
