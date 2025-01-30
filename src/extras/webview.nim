@@ -24,11 +24,13 @@ import extras/window
 {.passC: "-I" & parentDir(currentSourcePath()) .}
 
 when defined(linux):
+    const
+        webkitVersion {.strdefine.} = "empty"
     {.compile("webview/webview-unix.cc","-std=c++11").}
     {.passC: "-DWEBVIEW_GTK=1 -DWEBVIEW_STATIC=1 " &
-             staticExec"pkg-config --cflags gtk+-3.0 webkit2gtk-" & staticExec("pkg-config --modversion webkit2gtk-4.1 2>/dev/null || echo 4.0").}
+             staticExec"pkg-config --cflags gtk+-3.0 webkit2gtk-" & webkitVersion .}
     {.passL: "-lstdc++ " &
-             staticExec"pkg-config --libs gtk+-3.0 webkit2gtk-" & staticExec("pkg-config --modversion webkit2gtk-4.1 2>/dev/null || echo 4.0").}
+             staticExec"pkg-config --libs gtk+-3.0 webkit2gtk-" & webkitVersion .}
 elif defined(freebsd) or defined(netbsd) or defined(openbsd):
     {.compile("webview/webview-unix.cc","-std=c++11").}
     {.passC: "-DWEBVIEW_GTK=1 " &
