@@ -22,10 +22,9 @@ import os
 {.passC: "-I" & parentDir(currentSourcePath()) .}
 
 when defined(linux):
-    let webkit_version = staticExec("pkg-config --modversion webkit2gtk-4.1 2>/dev/null || echo 4.0")
-    {.compile("window/window.cc", staticExec"pkg-config --cflags gtk+-3.0 webkit2gtk-" & webkit_version).}
-    {.passC: staticExec"pkg-config --cflags gtk+-3.0 webkit2gtk-" & webkit_version .}
-    {.passL: staticExec"pkg-config --libs gtk+-3.0 webkit2gtk-" & webkit_version .}
+    {.compile("window/window.cc", staticExec"pkg-config --cflags gtk+-3.0 webkit2gtk-" & staticExec("pkg-config --modversion webkit2gtk-4.1 2>/dev/null || echo 4.0")).}
+    {.passC: staticExec"pkg-config --cflags gtk+-3.0 webkit2gtk-" & staticExec("pkg-config --modversion webkit2gtk-4.1 2>/dev/null || echo 4.0") .}
+    {.passL: staticExec"pkg-config --libs gtk+-3.0 webkit2gtk-" & staticExec("pkg-config --modversion webkit2gtk-4.1 2>/dev/null || echo 4.0") .}
 elif defined(freebsd) or defined(netbsd) or defined(openbsd):
     {.compile("window/window.cc", staticExec"pkg-config --cflags gtk3 webkit2-gtk3").}
     {.passC: staticExec"pkg-config --cflags gtk3 webkit2-gtk3".}
