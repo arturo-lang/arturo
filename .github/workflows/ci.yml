@@ -47,7 +47,7 @@ jobs:
               if: (matrix.os == 'ubuntu-latest')
               run: |
                 lsb_release -a
-
+ 
             - name: Install Arturo
               uses: arturo-lang/arturo-action@main
               with: 
