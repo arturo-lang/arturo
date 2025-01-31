@@ -1412,14 +1412,33 @@ proc defineLibrary*() =
         returns     = {Range},
         example     = """
         ; range of :integers
-        array range 0 5     ; [0 1 2 3 4 5]
+
+        range 0 5           ; 0..5
+        0..5                ; 0..5
         @0..5               ; [0 1 2 3 4 5]
         ..........
         ; range of :chars
+
+        'a'..'e'            ; 'a'..'e'
         @'a'..'e'           ; [a b c d e]
         ..........
         ; range with steps
-        range.step: 2 1 5   ; [1 3 5]
+
+        @range.step: 2 1 5   ; [1 3 5]
+        ..........
+        ; iterate a range
+
+        0..5 | loop 'i -> print ~"|i|. hello"
+        ; 0. hello
+        ; 1. hello
+        ; 2. hello
+        ; 3. hello
+        ; 4. hello
+        ; 5. hello
+        ..........
+        ; check bounds
+
+        in? 5 0..10     ; => true
         """:
             #=======================================================
             var limX: int
