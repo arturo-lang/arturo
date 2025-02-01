@@ -442,6 +442,14 @@ proc defineLibrary*() =
                 AGE: 35
             ]
             ; e: [name:John, surname:Doe, age:35]
+            ..........
+            entity: "EU"
+
+            location: dictionary.with: [entity][
+                country: "Spain"
+            ]
+
+            print location\entity   ; => EU
         """:
             #=======================================================
             var dict: ValueDict
@@ -1403,6 +1411,34 @@ proc defineLibrary*() =
         },
         returns     = {Range},
         example     = """
+        ; range of :integers
+
+        range 0 5           ; 0..5
+        0..5                ; 0..5
+        @0..5               ; [0 1 2 3 4 5]
+        ..........
+        ; range of :chars
+
+        'a'..'e'            ; 'a'..'e'
+        @'a'..'e'           ; [a b c d e]
+        ..........
+        ; range with steps
+
+        @range.step: 2 1 5   ; [1 3 5]
+        ..........
+        ; iterate a range
+
+        0..5 | loop 'i -> print ~"|i|. hello"
+        ; 0. hello
+        ; 1. hello
+        ; 2. hello
+        ; 3. hello
+        ; 4. hello
+        ; 5. hello
+        ..........
+        ; check bounds
+
+        in? 5 0..10     ; => true
         """:
             #=======================================================
             var limX: int
@@ -1466,10 +1502,13 @@ proc defineLibrary*() =
         example     = """
             remove "hello" "l"        ; => "heo"
             print "hello" -- "l"      ; heo
+            remove [1 2 3 4] 4        ; => [1 2 3]
             ..........
             str: "mystring"
             remove 'str "str"
             print str                 ; mying
+            ..........
+            remove.key #[name: "John" surname: "Doe"] "surname" ; => #[name: "John"]
             ..........
             print remove.once "hello" "l"
             ; helo
@@ -1478,7 +1517,11 @@ proc defineLibrary*() =
             remove.once  [1 2 [1 2] 3 4 1 2 [1 2] 3 4]  [1 2]
             ; [[1 2] 3 4 1 2 [1 2] 3 4]
             ..........
-            remove [1 2 3 4] 4        ; => [1 2 3]
+            remove.index: 2 "Ruby" "u"  ; => Rby
+            remove.index: 2 "Ruby" "a"  ; => Ruby
+            ..........
+            remove.prefix "--empty --flag" "--"         ; => "empty --flag"
+            remove.suffix "test.txt file.txt" ".txt"   ; => "test.txt file"
             ..........
             remove.instance [1 [6 2] 5 3 [6 2] 4 5 6] [6 2]  ; => [1 5 3 4 5 6]
             remove.instance.once [1 [6 2] 5 3 [6 2] 4 5 6] [6 2]  ; => [1 5 3 [6 2] 4 5 6]
@@ -2013,6 +2056,16 @@ proc defineLibrary*() =
             ; 1 : Urgent!
             ; 2 : Important
             ; 3 : Low priority
+            ..........
+            spanishWords: ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
+            sort.as: 'es spanishWords
+            ; => ["ábaco" "aberración" "abismo" "dos" "perversión" "tres" "uno" "Uno"]
+            ..........
+            sort.sensitive ["c" "C" "CoffeeScript" "nim" "Arturo" "coffeescript" "arturo" "Nim"]
+            ; => ["Arturo" "C" "CoffeeScript" "Nim" "arturo" "c" "coffeescript" "nim"]
+            ..........
+            sort.values #[ name: "John" surname: "Doe" age: 35 income: 5000]
+            ; => #[age: 35 income: 5000 surname: "Doe" name: "John" ]
         """:
             #=======================================================
             var sortOrdering = SortOrder.Ascending
@@ -2180,6 +2233,12 @@ proc defineLibrary*() =
             split "hello"                 ; => [`h` `e` `l` `l` `o`]
             ..........
             split.words "hello world"     ; => ["hello" "world"]
+            split.by: "," "hello,world"   ; => ["hello" "world"]
+            split.lines "hello\nworld"    ; => ["hello" "world"]
+            split.path "/usr/bin"         ; => ["usr" "bin"]
+
+            ; windows only:
+            split.path "\\usr\\bin"       ; => ["usr" "bin"]
             ..........
             split.every: 2 "helloworld"
             ; => ["he" "ll" "ow" "or" "ld"]
@@ -2519,6 +2578,8 @@ proc defineLibrary*() =
             arr: [1 2 4 1 3 2]
             unique 'arr
             print arr                     ; 1 2 4 3
+            ..........
+            unique.id "user-"   ; => user-67915b7a409e222b2f9a6bed
         """:
             #=======================================================
             if (hadAttr("id")):
@@ -2554,8 +2615,7 @@ proc defineLibrary*() =
                 surname: "Doe"
             ]
 
-            values user
-            => ["John" "Doe"]
+            values user     ; => ["John" "Doe"]
         """:
             #=======================================================
             if xKind == Block:
