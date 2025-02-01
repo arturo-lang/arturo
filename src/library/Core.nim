@@ -619,9 +619,55 @@ proc defineLibrary*() =
             "all"   : ({Logical},"export everything, regardless of whether it's been marked as public (makes sense only for modules)")
         },
         returns     = {Nothing},
-        # TODO(Core\export) add documentation example
-        #  labels: library, documentation, easy
         example     = """
+        greeting: module [
+            greet: method.public [user :string][
+                print ~"Hello, |user|!"
+            ]
+        ]
+
+        export greeting!
+
+        greet "Anonymous"   ; Hello, Anonymous!
+        ..........
+        ; You can't use private methods
+        greeting: module [
+            greet: method [user :string][
+                print ~"Bye, bye, |user|!"
+            ]
+        ]
+
+        export greeting!
+
+        greet "Anonymous"
+        ; Cannot resolve requested value
+        ;
+        ; Identifier not found: 
+        ;     greet
+        ;
+        ; ┃ File: example.art
+        ; ┃ Line: 9
+        ; ┃ 
+        ; ┃    7 ║  ]
+        ; ┃    8 ║  
+        ; ┃    9 ║► export greeting!
+        ; ┃   10 ║  
+        ; ┃   11 ║  greet "Anonymous"
+        ; 
+        ; Hint: Perhaps you meant... greeting ?
+        ;                     or... repeat ?
+        ;                     or... greater? ?
+        ..........
+        ; You can export private functions using the `.all` attribute
+        greeting: module [
+            greet: method [user :string][
+                print ~"Bye, bye, |user|!"
+            ]
+        ]
+
+        export.all greeting!
+
+        greet "Anonymous" ; Bye, bye, Anonymous!
         """:
             #=======================================================
             let exportAll = hadAttr("all")
@@ -1175,6 +1221,57 @@ proc defineLibrary*() =
         # TODO(Core\module) add documentation example
         #  labels: library, documentation, easy
         example     = """
+        ui: module [
+
+            namedRule: method [title :string width :integer][
+                title: ~" |title| "
+                pad.center.with: '=' title width
+            ]
+
+            section: method.public [title :string content :string width :integer][
+                ~{
+                    |\namedRule title width|
+                    |content|
+                    |\namedRule title width|
+                }
+            ]
+        ]
+
+        export ui!
+
+        print section "Hello" "World" 50
+        ; ===================== Hello ======================
+        ; World
+        ; ===================== Hello ======================
+        print set? 'ui          ; true
+        print set? 'namedRule   ; false
+        print set? 'section     ; true
+        ..........
+        ui: [
+
+            init: method [symbol :char][
+                \symbol: symbol
+            ]
+
+            namedRule: method [title :string width :integer][
+                title: ~" |title| "
+                pad.center.with: \symbol title width
+            ]
+
+            section: method.public [title :string content :string width :integer][
+                ~{
+                    |\namedRule title width|
+                    |content|
+                    |\namedRule title width|
+                }
+            ]
+        ]
+
+        export module.with: ['~'] ui!  
+        print section "Example" "This is an example" 40
+        ; ~~~~~~~~~~~~~~~ Example ~~~~~~~~~~~~~~~~
+        ; This is an example
+        ; ~~~~~~~~~~~~~~~ Example ~~~~~~~~~~~~~~~~
         """:
             #=======================================================
             var definitions: ValueDict = newOrderedTable[string,Value]()
