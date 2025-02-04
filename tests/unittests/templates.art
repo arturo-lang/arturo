@@ -12,6 +12,6 @@ print render.template "x: <||= x ||>"
 print render.template {
     rendering the template
     x: <||= x ||>
-    <|| if? x>1 [ ||>Yep, x is greater than 1
-    <||] else [ ||>Nope it's not.<||]||>
+    <|| switch x>1 [ ||>Yep, x is greater than 1
+    <||] [ ||>Nope it's not.<||]||>
 }

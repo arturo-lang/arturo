@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2024 Yanis Zafirópulos
+# (c) 2019-2025 Yanis Zafirópulos
 #
 # @file: vm/parse.nim
 #=======================================================
@@ -27,7 +27,7 @@
 import lexbase, os, streams
 import strutils, tables, unicode
 
-import vm/[errors, profiler, values/value]
+import vm/[errors, values/value]
 import vm/values/custom/[vquantity, vsymbol]
 
 #=======================================
@@ -1240,28 +1240,28 @@ proc parseDataBlock*(blk: Value): Value =
 proc doParse*(input: string, isFile: bool = true): Value =
     ## Parse a string or file path
     ## and return the result as a Block of values
-    hookProcProfiler("parse/doParse"):
-        var p: Parser
 
-        # open stream
-        if isFile:
-            var filePath = input
-            when not defined(WEB):
-                if unlikely(not fileExists(filePath)):
-                    Error_ScriptNotExists(input)
+    var p: Parser
 
-            var stream = newFileStream(filePath)
-            lexbase.open(p, stream)
-        else:
-            var stream = newStringStream(input)
+    # open stream
+    if isFile:
+        var filePath = input
+        when not defined(WEB):
+            if unlikely(not fileExists(filePath)):
+                Error_ScriptNotExists(input)
 
-            lexbase.open(p, stream)
-        try:
-            # do parse    
-            result = parseBlock(p, 0)
-        except CatchableError as e:
-            CurrentLine = p.lineNumber
-            raise e
+        var stream = newFileStream(filePath)
+        lexbase.open(p, stream)
+    else:
+        var stream = newStringStream(input)
 
-        # close lexer
-        lexbase.close(p)
+        lexbase.open(p, stream)
+    try:
+        # do parse    
+        result = parseBlock(p, 0)
+    except CatchableError as e:
+        CurrentLine = p.lineNumber
+        raise e
+
+    # close lexer
+    lexbase.close(p)

@@ -4,15 +4,15 @@ tokenize: function [s sep esc][
 	loop 0..(size s)-1 [i][
 		chr: get split s i
 
-		if? escaping=1 [
+		switch escaping=1 [
 			prints chr
 			escaping: 0
-		]
-		else [
-			case [chr]
-				when? [=sep] [print ""]
-				when? [=esc] [escaping: 1]
-				else [prints chr]
+		][
+			case chr [
+				sep 	-> print ""
+				esc 	-> escaping: 1
+				any  	-> prints chr
+			]
 		]
 	]
 	print ""

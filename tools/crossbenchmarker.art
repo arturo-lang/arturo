@@ -25,16 +25,16 @@ printHeader: function [][
     print ""
     
     loop 1 + size keys langs 'l [
-        if? l=1 -> prints pad.right "------------------------------------|" bigPadding
-        else -> prints pad.right (repeat "-" padding)++"|" padding+1
+        switch l=1 -> prints pad.right "------------------------------------|" bigPadding
+                   -> prints pad.right (repeat "-" padding)++"|" padding+1
     ]
     print "" prints pad.right "" bigPadding
     loop keys langs 'lang -> prints "|" ++ pad.center lang padding
     print "|"
 
     loop 1 + size keys langs 'l [
-        if? l=1 -> prints pad.right "====================================|" bigPadding
-        else -> prints pad.right (repeat "=" padding)++"|" padding+1
+        switch l=1 -> prints pad.right "====================================|" bigPadding
+                   -> prints pad.right (repeat "=" padding)++"|" padding+1
     ]
     print ""
 ]
@@ -49,13 +49,12 @@ runBenchmark: function [bench][
         ;print scr
         ;print expected
 
-        if? exists? scr [
+        switch exists? scr [
             result: execute ~{/usr/bin/time -lp |data\bin| |scr|}
             result: strip replace first match result "real [0-9\.]+" "real " ""
 
             prints "|" ++ color #green pad.center to :string result padding
-        ]
-        else [
+        ][
             prints "|" ++ color #red pad.center "-" padding
         ]
     ]

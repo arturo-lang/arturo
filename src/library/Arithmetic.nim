@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2024 Yanis Zafirópulos
+# (c) 2019-2025 Yanis Zafirópulos
 #
 # @file: library/Arithmetic.nim
 #=======================================================
@@ -134,6 +134,7 @@ proc defineLibrary*() =
         returns     = {Floating,Rational,Quantity,Object,Nothing},
         example     = """
             print fdiv 5 2     ; 2.5
+            print 5 // 2       ; 2.5
             ..........
             a: 6
             fdiv 'a 3          ; a: 2.0

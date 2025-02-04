@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2024 Yanis Zafirópulos
+# (c) 2019-2025 Yanis Zafirópulos
 #
 # @file: library/Strings.nim
 #=======================================================
@@ -366,9 +366,9 @@ proc defineLibrary*() =
             str: "hello World, 你好!"
             lower 'str                           ; str: "hello world, 你好!"
             ..........
-            ch: `A`
+            ch: 'A'
             lower ch    
-            ; => `a`  
+            ; => 'a'  
         """:
             #=======================================================
             if xKind==String: push(newString(x.s.toLower()))
@@ -904,9 +904,9 @@ proc defineLibrary*() =
             str: "hello World, 你好!"
             upper 'str                           ; str: "HELLO WORLD, 你好!"
             ..........
-            ch: `a`
+            ch: 'a'
             upper ch    
-            ; => `A`                     
+            ; => 'A'                     
         """:
             #=======================================================
             if xKind==String: push(newString(x.s.toUpper()))
@@ -974,9 +974,9 @@ proc defineLibrary*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
-            ascii? `d`              ; true
+            ascii? 'd'              ; true
             ..........
-            ascii? `😀`             ; false
+            ascii? '😀'             ; false
 
             ascii? "hello world"    ; true
             ascii? "Hællø wœrld"    ; false
