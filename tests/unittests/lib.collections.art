@@ -9,24 +9,10 @@ passed: $[] -> print "[+] passed!"
 
 ; ==> Tests
 
-topic "decouple"
+; couple don't support literals yet
+topic "couple"
 do [
-    ensure -> [["one" "two" "three"] [1 2 3]] = decouple [["one" 1] ["two" 2] ["three" 3]]
-    passed
-
-    a:  [["one" 1] ["two" 2] ["three" 3]]
-    decouple 'a
-    ensure -> [["one" "two" "three"] [1 2 3]] = a
-    passed
-   
-    blk:  [["one" 1] ["two" 2] ["three" 3]]
-    
-    a: new blk
-    b: #[b: new blk]
-    
-    decouple 'a
-    decouple 'b\b
-    ensure -> a = b\b
+    ensure -> [["one" 1] ["two" 2] ["three" 3]] = couple ["one" "two" "three"] [1 2 3]
     passed
 ]
 
