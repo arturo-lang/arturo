@@ -1,2 +1,2 @@
 contents: "Hello World!"
-write "output.txt" contents
+contents >> "output.txt"

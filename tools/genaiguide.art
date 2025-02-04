@@ -32,6 +32,13 @@ loop data [lib, contents][
         pprint ~"### |lib|"
         desc: # ~"docs/website/pages/documentation/library/|lower lib|/_index.art"
         pprint desc\description
+        pprint "\n----\n"
+        ovv: desc\overview
+        ovv: replace ovv {/(?<!#)#{5}(?!#)/} "######" 
+        ovv: replace ovv {/(?<!#)#{4}(?!#)/} "#####" 
+        ovv: replace ovv {/(?<!#)#{3}(?!#)/} "####" 
+        pprint ovv
+        pprint "\n----\n"
         loop contents 'content [
             aliased: ""
             if key? content\1 'alias [
@@ -73,4 +80,4 @@ loop data [lib, contents][
 ]
 
 unless empty? ppout ->
-    write ./"aiguide.md" ppout
+    ppout >> ./"aiguide.md"

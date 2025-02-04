@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2024 Yanis Zafirópulos
+# (c) 2019-2025 Yanis Zafirópulos
 #
 # @file: library/Colors.nim
 #=======================================================
@@ -206,6 +206,8 @@ proc defineLibrary*() =
         example     = """
             palette.triad #red      ; => [#FF0000 #00FF00 #0000FF]
             palette.tetrad #red     ; => [#FF0000 #80FF00 #00FFFF #7F00FF]
+            ..........
+            palette.split #red      ; => [#FF0000 #CCFF00 #0066FF]
             ..........
             palette.monochrome #red
             ; => [#FF0000 #D40000 #AA0000 #7F0000 #550000 #2A0000]

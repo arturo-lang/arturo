@@ -9,12 +9,12 @@ prettyPrint: function [in][
         print map split.every:10 line => join
 
         loop split line 'ch [
-            case [ch=]
-                when? -> "A" -> count\A: count\A + 1
-                when? -> "T" -> count\T: count\T + 1
-                when? -> "G" -> count\G: count\G + 1
-                when? -> "C" -> count\C: count\C + 1
-                else []
+            case ch [
+                "A" -> count\A: count\A + 1
+                "T" -> count\T: count\T + 1
+                "G" -> count\G: count\G + 1
+                "C" -> count\C: count\C + 1
+            ]
         ]
     ]
     print ["Total count => A:" count\A, "T:" count\T "G:" count\G "C:" count\C]
@@ -25,21 +25,21 @@ performRandomModifications: function [seq,times][
 
     loop times [x][
         what: random 1 3
-        case [what=]
-            when? -> 1 [
+        case what [
+            1 [
                 ind: random 0 (size result)
                 previous: get result ind
                 next: sample bases
                 set result ind next
                 print ["changing base at position" ind "from" previous "to" next]
             ]
-            when? -> 2 [
+            2 [
                 ind: random 0 (size result)
                 next: sample bases
                 result: insert result ind next
                 print ["inserting base" next "at position" ind]
             ]
-            else [
+            any [
                 ind: random 0 (size result)
                 previous: get result ind
                 result: remove result .index ind

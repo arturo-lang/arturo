@@ -63,6 +63,19 @@ proc configWinPCRE() =
 proc configMacosPCRE() =
     --dynlibOverride:pcre
 
+proc configWebkit() =
+    const webkitVersions = ["4.1", "4.0"]
+
+    proc getWebkitVersion(): string =
+        for version in webkitVersions:
+            let ret = gorgeEx("pkg-config --exists webkit2gtk-" & version)
+            if ret.exitCode == 0:
+                return version
+    
+        return ""
+
+    switch "define", "webkitVersion=" & getWebkitVersion()
+
 proc configWinSSL() =
     --define:"noOpenSSLHacks"
     --define:"sslVersion:("
@@ -80,6 +93,9 @@ proc main() =
     # see: https://github.com/arturo-lang/arturo/pull/1643
     # configGMPOnWindows()    
     configMimalloc()
+
+    if defined(linux):
+        configWebkit()
 
     if defined(windows):
         configWinPCRE()

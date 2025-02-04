@@ -1,0 +1,35 @@
+define :queue [
+    init: method [][
+        \items: []
+    ]
+
+    enqueue: method [item][
+        panic "enqueue must be implemented by concrete type"
+    ]
+
+    dequeue: method [][
+        panic "dequeue must be implemented by concrete type" 
+    ]
+]
+
+define :simpleQueue is :queue [
+    enqueue: method [item][       
+        \items: \items ++ item
+    ]
+
+    dequeue: method [][
+        if empty? \items -> return null
+        ret: first \items
+        \items: drop \items
+        return ret
+    ]
+]
+
+q: to :simpleQueue []!
+
+q\enqueue "first"
+q\enqueue "second"
+
+print q\dequeue         
+print q\dequeue
+print q\dequeue
