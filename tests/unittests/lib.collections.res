@@ -1,7 +1,5 @@
 
->> decouple
-[+] passed!
-[+] passed!
+>> couple
 [+] passed!
 
 >> drop - :string < :string :string
