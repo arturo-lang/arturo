@@ -1452,9 +1452,8 @@ proc defineLibrary*() =
             unstack.discard 1   ; popped 3 from the stack
         """:
             #=======================================================
-            if Stack[0..SP-1].len < x.i: Error_StackUnderflow()
-            
-            let doDiscard = (hadAttr("discard"))
+            if Stack[0..SP-1].len < x.i: 
+                Error_StackUnderflow()
             
             if x.i==1:
                 if doDiscard: discard stack.pop()
