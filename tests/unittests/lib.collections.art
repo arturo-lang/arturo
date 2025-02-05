@@ -2631,6 +2631,10 @@ do [
         = split.by: {/,/} "Arturo, Nim, Ruby, Python, C, CoffeeScript"
     passed
 
+    ensure -> ["Arturo" " Nim" " Ruby" " Python", " C", " CoffeeScript"]
+        = split.by: ',' "Arturo, Nim, Ruby, Python, C, CoffeeScript"
+    passed
+
     sample: {
         Arturo is an independently-developed,
         modern programming language,
