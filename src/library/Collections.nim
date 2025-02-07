@@ -2223,7 +2223,7 @@ proc defineLibrary*() =
         attrs       = {
             "words" : ({Logical}, "split string by whitespace"),
             "lines" : ({Logical}, "split string by lines"),
-            "by"    : ({String, Regex, Block}, "split using given separator"),
+            "by"    : ({String, Regex, Char, Block}, "split using given separator"),
             "at"    : ({Integer}, "split collection at given position"),
             "every" : ({Integer}, "split collection every *n* elements"),
             "path"  : ({Logical}, "split path components in string")
@@ -2269,6 +2269,8 @@ proc defineLibrary*() =
                     elif checkAttr("by"):
                         if aBy.kind == String:
                             SetInPlaceAny(newStringBlock(InPlaced.s.split(aBy.s)))
+                        elif aBy.kind == Char:
+                            SetInPlaceAny(newStringBlock(InPlaced.s.split(aBy.c)))
                         elif aBy.kind == Regex:
                             SetInPlaceAny(newStringBlock(InPlaced.s.split(aBy.rx)))
                         else:
@@ -2330,6 +2332,8 @@ proc defineLibrary*() =
                 elif checkAttr("by"):
                     if aBy.kind == String:
                         push(newStringBlock(x.s.split(aBy.s)))
+                    elif aBy.kind == Char:
+                        push(newStringBlock(x.s.split(aBy.c)))
                     elif aBy.kind == Regex:
                         push(newStringBlock(x.s.split(aBy.rx)))
                     else:
