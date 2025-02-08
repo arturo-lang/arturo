@@ -93,7 +93,6 @@ func newInt*(x: culong): Int =
     #  ```
     #  labels: 3rd-party, enhancement
     result = Int()
-    #new(result, finalizeInt)
     mpz_init_set_ui(result[], x)
 
 func newInt*(x: int = 0): Int =
@@ -122,48 +121,46 @@ func newInt*(s: string, base: cint = 10): Int =
         raise newException(ValueError, "String not in correct base")
 
 func newFloat*(x: float): Float =
-    result = Float()#new(result, finalizeFloat)
+    result = Float()
     mpfr_init(result[])
     mpfr_set_d(result[], x, MPFR_RNDN)
 
 func newFloat*(x: culong): Float =
-    result = Float()#new(result, finalizeFloat)
+    result = Float()
     mpfr_init(result[])
     mpfr_set_ui(result[], x, MPFR_RNDN)
 
 func newFloat*(x: int = 0): Float =
-    result = Float()#new(result, finalizeFloat)
+    result = Float()
     mpfr_init(result[])
     mpfr_set_si(result[], x.clong, MPFR_RNDN)
 
 func newFloat*(x: Int): Float =
-    result = Float()#new(result,finalizeFloat)
+    result = Float()
     mpfr_init(result[])
     mpfr_set_z(result[], x[], MPFR_RNDN)
 
 func newFloat*(s: string, base: cint = 10): Float =
     validBase(base)
-    result = Float()#new(result, finalizeFloat)
+    result = Float()
     mpfr_init(result[])
     if mpfr_set_str(result[], s, base, MPFR_RNDN) == -1:
         raise newException(ValueError, "String not in correct base")
 
 func newRat*(x: culong): Rat =
-    result = Rat()#new(result, finalizeRat)
+    result = Rat()
     mpq_init(result[])
     mpq_set_ui(result[], x, 1)
     canonicalize(result)
 
 func newRat*(x, y: culong): Rat =
     result = Rat()
-    #new(result,finalizeRat)
     mpq_init(result[])
     mpq_set_ui(result[], x, y)
     canonicalize(result)
 
 func newRat*(x: int = 0): Rat =
     result = Rat()
-    #new(result, finalizeRat)
     mpq_init(result[])
     when isLLP64():
         if x.fitsLLP64Long:
@@ -239,17 +236,17 @@ func newRat*(s: string, base: cint = 10): Rat =
 #=======================================
 
 func copyInt*(x: Int): Int =
-    result = Int()#new(result, finalizeInt)
+    result = Int()
     mpz_init(result[])
     mpz_set(result[], x[])
 
 func copyFloat*(x: Float): Float =
-    result = Float()#new(result,finalizeFloat)
+    result = Float()
     mpfr_init(result[])
     mpfr_set(result[], x[], MPFR_RNDN)
 
 func copyRat*(x: Rat): Rat = 
-    result = Rat()#new(result,finalizeRat)
+    result = Rat()
     mpq_init(result[])
     mpq_set(result[], x[])
 
