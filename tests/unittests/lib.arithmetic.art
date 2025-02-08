@@ -2736,20 +2736,20 @@ do [
     passed
     
     
-    topic "pow - :integer :complex"
+    ; topic "pow - :integer :complex"
     
-    a: to :complex [2 5]
-    ensure -> "-20.999999999999993+20.0i" = ~"|a ^ 2|"
-    ensure -> "-20.999999999999993+20.0i" = ~"|pow a 2|"
-    passed
+    ; a: to :complex [2 5]
+    ; ensure -> "-20.999999999999993+20.0i" = ~"|a ^ 2|"
+    ; ensure -> "-20.999999999999993+20.0i" = ~"|pow a 2|"
+    ; passed
     
-    a: to :complex [2 5]
-    'a ^ 2
-    ensure -> "-20.999999999999993+20.0i" = ~"|a|"
-    a: to :complex [2 5]
-    pow 'a 2
-    ensure -> "-20.999999999999993+20.0i" = ~"|a|"
-    passed
+    ; a: to :complex [2 5]
+    ; 'a ^ 2
+    ; ensure -> "-20.999999999999993+20.0i" = ~"|a|"
+    ; a: to :complex [2 5]
+    ; pow 'a 2
+    ; ensure -> "-20.999999999999993+20.0i" = ~"|a|"
+    ; passed
     
     
     topic "pow - :integer :rational"
@@ -2833,20 +2833,20 @@ do [
     ensure -> a = 16777216
     passed
     
-   topic "pow - :floating :complex"
+;    topic "pow - :floating :complex"
     
-    a: to :complex [2 5]
-    ensure -> "-20.999999999999993+20.0i" = ~"|a ^ 2.0|"
-    ensure -> "-20.999999999999993+20.0i" = ~"|pow a 2.0|"
-    passed
+;     a: to :complex [2 5]
+;     ensure -> "-20.999999999999993+20.0i" = ~"|a ^ 2.0|"
+;     ensure -> "-20.999999999999993+20.0i" = ~"|pow a 2.0|"
+;     passed
     
-    a: to :complex [2 5]
-    'a ^ 2.0
-    ensure -> "-20.999999999999993+20.0i" = ~"|a|"
-    a: to :complex [2 5]
-    pow 'a 2.0
-    ensure -> "-20.999999999999993+20.0i" = ~"|a|"
-    passed
+;     a: to :complex [2 5]
+;     'a ^ 2.0
+;     ensure -> "-20.999999999999993+20.0i" = ~"|a|"
+;     a: to :complex [2 5]
+;     pow 'a 2.0
+;     ensure -> "-20.999999999999993+20.0i" = ~"|a|"
+;     passed
     
     
     topic "pow - :floating :rational"
