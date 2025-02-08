@@ -2654,7 +2654,7 @@ do [
     passed
     
     ensure -> 4 = pow 2 2
-    ensure -> "0.027" = ~"|pow 0.3 3|"
+    ensure -> "0.026999999999999996" = ~"|pow 0.3 3|"
     passed
     
     ; neg base
@@ -2680,7 +2680,7 @@ do [
     passed
     
     ensure -> 4 = 2 ^ 2
-    ensure -> "0.027" = ~"|0.3 ^ 3|"
+    ensure -> "0.026999999999999996" = ~"|0.3 ^ 3|"
     passed
     
     ; neg base
@@ -2721,7 +2721,7 @@ do [
     ensure -> (pow 0 1.0) = pow 0.0 1
     passed
     
-    ensure -> "1.414213562373095" = ~"|2 ^ 0.5|"
+    ensure -> "1.4142135623730951" = ~"|2 ^ 0.5|"
     ensure -> 1 = 1.0 ^ 2
     ensure -> 4096 = 8 ^ 4.0
     ensure -> 1 = pow 1.0 2
@@ -2739,16 +2739,16 @@ do [
     topic "pow - :integer :complex"
     
     a: to :complex [2 5]
-    ensure -> "-20.99999999999999+20.0i" = ~"|a ^ 2|"
-    ensure -> "-20.99999999999999+20.0i" = ~"|pow a 2|"
+    ensure -> "-20.999999999999993+20.0i" = ~"|a ^ 2|"
+    ensure -> "-20.999999999999993+20.0i" = ~"|pow a 2|"
     passed
     
     a: to :complex [2 5]
     'a ^ 2
-    ensure -> "-20.99999999999999+20.0i" = ~"|a|"
+    ensure -> "-20.999999999999993+20.0i" = ~"|a|"
     a: to :complex [2 5]
     pow 'a 2
-    ensure -> "-20.99999999999999+20.0i" = ~"|a|"
+    ensure -> "-20.999999999999993+20.0i" = ~"|a|"
     passed
     
     
@@ -2780,7 +2780,7 @@ do [
     passed
     
     ensure -> 4.0 = pow 2.0 2.0
-    ensure -> ensure -> "0.027" = ~"|pow 0.3 3.0|"
+    ensure -> ensure -> "0.026999999999999996" = ~"|pow 0.3 3.0|"
     passed
     
     ; neg base
@@ -2806,7 +2806,7 @@ do [
     passed
     
     ensure -> 4 = 2.0 ^ 2.0
-    ensure -> "0.027" = ~"|0.3 ^ 3.0|"
+    ensure -> "0.026999999999999996" = ~"|0.3 ^ 3.0|"
     passed
     
     ; neg base
@@ -2836,16 +2836,16 @@ do [
    topic "pow - :floating :complex"
     
     a: to :complex [2 5]
-    ensure -> "-20.99999999999999+20.0i" = ~"|a ^ 2.0|"
-    ensure -> "-20.99999999999999+20.0i" = ~"|pow a 2.0|"
+    ensure -> "-20.999999999999993+20.0i" = ~"|a ^ 2.0|"
+    ensure -> "-20.999999999999993+20.0i" = ~"|pow a 2.0|"
     passed
     
     a: to :complex [2 5]
     'a ^ 2.0
-    ensure -> "-20.99999999999999+20.0i" = ~"|a|"
+    ensure -> "-20.999999999999993+20.0i" = ~"|a|"
     a: to :complex [2 5]
     pow 'a 2.0
-    ensure -> "-20.99999999999999+20.0i" = ~"|a|"
+    ensure -> "-20.999999999999993+20.0i" = ~"|a|"
     passed
     
     
