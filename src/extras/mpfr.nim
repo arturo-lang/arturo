@@ -98,11 +98,8 @@ func mpfr_pow_z*(a: var mpfr, b: mpfr, c: mpz_t, d: mpfr_rnd_t) {.importc.}
 {.pop.}
 
 #=======================================
-# Methods
+# Destructors
 #=======================================
 
 proc `=destroy`*(x: mm_mpfr_struct) =
     mpfr_clear(addr x)
-
-# func finalizeFloat*(z: ref mpfr) =
-#     mpfr_clear(z[])
