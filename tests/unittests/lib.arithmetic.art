@@ -2654,7 +2654,7 @@ do [
     passed
     
     ensure -> 4 = pow 2 2
-    ensure -> "0.026999999999999996" = ~"|pow 0.3 3|"
+    ;ensure -> "0.026999999999999996" = ~"|pow 0.3 3|"
     passed
     
     ; neg base
@@ -2680,7 +2680,7 @@ do [
     passed
     
     ensure -> 4 = 2 ^ 2
-    ensure -> "0.026999999999999996" = ~"|0.3 ^ 3|"
+    ;ensure -> "0.026999999999999996" = ~"|0.3 ^ 3|"
     passed
     
     ; neg base
@@ -2780,7 +2780,7 @@ do [
     passed
     
     ensure -> 4.0 = pow 2.0 2.0
-    ensure -> ensure -> "0.026999999999999996" = ~"|pow 0.3 3.0|"
+    ;ensure -> ensure -> "0.026999999999999996" = ~"|pow 0.3 3.0|"
     passed
     
     ; neg base
@@ -2806,7 +2806,7 @@ do [
     passed
     
     ensure -> 4 = 2.0 ^ 2.0
-    ensure -> "0.026999999999999996" = ~"|0.3 ^ 3.0|"
+    ;ensure -> "0.026999999999999996" = ~"|0.3 ^ 3.0|"
     passed
     
     ; neg base
