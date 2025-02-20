@@ -1138,6 +1138,9 @@ proc defineLibrary*() =
             suffix? "hello" "lo"          ; => true
             suffix? "boom" "lo"           ; => false
             ..........
+            suffix? "hello" {/\w/}        ; => true
+            suffix? "world" {/\d/}        ; => false
+            ..........
             suffix? "hello" 'o'           ; => true
             suffix? "world" 'o'           ; => false
         """:
