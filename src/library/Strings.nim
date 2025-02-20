@@ -1117,6 +1117,9 @@ proc defineLibrary*() =
             prefix? "hello" "he"          ; => true
             prefix? "boom" "he"           ; => false
             ..........
+            prefix? "hello" {/\w+/}       ; => true
+            prefix? "world" {/\d+/}       ; => false
+            ..........
             prefix? "hello" 'h'           ; => true
         """:
             #=======================================================
