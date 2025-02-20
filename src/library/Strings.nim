@@ -1109,7 +1109,7 @@ proc defineLibrary*() =
         description = "check if string starts with given prefix",
         args        = {
             "string": {String},
-            "prefix": {String, Regex}
+            "prefix": {String, Regex, Char}
         },
         attrs       = NoAttrs,
         returns     = {Logical},
@@ -1118,10 +1118,12 @@ proc defineLibrary*() =
             prefix? "boom" "he"           ; => false
         """:
             #=======================================================
-            if yKind==Regex:
+            if likely(yKind==String):
+                push(newLogical(x.s.startsWith(y.s)))
+            elif yKind==Regex:
                 push(newLogical(x.s.startsWith(y.rx)))
             else:
-                push(newLogical(x.s.startsWith(y.s)))
+                push(newLogical(x.s.len > 0 and x.s.runeAtPos(0)==y.c))
 
     builtin "suffix?",
         alias       = unaliased, 
