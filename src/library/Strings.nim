@@ -1137,6 +1137,9 @@ proc defineLibrary*() =
         example     = """
             suffix? "hello" "lo"          ; => true
             suffix? "boom" "lo"           ; => false
+            ..........
+            suffix? "hello" 'o'           ; => true
+            suffix? "world" 'o'           ; => false
         """:
             #=======================================================
             if likely(yKind==String):
