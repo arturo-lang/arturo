@@ -1130,7 +1130,7 @@ proc defineLibrary*() =
         description = "check if string ends with given suffix",
         args        = {
             "string": {String},
-            "suffix": {String, Regex}
+            "suffix": {String, Regex, Char}
         },
         attrs       = NoAttrs,
         returns     = {Logical},
@@ -1139,10 +1139,13 @@ proc defineLibrary*() =
             suffix? "boom" "lo"           ; => false
         """:
             #=======================================================
-            if yKind==Regex:
+            if likely(yKind==String):
+                push(newLogical(x.s.endsWith(y.s)))
+            elif yKind==Regex:
                 push(newLogical(x.s.endsWith(y.rx)))
             else:
-                push(newLogical(x.s.endsWith(y.s)))
+                let slen = x.s.len
+                push(newLogical(len > 0 and x.s.runeAtPos(slen-1) == y.c))
 
     builtin "upper?",
         alias       = unaliased, 
