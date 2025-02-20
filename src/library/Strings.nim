@@ -1116,6 +1116,8 @@ proc defineLibrary*() =
         example     = """
             prefix? "hello" "he"          ; => true
             prefix? "boom" "he"           ; => false
+            ..........
+            prefix? "hello" 'h'           ; => true
         """:
             #=======================================================
             if likely(yKind==String):
