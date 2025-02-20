@@ -1150,8 +1150,8 @@ proc defineLibrary*() =
             elif yKind==Regex:
                 push(newLogical(x.s.endsWith(y.rx)))
             else:
-                let slen = x.s.len
-                push(newLogical(len > 0 and x.s.runeAtPos(slen-1) == y.c))
+                let slen = x.s.runeLen()
+                push(newLogical(slen > 0 and x.s.runeAtPos(slen-1) == y.c))
 
     builtin "upper?",
         alias       = unaliased, 
