@@ -87,6 +87,7 @@ var
     ExecStack*      : seq[int]  = @[]
 
     IsRepl*         : bool = false
+    ShowWarnings*   : bool = true
 
 #=======================================
 # Helpers
@@ -94,10 +95,13 @@ var
 
 # Check environment
 
-proc getCurrentContext(e: VError): string =
-    if e.kind == CmdlineErr: return ""
+proc getGenericContext(): string =
     if IsRepl: return " <repl> "
     return " <script> "
+
+proc getCurrentContext(e: VError = nil): string =
+    if e.kind == CmdlineErr: return ""
+    return getGenericContext()
 
 proc getMaxWidth(): int =
     when not defined(WEB):
@@ -150,23 +154,26 @@ func `~~`*(s: string, inputs: seq[string]): string =
     finalS = finalS.replace("$$", "$#")
     return finalS % replacements    
 
-# Error messages
-
-proc printErrorHeader(e: VError) =
+proc printGenericHeader(color: string, label: string, context: string) =
     let preHeader = 
-        fg(redColor) & "{HorizLine}{HorizLine}{LeftBracket} ".fmt & 
-        bold(redColor) & (e.kind.label) & 
-        fg(redColor) & " {RightBracket}".fmt
+        fg(color) & "{HorizLine}{HorizLine}{LeftBracket} ".fmt & 
+        bold(color) & (label) & 
+        fg(color) & " {RightBracket}".fmt
 
     let postHeader = 
-        getCurrentContext(e) & 
+        context & 
         "{HorizLine}{HorizLine}".fmt & 
         resetColor()
 
     let middleStretch = getMaxWidth() - preHeader.realLen() - postHeader.realLen()
-
+    
     echo ""
     echo preHeader & repeat(HorizLine, middleStretch) & postHeader
+
+# Error messages
+
+proc printErrorHeader(e: VError) =
+    printGenericHeader(redColor, e.kind.label, getCurrentContext(e))
 
 proc printErrorKindDescription(e: VError) =
     if e.kind.description != "":
@@ -234,6 +241,14 @@ proc showError*(e: VError) =
     if (not IsRepl) or e.hint=="":
         echo ""
 
+proc showWarning*(t: string, w: string) =
+    printGenericHeader(cyanColor, t, getGenericContext())
+    echo ""
+    echo strip(indent(dedent(formatMessage(w)), 2), chars={'\n'})
+
+    if not IsRepl:
+        echo ""
+
 func panic(error: VError) =
     raise error
 
@@ -243,6 +258,12 @@ proc panic(throw: bool, error: VError) =
     else:
         showError(error)
         quit(1)
+
+proc warn(kind: string, warning: string) =
+    echo "in WARN"
+    if ShowWarnings:
+        echo "and about to show a warning"
+        showWarning(kind, warning)
 
 #=======================================
 # Constructors
@@ -949,6 +970,19 @@ func Error_ErrorLoadingLibrarySymbol*(path: string, sym: string) =
 func ProgramError_panic*(message: string, code: int) =
     panic:
         toError ProgramErr, message, errCode=code
+
+#------------------------
+# Warnings
+#------------------------
+
+proc Warning_DeprecatedFunction*(fnc: string, recommended: string) =
+    warn("Symbol Deprecated"): """
+        Function has been deprecated:
+            _$#_
+        
+        Use instead:
+            _$#_
+    """ ~~ @[fnc, recommended]
 
 # TODO Re-establish stack trace debug reports
 #  labels: vm, error handling
