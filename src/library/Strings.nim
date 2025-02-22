@@ -1206,7 +1206,7 @@ proc defineLibrary*() =
             whitespace? "\n \n"           ; => true
         """:
             #=======================================================
-            push(newLogical(x.s.isEmptyOrWhitespace()))
+            push(newLogical(x.s.isWhitespace()))
 
 
 #=======================================
