@@ -969,7 +969,7 @@ proc defineLibrary*() =
         rule        = PrefixPrecedence,
         description = "check if given character/string is in ASCII",
         args        = {
-            "string": {Char,String}
+            "string": {String,Char}
         },
         attrs       = NoAttrs,
         returns     = {Logical},
