@@ -219,3 +219,9 @@ func getSimilar*(s: string, options: seq[string]): seq[string] =
 
     if levs.len > 3: result = toSeq(levs.keys)[0..2]
     else: result = toSeq(levs.keys)
+
+func isWhitespace*(s: string): bool =
+    if s.len == 0: return false
+    for c in s:
+        if c notin Whitespace: return false
+    return true
