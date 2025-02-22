@@ -1011,6 +1011,9 @@ proc defineLibrary*() =
             lower? "X"               ; => false
             lower? "Hello World"     ; => false
             lower? "hello"           ; => true
+            ..........
+            lower? 'a'               ; => true
+            lower? 'A'               ; => false
         """:
             #=======================================================
             if xKind==Char:
