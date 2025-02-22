@@ -969,7 +969,7 @@ proc defineLibrary*() =
         rule        = PrefixPrecedence,
         description = "check if given character/string is in ASCII",
         args        = {
-            "string": {Char,String}
+            "string": {String,Char}
         },
         attrs       = NoAttrs,
         returns     = {Logical},
@@ -1011,6 +1011,9 @@ proc defineLibrary*() =
             lower? "X"               ; => false
             lower? "Hello World"     ; => false
             lower? "hello"           ; => true
+            ..........
+            lower? 'a'               ; => true
+            lower? 'A'               ; => false
         """:
             #=======================================================
             if xKind==Char:
@@ -1175,6 +1178,9 @@ proc defineLibrary*() =
             upper? "x"               ; => false
             upper? "Hello World"     ; => false
             upper? "HELLO"           ; => true
+            ..........
+            upper? 'A'               ; => true
+            upper? 'a'               ; => false
         """:
             #=======================================================
             if xKind==Char:
@@ -1196,7 +1202,7 @@ proc defineLibrary*() =
         rule        = PrefixPrecedence,
         description = "check if given string consists only of whitespace",
         args        = {
-            "string": {String}
+            "string": {String,Char}
         },
         attrs       = NoAttrs,
         returns     = {Logical},
@@ -1204,10 +1210,17 @@ proc defineLibrary*() =
             whitespace? "hello"           ; => false
             whitespace? " "               ; => true
             whitespace? "\n \n"           ; => true
+            whitespace? ""                ; => false
+            ..........
+            whitespace? ' '               ; => true
+            whitespace? '\n'              ; => true
+            whitespace? 'a'               ; => false
         """:
             #=======================================================
-            push(newLogical(x.s.isEmptyOrWhitespace()))
-
+            if xKind==Char:
+                push(newLogical(x.c.isWhitespace()))
+            else:
+                push(newLogical(x.s.isWhitespace()))
 
 #=======================================
 # Add Library
