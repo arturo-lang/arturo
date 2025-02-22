@@ -1175,6 +1175,9 @@ proc defineLibrary*() =
             upper? "x"               ; => false
             upper? "Hello World"     ; => false
             upper? "HELLO"           ; => true
+            ..........
+            upper? 'A'               ; => true
+            upper? 'a'               ; => false
         """:
             #=======================================================
             if xKind==Char:
