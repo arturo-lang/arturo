@@ -1196,7 +1196,7 @@ proc defineLibrary*() =
         rule        = PrefixPrecedence,
         description = "check if given string consists only of whitespace",
         args        = {
-            "string": {String}
+            "string": {String,Char}
         },
         attrs       = NoAttrs,
         returns     = {Logical},
@@ -1206,8 +1206,10 @@ proc defineLibrary*() =
             whitespace? "\n \n"           ; => true
         """:
             #=======================================================
-            push(newLogical(x.s.isWhitespace()))
-
+            if xKind==Char:
+                push(newLogical(x.c.isWhitespace()))
+            else:
+                push(newLogical(x.s.isWhitespace()))
 
 #=======================================
 # Add Library
