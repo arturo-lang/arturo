@@ -1204,6 +1204,11 @@ proc defineLibrary*() =
             whitespace? "hello"           ; => false
             whitespace? " "               ; => true
             whitespace? "\n \n"           ; => true
+            whitespace? ""                ; => false
+            ..........
+            whitespace? ' '               ; => true
+            whitespace? '\n'              ; => true
+            whitespace? 'a'               ; => false
         """:
             #=======================================================
             if xKind==Char:
