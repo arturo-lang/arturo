@@ -73,9 +73,10 @@ jobs:
                 mkdir tmpdocs
                 cd docs/website
                 arturo ../../tools/miniwebize/webize.art --build --at: ../../tmpdocs
+                cd ..
 
             - name: Upload artifact
               uses: 'actions/upload-artifact@v4'
               with:
                 name: tmpdocs
-                path: tmpdocs
+                path: arturo/tmpdocs
