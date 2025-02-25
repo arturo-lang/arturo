@@ -6,7 +6,7 @@ on:
             - closed
         branches:
             - master
-
+          
 jobs:
     increment-build:
         if: github.event.pull_request.merged == true
