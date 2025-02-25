@@ -33,7 +33,7 @@ jobs:
               uses: arturo-lang/arturo-action@main
               with: 
                 token: ${{ secrets.GITHUB_TOKEN }}
-                mode: full
+                mode: docgen
                 arch: amd64
                 src: ${{ github.ref }}
                 metadata: ${{ env.BRANCH_NAME }}-${{ github.sha }}
