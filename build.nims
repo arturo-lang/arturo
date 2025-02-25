@@ -286,8 +286,6 @@ proc buildArturo*(config: BuildConfig, targetFile: string) =
         config.showBuildInfo()
 
     proc setDevmodeUp() =
-        section "Updating build..."
-        updateBuild()
         devConfig()
 
     proc setBundlemodeUp() =
