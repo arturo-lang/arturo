@@ -6,6 +6,12 @@ on:
             - 'master'
         tags-ignore:
             - '**'
+    pull_request:
+        paths-ignore:
+            - 'docs/*'
+            - '*.yml'
+            - '*.md'
+            - 'LICENSE'
 
 # on:
 #     pull_request_target:
