@@ -424,7 +424,7 @@ cmd build, "[default] Build arturo and optionally install the executable":
                           "x86-32", "arm", "arm-32"]
         availableOSes = @["freebsd", "openbsd", "netbsd", "linux", "mac",
                           "macos", "macosx", "win", "windows",]
-        availableBuilds = @["full", "mini", "safe", "web"]
+        availableBuilds = @["full", "mini", "docgen", "safe", "web"]
         availableProfilers = @["default", "mem", "native", "profile"]
 
     var config = buildConfig()
