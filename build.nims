@@ -159,29 +159,6 @@ proc verifyDirectories*() =
     for path in [paths.targetBin, paths.targetLib, paths.targetStores]:
         mkdir path
 
-proc updateBuild*() =
-    ## Increment the build version by one and perform a commit.
-    
-    proc commit(file: string): string =
-        let cmd = fmt"git commit -m 'build update' {file}"
-        cmd.gorgeEx().output
-
-    proc increaseVersion(file: string) =
-        let buildVersion: int = file.readFile()
-                                    .strip()
-                                    .parseInt()
-                                    .succ()
-
-        file.writeFile $buildVersion
-    
-    proc main() =
-        let buildFile = "version/build"
-        increaseVersion(buildFile)
-        for line in commit(buildFile).splitLines:
-            echo line.strip()
-
-    main()
-
 proc compile*(config: BuildConfig, showFooter: bool = false): int
     {. raises: [OSError, ValueError, Exception] .} =
 
@@ -286,8 +263,6 @@ proc buildArturo*(config: BuildConfig, targetFile: string) =
         config.showBuildInfo()
 
     proc setDevmodeUp() =
-        section "Updating build..."
-        updateBuild()
         devConfig()
 
     proc setBundlemodeUp() =
