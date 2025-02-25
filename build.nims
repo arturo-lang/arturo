@@ -452,6 +452,9 @@ cmd build, "[default] Build arturo and optionally install the executable":
             miniBuildConfig()
             config.version = "@mini"
             miniBuild()
+        >> ["docgen"]:
+            fullBuildConfig()
+            docgenBuildConfig()
         >> ["safe"]:
             safeBuildConfig()
             miniBuild()
@@ -545,7 +548,7 @@ cmd package, "Package arturo app and build executable":
 
     config.buildPackage()
 
-cmd docs, "Build the documentation":
+cmd docs, "Build the internal documentation":
     ## docs:
     ##     Builds the developer documentation
     ##
