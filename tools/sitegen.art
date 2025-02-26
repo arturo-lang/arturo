@@ -29,6 +29,11 @@ loop rosettas 'ro [
     'dict ++ ro
 ]
 
+loop list "docs/website/data" 'df [
+    if ".art" = extract.extension df -> 
+        delete df
+]
+
 (as.pretty.code dict) >> "docs/website/data/rosetta.art" 
 
 ; get modules and functions
