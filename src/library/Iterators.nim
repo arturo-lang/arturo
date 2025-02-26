@@ -427,7 +427,7 @@ template doIterate(
 # Methods
 #=======================================
 
-proc defineLibrary*() =
+proc defineModule*(moduleName: string) =
 
     #----------------------------
     # Functions
@@ -1487,9 +1487,3 @@ proc defineLibrary*() =
                     return
             do:
                 push(VFALSE)
-
-#=======================================
-# Add Library
-#=======================================
-
-Libraries.add(defineLibrary)

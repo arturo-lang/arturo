@@ -72,7 +72,7 @@ when not defined(WEB):
 # Definitions
 #=======================================
 
-proc defineLibrary*() =
+proc defineModule*(moduleName: string) =
 
     #----------------------------
     # Functions
@@ -581,9 +581,3 @@ proc defineLibrary*() =
                     echo " :: Starting server on port " & $(port) & "...\n"
                 
                 startServer(requestHandler.RequestHandler, port)
-
-#=======================================
-# Add Library
-#=======================================
-
-Libraries.add(defineLibrary)

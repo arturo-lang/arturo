@@ -36,7 +36,7 @@ import vm/[errors, exec]
 # Definitions
 #=======================================
 
-proc defineLibrary*() =
+proc defineModule*(moduleName: string) =
 
     # TODO(Types) Add new `extend` function?
     #  This would replace Collections\extend (see relevant comment there)
@@ -1329,9 +1329,3 @@ proc defineLibrary*() =
         """:
             #=======================================================
             push(newLogical(xKind==Word))
-
-#=======================================
-# Add Library
-#=======================================
-
-Libraries.add(defineLibrary)

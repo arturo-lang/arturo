@@ -30,7 +30,7 @@ import vm/lib
 # TODO(Colors) more potential built-in function candidates?
 #  labels: library, enhancement, open discussion
 
-proc defineLibrary*() =
+proc defineModule*(moduleName: string) =
 
     #----------------------------
     # Functions
@@ -302,9 +302,3 @@ proc defineLibrary*() =
             else:
                 ensureInPlaceAny()
                 SetInPlaceAny(newColor(spinColor(InPlaced.l, y.i)))
-
-#=======================================
-# Add Library
-#=======================================
-
-Libraries.add(defineLibrary)

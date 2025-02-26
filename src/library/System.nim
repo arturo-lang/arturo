@@ -46,7 +46,7 @@ when not defined(WEB):
 # Definitions
 #=======================================
 
-proc defineLibrary*() =
+proc defineModule*(moduleName: string) =
 
     #----------------------------
     # Functions
@@ -606,8 +606,3 @@ proc defineLibrary*() =
                 #=======================================================
                 push newLogical(isAdmin())
 
-#=======================================
-# Add Library
-#=======================================
-
-Libraries.add(defineLibrary)

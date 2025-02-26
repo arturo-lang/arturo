@@ -424,7 +424,7 @@ cmd build, "[default] Build arturo and optionally install the executable":
                           "x86-32", "arm", "arm-32"]
         availableOSes = @["freebsd", "openbsd", "netbsd", "linux", "mac",
                           "macos", "macosx", "win", "windows",]
-        availableBuilds = @["full", "mini", "safe", "web"]
+        availableBuilds = @["full", "mini", "docgen", "safe", "web"]
         availableProfilers = @["default", "mem", "native", "profile"]
 
     var config = buildConfig()
@@ -452,6 +452,9 @@ cmd build, "[default] Build arturo and optionally install the executable":
             miniBuildConfig()
             config.version = "@mini"
             miniBuild()
+        >> ["docgen"]:
+            fullBuildConfig()
+            docgenBuildConfig()
         >> ["safe"]:
             safeBuildConfig()
             miniBuild()
@@ -545,7 +548,7 @@ cmd package, "Package arturo app and build executable":
 
     config.buildPackage()
 
-cmd docs, "Build the documentation":
+cmd docs, "Build the internal documentation":
     ## docs:
     ##     Builds the developer documentation
     ##

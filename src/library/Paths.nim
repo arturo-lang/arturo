@@ -36,7 +36,7 @@ when defined(SAFE):
 # Definitions
 #=======================================
 
-proc defineLibrary*() =
+proc defineModule*(moduleName: string) =
 
     #----------------------------
     # Functions
@@ -326,9 +326,3 @@ proc defineLibrary*() =
             """:
                 #=======================================================
                 push(newLogical(isAbsolute(x.s)))
-
-#=======================================
-# Add Library
-#=======================================
-
-Libraries.add(defineLibrary)

@@ -69,7 +69,7 @@ showHeader() {
     eecho "${CLEAR}"
     printf "     \e[1mArturo"
     printf " Programming Language\e[0m\n"
-    eecho "      (c)2024 Yanis Zafirópulos"
+    eecho "      (c)2025 Yanis Zafirópulos"
     eecho ""
 
     eecho "======================================"
