@@ -29,7 +29,7 @@ env:
 
 jobs:
     docgen:
-        runs-on: ubuntu-22.04
+        runs-on: macos-latest
         name: Generator
         defaults:
             run:
@@ -40,7 +40,7 @@ jobs:
               with: 
                 token: ${{ secrets.GITHUB_TOKEN }}
                 mode: docgen
-                arch: amd64
+                arch: arm64
                 src: ${{ github.ref }}
                 metadata: ${{ env.BRANCH_NAME }}-${{ github.sha }}
 
