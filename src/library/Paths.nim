@@ -326,9 +326,3 @@ proc defineLibrary*() =
             """:
                 #=======================================================
                 push(newLogical(isAbsolute(x.s)))
-
-#=======================================
-# Add Library
-#=======================================
-
-Libraries.add(defineLibrary)

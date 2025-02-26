@@ -361,9 +361,3 @@ proc defineLibrary*() =
                 }.toOrderedTable()
 
                 push(newDictionary(ret))
-
-#=======================================
-# Add Library
-#=======================================
-
-Libraries.add(defineLibrary)

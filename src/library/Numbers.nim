@@ -1496,9 +1496,3 @@ proc defineLibrary*() =
         alias       = unaliased,
         description = "the number tau, mathematical constant":
             newFloating(TAU)
-         
-#=======================================
-# Add Library
-#=======================================
-
-Libraries.add(defineLibrary)

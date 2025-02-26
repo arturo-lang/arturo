@@ -331,9 +331,3 @@ proc defineLibrary*() =
 
     when defined(GMP):
         addPhysicalConstants()
-
-#=======================================
-# Add Library
-#=======================================
-
-Libraries.add(defineLibrary)

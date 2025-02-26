@@ -1487,9 +1487,3 @@ proc defineLibrary*() =
                     return
             do:
                 push(VFALSE)
-
-#=======================================
-# Add Library
-#=======================================
-
-Libraries.add(defineLibrary)

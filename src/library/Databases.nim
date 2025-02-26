@@ -253,9 +253,3 @@ proc defineLibrary*() =
                 )
 
                 push newStore(store)
-
-#=======================================
-# Add Library
-#=======================================
-
-Libraries.add(defineLibrary)

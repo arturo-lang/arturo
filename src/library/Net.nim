@@ -581,9 +581,3 @@ proc defineLibrary*() =
                     echo " :: Starting server on port " & $(port) & "...\n"
                 
                 startServer(requestHandler.RequestHandler, port)
-
-#=======================================
-# Add Library
-#=======================================
-
-Libraries.add(defineLibrary)

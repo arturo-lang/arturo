@@ -464,9 +464,3 @@ proc defineLibrary*() =
         alias       = unaliased,
         description = "the TRUE logical constant":
             VTRUE
-
-#=======================================
-# Add Library
-#=======================================
-
-Libraries.add(defineLibrary)

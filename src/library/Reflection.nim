@@ -384,9 +384,3 @@ proc defineLibrary*() =
         """:
             #=======================================================
             push(newLogical(emptyFrameStack()))
-
-#=======================================
-# Add Library
-#=======================================
-
-Libraries.add(defineLibrary)

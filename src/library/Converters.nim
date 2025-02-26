@@ -180,8 +180,3 @@ proc defineLibrary*() =
             else:
                 push(x)
 
-#=======================================
-# Add Library
-#=======================================
-
-Libraries.add(defineLibrary)

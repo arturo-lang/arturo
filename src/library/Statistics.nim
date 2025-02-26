@@ -220,9 +220,3 @@ proc defineLibrary*() =
                 push newFloating(varianceS(x.a.map((z)=>(requireValue(z,{Integer,Floating}); asFloat(z)))))
             else:
                 push newFloating(variance(x.a.map((z)=>(requireValue(z,{Integer,Floating}); asFloat(z)))))
-
-#=======================================
-# Add Library
-#=======================================
-
-Libraries.add(defineLibrary)

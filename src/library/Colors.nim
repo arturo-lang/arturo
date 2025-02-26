@@ -302,9 +302,3 @@ proc defineLibrary*() =
             else:
                 ensureInPlaceAny()
                 SetInPlaceAny(newColor(spinColor(InPlaced.l, y.i)))
-
-#=======================================
-# Add Library
-#=======================================
-
-Libraries.add(defineLibrary)
