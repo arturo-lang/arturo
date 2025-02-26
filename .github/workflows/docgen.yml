@@ -61,8 +61,8 @@ jobs:
 
             - name: "Install prerequisites"
               run: |
-                sudo apt-get update
-                sudo apt-get install webp 
+                brew install webp
+                brew install node
                 sudo npm install -g sass uglify-js
  
             - name: "Generate website"
