@@ -31,7 +31,7 @@ import vm/lib
 #  Is it worth the fuss?
 #  labels: library, enhancement, open discussion
 
-proc defineLibrary*() =
+proc defineLibrary*(moduleName: string) =
 
     #----------------------------
     # Functions

@@ -55,7 +55,7 @@ template convertQuantity(x, y: Value, xKind, yKind: ValueKind): untyped =
 # Definitions
 #=======================================
 
-proc defineLibrary*() =
+proc defineLibrary*(moduleName: string) =
 
     #----------------------------
     # Functions

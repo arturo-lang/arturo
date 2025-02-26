@@ -30,7 +30,7 @@ import vm/lib
 #  But: we'll obviously have to somehow "define" this... approximate equality.
 #  labels: library, enhancement, open discussion
 
-proc defineLibrary*() =
+proc defineLibrary*(moduleName: string) =
 
     #----------------------------
     # Functions

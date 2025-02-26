@@ -40,7 +40,7 @@ when not defined(WEB):
 #  features
 #  labels: open discussion
 
-proc defineLibrary*() =
+proc defineLibrary*(moduleName: string) =
 
     #----------------------------
     # Functions
