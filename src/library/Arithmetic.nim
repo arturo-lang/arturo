@@ -30,8 +30,8 @@ when defined(GMP):
 
 # TODO(Arithmetic) add `powmod` built-in function?
 #  labels: library, enhancement, open discussion
-
-proc defineLibrary*() =
+ 
+proc defineModule*(moduleName: string) =
 
     #----------------------------
     # Functions
@@ -263,9 +263,3 @@ proc defineLibrary*() =
         """:
             #=======================================================
             generateOperationB("sub", `-`, `-=`)
-
-#=======================================
-# Add Library
-#=======================================
-
-Libraries.add(defineLibrary)

@@ -65,7 +65,7 @@ proc replacingAmpersands(va: Value, what: Value): Value =
 # Definitions
 #=======================================
 
-proc defineLibrary*() =
+proc defineModule*(moduleName: string) =
 
     #----------------------------
     # Functions
@@ -1930,9 +1930,3 @@ proc defineLibrary*() =
         alias       = slashedzero,
         description = "the NULL constant":
             VNULL
-
-#=======================================
-# Add Library
-#=======================================
-
-Libraries.add(defineLibrary)

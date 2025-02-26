@@ -61,7 +61,7 @@ template replaceStrWith(str: var string, src: Value, dst: Value): untyped =
 # Definitions
 #=======================================
 
-proc defineLibrary*() =
+proc defineModule*(moduleName: string) =
 
     #----------------------------
     # Functions
@@ -1221,9 +1221,3 @@ proc defineLibrary*() =
                 push(newLogical(x.c.isWhitespace()))
             else:
                 push(newLogical(x.s.isWhitespace()))
-
-#=======================================
-# Add Library
-#=======================================
-
-Libraries.add(defineLibrary)
