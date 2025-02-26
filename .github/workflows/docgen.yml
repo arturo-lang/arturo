@@ -83,7 +83,7 @@ jobs:
                 remote_path: /var/www/arturo-lang.io/master
                 remote_host: arturo-lang.io
                 remote_user: root
-                remote_key: ${{ secrets.DOCUMENTATION_DEPLOYMENT }}
+                remote_key: ${{ secrets.ARTUROLANG }}
 
             - name: Upload artifact
               uses: 'actions/upload-artifact@v4'
