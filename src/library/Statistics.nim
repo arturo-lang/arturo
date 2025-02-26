@@ -34,7 +34,7 @@ import vm/values/custom/[vrange]
 # TODO(Statistics) more potential built-in function candidates?
 #  labels: library, enhancement, open discussion
 
-proc defineLibrary*() =
+proc defineLibrary*(moduleName: string) =
 
     #----------------------------
     # Functions

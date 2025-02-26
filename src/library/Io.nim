@@ -47,7 +47,7 @@ when defined(WEB):
 # Definitions
 #=======================================
 
-proc defineLibrary*() =
+proc defineLibrary*(moduleName: string) =
 
     #----------------------------
     # Functions

@@ -33,7 +33,7 @@ import vm/[errors, eval, exec, runtime]
 # Definitions
 #=======================================
 
-proc defineLibrary*() =
+proc defineLibrary*(moduleName: string) =
 
     #----------------------------
     # Functions

@@ -38,7 +38,7 @@ when not defined(NODIALOGS):
 # Definitions
 #=======================================
 
-proc defineLibrary*() =
+proc defineLibrary*(moduleName: string) =
 
     #----------------------------
     # Functions

@@ -427,7 +427,7 @@ template doIterate(
 # Methods
 #=======================================
 
-proc defineLibrary*() =
+proc defineLibrary*(moduleName: string) =
 
     #----------------------------
     # Functions
