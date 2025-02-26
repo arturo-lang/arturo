@@ -58,7 +58,7 @@ template processTrigonometric(fun: untyped): untyped =
 #  potential use: https://rosettacode.org/wiki/Cubic_special_primes
 #  labels: library, enhancement, new feature
  
-proc defineLibrary*(moduleName: string) =
+proc defineModule*(moduleName: string) =
 
     #----------------------------
     # Functions

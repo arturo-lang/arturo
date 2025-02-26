@@ -65,7 +65,7 @@ proc replacingAmpersands(va: Value, what: Value): Value =
 # Definitions
 #=======================================
 
-proc defineLibrary*(moduleName: string) =
+proc defineModule*(moduleName: string) =
 
     #----------------------------
     # Functions

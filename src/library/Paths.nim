@@ -36,7 +36,7 @@ when defined(SAFE):
 # Definitions
 #=======================================
 
-proc defineLibrary*(moduleName: string) =
+proc defineModule*(moduleName: string) =
 
     #----------------------------
     # Functions

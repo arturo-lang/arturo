@@ -26,7 +26,7 @@ import vm/[exec]
 # Definitions
 #=======================================
 
-proc defineLibrary*(moduleName: string) =
+proc defineModule*(moduleName: string) =
 
     #----------------------------
     # Predicates

@@ -37,7 +37,7 @@ import vm/values/printable
 #  Is there any way to remove all ambiguity - by either reducing them, merging them, extending them or explaining their functionality more thoroughly?
 #  labels: library, enhancement, open discussion, documentation
 
-proc defineLibrary*(moduleName: string) =
+proc defineModule*(moduleName: string) =
 
     #----------------------------
     # Functions

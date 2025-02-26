@@ -36,7 +36,7 @@ import vm/[errors, exec]
 # Definitions
 #=======================================
 
-proc defineLibrary*(moduleName: string) =
+proc defineModule*(moduleName: string) =
 
     # TODO(Types) Add new `extend` function?
     #  This would replace Collections\extend (see relevant comment there)

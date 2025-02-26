@@ -31,7 +31,7 @@ when defined(GMP):
 # TODO(Arithmetic) add `powmod` built-in function?
 #  labels: library, enhancement, open discussion
  
-proc defineLibrary*(moduleName: string) =
+proc defineModule*(moduleName: string) =
 
     #----------------------------
     # Functions
