@@ -134,7 +134,7 @@ var
 #=======================================
 
 proc setupLibrary() =
-    for name, moduleDefinition in libraryModules:
+    for name, moduleDefinition in LibraryModules:
         moduleDefinition(name)
 
 template initialize(args: seq[string], filename: string, isFile:bool, scriptData:Value = nil, mutedColors: bool = false, portableData = "") =
