@@ -72,7 +72,7 @@ macro importLib(name: static[string]): untyped =
                     echo " ## " & `libname`
                     echo "-------------------------"
             import `libpath` as `id`
-            Libraries.add(`id`.defineLibrary)
+            Libraries[`name`] = `id`.defineLibrary
 
 #=======================================
 # Standard library setup
@@ -134,8 +134,8 @@ var
 #=======================================
 
 proc setupLibrary() =
-    for i,importLibrary in Libraries:
-        importLibrary()
+    for nm,importLibrary in Libraries:
+        importLibrary(nm)
 
 template initialize(args: seq[string], filename: string, isFile:bool, scriptData:Value = nil, mutedColors: bool = false, portableData = "") =
     # stack
