@@ -57,6 +57,7 @@ jobs:
                 ls -la arturo
                 cd arturo 
                 arturo tools/sitegen.art
+                echo "#[release?: false]" > docs/website/data/setup.art
                 mkdir tmpdocs
                 cd docs/website
                 arturo ../../tools/miniwebize/webize.art --build --at: ../../tmpdocs
