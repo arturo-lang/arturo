@@ -40,7 +40,7 @@ when not defined(WEB):
 #  features
 #  labels: open discussion
 
-proc defineLibrary*() =
+proc defineModule*(moduleName: string) =
 
     #----------------------------
     # Functions
@@ -294,9 +294,3 @@ proc defineLibrary*() =
                 when defined(SAFE): Error_OperationNotPermitted("send?")
 
                 push newLogical(x.sock.socket.trySend(y.s))
-
-#=======================================
-# Add Library
-#=======================================
-
-Libraries.add(defineLibrary)

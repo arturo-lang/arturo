@@ -29,7 +29,7 @@ import vm/lib
 # Definitions
 #=======================================
 
-proc defineLibrary*() =
+proc defineModule*(moduleName: string) =
 
     #----------------------------
     # Functions
@@ -315,9 +315,3 @@ proc defineLibrary*() =
                             break
 
                     push(newLogical(contains))
-
-#=======================================
-# Add Library
-#=======================================
-
-Libraries.add(defineLibrary)

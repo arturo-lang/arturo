@@ -48,7 +48,7 @@ import vm/lib
 #  Currently, the only supported database is Sqlite
 #  labels: library,enhancement
 
-proc defineLibrary*() =
+proc defineModule*(moduleName: string) =
 
     #----------------------------
     # Functions
@@ -253,9 +253,3 @@ proc defineLibrary*() =
                 )
 
                 push newStore(store)
-
-#=======================================
-# Add Library
-#=======================================
-
-Libraries.add(defineLibrary)
