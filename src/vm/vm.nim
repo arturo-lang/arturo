@@ -72,6 +72,7 @@ macro importLib(name: static[string]): untyped =
                     echo " ## " & `libname`
                     echo "-------------------------"
             import `libpath` as `id`
+            Libraries.add(`id`.defineLibrary)
 
 #=======================================
 # Standard library setup
