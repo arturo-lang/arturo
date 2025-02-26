@@ -61,7 +61,7 @@ template replaceStrWith(str: var string, src: Value, dst: Value): untyped =
 # Definitions
 #=======================================
 
-proc defineLibrary*(moduleName: string) =
+proc defineModule*(moduleName: string) =
 
     #----------------------------
     # Functions

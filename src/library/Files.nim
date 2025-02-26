@@ -55,7 +55,7 @@ when defined(BUNDLE):
 #  this should obviously support writing a 16-bit int, and all this
 #  labels: library, enhancement, new feature, open discussion
 
-proc defineLibrary*(moduleName: string) =
+proc defineModule*(moduleName: string) =
 
     #----------------------------
     # Functions

@@ -30,7 +30,7 @@ import vm/lib
 # TODO(Colors) more potential built-in function candidates?
 #  labels: library, enhancement, open discussion
 
-proc defineLibrary*(moduleName: string) =
+proc defineModule*(moduleName: string) =
 
     #----------------------------
     # Functions

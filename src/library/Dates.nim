@@ -31,7 +31,7 @@ import vm/lib
 #  we could also make use of our recently-added `:quantity` values
 #  labels: library, enhancement, open discussion
 
-proc defineLibrary*(moduleName: string) =
+proc defineModule*(moduleName: string) =
 
     #----------------------------
     # Functions

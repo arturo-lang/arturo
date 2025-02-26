@@ -41,7 +41,7 @@ import vm/lib
 # Definitions
 #=======================================
 
-proc defineLibrary*(moduleName: string) =
+proc defineModule*(moduleName: string) =
 
     #----------------------------
     # Functions
