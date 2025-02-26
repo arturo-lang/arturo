@@ -252,8 +252,3 @@ proc defineLibrary*() =
             #=======================================================
             push(newLogical(identical(x, y)))
 
-#=======================================
-# Add Library
-#=======================================
-
-Libraries.add(defineLibrary)

@@ -1930,9 +1930,3 @@ proc defineLibrary*() =
         alias       = slashedzero,
         description = "the NULL constant":
             VNULL
-
-#=======================================
-# Add Library
-#=======================================
-
-Libraries.add(defineLibrary)

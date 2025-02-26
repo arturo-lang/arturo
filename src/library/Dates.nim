@@ -391,9 +391,3 @@ proc defineLibrary*() =
         """:
             #=======================================================
             push(newLogical(x.eobj.weekday == dWed))
-
-#=======================================
-# Add Library
-#=======================================
-
-Libraries.add(defineLibrary)

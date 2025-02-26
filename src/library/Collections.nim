@@ -3072,9 +3072,3 @@ proc defineLibrary*() =
                     push(newLogical(x.d.len == 0))
                 else:
                     push(VTRUE)
-
-#=======================================
-# Add Library
-#=======================================
-
-Libraries.add(defineLibrary)

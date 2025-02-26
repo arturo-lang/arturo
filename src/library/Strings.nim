@@ -1221,9 +1221,3 @@ proc defineLibrary*() =
                 push(newLogical(x.c.isWhitespace()))
             else:
                 push(newLogical(x.s.isWhitespace()))
-
-#=======================================
-# Add Library
-#=======================================
-
-Libraries.add(defineLibrary)

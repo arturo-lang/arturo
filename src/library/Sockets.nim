@@ -294,9 +294,3 @@ proc defineLibrary*() =
                 when defined(SAFE): Error_OperationNotPermitted("send?")
 
                 push newLogical(x.sock.socket.trySend(y.s))
-
-#=======================================
-# Add Library
-#=======================================
-
-Libraries.add(defineLibrary)

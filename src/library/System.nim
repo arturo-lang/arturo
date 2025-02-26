@@ -606,8 +606,3 @@ proc defineLibrary*() =
                 #=======================================================
                 push newLogical(isAdmin())
 
-#=======================================
-# Add Library
-#=======================================
-
-Libraries.add(defineLibrary)

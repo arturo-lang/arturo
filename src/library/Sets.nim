@@ -315,9 +315,3 @@ proc defineLibrary*() =
                             break
 
                     push(newLogical(contains))
-
-#=======================================
-# Add Library
-#=======================================
-
-Libraries.add(defineLibrary)

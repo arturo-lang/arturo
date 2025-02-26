@@ -343,9 +343,3 @@ proc defineLibrary*() =
                         wv.evaluate(x.s)
 
                 wv.show()
-                
-#=======================================
-# Add Library
-#=======================================
-
-Libraries.add(defineLibrary)
