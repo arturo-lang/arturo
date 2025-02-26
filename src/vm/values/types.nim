@@ -48,8 +48,8 @@ type
 
     IntArray*   = seq[int]
 
-    BuiltinAction* = proc ()
-    LibraryInit* = proc(moduleName: string)
+    BuiltinAction*  = proc ()
+    ModuleDef*      = proc(moduleName: string)
 
     # TODO(VM/values/types) add new `:matrix` type?
     #  this would normally go with a separate Linear Algebra-related stdlib module

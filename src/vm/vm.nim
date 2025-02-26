@@ -60,7 +60,7 @@ when not defined(WEB):
 # Macros
 #=======================================
 
-macro importLib(name: static[string]): untyped =
+macro libraryModule(name: static[string]): untyped =
     let id = ident(name & "Lib")
     let libpath = ident("library/" & name)
     let libname = name.toUpperAscii()
@@ -72,7 +72,7 @@ macro importLib(name: static[string]): untyped =
                     echo " ## " & `libname`
                     echo "-------------------------"
             import `libpath` as `id`
-            Libraries[`name`] = `id`.defineLibrary
+            LibraryModules[`name`] = `id`.defineModule
 
 #=======================================
 # Standard library setup
@@ -94,33 +94,33 @@ macro importLib(name: static[string]): untyped =
 #  the error handling part. Food for thought! ;-)
 #  labels: vm, library, error handling, enhancement
 
-importLib "Arithmetic"
-importLib "Bitwise"
-importLib "Collections"
-importLib "Colors"
-importLib "Comparison"
-importLib "Converters"
-importLib "Core"
-importLib "Crypto"
-importLib "Databases"
-importLib "Dates"
-importLib "Exceptions"
-importLib "Files"
-importLib "Io"
-importLib "Iterators"
-importLib "Logic"
-importLib "Net"
-importLib "Numbers"
-importLib "Paths"
-importLib "Quantities"
-importLib "Reflection"
-importLib "Sets"
-importLib "Sockets"
-importLib "Statistics"
-importLib "Strings"
-importLib "System"
-importLib "Types"
-importLib "Ui"
+libraryModule "Arithmetic"
+libraryModule "Bitwise"
+libraryModule "Collections"
+libraryModule "Colors"
+libraryModule "Comparison"
+libraryModule "Converters"
+libraryModule "Core"
+libraryModule "Crypto"
+libraryModule "Databases"
+libraryModule "Dates"
+libraryModule "Exceptions"
+libraryModule "Files"
+libraryModule "Io"
+libraryModule "Iterators"
+libraryModule "Logic"
+libraryModule "Net"
+libraryModule "Numbers"
+libraryModule "Paths"
+libraryModule "Quantities"
+libraryModule "Reflection"
+libraryModule "Sets"
+libraryModule "Sockets"
+libraryModule "Statistics"
+libraryModule "Strings"
+libraryModule "System"
+libraryModule "Types"
+libraryModule "Ui"
 
 #=======================================
 # Variables
@@ -134,8 +134,8 @@ var
 #=======================================
 
 proc setupLibrary() =
-    for nm,importLibrary in Libraries:
-        importLibrary(nm)
+    for name, moduleDefinition in libraryModules:
+        moduleDefinition(name)
 
 template initialize(args: seq[string], filename: string, isFile:bool, scriptData:Value = nil, mutedColors: bool = false, portableData = "") =
     # stack
