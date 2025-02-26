@@ -16,7 +16,6 @@ import sequtils, tables, unicode
 
 import helpers/strings
 
-
 import vm/[errors, values/value]
 
 #=======================================
@@ -29,31 +28,31 @@ import vm/[errors, values/value]
 
 var
     # symbols
-    Syms* {.global.}        : SymTable          ## The symbol table: all the variables 
-                                                ## with their associated values
+    Syms* {.global.}        : SymTable                      ## The symbol table: all the variables 
+                                                            ## with their associated values
 
     # symbol aliases
-    Aliases* {.global.}     : SymbolDict        ## The symbol aliases: all the symbols
-                                                ## with all their associated variables
-                                                ## they point to
+    Aliases* {.global.}     : SymbolDict                    ## The symbol aliases: all the symbols
+                                                            ## with all their associated variables
+                                                            ## they point to
 
     # libraries 
-    Libraries* {.global.}   : seq[BuiltinAction]    ## The list of all builtin libraries
-                                                    ## to be imported at startup
+    LibraryModules* {.global.}  : Table[string, ModuleDef]  ## The table of all builtin libraries
+                                                            ## to be imported at startup
     
     # dictionary symbols stack
-    DictSyms* {.global.}    : seq[ValueDict]        ## The stack of dictionaries to be filled
-                                                    ## when using `execDictionary`
+    DictSyms* {.global.}        : seq[ValueDict]            ## The stack of dictionaries to be filled
+                                                            ## when using `execDictionary`
     
     # active stores
-    Stores* {.global.}      : seq[VStore]           ## The list of active stores to be stored
-                                                    ## before app termination
+    Stores* {.global.}          : seq[VStore]               ## The list of active stores to be stored
+                                                            ## before app termination
 
     # global configuration
-    Config* {.global.}      : Value                 ## The global configuration store
+    Config* {.global.}          : Value                     ## The global configuration store
 
     # dump values (from anywhere!)
-    Dumper* {.global.}      : proc (v:Value):string
+    Dumper* {.global.}          : proc (v:Value):string
 
 #=======================================
 # Helpers
