@@ -94,7 +94,7 @@ template builtin*(n: string, alias: VSymbol, op: OpCode, rule: PrecedenceKind, d
 
         let b = newBuiltin(
             when not defined(WEB): description else: "",
-            when not defined(WEB): static (instantiationInfo().filename.replace(".nim")) else: "",
+            when not defined(WEB): moduleName else: "",
             when not defined(WEB): static (instantiationInfo().line) else: 0,
             static argsLen, 
             when not defined(WEB): args.toOrderedTable else: initOrderedTable[string,ValueSpec](),
