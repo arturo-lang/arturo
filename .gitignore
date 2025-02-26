@@ -13,8 +13,6 @@ teststore
 dev-docs/*
 .vscode/*
 
-# Ignore all .art files in the library directory and subdirectories
+docs/website/data/*.art
 docs/website/pages/documentation/library/**/*.art
-
-# But don't ignore _index.art files
 !docs/website/pages/documentation/library/**/_index.art
