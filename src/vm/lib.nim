@@ -197,14 +197,9 @@ template constant*(n: string, alias: VSymbol, description: string, v: Value): un
             static: echo " -> " & n
 
         SetSym(n, v)
-        let moduleName = 
-            when ((static (instantiationInfo().filename).replace(".nim")) != "macros"):
-                (static (instantiationInfo().filename.replace(".nim")))
-            else:
-                "Quantities"
         var vInfo = ValueInfo(
             descr: description,
-            module: moduleName,
+            module: moduleName,     # `moduleName` comes from the main library module definition!
             kind: v.kind
         )
 
