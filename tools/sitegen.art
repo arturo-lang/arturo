@@ -13,7 +13,7 @@
 ; * Don't forget to push changes to the corresponding repo!
 ;---------------------------------------------------------------------------------
 
-import'progressive!
+;import'progressive!
 
 modules: new []
 functions: #[]
@@ -37,8 +37,8 @@ loop list "docs/website/data" 'df [
 (as.pretty.code dict) >> "docs/website/data/rosetta.art" 
 
 ; get modules and functions
-progressive\loop keys symbols [sym][
-    processing sym
+loop keys symbols [sym][
+    ;processing sym
 
     inf: info.get sym
 
@@ -85,8 +85,8 @@ progressive\loop keys symbols [sym][
 
 unique 'modules
 
-progressive\loop functions [modl,lst][
-    processing modl
+loop functions [modl,lst][
+    ;processing modl
     target: relative join.path @["../docs/website/pages/documentation/library" lower modl]
 
     loop list target 'tt [
@@ -129,8 +129,8 @@ sort 'funcs
 funcList: new []
 symbList: new []
 
-progressive\loop funcs 'f [
-    processing f
+loop funcs 'f [
+    ;processing f
     inf: info.get f 
 
     href: lower replace ~"|inf\module|/|f|" "?" "-"
