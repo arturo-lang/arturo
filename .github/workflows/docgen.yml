@@ -16,7 +16,7 @@ env:
 
 jobs:
     docgen:
-        runs-on: ubuntu-22.04
+        runs-on: ubuntu-latest
         name: Generator
         defaults:
             run:
