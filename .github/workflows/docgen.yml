@@ -42,6 +42,11 @@ jobs:
               with:
                 node-version: latest
 
+            - name: "Install build dependencies"
+              run: |
+                sudo apt-get update
+                sudo apt-get install -y build-essential libcmocka-dev
+
             - name: "Install Ruby"
               uses: ruby/setup-ruby@v1
               with:
@@ -50,7 +55,7 @@ jobs:
         
             - name: "Install gems"
               run: |
-                gem install commonmarker
+                gem install commonmarker -v "2.1.0" --platform=ruby
               
             - name: "Debugging"
               run: |
