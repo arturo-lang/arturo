@@ -167,7 +167,7 @@ postprocessAlerts: function [src][
 rGfm: ./"gfm.rb"
 githubMarkdown: function [src][
     src >> "tmp.md" 
-    ret: execute ~{:/usr/local/Cellar/ruby/3.3.5/bin/ruby |rGfm| tmp.md:}
+    ret: execute ~{:ruby |rGfm| tmp.md:}
     delete "tmp.md"
     ret: replace ret {/class="language-[^"]+"/} ""
     ret: replace ret {<pre lang="red"><code>} {<pre class="language-arturo"><code class="language-arturo">}
