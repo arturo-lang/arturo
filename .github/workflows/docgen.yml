@@ -1,11 +1,17 @@
 name: Documentation
 
 on:
-    pull_request_target:
-        types:
-            - closed
-        branches:
-            - master
+  pull_request:
+    paths-ignore:
+        - 'docs/*'
+        - '*.yml'
+        - '*.md'
+        - 'LICENSE'
+    # pull_request_target:
+    #     types:
+    #         - closed
+    #     branches:
+    #         - master
       
 concurrency: 
     group: ${{ github.workflow }}-${{ github.ref }}
