@@ -51,6 +51,12 @@ jobs:
             - name: "Install gems"
               run: |
                 gem install commonmarker
+              
+            - name: "Debugging"
+              run: |
+                ls -la arturo
+                cd arturo 
+                ruby tools/miniwebize/gfm.rb
 
             - name: "Install prerequisites"
               run: |
