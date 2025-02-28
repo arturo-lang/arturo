@@ -1,7 +1,17 @@
 import.version:2.0.1 {unitt}!
 
-tests: findTests
-    .thatMatches: "*.test.art" 
-    "tests/unitt/"
+TEST_PATH: "tests/unitt/"
+TEST_PATTERN: "*.test.art"
 
-runTests tests 
+tryOr: $[action :block alt :any][
+    (throws? [val:] ++ action)? -> alt -> val
+]
+
+files: switch empty? args\values
+    -> findTests.thatMatches: TEST_PATTERN TEST_PATH
+    -> args\values
+
+runTests
+    .fatal: tryOr [args\fatal] false
+    .suppress: tryOr [args\suppress] false
+    files
