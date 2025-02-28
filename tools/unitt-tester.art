@@ -1,3 +1,3 @@
-import.version:1.1.2 {unitt}!
+import.version:2.0.1 {unitt}!
 
 runTests findTests.thatMatches: "*.test.art" "tests/unitt/"
