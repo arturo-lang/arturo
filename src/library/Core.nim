@@ -1437,9 +1437,7 @@ proc defineModule*(moduleName: string) =
         args        = {
             "number"    : {Integer}
         },
-        attrs       = {
-            "discard"   : ({Logical},"do not return anything")
-        },
+        attrs       = NoAttrs,
         returns     = {Any},
         example     = """
             1 2 3
@@ -1448,30 +1446,23 @@ proc defineModule*(moduleName: string) =
             1 2 3
             b: unstack 2        ; b: [3 2]
             ..........
+            ; You can also discard the values using `discard`
             1 2 3
-            unstack.discard 1   ; popped 3 from the stack
+            discard unstack 1   ; popped 3 from the stack
         """:
             #=======================================================
-            if Stack[0..SP-1].len < x.i: Error_StackUnderflow()
-            
-            let doDiscard = (hadAttr("discard"))
+            if Stack[0..SP-1].len < x.i: 
+                Error_StackUnderflow()
             
             if x.i==1:
-                if doDiscard: discard stack.pop()
-                else: discard
+                discard
             else:
-                if doDiscard: 
-                    var i = 0
-                    while i<x.i:
-                        discard stack.pop()
-                        i+=1
-                else:
-                    var res: ValueArray
-                    var i = 0
-                    while i<x.i:
-                        res.add stack.pop()
-                        i+=1
-                    push(newBlock(res))
+                var res: ValueArray
+                var i = 0
+                while i<x.i:
+                    res.add stack.pop()
+                    i+=1
+                push(newBlock(res))
 
     builtin "until",
         alias       = unaliased, 

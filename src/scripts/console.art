@@ -176,7 +176,7 @@ lookup: function [what :string :literal :regex :type][
     ]
 
     PrintFList results "found"
-    unstack.discard size stack
+    discard unstack size stack
 ]
 
 Repl: #[autocomplete?: true, hints?: true, verbose?: true]
