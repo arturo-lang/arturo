@@ -10,6 +10,7 @@ tryOr: $[action :block alt :any][
 files: switch empty? args\values
     -> findTests.thatMatches: TEST_PATTERN TEST_PATH
     -> args\values
+    | map 'file [~"tests/unitt/lib/|file|.test.art"]
 
 runTests
     .fatal: tryOr [args\fatal] false
