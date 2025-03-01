@@ -18,7 +18,7 @@ for :integer [
         (neg 1) >> (neg 1)
     ]
     
-    section :integer [
+    section :floating [
         1.0 >> 1
         0.0 >> 0
         (neg 1.0) >> (neg 1)
