@@ -1,1 +1,25 @@
 import {unitt}!
+
+suite "to :integer" [
+
+    test "from :null:" [
+        assert -> zero? to :integer null
+    ]
+
+]
+
+suite "to :logical" [
+
+    test "from :null:" [
+        assert -> false? to :logical null
+    ]
+
+]
+
+suite "to :string" [
+
+    test "from :null:" [
+        assert -> "null" = to :string null
+    ]
+
+]
