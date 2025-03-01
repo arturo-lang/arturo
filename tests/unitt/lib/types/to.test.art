@@ -37,6 +37,8 @@ for :integer [
         0:1 >> 0
         (neg 1:1) >> neg 1
     ]
+
+    section :version []
 ]
 
 
@@ -72,6 +74,8 @@ for :floating [
         0:1 >> 0.0
         (neg 1:1) >> neg 1.0
     ]
+
+    section :version []
 ]
 
 
@@ -107,6 +111,8 @@ for :logical [
     section :rational [
     
     ]
+
+    section :version []
 ]
 
 
@@ -183,6 +189,8 @@ for :rational [
     
     ]
 
+    section :version []
+
 ]
 
 for :char [
@@ -214,6 +222,8 @@ for :char [
     section :rational [
     
     ]
+
+    section :version []
 
 ]
 
@@ -252,6 +262,8 @@ for :quantity [
         (neg 1:1) >> neg 1`
     ]
 
+    section :version []
+
 ]
 
 
@@ -276,6 +288,8 @@ for :date [
     section :rational [
     
     ]
+
+    section :version []
 
 ]
 
@@ -311,6 +325,8 @@ for :binary [
     
     ]
 
+    section :version []
+
 ]
 
 for :block [
@@ -342,6 +358,8 @@ for :block [
         (neg 1:5) >> @[neg 1 5]
     ]
 
+    section :version []
+
 ]
 
 for :version [
@@ -369,5 +387,7 @@ for :version [
     section :rational [
        
     ]
+
+    section :version []
 
 ]
