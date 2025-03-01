@@ -1,51 +1,56 @@
 import {unitt}!
 
-suite "to :floating" [
 
-    test.skip "from :null:" [
-        assert -> zero? to :floating null
+fromTo: $[sourceType :type targetType :type cases :block][
+    test ~"|targetType| from |sourceType|:" 
+    flatten.once map @cases 'p [
+        source: first p
+        expected: last p
+        assertion: [equal?] 
+            | append expected
+            | append [to]
+            | append targetType
+            | append source
+
+        [assert] ++ @[assertion]
     ]
-
-    test "from :logical:" [
-        assert -> one? to :floating true
-        assert -> zero? to :floating false
-        assert -> null? to :floating maybe
-    ]
-
 ]
 
-suite "to :integer" [
+alias.infix {==>} 'fromTo
 
-    test "from :null:" [
-        assert -> zero? to :integer null
-    ]
-
-    test "from :logical:" [
-        assert -> one? to :integer true
-        assert -> zero? to :integer false
-        assert -> null? to :integer maybe
-    ]
-
+pair: $[source target][
+    @[source target]
 ]
 
-suite "to :logical" [
+alias.infix {>>} 'pair
 
-    test "from :null:" [
-        assert -> false? to :logical null
-    ]
-
+fromTo :null :logical [
+    null >> false
 ]
 
-suite "to :string" [
+fromTo :null :integer [
+    null >> 0
+]
 
-    test "from :null:" [
-        assert -> "null" = to :string null
-    ]
+fromTo :null :string [
+    null >> "null"
+]
 
-    test "from :logical:" [
-        assert -> "true"  = to :integer true
-        assert -> "false" = to :integer false
-        assert -> "maybe"  = to :integer maybe
-    ]
 
+fromTo :logical :floating [
+    true  >> 1.0
+    false >> 0.0
+    maybe >> null
+]
+
+fromTo :logical :floating [
+    true  >> 1.0
+    false >> 0.0
+    maybe >> null
+]
+
+fromTo :logical :string [
+    true  >> "true"
+    false >> "false"
+    maybe >> "maybe"
 ]
