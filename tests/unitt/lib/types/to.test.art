@@ -115,3 +115,13 @@ for :char [
     ]
 
 ]
+
+for :quantity [
+
+    section :integer [
+        0 >> 0`
+        1 >> 1`
+        (neg 1) >> neg 1`
+    ]
+
+]
