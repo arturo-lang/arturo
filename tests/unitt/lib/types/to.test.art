@@ -49,9 +49,9 @@ for :logical [
     null >> false
 
     ; From :logical
-    true  >> 1.0
-    false >> 0.0
-    maybe >> null
+    true  >> true
+    false >> false
+    maybe >> maybe
 ]
 
 for :string [
