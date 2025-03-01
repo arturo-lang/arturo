@@ -1,8 +1,8 @@
 import {unitt}!
 
 
-fromTo: $[sourceType :type targetType :type cases :block][
-    test ~"|targetType| from |sourceType|:" 
+for: $[targetType :type cases :block][
+    test ~"to |targetType|:" 
     flatten.once map @cases 'p [
         source: first p
         expected: last p
@@ -16,40 +16,38 @@ fromTo: $[sourceType :type targetType :type cases :block][
     ]
 ]
 
-alias.infix {==>} 'fromTo
-
 pair: $[source target][
     @[source target]
 ]
 
 alias.infix {>>} 'pair
 
-fromTo :null :logical [
-    null >> false
-]
+; --------------------------------------
 
-fromTo :null :integer [
+for :integer [
+    ; From :null
     null >> 0
 ]
 
-fromTo :null :string [
+for :floating [
+    ; From :null
+    ; null >> 0.0
+
+    ; From :logical
+    true  >> 1.0
+    false >> 0.0
+    maybe >> null
+]
+
+for :logical [
+    ; From :null
+    null >> false
+]
+
+for :string [
+    ; From :null
     null >> "null"
-]
 
-
-fromTo :logical :floating [
-    true  >> 1.0
-    false >> 0.0
-    maybe >> null
-]
-
-fromTo :logical :floating [
-    true  >> 1.0
-    false >> 0.0
-    maybe >> null
-]
-
-fromTo :logical :string [
     true  >> "true"
     false >> "false"
     maybe >> "maybe"
