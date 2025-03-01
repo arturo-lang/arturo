@@ -32,7 +32,13 @@ for :integer [
     true  >> 1
     false >> 0
     maybe >> null
+
+    ; From :integer
+    1 >> 1
+    0 >> 0
+    (neg 1) >> (neg 1)
 ]
+
 
 for :floating [
     ; From :null
@@ -42,7 +48,13 @@ for :floating [
     true  >> 1.0
     false >> 0.0
     maybe >> null
+
+    ; From :integer
+    1 >> 1.0
+    0 >> 0.0
+    (neg 1) >> (neg 1.0)
 ]
+
 
 for :logical [
     ; From :null
@@ -52,7 +64,15 @@ for :logical [
     true  >> true
     false >> false
     maybe >> maybe
+
+    ; from :integer
+    0 >> false
+    1 >> true
+    (neg 1) >> true
+    (random 1 1000) >> true
+    (random neg 1000 neg 1) >> true
 ]
+
 
 for :string [
     ; From :null
@@ -62,4 +82,9 @@ for :string [
     true  >> "true"
     false >> "false"
     maybe >> "maybe"
+
+    ; From :integer
+    1 >> "1"
+    0 >> "0"
+    (neg 1) >> "-1"
 ]
