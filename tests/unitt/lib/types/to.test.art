@@ -60,6 +60,12 @@ for :floating [
     section :complex [
         
     ]
+
+    section :rational [
+        1:1 >> 1.0
+        0:1 >> 0.0
+        (neg 1:1) >> neg 1.0
+    ]
 ]
 
 
