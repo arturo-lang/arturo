@@ -1,28 +1,5 @@
 import {unitt}!
-
-
-for: $[targetType :type cases :block][
-    test ~"to |targetType|:" 
-    flatten.once map @cases 'p [
-        source: first p
-        expected: last p
-        assertion: [equal?] 
-            | append expected
-            | append [to]
-            | append targetType
-            | append source
-
-        [assert] ++ @[assertion]
-    ]
-]
-
-pair: $[source target][
-    @[source target]
-]
-
-alias.infix {>>} 'pair
-
-; --------------------------------------
+import ./{to.helper.art}!
 
 for :integer [
     ; From :null
