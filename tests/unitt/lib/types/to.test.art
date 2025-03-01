@@ -103,6 +103,10 @@ for :logical [
     section :complex [
         
     ]
+
+    section :rational [
+    
+    ]
 ]
 
 
@@ -169,6 +173,11 @@ for :rational [
     section :complex [
         
     ]
+
+    section :rational [
+    
+    ]
+
 ]
 
 for :char [
@@ -195,6 +204,10 @@ for :char [
 
     section :complex [
         
+    ]
+
+    section :rational [
+    
     ]
 
 ]
@@ -228,6 +241,10 @@ for :quantity [
         
     ]
 
+    section :rational [
+    
+    ]
+
 ]
 
 
@@ -247,6 +264,10 @@ for :date [
 
     section :complex [
         
+    ]
+
+    section :rational [
+    
     ]
 
 ]
@@ -277,6 +298,10 @@ for :binary [
 
     section :complex [
         
+    ]
+
+    section :rational [
+    
     ]
 
 ]
