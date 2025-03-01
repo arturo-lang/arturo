@@ -118,6 +118,16 @@ for :char [
 
 for :quantity [
 
+    section :null [
+        ; null >> 0`
+    ]
+
+    section :logical [
+        ; true  >> 1`
+        ; false >> 0`
+        ; maybe >> null
+    ]
+
     section :integer [
         0 >> 0`
         1 >> 1`
