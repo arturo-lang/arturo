@@ -263,6 +263,22 @@ for :binary [
 
 for :block [
 
+    section :null [
+
+    ]
+
+    section :logical [
+
+    ]
+
+    section :integer [
+        
+    ]
+    
+    section :floating [
+       
+    ]
+
     section :complex [
         (to :complex [1 5]) >> [1.0 5.0]    
     ]
