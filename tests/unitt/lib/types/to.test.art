@@ -27,6 +27,11 @@ alias.infix {>>} 'pair
 for :integer [
     ; From :null
     null >> 0
+
+    ; From :logical
+    true  >> 1
+    false >> 0
+    maybe >> null
 ]
 
 for :floating [
@@ -42,12 +47,18 @@ for :floating [
 for :logical [
     ; From :null
     null >> false
+
+    ; From :logical
+    true  >> 1.0
+    false >> 0.0
+    maybe >> null
 ]
 
 for :string [
     ; From :null
     null >> "null"
 
+    ; From :logical
     true  >> "true"
     false >> "false"
     maybe >> "maybe"
