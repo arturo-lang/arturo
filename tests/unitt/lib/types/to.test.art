@@ -134,3 +134,14 @@ for :date [
     ]
 
 ]
+
+for :binary [
+
+    section :integer [
+        ; There is no such way of properly testing it right now?
+        0 >> to :binary 0           ; Should be 0b0000
+        1 >> to :binary 1           ; Should be 0b0001
+        (neg 1) >> to :binary neg 1 ; Should be 0b1111
+    ]
+
+]
