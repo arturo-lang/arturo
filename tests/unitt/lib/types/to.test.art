@@ -17,6 +17,12 @@ for :integer [
         0 >> 0
         (neg 1) >> (neg 1)
     ]
+    
+    section :integer [
+        1.0 >> 1
+        0.0 >> 0
+        (neg 1.0) >> (neg 1)
+    ]
 ]
 
 
@@ -35,6 +41,12 @@ for :floating [
         1 >> 1.0
         0 >> 0.0
         (neg 1) >> (neg 1.0)
+    ]
+    
+    section :floating [
+        1.0 >> 1.0
+        0.0 >> 0.0
+        (neg 1.0) >> (neg 1.0)
     ]
 ]
 
@@ -57,6 +69,12 @@ for :logical [
         (random 1 1000) >> true
         (random neg 1000 neg 1) >> true
     ]
+   
+    section :floating [
+        0.0 >> false
+        1.0 >> true
+        (neg 1.0) >> true
+    ]
 ]
 
 
@@ -75,6 +93,12 @@ for :string [
         1 >> "1"
         0 >> "0"
         (neg 1) >> "-1"
+    ]
+    
+    section :floating [
+        1.0 >> "1.0"
+        0.0 >> "0.0"
+        (neg 1.0) >> "-1.0"
     ]
 ]
 
@@ -95,6 +119,12 @@ for :rational [
         0 >> 0:1
         (neg 1) >> neg 1:1
     ]
+    
+    section :floating [
+        1.0 >> 1:1
+        0.0 >> 0:1
+        (neg 1.0) >> neg 1:1
+    ]
 ]
 
 for :char [
@@ -112,6 +142,11 @@ for :char [
     section :integer [
         75 >> 'K'
         1000 >> 'Ϩ' ; supports UNICODE
+    ]
+    
+    section :floating [
+        75.0   >> 'K'
+        50.0 >> '2'
     ]
 
 ]
@@ -132,6 +167,13 @@ for :quantity [
         0 >> 0`
         1 >> 1`
         (neg 1) >> neg 1`
+    ]
+    
+    section :floating [
+        0.0 >> 0`
+        1.0 >> 1`
+        (neg 1.0) >> neg 1`
+        1.5 >> 1.5`
     ]
 
 ]
@@ -160,6 +202,13 @@ for :binary [
         0 >> to :binary 0           ; Should be 0b0000
         1 >> to :binary 1           ; Should be 0b0001
         (neg 1) >> to :binary neg 1 ; Should be 0b1111
+    ]
+    
+    section :floating [
+        ; There is no such way of properly testing it right now?
+        0.0 >> to :binary 0           ; Should be 0b0000
+        1.0 >> to :binary 1           ; Should be 0b0001
+        (neg 1.0) >> to :binary neg 1 ; Should be 0b1111
     ]
 
 ]
