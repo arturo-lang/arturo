@@ -77,3 +77,22 @@ for :string [
         (neg 1) >> "-1"
     ]
 ]
+
+for :rational [
+
+    section :null [
+        ; null >> 0:1
+    ]
+
+    section :logical [
+        ; true  >> 1:1
+        ; false >> 0:1
+        ; maybe >> null
+    ]
+
+    section :integer [
+        1 >> 1:1
+        0 >> 0:1
+        (neg 1) >> neg 1:1
+    ]
+]
