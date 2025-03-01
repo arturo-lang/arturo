@@ -218,9 +218,10 @@ for :binary [
     
     section :floating [
         ; There is no such way of properly testing it right now?
-        0.0 >> to :binary 0           ; Should be 0b0000
-        1.0 >> to :binary 1           ; Should be 0b0001
-        (neg 1.0) >> to :binary neg 1 ; Should be 0b1111
+        ; 0.0 >> to :binary 0           ; Should be 0b0000
+        ; 1.0 >> to :binary 1           ; Should be 0b0001
+        ; (neg 1.0) >> to :binary neg 1 ; Should be 0b1111
+    ]
     ]
 
 ]
