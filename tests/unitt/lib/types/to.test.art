@@ -45,7 +45,7 @@ suite "to :string" [
     test "from :logical:" [
         assert -> "true"  = to :integer true
         assert -> "false" = to :integer false
-        assert -> "null"  = to :integer maybe
+        assert -> "maybe"  = to :integer maybe
     ]
 
 ]
