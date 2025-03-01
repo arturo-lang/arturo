@@ -336,3 +336,31 @@ for :block [
     ]
 
 ]
+
+for :version [
+
+    section :null [
+
+    ]
+
+    section :logical [
+
+    ]
+
+    section :integer [
+        
+    ]
+    
+    section :floating [
+       
+    ]
+
+    section :complex [
+          
+    ]
+    
+    section :rational [
+       
+    ]
+
+]
