@@ -2,66 +2,78 @@ import {unitt}!
 import ./{to.helper.art}!
 
 for :integer [
-    ; From :null
-    null >> 0
+    section :null [
+        null >> 0
+    ]
 
-    ; From :logical
-    true  >> 1
-    false >> 0
-    maybe >> null
+    section :logical [
+        true  >> 1
+        false >> 0
+        maybe >> null
+    ]
 
-    ; From :integer
-    1 >> 1
-    0 >> 0
-    (neg 1) >> (neg 1)
+    section :integer [
+        1 >> 1
+        0 >> 0
+        (neg 1) >> (neg 1)
+    ]
 ]
 
 
 for :floating [
-    ; From :null
-    ; null >> 0.0
+    section :null [
+        ; null >> 0.0
+    ]
 
-    ; From :logical
-    true  >> 1.0
-    false >> 0.0
-    maybe >> null
+    section :logical [
+        true  >> 1.0
+        false >> 0.0
+        maybe >> null
+    ]
 
-    ; From :integer
-    1 >> 1.0
-    0 >> 0.0
-    (neg 1) >> (neg 1.0)
+    section :integer [
+        1 >> 1.0
+        0 >> 0.0
+        (neg 1) >> (neg 1.0)
+    ]
 ]
 
 
 for :logical [
-    ; From :null
-    null >> false
+    section :null [
+        null >> false
+    ]
 
-    ; From :logical
-    true  >> true
-    false >> false
-    maybe >> maybe
+    section :logical [
+        true  >> true
+        false >> false
+        maybe >> maybe
+    ]
 
-    ; from :integer
-    0 >> false
-    1 >> true
-    (neg 1) >> true
-    (random 1 1000) >> true
-    (random neg 1000 neg 1) >> true
+    section :integer [
+        0 >> false
+        1 >> true
+        (neg 1) >> true
+        (random 1 1000) >> true
+        (random neg 1000 neg 1) >> true
+    ]
 ]
 
 
 for :string [
-    ; From :null
-    null >> "null"
+    section :null [
+        null >> "null"
+    ]
 
-    ; From :logical
-    true  >> "true"
-    false >> "false"
-    maybe >> "maybe"
+    section :logical [
+        true  >> "true"
+        false >> "false"
+        maybe >> "maybe"
+    ]
 
-    ; From :integer
-    1 >> "1"
-    0 >> "0"
-    (neg 1) >> "-1"
+    section :integer [
+        1 >> "1"
+        0 >> "0"
+        (neg 1) >> "-1"
+    ]
 ]

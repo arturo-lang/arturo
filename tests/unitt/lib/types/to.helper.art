@@ -1,16 +1,20 @@
-for: $[targetType :type cases :block][
-    test ~"to |targetType|:" 
-    flatten.once map @cases 'p [
-        source: first p
-        expected: last p
-        assertion: [equal?] 
-            | append expected
-            | append [to]
-            | append targetType
-            | append source
+for: $[targetType :type sections :block][
+    section: $[sourceType :type cases :block][
+        test ~"|sourceType| => |targetType|:" 
+        flatten.once map @cases 'p [
+            source: first p
+            expected: last p
+            assertion: [equal?] 
+                | append expected
+                | append [to]
+                | append targetType
+                | append source
 
-        [assert] ++ @[assertion]
+            [assert] ++ @[assertion]
+        ]
     ]
+
+    do sections
 ]
 
 pair: $[source target][
