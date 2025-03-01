@@ -27,6 +27,10 @@ for :integer [
         1.5 >> 1
         1.9 >> 1
     ]
+
+    section :complex [
+
+    ]
 ]
 
 
@@ -51,6 +55,10 @@ for :floating [
         1.0 >> 1.0
         0.0 >> 0.0
         (neg 1.0) >> (neg 1.0)
+    ]
+
+    section :complex [
+        
     ]
 ]
 
@@ -78,6 +86,10 @@ for :logical [
         0.0 >> false
         1.0 >> true
         (neg 1.0) >> true
+    ]
+
+    section :complex [
+        
     ]
 ]
 
@@ -133,6 +145,10 @@ for :rational [
         0.0 >> 0:1
         (neg 1.0) >> neg 1:1
     ]
+
+    section :complex [
+        
+    ]
 ]
 
 for :char [
@@ -155,6 +171,10 @@ for :char [
     section :floating [
         75.0   >> 'K'
         50.0 >> '2'
+    ]
+
+    section :complex [
+        
     ]
 
 ]
@@ -184,6 +204,10 @@ for :quantity [
         1.5 >> 1.5`
     ]
 
+    section :complex [
+        
+    ]
+
 ]
 
 
@@ -201,6 +225,10 @@ for :date [
         0 >> to :date "1969-12-31T21:00:00-03:00"
     ]
 
+    section :complex [
+        
+    ]
+
 ]
 
 for :binary [
@@ -210,7 +238,7 @@ for :binary [
     ]
 
     section :logical [
-        
+
     ]
 
     section :integer [
@@ -226,6 +254,9 @@ for :binary [
         ; 1.0 >> to :binary 1           ; Should be 0b0001
         ; (neg 1.0) >> to :binary neg 1 ; Should be 0b1111
     ]
+
+    section :complex [
+        
     ]
 
 ]
