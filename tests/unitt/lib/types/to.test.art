@@ -99,6 +99,16 @@ for :rational [
 
 for :char [
 
+    section :null [
+        ; null >> ''    ; Should be '\0'
+    ]
+
+    section :logical [
+        ; true  >> 'Y'
+        ; false >> 'N'
+        ; maybe >> '?'
+    ]
+
     section :integer [
         75 >> 'K'
         1000 >> 'Ϩ' ; supports UNICODE
