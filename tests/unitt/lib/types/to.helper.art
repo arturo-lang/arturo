@@ -5,10 +5,10 @@ for: $[targetType :type sections :block][
             source: first p
             expected: last p
             assertion: [equal?] 
-                | append expected
+                | append @[expected]
                 | append [to]
                 | append targetType
-                | append source
+                | append @[source]
 
             [assert] ++ @[assertion]
         ]
