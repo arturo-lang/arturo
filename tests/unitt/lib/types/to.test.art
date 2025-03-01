@@ -96,3 +96,12 @@ for :rational [
         (neg 1) >> neg 1:1
     ]
 ]
+
+for :char [
+
+    section :integer [
+        75 >> 'K'
+        1000 >> 'Ϩ' ; supports UNICODE
+    ]
+
+]
