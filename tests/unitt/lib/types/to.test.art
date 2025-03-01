@@ -6,12 +6,24 @@ suite "to :floating" [
         assert -> zero? to :floating null
     ]
 
+    test "from :logical:" [
+        assert -> one? to :floating true
+        assert -> zero? to :floating false
+        assert -> null? to :floating maybe
+    ]
+
 ]
 
 suite "to :integer" [
 
     test "from :null:" [
         assert -> zero? to :integer null
+    ]
+
+    test "from :logical:" [
+        assert -> one? to :integer true
+        assert -> zero? to :integer false
+        assert -> null? to :integer maybe
     ]
 
 ]
@@ -28,6 +40,12 @@ suite "to :string" [
 
     test "from :null:" [
         assert -> "null" = to :string null
+    ]
+
+    test "from :logical:" [
+        assert -> "true"  = to :integer true
+        assert -> "false" = to :integer false
+        assert -> "null"  = to :integer maybe
     ]
 
 ]
