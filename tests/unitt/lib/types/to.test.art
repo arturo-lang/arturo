@@ -1,5 +1,13 @@
 import {unitt}!
 
+suite "to :floating" [
+
+    test.skip "from :null:" [
+        assert -> zero? to :floating null
+    ]
+
+]
+
 suite "to :integer" [
 
     test "from :null:" [
