@@ -992,6 +992,12 @@ for :literal [
     section :block []
     section :char []
     section :complex []
+
+    section :error [
+        (try [throw "example"]) >> to :literal "Runtime Error"
+        (get try [throw "example"] 'message) >> 'example
+    ]    
+
     section :floating []
     section :integer []
 
