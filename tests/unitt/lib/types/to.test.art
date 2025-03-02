@@ -54,29 +54,30 @@ for :block [
 
 for :char [
 
-    section :null []
-    section :logical []
+    section :char []
+    section :complex []
 
-    section :integer [
-        75 >> 'K'
-        1000 >> 'Ϩ' ; supports UNICODE
-    ]
-    
     section :floating [
         75.0   >> 'K'
         50.0 >> '2'
     ]
 
-    section :complex []
+    section :integer [
+        75 >> 'K'
+        1000 >> 'Ϩ' ; supports UNICODE
+    ]
+
+    section :logical []
+    section :null []
     section :rational []
-    section :version []
-    section :type []
-    section :char []
     
     section :string [
         "K" >> 'K'
         "Ϩ" >> 'Ϩ'
     ]
+
+    section :type []
+    section :version []
 
 ]
 
