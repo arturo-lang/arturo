@@ -28,15 +28,17 @@ for :binary [
 ]
 
 for :block [
-
-    section :null []
-    section :logical []
-    section :integer []
-    section :floating []
-
+    
+    section :char []
+    
     section :complex [
         (to :complex [1 5]) >> [1.0 5.0]    
     ]
+
+    section :floating []
+    section :integer []
+    section :logical []
+    section :null []
     
     section :rational [
         1:2 >> [1 2]
@@ -45,10 +47,9 @@ for :block [
         (neg 1:5) >> @[neg 1 5]
     ]
 
-    section :version []
-    section :type []
-    section :char []
     section :string []
+    section :type []
+    section :version []
 
 ]
 
