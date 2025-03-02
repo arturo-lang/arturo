@@ -437,6 +437,129 @@ for :string [
 
 ]
 
+for :symbol [
+
+    section :char []
+    section :complex []
+    section :floating []
+    section :integer []
+    section :logical []
+    section :null []
+    section :rational []
+
+    test ":string => :symbol" [
+        ; Unable to parse here?
+        ;
+        ; assert -> equal? first [=>] to :symbol "=>"
+        ; assert -> equal? first [->] to :symbol "->"
+        ; assert -> equal? first [!] to :symbol "!"
+        ; assert -> equal? first [!!] to :symbol "!!"
+        ; assert -> equal? first [\\] to :symbol "\\"
+        ; assert -> equal? first [\\\\] to :symbol "\\\\"
+        ; assert -> equal? first [|] to :symbol "|"
+        ; assert -> equal? first [|-] to :symbol "|-"
+        ; assert -> equal? first [|=] to :symbol "|="
+        ; assert -> equal? first [:] to :symbol ":"
+        ; assert -> equal? first [::] to :symbol "::"
+        ; assert -> equal? first [||] to :symbol "||"
+        
+        ; Error: Found extraneous block symbol: closing square bracket (`]`) ???
+        ;
+        ; assert -> equal? first [<|] to :symbol "<|"
+        ; assert -> equal? first [|>] to :symbol "|>"
+        ; assert -> equal? first [<|>] to :symbol "<|>"
+
+        assert -> equal? first [<=] to :symbol "<="
+        assert -> equal? first [<=>] to :symbol "<=>"
+        assert -> equal? first [<<=] to :symbol "<<="
+        assert -> equal? first [=>>] to :symbol "=>>"
+        assert -> equal? first [<<=>>] to :symbol "<<=>>"
+        assert -> equal? first [<-] to :symbol "<-"
+        assert -> equal? first [<->] to :symbol "<->"
+        assert -> equal? first [<<-] to :symbol "<<-"
+        assert -> equal? first [->>] to :symbol "->>"
+        assert -> equal? first [<<->>] to :symbol "<<->>"
+        assert -> equal? first [-<] to :symbol "-<"
+        assert -> equal? first [>-] to :symbol ">-"
+        assert -> equal? first [>-<] to :symbol ">-<"
+        assert -> equal? first [-<<] to :symbol "-<<"
+        assert -> equal? first [>>-] to :symbol ">>-"
+        assert -> equal? first [>>-<<] to :symbol ">>-<<"
+        assert -> equal? first [<<] to :symbol "<<"
+        assert -> equal? first [>>] to :symbol ">>"
+        assert -> equal? first [<<<] to :symbol "<<<"
+        assert -> equal? first [>>>] to :symbol ">>>"
+        assert -> equal? first [<--] to :symbol "<--"
+        assert -> equal? first [-->] to :symbol "-->"
+        assert -> equal? first [<-->] to :symbol "<-->"
+        assert -> equal? first [<==] to :symbol "<=="
+        assert -> equal? first [==>] to :symbol "==>"
+        assert -> equal? first [<==>] to :symbol "<==>"
+        assert -> equal? first [<~] to :symbol "<~"
+        assert -> equal? first [~>] to :symbol "~>"
+        assert -> equal? first [<~>] to :symbol "<~>"
+        assert -> equal? first [=<] to :symbol "=<"
+        assert -> equal? first [>=] to :symbol ">="
+        assert -> equal? first [<>] to :symbol "<>"
+        assert -> equal? first [<:] to :symbol "<:"
+        assert -> equal? first [-:] to :symbol "-:"
+        assert -> equal? first [>:] to :symbol ">:"
+        assert -> equal? first [~] to :symbol "~"
+        assert -> equal? first [?] to :symbol "?"
+        assert -> equal? first [??] to :symbol "??"
+        assert -> equal? first [@] to :symbol "@"
+        assert -> equal? first [#] to :symbol "#"
+        assert -> equal? first [##] to :symbol "##"
+        assert -> equal? first [###] to :symbol "###"
+        assert -> equal? first [####] to :symbol "####"
+        assert -> equal? first [#####] to :symbol "#####"
+        assert -> equal? first [######] to :symbol "######"
+        assert -> equal? first [$] to :symbol "$"
+        assert -> equal? first [%] to :symbol "%"
+        assert -> equal? first [^] to :symbol "^"
+        assert -> equal? first [&] to :symbol "&"
+        assert -> equal? first [*] to :symbol "*"
+        assert -> equal? first [**] to :symbol "**"
+        assert -> equal? first [-] to :symbol "-"
+        assert -> equal? first [--] to :symbol "--"
+        assert -> equal? first [=] to :symbol "="
+        assert -> equal? first [==] to :symbol "=="
+        assert -> equal? first [=~] to :symbol "=~"
+        assert -> equal? first [+] to :symbol "+"
+        assert -> equal? first [++] to :symbol "++"
+        assert -> equal? first [<] to :symbol "<"
+        assert -> equal? first [>] to :symbol ">"
+        assert -> equal? first [/] to :symbol "/"
+        assert -> equal? first [/%] to :symbol "/%"
+        assert -> equal? first [//] to :symbol "//"
+        assert -> equal? first [..] to :symbol ".."
+        assert -> equal? first [...] to :symbol "..."
+        assert -> equal? first [./] to :symbol "./"
+        assert -> equal? first [:=] to :symbol ":="
+        assert -> equal? first [∅] to :symbol "∅"
+        assert -> equal? first [∞] to :symbol "∞"
+        assert -> equal? first [∑] to :symbol "∑"
+        assert -> equal? first [∏] to :symbol "∏"
+        assert -> equal? first [∩] to :symbol "∩"
+        assert -> equal? first [∪] to :symbol "∪"
+        assert -> equal? first [⊂] to :symbol "⊂"
+        assert -> equal? first [⊃] to :symbol "⊃"
+        assert -> equal? first [⊆] to :symbol "⊆"
+        assert -> equal? first [⊇] to :symbol "⊇"
+        assert -> equal? first [∈] to :symbol "∈"
+        assert -> equal? first [∉] to :symbol "∉"
+        assert -> equal? first [∧] to :symbol "∧"
+        assert -> equal? first [∨] to :symbol "∨"
+        assert -> equal? first [⊻] to :symbol "⊻"
+        assert -> equal? first [⊼] to :symbol "⊼"
+        assert -> equal? first [¬] to :symbol "¬"
+    ]
+    
+    section :type []
+    section :version []
+
+]
+
 for :type [
 
     section :char []
