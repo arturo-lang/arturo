@@ -1292,4 +1292,8 @@ for :word [
     section :type []
     section :version []
 
+    test ":word => :word" [
+        assert -> equal? first [example] to :word first [example]
+    ]
+
 ]
