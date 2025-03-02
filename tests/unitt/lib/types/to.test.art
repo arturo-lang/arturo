@@ -194,14 +194,14 @@ for :integer [
 
 
 for :logical [
-    section :null [
-        null >> false
-    ]
 
-    section :logical [
-        true  >> true
-        false >> false
-        maybe >> maybe
+    section :char []
+    section :complex []
+
+    section :floating [
+        0.0 >> false
+        1.0 >> true
+        (neg 1.0) >> true
     ]
 
     section :integer [
@@ -211,24 +211,27 @@ for :logical [
         (random 1 1000) >> true
         (random neg 1000 neg 1) >> true
     ]
-   
-    section :floating [
-        0.0 >> false
-        1.0 >> true
-        (neg 1.0) >> true
+
+    section :logical [
+        true  >> true
+        false >> false
+        maybe >> maybe
     ]
 
-    section :complex []
+    section :null [
+        null >> false
+    ]
+
     section :rational []
-    section :version []
-    section :type []
-    section :char []
 
     section :string [
         "true" >> true
         "false" >> false
         "maybe" >> maybe
     ]
+
+    section :type []
+    section :version []
 ]
 
 for :quantity [
