@@ -162,7 +162,10 @@ for :string [
         :type >> "type"
     ]
 
-    section :char []
+    section :char [
+        'K' >> "K"
+        'Ϩ' >> "Ϩ" ; supports UNICODE
+    ]
 
 ]
 
