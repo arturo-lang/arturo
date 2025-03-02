@@ -100,12 +100,14 @@ for :date [
 ]
 
 for :floating [
-    section :null []
 
-    section :logical [
-        true  >> 1.0
-        false >> 0.0
-        maybe >> null
+    section :char []
+    section :complex []
+
+    section :floating [
+        1.0 >> 1.0
+        0.0 >> 0.0
+        (neg 1.0) >> (neg 1.0)
     ]
 
     section :integer [
@@ -113,14 +115,14 @@ for :floating [
         0 >> 0.0
         (neg 1) >> (neg 1.0)
     ]
-    
-    section :floating [
-        1.0 >> 1.0
-        0.0 >> 0.0
-        (neg 1.0) >> (neg 1.0)
+
+    section :logical [
+        true  >> 1.0
+        false >> 0.0
+        maybe >> null
     ]
 
-    section :complex []
+    section :null []
 
     section :rational [
         1:1 >> 1.0
@@ -128,15 +130,14 @@ for :floating [
         (neg 1:1) >> neg 1.0
     ]
 
-    section :version []
-    section :type []
-    section :char []
-
     section :string [
         "1.0" >> 1.0
         "0.0" >> 0.0
         "-1.0" >> neg 1.0
     ]
+
+    section :type []
+    section :version []
 ]
 
 for :integer [
