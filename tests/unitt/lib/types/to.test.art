@@ -1088,7 +1088,9 @@ for :string [
         assert -> equal? "example" to :string first [.example:]
     ]
 
-    section :block []
+    section :block [
+        [arturo language 12 3.0] >> "[arturo language 12 3.0]"
+    ]
 
     section :char [
         'K' >> "K"
