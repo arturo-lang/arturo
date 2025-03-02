@@ -882,6 +882,11 @@ for :label [
 
 for :literal [
 
+    test ":attribute(Label) => :literal" [
+        assert -> equal? 'example to :literal first [.example]
+        assert -> equal? 'example to :literal first [.example:]
+    ]
+
     section :char []
     section :complex []
     section :floating []
