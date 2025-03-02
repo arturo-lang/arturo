@@ -902,6 +902,10 @@ for :literal [
     section :type []
     section :version []
 
+    test ":word => :literal" [
+        assert -> equal? 'example to :literal first [example]
+    ]
+
 ]
 
 
