@@ -1,6 +1,144 @@
 import {unitt}!
 import ./{to.helper.art}!
 
+for :binary [
+
+    section :null []
+    section :logical []
+
+    section :integer [
+        ; There is no such way of properly testing it right now?
+        0 >> to :binary 0           ; Should be 0b0000
+        1 >> to :binary 1           ; Should be 0b0001
+        (neg 1) >> to :binary neg 1 ; Should be 0b1111
+    ]
+    
+    section :floating []
+    section :complex []
+    section :rational []
+    section :version []
+    section :type []
+    
+    section :char [
+        'K' >> to :binary 75
+    ]
+
+    section :string []
+
+]
+
+for :block [
+
+    section :null []
+    section :logical []
+    section :integer []
+    section :floating []
+
+    section :complex [
+        (to :complex [1 5]) >> [1.0 5.0]    
+    ]
+    
+    section :rational [
+        1:2 >> [1 2]
+        0:5 >> [0 1]
+        2:10 >> [1 5]
+        (neg 1:5) >> @[neg 1 5]
+    ]
+
+    section :version []
+    section :type []
+    section :char []
+    section :string []
+
+]
+
+for :char [
+
+    section :null []
+    section :logical []
+
+    section :integer [
+        75 >> 'K'
+        1000 >> 'Ϩ' ; supports UNICODE
+    ]
+    
+    section :floating [
+        75.0   >> 'K'
+        50.0 >> '2'
+    ]
+
+    section :complex []
+    section :rational []
+    section :version []
+    section :type []
+    section :char []
+    
+    section :string [
+        "K" >> 'K'
+        "Ϩ" >> 'Ϩ'
+    ]
+
+]
+
+for :date [
+
+    section :null []
+    section :logical []
+
+    section :integer [
+        0 >> to :date "1969-12-31T21:00:00-03:00"
+    ]
+
+    section :floating []
+    section :complex []
+    section :rational []
+    section :version []
+    section :type []
+    section :char []
+    section :string []
+
+]
+
+for :floating [
+    section :null []
+
+    section :logical [
+        true  >> 1.0
+        false >> 0.0
+        maybe >> null
+    ]
+
+    section :integer [
+        1 >> 1.0
+        0 >> 0.0
+        (neg 1) >> (neg 1.0)
+    ]
+    
+    section :floating [
+        1.0 >> 1.0
+        0.0 >> 0.0
+        (neg 1.0) >> (neg 1.0)
+    ]
+
+    section :complex []
+
+    section :rational [
+        1:1 >> 1.0
+        0:1 >> 0.0
+        (neg 1:1) >> neg 1.0
+    ]
+
+    section :version []
+    section :type []
+    section :char []
+
+    section :string [
+        "1.0" >> 1.0
+        "0.0" >> 0.0
+        "-1.0" >> neg 1.0
+    ]
+]
+
 for :integer [
     section :null [
         null >> 0
@@ -55,47 +193,6 @@ for :integer [
 ]
 
 
-for :floating [
-    section :null []
-
-    section :logical [
-        true  >> 1.0
-        false >> 0.0
-        maybe >> null
-    ]
-
-    section :integer [
-        1 >> 1.0
-        0 >> 0.0
-        (neg 1) >> (neg 1.0)
-    ]
-    
-    section :floating [
-        1.0 >> 1.0
-        0.0 >> 0.0
-        (neg 1.0) >> (neg 1.0)
-    ]
-
-    section :complex []
-
-    section :rational [
-        1:1 >> 1.0
-        0:1 >> 0.0
-        (neg 1:1) >> neg 1.0
-    ]
-
-    section :version []
-    section :type []
-    section :char []
-
-    section :string [
-        "1.0" >> 1.0
-        "0.0" >> 0.0
-        "-1.0" >> neg 1.0
-    ]
-]
-
-
 for :logical [
     section :null [
         null >> false
@@ -132,6 +229,65 @@ for :logical [
         "false" >> false
         "maybe" >> maybe
     ]
+]
+
+for :quantity [
+
+    section :null []
+    section :logical []
+
+    section :integer [
+        0 >> 0`
+        1 >> 1`
+        (neg 1) >> neg 1`
+    ]
+    
+    section :floating [
+        0.0 >> 0`
+        1.0 >> 1`
+        (neg 1.0) >> neg 1`
+        1.5 >> 1.5`
+    ]
+
+    section :complex []
+
+    section :rational [
+        1:1 >> 1`
+        0:1 >> 0`
+        (neg 1:1) >> neg 1`
+    ]
+
+    section :version []
+    section :type []
+    section :char []
+    section :string []
+
+]
+
+for :rational [
+
+    section :null []
+    section :logical []
+
+    section :integer [
+        1 >> 1:1
+        0 >> 0:1
+        (neg 1) >> neg 1:1
+    ]
+    
+    section :floating [
+        1.0 >> 1:1
+        0.0 >> 0:1
+        (neg 1.0) >> neg 1:1
+    ]
+
+    section :complex []
+    section :rational []
+    section :version []
+    section :type []
+    section :char []
+    section :string []
+
 ]
 
 
@@ -194,183 +350,6 @@ for :string [
 
 ]
 
-for :rational [
-
-    section :null []
-    section :logical []
-
-    section :integer [
-        1 >> 1:1
-        0 >> 0:1
-        (neg 1) >> neg 1:1
-    ]
-    
-    section :floating [
-        1.0 >> 1:1
-        0.0 >> 0:1
-        (neg 1.0) >> neg 1:1
-    ]
-
-    section :complex []
-    section :rational []
-    section :version []
-    section :type []
-    section :char []
-    section :string []
-
-]
-
-for :char [
-
-    section :null []
-    section :logical []
-
-    section :integer [
-        75 >> 'K'
-        1000 >> 'Ϩ' ; supports UNICODE
-    ]
-    
-    section :floating [
-        75.0   >> 'K'
-        50.0 >> '2'
-    ]
-
-    section :complex []
-    section :rational []
-    section :version []
-    section :type []
-    section :char []
-    
-    section :string [
-        "K" >> 'K'
-        "Ϩ" >> 'Ϩ'
-    ]
-
-]
-
-for :quantity [
-
-    section :null []
-    section :logical []
-
-    section :integer [
-        0 >> 0`
-        1 >> 1`
-        (neg 1) >> neg 1`
-    ]
-    
-    section :floating [
-        0.0 >> 0`
-        1.0 >> 1`
-        (neg 1.0) >> neg 1`
-        1.5 >> 1.5`
-    ]
-
-    section :complex []
-
-    section :rational [
-        1:1 >> 1`
-        0:1 >> 0`
-        (neg 1:1) >> neg 1`
-    ]
-
-    section :version []
-    section :type []
-    section :char []
-    section :string []
-
-]
-
-
-for :date [
-
-    section :null []
-    section :logical []
-
-    section :integer [
-        0 >> to :date "1969-12-31T21:00:00-03:00"
-    ]
-
-    section :floating []
-    section :complex []
-    section :rational []
-    section :version []
-    section :type []
-    section :char []
-    section :string []
-
-]
-
-for :binary [
-
-    section :null []
-    section :logical []
-
-    section :integer [
-        ; There is no such way of properly testing it right now?
-        0 >> to :binary 0           ; Should be 0b0000
-        1 >> to :binary 1           ; Should be 0b0001
-        (neg 1) >> to :binary neg 1 ; Should be 0b1111
-    ]
-    
-    section :floating []
-    section :complex []
-    section :rational []
-    section :version []
-    section :type []
-    
-    section :char [
-        'K' >> to :binary 75
-    ]
-
-    section :string []
-
-]
-
-for :block [
-
-    section :null []
-    section :logical []
-    section :integer []
-    section :floating []
-
-    section :complex [
-        (to :complex [1 5]) >> [1.0 5.0]    
-    ]
-    
-    section :rational [
-        1:2 >> [1 2]
-        0:5 >> [0 1]
-        2:10 >> [1 5]
-        (neg 1:5) >> @[neg 1 5]
-    ]
-
-    section :version []
-    section :type []
-    section :char []
-    section :string []
-
-]
-
-for :version [
-
-    section :null []
-    section :logical []
-    section :integer []
-    section :floating []
-    section :complex []
-    section :rational []
-    section :version []
-    section :type []
-    section :char []
-
-    section :string [
-        "1.2.3" >> 1.2.3
-        "1.2.3-pre" >> 1.2.3-pre
-    ]
-
-]
-
 for :type [
 
     section :null []
@@ -392,6 +371,25 @@ for :type [
         "rational" >> :rational
         "version" >> :version
         "type" >> :type
+    ]
+
+]
+
+for :version [
+
+    section :null []
+    section :logical []
+    section :integer []
+    section :floating []
+    section :complex []
+    section :rational []
+    section :version []
+    section :type []
+    section :char []
+
+    section :string [
+        "1.2.3" >> 1.2.3
+        "1.2.3-pre" >> 1.2.3-pre
     ]
 
 ]
