@@ -39,6 +39,7 @@ for :integer [
     ]
 
     section :version []
+    section :type []
 ]
 
 
@@ -72,6 +73,7 @@ for :floating [
     ]
 
     section :version []
+    section :type []
 ]
 
 
@@ -103,6 +105,7 @@ for :logical [
     section :complex []
     section :rational []
     section :version []
+    section :type []
 ]
 
 
@@ -145,6 +148,8 @@ for :string [
         1.2.3-pre >> "1.2.3-pre"
     ]
 
+    section :type []
+
 ]
 
 for :rational [
@@ -167,6 +172,7 @@ for :rational [
     section :complex []
     section :rational []
     section :version []
+    section :type []
 
 ]
 
@@ -188,6 +194,7 @@ for :char [
     section :complex []
     section :rational []
     section :version []
+    section :type []
 
 ]
 
@@ -218,6 +225,7 @@ for :quantity [
     ]
 
     section :version []
+    section :type []
 
 ]
 
@@ -235,6 +243,7 @@ for :date [
     section :complex []
     section :rational []
     section :version []
+    section :type []
 
 ]
 
@@ -254,6 +263,7 @@ for :binary [
     section :complex []
     section :rational []
     section :version []
+    section :type []
 
 ]
 
@@ -276,6 +286,7 @@ for :block [
     ]
 
     section :version []
+    section :type []
 
 ]
 
@@ -288,5 +299,6 @@ for :version [
     section :complex []
     section :rational []
     section :version []
+    section :type []
 
 ]
