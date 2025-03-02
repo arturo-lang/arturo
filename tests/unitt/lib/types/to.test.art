@@ -292,8 +292,26 @@ for :rational [
 
 
 for :string [
-    section :null [
-        null >> "null"
+
+    section :char [
+        'K' >> "K"
+        'Ϩ' >> "Ϩ" ; supports UNICODE
+    ]
+
+    section :complex [
+        (to :complex [1 5]) >> "1.0+5.0i"
+    ]
+
+    section :floating [
+        1.0 >> "1.0"
+        0.0 >> "0.0"
+        (neg 1.0) >> "-1.0"
+    ]
+
+    section :integer [
+        1 >> "1"
+        0 >> "0"
+        (neg 1) >> "-1"
     ]
 
     section :logical [
@@ -302,20 +320,8 @@ for :string [
         maybe >> "maybe"
     ]
 
-    section :integer [
-        1 >> "1"
-        0 >> "0"
-        (neg 1) >> "-1"
-    ]
-    
-    section :floating [
-        1.0 >> "1.0"
-        0.0 >> "0.0"
-        (neg 1.0) >> "-1.0"
-    ]
-
-    section :complex [
-        (to :complex [1 5]) >> "1.0+5.0i"
+    section :null [
+        null >> "null"
     ]
 
     section :rational [
@@ -325,10 +331,7 @@ for :string [
         (neg 2:10) >> "-1/5"
     ]
 
-    section :version [
-        1.2.3 >> "1.2.3"
-        1.2.3-pre >> "1.2.3-pre"
-    ]
+    section :string []
 
     section :type [
         :integer >> "integer"
@@ -341,12 +344,10 @@ for :string [
         :type >> "type"
     ]
 
-    section :char [
-        'K' >> "K"
-        'Ϩ' >> "Ϩ" ; supports UNICODE
+    section :version [
+        1.2.3 >> "1.2.3"
+        1.2.3-pre >> "1.2.3-pre"
     ]
-
-    section :string []
 
 ]
 
