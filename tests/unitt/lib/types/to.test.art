@@ -1278,6 +1278,12 @@ for :version [
 
 for :word [
 
+    ; TODO: verify this behavior
+    test ":attribute(Label) => :word" [
+        ; assert -> equal? first [example] to :word first [.example]
+        ; assert -> equal? first [example] to :word first [.example:]
+    ]
+
     section :char []
     section :complex []
     section :floating []
