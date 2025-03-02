@@ -193,6 +193,21 @@ for :integer [
 
 ]
 
+for :literal [
+
+    section :char []
+    section :complex []
+    section :floating []
+    section :integer []
+    section :logical []
+    section :null []
+    section :rational []
+    section :string []
+    section :type []
+    section :version []
+
+]
+
 
 for :logical [
 
