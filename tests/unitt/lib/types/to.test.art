@@ -46,6 +46,8 @@ for :integer [
         'Ϩ' >> 1000 ; supports UNICODE
     ]
 
+    section :string []
+
 ]
 
 
@@ -81,6 +83,7 @@ for :floating [
     section :version []
     section :type []
     section :char []
+    section :string []
 ]
 
 
@@ -114,6 +117,7 @@ for :logical [
     section :version []
     section :type []
     section :char []
+    section :string []
 ]
 
 
@@ -172,6 +176,8 @@ for :string [
         'Ϩ' >> "Ϩ" ; supports UNICODE
     ]
 
+    section :string []
+
 ]
 
 for :rational [
@@ -196,6 +202,7 @@ for :rational [
     section :version []
     section :type []
     section :char []
+    section :string []
 
 ]
 
@@ -219,6 +226,7 @@ for :char [
     section :version []
     section :type []
     section :char []
+    section :string []
 
 ]
 
@@ -251,6 +259,7 @@ for :quantity [
     section :version []
     section :type []
     section :char []
+    section :string []
 
 ]
 
@@ -270,6 +279,7 @@ for :date [
     section :version []
     section :type []
     section :char []
+    section :string []
 
 ]
 
@@ -295,6 +305,8 @@ for :binary [
         'K' >> to :binary 75
     ]
 
+    section :string []
+
 ]
 
 for :block [
@@ -318,6 +330,7 @@ for :block [
     section :version []
     section :type []
     section :char []
+    section :string []
 
 ]
 
@@ -332,5 +345,6 @@ for :version [
     section :version []
     section :type []
     section :char []
+    section :string []
 
 ]
