@@ -202,7 +202,11 @@ for :literal [
     section :logical []
     section :null []
     section :rational []
-    section :string []
+
+    section :string [
+        "example" >> 'example
+    ]
+    
     section :type []
     section :version []
 
@@ -426,8 +430,10 @@ for :word [
     section :null []
     section :rational []
     
-    section :string [
-        "example" >> first [example]
+    test ":string => :word" [
+        assert -> equal? 
+            first [example] 
+            to :word "example"
     ]
     
     section :type []
