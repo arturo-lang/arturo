@@ -1,6 +1,48 @@
 import {unitt}!
 import ./{to.helper.art}!
 
+for :attribute [
+
+    section :char []
+    section :complex []
+    section :floating []
+    section :integer []
+    section :logical []
+    section :null []
+    section :rational []
+
+    test ":string => :attribute" [
+        assert -> equal? 
+            first [.example] 
+            to :attribute "example"
+    ]
+    
+    section :type []
+    section :version []
+
+]
+
+for :attributeLabel [
+
+    section :char []
+    section :complex []
+    section :floating []
+    section :integer []
+    section :logical []
+    section :null []
+    section :rational []
+
+    test ":string => :attribute" [
+        assert -> equal? 
+            first [.example:] 
+            to :attributeLabel "example"
+    ]
+    
+    section :type []
+    section :version []
+
+]
+
 for :binary [
 
     section :char [
