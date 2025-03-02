@@ -738,7 +738,7 @@ for :color [
 for :complex [
 
     section :block [
-
+        [1 5] >> (to :complex [1.0 5.0])
     ]
 
     section :char []
