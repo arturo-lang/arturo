@@ -240,7 +240,11 @@ for :char [
     section :version []
     section :type []
     section :char []
-    section :string []
+    
+    section :string [
+        "K" >> 'K'
+        "Ϩ" >> 'Ϩ'
+    ]
 
 ]
 
