@@ -290,7 +290,10 @@ for :binary [
     section :rational []
     section :version []
     section :type []
-    section :char []
+    
+    section :char [
+        'K' >> to :binary 75
+    ]
 
 ]
 
