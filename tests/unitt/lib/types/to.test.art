@@ -1264,6 +1264,13 @@ for :word [
     section :complex []
     section :floating []
     section :integer []
+
+    test ":literal => :word" [
+        assert -> equal? 
+            first [example]
+            to :word 'example
+    ]
+
     section :logical []
     section :null []
     section :rational []
