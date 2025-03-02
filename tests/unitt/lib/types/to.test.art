@@ -32,7 +32,7 @@ for :attributeLabel [
     section :null []
     section :rational []
 
-    test ":string => :attribute" [
+    test ":string => :attributeLabel" [
         assert -> equal? 
             first [.example:] 
             to :attributeLabel "example"
@@ -751,7 +751,7 @@ for :errorKind [
     section :null []
     section :rational []
 
-    test ":string => :attribute" [
+    test ":string => :errorKind" [
         assert -> equal? "example" get (to :errorKind "example") 'label
     ]
     
