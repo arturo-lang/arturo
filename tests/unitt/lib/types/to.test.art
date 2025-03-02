@@ -87,7 +87,12 @@ for :floating [
     section :version []
     section :type []
     section :char []
-    section :string []
+
+    section :string [
+        "1.0" >> 1.0
+        "0.0" >> 0.0
+        "-1.0" >> neg 1.0
+    ]
 ]
 
 
