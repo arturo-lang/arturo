@@ -266,27 +266,27 @@ for :quantity [
 
 for :rational [
 
-    section :null []
-    section :logical []
+    section :char []
+    section :complex []
 
-    section :integer [
-        1 >> 1:1
-        0 >> 0:1
-        (neg 1) >> neg 1:1
-    ]
-    
     section :floating [
         1.0 >> 1:1
         0.0 >> 0:1
         (neg 1.0) >> neg 1:1
     ]
 
-    section :complex []
+    section :integer [
+        1 >> 1:1
+        0 >> 0:1
+        (neg 1) >> neg 1:1
+    ]
+
+    section :logical []
+    section :null []
     section :rational []
-    section :version []
-    section :type []
-    section :char []
     section :string []
+    section :type []
+    section :version []
 
 ]
 
