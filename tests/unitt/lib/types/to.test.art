@@ -88,7 +88,11 @@ for :block [
         (neg 1:5) >> @[neg 1 5]
     ]
 
-    section :string []
+    section :string [
+        ; Parses it as an arturo code
+        "a 1 1.5" >> [a 1 1.5]
+    ]
+
     section :type []
     section :version []
 
