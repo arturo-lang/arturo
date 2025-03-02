@@ -886,6 +886,11 @@ for :literal [
     section :complex []
     section :floating []
     section :integer []
+
+    section :literal [
+        'example >> 'example
+    ]
+
     section :logical []
     section :null []
     section :rational []
