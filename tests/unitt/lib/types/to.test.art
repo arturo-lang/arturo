@@ -233,15 +233,9 @@ for :logical [
 
 for :quantity [
 
-    section :null []
-    section :logical []
+    section :char []
+    section :complex []
 
-    section :integer [
-        0 >> 0`
-        1 >> 1`
-        (neg 1) >> neg 1`
-    ]
-    
     section :floating [
         0.0 >> 0`
         1.0 >> 1`
@@ -249,7 +243,14 @@ for :quantity [
         1.5 >> 1.5`
     ]
 
-    section :complex []
+    section :integer [
+        0 >> 0`
+        1 >> 1`
+        (neg 1) >> neg 1`
+    ]
+
+    section :logical []
+    section :null []
 
     section :rational [
         1:1 >> 1`
@@ -257,10 +258,9 @@ for :quantity [
         (neg 1:1) >> neg 1`
     ]
 
-    section :version []
-    section :type []
-    section :char []
     section :string []
+    section :type []
+    section :version []
 
 ]
 
