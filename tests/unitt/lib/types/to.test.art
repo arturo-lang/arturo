@@ -996,6 +996,10 @@ for :literal [
     section :error [
         (try [throw "example"]) >> to :literal "Runtime Error"
         (get try [throw "example"] 'message) >> 'example
+    ]
+    
+    section :errorKind [
+        (to :errorKind "OutOfBounds") >> 'OutOfBounds
     ]    
 
     section :floating []
