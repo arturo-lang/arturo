@@ -141,7 +141,21 @@ for :char [
 
 for :color [
 
-    section :block []
+    section :block [
+        [255 255 255] >> #white
+        [255 255 255 255] >> #white
+    ]
+
+    test ":block => :color (hsv)" [
+        assert -> equal? #white to :color .hsv [0 0.0 1.0]
+        assert -> equal? #white to :color .hsv [0 0.0 1.0 1.0]
+    ]
+    
+    test ":block => :color (hsl)" [
+        assert -> equal? #white to :color .hsl [180 0.0 1.0]
+        assert -> equal? #white to :color .hsl [180 0.0 1.0 1.0]
+    ]
+
     section :char []
     section :complex []
     section :floating []
