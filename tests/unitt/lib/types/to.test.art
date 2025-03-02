@@ -46,7 +46,11 @@ for :integer [
         'Ϩ' >> 1000 ; supports UNICODE
     ]
 
-    section :string []
+    section :string [
+        "1" >> 1
+        "0" >> 0
+        "-1" >> neg 1
+    ]
 
 ]
 
