@@ -1219,6 +1219,14 @@ for :string [
         null >> "null"
     ]
 
+    section :quantity [
+        1`m >> "1 m"
+        1`ohm >> "1 Ω"
+        1`cm2 >> "1 cm²"
+        1`kg.m >> "1 kg·m"
+        1`kg/l >> "1 kg/L"
+    ]
+
     section :rational [
         1:1 >> "1/1"
         0:2 >> "0/1"
