@@ -366,3 +366,28 @@ for :version [
     ]
 
 ]
+
+for :type [
+
+    section :null []
+    section :logical []
+    section :integer []
+    section :floating []
+    section :complex []
+    section :rational []
+    section :version []
+    section :type []
+    section :char []
+
+    section :string [
+        "integer" >> :integer
+        "floating" >> :floating
+        "logical" >> :logical
+        "string" >> :string
+        "complex" >> :complex
+        "rational" >> :rational
+        "version" >> :version
+        "type" >> :type
+    ]
+
+]
