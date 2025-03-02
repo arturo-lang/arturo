@@ -1355,6 +1355,14 @@ for :string [
         :type >> "type"
     ]
 
+    section :unit [
+        `m >> "m"
+        `ohm >> "Ω"
+        `cm2 >> "cm²"
+        `kg.m >> "kg·m"
+        `kg/l >> "kg/L"
+    ]
+
     section :version [
         1.2.3 >> "1.2.3"
         1.2.3-pre >> "1.2.3-pre"
