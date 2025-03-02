@@ -40,7 +40,12 @@ for :integer [
 
     section :version []
     section :type []
-    section :char []
+
+    section :char [
+        'K' >> 75
+        'Ϩ' >> 1000 ; supports UNICODE
+    ]
+
 ]
 
 
