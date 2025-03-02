@@ -410,7 +410,11 @@ for :word [
     section :logical []
     section :null []
     section :rational []
-    section :string []
+    
+    section :string [
+        "example" >> first [example]
+    ]
+    
     section :type []
     section :version []
 
