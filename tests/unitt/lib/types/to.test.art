@@ -1034,7 +1034,23 @@ for :logical [
 
 for :quantity [
 
-    section :block []
+    section :block [
+        [1 `m ] >> 1`m
+        [1  m ] >> 1`m
+        [1 'm ] >> 1`m
+        [1 "m"] >> 1`m
+        
+        [1.0 `m ] >> 1`m
+        [1.0  m ] >> 1`m
+        [1.0 'm ] >> 1`m
+        [1.0 "m"] >> 1`m
+        
+        [1:1 `m ] >> 1`m
+        [1:1  m ] >> 1`m
+        [1:1 'm ] >> 1`m
+        [1:1 "m"] >> 1`m
+    ]
+
     section :char []
     section :complex []
 
