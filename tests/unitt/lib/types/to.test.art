@@ -43,9 +43,7 @@ for :integer [
 
 
 for :floating [
-    section :null [
-        ; null >> 0.0
-    ]
+    section :null []
 
     section :logical [
         true  >> 1.0
@@ -65,9 +63,7 @@ for :floating [
         (neg 1.0) >> (neg 1.0)
     ]
 
-    section :complex [
-        
-    ]
+    section :complex []
 
     section :rational [
         1:1 >> 1.0
@@ -104,14 +100,8 @@ for :logical [
         (neg 1.0) >> true
     ]
 
-    section :complex [
-        
-    ]
-
-    section :rational [
-    
-    ]
-
+    section :complex []
+    section :rational []
     section :version []
 ]
 
@@ -159,15 +149,8 @@ for :string [
 
 for :rational [
 
-    section :null [
-        ; null >> 0:1
-    ]
-
-    section :logical [
-        ; true  >> 1:1
-        ; false >> 0:1
-        ; maybe >> null
-    ]
+    section :null []
+    section :logical []
 
     section :integer [
         1 >> 1:1
@@ -181,29 +164,16 @@ for :rational [
         (neg 1.0) >> neg 1:1
     ]
 
-    section :complex [
-        
-    ]
-
-    section :rational [
-    
-    ]
-
+    section :complex []
+    section :rational []
     section :version []
 
 ]
 
 for :char [
 
-    section :null [
-        ; null >> ''    ; Should be '\0'
-    ]
-
-    section :logical [
-        ; true  >> 'Y'
-        ; false >> 'N'
-        ; maybe >> '?'
-    ]
+    section :null []
+    section :logical []
 
     section :integer [
         75 >> 'K'
@@ -215,29 +185,16 @@ for :char [
         50.0 >> '2'
     ]
 
-    section :complex [
-        
-    ]
-
-    section :rational [
-    
-    ]
-
+    section :complex []
+    section :rational []
     section :version []
 
 ]
 
 for :quantity [
 
-    section :null [
-        ; null >> 0`
-    ]
-
-    section :logical [
-        ; true  >> 1`
-        ; false >> 0`
-        ; maybe >> null
-    ]
+    section :null []
+    section :logical []
 
     section :integer [
         0 >> 0`
@@ -252,9 +209,7 @@ for :quantity [
         1.5 >> 1.5`
     ]
 
-    section :complex [
-        
-    ]
+    section :complex []
 
     section :rational [
         1:1 >> 1`
@@ -269,39 +224,24 @@ for :quantity [
 
 for :date [
 
-    section :null [
-        
-    ]
-
-    section :logical [
-        
-    ]
+    section :null []
+    section :logical []
 
     section :integer [
         0 >> to :date "1969-12-31T21:00:00-03:00"
     ]
 
-    section :complex [
-        
-    ]
-
-    section :rational [
-    
-    ]
-
+    section :floating []
+    section :complex []
+    section :rational []
     section :version []
 
 ]
 
 for :binary [
 
-    section :null [
-
-    ]
-
-    section :logical [
-
-    ]
+    section :null []
+    section :logical []
 
     section :integer [
         ; There is no such way of properly testing it right now?
@@ -310,42 +250,19 @@ for :binary [
         (neg 1) >> to :binary neg 1 ; Should be 0b1111
     ]
     
-    section :floating [
-        ; There is no such way of properly testing it right now?
-        ; 0.0 >> to :binary 0           ; Should be 0b0000
-        ; 1.0 >> to :binary 1           ; Should be 0b0001
-        ; (neg 1.0) >> to :binary neg 1 ; Should be 0b1111
-    ]
-
-    section :complex [
-        
-    ]
-
-    section :rational [
-    
-    ]
-
+    section :floating []
+    section :complex []
+    section :rational []
     section :version []
 
 ]
 
 for :block [
 
-    section :null [
-
-    ]
-
-    section :logical [
-
-    ]
-
-    section :integer [
-        
-    ]
-    
-    section :floating [
-       
-    ]
+    section :null []
+    section :logical []
+    section :integer []
+    section :floating []
 
     section :complex [
         (to :complex [1 5]) >> [1.0 5.0]    
@@ -364,30 +281,12 @@ for :block [
 
 for :version [
 
-    section :null [
-
-    ]
-
-    section :logical [
-
-    ]
-
-    section :integer [
-        
-    ]
-    
-    section :floating [
-       
-    ]
-
-    section :complex [
-          
-    ]
-    
-    section :rational [
-       
-    ]
-
+    section :null []
+    section :logical []
+    section :integer []
+    section :floating []
+    section :complex []
+    section :rational []
     section :version []
 
 ]
