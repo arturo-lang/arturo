@@ -842,6 +842,25 @@ for :floating [
     section :version []
 ]
 
+for :inline [
+
+    test ":block => :inline" [
+        assert -> equal? first [(1 2 3)] to :inline [1 2 3]
+    ]
+
+    section :char []
+    section :complex []
+    section :floating []
+    section :integer []
+    section :logical []
+    section :null []
+    section :rational []
+    section :string []
+    section :type []
+    section :version []
+
+]
+
 for :integer [
 
     section :block []
