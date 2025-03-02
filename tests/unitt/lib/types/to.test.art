@@ -77,6 +77,13 @@ for :block [
     ]
 
     section :floating []
+
+    test ":inline => :block" [
+        assert -> equal? 
+            [hello, world] 
+            to :block first [(hello, world)]
+    ]
+
     section :integer []
     section :logical []
     section :null []
