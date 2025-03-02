@@ -3,8 +3,12 @@ import ./{to.helper.art}!
 
 for :binary [
 
-    section :null []
-    section :logical []
+    section :char [
+        'K' >> to :binary 75
+    ]
+
+    section :complex []
+    section :floating []
 
     section :integer [
         ; There is no such way of properly testing it right now?
@@ -13,17 +17,12 @@ for :binary [
         (neg 1) >> to :binary neg 1 ; Should be 0b1111
     ]
     
-    section :floating []
-    section :complex []
+    section :logical []
+    section :null []
     section :rational []
-    section :version []
-    section :type []
-    
-    section :char [
-        'K' >> to :binary 75
-    ]
-
     section :string []
+    section :type []
+    section :version []
 
 ]
 
