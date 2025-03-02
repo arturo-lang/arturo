@@ -1087,6 +1087,10 @@ for :string [
         1.2.3-pre >> "1.2.3-pre"
     ]
 
+    test ":word => :string" [
+        assert -> equal? "example" to :string first [example]
+    ]
+
 ]
 
 for :symbol [
