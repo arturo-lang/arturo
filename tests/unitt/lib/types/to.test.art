@@ -1134,6 +1134,13 @@ for :rational [
 
     section :logical []
     section :null []
+
+    section :quantity [
+        1`m >> 1:1
+        0`m >> 0:1
+        (neg 1`m) >> neg 1:1
+    ]
+
     section :rational []
     section :string []
     section :type []
