@@ -1517,6 +1517,31 @@ for :type [
 
 ]
 
+for :unit [
+
+    section :block []
+    section :char []
+    section :complex []
+    section :floating []
+    section :integer []
+    section :logical []
+    section :null []
+
+    section :quantity [
+        1`m >> `m
+        1`ohm >> `ohm
+        1`cm2 >> `cm2
+        1`kg.m >> `kg.m
+        1`kg/l >> `kg/l
+    ]
+    
+    section :rational []
+    section :string []
+    section :type []
+    section :version []
+
+]
+
 for :version [
 
     section :block []
