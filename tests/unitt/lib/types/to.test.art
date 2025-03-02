@@ -62,7 +62,7 @@ for :binary [
     section :logical []
     section :null []
     section :rational []
-    section :string []
+    section :string [] ; there is no way to test it...
     section :type []
     section :version []
 
