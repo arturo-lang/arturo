@@ -1030,7 +1030,12 @@ for :quantity [
 
 for :rational [
 
-    section :block []
+    section :block [
+        [1 1] >> 1:1
+        [1 2] >> 1:2
+        [10 5] >> 2:1
+        (@[neg 1 1]) >> (neg 1:1)
+    ]
     section :char []
     section :complex []
 
