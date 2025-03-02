@@ -1208,6 +1208,10 @@ for :string [
         (get try [throw "example"] 'message) >> "example"
     ]
 
+    section :errorKind [
+        (to :errorKind "OutOfBounds") >> "OutOfBounds"
+    ]   
+
     section :floating [
         1.0 >> "1.0"
         0.0 >> "0.0"
