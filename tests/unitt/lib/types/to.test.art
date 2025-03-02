@@ -1253,6 +1253,10 @@ for :string [
         (neg 2:10) >> "-1/5"
     ]
 
+    section :regex [
+        {/(.*)/} >> "(.*)"
+    ]
+
     section :string []
 
     test ":string => :symbol" [
