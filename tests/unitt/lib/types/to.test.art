@@ -1048,6 +1048,10 @@ for :string [
         (neg 1) >> "-1"
     ]
 
+    section :literal [
+        'example >> "example"
+    ]
+
     section :logical [
         true  >> "true"
         false >> "false"
