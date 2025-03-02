@@ -82,20 +82,20 @@ for :char [
 
 for :date [
 
-    section :null []
-    section :logical []
+    section :char []
+    section :complex []
+    section :floating []
 
     section :integer [
         0 >> to :date "1969-12-31T21:00:00-03:00"
     ]
 
-    section :floating []
-    section :complex []
+    section :logical []
+    section :null []
     section :rational []
-    section :version []
-    section :type []
-    section :char []
     section :string []
+    section :type []
+    section :version []
 
 ]
 
