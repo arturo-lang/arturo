@@ -1193,6 +1193,11 @@ for :string [
         (#[name: "John"]) >> "[name:John]"
     ]
 
+    section :error [
+        (try [throw "example"]) >> "Runtime Error"
+        (get try [throw "example"] 'message) >> "example"
+    ]
+
     section :floating [
         1.0 >> "1.0"
         0.0 >> "0.0"
