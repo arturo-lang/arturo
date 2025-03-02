@@ -780,6 +780,25 @@ for :date [
 
 ]
 
+for :dictionary [
+
+    section :block [
+        ["user" "John"] >> #[user: "John"]
+    ]
+
+    section :char []
+    section :complex []
+    section :floating []
+    section :integer []
+    section :logical []
+    section :null []
+    section :rational []
+    section :string []
+    section :type []
+    section :version []
+
+]
+
 for :errorKind [
 
     section :block []
