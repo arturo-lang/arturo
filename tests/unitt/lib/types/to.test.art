@@ -117,7 +117,12 @@ for :logical [
     section :version []
     section :type []
     section :char []
-    section :string []
+
+    section :string [
+        "true" >> true
+        "false" >> false
+        "maybe" >> maybe
+    ]
 ]
 
 
