@@ -148,7 +148,16 @@ for :string [
         1.2.3-pre >> "1.2.3-pre"
     ]
 
-    section :type []
+    section :type [
+        :integer >> "integer"
+        :floating >> "floating"
+        :logical >> "logical"
+        :string >> "string"
+        :complex >> "complex"
+        :rational >> "rational"
+        :version >> "version"
+        :type >> "type"
+    ]
 
 ]
 
