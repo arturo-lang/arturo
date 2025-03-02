@@ -40,6 +40,7 @@ for :integer [
 
     section :version []
     section :type []
+    section :char []
 ]
 
 
@@ -74,6 +75,7 @@ for :floating [
 
     section :version []
     section :type []
+    section :char []
 ]
 
 
@@ -106,6 +108,7 @@ for :logical [
     section :rational []
     section :version []
     section :type []
+    section :char []
 ]
 
 
@@ -159,6 +162,8 @@ for :string [
         :type >> "type"
     ]
 
+    section :char []
+
 ]
 
 for :rational [
@@ -182,6 +187,7 @@ for :rational [
     section :rational []
     section :version []
     section :type []
+    section :char []
 
 ]
 
@@ -204,6 +210,7 @@ for :char [
     section :rational []
     section :version []
     section :type []
+    section :char []
 
 ]
 
@@ -235,6 +242,7 @@ for :quantity [
 
     section :version []
     section :type []
+    section :char []
 
 ]
 
@@ -253,6 +261,7 @@ for :date [
     section :rational []
     section :version []
     section :type []
+    section :char []
 
 ]
 
@@ -273,6 +282,7 @@ for :binary [
     section :rational []
     section :version []
     section :type []
+    section :char []
 
 ]
 
@@ -296,6 +306,7 @@ for :block [
 
     section :version []
     section :type []
+    section :char []
 
 ]
 
@@ -309,5 +320,6 @@ for :version [
     section :rational []
     section :version []
     section :type []
+    section :char []
 
 ]
