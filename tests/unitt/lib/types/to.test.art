@@ -142,6 +142,25 @@ for :date [
 
 ]
 
+for :errorKind [
+
+    section :char []
+    section :complex []
+    section :floating []
+    section :integer []
+    section :logical []
+    section :null []
+    section :rational []
+
+    test ":string => :attribute" [
+        assert -> equal? "example" get (to :errorKind "example") 'label
+    ]
+    
+    section :type []
+    section :version []
+
+]
+
 for :floating [
 
     section :char []
