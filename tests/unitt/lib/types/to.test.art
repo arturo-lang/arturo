@@ -377,19 +377,20 @@ for :type [
 
 for :version [
 
-    section :null []
-    section :logical []
-    section :integer []
-    section :floating []
-    section :complex []
-    section :rational []
-    section :version []
-    section :type []
     section :char []
+    section :complex []
+    section :floating []
+    section :integer []
+    section :logical []
+    section :null []
+    section :rational []
 
     section :string [
         "1.2.3" >> 1.2.3
         "1.2.3-pre" >> 1.2.3-pre
     ]
+
+    section :type []
+    section :version []
 
 ]
