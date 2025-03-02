@@ -866,6 +866,12 @@ for :floating [
 
     section :null []
 
+    section :quantity [
+        1`m >> 1.0
+        0`m >> 0.0
+        (neg 1`m) >> (neg 1.0)
+    ]
+
     section :rational [
         1:1 >> 1.0
         0:1 >> 0.0
