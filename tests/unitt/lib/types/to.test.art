@@ -1031,6 +1031,11 @@ for :regex [
 
 for :string [
 
+    test ":attribute(Label) => :string" [
+        assert -> equal? "example" to :string first [.example]
+        assert -> equal? "example" to :string first [.example:]
+    ]
+
     section :char [
         'K' >> "K"
         'Ϩ' >> "Ϩ" ; supports UNICODE
