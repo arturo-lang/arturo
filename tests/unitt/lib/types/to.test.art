@@ -193,6 +193,27 @@ for :integer [
 
 ]
 
+for :label [
+
+    section :char []
+    section :complex []
+    section :floating []
+    section :integer []
+    section :logical []
+    section :null []
+    section :rational []
+
+    test ":string => :label" [
+        assert -> equal? 
+            first [example:] 
+            to :label "example"
+    ]
+    
+    section :type []
+    section :version []
+
+]
+
 for :literal [
 
     section :char []
