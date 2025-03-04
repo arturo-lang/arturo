@@ -21,4 +21,4 @@ pair: $[source target][
     @[source target]
 ]
 
-alias.infix {>>} 'pair
+alias.infix {->>} 'pair
