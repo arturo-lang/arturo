@@ -75,9 +75,6 @@ proc defineModule*(moduleName: string) =
             "octal"     : ({Logical},"format integer as octal"),
             "agnostic"  : ({Logical},"convert words in block to literals, if not in context"),
             "data"      : ({Logical},"parse input as Arturo data block"),
-            "code"      : ({Logical},"convert value to valid Arturo code"),
-            "pretty"    : ({Logical},"prettify generated code"),
-            "unwrapped" : ({Logical},"omit external block notation")
         },
         returns     = {Any},
         example     = """
@@ -89,19 +86,6 @@ proc defineModule*(moduleName: string) =
             ; [ :block
             ;         hello :literal
             ;         world :literal
-            ; ]
-            ..........
-            example: "Hello, world"
-            example                 ; => Hello, world
-            as.code example         ; => "Hello, world"
-            ..........
-            as.code #[name: "John" surname: "Doe"]
-            ; => #[name: "John" surname: "Doe" ]
-            
-            as.code.pretty #[name: "John" surname: "Doe"]
-            ; => #[
-            ;         name: "John"
-            ;         surname: "Doe"
             ; ]
         """:
             #=======================================================
@@ -123,8 +107,6 @@ proc defineModule*(moduleName: string) =
                 elif xKind==String:
                     let (src, _) = getSource(x.s)
                     push(parseDataBlock(doParse(src, isFile=false)))
-            elif (hadAttr("code")):
-                push(newString(codify(x,pretty = (hadAttr("pretty")), unwrapped = (hadAttr("unwrapped")), safeStrings = (hadAttr("safe")))))
             else:
                 push(x)
 
