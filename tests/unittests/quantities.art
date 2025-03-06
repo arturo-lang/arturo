@@ -80,7 +80,7 @@ do [
 
     ensure -> 'arturocrypto = property 1`artc
     ensure -> "1.00 ÁRT" = ~"|1`artc|"
-    ensure -> "31:2`ÁRT" = as.code 15.5`artc
+    ensure -> "31:2`ÁRT" = express 15.5`artc
     ensure -> 10`EUR = 1`artc --> `EUR
     passed
 
@@ -729,7 +729,7 @@ do [
 
     ensure -> (to :literal "high distance") = property 1`lejos
     ensure -> "1 🛣" = ~"|1`lejos|"
-    ensure -> "31:2`🛣" = as.code 15.5`lejos
+    ensure -> "31:2`🛣" = express 15.5`lejos
     ensure -> 1500`m = 1`lejos --> `m
     passed
 
@@ -1363,7 +1363,7 @@ do [
 
     ensure -> (to :literal "high area") = property 1`colossal
     ensure -> "1 🏟️" = ~"|1`colossal|"
-    ensure -> "31:2`🏟️" = as.code 15.5`colossal
+    ensure -> "31:2`🏟️" = express 15.5`colossal
     ensure -> 609840`sqft = 1`colossal --> `sqft
     passed
 
@@ -1833,7 +1833,7 @@ do [
 
     ensure -> (to :literal "huge volume") = property 1`oceanic
     ensure -> "1 =~" = ~"|1`oceanic|"
-    ensure -> "31:2`=~" = as.code 15.5`oceanic
+    ensure -> "31:2`=~" = express 15.5`oceanic
     ensure -> 1.3`km3 = 1`oceanic --> `km3
     passed
 
@@ -2020,7 +2020,7 @@ do [
 
     ensure -> (to :literal "eternity") = property 1`eternity
     ensure -> "1 💀" = ~"|1`eternity|"
-    ensure -> "31:2`💀" = as.code 15.5`eternity
+    ensure -> "31:2`💀" = express 15.5`eternity
     ensure -> 3.5`months = 1`eternity --> `months
     passed
 
@@ -2200,7 +2200,7 @@ do [
 
     ensure -> "average coleman's leg press" = to :string property 1`ronnies
     ensure -> "1 🏋️" = ~"|1`ronnies|"
-    ensure -> "31:2`🏋️" = as.code 15.5`ronnies
+    ensure -> "31:2`🏋️" = express 15.5`ronnies
     ensure -> 1043`kg   = 1`ronnies --> `kg
     passed
 
@@ -2384,7 +2384,7 @@ do [
 
     ensure -> "f1's highest speed" = to :string property 1`bottas
     ensure -> "1 🏎️" = ~"|1`bottas|"
-    ensure -> "31:2`🏎️" = as.code 15.5`bottas
+    ensure -> "31:2`🏎️" = express 15.5`bottas
     ensure -> 372.5`kph = 1`bottas --> `kph
     passed
 
@@ -2541,7 +2541,7 @@ do [
 
     ensure -> "earth's gravity acceleration" = to :string property 1`earth
     ensure -> "1 🌎" = ~"|1`earth|"
-    ensure -> "31:2`🌎" = as.code 15.5`earth
+    ensure -> "31:2`🌎" = express 15.5`earth
     ensure -> 9.81`m/s2 = 1`earth --> `m/s2
     passed
 
@@ -2691,7 +2691,7 @@ do [
 
     ensure -> "g-force" = to :string property 1`gforce
     ensure -> "1 🚀" = ~"|1`gforce|"
-    ensure -> "31:2`🚀" = as.code 15.5`gforce
+    ensure -> "31:2`🚀" = express 15.5`gforce
     ensure -> 9.81`m.g/s2 = 1`gforce --> `m.g/s2
     passed
 
@@ -2873,7 +2873,7 @@ do [
 
     ensure -> "sea level's pressure" = to :string property 1`seaLevel
     ensure -> "1 🌊" = ~"|1`seaLevel|"
-    ensure -> "31:2`🌊" = as.code 15.5`seaLevel
+    ensure -> "31:2`🌊" = express 15.5`seaLevel
     ensure -> 1`atm     = 1`seaLevel --> `atm
     passed
 
