@@ -729,6 +729,21 @@ proc defineModule*(moduleName: string) =
         },
         returns     = {String},
         example     = """
+            example: "Hello, world"
+            example                 ; => Hello, world
+            express example         ; => "Hello, world"
+            ..........
+            d: #[name: "John"]
+            d\surname: "Doe"
+            
+            express d
+            ; => #[name: "John" surname: "Doe" ]
+            ..........
+            express.pretty #[name: "John" surname: "Doe"]
+            ; => #[
+            ;         name: "John"
+            ;         surname: "Doe"
+            ; ]
         """:
             #=======================================================
             push(newString(codify(x,
