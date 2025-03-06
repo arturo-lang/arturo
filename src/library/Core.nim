@@ -714,6 +714,29 @@ proc defineModule*(moduleName: string) =
                 for k,v in x.d.pairs:
                     SetSym(k, v)
 
+    builtin "express",
+        alias       = unaliased,
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "convert given value to Arturo code",
+        args        = {
+            "value" : {Any}
+        },
+        attrs       = {
+            "pretty"    : ({Logical},"prettify generated code"),
+            "unwrapped" : ({Logical},"omit external block notation"),
+            "safe"      : ({Logical},"use safe strings")
+        },
+        returns     = {String},
+        example     = """
+        """:
+            #=======================================================
+            push(newString(codify(x,
+                pretty = (hadAttr("pretty")), 
+                unwrapped = (hadAttr("unwrapped")), 
+                safeStrings = (hadAttr("safe"))
+            )))
+
     builtin "function",
         alias       = dollar,
         op          = opFunc,
