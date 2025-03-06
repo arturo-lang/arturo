@@ -1334,6 +1334,22 @@ proc defineModule*(moduleName: string) =
             #=======================================================
             push(copyValue(x))
 
+    builtin "parse",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "parse given string as an Arturo value",
+        args        = {
+            "code"   : {String}
+        },
+        attrs       = NoAttrs,
+        returns     = {Nothing},
+        example     = """
+        """:
+            #=======================================================
+            let ret = doParse(x.s, isFile=false)
+            push(ret[0])
+
     builtin "return",
         alias       = unaliased, 
         op          = opReturn,
