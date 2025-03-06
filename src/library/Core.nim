@@ -1347,6 +1347,10 @@ proc defineModule*(moduleName: string) =
         },
         returns     = {Any},
         example     = """
+            parse "123"         ; 123 (:integer)
+            parse "3.14"        ; 3.14 (:floating)
+            parse "true"        ; true (:logical)
+            parse "[1 2 3]"     ; [1 2 3] (:block)
         """:
             #=======================================================
             if xKind == String:
