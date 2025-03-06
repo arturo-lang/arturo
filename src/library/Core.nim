@@ -1348,7 +1348,7 @@ proc defineModule*(moduleName: string) =
         """:
             #=======================================================
             let ret = doParse(x.s, isFile=false)
-            push(ret[0])
+            push(ret.a[0])
 
     builtin "return",
         alias       = unaliased, 
