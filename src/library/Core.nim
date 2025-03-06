@@ -1340,15 +1340,28 @@ proc defineModule*(moduleName: string) =
         rule        = PrefixPrecedence,
         description = "parse given string as an Arturo value",
         args        = {
-            "code"   : {String}
+            "code"   : {String, Block}
         },
-        attrs       = NoAttrs,
-        returns     = {Nothing},
+        attrs       = {
+            "data"      : ({Logical},"parse input as Arturo data block (unstable!)")
+        },
+        returns     = {Any},
         example     = """
         """:
             #=======================================================
-            let ret = doParse(x.s, isFile=false)
-            push(ret.a[0])
+            if xKind == String:
+                let (src, _) = getSource(x.s)
+                
+                let ret = doParse(src, isFile=false)
+                if unlikely(hadAttr("data")):
+                    push(parseDataBlock(ret))
+                else:
+                    push(ret.a[0])
+            else:
+                if unlikely(hadAttr("data")):
+                    push(parseDataBlock(x))
+                else:
+                    push(x)
 
     builtin "return",
         alias       = unaliased, 
