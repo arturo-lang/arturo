@@ -2,7 +2,7 @@
 ######################################################
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2024 Yanis Zafirópulos
+# (c) 2019-2025 Yanis Zafirópulos
 #
 # @file: build.nims
 ######################################################
@@ -159,29 +159,6 @@ proc verifyDirectories*() =
     for path in [paths.targetBin, paths.targetLib, paths.targetStores]:
         mkdir path
 
-proc updateBuild*() =
-    ## Increment the build version by one and perform a commit.
-    
-    proc commit(file: string): string =
-        let cmd = fmt"git commit -m 'build update' {file}"
-        cmd.gorgeEx().output
-
-    proc increaseVersion(file: string) =
-        let buildVersion: int = file.readFile()
-                                    .strip()
-                                    .parseInt()
-                                    .succ()
-
-        file.writeFile $buildVersion
-    
-    proc main() =
-        let buildFile = "version/build"
-        increaseVersion(buildFile)
-        for line in commit(buildFile).splitLines:
-            echo line.strip()
-
-    main()
-
 proc compile*(config: BuildConfig, showFooter: bool = false): int
     {. raises: [OSError, ValueError, Exception] .} =
 
@@ -286,8 +263,6 @@ proc buildArturo*(config: BuildConfig, targetFile: string) =
         config.showBuildInfo()
 
     proc setDevmodeUp() =
-        section "Updating build..."
-        updateBuild()
         devConfig()
 
     proc setBundlemodeUp() =
@@ -449,7 +424,7 @@ cmd build, "[default] Build arturo and optionally install the executable":
                           "x86-32", "arm", "arm-32"]
         availableOSes = @["freebsd", "openbsd", "netbsd", "linux", "mac",
                           "macos", "macosx", "win", "windows",]
-        availableBuilds = @["full", "mini", "safe", "web"]
+        availableBuilds = @["full", "mini", "docgen", "safe", "web"]
         availableProfilers = @["default", "mem", "native", "profile"]
 
     var config = buildConfig()
@@ -477,6 +452,9 @@ cmd build, "[default] Build arturo and optionally install the executable":
             miniBuildConfig()
             config.version = "@mini"
             miniBuild()
+        >> ["docgen"]:
+            fullBuildConfig()
+            docgenBuildConfig()
         >> ["safe"]:
             safeBuildConfig()
             miniBuild()
@@ -570,7 +548,7 @@ cmd package, "Package arturo app and build executable":
 
     config.buildPackage()
 
-cmd docs, "Build the documentation":
+cmd docs, "Build the internal documentation":
     ## docs:
     ##     Builds the developer documentation
     ##

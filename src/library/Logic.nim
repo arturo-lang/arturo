@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2024 Yanis Zafirópulos
+# (c) 2019-2025 Yanis Zafirópulos
 #
 # @file: library/Logic.nim
 #=======================================================
@@ -26,7 +26,7 @@ import vm/[exec]
 # Definitions
 #=======================================
 
-proc defineLibrary*() =
+proc defineModule*(moduleName: string) =
 
     #----------------------------
     # Predicates
@@ -317,7 +317,7 @@ proc defineLibrary*() =
             y: 4
             
             if or? x=2 y>5 [
-                print "yep, that's correct!"]
+                print "yep, that's correct!"
             ]
             
             ; yep, that's correct!
@@ -464,9 +464,3 @@ proc defineLibrary*() =
         alias       = unaliased,
         description = "the TRUE logical constant":
             VTRUE
-
-#=======================================
-# Add Library
-#=======================================
-
-Libraries.add(defineLibrary)

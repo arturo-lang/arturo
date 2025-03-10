@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2024 Yanis Zafirópulos
+# (c) 2019-2025 Yanis Zafirópulos
 #
 # @file: library/Numbers.nim
 #=======================================================
@@ -58,7 +58,7 @@ template processTrigonometric(fun: untyped): untyped =
 #  potential use: https://rosettacode.org/wiki/Cubic_special_primes
 #  labels: library, enhancement, new feature
  
-proc defineLibrary*() =
+proc defineModule*(moduleName: string) =
 
     #----------------------------
     # Functions
@@ -1496,9 +1496,3 @@ proc defineLibrary*() =
         alias       = unaliased,
         description = "the number tau, mathematical constant":
             newFloating(TAU)
-         
-#=======================================
-# Add Library
-#=======================================
-
-Libraries.add(defineLibrary)

@@ -2,11 +2,6 @@
 >> couple
 [+] passed!
 
->> decouple
-[+] passed!
-[+] passed!
-[+] passed!
-
 >> drop - :string < :string :string
 [+] passed!
 [+] passed!
@@ -648,6 +643,7 @@
 [+] passed!
 
 >> split - .by
+[+] passed!
 [+] passed!
 [+] passed!
 [+] passed!

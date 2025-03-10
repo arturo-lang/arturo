@@ -3,7 +3,7 @@
 # GMP BigNum library wrapper
 # for Nim
 #
-# (c) 2024 Yanis Zafirópulos
+# (c) 2019-2025 Yanis Zafirópulos
 # 
 # @license: see LICENSE file
 # @file: extras/gmp.nim
@@ -798,14 +798,11 @@ func mpz_xor*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc.}
 {.pop.}
 
 #=======================================
-# Methods
+# Destructors
 #=======================================
 
-func finalizeInt*(z: ref mpz_t) =
-    mpz_clear(z[])
+proc `=destroy`*(x: mm_mpz_struct) =
+    mpz_clear(addr x)
 
-# func finalizeFloat*(z: ref mpf_t) =
-#     mpf_clear(z[])
-
-func finalizeRat*(z: ref mpq_t) =
-    mpq_clear(z[])
+proc `=destroy`*(x: mm_mpq_struct) =
+    mpq_clear(addr x)

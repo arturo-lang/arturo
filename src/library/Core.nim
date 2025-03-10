@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2024 Yanis Zafirópulos
+# (c) 2019-2025 Yanis Zafirópulos
 #
 # @file: library/Core.nim
 #=======================================================
@@ -65,7 +65,7 @@ proc replacingAmpersands(va: Value, what: Value): Value =
 # Definitions
 #=======================================
 
-proc defineLibrary*() =
+proc defineModule*(moduleName: string) =
 
     #----------------------------
     # Functions
@@ -619,9 +619,55 @@ proc defineLibrary*() =
             "all"   : ({Logical},"export everything, regardless of whether it's been marked as public (makes sense only for modules)")
         },
         returns     = {Nothing},
-        # TODO(Core\export) add documentation example
-        #  labels: library, documentation, easy
         example     = """
+        greeting: module [
+            greet: method.public [user :string][
+                print ~"Hello, |user|!"
+            ]
+        ]
+
+        export greeting!
+
+        greet "Anonymous"   ; Hello, Anonymous!
+        ..........
+        ; You can't use private methods
+        greeting: module [
+            greet: method [user :string][
+                print ~"Bye, bye, |user|!"
+            ]
+        ]
+
+        export greeting!
+
+        greet "Anonymous"
+        ; Cannot resolve requested value
+        ;
+        ; Identifier not found: 
+        ;     greet
+        ;
+        ; ┃ File: example.art
+        ; ┃ Line: 9
+        ; ┃ 
+        ; ┃    7 ║  ]
+        ; ┃    8 ║  
+        ; ┃    9 ║► export greeting!
+        ; ┃   10 ║  
+        ; ┃   11 ║  greet "Anonymous"
+        ; 
+        ; Hint: Perhaps you meant... greeting ?
+        ;                     or... repeat ?
+        ;                     or... greater? ?
+        ..........
+        ; You can export private functions using the `.all` attribute
+        greeting: module [
+            greet: method [user :string][
+                print ~"Bye, bye, |user|!"
+            ]
+        ]
+
+        export.all greeting!
+
+        greet "Anonymous" ; Bye, bye, Anonymous!
         """:
             #=======================================================
             let exportAll = hadAttr("all")
@@ -1175,6 +1221,57 @@ proc defineLibrary*() =
         # TODO(Core\module) add documentation example
         #  labels: library, documentation, easy
         example     = """
+        ui: module [
+
+            namedRule: method [title :string width :integer][
+                title: ~" |title| "
+                pad.center.with: '=' title width
+            ]
+
+            section: method.public [title :string content :string width :integer][
+                ~{
+                    |\namedRule title width|
+                    |content|
+                    |\namedRule title width|
+                }
+            ]
+        ]
+
+        export ui!
+
+        print section "Hello" "World" 50
+        ; ===================== Hello ======================
+        ; World
+        ; ===================== Hello ======================
+        print set? 'ui          ; true
+        print set? 'namedRule   ; false
+        print set? 'section     ; true
+        ..........
+        ui: [
+
+            init: method [symbol :char][
+                \symbol: symbol
+            ]
+
+            namedRule: method [title :string width :integer][
+                title: ~" |title| "
+                pad.center.with: \symbol title width
+            ]
+
+            section: method.public [title :string content :string width :integer][
+                ~{
+                    |\namedRule title width|
+                    |content|
+                    |\namedRule title width|
+                }
+            ]
+        ]
+
+        export module.with: ['~'] ui!  
+        print section "Example" "This is an example" 40
+        ; ~~~~~~~~~~~~~~~ Example ~~~~~~~~~~~~~~~~
+        ; This is an example
+        ; ~~~~~~~~~~~~~~~ Example ~~~~~~~~~~~~~~~~
         """:
             #=======================================================
             var definitions: ValueDict = newOrderedTable[string,Value]()
@@ -1336,13 +1433,11 @@ proc defineLibrary*() =
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "pop top <number> values from stack",
+        description = "pop top N values from stack",
         args        = {
             "number"    : {Integer}
         },
-        attrs       = {
-            "discard"   : ({Logical},"do not return anything")
-        },
+        attrs       = NoAttrs,
         returns     = {Any},
         example     = """
             1 2 3
@@ -1351,30 +1446,23 @@ proc defineLibrary*() =
             1 2 3
             b: unstack 2        ; b: [3 2]
             ..........
+            ; You can also discard the values using `discard`
             1 2 3
-            unstack.discard 1   ; popped 3 from the stack
+            discard unstack 1   ; popped 3 from the stack
         """:
             #=======================================================
-            if Stack[0..SP-1].len < x.i: Error_StackUnderflow()
-            
-            let doDiscard = (hadAttr("discard"))
+            if Stack[0..SP-1].len < x.i: 
+                Error_StackUnderflow()
             
             if x.i==1:
-                if doDiscard: discard stack.pop()
-                else: discard
+                discard
             else:
-                if doDiscard: 
-                    var i = 0
-                    while i<x.i:
-                        discard stack.pop()
-                        i+=1
-                else:
-                    var res: ValueArray
-                    var i = 0
-                    while i<x.i:
-                        res.add stack.pop()
-                        i+=1
-                    push(newBlock(res))
+                var res: ValueArray
+                var i = 0
+                while i<x.i:
+                    res.add stack.pop()
+                    i+=1
+                push(newBlock(res))
 
     builtin "until",
         alias       = unaliased, 
@@ -1496,8 +1584,8 @@ proc defineLibrary*() =
             ; the main block is always evaluated!
             when [
                 prime? 4 -> print "yes, 4 is prime - wait, what?!"
-                prime? 5 -> print "yes, 5 is prime
-                prime? 7 -> print "yes, 6 is prime
+                prime? 5 -> print "yes, 5 is prime"
+                prime? 7 -> print "yes, 6 is prime"
                 true     -> print "none of the above was true"
             ]
             ; yes, 5 is prime
@@ -1518,6 +1606,22 @@ proc defineLibrary*() =
                 true -> print "x is >= 4"
             ]
             ; x is less than 4
+            ..........
+            f: function [x][
+                print ["called F with:" x]
+                return odd? x
+            ]
+            ; short-circuiting:
+            ; conditions are not evaluated unless needed
+            when [
+                [f 10]-> print "F 10"
+                [f 11]-> print "F 11"
+                [f 12]-> print "F 12"
+            ]
+            ; called F with: 10 
+            ; called F with: 11 
+            ; F 11
+
         """:
             #=======================================================
             let withAny = (hadAttr("any"))
@@ -1817,9 +1921,3 @@ proc defineLibrary*() =
         alias       = slashedzero,
         description = "the NULL constant":
             VNULL
-
-#=======================================
-# Add Library
-#=======================================
-
-Libraries.add(defineLibrary)

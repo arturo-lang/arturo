@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2024 Yanis Zafirópulos
+# (c) 2019-2025 Yanis Zafirópulos
 #
 # @file: library/Net.nim
 #=======================================================
@@ -72,7 +72,7 @@ when not defined(WEB):
 # Definitions
 #=======================================
 
-proc defineLibrary*() =
+proc defineModule*(moduleName: string) =
 
     #----------------------------
     # Functions
@@ -382,7 +382,7 @@ proc defineLibrary*() =
                 "routes"    : {Block, Function}
             },
             attrs       = {
-                "port"      : ({Integer},"use given port"),
+                "port"      : ({Integer},"use given port. Default: 18966"),
                 "silent"    : ({Logical},"don't print info log"),
                 "chrome"    : ({Logical},"open in Chrome windows as an app")
             },
@@ -581,9 +581,3 @@ proc defineLibrary*() =
                     echo " :: Starting server on port " & $(port) & "...\n"
                 
                 startServer(requestHandler.RequestHandler, port)
-
-#=======================================
-# Add Library
-#=======================================
-
-Libraries.add(defineLibrary)
