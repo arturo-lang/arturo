@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2024 Yanis Zafirópulos
+# (c) 2019-2025 Yanis Zafirópulos
 #
 # @file: library/Ui.nim
 #=======================================================
@@ -48,7 +48,7 @@ when (not defined(WEB)) and not defined(NOWEBVIEW):
 # Definitions
 #=======================================
 
-proc defineLibrary*() =
+proc defineModule*(moduleName: string) =
 
     #----------------------------
     # Functions
@@ -476,9 +476,3 @@ proc defineLibrary*() =
             alias       = unaliased,
             description = "the main active window":
                 ActiveWindow
-                
-#=======================================
-# Add Library
-#=======================================
-
-Libraries.add(defineLibrary)

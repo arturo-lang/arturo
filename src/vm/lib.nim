@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2024 Yanis Zafirópulos
+# (c) 2019-2025 Yanis Zafirópulos
 #
 # @file: vm/common.nim
 #=======================================================
@@ -94,7 +94,7 @@ template builtin*(n: string, alias: VSymbol, op: OpCode, rule: PrecedenceKind, d
 
         let b = newBuiltin(
             when not defined(WEB): description else: "",
-            when not defined(WEB): static (instantiationInfo().filename.replace(".nim")) else: "",
+            when not defined(WEB): moduleName else: "",     # `moduleName` comes from the main library module definition!
             when not defined(WEB): static (instantiationInfo().line) else: 0,
             static argsLen, 
             when not defined(WEB): args.toOrderedTable else: initOrderedTable[string,ValueSpec](),
@@ -235,14 +235,9 @@ template constant*(n: string, alias: VSymbol, description: string, v: Value): un
             static: echo " -> " & n
 
         SetSym(n, v)
-        let moduleName = 
-            when ((static (instantiationInfo().filename).replace(".nim")) != "macros"):
-                (static (instantiationInfo().filename.replace(".nim")))
-            else:
-                "Quantities"
         var vInfo = ValueInfo(
             descr: description,
-            module: moduleName,
+            module: moduleName,     # `moduleName` comes from the main library module definition!
             kind: v.kind
         )
 

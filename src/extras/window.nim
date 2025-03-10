@@ -2,7 +2,7 @@
 # Windows management
 # and utilities
 #
-# (c) 2024 Yanis Zafirópulos
+# (c) 2019-2025 Yanis Zafirópulos
 # 
 # @license: see LICENSE file
 # @file: extras/windows.nim
@@ -21,9 +21,11 @@ import os
 {.passC: "-I" & parentDir(currentSourcePath()) .}
 
 when defined(linux):
-    {.compile("window/window.cc", staticExec"pkg-config --cflags gtk+-3.0 webkit2gtk-4.0").}
-    {.passC: staticExec"pkg-config --cflags gtk+-3.0 webkit2gtk-4.0".}
-    {.passL: staticExec"pkg-config --libs gtk+-3.0 webkit2gtk-4.0".}
+    const
+        webkitVersion {.strdefine.} = "empty"
+    {.compile("window/window.cc", staticExec("pkg-config --cflags gtk+-3.0 webkit2gtk-" & webkitVersion)).}
+    {.passC: staticExec("pkg-config --cflags gtk+-3.0 webkit2gtk-" & webkitVersion) .}
+    {.passL: staticExec("pkg-config --libs gtk+-3.0 webkit2gtk-"  & webkitVersion) .}
 elif defined(freebsd) or defined(netbsd) or defined(openbsd):
     {.compile("window/window.cc", staticExec"pkg-config --cflags gtk3 webkit2-gtk3").}
     {.passC: staticExec"pkg-config --cflags gtk3 webkit2-gtk3".}

@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2024 Yanis Zafirópulos
+# (c) 2019-2025 Yanis Zafirópulos
 #
 # @file: library/Collections.nim
 #=======================================================
@@ -51,7 +51,7 @@ import vm/errors as err
 # Definitions
 #=======================================
 
-proc defineLibrary*() =
+proc defineModule*(moduleName: string) =
 
     #----------------------------
     # Functions
@@ -442,6 +442,14 @@ proc defineLibrary*() =
                 AGE: 35
             ]
             ; e: [name:John, surname:Doe, age:35]
+            ..........
+            entity: "EU"
+
+            location: dictionary.with: [entity][
+                country: "Spain"
+            ]
+
+            print location\entity   ; => EU
         """:
             #=======================================================
             var dict: ValueDict
@@ -1405,6 +1413,34 @@ proc defineLibrary*() =
         # TODO(Collections\range) add documentation example
         #  labels: library, documentation, example
         example     = """
+        ; range of :integers
+
+        range 0 5           ; 0..5
+        0..5                ; 0..5
+        @0..5               ; [0 1 2 3 4 5]
+        ..........
+        ; range of :chars
+
+        'a'..'e'            ; 'a'..'e'
+        @'a'..'e'           ; [a b c d e]
+        ..........
+        ; range with steps
+
+        @range.step: 2 1 5   ; [1 3 5]
+        ..........
+        ; iterate a range
+
+        0..5 | loop 'i -> print ~"|i|. hello"
+        ; 0. hello
+        ; 1. hello
+        ; 2. hello
+        ; 3. hello
+        ; 4. hello
+        ; 5. hello
+        ..........
+        ; check bounds
+
+        in? 5 0..10     ; => true
         """:
             #=======================================================
             var limX: int
@@ -1468,10 +1504,13 @@ proc defineLibrary*() =
         example     = """
             remove "hello" "l"        ; => "heo"
             print "hello" -- "l"      ; heo
+            remove [1 2 3 4] 4        ; => [1 2 3]
             ..........
             str: "mystring"
             remove 'str "str"
             print str                 ; mying
+            ..........
+            remove.key #[name: "John" surname: "Doe"] "surname" ; => #[name: "John"]
             ..........
             print remove.once "hello" "l"
             ; helo
@@ -1480,7 +1519,11 @@ proc defineLibrary*() =
             remove.once  [1 2 [1 2] 3 4 1 2 [1 2] 3 4]  [1 2]
             ; [[1 2] 3 4 1 2 [1 2] 3 4]
             ..........
-            remove [1 2 3 4] 4        ; => [1 2 3]
+            remove.index: 2 "Ruby" "u"  ; => Rby
+            remove.index: 2 "Ruby" "a"  ; => Ruby
+            ..........
+            remove.prefix "--empty --flag" "--"         ; => "empty --flag"
+            remove.suffix "test.txt file.txt" ".txt"   ; => "test.txt file"
             ..........
             remove.instance [1 [6 2] 5 3 [6 2] 4 5 6] [6 2]  ; => [1 5 3 4 5 6]
             remove.instance.once [1 [6 2] 5 3 [6 2] 4 5 6] [6 2]  ; => [1 5 3 [6 2] 4 5 6]
@@ -1999,6 +2042,32 @@ proc defineLibrary*() =
             b: ["one" "two" "three"]
             sort 'b
             print b                       ; one three two
+            ..........
+            ; Creating a Priority Queue
+            tasks: []
+
+            ; add tasks with priorities
+            'tasks ++ #[priority: 3 task: "Low priority"]
+            'tasks ++ #[priority: 1 task: "Urgent!"]
+            'tasks ++ #[priority: 2 task: "Important"]
+
+            ; sort by priority
+            sorted: sort.by: 'priority tasks
+            loop sorted 'item ->
+                print [item\priority ":" item\task]
+            ; 1 : Urgent!
+            ; 2 : Important
+            ; 3 : Low priority
+            ..........
+            spanishWords: ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
+            sort.as: 'es spanishWords
+            ; => ["ábaco" "aberración" "abismo" "dos" "perversión" "tres" "uno" "Uno"]
+            ..........
+            sort.sensitive ["c" "C" "CoffeeScript" "nim" "Arturo" "coffeescript" "arturo" "Nim"]
+            ; => ["Arturo" "C" "CoffeeScript" "Nim" "arturo" "c" "coffeescript" "nim"]
+            ..........
+            sort.values #[ name: "John" surname: "Doe" age: 35 income: 5000]
+            ; => #[age: 35 income: 5000 surname: "Doe" name: "John" ]
         """:
             #=======================================================
             var sortOrdering = SortOrder.Ascending
@@ -2156,7 +2225,7 @@ proc defineLibrary*() =
         attrs       = {
             "words" : ({Logical}, "split string by whitespace"),
             "lines" : ({Logical}, "split string by lines"),
-            "by"    : ({String, Regex, Block}, "split using given separator"),
+            "by"    : ({String, Regex, Char, Block}, "split using given separator"),
             "at"    : ({Integer}, "split collection at given position"),
             "every" : ({Integer}, "split collection every *n* elements"),
             "path"  : ({Logical}, "split path components in string")
@@ -2166,6 +2235,12 @@ proc defineLibrary*() =
             split "hello"                 ; => [`h` `e` `l` `l` `o`]
             ..........
             split.words "hello world"     ; => ["hello" "world"]
+            split.by: "," "hello,world"   ; => ["hello" "world"]
+            split.lines "hello\nworld"    ; => ["hello" "world"]
+            split.path "/usr/bin"         ; => ["usr" "bin"]
+
+            ; windows only:
+            split.path "\\usr\\bin"       ; => ["usr" "bin"]
             ..........
             split.every: 2 "helloworld"
             ; => ["he" "ll" "ow" "or" "ld"]
@@ -2196,6 +2271,8 @@ proc defineLibrary*() =
                     elif checkAttr("by"):
                         if aBy.kind == String:
                             SetInPlaceAny(newStringBlock(InPlaced.s.split(aBy.s)))
+                        elif aBy.kind == Char:
+                            SetInPlaceAny(newStringBlock(InPlaced.s.split(aBy.c)))
                         elif aBy.kind == Regex:
                             SetInPlaceAny(newStringBlock(InPlaced.s.split(aBy.rx)))
                         else:
@@ -2257,6 +2334,8 @@ proc defineLibrary*() =
                 elif checkAttr("by"):
                     if aBy.kind == String:
                         push(newStringBlock(x.s.split(aBy.s)))
+                    elif aBy.kind == Char:
+                        push(newStringBlock(x.s.split(aBy.c)))
                     elif aBy.kind == Regex:
                         push(newStringBlock(x.s.split(aBy.rx)))
                     else:
@@ -2366,7 +2445,7 @@ proc defineLibrary*() =
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "keep first <number> of elements from given collection and return the remaining ones",
+        description = "keep first N elements from given collection and return the remaining ones",
         args        = {
             "collection": {String, Block, Range, Literal, PathLiteral},
             "number"    : {Integer}
@@ -2505,6 +2584,8 @@ proc defineLibrary*() =
             arr: [1 2 4 1 3 2]
             unique 'arr
             print arr                     ; 1 2 4 3
+            ..........
+            unique.id "user-"   ; => user-67915b7a409e222b2f9a6bed
         """:
             #=======================================================
             if (hadAttr("id")):
@@ -2540,8 +2621,7 @@ proc defineLibrary*() =
                 surname: "Doe"
             ]
 
-            values user
-            => ["John" "Doe"]
+            values user     ; => ["John" "Doe"]
         """:
             #=======================================================
             if xKind == Block:
@@ -2994,9 +3074,3 @@ proc defineLibrary*() =
                     push(newLogical(x.d.len == 0))
                 else:
                     push(VTRUE)
-
-#=======================================
-# Add Library
-#=======================================
-
-Libraries.add(defineLibrary)
