@@ -37,7 +37,7 @@ import vm/values/printable
 #  Is there any way to remove all ambiguity - by either reducing them, merging them, extending them or explaining their functionality more thoroughly?
 #  labels: library, enhancement, open discussion, documentation
 
-proc defineLibrary*() =
+proc defineModule*(moduleName: string) =
 
     #----------------------------
     # Functions
@@ -84,6 +84,25 @@ proc defineLibrary*() =
             print as.binary 123           ; 1111011
             print as.octal 123            ; 173
             print as.hex 123              ; 7b
+            ..........
+            inspect as.agnostic [hello world]
+            ; [ :block
+            ;         hello :literal
+            ;         world :literal
+            ; ]
+            ..........
+            example: "Hello, world"
+            example                 ; => Hello, world
+            as.code example         ; => "Hello, world"
+            ..........
+            as.code #[name: "John" surname: "Doe"]
+            ; => #[name: "John" surname: "Doe" ]
+            
+            as.code.pretty #[name: "John" surname: "Doe"]
+            ; => #[
+            ;         name: "John"
+            ;         surname: "Doe"
+            ; ]
         """:
             #=======================================================
             if (hadAttr("binary")):
@@ -161,8 +180,3 @@ proc defineLibrary*() =
             else:
                 push(x)
 
-#=======================================
-# Add Library
-#=======================================
-
-Libraries.add(defineLibrary)

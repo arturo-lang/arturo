@@ -61,6 +61,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat:Value = nil): Val
         case y.kind:
             of Null:
                 case tp:
+                # TODO(Converters) should support :null -> :floating
                     of Logical: return VFALSE
                     of Integer: return I0
                     of String: return newString("null")

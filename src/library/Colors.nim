@@ -30,7 +30,7 @@ import vm/lib
 # TODO(Colors) more potential built-in function candidates?
 #  labels: library, enhancement, open discussion
 
-proc defineLibrary*() =
+proc defineModule*(moduleName: string) =
 
     #----------------------------
     # Functions
@@ -207,6 +207,8 @@ proc defineLibrary*() =
             palette.triad #red      ; => [#FF0000 #00FF00 #0000FF]
             palette.tetrad #red     ; => [#FF0000 #80FF00 #00FFFF #7F00FF]
             ..........
+            palette.split #red      ; => [#FF0000 #CCFF00 #0066FF]
+            ..........
             palette.monochrome #red
             ; => [#FF0000 #D40000 #AA0000 #7F0000 #550000 #2A0000]
 
@@ -300,9 +302,3 @@ proc defineLibrary*() =
             else:
                 ensureInPlaceAny()
                 SetInPlaceAny(newColor(spinColor(InPlaced.l, y.i)))
-
-#=======================================
-# Add Library
-#=======================================
-
-Libraries.add(defineLibrary)

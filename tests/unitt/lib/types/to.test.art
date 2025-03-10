@@ -1,0 +1,1639 @@
+import {unitt}!
+import ./{to.helper.art}!
+
+for :attribute [
+
+    section :block []
+    section :char []
+    section :complex []
+    section :floating []
+    section :integer []
+    section :logical []
+    section :null []
+    section :rational []
+
+    test ":string => :attribute" [
+        assert -> equal? 
+            first [.example] 
+            to :attribute "example"
+    ]
+    
+    section :type []
+    section :version []
+
+]
+
+for :attributeLabel [
+
+    section :block []
+    section :char []
+    section :complex []
+    section :floating []
+    section :integer []
+    section :logical []
+    section :null []
+    section :rational []
+
+    test ":string => :attributeLabel" [
+        assert -> equal? 
+            first [.example:] 
+            to :attributeLabel "example"
+    ]
+    
+    section :type []
+    section :version []
+
+]
+
+for :binary [
+
+    section :block []
+    section :char [
+        'K' ->> to :binary 75
+    ]
+
+    section :complex []
+    section :floating []
+
+    section :integer [
+        ; There is no such way of properly testing it right now?
+        0 ->> to :binary 0           ; Should be 0b0000
+        1 ->> to :binary 1           ; Should be 0b0001
+        (neg 1) ->> to :binary neg 1 ; Should be 0b1111
+    ]
+    
+    section :logical []
+    section :null []
+    section :rational []
+    section :string [] ; there is no way to test it...
+    section :type []
+    section :version []
+
+]
+
+for :block [
+    
+    section :block []
+    section :char []
+    
+    section :complex [
+        (to :complex [1 5]) ->> [1.0 5.0]    
+    ]
+
+    section :floating []
+
+    test ":inline => :block" [
+        assert -> equal? 
+            [hello, world] 
+            to :block first [(hello, world)]
+    ]
+
+    section :integer []
+    section :logical []
+    section :null []
+    
+    section :range [
+        ; TODO: should this be the same as @
+        ; or shoud it return [1 10] or [1 10 2]
+        (1..10) ->> [1 2 3 4 5 6 7 8 9 10]
+        (1.. .step: 2 10) ->> [1 3 5 7 9]
+    ]
+
+    section :rational [
+        1:2 ->> [1 2]
+        0:5 ->> [0 1]
+        2:10 ->> [1 5]
+        (neg 1:5) ->> @[neg 1 5]
+    ]
+
+    section :string [
+        ; Parses it as an arturo code
+        "a 1 1.5" ->> [a 1 1.5]
+    ]
+
+    section :type []
+    section :version []
+
+]
+
+for :char [
+
+    section :block []
+    section :char []
+    section :complex []
+
+    section :floating [
+        75.0   ->> 'K'
+        50.0 ->> '2'
+    ]
+
+    section :integer [
+        75 ->> 'K'
+        1000 ->> 'Ϩ' ; supports UNICODE
+    ]
+
+    section :logical []
+    section :null []
+    section :rational []
+    
+    section :string [
+        "K" ->> 'K'
+        "Ϩ" ->> 'Ϩ'
+    ]
+
+    section :type []
+    section :version []
+
+]
+
+for :color [
+
+    section :block [
+        [255 255 255] ->> #white
+        [255 255 255 255] ->> #white
+    ]
+
+    test ":block => :color (hsv)" [
+        assert -> equal? #white to :color .hsv [0 0.0 1.0]
+        assert -> equal? #white to :color .hsv [0 0.0 1.0 1.0]
+    ]
+    
+    test ":block => :color (hsl)" [
+        assert -> equal? #white to :color .hsl [180 0.0 1.0]
+        assert -> equal? #white to :color .hsl [180 0.0 1.0 1.0]
+    ]
+
+    section :char []
+    section :complex []
+    section :floating []
+    section :integer []
+    section :logical []
+    section :null []
+    section :rational []
+
+    section :string [
+        "acidGreen" ->> #acidGreen
+        "algaeGreen" ->> #algaeGreen
+        "aliceBlue" ->> #aliceBlue
+        "alienGray" ->> #alienGray
+        "alienGreen" ->> #alienGreen
+        "aloeVeraGreen" ->> #aloeVeraGreen
+        "antiqueBronze" ->> #antiqueBronze
+        "antiqueWhite" ->> #antiqueWhite
+        "aquamarine" ->> #aquamarine
+        "aquamarineStone" ->> #aquamarineStone
+        "armyBrown" ->> #armyBrown
+        "armyGreen" ->> #armyGreen
+        "ashGray" ->> #ashGray
+        "ashWhite" ->> #ashWhite
+        "avocadoGreen" ->> #avocadoGreen
+        "aztechPurple" ->> #aztechPurple
+        "azure" ->> #azure
+        "azureBlue" ->> #azureBlue
+        "babyBlue" ->> #babyBlue
+        "babyPink" ->> #babyPink
+        "bakersBrown" ->> #bakersBrown
+        "balloonBlue" ->> #balloonBlue
+        "bananaYellow" ->> #bananaYellow
+        "bashfulPink" ->> #bashfulPink
+        "basketBallOrange" ->> #basketBallOrange
+        "battleshipGray" ->> #battleshipGray
+        "beanRed" ->> #beanRed
+        "beer" ->> #beer
+        "beetleGreen" ->> #beetleGreen
+        "beeYellow" ->> #beeYellow
+        "beige" ->> #beige
+        "bisque" ->> #bisque
+        "black" ->> #black
+        "blackBean" ->> #blackBean
+        "blackCat" ->> #blackCat
+        "blackCow" ->> #blackCow
+        "blackEel" ->> #blackEel
+        "blanchedAlmond" ->> #blanchedAlmond
+        "blonde" ->> #blonde
+        "bloodNight" ->> #bloodNight
+        "bloodRed" ->> #bloodRed
+        "blossomPink" ->> #blossomPink
+        "blue" ->> #blue
+        "blueAngel" ->> #blueAngel
+        "blueberryBlue" ->> #blueberryBlue
+        "blueDiamond" ->> #blueDiamond
+        "blueDress" ->> #blueDress
+        "blueEyes" ->> #blueEyes
+        "blueGray" ->> #blueGray
+        "blueGreen" ->> #blueGreen
+        "blueHosta" ->> #blueHosta
+        "blueIvy" ->> #blueIvy
+        "blueJay" ->> #blueJay
+        "blueKoi" ->> #blueKoi
+        "blueLagoon" ->> #blueLagoon
+        "blueLotus" ->> #blueLotus
+        "blueMossGreen" ->> #blueMossGreen
+        "blueOrchid" ->> #blueOrchid
+        "blueRibbon" ->> #blueRibbon
+        "blueTurquoise" ->> #blueTurquoise
+        "blueViolet" ->> #blueViolet
+        "blueWhale" ->> #blueWhale
+        "blueZircon" ->> #blueZircon
+        "blush" ->> #blush
+        "blushPink" ->> #blushPink
+        "blushRed" ->> #blushRed
+        "boldYellow" ->> #boldYellow
+        "brass" ->> #brass
+        "brightBlue" ->> #brightBlue
+        "brightCyan" ->> #brightCyan
+        "brightGold" ->> #brightGold
+        "brightGreen" ->> #brightGreen
+        "brightLilac" ->> #brightLilac
+        "brightMaroon" ->> #brightMaroon
+        "brightNavyBlue" ->> #brightNavyBlue
+        "brightNeonPink" ->> #brightNeonPink
+        "brightOrange" ->> #brightOrange
+        "brightPurple" ->> #brightPurple
+        "brightTurquoise" ->> #brightTurquoise
+        "bronze" ->> #bronze
+        "brown" ->> #brown
+        "brownBear" ->> #brownBear
+        "brownSand" ->> #brownSand
+        "brownSugar" ->> #brownSugar
+        "bulletShell" ->> #bulletShell
+        "burgundy" ->> #burgundy
+        "burlyWood" ->> #burlyWood
+        "burntPink" ->> #burntPink
+        "butterflyBlue" ->> #butterflyBlue
+        "cadetBlue" ->> #cadetBlue
+        "cadillacPink" ->> #cadillacPink
+        "camelBrown" ->> #camelBrown
+        "camouflageGreen" ->> #camouflageGreen
+        "canaryBlue" ->> #canaryBlue
+        "canaryYellow" ->> #canaryYellow
+        "cantaloupe" ->> #cantaloupe
+        "caramel" ->> #caramel
+        "carbonGray" ->> #carbonGray
+        "carbonRed" ->> #carbonRed
+        "cardboardBrown" ->> #cardboardBrown
+        "carnationPink" ->> #carnationPink
+        "carrotOrange" ->> #carrotOrange
+        "celeste" ->> #celeste
+        "chameleonGreen" ->> #chameleonGreen
+        "champagne" ->> #champagne
+        "charcoal" ->> #charcoal
+        "charcoalBlue" ->> #charcoalBlue
+        "chartreuse" ->> #chartreuse
+        "cherryRed" ->> #cherryRed
+        "chestnut" ->> #chestnut
+        "chestnutRed" ->> #chestnutRed
+        "chilliPepper" ->> #chilliPepper
+        "chocolate" ->> #chocolate
+        "chocolateBrown" ->> #chocolateBrown
+        "cinnamon" ->> #cinnamon
+        "clemantisViolet" ->> #clemantisViolet
+        "cloudyGray" ->> #cloudyGray
+        "cloverGreen" ->> #cloverGreen
+        "cobaltBlue" ->> #cobaltBlue
+        "coffee" ->> #coffee
+        "columbiaBlue" ->> #columbiaBlue
+        "constructionConeOrange" ->> #constructionConeOrange
+        "cookieBrown" ->> #cookieBrown
+        "copper" ->> #copper
+        "copperRed" ->> #copperRed
+        "coral" ->> #coral
+        "coralBlue" ->> #coralBlue
+        "cornflowerBlue" ->> #cornflowerBlue
+        "cornsilk" ->> #cornsilk
+        "cornYellow" ->> #cornYellow
+        "cotton" ->> #cotton
+        "cottonCandy" ->> #cottonCandy
+        "cranberry" ->> #cranberry
+        "cream" ->> #cream
+        "crimson" ->> #crimson
+        "crimsonPurple" ->> #crimsonPurple
+        "crocusPurple" ->> #crocusPurple
+        "crystalBlue" ->> #crystalBlue
+        "cyan" ->> #cyan
+        "cyanOpaque" ->> #cyanOpaque
+        "darkBisque" ->> #darkBisque
+        "darkBlonde" ->> #darkBlonde
+        "darkBlue" ->> #darkBlue
+        "darkBlueGrey" ->> #darkBlueGrey
+        "darkBrown" ->> #darkBrown
+        "darkCarnationPink" ->> #darkCarnationPink
+        "darkCoffee" ->> #darkCoffee
+        "darkCyan" ->> #darkCyan
+        "darkForestGreen" ->> #darkForestGreen
+        "darkGoldenRod" ->> #darkGoldenRod
+        "darkGray" ->> #darkGray
+        "darkGray" ->> #darkGray
+        "darkGreen" ->> #darkGreen
+        "darkHotPink" ->> #darkHotPink
+        "darkKhaki" ->> #darkKhaki
+        "darkLimeGreen" ->> #darkLimeGreen
+        "darkMagenta" ->> #darkMagenta
+        "darkMint" ->> #darkMint
+        "darkMoccasin" ->> #darkMoccasin
+        "darkOliveGreen" ->> #darkOliveGreen
+        "darkOrange" ->> #darkOrange
+        "darkOrchid" ->> #darkOrchid
+        "darkPink" ->> #darkPink
+        "darkPurple" ->> #darkPurple
+        "darkRaspberry" ->> #darkRaspberry
+        "darkRed" ->> #darkRed
+        "darkSalmon" ->> #darkSalmon
+        "darkSeaGreen" ->> #darkSeaGreen
+        "darkSienna" ->> #darkSienna
+        "darkSlate" ->> #darkSlate
+        "darkSlateBlue" ->> #darkSlateBlue
+        "darkSlateGray" ->> #darkSlateGray
+        "darkTurquoise" ->> #darkTurquoise
+        "darkViolet" ->> #darkViolet
+        "darkYellow" ->> #darkYellow
+        "daySkyBlue" ->> #daySkyBlue
+        "deepEmeraldGreen" ->> #deepEmeraldGreen
+        "deepMauve" ->> #deepMauve
+        "deepPeach" ->> #deepPeach
+        "deepPeriwinkle" ->> #deepPeriwinkle
+        "deepPink" ->> #deepPink
+        "deepPurple" ->> #deepPurple
+        "deepRed" ->> #deepRed
+        "deepRose" ->> #deepRose
+        "deepSea" ->> #deepSea
+        "deepSeaBlue" ->> #deepSeaBlue
+        "deepSeaGreen" ->> #deepSeaGreen
+        "deepSkyBlue" ->> #deepSkyBlue
+        "deepTeal" ->> #deepTeal
+        "deepTurquoise" ->> #deepTurquoise
+        "deepYellow" ->> #deepYellow
+        "deerBrown" ->> #deerBrown
+        "denimBlue" ->> #denimBlue
+        "denimDarkBlue" ->> #denimDarkBlue
+        "desertSand" ->> #desertSand
+        "dimGray" ->> #dimGray
+        "dimorphothecaMagenta" ->> #dimorphothecaMagenta
+        "dinosaurGreen" ->> #dinosaurGreen
+        "dodgerBlue" ->> #dodgerBlue
+        "dollarBillGreen" ->> #dollarBillGreen
+        "donutPink" ->> #donutPink
+        "dragonGreen" ->> #dragonGreen
+        "dullGreenYellow" ->> #dullGreenYellow
+        "dullPurple" ->> #dullPurple
+        "dullSeaGreen" ->> #dullSeaGreen
+        "earthBlue" ->> #earthBlue
+        "earthGreen" ->> #earthGreen
+        "eggplant" ->> #eggplant
+        "eggShell" ->> #eggShell
+        "electricBlue" ->> #electricBlue
+        "emerald" ->> #emerald
+        "emeraldGreen" ->> #emeraldGreen
+        "fallForestGreen" ->> #fallForestGreen
+        "fallLeafBrown" ->> #fallLeafBrown
+        "fernGreen" ->> #fernGreen
+        "ferrariRed" ->> #ferrariRed
+        "fireBrick" ->> #fireBrick
+        "fireEngineRed" ->> #fireEngineRed
+        "flamingoPink" ->> #flamingoPink
+        "floralWhite" ->> #floralWhite
+        "forestGreen" ->> #forestGreen
+        "frenchLilac" ->> #frenchLilac
+        "frogGreen" ->> #frogGreen
+        "gainsboro" ->> #gainsboro
+        "ghostWhite" ->> #ghostWhite
+        "gingerBrown" ->> #gingerBrown
+        "glacialBlueIce" ->> #glacialBlueIce
+        "gold" ->> #gold
+        "goldenBlonde" ->> #goldenBlonde
+        "goldenBrown" ->> #goldenBrown
+        "goldenRod" ->> #goldenRod
+        "goldenSilk" ->> #goldenSilk
+        "goldenYellow" ->> #goldenYellow
+        "granite" ->> #granite
+        "grape" ->> #grape
+        "grapefruit" ->> #grapefruit
+        "gray" ->> #gray
+        "grayBrown" ->> #grayBrown
+        "grayCloud" ->> #grayCloud
+        "grayDolphin" ->> #grayDolphin
+        "grayGoose" ->> #grayGoose
+        "grayishTurquoise" ->> #grayishTurquoise
+        "grayWolf" ->> #grayWolf
+        "green" ->> #green
+        "greenApple" ->> #greenApple
+        "greenishBlue" ->> #greenishBlue
+        "greenOnion" ->> #greenOnion
+        "greenPeas" ->> #greenPeas
+        "greenPepper" ->> #greenPepper
+        "greenSnake" ->> #greenSnake
+        "greenThumb" ->> #greenThumb
+        "greenYellow" ->> #greenYellow
+        "gulfBlue" ->> #gulfBlue
+        "gunmetal" ->> #gunmetal
+        "halloweenOrange" ->> #halloweenOrange
+        "harvestGold" ->> #harvestGold
+        "hazel" ->> #hazel
+        "hazelGreen" ->> #hazelGreen
+        "heavenlyBlue" ->> #heavenlyBlue
+        "heliotropePurple" ->> #heliotropePurple
+        "honeyDew" ->> #honeyDew
+        "hotDeepPink" ->> #hotDeepPink
+        "hotPink" ->> #hotPink
+        "hummingbirdGreen" ->> #hummingbirdGreen
+        "iceberg" ->> #iceberg
+        "iguanaGreen" ->> #iguanaGreen
+        "indianRed" ->> #indianRed
+        "indianSaffron" ->> #indianSaffron
+        "indigo" ->> #indigo
+        "iridium" ->> #iridium
+        "ironGray" ->> #ironGray
+        "ivory" ->> #ivory
+        "jade" ->> #jade
+        "jadeGreen" ->> #jadeGreen
+        "jasminePurple" ->> #jasminePurple
+        "jeansBlue" ->> #jeansBlue
+        "jellyfish" ->> #jellyfish
+        "jetGray" ->> #jetGray
+        "jungleGreen" ->> #jungleGreen
+        "kellyGreen" ->> #kellyGreen
+        "khaki" ->> #khaki
+        "khakiRose" ->> #khakiRose
+        "lapisBlue" ->> #lapisBlue
+        "lavaRed" ->> #lavaRed
+        "lavender" ->> #lavender
+        "lavenderBlue" ->> #lavenderBlue
+        "lavenderBlush" ->> #lavenderBlush
+        "lavenderPinocchio" ->> #lavenderPinocchio
+        "lavenderPurple" ->> #lavenderPurple
+        "lawnGreen" ->> #lawnGreen
+        "lemonChiffon" ->> #lemonChiffon
+        "lightAquamarine" ->> #lightAquamarine
+        "lightBlack" ->> #lightBlack
+        "lightBlue" ->> #lightBlue
+        "lightBrown" ->> #lightBrown
+        "lightCopper" ->> #lightCopper
+        "lightCoral" ->> #lightCoral
+        "lightCyan" ->> #lightCyan
+        "lightDayBlue" ->> #lightDayBlue
+        "lightFrenchBeige" ->> #lightFrenchBeige
+        "lightGold" ->> #lightGold
+        "lightGoldenRodYellow" ->> #lightGoldenRodYellow
+        "lightGray" ->> #lightGray
+        "lightGreen" ->> #lightGreen
+        "lightJade" ->> #lightJade
+        "lightOrange" ->> #lightOrange
+        "lightPink" ->> #lightPink
+        "lightPurple" ->> #lightPurple
+        "lightPurpleBlue" ->> #lightPurpleBlue
+        "lightRed" ->> #lightRed
+        "lightRose" ->> #lightRose
+        "lightRoseGreen" ->> #lightRoseGreen
+        "lightSalmon" ->> #lightSalmon
+        "lightSalmonRose" ->> #lightSalmonRose
+        "lightSeaGreen" ->> #lightSeaGreen
+        "lightSkyBlue" ->> #lightSkyBlue
+        "lightSlate" ->> #lightSlate
+        "lightSlateBlue" ->> #lightSlateBlue
+        "lightSlateGray" ->> #lightSlateGray
+        "lightSteelBlue" ->> #lightSteelBlue
+        "lightWhite" ->> #lightWhite
+        "lightYellow" ->> #lightYellow
+        "lilac" ->> #lilac
+        "lime" ->> #lime
+        "limeGreen" ->> #limeGreen
+        "limeMintGreen" ->> #limeMintGreen
+        "linen" ->> #linen
+        "lipstickPink" ->> #lipstickPink
+        "lovelyPurple" ->> #lovelyPurple
+        "loveRed" ->> #loveRed
+        "macaroniAndCheese" ->> #macaroniAndCheese
+        "macawBlueGreen" ->> #macawBlueGreen
+        "magenta" ->> #magenta
+        "magicMint" ->> #magicMint
+        "mahogany" ->> #mahogany
+        "mangoOrange" ->> #mangoOrange
+        "marbleBlue" ->> #marbleBlue
+        "maroon" ->> #maroon
+        "mauve" ->> #mauve
+        "mauveTaupe" ->> #mauveTaupe
+        "mediumAquaMarine" ->> #mediumAquaMarine
+        "mediumBlue" ->> #mediumBlue
+        "mediumForestGreen" ->> #mediumForestGreen
+        "mediumOrchid" ->> #mediumOrchid
+        "mediumPurple" ->> #mediumPurple
+        "mediumSeaGreen" ->> #mediumSeaGreen
+        "mediumSlateBlue" ->> #mediumSlateBlue
+        "mediumSpringGreen" ->> #mediumSpringGreen
+        "mediumTeal" ->> #mediumTeal
+        "mediumTurquoise" ->> #mediumTurquoise
+        "mediumVioletRed" ->> #mediumVioletRed
+        "metallicGold" ->> #metallicGold
+        "metallicSilver" ->> #metallicSilver
+        "middayBlue" ->> #middayBlue
+        "midnight" ->> #midnight
+        "midnightBlue" ->> #midnightBlue
+        "milkChocolate" ->> #milkChocolate
+        "milkWhite" ->> #milkWhite
+        "mint" ->> #mint
+        "mintCream" ->> #mintCream
+        "mintGreen" ->> #mintGreen
+        "mistBlue" ->> #mistBlue
+        "mistyRose" ->> #mistyRose
+        "moccasin" ->> #moccasin
+        "mocha" ->> #mocha
+        "mustardYellow" ->> #mustardYellow
+        "navajoWhite" ->> #navajoWhite
+        "navy" ->> #navy
+        "nebulaGreen" ->> #nebulaGreen
+        "neonBlue" ->> #neonBlue
+        "neonGreen" ->> #neonGreen
+        "neonHotPink" ->> #neonHotPink
+        "neonOrange" ->> #neonOrange
+        "neonPink" ->> #neonPink
+        "neonPurple" ->> #neonPurple
+        "neonRed" ->> #neonRed
+        "neonYellow" ->> #neonYellow
+        "neonYellowGreen" ->> #neonYellowGreen
+        "newMidnightBlue" ->> #newMidnightBlue
+        "night" ->> #night
+        "nightBlue" ->> #nightBlue
+        "northernLightsBlue" ->> #northernLightsBlue
+        "oakBrown" ->> #oakBrown
+        "oceanBlue" ->> #oceanBlue
+        "offWhite" ->> #offWhite
+        "oil" ->> #oil
+        "oldBurgundy" ->> #oldBurgundy
+        "oldLace" ->> #oldLace
+        "olive" ->> #olive
+        "oliveDrab" ->> #oliveDrab
+        "oliveGreen" ->> #oliveGreen
+        "orange" ->> #orange
+        "orangeGold" ->> #orangeGold
+        "orangeRed" ->> #orangeRed
+        "orangeSalmon" ->> #orangeSalmon
+        "orangeYellow" ->> #orangeYellow
+        "orchid" ->> #orchid
+        "orchidPurple" ->> #orchidPurple
+        "organicBrown" ->> #organicBrown
+        "paleBlueLily" ->> #paleBlueLily
+        "paleGoldenRod" ->> #paleGoldenRod
+        "paleGreen" ->> #paleGreen
+        "paleLilac" ->> #paleLilac
+        "paleSilver" ->> #paleSilver
+        "paleTurquoise" ->> #paleTurquoise
+        "paleVioletRed" ->> #paleVioletRed
+        "papayaOrange" ->> #papayaOrange
+        "papayaWhip" ->> #papayaWhip
+        "parchment" ->> #parchment
+        "parrotGreen" ->> #parrotGreen
+        "pastelBlue" ->> #pastelBlue
+        "pastelGreen" ->> #pastelGreen
+        "pastelLightBlue" ->> #pastelLightBlue
+        "pastelOrange" ->> #pastelOrange
+        "pastelPink" ->> #pastelPink
+        "pastelPurple" ->> #pastelPurple
+        "pastelRed" ->> #pastelRed
+        "pastelViolet" ->> #pastelViolet
+        "pastelYellow" ->> #pastelYellow
+        "peach" ->> #peach
+        "peachPuff" ->> #peachPuff
+        "peaGreen" ->> #peaGreen
+        "pearl" ->> #pearl
+        "periwinkle" ->> #periwinkle
+        "periwinklePink" ->> #periwinklePink
+        "periwinklePurple" ->> #periwinklePurple
+        "peru" ->> #peru
+        "pigPink" ->> #pigPink
+        "pineGreen" ->> #pineGreen
+        "pink" ->> #pink
+        "pinkBrown" ->> #pinkBrown
+        "pinkBubbleGum" ->> #pinkBubbleGum
+        "pinkCoral" ->> #pinkCoral
+        "pinkCupcake" ->> #pinkCupcake
+        "pinkDaisy" ->> #pinkDaisy
+        "pinkLemonade" ->> #pinkLemonade
+        "pinkPlum" ->> #pinkPlum
+        "pinkRose" ->> #pinkRose
+        "pinkViolet" ->> #pinkViolet
+        "pistachioGreen" ->> #pistachioGreen
+        "platinum" ->> #platinum
+        "platinumGray" ->> #platinumGray
+        "platinumSilver" ->> #platinumSilver
+        "plum" ->> #plum
+        "plumPie" ->> #plumPie
+        "plumPurple" ->> #plumPurple
+        "plumVelvet" ->> #plumVelvet
+        "powderBlue" ->> #powderBlue
+        "puce" ->> #puce
+        "pumpkinOrange" ->> #pumpkinOrange
+        "purple" ->> #purple
+        "purpleAmethyst" ->> #purpleAmethyst
+        "purpleDaffodil" ->> #purpleDaffodil
+        "purpleDragon" ->> #purpleDragon
+        "purpleFlower" ->> #purpleFlower
+        "purpleHaze" ->> #purpleHaze
+        "purpleIris" ->> #purpleIris
+        "purpleJam" ->> #purpleJam
+        "purpleLily" ->> #purpleLily
+        "purpleMaroon" ->> #purpleMaroon
+        "purpleMimosa" ->> #purpleMimosa
+        "purpleMonster" ->> #purpleMonster
+        "purpleNavy" ->> #purpleNavy
+        "purplePink" ->> #purplePink
+        "purplePlum" ->> #purplePlum
+        "purpleSageBush" ->> #purpleSageBush
+        "purpleThistle" ->> #purpleThistle
+        "purpleViolet" ->> #purpleViolet
+        "raspberry" ->> #raspberry
+        "raspberryPurple" ->> #raspberryPurple
+        "ratGray" ->> #ratGray
+        "rebeccaPurple" ->> #rebeccaPurple
+        "red" ->> #red
+        "redBlood" ->> #redBlood
+        "redDirt" ->> #redDirt
+        "redFox" ->> #redFox
+        "rice" ->> #rice
+        "richLilac" ->> #richLilac
+        "robinEggBlue" ->> #robinEggBlue
+        "roguePink" ->> #roguePink
+        "romanSilver" ->> #romanSilver
+        "rose" ->> #rose
+        "roseDust" ->> #roseDust
+        "roseGold" ->> #roseGold
+        "roseRed" ->> #roseRed
+        "rosyBrown" ->> #rosyBrown
+        "rosyFinch" ->> #rosyFinch
+        "rosyPink" ->> #rosyPink
+        "royalBlue" ->> #royalBlue
+        "rubberDuckyYellow" ->> #rubberDuckyYellow
+        "rubyRed" ->> #rubyRed
+        "rust" ->> #rust
+        "saddleBrown" ->> #saddleBrown
+        "saffron" ->> #saffron
+        "saffronRed" ->> #saffronRed
+        "sage" ->> #sage
+        "sageGreen" ->> #sageGreen
+        "saladGreen" ->> #saladGreen
+        "salmon" ->> #salmon
+        "sand" ->> #sand
+        "sandstone" ->> #sandstone
+        "sandyBrown" ->> #sandyBrown
+        "sangria" ->> #sangria
+        "sapphireBlue" ->> #sapphireBlue
+        "scarlet" ->> #scarlet
+        "schoolBusYellow" ->> #schoolBusYellow
+        "seaBlue" ->> #seaBlue
+        "seafoamGreen" ->> #seafoamGreen
+        "seaGreen" ->> #seaGreen
+        "seaShell" ->> #seaShell
+        "seaTurtleGreen" ->> #seaTurtleGreen
+        "seaweedGreen" ->> #seaweedGreen
+        "sedona" ->> #sedona
+        "sepia" ->> #sepia
+        "sepiaBrown" ->> #sepiaBrown
+        "shamrockGreen" ->> #shamrockGreen
+        "shockingOrange" ->> #shockingOrange
+        "sienna" ->> #sienna
+        "silkBlue" ->> #silkBlue
+        "silver" ->> #silver
+        "silverPink" ->> #silverPink
+        "skyBlue" ->> #skyBlue
+        "skyBlueDress" ->> #skyBlueDress
+        "slateBlue" ->> #slateBlue
+        "slateBlueGrey" ->> #slateBlueGrey
+        "slateGraniteGray" ->> #slateGraniteGray
+        "slateGray" ->> #slateGray
+        "slimeGreen" ->> #slimeGreen
+        "smokeyGray" ->> #smokeyGray
+        "snow" ->> #snow
+        "softIvory" ->> #softIvory
+        "sonicSilver" ->> #sonicSilver
+        "springGreen" ->> #springGreen
+        "steelBlue" ->> #steelBlue
+        "stoplightGoGreen" ->> #stoplightGoGreen
+        "sunriseOrange" ->> #sunriseOrange
+        "sunYellow" ->> #sunYellow
+        "tan" ->> #tan
+        "tanBrown" ->> #tanBrown
+        "tangerine" ->> #tangerine
+        "taupe" ->> #taupe
+        "teaGreen" ->> #teaGreen
+        "teal" ->> #teal
+        "thistle" ->> #thistle
+        "tiffanyBlue" ->> #tiffanyBlue
+        "tigerOrange" ->> #tigerOrange
+        "tomato" ->> #tomato
+        "tomatoSauceRed" ->> #tomatoSauceRed
+        "tronBlue" ->> #tronBlue
+        "tulipPink" ->> #tulipPink
+        "turquoise" ->> #turquoise
+        "tyrianPurple" ->> #tyrianPurple
+        "unbleachedSilk" ->> #unbleachedSilk
+        "valentineRed" ->> #valentineRed
+        "vampireGray" ->> #vampireGray
+        "vanilla" ->> #vanilla
+        "velvetMaroon" ->> #velvetMaroon
+        "venomGreen" ->> #venomGreen
+        "violaPurple" ->> #violaPurple
+        "violet" ->> #violet
+        "violetRed" ->> #violetRed
+        "water" ->> #water
+        "watermelonPink" ->> #watermelonPink
+        "westernCharcoal" ->> #westernCharcoal
+        "wheat" ->> #wheat
+        "white" ->> #white
+        "whiteChocolate" ->> #whiteChocolate
+        "whiteSmoke" ->> #whiteSmoke
+        "windowsBlue" ->> #windowsBlue
+        "wineRed" ->> #wineRed
+        "wisteriaPurple" ->> #wisteriaPurple
+        "wood" ->> #wood
+        "yellow" ->> #yellow
+        "yellowGreen" ->> #yellowGreen
+        "yellowGreenGrosbeak" ->> #yellowGreenGrosbeak
+        "yellowLawnGreen" ->> #yellowLawnGreen
+        "zombieGreen" ->> #zombieGreen    
+    ]
+    
+    section :type []
+    section :version []
+
+]
+
+for :complex [
+
+    section :block [
+        [1 5] ->> (to :complex [1.0 5.0])
+    ]
+
+    section :char []
+    section :complex []
+    section :floating []
+    section :integer []
+    section :logical []
+    section :null []
+    section :rational []
+    section :string []
+    section :type []
+    section :version []
+
+]
+
+for :date [
+
+    section :block []
+    section :char []
+    section :complex []
+    section :floating []
+
+    section :integer [
+        0 ->> to :date "1969-12-31T21:00:00-03:00"
+    ]
+
+    section :logical []
+    section :null []
+    section :rational []
+
+    section :string [
+        "1969-12-31T21:00:00-03:00" ->> to :date "1969-12-31T21:00:00-03:00"
+    ]
+
+    ; TODO(Types\to): test .format
+
+    section :type []
+    section :version []
+
+]
+
+for :dictionary [
+
+    section :block [
+        ["user" "John"] ->> #[user: "John"]
+    ]
+
+    section :char []
+    section :complex []
+    section :floating []
+    section :integer []
+    section :logical []
+    section :null []
+    section :rational []
+    section :string []
+    section :type []
+    section :version []
+
+]
+
+for :errorKind [
+
+    section :block []
+    section :char []
+    section :complex []
+    section :floating []
+    section :integer []
+    section :logical []
+    section :null []
+    section :rational []
+
+    test ":string => :errorKind" [
+        assert -> equal? "example" get (to :errorKind "example") 'label
+    ]
+    
+    section :type []
+    section :version []
+
+]
+
+for :floating [
+
+    section :block []
+    section :char []
+    section :complex []
+
+    section :floating [
+        1.0 ->> 1.0
+        0.0 ->> 0.0
+        (neg 1.0) ->> (neg 1.0)
+    ]
+
+    section :integer [
+        1 ->> 1.0
+        0 ->> 0.0
+        (neg 1) ->> (neg 1.0)
+    ]
+
+    section :logical [
+        true  ->> 1.0
+        false ->> 0.0
+        maybe ->> null
+    ]
+
+    section :null []
+
+    section :quantity [
+        1`m ->> 1.0
+        0`m ->> 0.0
+        (neg 1`m) ->> (neg 1.0)
+    ]
+
+    section :rational [
+        1:1 ->> 1.0
+        0:1 ->> 0.0
+        (neg 1:1) ->> neg 1.0
+    ]
+
+    section :string [
+        "1.0" ->> 1.0
+        "0.0" ->> 0.0
+        "-1.0" ->> neg 1.0
+    ]
+
+    section :type []
+    section :version []
+]
+
+for :inline [
+
+    test ":block => :inline" [
+        assert -> equal? first [(1 2 3)] to :inline [1 2 3]
+    ]
+
+    section :char []
+    section :complex []
+    section :floating []
+    section :integer []
+    section :logical []
+    section :null []
+    section :rational []
+    section :string []
+    section :type []
+    section :version []
+
+]
+
+for :integer [
+
+    section :block []
+    section :char [
+        'K' ->> 75
+        'Ϩ' ->> 1000 ; supports UNICODE
+    ]
+
+    section :complex []
+
+    section :floating [
+        1.0 ->> 1
+        0.0 ->> 0
+        (neg 1.0) ->> (neg 1)
+
+        1.1 ->> 1
+        1.5 ->> 1
+        1.9 ->> 1
+    ]
+
+    section :integer [
+        1 ->> 1
+        0 ->> 0
+        (neg 1) ->> (neg 1)
+    ]
+
+    section :logical [
+        true  ->> 1
+        false ->> 0
+        maybe ->> null
+    ]
+
+    section :null [
+        null ->> 0
+    ]
+
+    section :rational [
+        1:1 ->> 1
+        0:1 ->> 0
+        (neg 1:1) ->> neg 1
+    ]
+
+    section :string [
+        "1" ->> 1
+        "0" ->> 0
+        "-1" ->> neg 1
+    ]
+
+    section :type []
+    section :version []
+
+]
+
+for :label [
+
+    section :block []
+    section :char []
+    section :complex []
+    section :floating []
+    section :integer []
+    section :logical []
+    section :null []
+    section :rational []
+
+    test ":string => :label" [
+        assert -> equal? 
+            first [example:] 
+            to :label "example"
+    ]
+    
+    section :type []
+    section :version []
+
+]
+
+for :literal [
+
+    test ":attribute(Label) => :literal" [
+        assert -> equal? 'example to :literal first [.example]
+        assert -> equal? 'example to :literal first [.example:]
+    ]
+
+    section :block []
+    section :char []
+    section :complex []
+
+    section :error [
+        (try [throw "example"]) ->> to :literal "Runtime Error"
+        (get try [throw "example"] 'message) ->> 'example
+    ]
+    
+    section :errorKind [
+        (to :errorKind "OutOfBounds") ->> 'OutOfBounds
+    ]    
+
+    section :floating []
+    section :integer []
+
+    section :literal [
+        'example ->> 'example
+    ]
+
+    section :logical []
+    section :null []
+    section :rational []
+
+    section :string [
+        "example" ->> 'example
+    ]
+    
+    section :type []
+    section :version []
+
+    test ":word => :literal" [
+        assert -> equal? 'example to :literal first [example]
+    ]
+
+]
+
+
+for :logical [
+
+    section :block []
+    section :char []
+    section :complex []
+
+    section :floating [
+        0.0 ->> false
+        1.0 ->> true
+        (neg 1.0) ->> true
+    ]
+
+    section :integer [
+        0 ->> false
+        1 ->> true
+        (neg 1) ->> true
+        (random 1 1000) ->> true
+        (random neg 1000 neg 1) ->> true
+    ]
+
+    section :logical [
+        true  ->> true
+        false ->> false
+        maybe ->> maybe
+    ]
+
+    section :null [
+        null ->> false
+    ]
+
+    section :rational []
+
+    section :string [
+        "true" ->> true
+        "false" ->> false
+        "maybe" ->> maybe
+    ]
+
+    section :type []
+    section :version []
+]
+
+for :quantity [
+
+    section :block [
+        [1 `m ] ->> 1`m
+        [1  m ] ->> 1`m
+        [1 'm ] ->> 1`m
+        [1 "m"] ->> 1`m
+        
+        [1.0 `m ] ->> 1`m
+        [1.0  m ] ->> 1`m
+        [1.0 'm ] ->> 1`m
+        [1.0 "m"] ->> 1`m
+        
+        [1:1 `m ] ->> 1`m
+        [1:1  m ] ->> 1`m
+        [1:1 'm ] ->> 1`m
+        [1:1 "m"] ->> 1`m
+    ]
+
+    section :char []
+    section :complex []
+
+    section :floating [
+        0.0 ->> 0`
+        1.0 ->> 1`
+        (neg 1.0) ->> neg 1`
+        1.5 ->> 1.5`
+    ]
+
+    section :integer [
+        0 ->> 0`
+        1 ->> 1`
+        (neg 1) ->> neg 1`
+    ]
+
+    section :logical []
+    section :null []
+
+    section :rational [
+        1:1 ->> 1`
+        0:1 ->> 0`
+        (neg 1:1) ->> neg 1`
+    ]
+
+    section :string []
+    section :type []
+    section :version []
+
+]
+
+for :rational [
+
+    section :block [
+        [1 1] ->> 1:1
+        [1 2] ->> 1:2
+        [10 5] ->> 2:1
+        (@[neg 1 1]) ->> (neg 1:1)
+    ]
+    section :char []
+    section :complex []
+
+    section :floating [
+        1.0 ->> 1:1
+        0.0 ->> 0:1
+        (neg 1.0) ->> neg 1:1
+    ]
+
+    section :integer [
+        1 ->> 1:1
+        0 ->> 0:1
+        (neg 1) ->> neg 1:1
+    ]
+
+    section :logical []
+    section :null []
+
+    section :quantity [
+        1`m ->> 1:1
+        0`m ->> 0:1
+        (neg 1`m) ->> neg 1:1
+    ]
+
+    section :rational []
+    section :string []
+    section :type []
+    section :version []
+
+]
+
+for :regex [
+
+    section :block []
+    section :char []
+    section :complex []
+    section :floating []
+    section :integer []
+    section :logical []
+    section :null []
+    section :rational []
+
+    section :string [
+        "(.*)" ->> {/(.*)/}
+    ]
+    
+    section :type []
+    section :version []
+
+]
+
+
+for :string [
+
+    test ":attribute(Label) => :string" [
+        assert -> equal? "example" to :string first [.example]
+        assert -> equal? "example" to :string first [.example:]
+    ]
+
+    section :block [
+        [arturo language 12 3.0] ->> "[arturo language 12 3.0]"
+    ]
+
+    section :char [
+        'K' ->> "K"
+        'Ϩ' ->> "Ϩ" ; supports UNICODE
+    ]
+
+    section :color [
+        #white ->> "#FFFFFF"
+        (to :color [15 45 87]) ->> "#0F2D57"
+    ]
+
+    section :complex [
+        (to :complex [1 5]) ->> "1.0+5.0i"
+    ]
+
+    section :dictionary [
+        (#[name: "John"]) ->> "[name:John]"
+    ]
+
+    section :error [
+        (try [throw "example"]) ->> "Runtime Error"
+        (get try [throw "example"] 'message) ->> "example"
+    ]
+
+    section :errorKind [
+        (to :errorKind "OutOfBounds") ->> "OutOfBounds"
+    ]   
+
+    section :floating [
+        1.0 ->> "1.0"
+        0.0 ->> "0.0"
+        (neg 1.0) ->> "-1.0"
+    ]
+
+    section :integer [
+        1 ->> "1"
+        0 ->> "0"
+        (neg 1) ->> "-1"
+    ]
+
+    section :literal [
+        'example ->> "example"
+    ]
+
+    section :logical [
+        true  ->> "true"
+        false ->> "false"
+        maybe ->> "maybe"
+    ]
+
+    section :null [
+        null ->> "null"
+    ]
+
+    section :quantity [
+        1`m ->> "1 m"
+        1`ohm ->> "1 Ω"
+        1`cm2 ->> "1 cm²"
+        1`kg.m ->> "1 kg·m"
+        1`kg/l ->> "1 kg/L"
+    ]
+
+    section :rational [
+        1:1 ->> "1/1"
+        0:2 ->> "0/1"
+        2:10 ->> "1/5"
+        (neg 2:10) ->> "-1/5"
+    ]
+
+    section :regex [
+        {/(.*)/} ->> "(.*)"
+    ]
+
+    section :string []
+
+    test ":string => :symbol" [
+        ; Unable to parse here?
+        ;
+        ; assert -> equal? "=>" to :string first [=>]
+        ; assert -> equal? "->" to :string first [->]
+        ; assert -> equal? "!" to :string first [!]
+        ; assert -> equal? "!!" to :string first [!!]
+        ; assert -> equal? "\\" to :string first [\\]
+        ; assert -> equal? "\\\\" to :string first [\\\\]
+        ; assert -> equal? "|" to :string first [|]
+        ; assert -> equal? "|-" to :string first [|-]
+        ; assert -> equal? "|=" to :string first [|=]
+        ; assert -> equal? ":" to :string first [:]
+        ; assert -> equal? "::" to :string first [::]
+        ; assert -> equal? "||" to :string first [||]
+        
+        ; Error: Found extraneous block symbol: closing square bracket (`]`) ???
+        ;
+        ; assert -> equal? "<|" to :string first [<|] 
+        ; assert -> equal? "|>" to :string first [|>] 
+        ; assert -> equal? "<|>" to :string first [<|>] 
+
+        assert -> equal? "<=" to :string first [<=]
+        assert -> equal? "<=>" to :string first [<=>]
+        assert -> equal? "<<=" to :string first [<<=]
+        assert -> equal? "=>>" to :string first [=>>]
+        assert -> equal? "<<=>>" to :string first [<<=>>]
+        assert -> equal? "<-" to :string first [<-]
+        assert -> equal? "<->" to :string first [<->]
+        assert -> equal? "<<-" to :string first [<<-]
+        assert -> equal? "->>" to :string first [->>]
+        assert -> equal? "<<->>" to :string first [<<->>]
+        assert -> equal? "-<" to :string first [-<]
+        assert -> equal? ">-" to :string first [>-]
+        assert -> equal? ">-<" to :string first [>-<]
+        assert -> equal? "-<<" to :string first [-<<]
+        assert -> equal? ">>-" to :string first [>>-]
+        assert -> equal? ">>-<<" to :string first [>>-<<]
+        assert -> equal? "<<" to :string first [<<]
+        assert -> equal? ">>" to :string first [>>]
+        assert -> equal? "<<<" to :string first [<<<]
+        assert -> equal? ">>>" to :string first [>>>]
+        assert -> equal? "<--" to :string first [<--]
+        assert -> equal? "-->" to :string first [-->]
+        assert -> equal? "<-->" to :string first [<-->]
+        assert -> equal? "<==" to :string first [<==]
+        assert -> equal? "==>" to :string first [==>]
+        assert -> equal? "<==>" to :string first [<==>]
+        assert -> equal? "<~" to :string first [<~]
+        assert -> equal? "~>" to :string first [~>]
+        assert -> equal? "<~>" to :string first [<~>]
+        assert -> equal? "=<" to :string first [=<]
+        assert -> equal? ">=" to :string first [>=]
+        assert -> equal? "<>" to :string first [<>]
+        assert -> equal? "<:" to :string first [<:]
+        assert -> equal? "-:" to :string first [-:]
+        assert -> equal? ">:" to :string first [>:]
+        assert -> equal? "~" to :string first [~]
+        assert -> equal? "?" to :string first [?]
+        assert -> equal? "??" to :string first [??]
+        assert -> equal? "@" to :string first [@]
+        assert -> equal? "#" to :string first [#]
+        assert -> equal? "##" to :string first [##]
+        assert -> equal? "###" to :string first [###]
+        assert -> equal? "####" to :string first [####]
+        assert -> equal? "#####" to :string first [#####]
+        assert -> equal? "######" to :string first [######]
+        assert -> equal? "$" to :string first [$]
+        assert -> equal? "%" to :string first [%]
+        assert -> equal? "^" to :string first [^]
+        assert -> equal? "&" to :string first [&]
+        assert -> equal? "*" to :string first [*]
+        assert -> equal? "**" to :string first [**]
+        assert -> equal? "-" to :string first [-]
+        assert -> equal? "--" to :string first [--]
+        assert -> equal? "=" to :string first [=]
+        assert -> equal? "==" to :string first [==]
+        assert -> equal? "=~" to :string first [=~]
+        assert -> equal? "+" to :string first [+]
+        assert -> equal? "++" to :string first [++]
+        assert -> equal? "<" to :string first [<]
+        assert -> equal? ">" to :string first [>]
+        assert -> equal? "/" to :string first [/]
+        assert -> equal? "/%" to :string first [/%]
+        assert -> equal? "//" to :string first [//]
+        assert -> equal? ".." to :string first [..]
+        assert -> equal? "..." to :string first [...]
+        assert -> equal? "./" to :string first [./]
+        assert -> equal? ":=" to :string first [:=]
+        assert -> equal? "∅" to :string first [∅]
+        assert -> equal? "∞" to :string first [∞]
+        assert -> equal? "∑" to :string first [∑]
+        assert -> equal? "∏" to :string first [∏]
+        assert -> equal? "∩" to :string first [∩]
+        assert -> equal? "∪" to :string first [∪]
+        assert -> equal? "⊂" to :string first [⊂]
+        assert -> equal? "⊃" to :string first [⊃]
+        assert -> equal? "⊆" to :string first [⊆]
+        assert -> equal? "⊇" to :string first [⊇]
+        assert -> equal? "∈" to :string first [∈]
+        assert -> equal? "∉" to :string first [∉]
+        assert -> equal? "∧" to :string first [∧]
+        assert -> equal? "∨" to :string first [∨]
+        assert -> equal? "⊻" to :string first [⊻]
+        assert -> equal? "⊼" to :string first [⊼]
+        assert -> equal? "¬" to :string first [¬]
+    ]
+
+    section :type [
+        :integer ->> "integer"
+        :floating ->> "floating"
+        :logical ->> "logical"
+        :string ->> "string"
+        :complex ->> "complex"
+        :rational ->> "rational"
+        :version ->> "version"
+        :type ->> "type"
+    ]
+
+    section :unit [
+        `m ->> "m"
+        `ohm ->> "Ω"
+        `cm2 ->> "cm²"
+        `kg.m ->> "kg·m"
+        `kg/l ->> "kg/L"
+    ]
+
+    section :version [
+        1.2.3 ->> "1.2.3"
+        1.2.3-pre ->> "1.2.3-pre"
+    ]
+
+    test ":word => :string" [
+        assert -> equal? "example" to :string first [example]
+    ]
+
+]
+
+for :symbol [
+
+    section :block []
+    section :char []
+    section :complex []
+    section :floating []
+    section :integer []
+    section :logical []
+    section :null []
+    section :rational []
+
+    test ":string => :symbol" [
+        ; Unable to parse here?
+        ;
+        ; assert -> equal? first [=>] to :symbol "=>"
+        ; assert -> equal? first [->] to :symbol "->"
+        ; assert -> equal? first [!] to :symbol "!"
+        ; assert -> equal? first [!!] to :symbol "!!"
+        ; assert -> equal? first [\\] to :symbol "\\"
+        ; assert -> equal? first [\\\\] to :symbol "\\\\"
+        ; assert -> equal? first [|] to :symbol "|"
+        ; assert -> equal? first [|-] to :symbol "|-"
+        ; assert -> equal? first [|=] to :symbol "|="
+        ; assert -> equal? first [:] to :symbol ":"
+        ; assert -> equal? first [::] to :symbol "::"
+        ; assert -> equal? first [||] to :symbol "||"
+        
+        ; Error: Found extraneous block symbol: closing square bracket (`]`) ???
+        ;
+        ; assert -> equal? first [<|] to :symbol "<|"
+        ; assert -> equal? first [|>] to :symbol "|>"
+        ; assert -> equal? first [<|>] to :symbol "<|>"
+
+        assert -> equal? first [<=] to :symbol "<="
+        assert -> equal? first [<=>] to :symbol "<=>"
+        assert -> equal? first [<<=] to :symbol "<<="
+        assert -> equal? first [=>>] to :symbol "=>>"
+        assert -> equal? first [<<=>>] to :symbol "<<=>>"
+        assert -> equal? first [<-] to :symbol "<-"
+        assert -> equal? first [<->] to :symbol "<->"
+        assert -> equal? first [<<-] to :symbol "<<-"
+        assert -> equal? first [->>] to :symbol "->>"
+        assert -> equal? first [<<->>] to :symbol "<<->>"
+        assert -> equal? first [-<] to :symbol "-<"
+        assert -> equal? first [>-] to :symbol ">-"
+        assert -> equal? first [>-<] to :symbol ">-<"
+        assert -> equal? first [-<<] to :symbol "-<<"
+        assert -> equal? first [>>-] to :symbol ">>-"
+        assert -> equal? first [>>-<<] to :symbol ">>-<<"
+        assert -> equal? first [<<] to :symbol "<<"
+        assert -> equal? first [>>] to :symbol ">>"
+        assert -> equal? first [<<<] to :symbol "<<<"
+        assert -> equal? first [>>>] to :symbol ">>>"
+        assert -> equal? first [<--] to :symbol "<--"
+        assert -> equal? first [-->] to :symbol "-->"
+        assert -> equal? first [<-->] to :symbol "<-->"
+        assert -> equal? first [<==] to :symbol "<=="
+        assert -> equal? first [==>] to :symbol "==>"
+        assert -> equal? first [<==>] to :symbol "<==>"
+        assert -> equal? first [<~] to :symbol "<~"
+        assert -> equal? first [~>] to :symbol "~>"
+        assert -> equal? first [<~>] to :symbol "<~>"
+        assert -> equal? first [=<] to :symbol "=<"
+        assert -> equal? first [>=] to :symbol ">="
+        assert -> equal? first [<>] to :symbol "<>"
+        assert -> equal? first [<:] to :symbol "<:"
+        assert -> equal? first [-:] to :symbol "-:"
+        assert -> equal? first [>:] to :symbol ">:"
+        assert -> equal? first [~] to :symbol "~"
+        assert -> equal? first [?] to :symbol "?"
+        assert -> equal? first [??] to :symbol "??"
+        assert -> equal? first [@] to :symbol "@"
+        assert -> equal? first [#] to :symbol "#"
+        assert -> equal? first [##] to :symbol "##"
+        assert -> equal? first [###] to :symbol "###"
+        assert -> equal? first [####] to :symbol "####"
+        assert -> equal? first [#####] to :symbol "#####"
+        assert -> equal? first [######] to :symbol "######"
+        assert -> equal? first [$] to :symbol "$"
+        assert -> equal? first [%] to :symbol "%"
+        assert -> equal? first [^] to :symbol "^"
+        assert -> equal? first [&] to :symbol "&"
+        assert -> equal? first [*] to :symbol "*"
+        assert -> equal? first [**] to :symbol "**"
+        assert -> equal? first [-] to :symbol "-"
+        assert -> equal? first [--] to :symbol "--"
+        assert -> equal? first [=] to :symbol "="
+        assert -> equal? first [==] to :symbol "=="
+        assert -> equal? first [=~] to :symbol "=~"
+        assert -> equal? first [+] to :symbol "+"
+        assert -> equal? first [++] to :symbol "++"
+        assert -> equal? first [<] to :symbol "<"
+        assert -> equal? first [>] to :symbol ">"
+        assert -> equal? first [/] to :symbol "/"
+        assert -> equal? first [/%] to :symbol "/%"
+        assert -> equal? first [//] to :symbol "//"
+        assert -> equal? first [..] to :symbol ".."
+        assert -> equal? first [...] to :symbol "..."
+        assert -> equal? first [./] to :symbol "./"
+        assert -> equal? first [:=] to :symbol ":="
+        assert -> equal? first [∅] to :symbol "∅"
+        assert -> equal? first [∞] to :symbol "∞"
+        assert -> equal? first [∑] to :symbol "∑"
+        assert -> equal? first [∏] to :symbol "∏"
+        assert -> equal? first [∩] to :symbol "∩"
+        assert -> equal? first [∪] to :symbol "∪"
+        assert -> equal? first [⊂] to :symbol "⊂"
+        assert -> equal? first [⊃] to :symbol "⊃"
+        assert -> equal? first [⊆] to :symbol "⊆"
+        assert -> equal? first [⊇] to :symbol "⊇"
+        assert -> equal? first [∈] to :symbol "∈"
+        assert -> equal? first [∉] to :symbol "∉"
+        assert -> equal? first [∧] to :symbol "∧"
+        assert -> equal? first [∨] to :symbol "∨"
+        assert -> equal? first [⊻] to :symbol "⊻"
+        assert -> equal? first [⊼] to :symbol "⊼"
+        assert -> equal? first [¬] to :symbol "¬"
+    ]
+    
+    section :type []
+    section :version []
+
+]
+
+for :type [
+
+    section :block []
+    section :char []
+    section :complex []
+    section :floating []
+    section :integer []
+    section :logical []
+    section :null []
+    section :rational []
+
+    section :string [
+        "integer" ->> :integer
+        "floating" ->> :floating
+        "logical" ->> :logical
+        "string" ->> :string
+        "complex" ->> :complex
+        "rational" ->> :rational
+        "version" ->> :version
+        "type" ->> :type
+    ]
+
+    section :type []
+    section :version []
+
+]
+
+for :unit [
+
+    section :block []
+    section :char []
+    section :complex []
+    section :floating []
+    section :integer []
+    section :logical []
+    section :null []
+
+    section :quantity [
+        1`m ->> `m
+        1`ohm ->> `ohm
+        1`cm2 ->> `cm2
+        1`kg.m ->> `kg.m
+        1`kg/l ->> `kg/l
+    ]
+    
+    section :rational []
+    section :string []
+    section :type []
+    section :version []
+
+]
+
+for :version [
+
+    section :block []
+    section :char []
+    section :complex []
+    section :floating []
+    section :integer []
+    section :logical []
+    section :null []
+    section :rational []
+
+    section :string [
+        "1.2.3" ->> 1.2.3
+        "1.2.3-pre" ->> 1.2.3-pre
+    ]
+
+    section :type []
+    section :version []
+
+]
+
+for :word [
+
+    ; TODO: verify this behavior
+    test ":attribute(Label) => :word" [
+        ; assert -> equal? first [example] to :word first [.example]
+        ; assert -> equal? first [example] to :word first [.example:]
+    ]
+
+    section :block []
+    section :char []
+    section :complex []
+    section :floating []
+    section :integer []
+
+    test ":literal => :word" [
+        assert -> equal? 
+            first [example]
+            to :word 'example
+    ]
+
+    section :logical []
+    section :null []
+    section :rational []
+    
+    test ":string => :word" [
+        assert -> equal? 
+            first [example] 
+            to :word "example"
+    ]
+    
+    section :type []
+    section :version []
+
+    test ":word => :word" [
+        assert -> equal? first [example] to :word first [example]
+    ]
+
+]

@@ -1,0 +1,105 @@
+import {unitt}!
+import relative {../../commons/functions}!
+
+suite "array.of: :integer" [
+
+    test "array.of: n returns a n-size :block" [
+        expected: ['done 'done 'done]
+        actual: array.of: 3 'done
+        assert -> equal? expected actual
+    ]
+
+    test "array.of: n returns a n-size :block even when the source is a :block" [
+        expected: [['done] ['done] ['done]]
+        actual: array.of: 3 ['done]
+        assert -> equal? expected actual
+    ]
+]
+
+
+suite "array.of: :block - n-dimensional arrays" [
+
+    test "array.of: [3 4] returns a 3x4 matrix :block" [
+        expected: [
+            [0 0 0 0]
+            [0 0 0 0]
+            [0 0 0 0]
+        ]
+
+        actual: array.of: [3, 4] 0
+        assert -> equal? expected actual
+    ]
+
+    test "array.of: [3 4] returns a 3x4 matrix :block preserving the :block source" [
+        expected: [
+            [[0] [0] [0] [0]]
+            [[0] [0] [0] [0]]
+            [[0] [0] [0] [0]]
+        ]
+
+        actual: array.of: [3, 4] [0]
+        assert -> equal? expected actual
+    ]
+
+    test "array.of: [3 3 3] return a 3-dimensional array" [
+        expected: [
+            [
+                [:point :point :point] 
+                [:point :point :point] 
+                [:point :point :point]
+            ] 
+            [
+                [:point :point :point] 
+                [:point :point :point] 
+                [:point :point :point]
+            ] 
+            [
+                [:point :point :point] 
+                [:point :point :point] 
+                [:point :point :point]
+            ]
+        ]
+
+        actual: array.of: [3, 3, 3] :point
+        assert -> equal? expected actual
+    ]
+]
+
+suite "array <source>" [
+
+    test "array :range should return a :block from iteration" [
+        assert -> equal? [1 2 3] @1..3
+        assert -> equal? [1 2 3] @1..3.2
+        assert -> equal? ['a' 'b' 'c'] @'a'..'c'
+    ]
+
+    test "array :range should respect .step" [
+        assert -> equal? [1 3 5] @range.step: 2 1 5
+        assert -> equal? ['a' 'c'] @range.step: 2 'a' 'c'
+    ]
+
+    test "array :block should evaluate it" [
+        data: [
+            append "Art" "uro"
+            join.with: " " ["is" "awesome!"]
+        ]
+
+        expected: ["Arturo" "is awesome!"]
+        actual: @data
+
+        assert -> notEqual? expected data
+        assert -> equal? expected actual
+    ]
+
+    test "array :any should wrap and evaluate it into a :block" [
+        data: [pi]
+        expected: [3.141592653589793]
+        actual: @data
+
+        assert -> notEqual? expected data
+        assert -> equal? expected actual
+    ]
+
+]
+
+; todo(Collections\array) add file reading tests from #1786

@@ -3317,7 +3317,7 @@ do [
     passed
 
     ensure -> (~"|1`statV --> `V |") =   "299.792458 V"
-    ensure -> (~"|1`abV   --> `V |") =   "1e-08 V"
+    ensure -> (~"|1`abV   --> `V |") =   "1e-8 V"
     passed
 
 
@@ -3409,7 +3409,7 @@ do [
     passed
 
     ensure -> (~"|1`statOhm --> `Ohm |") =   "898755178740 Ω"
-    ensure -> (~"|1`abOhm   --> `Ohm |") =   "1e-09 Ω"
+    ensure -> (~"|1`abOhm   --> `Ohm |") =   "1e-9 Ω"
     passed
 
 
@@ -3844,7 +3844,7 @@ do [
     ensure -> 1`H   =   1`V.s/A
     passed
 
-    ensure -> (~"|1`abH   --> `H |") =   "1e-09 H"
+    ensure -> (~"|1`abH   --> `H |") =   "1e-9 H"
     passed
 
 
@@ -3950,7 +3950,7 @@ do [
     ensure -> 1`Wb   =   1`V.s
     passed
 
-    ensure -> (~"|1`Mx   --> `Wb |") =   "1e-08 Wb"
+    ensure -> (~"|1`Mx   --> `Wb |") =   "1e-8 Wb"
     passed
 
 

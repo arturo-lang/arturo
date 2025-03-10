@@ -46,7 +46,7 @@ when not defined(WEB):
 # Definitions
 #=======================================
 
-proc defineLibrary*() =
+proc defineModule*(moduleName: string) =
 
     #----------------------------
     # Functions
@@ -199,6 +199,41 @@ proc defineLibrary*() =
             
             split.lines execute "ls"
             ; => ["tests" "var" "data.txt"]
+            ......................
+            execute.args: ["-s"] "ls"
+            ; => total 15
+            ; 0 aoc
+            ; 0 architectures
+            ; 4 bundle
+            ; 0 cave
+            ; 4 cmd.c
+            ; 1 expr.art
+            ; 0 galilee
+            ; 4 generic_klist.c
+            ; 1 jquery.js
+            ; 0 shell
+            ; 1 test.art
+            ......................
+            execute.code "ls"
+            ; => [output:aoc
+            ; architectures
+            ; bundle
+            ; cave
+            ; cmd.c
+            ; expr.art
+            ; galilee
+            ; generic_klist.c
+            ; jquery.js
+            ; shell
+            ; test.art
+            ; code:0]
+            ......................
+            ; This prints the output directly
+            ; And only returns the exit code.
+            execute.code.directly "ls"
+            aoc            bundle  cmd.c     galilee          jquery.js  test.art
+            architectures  cave    expr.art  generic_klist.c  shell
+            => 0
             """:
                 #=======================================================
                 when defined(SAFE): Error_OperationNotPermitted("execute")
@@ -340,7 +375,7 @@ proc defineLibrary*() =
 
             print "done. let's continue..."
             ..........
-            print "waiting for 2 seconds
+            print "waiting for 2 seconds"
 
             pause 2:s       ; let's sleep for a while
 
@@ -571,8 +606,3 @@ proc defineLibrary*() =
                 #=======================================================
                 push newLogical(isAdmin())
 
-#=======================================
-# Add Library
-#=======================================
-
-Libraries.add(defineLibrary)
