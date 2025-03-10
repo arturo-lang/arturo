@@ -61,7 +61,7 @@ template replaceStrWith(str: var string, src: Value, dst: Value): untyped =
 # Definitions
 #=======================================
 
-proc defineLibrary*() =
+proc defineModule*(moduleName: string) =
 
     #----------------------------
     # Functions
@@ -366,9 +366,9 @@ proc defineLibrary*() =
             str: "hello World, 你好!"
             lower 'str                           ; str: "hello world, 你好!"
             ..........
-            ch: `A`
+            ch: 'A'
             lower ch    
-            ; => `a`  
+            ; => 'a'  
         """:
             #=======================================================
             if xKind==String: push(newString(x.s.toLower()))
@@ -904,9 +904,9 @@ proc defineLibrary*() =
             str: "hello World, 你好!"
             upper 'str                           ; str: "HELLO WORLD, 你好!"
             ..........
-            ch: `a`
+            ch: 'a'
             upper ch    
-            ; => `A`                     
+            ; => 'A'                     
         """:
             #=======================================================
             if xKind==String: push(newString(x.s.toUpper()))
@@ -969,14 +969,14 @@ proc defineLibrary*() =
         rule        = PrefixPrecedence,
         description = "check if given character/string is in ASCII",
         args        = {
-            "string": {Char,String}
+            "string": {String,Char}
         },
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
-            ascii? `d`              ; true
+            ascii? 'd'              ; true
             ..........
-            ascii? `😀`             ; false
+            ascii? '😀'             ; false
 
             ascii? "hello world"    ; true
             ascii? "Hællø wœrld"    ; false
@@ -1011,6 +1011,9 @@ proc defineLibrary*() =
             lower? "X"               ; => false
             lower? "Hello World"     ; => false
             lower? "hello"           ; => true
+            ..........
+            lower? 'a'               ; => true
+            lower? 'A'               ; => false
         """:
             #=======================================================
             if xKind==Char:
@@ -1109,19 +1112,26 @@ proc defineLibrary*() =
         description = "check if string starts with given prefix",
         args        = {
             "string": {String},
-            "prefix": {String, Regex}
+            "prefix": {String, Regex, Char}
         },
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
             prefix? "hello" "he"          ; => true
             prefix? "boom" "he"           ; => false
+            ..........
+            prefix? "hello" {/\w+/}       ; => true
+            prefix? "world" {/\d+/}       ; => false
+            ..........
+            prefix? "hello" 'h'           ; => true
         """:
             #=======================================================
-            if yKind==Regex:
+            if likely(yKind==String):
+                push(newLogical(x.s.startsWith(y.s)))
+            elif yKind==Regex:
                 push(newLogical(x.s.startsWith(y.rx)))
             else:
-                push(newLogical(x.s.startsWith(y.s)))
+                push(newLogical(x.s.len > 0 and x.s.runeAtPos(0)==y.c))
 
     builtin "suffix?",
         alias       = unaliased, 
@@ -1130,19 +1140,28 @@ proc defineLibrary*() =
         description = "check if string ends with given suffix",
         args        = {
             "string": {String},
-            "suffix": {String, Regex}
+            "suffix": {String, Regex, Char}
         },
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
             suffix? "hello" "lo"          ; => true
             suffix? "boom" "lo"           ; => false
+            ..........
+            suffix? "hello" {/\w/}        ; => true
+            suffix? "world" {/\d/}        ; => false
+            ..........
+            suffix? "hello" 'o'           ; => true
+            suffix? "world" 'o'           ; => false
         """:
             #=======================================================
-            if yKind==Regex:
+            if likely(yKind==String):
+                push(newLogical(x.s.endsWith(y.s)))
+            elif yKind==Regex:
                 push(newLogical(x.s.endsWith(y.rx)))
             else:
-                push(newLogical(x.s.endsWith(y.s)))
+                let slen = x.s.runeLen()
+                push(newLogical(slen > 0 and x.s.runeAtPos(slen-1) == y.c))
 
     builtin "upper?",
         alias       = unaliased, 
@@ -1159,6 +1178,9 @@ proc defineLibrary*() =
             upper? "x"               ; => false
             upper? "Hello World"     ; => false
             upper? "HELLO"           ; => true
+            ..........
+            upper? 'A'               ; => true
+            upper? 'a'               ; => false
         """:
             #=======================================================
             if xKind==Char:
@@ -1180,7 +1202,7 @@ proc defineLibrary*() =
         rule        = PrefixPrecedence,
         description = "check if given string consists only of whitespace",
         args        = {
-            "string": {String}
+            "string": {String,Char}
         },
         attrs       = NoAttrs,
         returns     = {Logical},
@@ -1188,13 +1210,14 @@ proc defineLibrary*() =
             whitespace? "hello"           ; => false
             whitespace? " "               ; => true
             whitespace? "\n \n"           ; => true
+            whitespace? ""                ; => false
+            ..........
+            whitespace? ' '               ; => true
+            whitespace? '\n'              ; => true
+            whitespace? 'a'               ; => false
         """:
             #=======================================================
-            push(newLogical(x.s.isEmptyOrWhitespace()))
-
-
-#=======================================
-# Add Library
-#=======================================
-
-Libraries.add(defineLibrary)
+            if xKind==Char:
+                push(newLogical(x.c.isWhitespace()))
+            else:
+                push(newLogical(x.s.isWhitespace()))

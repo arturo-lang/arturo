@@ -9,7 +9,7 @@
 </div>
 
 ---
- 
+
 <!--ts-->
    * [The Language](#the-language)
    * [Documentation](#documentation)

@@ -31,7 +31,7 @@ import vm/lib
 #  we could also make use of our recently-added `:quantity` values
 #  labels: library, enhancement, open discussion
 
-proc defineLibrary*() =
+proc defineModule*(moduleName: string) =
 
     #----------------------------
     # Functions
@@ -391,9 +391,3 @@ proc defineLibrary*() =
         """:
             #=======================================================
             push(newLogical(x.eobj.weekday == dWed))
-
-#=======================================
-# Add Library
-#=======================================
-
-Libraries.add(defineLibrary)
