@@ -1,7 +1,7 @@
 ######################################################
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2024 Yanis Zafirópulos
+# (c) 2019-2025 Yanis Zafirópulos
 #
 # @file: installer.sh
 ######################################################
@@ -69,7 +69,7 @@ showHeader() {
     eecho "${CLEAR}"
     printf "     \e[1mArturo"
     printf " Programming Language\e[0m\n"
-    eecho "      (c)2024 Yanis Zafirópulos"
+    eecho "      (c)2025 Yanis Zafirópulos"
     eecho ""
 
     eecho "======================================"
@@ -85,7 +85,7 @@ showFooter(){
     eecho " : Arturo has been successfully installed!"
     eecho " :"
     eecho " : To be able to run it,"
-    eecho " : first make sure its in your \$PATH:"
+    eecho " : first make sure it's in your \$PATH:"
     eecho " :"
     eecho " :    export PATH=$HOME/.arturo/bin:\$PATH"
     eecho " :"
@@ -213,12 +213,12 @@ get_download_url() {
 download_arturo() {
     create_tmp_directory
     get_download_url $currentOS
-    curl -sSL $downloadUrl --output "$ARTURO_TMP_DIR/arturo.tar.gz"
-    tar -zxf "$ARTURO_TMP_DIR/arturo.tar.gz" -C $ARTURO_TMP_DIR
+    curl -sSL $downloadUrl --output "$ARTURO_TMP_DIR/arturo.zip"
+    unzip -q "$ARTURO_TMP_DIR/arturo.zip" -d $ARTURO_TMP_DIR
 }
 
 install_arturo() {
-    if [[ "$currentOS" = "windows-msys2" ]]; then
+    if [ "$OSTYPE" = "windows-msys2" ]; then
         HOME=$USERPROFILE
     fi
 

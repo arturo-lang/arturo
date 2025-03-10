@@ -13,6 +13,8 @@
 ; * Don't forget to push changes to the corresponding repo!
 ;---------------------------------------------------------------------------------
 
+;import'progressive!
+
 modules: new []
 functions: #[]
 relatedFuncs: #[]
@@ -27,13 +29,17 @@ loop rosettas 'ro [
     'dict ++ ro
 ]
 
-write "docs/website/data/rosetta.art" as.pretty.code dict
+loop list "docs/website/data" 'df [
+    if ".art" = extract.extension df -> 
+        delete df
+]
 
-print as.pretty.code dict
+(as.pretty.code dict) >> "docs/website/data/rosetta.art" 
 
 ; get modules and functions
 loop keys symbols [sym][
-    print ["processing:" sym]
+    ;processing sym
+
     inf: info.get sym
 
     if key? inf 'module [
@@ -77,13 +83,10 @@ loop keys symbols [sym][
     ]
 ]
 
-inspect modules
-
-inspect relatedFuncs
-
 unique 'modules
 
 loop functions [modl,lst][
+    ;processing modl
     target: relative join.path @["../docs/website/pages/documentation/library" lower modl]
 
     loop list target 'tt [
@@ -93,7 +96,7 @@ loop functions [modl,lst][
 
     loop lst 'func [
         funcInfo:  info.get func
-        if? funcInfo\type = :function [
+        switch funcInfo\type = :function [
             attributes: funcInfo\attrs
             arguments: funcInfo\args
             funcInfo: remove.key funcInfo 'attrs
@@ -103,40 +106,31 @@ loop functions [modl,lst][
             funcInfo\examples: examples
             funcInfo\attributes: attributes
             funcInfo\arguments: arguments
-        ]
-        else [
+        ][
             funcInfo\returns: @[funcInfo\type]
         ]
         funcInfo: remove.key funcInfo 'address
         funcInfo\related: relatedFuncs\[func]
         funcInfo: replace strip as.pretty.code.unwrapped funcInfo "\t" "    "
 
-        inspect funcInfo
-        
-        print join.path @[target ~"|func|.art"]
         if not? exists? target ->
-            write.directory target ø
-        write join.path @[target ~{|replace func "?" "-"|.art}] funcInfo
+            write.directory ø target
+        funcInfo >> join.path @[target ~{|replace func "?" "-"|.art}]
     ]
 ]
 funcs: new []
 loop functions [modl,lst][
     loop lst 'f [
-        print ["adding:" f]
         'funcs ++ f
     ]
 ]
-
-print "AFTER"
 
 sort 'funcs
 funcList: new []
 symbList: new []
 
-inspect funcs
-
 loop funcs 'f [
-    print ["processing func:" f]
+    ;processing f
     inf: info.get f 
 
     href: lower replace ~"|inf\module|/|f|" "?" "-"
@@ -150,8 +144,6 @@ loop funcs 'f [
     ]
 ]
 
-write "docs/website/data/libraryModules.art" as.pretty.code sort unique modules
-write "docs/website/data/libraryFunctions.art" as.pretty.code funcList
-write "docs/website/data/librarySymbols.art" as.pretty.code symbList
-
-inspect funcList
+(as.pretty.code sort unique modules) >> "docs/website/data/libraryModules.art" 
+(as.pretty.code funcList) >> "docs/website/data/libraryFunctions.art" 
+(as.pretty.code symbList) >> "docs/website/data/librarySymbols.art" 

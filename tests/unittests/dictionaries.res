@@ -1,8 +1,0 @@
-[name:John surname:Doe age:35]
-[name:John surname:Doe age:35]
-[name:John surname:Doe location:[country:Spain]]
-[continent:Europe country:Greece entity:EU]
-[continent:Europe country:Spain entity:EU]
-[some:value]
-[some:value]
-[name:John surname:Doe]

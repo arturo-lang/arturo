@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2024 Yanis Zafirópulos
+# (c) 2019-2025 Yanis Zafirópulos
 #
 # @file: helpers/bignums.nim
 #=======================================================
@@ -92,11 +92,11 @@ func newInt*(x: culong): Int =
     #  Warning: A custom '=destroy' hook which takes a 'var T' parameter is deprecated; it should take a 'T' parameter [Deprecated]
     #  ```
     #  labels: 3rd-party, enhancement
-    new(result, finalizeInt)
+    result = Int()
     mpz_init_set_ui(result[], x)
 
 func newInt*(x: int = 0): Int =
-    new(result, finalizeInt)
+    result = Int()
     when isLLP64():
         if x.fitsLLP64Long:
             mpz_init_set_si(result[], x.clong)
@@ -110,57 +110,57 @@ func newInt*(x: int = 0): Int =
         mpz_init_set_si(result[], x.clong)
 
 func newInt*(x: Float): Int =
-    new(result,finalizeInt)
+    result = Int()
     mpz_init(result[])
     mpz_set_d(result[], mpfr_get_d(x[], MPFR_RNDN))
 
 func newInt*(s: string, base: cint = 10): Int =
     validBase(base)
-    new(result, finalizeInt)
+    result = Int()
     if mpz_init_set_str(result[], s, base) == -1:
         raise newException(ValueError, "String not in correct base")
 
 func newFloat*(x: float): Float =
-    new(result, finalizeFloat)
+    result = Float()
     mpfr_init(result[])
     mpfr_set_d(result[], x, MPFR_RNDN)
 
 func newFloat*(x: culong): Float =
-    new(result, finalizeFloat)
+    result = Float()
     mpfr_init(result[])
     mpfr_set_ui(result[], x, MPFR_RNDN)
 
 func newFloat*(x: int = 0): Float =
-    new(result, finalizeFloat)
+    result = Float()
     mpfr_init(result[])
     mpfr_set_si(result[], x.clong, MPFR_RNDN)
 
 func newFloat*(x: Int): Float =
-    new(result,finalizeFloat)
+    result = Float()
     mpfr_init(result[])
     mpfr_set_z(result[], x[], MPFR_RNDN)
 
 func newFloat*(s: string, base: cint = 10): Float =
     validBase(base)
-    new(result, finalizeFloat)
+    result = Float()
     mpfr_init(result[])
     if mpfr_set_str(result[], s, base, MPFR_RNDN) == -1:
         raise newException(ValueError, "String not in correct base")
 
 func newRat*(x: culong): Rat =
-    new(result, finalizeRat)
+    result = Rat()
     mpq_init(result[])
     mpq_set_ui(result[], x, 1)
     canonicalize(result)
 
 func newRat*(x, y: culong): Rat =
-    new(result,finalizeRat)
+    result = Rat()
     mpq_init(result[])
     mpq_set_ui(result[], x, y)
     canonicalize(result)
 
 func newRat*(x: int = 0): Rat =
-    new(result, finalizeRat)
+    result = Rat()
     mpq_init(result[])
     when isLLP64():
         if x.fitsLLP64Long:
@@ -176,7 +176,7 @@ func newRat*(x: int = 0): Rat =
     canonicalize(result)
 
 func newRat*(x, y: int): Rat =
-    new(result, finalizeRat)
+    result = Rat()
     mpq_init(result[])
     when isLLP64():
         var nref = mpq_numref(result[])
@@ -205,27 +205,27 @@ func newRat*(x, y: int): Rat =
     canonicalize(result)
 
 func newRat*(x, y: Int): Rat =
-    new(result,finalizeRat)
+    result = Rat()
     mpq_init(result[])
     mpq_set_num(result[], x[])
     mpq_set_den(result[], y[])
     canonicalize(result)
 
 func newRat*(x: float): Rat =
-    new(result,finalizeRat)
+    result = Rat()
     mpq_init(result[])
     mpq_set_d(result[], x)
     canonicalize(result)
 
 func newRat*(x: Int): Rat =
-    new(result,finalizeRat)
+    result = Rat()
     mpq_init(result[])
     mpq_set_z(result[], x[])
     canonicalize(result)
 
 func newRat*(s: string, base: cint = 10): Rat =
     validBase(base)
-    new(result, finalizeRat)
+    result = Rat()
     mpq_init(result[])
     if mpq_set_str(result[], s, base) == -1:
         raise newException(ValueError, "String not in correct base")
@@ -236,17 +236,17 @@ func newRat*(s: string, base: cint = 10): Rat =
 #=======================================
 
 func copyInt*(x: Int): Int =
-    new(result, finalizeInt)
+    result = Int()
     mpz_init(result[])
     mpz_set(result[], x[])
 
 func copyFloat*(x: Float): Float =
-    new(result,finalizeFloat)
+    result = Float()
     mpfr_init(result[])
     mpfr_set(result[], x[], MPFR_RNDN)
 
 func copyRat*(x: Rat): Rat = 
-    new(result,finalizeRat)
+    result = Rat()
     mpq_init(result[])
     mpq_set(result[], x[])
 
@@ -1173,12 +1173,12 @@ func nextPrime*(x: Int): Int =
 
 func clear*(z: Int) {.inline.} =
     GCunref(z)
-    finalizeInt(z)
+    mpz_clear(z[])
 
 func clear*(z: Float) {.inline.} =
     GCunref(z)
-    finalizeFloat(z)
+    mpfr_clear(z[])
 
 func clear*(z: Rat) {.inline.} =
     GCunref(z)
-    finalizeRat(z)
+    mpq_clear(z[])

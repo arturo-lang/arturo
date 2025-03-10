@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2024 Yanis Zafirópulos
+# (c) 2019-2025 Yanis Zafirópulos
 #
 # @file: library/Crypto.nim
 #=======================================================
@@ -41,7 +41,7 @@ import vm/lib
 # Definitions
 #=======================================
 
-proc defineLibrary*() =
+proc defineModule*(moduleName: string) =
 
     #----------------------------
     # Functions
@@ -239,9 +239,3 @@ proc defineLibrary*() =
                 push(newString($(hash(x))))
             else:
                 push(newInteger(hash(x)))
-
-#=======================================
-# Add Library
-#=======================================
-
-Libraries.add(defineLibrary)

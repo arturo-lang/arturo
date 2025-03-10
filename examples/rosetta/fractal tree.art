@@ -30,4 +30,4 @@ svg: {
 drawTree svg 0.5*width height trunkLength startingAngle
 'svg ++ "</svg>"
 
-write "fractal.svg" svg
+svg >> "fractal.svg"

@@ -10,12 +10,13 @@ B: "I am string too"
 sA: size A
 sB: size B
 
-if? sA < sB ->
+switch sA < sB ->
     print ["string ->" A "(" sA ") is smaller than string ->" B "(" sB ")"]
-else [
-    if? sA > sB ->
+[
+    switch sA > sB 
+    ->
         print ["string ->" A "(" sA ") is larger than string ->" B "(" sB ")"]
-    else ->
+    ->
         print ["string ->" A "(" sA ") and string ->" B "(" sB ") are of equal length"]
 ]
 
