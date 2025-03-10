@@ -2,7 +2,7 @@ block: [print]
 block: block ++ to :integer "34"
 
 print "Here is our code:"
-print as.code block
+print express block
 
 print ""
 print "And here's its result:"

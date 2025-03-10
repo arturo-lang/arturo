@@ -1,1 +1,1 @@
-block: [print ["block:" as .code block "do block"]] do block
+block: [print ["block:" express block "do block"]] do block

@@ -5,4 +5,4 @@ code: {
 
 s: first to :block code
 inspect.muted s
-print as.code s
+print express s

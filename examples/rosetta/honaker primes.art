@@ -19,4 +19,4 @@ loop 2..∞ 'n [
 ]
 
 loop split.every: 5 honakers 'x ->
-    print map x 's -> pad as.code s 14
+    print map x 's -> pad express s 14

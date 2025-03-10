@@ -20,5 +20,5 @@ print ""
 print "Sphenic triplets up to 10000:"
 loop split.every: 3 sphenicTripletsBelow10K 'x ->
     print map x 's [
-        pad as.code @[s, s+1, s+2] 12
+        pad express @[s, s+1, s+2] 12
     ]

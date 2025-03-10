@@ -361,10 +361,10 @@ do [
     topic "add - :complex :quantity"
 
     ensure -> every? @[
-        -> "31.0+2.0i:usd" = ~"|as.code 30`N + to :complex [1 2]|"
-        -> "31.0+2.0i:eur" = ~"|as.code 30`W + to :complex [1 2]|"
-        -> "31.0+2.0i:usd" = ~"|as.code add 30`N to :complex [1 2]|"
-        -> "31.0+2.0i:eur" = ~"|as.code add 30`W to :complex [1 2]|"
+        -> "31.0+2.0i:usd" = ~"|express 30`N + to :complex [1 2]|"
+        -> "31.0+2.0i:eur" = ~"|express 30`W + to :complex [1 2]|"
+        -> "31.0+2.0i:usd" = ~"|express add 30`N to :complex [1 2]|"
+        -> "31.0+2.0i:eur" = ~"|express add 30`W to :complex [1 2]|"
 
         -> (to :complex [1 2]) + 30`N
         -> (to :complex [1 2]) + 30`W
@@ -439,10 +439,10 @@ do [
     topic "add - :rational :quantity"
 
     ensure -> all? @[
-        "61:2`N" = as.code 30`N + to :rational [1 2]
-        "61:2`W" = as.code 30`W + to :rational [1 2]
-        "61:2`N" = as.code add 30`N to :rational [1 2]
-        "61:2`W" = as.code add 30`W to :rational [1 2]
+        "61:2`N" = express 30`N + to :rational [1 2]
+        "61:2`W" = express 30`W + to :rational [1 2]
+        "61:2`N" = express add 30`N to :rational [1 2]
+        "61:2`W" = express add 30`W to :rational [1 2]
     ]
 
     ensure -> every? @[
@@ -454,7 +454,7 @@ do [
     passed
     
     a: 30`N, 'a + to :rational [1 2]
-    ensure -> "61:2`N" = as.code a
+    ensure -> "61:2`N" = express a
     passed
     
     a: to :rational [1 2]
