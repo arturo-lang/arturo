@@ -1,0 +1,19 @@
+import {unitt}!
+import relative {../../commons/functions}!
+
+test "returns tuples" [
+    expected: [[a a] [b b] [c c]]
+    actual: couple [a b c] [a b c]
+    assert -> expected = actual
+    assert -> every? actual 'el [2 = size el]
+]
+
+test "keeps the order" [
+    expected: [["one" 1] ["two" 2] ["three" 3]]
+    actual: couple ["one" "two" "three"] [1 2 3]
+
+    assert -> expected = actual
+]
+
+; todo(Collections\couple): add tests for inplace-equivalence after add this feature.
+;   ref: #1786

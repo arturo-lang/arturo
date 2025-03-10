@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2024 Yanis Zafirópulos
+# (c) 2019-2025 Yanis Zafirópulos
 #
 # @file: helpers/conversion.nim
 #=======================================================
@@ -61,6 +61,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat:Value = nil): Val
         case y.kind:
             of Null:
                 case tp:
+                # TODO(Converters) should support :null -> :floating
                     of Logical: return VFALSE
                     of Integer: return I0
                     of String: return newString("null")

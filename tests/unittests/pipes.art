@@ -72,8 +72,8 @@ check: function [block1 block2].inline[
       b1: to.intrepid :bytecode block1
       b2: to.intrepid :bytecode block2
 
-      if? b1 = b2 -> print [pad to :string testNo 2 ": [+] passed!"]
-      else [
+      switch b1 = b2 -> print [pad to :string testNo 2 ": [+] passed!"]
+      [
             print [pad to :string testNo 2 ": [-] failed!"]
             inspect b1
             print repeat "-" 10

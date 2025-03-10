@@ -1,0 +1,83 @@
+ppout: ""
+
+pprint: function [z].export:[ppout][
+    ;print z
+    'ppout ++ z ++ "\n"
+]
+
+data: sort gather map sort keys symbols 'key [
+    information: info.get key
+    @[key information]
+] 'item [
+    (or? [contains? ["ppout" "pprint"] item\0] [item\1\module = "macros"])? -> "--"
+                                                                        -> item\1\module
+]
+
+pprint ~"# Arturo Programming language"
+
+pprint ~"## Language overview"
+
+languageDoc: # ~"docs/website/pages/documentation/language.art"
+pprint languageDoc\content
+
+pprint ~"## Example program"
+
+nutshellDoc: # ~"docs/website/pages/documentation/in a nutshell.art"
+pprint nutshellDoc\content
+
+pprint ~"## Standard library"
+
+loop data [lib, contents][
+    unless lib = "--" [
+        pprint ~"### |lib|"
+        desc: # ~"docs/website/pages/documentation/library/|lower lib|/_index.art"
+        pprint desc\description
+        pprint "\n----\n"
+        ovv: desc\overview
+        ovv: replace ovv {/(?<!#)#{5}(?!#)/} "######" 
+        ovv: replace ovv {/(?<!#)#{4}(?!#)/} "#####" 
+        ovv: replace ovv {/(?<!#)#{3}(?!#)/} "####" 
+        pprint ovv
+        pprint "\n----\n"
+        loop contents 'content [
+            aliased: ""
+            if key? content\1 'alias [
+                aliased: " (alias: `|content\1\alias|` - infix: |content\1\infix?|)"
+            ]
+            pprint ~"#### `|content\0|`" ++ aliased
+
+            pprint content\1\description
+            if key? content\1 'args [
+                unless empty? content\1\args [
+                    pprint "##### Arguments"
+                    loop content\1\args [argname, argtypes][
+                        pprint ~{- `|argname|` (|join.with:"," argtypes|)}
+                    ]
+                ]
+            ]
+            if key? content\1 'attrs [
+                unless empty? content\1\attrs [
+                    pprint "##### Options"
+                    loop content\1\attrs [attrname, attrdesc][
+                        pprint ~{- `|attrname|` (|join.with:"," attrdesc\types|): |attrdesc\description|}
+                    ]
+                ]
+            ]
+            if key? content\1 'returns [
+                pprint "##### Returns"
+                pprint join.with:"," content\1\returns
+            ]
+            if key? content\1 'example [
+                pprint "##### Examples"
+                loop content\1\example 'ex [
+                    pprint "```"
+                    pprint ex
+                    pprint "```"
+                ]
+            ]
+        ]
+    ]
+]
+
+unless empty? ppout ->
+    ppout >> ./"aiguide.md"

@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2024 Yanis Zafirópulos
+# (c) 2019-2025 Yanis Zafirópulos
 #
 # @file: vm/env.nim
 #=======================================================
@@ -103,7 +103,7 @@ proc getSystemInfo*(): ValueDict =
     try:
         result = {
             "author"    : newString("Yanis Zafirópulos"),
-            "copyright" : newString("(c) 2019-2024"),
+            "copyright" : newString("(c) 2019-2025"),
             "version"   : newVersion(versionStr),
             "built"     : newDate(parse(CompileDate & " " & CompileTime, "yyyy-MM-dd HH:mm:ss")),
             "deps"      : newDictionary(),

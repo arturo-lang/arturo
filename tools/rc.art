@@ -29,7 +29,7 @@ getTemplateRC: function [s][
         <pre>OUT</pre>
     }
 
-    write resPath s strip runScript s
+    (strip runScript s) >> resPath s
 
     replace templ ["SCR", "OUT"] @[read scrPath s, read resPath s]
 ]
@@ -42,24 +42,24 @@ commitGit: function [s][
 scr: sanitizeName first arg
 cmd: last arg
 
-case [cmd=]
-    when? ["n"][
+case cmd [
+    "n" [
         print color #cyan "creating new RC example...\n"
     
-        write scrPath scr ""
-        write resPath scr ""
+        "" >> scrPath scr
+        "" >> resPath scr
     ]
-    when? ["c"][
+    "c" [
         print color #cyan "cleaning up RC res...\n"
 
         delete resPath scr
     ]
-    when? ["r"][
+    "r" [
         print color #cyan "running RC example...\n"
 
         print runScript scr
     ]
-    when? ["p"][
+    "p" [
         print color #cyan "publishing RC example...\n"
         
         print getTemplateRC scr
@@ -68,3 +68,4 @@ case [cmd=]
     else [
         panic "unrecognized command"
     ]
+]

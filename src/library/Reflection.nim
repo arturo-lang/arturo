@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2024 Yanis Zafirópulos
+# (c) 2019-2025 Yanis Zafirópulos
 #
 # @file: library/Reflection.nim
 #=======================================================
@@ -33,7 +33,7 @@ import vm/[errors, eval, exec, runtime]
 # Definitions
 #=======================================
 
-proc defineLibrary*() =
+proc defineModule*(moduleName: string) =
 
     #----------------------------
     # Functions
@@ -70,12 +70,9 @@ proc defineLibrary*() =
         returns     = {Any,Null},
         example     = """
             multiply: function [x][
-                if? attr? "with" [ 
-                    x * attr "with"
-                ] 
-                else [ 
-                    2*x 
-                ]
+                switch attr? "with" 
+                    -> x * attr "with"
+                    -> 2*x 
             ]
             
             print multiply 5
@@ -387,9 +384,3 @@ proc defineLibrary*() =
         """:
             #=======================================================
             push(newLogical(emptyFrameStack()))
-
-#=======================================
-# Add Library
-#=======================================
-
-Libraries.add(defineLibrary)
