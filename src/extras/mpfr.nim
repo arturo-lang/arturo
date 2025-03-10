@@ -3,7 +3,7 @@
 # MPFR BigNum library wrapper
 # for Nim
 #
-# (c) 2024 Yanis Zafirópulos
+# (c) 2019-2025 Yanis Zafirópulos
 # 
 # @license: see LICENSE file
 # @file: extras/mpfr.nim
@@ -39,6 +39,7 @@ type
 
 type
     mpfr* = mm_mpfr_struct
+    mpfr_ptr* = ptr mm_mpfr_struct
 
 #=======================================
 # Constants
@@ -59,6 +60,7 @@ const
 
 func mpfr_get_version*(): cstring {.importc.}
 
+func mpfr_clear*(a: mpfr_ptr) {.importc.}
 func mpfr_clear*(a: var mpfr) {.importc.}
 func mpfr_init*(a: var mpfr) {.importc.}
 func mpfr_set*(a: var mpfr, b: mpfr, c: mpfr_rnd_t) {.importc.}
@@ -96,8 +98,8 @@ func mpfr_pow_z*(a: var mpfr, b: mpfr, c: mpz_t, d: mpfr_rnd_t) {.importc.}
 {.pop.}
 
 #=======================================
-# Methods
+# Destructors
 #=======================================
 
-func finalizeFloat*(z: ref mpfr) =
-    mpfr_clear(z[])
+proc `=destroy`*(x: mm_mpfr_struct) =
+    mpfr_clear(addr x)

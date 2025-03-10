@@ -2,7 +2,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2024 Yanis Zafirópulos
+# (c) 2019-2025 Yanis Zafirópulos
 #
 # @file: library/Exceptions.nim
 #=======================================================
@@ -29,7 +29,7 @@ import vm/values/custom/verror
 # Definitions
 #=======================================
 
-proc defineSymbols*() =
+proc defineModule*(moduleName: string) =
 
     # TODO(Exceptions) revisit and review the whole module
     #  also: we have an "Exceptions" module but the values we are talking
@@ -253,5 +253,3 @@ proc defineSymbols*() =
         alias       = unaliased,
         description = "a VM error":
             newErrorKind(VMErr)
-
-Libraries.add(defineSymbols)

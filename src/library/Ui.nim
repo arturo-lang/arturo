@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2024 Yanis Zafirópulos
+# (c) 2019-2025 Yanis Zafirópulos
 #
 # @file: library/Ui.nim
 #=======================================================
@@ -38,7 +38,7 @@ when not defined(NODIALOGS):
 # Definitions
 #=======================================
 
-proc defineLibrary*() =
+proc defineModule*(moduleName: string) =
 
     #----------------------------
     # Functions
@@ -253,13 +253,12 @@ proc defineLibrary*() =
             webview .width:  200 
                     .height: 300
                     .title:  "My webview app"
+            ; (opens a webview with given attributes)
             ---
                 <h1>This is my webpage</h1>
                 <p>
                     This is some content
                 </p>
-            ---
-            ; (opens a webview with given attributes)
             """:
                 #=======================================================
                 var title = "Arturo"
@@ -344,9 +343,3 @@ proc defineLibrary*() =
                         wv.evaluate(x.s)
 
                 wv.show()
-                
-#=======================================
-# Add Library
-#=======================================
-
-Libraries.add(defineLibrary)

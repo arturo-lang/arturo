@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2024 Yanis Zafirópulos
+# (c) 2019-2025 Yanis Zafirópulos
 #
 # @file: library/Net.nim
 #=======================================================
@@ -46,29 +46,33 @@ when defined(ssl):
 when not defined(WEB):
     import algorithm, asyncdispatch, browsers
     import httpclient, httpcore, std/net, os
-    import strutils, times, uri
+    import sequtils, strformat, strutils
+    import terminal, times, uri
 
     when defined(ssl):
         import extras/smtp
         import helpers/stores
 
+    import helpers/benchmark
     import helpers/jsonobject
     import helpers/servers
+    import helpers/strings
     import helpers/terminal
     import helpers/url
     import helpers/webviews
 
 import vm/lib
+import vm/errors
+import vm/values/custom/verror
+
 when not defined(WEB):
     import vm/[env, exec]
-when defined(SAFE):
-    import vm/[errors]
 
 #=======================================
 # Definitions
 #=======================================
 
-proc defineLibrary*() =
+proc defineModule*(moduleName: string) =
 
     #----------------------------
     # Functions
@@ -183,7 +187,7 @@ proc defineLibrary*() =
             description = "perform HTTP request to url with given data and get response",
             args        = {
                 "url"   : {String},
-                "data"  : {Dictionary, Null}
+                "data"  : {Dictionary, String, Null}
             },
             attrs       = {
                 "get"           : ({Logical},"perform a GET request (default)"),
@@ -199,7 +203,7 @@ proc defineLibrary*() =
                 "certificate"   : ({String},"use SSL certificate at given path"),
                 "raw"           : ({Logical},"return raw response without processing")
             },
-            returns     = {Dictionary},
+            returns     = {Dictionary,Null},
             example     = """
             print request "https://httpbin.org/get" #[some:"arg" another: 123]
             ; [version:1.1 body:{
@@ -271,15 +275,21 @@ proc defineLibrary*() =
                         headers.add("Content-Type", "application/json")
                         body = jsonFromValue(y, pretty=false)
                     else:
-                        multipart = newMultipartData()
-                        for k,v in pairs(y.d):
-                            multipart[k] = $(v)
+                        if yKind == String:
+                            body = y.s
+                        else:
+                            multipart = newMultipartData()
+                            for k,v in pairs(y.d):
+                                multipart[k] = $(v)
                 else:
-                    if y != VNULL and (yKind==Dictionary and y.d.len!=0):
-                        var parts: seq[string]
-                        for k,v in pairs(y.d):
-                            parts.add(k & "=" & urlencode($(v)))
-                        url &= "?" & parts.join("&")
+                    if y != VNULL:
+                        if (yKind==Dictionary and y.d.len!=0):
+                            var parts: seq[string]
+                            for k,v in pairs(y.d):
+                                parts.add(k & "=" & urlencode($(v)))
+                            url &= "?" & parts.join("&")
+                        elif yKind==String:
+                            url &= "?" & y.s
 
                 var client: HttpClient
 
@@ -309,56 +319,59 @@ proc defineLibrary*() =
                         headers = headers
                     )
 
-                let response = client.request(url = url,
-                                            httpMethod = meth,
-                                            body = body,
-                                            multipart = multipart)
+                try:
+                    let response = client.request(url = url,
+                                                httpMethod = meth,
+                                                body = body,
+                                                multipart = multipart)
 
-                var ret: ValueDict = initOrderedTable[string,Value]()
-                ret["version"] = newString(response.version)
-                
-                ret["body"] = newString(response.body)
-                ret["headers"] = newDictionary()
+                    var ret: ValueDict = initOrderedTable[string,Value]()
+                    ret["version"] = newString(response.version)
+                    
+                    ret["body"] = newString(response.body)
+                    ret["headers"] = newDictionary()
 
-                if (hadAttr("raw")):
-                    ret["status"] = newString(response.status)
-
-                    for k,v in response.headers.table:
-                        ret["headers"].d[k] = newStringBlock(v)
-                else:
-                    try:
-                        let respStatus = (response.status.splitWhitespace())[0]
-                        ret["status"] = newInteger(respStatus)
-                    except CatchableError:
+                    if (hadAttr("raw")):
                         ret["status"] = newString(response.status)
 
-                    for k,v in response.headers.table:
-                        var val: Value
-                        if v.len==1:
-                            case k
-                                of "age","content-length": 
-                                    try:
-                                        val = newInteger(v[0])
-                                    except CatchableError:
-                                        val = newString(v[0])
-                                of "access-control-allow-credentials":
-                                    val = newLogical(v[0])
-                                of "date", "expires", "last-modified":
-                                    let dateParts = v[0].splitWhitespace()
-                                    let cleanDate = (dateParts[0..(dateParts.len-2)]).join(" ")
-                                    var dateFormat = "ddd, dd MMM YYYY HH:mm:ss"
-                                    let timeFormat = initTimeFormat(dateFormat)
-                                    try:
-                                        val = newDate(parse(cleanDate, timeFormat))
-                                    except CatchableError:
-                                        val = newString(v[0])
-                                else:
-                                    val = newString(v[0])
-                        else:
-                            val = newStringBlock(v)
-                        ret["headers"].d[k] = val
+                        for k,v in response.headers.table:
+                            ret["headers"].d[k] = newStringBlock(v)
+                    else:
+                        try:
+                            let respStatus = (response.status.splitWhitespace())[0]
+                            ret["status"] = newInteger(respStatus)
+                        except CatchableError:
+                            ret["status"] = newString(response.status)
 
-                push newDictionary(ret)
+                        for k,v in response.headers.table:
+                            var val: Value
+                            if v.len==1:
+                                case k
+                                    of "age","content-length": 
+                                        try:
+                                            val = newInteger(v[0])
+                                        except CatchableError:
+                                            val = newString(v[0])
+                                    of "access-control-allow-credentials":
+                                        val = newLogical(v[0])
+                                    of "date", "expires", "last-modified":
+                                        let dateParts = v[0].splitWhitespace()
+                                        let cleanDate = (dateParts[0..(dateParts.len-2)]).join(" ")
+                                        var dateFormat = "ddd, dd MMM YYYY HH:mm:ss"
+                                        let timeFormat = initTimeFormat(dateFormat)
+                                        try:
+                                            val = newDate(parse(cleanDate, timeFormat))
+                                        except CatchableError:
+                                            val = newString(v[0])
+                                    else:
+                                        val = newString(v[0])
+                            else:
+                                val = newStringBlock(v)
+                            ret["headers"].d[k] = val
+                
+                    push newDictionary(ret)
+                except CatchableError:
+                    push(VNULL)
 
         builtin "serve",
             alias       = unaliased, 
@@ -366,11 +379,11 @@ proc defineLibrary*() =
             rule        = PrefixPrecedence,
             description = "start web server using given routes",
             args        = {
-                "routes"    : {Block}
+                "routes"    : {Block, Function}
             },
             attrs       = {
-                "port"      : ({Integer},"use given port"),
-                "verbose"   : ({Logical},"print info log"),
+                "port"      : ({Integer},"use given port. Default: 18966"),
+                "silent"    : ({Logical},"don't print info log"),
                 "chrome"    : ({Logical},"open in Chrome windows as an app")
             },
             returns     = {Nothing},
@@ -392,6 +405,30 @@ proc defineLibrary*() =
             ; run the app and go to localhost:18966 - that was it!
             ; the app will respond to GET requests to "/" or "/post?id=..."
             ; and also POST requests to "/getinfo" with an 'id' parameter
+            ..........
+            serve $[req][
+                inspect req
+                ;[ :dictionary
+                ;    method   :        GET :string
+                ;    path     :        / :string
+                ;    uri      :        / :string
+                ;    body     :         :string
+                ;    query    :        [ :dictionary
+                ;    ]
+                ;    headers  :        [ :dictionary
+                ;        ...
+                ;    ]
+
+                ; we have to return either a string
+                ; or a dictionary like:
+                #[
+                    body: "..."
+                    status: 200
+                    headers: #[
+                        ;...
+                    ]
+                ]
+            ]
             """:
                 #=======================================================
                 when defined(SAFE): Error_OperationNotPermitted("serve")
@@ -399,21 +436,22 @@ proc defineLibrary*() =
                 # get parameters
                 let routes = x
                 var port = 18966
-                var verbose = (hadAttr("verbose"))
+                var verbose = not (hadAttr("verbose"))
                 if checkAttr("port"):
                     port = aPort.i
             
                 if hadAttr("chrome"):
                     openChromeWindow(port)
 
-                # necessary so that "serveInternal" is available
-                execInternal("Net/serve")
+                if routes.kind != Function:
+                    # necessary so that "serveInternal" is available
+                    execInternal("Net/serve")
 
-                # call internal implementation
-                # to initialize routes
-                callInternal("initServerInternal", getValue=false,
-                    routes
-                )
+                    # call internal implementation
+                    # to initialize routes
+                    callInternal("initServerInternal", getValue=false,
+                        routes
+                    )
 
                 proc requestHandler(req: ServerRequest): Future[void] {.gcsafe.} =
                     {.cast(gcsafe).}:
@@ -445,68 +483,101 @@ proc defineLibrary*() =
                         else: 
                             reqBodyV = newString(reqBody)
 
-                        # call internal implementation
-                        let got = callInternal("serveInternal", getValue=true,
-                            newDictionary({
+                        # store request info inside a Dictionary
+                        # we will pass this to the function -
+                        # user-defined or the "default" one -
+                        # which will handle it
+                        let requestDict = newDictionary({
                                 "method": newString($(reqAction)),
                                 "path": newString(reqPath),
-                                "fullPath": newString(initialReqPath),
+                                "uri": newString(initialReqPath),
                                 "body": reqBodyV,
                                 "query": newDictionary(reqQuery),
                                 "headers": newStringDictionary(reqHeaders, collapseBlocks=true)
-                            }.toOrderedTable),
-                            newLogical(verbose)
-                        )
+                            }.toOrderedTable)
 
-                        # show request info
-                        # if we're on .verbose mode
-                        if verbose:
-                            var serverPattern = " "
-                            if got.d["serverPattern"].s != initialReqPath and got.d["serverPattern"].s != "":
-                                serverPattern = " -> " & got.d["serverPattern"].s & " "
+                        # the response
+                        var responseDict: ValueDict = {
+                            "body": newString(""),
+                            "status": newInteger(200),
+                            "headers": newDictionary()
+                        }.toOrderedTable
 
-                            echo bold(whiteColor) & "<<" & resetColor & " " & 
-                                 fg(whiteColor) & "[" & $(now()) & "] " &
-                                 bold(whiteColor) & ($(reqAction)).toUpperAscii() & " " & initialReqPath & 
-                                 resetColor & serverPattern & resetColor
+                        var resp: Value
+                        if routes.kind == Function:
+                            let timeTaken = getBenchmark:
+                                try:
+                                    callFunction(routes, "<closure>", @[requestDict])
+                                    resp = stack.pop()
+
+                                    if resp.kind == String:
+                                        responseDict["body"] = resp
+                                    else:
+                                        for k,v in resp.d.pairs:
+                                            responseDict[k] = v
+
+                                except VError as e:
+                                    showError(e)
+                                    responseDict["status"] = newInteger(500)
+                                except CatchableError, Defect:
+                                    let e = getCurrentException()
+                                    showError(VError(e))
+                                    responseDict["status"] = newInteger(500)
+                            
+                            responseDict["benchmark"] = newQuantity(toQuantity(timeTaken, parseAtoms("ms")))
+                        else:
+                            # call internal implementation
+                            responseDict = callInternal("serveInternal", getValue=true,
+                                requestDict
+                            ).d
+
+                            if not responseDict["headers"].d.hasKey("Content-Type"):
+                                responseDict["headers"].d["Content-Type"] = newString("text/html")
+
+                        let headerStr = (toSeq(responseDict["headers"].d.pairs)).map(
+                            proc(kv: (string,Value)): string = 
+                                kv[0] & ": " & kv[1].s
+                        ).join("\c\L")
 
                         # send response
                         req.respond(newServerResponse(
-                            got.d["serverBody"].s,
-                            HttpCode(got.d["serverStatus"].i),
-                            got.d["serverHeaders"].s
+                            responseDict["body"].s,
+                            HttpCode(responseDict["status"].i),
+                            headerStr
                         ))
 
                         # show request response info
                         # if we're on .verbose mode
                         if verbose:
+                            let contentType = responseDict["headers"].d.getOrDefault("Content-Type", newString("--"))
+                            let requestPattern = responseDict.getOrDefault("pattern", newString(initialReqPath))
+
                             var colorCode = greenColor
-                            if got.d["serverStatus"].i != 200: 
+                            if responseDict["status"].i != 200: 
                                 colorCode = redColor
 
                             var serverPattern = " "
-                            if got.d["serverPattern"].s != initialReqPath and got.d["serverPattern"].s != "":
-                                serverPattern = " -> " & got.d["serverPattern"].s & " "
+                            if requestPattern.s != initialReqPath and requestPattern.s != "":
+                                serverPattern = " -> " & requestPattern.s & " "
 
-                            let serverBenchmark = $(got.d["serverBenchmark"])
+                            var serverBenchmark: string
+                            formatValue(serverBenchmark, toFloat(responseDict["benchmark"].q.original), ".2f")
+                            serverBenchmark = "| " & align(serverBenchmark, 6) & " ms "
+                            let timestamp = "[" & $(now()) & "] "
 
-                            echo bold(colorCode) & ">>" & resetColor & " " & 
-                                 fg(whiteColor) & "[" & $(now()) & "] " &
-                                 bold(colorCode) & $(got.d["serverStatus"].i) & " " & resetColor &
-                                 fg(whiteColor) & got.d["serverContentType"].s & " " &
-                                #  bold(whiteColor) & ($(reqAction)).toUpperAscii() & " " & initialReqPath & 
-                                #  resetColor & serverPattern & 
-                                 fg(grayColor) & "(" & serverBenchmark & ")" & resetColor
+                            let logStr = 
+                                bold(colorCode) & " -- " & $(responseDict["status"].i) & resetColor & " " & 
+                                fg(whiteColor) & timestamp &
+                                bold(whiteColor) & ($(reqAction)).toUpperAscii() & " " & initialReqPath & #& "\n" & align($(responseDict["status"].i), timestamp.len() + 6)
+                                bold(colorCode)  & " " & resetColor
+
+                            echo logStr & fg(whiteColor) & align(contentType.s, terminalWidth() - logStr.realLen() - serverBenchmark.realLen() - 1) & " " &
+                                          fg(grayColor) & serverBenchmark & resetColor
+
 
                 # show server startup info
                 # if we're on .verbose mode
                 if verbose:
-                    echo ":: Starting server on port " & $(port) & "...\n"
+                    echo " :: Starting server on port " & $(port) & "...\n"
                 
                 startServer(requestHandler.RequestHandler, port)
-
-#=======================================
-# Add Library
-#=======================================
-
-Libraries.add(defineLibrary)

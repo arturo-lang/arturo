@@ -1,8 +1,8 @@
 Through points:
    (x: 0.1234, y: 0.9876) 
-   (x: 0.8764999999999999, y: 0.2345) 
+   (x: 0.8765, y: 0.2345) 
 and radius 2.0, you can construct the following circles: 
-   (x: 1.863111801658189, y: 1.974211801658189, r: 2.0) 
+   (x: 1.8631118016581893, y: 1.974211801658189, r: 2.0) 
    (x: -0.8632118016581896, y: -0.7521118016581892, r: 2.0) 
 
 Through points:
@@ -20,7 +20,7 @@ and radius 2.0, you can construct the following circles:
 
 Through points:
    (x: 0.1234, y: 0.9876) 
-   (x: 0.8764999999999999, y: 0.2345) 
+   (x: 0.8765, y: 0.2345) 
 and radius 0.5, you can construct the following circles: 
    ERROR: separation of points > diameter 
 

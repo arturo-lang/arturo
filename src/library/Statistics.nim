@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2024 Yanis Zafirópulos
+# (c) 2019-2025 Yanis Zafirópulos
 #
 # @file: library/Statistics.nim
 #=======================================================
@@ -34,7 +34,7 @@ import vm/values/custom/[vrange]
 # TODO(Statistics) more potential built-in function candidates?
 #  labels: library, enhancement, open discussion
 
-proc defineLibrary*() =
+proc defineModule*(moduleName: string) =
 
     #----------------------------
     # Functions
@@ -220,9 +220,3 @@ proc defineLibrary*() =
                 push newFloating(varianceS(x.a.map((z)=>(requireValue(z,{Integer,Floating}); asFloat(z)))))
             else:
                 push newFloating(variance(x.a.map((z)=>(requireValue(z,{Integer,Floating}); asFloat(z)))))
-
-#=======================================
-# Add Library
-#=======================================
-
-Libraries.add(defineLibrary)

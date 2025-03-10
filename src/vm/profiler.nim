@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2024 Yanis Zafirópulos
+# (c) 2019-2025 Yanis Zafirópulos
 #
 # @file: vm/profiler.nim
 #=======================================================
@@ -288,11 +288,8 @@ proc initProfiler*() =
             "optimizations": initOrderedTable[string, ProfilerDataRow]()
         }.toOrderedTable
 
-        # TODO(VM/profiler) Completely remove or make it work "properly"
-        #  labels: vm, benchmark, performance, bug
-        when false:
-            system.profilingRequestedHook = requestedHook
-            system.profilerHook = hook
+        system.profilingRequestedHook = requestedHook
+        system.profilerHook = hook
     else:
         discard 
 

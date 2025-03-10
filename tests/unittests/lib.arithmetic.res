@@ -540,10 +540,6 @@
 [+] passed!
 [+] passed!
 
->> pow - :integer :complex
-[+] passed!
-[+] passed!
-
 >> pow - :integer :rational
 [+] passed!
 [+] passed!
@@ -558,10 +554,6 @@
 [+] passed!
 [+] passed!
 [+] passed!
-[+] passed!
-[+] passed!
-
->> pow - :floating :complex
 [+] passed!
 [+] passed!
 
