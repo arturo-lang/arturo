@@ -1,0 +1,27 @@
+import {unitt}!
+import relative {../../commons/functions}!
+
+
+test "returns a tuple" [
+    expected: [[a b c] [a b c]] 
+    actual: decouple [[a a] [b b] [c c]]
+
+    assert -> expected = actual
+    assert -> 2 = size actual
+]
+
+test "keeps the order" [
+    expected: [["one" "two" "three"] [1 2 3]]
+    actual: decouple [["one" 1] ["two" 2] ["three" 3]] 
+
+    assert -> expected = actual
+]
+
+test "inplace-equivalence" [
+    value: [["one" "two" "three"] [1 2 3]]
+
+    [reference inplaced]: 
+        inplaceEquivalence value 'decouple []
+
+    assert -> reference = inplaced
+]

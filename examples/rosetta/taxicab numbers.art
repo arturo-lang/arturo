@@ -1,0 +1,18 @@
+taxicabs: [0] ++ (@1..1200) | combine.repeated.by:2
+                            | gather 'pair -> (pair\0^3) + pair\1^3
+                            | select [k,pair] -> (size pair) > 1
+                            | arrange [k,v] -> to :integer k
+
+cubed: function [n]-> pad (to :string n)++"³" 4
+
+loop append @1..25 @2000..2007 'rank [
+    [num,p]: taxicabs\[rank]
+    print [
+        pad to :string rank 5 ":" 
+        pad num 10 "=" 
+        cubed p\0\0 "+"
+        cubed p\0\1 "="
+        cubed p\1\0 "+"
+        cubed p\1\1
+    ]
+]

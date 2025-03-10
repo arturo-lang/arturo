@@ -1,0 +1,67 @@
+; Bitmap object definition
+define :bitmap [
+    init: method [width :integer height :integer][
+        \width: width 
+        \height: height
+        \grid: array.of:@[width height] false
+    ]
+
+    setOn: method [x :integer y :integer][
+        \grid\[y]\[x]: true
+    ]
+
+    line: method [x0 :integer y0 :integer x1 :integer y1 :integer][
+        [dx,dy]: @[abs x1 - x0, abs y1 - y0]
+        [x,y]: @[x0, y0]
+        sx: (x0 > x1) ? -> neg 1 -> 1
+        sy: (y0 > y1) ? -> neg 1 -> 1
+
+        switch dx > dy [
+            err: dx // 2
+            while [x <> x1][
+                \setOn x y       
+                if negative? err: <= err - dy ->
+                    [y, err]: @[y + sy, err + dx]
+
+                x: x + sx
+            ]
+        ][
+            err: dy // 2
+            while [y <> y1][
+                \setOn x y       
+                if negative? err: <= err - dx ->
+                    [x, err]: @[x + sx, err + dy]
+                y: y + sy
+            ]
+        ]
+        \setOn x y
+    ]
+
+    string: method [][
+        join.with:"\n" @[
+            "+" ++ (repeat "-" \width) ++ "+"
+            join.with:"\n" map 0..dec \height 'y [
+                "|" ++ (join.with:"" map 0..dec \width 'x ->
+                    \grid\[dec \height-y]\[x] ? -> "@" -> " "
+                ) ++ "|"
+            ]
+            "+" ++ (repeat "-" \width) ++ "+"
+        ]
+    ]
+]
+
+; Create bitmap 
+bitmap: to :bitmap @[17 17]!
+
+; and... draw a diamond shape
+points: @[
+    [1 8 8 16]
+    [8 16 16 8]
+    [16 8 8 1]
+    [8 1 1 8]
+]
+
+loop points 'p -> 
+    bitmap\line p\0 p\1 p\2 p\3
+
+print bitmap

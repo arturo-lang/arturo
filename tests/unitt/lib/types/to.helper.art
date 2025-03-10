@@ -1,0 +1,24 @@
+for: $[targetType :type sections :block][
+    section: $[sourceType :type cases :block][
+        test ~"|sourceType| => |targetType|:" 
+        flatten.once map @cases 'p [
+            source: first p
+            expected: last p
+            assertion: [equal?] 
+                | append @[expected]
+                | append [to]
+                | append targetType
+                | append @[source]
+
+            [assert] ++ @[assertion]
+        ]
+    ]
+
+    do sections
+]
+
+pair: $[source target][
+    @[source target]
+]
+
+alias.infix {->>} 'pair

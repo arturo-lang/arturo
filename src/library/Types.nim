@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2024 Yanis Zafirópulos
+# (c) 2019-2025 Yanis Zafirópulos
 #
 # @file: library/Types.nim
 #=======================================================
@@ -36,7 +36,7 @@ import vm/[errors, exec]
 # Definitions
 #=======================================
 
-proc defineLibrary*() =
+proc defineModule*(moduleName: string) =
 
     # TODO(Types) Add new `extend` function?
     #  This would replace Collections\extend (see relevant comment there)
@@ -363,8 +363,8 @@ proc defineLibrary*() =
         example     = """
             to :integer "2020"            ; 2020
 
-            to :integer `A`               ; 65
-            to :char 65                   ; `A`
+            to :integer 'A'               ; 65
+            to :char 65                   ; 'A'
 
             to :integer 4.3               ; 4
             to :floating 4                ; 4.0
@@ -409,7 +409,7 @@ proc defineLibrary*() =
             ; ["1" "2" "3" "4"]
 
             to [:char] "hello"
-            ; [`h` `e` `l` `l` `o`]
+            ; ['h' 'e' 'l' 'l' 'o']
             ..........
             define :person [name surname age][]
 
@@ -570,7 +570,7 @@ proc defineLibrary*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
-            print char? `a`         ; true
+            print char? 'a'         ; true
             print char? 123         ; false
         """:
             #=======================================================
@@ -1329,9 +1329,3 @@ proc defineLibrary*() =
         """:
             #=======================================================
             push(newLogical(xKind==Word))
-
-#=======================================
-# Add Library
-#=======================================
-
-Libraries.add(defineLibrary)

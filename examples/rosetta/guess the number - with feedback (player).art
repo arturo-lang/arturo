@@ -13,24 +13,25 @@ while ø [
     inputOk: false
     while [not? inputOk][
         hle: strip input "How did I do? (h)igh, (l)ow, (=): "
-        case [hle]
-            when? [="h"][
-                if? rmin =< dec guess [rmax: dec guess, inputOk: true]
-                else -> print "\tThat doesn't make any sense. I cannot find the number..."
+        case hle [
+            "h" [
+                switch rmin =< dec guess [rmax: dec guess, inputOk: true]
+                    -> print "\tThat doesn't make any sense. I cannot find the number..."
             ]
-            when? [="l"][
-                if? (inc guess) =< rmax [rmin: inc guess, inputOk: true]
-                else -> print "\tThat doesn't make any sense. I cannot find the number..."
+            "l" [
+                switch (inc guess) =< rmax [rmin: inc guess, inputOk: true]
+                    -> print "\tThat doesn't make any sense. I cannot find the number..."
             ]
-            when? [="="][
+            "=" [
                 print ""
                 print "Great! I found it! :)"
                 print "Thanks for keeping the score."
                 exit
             ]
-            else [
+            any  [
                 print "\tPlease, check your input; it doesn't appear to be correct!"
             ]
+        ]
     ]
     print ""
 ]

@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2024 Yanis Zafirópulos
+# (c) 2019-2025 Yanis Zafirópulos
 #
 # @file: library/Files.nim
 #=======================================================
@@ -55,7 +55,7 @@ when defined(BUNDLE):
 #  this should obviously support writing a 16-bit int, and all this
 #  labels: library, enhancement, new feature, open discussion
 
-proc defineLibrary*() =
+proc defineModule*(moduleName: string) =
 
     #----------------------------
     # Functions
@@ -494,11 +494,11 @@ proc defineLibrary*() =
         builtin "write",
             alias       = doublearrowright, 
             op          = opNop,
-            rule        = PrefixPrecedence,
+            rule        = InfixPrecedence,
             description = "write content to file at given path",
             args        = {
-                "file"      : {String,Null},
-                "content"   : {Any}
+                "content"   : {Any},
+                "file"      : {String,Null}
             },
             attrs       = {
                 "append"        : ({Logical},"append to given file"),
@@ -510,36 +510,36 @@ proc defineLibrary*() =
             returns     = {Nothing},
             example     = """
             ; write some string data to given file path
-            write "somefile.txt" "Hello world!"
+            write "Hello world!" "somefile.txt"
             ..........
             ; we can also write any type of data as JSON
-            write.json "data.json" myData
+            write.json myData "data.json"
             ..........
             ; append to an existing file
-            write.append "somefile.txt" "Yes, Hello again!"
+            write.append "Yes, Hello again!" "somefile.txt"
             """:
                 #=======================================================
                 when defined(SAFE): Error_OperationNotPermitted("write")
 
-                if yKind==Bytecode:
+                if xKind==Bytecode:
                     let dataS = codify(newBlock(y.trans.constants), unwrapped=true, safeStrings=true)
-                    let codeS = y.trans.instructions
-                    discard writeBytecode(dataS, codeS, x.s)
+                    let codeS = x.trans.instructions
+                    discard writeBytecode(dataS, codeS, y.s)
                 else:
                     if (hadAttr("directory")):
-                        createDir(x.s)
+                        createDir(y.s)
                     else:
                         if (hadAttr("binary")):
-                            writeToFile(x.s, y.n, append = (hadAttr("append")))
+                            writeToFile(y.s, x.n, append = (hadAttr("append")))
                         else:
                             if (hadAttr("json")):
-                                let rez = jsonFromValue(y, pretty=(not hadAttr("compact")))
-                                if x.kind==String:
-                                    writeToFile(x.s, rez, append = (hadAttr("append")))
+                                let rez = jsonFromValue(x, pretty=(not hadAttr("compact")))
+                                if y.kind==String:
+                                    writeToFile(y.s, rez, append = (hadAttr("append")))
                                 else:
                                     push(newString(rez))
                             else:
-                                writeToFile(x.s, y.s, append = (hadAttr("append")))
+                                writeToFile(y.s, x.s, append = (hadAttr("append")))
 
         builtin "zip",
             alias       = unaliased, 
@@ -663,9 +663,3 @@ proc defineLibrary*() =
                 when defined(SAFE): Error_OperationNotPermitted("symlink?")
 
                 push newLogical(symlinkExists(x.s))
-
-#=======================================
-# Add Library
-#=======================================
-
-Libraries.add(defineLibrary)

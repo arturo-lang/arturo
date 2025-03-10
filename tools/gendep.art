@@ -176,6 +176,6 @@ delete "src/arturo.png"
 
 delete "arturo.deps"
 
-write "arturo.dot" "digraph Arturo {\n" ++ join.with:"\n" lines ++ "\n}"
+("digraph Arturo {\n" ++ join.with:"\n" lines ++ "\n}") >> "arturo.dot"
 
 execute "dot -Tpng arturo.dot -o arturo.png"
