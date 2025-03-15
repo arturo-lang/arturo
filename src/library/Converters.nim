@@ -70,9 +70,6 @@ proc defineModule*(moduleName: string) =
             "value" : {Any}
         },
         attrs       = {
-            "binary"    : ({Logical},"format integer as binary"),
-            "hex"       : ({Logical},"format integer as hexadecimal"),
-            "octal"     : ({Logical},"format integer as octal"),
             "agnostic"  : ({Logical},"convert words in block to literals, if not in context"),
             "data"      : ({Logical},"parse input as Arturo data block"),
             "code"      : ({Logical},"convert value to valid Arturo code"),
@@ -105,13 +102,13 @@ proc defineModule*(moduleName: string) =
             ; ]
         """:
             #=======================================================
-            if (hadAttr("binary")):
-                push(newString(fmt"{x.i:b}"))
-            elif (hadAttr("hex")):
-                push(newString(fmt"{x.i:x}"))
-            elif (hadAttr("octal")):
-                push(newString(fmt"{x.i:o}"))
-            elif (hadAttr("agnostic")):
+            # if (hadAttr("binary")):
+            #     push(newString(fmt"{x.i:b}"))
+            # elif (hadAttr("hex")):
+            #     push(newString(fmt"{x.i:x}"))
+            # elif (hadAttr("octal")):
+            #     push(newString(fmt"{x.i:o}"))
+            if (hadAttr("agnostic")):
                 let res = x.a.map(proc(v:Value):Value =
                     if v.kind == Word and not SymExists(v.s): newLiteral(v.s)
                     else: v
