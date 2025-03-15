@@ -73,7 +73,6 @@ proc defineModule*(moduleName: string) =
             "binary"    : ({Logical},"format integer as binary"),
             "hex"       : ({Logical},"format integer as hexadecimal"),
             "octal"     : ({Logical},"format integer as octal"),
-            "agnostic"  : ({Logical},"convert words in block to literals, if not in context"),
             "data"      : ({Logical},"parse input as Arturo data block"),
             "code"      : ({Logical},"convert value to valid Arturo code"),
             "pretty"    : ({Logical},"prettify generated code"),
@@ -111,12 +110,12 @@ proc defineModule*(moduleName: string) =
                 push(newString(fmt"{x.i:x}"))
             elif (hadAttr("octal")):
                 push(newString(fmt"{x.i:o}"))
-            elif (hadAttr("agnostic")):
-                let res = x.a.map(proc(v:Value):Value =
-                    if v.kind == Word and not SymExists(v.s): newLiteral(v.s)
-                    else: v
-                )
-                push(newBlock(res))
+            # elif (hadAttr("agnostic")):
+            #     let res = x.a.map(proc(v:Value):Value =
+            #         if v.kind == Word and not SymExists(v.s): newLiteral(v.s)
+            #         else: v
+            #     )
+            #     push(newBlock(res))
             elif (hadAttr("data")):
                 if xKind==Block:
                     push(parseDataBlock(x))
