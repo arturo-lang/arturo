@@ -145,9 +145,6 @@ proc defineModule*(moduleName: string) =
             "value" : {String,Literal}
         },
         attrs       = {
-            "binary"    : ({Logical},"get integer from binary representation"),
-            "hex"       : ({Logical},"get integer from hexadecimal representation"),
-            "octal"     : ({Logical},"get integer from octal representation"),
             "opcode"    : ({Logical},"get opcode by from opcode literal")
         },
         returns     = {Any},
@@ -160,22 +157,22 @@ proc defineModule*(moduleName: string) =
             => 33
         """:
             #=======================================================
-            if (hadAttr("binary")):
-                try:
-                    push(newInteger(parseBinInt(x.s)))
-                except ValueError:
-                    push(VNULL)
-            elif (hadAttr("hex")):
-                try:
-                    push(newInteger(parseHexInt(x.s)))
-                except ValueError:
-                    push(VNULL)
-            elif (hadAttr("octal")):
-                try:
-                    push(newInteger(parseOctInt(x.s)))
-                except ValueError:
-                    push(VNULL)
-            elif (hadAttr("opcode")):
+            # if (hadAttr("binary")):
+            #     try:
+            #         push(newInteger(parseBinInt(x.s)))
+            #     except ValueError:
+            #         push(VNULL)
+            # elif (hadAttr("hex")):
+            #     try:
+            #         push(newInteger(parseHexInt(x.s)))
+            #     except ValueError:
+            #         push(VNULL)
+            # elif (hadAttr("octal")):
+            #     try:
+            #         push(newInteger(parseOctInt(x.s)))
+            #     except ValueError:
+            #         push(VNULL)
+            if (hadAttr("opcode")):
                 push(newInteger(int(parseOpcode(x.s))))
             else:
                 push(x)
