@@ -7,7 +7,7 @@ fromBase: function [x,base][
 ]
 
 toBase: function [x,base][
-    if base=2 [ return as.binary x ]
+    if base=2 [ return to :string .format:".b" x ]
     if base=8 [ return as.octal x ]
     if base=16 [ return as.hex x ]
 

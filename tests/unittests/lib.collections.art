@@ -1172,7 +1172,7 @@ do [
         b0: to :binary 0
         b1: to :binary 1
 
-        ensure -> as.binary 1 = prepend b1 b0
+        ensure -> to :string .format:".b" 1 = prepend b1 b0
         passed
     ]
 
@@ -1182,14 +1182,14 @@ do [
         b1: to :binary 1
         prepend 'b1 b0
 
-        ensure -> as.binary 1 = b1
+        ensure -> to :string .format:".b" 1 = b1
         passed
     ]
 
     topic "prepend - :binary < :binary :integer"
     do [
         b: to :binary 1
-        ensure -> as.binary 0 = prepend b 0
+        ensure -> to :string .format:".b" = prepend b 0
         passed
     ]
 
@@ -1197,7 +1197,7 @@ do [
     do [
         b: to :binary 1
         prepend 'b 0
-        ensure -> as.binary 0 = b
+        ensure -> to :string .format:".b" 0 = b
         passed
     ]
 
