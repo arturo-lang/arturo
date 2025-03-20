@@ -72,10 +72,7 @@ proc defineModule*(moduleName: string) =
         attrs       = {
             "binary"    : ({Logical},"format integer as binary"),
             "hex"       : ({Logical},"format integer as hexadecimal"),
-            "octal"     : ({Logical},"format integer as octal"),
-            "code"      : ({Logical},"convert value to valid Arturo code"),
-            "pretty"    : ({Logical},"prettify generated code"),
-            "unwrapped" : ({Logical},"omit external block notation")
+            "octal"     : ({Logical},"format integer as octal")
         },
         returns     = {Any},
         example     = """
@@ -88,19 +85,6 @@ proc defineModule*(moduleName: string) =
             ;         hello :literal
             ;         world :literal
             ; ]
-            ..........
-            example: "Hello, world"
-            example                 ; => Hello, world
-            as.code example         ; => "Hello, world"
-            ..........
-            as.code #[name: "John" surname: "Doe"]
-            ; => #[name: "John" surname: "Doe" ]
-            
-            as.code.pretty #[name: "John" surname: "Doe"]
-            ; => #[
-            ;         name: "John"
-            ;         surname: "Doe"
-            ; ]
         """:
             #=======================================================
             if (hadAttr("binary")):
@@ -109,8 +93,6 @@ proc defineModule*(moduleName: string) =
                 push(newString(fmt"{x.i:x}"))
             elif (hadAttr("octal")):
                 push(newString(fmt"{x.i:o}"))
-            elif (hadAttr("code")):
-                push(newString(codify(x,pretty = (hadAttr("pretty")), unwrapped = (hadAttr("unwrapped")), safeStrings = (hadAttr("safe")))))
             else:
                 push(x)
 
@@ -133,17 +115,13 @@ proc defineModule*(moduleName: string) =
         attrs       = {
             "binary"    : ({Logical},"get integer from binary representation"),
             "hex"       : ({Logical},"get integer from hexadecimal representation"),
-            "octal"     : ({Logical},"get integer from octal representation"),
-            "opcode"    : ({Logical},"get opcode by from opcode literal")
+            "octal"     : ({Logical},"get integer from octal representation")
         },
         returns     = {Any},
         example     = """
             print from.binary "1011"        ; 11
             print from.octal "1011"         ; 521
             print from.hex "0xDEADBEEF"     ; 3735928559
-            ..........
-            from.opcode 'push1
-            => 33
         """:
             #=======================================================
             if (hadAttr("binary")):
@@ -161,8 +139,8 @@ proc defineModule*(moduleName: string) =
                     push(newInteger(parseOctInt(x.s)))
                 except ValueError:
                     push(VNULL)
-            elif (hadAttr("opcode")):
-                push(newInteger(int(parseOpcode(x.s))))
+            # elif (hadAttr("opcode")):
+            #     push(newInteger(int(parseOpcode(x.s))))
             else:
                 push(x)
 
