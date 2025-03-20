@@ -7,5 +7,5 @@ loop [
     [[1 2 3][30][500 100]] 
     [[1 2 3][][500 100]] 
 ] 'lst [
-    print as.code product.cartesian lst
+    print express product.cartesian lst
 ]
