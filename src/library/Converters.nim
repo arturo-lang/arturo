@@ -72,8 +72,7 @@ proc defineModule*(moduleName: string) =
         attrs       = {
             "binary"    : ({Logical},"format integer as binary"),
             "hex"       : ({Logical},"format integer as hexadecimal"),
-            "octal"     : ({Logical},"format integer as octal"),
-            "agnostic"  : ({Logical},"convert words in block to literals, if not in context")
+            "octal"     : ({Logical},"format integer as octal")
         },
         returns     = {Any},
         example     = """
@@ -94,12 +93,6 @@ proc defineModule*(moduleName: string) =
                 push(newString(fmt"{x.i:x}"))
             elif (hadAttr("octal")):
                 push(newString(fmt"{x.i:o}"))
-            elif (hadAttr("agnostic")):
-                let res = x.a.map(proc(v:Value):Value =
-                    if v.kind == Word and not SymExists(v.s): newLiteral(v.s)
-                    else: v
-                )
-                push(newBlock(res))
             else:
                 push(x)
 
