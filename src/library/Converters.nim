@@ -70,10 +70,7 @@ proc defineModule*(moduleName: string) =
             "value" : {Any}
         },
         attrs       = {
-            "agnostic"  : ({Logical},"convert words in block to literals, if not in context"),
-            "code"      : ({Logical},"convert value to valid Arturo code"),
-            "pretty"    : ({Logical},"prettify generated code"),
-            "unwrapped" : ({Logical},"omit external block notation")
+            "agnostic"  : ({Logical},"convert words in block to literals, if not in context")
         },
         returns     = {Any},
         example     = """
@@ -85,19 +82,6 @@ proc defineModule*(moduleName: string) =
             ; [ :block
             ;         hello :literal
             ;         world :literal
-            ; ]
-            ..........
-            example: "Hello, world"
-            example                 ; => Hello, world
-            as.code example         ; => "Hello, world"
-            ..........
-            as.code #[name: "John" surname: "Doe"]
-            ; => #[name: "John" surname: "Doe" ]
-            
-            as.code.pretty #[name: "John" surname: "Doe"]
-            ; => #[
-            ;         name: "John"
-            ;         surname: "Doe"
             ; ]
         """:
             #=======================================================
@@ -113,8 +97,6 @@ proc defineModule*(moduleName: string) =
                     else: v
                 )
                 push(newBlock(res))
-            elif (hadAttr("code")):
-                push(newString(codify(x,pretty = (hadAttr("pretty")), unwrapped = (hadAttr("unwrapped")), safeStrings = (hadAttr("safe")))))
             else:
                 push(x)
 
@@ -134,17 +116,9 @@ proc defineModule*(moduleName: string) =
         args        = {
             "value" : {String,Literal}
         },
-        attrs       = {
-            "opcode"    : ({Logical},"get opcode by from opcode literal")
-        },
+        attrs       = NoAttrs,
         returns     = {Any},
         example     = """
-            print from.binary "1011"        ; 11
-            print from.octal "1011"         ; 521
-            print from.hex "0xDEADBEEF"     ; 3735928559
-            ..........
-            from.opcode 'push1
-            => 33
         """:
             #=======================================================
             # if (hadAttr("binary")):
@@ -162,8 +136,4 @@ proc defineModule*(moduleName: string) =
             #         push(newInteger(parseOctInt(x.s)))
             #     except ValueError:
             #         push(VNULL)
-            if (hadAttr("opcode")):
-                push(newInteger(int(parseOpcode(x.s))))
-            else:
-                push(x)
-
+            push(x)
