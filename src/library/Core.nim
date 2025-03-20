@@ -1372,6 +1372,39 @@ proc defineModule*(moduleName: string) =
             #=======================================================
             push(copyValue(x))
 
+    builtin "parse",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "parse given string as an Arturo value",
+        args        = {
+            "code"   : {String, Block}
+        },
+        attrs       = {
+            "data"      : ({Logical},"parse input as Arturo data block (unstable!)")
+        },
+        returns     = {Any},
+        example     = """
+            parse "123"         ; 123 (:integer)
+            parse "3.14"        ; 3.14 (:floating)
+            parse "true"        ; true (:logical)
+            parse "[1 2 3]"     ; [1 2 3] (:block)
+        """:
+            #=======================================================
+            if xKind == String:
+                let (src, _) = getSource(x.s)
+                
+                let ret = doParse(src, isFile=false)
+                if unlikely(hadAttr("data")):
+                    push(parseDataBlock(ret))
+                else:
+                    push(ret.a[0])
+            else:
+                if unlikely(hadAttr("data")):
+                    push(parseDataBlock(x))
+                else:
+                    push(x)
+
     builtin "return",
         alias       = unaliased, 
         op          = opReturn,
