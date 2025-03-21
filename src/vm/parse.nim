@@ -523,7 +523,7 @@ template parseNumber(p: var Parser, inPath: bool = false) =
         if p.buf[pos] == '0':
             add(p.value, p.buf[pos])
             var numAllowedChars = {'0'..'9'}
-            if p.buf[pos+1] in {'x', 'X'}:
+            if p.buf[pos+1] in {'x'}:
                 numBase = 16
                 numAllowedChars = {'0'..'9', 'a'..'f', 'A'..'F'}
                 add(p.value, p.buf[pos+1])
