@@ -513,7 +513,7 @@ template parseIdentifier(p: var Parser, alsoAddCurrent: bool) =
         inc(pos)
     p.bufpos = pos
 
-template parseNumber(p: var Parser) =
+template parseNumber(p: var Parser, inPath: bool = false) =
     var pos = p.bufpos
     while p.buf[pos] in Digits:
         add(p.value, p.buf[pos])
