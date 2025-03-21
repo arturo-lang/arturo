@@ -30,6 +30,8 @@ import strutils, tables, unicode
 import vm/[errors, values/value]
 import vm/values/custom/[vquantity, vsymbol]
 
+import helpers/strings
+
 #=======================================
 # Types
 #=======================================
