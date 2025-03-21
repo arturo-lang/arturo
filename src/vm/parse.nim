@@ -524,7 +524,7 @@ template parseNumber(p: var Parser, inPath: bool = false) =
             while p.buf[pos] in {'0'..'9', 'a'..'f', 'A'..'F'}:
                 add(p.value, p.buf[pos])
                 inc(pos)
-            var parseNum: int
+            var parsedNum: int
             discard parseHex(p.value, parsedNum)
             p.value = $(parsedNum)
             p.bufpos = pos
