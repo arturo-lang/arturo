@@ -518,22 +518,22 @@ template parseNumber(p: var Parser, inPath: bool = false) =
 
     when not inPath:
         var numBase = 10
-        if p.buf[pos] == '0' 
+        if p.buf[pos] == '0':
             add(p.value, p.buf[pos])
             var numAllowedChars = {'0'..'9'}
             if p.buf[pos+1] in {'x', 'X'}:
                 numBase = 16
-                numAllowedChars += {'a'..'f', 'A'..'F'}
+                numAllowedChars = {'0'..'9', 'a'..'f', 'A'..'F'}
                 add(p.value, p.buf[pos+1])
                 inc(pos, 2)
             elif p.buf[pos+1] in {'b'}:
                 numBase = 2
-                numAllowedChars += {'0'..'7'}
+                numAllowedChars = {'0'..'7'}
                 add(p.value, p.buf[pos+1])
                 inc(pos, 2)
             elif p.buf[pos+1] in {'o'}:
                 numBase = 8
-                numAllowedChars += {'0','1'}
+                numAllowedChars = {'0','1'}
                 add(p.value, p.buf[pos+1])
                 inc(pos, 2)
             else:
