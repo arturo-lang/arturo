@@ -515,6 +515,17 @@ template parseIdentifier(p: var Parser, alsoAddCurrent: bool) =
 
 template parseNumber(p: var Parser, inPath: bool = false) =
     var pos = p.bufpos
+
+    when not inPath:
+        if p.buf[pos] == '0' and p.buf[pos+1] in {'x', 'X'}:
+            add(p.value, p.buf[pos])
+            add(p.value, p.buf[pos+1])
+            inc(pos, 2)
+            while p.buf[pos] in {'0'..'9', 'a'..'f', 'A'..'F'}:
+                add(p.value, p.buf[pos])
+                inc(pos)
+            p.bufpos = pos
+
     while p.buf[pos] in Digits:
         add(p.value, p.buf[pos])
         inc(pos)
@@ -806,7 +817,7 @@ template parsePath(p: var Parser, root: Value, curLevel: int, asLiteral: bool = 
                 p.values[^1].add(newLiteral(p.value))
             of PermittedNumbers_Start:
                 setLen(p.value, 0)
-                parseNumber(p)
+                parseNumber(p, inPath=true)
                 if hasDot: p.values[^1].add(newFloating(p.value))
                 else: p.values[^1].add(newInteger(p.value))
             of LBracket:
