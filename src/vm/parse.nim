@@ -517,15 +517,33 @@ template parseNumber(p: var Parser, inPath: bool = false) =
     var pos = p.bufpos
 
     when not inPath:
-        if p.buf[pos] == '0' and p.buf[pos+1] in {'x', 'X'}:
+        var numBase = 10
+        if p.buf[pos] == '0' 
             add(p.value, p.buf[pos])
-            add(p.value, p.buf[pos+1])
-            inc(pos, 2)
-            while p.buf[pos] in {'0'..'9', 'a'..'f', 'A'..'F'}:
+            var numAllowedChars = {'0'..'9'}
+            if p.buf[pos+1] in {'x', 'X'}:
+                numBase = 16
+                numAllowedChars += {'a'..'f', 'A'..'F'}
+                add(p.value, p.buf[pos+1])
+                inc(pos, 2)
+            elif p.buf[pos+1] in {'b'}:
+                numBase = 2
+                numAllowedChars += {'0'..'7'}
+                add(p.value, p.buf[pos+1])
+                inc(pos, 2)
+            elif p.buf[pos+1] in {'o'}:
+                numBase = 8
+                numAllowedChars += {'0','1'}
+                add(p.value, p.buf[pos+1])
+                inc(pos, 2)
+            else:
+                inc(pos)
+
+            while p.buf[pos] in numAllowedChars:
                 add(p.value, p.buf[pos])
                 inc(pos)
 
-            p.value = $(parseHexInt(p.value))
+            p.value = $(parseNumFromString(p.value, numBase))
             p.bufpos = pos
 
     while p.buf[pos] in Digits:
