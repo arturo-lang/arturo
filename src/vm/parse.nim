@@ -24,7 +24,7 @@
 # Libraries
 #=======================================
 
-import lexbase, os, parseutils, streams
+import lexbase, os, streams
 import strutils, tables, unicode
 
 import vm/[errors, values/value]
