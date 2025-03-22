@@ -555,12 +555,12 @@ template parseNumber(p: var Parser, inPath: bool = false) =
                 pos = p.bufpos
                 p.value = ""
 
+    var hasDot{.inject.} = false
+
     if likely(not alreadyParsedNumber):
         while p.buf[pos] in Digits:
             add(p.value, p.buf[pos])
             inc(pos)
-
-        var hasDot{.inject.} = false
 
         if p.buf[pos] == Dot and p.buf[pos+1] in Digits:
             hasDot = true
