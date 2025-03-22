@@ -531,12 +531,12 @@ template parseNumber(p: var Parser, inPath: bool = false) =
                 inc(pos, 2)
             elif p.buf[pos+1] in {'b'}:
                 numBase = 2
-                numAllowedChars = {'0'..'7'}
+                numAllowedChars = {'0','1'}
                 add(p.value, p.buf[pos+1])
                 inc(pos, 2)
             elif p.buf[pos+1] in {'o'}:
                 numBase = 8
-                numAllowedChars = {'0','1'}
+                numAllowedChars = {'0'..'7'}
                 add(p.value, p.buf[pos+1])
                 inc(pos, 2)
             else:
