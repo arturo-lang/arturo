@@ -523,6 +523,7 @@ template parseNumber(p: var Parser, inPath: bool = false) =
         if p.buf[pos] == '0':
             add(p.value, p.buf[pos])
             var numAllowedChars = {'0'..'9'}
+            
             if p.buf[pos+1] in {'x'}:
                 numBase = 16
                 numAllowedChars = {'0'..'9', 'a'..'f', 'A'..'F'}
@@ -548,6 +549,9 @@ template parseNumber(p: var Parser, inPath: bool = false) =
 
                 p.value = $(parseNumFromString(p.value, numBase))
                 p.bufpos = pos
+            else:
+                pos = p.bufpos
+                p.value = ""
 
     while p.buf[pos] in Digits:
         add(p.value, p.buf[pos])
