@@ -517,6 +517,7 @@ template parseIdentifier(p: var Parser, alsoAddCurrent: bool) =
 
 template parseNumber(p: var Parser, inPath: bool = false) =
     var pos = p.bufpos
+    var alreadyParsedNumber = false
 
     when not inPath:
         var numBase = 10
@@ -549,38 +550,40 @@ template parseNumber(p: var Parser, inPath: bool = false) =
 
                 p.value = $(parseNumFromString(p.value, numBase))
                 p.bufpos = pos
+                alreadyParsedNumber = true
             else:
                 pos = p.bufpos
                 p.value = ""
 
-    while p.buf[pos] in Digits:
-        add(p.value, p.buf[pos])
-        inc(pos)
-
-    var hasDot{.inject.} = false
-
-    if p.buf[pos] == Dot and p.buf[pos+1] in Digits:
-        hasDot = true
-
-        add(p.value, Dot)
-        inc(pos)
-
+    if likely(not alreadyParsedNumber):
         while p.buf[pos] in Digits:
             add(p.value, p.buf[pos])
             inc(pos)
 
-        if p.buf[pos] == Dot:
-            if p.buf[pos+1] in Digits:
-                add(p.value, Dot)
+        var hasDot{.inject.} = false
+
+        if p.buf[pos] == Dot and p.buf[pos+1] in Digits:
+            hasDot = true
+
+            add(p.value, Dot)
+            inc(pos)
+
+            while p.buf[pos] in Digits:
+                add(p.value, p.buf[pos])
                 inc(pos)
-                while p.buf[pos] in Digits:
-                    add(p.value, p.buf[pos])
+
+            if p.buf[pos] == Dot:
+                if p.buf[pos+1] in Digits:
+                    add(p.value, Dot)
                     inc(pos)
-                
-                if p.buf[pos] in {'+','-'}:
-                    while p.buf[pos] in SemVerExtra:
+                    while p.buf[pos] in Digits:
                         add(p.value, p.buf[pos])
                         inc(pos)
+                    
+                    if p.buf[pos] in {'+','-'}:
+                        while p.buf[pos] in SemVerExtra:
+                            add(p.value, p.buf[pos])
+                            inc(pos)
 
     p.bufpos = pos
 
