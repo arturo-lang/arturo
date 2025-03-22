@@ -1,5 +1,5 @@
 needsAF?: function [x][
-    hex: as.hex x
+    hex: to :string .format:".x" x
     loop 'a'..'f' 'c [
         if contains? hex c ->
             return true

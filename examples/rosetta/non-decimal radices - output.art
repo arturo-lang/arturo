@@ -1,7 +1,7 @@
 loop 0..33 'i ->
     print [
-        pad as.binary i 6
-        pad as.octal i 2
+        pad to :string .format:".b" i 6
+        pad to :string .format:".o" i 2
         pad to :string i 2
-        pad as.hex i 2
+        pad to :string .format:".x" i 2
     ]

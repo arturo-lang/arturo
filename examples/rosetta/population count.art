@@ -1,5 +1,5 @@
 popCount: function [num][
-    size select split to :string as.binary num 'x -> x="1"
+    size select split to :string .format:".b" num 'x -> x="1"
 ]
 
 print "population count for the first thirty powers of 3:"

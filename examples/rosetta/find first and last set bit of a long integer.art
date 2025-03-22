@@ -1,4 +1,4 @@
-msb: function [x]-> dec size as.binary x
+msb: function [x]-> dec size to :string .format:".b" x
 lsb: function [x]-> msb and x neg x
 
 loop 0..5 'i [

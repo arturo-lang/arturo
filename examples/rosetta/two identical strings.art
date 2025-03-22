@@ -1,5 +1,5 @@
 loop 0..1000 'i [
-    bin: as.binary i
+    bin: to :string .format:".b" i
     if even? size bin [
         half: (size bin)/2
         if equal? slice bin 0 dec half
