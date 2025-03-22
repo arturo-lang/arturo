@@ -538,13 +538,16 @@ template parseNumber(p: var Parser, inPath: bool = false) =
                 numAllowedChars = {'0','1'}
                 add(p.value, p.buf[pos+1])
                 inc(pos, 2)
+            else:
+                numAllowedChars = {}
+        
+            if p.buf[pos] in numAllowedChars:
+                while p.buf[pos] in numAllowedChars:
+                    add(p.value, p.buf[pos])
+                    inc(pos)
 
-            while p.buf[pos] in numAllowedChars:
-                add(p.value, p.buf[pos])
-                inc(pos)
-
-            p.value = $(parseNumFromString(p.value, numBase))
-            p.bufpos = pos
+                p.value = $(parseNumFromString(p.value, numBase))
+                p.bufpos = pos
 
     while p.buf[pos] in Digits:
         add(p.value, p.buf[pos])
