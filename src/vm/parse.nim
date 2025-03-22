@@ -538,8 +538,6 @@ template parseNumber(p: var Parser, inPath: bool = false) =
                 numAllowedChars = {'0','1'}
                 add(p.value, p.buf[pos+1])
                 inc(pos, 2)
-            else:
-                inc(pos)
 
             while p.buf[pos] in numAllowedChars:
                 add(p.value, p.buf[pos])
