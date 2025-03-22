@@ -16,8 +16,10 @@
 ## 
 ## The main entry point is `doParse`.
 
-# TODO(VM/parser) General cleanup needed
-#  There are various pieces of commented-out code that make the final result pretty much illegible. Let's clean this up.
+# TODO(VM/parser) Enhance/rewrite the whole file
+#  - The parser is currently a bit of a mess
+#  - It should be rewritten to be cleaner & more efficient
+#  - It should also be more error-aware
 #  labels: vm, parser, cleanup
 
 #=======================================
