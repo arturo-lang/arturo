@@ -38,6 +38,6 @@ loop 0..15 'a [
         binA: (to :string .format:".b" a) ++ join to [:string] repeat 0 4-size to :string .format:".b" a
         binB: (to :string .format:".b" b) ++ join to [:string] repeat 0 4-size to :string .format:".b" b
         [sm,carry]: fourBitAdder binA binB
-        print [pad to :string a 2 "+" pad to :string b 2 "=" binA "+" binB "=" "("++carry++")" sm "=" from.binary carry ++ sm]
+        print [pad to :string a 2 "+" pad to :string b 2 "=" binA "+" binB "=" "("++carry++")" sm "=" parse "0b" ++ carry ++ sm]
     ]
 ]
