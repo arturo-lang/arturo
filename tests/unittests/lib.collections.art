@@ -375,7 +375,7 @@ do [
 topic "get - :binary"
 do [
     bi: to :binary 65000
-    ensure -> (from.hex "E8") = get bi 1
+    ensure -> 0xE8 = get bi 1
     passed
 ]
 
