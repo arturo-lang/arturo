@@ -225,3 +225,11 @@ func isWhitespace*(s: string): bool =
     for c in s:
         if c notin Whitespace: return false
     return true
+
+func parseNumFromString*(s: string, base: int): int =
+    case base:
+        of 2: return parseBinInt(s)
+        of 8: return parseOctInt(s)
+        of 10: return parseInt(s)
+        of 16: return parseHexInt(s)
+        else: raise newException(ValueError, "Invalid base")
