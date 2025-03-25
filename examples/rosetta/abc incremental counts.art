@@ -1,0 +1,14 @@
+unix: read.lines ./"unixdict.txt"
+alpha: read.lines ./"words_alpha.txt"
+
+incrementing: function [letters min words][
+    select words 'word [
+        subset? @min..min+2
+        values select tally word [k v] -> in? k letters
+    ]
+]
+
+loop [
+    "abc" 1 unix "the" 1 unix "cio" 2 unix
+    "abc" 2 alpha "the" 2 alpha "cio" 3 alpha
+] [l m w] -> print ~"|l|, min |m|, |w|\n|incrementing split l m var w|\n"
