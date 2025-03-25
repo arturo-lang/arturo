@@ -189,7 +189,7 @@ suite "dictionary from function" [
 
     test "should return dictionary" [
         returnsDict: $[][
-            #[some: "value"]
+            #[some: "value"] 
         ]
 
         assert -> (#[some: "value"]) = returnsDict
