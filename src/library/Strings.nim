@@ -1090,6 +1090,12 @@ proc defineModule*(moduleName: string) =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
+            numeric? "hello"            ; => false
+            numeric? "3.14"             ; => true
+            numeric? "18966"            ; => true
+            numeric? "3:5"              ; => true
+            numeric? "0xdeadbeef"       ; => true
+            numeric? "123xxy"           ; => false
         """:
             #=======================================================
             var res: Value
