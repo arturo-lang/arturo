@@ -16,8 +16,10 @@
 ## 
 ## The main entry point is `doParse`.
 
-# TODO(VM/parser) General cleanup needed
-#  There are various pieces of commented-out code that make the final result pretty much illegible. Let's clean this up.
+# TODO(VM/parser) Enhance/rewrite the whole file
+#  - The parser is currently a bit of a mess
+#  - It should be rewritten to be cleaner & more efficient
+#  - It should also be more error-aware
 #  labels: vm, parser, cleanup
 
 #=======================================
@@ -29,6 +31,8 @@ import strutils, tables, unicode
 
 import vm/[errors, values/value]
 import vm/values/custom/[vquantity, vsymbol]
+
+import helpers/strings
 
 #=======================================
 # Types
@@ -514,36 +518,75 @@ template parseIdentifier(p: var Parser, alsoAddCurrent: bool) =
         inc(pos)
     p.bufpos = pos
 
-template parseNumber(p: var Parser) =
+template parseNumber(p: var Parser, inPath: bool = false) =
     var pos = p.bufpos
-    while p.buf[pos] in Digits:
-        add(p.value, p.buf[pos])
-        inc(pos)
+    var alreadyParsedNumber = false
+
+    when not inPath:
+        var numBase = 10
+        if p.buf[pos] == '0':
+            add(p.value, p.buf[pos])
+            var numAllowedChars = {'0'..'9'}
+            
+            if p.buf[pos+1] in {'x'}:
+                numBase = 16
+                numAllowedChars = {'0'..'9', 'a'..'f', 'A'..'F'}
+                add(p.value, p.buf[pos+1])
+                inc(pos, 2)
+            elif p.buf[pos+1] in {'b'}:
+                numBase = 2
+                numAllowedChars = {'0','1'}
+                add(p.value, p.buf[pos+1])
+                inc(pos, 2)
+            elif p.buf[pos+1] in {'o'}:
+                numBase = 8
+                numAllowedChars = {'0'..'7'}
+                add(p.value, p.buf[pos+1])
+                inc(pos, 2)
+            else:
+                numAllowedChars = {}
+        
+            if p.buf[pos] in numAllowedChars:
+                while p.buf[pos] in numAllowedChars:
+                    add(p.value, p.buf[pos])
+                    inc(pos)
+
+                p.value = $(parseNumFromString(p.value, numBase))
+                p.bufpos = pos
+                alreadyParsedNumber = true
+            else:
+                pos = p.bufpos
+                p.value = ""
 
     var hasDot{.inject.} = false
 
-    if p.buf[pos] == Dot and p.buf[pos+1] in Digits:
-        hasDot = true
-
-        add(p.value, Dot)
-        inc(pos)
-
+    if likely(not alreadyParsedNumber):
         while p.buf[pos] in Digits:
             add(p.value, p.buf[pos])
             inc(pos)
 
-        if p.buf[pos] == Dot:
-            if p.buf[pos+1] in Digits:
-                add(p.value, Dot)
+        if p.buf[pos] == Dot and p.buf[pos+1] in Digits:
+            hasDot = true
+
+            add(p.value, Dot)
+            inc(pos)
+
+            while p.buf[pos] in Digits:
+                add(p.value, p.buf[pos])
                 inc(pos)
-                while p.buf[pos] in Digits:
-                    add(p.value, p.buf[pos])
+
+            if p.buf[pos] == Dot:
+                if p.buf[pos+1] in Digits:
+                    add(p.value, Dot)
                     inc(pos)
-                
-                if p.buf[pos] in {'+','-'}:
-                    while p.buf[pos] in SemVerExtra:
+                    while p.buf[pos] in Digits:
                         add(p.value, p.buf[pos])
                         inc(pos)
+                    
+                    if p.buf[pos] in {'+','-'}:
+                        while p.buf[pos] in SemVerExtra:
+                            add(p.value, p.buf[pos])
+                            inc(pos)
 
     p.bufpos = pos
 
@@ -807,7 +850,7 @@ template parsePath(p: var Parser, root: Value, curLevel: int, asLiteral: bool = 
                 p.values[^1].add(newLiteral(p.value))
             of PermittedNumbers_Start:
                 setLen(p.value, 0)
-                parseNumber(p)
+                parseNumber(p, inPath=true)
                 if hasDot: p.values[^1].add(newFloating(p.value))
                 else: p.values[^1].add(newInteger(p.value))
             of LBracket:
