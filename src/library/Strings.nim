@@ -1102,7 +1102,7 @@ proc defineModule*(moduleName: string) =
             #=======================================================
             var res: Value
             if likely(xKind==String):
-                res = doParse(x.s, isFile=false)
+                res = doParse(x.s.strip(leading=true,trailing=false,{'-'}), isFile=false)
             else:
                 res = doParse($(x.c), isFile=false)
 
