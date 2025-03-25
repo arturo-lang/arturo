@@ -33,7 +33,9 @@ import helpers/strings
 import vm/lib
 
 when not defined(WEB):
-    import vm/[eval, exec, parse]
+    import vm/[eval, exec]
+
+import vm/parse
 
 import vm/values/custom/[vrange]
 
