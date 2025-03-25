@@ -27,7 +27,7 @@ byteCode: function [blk][
     ;inspect btc    ; uncomment this line to see the bytecode
                     ; in a more readable format
     prints spacer
-    print ["input:" as.code blk]
+    print ["input:" express blk]
     prints spacer
     print ["data:" get btc 'data]
     prints spacer
