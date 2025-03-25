@@ -714,6 +714,44 @@ proc defineModule*(moduleName: string) =
                 for k,v in x.d.pairs:
                     SetSym(k, v)
 
+    builtin "express",
+        alias       = unaliased,
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "convert given value to Arturo code",
+        args        = {
+            "value" : {Any}
+        },
+        attrs       = {
+            "pretty"    : ({Logical},"prettify generated code"),
+            "unwrapped" : ({Logical},"omit external block notation"),
+            "safe"      : ({Logical},"use safe strings")
+        },
+        returns     = {String},
+        example     = """
+            example: "Hello, world"
+            example                 ; => Hello, world
+            express example         ; => "Hello, world"
+            ..........
+            d: #[name: "John"]
+            d\surname: "Doe"
+            
+            express d
+            ; => #[name: "John" surname: "Doe" ]
+            ..........
+            express.pretty #[name: "John" surname: "Doe"]
+            ; => #[
+            ;         name: "John"
+            ;         surname: "Doe"
+            ; ]
+        """:
+            #=======================================================
+            push(newString(codify(x,
+                pretty = (hadAttr("pretty")), 
+                unwrapped = (hadAttr("unwrapped")), 
+                safeStrings = (hadAttr("safe"))
+            )))
+
     builtin "function",
         alias       = dollar,
         op          = opFunc,
@@ -1333,6 +1371,39 @@ proc defineModule*(moduleName: string) =
         """:
             #=======================================================
             push(copyValue(x))
+
+    builtin "parse",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "parse given string as an Arturo value",
+        args        = {
+            "code"   : {String, Block}
+        },
+        attrs       = {
+            "data"      : ({Logical},"parse input as Arturo data block (unstable!)")
+        },
+        returns     = {Any},
+        example     = """
+            parse "123"         ; 123 (:integer)
+            parse "3.14"        ; 3.14 (:floating)
+            parse "true"        ; true (:logical)
+            parse "[1 2 3]"     ; [1 2 3] (:block)
+        """:
+            #=======================================================
+            if xKind == String:
+                let (src, _) = getSource(x.s)
+                
+                let ret = doParse(src, isFile=false)
+                if unlikely(hadAttr("data")):
+                    push(parseDataBlock(ret))
+                else:
+                    push(ret.a[0])
+            else:
+                if unlikely(hadAttr("data")):
+                    push(parseDataBlock(x))
+                else:
+                    push(x)
 
     builtin "return",
         alias       = unaliased, 
