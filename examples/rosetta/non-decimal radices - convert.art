@@ -1,15 +1,15 @@
 fromBase: function [x,base][
-    if base=2 [ return from.binary x ]
-    if base=8 [ return from.octal x ]
-    if base=16 [ return from.hex x ]
+    if base=2 [ return parse "0b" ++ x ]
+    if base=8 [ return parse "0o" ++  x ]
+    if base=16 [ return parse "0x" ++ x ]
 
     return to :integer x
 ]
 
 toBase: function [x,base][
-    if base=2 [ return as.binary x ]
-    if base=8 [ return as.octal x ]
-    if base=16 [ return as.hex x ]
+    if base=2 [ return to :string .format:".b" x ]
+    if base=8 [ return to :string .format:".o" x ]
+    if base=16 [ return to :string .format:".x" x ]
 
     return to :string x
 ]
