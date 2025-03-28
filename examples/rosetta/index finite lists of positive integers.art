@@ -1,11 +1,11 @@
 rank: function [arr][
     if empty? arr -> return 0
-    from.binary "1" ++ join.with:"0" map arr 'a -> repeat "1" a
+    parse "0b1" ++ join.with:"0" map arr 'a -> repeat "1" a
 ]
 
 unrank: function [rnk][
     if rnk=1 -> return [0]
-    bn: as.binary rnk 
+    bn: to :string .format:".b" rnk 
     map split.by:"0" slice bn 1 dec size bn => size
 ]
 
