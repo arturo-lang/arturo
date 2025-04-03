@@ -29,7 +29,7 @@ import vm/values/custom/verror
 # Definitions
 #=======================================
 
-proc defineSymbols*() =
+proc defineModule*(moduleName: string) =
 
     # TODO(Exceptions) revisit and review the whole module
     #  also: we have an "Exceptions" module but the values we are talking
@@ -253,5 +253,3 @@ proc defineSymbols*() =
         alias       = unaliased,
         description = "a VM error":
             newErrorKind(VMErr)
-
-Libraries.add(defineSymbols)

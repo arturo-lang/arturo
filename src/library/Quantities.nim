@@ -55,7 +55,7 @@ template convertQuantity(x, y: Value, xKind, yKind: ValueKind): untyped =
 # Definitions
 #=======================================
 
-proc defineLibrary*() =
+proc defineModule*(moduleName: string) =
 
     #----------------------------
     # Functions
@@ -331,9 +331,3 @@ proc defineLibrary*() =
 
     when defined(GMP):
         addPhysicalConstants()
-
-#=======================================
-# Add Library
-#=======================================
-
-Libraries.add(defineLibrary)

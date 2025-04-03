@@ -37,7 +37,7 @@ import vm/values/printable
 #  Is there any way to remove all ambiguity - by either reducing them, merging them, extending them or explaining their functionality more thoroughly?
 #  labels: library, enhancement, open discussion, documentation
 
-proc defineLibrary*() =
+proc defineModule*(moduleName: string) =
 
     #----------------------------
     # Functions
@@ -70,14 +70,7 @@ proc defineLibrary*() =
             "value" : {Any}
         },
         attrs       = {
-            "binary"    : ({Logical},"format integer as binary"),
-            "hex"       : ({Logical},"format integer as hexadecimal"),
-            "octal"     : ({Logical},"format integer as octal"),
-            "agnostic"  : ({Logical},"convert words in block to literals, if not in context"),
-            "data"      : ({Logical},"parse input as Arturo data block"),
-            "code"      : ({Logical},"convert value to valid Arturo code"),
-            "pretty"    : ({Logical},"prettify generated code"),
-            "unwrapped" : ({Logical},"omit external block notation")
+            "agnostic"  : ({Logical},"convert words in block to literals, if not in context")
         },
         returns     = {Any},
         example     = """
@@ -90,41 +83,20 @@ proc defineLibrary*() =
             ;         hello :literal
             ;         world :literal
             ; ]
-            ..........
-            example: "Hello, world"
-            example                 ; => Hello, world
-            as.code example         ; => "Hello, world"
-            ..........
-            as.code #[name: "John" surname: "Doe"]
-            ; => #[name: "John" surname: "Doe" ]
-            
-            as.code.pretty #[name: "John" surname: "Doe"]
-            ; => #[
-            ;         name: "John"
-            ;         surname: "Doe"
-            ; ]
         """:
             #=======================================================
-            if (hadAttr("binary")):
-                push(newString(fmt"{x.i:b}"))
-            elif (hadAttr("hex")):
-                push(newString(fmt"{x.i:x}"))
-            elif (hadAttr("octal")):
-                push(newString(fmt"{x.i:o}"))
-            elif (hadAttr("agnostic")):
+            # if (hadAttr("binary")):
+            #     push(newString(fmt"{x.i:b}"))
+            # elif (hadAttr("hex")):
+            #     push(newString(fmt"{x.i:x}"))
+            # elif (hadAttr("octal")):
+            #     push(newString(fmt"{x.i:o}"))
+            if (hadAttr("agnostic")):
                 let res = x.a.map(proc(v:Value):Value =
                     if v.kind == Word and not SymExists(v.s): newLiteral(v.s)
                     else: v
                 )
                 push(newBlock(res))
-            elif (hadAttr("data")):
-                if xKind==Block:
-                    push(parseDataBlock(x))
-                elif xKind==String:
-                    let (src, _) = getSource(x.s)
-                    push(parseDataBlock(doParse(src, isFile=false)))
-            elif (hadAttr("code")):
-                push(newString(codify(x,pretty = (hadAttr("pretty")), unwrapped = (hadAttr("unwrapped")), safeStrings = (hadAttr("safe")))))
             else:
                 push(x)
 
@@ -144,44 +116,24 @@ proc defineLibrary*() =
         args        = {
             "value" : {String,Literal}
         },
-        attrs       = {
-            "binary"    : ({Logical},"get integer from binary representation"),
-            "hex"       : ({Logical},"get integer from hexadecimal representation"),
-            "octal"     : ({Logical},"get integer from octal representation"),
-            "opcode"    : ({Logical},"get opcode by from opcode literal")
-        },
+        attrs       = NoAttrs,
         returns     = {Any},
         example     = """
-            print from.binary "1011"        ; 11
-            print from.octal "1011"         ; 521
-            print from.hex "0xDEADBEEF"     ; 3735928559
-            ..........
-            from.opcode 'push1
-            => 33
         """:
             #=======================================================
-            if (hadAttr("binary")):
-                try:
-                    push(newInteger(parseBinInt(x.s)))
-                except ValueError:
-                    push(VNULL)
-            elif (hadAttr("hex")):
-                try:
-                    push(newInteger(parseHexInt(x.s)))
-                except ValueError:
-                    push(VNULL)
-            elif (hadAttr("octal")):
-                try:
-                    push(newInteger(parseOctInt(x.s)))
-                except ValueError:
-                    push(VNULL)
-            elif (hadAttr("opcode")):
-                push(newInteger(int(parseOpcode(x.s))))
-            else:
-                push(x)
-
-#=======================================
-# Add Library
-#=======================================
-
-Libraries.add(defineLibrary)
+            # if (hadAttr("binary")):
+            #     try:
+            #         push(newInteger(parseBinInt(x.s)))
+            #     except ValueError:
+            #         push(VNULL)
+            # elif (hadAttr("hex")):
+            #     try:
+            #         push(newInteger(parseHexInt(x.s)))
+            #     except ValueError:
+            #         push(VNULL)
+            # elif (hadAttr("octal")):
+            #     try:
+            #         push(newInteger(parseOctInt(x.s)))
+            #     except ValueError:
+            #         push(VNULL)
+            push(x)

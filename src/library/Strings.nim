@@ -33,7 +33,9 @@ import helpers/strings
 import vm/lib
 
 when not defined(WEB):
-    import vm/[eval, exec, parse]
+    import vm/[eval, exec]
+
+import vm/parse
 
 import vm/values/custom/[vrange]
 
@@ -61,7 +63,7 @@ template replaceStrWith(str: var string, src: Value, dst: Value): untyped =
 # Definitions
 #=======================================
 
-proc defineLibrary*() =
+proc defineModule*(moduleName: string) =
 
     #----------------------------
     # Functions
@@ -1090,20 +1092,21 @@ proc defineLibrary*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
-            numeric? "hello"           ; => false
-            numeric? "3.14"            ; => true
-            numeric? "18966"           ; => true
-            numeric? "123xxy"          ; => false
+            numeric? "hello"            ; => false
+            numeric? "3.14"             ; => true
+            numeric? "18966"            ; => true
+            numeric? "3:5"              ; => true
+            numeric? "0xdeadbeef"       ; => true
+            numeric? "123xxy"           ; => false
         """:
             #=======================================================
-            try:
-                if xKind==Char:
-                    discard parseFloat($(x.c))
-                else:
-                    discard x.s.parseFloat()
-                push(VTRUE)
-            except ValueError:
-                push(VFALSE)
+            var res: Value
+            if likely(xKind==String):
+                res = doParse(x.s.strip(leading=true,trailing=false,{'-'}), isFile=false)
+            else:
+                res = doParse($(x.c), isFile=false)
+
+            push(newLogical(res.a.len==1 and res.a[0].kind in {Integer,Floating,Rational}))
 
     builtin "prefix?",
         alias       = unaliased, 
@@ -1221,9 +1224,3 @@ proc defineLibrary*() =
                 push(newLogical(x.c.isWhitespace()))
             else:
                 push(newLogical(x.s.isWhitespace()))
-
-#=======================================
-# Add Library
-#=======================================
-
-Libraries.add(defineLibrary)

@@ -38,7 +38,7 @@ when not defined(NODIALOGS):
 # Definitions
 #=======================================
 
-proc defineLibrary*() =
+proc defineModule*(moduleName: string) =
 
     #----------------------------
     # Functions
@@ -343,9 +343,3 @@ proc defineLibrary*() =
                         wv.evaluate(x.s)
 
                 wv.show()
-                
-#=======================================
-# Add Library
-#=======================================
-
-Libraries.add(defineLibrary)

@@ -65,7 +65,7 @@ proc replacingAmpersands(va: Value, what: Value): Value =
 # Definitions
 #=======================================
 
-proc defineLibrary*() =
+proc defineModule*(moduleName: string) =
 
     #----------------------------
     # Functions
@@ -714,6 +714,44 @@ proc defineLibrary*() =
                 for k,v in x.d.pairs:
                     SetSym(k, v)
 
+    builtin "express",
+        alias       = unaliased,
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "convert given value to Arturo code",
+        args        = {
+            "value" : {Any}
+        },
+        attrs       = {
+            "pretty"    : ({Logical},"prettify generated code"),
+            "unwrapped" : ({Logical},"omit external block notation"),
+            "safe"      : ({Logical},"use safe strings")
+        },
+        returns     = {String},
+        example     = """
+            example: "Hello, world"
+            example                 ; => Hello, world
+            express example         ; => "Hello, world"
+            ..........
+            d: #[name: "John"]
+            d\surname: "Doe"
+            
+            express d
+            ; => #[name: "John" surname: "Doe" ]
+            ..........
+            express.pretty #[name: "John" surname: "Doe"]
+            ; => #[
+            ;         name: "John"
+            ;         surname: "Doe"
+            ; ]
+        """:
+            #=======================================================
+            push(newString(codify(x,
+                pretty = (hadAttr("pretty")), 
+                unwrapped = (hadAttr("unwrapped")), 
+                safeStrings = (hadAttr("safe"))
+            )))
+
     builtin "function",
         alias       = dollar,
         op          = opFunc,
@@ -1334,6 +1372,39 @@ proc defineLibrary*() =
             #=======================================================
             push(copyValue(x))
 
+    builtin "parse",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "parse given string as an Arturo value",
+        args        = {
+            "code"   : {String, Block}
+        },
+        attrs       = {
+            "data"      : ({Logical},"parse input as Arturo data block (unstable!)")
+        },
+        returns     = {Any},
+        example     = """
+            parse "123"         ; 123 (:integer)
+            parse "3.14"        ; 3.14 (:floating)
+            parse "true"        ; true (:logical)
+            parse "[1 2 3]"     ; [1 2 3] (:block)
+        """:
+            #=======================================================
+            if xKind == String:
+                let (src, _) = getSource(x.s)
+                
+                let ret = doParse(src, isFile=false)
+                if unlikely(hadAttr("data")):
+                    push(parseDataBlock(ret))
+                else:
+                    push(ret.a[0])
+            else:
+                if unlikely(hadAttr("data")):
+                    push(parseDataBlock(x))
+                else:
+                    push(x)
+
     builtin "return",
         alias       = unaliased, 
         op          = opReturn,
@@ -1437,9 +1508,7 @@ proc defineLibrary*() =
         args        = {
             "number"    : {Integer}
         },
-        attrs       = {
-            "discard"   : ({Logical},"do not return anything")
-        },
+        attrs       = NoAttrs,
         returns     = {Any},
         example     = """
             1 2 3
@@ -1448,30 +1517,23 @@ proc defineLibrary*() =
             1 2 3
             b: unstack 2        ; b: [3 2]
             ..........
+            ; You can also discard the values using `discard`
             1 2 3
-            unstack.discard 1   ; popped 3 from the stack
+            discard unstack 1   ; popped 3 from the stack
         """:
             #=======================================================
-            if Stack[0..SP-1].len < x.i: Error_StackUnderflow()
-            
-            let doDiscard = (hadAttr("discard"))
+            if Stack[0..SP-1].len < x.i: 
+                Error_StackUnderflow()
             
             if x.i==1:
-                if doDiscard: discard stack.pop()
-                else: discard
+                discard
             else:
-                if doDiscard: 
-                    var i = 0
-                    while i<x.i:
-                        discard stack.pop()
-                        i+=1
-                else:
-                    var res: ValueArray
-                    var i = 0
-                    while i<x.i:
-                        res.add stack.pop()
-                        i+=1
-                    push(newBlock(res))
+                var res: ValueArray
+                var i = 0
+                while i<x.i:
+                    res.add stack.pop()
+                    i+=1
+                push(newBlock(res))
 
     builtin "until",
         alias       = unaliased, 
@@ -1930,9 +1992,3 @@ proc defineLibrary*() =
         alias       = slashedzero,
         description = "the NULL constant":
             VNULL
-
-#=======================================
-# Add Library
-#=======================================
-
-Libraries.add(defineLibrary)

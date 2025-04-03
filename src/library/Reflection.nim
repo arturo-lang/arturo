@@ -33,7 +33,7 @@ import vm/[errors, eval, exec, runtime]
 # Definitions
 #=======================================
 
-proc defineLibrary*() =
+proc defineModule*(moduleName: string) =
 
     #----------------------------
     # Functions
@@ -384,9 +384,3 @@ proc defineLibrary*() =
         """:
             #=======================================================
             push(newLogical(emptyFrameStack()))
-
-#=======================================
-# Add Library
-#=======================================
-
-Libraries.add(defineLibrary)

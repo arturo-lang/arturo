@@ -55,7 +55,7 @@ when defined(BUNDLE):
 #  this should obviously support writing a 16-bit int, and all this
 #  labels: library, enhancement, new feature, open discussion
 
-proc defineLibrary*() =
+proc defineModule*(moduleName: string) =
 
     #----------------------------
     # Functions
@@ -663,9 +663,3 @@ proc defineLibrary*() =
                 when defined(SAFE): Error_OperationNotPermitted("symlink?")
 
                 push newLogical(symlinkExists(x.s))
-
-#=======================================
-# Add Library
-#=======================================
-
-Libraries.add(defineLibrary)
