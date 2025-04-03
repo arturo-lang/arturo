@@ -27,6 +27,10 @@ proc fullBuildConfig() =
             --define:useOpenssl3
     --define:ssl
 
+proc docgenBuildConfig() =
+    fullBuildConfig()
+    --define:DOCGEN
+
 proc bundleConfig() =
     --define:BUNDLE
     #--define:NOERRORLINES

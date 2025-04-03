@@ -14,9 +14,9 @@ loop 0..31 'num [
 
     print [
         pad to :string num 2 ":" 
-        pad as.binary num 5 "=>" 
-        pad as.binary encoded 5 "=>" 
-        pad as.binary decoded 5 ":" 
+        pad to :string .format:".b" num 5 "=>" 
+        pad to :string .format:".b" encoded 5 "=>" 
+        pad to :string .format:".b" decoded 5 ":" 
         pad to :string decoded 2
     ]
 ]

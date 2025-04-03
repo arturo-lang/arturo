@@ -13,6 +13,8 @@
 ; * Don't forget to push changes to the corresponding repo!
 ;---------------------------------------------------------------------------------
 
+;import'progressive!
+
 modules: new []
 functions: #[]
 relatedFuncs: #[]
@@ -27,13 +29,17 @@ loop rosettas 'ro [
     'dict ++ ro
 ]
 
-(as.pretty.code dict) >> "docs/website/data/rosetta.art" 
+loop list "docs/website/data" 'df [
+    if ".art" = extract.extension df -> 
+        delete df
+]
 
-print as.pretty.code dict
+(as.pretty.code dict) >> "docs/website/data/rosetta.art" 
 
 ; get modules and functions
 loop keys symbols [sym][
-    print ["processing:" sym]
+    ;processing sym
+
     inf: info.get sym
 
     if key? inf 'module [
@@ -77,13 +83,10 @@ loop keys symbols [sym][
     ]
 ]
 
-inspect modules
-
-inspect relatedFuncs
-
 unique 'modules
 
 loop functions [modl,lst][
+    ;processing modl
     target: relative join.path @["../docs/website/pages/documentation/library" lower modl]
 
     loop list target 'tt [
@@ -110,9 +113,6 @@ loop functions [modl,lst][
         funcInfo\related: relatedFuncs\[func]
         funcInfo: replace strip as.pretty.code.unwrapped funcInfo "\t" "    "
 
-        inspect funcInfo
-        
-        print join.path @[target ~"|func|.art"]
         if not? exists? target ->
             write.directory ø target
         funcInfo >> join.path @[target ~{|replace func "?" "-"|.art}]
@@ -121,21 +121,16 @@ loop functions [modl,lst][
 funcs: new []
 loop functions [modl,lst][
     loop lst 'f [
-        print ["adding:" f]
         'funcs ++ f
     ]
 ]
-
-print "AFTER"
 
 sort 'funcs
 funcList: new []
 symbList: new []
 
-inspect funcs
-
 loop funcs 'f [
-    print ["processing func:" f]
+    ;processing f
     inf: info.get f 
 
     href: lower replace ~"|inf\module|/|f|" "?" "-"
@@ -152,5 +147,3 @@ loop funcs 'f [
 (as.pretty.code sort unique modules) >> "docs/website/data/libraryModules.art" 
 (as.pretty.code funcList) >> "docs/website/data/libraryFunctions.art" 
 (as.pretty.code symbList) >> "docs/website/data/librarySymbols.art" 
-
-inspect funcList
