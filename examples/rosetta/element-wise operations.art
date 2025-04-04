@@ -1,0 +1,41 @@
+scalar?: $[obj] -> in? type obj [:integer :floating :rational]
+ 
+; a function that creates new matrix functions
+matrixOp: function [binOp][
+	return function [
+		a :block :integer :floating :rational
+		b :block :integer :floating :rational
+	] with [binOp][
+		when [
+			and? block? a, block? b [
+				map.with:'y a => [
+					map.with:'x & => [
+						call binOp @[a\[y]\[x] b\[y]\[x]]
+					]
+				]
+			]
+			and? scalar? a, block? b ->
+				map b => [map & 'x -> call binOp @[a x]]
+ 
+			and? block? a, scalar? b ->
+				map a => [map & 'x -> call binOp @[x b]]
+ 
+			any -> throw "Expected at least one matrix."
+		]
+	]
+]
+madd: matrixOp 'add
+msub: matrixOp 'sub
+mmul: matrixOp 'mul
+mfdiv: matrixOp 'fdiv
+mpow: matrixOp 'pow!
+ 
+a: [[1 2] [3 4]]
+b: [[5 6] [7 8]]
+ 
+print.lines [
+	madd a b
+	msub a b
+	msub a 2
+	msub 2 a
+]
