@@ -28,6 +28,7 @@ canExecute?: function [scri][
 
             "ackermann function"
             "arbitrary-precision integers - included"
+            "arithmetic derivative"
             "bell numbers"
             "benford's law"
             "combinations and permutations"
