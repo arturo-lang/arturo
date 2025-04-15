@@ -1,0 +1,2 @@
+print.lines select.first:50 1..∞ 'n ->
+  (sum factors n) = sum factors n+1

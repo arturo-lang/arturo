@@ -1,0 +1,7 @@
+entropy: function [s][
+    fold values tally s [acc x] ->
+        acc - (x // size s) * log x // size s 2
+]
+
+; assumes file name
+print entropy read.file ./"entropy - narcissist.art"

@@ -24,7 +24,7 @@ loop words 'word [
         continue
 
     if match? word {/^[a-f]+$/} [
-        base10: from.hex word
+        base10: parse "0x" ++ word
         droot: digRoot base10
         'hexWords ++ #[
             root: droot
