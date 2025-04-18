@@ -1,0 +1,20 @@
+D: $[x][
+    when [
+        x < 0 -> neg D neg x
+        x = 0 -> 0
+        x = 1 -> 0
+        prime? x -> 1
+        any [
+            m: 2
+            while [0 <> x % m] -> inc 'm
+            n: x / m
+            (n * D m) + m * D n
+        ]
+    ]
+]
+
+(neg 99)..100 | map => D
+              | split.every:10
+              | loop => [loop & 'n -> prints pad to :string n 5 print ""]
+print ""
+loop 20 'n -> print ~"D(10^|n|)/7 = |div D 10^n 7|"

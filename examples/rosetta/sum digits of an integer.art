@@ -10,5 +10,5 @@ sumDigits: function [n base][
 print sumDigits 1 10
 print sumDigits 12345 10
 print sumDigits 123045 10
-print sumDigits from.hex "0xfe" 16
-print sumDigits from.hex "0xf0e" 16
+print sumDigits 0xfe 16
+print sumDigits 0xf0e 16

@@ -1,0 +1,11 @@
+roll: $[n sides][
+    fold n [x y] -> x + random 1 sides
+]
+
+winRatio: $[a b c d][
+    enumerate 10000 => [(roll a b) > roll c d]
+    | fdiv 10000
+]
+
+print winRatio 9 4 6 6  ; probability that 9d4 beats 6d6
+print winRatio 5 10 6 7
