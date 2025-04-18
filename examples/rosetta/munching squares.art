@@ -1,0 +1,9 @@
+; outputs a PPM image file
+imgSize: 256
+image: ~"P3\n|imgSize| |imgSize|\n255\n"
+
+loop 0..dec imgSize 'row ->
+    loop 0..dec imgSize 'col ->
+        'image ++ ~"|xor row col| |or row col| |and row col|\n"
+
+write image ./"munching.ppm"
