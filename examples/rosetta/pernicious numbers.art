@@ -1,5 +1,5 @@
 pernicious?: function [n][
-    prime? size filter split as.binary n 'x -> x="0"
+    prime? size filter split to :string .format:".b" n 'x -> x="0"
 ]
 
 i: 1

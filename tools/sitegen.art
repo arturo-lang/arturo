@@ -34,7 +34,7 @@ loop list "docs/website/data" 'df [
         delete df
 ]
 
-(as.pretty.code dict) >> "docs/website/data/rosetta.art" 
+(express.pretty dict) >> "docs/website/data/rosetta.art" 
 
 ; get modules and functions
 loop keys symbols [sym][
@@ -111,7 +111,7 @@ loop functions [modl,lst][
         ]
         funcInfo: remove.key funcInfo 'address
         funcInfo\related: relatedFuncs\[func]
-        funcInfo: replace strip as.pretty.code.unwrapped funcInfo "\t" "    "
+        funcInfo: replace strip express.pretty.unwrapped funcInfo "\t" "    "
 
         if not? exists? target ->
             write.directory ø target
@@ -144,6 +144,6 @@ loop funcs 'f [
     ]
 ]
 
-(as.pretty.code sort unique modules) >> "docs/website/data/libraryModules.art" 
-(as.pretty.code funcList) >> "docs/website/data/libraryFunctions.art" 
-(as.pretty.code symbList) >> "docs/website/data/librarySymbols.art" 
+(express.pretty sort unique modules) >> "docs/website/data/libraryModules.art" 
+(express.pretty funcList) >> "docs/website/data/libraryFunctions.art" 
+(express.pretty symbList) >> "docs/website/data/librarySymbols.art" 
