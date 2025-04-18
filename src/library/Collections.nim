@@ -705,7 +705,7 @@ proc defineModule*(moduleName: string) =
             "index"     : {Any}
         },
         attrs       = {
-            "safe"  : ({Logical}, "get value, overriding potential magic methods (only for Object values)")
+            "field" : ({Logical}, "get field value, overriding type magic methods")
         },
         returns     = {Any},
         example     = """
@@ -743,7 +743,7 @@ proc defineModule*(moduleName: string) =
             ..........
             define :person [
                 get: method [what][
-                    (key? this what)? -> get.safe this what     ; if the key exists, return the value
+                    (key? this what)? -> get.field this what    ; if the key exists, return the value
                                       -> "DEFAULT"              ; otherwise, do something else
                 ]
             ]
@@ -823,14 +823,14 @@ proc defineModule*(moduleName: string) =
                         of String, Word, Literal:
                             if (let got = GetObjectKey(x, y.s, withError=false); not got.isNil):
                                 push(got)
-                            elif x.magic.fetch(GetM) and (not hadAttr("safe")):
+                            elif x.magic.fetch(GetM) and (not hadAttr("field")):
                                 mgk(@[x, y]) # value already pushed
                             else:
                                 discard GetObjectKey(x, y.s) # Merely to trigger the error
                         else:
                             if (let got = GetObjectKey(x, $(y), withError=false); not got.isNil):
                                 push(got)
-                            elif x.magic.fetch(GetM) and (not hadAttr("safe")):
+                            elif x.magic.fetch(GetM) and (not hadAttr("field")):
                                 mgk(@[x, y]) # value already pushed
                             else:
                                 discard GetObjectKey(x, $(y)) # Merely to trigger the error
@@ -1410,6 +1410,8 @@ proc defineModule*(moduleName: string) =
             "step"  : ({Integer},"use step between range values")
         },
         returns     = {Range},
+        # TODO(Collections\range) add documentation example
+        #  labels: library, documentation, example
         example     = """
         ; range of :integers
 
@@ -1778,7 +1780,7 @@ proc defineModule*(moduleName: string) =
             "value"     : {Any}
         },
         attrs       = {
-            "safe"  : ({Logical}, "set value, overriding potential magic methods (only for Object values)")
+            "field" : ({Logical}, "set field value, overriding type magic methods")
         },
         returns     = {Nothing},
         example     = """
@@ -1806,7 +1808,7 @@ proc defineModule*(moduleName: string) =
                 set: method [what, value][
                     ; do some processing...
 
-                    set.safe this what value
+                    set.field this what value
                     ; and actually set the value internally
                 ]
             ]
@@ -1862,7 +1864,7 @@ proc defineModule*(moduleName: string) =
                 of Object:
                     if unlikely(x.magic.fetch(ChangingM)):
                         mgk(@[x, y])
-                    if (x.magic.fetch(SetM) and (not hadAttr("safe")) and (y.kind in {String,Word,Literal,Label}) and (y.s notin toSeq(x.proto.fields.keys()))):
+                    if (x.magic.fetch(SetM) and (not hadAttr("field")) and (y.kind in {String,Word,Literal,Label}) and (y.s notin toSeq(x.proto.fields.keys()))):
                         mgk(@[x, y, z])
                     else:
                         case yKind:
