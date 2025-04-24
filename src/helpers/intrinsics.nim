@@ -21,7 +21,7 @@ else:
         when sizeof(int) == sizeof(clong):
             func addIntWithOverflow*(a, b: int, res: var int): bool {.importc: "__builtin_saddl_overflow", nodecl, nosideeffect.}
             func subIntWithOverflow*(a, b: int, res: var int): bool {.importc: "__builtin_ssubl_overflow", nodecl, nosideeffect.}
-            func mulIntWithOverflow*(a, b: int, res: var int): bool {.importc: "__builtin_smulll_overflow", nodecl, nosideeffect.}
+            func mulIntWithOverflow*(a, b: int, res: var int): bool {.importc: "__builtin_smull_overflow", nodecl, nosideeffect.}
         elif sizeof(int) == sizeof(clonglong):
             func addIntWithOverflow*(a, b: int, res: var int): bool {.importc: "__builtin_saddll_overflow", nodecl, nosideeffect.}
             func subIntWithOverflow*(a, b: int, res: var int): bool {.importc: "__builtin_ssubll_overflow", nodecl, nosideeffect.}
