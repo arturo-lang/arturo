@@ -35,7 +35,6 @@ when not defined(NOWEBVIEW):
         WebviewCallKind* = enum
             FunctionCall,
             ExecuteCode,
-            BackendAction,
             WebviewEvent,
             UnrecognizedCall
 
@@ -205,30 +204,13 @@ when not defined(NOWEBVIEW):
                 of "call"   : callKind = FunctionCall
                 of "exec"   : callKind = ExecuteCode
                 of "event"  : callKind = WebviewEvent
-                of "action" : callKind = BackendAction
                 else        : 
                     res = 1
                     callKind = UnrecognizedCall
 
-            if callKind == BackendAction:
-                case value.s:
-                    of "window.maximize":
-                        mainWebview.getWindow().maximize()
-                    of "window.unmaximize":
-                        mainWebview.getWindow().unmaximize()
-                    of "window.show":
-                        mainWebview.getWindow().show()
-                    of "window.hide":
-                        mainWebview.getWindow().hide()
-                    of "window.fullscreen":
-                        mainWebview.getWindow().fullscreen()
-                    of "window.unfullscreen":
-                        mainWebview.getWindow().unfullscreen()
-                    else:
-                        discard
-            else:
-                if callKind != UnrecognizedCall:
-                    returned = jsonFromValue(mainCallHandler(callKind, value), pretty=false).cstring
+
+            if callKind != UnrecognizedCall:
+                returned = jsonFromValue(mainCallHandler(callKind, value), pretty=false).cstring
 
             discard webview_return(mainWebview, cast[cstring](seq), res.cint, returned)
 
@@ -237,8 +219,40 @@ when not defined(NOWEBVIEW):
         discard result.webview_bind("callback", handler, cast[pointer](0))
 
     proc show*(w: Webview) =
-        when defined(macosx):
-            generateDefaultMainMenu()
+        # when defined(macosx):
+        #     generateDefaultMainMenu()
+        
+
+        # Create File menu
+        let fileMenu = newMenu("File")
+        discard fileMenu.addItem("New") do (userData: pointer):
+            echo "New file"
+        discard fileMenu.addItem("Open")
+        discard fileMenu.addSeparator()
+
+        # Create Share menu
+        let shareMenu = newMenu()  # Using newMenu() for submenu
+
+        # Add items to Share menu using the proper Nim API
+        discard shareMenu.addItem("Facebook") do (userData: pointer):
+            echo "Shared to Facebook"
+        discard shareMenu.addItem("Twitter") do (userData: pointer):
+            echo "Shared to Twitter"
+        discard shareMenu.addItem("Instagram") do (userData: pointer):
+            echo "Shared to Instagram"
+
+        # Add Share submenu to File menu
+        discard fileMenu.addSubmenu("Share", shareMenu)
+
+        discard fileMenu.addItem("Exit")
+
+        # Create Edit menu
+        let editMenu = newMenu("Edit")
+        let undoItem = editMenu.addItem("Undo")
+        undoItem.setShortcut("Ctrl+Z")
+
+        # Set the menu bar
+        w.getWindow().setMenus([fileMenu, editMenu])
 
         discard webview_run(w)
         discard webview_destroy(w)
