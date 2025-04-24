@@ -67,10 +67,9 @@ proc configWebkit() =
     const webkitVersions = ["4.1", "4.0"]
 
     proc getWebkitVersion(): string =
-        let testPkg = gorgeEx("which pkg-config")
+        let testPkg = gorgeEx("lsb_release -a")
         if testPkg.exitCode != 0:
-            # pkg-config not found
-            # probably because we are not on Ubuntu
+            # not on Ubuntu
             return "4.0"
 
         for version in webkitVersions:
