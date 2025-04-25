@@ -14,7 +14,7 @@
 #=======================================
 
 import std/json, os
-import strformat, strutils
+import strformat, strutils, tables
 
 import ".config/utils/ui.nims"
 import ".config/utils/cli.nims"
@@ -50,6 +50,19 @@ let
         targetStores:   targetDir/"stores",
         mainFile:       "src"/"arturo.nim",
     )
+
+const
+    dependencies = {
+        "gtk+-3.0":       "gtk3-devel",
+        "webkit2gtk-4.1": "webkit2gtk4.1-devel",
+        "gmp":            "gmp-devel",
+        "mpfr":           "mpfr-devel",
+    }.toTable
+
+    buildsWithDependencies = [
+        "@full",
+        "@docgen",
+    ]
 
 #=======================================
 # Types
@@ -234,6 +247,25 @@ proc installAll*(config: BuildConfig, targetFile: string) =
 
     main(config)
 
+proc checkDependencies(logging: bool) =
+    var fails: seq[string]
+
+    log ""
+    for dep in dependencies.keys:
+        if gorgeEx(fmt"pkg-config --exists {dep}").exitCode != 0:
+            fails.add(dep)
+
+    if fails.len > 0:
+        let failText = (if fails.len == 1: "this dependency" else: "these dependencies")
+        warn fmt"Missing {failText}:"
+        for fail in fails:
+            log dependencies[fail]
+        log ""
+        panic "Install all packages listed above and try again", 1
+    else:
+        if logging:
+            log "Dependencies successfully checked"
+
 proc showBuildInfo*(config: BuildConfig) =
     let
         params = flags.join(" ")
@@ -249,6 +281,9 @@ proc showBuildInfo*(config: BuildConfig) =
 
     if not config.silentCompilation:
         log fmt"flags: {params}"
+
+    if config.version in buildsWithDependencies:
+        checkDependencies(config.shouldLog)
 
 #=======================================
 # Methods
@@ -455,6 +490,7 @@ cmd build, "[default] Build arturo and optionally install the executable":
         >> ["docgen"]:
             fullBuildConfig()
             docgenBuildConfig()
+            config.version = "@docgen"
         >> ["safe"]:
             safeBuildConfig()
             miniBuild()
