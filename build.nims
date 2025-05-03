@@ -73,7 +73,7 @@ let
     )
 
 # BSDs not supported yet
-when defined(windows):
+when defined(linux):
     const
         dependencies = [
             "gtk+-3.0",
@@ -86,7 +86,7 @@ elif defined(macosx):
         dependencies = [
             "mpfr",
         ]
-elif defined(linux):
+elif defined(windows):
     const
         dependencies: array[0, string] = []
 else:
