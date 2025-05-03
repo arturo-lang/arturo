@@ -214,7 +214,7 @@ const
                       "gmp"           : "gmp",
                       "mpfr"          : "mpfr",
         }.toTable,
-        slackware:  { "gtk+-3.0"      : "gtk+3[current version here].txz",
+        upgradepkg: { "gtk+-3.0"      : "gtk+3[current version here].txz",
                       "webkit2gtk-4.1": "webkit2gtk4.1[current version here].txz",
                       "gmp"           : "gmp[current version here].txz",
                       "mpfr"          : "mpfr[current version here].txz",
