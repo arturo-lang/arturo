@@ -40,23 +40,24 @@ include ".config/who.nims"
 # Constants
 #=======================================
 
+# Most of the time package names are the same among distros using
+# the same package manager. The exceptions are listed as <pkgman><distro>
 type
     PkgMan = enum
         apk
         apt
+        aptChimera
         brew
         bsd
-        chimera
         dnf
+        dnfMandriva
         emerge
         eopkg
         guix
-        mandriva
         nix
         pacman
         pkg_add
         pkgin
-        slackware
         swupd
         upgradepkg
         xbps
@@ -107,7 +108,7 @@ when defined(linux):
             "blendos"       : pacman,
             "bluefin"       : brew,
             "centos"        : dnf,
-            "chimera"       : chimera,
+            "chimera"       : aptChimera,
             "clear-linux-os": swupd,
             "debian"        : apt,
             "deepin"        : apt,
@@ -120,7 +121,7 @@ when defined(linux):
             "manjaro"       : pacman,
             "nixos"         : nix,
             "nobara"        : dnf,
-            "openmandriva"  : mandriva,
+            "openmandriva"  : dnfMandriva,
             "opensuse"      : zypper,
             "pureos"        : apt,
             "rhel"          : dnf,
@@ -130,6 +131,7 @@ when defined(linux):
             "ubuntu"        : apt,
             "void"          : xbps,
         }.toTable
+
 elif defined(bsd):
     const
         distros = {
@@ -139,14 +141,17 @@ elif defined(bsd):
             "netbsd"        : pkgin,
             "openbsd"       : pkg_add,
         }.toTable
+
 elif defined(macosx):
     const
         distros = {
             "macos"         : brew,
         }.toTable
+
 else:
     const
         distros = Table[string, PkgMan]()
+
 const
     buildsWithDependencies = [
         "@full",
@@ -154,80 +159,80 @@ const
     ]
 
     dependenciesNames = {
-        apk:       { "gtk+-3.0"      : "gtk+3.0-dev",
-                     "webkit2gtk-4.1": "webkit2gtk-4.1-dev",
-                     "gmp"           : "gmp-dev",
-                     "mpfr"          : "mpfr-dev",
+        apk:        { "gtk+-3.0"      : "gtk+3.0-dev",
+                      "webkit2gtk-4.1": "webkit2gtk-4.1-dev",
+                      "gmp"           : "gmp-dev",
+                      "mpfr"          : "mpfr-dev",
         }.toTable,
-        chimera:   { "gtk+-3.0"      : "gtk+3-devel",
-                     "webkit2gtk-4.1": "webkitgtk-devel",
-                     "gmp"           : "gmp-devel",
-                     "mpfr"          : "mpfr-devel",
+        apt:        { "gtk+-3.0"      : "libgtk-3-dev",
+                      "webkit2gtk-4.1": "libwebkit2gtk-4.1-dev",
+                      "gmp"           : "libgmp-dev",
+                      "mpfr"          : "libmpfr-dev",
         }.toTable,
-        apt:       { "gtk+-3.0"      : "libgtk-3-dev",
-                     "webkit2gtk-4.1": "libwebkit2gtk4.1-devel",
-                     "gmp"           : "libgmp-devel",
-                     "mpfr"          : "libmpfr-devel",
+        aptChimera: { "gtk+-3.0"      : "gtk+3-devel",
+                      "webkit2gtk-4.1": "webkitgtk-devel",
+                      "gmp"           : "gmp-devel",
+                      "mpfr"          : "mpfr-devel",
         }.toTable,
-        brew:      { "gtk+-3.0"      : "gtk+3",
-                     "webkit2gtk-4.1": "webkitgtk",
-                     "gmp"           : "gmp",
-                     "mpfr"          : "mpfr",
+        brew:       { "gtk+-3.0"      : "gtk+3",
+                      "webkit2gtk-4.1": "webkitgtk",
+                      "gmp"           : "gmp",
+                      "mpfr"          : "mpfr",
         }.toTable,
-        dnf:       { "gtk+-3.0"      : "gtk3-devel",
-                     "webkit2gtk-4.1": "webkit2gtk4.1-devel",
-                     "gmp"           : "gmp-devel",
-                     "mpfr"          : "mpfr-devel",
+        dnf:        { "gtk+-3.0"      : "gtk3-devel",
+                      "webkit2gtk-4.1": "webkit2gtk4.1-devel",
+                      "gmp"           : "gmp-devel",
+                      "mpfr"          : "mpfr-devel",
         }.toTable,
-        emerge:    { "gtk+-3.0"      : "gtk+",
-                     "webkit2gtk-4.1": "webkit-gtk",
-                     "gmp"           : "gmp",
-                     "mpfr"          : "mpfr",
+        dnfMandriva:{ "gtk+-3.0"      : "lib64gtk+3.0-devel",
+                      "webkit2gtk-4.1": "lib64webkit4.1-devel",
+                      "gmp"           : "lib64gmp-devel",
+                      "mpfr"          : "lib64mpfr-devel",
         }.toTable,
-        eopkg:     { "gtk+-3.0"      : "libgtk-3-devel",
-                     "webkit2gtk-4.1": "libwebkit-gtk41-devel",
-                     "gmp"           : "gmp",
-                     "mpfr"          : "mpfr",
+        emerge:     { "gtk+-3.0"      : "gtk+",
+                      "webkit2gtk-4.1": "webkit-gtk",
+                      "gmp"           : "gmp",
+                      "mpfr"          : "mpfr",
         }.toTable,
-        guix:      { "gtk+-3.0"      : "gtk+@3",
-                     "webkit2gtk-4.1": "webkitgtk",
-                     "gmp"           : "gmp",
-                     "mpfr"          : "mpfr",
+        eopkg:      { "gtk+-3.0"      : "libgtk-3-devel",
+                      "webkit2gtk-4.1": "libwebkit-gtk41-devel",
+                      "gmp"           : "gmp",
+                      "mpfr"          : "mpfr",
         }.toTable,
-        mandriva:  { "gtk+-3.0"      : "lib64gtk+3.0-devel",
-                     "webkit2gtk-4.1": "lib64webkit4.1-devel",
-                     "gmp"           : "lib64gmp-devel",
-                     "mpfr"          : "lib64mpfr-devel",
+        guix:       { "gtk+-3.0"      : "gtk+@3",
+                      "webkit2gtk-4.1": "webkitgtk",
+                      "gmp"           : "gmp",
+                      "mpfr"          : "mpfr",
         }.toTable,
-        nix:       { "gtk+-3.0"      : "gtk3",
-                     "webkit2gtk-4.1": "webkitgtk_4_1",
-                     "gmp"           : "gmp",
-                     "mpfr"          : "mpfr",
+        nix:        { "gtk+-3.0"      : "gtk3",
+                      "webkit2gtk-4.1": "webkitgtk_4_1",
+                      "gmp"           : "gmp",
+                      "mpfr"          : "mpfr",
         }.toTable,
-        pacman:    { "gtk+-3.0"      : "gtk3",
-                     "webkit2gtk-4.1": "webkit2gtk-4.1",
-                     "gmp"           : "gmp",
-                     "mpfr"          : "mpfr",
+        pacman:     { "gtk+-3.0"      : "gtk3",
+                      "webkit2gtk-4.1": "webkit2gtk-4.1",
+                      "gmp"           : "gmp",
+                      "mpfr"          : "mpfr",
         }.toTable,
-        slackware: { "gtk+-3.0"      : "gtk+3[current version here].txz",
-                     "webkit2gtk-4.1": "webkit2gtk4.1[current version here].txz",
-                     "gmp"           : "gmp[current version here].txz",
-                     "mpfr"          : "mpfr[current version here].txz",
+        slackware:  { "gtk+-3.0"      : "gtk+3[current version here].txz",
+                      "webkit2gtk-4.1": "webkit2gtk4.1[current version here].txz",
+                      "gmp"           : "gmp[current version here].txz",
+                      "mpfr"          : "mpfr[current version here].txz",
         }.toTable,
-        swupd:     { "gtk+-3.0"      : "devpkg-gtk3",
-                     "webkit2gtk-4.1": "devpkg-webkitgtk",
-                     "gmp"           : "devpkg-gmp",
-                     "mpfr"          : "devpkg-mpfr",
+        swupd:      { "gtk+-3.0"      : "devpkg-gtk3",
+                      "webkit2gtk-4.1": "devpkg-webkitgtk",
+                      "gmp"           : "devpkg-gmp",
+                      "mpfr"          : "devpkg-mpfr",
         }.toTable,
-        xbps:      { "gtk+-3.0"      : "gtk+3-devel",
-                     "webkit2gtk-4.1": "webkit2gtk-devel",
-                     "gmp"           : "gmp-devel",
-                     "mpfr"          : "mpfr-devel",
+        xbps:       { "gtk+-3.0"      : "gtk+3-devel",
+                      "webkit2gtk-4.1": "webkit2gtk-devel",
+                      "gmp"           : "gmp-devel",
+                      "mpfr"          : "mpfr-devel",
         }.toTable,
-        zypper:    { "gtk+-3.0"      : "gtk+3-devel",
-                     "webkit2gtk-4.1": "webkit2gtk-devel",
-                     "gmp"           : "gmp-devel",
-                     "mpfr"          : "mpfr-devel",
+        zypper:     { "gtk+-3.0"      : "gtk3-devel",
+                      "webkit2gtk-4.1": "webkit2gtk3-devel",
+                      "gmp"           : "gmp-devel",
+                      "mpfr"          : "mpfr-devel",
         }.toTable,
     }.toTable
 
@@ -243,24 +248,24 @@ const
         """
     
     installCmds = {
-        apk       : "apk add $1",
-        apt       : "apt-get install $1",
-        brew      : "brew install $1",
-        bsd       : "pkg install $1",
-        chimera   : "apk add $1",
-        dnf       : "dnf install $1",
-        emerge    : "emerge install $1",
-        eopkg     : "eopkg install $1",
-        guix      : "guix install $1",
-        mandriva  : "dnf install $1",
-        nix       :  nixInstallCmd,
-        pacman    : "pacman -S $1",
-        pkg_add   : "pkg_add $1",
-        pkgin     : "pkgin install $1",
-        swupd     : "swupd bundle-add $1",
-        upgradepkg: "upgradepkg --install-new $1",
-        xbps      : "xbps-install $1",
-        zypper    : "zypper install $1",
+        apk        : "apk add $1",
+        apt        : "apt-get install $1",
+        brew       : "brew install $1",
+        bsd        : "pkg install $1",
+        aptChimera : "apk add $1",
+        dnf        : "dnf install $1",
+        dnfMandriva: "dnf install $1",
+        emerge     : "emerge install $1",
+        eopkg      : "eopkg install $1",
+        guix       : "guix install $1",
+        nix        :  nixInstallCmd,
+        pacman     : "pacman -S $1",
+        pkg_add    : "pkg_add $1",
+        pkgin      : "pkgin install $1",
+        swupd      : "swupd bundle-add $1",
+        upgradepkg : "upgradepkg --install-new $1",
+        xbps       : "xbps-install $1",
+        zypper     : "zypper install $1",
     }.toTable
 
     #TODO OTHER = @["redox", "tinycore"] these are niche but very interesting
