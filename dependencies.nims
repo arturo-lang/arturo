@@ -219,7 +219,7 @@ const
         apt        : "apt-get install $1",
         brew       : "brew install $1",
         bsd        : "pkg install $1",
-        aptChimera : "apk add $1",
+        apkChimera : "apk add $1",
         dnf        : "dnf install $1",
         dnfMandriva: "dnf install $1",
         emerge     : "emerge install $1",
