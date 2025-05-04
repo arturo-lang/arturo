@@ -7,8 +7,8 @@ import ".config/utils/ui.nims"
 type
     PkgMan = enum
         apk
+        apkChimera
         apt
-        aptChimera
         brew
         bsd
         dnf
@@ -60,7 +60,7 @@ when defined(linux):
             "blendos"       : pacman,
             "bluefin"       : brew,
             "centos"        : dnf,
-            "chimera"       : aptChimera,
+            "chimera"       : apkChimera,
             "clear-linux-os": swupd,
             "debian"        : apt,
             "deepin"        : apt,
@@ -116,15 +116,15 @@ const
                       "gmp"           : "gmp-dev",
                       "mpfr"          : "mpfr-dev",
         }.toTable,
+        apkChimera: { "gtk+-3.0"      : "gtk+3-devel",
+                      "webkit2gtk-4.1": "webkitgtk-devel",
+                      "gmp"           : "gmp-devel",
+                      "mpfr"          : "mpfr-devel",
+        }.toTable,
         apt:        { "gtk+-3.0"      : "libgtk-3-dev",
                       "webkit2gtk-4.1": "libwebkit2gtk-4.1-dev",
                       "gmp"           : "libgmp-dev",
                       "mpfr"          : "libmpfr-dev",
-        }.toTable,
-        aptChimera: { "gtk+-3.0"      : "gtk+3-devel",
-                      "webkit2gtk-4.1": "webkitgtk-devel",
-                      "gmp"           : "gmp-devel",
-                      "mpfr"          : "mpfr-devel",
         }.toTable,
         brew:       { "gtk+-3.0"      : "gtk+3",
                       "webkit2gtk-4.1": "webkitgtk",
