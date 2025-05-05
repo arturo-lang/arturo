@@ -306,7 +306,7 @@ template prepareIteration(doesAcceptLiterals=true) {.dirty.} =
 template fetchIterableRange() {.dirty.} =
     var rang = iterable.rng
 
-template fetchIterableItems(doesAcceptLiterals=true, defaultReturn: untyped) {.dirty.} =
+template fetchIterableItems(doesAcceptLiterals=true, hasSeed: bool, defaultReturn: untyped) {.dirty.} =
     var blo = 
         case iterable.kind:
             of Block,Inline:
@@ -323,7 +323,7 @@ template fetchIterableItems(doesAcceptLiterals=true, defaultReturn: untyped) {.d
             else: # won't ever reach here
                 @[VNULL]
 
-    if blo.len == 0: 
+    if blo.len == 0 and not hasSeed: 
         when doesAcceptLiterals:
             when astToStr(defaultReturn) != "nil":
                 if unlikely(inPlace): RawInPlaced = defaultReturn
@@ -415,7 +415,7 @@ template doIterate(
             itAct
         itPost
     else:
-        fetchIterableItems(doesAcceptLiterals=itLit):
+        fetchIterableItems(doesAcceptLiterals=itLit, hasSeed=false):
             itDefVal
 
         itPre
@@ -654,7 +654,7 @@ proc defineModule*(moduleName: string) =
                     if unlikely(inPlace): RawInPlaced = newBlock(res)
                     else: push(newBlock(res))
                 else:
-                    fetchIterableItems(doesAcceptLiterals=true):
+                    fetchIterableItems(doesAcceptLiterals=true, hasSeed=false):
                         newBlock()
                     
                     iterateBlock(withCap=false, withInf=false, withCounter=false, rolling=false):
@@ -812,7 +812,7 @@ proc defineModule*(moduleName: string) =
                 if unlikely(inPlace): RawInPlaced = newBlock(res)
                 else: push(newBlock(res))
             else: 
-                fetchIterableItems(doesAcceptLiterals=true):
+                fetchIterableItems(doesAcceptLiterals=true, hasSeed=false):
                     newBlock()
 
                 if onlyLast:
@@ -908,52 +908,48 @@ proc defineModule*(moduleName: string) =
             prepareIteration()
 
             let rollingRight = hadAttr("right")
+            let hasSeed = checkAttr("seed")
 
             if iterable.kind==Range:
                 fetchIterableRange()
 
                 var res: Value
-                var seed = I0
 
                 if rollingRight:
                     rang = rang.reversed(safe=true)
 
-                let firstElem {.cursor.} = rang[0]
-
-                if firstElem.kind == String:     seed = newString("")
-                elif firstElem.kind == Floating: seed = newFloating(0.0)
-                elif firstElem.kind == Block:    seed = newBlock()
-
-                if checkAttr("seed"):
-                    seed = aSeed
-
-                res = seed
-                
+                if hasSeed:
+                    res = aSeed
+                else:
+                    let firstElem {.cursor.} = rang[0]
+                    res = case firstElem.kind
+                    of Char  :newString("")
+                    of Floating: newFloating(0.0)
+                    else: I0
+               
                 iterateRange(withCap=false, withInf=false, withCounter=false, rolling=true):
                     res = stack.pop()
 
                 if unlikely(inPlace): RawInPlaced = res
                 else: push(res)
-            else: 
-                fetchIterableItems(doesAcceptLiterals=true):
+            else:
+                fetchIterableItems(doesAcceptLiterals=true, hasSeed=hasSeed):
                     newBlock()
 
                 var res: Value
-                var seed = I0
 
                 if rollingRight:
                     blo = blo.reversed()
 
-                let firstElem {.cursor.} = blo[0]
-
-                if firstElem.kind == String:     seed = newString("")
-                elif firstElem.kind == Floating: seed = newFloating(0.0)
-                elif firstElem.kind == Block:    seed = newBlock()
-
-                if checkAttr("seed"):
-                    seed = aSeed
-
-                res = seed
+                if hasSeed:
+                    res = aSeed
+                else:
+                    let firstElem {.cursor.} = blo[0]
+                    res = case firstElem.kind
+                        of Char, String: newString("")
+                        of Floating    : newFloating(0.0)
+                        of Block       : newBlock()
+                        else           : I0
 
                 iterateBlock(withCap=false, withInf=false, withCounter=false, rolling=true):
                     res = stack.pop()
@@ -1120,7 +1116,7 @@ proc defineModule*(moduleName: string) =
                 if unlikely(inPlace): RawInPlaced = newBlock(res)
                 else: push(newBlock(res))
             else: 
-                fetchIterableItems(doesAcceptLiterals=true):
+                fetchIterableItems(doesAcceptLiterals=true, hasSeed=false):
                     newBlock()
 
                 var res: ValueArray = newSeq[Value](blo.len)
@@ -1362,7 +1358,7 @@ proc defineModule*(moduleName: string) =
                     if unlikely(inPlace): RawInPlaced = newBlock(res)
                     else: push(newBlock(res))
             else: 
-                fetchIterableItems(doesAcceptLiterals=true):
+                fetchIterableItems(doesAcceptLiterals=true, hasSeed=false):
                     newBlock()
 
                 if onlyLast:
