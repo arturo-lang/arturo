@@ -923,9 +923,9 @@ proc defineModule*(moduleName: string) =
                 else:
                     let firstElem {.cursor.} = rang[0]
                     res = case firstElem.kind
-                    of Char  :newString("")
-                    of Floating: newFloating(0.0)
-                    else: I0
+                        of Char  :newString("")
+                        of Floating: newFloating(0.0)
+                        else: I0
                
                 iterateRange(withCap=false, withInf=false, withCounter=false, rolling=true):
                     res = stack.pop()
