@@ -268,7 +268,7 @@ proc checkDependencies*(logging: bool) =
     when defined(windows): return
     when defined(bsd)    : return
 
-    echo ""
+    log ""
     for dep in dependencies:
         if gorgeEx(fmt"pkg-config --exists {dep}").exitCode != 0:
             fails.add(dep)
@@ -277,19 +277,19 @@ proc checkDependencies*(logging: bool) =
         let failText = (if fails.len == 1: "this dependency" else: fmt"these {fails.len} dependencies")
         warn fmt"Missing {failText}:"
         for fail in fails:
-            echo fail
+            log fail
             if os == "nixos": continue
             if os != "unknown":
                 var cmd = installCmds[distros[os]]
-                echo "-> " & cmd % dependenciesNames[distros[os]][fail]
-        echo ""
+                log "-> " & cmd % dependenciesNames[distros[os]][fail]
+        log ""
 
         if os == "nixos":
-            echo installCmds[nix] %
+            log installCmds[nix] %
                 (fails.map do (fail: string) -> string:
                     dependenciesNames[distros[os]][fail]).join("\p")
 
         echo "Install all packages listed above and try again", 1
     else:
         if logging:
-            echo "Dependencies successfully checked"
+            log "Dependencies successfully checked"
