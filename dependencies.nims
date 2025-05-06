@@ -1,6 +1,6 @@
 import std/[sequtils, strformat, strutils, tables]
 
-#import ".config/utils/ui.nims"
+import ".config/utils/ui.nims"
 
 # Most of the time package names are the same among distros using
 # the same package manager. The exceptions are listed as <pkgman><distro>
@@ -275,21 +275,21 @@ proc checkDependencies*(logging: bool) =
     if fails.len > 0:
         os = getDistro()
         let failText = (if fails.len == 1: "this dependency" else: fmt"these {fails.len} dependencies")
-        echo fmt"Missing {failText}:"
+        warn fmt"Missing {failText}:"
         for fail in fails:
-            echo fail
+            log fail
             if os == "nixos": continue
             if os != "unknown":
                 var cmd = installCmds[distros[os]]
-                echo "-> " & cmd % dependenciesNames[distros[os]][fail]
+                log "-> " & cmd % dependenciesNames[distros[os]][fail]
         echo ""
 
         if os == "nixos":
-            echo installCmds[nix] %
+            log installCmds[nix] %
                 (fails.map do (fail: string) -> string:
                     dependenciesNames[distros[os]][fail]).join("\p")
 
-        echo "Install all packages listed above and try again", 1
+        panic "Install all packages listed above and try again", 1
     else:
         if logging:
-            echo "Dependencies successfully checked"
+            log "Dependencies successfully checked"
