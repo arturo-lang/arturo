@@ -306,7 +306,7 @@ template prepareIteration(doesAcceptLiterals=true) {.dirty.} =
 template fetchIterableRange() {.dirty.} =
     var rang = iterable.rng
 
-template fetchIterableItems(doesAcceptLiterals=true, hasSeed: bool, defaultReturn: untyped) {.dirty.} =
+template fetchIterableItems(doesAcceptLiterals=true, defaultReturn: untyped) {.dirty.} =
     var blo = 
         case iterable.kind:
             of Block,Inline:
@@ -323,7 +323,7 @@ template fetchIterableItems(doesAcceptLiterals=true, hasSeed: bool, defaultRetur
             else: # won't ever reach here
                 @[VNULL]
 
-    if blo.len == 0 and not hasSeed: 
+    if blo.len == 0 and (when declared(hasSeed):not hasSeed else: true): 
         when doesAcceptLiterals:
             when astToStr(defaultReturn) != "nil":
                 if unlikely(inPlace): RawInPlaced = defaultReturn
@@ -415,7 +415,7 @@ template doIterate(
             itAct
         itPost
     else:
-        fetchIterableItems(doesAcceptLiterals=itLit, hasSeed=false):
+        fetchIterableItems(doesAcceptLiterals=itLit):
             itDefVal
 
         itPre
@@ -654,7 +654,7 @@ proc defineModule*(moduleName: string) =
                     if unlikely(inPlace): RawInPlaced = newBlock(res)
                     else: push(newBlock(res))
                 else:
-                    fetchIterableItems(doesAcceptLiterals=true, hasSeed=false):
+                    fetchIterableItems(doesAcceptLiterals=true):
                         newBlock()
                     
                     iterateBlock(withCap=false, withInf=false, withCounter=false, rolling=false):
@@ -812,7 +812,7 @@ proc defineModule*(moduleName: string) =
                 if unlikely(inPlace): RawInPlaced = newBlock(res)
                 else: push(newBlock(res))
             else: 
-                fetchIterableItems(doesAcceptLiterals=true, hasSeed=false):
+                fetchIterableItems(doesAcceptLiterals=true):
                     newBlock()
 
                 if onlyLast:
@@ -933,7 +933,7 @@ proc defineModule*(moduleName: string) =
                 if unlikely(inPlace): RawInPlaced = res
                 else: push(res)
             else:
-                fetchIterableItems(doesAcceptLiterals=true, hasSeed=hasSeed):
+                fetchIterableItems(doesAcceptLiterals=true):
                     newBlock()
 
                 var res: Value
@@ -1116,7 +1116,7 @@ proc defineModule*(moduleName: string) =
                 if unlikely(inPlace): RawInPlaced = newBlock(res)
                 else: push(newBlock(res))
             else: 
-                fetchIterableItems(doesAcceptLiterals=true, hasSeed=false):
+                fetchIterableItems(doesAcceptLiterals=true):
                     newBlock()
 
                 var res: ValueArray = newSeq[Value](blo.len)
@@ -1358,7 +1358,7 @@ proc defineModule*(moduleName: string) =
                     if unlikely(inPlace): RawInPlaced = newBlock(res)
                     else: push(newBlock(res))
             else: 
-                fetchIterableItems(doesAcceptLiterals=true, hasSeed=false):
+                fetchIterableItems(doesAcceptLiterals=true):
                     newBlock()
 
                 if onlyLast:
