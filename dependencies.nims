@@ -243,6 +243,7 @@ proc getDistro(): string =
         if id.len == 0: return "unknown"
         var idLike = gorge("grep ^ID_LIKE= /etc/os-release")
         var idLikes: seq[string]
+
         if idLike.len > 0:
             idLikes = idLike[8..^1].strip(chars = {'"'}).toLower().splitWhitespace()
         for distro in distros.keys:
