@@ -289,7 +289,7 @@ proc checkDependencies*(logging: bool) =
                 (fails.map do (fail: string) -> string:
                     dependenciesNames[distros[os]][fail]).join("\p")
 
-        panic "Install all packages listed above and try again", 1
+        echo "Install all packages listed above and try again", 1
     else:
         if logging:
             echo "Dependencies successfully checked"
