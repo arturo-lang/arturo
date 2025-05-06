@@ -275,21 +275,21 @@ proc checkDependencies*(logging: bool) =
     if fails.len > 0:
         os = getDistro()
         let failText = (if fails.len == 1: "this dependency" else: fmt"these {fails.len} dependencies")
-        warn fmt"Missing {failText}:"
+        echo fmt"Missing {failText}:"
         for fail in fails:
-            log fail
+            echo fail
             if os == "nixos": continue
             if os != "unknown":
                 var cmd = installCmds[distros[os]]
-                log "-> " & cmd % dependenciesNames[distros[os]][fail]
+                echo "-> " & cmd % dependenciesNames[distros[os]][fail]
         echo ""
 
         if os == "nixos":
-            log installCmds[nix] %
+            echo installCmds[nix] %
                 (fails.map do (fail: string) -> string:
                     dependenciesNames[distros[os]][fail]).join("\p")
 
-        panic "Install all packages listed above and try again", 1
+        echo "Install all packages listed above and try again", 1
     else:
         if logging:
-            log "Dependencies successfully checked"
+            echo "Dependencies successfully checked"
