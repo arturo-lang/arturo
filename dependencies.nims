@@ -275,7 +275,7 @@ proc checkDependencies*(logging: bool) =
     if fails.len > 0:
         os = getDistro()
         let failText = (if fails.len == 1: "this dependency" else: fmt"these {fails.len} dependencies")
-        echo fmt"Missing {failText}:"
+        warn fmt"Missing {failText}:"
         for fail in fails:
             echo fail
             if os == "nixos": continue
@@ -289,7 +289,7 @@ proc checkDependencies*(logging: bool) =
                 (fails.map do (fail: string) -> string:
                     dependenciesNames[distros[os]][fail]).join("\p")
 
-        echo "Install all packages listed above and try again", 1
+        panic "Install all packages listed above and try again", 1
     else:
         if logging:
             echo "Dependencies successfully checked"
