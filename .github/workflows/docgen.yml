@@ -68,7 +68,7 @@ jobs:
                 arturo ../../tools/miniwebize/webize.art --build --at: ../../tmpdocs
                 cd ../..
                 arturo tools/genaiguide.art
-                mv tools/aiguide.md tmpdocs/aiguide.md
+                mv tools/aiguide.md tmpdocs/llms.txt
 
             - name: Synchronize
               uses: burnett01/rsync-deployments@7.0.2
