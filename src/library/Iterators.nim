@@ -323,7 +323,7 @@ template fetchIterableItems(doesAcceptLiterals=true, defaultReturn: untyped) {.d
             else: # won't ever reach here
                 @[VNULL]
 
-    if blo.len == 0 and (when declared(hasSeed):not hasSeed else: true): 
+    if blo.len == 0 and (when declared(hasSeed): not hasSeed else: true): 
         when doesAcceptLiterals:
             when astToStr(defaultReturn) != "nil":
                 if unlikely(inPlace): RawInPlaced = defaultReturn
@@ -923,9 +923,9 @@ proc defineModule*(moduleName: string) =
                 else:
                     let firstElem {.cursor.} = rang[0]
                     res = case firstElem.kind
-                        of Char  :newString("")
+                        of Char    :newString("")
                         of Floating: newFloating(0.0)
-                        else: I0
+                        else       : I0
                
                 iterateRange(withCap=false, withInf=false, withCounter=false, rolling=true):
                     res = stack.pop()
