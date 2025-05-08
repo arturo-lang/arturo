@@ -1,7 +1,7 @@
 import.version:2.0.1 {unitt}!
 
 if or? contains? arg "--help" contains? arg "-h" [
-    print "Usage: unitt-tester [options] [files]"
+    print "Usage: unitt2-tester [options] [files]"
     print ""
     print "Options:"
     print ""
@@ -13,13 +13,13 @@ if or? contains? arg "--help" contains? arg "-h" [
     print "Examples:"
     print ""
     print "  # runs all the tests"
-    print "  ./bin/arturo tools/unitt-tester"
+    print "  ./bin/arturo tools/unitt2-tester"
     print ""
     print "  # fails on the first failed test"
-    print "  ./bin/arturo tools/unitt-tester --fatal"
+    print "  ./bin/arturo tools/unitt2-tester --fatal"
     print ""
     print "  # Runs a specific test file"
-    print "  ./bin/arturo tools/unitt-tester collections/append"
+    print "  ./bin/arturo tools/unitt-tester2 collections/append"
     exit
 ]
 
@@ -32,7 +32,7 @@ tryOr: $[action :block alt :any][
 
 files: switch empty? args\values
     -> findTests.thatMatches: TEST_PATTERN TEST_PATH
-    -> (args\values | map 'file [~"tests/unitt/lib/|file|.test.art"])
+    -> (args\values | map 'file [~"tests/unitt2/lib/|file|.test.art"])
 
 runTests
     .fatal: tryOr [args\fatal] false
