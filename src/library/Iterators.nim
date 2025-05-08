@@ -923,7 +923,7 @@ proc defineModule*(moduleName: string) =
                 else:
                     let firstElem {.cursor.} = rang[0]
                     res = case firstElem.kind
-                        of Char    :newString("")
+                        of Char    : newString("")
                         of Floating: newFloating(0.0)
                         else       : I0
                
