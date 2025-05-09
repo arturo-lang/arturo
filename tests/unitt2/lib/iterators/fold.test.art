@@ -3,7 +3,7 @@ import.version:2.0.1 {unitt}!
 describe "Allowed Operations" [
 
     it "fold with no seed and empty string" [
-        expects -> equal? :block type fold "" [x y][x ++ y]
+        expects -> block? fold "" [x y][x ++ y]
     ]
 
     it "fold with no seed and long string" [
