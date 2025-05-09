@@ -1,0 +1,40 @@
+import.version:2.0.1 {unitt}!
+
+if or? contains? arg "--help" contains? arg "-h" [
+    print "Usage: unitt2-tester [options] [files]"
+    print ""
+    print "Options:"
+    print ""
+    print "  --fatal    Exit with error code if any test fails"
+    print "  --suppress Suppress output of successful tests"
+    print "  --help     Display this help message"
+    print ""
+    print ""
+    print "Examples:"
+    print ""
+    print "  # runs all the tests"
+    print "  ./bin/arturo tools/unitt2-tester"
+    print ""
+    print "  # fails on the first failed test"
+    print "  ./bin/arturo tools/unitt2-tester --fatal"
+    print ""
+    print "  # Runs a specific test file"
+    print "  ./bin/arturo tools/unitt-tester2 collections/append"
+    exit
+]
+
+TEST_PATH: "tests/unitt2/"
+TEST_PATTERN: "*.test.art"
+
+tryOr: $[action :block alt :any][
+    (throws? [val:] ++ action)? -> alt -> val
+]
+
+files: switch empty? args\values
+    -> findTests.thatMatches: TEST_PATTERN TEST_PATH
+    -> (args\values | map 'file [~"tests/unitt2/lib/|file|.test.art"])
+
+runTests
+    .fatal: tryOr [args\fatal] false
+    .suppress: tryOr [args\suppress] false
+    files
