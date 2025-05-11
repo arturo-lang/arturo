@@ -323,7 +323,7 @@ template fetchIterableItems(doesAcceptLiterals=true, defaultReturn: untyped) {.d
             else: # won't ever reach here
                 @[VNULL]
 
-    if blo.len == 0: 
+    if blo.len == 0 and (when declared(hasSeed): not hasSeed else: true): 
         when doesAcceptLiterals:
             when astToStr(defaultReturn) != "nil":
                 if unlikely(inPlace): RawInPlaced = defaultReturn
@@ -908,52 +908,48 @@ proc defineModule*(moduleName: string) =
             prepareIteration()
 
             let rollingRight = hadAttr("right")
+            let hasSeed = checkAttr("seed")
 
             if iterable.kind==Range:
                 fetchIterableRange()
 
                 var res: Value
-                var seed = I0
 
                 if rollingRight:
                     rang = rang.reversed(safe=true)
 
-                let firstElem {.cursor.} = rang[0]
-
-                if firstElem.kind == String:     seed = newString("")
-                elif firstElem.kind == Floating: seed = newFloating(0.0)
-                elif firstElem.kind == Block:    seed = newBlock()
-
-                if checkAttr("seed"):
-                    seed = aSeed
-
-                res = seed
-                
+                if hasSeed:
+                    res = aSeed
+                else:
+                    let firstElem {.cursor.} = rang[0]
+                    res = case firstElem.kind
+                        of Char    : newString("")
+                        of Floating: newFloating(0.0)
+                        else       : I0
+               
                 iterateRange(withCap=false, withInf=false, withCounter=false, rolling=true):
                     res = stack.pop()
 
                 if unlikely(inPlace): RawInPlaced = res
                 else: push(res)
-            else: 
+            else:
                 fetchIterableItems(doesAcceptLiterals=true):
                     newBlock()
 
                 var res: Value
-                var seed = I0
 
                 if rollingRight:
                     blo = blo.reversed()
 
-                let firstElem {.cursor.} = blo[0]
-
-                if firstElem.kind == String:     seed = newString("")
-                elif firstElem.kind == Floating: seed = newFloating(0.0)
-                elif firstElem.kind == Block:    seed = newBlock()
-
-                if checkAttr("seed"):
-                    seed = aSeed
-
-                res = seed
+                if hasSeed:
+                    res = aSeed
+                else:
+                    let firstElem {.cursor.} = blo[0]
+                    res = case firstElem.kind
+                        of Char, String: newString("")
+                        of Floating    : newFloating(0.0)
+                        of Block       : newBlock()
+                        else           : I0
 
                 iterateBlock(withCap=false, withInf=false, withCounter=false, rolling=true):
                     res = stack.pop()
