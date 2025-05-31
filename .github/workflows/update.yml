@@ -286,6 +286,7 @@ jobs:
 
             # Copy binaries to website output directory
             - name: Copy binaries to website
+              run: |
             # Copy binaries to website output directory
             - name: Copy binaries to website
               run: |
