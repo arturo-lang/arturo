@@ -195,6 +195,7 @@ jobs:
               run: |
                 # Initialize variables for _index.art
                 declare -A binary_paths
+                declare -A binary_sizes
                 
                 # Process all binary artifacts to create mappings
                 for binary_dir in binaries/*/; do
@@ -206,16 +207,20 @@ jobs:
                     binary_file=$(find "$binary_dir" -type f \( -name "arturo" -o -name "arturo.exe" -o -name "arturo.js" \) | head -1)
                     
                     if [ -n "$binary_file" ]; then
-                      # Store binary path for _index.art mapping
+                      # Get file size in human readable format
+                      file_size=$(ls -lh "$binary_file" | awk '{print $5}')
+                      
+                      # Store binary path and size for _index.art mapping
                       binary_paths["$binary_name"]="/binaries/$binary_name"
-                      echo "Mapped: $binary_name -> /binaries/$binary_name"
+                      binary_sizes["$binary_name"]="$file_size"
+                      echo "Mapped: $binary_name -> /binaries/$binary_name ($file_size)"
                     else
                       echo "Warning: No binary found in $binary_dir"
                     fi
                   fi
                 done
                 
-                # Generate _index.art with binary paths
+                # Generate _index.art with binary paths and sizes
                 cat > arturo/docs/website/pages/_index.art << 'EOF'
                 #.:.......................:.#
                 #  Arturo Website Data       #
@@ -223,7 +228,7 @@ jobs:
                 #.:.......................:.#
                 
                 #================================
-                # Binary Download Paths
+                # Binary Download Paths & Sizes
                 #================================
                 
                 EOF
@@ -251,8 +256,10 @@ jobs:
                     # Clean up variable name
                     var_name=$(echo "$var_name" | sed 's/\.webkit41/Webkit41/g' | sed 's/[^a-zA-Z0-9]//g')
                     
+                    # Add both path and size
                     echo "${var_name}: \"${binary_paths[$binary_name]}\"" >> arturo/docs/website/pages/_index.art
-                    echo "Variable created: $var_name = ${binary_paths[$binary_name]}"
+                    echo "${var_name}Size: \"${binary_sizes[$binary_name]}\"" >> arturo/docs/website/pages/_index.art
+                    echo "Variable created: $var_name = ${binary_paths[$binary_name]} (${binary_sizes[$binary_name]})"
                   fi
                 done
                 
