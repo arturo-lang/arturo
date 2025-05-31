@@ -154,15 +154,21 @@
                             <td><b>Linux</b></td>
                             <td class="is-hidden-touch has-text-centered">amd64</td>
                             <td class="is-hidden-touch has-text-centered">
-                                <span id="linux-amd64-full-size" class="full-version">~3.8 MB</span>
-                                <span id="linux-amd64-mini-size" class="mini-version is-hidden">~1.9 MB</span>
+                                <span id="linux-amd64-full-size" class="full-version"><||= W\linuxFullAmd64Size ||></span>
+                                <span id="linux-amd64-mini-size" class="mini-version is-hidden">
+                                    <|| switch key? W 'linuxMiniAmd64Size [ ||>
+                                    <||= W\linuxMiniAmd64Size ||>
+                                    <|| ][ ||>
+                                    --
+                                    <|| ] ||>
+                                </span>
                             </td>
                             <td>
                                 <span id="linux-amd64-full-download" class="full-version">
                                     <a href="<||= W\linuxFullAmd64 ||>"><i class="far fa-arrow-alt-circle-down" aria-hidden="true"></i>&nbsp;&nbsp;Download</a>
                                 </span>
                                 <span id="linux-amd64-mini-download" class="mini-version is-hidden">
-                                    <|| if key? W 'linuxMiniAmd64 [ ||>
+                                    <|| switch key? W 'linuxMiniAmd64 [ ||>
                                     <a href="<||= W\linuxMiniAmd64 ||>"><i class="far fa-arrow-alt-circle-down" aria-hidden="true"></i>&nbsp;&nbsp;Download</a>
                                     <|| ][ ||>
                                     <i><small>*Not available</small></i>
@@ -184,7 +190,7 @@
                             <td class="is-hidden-touch has-text-centered">arm64</td>
                             <td class="is-hidden-touch has-text-centered">
                                 <span id="linux-arm64-full-size" class="full-version">--</span>
-                                <span id="linux-arm64-mini-size" class="mini-version is-hidden">~1.8 MB</span>
+                                <span id="linux-arm64-mini-size" class="mini-version is-hidden"><||= W\linuxMiniArm64Size ||></span>
                             </td>
                             <td>
                                 <span id="linux-arm64-full-download" class="full-version">
@@ -208,15 +214,21 @@
                             <td><b>macOS</b></td>
                             <td class="is-hidden-touch has-text-centered">amd64</td>
                             <td class="is-hidden-touch has-text-centered">
-                                <span id="macos-amd64-full-size" class="full-version">~3.3 MB</span>
-                                <span id="macos-amd64-mini-size" class="mini-version is-hidden">~1.6 MB</span>
+                                <span id="macos-amd64-full-size" class="full-version"><||= W\macosFullAmd64Size ||></span>
+                                <span id="macos-amd64-mini-size" class="mini-version is-hidden">
+                                    <|| switch key? W 'macosMiniAmd64Size [ ||>
+                                    <||= W\macosMiniAmd64Size ||>
+                                    <|| ][ ||>
+                                    --
+                                    <|| ] ||>
+                                </span>
                             </td>
                             <td>
                                 <span id="macos-amd64-full-download" class="full-version">
                                     <a href="<||= W\macosFullAmd64 ||>"><i class="far fa-arrow-alt-circle-down" aria-hidden="true"></i>&nbsp;&nbsp;Download</a>
                                 </span>
                                 <span id="macos-amd64-mini-download" class="mini-version is-hidden">
-                                    <|| if key? W 'macosMiniAmd64 [ ||>
+                                    <|| switch key? W 'macosMiniAmd64 [ ||>
                                     <a href="<||= W\macosMiniAmd64 ||>"><i class="far fa-arrow-alt-circle-down" aria-hidden="true"></i>&nbsp;&nbsp;Download</a>
                                     <|| ][ ||>
                                     <i><small>*Not available</small></i>
@@ -237,15 +249,21 @@
                             <td><b>macOS</b></td>
                             <td class="is-hidden-touch has-text-centered">arm64 / M1</td>
                             <td class="is-hidden-touch has-text-centered">
-                                <span id="macos-arm64-full-size" class="full-version">~1.8 MB</span>
-                                <span id="macos-arm64-mini-size" class="mini-version is-hidden">~1.4 MB</span>
+                                <span id="macos-arm64-full-size" class="full-version"><||= W\macosFullArm64Size ||></span>
+                                <span id="macos-arm64-mini-size" class="mini-version is-hidden">
+                                    <|| switch key? W 'macosMiniArm64Size [ ||>
+                                    <||= W\macosMiniArm64Size ||>
+                                    <|| ][ ||>
+                                    --
+                                    <|| ] ||>
+                                </span>
                             </td>
                             <td>
                                 <span id="macos-arm64-full-download" class="full-version">
                                     <a href="<||= W\macosFullArm64 ||>"><i class="far fa-arrow-alt-circle-down" aria-hidden="true"></i>&nbsp;&nbsp;Download</a>
                                 </span>
                                 <span id="macos-arm64-mini-download" class="mini-version is-hidden">
-                                    <|| if key? W 'macosMiniArm64 [ ||>
+                                    <|| switch key? W 'macosMiniArm64 [ ||>
                                     <a href="<||= W\macosMiniArm64 ||>"><i class="far fa-arrow-alt-circle-down" aria-hidden="true"></i>&nbsp;&nbsp;Download</a>
                                     <|| ][ ||>
                                     <i><small>*Not available</small></i>
@@ -266,15 +284,21 @@
                             <td><b>Windows</b></td>
                             <td class="is-hidden-touch has-text-centered">amd64</td>
                             <td class="is-hidden-touch has-text-centered">
-                                <span id="windows-amd64-full-size" class="full-version">~4.7 MB</span>
-                                <span id="windows-amd64-mini-size" class="mini-version is-hidden">~2.1 MB</span>
+                                <span id="windows-amd64-full-size" class="full-version"><||= W\windowsFullAmd64Size ||></span>
+                                <span id="windows-amd64-mini-size" class="mini-version is-hidden">
+                                    <|| switch key? W 'windowsMiniAmd64Size [ ||>
+                                    <||= W\windowsMiniAmd64Size ||>
+                                    <|| ][ ||>
+                                    --
+                                    <|| ] ||>
+                                </span>
                             </td>
                             <td>
                                 <span id="windows-amd64-full-download" class="full-version">
                                     <a href="<||= W\windowsFullAmd64 ||>"><i class="far fa-arrow-alt-circle-down" aria-hidden="true"></i>&nbsp;&nbsp;Download</a>
                                 </span>
                                 <span id="windows-amd64-mini-download" class="mini-version is-hidden">
-                                    <|| if key? W 'windowsMiniAmd64 [ ||>
+                                    <|| switch key? W 'windowsMiniAmd64 [ ||>
                                     <a href="<||= W\windowsMiniAmd64 ||>"><i class="far fa-arrow-alt-circle-down" aria-hidden="true"></i>&nbsp;&nbsp;Download</a>
                                     <|| ][ ||>
                                     <i><small>*Not available</small></i>
@@ -296,7 +320,7 @@
                             <td class="is-hidden-touch has-text-centered">JavaScript</td>
                             <td class="is-hidden-touch has-text-centered">
                                 <span id="web-js-full-size" class="full-version">--</span>
-                                <span id="web-js-mini-size" class="mini-version is-hidden">~763 KB</span>
+                                <span id="web-js-mini-size" class="mini-version is-hidden"><||= W\webMiniJsSize ||></span>
                             </td>
                             <td>
                                 <span id="web-js-full-download" class="full-version">
