@@ -1,4 +1,4 @@
-name: Documentation
+name: Update Website
 
 on:
     pull_request_target:
@@ -11,13 +11,65 @@ concurrency:
     group: ${{ github.workflow }}-${{ github.ref }}
     cancel-in-progress: true
 
-env:
-    BRANCH_NAME: ${{ github.head_ref || github.ref_name }} 
-
 jobs:
-    # Build all binaries (similar to our CI workflow)
+    # Step 1: Auto-increment build number
+    increment-build:
+        if: github.event.pull_request.merged == true
+        runs-on: ubuntu-latest
+        permissions:
+            contents: write
+        outputs:
+            version_tag: ${{ steps.version-info.outputs.VERSION_TAG }}
+            
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v3
+              with:
+                ref: master
+                fetch-depth: 0
+                token: ${{ secrets.PAT_TOKEN }}
+      
+            - name: Configure Git
+              run: |
+                git config user.name "GitHub Actions Bot"
+                git config user.email "actions@github.com"
+      
+            - name: Increment build number and get version info
+              id: version-info
+              run: |
+                # Read current build number
+                current_build=$(cat version/build)
+                
+                # Increment it
+                new_build=$((current_build + 1))
+                
+                # Update file
+                echo $new_build > version/build
+                
+                # Read version (assuming you have a version file)
+                if [ -f "version/version" ]; then
+                    version=$(cat version/version)
+                else
+                    # Fallback to git tag or default
+                    version=$(git describe --tags --abbrev=0 2>/dev/null || echo "0.9.83")
+                fi
+                
+                # Create version tag
+                version_tag="master-${version}-${new_build}"
+                echo "VERSION_TAG=${version_tag}" >> "$GITHUB_OUTPUT"
+                
+                echo "New build number: $new_build"
+                echo "Version tag: $version_tag"
+                
+                # Commit and push
+                git add version/build
+                git commit -m "Update build to ${new_build}"
+                git push origin master
+
+    # Step 2: Build all binaries with new version
     build-binaries:
         runs-on: ${{ matrix.os }}
+        needs: increment-build
         strategy:
             matrix:
                 include: 
@@ -46,7 +98,7 @@ jobs:
                 mode: ${{ matrix.mode }}
                 arch: ${{ matrix.arch }}
                 src: ${{ github.ref }}
-                metadata: ${{ env.BRANCH_NAME }}-${{ github.sha }}
+                metadata: ${{ needs.increment-build.outputs.version_tag }}
 
             - name: Prepare artifact
               id: artifact-details
@@ -75,12 +127,9 @@ jobs:
                     fi
                 fi
 
-                cd arturo
-                git_hash=$(git rev-parse --short "$GITHUB_SHA")
-                git_stamp="${{ env.BRANCH_NAME}}.${git_hash}"
-                cd ..
-
-                artifact_name="arturo-${git_stamp}-${artifact_arch}-${artifact_os}${artifact_os_extra}-${artifact_mode}"
+                # Use the version tag from the increment-build job
+                version_tag="${{ needs.increment-build.outputs.version_tag }}"
+                artifact_name="arturo-${version_tag}-${artifact_arch}-${artifact_os}${artifact_os_extra}-${artifact_mode}"
 
                 echo "BINARY_PATH=$binary_path" >> "$GITHUB_OUTPUT"
                 echo "ARTIFACT_NAME=$artifact_name" >> "$GITHUB_OUTPUT"
@@ -91,11 +140,11 @@ jobs:
                 name: ${{ steps.artifact-details.outputs.ARTIFACT_NAME }}
                 path: ${{ steps.artifact-details.outputs.BINARY_PATH }}
 
-    # Generate documentation and combine with binaries
+    # Step 3: Generate documentation and combine with binaries
     docgen:
         runs-on: ubuntu-latest
-        name: Generator
-        needs: build-binaries  # Wait for all binaries to be built
+        name: Generate Documentation & Deploy
+        needs: [increment-build, build-binaries]  # Wait for both previous jobs
         defaults:
             run:
                 shell: bash
@@ -107,7 +156,7 @@ jobs:
                 mode: docgen
                 arch: amd64
                 src: ${{ github.ref }}
-                metadata: ${{ env.BRANCH_NAME }}-${{ github.sha }}
+                metadata: ${{ needs.increment-build.outputs.version_tag }}
 
             - name: "Install Node"
               uses: actions/setup-node@v4
@@ -135,6 +184,7 @@ jobs:
                 sudo apt-get install webp 
                 sudo npm install -g sass uglify-js
 
+            # Download all binary artifacts
             - name: Download all binary artifacts
               uses: actions/download-artifact@v4
               with:
@@ -153,12 +203,17 @@ jobs:
                 arturo tools/genaiguide.art
                 mv tools/aiguide.md tmpdocs/llms.txt
 
+            # Prepare binaries for upload
             - name: Prepare binaries for website
               run: |
                 # Create binaries directory in the website output
                 mkdir -p arturo/tmpdocs/binaries
                 
                 # Copy all binaries and create checksums
+                echo "# Arturo Binaries - ${{ needs.increment-build.outputs.version_tag }}" > arturo/tmpdocs/binaries/checksums.txt
+                echo "# Generated on $(date -u)" >> arturo/tmpdocs/binaries/checksums.txt
+                echo "" >> arturo/tmpdocs/binaries/checksums.txt
+                
                 for binary_dir in binaries/*/; do
                   if [ -d "$binary_dir" ]; then
                     binary_name=$(basename "$binary_dir")
@@ -171,27 +226,32 @@ jobs:
                       # Copy binary with proper name
                       cp "$binary_file" "arturo/tmpdocs/binaries/$binary_name"
                       
-                      # Generate SHA256 checksum
+                      # Generate SHA256 checksum and file size
                       cd arturo/tmpdocs/binaries
-                      sha256sum "$binary_name" >> checksums.txt
+                      file_size=$(ls -lh "$binary_name" | awk '{print $5}')
+                      sha256_hash=$(sha256sum "$binary_name" | awk '{print $1}')
+                      echo "$sha256_hash  $binary_name  ($file_size)" >> checksums.txt
                       cd ../../..
                       
-                      echo "Added binary: $binary_name"
+                      echo "Added binary: $binary_name ($file_size)"
                     else
                       echo "Warning: No binary found in $binary_dir"
                     fi
                   fi
                 done
                 
+                # Create a version info file
+                echo "${{ needs.increment-build.outputs.version_tag }}" > arturo/tmpdocs/binaries/VERSION
+                
                 # List all binaries for verification
                 echo "Final binaries list:"
                 ls -la arturo/tmpdocs/binaries/
                 
                 # Show checksums
-                echo "Checksums:"
-                cat arturo/tmpdocs/binaries/checksums.txt || echo "No checksums file created"
+                echo "Checksums file:"
+                cat arturo/tmpdocs/binaries/checksums.txt
 
-            - name: Synchronize
+            - name: Synchronize to website
               uses: burnett01/rsync-deployments@7.0.2
               with:
                 switches: -avzr --delete
@@ -204,5 +264,13 @@ jobs:
             - name: Upload complete website artifact
               uses: 'actions/upload-artifact@v4'
               with:
-                name: website-with-binaries
+                name: website-with-binaries-${{ needs.increment-build.outputs.version_tag }}
                 path: arturo/tmpdocs
+
+            - name: Display completion summary
+              run: |
+                echo "🎉 Build & Documentation Complete!"
+                echo "Version: ${{ needs.increment-build.outputs.version_tag }}"
+                echo "Binaries built: $(ls binaries/ | wc -l)"
+                echo "Website deployed to: https://arturo-lang.io/master"
+                echo "Binaries available at: https://arturo-lang.io/master/binaries/"
