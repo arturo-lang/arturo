@@ -15,9 +15,87 @@ env:
     BRANCH_NAME: ${{ github.head_ref || github.ref_name }} 
 
 jobs:
+    # Build all binaries (similar to our CI workflow)
+    build-binaries:
+        runs-on: ${{ matrix.os }}
+        strategy:
+            matrix:
+                include: 
+                    - {name: "Linux (amd64 / full / webkit-4.1)",   os: ubuntu-latest,   arch: amd64, mode: full, shell: bash}
+                    - {name: "Linux (amd64 / full)",                os: ubuntu-22.04,    arch: amd64, mode: full, shell: bash}
+                    - {name: "Linux (amd64 / safe)",                os: ubuntu-22.04,    arch: amd64, mode: safe, shell: bash}
+                    - {name: "Linux (amd64 / mini)",                os: ubuntu-22.04,    arch: amd64, mode: mini, shell: bash}
+                    - {name: "Linux (arm64 / mini)",                os: ubuntu-22.04,    arch: arm64, mode: mini, shell: bash}
+                    - {name: "JS (web / mini)",                     os: ubuntu-latest,   arch: amd64, mode: web,  shell: bash}
+                    - {name: "Windows (amd64 / full)",              os: windows-latest,  arch: amd64, mode: full, shell: "msys2 {0}"}
+                    - {name: "Windows (amd64 / mini)",              os: windows-latest,  arch: amd64, mode: mini, shell: "msys2 {0}"}
+                    - {name: "macOS (amd64 / full)",                os: macOS-13,        arch: amd64, mode: full, shell: bash}
+                    - {name: "macOS (amd64 / mini)",                os: macOS-13,        arch: amd64, mode: mini, shell: bash}
+                    - {name: "macOS (arm64 / full)",                os: macos-latest,    arch: arm64, mode: full, shell: bash}
+                    - {name: "macOS (arm64 / mini)",                os: macos-latest,    arch: arm64, mode: mini, shell: bash}
+
+        name: Build ${{ matrix.name }}
+        defaults:
+            run:
+                shell: ${{ matrix.shell }}
+        steps:
+            - name: Install Arturo
+              uses: arturo-lang/arturo-action@main
+              with: 
+                token: ${{ secrets.GITHUB_TOKEN }}
+                mode: ${{ matrix.mode }}
+                arch: ${{ matrix.arch }}
+                src: ${{ github.ref }}
+                metadata: ${{ env.BRANCH_NAME }}-${{ github.sha }}
+
+            - name: Prepare artifact
+              id: artifact-details
+              run: |
+                binary_path="arturo/bin/arturo"
+
+                artifact_os="macos"
+                artifact_os_extra=""
+                artifact_arch="${{matrix.arch}}"
+                artifact_mode="${{matrix.mode}}"
+
+                if [ "${{runner.os}}" = "Windows" ]; then
+                    artifact_os="windows"
+                    binary_path="${binary_path}.exe"
+                fi
+                if [ "${{runner.os}}" = "Linux" ]; then
+                    artifact_os="linux"
+                    if [ "${{matrix.mode}}" = "web" ]; then
+                        artifact_os="js"
+                        artifact_arch="web"
+                        artifact_mode="mini"
+                        binary_path="${binary_path}.js"
+                    fi
+                    if [ "${{matrix.name}}" = "Linux (amd64 / full / webkit-4.1)" ]; then
+                        artifact_os_extra=".webkit41"
+                    fi
+                fi
+
+                cd arturo
+                git_hash=$(git rev-parse --short "$GITHUB_SHA")
+                git_stamp="${{ env.BRANCH_NAME}}.${git_hash}"
+                cd ..
+
+                artifact_name="arturo-${git_stamp}-${artifact_arch}-${artifact_os}${artifact_os_extra}-${artifact_mode}"
+
+                echo "BINARY_PATH=$binary_path" >> "$GITHUB_OUTPUT"
+                echo "ARTIFACT_NAME=$artifact_name" >> "$GITHUB_OUTPUT"
+
+            - name: Upload binary artifact
+              uses: 'actions/upload-artifact@v4'
+              with:
+                name: ${{ steps.artifact-details.outputs.ARTIFACT_NAME }}
+                path: ${{ steps.artifact-details.outputs.BINARY_PATH }}
+
+    # Generate documentation and combine with binaries
     docgen:
         runs-on: ubuntu-latest
         name: Generator
+        needs: build-binaries  # Wait for all binaries to be built
         defaults:
             run:
                 shell: bash
@@ -56,7 +134,12 @@ jobs:
                 sudo apt-get update
                 sudo apt-get install webp 
                 sudo npm install -g sass uglify-js
- 
+
+            - name: Download all binary artifacts
+              uses: actions/download-artifact@v4
+              with:
+                path: binaries/
+
             - name: "Generate website"
               run: |
                 ls -la arturo
@@ -70,6 +153,44 @@ jobs:
                 arturo tools/genaiguide.art
                 mv tools/aiguide.md tmpdocs/llms.txt
 
+            - name: Prepare binaries for website
+              run: |
+                # Create binaries directory in the website output
+                mkdir -p arturo/tmpdocs/binaries
+                
+                # Copy all binaries and create checksums
+                for binary_dir in binaries/*/; do
+                  if [ -d "$binary_dir" ]; then
+                    binary_name=$(basename "$binary_dir")
+                    echo "Processing binary: $binary_name"
+                    
+                    # Find the binary file (could be .exe, .js, or no extension)
+                    binary_file=$(find "$binary_dir" -type f \( -name "arturo" -o -name "arturo.exe" -o -name "arturo.js" \) | head -1)
+                    
+                    if [ -n "$binary_file" ]; then
+                      # Copy binary with proper name
+                      cp "$binary_file" "arturo/tmpdocs/binaries/$binary_name"
+                      
+                      # Generate SHA256 checksum
+                      cd arturo/tmpdocs/binaries
+                      sha256sum "$binary_name" >> checksums.txt
+                      cd ../../..
+                      
+                      echo "Added binary: $binary_name"
+                    else
+                      echo "Warning: No binary found in $binary_dir"
+                    fi
+                  fi
+                done
+                
+                # List all binaries for verification
+                echo "Final binaries list:"
+                ls -la arturo/tmpdocs/binaries/
+                
+                # Show checksums
+                echo "Checksums:"
+                cat arturo/tmpdocs/binaries/checksums.txt || echo "No checksums file created"
+
             - name: Synchronize
               uses: burnett01/rsync-deployments@7.0.2
               with:
@@ -80,8 +201,8 @@ jobs:
                 remote_user: root
                 remote_key: ${{ secrets.ARTUROLANG }}
 
-            - name: Upload artifact
+            - name: Upload complete website artifact
               uses: 'actions/upload-artifact@v4'
               with:
-                name: tmpdocs
+                name: website-with-binaries
                 path: arturo/tmpdocs
