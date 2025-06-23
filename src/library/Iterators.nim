@@ -1251,7 +1251,7 @@ proc defineModule*(moduleName: string) =
         alias       = unaliased,
         op          = opSelect,
         rule        = PrefixPrecedence,
-        description = "get collection's items that fulfil given condition",
+        description = "get items in collection that satisfy given condition",
         args        = {
             "collection"    : {Integer,String,Block,Range,Inline,Dictionary,Object,Literal},
             "params"        : {Literal,Block,Null},
