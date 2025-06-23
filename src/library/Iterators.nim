@@ -716,7 +716,7 @@ proc defineModule*(moduleName: string) =
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "get collection's items by omitting those that do not fulfil given condition",
+        description = "get collection's items by omitting those that do not satisfy given condition",
         args        = {
             "collection"    : {Integer,String,Block,Range,Inline,Dictionary,Object,Literal},
             "params"        : {Literal,Block,Null},
