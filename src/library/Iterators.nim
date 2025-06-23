@@ -437,11 +437,11 @@ proc defineModule*(moduleName: string) =
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "sort items in collection using given action, in ascending order",
+        description = "sort items in collection using value returned from given action, in ascending order",
         args        = {
             "collection"    : {Integer,String,Block,Range,Inline,Dictionary,Object,Literal},
             "params"        : {Literal,Block,Null},
-            "condition"     : {Block,Bytecode}
+            "action"        : {Block,Bytecode}
         },
         attrs       = {
             "with"          : ({Literal}, "use given index"),
