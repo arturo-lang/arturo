@@ -961,11 +961,11 @@ proc defineModule*(moduleName: string) =
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "group items in collection by block result and return as dictionary",
+        description = "group items in collection by value returned from given action, returning a dictionary",
         args        = {
             "collection"    : {Integer,String,Block,Range,Inline,Dictionary,Object,Literal},
             "params"        : {Literal,Block,Null},
-            "condition"     : {Block,Bytecode}
+            "action"        : {Block,Bytecode}
         },
         attrs       = {
             "with"  : ({Literal},"use given index")
