@@ -1067,7 +1067,7 @@ proc defineModule*(moduleName: string) =
         alias       = unaliased,
         op          = opMap,
         rule        = PrefixPrecedence,
-        description = "map collection's items by applying given action",
+        description = "map items in collection to values returned from given action",
         args        = {
             "collection"    : {Integer,String,Block,Range,Inline,Dictionary,Object,Literal},
             "params"        : {Literal,Block,Null},
