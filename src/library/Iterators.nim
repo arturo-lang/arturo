@@ -495,7 +495,7 @@ proc defineModule*(moduleName: string) =
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "chunk together consecutive items in collection that abide by given predicate",
+        description = "chunk together consecutive items in collection that abide by given condition",
         args        = {
             "collection"    : {Integer,String,Block,Range,Inline,Dictionary,Object,Literal},
             "params"        : {Literal,Block,Null},
