@@ -211,9 +211,9 @@ jobs:
                       file_size=$(ls -lh "$binary_file" | awk '{print $5}')
                       
                       # Store binary path and size for _index.art mapping
-                      binary_paths["$binary_name"]="/binaries/$binary_name"
+                      binary_paths["$binary_name"]="binaries/$binary_name"
                       binary_sizes["$binary_name"]="$file_size"
-                      echo "Mapped: $binary_name -> /binaries/$binary_name ($file_size)"
+                      echo "Mapped: $binary_name -> binaries/$binary_name ($file_size)"
                     else
                       echo "Warning: No binary found in $binary_dir"
                     fi
