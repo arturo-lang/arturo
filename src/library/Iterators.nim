@@ -437,11 +437,11 @@ proc defineModule*(moduleName: string) =
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "sort items in collection using given action, in ascending order",
+        description = "sort items in collection using value returned from given action, in ascending order",
         args        = {
             "collection"    : {Integer,String,Block,Range,Inline,Dictionary,Object,Literal},
             "params"        : {Literal,Block,Null},
-            "condition"     : {Block,Bytecode}
+            "action"        : {Block,Bytecode}
         },
         attrs       = {
             "with"          : ({Literal}, "use given index"),
@@ -495,7 +495,7 @@ proc defineModule*(moduleName: string) =
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "chunk together consecutive items in collection that abide by given predicate",
+        description = "chunk together consecutive items in collection that abide by given condition",
         args        = {
             "collection"    : {Integer,String,Block,Range,Inline,Dictionary,Object,Literal},
             "params"        : {Literal,Block,Null},
@@ -549,7 +549,7 @@ proc defineModule*(moduleName: string) =
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "group together items in collection that abide by given predicate",
+        description = "group together items in collection that abide by given condition",
         args        = {
             "collection"    : {Integer,String,Block,Range,Inline,Dictionary,Object,Literal},
             "params"        : {Literal,Block,Null},
@@ -716,7 +716,7 @@ proc defineModule*(moduleName: string) =
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "get collection's items by filtering those that do not fulfil given condition",
+        description = "get collection's items by omitting those that do not satisfy given condition",
         args        = {
             "collection"    : {Integer,String,Block,Range,Inline,Dictionary,Object,Literal},
             "params"        : {Literal,Block,Null},
@@ -849,7 +849,7 @@ proc defineModule*(moduleName: string) =
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "left-fold given collection returning accumulator",
+        description = "reduce collection from the left using given action, returning the final accumulator",
         args        = {
             "collection"    : {Integer,String,Block,Range,Inline,Dictionary,Object},
             "params"        : {Block,Null},
@@ -961,11 +961,11 @@ proc defineModule*(moduleName: string) =
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "group items in collection by block result and return as dictionary",
+        description = "group items in collection by value returned from given action, returning a dictionary",
         args        = {
             "collection"    : {Integer,String,Block,Range,Inline,Dictionary,Object,Literal},
             "params"        : {Literal,Block,Null},
-            "condition"     : {Block,Bytecode}
+            "action"        : {Block,Bytecode}
         },
         attrs       = {
             "with"  : ({Literal},"use given index")
@@ -1000,7 +1000,7 @@ proc defineModule*(moduleName: string) =
         alias       = unaliased,
         op          = opLoop,
         rule        = PrefixPrecedence,
-        description = "loop through collection, using given iterator and block",
+        description = "iterate through collection, executing given action for each item",
         args        = {
             "collection"    : {Integer,String,Block,Range,Inline,Dictionary,Object},
             "params"        : {Literal,Block,Null},
@@ -1067,11 +1067,11 @@ proc defineModule*(moduleName: string) =
         alias       = unaliased,
         op          = opMap,
         rule        = PrefixPrecedence,
-        description = "map collection's items by applying given action",
+        description = "map items in collection to values returned from given action",
         args        = {
             "collection"    : {Integer,String,Block,Range,Inline,Dictionary,Object,Literal},
             "params"        : {Literal,Block,Null},
-            "condition"     : {Block,Bytecode}
+            "action"        : {Block,Bytecode}
         },
         attrs       = {
             "with"      : ({Literal},"use given index")
@@ -1131,11 +1131,11 @@ proc defineModule*(moduleName: string) =
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "get maximum item from collection based on given predicate",
+        description = "get item in collection with maximum value returned from given action",
         args        = {
             "collection"    : {Integer,String,Block,Range,Inline,Dictionary,Object,Literal},
             "params"        : {Literal,Block,Null},
-            "condition"     : {Block,Bytecode}
+            "action"        : {Block,Bytecode}
         },
         attrs       = {
             "with"      : ({Literal},"use given index"),
@@ -1185,11 +1185,11 @@ proc defineModule*(moduleName: string) =
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "get minimum item from collection based on given predicate",
+        description = "get item in collection with minimum value returned from given action",
         args        = {
             "collection"    : {Integer,String,Block,Range,Inline,Dictionary,Object,Literal},
             "params"        : {Literal,Block,Null},
-            "condition"     : {Block,Bytecode}
+            "action"        : {Block,Bytecode}
         },
         attrs       = {
             "with"      : ({Literal},"use given index"),
@@ -1251,7 +1251,7 @@ proc defineModule*(moduleName: string) =
         alias       = unaliased,
         op          = opSelect,
         rule        = PrefixPrecedence,
-        description = "get collection's items that fulfil given condition",
+        description = "get items in collection that satisfy given condition",
         args        = {
             "collection"    : {Integer,String,Block,Range,Inline,Dictionary,Object,Literal},
             "params"        : {Literal,Block,Null},
