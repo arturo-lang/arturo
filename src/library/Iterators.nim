@@ -1071,7 +1071,7 @@ proc defineModule*(moduleName: string) =
         args        = {
             "collection"    : {Integer,String,Block,Range,Inline,Dictionary,Object,Literal},
             "params"        : {Literal,Block,Null},
-            "condition"     : {Block,Bytecode}
+            "action"        : {Block,Bytecode}
         },
         attrs       = {
             "with"      : ({Literal},"use given index")
