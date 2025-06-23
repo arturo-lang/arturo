@@ -849,7 +849,7 @@ proc defineModule*(moduleName: string) =
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "left-fold given collection returning accumulator",
+        description = "reduce collection from the left using given action, returning the final accumulator",
         args        = {
             "collection"    : {Integer,String,Block,Range,Inline,Dictionary,Object},
             "params"        : {Block,Null},
