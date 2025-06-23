@@ -1185,11 +1185,11 @@ proc defineModule*(moduleName: string) =
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "get minimum item from collection based on given predicate",
+        description = "get item in collection with minimum value returned from given action",
         args        = {
             "collection"    : {Integer,String,Block,Range,Inline,Dictionary,Object,Literal},
             "params"        : {Literal,Block,Null},
-            "condition"     : {Block,Bytecode}
+            "action"        : {Block,Bytecode}
         },
         attrs       = {
             "with"      : ({Literal},"use given index"),
