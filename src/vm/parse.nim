@@ -67,6 +67,7 @@ const
     Dash                        = '-'
 
     QuestionMark                = '?'
+    Underscore                  = '_'
 
     CR                          = '\c'
     LF                          = '\L'
@@ -81,7 +82,7 @@ const
     ScientificNotation_Start    = {'e', 'E'}
     Symbols                     = {'~', '!', '@', '#', '$', '%', '^', '&', '*', '-', '=', '+', '<', '>', '/', '|', '?'}
     Letters                     = {'a'..'z', 'A'..'Z'}
-    PermittedIdentifiers_Start  = Letters + {'_'}
+    PermittedIdentifiers_Start  = Letters + {Underscore}
     PermittedColorChars         = Letters + Numbers
     PermittedIdentifiers_In     = PermittedIdentifiers_Start + Numbers
     PermittedQuantityChars      = Letters + Numbers + {'.', '/'}
