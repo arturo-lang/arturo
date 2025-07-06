@@ -1,0 +1,69 @@
+import.version:2.0.1 {unitt}!
+
+describe "Allowed Operations" [
+
+    it "fold with no seed and empty string" [
+        expects -> block? fold "" [x y][x ++ y]
+    ]
+
+    it "fold with no seed and long string" [
+        expects -> equal? "test" fold "test" [x y][x ++ y]
+    ]
+
+    it "fold with no seed and short string" [
+        expects -> equal? "t" fold "t" [x y][x ++ y]
+    ]
+
+    it "fold with string seed and empty string" [
+        expects -> equal? "TEST" fold.seed:"TEST" "" [x y][x ++ y]
+    ]
+
+    it "fold with string seed and long string" [
+        expects -> equal? "TESTtest" fold.seed:"TEST" "test" [x y][x ++ y]
+    ]
+
+    it "fold with string seed and short string" [
+        expects -> equal? "TESTt"fold.seed:"TEST" "t" [x y][x ++ y]
+    ]
+
+    it "fold with empty seed string and empty string" [
+        expects -> equal? "" fold.seed:"" ""  [x y][x ++ y]
+    ]
+
+    it "fold with empty seed string and long string" [
+        expects -> equal? "test" fold.seed:"" "test" [x y][x ++ y]
+    ]
+
+    it "fold with empty seed string and short string" [
+        expects -> equal? "t" fold.seed:"" "t" [x y][x ++ y]
+    ]
+
+    it "fold with char seed and empty string" [
+        expects -> equal? 'T' fold.seed:'T' "" [x y][x ++ y]
+    ]
+
+    it "fold with char seed and long string" [
+        expects -> equal? "Ttest" fold.seed:'T' "test" [x y][x ++ y]
+    ]
+
+    it "fold with no seed and range" [
+        expects -> equal? 3 fold 1..2 [x y][x + y]
+    ]
+
+    it "fold with number range seed and range" [
+        expects -> equal? 103 fold.seed:100 1..2 [x y][x + y]
+    ]
+
+    it "fold with no seed and char range" [
+        expects -> equal? "abc" fold 'a'..'c' [x y][x ++ y]
+    ]
+
+    it "fold with string seed and char range" [
+        expects -> equal? "TESTxy" fold.seed:"TEST" 'x'..'y' [x y][x ++ y]
+    ]
+
+    it "fold with empty seed and char range" [
+        expects -> equal? "xy" fold.seed:"" 'x'..'y' [x y][x ++ y]
+    ]
+
+]
