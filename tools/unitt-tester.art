@@ -6,5 +6,5 @@ exe: switch "windows" = sys\os
 print list normalize ~"|path\home|/.arturo/packages/bin/"
 
 fullpath: normalize ~"|path\home|/.arturo/packages/bin/|exe|"
-code: execute.code.directly ~"|exe| --clean"
+code: execute.code.directly ~"|fullpath| --clean"
 panic.unstyled.code: code ""
