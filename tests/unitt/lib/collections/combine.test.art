@@ -14,20 +14,28 @@ suite "General Tests" [
 
     someBlock: [A B C]
 
+    print 1
+
     test.prop "all combinations of given collection is itself inside a block" [
         assert -> equal? @[someBlock] combine someBlock
     ]
+
+    print 2
 
     test.prop "all repeated combinations of an unitary collection" 
     ++ "is itself wrapped into a block" [
         assert -> equal? [[A]] combine.repeated [A]
     ]
 
+    print 3
+
     test.prop "combine.by: k returns inner values of k size" [
         k: 2
         assert -> every? combine.by: k someBlock 'el -> k = size el
         assert -> every? combine.repeated.by: k someBlock 'el -> k = size el
     ]
+
+    print 4
     
     test.prop "combine A is a shortcut for combine.by: (size A) A" [
         n: 2
@@ -38,6 +46,8 @@ suite "General Tests" [
             combine.repeated someBlock 
             combine.repeated.by: (size someBlock) someBlock
     ]
+
+    print 5
 
     test.prop ".count is the size of the combination" [
         operations: [[combine.by: 2] [combine.repeated] [combine.repeated.by: 2]
@@ -57,27 +67,40 @@ suite "Matematical Properties" [
 
     someBlock: [A B C D E F]
 
+    print 6
+
     test.prop "C[n:n] = 1" [
         assert -> 1 = combine.count someBlock
         assert -> 1 = combine.count.by: (size someBlock) someBlock
     ]
+
+    print 7
     
     test.prop "C[n:0] = 1" [
         assert -> 1 = combine.count.by: 0 someBlock 
     ]
 
+    print 8
+
     test.prop "C[n:k] = 0, for all k > n" [
         assert -> 0 = combine.count.by: (inc size someBlock) someBlock
     ]
+
+    print 9
 
     test.prop "C[n:k] = 0, for all k < 0" [
         assert -> 0 = combine.count.by: (neg 1) someBlock
     ]
 
+    print 10
+
     test.prop "C[n:k] = n! / (k! * (n - k)!)" [
         sample: [[A B C] [I J K L] [D E F G H] [D E F G H I J]]
 
-        loop [1 2 3] 'k -> loop sample 'Set [
+        loop [1 2 3] 'kVar -> loop sample 'SetVar [
+            Set: new SetVar
+            k: new kVar
+
             default: kCombinations size Set k
             repeating: kMulticombination size Set k
 
@@ -91,6 +114,8 @@ suite "Matematical Properties" [
 
 suite "Specific Tests" [
 
+    print 11
+
     test "combine.repeated [A B C]" [
         result: [
             [A A A] [A A B] [A A C] [A B B] [A B C] [A C C] 
@@ -101,6 +126,8 @@ suite "Specific Tests" [
         assert -> result = combine.repeated [A B C]
         assert -> equal? size result combine.count.repeated [A B C]
     ]
+
+    print 12
     
     test "combine.by: 2 [A B C]" [
         result: [
@@ -110,6 +137,8 @@ suite "Specific Tests" [
         assert -> result = combine.by: 2 [A B C]
         assert -> equal? size result combine.count.by: 2 [A B C]
     ]
+
+    print 13
     
     test "combine.repeated.by: 2 [A B C]" [
         result: [
@@ -122,11 +151,15 @@ suite "Specific Tests" [
         assert -> equal? size result combine.count.repeated.by: 2 [A B C]
     ]
 
+    print 14
+
     test "combine.repeated.by: 3 [A B]" [
         result: [[A A A] [A A B] [A B B] [B B B]]
 
         assert -> result = combine.repeated.by: 3 [A B]
         assert -> equal? size result combine.count.repeated.by: 3 [A B]
     ]
+
+    print 15
 
 ]
