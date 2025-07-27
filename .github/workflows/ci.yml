@@ -67,6 +67,7 @@ jobs:
               name: Run tests (Unitt)
               run: |
                 cd arturo
+                ls ~/.arturo/packages/bin
                 arturo tools/unitt-tester.art
                 cd ..
 
