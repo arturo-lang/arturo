@@ -68,7 +68,6 @@ jobs:
               run: |
                 cd arturo
                 arturo -p install unitt
-                ls ~/.arturo/packages/bin
                 arturo tools/unitt-tester.art
                 cd ..
 
