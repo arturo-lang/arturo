@@ -540,7 +540,10 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat:Value = nil): Val
             of Path,
                PathLabel,
                PathLiteral:
-                throwCannotConvert()
+                if tp == Block:
+                    return newBlock(y.p)
+                else:
+                    throwCannotConvert()
 
             of Symbol:
                 case tp:
