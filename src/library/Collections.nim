@@ -1410,8 +1410,6 @@ proc defineModule*(moduleName: string) =
             "step"  : ({Integer},"use step between range values")
         },
         returns     = {Range},
-        # TODO(Collections\range) add documentation example
-        #  labels: library, documentation, example
         example     = """
         ; range of :integers
 
