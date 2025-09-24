@@ -106,6 +106,7 @@ Commands:
 
 Options:
     --no-color                              Mute all colors from output
+    --no-warnings                           Mute all possible warnings
 
 Experimental:
     -c, --compile                           Compile script and write bytecode
@@ -230,6 +231,8 @@ when isMainModule and not defined(WEB):
                         # options
                         of "no-color":
                             muted = true
+                        of "no-warnings":
+                            ShowWarnings = false
 
                         # experimental
                         of "c","compile":
