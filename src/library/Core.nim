@@ -1984,7 +1984,7 @@ proc defineModule*(moduleName: string) =
     #  https://github.com/arturo-lang/arturo/pull/1774
     # labels: library,→ Core, enhancement
     constant "any",
-        alias       = unaliased,
+        alias       = underscore,
         description = "the ANY constant":
             VANY
 
