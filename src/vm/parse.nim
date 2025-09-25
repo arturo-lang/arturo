@@ -1000,7 +1000,9 @@ proc parseBlock(p: var Parser, level: int, isSubBlock: bool = false, isSubInline
                     
             of PermittedIdentifiers_Start:
                 parseIdentifier(p, alsoAddCurrent=true)
-                if p.buf[p.bufpos] == Colon:
+                if p.value.len == 1 and p.value[0] == Underscore:
+                    AddToken newSymbol(underscore)
+                elif p.buf[p.bufpos] == Colon:
                     inc(p.bufpos)
                     AddToken newLabel(p.value)
                 elif p.buf[p.bufpos] == Backslash:
@@ -1017,8 +1019,6 @@ proc parseBlock(p: var Parser, level: int, isSubBlock: bool = false, isSubInline
                     else:
                         inc(p.bufpos)
                         AddToken newSymbol(backslash)
-                elif p.value.len == 1 and p.value[0] == Underscore:
-                    AddToken newSymbol(underscore)
                 else:
                     AddToken newWord(p.value)
             of Tick:
