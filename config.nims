@@ -67,12 +67,18 @@ proc configWebkit() =
     const webkitVersions = ["4.1", "4.0"]
 
     proc getWebkitVersion(): string =
+        let testPkg = gorgeEx("which pkg-config")
+        if testPkg.exitCode != 0:
+            # pkg-config not found
+            # probably because we are not on Ubuntu
+            return "4.0"
+
         for version in webkitVersions:
             let ret = gorgeEx("pkg-config --exists webkit2gtk-" & version)
             if ret.exitCode == 0:
                 return version
-    
-        return ""
+
+        return "4.0"  # fallback if none found
 
     switch "define", "webkitVersion=" & getWebkitVersion()
 
