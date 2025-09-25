@@ -1978,13 +1978,8 @@ proc defineModule*(moduleName: string) =
     # Constants
     #----------------------------
 
-    # TODO(Core\any) `_` could be aliased to `any`
-    #  we should clean up word definitions and consider
-    #  it a pure symbol first.
-    #  https://github.com/arturo-lang/arturo/pull/1774
-    # labels: library,→ Core, enhancement
     constant "any",
-        alias       = unaliased,
+        alias       = underscore,
         description = "the ANY constant":
             VANY
 
