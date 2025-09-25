@@ -1,3 +1,5 @@
+; question marks in identifiers
+
 inspect [something?anotherone????]
 inspect [something?: something]
 inspect ['some?thing??]
