@@ -510,10 +510,12 @@ template parseIdentifier(p: var Parser, alsoAddCurrent: bool) =
     when alsoAddCurrent:
         add(p.value, p.buf[pos])
     inc(pos)
+    let initialPos = pos
     while p.buf[pos] in PermittedIdentifiers_In:
         add(p.value, p.buf[pos])
         inc(pos)
-    if p.buf[pos] == QuestionMark:
+    # '?' by itself shouldn't be a valid identifier   
+    if p.buf[pos] == QuestionMark and pos != initialPos:
         add(p.value, QuestionMark)
         inc(pos)
     p.bufpos = pos

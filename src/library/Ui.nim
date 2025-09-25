@@ -22,17 +22,27 @@
 import vm/lib
 
 when not defined(NOWEBVIEW):
-    import algorithm, hashes, tables
+    import algorithm, hashes, os, tables
 
+    import helpers/objects
     import helpers/webviews
+    import helpers/windows
 
-    import vm/[exec, parse]
+    import vm/[errors, exec, parse, values/custom/verror]
 
 when not defined(NOCLIPBOARD):
     import helpers/clipboard
 
 when not defined(NODIALOGS):
     import helpers/dialogs
+
+#=======================================
+# Variables
+#=======================================
+
+when (not defined(WEB)) and not defined(NOWEBVIEW):
+    var
+        ActiveWindow: Value = VNULL
 
 #=======================================
 # Definitions
@@ -313,13 +323,21 @@ proc defineModule*(moduleName: string) =
 
                                 if SP > prevSP:
                                     result = stack.pop()
+
                         elif call==ExecuteCode:
-                            let parsed = doParse(value.s, isFile=false)
-                            let prevSP = SP
-                            if not isNil(parsed):
-                                execUnscoped(parsed)
-                            if SP > prevSP:
-                                result = stack.pop()
+                            try:
+                                let parsed = doParse(value.s, isFile=false)
+                                let prevSP = SP
+                                if not isNil(parsed):
+                                    execUnscoped(parsed)
+                                if SP > prevSP:
+                                    result = stack.pop()
+                            except VError as e:
+                                showError(e)
+                            except CatchableError, Defect:
+                                let e = getCurrentException()
+                                showError(VError(e))
+                            
                         elif call==WebviewEvent:
                             if (let onEvent = on.getOrDefault(value.s, nil); not onEvent.isNil):
                                 execUnscoped(onEvent)
@@ -340,6 +358,121 @@ proc defineModule*(moduleName: string) =
                     example     = """
                     """:
                         #=======================================================
+                        echo "in old eval: " & $(x.s)
                         wv.evaluate(x.s)
 
+                # necessary so that "__webviewWindow" is available
+                execInternal("Ui/window")
+
+                let emptyvarr: ValueArray = @[]
+                ActiveWindow = generateNewObject(getType("__webviewWindow"),emptyvarr)
+                ActiveWindow.o["title"] = newString(title)
+                ActiveWindow.o["maximizable?"] = newLogical(true)
+                ActiveWindow.o["minimizable?"] = newLogical(true)
+                ActiveWindow.o["topmost?"] = newLogical(topmost)
+
+                ActiveWindow.o["_setTitle"] = adhocPrivate({"title": {String}}, NoAttrs):
+                    push(newLogical(webview_set_title(wv, cstring(x.s)) == OK))
+
+                ActiveWindow.o["_isVisible"] = adhocPrivate(NoArgs, NoAttrs):
+                    push(newLogical(wv.getWindow().isVisible()))
+
+                ActiveWindow.o["_isFocused"] = adhocPrivate(NoArgs, NoAttrs):
+                    push(newLogical(wv.getWindow().isFocused()))
+
+                ActiveWindow.o["_isFullscreen"] = adhocPrivate(NoArgs, NoAttrs):
+                    push(newLogical(wv.getWindow().isFullscreen()))
+
+                ActiveWindow.o["_isMaximized"] = adhocPrivate(NoArgs, NoAttrs):
+                    push(newLogical(wv.getWindow().isMaximized()))
+
+                ActiveWindow.o["_maximize"] = adhocPrivate(NoArgs, NoAttrs):
+                    wv.getWindow().maximize()
+                
+                ActiveWindow.o["_unmaximize"] = adhocPrivate(NoArgs, NoAttrs):
+                    wv.getWindow().unmaximize()
+
+                ActiveWindow.o["_isMinimized"] = adhocPrivate(NoArgs, NoAttrs):
+                    push(newLogical(wv.getWindow().isMinimized()))
+
+                ActiveWindow.o["_minimize"] = adhocPrivate(NoArgs, NoAttrs):
+                    wv.getWindow().minimize()
+                
+                ActiveWindow.o["_unminimize"] = adhocPrivate(NoArgs, NoAttrs):
+                    wv.getWindow().unminimize()
+            
+                ActiveWindow.o["_fullscreen"] = adhocPrivate(NoArgs, NoAttrs):
+                    wv.getWindow().fullscreen()
+            
+                ActiveWindow.o["_unfullscreen"] = adhocPrivate(NoArgs, NoAttrs):
+                    wv.getWindow().unfullscreen()
+
+                ActiveWindow.o["_topmost"] = adhocPrivate(NoArgs, NoAttrs):
+                    wv.getWindow().set_topmost_window()
+            
+                ActiveWindow.o["_untopmost"] = adhocPrivate(NoArgs, NoAttrs):
+                    wv.getWindow().unset_topmost_window()
+
+                ActiveWindow.o["_getSize"] = adhocPrivate(NoArgs, NoAttrs):
+                    let sz = wv.getWindow().getSize()
+                    push(newBlock(@[newInteger(sz.width), newInteger(sz.height)]))
+
+                ActiveWindow.o["_setSize"] = adhocPrivate({"size": {Block}}, NoAttrs):
+                    wv.getWindow().setSize(WindowSize(width: x.a[0].i, height: x.a[1].i))
+
+                ActiveWindow.o["_getMinSize"] = adhocPrivate(NoArgs, NoAttrs):
+                    let sz = wv.getWindow().getMinSize()
+                    push(newBlock(@[newInteger(sz.width), newInteger(sz.height)]))
+
+                ActiveWindow.o["_setMinSize"] = adhocPrivate({"size": {Block}}, NoAttrs):
+                    wv.getWindow().setMinSize(WindowSize(width: x.a[0].i, height: x.a[1].i))
+
+                ActiveWindow.o["_getMaxSize"] = adhocPrivate(NoArgs, NoAttrs):
+                    let sz = wv.getWindow().getMaxSize()
+                    push(newBlock(@[newInteger(sz.width), newInteger(sz.height)]))
+
+                ActiveWindow.o["_setMaxSize"] = adhocPrivate({"size": {Block}}, NoAttrs):
+                    wv.getWindow().setMaxSize(WindowSize(width: x.a[0].i, height: x.a[1].i))
+
+                ActiveWindow.o["_getPosition"] = adhocPrivate(NoArgs, NoAttrs):
+                    let pos = wv.getWindow().getPosition()
+                    push(newBlock(@[newInteger(pos.x), newInteger(pos.y)]))
+
+                ActiveWindow.o["_setPosition"] = adhocPrivate({"pos": {Block}}, NoAttrs):
+                    wv.getWindow().setPosition(WindowPosition(x: x.a[0].i, y: x.a[1].i))
+
+                ActiveWindow.o["center"] = adhocPrivate(NoArgs, NoAttrs):
+                    wv.getWindow().center()
+
+                ActiveWindow.o["_show"] = adhocPrivate(NoArgs, NoAttrs):
+                    wv.getWindow().show()
+                    
+                ActiveWindow.o["_hide"] = adhocPrivate(NoArgs, NoAttrs):
+                    wv.getWindow().hide()
+
+                ActiveWindow.o["_setFocused"] = adhocPrivate({"val": {Logical}}, NoAttrs):
+                    wv.getWindow().setFocused(isTrue(x))
+
+                ActiveWindow.o["_setClosable"] = adhocPrivate({"val": {Logical}}, NoAttrs):
+                    wv.getWindow().setClosable(isTrue(x))
+
+                ActiveWindow.o["_setMaximizable"] = adhocPrivate({"val": {Logical}}, NoAttrs):
+                    wv.getWindow().setMaximizable(isTrue(x))
+
+                ActiveWindow.o["_setMinimizable"] = adhocPrivate({"val": {Logical}}, NoAttrs):
+                    wv.getWindow().setMinimizable(isTrue(x))
+                
+                ActiveWindow.o["close"] = adhocPrivate(NoArgs, NoAttrs):
+                    push(newLogical(wv.webview_terminate() == OK))
+
+                ActiveWindow.o["evaluate"] = adhocPrivate({"code": {String}}, NoAttrs):
+                    wv.evaluate(x.s)
+
+                SetSym("window", ActiveWindow)
+
                 wv.show()
+
+        constant "window",
+            alias       = unaliased,
+            description = "the main active window":
+                ActiveWindow
