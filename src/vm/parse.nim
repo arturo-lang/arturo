@@ -67,6 +67,7 @@ const
     Dash                        = '-'
 
     QuestionMark                = '?'
+    Underscore                  = '_'
 
     CR                          = '\c'
     LF                          = '\L'
@@ -81,7 +82,7 @@ const
     ScientificNotation_Start    = {'e', 'E'}
     Symbols                     = {'~', '!', '@', '#', '$', '%', '^', '&', '*', '-', '=', '+', '<', '>', '/', '|', '?'}
     Letters                     = {'a'..'z', 'A'..'Z'}
-    PermittedIdentifiers_Start  = Letters + {'_'}
+    PermittedIdentifiers_Start  = Letters + {Underscore}
     PermittedColorChars         = Letters + Numbers
     PermittedIdentifiers_In     = PermittedIdentifiers_Start + Numbers
     PermittedQuantityChars      = Letters + Numbers + {'.', '/'}
@@ -999,7 +1000,9 @@ proc parseBlock(p: var Parser, level: int, isSubBlock: bool = false, isSubInline
                     
             of PermittedIdentifiers_Start:
                 parseIdentifier(p, alsoAddCurrent=true)
-                if p.buf[p.bufpos] == Colon:
+                if p.value.len == 1 and p.value[0] == Underscore:
+                    AddToken newSymbol(underscore)
+                elif p.buf[p.bufpos] == Colon:
                     inc(p.bufpos)
                     AddToken newLabel(p.value)
                 elif p.buf[p.bufpos] == Backslash:
