@@ -62,6 +62,7 @@ type
         greatercolon             = ">:"
 
         tilde                    = "~"
+        underscore               = "_"
         exclamation              = "!"
         doubleexclamation        = "!!"
         question                 = "?"

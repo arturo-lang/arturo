@@ -1,3 +1,14 @@
+; question marks in identifiers
+
 inspect [something?anotherone????]
 inspect [something?: something]
 inspect ['some?thing??]
+
+; underscores
+
+inspect [_ one]
+inspect [_two]
+inspect [three]
+inspect [four:]
+inspect [_ five:]
+inspect [_six:]
