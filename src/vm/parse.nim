@@ -1017,6 +1017,8 @@ proc parseBlock(p: var Parser, level: int, isSubBlock: bool = false, isSubInline
                     else:
                         inc(p.bufpos)
                         AddToken newSymbol(backslash)
+                elif p.value.len == 1 and p.value[0] == Underscore:
+                    AddToken newSymbol(underscore)
                 else:
                     AddToken newWord(p.value)
             of Tick:
