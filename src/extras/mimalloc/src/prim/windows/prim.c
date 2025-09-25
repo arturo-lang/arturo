@@ -7,6 +7,14 @@ terms of the MIT license. A copy of the license can be found in the file
 
 // This file is included in `src/prim/prim.c`
 
+// Prevent any potential clock_gettime64 linkage on Windows builds
+// This addresses compatibility issues with newer MinGW-w64 toolchains
+#ifdef _WIN32
+#define _POSIX_TIMERS 0
+#define clock_gettime(...) static_assert(0, "clock_gettime should not be used on Windows")
+#define clock_gettime64(...) static_assert(0, "clock_gettime64 should not be used on Windows") 
+#endif
+
 #include "mimalloc.h"
 #include "mimalloc/internal.h"
 #include "mimalloc/prim.h"
