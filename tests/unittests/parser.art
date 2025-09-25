@@ -3,3 +3,10 @@
 inspect [something?anotherone????]
 inspect [something?: something]
 inspect ['some?thing??]
+
+; underscores
+
+inspect [_ one]
+inspect [_one]
+inspect [_ two]
+inspect [_two]
