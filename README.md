@@ -188,7 +188,7 @@ So...
 
 ### How can I donate?
 
-We have different options for you:
+Our main sponsor channel is [GitHub Sponsors](https://github.com/sponsors/drkameleon).
 
 - [GitHub Sponsors](https://github.com/sponsors/drkameleon)
 - [Patreon](https://patreon.com/arturolang)
