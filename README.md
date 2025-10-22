@@ -190,10 +190,18 @@ So...
 
 Our main sponsor channel is [GitHub Sponsors](https://github.com/sponsors/drkameleon).
 
+You may also donate via crypto:
+
+- **BTC**: `bc1qpjlmktrz79muz4yksm8aadz3d3srh0rmnn3hhd`
+- **ETH**: `0x8552a389ea3d77e0e13573a642cff5ef745447b9`
+- **SOL**: `FS47tEruHesSbWFPdhqbJpixtwHVgU38DvJYYYLRk2MS`
+
 - [GitHub Sponsors](https://github.com/sponsors/drkameleon)
 - [Patreon](https://patreon.com/arturolang)
 
-You may also donate [via Bitcoin](https://blockchain.info/address/bc1qpjlmktrz79muz4yksm8aadz3d3srh0rmnn3hhd):
+You may also donate via one of the following addresses:
+
+- BTC: [via Bitcoin](https://blockchain.info/address/bc1qpjlmktrz79muz4yksm8aadz3d3srh0rmnn3hhd):
 
 <img width="150" src="docs/images/bitc.png"/>
 
