@@ -200,7 +200,6 @@ You may also donate via one of the following addresses:
 
 - BTC: [via Bitcoin](https://blockchain.info/address/bc1qpjlmktrz79muz4yksm8aadz3d3srh0rmnn3hhd):
 
-<img width="150" src="docs/images/bitc.png"/>
 
 ### Sponsors
 
