@@ -188,14 +188,13 @@ So...
 
 ### How can I donate?
 
-We have different options for you:
+Our main sponsor channel is [GitHub Sponsors](https://github.com/sponsors/drkameleon).
 
-- [GitHub Sponsors](https://github.com/sponsors/drkameleon)
-- [Patreon](https://patreon.com/arturolang)
+You may also donate via crypto:
 
-You may also donate [via Bitcoin](https://blockchain.info/address/bc1qpjlmktrz79muz4yksm8aadz3d3srh0rmnn3hhd):
-
-<img width="150" src="docs/images/bitc.png"/>
+- **BTC**: `bc1qpjlmktrz79muz4yksm8aadz3d3srh0rmnn3hhd`
+- **ETH**: `0x8552a389ea3d77e0e13573a642cff5ef745447b9`
+- **SOL**: `FS47tEruHesSbWFPdhqbJpixtwHVgU38DvJYYYLRk2MS`
 
 ### Sponsors
 
