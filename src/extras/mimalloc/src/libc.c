@@ -1,5 +1,5 @@
 /* ----------------------------------------------------------------------------
-Copyright (c) 2018-2024, Microsoft Research, Daan Leijen
+Copyright (c) 2018-2023, Microsoft Research, Daan Leijen
 This is free software; you can redistribute it and/or modify it under the
 terms of the MIT license. A copy of the license can be found in the file
 "LICENSE" at the root of this distribution.
@@ -171,18 +171,7 @@ int _mi_vsnprintf(char* buf, size_t bufsize, const char* fmt, va_list args) {
     char c;
     MI_NEXTC();
     if (c != '%') {
-      if (c == '\\') {
-        MI_NEXTC();
-        switch (c) {
-        case 'e': mi_outc('\x1B', &out, end); break;
-        case 't': mi_outc('\t', &out, end); break;
-        case 'n': mi_outc('\n', &out, end); break;
-        case 'r': mi_outc('\r', &out, end); break;
-        case '\\': mi_outc('\\', &out, end); break;
-        default: /* ignore */ break;
-        }
-      }
-      else if ((c >= ' ' && c <= '~') || c=='\n' || c=='\r' || c=='\t' || c=='\x1b') { // output visible ascii or standard control only
+      if ((c >= ' ' && c <= '~') || c=='\n' || c=='\r' || c=='\t') { // output visible ascii or standard control only
         mi_outc(c, &out, end);
       }
     }
@@ -210,10 +199,7 @@ int _mi_vsnprintf(char* buf, size_t bufsize, const char* fmt, va_list args) {
       }
 
       char* start = out;
-      if (c == '%') {
-        mi_outc('%', &out, end);
-      }
-      else if (c == 's') {
+      if (c == 's') {
         // string
         const char* s = va_arg(args, const char*);
         mi_outs(s, &out, end);
@@ -291,72 +277,6 @@ int _mi_snprintf(char* buf, size_t buflen, const char* fmt, ...) {
 }
 
 
-
-// --------------------------------------------------------
-// generic trailing and leading zero count, and popcount
-// --------------------------------------------------------
-
-#if !MI_HAS_FAST_BITSCAN
-
-static size_t mi_ctz_generic32(uint32_t x) {
-  // de Bruijn multiplication, see <http://keithandkatie.com/keith/papers/debruijn.html>
-  static const uint8_t debruijn[32] = {
-    0, 1, 28, 2, 29, 14, 24, 3, 30, 22, 20, 15, 25, 17, 4, 8,
-    31, 27, 13, 23, 21, 19, 16, 7, 26, 12, 18, 6, 11, 5, 10, 9
-  };
-  if (x==0) return 32;
-  return debruijn[(uint32_t)((x & -(int32_t)x) * (uint32_t)(0x077CB531U)) >> 27];
-}
-
-static size_t mi_clz_generic32(uint32_t x) {
-  // de Bruijn multiplication, see <http://keithandkatie.com/keith/papers/debruijn.html>
-  static const uint8_t debruijn[32] = {
-    31, 22, 30, 21, 18, 10, 29, 2, 20, 17, 15, 13, 9, 6, 28, 1,
-    23, 19, 11, 3, 16, 14, 7, 24, 12, 4, 8, 25, 5, 26, 27, 0
-  };
-  if (x==0) return 32;
-  x |= x >> 1;
-  x |= x >> 2;
-  x |= x >> 4;
-  x |= x >> 8;
-  x |= x >> 16;
-  return debruijn[(uint32_t)(x * (uint32_t)(0x07C4ACDDU)) >> 27];
-}
-
-size_t _mi_ctz_generic(size_t x) {
-  if (x==0) return MI_SIZE_BITS;
-  #if (MI_SIZE_BITS <= 32)
-    return mi_ctz_generic32((uint32_t)x);
-  #else
-    const uint32_t lo = (uint32_t)x;
-    if (lo != 0) {
-      return mi_ctz_generic32(lo);
-    }
-    else {
-      return (32 + mi_ctz_generic32((uint32_t)(x>>32)));
-    }
-  #endif
-}
-
-size_t _mi_clz_generic(size_t x) {
-  if (x==0) return MI_SIZE_BITS;
-  #if (MI_SIZE_BITS <= 32)
-    return mi_clz_generic32((uint32_t)x);
-  #else
-    const uint32_t hi = (uint32_t)(x>>32);
-    if (hi != 0) {
-      return mi_clz_generic32(hi);
-    }
-    else {
-      return 32 + mi_clz_generic32((uint32_t)x);
-    }
-  #endif
-}
-
-#endif // bit scan
-
-#if !MI_HAS_FAST_POPCOUNT
-
 #if MI_SIZE_SIZE == 4
 #define mi_mask_even_bits32      (0x55555555)
 #define mi_mask_even_pairs32     (0x33333333)
@@ -383,7 +303,7 @@ static size_t mi_popcount_generic32(uint32_t x) {
   return mi_byte_sum32(x);
 }
 
-size_t _mi_popcount_generic(size_t x) {
+mi_decl_noinline size_t _mi_popcount_generic(size_t x) {
   return mi_popcount_generic32(x);
 }
 
@@ -407,9 +327,8 @@ static size_t mi_popcount_generic64(uint64_t x) {
   return mi_byte_sum64(x);
 }
 
-size_t _mi_popcount_generic(size_t x) {
+mi_decl_noinline size_t _mi_popcount_generic(size_t x) {
   return mi_popcount_generic64(x);
 }
 #endif
 
-#endif // popcount

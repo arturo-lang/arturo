@@ -1,5 +1,5 @@
 /* ----------------------------------------------------------------------------
-Copyright (c) 2018-2023, Microsoft Research, Daan Leijen
+Copyright (c) 2018-2025, Microsoft Research, Daan Leijen
 This is free software; you can redistribute it and/or modify it under the
 terms of the MIT license. A copy of the license can be found in the file
 "LICENSE" at the root of this distribution.
@@ -31,11 +31,12 @@ terms of the MIT license. A copy of the license can be found in the file
 
 #if defined(__linux__)
   #include <features.h>
-  //#if defined(MI_NO_THP)
-  #include <sys/prctl.h>  // THP disable
-  //#endif
+  #include <sys/prctl.h>    // THP disable, PR_SET_VMA
+  #if defined(__GLIBC__) && !defined(PR_SET_VMA)
+  #include <linux/prctl.h>
+  #endif
   #if defined(__GLIBC__)
-  #include <linux/mman.h> // linux mmap flags
+  #include <linux/mman.h>   // linux mmap flags
   #else
   #include <sys/mman.h>
   #endif
@@ -57,9 +58,16 @@ terms of the MIT license. A copy of the license can be found in the file
   #include <sys/sysctl.h>
 #endif
 
-#if defined(__linux__) || defined(__FreeBSD__)
+#if (defined(__linux__) && !defined(__ANDROID__)) || defined(__FreeBSD__)
   #define MI_HAS_SYSCALL_H
   #include <sys/syscall.h>
+#endif
+
+#if !defined(MADV_DONTNEED) && defined(POSIX_MADV_DONTNEED)  // QNX
+#define MADV_DONTNEED  POSIX_MADV_DONTNEED
+#endif
+#if !defined(MADV_FREE) && defined(POSIX_MADV_FREE)  // QNX
+#define MADV_FREE  POSIX_MADV_FREE
 #endif
 
 #define MI_UNIX_LARGE_PAGE_SIZE (2*MI_MiB) // TODO: can we query the OS for this?
@@ -179,6 +187,7 @@ void _mi_prim_mem_init( mi_os_mem_config_t* config )
 //---------------------------------------------
 
 int _mi_prim_free(void* addr, size_t size ) {
+  if (size==0) return 0;
   bool err = (munmap(addr, size) == -1);
   return (err ? errno : 0);
 }
@@ -191,21 +200,32 @@ int _mi_prim_free(void* addr, size_t size ) {
 static int unix_madvise(void* addr, size_t size, int advice) {
   #if defined(__sun)
   int res = madvise((caddr_t)addr, size, advice);  // Solaris needs cast (issue #520)
+  #elif defined(__QNX__)
+  int res = posix_madvise(addr, size, advice);
   #else
   int res = madvise(addr, size, advice);
   #endif
   return (res==0 ? 0 : errno);
 }
 
-static void* unix_mmap_prim(void* addr, size_t size, size_t try_alignment, int protect_flags, int flags, int fd) {
+static void* unix_mmap_prim(void* addr, size_t size, int protect_flags, int flags, int fd) {
+  void* p = mmap(addr, size, protect_flags, flags, fd, 0 /* offset */);
+  #if defined(__linux__) && defined(PR_SET_VMA)
+  if (p!=MAP_FAILED && p!=NULL) {
+    prctl(PR_SET_VMA, PR_SET_VMA_ANON_NAME, p, size, "mimalloc");
+  }
+  #endif
+  return p;
+}
+
+static void* unix_mmap_prim_aligned(void* addr, size_t size, size_t try_alignment, int protect_flags, int flags, int fd) {
   MI_UNUSED(try_alignment);
   void* p = NULL;
   #if defined(MAP_ALIGNED)  // BSD
   if (addr == NULL && try_alignment > 1 && (try_alignment % _mi_os_page_size()) == 0) {
-    size_t idx;
-    size_t n = mi_bsr(try_alignment, &idx);
+    size_t n = mi_bsr(try_alignment);
     if (((size_t)1 << n) == try_alignment && n >= 12 && n <= 30) {  // alignment is a power of 2 and 4096 <= alignment <= 1GiB
-      p = mmap(addr, size, protect_flags, flags | MAP_ALIGNED(n), fd, 0);
+      p = unix_mmap_prim(addr, size, protect_flags, flags | MAP_ALIGNED(n), fd);
       if (p==MAP_FAILED || !_mi_is_aligned(p,try_alignment)) {
         int err = errno;
         _mi_trace_message("unable to directly request aligned OS memory (error: %d (0x%x), size: 0x%zx bytes, alignment: 0x%zx, hint address: %p)\n", err, err, size, try_alignment, addr);
@@ -216,7 +236,7 @@ static void* unix_mmap_prim(void* addr, size_t size, size_t try_alignment, int p
   }
   #elif defined(MAP_ALIGN)  // Solaris
   if (addr == NULL && try_alignment > 1 && (try_alignment % _mi_os_page_size()) == 0) {
-    p = mmap((void*)try_alignment, size, protect_flags, flags | MAP_ALIGN, fd, 0);  // addr parameter is the required alignment
+    p = unix_mmap_prim((void*)try_alignment, size, protect_flags, flags | MAP_ALIGN, fd);  // addr parameter is the required alignment
     if (p!=MAP_FAILED) return p;
     // fall back to regular mmap
   }
@@ -226,7 +246,7 @@ static void* unix_mmap_prim(void* addr, size_t size, size_t try_alignment, int p
   if (addr == NULL) {
     void* hint = _mi_os_get_aligned_hint(try_alignment, size);
     if (hint != NULL) {
-      p = mmap(hint, size, protect_flags, flags, fd, 0);
+      p = unix_mmap_prim(hint, size, protect_flags, flags, fd);
       if (p==MAP_FAILED || !_mi_is_aligned(p,try_alignment)) {
         #if MI_TRACK_ENABLED  // asan sometimes does not instrument errno correctly?
         int err = 0;
@@ -241,7 +261,7 @@ static void* unix_mmap_prim(void* addr, size_t size, size_t try_alignment, int p
   }
   #endif
   // regular mmap
-  p = mmap(addr, size, protect_flags, flags, fd, 0);
+  p = unix_mmap_prim(addr, size, protect_flags, flags, fd);
   if (p!=MAP_FAILED) return p;
   // failed to allocate
   return NULL;
@@ -312,7 +332,7 @@ static void* unix_mmap(void* addr, size_t size, size_t try_alignment, int protec
       if (large_only || lflags != flags) {
         // try large OS page allocation
         *is_large = true;
-        p = unix_mmap_prim(addr, size, try_alignment, protect_flags, lflags, lfd);
+        p = unix_mmap_prim_aligned(addr, size, try_alignment, protect_flags, lflags, lfd);
         #ifdef MAP_HUGE_1GB
         if (p == NULL && (lflags & MAP_HUGE_1GB) == MAP_HUGE_1GB) {
           mi_huge_pages_available = false; // don't try huge 1GiB pages again
@@ -320,7 +340,7 @@ static void* unix_mmap(void* addr, size_t size, size_t try_alignment, int protec
             _mi_warning_message("unable to allocate huge (1GiB) page, trying large (2MiB) pages instead (errno: %i)\n", errno);
           }
           lflags = ((lflags & ~MAP_HUGE_1GB) | MAP_HUGE_2MB);
-          p = unix_mmap_prim(addr, size, try_alignment, protect_flags, lflags, lfd);
+          p = unix_mmap_prim_aligned(addr, size, try_alignment, protect_flags, lflags, lfd);
         }
         #endif
         if (large_only) return p;
@@ -333,7 +353,7 @@ static void* unix_mmap(void* addr, size_t size, size_t try_alignment, int protec
   // regular allocation
   if (p == NULL) {
     *is_large = false;
-    p = unix_mmap_prim(addr, size, try_alignment, protect_flags, flags, fd);
+    p = unix_mmap_prim_aligned(addr, size, try_alignment, protect_flags, flags, fd);
     if (p != NULL) {
       #if defined(MADV_HUGEPAGE)
       // Many Linux systems don't allow MAP_HUGETLB but they support instead
@@ -394,10 +414,6 @@ static void unix_mprotect_hint(int err) {
   #endif
 }
 
-
-
-
-
 int _mi_prim_commit(void* start, size_t size, bool* is_zero) {
   // commit: ensure we can access the area
   // note: we may think that *is_zero can be true since the memory
@@ -413,10 +429,24 @@ int _mi_prim_commit(void* start, size_t size, bool* is_zero) {
   return err;
 }
 
+int _mi_prim_reuse(void* start, size_t size) {
+  MI_UNUSED(start); MI_UNUSED(size);
+  #if defined(__APPLE__) && defined(MADV_FREE_REUSE)
+  return unix_madvise(start, size, MADV_FREE_REUSE);
+  #endif
+  return 0;
+}
+
 int _mi_prim_decommit(void* start, size_t size, bool* needs_recommit) {
   int err = 0;
-  // decommit: use MADV_DONTNEED as it decreases rss immediately (unlike MADV_FREE)
-  err = unix_madvise(start, size, MADV_DONTNEED);
+  #if defined(__APPLE__) && defined(MADV_FREE_REUSABLE)
+    // decommit on macOS: use MADV_FREE_REUSABLE as it does immediate rss accounting (issue #1097)
+    err = unix_madvise(start, size, MADV_FREE_REUSABLE);
+    if (err) { err = unix_madvise(start, size, MADV_DONTNEED); }
+  #else
+    // decommit: use MADV_DONTNEED as it decreases rss immediately (unlike MADV_FREE)
+    err = unix_madvise(start, size, MADV_DONTNEED);
+  #endif  
   #if !MI_DEBUG && MI_SECURE<=2
     *needs_recommit = false;
   #else
@@ -434,14 +464,22 @@ int _mi_prim_decommit(void* start, size_t size, bool* needs_recommit) {
 }
 
 int _mi_prim_reset(void* start, size_t size) {
-  // We try to use `MADV_FREE` as that is the fastest. A drawback though is that it
+  int err = 0;
+
+  // on macOS can use MADV_FREE_REUSABLE (but we disable this for now as it seems slower)
+  #if 0 && defined(__APPLE__) && defined(MADV_FREE_REUSABLE) 
+  err = unix_madvise(start, size, MADV_FREE_REUSABLE);  
+  if (err==0) return 0;
+  // fall through
+  #endif
+
+  #if defined(MADV_FREE)
+  // Otherwise, we try to use `MADV_FREE` as that is the fastest. A drawback though is that it
   // will not reduce the `rss` stats in tools like `top` even though the memory is available
   // to other processes. With the default `MIMALLOC_PURGE_DECOMMITS=1` we ensure that by
   // default `MADV_DONTNEED` is used though.
-  #if defined(MADV_FREE)
   static _Atomic(size_t) advice = MI_ATOMIC_VAR_INIT(MADV_FREE);
   int oadvice = (int)mi_atomic_load_relaxed(&advice);
-  int err;
   while ((err = unix_madvise(start, size, oadvice)) != 0 && errno == EAGAIN) { errno = 0;  };
   if (err != 0 && errno == EINVAL && oadvice == MADV_FREE) {
     // if MADV_FREE is not supported, fall back to MADV_DONTNEED from now on
@@ -449,7 +487,7 @@ int _mi_prim_reset(void* start, size_t size) {
     err = unix_madvise(start, size, MADV_DONTNEED);
   }
   #else
-  int err = unix_madvise(start, size, MADV_DONTNEED);
+  err = unix_madvise(start, size, MADV_DONTNEED);
   #endif
   return err;
 }
@@ -487,7 +525,7 @@ static long mi_prim_mbind(void* start, unsigned long len, unsigned long mode, co
 int _mi_prim_alloc_huge_os_pages(void* hint_addr, size_t size, int numa_node, bool* is_zero, void** addr) {
   bool is_large = true;
   *is_zero = true;
-  *addr = unix_mmap(hint_addr, size, MI_ARENA_SLICE_ALIGN, PROT_READ | PROT_WRITE, true, true, &is_large);
+  *addr = unix_mmap(hint_addr, size, MI_SEGMENT_SIZE, PROT_READ | PROT_WRITE, true, true, &is_large);
   if (*addr != NULL && numa_node >= 0 && numa_node < 8*MI_INTPTR_SIZE) { // at most 64 nodes
     unsigned long numa_mask = (1UL << numa_node);
     // TODO: does `mbind` work correctly for huge OS pages? should we
@@ -894,7 +932,3 @@ void _mi_prim_thread_associate_default_heap(mi_heap_t* heap) {
 }
 
 #endif
-
-bool _mi_prim_thread_is_in_threadpool(void) {
-  return false;
-}
