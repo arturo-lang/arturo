@@ -31,12 +31,11 @@ terms of the MIT license. A copy of the license can be found in the file
 
 #if defined(__linux__)
   #include <features.h>
-  #include <linux/prctl.h>  // PR_SET_VMA
   //#if defined(MI_NO_THP)
-  #include <sys/prctl.h>    // THP disable
+  #include <sys/prctl.h>  // THP disable
   //#endif
   #if defined(__GLIBC__)
-  #include <linux/mman.h>   // linux mmap flags
+  #include <linux/mman.h> // linux mmap flags
   #else
   #include <sys/mman.h>
   #endif
@@ -58,19 +57,13 @@ terms of the MIT license. A copy of the license can be found in the file
   #include <sys/sysctl.h>
 #endif
 
-#if (defined(__linux__) && !defined(__ANDROID__)) || defined(__FreeBSD__)
+#if defined(__linux__) || defined(__FreeBSD__)
   #define MI_HAS_SYSCALL_H
   #include <sys/syscall.h>
 #endif
 
-#if !defined(MADV_DONTNEED) && defined(POSIX_MADV_DONTNEED)  // QNX
-#define MADV_DONTNEED  POSIX_MADV_DONTNEED
-#endif
-#if !defined(MADV_FREE) && defined(POSIX_MADV_FREE)  // QNX
-#define MADV_FREE  POSIX_MADV_FREE
-#endif
+#define MI_UNIX_LARGE_PAGE_SIZE (2*MI_MiB) // TODO: can we query the OS for this?
 
-  
 //------------------------------------------------------------------------------------
 // Use syscalls for some primitives to allow for libraries that override open/read/close etc.
 // and do allocation themselves; using syscalls prevents recursion when mimalloc is
@@ -156,7 +149,7 @@ void _mi_prim_mem_init( mi_os_mem_config_t* config )
     }
     #endif
   }
-  config->large_page_size = 2*MI_MiB; // TODO: can we query the OS for this?
+  config->large_page_size = MI_UNIX_LARGE_PAGE_SIZE;
   config->has_overcommit = unix_detect_overcommit();
   config->has_partial_free = true;    // mmap can free in parts
   config->has_virtual_reserve = true; // todo: check if this true for NetBSD?  (for anonymous mmap with PROT_NONE)
@@ -198,32 +191,21 @@ int _mi_prim_free(void* addr, size_t size ) {
 static int unix_madvise(void* addr, size_t size, int advice) {
   #if defined(__sun)
   int res = madvise((caddr_t)addr, size, advice);  // Solaris needs cast (issue #520)
-  #elif defined(__QNX__)
-  int res = posix_madvise(addr, size, advice);
   #else
   int res = madvise(addr, size, advice);
   #endif
   return (res==0 ? 0 : errno);
 }
 
-static void* unix_mmap_prim(void* addr, size_t size, int protect_flags, int flags, int fd) {
-  void* p = mmap(addr, size, protect_flags, flags, fd, 0 /* offset */);
-  #if (defined(__linux__) && defined(PR_SET_VMA))
-  if (p!=MAP_FAILED && p!=NULL) {
-    prctl(PR_SET_VMA, PR_SET_VMA_ANON_NAME, p, size, "mimalloc");
-  }
-  #endif
-  return p;
-}
-
-static void* unix_mmap_prim_aligned(void* addr, size_t size, size_t try_alignment, int protect_flags, int flags, int fd) {
+static void* unix_mmap_prim(void* addr, size_t size, size_t try_alignment, int protect_flags, int flags, int fd) {
   MI_UNUSED(try_alignment);
   void* p = NULL;
   #if defined(MAP_ALIGNED)  // BSD
   if (addr == NULL && try_alignment > 1 && (try_alignment % _mi_os_page_size()) == 0) {
-    size_t n = mi_bsr(try_alignment);
+    size_t idx;
+    size_t n = mi_bsr(try_alignment, &idx);
     if (((size_t)1 << n) == try_alignment && n >= 12 && n <= 30) {  // alignment is a power of 2 and 4096 <= alignment <= 1GiB
-      p = unix_mmap_prim(addr, size, protect_flags, flags | MAP_ALIGNED(n), fd);
+      p = mmap(addr, size, protect_flags, flags | MAP_ALIGNED(n), fd, 0);
       if (p==MAP_FAILED || !_mi_is_aligned(p,try_alignment)) {
         int err = errno;
         _mi_trace_message("unable to directly request aligned OS memory (error: %d (0x%x), size: 0x%zx bytes, alignment: 0x%zx, hint address: %p)\n", err, err, size, try_alignment, addr);
@@ -234,7 +216,7 @@ static void* unix_mmap_prim_aligned(void* addr, size_t size, size_t try_alignmen
   }
   #elif defined(MAP_ALIGN)  // Solaris
   if (addr == NULL && try_alignment > 1 && (try_alignment % _mi_os_page_size()) == 0) {
-    p = unix_mmap_prim((void*)try_alignment, size, protect_flags, flags | MAP_ALIGN, fd);  // addr parameter is the required alignment
+    p = mmap((void*)try_alignment, size, protect_flags, flags | MAP_ALIGN, fd, 0);  // addr parameter is the required alignment
     if (p!=MAP_FAILED) return p;
     // fall back to regular mmap
   }
@@ -244,7 +226,7 @@ static void* unix_mmap_prim_aligned(void* addr, size_t size, size_t try_alignmen
   if (addr == NULL) {
     void* hint = _mi_os_get_aligned_hint(try_alignment, size);
     if (hint != NULL) {
-      p = unix_mmap_prim(hint, size, protect_flags, flags, fd);
+      p = mmap(hint, size, protect_flags, flags, fd, 0);
       if (p==MAP_FAILED || !_mi_is_aligned(p,try_alignment)) {
         #if MI_TRACK_ENABLED  // asan sometimes does not instrument errno correctly?
         int err = 0;
@@ -259,7 +241,7 @@ static void* unix_mmap_prim_aligned(void* addr, size_t size, size_t try_alignmen
   }
   #endif
   // regular mmap
-  p = unix_mmap_prim(addr, size, protect_flags, flags, fd);
+  p = mmap(addr, size, protect_flags, flags, fd, 0);
   if (p!=MAP_FAILED) return p;
   // failed to allocate
   return NULL;
@@ -330,7 +312,7 @@ static void* unix_mmap(void* addr, size_t size, size_t try_alignment, int protec
       if (large_only || lflags != flags) {
         // try large OS page allocation
         *is_large = true;
-        p = unix_mmap_prim_aligned(addr, size, try_alignment, protect_flags, lflags, lfd);
+        p = unix_mmap_prim(addr, size, try_alignment, protect_flags, lflags, lfd);
         #ifdef MAP_HUGE_1GB
         if (p == NULL && (lflags & MAP_HUGE_1GB) == MAP_HUGE_1GB) {
           mi_huge_pages_available = false; // don't try huge 1GiB pages again
@@ -338,7 +320,7 @@ static void* unix_mmap(void* addr, size_t size, size_t try_alignment, int protec
             _mi_warning_message("unable to allocate huge (1GiB) page, trying large (2MiB) pages instead (errno: %i)\n", errno);
           }
           lflags = ((lflags & ~MAP_HUGE_1GB) | MAP_HUGE_2MB);
-          p = unix_mmap_prim_aligned(addr, size, try_alignment, protect_flags, lflags, lfd);
+          p = unix_mmap_prim(addr, size, try_alignment, protect_flags, lflags, lfd);
         }
         #endif
         if (large_only) return p;
@@ -351,7 +333,7 @@ static void* unix_mmap(void* addr, size_t size, size_t try_alignment, int protec
   // regular allocation
   if (p == NULL) {
     *is_large = false;
-    p = unix_mmap_prim_aligned(addr, size, try_alignment, protect_flags, flags, fd);
+    p = unix_mmap_prim(addr, size, try_alignment, protect_flags, flags, fd);
     if (p != NULL) {
       #if defined(MADV_HUGEPAGE)
       // Many Linux systems don't allow MAP_HUGETLB but they support instead
@@ -385,6 +367,9 @@ int _mi_prim_alloc(void* hint_addr, size_t size, size_t try_alignment, bool comm
   mi_assert_internal(size > 0 && (size % _mi_os_page_size()) == 0);
   mi_assert_internal(commit || !allow_large);
   mi_assert_internal(try_alignment > 0);
+  if (hint_addr == NULL && size >= 8*MI_UNIX_LARGE_PAGE_SIZE && try_alignment > 1 && _mi_is_power_of_two(try_alignment) && try_alignment < MI_UNIX_LARGE_PAGE_SIZE) {
+    try_alignment = MI_UNIX_LARGE_PAGE_SIZE; // try to align along large page size for larger allocations
+  }
 
   *is_zero = true;
   int protect_flags = (commit ? (PROT_WRITE | PROT_READ) : PROT_NONE);
@@ -409,6 +394,10 @@ static void unix_mprotect_hint(int err) {
   #endif
 }
 
+
+
+
+
 int _mi_prim_commit(void* start, size_t size, bool* is_zero) {
   // commit: ensure we can access the area
   // note: we may think that *is_zero can be true since the memory
@@ -428,7 +417,7 @@ int _mi_prim_decommit(void* start, size_t size, bool* needs_recommit) {
   int err = 0;
   // decommit: use MADV_DONTNEED as it decreases rss immediately (unlike MADV_FREE)
   err = unix_madvise(start, size, MADV_DONTNEED);
-  #if !MI_DEBUG && !MI_SECURE
+  #if !MI_DEBUG && MI_SECURE<=2
     *needs_recommit = false;
   #else
     *needs_recommit = true;
@@ -498,7 +487,7 @@ static long mi_prim_mbind(void* start, unsigned long len, unsigned long mode, co
 int _mi_prim_alloc_huge_os_pages(void* hint_addr, size_t size, int numa_node, bool* is_zero, void** addr) {
   bool is_large = true;
   *is_zero = true;
-  *addr = unix_mmap(hint_addr, size, MI_SEGMENT_SIZE, PROT_READ | PROT_WRITE, true, true, &is_large);
+  *addr = unix_mmap(hint_addr, size, MI_ARENA_SLICE_ALIGN, PROT_READ | PROT_WRITE, true, true, &is_large);
   if (*addr != NULL && numa_node >= 0 && numa_node < 8*MI_INTPTR_SIZE) { // at most 64 nodes
     unsigned long numa_mask = (1UL << numa_node);
     // TODO: does `mbind` work correctly for huge OS pages? should we
@@ -905,3 +894,7 @@ void _mi_prim_thread_associate_default_heap(mi_heap_t* heap) {
 }
 
 #endif
+
+bool _mi_prim_thread_is_in_threadpool(void) {
+  return false;
+}
