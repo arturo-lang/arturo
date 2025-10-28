@@ -1,5 +1,5 @@
 /* ----------------------------------------------------------------------------
-Copyright (c) 2018-2023, Microsoft Research, Daan Leijen, Alon Zakai
+Copyright (c) 2018-2025, Microsoft Research, Daan Leijen, Alon Zakai
 This is free software; you can redistribute it and/or modify it under the
 terms of the MIT license. A copy of the license can be found in the file
 "LICENSE" at the root of this distribution.
@@ -58,7 +58,7 @@ void _mi_prim_mem_init( mi_os_mem_config_t* config) {
 extern void emmalloc_free(void*);
 
 int _mi_prim_free(void* addr, size_t size) {
-  MI_UNUSED(size);
+  if (size==0) return 0;
   emmalloc_free(addr);
   return 0;
 }
@@ -110,6 +110,11 @@ int _mi_prim_decommit(void* addr, size_t size, bool* needs_recommit) {
 }
 
 int _mi_prim_reset(void* addr, size_t size) {
+  MI_UNUSED(addr); MI_UNUSED(size);
+  return 0;
+}
+
+int _mi_prim_reuse(void* addr, size_t size) {
   MI_UNUSED(addr); MI_UNUSED(size);
   return 0;
 }
@@ -239,9 +244,6 @@ void _mi_prim_thread_done_auto_done(void) {
 
 void _mi_prim_thread_associate_default_heap(mi_heap_t* heap) {
   MI_UNUSED(heap);
+
 }
 #endif
-
-bool _mi_prim_thread_is_in_threadpool(void) {
-  return false;
-}

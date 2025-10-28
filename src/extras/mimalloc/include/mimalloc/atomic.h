@@ -5,8 +5,8 @@ terms of the MIT license. A copy of the license can be found in the file
 "LICENSE" at the root of this distribution.
 -----------------------------------------------------------------------------*/
 #pragma once
-#ifndef MI_ATOMIC_H
-#define MI_ATOMIC_H
+#ifndef MIMALLOC_ATOMIC_H
+#define MIMALLOC_ATOMIC_H
 
 // include windows.h or pthreads.h
 #if defined(_WIN32)
@@ -75,21 +75,16 @@ terms of the MIT license. A copy of the license can be found in the file
 #define mi_atomic_exchange_relaxed(p,x)          mi_atomic(exchange_explicit)(p,x,mi_memory_order(relaxed))
 #define mi_atomic_exchange_release(p,x)          mi_atomic(exchange_explicit)(p,x,mi_memory_order(release))
 #define mi_atomic_exchange_acq_rel(p,x)          mi_atomic(exchange_explicit)(p,x,mi_memory_order(acq_rel))
-
-#define mi_atomic_cas_weak_relaxed(p,exp,des)    mi_atomic_cas_weak(p,exp,des,mi_memory_order(relaxed),mi_memory_order(relaxed))
 #define mi_atomic_cas_weak_release(p,exp,des)    mi_atomic_cas_weak(p,exp,des,mi_memory_order(release),mi_memory_order(relaxed))
 #define mi_atomic_cas_weak_acq_rel(p,exp,des)    mi_atomic_cas_weak(p,exp,des,mi_memory_order(acq_rel),mi_memory_order(acquire))
-#define mi_atomic_cas_strong_relaxed(p,exp,des)  mi_atomic_cas_strong(p,exp,des,mi_memory_order(relaxed),mi_memory_order(relaxed))
 #define mi_atomic_cas_strong_release(p,exp,des)  mi_atomic_cas_strong(p,exp,des,mi_memory_order(release),mi_memory_order(relaxed))
 #define mi_atomic_cas_strong_acq_rel(p,exp,des)  mi_atomic_cas_strong(p,exp,des,mi_memory_order(acq_rel),mi_memory_order(acquire))
 
 #define mi_atomic_add_relaxed(p,x)               mi_atomic(fetch_add_explicit)(p,x,mi_memory_order(relaxed))
-#define mi_atomic_add_acq_rel(p,x)               mi_atomic(fetch_add_explicit)(p,x,mi_memory_order(acq_rel))
 #define mi_atomic_sub_relaxed(p,x)               mi_atomic(fetch_sub_explicit)(p,x,mi_memory_order(relaxed))
+#define mi_atomic_add_acq_rel(p,x)               mi_atomic(fetch_add_explicit)(p,x,mi_memory_order(acq_rel))
 #define mi_atomic_sub_acq_rel(p,x)               mi_atomic(fetch_sub_explicit)(p,x,mi_memory_order(acq_rel))
-#define mi_atomic_and_relaxed(p,x)               mi_atomic(fetch_and_explicit)(p,x,mi_memory_order(relaxed))
 #define mi_atomic_and_acq_rel(p,x)               mi_atomic(fetch_and_explicit)(p,x,mi_memory_order(acq_rel))
-#define mi_atomic_or_relaxed(p,x)                mi_atomic(fetch_or_explicit)(p,x,mi_memory_order(relaxed))
 #define mi_atomic_or_acq_rel(p,x)                mi_atomic(fetch_or_explicit)(p,x,mi_memory_order(acq_rel))
 
 #define mi_atomic_increment_relaxed(p)           mi_atomic_add_relaxed(p,(uintptr_t)1)
@@ -116,6 +111,7 @@ static inline intptr_t mi_atomic_subi(_Atomic(intptr_t)*p, intptr_t sub);
 #define mi_atomic_cas_ptr_weak_release(tp,p,exp,des)    mi_atomic_cas_weak_release(p,exp,(tp*)des)
 #define mi_atomic_cas_ptr_weak_acq_rel(tp,p,exp,des)    mi_atomic_cas_weak_acq_rel(p,exp,(tp*)des)
 #define mi_atomic_cas_ptr_strong_release(tp,p,exp,des)  mi_atomic_cas_strong_release(p,exp,(tp*)des)
+#define mi_atomic_cas_ptr_strong_acq_rel(tp,p,exp,des)  mi_atomic_cas_strong_acq_rel(p,exp,(tp*)des)
 #define mi_atomic_exchange_ptr_relaxed(tp,p,x)          mi_atomic_exchange_relaxed(p,(tp*)x)
 #define mi_atomic_exchange_ptr_release(tp,p,x)          mi_atomic_exchange_release(p,(tp*)x)
 #define mi_atomic_exchange_ptr_acq_rel(tp,p,x)          mi_atomic_exchange_acq_rel(p,(tp*)x)
@@ -125,6 +121,7 @@ static inline intptr_t mi_atomic_subi(_Atomic(intptr_t)*p, intptr_t sub);
 #define mi_atomic_cas_ptr_weak_release(tp,p,exp,des)    mi_atomic_cas_weak_release(p,exp,des)
 #define mi_atomic_cas_ptr_weak_acq_rel(tp,p,exp,des)    mi_atomic_cas_weak_acq_rel(p,exp,des)
 #define mi_atomic_cas_ptr_strong_release(tp,p,exp,des)  mi_atomic_cas_strong_release(p,exp,des)
+#define mi_atomic_cas_ptr_strong_acq_rel(tp,p,exp,des)  mi_atomic_cas_strong_acq_rel(p,exp,des)
 #define mi_atomic_exchange_ptr_relaxed(tp,p,x)          mi_atomic_exchange_relaxed(p,x)
 #define mi_atomic_exchange_ptr_release(tp,p,x)          mi_atomic_exchange_release(p,x)
 #define mi_atomic_exchange_ptr_acq_rel(tp,p,x)          mi_atomic_exchange_acq_rel(p,x)
@@ -271,7 +268,6 @@ static inline int64_t mi_atomic_addi64_relaxed(volatile _Atomic(int64_t)*p, int6
   return current;
 #endif
 }
-
 static inline void mi_atomic_void_addi64_relaxed(volatile int64_t* p, const volatile int64_t* padd) {
   const int64_t add = *padd;
   if (add != 0) {
@@ -309,6 +305,7 @@ static inline bool mi_atomic_casi64_strong_acq_rel(volatile _Atomic(int64_t*)p, 
 #define mi_atomic_cas_ptr_weak_release(tp,p,exp,des)    mi_atomic_cas_weak_release((_Atomic(uintptr_t)*)(p),(uintptr_t*)exp,(uintptr_t)des)
 #define mi_atomic_cas_ptr_weak_acq_rel(tp,p,exp,des)    mi_atomic_cas_weak_acq_rel((_Atomic(uintptr_t)*)(p),(uintptr_t*)exp,(uintptr_t)des)
 #define mi_atomic_cas_ptr_strong_release(tp,p,exp,des)  mi_atomic_cas_strong_release((_Atomic(uintptr_t)*)(p),(uintptr_t*)exp,(uintptr_t)des)
+#define mi_atomic_cas_ptr_strong_acq_rel(tp,p,exp,des)  mi_atomic_cas_strong_acq_rel((_Atomic(uintptr_t)*)(p),(uintptr_t*)exp,(uintptr_t)des)
 #define mi_atomic_exchange_ptr_relaxed(tp,p,x)          (tp*)mi_atomic_exchange_relaxed((_Atomic(uintptr_t)*)(p),(uintptr_t)x)
 #define mi_atomic_exchange_ptr_release(tp,p,x)          (tp*)mi_atomic_exchange_release((_Atomic(uintptr_t)*)(p),(uintptr_t)x)
 #define mi_atomic_exchange_ptr_acq_rel(tp,p,x)          (tp*)mi_atomic_exchange_acq_rel((_Atomic(uintptr_t)*)(p),(uintptr_t)x)
@@ -376,8 +373,9 @@ static inline void mi_atomic_yield(void) {
   _mm_pause();
 }
 #elif (defined(__GNUC__) || defined(__clang__)) && \
-      (defined(__x86_64__) || defined(__i386__) || defined(__arm__) || defined(__armel__) || defined(__ARMEL__) || \
-       defined(__aarch64__) || defined(__powerpc__) || defined(__ppc__) || defined(__PPC__)) || defined(__POWERPC__)
+      (defined(__x86_64__) || defined(__i386__) || \
+       defined(__aarch64__) || defined(__arm__) || \
+       defined(__powerpc__) || defined(__ppc__) || defined(__PPC__) || defined(__POWERPC__))
 #if defined(__x86_64__) || defined(__i386__)
 static inline void mi_atomic_yield(void) {
   __asm__ volatile ("pause" ::: "memory");
@@ -386,10 +384,16 @@ static inline void mi_atomic_yield(void) {
 static inline void mi_atomic_yield(void) {
   __asm__ volatile("wfe");
 }
-#elif (defined(__arm__) && __ARM_ARCH__ >= 7)
+#elif defined(__arm__)
+#if __ARM_ARCH >= 7
 static inline void mi_atomic_yield(void) {
   __asm__ volatile("yield" ::: "memory");
 }
+#else
+static inline void mi_atomic_yield(void) {
+  __asm__ volatile ("nop" ::: "memory");
+}
+#endif
 #elif defined(__powerpc__) || defined(__ppc__) || defined(__PPC__) || defined(__POWERPC__)
 #ifdef __APPLE__
 static inline void mi_atomic_yield(void) {
@@ -400,10 +404,6 @@ static inline void mi_atomic_yield(void) {
   __asm__ __volatile__ ("or 27,27,27" ::: "memory");
 }
 #endif
-#elif defined(__armel__) || defined(__ARMEL__)
-static inline void mi_atomic_yield(void) {
-  __asm__ volatile ("nop" ::: "memory");
-}
 #endif
 #elif defined(__sun)
 // Fallback for other archs
@@ -425,9 +425,10 @@ static inline void mi_atomic_yield(void) {
 
 
 // ----------------------------------------------------------------------
-// Locks
-// These should be light-weight in-process only locks.
-// Only used for reserving arena's and to maintain the abandoned list.
+// Locks 
+// These do not have to be recursive and should be light-weight 
+// in-process only locks. Only used for reserving arena's and to 
+// maintain the abandoned list.
 // ----------------------------------------------------------------------
 #if _MSC_VER
 #pragma warning(disable:26110)  // unlock with holding lock
@@ -553,4 +554,4 @@ static inline void mi_lock_done(mi_lock_t* lock) {
 #endif
 
 
-#endif // MI_ATOMIC_H
+#endif // __MIMALLOC_ATOMIC_H
