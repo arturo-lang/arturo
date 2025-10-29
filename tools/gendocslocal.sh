@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+arturo-docg tools/sitegen.art
+
+echo "version: \"$(cat version/version)\"" >> docs/website/pages/_index.art 
+echo "buildDate: \"$(date -u)\"" >> docs/website/pages/_index.art 
+echo "#[release?: false]" > docs/website/data/setup.art
+
+
+mkdir tmpdocs
+cd docs/website
+
+arturo-docg ../../tools/miniwebize/webize.art --build --at: ../../tmpdocs
+cd ../..
