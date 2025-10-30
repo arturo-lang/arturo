@@ -357,7 +357,7 @@ proc buildPackage*(config: BuildConfig) =
 
     main()
 
-
+ 
 proc buildDocs*() =
     let 
         params = flags.join(" ")
