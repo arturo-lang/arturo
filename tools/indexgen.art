@@ -25,4 +25,4 @@ loop select list libDocPath => validDocFile? 'modl [
     ]
 ]
 
-docEntries >>.json "docs/website/theme/resources/index.json"
+docEntries >>.json "docs/website/theme/resources/data/index.json"
