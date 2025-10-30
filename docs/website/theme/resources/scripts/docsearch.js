@@ -21,7 +21,7 @@
     // Load search data and initialize Fuse
     async function initSearch() {
         try {
-            const response = await fetch('/search-data.json');
+            const response = await fetch('/master/resources/data/index.json');
             searchData = await response.json();
             
             fuse = new Fuse(searchData, {
