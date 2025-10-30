@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 
 arturo-docg tools/sitegen.art
+arturo-docg tools/indexgen.art
 
-echo "version: \"$(cat version/version)\"" >> docs/website/pages/_index.art 
+echo "version: \"$(cat version/version)\"" > docs/website/pages/_index.art 
 echo "buildDate: \"$(date -u)\"" >> docs/website/pages/_index.art 
 echo "#[release?: false]" > docs/website/data/setup.art
 
