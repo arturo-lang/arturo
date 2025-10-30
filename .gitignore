@@ -11,6 +11,7 @@ arturo.png
 arturo.dot
 testrb
 teststore
+tmpdocs/*
 dev-docs/*
 .vscode/*
 
