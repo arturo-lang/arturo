@@ -33,6 +33,10 @@
 <||= if contains? pagePath "documentation" [ ||>
     <script src="<||= linkTo {resources/scripts/fuse.js} ||>"></script>
     <script src="<||= linkTo {resources/scripts/docsearch.js} ||>"></script>
+    <script>
+        // Initialize doc search with base path
+        initDocSearch('/arturodocs');
+    </script>
 <|| ] ||>
 </body>
 </html>
