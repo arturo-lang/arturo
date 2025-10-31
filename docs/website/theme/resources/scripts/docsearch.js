@@ -30,8 +30,8 @@
                     { name: 'desc', weight: 0.2 },
                     { name: 'modl', weight: 0.1 }
                 ],
-                threshold: 0.5,
-                distance: 50,
+                threshold: 0.4,
+                //distance: 50,
                 includeScore: true,
                 includeMatches: true,
                 minMatchCharLength: 2,
