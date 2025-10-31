@@ -1,5 +1,10 @@
 @import "global.scss";
 
+.search-container {
+    padding: 0;
+    align-items: normal;
+}
+
 /*******************************
  * Search Dropdown
  *******************************/
@@ -166,7 +171,7 @@
     }
 
     .search-dropdown {
-        width: 30vw;
+        //width: 30vw;
         left: 0;
     }
 }
