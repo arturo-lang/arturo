@@ -235,57 +235,57 @@ githubMarkdown: function [src][
         ]
         ; inspect pageTree
 
-        ; count: size pages
-        ; loop.with: 'c pages 'page [
-        ;     sourcePath: page --"pages/"
-        ;     targetRoute: sourcePath -- extract.extension page
-        ;     targetPath: ""
-        ;     switch "_index" = extract.filename page 
-        ;         -> targetPath: replace append join.path @[loc targetRoute] ".html" "_" ""
-        ;         -> targetPath: append join.path @[loc targetRoute "index"] ".html"
+        count: size pages
+        loop.with: 'c pages 'page [
+            sourcePath: page --"pages/"
+            targetRoute: sourcePath -- extract.extension page
+            targetPath: ""
+            switch "_index" = extract.filename page 
+                -> targetPath: replace append join.path @[loc targetRoute] ".html" "_" ""
+                -> targetPath: append join.path @[loc targetRoute "index"] ".html"
 
-        ;     targetPath: lower replace replace targetPath "?" "-" " " "-"
-        ;     targetDir: extract.directory targetPath
-        ;     targetFile: extract.filename targetPath
+            targetPath: lower replace replace targetPath "?" "-" " " "-"
+            targetDir: extract.directory targetPath
+            targetFile: extract.filename targetPath
             
-        ;     write.directory ø targetDir 
+            write.directory ø targetDir 
 
-        ;     call {_showInfoLine} @[~"[|c+1|/|count|]" call {_routerDiagram} @[sourcePath] false]
+            call {_showInfoLine} @[~"[|c+1|/|count|]" call {_routerDiagram} @[sourcePath] false]
 
-        ;     templatePath: ""
-        ;     loop ThemeSettings\routes [route,template][
-        ;         if not? empty? match sourcePath route [
-        ;             ; print ["matched:" route "for:" sourcePath]
-        ;             templatePath: join.path @[Theme template]
-        ;             break
-        ;         ]
-        ;     ]
+            templatePath: ""
+            loop ThemeSettings\routes [route,template][
+                if not? empty? match sourcePath route [
+                    ; print ["matched:" route "for:" sourcePath]
+                    templatePath: join.path @[Theme template]
+                    break
+                ]
+            ]
 
-        ;     do [
-        ;         pagePath: split.path targetRoute
-        ;         ;; debug
-        ;         ; print [ "\n"
-        ;         ;     "sourcePath:" sourcePath "\n"
-        ;         ;     "targetRoute:" targetRoute "\n"
-        ;         ;     "targetPath:" targetPath "\n"
-        ;         ;     "targetDir:" targetDir "\n"
-        ;         ;     "targetFile:" targetFile "\n"
-        ;         ;     "pagePath:" pagePath "\n"
-        ;         ;     "template:" templatePath "\n"
-        ;         ; ]
-        ;         W: #.data page
-        ;         rendered: new render.template read templatePath
-        ;         if key? ThemeSettings 'postprocess [
-        ;             loop ThemeSettings\postprocess [k,v] [
-        ;                 replace 'rendered to :regex k v
-        ;             ]
-        ;         ]
-        ;         write rendered targetPath 
-        ;         execute ~"html-minifier --collapse-whitespace --remove-comments |targetPath| -o |targetPath|"
-        ;     ]
+            do [
+                pagePath: split.path targetRoute
+                ;; debug
+                ; print [ "\n"
+                ;     "sourcePath:" sourcePath "\n"
+                ;     "targetRoute:" targetRoute "\n"
+                ;     "targetPath:" targetPath "\n"
+                ;     "targetDir:" targetDir "\n"
+                ;     "targetFile:" targetFile "\n"
+                ;     "pagePath:" pagePath "\n"
+                ;     "template:" templatePath "\n"
+                ; ]
+                W: #.data page
+                rendered: new render.template read templatePath
+                if key? ThemeSettings 'postprocess [
+                    loop ThemeSettings\postprocess [k,v] [
+                        replace 'rendered to :regex k v
+                    ]
+                ]
+                write rendered targetPath 
+                execute ~"html-minifier --collapse-whitespace --remove-comments |targetPath| -o |targetPath|"
+            ]
             
-        ; ]
-        ; call {_showInfoLine} @["Done." "" true]
+        ]
+        call {_showInfoLine} @["Done." "" true]
 
         ;-------------------------
         ; Post-processing
