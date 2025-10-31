@@ -17,7 +17,7 @@ loop select list libDocPath => validDocFile? 'modl [
             name: cmdData\name
             desc: cmdData\description
             modl: capitalize moduleName
-            url: ~"documentation/library/|moduleName|/|fileName|/"
+            url: ~"library/|moduleName|/|fileName|/"
         ]
         ; commandName: replace fname cmd ["-" ".art"] ["?" ""]
         inspect entry
