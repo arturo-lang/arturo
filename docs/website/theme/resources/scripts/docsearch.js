@@ -33,6 +33,7 @@
                 threshold: 0.5,
                 distance: 50,
                 includeScore: true,
+                includeMatches: true,
                 minMatchCharLength: 2,
                 ignoreLocation: true,
                 shouldSort: true
@@ -67,7 +68,7 @@
 
         results.forEach((result, index) => {
             const item = result.item;
-            const resultEl = createResultElement(item, index, query);
+            const resultEl = createResultElement(item, index, query, result.matches);
             dropdown.appendChild(resultEl);
         });
 
@@ -75,15 +76,17 @@
     }
 
     // Create result element
-    function createResultElement(item, index, query) {
+    function createResultElement(item, index, query, matches = []) {
         const div = document.createElement('div');
         div.className = 'search-result-item';
         div.setAttribute('data-index', index);
         div.setAttribute('data-url', item.url);
 
-        // Highlight matching text
-        const highlightedName = highlightMatch(item.name, query);
-        const highlightedDesc = highlightMatch(item.desc, query);
+        const nameMatch = matches.find(m => m.key === 'name');
+        const descMatch = matches.find(m => m.key === 'desc');
+
+        const highlightedName = highlightFuseMatch(item.name, nameMatch);
+        const highlightedDesc = highlightFuseMatch(item.desc || '', descMatch);
 
         div.innerHTML = `
             <div class="search-result-content">
@@ -110,11 +113,20 @@
     }
 
     // Highlight matching text
-    function highlightMatch(text, query) {
-        if (!query) return text;
-        
-        const regex = new RegExp(`(${escapeRegex(query)})`, 'gi');
-        return text.replace(regex, '<mark>$1</mark>');
+    function highlightFuseMatch(text, match) {
+        if (!match || !match.indices) return escapeHtml(text);
+
+        let result = '';
+        let lastIndex = 0;
+
+        match.indices.forEach(([start, end]) => {
+            result += escapeHtml(text.slice(lastIndex, start));
+            result += `<mark>${escapeHtml(text.slice(start, end + 1))}</mark>`;
+            lastIndex = end + 1;
+        });
+
+        result += escapeHtml(text.slice(lastIndex));
+        return result;
     }
 
     // Escape regex special characters
