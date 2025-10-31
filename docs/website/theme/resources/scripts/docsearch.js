@@ -1,11 +1,12 @@
-// Documentation Search powered by Fuse.js
+// Fuse.js-powered 
+// Documentation Search
 (function() {
     'use strict';
 
     let fuse = null;
     let searchData = [];
     let currentIndex = -1;
-    let basePath = ''; // Will be set by initialization
+    let basePath = '';
     
     // DOM elements
     const searchInput = document.getElementById('searchbar');
@@ -34,13 +35,12 @@
             fuse = new Fuse(searchData, {
                 keys: [
                     { name: 'name', weight: 0.4 },
+                    { name: 'attr', weight: 0.3 },
                     { name: 'desc', weight: 0.2 },
-                    { name: 'attr', weight: 0.2 },
-                    { name: 'exam', weight: 0.1 },
-                    { name: 'modl', weight: 0.4 }
+                    { name: 'exam', weight: 0.05 },
+                    { name: 'modl', weight: 0.05 }
                 ],
                 threshold: 0.4,
-                //distance: 50,
                 includeScore: true,
                 includeMatches: true,
                 minMatchCharLength: 2,
@@ -61,47 +61,40 @@
             return;
         }
 
-        const results = fuse.search(query, { limit: 20 }); // Get more results initially
-        
-        // Sort results with custom scoring that prioritizes exact matches
-        const sortedResults = results
+        const queryLower = query.toLowerCase();
+        const results = fuse.search(query)
             .map(result => {
                 const item = result.item;
-                const queryLower = query.toLowerCase();
-                let exactMatchBonus = 0;
+                let bonus = 0;
                 
-                // Check for exact matches in various fields
-                if (item.name && item.name.toLowerCase() === queryLower) {
-                    exactMatchBonus = 1000; // Highest priority
-                } else if (item.name && item.name.toLowerCase().includes(queryLower)) {
-                    exactMatchBonus = 500; // Partial name match
+                // Name starts with query?
+                if (item.name && item.name.toLowerCase().startsWith(queryLower)) {
+                    bonus = 1000;
+                }
+                // Name contains query?
+                else if (item.name && item.name.toLowerCase().includes(queryLower)) {
+                    bonus = 500;
                 }
                 
-                // Check attributes for exact match
+                // Attr key starts with query?
                 if (item.attr && typeof item.attr === 'object') {
-                    for (const [key, value] of Object.entries(item.attr)) {
-                        if (key.toLowerCase() === queryLower) {
-                            exactMatchBonus = Math.max(exactMatchBonus, 900); // Very high priority for exact attr key match
+                    for (const key of Object.keys(item.attr)) {
+                        if (key.toLowerCase().startsWith(queryLower)) {
+                            bonus = Math.max(bonus, 900);
                             break;
-                        } else if (key.toLowerCase().includes(queryLower)) {
-                            exactMatchBonus = Math.max(exactMatchBonus, 400); // Partial attr key match
                         }
                     }
                 }
                 
-                // Create adjusted score (lower is better in Fuse.js)
-                const adjustedScore = (result.score || 0) - (exactMatchBonus / 1000);
-                
                 return {
                     ...result,
-                    adjustedScore,
-                    exactMatchBonus
+                    adjustedScore: result.score - (bonus / 1000)
                 };
             })
-            .sort((a, b) => a.adjustedScore - b.adjustedScore) // Sort by adjusted score
-            .slice(0, 8); // Take top 8
-        
-        displayResults(sortedResults, query);
+            .sort((a, b) => a.adjustedScore - b.adjustedScore)
+            .slice(0, 8);
+            
+        displayResults(results, query);
     }
 
     // Display search results
@@ -128,52 +121,39 @@
         const div = document.createElement('div');
         div.className = 'search-result-item';
         div.setAttribute('data-index', index);
-        // Always use the parent item's URL, even for attribute matches
-        div.setAttribute('data-url', basePath + '/' + item.url);
+        div.setAttribute('data-url', basePath + '/documentation/' + item.url);
 
         const nameMatch = matches.find(m => m.key === 'name');
         const descMatch = matches.find(m => m.key === 'desc');
         const attrMatch = matches.find(m => m.key === 'attr');
 
-        // Check if this is an attribute match
+        const queryLower = query.toLowerCase();
+        const nameLower = item.name ? item.name.toLowerCase() : '';
+        
+        // Does name match?
+        const hasNameMatch = nameLower.includes(queryLower);
+        
+        // Find attribute match
         let matchedAttrKey = null;
         let matchedAttrValue = null;
         
-        if (item.attr && typeof item.attr === 'object') {
-            const queryLower = query.toLowerCase();
-            const queryTerms = queryLower.split(/\s+/).filter(t => t.length > 0);
-            
-            // First pass: look for exact key matches
+        if (!hasNameMatch && item.attr && typeof item.attr === 'object') {
             for (const [key, value] of Object.entries(item.attr)) {
-                const keyLower = key.toLowerCase();
-                if (queryTerms.some(term => keyLower === term || keyLower.includes(term))) {
+                if (key.toLowerCase().includes(queryLower)) {
                     matchedAttrKey = key;
                     matchedAttrValue = String(value);
                     break;
-                }
-            }
-            
-            // Second pass: if no key match, look in values
-            if (!matchedAttrKey) {
-                for (const [key, value] of Object.entries(item.attr)) {
-                    const valueLower = String(value).toLowerCase();
-                    if (queryTerms.some(term => valueLower.includes(term))) {
-                        matchedAttrKey = key;
-                        matchedAttrValue = String(value);
-                        break;
-                    }
                 }
             }
         }
 
         const highlightedName = highlightFuseMatch(item.name, nameMatch);
         
-        // Build HTML based on whether it's an attr match or regular match
         let html;
-        if (matchedAttrKey !== null && matchedAttrValue !== null) {
-            // Attribute match - show name.attr and attr description
-            const highlightedAttrKey = highlightMatch(matchedAttrKey, query);
-            const highlightedAttrValue = highlightMatch(matchedAttrValue, query);
+        if (matchedAttrKey !== null) {
+            // Show attribute format with highlighting
+            const highlightedAttrKey = highlightText(matchedAttrKey, queryLower);
+            const highlightedAttrValue = highlightText(matchedAttrValue, queryLower);
             
             html = `
                 <div class="search-result-content">
@@ -187,7 +167,7 @@
                 </div>
             `;
         } else {
-            // Regular match - show name and description
+            // Show normal format
             const highlightedDesc = highlightFuseMatch(item.desc || '', descMatch);
             
             html = `
@@ -206,7 +186,7 @@
         // Click handler
         div.addEventListener('click', (e) => {
             e.preventDefault();
-            navigateToResult(basePath + '/' + item.url);
+            navigateToResult(div.getAttribute('data-url'));
         });
 
         // Hover handler
@@ -234,24 +214,20 @@
         return result;
     }
 
-    // Highlight matching text using simple string matching (for attr keys/values)
-    function highlightMatch(text, query) {
-        if (!query) return escapeHtml(text);
+    // Highlight query text in string
+    function highlightText(text, query) {
+        if (!text || !query) return escapeHtml(text);
         
-        const queryTerms = query.toLowerCase().split(/\s+/).filter(t => t.length > 0);
-        let result = escapeHtml(text);
+        const textLower = text.toLowerCase();
+        const index = textLower.indexOf(query);
         
-        queryTerms.forEach(term => {
-            const regex = new RegExp(`(${escapeRegex(term)})`, 'gi');
-            result = result.replace(regex, '<mark>$1</mark>');
-        });
+        if (index === -1) return escapeHtml(text);
         
-        return result;
-    }
-
-    // Escape regex special characters
-    function escapeRegex(str) {
-        return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const before = escapeHtml(text.slice(0, index));
+        const match = escapeHtml(text.slice(index, index + query.length));
+        const after = escapeHtml(text.slice(index + query.length));
+        
+        return `${before}<mark>${match}</mark>${after}`;
     }
 
     // Show no results message
@@ -295,7 +271,6 @@
             if (i === index) {
                 item.classList.add('is-active');
                 currentIndex = index;
-                // Scroll into view if needed
                 item.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
             } else {
                 item.classList.remove('is-active');
@@ -329,8 +304,10 @@
             
             case 'Enter':
                 e.preventDefault();
-                if (currentIndex >= 0 && items[currentIndex]) {
-                    const url = items[currentIndex].getAttribute('data-url');
+                // If no item selected, use first result
+                const targetIndex = currentIndex >= 0 ? currentIndex : 0;
+                if (items[targetIndex]) {
+                    const url = items[targetIndex].getAttribute('data-url');
                     navigateToResult(url);
                 }
                 break;
@@ -349,7 +326,7 @@
         clearTimeout(searchTimeout);
         searchTimeout = setTimeout(() => {
             performSearch(e.target.value.trim());
-        }, 150); // Debounce
+        }, 150);
     });
 
     searchInput.addEventListener('keydown', handleKeyboard);
