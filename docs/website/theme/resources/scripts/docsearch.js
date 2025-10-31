@@ -28,7 +28,9 @@
                 keys: [
                     { name: 'name', weight: 0.4 },
                     { name: 'desc', weight: 0.2 },
-                    { name: 'modl', weight: 0.1 }
+                    { name: 'attr', weight: 0.2 },
+                    { name: 'exam', weight: 0.1 },
+                    { name: 'modl', weight: 0.4 }
                 ],
                 threshold: 0.4,
                 //distance: 50,
@@ -84,19 +86,75 @@
 
         const nameMatch = matches.find(m => m.key === 'name');
         const descMatch = matches.find(m => m.key === 'desc');
+        const attrMatch = matches.find(m => m.key === 'attr');
+
+        // Check if this is an attribute match
+        let matchedAttrKey = null;
+        let matchedAttrValue = null;
+        
+        if (item.attr && typeof item.attr === 'object') {
+            const queryLower = query.toLowerCase();
+            const queryTerms = queryLower.split(/\s+/).filter(t => t.length > 0);
+            
+            // First pass: look for exact key matches
+            for (const [key, value] of Object.entries(item.attr)) {
+                const keyLower = key.toLowerCase();
+                if (queryTerms.some(term => keyLower === term || keyLower.includes(term))) {
+                    matchedAttrKey = key;
+                    matchedAttrValue = String(value);
+                    break;
+                }
+            }
+            
+            // Second pass: if no key match, look in values
+            if (!matchedAttrKey) {
+                for (const [key, value] of Object.entries(item.attr)) {
+                    const valueLower = String(value).toLowerCase();
+                    if (queryTerms.some(term => valueLower.includes(term))) {
+                        matchedAttrKey = key;
+                        matchedAttrValue = String(value);
+                        break;
+                    }
+                }
+            }
+        }
 
         const highlightedName = highlightFuseMatch(item.name, nameMatch);
-        const highlightedDesc = highlightFuseMatch(item.desc || '', descMatch);
-
-        div.innerHTML = `
-            <div class="search-result-content">
-                <div class="search-result-header">
-                    <span class="search-result-name">${highlightedName}</span>
-                    <span class="search-result-category">${item.modl}</span>
+        
+        // Build HTML based on whether it's an attr match or regular match
+        let html;
+        if (matchedAttrKey !== null && matchedAttrValue !== null) {
+            // Attribute match - show name.attr and attr description
+            const highlightedAttrKey = highlightMatch(matchedAttrKey, query);
+            const highlightedAttrValue = highlightMatch(matchedAttrValue, query);
+            
+            html = `
+                <div class="search-result-content">
+                    <div class="search-result-header">
+                        <span class="search-result-name">
+                            ${highlightedName}<span class="search-result-attr-key">.${highlightedAttrKey}</span>
+                        </span>
+                        <span class="search-result-category">${item.modl}</span>
+                    </div>
+                    <div class="search-result-description search-result-attr-desc">${highlightedAttrValue}</div>
                 </div>
-                <div class="search-result-description">${highlightedDesc}</div>
-            </div>
-        `;
+            `;
+        } else {
+            // Regular match - show name and description
+            const highlightedDesc = highlightFuseMatch(item.desc || '', descMatch);
+            
+            html = `
+                <div class="search-result-content">
+                    <div class="search-result-header">
+                        <span class="search-result-name">${highlightedName}</span>
+                        <span class="search-result-category">${item.modl}</span>
+                    </div>
+                    <div class="search-result-description">${highlightedDesc}</div>
+                </div>
+            `;
+        }
+        
+        div.innerHTML = html;
 
         // Click handler
         div.addEventListener('click', (e) => {
@@ -112,7 +170,7 @@
         return div;
     }
 
-    // Highlight matching text
+    // Highlight matching text using Fuse.js match indices
     function highlightFuseMatch(text, match) {
         if (!match || !match.indices) return escapeHtml(text);
 
@@ -126,6 +184,21 @@
         });
 
         result += escapeHtml(text.slice(lastIndex));
+        return result;
+    }
+
+    // Highlight matching text using simple string matching (for attr keys/values)
+    function highlightMatch(text, query) {
+        if (!query) return escapeHtml(text);
+        
+        const queryTerms = query.toLowerCase().split(/\s+/).filter(t => t.length > 0);
+        let result = escapeHtml(text);
+        
+        queryTerms.forEach(term => {
+            const regex = new RegExp(`(${escapeRegex(term)})`, 'gi');
+            result = result.replace(regex, '<mark>$1</mark>');
+        });
+        
         return result;
     }
 

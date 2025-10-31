@@ -5,9 +5,7 @@
     align-items: normal;
 }
 
-/*******************************
- * Search Dropdown
- *******************************/
+// Arturo Search Dropdown Styles
 
 .search-dropdown {
     position: absolute;
@@ -99,6 +97,25 @@
     }
 }
 
+.search-result-attr-key {
+    color: #999;
+    font-weight: 500;
+    font-size: 14px;
+    
+    mark {
+        background-color: rgba(106, 21, 107, 0.15);
+        color: $main-purple;
+        font-weight: 700;
+        padding: 1px 2px;
+        border-radius: 2px;
+    }
+}
+
+.search-result-attr-desc {
+    font-style: italic;
+    color: #777;
+}
+
 .search-result-category {
     font-size: 12px;
     font-weight: 500;
@@ -171,7 +188,7 @@
     }
 
     .search-dropdown {
-        //width: 30vw;
+        width: 30vw;
         left: 0;
     }
 }
@@ -199,6 +216,19 @@
             background-color: rgba(138, 225, 144, 0.2);
             color: #8ae190;
         }
+    }
+
+    .search-result-attr-key {
+        color: #999;
+        
+        mark {
+            background-color: rgba(138, 225, 144, 0.2);
+            color: #8ae190;
+        }
+    }
+
+    .search-result-attr-desc {
+        color: #aaa;
     }
 
     .search-result-description {
