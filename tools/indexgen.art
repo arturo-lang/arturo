@@ -20,12 +20,17 @@ loop select list libDocPath => validDocFile? 'modl [
             ]
         ]
 
+        examples: ""
+        if key? cmdData 'examples [
+            examples: join.with:"\n" cmdData\examples
+        ]
+
         entry: #[
             name: cmdData\name
             desc: cmdData\description
             modl: capitalize moduleName
             attr: attributes
-            exam: cmdData\examples
+            exam: examples
             url: ~"library/|moduleName|/|fileName|/"
         ]
         ; commandName: replace fname cmd ["-" ".art"] ["?" ""]
