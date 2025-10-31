@@ -5,6 +5,7 @@
     let fuse = null;
     let searchData = [];
     let currentIndex = -1;
+    let basePath = ''; // Will be set by initialization
     
     // DOM elements
     const searchInput = document.getElementById('searchbar');
@@ -18,10 +19,16 @@
     dropdown.className = 'search-dropdown';
     searchInput.parentNode.insertBefore(dropdown, searchInput.nextSibling);
 
+    // Initialize search with base path
+    window.initDocSearch = function(basePathValue = '') {
+        basePath = basePathValue;
+        initSearch();
+    };
+
     // Load search data and initialize Fuse
     async function initSearch() {
         try {
-            const response = await fetch('/arturodocs/resources/data/index.json');
+            const response = await fetch(basePath + '/resources/data/index.json');
             searchData = await response.json();
             
             fuse = new Fuse(searchData, {
@@ -121,7 +128,8 @@
         const div = document.createElement('div');
         div.className = 'search-result-item';
         div.setAttribute('data-index', index);
-        div.setAttribute('data-url', item.url);
+        // Always use the parent item's URL, even for attribute matches
+        div.setAttribute('data-url', basePath + '/' + item.url);
 
         const nameMatch = matches.find(m => m.key === 'name');
         const descMatch = matches.find(m => m.key === 'desc');
@@ -198,7 +206,7 @@
         // Click handler
         div.addEventListener('click', (e) => {
             e.preventDefault();
-            navigateToResult(item.url);
+            navigateToResult(basePath + '/' + item.url);
         });
 
         // Hover handler
@@ -365,7 +373,4 @@
             e.preventDefault();
         }
     });
-
-    // Initialize on load
-    initSearch();
 })();
