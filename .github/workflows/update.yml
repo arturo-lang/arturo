@@ -276,6 +276,7 @@ jobs:
                 ls -la arturo
                 cd arturo 
                 arturo tools/sitegen.art
+                arturo tools/indexgen.art
                 echo "#[release?: false]" > docs/website/data/setup.art
                 mkdir tmpdocs
                 cd docs/website
