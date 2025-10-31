@@ -35,7 +35,11 @@
     <script src="<||= linkTo {resources/scripts/docsearch.js} ||>"></script>
     <script>
         // Initialize doc search with base path
-        initDocSearch('/arturodocs');
+        <|| switch Data\setup\release? [ ||>
+            initDocSearch('');
+        <|| ][ ||>
+            initDocSearch('/master');
+        <|| ] ||>
     </script>
 <|| ] ||>
 </body>
