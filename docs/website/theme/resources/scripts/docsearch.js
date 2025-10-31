@@ -114,6 +114,11 @@
         });
 
         showDropdown();
+        
+        // Automatically select the first result
+        if (results.length > 0) {
+            setActiveResult(0);
+        }
     }
 
     // Create result element
