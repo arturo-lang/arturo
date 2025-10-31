@@ -81,8 +81,8 @@ jobs:
                     - {name: "JS (web / mini)",                     os: ubuntu-latest,   arch: amd64, mode: web,  shell: bash}
                     - {name: "Windows (amd64 / full)",              os: windows-latest,  arch: amd64, mode: full, shell: "msys2 {0}"}
                     - {name: "Windows (amd64 / mini)",              os: windows-latest,  arch: amd64, mode: mini, shell: "msys2 {0}"}
-                    - {name: "macOS (amd64 / full)",                os: macOS-13,        arch: amd64, mode: full, shell: bash}
-                    - {name: "macOS (amd64 / mini)",                os: macOS-13,        arch: amd64, mode: mini, shell: bash}
+                    - {name: "macOS (amd64 / full)",                os: macOS-15-intel,  arch: amd64, mode: full, shell: bash}
+                    - {name: "macOS (amd64 / mini)",                os: macOS-15-intel,  arch: amd64, mode: mini, shell: bash}
                     - {name: "macOS (arm64 / full)",                os: macos-latest,    arch: arm64, mode: full, shell: bash}
                     - {name: "macOS (arm64 / mini)",                os: macos-latest,    arch: arm64, mode: mini, shell: bash}
 
