@@ -14,8 +14,10 @@ loop select list libDocPath => validDocFile? 'modl [
         fileName: fname cmd
 
         attributes: #[]
-        loop cmdData\attributes [k,v][
-            attributes\[k]: v\description
+        if key? cmdData 'attributes [
+            loop cmdData\attributes [k,v][
+                attributes\[k]: v\description
+            ]
         ]
 
         entry: #[
