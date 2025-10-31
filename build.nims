@@ -12,7 +12,7 @@
 #=======================================
 # Libraries
 #=======================================
-
+ 
 import std/json, os
 import strformat, strutils
 
@@ -357,7 +357,7 @@ proc buildPackage*(config: BuildConfig) =
 
     main()
 
-
+ 
 proc buildDocs*() =
     let 
         params = flags.join(" ")
