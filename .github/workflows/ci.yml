@@ -38,7 +38,7 @@ jobs:
                     - {name: "macOS (amd64 / mini)",                os: macOS-13,        arch: amd64, mode: mini, shell: bash}
                     - {name: "macOS (arm64 / full)",                os: macos-latest,    arch: arm64, mode: full, shell: bash}
                     - {name: "macOS (arm64 / mini)",                os: macos-latest,    arch: arm64, mode: mini, shell: bash}
-
+ 
         name: ${{ matrix.name }}
         defaults:
             run:
