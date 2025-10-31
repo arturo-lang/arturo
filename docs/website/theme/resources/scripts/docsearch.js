@@ -40,7 +40,7 @@
                     { name: 'exam', weight: 0.05 },
                     { name: 'modl', weight: 0.05 }
                 ],
-                threshold: 0.4,
+                threshold: 0.35,
                 includeScore: true,
                 includeMatches: true,
                 minMatchCharLength: 2,
