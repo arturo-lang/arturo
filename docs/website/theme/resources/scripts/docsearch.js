@@ -54,8 +54,47 @@
             return;
         }
 
-        const results = fuse.search(query, { limit: 8 });
-        displayResults(results, query);
+        const results = fuse.search(query, { limit: 20 }); // Get more results initially
+        
+        // Sort results with custom scoring that prioritizes exact matches
+        const sortedResults = results
+            .map(result => {
+                const item = result.item;
+                const queryLower = query.toLowerCase();
+                let exactMatchBonus = 0;
+                
+                // Check for exact matches in various fields
+                if (item.name && item.name.toLowerCase() === queryLower) {
+                    exactMatchBonus = 1000; // Highest priority
+                } else if (item.name && item.name.toLowerCase().includes(queryLower)) {
+                    exactMatchBonus = 500; // Partial name match
+                }
+                
+                // Check attributes for exact match
+                if (item.attr && typeof item.attr === 'object') {
+                    for (const [key, value] of Object.entries(item.attr)) {
+                        if (key.toLowerCase() === queryLower) {
+                            exactMatchBonus = Math.max(exactMatchBonus, 900); // Very high priority for exact attr key match
+                            break;
+                        } else if (key.toLowerCase().includes(queryLower)) {
+                            exactMatchBonus = Math.max(exactMatchBonus, 400); // Partial attr key match
+                        }
+                    }
+                }
+                
+                // Create adjusted score (lower is better in Fuse.js)
+                const adjustedScore = (result.score || 0) - (exactMatchBonus / 1000);
+                
+                return {
+                    ...result,
+                    adjustedScore,
+                    exactMatchBonus
+                };
+            })
+            .sort((a, b) => a.adjustedScore - b.adjustedScore) // Sort by adjusted score
+            .slice(0, 8); // Take top 8
+        
+        displayResults(sortedResults, query);
     }
 
     // Display search results
