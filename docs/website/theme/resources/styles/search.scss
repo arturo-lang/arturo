@@ -32,7 +32,7 @@
 
     // Custom scrollbar
     &::-webkit-scrollbar {
-        width: 2px;
+        width: 0px;
     }
     
     &::-webkit-scrollbar-track {
@@ -40,12 +40,8 @@
     }
     
     &::-webkit-scrollbar-thumb {
-        background: $main-purple;
+        background: #fff;
         border-radius: 0;
-        
-        &:hover {
-            background: darken($main-purple, 10%);
-        }
     }
 }
 
@@ -187,8 +183,8 @@
         padding-left: 50px;
         margin-top: 0px;
         line-height: 1.9em;
-        padding-right: 16px;
-        margin-right: -16px;
+        padding-right: 15.5px;
+        margin-right: -15.5px;
         
         &:focus {
             border-left-color: darken($main-purple, 10%);
