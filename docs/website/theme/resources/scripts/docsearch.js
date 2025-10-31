@@ -21,17 +21,17 @@
     // Load search data and initialize Fuse
     async function initSearch() {
         try {
-            const response = await fetch('/master/resources/data/index.json');
+            const response = await fetch('/arturodocs/resources/data/index.json');
             searchData = await response.json();
             
             fuse = new Fuse(searchData, {
                 keys: [
                     { name: 'name', weight: 0.4 },
-                    { name: 'fullName', weight: 0.3 },
-                    { name: 'description', weight: 0.2 },
-                    { name: 'searchText', weight: 0.1 }
+                    { name: 'desc', weight: 0.2 },
+                    { name: 'modl', weight: 0.1 }
                 ],
-                threshold: 0.3,
+                threshold: 0.5,
+                distance: 50,
                 includeScore: true,
                 minMatchCharLength: 2,
                 ignoreLocation: true,
@@ -83,13 +83,13 @@
 
         // Highlight matching text
         const highlightedName = highlightMatch(item.name, query);
-        const highlightedDesc = highlightMatch(item.description, query);
+        const highlightedDesc = highlightMatch(item.desc, query);
 
         div.innerHTML = `
             <div class="search-result-content">
                 <div class="search-result-header">
                     <span class="search-result-name">${highlightedName}</span>
-                    <span class="search-result-category">${item.category}</span>
+                    <span class="search-result-category">${item.modl}</span>
                 </div>
                 <div class="search-result-description">${highlightedDesc}</div>
             </div>
