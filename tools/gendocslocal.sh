@@ -13,3 +13,6 @@ cd docs/website
 
 arturo-docg ../../tools/miniwebize/webize.art --build --at: ../../tmpdocs
 cd ../..
+
+rm -rf /Applications/XAMPP/xamppfiles/htdocs/arturodocs
+cp -r tmpdocs /Applications/XAMPP/xamppfiles/htdocs/arturodocs
