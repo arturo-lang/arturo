@@ -307,6 +307,7 @@ template fetchIterableRange() {.dirty.} =
     var rang = iterable.rng
 
 template fetchIterableItems(doesAcceptLiterals=true, defaultReturn: untyped) {.dirty.} =
+    debugEcho "Fetching iterable items"
     var blo = 
         case iterable.kind:
             of Block,Inline:
@@ -324,13 +325,21 @@ template fetchIterableItems(doesAcceptLiterals=true, defaultReturn: untyped) {.d
                 @[VNULL]
 
     if blo.len == 0 and (when declared(hasSeed): not hasSeed else: true): 
+        debugEcho "Iterator block is empty"
         when doesAcceptLiterals:
             when astToStr(defaultReturn) != "nil":
+                debugEcho "Pushing default return value"
                 if unlikely(inPlace): RawInPlaced = defaultReturn
                 else: push(defaultReturn)
+            else:
+                debugEcho "No default return value given"
         else:
             when astToStr(defaultReturn) != "nil":
+                debugEcho "Pushing default return value (non-literal)"
                 push(defaultReturn)
+            else:
+                debugEcho "No default return value given (non-literal)"
+        debugEcho "Exiting iterator"
         return
 
 template iterateRange(withCap:bool, withInf:bool, withCounter:bool, rolling:bool, act: untyped) {.dirty.} =
@@ -405,22 +414,30 @@ template doIterate(
     ## The main iterator helper for every method 
     ## that doesn't require any special handling, 
     ## e.g. for Range and Block values
+    debugEcho "Preparing iteration"
     prepareIteration(doesAcceptLiterals=itLit)
-
+    debugEcho "Starting iteration"
     if iterable.kind==Range:
+        debugEcho "Iterating over Range"
         fetchIterableRange()
-
+        debugEcho "Fetched iterable range"
         itPre
+        debugEcho "Prepared pre-iteration"
         iterateRange(withCap=itCap, withInf=itInf, withCounter=itCounter, rolling=itRolling):
             itAct
+        debugEcho "Finished iteration"
         itPost
     else:
+        debugEcho "Iterating over Items"
         fetchIterableItems(doesAcceptLiterals=itLit):
             itDefVal
 
+        debugEcho "Fetched iterable items"
         itPre
+        debugEcho "Prepared pre-iteration"
         iterateBlock(withCap=itCap, withInf=itInf, withCounter=itCounter, rolling=itRolling):
             itAct
+        debugEcho "Finished iteration"
         itPost
 
 #=======================================
@@ -1056,7 +1073,7 @@ proc defineModule*(moduleName: string) =
         """:
             #=======================================================
             let doForever = hadAttr("forever")
-            doIterate(itLit=false, itCap=false, itInf=doForever, itCounter=false, itRolling=false, nil):
+            doIterate(itLit=false, itCap=false, itInf=doForever, itCounter=false, itRolling=false, VNULL):
                 discard
             do:
                 discard
