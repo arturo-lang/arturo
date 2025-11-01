@@ -44,6 +44,30 @@ proc defineModule*(moduleName: string) =
 
     when not defined(WEB):
 
+        builtin "absolute",
+            alias       = unaliased, 
+            op          = opNop,
+            rule        = PrefixPrecedence,
+            description = "get absolute path for given path, based on current script's location",
+            args        = {
+                "path"  : {String}
+            },
+            attrs       = NoAttrs,
+            returns     = {String},
+            example     = """
+            ; we are in folder: /Users/admin/Desktop
+            ; and have a file at: /Users/admin/Desktop/subfolder/test.txt
+            
+            print absolute "../subfolder/test.txt"
+            ; /Users/admin/subfolder/test.txt
+            
+            print absolute "./test.txt"
+            ; /Users/admin/Desktop/test.txt
+            """:
+                #=======================================================
+                let fullPath = joinPath(currentFrame().folder, x.s)
+                push(newString(normalizedPath(fullPath)))
+
         # TODO(Paths\extract) implement for Web/JS builds
         #  labels: library,enhancement,web
         builtin "extract",
