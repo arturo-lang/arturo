@@ -39,4 +39,5 @@ loop select list libDocPath => validDocFile? 'modl [
     ]
 ]
 
+write.directory ø docs "docs/website/theme/resources/data"
 docEntries >>.compact.json "docs/website/theme/resources/data/index.json"
