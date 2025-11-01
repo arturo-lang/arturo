@@ -1,0 +1,42 @@
+
+docPath: "docs/website/pages/documentation"
+libDocPath: ~"|docPath|/library"
+fname: function [p][ extract.filename p ]
+validDocFile?: function [f][ not? contains? ['.' '_'] first fname f ]
+
+docEntries: []
+loop select list libDocPath => validDocFile? 'modl [
+    moduleName: fname modl
+    print color #green moduleName
+
+    loop select list ~"|libDocPath|/|moduleName|" => validDocFile? 'cmd [
+        cmdData: # cmd
+        fileName: fname cmd
+
+        attributes: #[]
+        if key? cmdData 'attributes [
+            loop cmdData\attributes [k,v][
+                attributes\[k]: v\description
+            ]
+        ]
+
+        examples: ""
+        if key? cmdData 'examples [
+            examples: join.with:"\n" cmdData\examples
+        ]
+
+        entry: #[
+            name: cmdData\name
+            desc: cmdData\description
+            modl: capitalize moduleName
+            attr: attributes
+            exam: examples
+            url: ~"library/|moduleName|/|fileName|/"
+        ]
+        ; commandName: replace fname cmd ["-" ".art"] ["?" ""]
+        inspect entry
+        'docEntries ++ entry
+    ]
+]
+
+docEntries >>.compact.json "docs/website/theme/resources/data/index.json"
