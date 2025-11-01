@@ -26,6 +26,7 @@ Paths: #[
     theme:              "|project|/theme"
     resourceFonts:  	"|project|/theme/resources/fonts"
     resourceImages: 	"|project|/theme/resources/images"
+    resourceData:       "|project|/theme/resources/data"
     resourceScripts:	"|project|/theme/resources/scripts"
     resourceStyles: 	"|project|/theme/resources/styles"
 ]
