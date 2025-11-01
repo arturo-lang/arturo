@@ -327,14 +327,14 @@ template fetchIterableItems(doesAcceptLiterals=true, defaultReturn: untyped) {.d
     if blo.len == 0 and (when declared(hasSeed): not hasSeed else: true): 
         debugEcho "Iterator block is empty"
         when doesAcceptLiterals:
-            when astToStr(defaultReturn) != "nil":
+            when not (defaultReturn is typeof(nil)):
                 debugEcho "Pushing default return value"
                 if unlikely(inPlace): RawInPlaced = defaultReturn
                 else: push(defaultReturn)
             else:
                 debugEcho "No default return value given"
         else:
-            when astToStr(defaultReturn) != "nil":
+            when not (defaultReturn is typeof(nil)):
                 debugEcho "Pushing default return value (non-literal)"
                 push(defaultReturn)
             else:
