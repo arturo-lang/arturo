@@ -12,7 +12,7 @@
 #=======================================
 # Libraries
 #=======================================
- 
+
 import std/json, os
 import strformat, strutils
 
