@@ -1,5 +1,5 @@
 import os, strutils
- 
+
 proc defaultConfig() =
     --cincludes:extras
     --path:src
