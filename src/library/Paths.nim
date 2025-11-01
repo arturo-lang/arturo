@@ -65,7 +65,9 @@ proc defineModule*(moduleName: string) =
             ; /Users/admin/Desktop/test.txt
             """:
                 #=======================================================
-                let fullPath = joinPath(currentFrame().folder, x.s)
+                let relativePath = joinPath(currentFrame().folder, x.s)
+                let fullPath = joinPath(getCurrentDir(), relativePath)
+                
                 push(newString(normalizedPath(fullPath)))
 
         # TODO(Paths\extract) implement for Web/JS builds
