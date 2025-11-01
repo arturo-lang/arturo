@@ -325,12 +325,13 @@ template fetchIterableItems(doesAcceptLiterals=true, defaultReturn: untyped) {.d
 
     if blo.len == 0 and (when declared(hasSeed): not hasSeed else: true): 
         when doesAcceptLiterals:
-            when astToStr(defaultReturn) != "nil":
+            when not (defaultReturn is typeof(nil)):
                 if unlikely(inPlace): RawInPlaced = defaultReturn
                 else: push(defaultReturn)
         else:
-            when astToStr(defaultReturn) != "nil":
+            when not (defaultReturn is typeof(nil)):
                 push(defaultReturn)
+
         return
 
 template iterateRange(withCap:bool, withInf:bool, withCounter:bool, rolling:bool, act: untyped) {.dirty.} =
@@ -405,6 +406,7 @@ template doIterate(
     ## The main iterator helper for every method 
     ## that doesn't require any special handling, 
     ## e.g. for Range and Block values
+
     prepareIteration(doesAcceptLiterals=itLit)
 
     if iterable.kind==Range:
@@ -413,6 +415,7 @@ template doIterate(
         itPre
         iterateRange(withCap=itCap, withInf=itInf, withCounter=itCounter, rolling=itRolling):
             itAct
+
         itPost
     else:
         fetchIterableItems(doesAcceptLiterals=itLit):
@@ -421,6 +424,7 @@ template doIterate(
         itPre
         iterateBlock(withCap=itCap, withInf=itInf, withCounter=itCounter, rolling=itRolling):
             itAct
+
         itPost
 
 #=======================================
@@ -1056,7 +1060,7 @@ proc defineModule*(moduleName: string) =
         """:
             #=======================================================
             let doForever = hadAttr("forever")
-            doIterate(itLit=false, itCap=false, itInf=doForever, itCounter=false, itRolling=false, nil):
+            doIterate(itLit=false, itCap=false, itInf=doForever, itCounter=false, itRolling=false, VNULL):
                 discard
             do:
                 discard
