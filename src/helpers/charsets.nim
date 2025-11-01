@@ -118,10 +118,11 @@ const
 #=======================================
 
 proc getCharsetRunes*(locale: string, withExtras = false, doUppercase = false, filterNgraphs = true): seq[Rune] =
+    let charsetStr = charsets[locale]
     if doUppercase:
-        result = toSeq(runes(charsets[locale])).map((x)=>toUpper(x))
+        result = toSeq(runes(charsetStr)).map((x)=>toUpper(x))
     else:
-        result = toSeq(runes(charsets[locale]))
+        result = toSeq(runes(charsetStr))
 
     if withExtras:
         var extra: seq[Rune]
