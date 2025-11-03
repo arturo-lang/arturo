@@ -187,12 +187,10 @@ template initialize(args: seq[string], filename: string, isFile:bool, scriptData
 
     when not defined(WEB):
         # paths
-        if isFile: pushFrame(filename, fromFile=true)
+        if isFile: 
+            pushFrame(filename, fromFile=true)
         else: 
-            when defined(BUNDLE):
-                pushFrame("")
-            else:
-                pushFrame(getCurrentDir())
+            pushFrame("")
 
     Syms = initTable[string,Value]()
 
