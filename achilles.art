@@ -1,6 +1,6 @@
 prettyPrint: function [res][
     res | split.every: 10
-        | loop => [print map & 'x -> pad to :string x 9]
+        | loop => [print map & 'x -> pad to :string x 7]
 ]
 
 achilles?: function [n][
