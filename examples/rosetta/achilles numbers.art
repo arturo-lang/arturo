@@ -1,0 +1,36 @@
+prettyPrint: function [res][
+    res | split.every: 10
+        | loop => [print map & 'x -> pad to :string x 7]
+]
+
+achilles?: function [n][
+    exps: values tally factors.prime n
+    and? -> not? some? exps => one?
+         -> 1 = fold exps [a b] -> gcd @[a b]
+]
+
+phi: function [n][
+    pf: tally factors.prime n
+    fold.seed:1 keys pf [res pr][
+        ipr: to :integer pr
+        res * (ipr - 1) * ipr ^ dec to :integer pf\[ipr]
+    ]
+]
+
+n: 50
+print ["First" n "Achilles numbers:"]
+2..∞ | select.first: n => achilles?
+     | prettyPrint
+
+print ""
+print ["First" n "strong Achilles numbers:"]
+2..∞ | select.first: n 'x -> and? [achilles? x][achilles? phi x]
+     | prettyPrint
+
+print ""
+counts: 2..1000000 | select => achilles?
+                   | map => [size digits &]
+                   | tally
+
+loop counts [k v]->
+    print [k "digits:" v]
