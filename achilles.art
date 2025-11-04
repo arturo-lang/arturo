@@ -5,7 +5,7 @@ prettyPrint: function [res][
 
 achilles?: function [n][
     exps: values tally factors.prime n
-    and? -> not? some? exps => [& = 1]
+    and? -> not? some? exps => one?
          -> 1 = fold exps [a b] -> gcd @[a b]
 ]
 
@@ -13,8 +13,7 @@ phi: function [n][
     pf: tally factors.prime n
     fold.seed:1 keys pf [res pr][
         ipr: to :integer pr
-        xp: to :integer pf\[ipr]
-        res * (ipr - 1) * ipr ^ (xp - 1)
+        res * (ipr - 1) * ipr ^ dec to :integer pf\[ipr]
     ]
 ]
 
