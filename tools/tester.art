@@ -44,6 +44,7 @@ canExecute?: function [scri][
             "loops - continue"
             "lucas-lehmer test"
             "magic constant"
+            "miller-rabin primality test"
             "modular exponentation"
             "next special primes"
             "pell's equation"
