@@ -60,6 +60,7 @@ canExecute?: function [scri][
             "sorting algorithms - pancake sort"
             "special factorials"
             "square root by hand"
+            "super-d numbers"
             "super-poulet numbers"
             "sylvester's sequence"
             "trigonometric functions"
