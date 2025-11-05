@@ -27,7 +27,7 @@ canExecute?: function [scri][
             "sorting"
 
             "ackermann function"
-            "arbitrary-precision integers - included"
+            "arbitrary-precision integers (included)"
             "arithmetic derivative"
             "bell numbers"
             "benford's law"
@@ -45,7 +45,7 @@ canExecute?: function [scri][
             "lucas-lehmer test"
             "magic constant"
             "miller-rabin primality test"
-            "modular exponentation"
+            "modular exponentiation"
             "next special primes"
             "pell's equation"
             "penta-power prime seeds"
