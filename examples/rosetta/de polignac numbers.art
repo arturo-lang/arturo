@@ -1,0 +1,18 @@
+polignac?: function [n][
+    exp: 0
+    while [n >= shl 1 exp][
+        if prime? n - shl 1 exp -> return false
+        inc 'exp
+    ]
+    return true
+]
+
+polignacs: select.first:10000 range.step:2 1 infinite => polignac?
+
+print "First 50 De Polignac numbers:"
+loop split.every:10 first.n:50 polignacs 'row ->
+    print map row 'n -> pad to :string n 5
+
+print ""
+print ["1000th:" polignacs\999]
+print ["10000th:" polignacs\9999]
