@@ -1,0 +1,18 @@
+magnanimous?: function [n][
+    or? -> n < 10
+        -> every? dec size s: <= to :string n 'i [
+            [left,right]: to [:integer] split.at:i s
+            prime? left + right
+        ]
+]
+
+magnanimouses: select.first:400 0..∞ => magnanimous?
+
+print "First 45 magnanimous numbers:"
+print join.with:" " to [:string] first.n:45 magnanimouses
+
+print "\n241st through 250th magnanimous numbers:"
+print join.with:" " to [:string] magnanimouses\[240..249]
+
+print "\n391st through 400th magnanimous numbers:"
+print join.with:" " to [:string] last.n:10 magnanimouses
