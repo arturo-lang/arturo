@@ -1,0 +1,25 @@
+palindromic?: function [n][
+    s = reverse s: <= to :string n
+]
+
+gapful?: function [n][
+    s: to :string n
+    divisor: to :integer (first s) ++ last s
+    0 = n % divisor
+]
+
+palindromicGapfuls: map 1..9 'd [
+    select.first:100 range.step:10 100+d ∞ 'x ->
+        and? [palindromic? x][gapful? x]
+]
+
+print "First 20 palindromic gapful numbers ending with:"
+print repeat "=" 65
+loop 1..9 'd ->
+    print [d ":", join.with:" " to [:string] first.n:20 palindromicGapfuls\[d-1]]
+
+print ""
+print "Last 15 of first 100 palindromic gapful numbers ending with:"
+print repeat "=" 65
+loop 1..9 'd ->
+    print [d ":", join.with:" " to [:string] last.n:15 palindromicGapfuls\[d-1]]
