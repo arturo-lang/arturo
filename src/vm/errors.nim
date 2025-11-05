@@ -152,6 +152,12 @@ func `~~`*(s: string, inputs: seq[string]): string =
 
 # Error messages
 
+proc printError(s: string) =
+    when not defined(WEB):
+        stderr.writeLine s
+    else:
+        echo s
+
 proc printErrorHeader(e: VError) =
     let preHeader = 
         fg(redColor) & "{HorizLine}{HorizLine}{LeftBracket} ".fmt & 
@@ -165,17 +171,17 @@ proc printErrorHeader(e: VError) =
 
     let middleStretch = getMaxWidth() - preHeader.realLen() - postHeader.realLen()
 
-    stderr.writeLine ""
-    stderr.writeLine preHeader & repeat(HorizLine, middleStretch) & postHeader
+    printError ""
+    printError preHeader & repeat(HorizLine, middleStretch) & postHeader
 
 proc printErrorKindDescription(e: VError) =
     if e.kind.description != "":
-        stderr.writeLine ""
-        stderr.writeLine indent(e.kind.description, 2) & resetColor
+        printError ""
+        printError indent(e.kind.description, 2) & resetColor
 
 proc printErrorMessage(e: VError) =
-    stderr.writeLine ""
-    stderr.writeLine strip(indent(dedent(formatMessage(e.msg)), 2), chars={'\n'})
+    printError ""
+    printError strip(indent(dedent(formatMessage(e.msg)), 2), chars={'\n'})
 
 proc printCodePreview(e: VError) =
     when (not defined(NOERRORLINES)) and (not defined(BUNDLE)):
@@ -187,15 +193,15 @@ proc printCodePreview(e: VError) =
                 else:
                     e.context.file = currentFrame().path
                 
-            stderr.writeLine ""
+            printError ""
             let fileContent = readFile(e.context.file)
             let codeLines = fileContent.splitLines()
             const linesBeforeAfter = 2
             let lineFrom = max(0, e.context.line - (linesBeforeAfter+1))
             let lineTo = min(len(codeLines)-1, e.context.line + (linesBeforeAfter-1))
-            stderr.writeLine "  " & fg(grayColor) & "{VertLine} ".fmt & bold(grayColor) & "File: " & fg(grayColor) & e.context.file
-            stderr.writeLine "  " & fg(grayColor) & "{VertLine} ".fmt & bold(grayColor) & "Line: " & fg(grayColor) & $(e.context.line)
-            stderr.writeLine "  " & fg(grayColor) & "{VertLine} ".fmt & resetColor
+            printError "  " & fg(grayColor) & "{VertLine} ".fmt & bold(grayColor) & "File: " & fg(grayColor) & e.context.file
+            printError "  " & fg(grayColor) & "{VertLine} ".fmt & bold(grayColor) & "Line: " & fg(grayColor) & $(e.context.line)
+            printError "  " & fg(grayColor) & "{VertLine} ".fmt & resetColor
             for lineNo in lineFrom..lineTo:
                 var line = codeLines[lineNo]
                 var pointerArrow = "{VertLineD} ".fmt
@@ -207,17 +213,17 @@ proc printCodePreview(e: VError) =
                     line = bold(grayColor) & line & fg(grayColor)
                     lineNumPre = bold(grayColor)
                     lineNumPost = fg(grayColor)
-                stderr.writeLine "  " & fg(grayColor) & "{VertLine} ".fmt & lineNumPre & align(lineNum,4) & lineNumPost & " {pointerArrow} ".fmt & line & resetColor
+                printError "  " & fg(grayColor) & "{VertLine} ".fmt & lineNumPre & align(lineNum,4) & lineNumPost & " {pointerArrow} ".fmt & line & resetColor
 
 proc printHint(e: VError) =
     if e.hint != "":
         let wrappingWidth = min(100, int(0.8 * float(getMaxWidth() - 2 - 6)))
         let hinter = "  " & underline() & "Hint" & resetColor() & ": "
-        stderr.writeLine ""
+        printError ""
         if e.hint.contains("\n"):
-            stderr.writeLine (hinter & "$$") ~~ @[e.hint.processPseudomarkdown()]
+            printError (hinter & "$$") ~~ @[e.hint.processPseudomarkdown()]
         else:
-            stderr.writeLine hinter & wrapped(strip(dedent(e.hint)).splitLines().join(" "), wrappingWidth, delim="\n        ")
+            printError hinter & wrapped(strip(dedent(e.hint)).splitLines().join(" "), wrappingWidth, delim="\n        ")
 
 #=======================================
 # Methods
@@ -232,7 +238,7 @@ proc showError*(e: VError) =
         printHint()
     
     if (not IsRepl) or e.hint=="":
-        stderr.writeLine ""
+        printError ""
 
 func panic(error: VError) =
     raise error
@@ -1045,4 +1051,4 @@ func ProgramError_panic*(message: string, code: int) =
 
 #     if errMsgParts.len > 1:
 #         errMsg &= errMsgParts[1..^1].join(fmt("\n{indent}{bold(redColor)}{separator}{resetColor} "))
-#     stderr.writeLine fmt("{bold(redColor)}{marker} {header} {separator}{resetColor} {errMsg}")
+#     printError fmt("{bold(redColor)}{marker} {header} {separator}{resetColor} {errMsg}")
