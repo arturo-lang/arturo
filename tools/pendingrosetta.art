@@ -1,0 +1,204 @@
+import'unidecode!
+
+;------------------------------------------
+; Configuration
+;------------------------------------------
+
+API_URL: "https://rosettacode.org/w/api.php"
+
+;------------------------------------------
+; Helper Functions
+;------------------------------------------
+
+fetchCategory: function [category][
+    results: []
+    continue: ""
+    
+    while ø [
+        params: #[
+            action: "query"
+            list: "categorymembers"
+            cmtitle: ~"Category:|category|"
+            cmlimit: "500"
+            format: "json"
+        ]
+        
+        unless empty? continue ->
+            params\cmcontinue: continue
+
+        response: request API_URL params
+        body: read.json response\body
+
+        inspect response
+        
+        'results ++ map body\query\categorymembers 'page ->
+            page\title
+            
+        switch key? body 'continue 
+            -> continue: body\continue\cmcontinue
+            -> break
+    ]
+    
+    return results
+]
+
+fetchTaskSolution: function [taskName, language][
+    ;------------------------------------------
+    ; Fetch the raw wikitext for the task
+    ;------------------------------------------
+    
+    params: #[
+        action: "parse"
+        page: taskName
+        prop: "wikitext"
+        format: "json"
+    ]
+    
+    response: request API_URL params
+    body: read.json response\body
+    
+    ; Check if page exists
+    unless key? body\parse 'wikitext [
+        print color #red "Error: Task not found!"
+        return null
+    ]
+    
+    ; Get the wikitext content
+    wikitextObj: body\parse\wikitext
+    wikitext: first values wikitextObj
+    
+    ;------------------------------------------
+    ; Extract the section for the given language
+    ;------------------------------------------
+    
+    ; Create the header pattern to search for
+    headerPattern: "=={{header|" ++ language ++ "}}=="
+    
+    ; Get everything from header position onwards
+    fromHeader: last split.by:headerPattern wikitext 
+    if fromHeader = wikitext ->
+        return null
+
+    
+    
+    ; Find next header (starting with ==)
+    nextHeaderPattern: "\n=="
+    nextHeaderPos: index fromHeader nextHeaderPattern
+    
+    print ["DEBUG: Next header found at offset:" nextHeaderPos]
+    
+    ; Extract just this section
+    sectionText: switch null? nextHeaderPos
+        -> fromHeader
+        -> slice fromHeader 0 nextHeaderPos-1
+    
+    print ["DEBUG: Section length:" size sectionText]
+    print "DEBUG: Section text:"
+    print repeat "-" 60
+    print sectionText
+    print repeat "-" 60
+    
+    ;------------------------------------------
+    ; Extract code and output
+    ;------------------------------------------
+    
+    result: #[code: "", output: ""]
+    
+    codeStart: index sectionText "<syntaxhighlight lang=\"arturo\">"
+    unless codeStart [
+        codeStart: index sectionText "<syntaxhighlight lang=\"rebol\">"
+    ]
+    
+    if codeStart [
+        afterStart: slice sectionText codeStart + 30 (size sectionText)-1
+        codeEnd: index afterStart "</syntaxhighlight>"
+        
+        if codeEnd ->
+            result\code: strip slice afterStart 0 codeEnd-1
+    ]
+    
+    outStart: index sectionText "{{out}}"
+    if outStart [
+        afterOut: slice sectionText outStart (size sectionText)-1
+        preStart: index afterOut "<pre>"
+        if preStart [
+            afterPre: slice afterOut preStart + 5 (size afterOut)-1
+            preEnd: index afterPre "</pre>"
+            if preEnd ->
+                result\output: strip slice afterPre 0 preEnd-1
+        ]
+    ]
+    
+    return result
+]
+
+checkSolution: function [name][
+    source: read ./~"../examples/rosetta/|name|.art"
+    output: read ./~"../examples/rosetta/|name|.res"
+
+    fetched: fetchTaskSolution name "Arturo"
+
+    print (fetched\code = source) ?
+        -> color #green "SOURCE OK"
+        -> color #red "SOURCE ERROR"
+    
+    print ["fetched:" fetched\code]
+    print ["was:" source]
+
+    print (fetched\output = output) ?
+        -> color #green "OUTPUT OK"
+        -> color #red "OUTPUT ERROR"
+
+    print ["fetched:" fetched\output]
+    print ["was:" output]
+]
+checkSolution "10001th prime"
+
+; prints "• Fetching remote tasks implemented in Arturo..."
+; rcTasks: "arturo" 
+;     | fetchCategory
+;     | filter => [& = "Category:Arturo User"]
+; print color #green " OK"
+
+; prints "• Getting local tasks..."
+; localTasks: "examples/rosetta" 
+;     | list
+;     | select => [suffix? & ".art"]
+;     | map => [extract.filename &]
+; print color #green " OK"
+
+; prints "• Matching tasks..."
+; result: #[]
+; loop localTasks 'tsk [
+;     sanitized: strip first split.by:"--" replace tsk " - " "/"
+;     found: ø
+;     loop rcTasks 'rct [
+;         if sanitized = unidecode lower rct [
+;             found: rct
+;             break
+;         ]
+;     ]
+;     result\[tsk]: found
+; ]
+; print color #green " OK"
+
+; unmatchedRcTasks: difference rcTasks values result
+
+; loop result [k,v][
+;     if null? v [
+;         print color #gray "\tNot found: " ++ k
+;         sanitized: strip first split.by:"--" replace k " - " "/"
+;         found: minimum unmatchedRcTasks 'rct ->
+;             levenshtein sanitized unidecode lower rct
+;         result\[k]: found
+;         print color #gray "\t\t-> Matched with: " ++ found
+;     ]
+; ]
+
+; unmatchedRcTasks: difference rcTasks values result
+; nofTasks: (size unmatchedRcTasks) + size unique values result
+
+; print color #cyan repeat "-" 60
+; print ["•  Found" size result "files"]
+; print ["• " nofTasks "tasks solved in total (" size unmatchedRcTasks "only on RC )"]
+; print color #cyan repeat "-" 60
