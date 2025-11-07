@@ -1,3 +1,5 @@
+import'progressive!
+import'tabular!
 import'unidecode!
 
 ;------------------------------------------
@@ -28,8 +30,6 @@ fetchCategory: function [category][
 
         response: request API_URL params
         body: read.json response\body
-
-        inspect response
         
         'results ++ map body\query\categorymembers 'page ->
             page\title
@@ -70,135 +70,187 @@ fetchTaskSolution: function [taskName, language][
     ;------------------------------------------
     ; Extract the section for the given language
     ;------------------------------------------
+
+    syntaxStart: {<syntaxhighlight}
+    rebolSyntax: {<syntaxhighlight lang="rebol">}
+    arturoSyntax: {<syntaxhighlight lang="arturo">}
+    syntaxEnd: {</syntaxhighlight>}
+
+    preStart: {<pre>}
+    preEnd: {</pre>}
     
     ; Create the header pattern to search for
-    headerPattern: "=={{header|" ++ language ++ "}}=="
-    
-    ; Get everything from header position onwards
-    fromHeader: last split.by:headerPattern wikitext 
-    if fromHeader = wikitext ->
-        return null
+    headerStart: "=={{header|"
+    headerPattern: headerStart ++ language ++ "}}=="
 
-    
-    
-    ; Find next header (starting with ==)
-    nextHeaderPattern: "\n=="
-    nextHeaderPos: index fromHeader nextHeaderPattern
-    
-    print ["DEBUG: Next header found at offset:" nextHeaderPos]
-    
-    ; Extract just this section
-    sectionText: switch null? nextHeaderPos
-        -> fromHeader
-        -> slice fromHeader 0 nextHeaderPos-1
-    
-    print ["DEBUG: Section length:" size sectionText]
-    print "DEBUG: Section text:"
-    print repeat "-" 60
-    print sectionText
-    print repeat "-" 60
-    
-    ;------------------------------------------
-    ; Extract code and output
-    ;------------------------------------------
-    
-    result: #[code: "", output: ""]
-    
-    codeStart: index sectionText "<syntaxhighlight lang=\"arturo\">"
-    unless codeStart [
-        codeStart: index sectionText "<syntaxhighlight lang=\"rebol\">"
-    ]
-    
-    if codeStart [
-        afterStart: slice sectionText codeStart + 30 (size sectionText)-1
-        codeEnd: index afterStart "</syntaxhighlight>"
-        
-        if codeEnd ->
-            result\code: strip slice afterStart 0 codeEnd-1
-    ]
-    
-    outStart: index sectionText "{{out}}"
-    if outStart [
-        afterOut: slice sectionText outStart (size sectionText)-1
-        preStart: index afterOut "<pre>"
-        if preStart [
-            afterPre: slice afterOut preStart + 5 (size afterOut)-1
-            preEnd: index afterPre "</pre>"
-            if preEnd ->
-                result\output: strip slice afterPre 0 preEnd-1
+    ;print ["===>" size split.by:headerPattern wikitext "sections found"]
+    main: last split.by:headerPattern wikitext
+    if main = wikitext ->
+        panic "Arturo section not found"
+    main: strip first split.by:headerStart main
+
+    code?: false
+    output?: false
+
+    hasOldRebolTag?: false
+
+    code: ""
+    output: ""
+
+    i: 0
+    while [i < size main][
+        substr: drop.times: i main
+        ch: main\[i]
+
+        when.has: substr [
+            [|prefix? syntaxEnd][
+                i: i + dec size syntaxEnd
+                code?: false
+            ]
+            [|prefix? preEnd][
+                output?: false
+            ]
         ]
+
+        if code?    -> code: code ++ ch
+        if output?  -> output: output ++ ch
+
+        when.has: substr [
+            [|prefix? syntaxStart][
+                when.has: substr [
+                    [|prefix? rebolSyntax][
+                        i: i + dec size rebolSyntax
+                        hasOldRebolTag?: true
+                        code?: true
+                    ]
+                    [|prefix? arturoSyntax][
+                        i: i + dec size arturoSyntax
+                        code?: true
+                    ]
+                    true [
+                        return #[
+                            code: "Unrecognized syntax marker"
+                            output: ""
+                            rebol?: hasOldRebolTag?
+                        ]
+                    ]
+                ]
+            ]
+            [|prefix? preStart][
+                i: i + dec size preStart
+                output?: true
+            ]
+        ]
+
+        i: i + 1
     ]
-    
-    return result
+
+    return #[
+        code: code
+        output: output
+        rebol?: hasOldRebolTag?
+    ]
 ]
 
-checkSolution: function [name][
-    source: read ./~"../examples/rosetta/|name|.art"
-    output: read ./~"../examples/rosetta/|name|.res"
+checkSolution: function [fname,name][
+    source: read ./~"../examples/rosetta/|fname|.art"
+    output: read ./~"../examples/rosetta/|fname|.res"
 
     fetched: fetchTaskSolution name "Arturo"
+    ;return fetched
 
-    print (fetched\code = source) ?
-        -> color #green "SOURCE OK"
-        -> color #red "SOURCE ERROR"
+    return #[
+        codeOK?: to :string fetched\code = source
+        outputOK?: to :string fetched\output = output
+        oldTags?: to :string fetched\rebol?
+    ]
+    ; print (fetched\code = source) ?
+    ;     -> color #green "SOURCE OK"
+    ;     -> color #red "SOURCE ERROR"
     
-    print ["fetched:" fetched\code]
-    print ["was:" source]
+    ; print ["fetched:" fetched\code]
+    ; print ["was:" source]
 
-    print (fetched\output = output) ?
-        -> color #green "OUTPUT OK"
-        -> color #red "OUTPUT ERROR"
+    ; print (fetched\output = output) ?
+    ;     -> color #green "OUTPUT OK"
+    ;     -> color #red "OUTPUT ERROR"
 
-    print ["fetched:" fetched\output]
-    print ["was:" output]
+    ; print ["fetched:" fetched\output]
+    ; print ["was:" output]
 ]
-checkSolution "10001th prime"
+;checkSolution "100 prisoners"
 
-; prints "• Fetching remote tasks implemented in Arturo..."
-; rcTasks: "arturo" 
-;     | fetchCategory
-;     | filter => [& = "Category:Arturo User"]
-; print color #green " OK"
+prints " • Fetching remote tasks implemented in Arturo..."
+rcTasks: "arturo" 
+    | fetchCategory
+    | filter => [& = "Category:Arturo User"]
+print color #green " OK"
 
-; prints "• Getting local tasks..."
-; localTasks: "examples/rosetta" 
-;     | list
-;     | select => [suffix? & ".art"]
-;     | map => [extract.filename &]
-; print color #green " OK"
+prints " • Getting local tasks..."
+localTasks: "examples/rosetta" 
+    | list
+    | select => [suffix? & ".art"]
+    | map => [extract.filename &]
+print color #green " OK"
 
-; prints "• Matching tasks..."
-; result: #[]
-; loop localTasks 'tsk [
-;     sanitized: strip first split.by:"--" replace tsk " - " "/"
-;     found: ø
-;     loop rcTasks 'rct [
-;         if sanitized = unidecode lower rct [
-;             found: rct
-;             break
-;         ]
-;     ]
-;     result\[tsk]: found
-; ]
-; print color #green " OK"
+print " • Matching tasks..."
+result: #[]
+progressive\loop.keep localTasks 'tsk [
+    processing tsk
+    sanitized: strip first split.by:"--" replace tsk " - " "/"
+    found: ø
+    loop rcTasks 'rct [
+        if sanitized = unidecode lower rct [
+            found: rct
+            break
+        ]
+    ]
+    result\[tsk]: found
+]
 
-; unmatchedRcTasks: difference rcTasks values result
+unmatchedRcTasks: difference rcTasks values result
 
-; loop result [k,v][
-;     if null? v [
-;         print color #gray "\tNot found: " ++ k
-;         sanitized: strip first split.by:"--" replace k " - " "/"
-;         found: minimum unmatchedRcTasks 'rct ->
-;             levenshtein sanitized unidecode lower rct
-;         result\[k]: found
-;         print color #gray "\t\t-> Matched with: " ++ found
-;     ]
-; ]
+loop result [k,v][
+    if null? v [
+        print color #gray "\tNot found: " ++ k
+        sanitized: strip first split.by:"--" replace k " - " "/"
+        found: minimum unmatchedRcTasks 'rct ->
+            levenshtein sanitized unidecode lower rct
+        result\[k]: found
+        print color #gray "\t\t-> Matched with: " ++ found
+    ]
+]
 
-; unmatchedRcTasks: difference rcTasks values result
-; nofTasks: (size unmatchedRcTasks) + size unique values result
+unmatchedRcTasks: difference rcTasks values result
+nofTasks: (size unmatchedRcTasks) + size unique values result
 
-; print color #cyan repeat "-" 60
-; print ["•  Found" size result "files"]
-; print ["• " nofTasks "tasks solved in total (" size unmatchedRcTasks "only on RC )"]
-; print color #cyan repeat "-" 60
+print color #cyan repeat "-" 60
+print [" •  Found" size result "files"]
+print [" • " nofTasks "tasks solved in total (" size unmatchedRcTasks "only on RC )"]
+print color #cyan repeat "-" 60
+
+print " • Checking tasks..."
+stats: #[]
+tblrows: []
+result: arrange result [k,v]-> v
+progressive\loop.keep first.n:10 keys result 'kk [
+    vv: result\[kk]
+    processing kk
+
+    check: checkSolution kk vv
+    ;stats\[kk]: checkSolution kk vv
+
+    'tblrows ++ @[flatten @[vv values check]]
+    ; sanitized: strip first split.by:"--" replace tsk " - " "/"
+    ; found: ø
+    ; loop rcTasks 'rct [
+    ;     if sanitized = unidecode lower rct [
+    ;         found: rct
+    ;         break
+    ;     ]
+    ; ]
+    ; result\[tsk]: found
+]
+
+;inspect rows
+print tabular.header:["Task" "Solution" "Output" "Older tags"] tblrows
