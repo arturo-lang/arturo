@@ -1,0 +1,48 @@
+
+rng: range .step:2 0 6
+; without `.inline`, it's super-slow
+; but *with* it's not conceptually very correct
+eban?: function [i].inline[
+    b: i / 1000000000
+    r: i % 1000000000
+    m: r / 1000000
+    r: r % 1000000
+    t: r / 1000
+    r: r % 1000
+    
+    if and? [30 =< m][m =< 66] -> m: m % 10
+    if and? [30 =< t][t =< 66] -> t: t % 10
+    if and? [30 =< r][r =< 66] -> r: r % 10
+    
+    unless in? b rng -> return false
+    unless in? m rng -> return false
+    unless in? t rng -> return false
+    unless in? r rng -> return false
+    return true
+]
+
+processRange: function [start ending display][
+    (start = 2)? 
+        -> print ~"eban numbers up to and including |ending|:"
+        -> print ~"eban numbers between |start| and |ending| (inclusive):"
+    
+    count: 0
+    i: start
+    while [i =< ending][
+        if eban? i [
+            if display -> prints (pad to :string i 4) ++ "  "
+            count: count + 1
+        ]
+        i: i + 2
+    ]
+    
+    if display -> print ""
+    print ~"count = |count|\n"
+]
+
+processRange 2 1000 true
+processRange 1000 4000 true
+processRange 2 10000 false
+processRange 2 100000 false
+processRange 2 1000000 false
+processRange 2 10000000 false

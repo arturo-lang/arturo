@@ -1,0 +1,7 @@
+loop 2..7 'd [
+    rep: repeat to :string d d
+    superD: select.first:10 1..∞ 'x ->
+        contains? to :string d * x^d rep
+
+    print [d "->" join.with:", " to [:string] superD]
+]

@@ -1,0 +1,36 @@
+millerRabin?: function [n, k][
+    if n < 2    -> return false
+    if n = 2    -> return true
+    if even? n  -> return false
+    
+    d: n - 1
+    s: 0
+    while [even? d][
+        d: d / 2
+        s: s + 1
+    ]
+
+    loop k 'trial [
+        x: powmod (random 2 n - 1) d n
+        if or? [x = 1][x = n - 1] -> continue
+        
+        composite?: true
+        loop 1..s - 1 'r [
+            x: powmod x 2 n
+            if x = 1 -> return false
+            if x = n - 1 [
+                composite?: false
+                break
+            ]
+        ]
+        
+        if composite? -> return false
+    ]
+    
+    return true
+]
+
+3 | range.step: 2 1000
+  | select => [millerRabin? & 10] 
+  | split.every: 16
+  | loop => [print map & 'x -> pad to :string x 4]
