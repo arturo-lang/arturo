@@ -1,0 +1,178 @@
+API_URL: "https://rosettacode.org/w/api.php"
+SESSION_COOKIES: #[]
+
+login: function [username, password][
+    tokenParams: #[
+        action: "query"
+        meta: "tokens"
+        type: "login"
+        format: "json"
+    ]
+    
+    tokenResp: request.get API_URL tokenParams
+    if tokenResp\status <> 200 -> return false
+    
+    cookies: tokenResp\headers\["set-cookie"]
+    if string? cookies -> cookies: @[cookies]
+    
+    loop cookies 'cookie [
+        parts: split.by:";" cookie
+        nameVal: split.by:"=" first parts
+        if 2 = size nameVal ->
+            SESSION_COOKIES\[first nameVal]: last nameVal
+    ]
+    
+    tokenData: read.json tokenResp\body
+    loginToken: tokenData\query\tokens\logintoken
+    
+    cookieStr: join.with:"; " map keys SESSION_COOKIES 'k -> join @[k "=" SESSION_COOKIES\[k]]
+    
+    loginParams: #[
+        action: "login"
+        lgname: username
+        lgpassword: password
+        lgtoken: loginToken
+        format: "json"
+    ]
+    
+    loginResp: request.post .headers: #[
+        Cookie: cookieStr
+    ] API_URL loginParams
+
+    if loginResp\status <> 200 -> return false
+    
+    newCookies: loginResp\headers\["set-cookie"]
+    if string? newCookies -> newCookies: @[newCookies]
+    
+    loop newCookies 'cookie [
+        parts: split.by:";" cookie
+        nameVal: split.by:"=" first parts
+        if 2 = size nameVal ->
+            SESSION_COOKIES\[first nameVal]: last nameVal
+    ]
+    
+    loginData: read.json loginResp\body
+    
+    if loginData\login\result = "Success" -> return true
+    
+    return false
+]
+
+editPage: function [title, content, summary][
+    cookieStr: join.with:"; " map keys SESSION_COOKIES 'k -> join @[k "=" SESSION_COOKIES\[k]]
+    
+    userParams: #[
+        action: "query"
+        meta: "userinfo"
+        format: "json"
+    ]
+    
+    userResp: request.get .headers: #[Cookie: cookieStr] API_URL userParams
+    
+    userData: read.json userResp\body
+    
+    if key? userData\query\userinfo 'anon [
+        print "ERROR: Not logged in!"
+        return false
+    ]
+    
+    tokenParams: #[
+        action: "query"
+        meta: "tokens"
+        format: "json"
+    ]
+    
+    tokenResp: request.get .headers: #[Cookie: cookieStr] API_URL tokenParams
+    tokenData: read.json tokenResp\body
+    
+    if key? tokenData 'error [
+        print ["Token Error:" tokenData\error\code "-" tokenData\error\info]
+        return false
+    ]
+    
+    editToken: tokenData\query\tokens\csrftoken
+    
+    editParams: #[
+        action: "edit"
+        title: title
+        text: content
+        summary: summary
+        token: editToken
+        minor: "true"
+        format: "json"
+    ]
+    
+    editResp: request.post .headers: #[Cookie: cookieStr] API_URL editParams
+    
+    if editResp\status <> 200 -> return false
+    
+    editData: read.json editResp\body
+    
+    if key? editData 'error -> return false
+    
+    return key? editData 'edit
+]
+
+fetchTaskBody: function [taskName][
+    errorMsg: function [msg][
+        #[
+            code: "",
+            output: msg
+            rebol?: true
+        ]
+    ]
+    
+    params: #[
+        action: "parse"
+        page: taskName
+        prop: "wikitext"
+        format: "json"
+    ]
+    response: request API_URL params
+    if response\status <> 200 [
+        return ""
+    ]
+    body: ø
+    if try [
+        body: read.json response\body
+    ] [
+        return ""
+    ]
+    
+    unless key? body\parse 'wikitext -> return ""
+    
+    wikitext: first values body\parse\wikitext
+
+    return wikitext
+]
+
+pattern: {/==\{\{header\|Arturo\}\}==\n+\<syntaxhighlight lang="rebol"\>/}
+replacement: {:=={{header|Arturo}}==
+
+<syntaxhighlight lang="arturo">:}
+
+pageTitle: arg\0
+
+prints "- " ++ pad.right color #cyan truncate.preserve.with:"..." pageTitle 50 60
+; print "> Getting source..."
+bodyPre: fetchTaskBody pageTitle "Arturo"
+
+(contains? bodyPre pattern)? [
+    ;print "> Replacing syntax..."
+    bodyPost: replace bodyPre pattern replacement
+    unless bodyPre = bodyPost [
+        ;print color #green "> Updating..."
+        switch login "drkameleon" "REDACTED" [
+            ;print "\t> Logged in"
+
+            print (editPage pageTitle bodyPost "updated syntax highlighting mode for Arturo")? 
+                -> color #green "[  DONE ]"
+                -> color #red   "[ ERROR ]"
+        ][
+            print color #red "[ ERROR*]"
+        ]
+    ]
+][
+    print color #gray "[   OK  ]"
+]
+;print ""
