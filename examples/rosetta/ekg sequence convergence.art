@@ -1,0 +1,37 @@
+ekg: function [start, limit][
+    result: @[1 start]
+    
+    while [limit > size result][
+        candidate: 2
+        while ø [
+            if and? [not? contains? result candidate]
+                    [1 < gcd @[last result candidate]][
+                'result ++ candidate
+                break
+            ]
+            inc 'candidate
+        ]
+    ]
+    
+    return result
+]
+
+loop [2 5 7 9 10] 'n ->
+    print ["EKG(" ++ (to :string n) ++ "):" join.with:", " ekg n 10]
+
+print ""
+ekg5: ekg 5 100
+ekg7: ekg 7 100
+
+converged?: false
+loop 2..99 'i [
+    if and? -> ekg5\[i] = ekg7\[i]
+            -> equal? sort slice ekg5 0 i sort slice ekg7 0 i [
+        print ["EKG(5) and EKG(7) converge at term" i+1]
+        converged?: true
+        break
+    ]
+]
+
+unless converged? ->
+    print "EKG(5) and EKG(7) do not converge within 100 terms"

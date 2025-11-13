@@ -1,0 +1,103 @@
+
+login: function [username, password][
+    ; Get login token
+    tokenParams: #[
+        action: "query"
+        meta: "tokens"
+        type: "login"
+        format: "json"
+    ]
+    
+    tokenResp: request.get API_URL tokenParams
+    inspect tokenResp
+    if tokenResp\status <> 200 -> return false
+    
+    ; Extract session cookie
+    cookies: tokenResp\headers\["set-cookie"]
+    
+    tokenData: read.json tokenResp\body
+    loginToken: tokenData\query\tokens\logintoken
+    
+    ; Perform login with session cookie
+    loginParams: #[
+        action: "login"
+        lgname: username
+        lgpassword: password
+        lgtoken: loginToken
+        format: "json"
+    ]
+    
+    loginResp: request.post .headers: #[
+        Cookie: cookies
+    ] API_URL loginParams
+
+    inspect loginResp
+    if loginResp\status <> 200 -> return false
+    
+    loginData: read.json loginResp\body
+    
+    if loginData\login\result = "Success" [
+        ; Store the authenticated session cookie globally
+        SESSION_COOKIE: loginResp\headers\["set-cookie"]
+        return true
+    ]
+    return false
+]
+
+editPage: function [title, content, summary][
+    ; Get CSRF token
+    tokenParams: #[
+        action: "query"
+        meta: "tokens"
+        format: "json"
+    ]
+    
+    tokenResp: request.get  .headers: #[
+        Cookie: SESSION_COOKIE
+    ] API_URL tokenParams
+    
+    if tokenResp\status <> 200 -> return false
+    
+    tokenData: read.json tokenResp\body
+    editToken: tokenData\query\tokens\csrftoken
+
+    inspect tokenResp
+    inspect tokenData
+    inspect editToken
+    
+    ; Edit page
+    editParams: #[
+        action: "edit"
+        title: title
+        text: content
+        summary: summary
+        token: editToken
+        bot: "true"
+        format: "json"
+    ]
+    
+    editResp: request.post .headers: #[
+        Cookie: SESSION_COOKIE
+    ] API_URL editParams
+    
+    if editResp\status <> 200 -> return false
+
+    inspect editResp
+    
+    editData: read.json editResp\body
+    inspect editData
+    return key? editData 'edit
+]
+
+
+
+; if login "drkameleon" "jN271086" [
+;     print "Logged in"
+;     editPage "Page Title" "New content" "update summary"
+; ]
+
+; Usage:
+; if login "YourUsername" "YourPassword" [
+;     print "Logged in!"
+;     editPage "Page Title" "New content" "Update summary"
+; ]
