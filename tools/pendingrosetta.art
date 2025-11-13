@@ -1,3 +1,6 @@
+; this is a draft
+; not really meant to be used right now
+
 import'progressive!
 import'tabular!
 import'unidecode!
@@ -29,6 +32,9 @@ fetchCategory: function [category][
             params\cmcontinue: continue
 
         response: request API_URL params
+        if response\status <> 200 [
+           break
+        ]
         body: read.json response\body
         
         'results ++ map body\query\categorymembers 'page ->
@@ -43,6 +49,14 @@ fetchCategory: function [category][
 ]
 
 fetchTaskSolution: function [taskName, language][
+    ;print "in fetchTaskSolution"
+    errorMsg: function [msg][
+        #[
+            code: "",
+            output: msg
+            rebol?: true
+        ]
+    ]
     ;------------------------------------------
     ; Fetch the raw wikitext for the task
     ;------------------------------------------
@@ -53,20 +67,29 @@ fetchTaskSolution: function [taskName, language][
         prop: "wikitext"
         format: "json"
     ]
-    
+    ;print ["making request with:" params]
     response: request API_URL params
-    body: read.json response\body
+    if response\status <> 200 [
+        return errorMsg "HTTP error"
+    ]
+    body: ø
+    ;print "getting response"
+    if try [
+        body: read.json response\body
+    ] [
+        ;print "before returning json error"
+        return errorMsg "JSON error"
+    ]
+    ;print "HERE"
     
     ; Check if page exists
     unless key? body\parse 'wikitext [
-        print color #red "Error: Task not found!"
-        return null
+        return errorMsg "Parsing error"
     ]
     
     ; Get the wikitext content
-    wikitextObj: body\parse\wikitext
-    wikitext: first values wikitextObj
-    
+    wikitext: first values body\parse\wikitext
+
     ;------------------------------------------
     ; Extract the section for the given language
     ;------------------------------------------
@@ -86,7 +109,7 @@ fetchTaskSolution: function [taskName, language][
     ;print ["===>" size split.by:headerPattern wikitext "sections found"]
     main: last split.by:headerPattern wikitext
     if main = wikitext ->
-        panic "Arturo section not found"
+        return errorMsg "No section"
     main: strip first split.by:headerStart main
 
     code?: false
@@ -128,11 +151,7 @@ fetchTaskSolution: function [taskName, language][
                         code?: true
                     ]
                     true [
-                        return #[
-                            code: "Unrecognized syntax marker"
-                            output: ""
-                            rebol?: hasOldRebolTag?
-                        ]
+                        return errorMsg "No code section"
                     ]
                 ]
             ]
@@ -153,33 +172,48 @@ fetchTaskSolution: function [taskName, language][
 ]
 
 checkSolution: function [fname,name][
-    source: read ./~"../examples/rosetta/|fname|.art"
-    output: read ./~"../examples/rosetta/|fname|.res"
+    ;print ["in checkSolution with:" fname "/" name]
+    ;print exists? ~"examples/rosetta/|fname|.art"
+    ;print exists? ~"examples/rosetta/|fname|.res"
+    source: ""
+    try [
+        source: read.file ~"examples/rosetta/|fname|.art"
+    ]
+    ;print "getting output"
+    output: ""
+    try [output: read.file ~"examples/rosetta/|fname|.res"]
+    ;print "read local files"
 
     fetched: fetchTaskSolution name "Arturo"
-    ;return fetched
+
+    ; print "after fetching"
+    ; inspect fetched
+
+    ; print ["source:" source]
+    ; print ["output:" output]
+    ; ;return fetched
+
+    codeMsg: (fetched\code = source)? -> color #green "✓" [
+        (fetched\code = "")? -> color #red to :string fetched\output
+                             -> color #red to :string levenshtein fetched\code source
+    ]
+
+    outputMsg: (fetched\code = source)? -> color #green "✓" [
+        color #red to :string levenshtein fetched\code source
+    ]
 
     return #[
-        codeOK?: to :string fetched\code = source
-        outputOK?: to :string fetched\output = output
-        oldTags?: to :string fetched\rebol?
+        codeOK?: codeMsg
+        outputOK?: outputMsg
+        oldTags?: (not? fetched\rebol?)? -> color #green "✓" -> color #red "x"
     ]
-    ; print (fetched\code = source) ?
-    ;     -> color #green "SOURCE OK"
-    ;     -> color #red "SOURCE ERROR"
-    
-    ; print ["fetched:" fetched\code]
-    ; print ["was:" source]
-
-    ; print (fetched\output = output) ?
-    ;     -> color #green "OUTPUT OK"
-    ;     -> color #red "OUTPUT ERROR"
-
-    ; print ["fetched:" fetched\output]
-    ; print ["was:" output]
+    return ""
 ]
-;checkSolution "100 prisoners"
-
+; hello world - web server 
+; matched to: Hello world/Web server 
+; inspect checkSolution "hello world - graphical" "Hello world/Graphical"
+;inspect checkSolution "interactive programming (repl)" "Interactive programming (repl)"
+;inspect checkSolution "introspection" "Introspection"
 prints " • Fetching remote tasks implemented in Arturo..."
 rcTasks: "arturo" 
     | fetchCategory
@@ -195,8 +229,8 @@ print color #green " OK"
 
 print " • Matching tasks..."
 result: #[]
-progressive\loop.keep localTasks 'tsk [
-    processing tsk
+loop.keep localTasks 'tsk [
+    ;processing tsk
     sanitized: strip first split.by:"--" replace tsk " - " "/"
     found: ø
     loop rcTasks 'rct [
@@ -221,36 +255,38 @@ loop result [k,v][
     ]
 ]
 
-unmatchedRcTasks: difference rcTasks values result
-nofTasks: (size unmatchedRcTasks) + size unique values result
+result | values
+       | join.with:"\n"
+       | write "rctasks.txt"
 
-print color #cyan repeat "-" 60
-print [" •  Found" size result "files"]
-print [" • " nofTasks "tasks solved in total (" size unmatchedRcTasks "only on RC )"]
-print color #cyan repeat "-" 60
+; unmatchedRcTasks: difference rcTasks values result
+; nofTasks: (size unmatchedRcTasks) + size unique values result
 
-print " • Checking tasks..."
-stats: #[]
-tblrows: []
-result: arrange result [k,v]-> v
-progressive\loop.keep first.n:10 keys result 'kk [
-    vv: result\[kk]
-    processing kk
+; print color #cyan repeat "-" 60
+; print [" •  Found" size result "files"]
+; print [" • " nofTasks "tasks solved in total (" size unmatchedRcTasks "only on RC )"]
+; print color #cyan repeat "-" 60
 
-    check: checkSolution kk vv
-    ;stats\[kk]: checkSolution kk vv
+; print " • Checking tasks..."
+; stats: #[]
+; tblrows: []
+; result: #.raw flatten arrange result [k,v]-> v
+; progressive\loop keys result 'kk [
+;     vv: result\[kk]
+;     ;print kk
+;     processing kk
 
-    'tblrows ++ @[flatten @[vv values check]]
-    ; sanitized: strip first split.by:"--" replace tsk " - " "/"
-    ; found: ø
-    ; loop rcTasks 'rct [
-    ;     if sanitized = unidecode lower rct [
-    ;         found: rct
-    ;         break
-    ;     ]
-    ; ]
-    ; result\[tsk]: found
-]
+;     ; print ["checking:" kk]
+;     ; print ["matched to:" vv]
+;     ; print ""
 
-;inspect rows
-print tabular.header:["Task" "Solution" "Output" "Older tags"] tblrows
+;     check: checkSolution kk vv
+;     ;stats\[kk]: checkSolution kk vv
+
+;     'tblrows ++ @[flatten @[vv values check]]
+;     ;;print color #cyan repeat "=" 50
+;     ;;print color #cyan repeat "=" 50
+; ]
+
+; ;inspect rows
+; print tabular.header:["Task" "Solution" "Output" "Clean tags?"] tblrows
