@@ -1,0 +1,96 @@
+#!/usr/bin/env arturo
+
+import'progressive!
+import'tabular!
+import'unidecode!
+import ./{../../../drkameleon/rosetta.art/src/rosetta.art}!
+
+HorizLine: repeat "=" 95
+
+rc: to :Rosetta []!
+remoteTasks: []
+
+getLocalTasks: function [][
+    "examples/rosetta" 
+        | list
+        | select => [suffix? & ".art"]
+        | map => [extract.filename &]
+]
+
+getRemoteTasks: function [][
+    rc\implemented "Arturo"
+]
+
+getLocalSource: function [task][
+    src: read.file ./~"../examples/rosetta/|task|.art"
+    src: replace src {/;+ by @\w+/} ""
+    strip src
+]
+
+getRemoteSource: function [task][
+    solution: remote\solution "Arturo"
+    strip first solution\code
+]
+
+getTaskTable: function [].export:[remoteTasks][
+    print color #orange " • Getting local tasks..."
+    localTasks: getLocalTasks
+
+    print color #orange " • Getting remote tasks..."
+    remoteTasks: getRemoteTasks
+
+    remoteTaskTitles: map remoteTasks 't -> t\title
+
+    print color #orange " • Matching tasks..."
+    result: #[]
+    progressive\loop localTasks 'tsk [
+        processing truncate tsk 30
+        sanitized: strip first split.by:"--" replace tsk " - " "/"
+        found: ø
+        loop remoteTasks 'rt [
+            if sanitized = unidecode lower rt\title [
+                found: rt
+                break
+            ]
+        ]
+        result\[tsk]: found
+    ]
+
+    titlesMatched: filter map values result 'v [
+        (null? v)? -> null -> v\title
+    ] => null?
+    unmatchedRemoteTasks: filter remoteTasks 'rt ->
+        contains? titlesMatched rt\title
+
+    loop result [k,v][
+        if null? v [
+            sanitized: strip first split.by:"--" replace k " - " "/"
+            found: minimum unmatchedRemoteTasks 'rtt ->
+                levenshtein sanitized unidecode lower rtt\title
+            result\[k]: found
+        ]
+    ]
+
+    return #.raw flatten arrange result [k,v]-> v\title
+]
+
+tasks: getTaskTable
+print color #orange " • Comparing solutions...\n"
+loop tasks [local,remote][
+    prints " " ++ color #cyan pad.right truncate remote\title 75 85
+
+    localSrc: getLocalSource local
+    remoteSrc: getRemoteSource remote
+
+    print (localSrc = remoteSrc)? -> color.bold #green "[ ✅ OK ]"
+                                  -> color.bold #red   "[ OOOPS ]"
+
+    if localSrc <> remoteSrc [
+        print " " ++ color #gray HorizLine
+        localSrc >> "local.tmp"
+        remoteSrc >> "remote.tmp"
+        diff: split.lines strip execute "diff local.tmp remote.tmp"
+        print color #gray " " ++ join.with:"\n " diff
+        print " " ++ color #gray HorizLine
+    ]
+]
