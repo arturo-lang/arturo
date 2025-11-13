@@ -3,7 +3,7 @@
 import'progressive!
 import'tabular!
 import'unidecode!
-import ./{../../../drkameleon/rosetta.art/src/rosetta.art}!
+import'rosetta!
 
 HorizLine: repeat "=" 95
 
