@@ -54,7 +54,7 @@ jobs:
             arturo tools/tester.art
         if: matrix.version == 'mini'
 
-      - name: Setup environment & Build Arturo (Mini)
+      - name: Setup environment & Build Arturo (Full)
         uses: vmactions/freebsd-vm@v1
         with:
           usesh: true
