@@ -1,0 +1,210 @@
+import {unitt}!
+
+suite "storage and access" [
+
+    suite "simple dictionary" [
+        person: #[
+            name: "John"
+            surname: "Doe"
+            age: 35
+        ]
+
+        test "should store all fields" [
+            actualName: person\name
+            assert -> "John" = actualName
+
+            actualSurname: person\surname
+            assert -> "Doe" = actualSurname
+
+            actualAge: person\age
+            assert -> 35 = actualAge
+        ]
+    ]
+
+    suite "nested dictionary" [
+        resident: #[
+            fullname: "John Doe"
+            location: #[
+                country: "Brazil"
+                city: "São Paulo"
+            ]
+        ]
+
+        test "should access 1-depth values" [
+            expectedLocation: #[country: "Brazil" city: "São Paulo"]
+
+            actualFullname: resident\fullname
+            assert -> "John Doe" = actualFullname
+
+            actualLocation: resident\location
+            assert -> expectedLocation = actualLocation
+        ]
+
+        test "should access n-depth values" [
+            actualCity: resident\location\city
+            assert -> "São Paulo" = actualCity
+
+            actualCountry: resident\location\country
+            assert -> "Brazil" = actualCountry
+        ]
+
+        test "should store keys as lower when .lower" [
+            example: #.lower [USERNAME: "Rick"]
+
+            actual: keys example
+            assert -> ["username"] = actual 
+        ]
+
+    ]
+]
+
+suite "scope and evaluation" [
+
+    test "should read out-of-scope variables" [
+        country: "Spain"    ; out-of-scope variable
+
+        resident: #[
+            fullname: "John Doe"
+            country: country
+            city: "Madrid"
+        ]
+
+        actual: resident\country
+        assert -> country = actual
+    ]
+
+    test "should not alter outside values with same label" [
+        country: "Spain"
+        entity: "EU"
+
+        location: #[
+            continent: "Europe"
+            country: "Greece"
+            entity: entity
+        ]
+
+        assert -> "EU" = entity
+        assert -> "Spain" = country
+
+        actual: location\country
+        assert -> "Greece" = actual
+    ]
+
+    test "should evaluate functions" [
+        adding: $=> add
+        calculator: #[
+            result: adding 1 2
+        ]
+
+        actual: calculator\result
+        assert -> 3 = actual
+    ]
+
+    test "should be accessible after a block evaluation" [
+        do -> example: #[some: "value"]
+
+        assert -> set? 'example
+
+        actual: example\some
+        assert -> "value" = example\some
+    ]
+
+]
+
+suite "inject fields with `.with`" [
+
+    test "should contain \entity field" [
+        entity: "EU"
+
+        location: dictionary.with: [entity][
+            country: "Spain"
+        ]
+
+        actual: location\entity
+        assert -> "EU" = location\entity
+    ]
+
+    test "should keep other fields" [
+        entity: "EU"
+
+        location: dictionary.with: [entity][
+            country: "Spain"
+        ]
+
+        actual: location\country
+        assert -> "Spain" = location\country
+    ]
+
+    test "should accept [:literal]" [
+        entity: "EU"
+
+        location: dictionary.with: ['entity][
+            country: "Spain"
+        ]
+
+        actual: location\entity
+        assert -> "EU" = location\entity
+    ]
+
+    test "should store injected keys as lower when .lower" [
+        ENTITY: "EU"
+        example: #.lower.with: [ENTITY][]
+
+        actual: keys example
+        assert -> ["entity"] = actual 
+    ]
+
+]
+
+
+suite "construction from raw" [
+
+    test "should store all keys & values in order" [
+        actual: dictionary.raw [name "John" surname "Doe" age 35]
+
+        actualKeys: keys actual
+        assert -> ["name" "surname" "age"] = actualKeys
+
+        actualValues: values actual
+        assert -> ["John" "Doe" 35] = actualValues
+    ]
+
+    test "should not evaluate :block" [
+        ; External variables
+        name: "nome"
+        john: "Jane"
+
+        actual: dictionary.raw [name john]
+
+        assert -> in? "name" keys actual
+        assert -> in? (to :word "john") values actual
+
+        assert -> not? in? "nome" keys actual
+        assert -> not? in? "Jane" values actual
+    ]
+
+]
+
+suite "dictionary from function" [
+
+    test "should return dictionary" [
+        returnsDict: $[][
+            #[some: "value"] 
+        ]
+
+        assert -> (#[some: "value"]) = returnsDict
+
+        actual: returnsDict
+        actualField: actual\some
+        assert -> "value" = actualField 
+    ]
+
+    test "should access field direclty for 0-arity" [
+        returnsDict: $[][
+            #[some: "value"]
+        ]
+
+        assert -> "value" = returnsDict\some
+    ]
+
+]
