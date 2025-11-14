@@ -112,7 +112,7 @@ proc main() =
     if defined(windows) and defined(ssl):
         configWinSSL()
 
-    if not defined(windows) and defined(ssl):
+    if (defined(macosx) or defined(linux)) and defined(ssl):
         configUnixSSL()
 
 main()
