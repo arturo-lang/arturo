@@ -15,6 +15,13 @@ supertotal: 0
 
 canExecute?: function [scri][
     scr: extract.filename scri
+
+    if sys\os = 'freebsd [
+        if in? scr [
+            "quantities"
+        ] -> return false
+    ]
+
     if sys\release='mini [
         if in? scr [
             "runtime.NumberOutOfPermittedRange"
