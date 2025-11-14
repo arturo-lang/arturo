@@ -100,7 +100,7 @@ proc main() =
     # configGMPOnWindows()    
     configMimalloc()
 
-    if defined(linux):
+    if defined(linux) or defined(freebsd):
         configWebkit()
 
     if defined(windows):
