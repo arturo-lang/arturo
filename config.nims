@@ -100,7 +100,7 @@ proc main() =
     # configGMPOnWindows()    
     configMimalloc()
 
-    if defined(linux):
+    if defined(linux) or defined(freebsd):
         configWebkit()
 
     if defined(windows):
@@ -109,10 +109,10 @@ proc main() =
     if defined(macosx):
         configMacosPCRE()
 
-    if defined(windows) and defined(ssl):
-        configWinSSL()
-
-    if not defined(windows) and defined(ssl):
-        configUnixSSL()
+    if defined(ssl):
+        if defined(windows):
+            configWinSSL()
+        elif defined(macosx) or defined(linux):
+            configUnixSSL()
 
 main()
