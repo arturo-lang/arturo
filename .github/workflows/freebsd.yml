@@ -30,6 +30,7 @@ jobs:
           - freebsd-latest
         version:
           - mini
+          - full
         arch:
           - amd64
     steps:
@@ -45,7 +46,7 @@ jobs:
           usesh: true
           prepare: |
             pkg update
-            pkg install -y wget nim bash 
+            pkg install -y wget nim bash
             pkg info --list-file nim
           #gmp mpfr databases/sqlite3
           run: |
