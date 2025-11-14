@@ -31,6 +31,9 @@ jobs:
         version:
           - mini
           - full
+        webkit:
+          - "40"
+          - "41"
         arch:
           - amd64
     steps:
@@ -52,7 +55,7 @@ jobs:
             ./build.nims --install --mode ${{ matrix.version }} --log
             export PATH="$HOME/.arturo/bin:$PATH"
             #arturo tools/tester.art
-        if: matrix.version == 'mini'
+        if: matrix.version == 'mini' && matrix.webkit == '40'
 
       - name: Setup environment & Build Arturo (Full)
         uses: vmactions/freebsd-vm@v1
@@ -61,7 +64,7 @@ jobs:
           prepare: |
             pkg update
             pkg install -y wget nim bash pkgconf
-            pkg install -y gtk3 mpfr openssl webkit2-gtk_41
+            pkg install -y gtk3 mpfr openssl webkit2-gtk_${{ matrix.webkit }}
             pkg info --list-file nim
           run: |
             export PATH="/usr/local/nim/bin/:$PATH"
@@ -75,3 +78,13 @@ jobs:
         with:
           name: "arturo-${{matrix.version}}-${{matrix.arch}}-freebsd"
           path: bin/arturo
+        if: matrix.version == 'mini' && matrix.webkit == '40'
+
+      - name: Upload Artifacts
+        uses: 'actions/upload-artifact@v4'
+        with:
+          name: "arturo-${{matrix.version}}-${{matrix.arch}}-webkit${{matrix.webkit}}-freebsd"
+          path: bin/arturo
+        if: matrix.version == 'full'
+
+      
