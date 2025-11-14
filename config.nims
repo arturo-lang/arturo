@@ -109,10 +109,10 @@ proc main() =
     if defined(macosx):
         configMacosPCRE()
 
-    if defined(windows) and defined(ssl):
-        configWinSSL()
-
-    if (defined(macosx) or defined(linux)) and defined(ssl):
-        configUnixSSL()
+    if defined(ssl):
+        if defined(windows):
+            configWinSSL()
+        elif defined(macosx) or defined(linux):
+            configUnixSSL()
 
 main()
