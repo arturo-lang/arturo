@@ -54,7 +54,7 @@ jobs:
             export PATH="/usr/local/nim/bin/:$PATH"
             ./build.nims --install --mode ${{ matrix.version }} --log
             export PATH="$HOME/.arturo/bin:$PATH"
-            #arturo tools/tester.art
+            arturo tools/tester.art
         if: matrix.version == 'mini' && matrix.webkit == '40'
 
       - name: Setup environment & Build Arturo (Full)
@@ -70,7 +70,7 @@ jobs:
             export PATH="/usr/local/nim/bin/:$PATH"
             ./build.nims --install --mode ${{ matrix.version }} --log
             export PATH="$HOME/.arturo/bin:$PATH"
-            #arturo tools/tester.art
+            arturo tools/tester.art
         if: matrix.version == 'full'
 
       - name: Upload Artifacts
