@@ -22,38 +22,40 @@ env:
 
 jobs:
     test:
-        runs-on: ${{ matrix.os }}
+        runs-on: ${{ (matrix.os == 'linux' && matrix.webkit == '41' && 'ubuntu-latest') || (matrix.os == 'linux' && 'ubuntu-22.04') || (matrix.os == 'windows' && 'windows-latest') || (matrix.os == 'macos' && matrix.arch == 'arm64' && 'macos-latest') || (matrix.os == 'macos' && 'macOS-15-intel') || 'ubuntu-latest' }}
         strategy:
             matrix:
                 include: 
-                    - {name: "Linux (amd64 / full / webkit-4.1)",   os: ubuntu-latest,   arch: amd64, mode: full, shell: bash}
-                    - {name: "Linux (amd64 / full)",                os: ubuntu-22.04,    arch: amd64, mode: full, shell: bash}
-                    - {name: "Linux (amd64 / safe)",                os: ubuntu-22.04,    arch: amd64, mode: safe, shell: bash}
-                    - {name: "Linux (amd64 / mini)",                os: ubuntu-22.04,    arch: amd64, mode: mini, shell: bash}
-                    - {name: "Linux (arm64 / mini)",                os: ubuntu-22.04,    arch: arm64, mode: mini, shell: bash}
-                    - {name: "JS (web / mini)",                     os: ubuntu-latest,   arch: amd64, mode: web,  shell: bash}
-                    - {name: "Windows (amd64 / full)",              os: windows-latest,  arch: amd64, mode: full, shell: "msys2 {0}"}
-                    - {name: "Windows (amd64 / mini)",              os: windows-latest,  arch: amd64, mode: mini, shell: "msys2 {0}"}
-                    - {name: "macOS (amd64 / full)",                os: macOS-15-intel,  arch: amd64, mode: full, shell: bash}
-                    - {name: "macOS (amd64 / mini)",                os: macOS-15-intel,  arch: amd64, mode: mini, shell: bash}
-                    - {name: "macOS (arm64 / full)",                os: macos-latest,    arch: arm64, mode: full, shell: bash}
-                    - {name: "macOS (arm64 / mini)",                os: macos-latest,    arch: arm64, mode: mini, shell: bash}
+                    - {name: "Linux (amd64 / full / webkit-4.1)",   os: linux,   arch: amd64, mode: full, webkit: "41"}
+                    - {name: "Linux (amd64 / full)",                os: linux,   arch: amd64, mode: full}
+                    - {name: "Linux (amd64 / safe)",                os: linux,   arch: amd64, mode: safe}
+                    - {name: "Linux (amd64 / mini)",                os: linux,   arch: amd64, mode: mini}
+                    - {name: "Linux (arm64 / mini)",                os: linux,   arch: arm64, mode: mini}
+                    - {name: "JS (web / mini)",                     os: web}
+                    - {name: "Windows (amd64 / full)",              os: windows, arch: amd64, mode: full}
+                    - {name: "Windows (amd64 / mini)",              os: windows, arch: amd64, mode: mini}
+                    - {name: "macOS (amd64 / full)",                os: macos,   arch: amd64, mode: full}
+                    - {name: "macOS (amd64 / mini)",                os: macos,   arch: amd64, mode: mini}
+                    - {name: "macOS (arm64 / full)",                os: macos,   arch: arm64, mode: full}
+                    - {name: "macOS (arm64 / mini)",                os: macos,   arch: arm64, mode: mini}
+                    - {name: "FreeBSD (amd64 / mini)",              os: freebsd, arch: amd64, mode: mini}
+                    - {name: "FreeBSD (amd64 / full / webkit-4.0)", os: freebsd, arch: amd64, mode: full}
+                    - {name: "FreeBSD (amd64 / full / webkit-4.1)", os: freebsd, arch: amd64, mode: full, webkit: "41"}
  
         name: ${{ matrix.name }}
-        defaults:
-            run:
-                shell: ${{ matrix.shell }}
         steps:
             - name: Install Arturo
               uses: arturo-lang/arturo-action@main
               with: 
                 token: ${{ secrets.GITHUB_TOKEN }}
-                mode: ${{ matrix.mode }}
-                arch: ${{ matrix.arch }}
+                os: ${{ matrix.os }}
+                arch: ${{ matrix.arch || 'amd64' }}
+                mode: ${{ matrix.mode || 'mini' }}
+                webkit: ${{ matrix.webkit || '40' }}
                 src: ${{ github.ref }}
                 metadata: ${{ env.BRANCH_NAME }}-${{ github.sha }}
  
-            - if: (matrix.mode != 'safe' && matrix.mode != 'web') && (runner.os != 'Linux' || matrix.arch != 'arm64')
+            - if: (matrix.mode != 'safe' && matrix.os != 'web') && (matrix.os != 'freebsd' && !(matrix.os == 'linux' && matrix.arch == 'arm64'))
               name: Run tests (Old)
               run: |
                 ls -la arturo
@@ -63,7 +65,7 @@ jobs:
                 arturo tools/tester.art
                 cd ..
  
-            - if: matrix.mode == 'full' && (runner.os != 'Linux' || matrix.arch != 'arm64')
+            - if: matrix.mode == 'full' && (matrix.os != 'freebsd' && !(matrix.os == 'linux' && matrix.arch == 'arm64'))
               name: Run tests (Unitt)
               run: |
                 cd arturo
@@ -76,25 +78,33 @@ jobs:
               run: |
                 binary_path="arturo/bin/arturo"
 
-                artifact_os="macos"
+                artifact_os="${{matrix.os}}"
                 artifact_os_extra=""
                 artifact_arch="${{matrix.arch}}"
                 artifact_mode="${{matrix.mode}}"
-
-                if [ "${{runner.os}}" = "Windows" ]; then
-                    artifact_os="windows"
-                    binary_path="${binary_path}.exe"
+                webkit="${{matrix.webkit}}"
+                
+                # Apply defaults for web
+                if [ "$artifact_os" = "web" ]; then
+                    artifact_arch="web"
+                    artifact_mode="mini"
                 fi
-                if [ "${{runner.os}}" = "Linux" ]; then
-                    artifact_os="linux"
-                    if [ "${{matrix.mode}}" = "web" ]; then
-                        artifact_os="js"
-                        artifact_arch="web"
-                        artifact_mode="mini"
-                        binary_path="${binary_path}.js"
-                    fi
-                    if [ "${{matrix.name}}" = "Linux (amd64 / full / webkit-4.1)" ]; then
-                        artifact_os_extra=".webkit41"
+                
+                # Apply defaults for missing values
+                [ -z "$artifact_arch" ] && artifact_arch="amd64"
+                [ -z "$artifact_mode" ] && artifact_mode="mini"
+                [ -z "$webkit" ] && webkit="40"
+
+                if [ "${{matrix.os}}" = "windows" ]; then
+                    binary_path="${binary_path}.exe"
+                elif [ "${{matrix.os}}" = "web" ]; then
+                    artifact_os="js"
+                    binary_path="${binary_path}.js"
+                fi
+
+                if [ "${{matrix.os}}" = "linux" ] || [ "${{matrix.os}}" = "freebsd" ]; then
+                    if [ "$artifact_mode" = "full" ]; then
+                        artifact_os_extra=".webkit${webkit}"
                     fi
                 fi
 
