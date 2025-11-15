@@ -71,6 +71,8 @@ proc configWebkit() =
         if testPkg.exitCode != 0:
             # pkg-config not found
             # probably because we are not on Ubuntu
+            if defined(freebsd):
+                return "40"
             return "4.0"
 
         for version in webkitVersions:
@@ -78,6 +80,8 @@ proc configWebkit() =
             if ret.exitCode == 0:
                 return version
 
+        if defined(freebsd):
+            return "40"
         return "4.0"  # fallback if none found
 
     switch "define", "webkitVersion=" & getWebkitVersion()
@@ -100,7 +104,7 @@ proc main() =
     # configGMPOnWindows()    
     configMimalloc()
 
-    if defined(linux):
+    if defined(linux) or defined(freebsd):
         configWebkit()
 
     if defined(windows):
@@ -109,10 +113,10 @@ proc main() =
     if defined(macosx):
         configMacosPCRE()
 
-    if defined(windows) and defined(ssl):
-        configWinSSL()
-
-    if not defined(windows) and defined(ssl):
-        configUnixSSL()
+    if defined(ssl):
+        if defined(windows):
+            configWinSSL()
+        elif defined(macosx) or defined(linux):
+            configUnixSSL()
 
 main()

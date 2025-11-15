@@ -293,7 +293,7 @@ proc buildArturo*(config: BuildConfig, targetFile: string) =
         showFooter()
 
     main()
-
+ 
 proc buildPackage*(config: BuildConfig) =
 
     # Helper functions

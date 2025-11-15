@@ -30,6 +30,10 @@ jobs:
           - freebsd-latest
         version:
           - mini
+          - full
+        webkit:
+          - "40"
+          - "41"
         arch:
           - amd64
     steps:
@@ -38,24 +42,47 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Setup environment & Build Arturo
-        id: test
+      - name: Setup environment & Build Arturo (Mini)
         uses: vmactions/freebsd-vm@v1
         with:
           usesh: true
           prepare: |
             pkg update
-            pkg install -y wget nim bash 
+            pkg install -y wget nim bash
             pkg info --list-file nim
-          #gmp mpfr databases/sqlite3
           run: |
             export PATH="/usr/local/nim/bin/:$PATH"
             ./build.nims --install --mode ${{ matrix.version }} --log
             export PATH="$HOME/.arturo/bin:$PATH"
             arturo tools/tester.art
-       
+        if: matrix.version == 'mini' && matrix.webkit == '40'
+
+      - name: Setup environment & Build Arturo (Full)
+        uses: vmactions/freebsd-vm@v1
+        with:
+          usesh: true
+          prepare: |
+            pkg update
+            pkg install -y wget nim bash pkgconf
+            pkg install -y gtk3 mpfr openssl webkit2-gtk_${{ matrix.webkit }}
+            pkg info --list-file nim
+          run: |
+            export PATH="/usr/local/nim/bin/:$PATH"
+            ./build.nims --install --mode ${{ matrix.version }} --log
+            export PATH="$HOME/.arturo/bin:$PATH"
+            arturo tools/tester.art
+        if: matrix.version == 'full'
+
       - name: Upload Artifacts
-        uses: 'actions/upload-artifact@v2'
+        uses: 'actions/upload-artifact@v4'
         with:
           name: "arturo-${{matrix.version}}-${{matrix.arch}}-freebsd"
           path: bin/arturo
+        if: matrix.version == 'mini' && matrix.webkit == '40'
+
+      - name: Upload Artifacts
+        uses: 'actions/upload-artifact@v4'
+        with:
+          name: "arturo-${{matrix.version}}-${{matrix.arch}}-webkit${{matrix.webkit}}-freebsd"
+          path: bin/arturo
+        if: matrix.version == 'full'
