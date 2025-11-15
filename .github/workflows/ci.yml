@@ -1,3 +1,4 @@
+```yaml
 name: "CI"
 
 on:
@@ -79,6 +80,25 @@ jobs:
                 arturo tools/unitt-tester.art
                 cd ..
 
+            - if: matrix.os == 'freebsd' && matrix.mode != 'safe'
+              name: Run tests (FreeBSD)
+              shell: freebsd {0}
+              run: |
+                cd arturo
+                export PATH="$HOME/.arturo/bin:$PATH"
+                cat version/metadata
+                arturo -v
+                arturo tools/tester.art
+
+            - if: matrix.os == 'freebsd' && matrix.mode == 'full'
+              name: Run tests (FreeBSD / Unitt)
+              shell: freebsd {0}
+              run: |
+                cd arturo
+                export PATH="$HOME/.arturo/bin:$PATH"
+                arturo -p install unitt
+                arturo tools/unitt-tester.art
+
             - name: Prepare artifact
               id: artifact-details
               run: |
@@ -129,3 +149,4 @@ jobs:
               with:
                 name: ${{ steps.artifact-details.outputs.ARTIFACT_NAME }}
                 path: ${{ steps.artifact-details.outputs.BINARY_PATH }}
+```
