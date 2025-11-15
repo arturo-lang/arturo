@@ -53,7 +53,7 @@ jobs:
             - name: Checkout repository
               if: matrix.os == 'freebsd'
               uses: actions/checkout@v4
-              
+
             - name: Install Arturo
               uses: arturo-lang/arturo-action@main
               with: 
@@ -87,7 +87,7 @@ jobs:
               name: Run tests (FreeBSD)
               shell: freebsd {0}
               run: |
-                cd arturo
+                cd $GITHUB_WORKSPACE
                 export PATH="$HOME/.arturo/bin:$PATH"
                 cat version/metadata
                 arturo -v
@@ -97,7 +97,7 @@ jobs:
               name: Run tests (FreeBSD / Unitt)
               shell: freebsd {0}
               run: |
-                cd arturo
+                cd $GITHUB_WORKSPACE
                 export PATH="$HOME/.arturo/bin:$PATH"
                 arturo -p install unitt
                 arturo tools/unitt-tester.art
