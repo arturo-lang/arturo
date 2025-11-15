@@ -32,8 +32,8 @@ jobs:
                     - {name: "Linux (amd64 / mini)",                os: linux,   arch: amd64, mode: mini}
                     - {name: "Linux (arm64 / mini)",                os: linux,   arch: arm64, mode: mini}
                     - {name: "JS (web / mini)",                     os: web}
-                    #- {name: "Windows (amd64 / full)",              os: windows, arch: amd64, mode: full}
-                    #- {name: "Windows (amd64 / mini)",              os: windows, arch: amd64, mode: mini}
+                    - {name: "Windows (amd64 / full)",              os: windows, arch: amd64, mode: full}
+                    - {name: "Windows (amd64 / mini)",              os: windows, arch: amd64, mode: mini}
                     - {name: "macOS (amd64 / full)",                os: macos,   arch: amd64, mode: full}
                     - {name: "macOS (amd64 / mini)",                os: macos,   arch: amd64, mode: mini}
                     - {name: "macOS (arm64 / full)",                os: macos,   arch: arm64, mode: full}
@@ -41,6 +41,12 @@ jobs:
                     - {name: "FreeBSD (amd64 / mini)",              os: freebsd, arch: amd64, mode: mini}
                     - {name: "FreeBSD (amd64 / full / webkit-4.0)", os: freebsd, arch: amd64, mode: full}
                     - {name: "FreeBSD (amd64 / full / webkit-4.1)", os: freebsd, arch: amd64, mode: full, webkit: "41"}
+
+        defaults:
+            run:
+                shell: ${{ 
+                    (matrix.os == 'windows') && 'msys2 {0}' || 
+                                                'bash'      }}
  
         name: ${{ matrix.name }}
         steps:
