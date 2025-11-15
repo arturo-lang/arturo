@@ -71,6 +71,8 @@ proc configWebkit() =
         if testPkg.exitCode != 0:
             # pkg-config not found
             # probably because we are not on Ubuntu
+            if defined(freebsd):
+                return "40"
             return "4.0"
 
         for version in webkitVersions:
@@ -78,6 +80,8 @@ proc configWebkit() =
             if ret.exitCode == 0:
                 return version
 
+        if defined(freebsd):
+            return "40"
         return "4.0"  # fallback if none found
 
     switch "define", "webkitVersion=" & getWebkitVersion()
