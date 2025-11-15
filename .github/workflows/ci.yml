@@ -50,6 +50,10 @@ jobs:
  
         name: ${{ matrix.name }}
         steps:
+            - name: Checkout repository
+              if: matrix.os == 'freebsd'
+              uses: actions/checkout@v4
+              
             - name: Install Arturo
               uses: arturo-lang/arturo-action@main
               with: 
