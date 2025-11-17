@@ -67,10 +67,31 @@ jobs:
                 metadata:   ${{ env.BRANCH_NAME }}-${{ github.sha }}
  
             - name: Debug
+              if: matrix.os != 'windows'
               run: |
                 pwd
                 ls -la $HOME/.arturo/bin
                 ls -la
+                
+            - name: Debug (Windows)
+              if: matrix.os == 'windows'
+              run: |
+                echo "======================================"
+                echo "Windows Path Debugging"
+                echo "======================================"
+                echo "MSYS2 HOME: $HOME"
+                echo "USERPROFILE: $USERPROFILE"
+                echo "======================================"
+                echo "MSYS2 paths:"
+                ls -la $HOME/ 2>&1 || echo "MSYS2 home not found"
+                ls -la $HOME/.arturo/bin 2>&1 || echo "MSYS2 .arturo/bin not found"
+                echo "======================================"
+                echo "Windows paths (via cmd):"
+                cmd //c "dir %USERPROFILE%\.arturo\bin" 2>&1 || echo "Windows .arturo\bin not found"
+                echo "======================================"
+                echo "Trying to find arturo:"
+                find /c/Users -name "arturo.exe" -o -name "arturo.js" 2>/dev/null || echo "No arturo found"
+                echo "======================================"
 
             - if: (matrix.mode != 'safe' && matrix.os != 'web') && (matrix.os != 'freebsd' && !(matrix.os == 'linux' && matrix.arch == 'arm64'))
               name: Run tests / old (*)
