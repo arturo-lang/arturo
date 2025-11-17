@@ -122,6 +122,7 @@ jobs:
                 cd ..
 
             - name: Prepare artifact
+              shell: bash
               id: artifact-details
               run: |
                 cd $GITHUB_WORKSPACE
@@ -164,4 +165,4 @@ jobs:
               uses: 'actions/upload-artifact@v4'
               with:
                 name: ${{ steps.artifact-details.outputs.ARTIFACT_NAME }}
-                path: .arturo-dist/*
+                path: ${{ github.workspace }}/.arturo-dist/*
