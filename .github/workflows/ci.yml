@@ -81,7 +81,10 @@ jobs:
                 pwd
                 ls -la $HOME/.arturo
                 cd arturo
-                arturo tools/unitt-tester.art
+                arturo -p install unitt
+                ls -la $HOME/.arturo/bin
+                ls -la $HOME/.arturo/packages
+                #arturo tools/unitt-tester.art
                 cd ..
 
             - if: matrix.os == 'freebsd' && matrix.mode != 'safe'
@@ -104,6 +107,9 @@ jobs:
                 ls -la $HOME/.arturo
                 cd $GITHUB_WORKSPACE
                 export PATH="$HOME/.arturo/bin:$PATH"
+                arturo -p install unitt
+                ls -la $HOME/.arturo/bin
+                ls -la $HOME/.arturo/packages
                 arturo tools/unitt-tester.art
 
             - name: Prepare artifact
