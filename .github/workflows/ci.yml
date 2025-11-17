@@ -63,55 +63,32 @@ jobs:
                 path: arturo
                 ref: ${{ github.ref }}
 
+            - name: Prepare artifact version
+              id: version
+              shell: bash
+              run: |
+                cd arturo
+                git_hash=$(git rev-parse --short "$GITHUB_SHA")
+                version="${{ env.BRANCH_NAME }}.${git_hash}"
+                echo "VERSION=$version" >> "$GITHUB_OUTPUT"
+
             - name: Install Arturo
               uses: arturo-lang/arturo-action@main
               with: 
-                token:      ${{ secrets.GITHUB_TOKEN }}
-                os:         ${{ matrix.os }}
-                arch:       ${{ matrix.arch || 'amd64' }}
-                mode:       ${{ matrix.mode || 'mini' }}
-                webkit:     ${{ matrix.webkit || '40' }}
-                src:        ${{ github.ref }}
-                metadata:   ${{ env.BRANCH_NAME }}-${{ github.sha }}
-
-            # - name: DEBUG - Check action output
-            #   shell: bash
-            #   run: |
-            #       echo "========================================="
-            #       echo "DEBUG: Checking action output"
-            #       echo "========================================="
-            #       echo "Current directory: $(pwd)"
-            #       echo "GITHUB_WORKSPACE: $GITHUB_WORKSPACE"
-            #       echo ""
-            #       echo "========== Contents of current directory =========="
-            #       ls -lah
-            #       echo ""
-            #       echo "========== Looking for arturo-dist =========="
-            #       if [ -d "arturo-dist" ]; then
-            #           echo "✓ arturo-dist found in $(pwd)"
-            #           ls -lah arturo-dist/
-            #       else
-            #           echo "✗ arturo-dist NOT found in $(pwd)"
-            #       fi
-            #       echo ""
-            #       echo "========== Looking for arturo vs arturo-src =========="
-            #       [ -d "arturo" ] && echo "✓ arturo/ exists" || echo "✗ arturo/ does not exist"
-            #       [ -d "arturo-src" ] && echo "✓ arturo-src/ exists" || echo "✗ arturo-src/ does not exist"
-            #       echo ""
-            #       echo "========== Checking if arturo command works =========="
-            #       if command -v arturo &> /dev/null; then
-            #           echo "✓ arturo command found at: $(which arturo)"
-            #           arturo -v
-            #       else
-            #           echo "✗ arturo command not found"
-            #       fi
-            #       echo "========================================="
+                token: ${{ secrets.GITHUB_TOKEN }}
+                os: ${{ matrix.os }}
+                arch: ${{ matrix.arch || 'amd64' }}
+                mode: ${{ matrix.mode || 'mini' }}
+                webkit: ${{ matrix.webkit || '40' }}
+                src: ${{ github.ref }}
+                metadata: ${{ env.BRANCH_NAME }}-${{ github.sha }}
+                create_artifact: 'true'
+                artifact_version: ${{ steps.version.outputs.VERSION }}
 
             - if: env.ArturoCanRun == 'true'
               name: Run tests
               run: |
-                cd $GITHUB_WORKSPACE
-                cd arturo 
+                cd $GITHUB_WORKSPACE/arturo 
                 arturo -v
                 arturo tools/tester.art
 
@@ -119,50 +96,3 @@ jobs:
                     arturo -p install unitt
                     arturo tools/unitt-tester.art
                 fi
-                cd ..
-
-            - name: Prepare artifact
-              shell: bash
-              id: artifact-details
-              run: |
-                cd $GITHUB_WORKSPACE
-
-                artifact_os="${{matrix.os}}"
-                artifact_os_extra=""
-                artifact_arch="${{matrix.arch}}"
-                artifact_mode="${{matrix.mode}}"
-                webkit="${{matrix.webkit}}"
-                
-                # Defaults for web
-                if [ "$artifact_os" = "web" ]; then
-                    artifact_arch="web"
-                    artifact_mode="mini"
-                    artifact_os="js"
-                fi
-                
-                # Defaults for missing values
-                [ -z "$artifact_arch" ] && artifact_arch="amd64"
-                [ -z "$artifact_mode" ] && artifact_mode="mini"
-                [ -z "$webkit" ] && webkit="40"
-
-                # Webkit suffix for Linux/FreeBSD full builds
-                if [ "${{matrix.os}}" = "linux" ] || [ "${{matrix.os}}" = "freebsd" ]; then
-                    if [ "$artifact_mode" = "full" ]; then
-                        artifact_os_extra=".webkit${webkit}"
-                    fi
-                fi
-
-                cd arturo
-                git_hash=$(git rev-parse --short "$GITHUB_SHA")
-                git_stamp="${{ env.BRANCH_NAME}}.${git_hash}"
-                cd ..
-
-                artifact_name="arturo-${git_stamp}-${artifact_arch}-${artifact_os}${artifact_os_extra}-${artifact_mode}"
-
-                echo "ARTIFACT_NAME=$artifact_name" >> "$GITHUB_OUTPUT"
-
-            - name: Upload artifact
-              uses: 'actions/upload-artifact@v4'
-              with:
-                name: ${{ steps.artifact-details.outputs.ARTIFACT_NAME }}
-                path: ${{ github.workspace }}/arturo-dist
