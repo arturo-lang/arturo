@@ -66,6 +66,12 @@ jobs:
                 src:        ${{ github.ref }}
                 metadata:   ${{ env.BRANCH_NAME }}-${{ github.sha }}
  
+            - name: Debug
+              run: |
+                pwd
+                ls -la $HOME/.arturo/bin
+                ls -la
+
             - if: (matrix.mode != 'safe' && matrix.os != 'web') && (matrix.os != 'freebsd' && !(matrix.os == 'linux' && matrix.arch == 'arm64'))
               name: Run tests / old (*)
               run: |
