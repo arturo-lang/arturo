@@ -38,9 +38,9 @@ jobs:
                     - {os: macos,   arch: amd64, mode: mini}
                     - {os: macos,   arch: arm64, mode: full}
                     - {os: macos,   arch: amd64, mode: mini}
-                    - {os: web}
                     - {os: windows, arch: amd64, mode: full}
                     - {os: windows, arch: amd64, mode: mini}
+                    - {os: web}
 
         defaults:
             run:
