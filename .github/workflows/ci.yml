@@ -79,7 +79,6 @@ jobs:
               name: Run tests (Unitt)
               run: |
                 cd arturo
-                arturo -p install unitt
                 arturo tools/unitt-tester.art
                 cd ..
 
@@ -99,7 +98,6 @@ jobs:
               run: |
                 cd $GITHUB_WORKSPACE
                 export PATH="$HOME/.arturo/bin:$PATH"
-                arturo -p install unitt
                 arturo tools/unitt-tester.art
 
             - name: Prepare artifact
