@@ -31,16 +31,16 @@ jobs:
                     - {os: linux,   arch: amd64, mode: safe}
                     - {os: linux,   arch: amd64, mode: mini}
                     - {os: linux,   arch: arm64, mode: mini}
-                    - {os: web}
-                    - {os: windows, arch: amd64, mode: full}
-                    - {os: windows, arch: amd64, mode: mini}
+                    - {os: freebsd, arch: amd64, mode: mini}
+                    - {os: freebsd, arch: amd64, mode: full}
+                    - {os: freebsd, arch: amd64, mode: full, webkit: "41"}
                     - {os: macos,   arch: amd64, mode: full}
                     - {os: macos,   arch: amd64, mode: mini}
                     - {os: macos,   arch: arm64, mode: full}
                     - {os: macos,   arch: amd64, mode: mini}
-                    - {os: freebsd, arch: amd64, mode: mini}
-                    - {os: freebsd, arch: amd64, mode: full}
-                    - {os: freebsd, arch: amd64, mode: full, webkit: "41"}
+                    - {os: web}
+                    - {os: windows, arch: amd64, mode: full}
+                    - {os: windows, arch: amd64, mode: mini}
 
         defaults:
             run:
@@ -49,7 +49,6 @@ jobs:
                     (matrix.os == 'windows') && 'msys2 {0}'   || 
                                                 'bash'        }}
  
-        name: ${{ matrix.name }}
         steps:
             - name: Install Arturo
               uses: arturo-lang/arturo-action@main
