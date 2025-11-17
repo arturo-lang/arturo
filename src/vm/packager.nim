@@ -321,13 +321,6 @@ proc downloadPackageSourceInto*(url: string, target: string) =
     
     ShowMessage "Downloading sources"
 
-    ShowMessage "Downloading sources"
-    debugEcho "[PKG-DEBUG] downloadPackageSourceInto called"
-    debugEcho "[PKG-DEBUG] URL: ", url
-    debugEcho "[PKG-DEBUG] Target: ", target
-    debugEcho "[PKG-DEBUG] TmpFolder: ", TmpFolder.fmt
-    debugEcho "[PKG-DEBUG] PackageTmpZip: ", PackageTmpZip.fmt
-
     createDir(TmpFolder.fmt) # make sure the tmp folder exists
     removeDir(target) # delete it, just in case
     newHttpClient().downloadFile(url, PackageTmpZip.fmt)
@@ -534,16 +527,8 @@ proc processRemotePackage(pkg: string, verspec: VersionSpec, doLoad: bool = true
 
     var specContent: string
     try:
-        debugEcho "[PKG-DEBUG] Attempting to fetch package spec"
-        debugEcho "[PKG-DEBUG] Package: ", pkg
-        debugEcho "[PKG-DEBUG] URL: ", packageSpecUrl
         specContent = waitFor (newAsyncHttpClient().getContent(packageSpecUrl))
-        debugEcho "[PKG-DEBUG] Successfully fetched spec (", specContent.len, " bytes)"
-    except Exception as e:
-        debugEcho "[PKG-DEBUG] FAILED to fetch spec"
-        debugEcho "[PKG-DEBUG] Exception type: ", e.name
-        debugEcho "[PKG-DEBUG] Exception msg: ", e.msg
-        debugEcho "[PKG-DEBUG] URL was: ", packageSpecUrl
+    except Exception:
         Error_PackageNotFound(pkg)
 
     ShowMessage "Downloading spec: {pkg}.pkgr.art".fmt
