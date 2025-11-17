@@ -303,7 +303,7 @@ proc buildPackage*(config: BuildConfig) =
 
     proc file(package: string): string =
         return fmt"{package}.art"
-x
+
     proc info(package: string): string =
         staticExec fmt"arturo --package-info {package.file}"
 
