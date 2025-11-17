@@ -37,7 +37,7 @@ jobs:
                     - {os: macos,   arch: amd64, mode: full}
                     - {os: macos,   arch: amd64, mode: mini}
                     - {os: macos,   arch: arm64, mode: full}
-                    - {os: macos,   arch: amd64, mode: mini}
+                    - {os: macos,   arch: arm64, mode: mini}
                     - {os: windows, arch: amd64, mode: full}
                     - {os: windows, arch: amd64, mode: mini}
                     - {os: web}
@@ -68,7 +68,7 @@ jobs:
                 path: arturo
                 ref: ${{ github.ref }}
 
-            - if: (matrix.mode != 'safe' && matrix.os != 'web') && !(matrix.os == 'linux' && matrix.arch == 'arm64')
+            - if: env.ArturoCanRun == 'true'
               name: Run tests / old
               run: |
                 cd arturo 
@@ -76,7 +76,7 @@ jobs:
                 arturo tools/tester.art
                 cd ..
  
-            - if: matrix.mode == 'full' && !(matrix.os == 'linux' && matrix.arch == 'arm64')
+            - if: matrix.mode == 'full' && env.ArturoCanRun == 'true'
               name: Run tests / unitt
               run: |
                 cd arturo
