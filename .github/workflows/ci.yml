@@ -65,6 +65,51 @@ jobs:
                 webkit:     ${{ matrix.webkit || '40' }}
                 src:        ${{ github.ref }}
                 metadata:   ${{ env.BRANCH_NAME }}-${{ github.sha }}
+
+            - name: Verify installation
+              run: |
+                echo "======================================"
+                echo "Verifying Arturo Installation"
+                echo "======================================"
+                
+                # Check 1: arturo command is accessible
+                echo "✓ Checking arturo command..."
+                if command -v arturo &> /dev/null; then
+                    echo "  ✓ arturo command found in PATH"
+                    arturo -v
+                else
+                    echo "  ✗ FAILED: arturo command not found"
+                    exit 1
+                fi
+                
+                echo ""
+                
+                # Check 2: .arturo-dist folder exists
+                echo "✓ Checking .arturo-dist folder..."
+                if [ -d ".arturo-dist" ]; then
+                    echo "  ✓ .arturo-dist folder exists"
+                    echo "  Contents:"
+                    ls -lh .arturo-dist/
+                else
+                    echo "  ✗ FAILED: .arturo-dist folder not found"
+                    exit 1
+                fi
+                
+                echo ""
+                
+                # Check 3: No arturo source directory
+                echo "✓ Checking arturo sources cleanup..."
+                if [ -d "arturo" ]; then
+                    echo "  ✗ FAILED: arturo source directory still exists"
+                    exit 1
+                else
+                    echo "  ✓ arturo source directory properly cleaned up"
+                fi
+                
+                echo ""
+                echo "======================================"
+                echo "All checks passed!"
+                echo "======================================"
  
             - name: Debug
               if: matrix.os != 'windows'
