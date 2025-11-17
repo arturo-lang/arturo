@@ -22,94 +22,77 @@ env:
 
 jobs:
     test:
-        runs-on: ${{ matrix.os }}
+        runs-on: ${{ 
+            (matrix.os == 'linux' && matrix.webkit == '40')     && 'ubuntu-22.04'   || 
+            (matrix.os == 'macos' && matrix.arch == 'arm64')    && 'macos-latest'   || 
+            (matrix.os == 'macos')                              && 'macOS-15-intel' || 
+            (matrix.os == 'windows')                            && 'windows-latest' || 
+                                                                   'ubuntu-latest'  }}
+                                                                   
         strategy:
             matrix:
                 include: 
-                    - {name: "Linux (amd64 / full / webkit-4.1)",   os: ubuntu-latest,   arch: amd64, mode: full, shell: bash}
-                    - {name: "Linux (amd64 / full)",                os: ubuntu-22.04,    arch: amd64, mode: full, shell: bash}
-                    - {name: "Linux (amd64 / safe)",                os: ubuntu-22.04,    arch: amd64, mode: safe, shell: bash}
-                    - {name: "Linux (amd64 / mini)",                os: ubuntu-22.04,    arch: amd64, mode: mini, shell: bash}
-                    - {name: "Linux (arm64 / mini)",                os: ubuntu-22.04,    arch: arm64, mode: mini, shell: bash}
-                    - {name: "JS (web / mini)",                     os: ubuntu-latest,   arch: amd64, mode: web,  shell: bash}
-                    - {name: "Windows (amd64 / full)",              os: windows-latest,  arch: amd64, mode: full, shell: "msys2 {0}"}
-                    - {name: "Windows (amd64 / mini)",              os: windows-latest,  arch: amd64, mode: mini, shell: "msys2 {0}"}
-                    - {name: "macOS (amd64 / full)",                os: macOS-15-intel,  arch: amd64, mode: full, shell: bash}
-                    - {name: "macOS (amd64 / mini)",                os: macOS-15-intel,  arch: amd64, mode: mini, shell: bash}
-                    - {name: "macOS (arm64 / full)",                os: macos-latest,    arch: arm64, mode: full, shell: bash}
-                    - {name: "macOS (arm64 / mini)",                os: macos-latest,    arch: arm64, mode: mini, shell: bash}
+                    - {os: linux,   arch: amd64, mode: full}
+                    - {os: linux,   arch: amd64, mode: full, webkit: "41"}
+                    - {os: linux,   arch: amd64, mode: safe}
+                    - {os: linux,   arch: amd64, mode: mini}
+                    - {os: linux,   arch: arm64, mode: mini}
+                    - {os: freebsd, arch: amd64, mode: mini}
+                    - {os: freebsd, arch: amd64, mode: full}
+                    - {os: freebsd, arch: amd64, mode: full, webkit: "41"}
+                    - {os: macos,   arch: amd64, mode: full}
+                    - {os: macos,   arch: amd64, mode: mini}
+                    - {os: macos,   arch: arm64, mode: full}
+                    - {os: macos,   arch: arm64, mode: mini}
+                    - {os: windows, arch: amd64, mode: full}
+                    - {os: windows, arch: amd64, mode: mini}
+                    - {os: web}
  
-        name: ${{ matrix.name }}
         defaults:
             run:
-                shell: ${{ matrix.shell }}
+                shell: ${{ 
+                    (matrix.os == 'freebsd') && 'freebsd {0}' ||
+                    (matrix.os == 'windows') && 'msys2 {0}'   || 
+                                                'bash'        }}
+
         steps:
+            - name: Checkout Arturo sources for testing
+              uses: actions/checkout@v4
+              with:
+                submodules: recursive
+                path: arturo
+                ref: ${{ github.ref }}
+
+            - name: Prepare artifact version
+              id: version
+              shell: bash
+              run: |
+                cd arturo
+                git_hash=$(git rev-parse --short "$GITHUB_SHA")
+                version="${{ env.BRANCH_NAME }}.${git_hash}"
+                echo "VERSION=$version" >> "$GITHUB_OUTPUT"
+
             - name: Install Arturo
               uses: arturo-lang/arturo-action@main
               with: 
                 token: ${{ secrets.GITHUB_TOKEN }}
-                mode: ${{ matrix.mode }}
-                arch: ${{ matrix.arch }}
+                os: ${{ matrix.os }}
+                arch: ${{ matrix.arch || 'amd64' }}
+                mode: ${{ matrix.mode || 'mini' }}
+                webkit: ${{ matrix.webkit || '40' }}
                 src: ${{ github.ref }}
                 metadata: ${{ env.BRANCH_NAME }}-${{ github.sha }}
- 
-            - if: (matrix.mode != 'safe' && matrix.mode != 'web') && (runner.os != 'Linux' || matrix.arch != 'arm64')
-              name: Run tests (Old)
+                create_artifact: 'true'
+                artifact_version: ${{ steps.version.outputs.VERSION }}
+
+            - if: env.ArturoCanRun == 'true'
+              name: Run tests
               run: |
-                ls -la arturo
-                cd arturo 
-                cat version/metadata
+                cd $GITHUB_WORKSPACE/arturo 
                 arturo -v
                 arturo tools/tester.art
-                cd ..
- 
-            - if: matrix.mode == 'full' && (runner.os != 'Linux' || matrix.arch != 'arm64')
-              name: Run tests (Unitt)
-              run: |
-                cd arturo
-                arturo -p install unitt
-                arturo tools/unitt-tester.art
-                cd ..
 
-            - name: Prepare artifact
-              id: artifact-details
-              run: |
-                binary_path="arturo/bin/arturo"
-
-                artifact_os="macos"
-                artifact_os_extra=""
-                artifact_arch="${{matrix.arch}}"
-                artifact_mode="${{matrix.mode}}"
-
-                if [ "${{runner.os}}" = "Windows" ]; then
-                    artifact_os="windows"
-                    binary_path="${binary_path}.exe"
+                if [ "${{ matrix.mode }}" = "full" ]; then
+                    arturo -p install unitt
+                    arturo tools/unitt-tester.art
                 fi
-                if [ "${{runner.os}}" = "Linux" ]; then
-                    artifact_os="linux"
-                    if [ "${{matrix.mode}}" = "web" ]; then
-                        artifact_os="js"
-                        artifact_arch="web"
-                        artifact_mode="mini"
-                        binary_path="${binary_path}.js"
-                    fi
-                    if [ "${{matrix.name}}" = "Linux (amd64 / full / webkit-4.1)" ]; then
-                        artifact_os_extra=".webkit41"
-                    fi
-                fi
-
-                cd arturo
-                git_hash=$(git rev-parse --short "$GITHUB_SHA")
-                git_stamp="${{ env.BRANCH_NAME}}.${git_hash}"
-                cd ..
-
-                artifact_name="arturo-${git_stamp}-${artifact_arch}-${artifact_os}${artifact_os_extra}-${artifact_mode}"
-
-                echo "BINARY_PATH=$binary_path" >> "$GITHUB_OUTPUT"
-                echo "ARTIFACT_NAME=$artifact_name" >> "$GITHUB_OUTPUT"
-
-            - name: Upload artifact
-              uses: 'actions/upload-artifact@v4'
-              with:
-                name: ${{ steps.artifact-details.outputs.ARTIFACT_NAME }}
-                path: ${{ steps.artifact-details.outputs.BINARY_PATH }}

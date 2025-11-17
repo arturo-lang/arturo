@@ -220,7 +220,7 @@ proc installAll*(config: BuildConfig, targetFile: string) =
         section "Installing..."
 
         if config.webVersion:
-            panic "Web builds can't be installed, please don't use --install"
+            log "Web builds can't be installed, please don't use --install"
 
         verifyDirectories()
         config.copyArturo(targetFile)
