@@ -86,12 +86,12 @@ jobs:
             #       echo "========== Contents of current directory =========="
             #       ls -lah
             #       echo ""
-            #       echo "========== Looking for .arturo-dist =========="
-            #       if [ -d ".arturo-dist" ]; then
-            #           echo "✓ .arturo-dist found in $(pwd)"
-            #           ls -lah .arturo-dist/
+            #       echo "========== Looking for arturo-dist =========="
+            #       if [ -d "arturo-dist" ]; then
+            #           echo "✓ arturo-dist found in $(pwd)"
+            #           ls -lah arturo-dist/
             #       else
-            #           echo "✗ .arturo-dist NOT found in $(pwd)"
+            #           echo "✗ arturo-dist NOT found in $(pwd)"
             #       fi
             #       echo ""
             #       echo "========== Looking for arturo vs arturo-src =========="
@@ -165,4 +165,4 @@ jobs:
               uses: 'actions/upload-artifact@v4'
               with:
                 name: ${{ steps.artifact-details.outputs.ARTIFACT_NAME }}
-                path: ${{ github.workspace }}/.arturo-dist/*
+                path: ${{ github.workspace }}/arturo-dist
