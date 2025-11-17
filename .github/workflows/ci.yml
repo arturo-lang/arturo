@@ -72,14 +72,18 @@ jobs:
                 echo "Verifying Arturo Installation"
                 echo "======================================"
                 
-                # Check 1: arturo command is accessible
-                echo "✓ Checking arturo command..."
-                if command -v arturo &> /dev/null; then
-                    echo "  ✓ arturo command found in PATH"
-                    arturo -v
+                # Check 1: arturo command is accessible (skip for web and cross-compiled arm64)
+                if [ "${{ matrix.os }}" != "web" ] && ! [ "${{ matrix.os }}" = "linux" -a "${{ matrix.arch }}" = "arm64" ]; then
+                    echo "✓ Checking arturo command..."
+                    if command -v arturo &> /dev/null; then
+                        echo "  ✓ arturo command found in PATH"
+                        arturo -v
+                    else
+                        echo "  ✗ FAILED: arturo command not found"
+                        exit 1
+                    fi
                 else
-                    echo "  ✗ FAILED: arturo command not found"
-                    exit 1
+                    echo "⊘ Skipping arturo command check (web build or cross-compiled)"
                 fi
                 
                 echo ""
