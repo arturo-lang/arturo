@@ -41,7 +41,7 @@ jobs:
                     - {os: windows, arch: amd64, mode: full}
                     - {os: windows, arch: amd64, mode: mini}
                     - {os: web}
-
+ 
         defaults:
             run:
                 shell: ${{ 
