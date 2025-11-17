@@ -22,7 +22,13 @@ env:
 
 jobs:
     test:
-        runs-on: ${{ (matrix.os == 'linux' && matrix.webkit == '41' && 'ubuntu-latest') || (matrix.os == 'linux' && 'ubuntu-22.04') || (matrix.os == 'windows' && 'windows-latest') || (matrix.os == 'macos' && matrix.arch == 'arm64' && 'macos-latest') || (matrix.os == 'macos' && 'macOS-15-intel') || 'ubuntu-latest' }}
+        runs-on: ${{ 
+            (matrix.os == 'linux' && matrix.webkit == '40')     && 'ubuntu-22.04'   || 
+            (matrix.os == 'macos' && matrix.arch == 'arm64')    && 'macos-latest'   || 
+            (matrix.os == 'macos')                              && 'macOS-15-intel' || 
+            (matrix.os == 'windows')                            && 'windows-latest' || 
+                                                                   'ubuntu-latest'  }}
+                                                                   
         strategy:
             matrix:
                 include: 
@@ -50,6 +56,13 @@ jobs:
                                                 'bash'        }}
  
         steps:
+            - name: Checkout Arturo sources for testing
+              uses: actions/checkout@v4
+              with:
+                submodules: recursive
+                path: arturo
+                ref: ${{ github.ref }}
+
             - name: Install Arturo
               uses: arturo-lang/arturo-action@main
               with: 
@@ -61,27 +74,18 @@ jobs:
                 src:        ${{ github.ref }}
                 metadata:   ${{ env.BRANCH_NAME }}-${{ github.sha }}
 
-            - name: Checkout Arturo sources for testing
-              uses: actions/checkout@v4
-              with:
-                submodules: recursive
-                path: arturo
-                ref: ${{ github.ref }}
-
             - if: env.ArturoCanRun == 'true'
-              name: Run tests / old
+              name: Run tests
               run: |
+                cd $GITHUB_WORKSPACE
                 cd arturo 
                 arturo -v
                 arturo tools/tester.art
-                cd ..
- 
-            - if: matrix.mode == 'full' && env.ArturoCanRun == 'true'
-              name: Run tests / unitt
-              run: |
-                cd arturo
-                arturo -p install unitt
-                arturo tools/unitt-tester.art
+
+                if [ "${{ matrix.mode }}" = "full" ]; then
+                    arturo -p install unitt
+                    arturo tools/unitt-tester.art
+                fi
                 cd ..
 
             - name: Prepare artifact
