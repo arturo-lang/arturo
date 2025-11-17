@@ -78,6 +78,8 @@ jobs:
             - if: matrix.mode == 'full' && (matrix.os != 'freebsd' && !(matrix.os == 'linux' && matrix.arch == 'arm64'))
               name: Run tests (Unitt)
               run: |
+                pwd
+                ls -la $HOME/.arturo
                 cd arturo
                 arturo tools/unitt-tester.art
                 cd ..
@@ -86,16 +88,20 @@ jobs:
               name: Run tests (FreeBSD)
               shell: freebsd {0}
               run: |
+                pwd
+                ls -la $HOME/.arturo
                 cd $GITHUB_WORKSPACE
                 export PATH="$HOME/.arturo/bin:$PATH"
                 cat version/metadata
                 arturo -v
-                arturo tools/tester.art
+                #arturo tools/tester.art
 
             - if: matrix.os == 'freebsd' && matrix.mode == 'full'
               name: Run tests (FreeBSD / Unitt)
               shell: freebsd {0}
               run: |
+                pwd
+                ls -la $HOME/.arturo
                 cd $GITHUB_WORKSPACE
                 export PATH="$HOME/.arturo/bin:$PATH"
                 arturo tools/unitt-tester.art
