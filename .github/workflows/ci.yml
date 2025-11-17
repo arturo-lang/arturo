@@ -74,6 +74,39 @@ jobs:
                 src:        ${{ github.ref }}
                 metadata:   ${{ env.BRANCH_NAME }}-${{ github.sha }}
 
+            - name: DEBUG - Check action output
+              shell: bash
+              run: |
+                  echo "========================================="
+                  echo "DEBUG: Checking action output"
+                  echo "========================================="
+                  echo "Current directory: $(pwd)"
+                  echo "GITHUB_WORKSPACE: $GITHUB_WORKSPACE"
+                  echo ""
+                  echo "========== Contents of current directory =========="
+                  ls -lah
+                  echo ""
+                  echo "========== Looking for .arturo-dist =========="
+                  if [ -d ".arturo-dist" ]; then
+                      echo "✓ .arturo-dist found in $(pwd)"
+                      ls -lah .arturo-dist/
+                  else
+                      echo "✗ .arturo-dist NOT found in $(pwd)"
+                  fi
+                  echo ""
+                  echo "========== Looking for arturo vs arturo-src =========="
+                  [ -d "arturo" ] && echo "✓ arturo/ exists" || echo "✗ arturo/ does not exist"
+                  [ -d "arturo-src" ] && echo "✓ arturo-src/ exists" || echo "✗ arturo-src/ does not exist"
+                  echo ""
+                  echo "========== Checking if arturo command works =========="
+                  if command -v arturo &> /dev/null; then
+                      echo "✓ arturo command found at: $(which arturo)"
+                      arturo -v
+                  else
+                      echo "✗ arturo command not found"
+                  fi
+                  echo "========================================="
+
             - if: env.ArturoCanRun == 'true'
               name: Run tests
               run: |
@@ -91,6 +124,8 @@ jobs:
             - name: Prepare artifact
               id: artifact-details
               run: |
+                cd $GITHUB_WORKSPACE
+
                 artifact_os="${{matrix.os}}"
                 artifact_os_extra=""
                 artifact_arch="${{matrix.arch}}"
