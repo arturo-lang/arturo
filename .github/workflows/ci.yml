@@ -45,8 +45,9 @@ jobs:
         defaults:
             run:
                 shell: ${{ 
-                    (matrix.os == 'windows') && 'msys2 {0}' || 
-                                                'bash'      }}
+                    (matrix.os == 'freebsd') && 'freebsd {0}' ||
+                    (matrix.os == 'windows') && 'msys2 {0}'   || 
+                                                'bash'        }}
  
         name: ${{ matrix.name }}
         steps:
@@ -57,59 +58,46 @@ jobs:
             - name: Install Arturo
               uses: arturo-lang/arturo-action@main
               with: 
-                token: ${{ secrets.GITHUB_TOKEN }}
-                os: ${{ matrix.os }}
-                arch: ${{ matrix.arch || 'amd64' }}
-                mode: ${{ matrix.mode || 'mini' }}
-                webkit: ${{ matrix.webkit || '40' }}
-                src: ${{ github.ref }}
-                metadata: ${{ env.BRANCH_NAME }}-${{ github.sha }}
+                token:      ${{ secrets.GITHUB_TOKEN }}
+                os:         ${{ matrix.os }}
+                arch:       ${{ matrix.arch || 'amd64' }}
+                mode:       ${{ matrix.mode || 'mini' }}
+                webkit:     ${{ matrix.webkit || '40' }}
+                src:        ${{ github.ref }}
+                metadata:   ${{ env.BRANCH_NAME }}-${{ github.sha }}
  
             - if: (matrix.mode != 'safe' && matrix.os != 'web') && (matrix.os != 'freebsd' && !(matrix.os == 'linux' && matrix.arch == 'arm64'))
-              name: Run tests (Old)
+              name: Run tests / Old
               run: |
-                ls -la arturo
                 cd arturo 
-                cat version/metadata
                 arturo -v
                 arturo tools/tester.art
                 cd ..
  
             - if: matrix.mode == 'full' && (matrix.os != 'freebsd' && !(matrix.os == 'linux' && matrix.arch == 'arm64'))
-              name: Run tests (Unitt)
+              name: Run tests / Unitt
               run: |
-                pwd
-                ls -la $HOME/.arturo
                 cd arturo
                 arturo -p install unitt
-                ls -la $HOME/.arturo/bin
-                ls -la $HOME/.arturo/packages
-                #arturo tools/unitt-tester.art
+                arturo tools/unitt-tester.art
                 cd ..
 
-            - if: matrix.os == 'freebsd' && matrix.mode != 'safe'
+            - if: matrix.os == 'freebsd'
               name: Run tests (FreeBSD)
               shell: freebsd {0}
               run: |
-                pwd
-                ls -la $HOME/.arturo
                 cd $GITHUB_WORKSPACE
                 export PATH="$HOME/.arturo/bin:$PATH"
-                cat version/metadata
                 arturo -v
-                #arturo tools/tester.art
+                arturo tools/tester.art
 
             - if: matrix.os == 'freebsd' && matrix.mode == 'full'
               name: Run tests (FreeBSD / Unitt)
               shell: freebsd {0}
               run: |
-                pwd
-                ls -la $HOME/.arturo
                 cd $GITHUB_WORKSPACE
                 export PATH="$HOME/.arturo/bin:$PATH"
                 arturo -p install unitt
-                ls -la $HOME/.arturo/bin
-                ls -la $HOME/.arturo/packages
                 arturo tools/unitt-tester.art
 
             - name: Prepare artifact
