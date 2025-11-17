@@ -67,7 +67,7 @@ jobs:
                 metadata:   ${{ env.BRANCH_NAME }}-${{ github.sha }}
  
             - if: (matrix.mode != 'safe' && matrix.os != 'web') && (matrix.os != 'freebsd' && !(matrix.os == 'linux' && matrix.arch == 'arm64'))
-              name: Run tests / Old
+              name: Run tests / old (*)
               run: |
                 cd arturo 
                 arturo -v
@@ -75,7 +75,7 @@ jobs:
                 cd ..
  
             - if: matrix.mode == 'full' && (matrix.os != 'freebsd' && !(matrix.os == 'linux' && matrix.arch == 'arm64'))
-              name: Run tests / Unitt
+              name: Run tests / unitt (*)
               run: |
                 cd arturo
                 arturo -p install unitt
@@ -83,8 +83,7 @@ jobs:
                 cd ..
 
             - if: matrix.os == 'freebsd'
-              name: Run tests (FreeBSD)
-              shell: freebsd {0}
+              name: Run tests / old (FreeBSD)
               run: |
                 cd $GITHUB_WORKSPACE
                 export PATH="$HOME/.arturo/bin:$PATH"
@@ -92,8 +91,7 @@ jobs:
                 arturo tools/tester.art
 
             - if: matrix.os == 'freebsd' && matrix.mode == 'full'
-              name: Run tests (FreeBSD / Unitt)
-              shell: freebsd {0}
+              name: Run tests / unitt (FreeBSD)
               run: |
                 cd $GITHUB_WORKSPACE
                 export PATH="$HOME/.arturo/bin:$PATH"
