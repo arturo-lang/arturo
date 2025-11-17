@@ -37,7 +37,7 @@ jobs:
                     - {name: "macOS (amd64 / full)",                os: macos,   arch: amd64, mode: full}
                     - {name: "macOS (amd64 / mini)",                os: macos,   arch: amd64, mode: mini}
                     - {name: "macOS (arm64 / full)",                os: macos,   arch: arm64, mode: full}
-                    - {name: "macOS (arm64 / mini)",                os: macos,   arch: arm64, mode: mini}
+                    - {name: "macOS (arm64 / mini)",                os: macos,   arch: amd64, mode: mini}
                     - {name: "FreeBSD (amd64 / mini)",              os: freebsd, arch: amd64, mode: mini}
                     - {name: "FreeBSD (amd64 / full / webkit-4.0)", os: freebsd, arch: amd64, mode: full}
                     - {name: "FreeBSD (amd64 / full / webkit-4.1)", os: freebsd, arch: amd64, mode: full, webkit: "41"}
@@ -69,37 +69,21 @@ jobs:
                 path: arturo
                 ref: ${{ github.ref }}
 
-            - if: (matrix.mode != 'safe' && matrix.os != 'web') && (matrix.os != 'freebsd' && !(matrix.os == 'linux' && matrix.arch == 'arm64'))
-              name: Run tests / old (*)
+            - if: (matrix.mode != 'safe' && matrix.os != 'web') && !(matrix.os == 'linux' && matrix.arch == 'arm64')
+              name: Run tests / old
               run: |
                 cd arturo 
                 arturo -v
                 arturo tools/tester.art
                 cd ..
  
-            - if: matrix.mode == 'full' && (matrix.os != 'freebsd' && !(matrix.os == 'linux' && matrix.arch == 'arm64'))
-              name: Run tests / unitt (*)
+            - if: matrix.mode == 'full' && !(matrix.os == 'linux' && matrix.arch == 'arm64')
+              name: Run tests / unitt
               run: |
                 cd arturo
                 arturo -p install unitt
                 arturo tools/unitt-tester.art
                 cd ..
-
-            - if: matrix.os == 'freebsd'
-              name: Run tests / old (FreeBSD)
-              run: |
-                cd $GITHUB_WORKSPACE
-                export PATH="$HOME/.arturo/bin:$PATH"
-                arturo -v
-                arturo tools/tester.art
-
-            - if: matrix.os == 'freebsd' && matrix.mode == 'full'
-              name: Run tests / unitt (FreeBSD)
-              run: |
-                cd $GITHUB_WORKSPACE
-                export PATH="$HOME/.arturo/bin:$PATH"
-                arturo -p install unitt
-                arturo tools/unitt-tester.art
 
             - name: Prepare artifact
               id: artifact-details
