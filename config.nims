@@ -55,13 +55,6 @@ proc configMimalloc() =
 
     "stdlib".patchFile("malloc"):
         "src"/"extras"/"mimalloc"
- 
-
-# proc configWinPCRE() =
-#     --dynlibOverride:pcre64
-
-# proc configMacosPCRE() =
-#     --dynlibOverride:pcre
 
 proc configWebkit() =
     const webkitVersions = ["4.1", "4.0"]
@@ -106,12 +99,6 @@ proc main() =
 
     if defined(linux) or defined(freebsd):
         configWebkit()
-
-    # if defined(windows):
-    #     configWinPCRE()
-
-    # if defined(macosx):
-    #     configMacosPCRE()
 
     if defined(ssl):
         if defined(windows):
