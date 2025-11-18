@@ -18,7 +18,7 @@ concurrency:
     cancel-in-progress: true
 
 env:
-    BRANCH_NAME: ${{ github.head_ref || github.ref_name }} 
+    branchName: ${{ github.head_ref || github.ref_name }} 
  
 jobs:
     test:
@@ -69,7 +69,7 @@ jobs:
               run: |
                 cd arturo
                 git_hash=$(git rev-parse --short "$GITHUB_SHA")
-                version="${{ env.BRANCH_NAME }}.${git_hash}"
+                version="${{ env.branchName }}.${git_hash}"
                 echo "VERSION=$version" >> "$GITHUB_OUTPUT"
 
             - name: Install Arturo
@@ -81,11 +81,11 @@ jobs:
                 mode: ${{ matrix.mode || 'mini' }}
                 webkit: ${{ matrix.webkit || '40' }}
                 src: ${{ github.ref }}
-                metadata: ${{ env.BRANCH_NAME }}-${{ github.sha }}
+                metadata: ${{ env.branchName }}-${{ github.sha }}
                 create_artifact: 'true'
                 artifact_version: ${{ steps.version.outputs.VERSION }}
 
-            - if: env.ArturoCanRun == 'true'
+            - if: env.arturoCanRun == 'true'
               name: Run tests
               run: |
                 cd $GITHUB_WORKSPACE/arturo 
