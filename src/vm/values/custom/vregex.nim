@@ -19,6 +19,8 @@ elif defined(macosx):
         {.passL: "-Bstatic -Lsrc/extras/pcre/deps/macos/m1 -lpcre -Bdynamic".}
     else:
         {.passL: "-Bstatic -Lsrc/extras/pcre/deps/macos -lpcre -Bdynamic".}
+elif defined(linux) or defined(freebsd):
+    {.passL: "-Bstatic -Lsrc/extras/pcre/deps/linux -lpcre -Bdynamic".}
 
 #=======================================
 # Libraries
