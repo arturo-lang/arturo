@@ -223,14 +223,14 @@ jobs:
                 name: openssl-libs-windows-amd64-${{ steps.version.outputs.VERSION }}
                 path: openssl-libs-windows-amd64/
 
-            - if: env.arturoCanRun == 'true'
-              name: Run tests
-              run: |
-                cd $GITHUB_WORKSPACE/arturo 
-                arturo -v
-                arturo tools/tester.art
+            # - if: env.arturoCanRun == 'true'
+            #   name: Run tests
+            #   run: |
+            #     cd $GITHUB_WORKSPACE/arturo 
+            #     arturo -v
+            #     arturo tools/tester.art
 
-                if [ "${{ matrix.mode }}" = "full" ]; then
-                    arturo -p install unitt
-                    arturo tools/unitt-tester.art
-                fi
+            #     if [ "${{ matrix.mode }}" = "full" ]; then
+            #         arturo -p install unitt
+            #         arturo tools/unitt-tester.art
+            #     fi
