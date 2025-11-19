@@ -72,8 +72,9 @@ proc configWebkit() =
             # pkg-config not found
             # probably because we are not on Ubuntu
             if defined(freebsd):
-                return "40"
-            return "4.0"
+                return "41"
+            else:
+                return "4.1"
 
         for version in webkitVersions:
             let ret = gorgeEx("pkg-config --exists webkit2gtk-" & version)
@@ -81,8 +82,9 @@ proc configWebkit() =
                 return version
 
         if defined(freebsd):
-            return "40"
-        return "4.0"  # fallback if none found
+            return "41"
+        else:
+            return "4.1"  # fallback if none found
 
     switch "define", "webkitVersion=" & getWebkitVersion()
 
