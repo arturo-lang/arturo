@@ -82,7 +82,7 @@ jobs:
                 echo "Building version: $version"
 
             - name: Install Arturo
-              uses: arturo-lang/arturo-action@attempt-to-add-FULL-builds-for-linux+arm64 
+              uses: arturo-lang/arturo-action@main
               with: 
                 token: ${{ secrets.GITHUB_TOKEN }}
                 os: ${{ matrix.os }}
