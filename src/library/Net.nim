@@ -24,10 +24,16 @@ when defined(ssl):
     when defined(windows): 
         {.passL: "-Bstatic -Lsrc/deps/openssl/windows/amd64 -lssl -lcrypto -Bdynamic -lws2_32 -lcrypt32".}
     elif defined(linux):
-        when defined(arm64):
-            {.passL: "-Bstatic -Lsrc/deps/openssl/linux/arm64 -lssl -lcrypto -Bdynamic".}
+        when defined(LEGACYUNIX):
+            when defined(arm64):
+                {.passL: "-Bstatic -Lsrc/deps/openssl/linux/arm64/legacy -lssl -lcrypto -Bdynamic".}
+            else:
+                {.passL: "-Bstatic -Lsrc/deps/openssl/linux/amd64/legacy -lssl -lcrypto -Bdynamic".}
         else:
-            {.passL: "-Bstatic -Lsrc/deps/openssl/linux/amd64 -lssl -lcrypto -Bdynamic".}
+            when defined(arm64):
+                {.passL: "-Bstatic -Lsrc/deps/openssl/linux/arm64 -lssl -lcrypto -Bdynamic".}
+            else:
+                {.passL: "-Bstatic -Lsrc/deps/openssl/linux/amd64 -lssl -lcrypto -Bdynamic".}
     elif defined(macosx):
         when defined(arm64):
             {.passL: "-Bstatic -Lsrc/deps/openssl/macos/arm64 -lssl -lcrypto -Bdynamic".}
