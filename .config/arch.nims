@@ -6,8 +6,6 @@ proc amd64Config() =
 
 proc arm64Config() =
     --cpu:arm64 
-    if hostOS == "macosx":
-        --passC:"-I/opt/homebrew/include"
     
 proc x86Config() =
     --cpu:i386 
