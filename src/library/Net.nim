@@ -20,10 +20,7 @@
 #=======================================
 
 when defined(ssl):
-
-    when defined(windows): 
-        {.passL: "-Bstatic -Lsrc/deps/openssl/windows/amd64 -lssl -lcrypto -Bdynamic -lws2_32 -lcrypt32".}
-    elif defined(linux):
+    when defined(linux):
         when defined(LEGACYUNIX):
             when defined(arm64):
                 {.passL: "-Bstatic -Lsrc/deps/openssl/linux/arm64/legacy -lssl -lcrypto -Bdynamic".}
@@ -34,11 +31,15 @@ when defined(ssl):
                 {.passL: "-Bstatic -Lsrc/deps/openssl/linux/arm64 -lssl -lcrypto -Bdynamic".}
             else:
                 {.passL: "-Bstatic -Lsrc/deps/openssl/linux/amd64 -lssl -lcrypto -Bdynamic".}
+    elif defined(freebsd):
+        {.passL: "-Bstatic -Lsrc/deps/openssl/freebsd/amd64 -lssl -lcrypto -Bdynamic".}
     elif defined(macosx):
         when defined(arm64):
             {.passL: "-Bstatic -Lsrc/deps/openssl/macos/arm64 -lssl -lcrypto -Bdynamic".}
         else:
             {.passL: "-Bstatic -Lsrc/deps/openssl/macos/amd64 -lssl -lcrypto -Bdynamic".}
+    elif defined(windows): 
+        {.passL: "-Bstatic -Lsrc/deps/openssl/windows/amd64 -lssl -lcrypto -Bdynamic -lws2_32 -lcrypt32".}
 
 #=======================================
 # Libraries

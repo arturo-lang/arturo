@@ -117,7 +117,7 @@ proc main() =
     if defined(ssl):
         if defined(windows):
             configWinSSL()
-        elif not defined(freebsd):
+        else:
             configUnixSSL()
 
 main()
