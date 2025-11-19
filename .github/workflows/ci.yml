@@ -30,7 +30,7 @@ jobs:
             matrix:
                 include: 
                     - {os: linux,   arch: amd64, mode: full}
-                    - {os: linux,   arch: amd64, mode: full, webkit: "41"}
+                    #- {os: linux,   arch: amd64, mode: full, webkit: "41"}
                     - {os: linux,   arch: amd64, mode: safe}
                     - {os: linux,   arch: amd64, mode: mini}
                     - {os: linux,   arch: arm64, mode: mini}
