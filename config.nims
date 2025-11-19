@@ -79,6 +79,8 @@ proc configWebkit() =
         for version in webkitVersions:
             let ret = gorgeEx("pkg-config --exists webkit2gtk-" & version)
             if ret.exitCode == 0:
+                if version == "4.0" or version == "40":
+                    --define:"LEGACYUNIX"
                 return version
 
         if defined(freebsd):
