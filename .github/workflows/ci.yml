@@ -92,7 +92,7 @@ jobs:
                 metadata: ${{ steps.version.outputs.VERSION }}
                 create_artifact: 'true'
                 artifact_version: ${{ steps.version.outputs.VERSION }}
-
+ 
             - name: Extract OpenSSL libraries (Linux)
               if: matrix.os == 'linux' && matrix.mode == 'full'
               shell: bash
