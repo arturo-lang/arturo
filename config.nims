@@ -92,11 +92,9 @@ proc configWinSSL() =
     --dynlibOverride:"ssl-"
     --dynlibOverride:"crypto-"
 
-
 proc configUnixSSL() =
     --dynlibOverride:ssl
     --dynlibOverride:crypto
-
 
 proc main() =
     defaultConfig()
