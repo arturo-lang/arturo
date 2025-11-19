@@ -24,7 +24,10 @@ when defined(ssl):
     when defined(windows): 
         {.passL: "-Bstatic -Lsrc/extras/openssl/deps/windows -lssl -lcrypto -lws2_32 -Bdynamic".}
     elif defined(linux):
-        {.passL: "-Bstatic -Lsrc/extras/openssl/deps/linux -lssl -lcrypto -Bdynamic".}
+        when defined(arm64):
+            {.passL: "-Bstatic -Lsrc/extras/openssl/deps/linux/arm64 -lssl -lcrypto -Bdynamic".}
+        else:
+            {.passL: "-Bstatic -Lsrc/extras/openssl/deps/linux/amd64 -lssl -lcrypto -Bdynamic".}
     elif defined(macosx):
         # TODO(Net) Use OpenSSL 1.1 in all cases
         #  right now, every OS/architecture statically links OpenSSL 1.1.
