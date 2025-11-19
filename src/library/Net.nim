@@ -35,9 +35,9 @@ when defined(ssl):
         {.passL: "-Bstatic -Lsrc/deps/openssl/freebsd/amd64 -lssl -lcrypto -Bdynamic".}
     elif defined(macosx):
         when defined(arm64):
-            {.passL: "-Bstatic -Lsrc/deps/openssl/macos/arm64 -lssl -lcrypto -Bdynamic".}
+            {.passL: "src/deps/openssl/macos/arm64/libssl.a src/deps/openssl/macos/arm64/libcrypto.a".}
         else:
-            {.passL: "-Bstatic -Lsrc/deps/openssl/macos/amd64 -lssl -lcrypto -Bdynamic".}
+            {.passL: "src/deps/openssl/macos/amd64/libssl.a src/deps/openssl/macos/amd64/libcrypto.a".}
     elif defined(windows): 
         {.passL: "-Bstatic -Lsrc/deps/openssl/windows/amd64 -lssl -lcrypto -Bdynamic -lws2_32 -lcrypt32".}
 
