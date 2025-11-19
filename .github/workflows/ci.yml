@@ -93,48 +93,6 @@ jobs:
                 create_artifact: 'true'
                 artifact_version: ${{ steps.version.outputs.VERSION }}
 
-            - name: Extract OpenSSL libraries (macOS)
-              if: matrix.os == 'macos' && matrix.mode == 'full'
-              shell: bash
-              run: |
-                # Determine OpenSSL path based on architecture
-                if [ "${{ matrix.arch }}" = "arm64" ]; then
-                    SSL_PATH="/opt/homebrew/opt/openssl@3"
-                else
-                    SSL_PATH="/usr/local/opt/openssl@3"
-                fi
-                
-                # Get OpenSSL version
-                OPENSSL_VERSION=$($SSL_PATH/bin/openssl version)
-                echo "======================================"
-                echo "OpenSSL Information"
-                echo "======================================"
-                echo "Architecture: ${{ matrix.arch || 'amd64' }}"
-                echo "Version: $OPENSSL_VERSION"
-                echo "Path: $SSL_PATH"
-                echo "======================================"
-                
-                # Create artifact directory
-                mkdir -p openssl-libs-macos-${{ matrix.arch || 'amd64' }}
-                
-                # Copy static libraries
-                cp $SSL_PATH/lib/libssl.a openssl-libs-macos-${{ matrix.arch || 'amd64' }}/
-                cp $SSL_PATH/lib/libcrypto.a openssl-libs-macos-${{ matrix.arch || 'amd64' }}/
-                
-                # Save version info
-                echo "$OPENSSL_VERSION" > openssl-libs-macos-${{ matrix.arch || 'amd64' }}/VERSION.txt
-                echo "Path: $SSL_PATH" >> openssl-libs-macos-${{ matrix.arch || 'amd64' }}/VERSION.txt
-                
-                # List files with sizes
-                ls -lh openssl-libs-macos-${{ matrix.arch || 'amd64' }}/
-
-            - name: Upload OpenSSL libraries (macOS)
-              if: matrix.os == 'macos' && matrix.mode == 'full'
-              uses: actions/upload-artifact@v4
-              with:
-                name: openssl-libs-macos-${{ matrix.arch || 'amd64' }}-${{ steps.version.outputs.VERSION }}
-                path: openssl-libs-macos-${{ matrix.arch || 'amd64' }}/
-
             - if: env.arturoCanRun == 'true'
               name: Run tests
               run: |
