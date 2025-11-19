@@ -60,7 +60,7 @@ proc configMimalloc() =
 proc configWinPCRE() =
     --dynlibOverride:pcre64
 
-proc configMacosPCRE() =
+proc configUnixPCRE() =
     --dynlibOverride:pcre
 
 proc configWebkit() =
@@ -71,14 +71,22 @@ proc configWebkit() =
         if testPkg.exitCode != 0:
             # pkg-config not found
             # probably because we are not on Ubuntu
-            return "4.0"
+            if defined(freebsd):
+                return "41"
+            else:
+                return "4.1"
 
         for version in webkitVersions:
             let ret = gorgeEx("pkg-config --exists webkit2gtk-" & version)
             if ret.exitCode == 0:
+                if version == "4.0" or version == "40":
+                    --define:"LEGACYUNIX"
                 return version
 
-        return "4.0"  # fallback if none found
+        if defined(freebsd):
+            return "41"
+        else:
+            return "4.1"  # fallback if none found
 
     switch "define", "webkitVersion=" & getWebkitVersion()
 
@@ -88,11 +96,9 @@ proc configWinSSL() =
     --dynlibOverride:"ssl-"
     --dynlibOverride:"crypto-"
 
-
 proc configUnixSSL() =
     --dynlibOverride:ssl
     --dynlibOverride:crypto
-
 
 proc main() =
     defaultConfig()
@@ -100,19 +106,18 @@ proc main() =
     # configGMPOnWindows()    
     configMimalloc()
 
-    if defined(linux):
+    if defined(linux) or defined(freebsd):
         configWebkit()
 
     if defined(windows):
         configWinPCRE()
+    else:
+        configUnixPCRE()
 
-    if defined(macosx):
-        configMacosPCRE()
-
-    if defined(windows) and defined(ssl):
-        configWinSSL()
-
-    if not defined(windows) and defined(ssl):
-        configUnixSSL()
+    if defined(ssl):
+        if defined(windows):
+            configWinSSL()
+        else:
+            configUnixSSL()
 
 main()
