@@ -30,7 +30,7 @@ jobs:
             matrix:
                 include: 
                     - {os: linux,   arch: amd64, mode: full}
-                    #- {os: linux,   arch: amd64, mode: full, webkit: "41"}
+                    - {os: linux,   arch: amd64, mode: full, webkit: "41"}
                     - {os: linux,   arch: amd64, mode: safe}
                     - {os: linux,   arch: amd64, mode: mini}
                     - {os: linux,   arch: arm64, mode: mini}
@@ -92,145 +92,15 @@ jobs:
                 metadata: ${{ steps.version.outputs.VERSION }}
                 create_artifact: 'true'
                 artifact_version: ${{ steps.version.outputs.VERSION }}
- 
-            - name: Extract OpenSSL libraries (Linux)
-              if: matrix.os == 'linux' && matrix.mode == 'full'
-              shell: bash
+
+            - if: env.arturoCanRun == 'true'
+              name: Run tests
               run: |
-                # Install OpenSSL 3.x if not present
-                sudo apt-get update
-                sudo apt-get install -y libssl-dev
-                
-                # Determine library path based on architecture
-                if [ "${{ matrix.arch }}" = "arm64" ]; then
-                    SSL_LIB_PATH="/usr/lib/aarch64-linux-gnu"
-                    ARCH_NAME="arm64"
-                else
-                    SSL_LIB_PATH="/usr/lib/x86_64-linux-gnu"
-                    ARCH_NAME="amd64"
+                cd $GITHUB_WORKSPACE/arturo 
+                arturo -v
+                arturo tools/tester.art
+
+                if [ "${{ matrix.mode }}" = "full" ]; then
+                    arturo -p install unitt
+                    arturo tools/unitt-tester.art
                 fi
-                
-                # Get OpenSSL version
-                OPENSSL_VERSION=$(openssl version)
-                echo "======================================"
-                echo "OpenSSL Information (Linux)"
-                echo "======================================"
-                echo "Architecture: $ARCH_NAME"
-                echo "Version: $OPENSSL_VERSION"
-                echo "Library Path: $SSL_LIB_PATH"
-                echo "======================================"
-                
-                # Create artifact directory
-                mkdir -p openssl-libs-linux-$ARCH_NAME
-                
-                # Copy static libraries
-                cp $SSL_LIB_PATH/libssl.a openssl-libs-linux-$ARCH_NAME/
-                cp $SSL_LIB_PATH/libcrypto.a openssl-libs-linux-$ARCH_NAME/
-                
-                # Save version info
-                echo "$OPENSSL_VERSION" > openssl-libs-linux-$ARCH_NAME/VERSION.txt
-                echo "Path: $SSL_LIB_PATH" >> openssl-libs-linux-$ARCH_NAME/VERSION.txt
-                
-                # List files with sizes
-                ls -lh openssl-libs-linux-$ARCH_NAME/
-
-            - name: Upload OpenSSL libraries (Linux)
-              if: matrix.os == 'linux' && matrix.mode == 'full'
-              uses: actions/upload-artifact@v4
-              with:
-                name: openssl-libs-linux-${{ matrix.arch || 'amd64' }}-${{ steps.version.outputs.VERSION }}
-                path: openssl-libs-linux-${{ matrix.arch || 'amd64' }}/
-
-            - name: Extract OpenSSL libraries (macOS)
-              if: matrix.os == 'macos' && matrix.mode == 'full'
-              shell: bash
-              run: |
-                # Determine OpenSSL path based on architecture
-                if [ "${{ matrix.arch }}" = "arm64" ]; then
-                    SSL_PATH="/opt/homebrew/opt/openssl@3"
-                else
-                    SSL_PATH="/usr/local/opt/openssl@3"
-                fi
-                
-                # Get OpenSSL version
-                OPENSSL_VERSION=$($SSL_PATH/bin/openssl version)
-                echo "======================================"
-                echo "OpenSSL Information (macOS)"
-                echo "======================================"
-                echo "Architecture: ${{ matrix.arch || 'amd64' }}"
-                echo "Version: $OPENSSL_VERSION"
-                echo "Path: $SSL_PATH"
-                echo "======================================"
-                
-                # Create artifact directory
-                mkdir -p openssl-libs-macos-${{ matrix.arch || 'amd64' }}
-                
-                # Copy static libraries
-                cp $SSL_PATH/lib/libssl.a openssl-libs-macos-${{ matrix.arch || 'amd64' }}/
-                cp $SSL_PATH/lib/libcrypto.a openssl-libs-macos-${{ matrix.arch || 'amd64' }}/
-                
-                # Save version info
-                echo "$OPENSSL_VERSION" > openssl-libs-macos-${{ matrix.arch || 'amd64' }}/VERSION.txt
-                echo "Path: $SSL_PATH" >> openssl-libs-macos-${{ matrix.arch || 'amd64' }}/VERSION.txt
-                
-                # List files with sizes
-                ls -lh openssl-libs-macos-${{ matrix.arch || 'amd64' }}/
-
-            - name: Upload OpenSSL libraries (macOS)
-              if: matrix.os == 'macos' && matrix.mode == 'full'
-              uses: actions/upload-artifact@v4
-              with:
-                name: openssl-libs-macos-${{ matrix.arch || 'amd64' }}-${{ steps.version.outputs.VERSION }}
-                path: openssl-libs-macos-${{ matrix.arch || 'amd64' }}/
-
-            - name: Extract OpenSSL libraries (Windows)
-              if: matrix.os == 'windows' && matrix.mode == 'full'
-              shell: msys2 {0}
-              run: |
-                # Install OpenSSL 3.x
-                pacman --noconfirm -S mingw-w64-x86_64-openssl
-                
-                SSL_LIB_PATH="/mingw64/lib"
-                
-                # Get OpenSSL version
-                OPENSSL_VERSION=$(/mingw64/bin/openssl version)
-                echo "======================================"
-                echo "OpenSSL Information (Windows)"
-                echo "======================================"
-                echo "Architecture: amd64"
-                echo "Version: $OPENSSL_VERSION"
-                echo "Library Path: $SSL_LIB_PATH"
-                echo "======================================"
-                
-                # Create artifact directory
-                mkdir -p openssl-libs-windows-amd64
-                
-                # Copy static libraries
-                cp $SSL_LIB_PATH/libssl.a openssl-libs-windows-amd64/
-                cp $SSL_LIB_PATH/libcrypto.a openssl-libs-windows-amd64/
-                
-                # Save version info
-                echo "$OPENSSL_VERSION" > openssl-libs-windows-amd64/VERSION.txt
-                echo "Path: $SSL_LIB_PATH" >> openssl-libs-windows-amd64/VERSION.txt
-                
-                # List files with sizes
-                ls -lh openssl-libs-windows-amd64/
-
-            - name: Upload OpenSSL libraries (Windows)
-              if: matrix.os == 'windows' && matrix.mode == 'full'
-              uses: actions/upload-artifact@v4
-              with:
-                name: openssl-libs-windows-amd64-${{ steps.version.outputs.VERSION }}
-                path: openssl-libs-windows-amd64/
-
-            # - if: env.arturoCanRun == 'true'
-            #   name: Run tests
-            #   run: |
-            #     cd $GITHUB_WORKSPACE/arturo 
-            #     arturo -v
-            #     arturo tools/tester.art
-
-            #     if [ "${{ matrix.mode }}" = "full" ]; then
-            #         arturo -p install unitt
-            #         arturo tools/unitt-tester.art
-            #     fi
