@@ -35,9 +35,9 @@ when defined(ssl):
         #  .config/buildmode.nims
         #  labels: enhancement, 3rd-party, macos
         when defined(arm64):
-            {.passL: "-Bstatic -Lsrc/extras/openssl/deps/macos/m1 -lssl -lcrypto -Bdynamic".}
+            {.passL: "-Bstatic -Lsrc/extras/openssl/deps/macos/arm64 -lssl -lcrypto -Bdynamic".}
         else:
-            {.passL: "-Bstatic -Lsrc/extras/openssl/deps/macos -lssl -lcrypto -Bdynamic".}
+            {.passL: "-Bstatic -Lsrc/extras/openssl/deps/macos/amd64 -lssl -lcrypto -Bdynamic".}
 
 #=======================================
 # Libraries
