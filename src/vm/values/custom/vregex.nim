@@ -27,7 +27,6 @@ elif defined(macosx):
 elif defined(windows): 
     {.passL: "-Bstatic -Lsrc/deps/pcre/windows/amd64 -lpcre -Bdynamic".}
 
-
 #=======================================
 # Libraries
 #=======================================
