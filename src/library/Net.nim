@@ -29,14 +29,6 @@ when defined(ssl):
         else:
             {.passL: "-Bstatic -Lsrc/deps/openssl/linux/amd64 -lssl -lcrypto -Bdynamic".}
     elif defined(macosx):
-        # TODO(Net) Use OpenSSL 1.1 in all cases
-        #  right now, every OS/architecture statically links OpenSSL 1.1.
-        #  except for Mac/arm64 (M1). This - most likely - leads to the aforementioned
-        #  binaries being largest, without any reason. This has to be fixed (by finding the correct
-        #  libraries to link against and making sure they are found during compilation). Once this is
-        #  done, we'll also have to remove the definition of `--define:useOpenssl3` in 
-        #  .config/buildmode.nims
-        #  labels: enhancement, 3rd-party, macos
         when defined(arm64):
             {.passL: "-Bstatic -Lsrc/deps/openssl/macos/arm64 -lssl -lcrypto -Bdynamic".}
         else:
