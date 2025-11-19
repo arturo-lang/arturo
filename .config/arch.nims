@@ -6,11 +6,7 @@ proc amd64Config() =
 
 proc arm64Config() =
     --cpu:arm64 
-    if hostOS != "macosx":
-        --gcc.path:"/usr/bin" 
-        --gcc.exe:"aarch64-linux-gnu-gcc" 
-        --gcc.linkerexe:"aarch64-linux-gnu-gcc"
-    else:
+    if hostOS == "macosx":
         --passC:"-I/opt/homebrew/include"
     
 proc x86Config() =
