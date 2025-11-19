@@ -17,9 +17,6 @@ concurrency:
     group: ${{ github.workflow }}-${{ github.ref }}
     cancel-in-progress: true
 
-env:
-    branchName: ${{ github.head_ref || github.ref_name }} 
-
 jobs:
     test:
         runs-on: ${{ 
@@ -67,9 +64,21 @@ jobs:
               shell: bash
               run: |
                 cd arturo
-                git_hash=$(git rev-parse --short "$GITHUB_SHA")
-                version="${{ env.branchName }}.${git_hash}"
+                git_hash=$(git rev-parse --short HEAD)
+                
+                # Sanitize branch name
+                if [ "${{ github.event_name }}" = "pull_request" ]; then
+                    branch="pr${{ github.event.pull_request.number }}"
+                elif [ "${{ github.ref_name }}" = "master" ]; then
+                    branch="master"
+                else
+                    # For other branches, use a short sanitized version
+                    branch=$(echo "${{ github.ref_name }}" | cut -c1-20 | sed 's/[^a-zA-Z0-9-]/-/g')
+                fi
+                
+                version="${branch}.${git_hash}"
                 echo "VERSION=$version" >> "$GITHUB_OUTPUT"
+                echo "Building version: $version"
 
             - name: Install Arturo
               uses: arturo-lang/arturo-action@main
@@ -80,12 +89,12 @@ jobs:
                 mode: ${{ matrix.mode || 'mini' }}
                 webkit: ${{ matrix.webkit || '40' }}
                 src: ${{ github.ref }}
-                metadata: ${{ env.branchName }}-${{ github.sha }}
+                metadata: ${{ steps.version.outputs.VERSION }}
                 create_artifact: 'true'
                 artifact_version: ${{ steps.version.outputs.VERSION }}
 
             - name: Extract OpenSSL libraries (macOS)
-              if: matrix.os == 'macos'
+              if: matrix.os == 'macos' && matrix.mode == 'full'
               shell: bash
               run: |
                 # Determine OpenSSL path based on architecture
@@ -120,10 +129,10 @@ jobs:
                 ls -lh openssl-libs-macos-${{ matrix.arch || 'amd64' }}/
 
             - name: Upload OpenSSL libraries (macOS)
-              if: matrix.os == 'macos'
+              if: matrix.os == 'macos' && matrix.mode == 'full'
               uses: actions/upload-artifact@v4
               with:
-                name: openssl-libs-macos-${{ matrix.arch || 'amd64' }}
+                name: openssl-libs-macos-${{ matrix.arch || 'amd64' }}-${{ steps.version.outputs.VERSION }}
                 path: openssl-libs-macos-${{ matrix.arch || 'amd64' }}/
 
             - if: env.arturoCanRun == 'true'
