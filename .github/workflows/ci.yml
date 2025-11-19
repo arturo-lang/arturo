@@ -86,9 +86,9 @@ jobs:
               with: 
                 token: ${{ secrets.GITHUB_TOKEN }}
                 os: ${{ matrix.os }}
-                arch: ${{ matrix.arch || 'amd64' }}
-                mode: ${{ matrix.mode || 'mini' }}
-                webkit: ${{ matrix.webkit || '41' }}
+                arch: ${{ matrix.arch }}
+                mode: ${{ matrix.mode }}
+                webkit: ${{ matrix.webkit }}
                 src: ${{ github.ref }}
                 metadata: ${{ steps.version.outputs.VERSION }}
                 create_artifact: 'true'
