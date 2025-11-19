@@ -20,24 +20,26 @@
 #=======================================
 
 when defined(ssl):
-
-    when defined(windows): 
-        {.passL: "-Bstatic -Lsrc/extras/openssl/deps/windows -lssl -lcrypto -lws2_32 -Bdynamic".}
-    elif defined(linux):
-        {.passL: "-Bstatic -Lsrc/extras/openssl/deps/linux -lssl -lcrypto -Bdynamic".}
-    elif defined(macosx):
-        # TODO(Net) Use OpenSSL 1.1 in all cases
-        #  right now, every OS/architecture statically links OpenSSL 1.1.
-        #  except for Mac/arm64 (M1). This - most likely - leads to the aforementioned
-        #  binaries being largest, without any reason. This has to be fixed (by finding the correct
-        #  libraries to link against and making sure they are found during compilation). Once this is
-        #  done, we'll also have to remove the definition of `--define:useOpenssl3` in 
-        #  .config/buildmode.nims
-        #  labels: enhancement, 3rd-party, macos
-        when defined(arm64):
-            {.passL: "-Bstatic -Lsrc/extras/openssl/deps/macos/m1 -lssl -lcrypto -Bdynamic".}
+    when defined(linux):
+        when defined(LEGACYUNIX):
+            when defined(arm64):
+                {.passL: "-Bstatic -Lsrc/deps/openssl/linux/arm64/legacy -lssl -lcrypto -Bdynamic".}
+            else:
+                {.passL: "-Bstatic -Lsrc/deps/openssl/linux/amd64/legacy -lssl -lcrypto -Bdynamic".}
         else:
-            {.passL: "-Bstatic -Lsrc/extras/openssl/deps/macos -lssl -lcrypto -Bdynamic".}
+            when defined(arm64):
+                {.passL: "-Bstatic -Lsrc/deps/openssl/linux/arm64 -lssl -lcrypto -Bdynamic".}
+            else:
+                {.passL: "-Bstatic -Lsrc/deps/openssl/linux/amd64 -lssl -lcrypto -Bdynamic".}
+    elif defined(freebsd):
+        {.passL: "-Bstatic -Lsrc/deps/openssl/freebsd/amd64 -lssl -lcrypto -Bdynamic".}
+    elif defined(macosx):
+        when defined(arm64):
+            {.passL: "src/deps/openssl/macos/arm64/libssl.a src/deps/openssl/macos/arm64/libcrypto.a".}
+        else:
+            {.passL: "src/deps/openssl/macos/amd64/libssl.a src/deps/openssl/macos/amd64/libcrypto.a".}
+    elif defined(windows): 
+        {.passL: "-Bstatic -Lsrc/deps/openssl/windows/amd64 -lssl -lcrypto -Bdynamic -lws2_32 -lcrypt32".}
 
 #=======================================
 # Libraries
