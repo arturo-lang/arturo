@@ -25,7 +25,7 @@ elif defined(linux):
     else:   
         {.passL: "-Bstatic -Lsrc/deps/pcre/linux/amd64 -lpcre -Bdynamic".}
 elif defined(freebsd):
-    {.passL: "-Bstatic -src/deps/pcre/deps/freebsd/amd64 -lpcre -Bdynamic".}
+    {.passL: "-Bstatic -src/deps/pcre/freebsd/amd64 -lpcre -Bdynamic".}
 
 #=======================================
 # Libraries
