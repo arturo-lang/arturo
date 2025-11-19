@@ -22,12 +22,12 @@
 when defined(ssl):
 
     when defined(windows): 
-        {.passL: "-Bstatic -Lsrc/extras/openssl/deps/windows -lssl -lcrypto -lws2_32 -Bdynamic".}
+        {.passL: "-Bstatic -Lsrc/deps/openssl/windows/amd64 -lssl -lcrypto -lws2_32 -Bdynamic".}
     elif defined(linux):
         when defined(arm64):
-            {.passL: "-Bstatic -Lsrc/extras/openssl/deps/linux/arm64 -lssl -lcrypto -Bdynamic".}
+            {.passL: "-Bstatic -Lsrc/deps/openssl/linux/arm64 -lssl -lcrypto -Bdynamic".}
         else:
-            {.passL: "-Bstatic -Lsrc/extras/openssl/deps/linux/amd64 -lssl -lcrypto -Bdynamic".}
+            {.passL: "-Bstatic -Lsrc/deps/openssl/linux/amd64 -lssl -lcrypto -Bdynamic".}
     elif defined(macosx):
         # TODO(Net) Use OpenSSL 1.1 in all cases
         #  right now, every OS/architecture statically links OpenSSL 1.1.
@@ -38,9 +38,9 @@ when defined(ssl):
         #  .config/buildmode.nims
         #  labels: enhancement, 3rd-party, macos
         when defined(arm64):
-            {.passL: "-Bstatic -Lsrc/extras/openssl/deps/macos/arm64 -lssl -lcrypto -Bdynamic".}
+            {.passL: "-Bstatic -Lsrc/deps/openssl/macos/arm64 -lssl -lcrypto -Bdynamic".}
         else:
-            {.passL: "-Bstatic -Lsrc/extras/openssl/deps/macos/amd64 -lssl -lcrypto -Bdynamic".}
+            {.passL: "-Bstatic -Lsrc/deps/openssl/macos/amd64 -lssl -lcrypto -Bdynamic".}
 
 #=======================================
 # Libraries
