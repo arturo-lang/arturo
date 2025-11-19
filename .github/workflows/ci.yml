@@ -81,55 +81,6 @@ jobs:
                 echo "VERSION=$version" >> "$GITHUB_OUTPUT"
                 echo "Building version: $version"
 
-            - name: Extract OpenSSL libraries (Linux Legacy)
-              if: matrix.os == 'linux' && matrix.mode == 'full' && matrix.webkit == '40'
-              shell: bash
-              run: |
-                # Install OpenSSL 3.x if not present
-                sudo apt-get update
-                sudo apt-get install -y libssl-dev
-                
-                # Determine library path based on architecture
-                if [ "${{ matrix.arch }}" = "arm64" ]; then
-                    SSL_LIB_PATH="/usr/lib/aarch64-linux-gnu"
-                    ARCH_NAME="arm64"
-                else
-                    SSL_LIB_PATH="/usr/lib/x86_64-linux-gnu"
-                    ARCH_NAME="amd64"
-                fi
-                
-                # Get OpenSSL version
-                OPENSSL_VERSION=$(openssl version)
-                echo "======================================"
-                echo "OpenSSL Information (Linux Legacy)"
-                echo "======================================"
-                echo "Architecture: $ARCH_NAME"
-                echo "Version: $OPENSSL_VERSION"
-                echo "Library Path: $SSL_LIB_PATH"
-                echo "======================================"
-                
-                # Create artifact directory
-                mkdir -p openssl-libs-linux-$ARCH_NAME-legacy
-                
-                # Copy static libraries
-                cp $SSL_LIB_PATH/libssl.a openssl-libs-linux-$ARCH_NAME-legacy/
-                cp $SSL_LIB_PATH/libcrypto.a openssl-libs-linux-$ARCH_NAME-legacy/
-                
-                # Save version info
-                echo "$OPENSSL_VERSION" > openssl-libs-linux-$ARCH_NAME-legacy/VERSION.txt
-                echo "Path: $SSL_LIB_PATH" >> openssl-libs-linux-$ARCH_NAME-legacy/VERSION.txt
-                echo "Ubuntu Version: $(lsb_release -rs)" >> openssl-libs-linux-$ARCH_NAME-legacy/VERSION.txt
-                
-                # List files with sizes
-                ls -lh openssl-libs-linux-$ARCH_NAME-legacy/
-
-            - name: Upload OpenSSL libraries (Linux Legacy)
-              if: matrix.os == 'linux' && matrix.mode == 'full' && matrix.webkit == '40'
-              uses: actions/upload-artifact@v4
-              with:
-                name: openssl-libs-linux-${{ matrix.arch || 'amd64' }}-legacy-${{ steps.version.outputs.VERSION }}
-                path: openssl-libs-linux-${{ matrix.arch || 'amd64' }}-legacy/
-
             - name: Install Arturo
               uses: arturo-lang/arturo-action@attempt-to-add-FULL-builds-for-linux+arm64 
               with: 
@@ -137,20 +88,20 @@ jobs:
                 os: ${{ matrix.os }}
                 arch: ${{ matrix.arch || 'amd64' }}
                 mode: ${{ matrix.mode || 'mini' }}
-                webkit: ${{ matrix.webkit || '40' }}
+                webkit: ${{ matrix.webkit || '41' }}
                 src: ${{ github.ref }}
                 metadata: ${{ steps.version.outputs.VERSION }}
                 create_artifact: 'true'
                 artifact_version: ${{ steps.version.outputs.VERSION }}
 
-            # - if: env.arturoCanRun == 'true'
-            #   name: Run tests
-            #   run: |
-            #     cd $GITHUB_WORKSPACE/arturo 
-            #     arturo -v
-            #     arturo tools/tester.art
+            - if: env.arturoCanRun == 'true'
+              name: Run tests
+              run: |
+                cd $GITHUB_WORKSPACE/arturo 
+                arturo -v
+                arturo tools/tester.art
 
-            #     if [ "${{ matrix.mode }}" = "full" ]; then
-            #         arturo -p install unitt
-            #         arturo tools/unitt-tester.art
-            #     fi
+                if [ "${{ matrix.mode }}" = "full" ]; then
+                    arturo -p install unitt
+                    arturo tools/unitt-tester.art
+                fi
