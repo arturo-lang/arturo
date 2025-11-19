@@ -13,19 +13,19 @@
 #=======================================
 
 when defined(windows): 
-    {.passL: "-Bstatic -Lsrc/extras/pcre/deps/windows -lpcre -Bdynamic".}
+    {.passL: "-Bstatic -Lsrc/deps/pcre/windows/amd64 -lpcre -Bdynamic".}
 elif defined(macosx):
     when defined(arm64):
-        {.passL: "-Bstatic -Lsrc/extras/pcre/deps/macos/arm64 -lpcre -Bdynamic".}
+        {.passL: "-Bstatic -Lsrc/deps/pcre/macos/arm64 -lpcre -Bdynamic".}
     else:
-        {.passL: "-Bstatic -Lsrc/extras/pcre/deps/macos/amd64 -lpcre -Bdynamic".}
+        {.passL: "-Bstatic -Lsrc/deps/pcre/macos/amd64 -lpcre -Bdynamic".}
 elif defined(linux):
     when defined(arm64):
-        {.passL: "-Bstatic -Lsrc/extras/pcre/deps/linux/arm64 -lpcre -Bdynamic".}
+        {.passL: "-Bstatic -Lsrc/deps/pcre/linux/arm64 -lpcre -Bdynamic".}
     else:   
-        {.passL: "-Bstatic -Lsrc/extras/pcre/deps/linux/amd64 -lpcre -Bdynamic".}
+        {.passL: "-Bstatic -Lsrc/deps/pcre/linux/amd64 -lpcre -Bdynamic".}
 elif defined(freebsd):
-    {.passL: "-Bstatic -Lsrc/extras/pcre/deps/freebsd -lpcre -Bdynamic".}
+    {.passL: "-Bstatic -Lsrc/deps/pcre/freebsd/amd64 -lpcre -Bdynamic".}
 
 #=======================================
 # Libraries

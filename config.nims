@@ -57,10 +57,10 @@ proc configMimalloc() =
         "src"/"extras"/"mimalloc"
  
 
-proc configPCREWindows() =
+proc configWinPCRE() =
     --dynlibOverride:pcre64
 
-proc configPCREOther() =
+proc configUnixPCRE() =
     --dynlibOverride:pcre
 
 proc configWebkit() =
@@ -92,11 +92,9 @@ proc configWinSSL() =
     --dynlibOverride:"ssl-"
     --dynlibOverride:"crypto-"
 
-
 proc configUnixSSL() =
     --dynlibOverride:ssl
     --dynlibOverride:crypto
-
 
 proc main() =
     defaultConfig()
@@ -108,14 +106,14 @@ proc main() =
         configWebkit()
 
     if defined(windows):
-        configPCREWindows()
+        configWinPCRE()
     else:
-        configPCREOther()
+        configUnixPCRE()
 
     if defined(ssl):
         if defined(windows):
             configWinSSL()
-        elif defined(macosx) or defined(linux):
+        elif not defined(freebsd):
             configUnixSSL()
 
 main()
