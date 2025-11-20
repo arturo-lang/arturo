@@ -83,7 +83,7 @@ jobs:
                 os: ${{ matrix.os }}
                 arch: ${{ matrix.arch }}
                 mode: ${{ matrix.mode }}
-                webkit: ${{ matrix.webkit }}
+                support: ${{ matrix.support }}
                 src: ${{ github.ref }}
                 metadata: ${{ steps.version.outputs.VERSION }}
                 create_artifact: 'true'
