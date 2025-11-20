@@ -67,17 +67,12 @@ jobs:
                 cd arturo
                 git_hash=$(git rev-parse --short HEAD)
                 
-                # Sanitize branch name
                 if [ "${{ github.event_name }}" = "pull_request" ]; then
-                    branch="pr${{ github.event.pull_request.number }}"
-                elif [ "${{ github.ref_name }}" = "master" ]; then
-                    branch="master"
+                    version="pr${{ github.event.pull_request.number }}.${git_hash}"
                 else
-                    # For other branches, use a short sanitized version
-                    branch=$(echo "${{ github.ref_name }}" | cut -c1-20 | sed 's/[^a-zA-Z0-9-]/-/g')
+                    version="${{ github.ref_name }}.${git_hash}"
                 fi
                 
-                version="${branch}.${git_hash}"
                 echo "VERSION=$version" >> "$GITHUB_OUTPUT"
                 echo "Building version: $version"
 
