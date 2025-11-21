@@ -34,15 +34,15 @@ jobs:
                     - {os: linux,   arch: arm64}
                     - {os: linux,   arch: arm64,    support: legacy}
                     - {os: linux,   arch: arm64,    mode: mini}
-                    # - {os: freebsd, arch: amd64}
-                    # - {os: freebsd, arch: amd64,    mode: mini}
+                    - {os: freebsd, arch: amd64}
+                    - {os: freebsd, arch: amd64,    mode: mini}
                     - {os: macos,   arch: amd64}
                     - {os: macos,   arch: amd64,    mode: mini}
                     - {os: macos,   arch: arm64}
                     - {os: macos,   arch: arm64,    mode: mini}
                     - {os: windows, arch: amd64}
                     - {os: windows, arch: amd64,    mode: mini}
-                    # - {os: web,     arch: js,       mode: mini}
+                    - {os: web,     arch: js,       mode: mini}
  
         defaults:
             run:
@@ -76,7 +76,7 @@ jobs:
                 echo "Building version: $version"
 
             - name: Install Arturo
-              uses: arturo-lang/arturo-action@v2
+              uses: arturo-lang/arturo-action@main
               with: 
                 do: compile
                 token: ${{ secrets.GITHUB_TOKEN }}
