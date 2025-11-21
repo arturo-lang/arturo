@@ -30,7 +30,6 @@ jobs:
                 include: 
                     - {os: linux,   arch: amd64}
                     - {os: linux,   arch: amd64,    support: legacy}
-                    - {os: linux,   arch: amd64,    mode: safe}
                     - {os: linux,   arch: amd64,    mode: mini}
                     - {os: linux,   arch: arm64}
                     - {os: linux,   arch: arm64,    support: legacy}
