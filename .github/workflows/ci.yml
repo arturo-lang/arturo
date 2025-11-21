@@ -76,7 +76,7 @@ jobs:
                 echo "Building version: $version"
 
             - name: Install Arturo
-              uses: arturo-lang/arturo-action@v2
+              uses: arturo-lang/arturo-action@v2.2.0
               with: 
                 do: compile
                 token: ${{ secrets.GITHUB_TOKEN }}
