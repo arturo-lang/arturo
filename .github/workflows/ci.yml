@@ -16,7 +16,7 @@ on:
 concurrency: 
     group: ${{ github.workflow }}-${{ github.ref }}
     cancel-in-progress: true
-
+ 
 jobs:
     Test:
         runs-on: ${{ 
@@ -30,7 +30,6 @@ jobs:
                 include: 
                     - {os: linux,   arch: amd64}
                     - {os: linux,   arch: amd64,    support: legacy}
-                    - {os: linux,   arch: amd64,    mode: safe}
                     - {os: linux,   arch: amd64,    mode: mini}
                     - {os: linux,   arch: arm64}
                     - {os: linux,   arch: arm64,    support: legacy}
@@ -44,7 +43,7 @@ jobs:
                     - {os: windows, arch: amd64}
                     - {os: windows, arch: amd64,    mode: mini}
                     - {os: web,     arch: js,       mode: mini}
- 
+
         defaults:
             run:
                 shell: ${{ 
@@ -77,8 +76,9 @@ jobs:
                 echo "Building version: $version"
 
             - name: Install Arturo
-              uses: arturo-lang/arturo-action@main
+              uses: arturo-lang/arturo-action@v2
               with: 
+                do: compile
                 token: ${{ secrets.GITHUB_TOKEN }}
                 os: ${{ matrix.os }}
                 arch: ${{ matrix.arch }}
