@@ -316,7 +316,7 @@ jobs:
               with:
                 switches: -avzr --delete
                 path: arturo/tmpdocs/
-                remote_path: /var/www/arturo-lang.io/master
+                remote_path: /var/www/arturo-lang.io/test
                 remote_host: arturo-lang.io
                 remote_user: root
                 remote_key: ${{ secrets.ARTUROLANG }}
@@ -332,5 +332,5 @@ jobs:
                 echo "🎉 Build & Documentation Complete!"
                 echo "Version: ${{ needs.increment-build.outputs.version_tag }}"
                 echo "Binaries built: $(ls binaries/ | wc -l)"
-                echo "Website deployed to: https://arturo-lang.io/master"
-                echo "Binaries available at: https://arturo-lang.io/master/binaries/"
+                echo "Website deployed to: https://arturo-lang.io/test"
+                echo "Binaries available at: https://arturo-lang.io/test/binaries/"
