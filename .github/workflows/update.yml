@@ -140,9 +140,6 @@ jobs:
               uses: arturo-lang/arturo-action@v2
               with: 
                 token: ${{ secrets.GITHUB_TOKEN }}
-                mode: docgen
-                arch: amd64
-                src: master
                 metadata: ${{ needs.Build.outputs.version_tag }}
 
             - name: "Install Node"
