@@ -1,4 +1,4 @@
-name: Build & Documentation
+name: Update
 
 on:
     pull_request_target:
@@ -13,7 +13,7 @@ concurrency:
 
 jobs:
     # Step 1: Auto-increment build number
-    increment-build:
+    Build:
         if: github.event.pull_request.merged == true
         runs-on: ubuntu-latest
         permissions:
@@ -67,7 +67,7 @@ jobs:
                 git push origin master
 
     # Step 2: Build all binaries with new version
-    build-binaries:
+    Binaries:
         runs-on: ${{ 
             (matrix.os == 'linux')   && (matrix.support == 'legacy' && (matrix.arch == 'arm64' && 'ubuntu-22.04-arm' || 'ubuntu-22.04') || matrix.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-latest') ||
             (matrix.os == 'macos')   && (matrix.arch == 'arm64' && 'macos-latest' || 'macOS-15-intel') ||
@@ -117,7 +117,7 @@ jobs:
                 artifact_version: ${{ needs.increment-build.outputs.version_tag }}
 
     # Step 3: Generate documentation and combine with binaries
-    docgen:
+    Documentation:
         runs-on: ubuntu-latest
         name: Generate Documentation & Deploy
         needs: [increment-build, build-binaries]
