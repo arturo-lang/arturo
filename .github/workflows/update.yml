@@ -69,7 +69,7 @@ jobs:
     # Step 2: Build all binaries with new version
     build-binaries:
         runs-on: ${{ 
-            (matrix.os == 'linux')   && (matrix.webkit == '40' && (matrix.arch == 'arm64' && 'ubuntu-22.04-arm' || 'ubuntu-22.04') || matrix.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-latest') ||
+            (matrix.os == 'linux')   && (matrix.support == 'legacy' && (matrix.arch == 'arm64' && 'ubuntu-22.04-arm' || 'ubuntu-22.04') || matrix.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-latest') ||
             (matrix.os == 'macos')   && (matrix.arch == 'arm64' && 'macos-latest' || 'macOS-15-intel') ||
             (matrix.os == 'windows') && 'windows-latest' || 
                                         'ubuntu-latest'  }}
@@ -78,11 +78,11 @@ jobs:
             matrix:
                 include: 
                     - {os: linux,   arch: amd64, mode: full}
-                    - {os: linux,   arch: amd64, mode: full, webkit: "40"}
+                    - {os: linux,   arch: amd64, mode: full, support: legacy}
                     - {os: linux,   arch: amd64, mode: safe}
                     - {os: linux,   arch: amd64, mode: mini}
                     - {os: linux,   arch: arm64, mode: full}
-                    - {os: linux,   arch: arm64, mode: full, webkit: "40"}
+                    - {os: linux,   arch: arm64, mode: full, support: legacy}
                     - {os: linux,   arch: arm64, mode: mini}
                     - {os: freebsd, arch: amd64, mode: full}
                     - {os: freebsd, arch: amd64, mode: mini}
@@ -94,7 +94,7 @@ jobs:
                     - {os: windows, arch: amd64, mode: mini}
                     - {os: web}
 
-        name: Build ${{ matrix.os }}-${{ matrix.arch || 'amd64' }}-${{ matrix.mode || 'mini' }}${{ matrix.webkit == '40' && '-legacy' || '' }}
+        name: Build ${{ matrix.os }}-${{ matrix.arch || 'js' }}-${{ matrix.mode || 'mini' }}${{ matrix.support == 'legacy' && '-legacy' || '' }}
         defaults:
             run:
                 shell: ${{ 
@@ -103,13 +103,14 @@ jobs:
                                                 'bash'        }}
         steps:
             - name: Install Arturo
-              uses: arturo-lang/arturo-action@main
+              uses: arturo-lang/arturo-action@v2
               with: 
+                do: compile
                 token: ${{ secrets.GITHUB_TOKEN }}
                 os: ${{ matrix.os }}
                 arch: ${{ matrix.arch }}
                 mode: ${{ matrix.mode }}
-                webkit: ${{ matrix.webkit }}
+                support: ${{ matrix.support }}
                 src: master
                 metadata: ${{ needs.increment-build.outputs.version_tag }}
                 create_artifact: 'true'
@@ -125,7 +126,7 @@ jobs:
                 shell: bash
         steps:
             - name: Install Arturo
-              uses: arturo-lang/arturo-action@main
+              uses: arturo-lang/arturo-action@v2
               with: 
                 token: ${{ secrets.GITHUB_TOKEN }}
                 mode: docgen
@@ -192,41 +193,62 @@ jobs:
                     if [ -n "$binary_file" ]; then
                       file_size=$(ls -lh "$binary_file" | awk '{print $5}')
                       
-                      # Parse artifact name: arturo-VERSION-OS-ARCH[-VARIANT]
+                      # Parse artifact name: arturo-VERSION-OS-ARCH[-MODE][-legacy]
                       # Examples: arturo-master.abc1234-linux-amd64-legacy
                       #           arturo-master.abc1234-macos-arm64
-                      #           arturo-master.abc1234-web-js-mini
+                      #           arturo-master.abc1234-linux-amd64-mini
+                      #           arturo-master.abc1234-web-js
                       
-                      if [[ "$artifact_name" =~ arturo-[^-]+-([^-]+)-([^-]+)(-(.+))?$ ]]; then
-                        os="${BASH_REMATCH[1]}"
-                        arch="${BASH_REMATCH[2]}"
-                        variant="${BASH_REMATCH[4]}"
+                      # Extract components after the version
+                      remainder="${artifact_name#arturo-*-}"
+                      
+                      # Parse OS
+                      os=$(echo "$remainder" | cut -d'-' -f1)
+                      
+                      # Parse architecture
+                      arch=$(echo "$remainder" | cut -d'-' -f2)
+                      
+                      # Initialize mode and legacy
+                      mode="full"
+                      legacy=""
+                      
+                      # Check for additional parts (mode/legacy)
+                      parts_count=$(echo "$remainder" | awk -F'-' '{print NF}')
+                      if [ $parts_count -ge 3 ]; then
+                        third_part=$(echo "$remainder" | cut -d'-' -f3)
                         
-                        # Determine mode
-                        if [[ "$variant" == *"mini"* ]]; then
-                          mode="mini"
-                        elif [[ "$variant" == *"safe"* ]]; then
-                          mode="safe"
-                        else
-                          mode="full"
-                        fi
-                        
-                        # Handle legacy
-                        legacy=""
-                        if [[ "$variant" == *"legacy"* ]]; then
-                          legacy="Legacy"
-                        fi
-                        
-                        # Create variable name (e.g., linuxAmd64Full, macosArm64Mini, linuxAmd64FullLegacy)
-                        var_name="${os^}${arch^}${mode^}${legacy}"
-                        var_name=$(echo "$var_name" | sed 's/[^a-zA-Z0-9]//g')
-                        
-                        # Write to _index.art
-                        echo "${var_name}Path: \"binaries/${artifact_name}\"" >> arturo/docs/website/pages/_index.art
-                        echo "${var_name}Size: \"${file_size}\"" >> arturo/docs/website/pages/_index.art
-                        
-                        echo "Created: $var_name -> binaries/${artifact_name} ($file_size)"
+                        # Check if third part is a mode or legacy
+                        case "$third_part" in
+                          mini|safe)
+                            mode="$third_part"
+                            # Check for legacy as 4th part
+                            if [ $parts_count -ge 4 ]; then
+                              fourth_part=$(echo "$remainder" | cut -d'-' -f4)
+                              [ "$fourth_part" = "legacy" ] && legacy="Legacy"
+                            fi
+                            ;;
+                          legacy)
+                            legacy="Legacy"
+                            ;;
+                        esac
                       fi
+                      
+                      # Special handling for web builds
+                      if [ "$os" = "web" ]; then
+                        mode="mini"
+                      fi
+                      
+                      # Create variable name (e.g., LinuxAmd64Full, MacosArm64Mini, LinuxAmd64FullLegacy)
+                      os_cap="${os^}"
+                      arch_cap="${arch^}"
+                      mode_cap="${mode^}"
+                      var_name="${os_cap}${arch_cap}${mode_cap}${legacy}"
+                      
+                      # Write to _index.art
+                      echo "${var_name}Path: \"binaries/${artifact_name}\"" >> arturo/docs/website/pages/_index.art
+                      echo "${var_name}Size: \"${file_size}\"" >> arturo/docs/website/pages/_index.art
+                      
+                      echo "Created: $var_name -> binaries/${artifact_name} ($file_size)"
                     fi
                   fi
                 done
