@@ -184,7 +184,7 @@ jobs:
 
             - name: Prepare website data from binaries
               run: |
-                # Initialize _index.art file
+                # Initialize _index.art file with proper structure
                 cat > docs/website/pages/_index.art << 'EOF'
                 ;
                 ;  Arturo Website Data       
@@ -192,10 +192,14 @@ jobs:
                 ;
                 
                 ;================================
-                ; Binary Download Paths & Sizes
+                ; Binary Downloads
                 ;================================
                 
+                binaries: #[
                 EOF
+                
+                # Track which OSes we've seen
+                declare -A os_started
                 
                 # Process all binary artifacts
                 for binary_dir in binaries/arturo-*/; do
@@ -209,19 +213,14 @@ jobs:
                     if [ -n "$binary_file" ]; then
                       file_size=$(ls -lh "$binary_file" | awk '{print $5}')
                       
-                      # Parse artifact name: arturo-VERSION-OS-ARCH[-MODE][-legacy]
-                      # Examples: arturo-master.abc1234-linux-amd64-legacy
-                      #           arturo-master.abc1234-macos-arm64
-                      #           arturo-master.abc1234-linux-amd64-mini
-                      #           arturo-master.abc1234-web-js
+                      # Calculate SHA256 checksum
+                      sha256_hash=$(sha256sum "$binary_file" | awk '{print $1}')
                       
-                      # Extract components after the version
+                      # Parse artifact name: arturo-VERSION-OS-ARCH[-MODE][-legacy]
                       remainder="${artifact_name#arturo-*-}"
                       
-                      # Parse OS
+                      # Parse components
                       os=$(echo "$remainder" | cut -d'-' -f1)
-                      
-                      # Parse architecture
                       arch=$(echo "$remainder" | cut -d'-' -f2)
                       
                       # Initialize mode and legacy
@@ -233,46 +232,72 @@ jobs:
                       if [ $parts_count -ge 3 ]; then
                         third_part=$(echo "$remainder" | cut -d'-' -f3)
                         
-                        # Check if third part is a mode or legacy
                         case "$third_part" in
                           mini|safe)
                             mode="$third_part"
-                            # Check for legacy as 4th part
                             if [ $parts_count -ge 4 ]; then
                               fourth_part=$(echo "$remainder" | cut -d'-' -f4)
-                              [ "$fourth_part" = "legacy" ] && legacy="Legacy"
+                              [ "$fourth_part" = "legacy" ] && legacy="legacy"
                             fi
                             ;;
                           legacy)
-                            legacy="Legacy"
+                            legacy="legacy"
                             ;;
                         esac
                       fi
                       
                       # Special handling for web builds
                       if [ "$os" = "web" ]; then
+                        arch="js"
                         mode="mini"
                       fi
                       
-                      # Create variable name (e.g., LinuxAmd64Full, MacosArm64Mini, LinuxAmd64FullLegacy)
-                      os_cap="${os^}"
-                      arch_cap="${arch^}"
-                      mode_cap="${mode^}"
-                      var_name="${os_cap}${arch_cap}${mode_cap}${legacy}"
+                      # Start OS section if not already started
+                      if [ -z "${os_started[$os]}" ]; then
+                        if [ ${#os_started[@]} -gt 0 ]; then
+                          echo "    ]" >> docs/website/pages/_index.art
+                        fi
+                        echo "    ${os}: #[" >> docs/website/pages/_index.art
+                        os_started[$os]=1
+                      fi
                       
-                      # Write to _index.art
-                      echo "${var_name}Path: \"binaries/${artifact_name}\"" >> docs/website/pages/_index.art
-                      echo "${var_name}Size: \"${file_size}\"" >> docs/website/pages/_index.art
+                      # Create the nested structure
+                      # Check if we need to start arch section
+                      echo "        ${arch}: #[" >> docs/website/pages/_index.art
+                      echo "            ${mode}: #[" >> docs/website/pages/_index.art
                       
-                      echo "Created: $var_name -> binaries/${artifact_name} ($file_size)"
+                      if [ -n "$legacy" ]; then
+                        echo "                legacy: #[" >> docs/website/pages/_index.art
+                        echo "                    path: \"binaries/${artifact_name}\"" >> docs/website/pages/_index.art
+                        echo "                    size: \"${file_size}\"" >> docs/website/pages/_index.art
+                        echo "                    checksum: \"${sha256_hash}\"" >> docs/website/pages/_index.art
+                        echo "                ]" >> docs/website/pages/_index.art
+                      else
+                        echo "                path: \"binaries/${artifact_name}\"" >> docs/website/pages/_index.art
+                        echo "                size: \"${file_size}\"" >> docs/website/pages/_index.art
+                        echo "                checksum: \"${sha256_hash}\"" >> docs/website/pages/_index.art
+                      fi
+                      
+                      echo "            ]" >> docs/website/pages/_index.art
+                      echo "        ]" >> docs/website/pages/_index.art
+                      
+                      echo "Created: $os/$arch/$mode${legacy:+/$legacy} -> $file_size"
                     fi
                   fi
                 done
                 
-                # Add version and build date
-                echo "" >> docs/website/pages/_index.art
-                echo "version: \"${{ needs.Build.outputs.version_tag }}\"" >> docs/website/pages/_index.art
-                echo "buildDate: \"$(date -u '+%Y-%m-%d %H:%M:%S UTC')\"" >> docs/website/pages/_index.art
+                # Close last OS section
+                if [ ${#os_started[@]} -gt 0 ]; then
+                  echo "    ]" >> docs/website/pages/_index.art
+                fi
+                
+                # Close binaries block and add metadata
+                cat >> docs/website/pages/_index.art << EOF
+                ]
+                
+                version: "${{ needs.Build.outputs.version_tag }}"
+                buildDate: "$(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+                EOF
                 
                 echo "Generated _index.art:"
                 cat docs/website/pages/_index.art
