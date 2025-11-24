@@ -143,6 +143,7 @@
                             <th></th>
                         </tr>
                         <||= to :string W ||>
+                        <|| importPartial "components/platform.html" ||>
                         <||= loop W\binaries [platform, arches][ ||>
                             <||= loop arches [arch, versions][ ||>
                                 <|| 
@@ -169,7 +170,7 @@
                                 
                                 <tr>
                                     <td order="<||= platformOrder ||>" class="first-td">
-                                        <||= currentPlatform: platform, importPartial "components/platform.html" ||>
+                                        <||= getPlatformIcon platform ||>
                                     </td>
                                     <td><b><||= capitalize platform ||></b></td>
                                     <td class="is-hidden-touch has-text-centered"><||= archDisplay ||></td>
