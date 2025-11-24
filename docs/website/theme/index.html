@@ -142,9 +142,9 @@
                             <th class="is-hidden-touch has-text-centered">Size</th>
                             <th></th>
                         </tr>
-                        
-                        <|| loop W\binaries [platform, arches][ ||>
-                            <|| loop arches [arch, versions][ ||>
+                        <||= to :string W ||>
+                        <||= loop W\binaries [platform, arches][ ||>
+                            <||= loop arches [arch, versions][ ||>
                                 <|| 
                                     ; Determine display name for architecture
                                     archDisplay: arch
@@ -175,18 +175,10 @@
                                     <td class="is-hidden-touch has-text-centered"><||= archDisplay ||></td>
                                     <td class="is-hidden-touch has-text-centered">
                                         <span id="<||= platform ||>-<||= arch ||>-full-size" class="full-version">
-                                            <|| switch hasFull? [ ||>
-                                                <||= versions\full\size ||>
-                                            <|| ][ ||>
-                                                --
-                                            <|| ] ||>
+                                            <||= (hasFull?)? -> versions\full\size -> "--" ||>
                                         </span>
                                         <span id="<||= platform ||>-<||= arch ||>-mini-size" class="mini-version is-hidden">
-                                            <|| switch hasMini? [ ||>
-                                                <||= versions\mini\size ||>
-                                            <|| ][ ||>
-                                                --
-                                            <|| ] ||>
+                                            <||= (hasMini?)? -> versions\mini\size -> "--" ||>
                                         </span>
                                     </td>
                                     <td>
