@@ -145,6 +145,7 @@ jobs:
             - name: Install Arturo
               uses: arturo-lang/arturo-action@v2
               with: 
+                do: compile
                 mode: docgen
                 token: ${{ secrets.GITHUB_TOKEN }}
                 metadata: ${{ needs.Build.outputs.version_tag }}
