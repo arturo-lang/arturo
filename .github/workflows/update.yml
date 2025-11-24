@@ -277,7 +277,6 @@ jobs:
 
             - name: "Generate website"
               run: |
-                cd arturo 
                 arturo tools/sitegen.art
                 arturo tools/indexgen.art
                 echo "#[release?: false]" > docs/website/data/setup.art
@@ -290,12 +289,12 @@ jobs:
 
             - name: Copy binaries to website
               run: |
-                mkdir -p arturo/tmpdocs/binaries
+                mkdir -p tmpdocs/binaries
                 
                 # Create checksums file
-                echo "# Arturo Binaries - ${{ needs.Build.outputs.version_tag }}" > arturo/tmpdocs/binaries/checksums.txt
-                echo "# Generated on $(date -u)" >> arturo/tmpdocs/binaries/checksums.txt
-                echo "" >> arturo/tmpdocs/binaries/checksums.txt
+                echo "# Arturo Binaries - ${{ needs.Build.outputs.version_tag }}" > tmpdocs/binaries/checksums.txt
+                echo "# Generated on $(date -u)" >> tmpdocs/binaries/checksums.txt
+                echo "" >> tmpdocs/binaries/checksums.txt
                 
                 # Copy all binaries
                 for binary_dir in binaries/arturo-*/; do
@@ -305,14 +304,14 @@ jobs:
                     
                     if [ -n "$binary_file" ]; then
                       # Copy with artifact name
-                      cp "$binary_file" "arturo/tmpdocs/binaries/$artifact_name"
+                      cp "$binary_file" "tmpdocs/binaries/$artifact_name"
                       
                       # Generate checksum
-                      cd arturo/tmpdocs/binaries
+                      cd tmpdocs/binaries
                       file_size=$(ls -lh "$artifact_name" | awk '{print $5}')
                       sha256_hash=$(sha256sum "$artifact_name" | awk '{print $1}')
                       echo "$sha256_hash  $artifact_name  ($file_size)" >> checksums.txt
-                      cd ../../..
+                      cd ../..
                       
                       echo "Copied: $artifact_name ($file_size)"
                     fi
@@ -320,16 +319,16 @@ jobs:
                 done
                 
                 # Create version file
-                echo "${{ needs.Build.outputs.version_tag }}" > arturo/tmpdocs/binaries/VERSION
+                echo "${{ needs.Build.outputs.version_tag }}" > tmpdocs/binaries/VERSION
                 
                 echo "Checksums:"
-                cat arturo/tmpdocs/binaries/checksums.txt
+                cat tmpdocs/binaries/checksums.txt
 
             - name: Synchronize to website
               uses: burnett01/rsync-deployments@7.0.2
               with:
                 switches: -avzr --delete
-                path: arturo/tmpdocs/
+                path: tmpdocs/
                 remote_path: /var/www/arturo-lang.io/test
                 remote_host: arturo-lang.io
                 remote_user: root
@@ -339,7 +338,7 @@ jobs:
               uses: 'actions/upload-artifact@v4'
               with:
                 name: website-with-binaries-${{ needs.Build.outputs.version_tag }}
-                path: arturo/tmpdocs
+                path: tmpdocs
 
             - name: Display completion summary
               run: |
