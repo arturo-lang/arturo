@@ -143,194 +143,74 @@
                             <th></th>
                         </tr>
                         
-                        <!-- Linux amd64 -->
-                        <|| if key? W 'linuxFullAmd64 [ ||>
-                        <tr>
-                            <td order="1" class="first-td">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 32 32">
-                                    <path fill="currentColor" d="M16 5C10.488 5 6 9.488 6 15v8c0 1.117-.883 2-2 2v2c2.2 0 4-1.8 4-4v-8c0-4.43 3.57-8 8-8a7.98 7.98 0 0 1 2.875.531c-.293.414-.137 1.145.406 1.688c.586.586 1.39.734 1.782.344c.144-.145.187-.368.187-.594A7.978 7.978 0 0 1 24 15v8c0 2.2 1.8 4 4 4v-2c-1.117 0-2-.883-2-2v-8c0-5.512-4.488-10-10-10zm-3 6c-1.52 0-2.668.852-3.25 1.875C9.168 13.898 9 15.047 9 16c0 1.355.414 2.348.875 2.969c.043.058.082.101.125.156c-.613.656-1 1.469-1 2.375c0 1.43.973 2.598 2.25 3.344C12.527 25.59 14.184 26 16 26c1.816 0 3.473-.41 4.75-1.156C22.027 24.098 23 22.93 23 21.5c0-.906-.387-1.719-1-2.375c.043-.055.082-.098.125-.156c.46-.621.875-1.614.875-2.969c0-.953-.168-2.102-.75-3.125A3.707 3.707 0 0 0 19 11a3.688 3.688 0 0 0-3 1.5a3.688 3.688 0 0 0-3-1.5zm0 2c.867 0 1.21.313 1.531.875c.32.563.469 1.418.469 2.125h2c0-.707.148-1.563.469-2.125c.32-.563.664-.875 1.531-.875c.867 0 1.21.313 1.531.875c.32.563.469 1.418.469 2.125c0 .96-.277 1.48-.5 1.781c-.07.098-.11.14-.156.188c-.227-.114-.446-.25-.688-.344c.211-.273.344-.672.344-1.125c0-.828-.45-1.5-1-1.5s-1 .672-1 1.5c0 .266.078.504.156.719A10.963 10.963 0 0 0 16 17c-.758 0-1.469.082-2.156.219c.078-.215.156-.453.156-.719c0-.828-.45-1.5-1-1.5s-1 .672-1 1.5c0 .453.133.852.344 1.125c-.242.094-.461.23-.688.344a1.334 1.334 0 0 1-.156-.188c-.223-.3-.5-.82-.5-1.781c0-.707.148-1.563.469-2.125c.32-.563.664-.875 1.531-.875zm3 6c1.5 0 2.855.352 3.75.875S21 20.996 21 21.5s-.355 1.102-1.25 1.625c-.895.523-2.25.875-3.75.875s-2.855-.352-3.75-.875S11 22.004 11 21.5s.355-1.102 1.25-1.625C13.145 19.352 14.5 19 16 19zm-2.5 1.438l-1 1.718S13.926 23 16 23s3.5-.844 3.5-.844l-1-1.718S17.547 21 16 21c-1.547 0-2.5-.563-2.5-.563z"></path>
-                                </svg>
-                            </td>
-                            <td><b>Linux</b></td>
-                            <td class="is-hidden-touch has-text-centered">amd64</td>
-                            <td class="is-hidden-touch has-text-centered">
-                                <span id="linux-amd64-full-size" class="full-version"><||= W\linuxFullAmd64Size ||></span>
-                                <span id="linux-amd64-mini-size" class="mini-version is-hidden">
-                                    <|| switch key? W 'linuxMiniAmd64Size [ ||>
-                                    <||= W\linuxMiniAmd64Size ||>
-                                    <|| ][ ||>
-                                    --
-                                    <|| ] ||>
-                                </span>
-                            </td>
-                            <td>
-                                <span id="linux-amd64-full-download" class="full-version">
-                                    <a href="<||= W\linuxFullAmd64 ||>"><i class="far fa-arrow-alt-circle-down" aria-hidden="true"></i>&nbsp;&nbsp;Download</a>
-                                </span>
-                                <span id="linux-amd64-mini-download" class="mini-version is-hidden">
-                                    <|| switch key? W 'linuxMiniAmd64 [ ||>
-                                    <a href="<||= W\linuxMiniAmd64 ||>"><i class="far fa-arrow-alt-circle-down" aria-hidden="true"></i>&nbsp;&nbsp;Download</a>
-                                    <|| ][ ||>
-                                    <i><small>*Not available</small></i>
-                                    <|| ] ||>
-                                </span>
-                            </td>
-                        </tr>
-                        <|| ] ||>
-                        
-                        <!-- Linux arm64 -->
-                        <|| if key? W 'linuxMiniArm64 [ ||>
-                        <tr>
-                            <td order="1" class="first-td">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 32 32">
-                                    <path fill="currentColor" d="M16 5C10.488 5 6 9.488 6 15v8c0 1.117-.883 2-2 2v2c2.2 0 4-1.8 4-4v-8c0-4.43 3.57-8 8-8a7.98 7.98 0 0 1 2.875.531c-.293.414-.137 1.145.406 1.688c.586.586 1.39.734 1.782.344c.144-.145.187-.368.187-.594A7.978 7.978 0 0 1 24 15v8c0 2.2 1.8 4 4 4v-2c-1.117 0-2-.883-2-2v-8c0-5.512-4.488-10-10-10zm-3 6c-1.52 0-2.668.852-3.25 1.875C9.168 13.898 9 15.047 9 16c0 1.355.414 2.348.875 2.969c.043.058.082.101.125.156c-.613.656-1 1.469-1 2.375c0 1.43.973 2.598 2.25 3.344C12.527 25.59 14.184 26 16 26c1.816 0 3.473-.41 4.75-1.156C22.027 24.098 23 22.93 23 21.5c0-.906-.387-1.719-1-2.375c.043-.055.082-.098.125-.156c.46-.621.875-1.614.875-2.969c0-.953-.168-2.102-.75-3.125A3.707 3.707 0 0 0 19 11a3.688 3.688 0 0 0-3 1.5a3.688 3.688 0 0 0-3-1.5zm0 2c.867 0 1.21.313 1.531.875c.32.563.469 1.418.469 2.125h2c0-.707.148-1.563.469-2.125c.32-.563.664-.875 1.531-.875c.867 0 1.21.313 1.531.875c.32.563.469 1.418.469 2.125c0 .96-.277 1.48-.5 1.781c-.07.098-.11.14-.156.188c-.227-.114-.446-.25-.688-.344c.211-.273.344-.672.344-1.125c0-.828-.45-1.5-1-1.5s-1 .672-1 1.5c0 .266.078.504.156.719A10.963 10.963 0 0 0 16 17c-.758 0-1.469.082-2.156.219c.078-.215.156-.453.156-.719c0-.828-.45-1.5-1-1.5s-1 .672-1 1.5c0 .453.133.852.344 1.125c-.242.094-.461.23-.688.344a1.334 1.334 0 0 1-.156-.188c-.223-.3-.5-.82-.5-1.781c0-.707.148-1.563.469-2.125c.32-.563.664-.875 1.531-.875zm3 6c1.5 0 2.855.352 3.75.875S21 20.996 21 21.5s-.355 1.102-1.25 1.625c-.895.523-2.25.875-3.75.875s-2.855-.352-3.75-.875S11 22.004 11 21.5s.355-1.102 1.25-1.625C13.145 19.352 14.5 19 16 19zm-2.5 1.438l-1 1.718S13.926 23 16 23s3.5-.844 3.5-.844l-1-1.718S17.547 21 16 21c-1.547 0-2.5-.563-2.5-.563z"></path>
-                                </svg>
-                            </td>
-                            <td><b>Linux</b></td>
-                            <td class="is-hidden-touch has-text-centered">arm64</td>
-                            <td class="is-hidden-touch has-text-centered">
-                                <span id="linux-arm64-full-size" class="full-version">--</span>
-                                <span id="linux-arm64-mini-size" class="mini-version is-hidden"><||= W\linuxMiniArm64Size ||></span>
-                            </td>
-                            <td>
-                                <span id="linux-arm64-full-download" class="full-version">
-                                    <i><small>*MINI build only</small></i>
-                                </span>
-                                <span id="linux-arm64-mini-download" class="mini-version is-hidden">
-                                    <a href="<||= W\linuxMiniArm64 ||>"><i class="far fa-arrow-alt-circle-down" aria-hidden="true"></i>&nbsp;&nbsp;Download</a>
-                                </span>
-                            </td>
-                        </tr>
-                        <|| ] ||>
-
-                        <!-- macOS amd64 -->
-                        <|| if key? W 'macosFullAmd64 [ ||>
-                        <tr>
-                            <td order="2" class="first-td">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 32 32">
-                                    <path fill="currentColor" d="M20.844 2c-1.64 0-3.297.852-4.407 2.156v.032c-.789.98-1.644 2.527-1.375 4.312c-.128-.05-.136-.035-.28-.094c-.692-.281-1.548-.594-2.563-.594c-3.98 0-7 3.606-7 8.344c0 3.067 1.031 5.942 2.406 8.094c.688 1.078 1.469 1.965 2.281 2.625c.813.66 1.664 1.125 2.625 1.125c.961 0 1.68-.324 2.219-.563c.54-.238.957-.437 1.75-.437c.715 0 1.078.195 1.625.438c.547.242 1.293.562 2.281.562c1.07 0 1.98-.523 2.719-1.188c.738-.664 1.36-1.519 1.875-2.343c.516-.824.922-1.633 1.219-2.282c.148-.324.258-.593.343-.812c.086-.219.13-.281.188-.531l.188-.813l-.75-.343a5.33 5.33 0 0 1-1.5-1.063c-.625-.637-1.157-1.508-1.157-2.844A4.08 4.08 0 0 1 24.563 13c.265-.309.542-.563.75-.719c.105-.078.187-.117.25-.156c.062-.04.05-.027.156-.094l.843-.531l-.562-.844c-1.633-2.511-4.246-2.844-5.281-2.844c-.48 0-.82.168-1.25.25c.242-.226.554-.367.75-.624c.004-.004-.004-.028 0-.032c.011-.011.023-.02.031-.031h.031a6.16 6.16 0 0 0 1.563-4.438L21.78 2zm-1.188 2.313c-.172.66-.453 1.289-.906 1.78l-.063.063c-.382.516-.972.899-1.562 1.125c.164-.652.45-1.312.844-1.812c.008-.012.023-.02.031-.032c.438-.5 1.043-.875 1.656-1.125zm-7.437 5.5c.558 0 1.172.21 1.812.468c.64.258 1.239.594 2.094.594c.852 0 1.496-.336 2.25-.594c.754-.258 1.559-.469 2.344-.469c.523 0 1.816.333 2.906 1.344c-.191.172-.36.297-.563.531a6.21 6.21 0 0 0-1.53 4.094c0 1.906.831 3.34 1.718 4.25c.55.563.89.696 1.313.938c-.055.125-.086.222-.157.375a18.82 18.82 0 0 1-1.093 2.062c-.454.727-1.004 1.434-1.532 1.907c-.527.472-1 .687-1.375.687c-.566 0-.898-.156-1.468-.406S17.581 25 16.5 25c-1.137 0-1.977.336-2.563.594c-.585.258-.89.406-1.406.406c-.246 0-.777-.2-1.375-.688c-.597-.488-1.254-1.23-1.844-2.156c-1.183-1.851-2.093-4.394-2.093-7c0-3.941 2.199-6.343 5-6.343z"></path>
-                                </svg>
-                            </td>
-                            <td><b>macOS</b></td>
-                            <td class="is-hidden-touch has-text-centered">amd64</td>
-                            <td class="is-hidden-touch has-text-centered">
-                                <span id="macos-amd64-full-size" class="full-version"><||= W\macosFullAmd64Size ||></span>
-                                <span id="macos-amd64-mini-size" class="mini-version is-hidden">
-                                    <|| switch key? W 'macosMiniAmd64Size [ ||>
-                                    <||= W\macosMiniAmd64Size ||>
-                                    <|| ][ ||>
-                                    --
-                                    <|| ] ||>
-                                </span>
-                            </td>
-                            <td>
-                                <span id="macos-amd64-full-download" class="full-version">
-                                    <a href="<||= W\macosFullAmd64 ||>"><i class="far fa-arrow-alt-circle-down" aria-hidden="true"></i>&nbsp;&nbsp;Download</a>
-                                </span>
-                                <span id="macos-amd64-mini-download" class="mini-version is-hidden">
-                                    <|| switch key? W 'macosMiniAmd64 [ ||>
-                                    <a href="<||= W\macosMiniAmd64 ||>"><i class="far fa-arrow-alt-circle-down" aria-hidden="true"></i>&nbsp;&nbsp;Download</a>
-                                    <|| ][ ||>
-                                    <i><small>*Not available</small></i>
-                                    <|| ] ||>
-                                </span>
-                            </td>
-                        </tr>
-                        <|| ] ||>
-
-                        <!-- macOS arm64 -->
-                        <|| if key? W 'macosFullArm64 [ ||>
-                        <tr>
-                            <td order="2" class="first-td">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 32 32">
-                                    <path fill="currentColor" d="M20.844 2c-1.64 0-3.297.852-4.407 2.156v.032c-.789.98-1.644 2.527-1.375 4.312c-.128-.05-.136-.035-.28-.094c-.692-.281-1.548-.594-2.563-.594c-3.98 0-7 3.606-7 8.344c0 3.067 1.031 5.942 2.406 8.094c.688 1.078 1.469 1.965 2.281 2.625c.813.66 1.664 1.125 2.625 1.125c.961 0 1.68-.324 2.219-.563c.54-.238.957-.437 1.75-.437c.715 0 1.078.195 1.625.438c.547.242 1.293.562 2.281.562c1.07 0 1.98-.523 2.719-1.188c.738-.664 1.36-1.519 1.875-2.343c.516-.824.922-1.633 1.219-2.282c.148-.324.258-.593.343-.812c.086-.219.13-.281.188-.531l.188-.813l-.75-.343a5.33 5.33 0 0 1-1.5-1.063c-.625-.637-1.157-1.508-1.157-2.844A4.08 4.08 0 0 1 24.563 13c.265-.309.542-.563.75-.719c.105-.078.187-.117.25-.156c.062-.04.05-.027.156-.094l.843-.531l-.562-.844c-1.633-2.511-4.246-2.844-5.281-2.844c-.48 0-.82.168-1.25.25c.242-.226.554-.367.75-.624c.004-.004-.004-.028 0-.032c.011-.011.023-.02.031-.031h.031a6.16 6.16 0 0 0 1.563-4.438L21.78 2zm-1.188 2.313c-.172.66-.453 1.289-.906 1.78l-.063.063c-.382.516-.972.899-1.562 1.125c.164-.652.45-1.312.844-1.812c.008-.012.023-.02.031-.032c.438-.5 1.043-.875 1.656-1.125zm-7.437 5.5c.558 0 1.172.21 1.812.468c.64.258 1.239.594 2.094.594c.852 0 1.496-.336 2.25-.594c.754-.258 1.559-.469 2.344-.469c.523 0 1.816.333 2.906 1.344c-.191.172-.36.297-.563.531a6.21 6.21 0 0 0-1.53 4.094c0 1.906.831 3.34 1.718 4.25c.55.563.89.696 1.313.938c-.055.125-.086.222-.157.375a18.82 18.82 0 0 1-1.093 2.062c-.454.727-1.004 1.434-1.532 1.907c-.527.472-1 .687-1.375.687c-.566 0-.898-.156-1.468-.406S17.581 25 16.5 25c-1.137 0-1.977.336-2.563.594c-.585.258-.89.406-1.406.406c-.246 0-.777-.2-1.375-.688c-.597-.488-1.254-1.23-1.844-2.156c-1.183-1.851-2.093-4.394-2.093-7c0-3.941 2.199-6.343 5-6.343z"></path>
-                                </svg>
-                            </td>
-                            <td><b>macOS</b></td>
-                            <td class="is-hidden-touch has-text-centered">arm64 / M1</td>
-                            <td class="is-hidden-touch has-text-centered">
-                                <span id="macos-arm64-full-size" class="full-version"><||= W\macosFullArm64Size ||></span>
-                                <span id="macos-arm64-mini-size" class="mini-version is-hidden">
-                                    <|| switch key? W 'macosMiniArm64Size [ ||>
-                                    <||= W\macosMiniArm64Size ||>
-                                    <|| ][ ||>
-                                    --
-                                    <|| ] ||>
-                                </span>
-                            </td>
-                            <td>
-                                <span id="macos-arm64-full-download" class="full-version">
-                                    <a href="<||= W\macosFullArm64 ||>"><i class="far fa-arrow-alt-circle-down" aria-hidden="true"></i>&nbsp;&nbsp;Download</a>
-                                </span>
-                                <span id="macos-arm64-mini-download" class="mini-version is-hidden">
-                                    <|| switch key? W 'macosMiniArm64 [ ||>
-                                    <a href="<||= W\macosMiniArm64 ||>"><i class="far fa-arrow-alt-circle-down" aria-hidden="true"></i>&nbsp;&nbsp;Download</a>
-                                    <|| ][ ||>
-                                    <i><small>*Not available</small></i>
-                                    <|| ] ||>
-                                </span>
-                            </td>
-                        </tr>
-                        <|| ] ||>
-
-                        <!-- Windows amd64 -->
-                        <|| if key? W 'windowsFullAmd64 [ ||>
-                        <tr>
-                            <td order="3" class="first-td">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 32 32">
-                                    <path fill="currentColor" d="M27 5L5 7.992v16.016L27 27V5zm-2 2.29V15H15V8.65l10-1.36zM13 8.921V15H7V9.738l6-.816zM7 17h6v6.078l-6-.816V17zm8 0h10v7.71l-10-1.36V17z"></path>
-                                </svg>
-                            </td>
-                            <td><b>Windows</b></td>
-                            <td class="is-hidden-touch has-text-centered">amd64</td>
-                            <td class="is-hidden-touch has-text-centered">
-                                <span id="windows-amd64-full-size" class="full-version"><||= W\windowsFullAmd64Size ||></span>
-                                <span id="windows-amd64-mini-size" class="mini-version is-hidden">
-                                    <|| switch key? W 'windowsMiniAmd64Size [ ||>
-                                    <||= W\windowsMiniAmd64Size ||>
-                                    <|| ][ ||>
-                                    --
-                                    <|| ] ||>
-                                </span>
-                            </td>
-                            <td>
-                                <span id="windows-amd64-full-download" class="full-version">
-                                    <a href="<||= W\windowsFullAmd64 ||>"><i class="far fa-arrow-alt-circle-down" aria-hidden="true"></i>&nbsp;&nbsp;Download</a>
-                                </span>
-                                <span id="windows-amd64-mini-download" class="mini-version is-hidden">
-                                    <|| switch key? W 'windowsMiniAmd64 [ ||>
-                                    <a href="<||= W\windowsMiniAmd64 ||>"><i class="far fa-arrow-alt-circle-down" aria-hidden="true"></i>&nbsp;&nbsp;Download</a>
-                                    <|| ][ ||>
-                                    <i><small>*Not available</small></i>
-                                    <|| ] ||>
-                                </span>
-                            </td>
-                        </tr>
-                        <|| ] ||>
-
-                        <!-- Web JavaScript -->
-                        <|| if key? W 'webMiniJs [ ||>
-                        <tr>
-                            <td order="7" class="first-td">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 32 32">
-                                    <path fill="currentColor" d="M5 5v22h22V5H5zm2 2h18v18H7V7zm13.244 8c-1.425 0-2.346.912-2.346 2.12c0 1.31.77 1.937 1.928 2.43l.4.173c.733.323 1.169.511 1.169 1.062c0 .465-.427.799-1.092.799c-.788 0-1.236-.418-1.578-.979l-1.31.75c.464.931 1.433 1.645 2.925 1.645c1.52 0 2.66-.788 2.66-2.232c0-1.35-.77-1.949-2.139-2.528l-.398-.172c-.693-.304-.988-.503-.988-.978c0-.39.294-.694.77-.694c.465 0 .758.2 1.034.694l1.256-.807c-.532-.93-1.265-1.283-2.29-1.283zm-5.85.096v5.463c0 .798-.342 1.005-.865 1.005c-.55 0-.788-.379-1.035-.826l-1.31.79c.38.807 1.129 1.472 2.412 1.472C15.02 23 16 22.24 16 20.576v-5.48h-1.605z"></path>
-                                </svg>
-                            </td>
-                            <td><b>Web</b></td>
-                            <td class="is-hidden-touch has-text-centered">JavaScript</td>
-                            <td class="is-hidden-touch has-text-centered">
-                                <span id="web-js-full-size" class="full-version">--</span>
-                                <span id="web-js-mini-size" class="mini-version is-hidden"><||= W\webMiniJsSize ||></span>
-                            </td>
-                            <td>
-                                <span id="web-js-full-download" class="full-version">
-                                    <i><small>*MINI build only</small></i>
-                                </span>
-                                <span id="web-js-mini-download" class="mini-version is-hidden">
-                                    <a href="<||= W\webMiniJs ||>"><i class="far fa-arrow-alt-circle-down" aria-hidden="true"></i>&nbsp;&nbsp;Download</a>
-                                </span>
-                            </td>
-                        </tr>
+                        <|| loop W\binaries [platform, arches][ ||>
+                            <|| loop arches [arch, versions][ ||>
+                                <|| 
+                                    ; Determine display name for architecture
+                                    archDisplay: arch
+                                    if arch = "js" -> archDisplay: "JavaScript"
+                                    if and? arch = "arm64" platform = "macos" -> archDisplay: "arm64 / M1"
+                                    
+                                    ; Determine platform order for sorting
+                                    platformOrder: case platform [
+                                        "linux"   -> 1
+                                        "macos"   -> 2
+                                        "windows" -> 3
+                                        "freebsd" -> 4
+                                        "web"     -> 7
+                                    ]
+                                    
+                                    ; Check if we have full version
+                                    hasFull?: key? versions 'full
+                                    
+                                    ; Check if we have mini version
+                                    hasMini?: key? versions 'mini
+                                ||>
+                                
+                                <tr>
+                                    <td order="<||= platformOrder ||>" class="first-td">
+                                        <||= currentPlatform: platform, importPartial "components/platform.html" ||>
+                                    </td>
+                                    <td><b><||= capitalize platform ||></b></td>
+                                    <td class="is-hidden-touch has-text-centered"><||= archDisplay ||></td>
+                                    <td class="is-hidden-touch has-text-centered">
+                                        <span id="<||= platform ||>-<||= arch ||>-full-size" class="full-version">
+                                            <|| switch hasFull? [ ||>
+                                                <||= versions\full\size ||>
+                                            <|| ][ ||>
+                                                --
+                                            <|| ] ||>
+                                        </span>
+                                        <span id="<||= platform ||>-<||= arch ||>-mini-size" class="mini-version is-hidden">
+                                            <|| switch hasMini? [ ||>
+                                                <||= versions\mini\size ||>
+                                            <|| ][ ||>
+                                                --
+                                            <|| ] ||>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span id="<||= platform ||>-<||= arch ||>-full-download" class="full-version">
+                                            <|| switch hasFull? [ ||>
+                                                <a href="<||= versions\full\path ||>"><i class="far fa-arrow-alt-circle-down" aria-hidden="true"></i>&nbsp;&nbsp;Download</a>
+                                            <|| ][ ||>
+                                                <|| switch hasMini? [ ||>
+                                                    <i><small>*MINI build only</small></i>
+                                                <|| ][ ||>
+                                                    <i><small>*Not available</small></i>
+                                                <|| ] ||>
+                                            <|| ] ||>
+                                        </span>
+                                        <span id="<||= platform ||>-<||= arch ||>-mini-download" class="mini-version is-hidden">
+                                            <|| switch hasMini? [ ||>
+                                                <a href="<||= versions\mini\path ||>"><i class="far fa-arrow-alt-circle-down" aria-hidden="true"></i>&nbsp;&nbsp;Download</a>
+                                            <|| ][ ||>
+                                                <i><small>*Not available</small></i>
+                                            <|| ] ||>
+                                        </span>
+                                    </td>
+                                </tr>
+                            <|| ] ||>
                         <|| ] ||>
                     </tbody>
                 </table>
