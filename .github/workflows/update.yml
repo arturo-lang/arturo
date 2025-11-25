@@ -239,7 +239,7 @@ jobs:
                             
                             ; Parse artifact name: arturo-VERSION-OS-ARCH[-MODE][-legacy]
                             allParts: split.by: "-" artifactName
-                            parts: drop 2 allParts
+                            parts: drop.times: 2 allParts
                             
                             os: first parts
                             arch: get parts 1
