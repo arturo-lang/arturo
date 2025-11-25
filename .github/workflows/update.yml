@@ -238,7 +238,8 @@ jobs:
                             checksum: first split.words checksumOutput
                             
                             ; Parse artifact name: arturo-VERSION-OS-ARCH[-MODE][-legacy]
-                            parts: split.by:"-" drop 2 split.by:"-" artifactName
+                            allParts: split.by: "-" artifactName
+                            parts: drop 2 allParts
                             
                             os: first parts
                             arch: get parts 1
@@ -248,14 +249,16 @@ jobs:
                             ; Check for mode/legacy in remaining parts
                             if 2 < size parts [
                                 thirdPart: get parts 2
-                                switch in? ["mini" "safe"] thirdPart [
-                                    mode: thirdPart
-                                    if 3 < size parts [
-                                        if "legacy" = get parts 3 -> legacy: true
+                                switch in? ["mini" "safe"] thirdPart 
+                                    [
+                                        mode: thirdPart
+                                        if 3 < size parts [
+                                            if "legacy" = get parts 3 -> legacy: true
+                                        ]
                                     ]
-                                ][
-                                    if "legacy" = thirdPart -> legacy: true
-                                ]
+                                    [
+                                        if "legacy" = thirdPart -> legacy: true
+                                    ]
                             ]
                             
                             ; Special handling for web builds
@@ -265,8 +268,8 @@ jobs:
                             ]
                             
                             ; Build nested structure
-                            if not? key? binaries os -> binaries\[os]: #[]
-                            if not? key? binaries\[os] arch -> binaries\[os]\[arch]: #[]
+                            unless key? binaries os -> binaries\[os]: #[]
+                            unless key? binaries\[os] arch -> binaries\[os]\[arch]: #[]
                             
                             ; Create entry
                             entry: #[
@@ -276,15 +279,17 @@ jobs:
                             ]
                             
                             ; Add to structure (handle legacy properly)
-                            switch legacy [
-                                ; For legacy, we need mode entry first
-                                if not? key? binaries\[os]\[arch] mode [
-                                    binaries\[os]\[arch]\[mode]: #[]
+                            switch legacy 
+                                [
+                                    ; For legacy, we need mode entry first
+                                    unless key? binaries\[os]\[arch] mode [
+                                        binaries\[os]\[arch]\[mode]: #[]
+                                    ]
+                                    binaries\[os]\[arch]\[mode]\legacy: entry
                                 ]
-                                binaries\[os]\[arch]\[mode]\legacy: entry
-                            ][
-                                binaries\[os]\[arch]\[mode]: entry
-                            ]
+                                [
+                                    binaries\[os]\[arch]\[mode]: entry
+                                ]
                             
                             print ["Added:" ~"|artifactName|.zip" ~"(|fileSize|)"]
                         ]
@@ -300,7 +305,7 @@ jobs:
                 ]
                 
                 ; Get version and build date from environment
-                version: sys\env\VERSION_TAG
+                version: env\VERSION_TAG
                 buildDate: strip execute ~"date -u '+%Y-%m-%d %H:%M:%S UTC'"
                 
                 ; Generate the _index.art file
