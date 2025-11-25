@@ -148,8 +148,6 @@
                                 <|| 
                                     ; Determine display name for architecture
                                     archDisplay: arch
-                                    if arch = "js" -> archDisplay: "JavaScript"
-                                    if and? arch = "arm64" platform = "macos" -> archDisplay: "arm64 / M1"
                                     
                                     ; Determine platform order for sorting
                                     platformOrder: case platform [
