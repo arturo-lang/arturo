@@ -1,598 +1,158 @@
-name: "Release"
-
-on:
-  push:
-    tags:
-      - 'v*.*.*'
-
-env:
-  app-name: arturo
-
-defaults:
-  run:
-    shell: bash -l {0}
+name: Release
  
+on:
+    push:
+        tags:
+            - 'v*.*.*'
+    
+    workflow_dispatch:
+        inputs:
+            version:
+                description: 'Version to release (e.g., 0.9.85)'
+                required: true
+                type: string
+
+concurrency: 
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
 jobs:
-
-  unix:
-    name: "Package *nix"
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os:
-          - ubuntu-20.04
-          - macos-12
-          - macos-14
-        version:
-          - mini
-          - full
-        arch:
-          - x86
-          - amd64
-          - arm
-          - arm64
-        exclude:
-          - version: full
-            arch: x86
-          - version: full
-            arch: arm
-          - version: full
-            arch: arm64
-          - os: macos-12
-            arch: x86
-          - os: macos-12
-            arch: arm
-          - os: macos-12
-            arch: arm64
-          - os: macos-14
-            arch: amd64
-          - os: macos-14
-            arch: arm
-          - os: macos-14
-            arch: x86
-
-    steps:
-      - name: "Cancel similar actions in progress"
-        uses: styfle/cancel-workflow-action@0.10.0
-        with:
-          all_but_latest: true
-          access_token: ${{ github.token }}
-
-      - name: "Checkout"
-        uses: actions/checkout@main
-        with:
-          submodules: recursive
-
-      - name: "Get version"
-        uses: pCYSl5EDgo/cat@master
-        id: versionNumber
-        with:
-          path: version/version
-          trim: true
-
-      - name: Install Nim
-        run: |
-          wget -qO - https://nim-lang.org/choosenim/init.sh | bash -s -- -y
-          echo "$HOME/.nimble/bin" >> $GITHUB_PATH
-
-      - name: Install dependencies (Linux / mini / x86)
-        if: matrix.version == 'mini' && matrix.arch != 'arm' && matrix.arch != 'arm64' && matrix.os == 'ubuntu-20.04'
-        run: |
-          sudo apt-get update
-          sudo apt-get install gcc-multilib g++-multilib
-
-      - name: Install dependencies (Linux / mini / arm)
-        if: matrix.version == 'mini' && (matrix.arch == 'arm' || matrix.arch == 'arm64') && matrix.os == 'ubuntu-20.04'
-        run: |
-          sudo apt-get update
-          sudo apt-get install gcc-arm-linux-gnueabihf gcc-aarch64-linux-gnu
-
-      - name: Install dependencies (Linux / full)
-        if: matrix.version != 'mini' && matrix.os == 'ubuntu-20.04'
-        run: |
-          sudo apt-get install libwebkit2gtk-4.0-dev libmpfr-dev
-
-      - name: Install dependencies (MacOS / full / arm64)
-        if: matrix.os == 'macos-14' && matrix.arch == 'arm64'
-        run: |
-          brew install pcre
-          brew install mpfr
-
-      - name: Verify dependecies
-        run: |
-          nim --version
-
-      - name: Build Arturo
-        run: |
-          export MACOSX_DEPLOYMENT_TARGET=10.10
-          ./build.nims build --mode ${{ matrix.version }} --arch ${{ matrix.arch }} --log --release
-          echo "$HOME/.arturo/bin" >> $GITHUB_PATH
-
-      - name: Create artifact (Linux)
-        if: matrix.os == 'ubuntu-20.04'
-        run: |
-          install -m 0755 ./bin/${{ env.app-name }} .
-          tar czf ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.version}}-${{matrix.arch}}-linux.tar.gz ${{ env.app-name }} README.md LICENSE
-
-      - name: Create artifact (macOS)
-        if: matrix.os == 'macos-12'
-        run: |
-          install -m 0755 ./bin/${{ env.app-name }} .
-          tar czf ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.version}}-${{matrix.arch}}-macos.tar.gz ${{ env.app-name }} README.md LICENSE
-
-      - name: Upload Artifact (Linux)
-        if: matrix.os == 'ubuntu-20.04'
-        uses: 'actions/upload-artifact@v1'
-        with:
-          name: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.version}}-${{matrix.arch}}-linux.tar.gz
-          path: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.version}}-${{matrix.arch}}-linux.tar.gz
-
-      - name: Upload Artifact (macOS)
-        if: matrix.os == 'macos-12' || matrix.os == 'macos-14'
-        uses: 'actions/upload-artifact@v1'
-        with:
-          name: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.version}}-${{matrix.arch}}-macos.tar.gz
-          path: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.version}}-${{matrix.arch}}-macos.tar.gz
-
-
-  # raspberry:
-  #   name: "Package Raspberry"
-  #   runs-on: ubuntu-20.04
-  #   strategy:
-  #     matrix:
-  #       os:
-  #         - linux
-  #       arch:
-  #         - arm
-  #         - arm64
-  #       version:
-  #         - mini
-
-  #   steps:
-  #     - name: "Cancel similar actions in progress"
-  #       uses: styfle/cancel-workflow-action@0.6.0
-  #       with:
-  #         access_token: ${{ github.token }}
-
-  #     - name: "Checkout"
-  #       uses: actions/checkout@main
-  #       with:
-  #         submodules: recursive
-
-  #     - name: "Get version"
-  #       uses: pCYSl5EDgo/cat@master
-  #       id: versionNumber
-  #       with:
-  #         path: version/version
-  #         trim: true
-
-  #     - name: Install Nim
-  #       run: |
-  #         wget -qO - https://nim-lang.org/choosenim/init.sh | bash -s -- -y
-  #         echo "$HOME/.nimble/bin" >> $GITHUB_PATH
-
-  #     - name: Install dependencies
-  #       run: |
-  #         sudo apt-get update
-  #         sudo apt-get install gcc-arm-linux-gnueabihf gcc-aarch64-linux-gnu
-
-  #     - name: Verify dependecies
-  #       run: |
-  #         nim --version
-
-  #     - name: Build Arturo
-  #       run: |
-  #         export MACOSX_DEPLOYMENT_TARGET=10.10
-  #         ./build.nims build --mode ${{ matrix.version }} --arch ${{ matrix.arch }} --log --release
-  #         echo "$HOME/.arturo/bin" >> $GITHUB_PATH
-  #         file bin/arturo
-
-  #     - name: Create artifact
-  #       run: |
-  #         install -m 0755 ./bin/${{ env.app-name }} .
-  #         tar czf ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.os}}-${{matrix.arch}}-${{matrix.version}}.tar.gz ${{ env.app-name }} README.md LICENSE
-
-  #     - name: Upload Artifact
-  #       uses: 'actions/upload-artifact@v1'
-  #       with:
-  #         name: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.os}}-${{matrix.arch}}-${{matrix.version}}.tar.gz
-  #         path: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.os}}-${{matrix.arch}}-${{matrix.version}}.tar.gz
-
-  freebsd:
-    name: "Package FreeBSD"
-    runs-on: macos-latest
-    strategy:
-      matrix:
-        os:
-          - freebsd-latest
-        version:
-          - mini
-        arch:
-          - amd64
-
-    steps:
-      - name: "Cancel similar actions in progress"
-        uses: styfle/cancel-workflow-action@0.6.0
-        with:
-          access_token: ${{ github.token }}
-
-      - name: "Checkout"
-        uses: actions/checkout@main
-        with:
-          submodules: recursive
-
-      - name: "Get version"
-        uses: pCYSl5EDgo/cat@master
-        id: versionNumber
-        with:
-          path: version/version
-          trim: true
-
-      - name: Setup environment & Build Arturo
-        id: test
-        uses: vmactions/freebsd-vm@v0
-        with:
-          usesh: true
-          prepare: pkg install -y nim gmp mpfr bash databases/sqlite3
-          run: |
-            ./build.nims build --mode ${{ matrix.version }} --arch ${{ matrix.arch }} --log --release
-            export PATH="$HOME/.arturo/bin:$PATH"
-
-      - name: Create artifact
-        run: |
-          install -m 0755 ./bin/${{ env.app-name }} .
-          tar czf ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.version}}-${{matrix.arch}}-freebsd.tar.gz ${{ env.app-name }} README.md LICENSE
-
-      - name: Upload Artifact
-        uses: 'actions/upload-artifact@v1'
-        with:
-          name: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.version}}-${{matrix.arch}}-freebsd.tar.gz
-          path: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.version}}-${{matrix.arch}}-freebsd.tar.gz
-
-  netbsd:
-    name: "Package NetBSD"
-    runs-on: macos-latest
-    strategy:
-      matrix:
-        os:
-          - netbsd-latest
-        version:
-          - mini
-        arch:
-          - amd64
-
-    steps:
-      - name: "Cancel similar actions in progress"
-        uses: styfle/cancel-workflow-action@0.6.0
-        with:
-          access_token: ${{ github.token }}
-
-      - name: "Checkout"
-        uses: actions/checkout@main
-        with:
-          submodules: recursive
-
-      - name: "Get version"
-        uses: pCYSl5EDgo/cat@master
-        id: versionNumber
-        with:
-          path: version/version
-          trim: true
-
-      - name: Setup environment & Build Arturo
-        id: test
-        uses: vmactions/netbsd-vm@v0
-        with:
-          usesh: true
-          prepare: /usr/sbin/pkg_add nim gmp mpfr bash pcre sqlite3
-          run: |
-            ./build.nims build --mode ${{ matrix.version }} --arch ${{ matrix.arch }} --log --release
-            export PATH="$HOME/.arturo/bin:$PATH"
-
-      - name: Create artifact
-        run: |
-          install -m 0755 ./bin/${{ env.app-name }} .
-          tar czf ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.version}}-${{matrix.arch}}-netbsd.tar.gz ${{ env.app-name }} README.md LICENSE
-
-      - name: Upload Artifact
-        uses: 'actions/upload-artifact@v1'
-        with:
-          name: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.version}}-${{matrix.arch}}-netbsd.tar.gz
-          path: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.version}}-${{matrix.arch}}-netbsd.tar.gz
-
-  openbsd:
-    name: "Package OpenBSD"
-    runs-on: macos-latest
-    strategy:
-      matrix:
-        os:
-          - openbsd-latest
-        version:
-          - mini
-        arch:
-          - amd64
-
-    steps:
-      - name: "Cancel similar actions in progress"
-        uses: styfle/cancel-workflow-action@0.6.0
-        with:
-          access_token: ${{ github.token }}
-
-      - name: "Checkout"
-        uses: actions/checkout@main
-        with:
-          submodules: recursive
-
-      - name: "Get version"
-        uses: pCYSl5EDgo/cat@master
-        id: versionNumber
-        with:
-          path: version/version
-          trim: true
-
-      - name: Setup environment & Build Arturo
-        id: test
-        uses: vmactions/openbsd-vm@v0
-        with:
-          usesh: true
-          prepare: /usr/sbin/pkg_add nim gmp mpfr bash pcre databases/sqlite3
-          run: |
-            ./build.nims build --mode ${{ matrix.version }} --arch ${{ matrix.arch }} --log --release
-            export PATH="$HOME/.arturo/bin:$PATH"
-
-      - name: Create artifact
-        run: |
-          install -m 0755 ./bin/${{ env.app-name }} .
-          tar czf ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.version}}-${{matrix.arch}}-openbsd.tar.gz ${{ env.app-name }} README.md LICENSE
-
-      - name: Upload Artifact
-        uses: 'actions/upload-artifact@v1'
-        with:
-          name: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.version}}-${{matrix.arch}}-openbsd.tar.gz
-          path: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.version}}-${{matrix.arch}}-openbsd.tar.gz
-
-  windows:
-    name: "Package Windows"
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os:
-          - windows-latest
-        version:
-          - mini
-          - full
-        arch:
-          - amd64
-
-    steps:
-      - name: "Cancel similar actions in progress"
-        uses: styfle/cancel-workflow-action@0.6.0
-        with:
-          access_token: ${{ github.token }}
-
-      - name: "Checkout"
-        uses: actions/checkout@main
-        with:
-          submodules: recursive
-
-      - name: "Get version"
-        uses: pCYSl5EDgo/cat@master
-        id: versionNumber
-        with:
-          path: version/version
-          trim: true
-
-      - uses: msys2/setup-msys2@v2
-        with:
-          update: true
-          install: 'git base-devel'
-
-      - name: Install dependencies + Build Arturo (full)
-        if: matrix.version == 'full'
-        shell: msys2 {0}
-        run: |
-          pacman --noconfirm -S p7zip mingw-w64-x86_64-toolchain
-          mkdir dist
-          mkdir nim
-          curl -L https://nim-lang.org/download/dlls.zip -o dist/dlls.zip
-          curl -L https://arturo-lang.s3.amazonaws.com/extra-dlls.zip -o dist/extradlls.zip
-          curl -L https://nim-lang.org/download/nim-2.0.0_x64.zip -o dist/nim.zip
-          7z x dist/dlls.zip -obin
-          7z x dist/extradlls.zip -obin
-          7z x dist/nim.zip -onim
-
-          cp src/extras/webview/deps/dlls/x64/*.dll bin
-
-          export PATH="${{ github.workspace }}/nim/nim-2.0.0/bin":$PATH
-
-          nim --version
-
-          ./build.nims build --mode ${{ matrix.version }} --log --release
-
-      - name: Install dependencies + Build Arturo (mini)
-        if: matrix.version == 'mini'
-        shell: msys2 {0}
-        run: |
-          pacman --noconfirm -S p7zip mingw-w64-x86_64-toolchain
-          mkdir dist
-          mkdir nim
-          curl -L https://nim-lang.org/download/dlls.zip -o dist/dlls.zip
-          curl -L https://nim-lang.org/download/nim-2.0.0_x64.zip -o dist/nim.zip
-          7z x dist/dlls.zip -obin
-          7z x dist/nim.zip -onim
-
-          export PATH="${{ github.workspace }}/nim/nim-2.0.0/bin":$PATH
-
-          ./build.nims build --mode ${{ matrix.version }} --log --release
-
-      - name: Create artifact (full)
-        if: matrix.version == 'full'
-        run: |
-          mkdir arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}
-
-          curl -L https://arturo-lang.s3.amazonaws.com/libwinpthread-1.dll -o libwinpthread-1.dll
-          curl -L https://arturo-lang.s3.amazonaws.com/libgmp-10.dll -o libgmp-10.dll
-          curl -L https://arturo-lang.s3.amazonaws.com/libmpfr-6.dll -o libmpfr-6.dll
-          curl -L https://arturo-lang.s3.amazonaws.com/sqlite3_64.dll -o sqlite3_64.dll
-          curl -L https://arturo-lang.s3.amazonaws.com/libgcc_s_seh-1.dll -o libgcc_s_seh-1.dll
-          curl -L https://arturo-lang.s3.amazonaws.com/pcre64.dll -o pcre64.dll
-          curl -L https://curl.se/ca/cacert.pem -o cacert.pem
-
-          cp *.dll arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}
-          cp *.pem arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}
-          
-          cp src/extras/webview/deps/dlls/x64/webview.dll arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}
-          cp src/extras/webview/deps/dlls/x64/WebView2Loader.dll arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}
-
-          cp bin/arturo.exe arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}
-          cp README.md arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}
-          cp LICENSE arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}
-
-      - name: Create artifact (mini)
-        if: matrix.version == 'mini'
-        run: |
-          mkdir arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}
-
-          curl -L https://arturo-lang.s3.amazonaws.com/libwinpthread-1.dll -o libwinpthread-1.dll
-          curl -L https://arturo-lang.s3.amazonaws.com/pcre64.dll -o pcre64.dll
-          curl -L https://curl.se/ca/cacert.pem -o cacert.pem
-
-          cp *.dll arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}
-          cp *.pem arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}
-
-          cp bin/arturo.exe arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}
-          cp README.md arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}
-          cp LICENSE arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}
-
-      - name: Package artifact
-        run: |
-          7z a ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.version}}-${{matrix.arch}}-windows.zip arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}/*
-          tar czf ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.version}}-${{matrix.arch}}-windows-msys2.tar.gz arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}/*
-
-      - name: Upload Artifact
-        uses: 'actions/upload-artifact@v1'
-        with:
-          name: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.version}}-${{matrix.arch}}-windows.zip
-          path: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.version}}-${{matrix.arch}}-windows.zip
-
-      - name: Upload Msys Artifact
-        uses: 'actions/upload-artifact@v1'
-        with:
-          name: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.version}}-${{matrix.arch}}-windows-msys2.tar.gz
-          path: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.version}}-${{matrix.arch}}-windows-msys2.tar.gz
-
-  web:
-    name: "Package Web"
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os:
-          - ubuntu-latest
-        version:
-          - mini
-
-    steps:
-      - name: "Cancel similar actions in progress"
-        uses: styfle/cancel-workflow-action@0.6.0
-        with:
-          access_token: ${{ github.token }}
-
-      - name: "Checkout"
-        uses: actions/checkout@main
-        with:
-          submodules: recursive
-
-      - name: "Get version"
-        uses: pCYSl5EDgo/cat@master
-        id: versionNumber
-        with:
-          path: version/version
-          trim: true
-
-      - name: Install Nim
-        run: |
-          wget -qO - https://nim-lang.org/choosenim/init.sh | bash -s -- -y
-          echo "$HOME/.nimble/bin" >> $GITHUB_PATH
-
-      - name: Install dependecies
-        run: |
-          sudo apt-get update -y
-          sudo apt-get install -y uglifyjs
-
-      - name: Verify dependecies
-        run: |
-          nim --version
-
-      - name: Build Arturo
-        run: |
-          ./build.nims build --mode web
-          echo "$HOME/.arturo/bin" >> $GITHUB_PATH
-
-      - name: Create artifact
-        run: |
-          install -m 0755 ./bin/${{ env.app-name }}.js .
-          install -m 0755 ./bin/${{ env.app-name }}.min.js .
-          tar czf ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.version}}-js-web.tar.gz ${{ env.app-name }}.js ${{ env.app-name }}.min.js README.md LICENSE
-
-      - name: Upload Artifact
-        uses: 'actions/upload-artifact@v1'
-        with:
-          name: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.version}}-js-web.tar.gz
-          path: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.version}}-js-web.tar.gz
-
-  upload:
-    name: "Upload"
-    runs-on: ubuntu-latest
-    if: ${{ always() }}
-    needs:
-      - unix
-      - freebsd
-      - windows
-      - web
-    steps:
-      - name: "Cancel similar actions in progress"
-        uses: styfle/cancel-workflow-action@0.6.0
-        with:
-          access_token: ${{ github.token }}
-
-      - name: "Checkout"
-        uses: actions/checkout@main
-        with:
-          submodules: recursive
-
-      - name: "Get version"
-        uses: pCYSl5EDgo/cat@master
-        id: versionNumber
-        with:
-          path: version/version
-          trim: true
-
-      - uses: actions/download-artifact@v4.1.7
-        with:
-          path: ./assets
-
-      - name: Display structure of downloaded files
-        run: ls -R
-
-      - name: Create Release
-        id: create-release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: ${{ github.ref }}
-          body: |
-            Official Release
-            ${{ github.ref }}
-          draft: false
-          prerelease: false
-
-      - name: Upload Release Assets
-        id: upload-release-assets
-        uses: dwenegar/upload-release-assets@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          release_id: ${{ steps.create-release.outputs.id }}
-          assets_path: ./assets
+    Prepare:
+        runs-on: ubuntu-latest
+        outputs:
+            version: ${{ steps.metadata.outputs.version }}
+            tag_name: ${{ steps.metadata.outputs.tag_name }}
+            git_sha: ${{ steps.metadata.outputs.git_sha }}
+        steps:
+            - uses: actions/checkout@v4
+            
+            - name: Prepare metadata
+              id: metadata
+              run: |
+                # Extract version from tag or workflow input
+                if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+                    VERSION="${{ github.event.inputs.version }}"
+                    TAG_NAME="v${VERSION}"
+                else
+                    TAG_NAME="${GITHUB_REF#refs/tags/}"
+                    VERSION="${TAG_NAME#v}"
+                fi
+                
+                echo "version=$VERSION" >> $GITHUB_OUTPUT
+                echo "tag_name=$TAG_NAME" >> $GITHUB_OUTPUT
+                
+                # Get the commit SHA for this tag/release
+                if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+                    ARTURO_SHA=$(gh api repos/arturo-lang/arturo/commits/master --jq '.sha[0:7]')
+                else
+                    ARTURO_SHA=$(git rev-parse --short HEAD)
+                fi
+                echo "git_sha=$ARTURO_SHA" >> $GITHUB_OUTPUT
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    Build:
+        needs: Prepare
+        runs-on: ${{ 
+            (matrix.os == 'linux')   && (matrix.support == 'legacy' && (matrix.arch == 'arm64' && 'ubuntu-22.04-arm' || 'ubuntu-22.04') || matrix.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-latest') ||
+            (matrix.os == 'macos')   && (matrix.arch == 'arm64' && 'macos-latest' || 'macOS-15-intel') ||
+            (matrix.os == 'windows') && 'windows-latest' || 
+                                        'ubuntu-latest'  }}
+                                                                   
+        strategy:
+            matrix:
+                include: 
+                    # Linux builds
+                    - {os: linux,   arch: amd64}
+                    - {os: linux,   arch: amd64,    support: legacy}
+                    - {os: linux,   arch: amd64,    mode: safe}
+                    - {os: linux,   arch: amd64,    mode: mini}
+                    - {os: linux,   arch: arm64}
+                    - {os: linux,   arch: arm64,    support: legacy}
+                    - {os: linux,   arch: arm64,    mode: mini}
+                    
+                    # FreeBSD builds
+                    - {os: freebsd, arch: amd64}
+                    - {os: freebsd, arch: amd64,    mode: mini}
+                    
+                    # macOS builds
+                    - {os: macos,   arch: amd64}
+                    - {os: macos,   arch: amd64,    mode: mini}
+                    - {os: macos,   arch: arm64}
+                    - {os: macos,   arch: arm64,    mode: mini}
+                    
+                    # Windows builds
+                    - {os: windows, arch: amd64}
+                    - {os: windows, arch: amd64,    mode: mini}
+                    
+                    # Web build
+                    - {os: web,     arch: js,       mode: mini}
+ 
+        defaults:
+            run:
+                shell: ${{ 
+                    (matrix.os == 'freebsd') && 'freebsd {0}' ||
+                    (matrix.os == 'windows') && 'msys2 {0}'   || 
+                                                'bash'        }}
+
+        steps:
+            - name: Build Arturo
+              uses: arturo-lang/arturo-action@v2
+              with: 
+                do: compile
+                token: ${{ secrets.GITHUB_TOKEN }}
+                os: ${{ matrix.os }}
+                arch: ${{ matrix.arch }}
+                mode: ${{ matrix.mode }}
+                support: ${{ matrix.support }}
+                src: ${{ needs.Prepare.outputs.tag_name }}
+                metadata: ${{ needs.Prepare.outputs.version }}
+                create_artifact: 'true'
+                artifact_version: ${{ needs.Prepare.outputs.version }}
+
+    Release:
+        runs-on: ubuntu-latest
+        needs: 
+            - Prepare
+            - Build
+        steps:
+            - uses: actions/checkout@v4
+            
+            - name: Download artifacts
+              uses: dawidd6/action-download-artifact@v11
+              with:
+                github_token: ${{ secrets.GITHUB_TOKEN }}
+                run_id: ${{ github.run_id }}
+                path: ./assets
+                skip_unpack: true
+
+            - name: Create source archive
+              run: |
+                VERSION=${{ needs.Prepare.outputs.version }}
+                TAG=${{ needs.Prepare.outputs.tag_name }}
+                
+                git clone --depth 1 --branch $TAG https://github.com/arturo-lang/arturo.git arturo-source
+                cd arturo-source
+                git archive --format=zip --prefix=arturo-$VERSION/ HEAD > ../assets/arturo-$VERSION-src.zip
+                git archive --format=tar.gz --prefix=arturo-$VERSION/ HEAD > ../assets/arturo-$VERSION-src.tar.gz
+  
+            - name: Debug environment
+              run: |
+                echo "Version: ${{ needs.Prepare.outputs.version }}"
+                echo "Tag: ${{ needs.Prepare.outputs.tag_name }}"
+                echo "Commit: ${{ needs.Prepare.outputs.git_sha }}"
+                echo "Assets:"
+                ls -laR ./assets
+
+            - name: Create release
+              run: |
+                BODY="**Official Release v${{ needs.Prepare.outputs.version }}**
+
+**Commit:** [\`${{ needs.Prepare.outputs.git_sha }}\`](https://github.com/arturo-lang/arturo/commit/${{ needs.Prepare.outputs.git_sha }})"
+                
+                gh release create "${{ needs.Prepare.outputs.tag_name }}" \
+                  --title "Arturo ${{ needs.Prepare.outputs.version }}" \
+                  --notes "$BODY" \
+                  ./assets/*
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
