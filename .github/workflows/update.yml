@@ -116,7 +116,7 @@ jobs:
             - name: Install Arturo
               uses: arturo-lang/arturo-action@v2
               with: 
-                #do: compile
+                do: compile
                 token: ${{ secrets.GITHUB_TOKEN }}
                 os: ${{ matrix.os }}
                 arch: ${{ matrix.arch }}
