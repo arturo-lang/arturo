@@ -222,18 +222,20 @@ jobs:
                 
                 ; Process all binary zip files
                 loop list "binaries" 'zipFile [
-                    if? suffix? zipFile ".zip" [
+                    if suffix? zipFile ".zip" [
                         artifactName: replace last split.path zipFile ".zip" ""
                         
                         ; Only process arturo-* files
-                        if? prefix? artifactName "arturo-" [
+                        if prefix? artifactName "arturo-" [
                             print ["Processing:" artifactName]
                             
-                            ; Get size and checksum
-                            fileSize: execute.args.lines ~"ls -lh |zipFile|" 'trim 
-                                      | first | split.words | get 4
-                            checksum: execute.args.lines ~"sha256sum |zipFile|" 'trim 
-                                      | first | split.words | first
+                            ; Get size
+                            lsOutput: execute ~"ls -lh |zipFile|"
+                            fileSize: get split.words lsOutput 4
+
+                            ; Get checksum  
+                            checksumOutput: execute ~"sha256sum |zipFile|"
+                            checksum: first split.words checksumOutput
                             
                             ; Parse artifact name: arturo-VERSION-OS-ARCH[-MODE][-legacy]
                             parts: split.by:"-" drop 2 split.by:"-" artifactName
@@ -244,28 +246,27 @@ jobs:
                             legacy: false
                             
                             ; Check for mode/legacy in remaining parts
-                            if? 2 < size parts [
+                            if 2 < size parts [
                                 thirdPart: get parts 2
-                                if? in? ["mini" "safe"] thirdPart [
+                                switch in? ["mini" "safe"] thirdPart [
                                     mode: thirdPart
-                                    if? 3 < size parts [
-                                        if? "legacy" = get parts 3 -> legacy: true
+                                    if 3 < size parts [
+                                        if "legacy" = get parts 3 -> legacy: true
                                     ]
-                                ]
-                                else [
-                                    if? "legacy" = thirdPart -> legacy: true
+                                ][
+                                    if "legacy" = thirdPart -> legacy: true
                                 ]
                             ]
                             
                             ; Special handling for web builds
-                            if? os = "web" [
+                            if os = "web" [
                                 arch: "js"
                                 mode: "mini"
                             ]
                             
                             ; Build nested structure
-                            if? not? key? binaries os -> binaries\[os]: #[]
-                            if? not? key? binaries\[os] arch -> binaries\[os]\[arch]: #[]
+                            if not? key? binaries os -> binaries\[os]: #[]
+                            if not? key? binaries\[os] arch -> binaries\[os]\[arch]: #[]
                             
                             ; Create entry
                             entry: #[
@@ -275,14 +276,13 @@ jobs:
                             ]
                             
                             ; Add to structure (handle legacy properly)
-                            if? legacy [
+                            switch legacy [
                                 ; For legacy, we need mode entry first
-                                if? not? key? binaries\[os]\[arch] mode [
+                                if not? key? binaries\[os]\[arch] mode [
                                     binaries\[os]\[arch]\[mode]: #[]
                                 ]
                                 binaries\[os]\[arch]\[mode]\legacy: entry
-                            ]
-                            else [
+                            ][
                                 binaries\[os]\[arch]\[mode]: entry
                             ]
                             
@@ -294,14 +294,14 @@ jobs:
                 ; Sort the structure by platform order
                 sortedBinaries: #[]
                 loop sort keys platformOrder 'platform [
-                    if? key? binaries platform [
+                    if key? binaries platform [
                         sortedBinaries\[platform]: binaries\[platform]
                     ]
                 ]
                 
                 ; Get version and build date from environment
                 version: sys\env\VERSION_TAG
-                buildDate: execute.args.lines ~"date -u '+%Y-%m-%d %H:%M:%S UTC'" 'trim | first
+                buildDate: strip execute ~"date -u '+%Y-%m-%d %H:%M:%S UTC'"
                 
                 ; Generate the _index.art file
                 output: {;
