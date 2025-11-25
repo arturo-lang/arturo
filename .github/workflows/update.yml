@@ -328,7 +328,7 @@ jobs:
                 }
                 
                 ; Write to file
-                write "docs/website/pages/_index.art" output
+                write output "docs/website/pages/_index.art" 
                 
                 print "\nGenerated _index.art:"
                 print read "docs/website/pages/_index.art"
