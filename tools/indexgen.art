@@ -34,7 +34,7 @@ loop select list libDocPath => validDocFile? 'modl [
             url: ~"library/|moduleName|/|fileName|/"
         ]
         ; commandName: replace fname cmd ["-" ".art"] ["?" ""]
-        inspect entry
+        ;inspect entry
         'docEntries ++ entry
     ]
 ]

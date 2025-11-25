@@ -303,13 +303,17 @@ jobs:
 
             - name: "Generate website"
               run: |
+                echo "BUILDING WEBSITE..."
                 arturo tools/sitegen.art
+                echo "BUILDING INDEX..."
                 arturo tools/indexgen.art
                 echo "#[release?: false]" > docs/website/data/setup.art
                 mkdir tmpdocs
                 cd docs/website
+                echo "GENERATING WEBSITE..."
                 arturo ../../tools/miniwebize/webize.art --build --at: ../../tmpdocs
                 cd ../..
+                echo "GENERATING AI GUIDE..."
                 arturo tools/genaiguide.art
                 mv tools/aiguide.md tmpdocs/llms.txt
 
