@@ -89,21 +89,21 @@ jobs:
             matrix:
                 include: 
                     - {os: linux,   arch: amd64, mode: full}
-                    # - {os: linux,   arch: amd64, mode: full, support: legacy}
-                    # - {os: linux,   arch: amd64, mode: safe}
-                    # - {os: linux,   arch: amd64, mode: mini}
-                    # - {os: linux,   arch: arm64, mode: full}
-                    # - {os: linux,   arch: arm64, mode: full, support: legacy}
-                    # - {os: linux,   arch: arm64, mode: mini}
-                    # - {os: freebsd, arch: amd64, mode: full}
-                    # - {os: freebsd, arch: amd64, mode: mini}
-                    # - {os: macos,   arch: amd64, mode: full}
-                    # - {os: macos,   arch: amd64, mode: mini}
-                    # - {os: macos,   arch: arm64, mode: full}
-                    # - {os: macos,   arch: arm64, mode: mini}
-                    # - {os: windows, arch: amd64, mode: full}
-                    # - {os: windows, arch: amd64, mode: mini}
-                    # - {os: web}
+                    - {os: linux,   arch: amd64, mode: full, support: legacy}
+                    - {os: linux,   arch: amd64, mode: safe}
+                    - {os: linux,   arch: amd64, mode: mini}
+                    - {os: linux,   arch: arm64, mode: full}
+                    - {os: linux,   arch: arm64, mode: full, support: legacy}
+                    - {os: linux,   arch: arm64, mode: mini}
+                    - {os: freebsd, arch: amd64, mode: full}
+                    - {os: freebsd, arch: amd64, mode: mini}
+                    - {os: macos,   arch: amd64, mode: full}
+                    - {os: macos,   arch: amd64, mode: mini}
+                    - {os: macos,   arch: arm64, mode: full}
+                    - {os: macos,   arch: arm64, mode: mini}
+                    - {os: windows, arch: amd64, mode: full}
+                    - {os: windows, arch: amd64, mode: mini}
+                    - {os: web}
 
         name: Build ${{ matrix.os }}-${{ matrix.arch || 'js' }}-${{ matrix.mode || 'mini' }}${{ matrix.support == 'legacy' && '-legacy' || '' }}
         defaults:
@@ -175,17 +175,136 @@ jobs:
                 sudo apt-get install webp 
                 sudo npm install -g sass uglify-js
 
-            - name: Download all binary artifacts
-              uses: actions/download-artifact@v4
-              with:
-                path: binaries/
-                pattern: arturo-*
+            - name: Download all binary artifacts as zips
+              run: |
+                mkdir -p binaries
+                
+                # Get the run ID
+                RUN_ID="${{ github.run_id }}"
+                
+                # List all artifacts for this workflow run
+                ARTIFACTS=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+                  "https://api.github.com/repos/${{ github.repository }}/actions/runs/${RUN_ID}/artifacts" \
+                  | jq -r '.artifacts[] | select(.name | startswith("arturo-")) | .name + "|" + (.archive_download_url | tostring)')
+                
+                # Download each artifact zip
+                echo "$ARTIFACTS" | while IFS='|' read -r name url; do
+                  if [ -n "$name" ]; then
+                    echo "Downloading: $name"
+                    curl -L -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+                      "$url" -o "binaries/${name}.zip"
+                  fi
+                done
+                
+                echo "Downloaded artifacts:"
+                ls -lh binaries/
 
             - name: Prepare website data from binaries
               run: |
-                # Initialize _index.art file with proper structure
-                cat > docs/website/pages/_index.art << 'EOF'
-                ;
+                cat > tools/prepare-binaries.art << 'ARTURO_SCRIPT'
+                #!/usr/bin/env arturo
+                
+                ;================================
+                ; Prepare binaries data structure
+                ;================================
+                
+                ; Platform order
+                platformOrder: #[
+                    linux: 1
+                    macos: 2
+                    windows: 3
+                    freebsd: 4
+                    web: 5
+                ]
+                
+                ; Initialize result structure
+                binaries: #[]
+                
+                ; Process all binary zip files
+                loop list "binaries" 'zipFile [
+                    if? suffix? zipFile ".zip" [
+                        artifactName: replace last split.path zipFile ".zip" ""
+                        
+                        ; Only process arturo-* files
+                        if? prefix? artifactName "arturo-" [
+                            print ["Processing:" artifactName]
+                            
+                            ; Get size and checksum
+                            fileSize: execute.args.lines ~"ls -lh |zipFile|" 'trim 
+                                      | first | split.words | get 4
+                            checksum: execute.args.lines ~"sha256sum |zipFile|" 'trim 
+                                      | first | split.words | first
+                            
+                            ; Parse artifact name: arturo-VERSION-OS-ARCH[-MODE][-legacy]
+                            parts: split.by:"-" drop 2 split.by:"-" artifactName
+                            
+                            os: first parts
+                            arch: get parts 1
+                            mode: "full"
+                            legacy: false
+                            
+                            ; Check for mode/legacy in remaining parts
+                            if? 2 < size parts [
+                                thirdPart: get parts 2
+                                if? in? ["mini" "safe"] thirdPart [
+                                    mode: thirdPart
+                                    if? 3 < size parts [
+                                        if? "legacy" = get parts 3 -> legacy: true
+                                    ]
+                                ]
+                                else [
+                                    if? "legacy" = thirdPart -> legacy: true
+                                ]
+                            ]
+                            
+                            ; Special handling for web builds
+                            if? os = "web" [
+                                arch: "js"
+                                mode: "mini"
+                            ]
+                            
+                            ; Build nested structure
+                            if? not? key? binaries os -> binaries\[os]: #[]
+                            if? not? key? binaries\[os] arch -> binaries\[os]\[arch]: #[]
+                            
+                            ; Create entry
+                            entry: #[
+                                path: ~"binaries/|artifactName|.zip"
+                                size: fileSize
+                                checksum: checksum
+                            ]
+                            
+                            ; Add to structure (handle legacy properly)
+                            if? legacy [
+                                ; For legacy, we need mode entry first
+                                if? not? key? binaries\[os]\[arch] mode [
+                                    binaries\[os]\[arch]\[mode]: #[]
+                                ]
+                                binaries\[os]\[arch]\[mode]\legacy: entry
+                            ]
+                            else [
+                                binaries\[os]\[arch]\[mode]: entry
+                            ]
+                            
+                            print ["Added:" ~"|artifactName|.zip" ~"(|fileSize|)"]
+                        ]
+                    ]
+                ]
+                
+                ; Sort the structure by platform order
+                sortedBinaries: #[]
+                loop sort keys platformOrder 'platform [
+                    if? key? binaries platform [
+                        sortedBinaries\[platform]: binaries\[platform]
+                    ]
+                ]
+                
+                ; Get version and build date from environment
+                version: sys\env\VERSION_TAG
+                buildDate: execute.args.lines ~"date -u '+%Y-%m-%d %H:%M:%S UTC'" 'trim | first
+                
+                ; Generate the _index.art file
+                output: {;
                 ;  Arturo Website Data       
                 ;  Auto-generated by CI      
                 ;
@@ -194,164 +313,52 @@ jobs:
                 ; Binary Downloads
                 ;================================
                 
-                binaries: #[
-                EOF
+                binaries: } ++ (to :string sortedBinaries) ++ {
                 
-                # Define platform order
-                declare -A platform_order=(
-                  ["linux"]=1
-                  ["macos"]=2
-                  ["windows"]=3
-                  ["freebsd"]=4
-                  ["web"]=5
-                )
+                version: "} ++ version ++ {"
+                buildDate: "} ++ buildDate ++ {"
+                }
                 
-                # Track platforms and their architectures
-                declare -A platforms
+                ; Write to file
+                write "docs/website/pages/_index.art" output
                 
-                # First pass: collect all binaries organized by platform/arch/mode/legacy
-                for binary_dir in binaries/arturo-*/; do
-                  if [ -d "$binary_dir" ]; then
-                    artifact_name=$(basename "$binary_dir")
-                    echo "Processing: $artifact_name"
-                    
-                    # Find the binary file (for size/checksum calculation)
-                    binary_file=$(find "$binary_dir" -type f \( -name "arturo" -o -name "arturo.exe" -o -name "arturo.js" \) | head -1)
-                    
-                    if [ -n "$binary_file" ]; then
-                      # We'll create a zip of the entire artifact directory
-                      zip_name="${artifact_name}.zip"
-                      
-                      # Create zip from the artifact directory contents
-                      (cd "$binary_dir" && zip -r "../../${zip_name}" .)
-                      
-                      # Get size and checksum of the zip file
-                      file_size=$(ls -lh "${zip_name}" | awk '{print $5}')
-                      sha256_hash=$(sha256sum "${zip_name}" | awk '{print $1}')
-                      
-                      # Parse artifact name: arturo-VERSION-OS-ARCH[-MODE][-legacy]
-                      remainder="${artifact_name#arturo-*-}"
-                      
-                      # Parse components
-                      os=$(echo "$remainder" | cut -d'-' -f1)
-                      arch=$(echo "$remainder" | cut -d'-' -f2)
-                      
-                      # Initialize mode and legacy
-                      mode="full"
-                      legacy=""
-                      
-                      # Check for additional parts (mode/legacy)
-                      parts_count=$(echo "$remainder" | awk -F'-' '{print NF}')
-                      if [ $parts_count -ge 3 ]; then
-                        third_part=$(echo "$remainder" | cut -d'-' -f3)
-                        
-                        case "$third_part" in
-                          mini|safe)
-                            mode="$third_part"
-                            if [ $parts_count -ge 4 ]; then
-                              fourth_part=$(echo "$remainder" | cut -d'-' -f4)
-                              [ "$fourth_part" = "legacy" ] && legacy="legacy"
-                            fi
-                            ;;
-                          legacy)
-                            legacy="legacy"
-                            ;;
-                        esac
-                      fi
-                      
-                      # Special handling for web builds
-                      if [ "$os" = "web" ]; then
-                        arch="js"
-                        mode="mini"
-                      fi
-                      
-                      # Store in associative array: platforms[os|arch|mode|legacy]=zip_name|size|checksum
-                      key="${os}|${arch}|${mode}|${legacy}"
-                      platforms[$key]="${zip_name}|${file_size}|${sha256_hash}"
-                      
-                      echo "Created: $zip_name ($file_size)"
-                    fi
+                print "\nGenerated _index.art:"
+                print read "docs/website/pages/_index.art"
+                ARTURO_SCRIPT
+                
+                arturo tools/prepare-binaries.art
+              env:
+                VERSION_TAG: ${{ needs.Build.outputs.version_tag }}
+
+            - name: Copy binaries to website
+              run: |
+                mkdir -p tmpdocs/binaries
+                
+                # Create checksums file
+                echo "# Arturo Binaries - ${{ needs.Build.outputs.version_tag }}" > tmpdocs/binaries/checksums.txt
+                echo "# Generated on $(date -u)" >> tmpdocs/binaries/checksums.txt
+                echo "" >> tmpdocs/binaries/checksums.txt
+                
+                # Copy all zip files
+                cp binaries/*.zip tmpdocs/binaries/
+                
+                # Generate checksums
+                cd tmpdocs/binaries
+                for zip_file in *.zip; do
+                  if [ -f "$zip_file" ]; then
+                    file_size=$(ls -lh "$zip_file" | awk '{print $5}')
+                    sha256_hash=$(sha256sum "$zip_file" | awk '{print $1}')
+                    echo "$sha256_hash  $zip_file  ($file_size)" >> checksums.txt
+                    echo "Copied: $zip_file ($file_size)"
                   fi
                 done
+                cd ../..
                 
-                # Second pass: output in sorted order
-                # Sort platforms by order, then by arch
-                for os in linux macos windows freebsd web; do
-                  platform_found=false
-                  
-                  # Check if this platform has any binaries
-                  for key in "${!platforms[@]}"; do
-                    IFS='|' read -r p_os p_arch p_mode p_legacy <<< "$key"
-                    if [ "$p_os" = "$os" ]; then
-                      platform_found=true
-                      break
-                    fi
-                  done
-                  
-                  if [ "$platform_found" = true ]; then
-                    echo "    ${os}: #[" >> docs/website/pages/_index.art
-                    
-                    # Process each architecture for this platform
-                    for arch in amd64 arm64 js; do
-                      arch_found=false
-                      
-                      # Check if this arch exists for this platform
-                      for key in "${!platforms[@]}"; do
-                        IFS='|' read -r p_os p_arch p_mode p_legacy <<< "$key"
-                        if [ "$p_os" = "$os" ] && [ "$p_arch" = "$arch" ]; then
-                          arch_found=true
-                          break
-                        fi
-                      done
-                      
-                      if [ "$arch_found" = true ]; then
-                        echo "        ${arch}: #[" >> docs/website/pages/_index.art
-                        
-                        # Process each mode for this arch
-                        for mode in full safe mini; do
-                          # Check regular build
-                          key="${os}|${arch}|${mode}|"
-                          if [ -n "${platforms[$key]}" ]; then
-                            IFS='|' read -r zip_name file_size sha256_hash <<< "${platforms[$key]}"
-                            echo "            ${mode}: #[" >> docs/website/pages/_index.art
-                            echo "                path: \"binaries/${zip_name}\"" >> docs/website/pages/_index.art
-                            echo "                size: \"${file_size}\"" >> docs/website/pages/_index.art
-                            echo "                checksum: \"${sha256_hash}\"" >> docs/website/pages/_index.art
-                            echo "            ]" >> docs/website/pages/_index.art
-                          fi
-                          
-                          # Check legacy build
-                          key="${os}|${arch}|${mode}|legacy"
-                          if [ -n "${platforms[$key]}" ]; then
-                            IFS='|' read -r zip_name file_size sha256_hash <<< "${platforms[$key]}"
-                            echo "            ${mode}: #[" >> docs/website/pages/_index.art
-                            echo "                legacy: #[" >> docs/website/pages/_index.art
-                            echo "                    path: \"binaries/${zip_name}\"" >> docs/website/pages/_index.art
-                            echo "                    size: \"${file_size}\"" >> docs/website/pages/_index.art
-                            echo "                    checksum: \"${sha256_hash}\"" >> docs/website/pages/_index.art
-                            echo "                ]" >> docs/website/pages/_index.art
-                            echo "            ]" >> docs/website/pages/_index.art
-                          fi
-                        done
-                        
-                        echo "        ]" >> docs/website/pages/_index.art
-                      fi
-                    done
-                    
-                    echo "    ]" >> docs/website/pages/_index.art
-                  fi
-                done
+                # Create version file
+                echo "${{ needs.Build.outputs.version_tag }}" > tmpdocs/binaries/VERSION
                 
-                # Close binaries block and add metadata
-                cat >> docs/website/pages/_index.art << EOF
-                ]
-                
-                version: "${{ needs.Build.outputs.version_tag }}"
-                buildDate: "$(date -u '+%Y-%m-%d %H:%M:%S UTC')"
-                EOF
-                
-                echo "Generated _index.art:"
-                cat docs/website/pages/_index.art
+                echo "Checksums:"
+                cat tmpdocs/binaries/checksums.txt
 
             - name: "Generate website"
               run: |
