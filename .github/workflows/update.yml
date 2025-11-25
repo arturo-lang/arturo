@@ -221,15 +221,18 @@ jobs:
                 binaries: #[]
                 
                 ; Process all binary zip files
-                loop list "binaries" 'zipFile [
-                    if suffix? zipFile ".zip" [
-                        artifactName: replace last split.path zipFile ".zip" ""
+                loop list "binaries" 'filename [
+                    zipFile: ~"binaries/|filename|"
+                    print ["Processing file:" zipFile]
+                    if suffix? filename ".zip" [
+                        print ["Found zip file:" zipFile]
+                        artifactName: replace filename ".zip" ""
                         
                         ; Only process arturo-* files
                         if prefix? artifactName "arturo-" [
                             print ["Processing:" artifactName]
                             
-                            ; Get size
+                            ; Get size - now zipFile has full path
                             lsOutput: execute ~"ls -lh |zipFile|"
                             fileSize: get split.words lsOutput 4
 
@@ -249,16 +252,14 @@ jobs:
                             ; Check for mode/legacy in remaining parts
                             if 2 < size parts [
                                 thirdPart: get parts 2
-                                switch in? ["mini" "safe"] thirdPart 
-                                    [
-                                        mode: thirdPart
-                                        if 3 < size parts [
-                                            if "legacy" = get parts 3 -> legacy: true
-                                        ]
+                                switch in? ["mini" "safe"] thirdPart [
+                                    mode: thirdPart
+                                    if 3 < size parts [
+                                        if "legacy" = get parts 3 -> legacy: true
                                     ]
-                                    [
-                                        if "legacy" = thirdPart -> legacy: true
-                                    ]
+                                ][
+                                    if "legacy" = thirdPart -> legacy: true
+                                ]
                             ]
                             
                             ; Special handling for web builds
@@ -279,17 +280,17 @@ jobs:
                             ]
                             
                             ; Add to structure (handle legacy properly)
-                            switch legacy 
-                                [
-                                    ; For legacy, we need mode entry first
-                                    unless key? binaries\[os]\[arch] mode [
-                                        binaries\[os]\[arch]\[mode]: #[]
-                                    ]
-                                    binaries\[os]\[arch]\[mode]\legacy: entry
+                            switch legacy [
+                                print ["Adding legacy build for" os arch mode]
+                                ; For legacy, we need mode entry first
+                                unless key? binaries\[os]\[arch] mode [
+                                    binaries\[os]\[arch]\[mode]: #[]
                                 ]
-                                [
-                                    binaries\[os]\[arch]\[mode]: entry
-                                ]
+                                binaries\[os]\[arch]\[mode]\legacy: entry
+                            ][
+                                print ["Adding build for" os arch mode]
+                                binaries\[os]\[arch]\[mode]: entry
+                            ]
                             
                             print ["Added:" ~"|artifactName|.zip" ~"(|fileSize|)"]
                         ]
@@ -299,7 +300,9 @@ jobs:
                 ; Sort the structure by platform order
                 sortedBinaries: #[]
                 loop sort keys platformOrder 'platform [
+                    print ["Sorting platform:" platform]
                     if key? binaries platform [
+                        print ["Adding platform to sorted list:" platform]
                         sortedBinaries\[platform]: binaries\[platform]
                     ]
                 ]
@@ -331,7 +334,9 @@ jobs:
                 print read "docs/website/pages/_index.art"
                 ARTURO_SCRIPT
                 
+                echo "Running Arturo script to prepare binaries data..."
                 arturo tools/prepare-binaries.art
+                echo "Prepared binaries data."
               env:
                 VERSION_TAG: ${{ needs.Build.outputs.version_tag }}
 
