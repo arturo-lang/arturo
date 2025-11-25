@@ -378,7 +378,8 @@ jobs:
                 arturo tools/indexgen.art
                 echo "RUNNING: miniwebize"
                 echo "#[release?: false]" > docs/website/data/setup.art
-                mkdir tmpdocs
+                rm -rf tmpdocs  # Remove if exists
+                mkdir -p tmpdocs
                 cd docs/website
                 arturo ../../tools/miniwebize/webize.art --build --at: ../../tmpdocs
                 cd ../..
