@@ -10,6 +10,7 @@ loop select list libDocPath => validDocFile? 'modl [
     print color #green moduleName
 
     loop select list ~"|libDocPath|/|moduleName|" => validDocFile? 'cmd [
+        print ["\t" cmd]
         cmdData: # cmd
         fileName: fname cmd
 
