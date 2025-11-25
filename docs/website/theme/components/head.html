@@ -8,12 +8,11 @@
         <|| 
             filtered: pagePath -- "_index"
             docum: ""
-            if? and? 4 = size filtered
+            switch and? 4 = size filtered
                      contains? filtered "library" [
                 filtered: (map chop filtered => capitalize) ++ replace last filtered "-" "?"
                 docum: W\description
-            ]
-            else [
+            ][
                 filtered: map filtered => capitalize
                 docum: join.with:" - " filtered
             ]

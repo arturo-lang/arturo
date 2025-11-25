@@ -687,3 +687,21 @@ blockquote {
         }
     }
 }
+
+/* Prevent any horizontal overflow */
+body, html {
+    overflow-x: hidden;
+}
+
+/* Fix container padding on mobile */
+@media screen and (max-width: 768px) {
+    .container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    
+    .hero-body {
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+    }
+}
