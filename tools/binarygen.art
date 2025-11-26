@@ -127,7 +127,7 @@ buildDate: "} ++ buildDate ++ {"
 }
 
 ; Write to file
-;'write output "docs/website/pages/_index.art" 
+write output "docs/website/pages/_index.art" 
 
 inspect sort # to :block output
 
