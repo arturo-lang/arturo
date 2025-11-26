@@ -17,7 +17,7 @@ platformOrder: #[
 binaries: #[]
 
 ; Process all binary zip files
-loop list "binaries" 'filename [
+loop sort list "binaries" 'filename [
     print ["Processing file:" filename]
     if suffix? filename ".zip" [
         artifactName: extract.filename filename
@@ -115,7 +115,7 @@ output: {;
 ; Binary Downloads
 ;================================
 
-binaries: } ++ (express sortedBinaries) ++ {
+binaries: } ++ (express.pretty sortedBinaries) ++ {
 
 version: "} ++ version ++ {"
 buildDate: "} ++ buildDate ++ {"
