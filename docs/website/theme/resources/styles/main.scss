@@ -219,6 +219,26 @@ sup {
     color: $main-purple;
 }
 
+#version-dropdown {
+    .button {
+        margin-left: 8px; 
+        vertical-align: middle; 
+        font-size: 0.7em; 
+        font-weight: normal; 
+        background-color: #f5e8f5; 
+        color: #6a156b; 
+        height: 1.8em !important;
+
+        .icon {
+            visibility: hidden;
+        }
+
+        &:hover .icon {
+            visibility: visible;    
+        }
+    }
+}
+
 code[class*=language-], pre[class*=language-] { 
     font-family: 'Fira Code Arturo', monospace !important; 
 }
