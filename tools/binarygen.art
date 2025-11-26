@@ -77,9 +77,10 @@ loop sort list "binaries" 'filename [
             ]
             unless key? binaries\[os] 'arch [
                 binaries\[os]\arch: #[]
-                unless key? binaries\[os]\arch arch [
-                    binaries\[os]\arch\[arch]: #[]
-                ]
+            ]
+
+            unless key? binaries\[os]\arch arch [
+                binaries\[os]\arch\[arch]: #[]
             ]
             
             ; Create entry
