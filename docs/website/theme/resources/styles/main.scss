@@ -446,18 +446,6 @@ a.algolia-docsearch-suggestion:hover {
     font-weight: 500;
 }
 
-#mainTitle {
-    span {
-        display: none !important;
-    }
-
-    &:hover {
-        span {
-            display: inline-block !important;
-        }
-    }
-}
-
 .semibold {
     font-weight: 500;
 }
