@@ -244,11 +244,24 @@ sup {
             visibility: hidden;
         }
 
-        &:hover {
-            background-color: #f5e8f5;
-            
+        &:hover {            
             .icon {
                 visibility: visible;    
+            }
+        }
+    }
+
+    .dropdown-menu {
+        a.dropdown-item {
+
+            &.is-active {
+                background-color: #f5e8f5;
+                color: #6a156b;
+                font-weight: 600;
+            }
+
+            &:hover {
+                border: 0;
             }
         }
     }
