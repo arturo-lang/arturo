@@ -24,6 +24,7 @@ Paths: #[
     dataPath:           "|project|/data"
     pages:				"|project|/pages"
     theme:              "|project|/theme"
+    resourceFavicon: 	"|project|/theme/resources/favicon"
     resourceFonts:  	"|project|/theme/resources/fonts"
     resourceImages: 	"|project|/theme/resources/images"
     resourceData:       "|project|/theme/resources/data"
@@ -292,12 +293,18 @@ githubMarkdown: function [src][
         ;-------------------------
         call {_showHeader} ["finalizing"]
 
+        write.directory ø join.path @[loc "favico"]
+
         loop filter list "theme/resources" => [in? "." &] 'res [ 
             folderPath: join.path @[loc "resources" extract.basename res]
             call {_showInfoLine} @["create" call {_routeDiagram} @[res -- "theme/resources/"] false]
             write.directory ø join.path @[loc "resources" extract.basename res] 
             loop list res 'item [
                 tgt: join.path @[loc item -- "theme/"]
+
+                if contains? res "favico" [
+                    tgt: loc
+                ]
                 
                 when [
                     [in? extract.extension item [".scss" ".sass"]] [
@@ -306,9 +313,11 @@ githubMarkdown: function [src][
                         execute ~"sass --style compressed |item| |newTgt|"
                     ]
                     [in? extract.extension item [".png"]][
-                        call {_showInfoLine} @["compress" call {_routeDiagram} @[item -- "theme/resources/"] false]
-                        newTgt: replace tgt extract.extension tgt ".webp"
-                        execute ~"cwebp |item| -o |newTgt|"
+                        unless contains? res "favico" [
+                            call {_showInfoLine} @["compress" call {_routeDiagram} @[item -- "theme/resources/"] false]
+                            newTgt: replace tgt extract.extension tgt ".webp"
+                            execute ~"cwebp |item| -o |newTgt|"
+                        ]
 
                         call {_showInfoLine} @["copy" call {_routeDiagram} @[item -- "theme/resources/"] false]
                         execute ~"cp |item| |extract.directory tgt|"
