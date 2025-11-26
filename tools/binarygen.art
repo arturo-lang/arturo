@@ -107,7 +107,7 @@ sortedBinaries: #.raw flatten arrange binaries [pfm,v][ index values platforms p
 ; ]
 
 ; Get version and build date from environment
-version: "some VER";env\VERSION_TAG
+version: env\VERSION_TAG
 buildDate: strip execute ~"date -u '+%Y-%m-%d %H:%M:%S UTC'"
 
 ; Generate the _index.art file
