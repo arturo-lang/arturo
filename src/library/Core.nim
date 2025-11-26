@@ -1837,42 +1837,6 @@ proc defineModule*(moduleName: string) =
     #   if <= some condition [ ... ]#
     #   ```
     #  labels: library,→ Core, open discussion
-    builtin "if?",
-        alias       = unaliased, 
-        op          = opIfE,
-        rule        = PrefixPrecedence,
-        description = "perform action, if given condition is not false or null and return condition result",
-        args        = {
-            "condition" : {Any},
-            "action"    : {Block}
-        },
-        attrs       = NoAttrs,
-        returns     = {Logical},
-        example     = """
-            x: 2
-            
-            result: if? x=2 -> print "yes, that's right!"
-            ; yes, that's right!
-            
-            print result
-            ; true
-            ..........
-            x: 2
-            z: 3
-            
-            if? x>z [
-                print "x was greater than z"
-            ]
-            else [
-                print "nope, x was not greater than z"
-            ]
-        """:
-            #=======================================================
-            let condition = not (xKind==Null or isFalse(x))
-            if condition: 
-                execUnscoped(y)
-
-            push(newLogical(condition))
 
     builtin "set?",
         alias       = unaliased, 
