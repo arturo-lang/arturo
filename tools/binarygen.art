@@ -5,12 +5,12 @@
 ;================================
 
 ; Platform order
-platformOrder: #[
-    linux: 1
-    macos: 2
-    windows: 3
-    freebsd: 4
-    web: 5
+platforms: #[
+    linux: "Linux"
+    macos: "macOS"
+    windows: "Windows"
+    freebsd: "FreeBSD"
+    web: "Web"
 ]
 
 ; Initialize result structure
@@ -38,7 +38,8 @@ loop sort list "binaries" 'filename [
             allParts: split.by: "-" artifactName
             parts: drop.times: 2 allParts
             
-            os: first parts
+            os: translate first parts platforms
+            
             arch: get parts 1
             mode: "full"
             legacy: false
@@ -46,7 +47,8 @@ loop sort list "binaries" 'filename [
             ; Check for mode/legacy in remaining parts
             if 2 < size parts [
                 thirdPart: get parts 2
-                switch in? ["mini" "safe"] thirdPart [
+                inspect thirdPart
+                switch contains? ["mini" "safe"] thirdPart [
                     mode: thirdPart
                     if 3 < size parts [
                         if "legacy" = get parts 3 -> legacy: true
@@ -73,16 +75,19 @@ loop sort list "binaries" 'filename [
                 checksum: checksum
             ]
             
-            ; Add to structure (handle legacy properly)
-            switch legacy [
-                print ["Adding legacy build for" os arch mode]
-                ; For legacy, we need mode entry first
-                unless key? binaries\[os]\[arch] mode [
-                    binaries\[os]\[arch]\[mode]: #[]
-                ]
-                binaries\[os]\[arch]\[mode]\legacy: entry
-            ][
-                print ["Adding build for" os arch mode]
+            ; ; Add to structure (handle legacy properly)
+            ; switch legacy [
+            ;     print ["Adding legacy build for" os arch mode]
+            ;     ; For legacy, we need mode entry first
+            ;     unless key? binaries\[os]\[arch] mode [
+            ;         binaries\[os]\[arch]\[mode]: #[]
+            ;     ]
+            ;     binaries\[os]\[arch]\[mode]\legacy: entry
+            ; ][
+            ;     print ["Adding build for" os arch mode]
+            ;     binaries\[os]\[arch]\[mode]: entry
+            ; ]
+            unless legacy [
                 binaries\[os]\[arch]\[mode]: entry
             ]
             
@@ -92,17 +97,17 @@ loop sort list "binaries" 'filename [
 ]
 
 ; Sort the structure by platform order
-sortedBinaries: #[]
-loop sort keys platformOrder 'platform [
-    print ["Sorting platform:" platform]
-    if key? binaries platform [
-        print ["Adding platform to sorted list:" platform]
-        sortedBinaries\[platform]: binaries\[platform]
-    ]
-]
+sortedBinaries: #.raw flatten arrange binaries [pfm,v][ index values platforms pfm] ;#[]
+; loop sort keys platformOrder 'platform [
+;     print ["Sorting platform:" platform]
+;     if key? binaries platform [
+;         print ["Adding platform to sorted list:" platform]
+;         sortedBinaries\[platform]: binaries\[platform]
+;     ]
+; ]
 
 ; Get version and build date from environment
-version: env\VERSION_TAG
+version: "some VER";env\VERSION_TAG
 buildDate: strip execute ~"date -u '+%Y-%m-%d %H:%M:%S UTC'"
 
 ; Generate the _index.art file
@@ -122,7 +127,9 @@ buildDate: "} ++ buildDate ++ {"
 }
 
 ; Write to file
-write output "docs/website/pages/_index.art" 
+;'write output "docs/website/pages/_index.art" 
+
+inspect sort # to :block output
 
 print "\nGenerated _index.art:"
 print read "docs/website/pages/_index.art"
