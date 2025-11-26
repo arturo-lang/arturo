@@ -1826,18 +1826,6 @@ proc defineModule*(moduleName: string) =
     # Predicates
     #----------------------------
 
-    # TODO(Core\if?) do we get rid of this?
-    #   obviously, this is not needed and it is not
-    #   meant to be used as a substitute for if-else
-    #   however, does it make sense to keep a version
-    #   of `if` that also returns whether the condition
-    #   succeeded or not? why? (or "why not?")
-    #   btw, an almost identical solution would be:
-    #   ```
-    #   if <= some condition [ ... ]#
-    #   ```
-    #  labels: library,→ Core, open discussion
-
     builtin "set?",
         alias       = unaliased, 
         op          = opNop,
