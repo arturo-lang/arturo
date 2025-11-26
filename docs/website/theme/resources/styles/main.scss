@@ -239,15 +239,15 @@ sup {
         color: #6a156b; 
         height: 1.5em !important;
         border: 0;
+    }
 
+    .icon {
+        visibility: hidden;
+    }
+
+    &:hover {            
         .icon {
-            visibility: hidden;
-        }
-
-        &:hover {            
-            .icon {
-                visibility: visible;    
-            }
+            visibility: visible;    
         }
     }
 
