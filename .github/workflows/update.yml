@@ -175,7 +175,7 @@ jobs:
                 sudo apt-get install webp 
                 sudo npm install -g sass uglify-js
 
-            - name: Download all binary artifacts as zips
+            - name: Download all binary artifacts
               run: |
                 mkdir -p binaries
                 
@@ -199,49 +199,9 @@ jobs:
                 echo "Downloaded artifacts:"
                 ls -lh binaries/
 
-            - name: Prepare website data from binaries
-              run: |
-                cat > tools/prepare-binaries.art << 'ARTURO_SCRIPT'
-                
-                ARTURO_SCRIPT
-                
-                echo "Running Arturo script to prepare binaries data..."
-                arturo tools/prepare-binaries.art
-                echo "Prepared binaries data."
+            - name: "Generate website"
               env:
                 VERSION_TAG: ${{ needs.Build.outputs.version_tag }}
-
-            - name: Copy binaries to website
-              run: |
-                mkdir -p tmpdocs/binaries
-                
-                # Create checksums file
-                echo "# Arturo Binaries - ${{ needs.Build.outputs.version_tag }}" > tmpdocs/binaries/checksums.txt
-                echo "# Generated on $(date -u)" >> tmpdocs/binaries/checksums.txt
-                echo "" >> tmpdocs/binaries/checksums.txt
-                
-                # Copy all zip files
-                cp binaries/*.zip tmpdocs/binaries/
-                
-                # Generate checksums
-                cd tmpdocs/binaries
-                for zip_file in *.zip; do
-                  if [ -f "$zip_file" ]; then
-                    file_size=$(ls -lh "$zip_file" | awk '{print $5}')
-                    sha256_hash=$(sha256sum "$zip_file" | awk '{print $1}')
-                    echo "$sha256_hash  $zip_file  ($file_size)" >> checksums.txt
-                    echo "Copied: $zip_file ($file_size)"
-                  fi
-                done
-                cd ../..
-                
-                # Create version file
-                echo "${{ needs.Build.outputs.version_tag }}" > tmpdocs/binaries/VERSION
-                
-                echo "Checksums:"
-                cat tmpdocs/binaries/checksums.txt
-
-            - name: "Generate website"
               run: |
                 echo "RUNNING: binarygen"
                 arturo tools/binarygen.art
@@ -262,35 +222,20 @@ jobs:
 
             - name: Copy binaries to website
               run: |
+                # Create binaries directory in website output
                 mkdir -p tmpdocs/binaries
                 
-                # Create checksums file
-                echo "# Arturo Binaries - ${{ needs.Build.outputs.version_tag }}" > tmpdocs/binaries/checksums.txt
-                echo "# Generated on $(date -u)" >> tmpdocs/binaries/checksums.txt
-                echo "" >> tmpdocs/binaries/checksums.txt
-                
-                # Copy all zip files
-                for zip_file in arturo-*.zip; do
-                  if [ -f "$zip_file" ]; then
-                    cp "$zip_file" "tmpdocs/binaries/"
-                    
-                    # Generate checksum
-                    cd tmpdocs/binaries
-                    file_size=$(ls -lh "$(basename "$zip_file")" | awk '{print $5}')
-                    sha256_hash=$(sha256sum "$(basename "$zip_file")" | awk '{print $1}')
-                    echo "$sha256_hash  $(basename "$zip_file")  ($file_size)" >> checksums.txt
-                    cd ../..
-                    
-                    echo "Copied: $(basename "$zip_file") ($file_size)"
-                  fi
-                done
+                # Copy all binary zips
+                echo "Copying binaries..."
+                cp binaries/*.zip tmpdocs/binaries/
                 
                 # Create version file
                 echo "${{ needs.Build.outputs.version_tag }}" > tmpdocs/binaries/VERSION
                 
-                echo "Checksums:"
-                cat tmpdocs/binaries/checksums.txt
-
+                # Verify binaries were copied
+                echo "Binaries in tmpdocs:"
+                ls -lh tmpdocs/binaries/
+                
             - name: Synchronize to website
               uses: burnett01/rsync-deployments@7.0.2
               with:
