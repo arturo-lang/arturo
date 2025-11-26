@@ -222,22 +222,20 @@ jobs:
                 
                 ; Process all binary zip files
                 loop list "binaries" 'filename [
-                    zipFile: ~"binaries/|filename|"
-                    print ["Processing file:" zipFile]
+                    print ["Processing file:" filename]
                     if suffix? filename ".zip" [
-                        print ["Found zip file:" zipFile]
-                        artifactName: replace filename ".zip" ""
+                        artifactName: extract.filename filename
                         
                         ; Only process arturo-* files
                         if prefix? artifactName "arturo-" [
                             print ["Processing:" artifactName]
                             
-                            ; Get size - now zipFile has full path
-                            lsOutput: execute ~"ls -lh |zipFile|"
+                            ; Get size
+                            lsOutput: execute ~"ls -lh |filename|"
                             fileSize: get split.words lsOutput 4
 
                             ; Get checksum  
-                            checksumOutput: execute ~"sha256sum |zipFile|"
+                            checksumOutput: execute ~"sha256sum |filename|"
                             checksum: first split.words checksumOutput
                             
                             ; Parse artifact name: arturo-VERSION-OS-ARCH[-MODE][-legacy]
@@ -321,7 +319,7 @@ jobs:
                 ; Binary Downloads
                 ;================================
                 
-                binaries: } ++ (to :string sortedBinaries) ++ {
+                binaries: } ++ (express sortedBinaries) ++ {
                 
                 version: "} ++ version ++ {"
                 buildDate: "} ++ buildDate ++ {"
