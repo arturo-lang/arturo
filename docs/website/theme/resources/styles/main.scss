@@ -26,14 +26,13 @@ nav ul li a {
 }
 
 #downloads a {
-    border: 1px solid transparent;
-    border-radius: 20px;
+    border-top: 2px solid transparent;
+    border-bottom: 2px solid transparent;
     padding: 0.5em;
 
     &:hover {
-        border: 1px solid #3273dc;
-        border-radius: 20px;
-        padding: 0.5em;
+        border-top: 2px solid #3273dc;
+        border-bottom: 2px solid #3273dc;
     }
 }
 
