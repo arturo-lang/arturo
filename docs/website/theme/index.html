@@ -178,8 +178,7 @@
                                     <td>
                                         <span id="<||= platform ||>-<||= arch ||>-full-download" class="full-version">
                                             <|| switch hasFull? [ ||>
-                                                <a href="<||= versions\full\path ||>"><i class="far fa-arrow-alt-circle-down" aria-hidden="true"></i>&nbsp;&nbsp;Download</a>
-                                                <span class="checksum"><||= versions\full\checksum ||></span>
+                                                <a href="<||= versions\full\path ||>" title="<||= versions\full\checksum ||>"><i class="far fa-arrow-alt-circle-down" aria-hidden="true"></i>&nbsp;&nbsp;Download</a>
                                             <|| ][ ||>
                                                 <|| switch hasMini? [ ||>
                                                     <i><small>*MINI build only</small></i>
@@ -190,8 +189,7 @@
                                         </span>
                                         <span id="<||= platform ||>-<||= arch ||>-mini-download" class="mini-version is-hidden">
                                             <|| switch hasMini? [ ||>
-                                                <a href="<||= versions\mini\path ||>"><i class="far fa-arrow-alt-circle-down" aria-hidden="true"></i>&nbsp;&nbsp;Download</a>
-                                                <span class="checksum"><||= versions\mini\checksum ||></span>
+                                                <a href="<||= versions\mini\path ||>" title="<||= versions\mini\checksum ||>><i class="far fa-arrow-alt-circle-down" aria-hidden="true"></i>&nbsp;&nbsp;Download</a>
                                             <|| ][ ||>
                                                 <i><small>*Not available</small></i>
                                             <|| ] ||>

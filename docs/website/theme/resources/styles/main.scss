@@ -47,17 +47,17 @@ nav ul li a {
 
     .full-version, .mini-version {
 
-        .checksum {
-            color: gray;
-            font-size: x-small;
-            display: none;
-        }
+        // .checksum {
+        //     color: gray;
+        //     font-size: x-small;
+        //     display: none;
+        // }
 
-        &:hover {
-            .checksum {
-                display: block;
-            }
-        }
+        // &:hover {
+        //     .checksum {
+        //         display: block;
+        //     }
+        // }
     }
 }
 
