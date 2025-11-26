@@ -1882,50 +1882,6 @@ proc defineModule*(moduleName: string) =
 
             push(newLogical(condition))
 
-    # TODO(Core\when?) should be marked as deprecated
-    #   https://github.com/arturo-lang/arturo/pull/1735
-    #  labels: library,→ Core, deprecated
-    builtin "when?",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "check if a specific condition is fulfilled and, if so, execute given action",
-        args        = {
-            "condition" : {Block},
-            "action"    : {Block}
-        },
-        attrs       = NoAttrs,
-        returns     = {Logical},
-        example     = """
-            ; DEPRECATED!
-            a: 2
-            case [a]
-                when? [<2] -> print "a is less than 2"
-                when? [=2] -> print "a is 2"
-                else       -> print "a is greater than 2"
-        """:
-            #=======================================================
-            let z = stack.pop()
-            if isFalse(z):
-
-                let top = sTop()
-
-                var newb: Value = newBlock()
-                for old in top.a:
-                    newb.a.add(old)
-                for cond in x.a:
-                    newb.a.add(cond)
-
-                execUnscoped(newb)
-
-                if isTrue(sTop()):
-                    execUnscoped(y)
-                    discard stack.pop()
-                    discard stack.pop()
-                    push(newLogical(true))
-            else:
-                push(z)
-
     #----------------------------
     # Constants
     #----------------------------
