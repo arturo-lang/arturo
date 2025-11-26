@@ -204,7 +204,7 @@ jobs:
                 VERSION_TAG: ${{ needs.Build.outputs.version_tag }}
               run: |
                 echo "RUNNING: binarygen"
-                arturo tools/binarygen.art
+                arturo tools/binarygen.art  "$VERSION_TAG"
                 echo "RUNNING: sitegen"
                 arturo tools/sitegen.art
                 echo "RUNNING: indexgen"
