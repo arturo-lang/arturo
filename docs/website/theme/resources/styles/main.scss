@@ -740,13 +740,14 @@ blockquote {
     }
 }
 
-/* Prevent any horizontal overflow */
-body, html {
-    overflow-x: hidden;
-}
-
 /* Fix container padding on mobile */
 @media screen and (max-width: 768px) {
+
+    /* Prevent any horizontal overflow */
+    body, html {
+        overflow-x: hidden;
+    }
+    
     .container {
         padding-left: 1rem;
         padding-right: 1rem;
