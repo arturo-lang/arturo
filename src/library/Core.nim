@@ -543,35 +543,6 @@ proc defineModule*(moduleName: string) =
             #=======================================================
             push(x)
             push(x)
-
-    # TODO(Core\else) should be marked as deprecated
-    #   https://github.com/arturo-lang/arturo/pull/1735
-    #  labels: library,→ Core, deprecated
-    builtin "else",
-        alias       = unaliased, 
-        op          = opElse,
-        rule        = PrefixPrecedence,
-        description = "perform action, if last condition was not true",
-        args        = {
-            "otherwise" : {Block,Bytecode}
-        },
-        attrs       = NoAttrs,
-        returns     = {Nothing},
-        example     = """
-            x: 2
-            z: 3
-            
-            if? x>z [
-                print "x was greater than z"
-            ]
-            else [
-                print "nope, x was not greater than z"
-            ]
-        """:
-            #=======================================================
-            let y = stack.pop() # pop the value of the previous operation (hopefully an 'if?' or 'when?')
-            if isFalse(y): 
-                execUnscoped(x)  
             
     builtin "ensure",
         alias       = unaliased, 
