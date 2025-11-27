@@ -13,11 +13,11 @@
 # Libraries
 #=======================================
 
-import std/json, os
-import strformat, strutils
+import std/[json, os, strformat, strutils]
 
 import ".config/utils/ui.nims"
 import ".config/utils/cli.nims"
+import "dependencies.nims"
 
 #=======================================
 # Initialize globals
@@ -50,6 +50,7 @@ let
         targetStores:   targetDir/"stores",
         mainFile:       "src"/"arturo.nim",
     )
+
 
 #=======================================
 # Types
@@ -234,6 +235,7 @@ proc installAll*(config: BuildConfig, targetFile: string) =
 
     main(config)
 
+
 proc showBuildInfo*(config: BuildConfig) =
     let
         params = flags.join(" ")
@@ -249,6 +251,9 @@ proc showBuildInfo*(config: BuildConfig) =
 
     if not config.silentCompilation:
         log fmt"flags: {params}"
+
+    if config.version in buildsWithDependencies:
+        checkDependencies(config.shouldLog)
 
 #=======================================
 # Methods
@@ -454,6 +459,7 @@ cmd build, "[default] Build arturo and optionally install the executable":
         >> ["docgen"]:
             fullBuildConfig()
             docgenBuildConfig()
+            config.version = "@docgen"
         >> ["safe"]:
             safeBuildConfig()
             miniBuild()
