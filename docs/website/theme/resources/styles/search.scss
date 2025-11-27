@@ -1,5 +1,23 @@
 @import "global.scss";
 
+#searchbar {
+    border: 0;
+    border-radius: 0;
+    border-left: 2px solid $main-purple;
+    outline: none;
+    width: 30vw;
+    font-size: 1.2em;
+    padding-left: 50px;
+    margin-top: 0px;
+    line-height: 1.9em;
+}
+
+#searchbar-icon {
+    position: relative;
+    left: calc(-1 * 30vw + 42.5px);
+    top: 16px;
+}
+
 .search-container {
     padding: 0;
     align-items: normal;
@@ -184,7 +202,7 @@
         margin-top: 0px;
         line-height: 1.9em;
         padding-right: 15.5px;
-        margin-right: -15.5px;
+        margin-right: -21.5px;
         
         &:focus {
             border-left-color: darken($main-purple, 10%);
