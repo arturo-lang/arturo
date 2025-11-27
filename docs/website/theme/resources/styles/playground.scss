@@ -276,3 +276,37 @@
         background: transparent;
     }
 }
+
+#runbutton {
+    .play {
+        display: block;
+    }
+    .processing {
+        display: none;
+    }
+    &.working {
+        .play {
+            display: none;
+        }
+        .processing {
+            display: block;
+        }
+    }
+}
+
+#expanderIcon {
+    .doexpand {
+        display: block;
+    }
+    .docompress {
+        display: none;
+    }
+    &.expanded {
+        .doexpand {
+            display: none;
+        }
+        .docompress {
+            display: block;
+        }
+    }
+}
