@@ -303,7 +303,7 @@ githubMarkdown: function [src][
                 tgt: join.path @[loc item -- "theme/"]
 
                 if contains? res "favico" [
-                    tgt: join.path @[loc "favico"]
+                    tgt: join.path @[loc "favico" "extra"]
                 ]
                 
                 when [
