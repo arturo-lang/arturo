@@ -240,10 +240,10 @@
         dropdown.innerHTML = `
             <div class="search-no-results">
                 <div class="search-no-results-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" fill="currentColor" viewBox="0 0 256 256"><path d="M232.49,215.51,185,168a92.12,92.12,0,1,0-17,17l47.53,47.54a12,12,0,0,0,17-17ZM44,112a68,68,0,1,1,68,68A68.07,68.07,0,0,1,44,112Z"></path></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" fill="currentColor" viewBox="0 0 256 256"><path d="M128,20A108,108,0,1,0,236,128,108.12,108.12,0,0,0,128,20Zm0,192a84,84,0,1,1,84-84A84.09,84.09,0,0,1,128,212ZM108,108A16,16,0,1,1,92,92,16,16,0,0,1,108,108Zm72,0a16,16,0,1,1-16-16A16,16,0,0,1,180,108Z"></path></svg>
                 </div>
                 <div class="search-no-results-text">
-                    No results found for "<strong>${escapeHtml(query)}</strong>"
+                    No results found for<br>"<strong>${escapeHtml(query)}</strong>"
                 </div>
             </div>
         `;
