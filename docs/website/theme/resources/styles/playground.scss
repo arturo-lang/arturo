@@ -283,6 +283,7 @@
     }
     .processing {
         display: none;
+        animation: spin 1s linear infinite;
     }
     &.working {
         .play {
@@ -309,4 +310,13 @@
             display: block;
         }
     }
+}
+
+@keyframes spinaround {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
