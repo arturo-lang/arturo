@@ -747,7 +747,7 @@ blockquote {
     body, html {
         overflow-x: hidden;
     }
-    
+
     .container {
         padding-left: 1rem;
         padding-right: 1rem;
@@ -756,5 +756,25 @@ blockquote {
     .hero-body {
         padding-left: 1.5rem;
         padding-right: 1.5rem;
+    }
+}
+
+#runbutton {
+    .play {
+        display: block;
+    }
+
+    .processing {
+        display: none;
+    }
+
+    &.working {
+        .play {
+            display: none;
+        }
+
+        .processing {
+            display: block;
+        }
     }
 }
