@@ -758,23 +758,3 @@ blockquote {
         padding-right: 1.5rem;
     }
 }
-
-#runbutton {
-    .play {
-        display: block;
-    }
-
-    .processing {
-        display: none;
-    }
-
-    &.working {
-        .play {
-            display: none;
-        }
-
-        .processing {
-            display: block;
-        }
-    }
-}
