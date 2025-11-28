@@ -66,8 +66,6 @@ proc defineModule*(moduleName: string) =
             print ["accepted incoming connection from:" client]
             """:
                 #=======================================================
-                when defined(SAFE): Error_OperationNotPermitted("accept")
-
                 var client: netsock.Socket
                 x.sock.socket.accept(client)
 
@@ -100,8 +98,6 @@ proc defineModule*(moduleName: string) =
             server: connect.to:"123.456.789.123" 18966
             """:
                 #=======================================================
-                when defined(SAFE): Error_OperationNotPermitted("connect")
-
                 let isUDP = hadAttr("udp")
 
                 let protocol = 
@@ -141,8 +137,6 @@ proc defineModule*(moduleName: string) =
             server: listen 18966
             """:
                 #=======================================================
-                when defined(SAFE): Error_OperationNotPermitted("listen")
-
                 let blocking = true
                 let protocol = 
                     if hadAttr("udp"): IPPROTO_UDP
@@ -195,8 +189,6 @@ proc defineModule*(moduleName: string) =
             unplug server
             """:
                 #=======================================================
-                when defined(SAFE): Error_OperationNotPermitted("receive")
-
                 var size = MaxLineLength
                 if checkAttr("size"):
                     size = aSize.i
@@ -228,8 +220,6 @@ proc defineModule*(moduleName: string) =
             send socket "Hello Socket World"
             """:
                 #=======================================================
-                when defined(SAFE): Error_OperationNotPermitted("send")
-
                 let asChunk = hadAttr("chunk")
 
                 let message = 
@@ -259,8 +249,6 @@ proc defineModule*(moduleName: string) =
             unplug socket
             """:
                 #=======================================================
-                when defined(SAFE): Error_OperationNotPermitted("unplug")
-
                 x.sock.socket.close()
 
     #----------------------------
@@ -291,6 +279,4 @@ proc defineModule*(moduleName: string) =
             print ["Message was sent successfully:" sent?]
             """:
                 #=======================================================
-                when defined(SAFE): Error_OperationNotPermitted("send?")
-
                 push newLogical(x.sock.socket.trySend(y.s))

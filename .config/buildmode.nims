@@ -12,10 +12,6 @@ proc miniBuildConfig() =
     --define:MINI
     noDepencenciesConfig()
 
-proc safeBuildConfig() =
-    --define:SAFE
-    noDepencenciesConfig()
-
 proc webBuildConfig() =
     --define:WEB
     noDepencenciesConfig()
