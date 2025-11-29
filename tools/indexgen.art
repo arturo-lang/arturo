@@ -7,10 +7,10 @@ validDocFile?: function [f][ not? contains? ['.' '_'] first fname f ]
 docEntries: []
 loop select list libDocPath => validDocFile? 'modl [
     moduleName: fname modl
-    print color #green moduleName
+    ;print color #green moduleName
 
     loop select list ~"|libDocPath|/|moduleName|" => validDocFile? 'cmd [
-        print ["\t" cmd]
+        ;print ["\t" cmd]
         cmdData: # cmd
         fileName: fname cmd
 
