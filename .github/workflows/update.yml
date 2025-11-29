@@ -210,7 +210,7 @@ jobs:
                 echo "RUNNING: indexgen"
                 arturo tools/indexgen.art
                 echo "RUNNING: miniwebize"
-                echo "#[release?: false]" > docs/website/data/setup.art
+                echo "#[version: {test}]" > docs/website/data/setup.art
                 rm -rf tmpdocs  # Remove if exists
                 mkdir -p tmpdocs
                 cd docs/website

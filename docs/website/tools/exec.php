@@ -1,5 +1,5 @@
 <?php
-header('Access-Control-Allow-Origin: https://arturo-lang.io');
+header('Access-Control-Allow-Origin: http://188.245.97.105');
 
 $rest_json = file_get_contents("php://input");
 $_POST = json_decode($rest_json, true);
