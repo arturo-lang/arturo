@@ -6,8 +6,31 @@
                 <source srcset="<||= linkTo {resources/images/navlogo.png} ||>" type="image/png">
                 <img class="navlogo" src="<||= linkTo {resources/images/navlogo.png} ||>" width="28" height="28" alt="arturo logo">
             </picture>
-            &nbsp;&nbsp;<h1 id="mainTitle" style="font-weight: inherit !important;">Arturo<||= switch Data\setup\release? [ ||><span>:</span><span class="logo-secondary">&nbsp;programming language</span><|| ][ ||><div class="tag" style="margin-left: 8px; vertical-align: middle; font-size: 0.7em; font-weight: normal; background-color: #f5e8f5; color: #6a156b; height: 1.8em !important;">@ master</div><|| ] ||></h1>
-        </a>
+            &nbsp;&nbsp;<h1 id="mainTitle" style="font-weight: inherit !important;">Arturo</h1></a>
+                <div id="version-dropdown" class="dropdown is-hoverable">
+                    <div class="dropdown-trigger">
+                        <button class="button" aria-haspopup="true" aria-controls="dropdown-menu">
+                            <span class="version-id">v0.10.0</span>
+                            <span class="icon is-small">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="0.9em" height="0.9em" fill="currentColor" viewBox="0 0 256 256"><path d="M216.49,104.49l-80,80a12,12,0,0,1-17,0l-80-80a12,12,0,0,1,17-17L128,159l71.51-71.52a12,12,0,0,1,17,17Z"></path></svg>
+                            </span>
+                        </button>
+                    </div>
+                    <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                        <div class="dropdown-content">
+                            <a href="<||= getCanonical "http://188.245.97.105/latest/" ||>" class="dropdown-item">
+                                @latest
+                            </a>
+                            <hr class="dropdown-divider">
+                            <a href="<||= getCanonical "http://188.245.97.105/" ||>" class="dropdown-item is-active">
+                                v0.10.0
+                            </a>
+                            <a href="<||= getCanonical "http://188.245.97.105/0.9.83/" ||>" class="dropdown-item">
+                                v0.9.83
+                            </a>
+                        </div>
+                    </div>
+                </div>
         <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarMain">
             <span aria-hidden="true"></span>
             <span aria-hidden="true"></span>
@@ -21,22 +44,21 @@
             <||= if contains? pagePath "documentation" [||>
                 <div class="navbar-item is-hidden-touch search-container">
                     <input id="searchbar" type="search" placeholder="Search documentation...">
-                    <i id="searchbar-icon" class="fa fa-search"></i>
+                    <svg id="searchbar-icon" xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" fill="currentColor" viewBox="0 0 256 256"><path d="M232.49,215.51,185,168a92.12,92.12,0,1,0-17,17l47.53,47.54a12,12,0,0,0,17-17ZM44,112a68,68,0,1,1,68,68A68.07,68.07,0,0,1,44,112Z"></path></svg>
                 </div>
             <|| ] ||>
 
             <a class="<||= if contains? pagePath "documentation" [||>is-active<||]||> navbar-item is-tab is-warning" href="<||= linkTo{documentation} ||>">
-                <!--<i class="far fa-file-alt"></i>&nbsp;&nbsp;-->Documentation
+                Documentation
             </a>
             <a class="<||= if contains? pagePath "playground" [||>is-active<||]||> navbar-item is-tab " href="<||= linkTo{playground} ||>">
-                <!--<i class="fab fa-github"></i>&nbsp;&nbsp;-->Playground
+                Playground
             </a>
-            <!-- <a rel="noopener" target="_blank" class="navbar-item is-tab " href="https://github.com/arturo-lang/arturo">
-                Source
-            </a> -->
-            <!-- <div class="is-divider-vertical"></div>
-            <a rel="noopener" target="_blank" class="navbar-item is-tab" href="https://twitter.com/ArturoLanguage" aria-label="official twitter page">
-                <i class="fab fa-twitter"></i>
+            <!-- <a class="<||= if contains? pagePath "packages" [||>is-active<||]||> navbar-item is-tab " href="<||= linkTo{packages} ||>">
+                Packages
+            </a>
+            <a class="<||= if contains? pagePath "blog" [||>is-active<||]||> navbar-item is-tab " href="<||= linkTo{blog} ||>">
+                Blog
             </a> -->
         </div>
     </div>

@@ -10,18 +10,17 @@ function execCode() {
     if (!runbutton.innerHTML.includes("notch")) {
         if (editor.getValue()!=previousCode) {
             previousCode = editor.getValue();
-            runbutton.innerHTML = `<i class='fas fa-circle-notch fa-spin'></i>`;
+            //runbutton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" fill="currentColor" viewBox="0 0 256 256"><path d="M236,128a108,108,0,0,1-216,0c0-42.52,24.73-81.34,63-98.9A12,12,0,1,1,93,50.91C63.24,64.57,44,94.83,44,128a84,84,0,0,0,168,0c0-33.17-19.24-63.43-49-77.09A12,12,0,1,1,173,29.1C211.27,46.66,236,85.48,236,128Z"></path></svg>`;
             runbutton.classList.add('working');
             document.getElementById("terminal_output").innerHTML = "";
-            ajaxPost("https://arturo-lang.io/exec.php",
+            ajaxPost("http://188.245.97.105/exec.php",
 
             function (result) {
                 var got = JSON.parse(result);
                 document.getElementById("terminal_output").innerHTML = got.text;
                 window.snippetId = got.code;
-                window.history.replaceState({code: got.code, text: got.text}, `${got.code} - Playground | Arturo programming language`, `https://arturo-lang.io/playground/?${got.code}`);
+                window.history.replaceState({code: got.code, text: got.text}, `${got.code} - Playground | Arturo programming language`, `http://188.245.97.105//playground/?${got.code}`);
 
-                runbutton.innerHTML = `<i class='far fa-play-circle'></i>`;
                 runbutton.classList.remove('working');
 
                 window.scroll.animateScroll(document.querySelector("#terminal"));
@@ -34,7 +33,7 @@ function execCode() {
 }
 
 function getSnippet(cd) {
-    ajaxPost("https://arturo-lang.io/get.php",
+    ajaxPost("http://188.245.97.105/get.php",
     
     function (result) {
         var got = JSON.parse(result);
@@ -49,7 +48,7 @@ function getSnippet(cd) {
 }
 
 function getExample(cd) {
-    ajaxPost("https://arturo-lang.io/example.php",
+    ajaxPost("http://188.245.97.105/example.php",
     
     function (result) {
         var got = JSON.parse(result);
@@ -107,7 +106,7 @@ function shareLink(){
         Bulma().alert({
             type: 'info',
             title: 'Share this script',
-            body:  `<input id='snippet-link' class='input is-info' value='http://arturo-lang.io/playground?${window.snippetId}'>`,
+            body:  `<input id='snippet-link' class='input is-info' value='http://188.245.97.105/playground?${window.snippetId}'>`,
             confirm: {
                 label: 'Copy link',
                 onClick: function(){
@@ -132,8 +131,7 @@ function toggleExpand(){
     if (window.expanded){
         window.expanded = false;
         document.querySelector(".doccols").style.display = "flex";
-        document.querySelector("#expanderIcon").classList.remove("fa-compress-alt");
-        document.querySelector("#expanderIcon").classList.add("fa-expand-alt");
+        document.querySelector("#expanderIcon").classList.remove("expanded");
         document.querySelector("#runbutton").classList.remove("expanded");
         document.querySelector("#sharebutton").classList.remove("expanded");
         document.querySelector("#expander").classList.remove("expanded");
@@ -142,8 +140,7 @@ function toggleExpand(){
     else {
         window.expanded = true;
         document.querySelector(".doccols").style.display = "inherit";
-        document.querySelector("#expanderIcon").classList.remove("fa-expand-alt");
-        document.querySelector("#expanderIcon").classList.add("fa-compress-alt");
+        document.querySelector("#expanderIcon").classList.add("expanded");
         document.querySelector("#runbutton").classList.add("expanded");
         document.querySelector("#sharebutton").classList.add("expanded");
         document.querySelector("#expander").classList.add("expanded");

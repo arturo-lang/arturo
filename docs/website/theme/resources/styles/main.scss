@@ -25,15 +25,49 @@ nav ul li a {
     }
 }
 
-#downloads a {
-    border: 1px solid transparent;
-    border-radius: 20px;
-    padding: 0.5em;
+#downloads {
+    td:last-child {
+        text-align: center;
+    }
 
-    &:hover {
-        border: 1px solid #3273dc;
-        border-radius: 20px;
+    a {
+        border-top: 2px solid transparent;
+        border-bottom: 2px solid transparent;
         padding: 0.5em;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+
+        svg {
+            transform: rotate(90deg);
+            transition: transform 0.3s ease;
+        }
+
+        &:hover {
+            border-top: 2px solid #3273dc;
+            border-bottom: 2px solid #3273dc;
+            
+            svg {
+                transform: rotate(180deg);
+            }
+        }
+    }
+
+    .full-version, .mini-version {
+
+        // .checksum {
+        //     color: gray;
+        //     font-size: x-small;
+        //     display: none;
+        // }
+
+        // &:hover {
+        //     .checksum {
+        //         display: block;
+        //     }
+        // }
     }
 }
 
@@ -203,6 +237,46 @@ sup {
     color: $main-purple;
 }
 
+#version-dropdown {
+    align-items: center;
+
+    .button {
+        margin-left: 8px; 
+        vertical-align: middle; 
+        font-size: 0.9em; 
+        font-weight: normal; 
+        background-color: inherit; 
+        color: #6a156b; 
+        height: 1.5em !important;
+        border: 0;
+    }
+
+    .icon {
+        visibility: hidden;
+    }
+
+    &:hover {            
+        .icon {
+            visibility: visible;    
+        }
+    }
+
+    .dropdown-menu {
+        a.dropdown-item {
+
+            &.is-active {
+                background-color: #f5e8f5;
+                color: #6a156b;
+                font-weight: 600;
+            }
+
+            &:hover {
+                border: 0;
+            }
+        }
+    }
+}
+
 code[class*=language-], pre[class*=language-] { 
     font-family: 'Fira Code Arturo', monospace !important; 
 }
@@ -366,33 +440,6 @@ code[class*=language-], pre[class*=language-] {
     }
 }
 
-#searchbar {
-    border: 0;
-    border-radius: 0;
-    border-left: 2px solid $main-purple;
-    outline: none;
-    width: 30vw;
-    font-size: 1.2em;
-    padding-left: 50px;
-    margin-top: 0px;
-    line-height: 1.9em;
-}
-
-#searchbar-icon {
-    position: relative;
-    left: calc(-1 * 30vw + 35.5px);
-    top: 18px;
-}
-
-a.algolia-docsearch-suggestion:hover {
-    border-bottom: 0;
-}
-@media (max-width: 1023px) {
-    .algolia-autocomplete {
-        display: none !important;
-    }
-}
-
 .exampleletter {
     font-size: 2rem;
     display: block;
@@ -408,18 +455,6 @@ a.algolia-docsearch-suggestion:hover {
 
 #navbarMain {
     font-weight: 500;
-}
-
-#mainTitle {
-    span {
-        display: none !important;
-    }
-
-    &:hover {
-        span {
-            display: inline-block !important;
-        }
-    }
 }
 
 .semibold {
@@ -688,13 +723,14 @@ blockquote {
     }
 }
 
-/* Prevent any horizontal overflow */
-body, html {
-    overflow-x: hidden;
-}
-
 /* Fix container padding on mobile */
 @media screen and (max-width: 768px) {
+
+    /* Prevent any horizontal overflow */
+    body, html {
+        overflow-x: hidden;
+    }
+
     .container {
         padding-left: 1rem;
         padding-right: 1rem;

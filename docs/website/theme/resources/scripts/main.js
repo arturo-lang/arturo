@@ -428,47 +428,5 @@ document.addEventListener('DOMContentLoaded', () => {
             var parsed = JSON.parse(data);
             setDiv("stargazers",parsed.items[0].stargazers_count);
         });
-
-        ajaxGet("https://api.github.com/repos/arturo-lang/arturo/releases", function (data){
-            var parsed = JSON.parse(data);
-            /*console.log(parsed);*/
-            //var releaseVersion = parsed[0].tag_name;
-            //setClass("release-version", parsed[0].tag_name);
-            //setClass("release-version-mini", `${parsed[0].tag_name}<sup>*</sup>`);
-            //setDiv("release-date", parsed[0].published_at);
-			/*
-            ajaxGet(parsed[0].assets_url, function (data){
-                var parsed = JSON.parse(data);
-                var downloadsTable = `<tr><th></th><th></th><th class="is-hidden-touch has-text-centered">Version</th><th class="is-hidden-touch has-text-centered">Compressed file size</th><th></th></tr>`;
-                var downloadItems = [];
-                for (var i = 0; i < parsed.length; i++){
-                    var elem = parsed[i];
-                    var logo = "";
-                    var os = "";
-                    var order = "";
-                    var version = releaseVersion;
-                    if (elem.name.includes("Linux")) { order = 1; logo = linuxLogo; os = "<b>Linux</b>"; }
-                    else if (elem.name.includes("macOS")) { order = 2; logo = macosLogo; os = "<b>macOS</b>"; }
-                    else if (elem.name.includes("Windows")) { order = 3; logo = windowsLogo; os = "<b>Windows</b>"; }
-                    else if (elem.name.includes("FreeBSD")) { order = 4; logo = bsdLogo; os = "<b>FreeBSD</b>"; }
-                    else if (elem.name.includes("arm-")) { order = 5; logo = raspberryLogo; os = "<b>arm</b>"; }
-                    else if (elem.name.includes("arm64-")) { order = 6; logo = raspberryLogo; os = "<b>arm64</b>"; }
-					else if (elem.name.includes("Web")) { order = 7; logo = webLogo; os = "<b>Web</b>"; }
-                    if (elem.name.includes("mini")) { 
-						version += "<sup>*</sup>"; 
-						os += "<sup class='is-hidden-desktop'>*</sup>";
-					}
-                    var size = ((elem.size)/(1024*1024)).toFixed(2) + " MB";
-                    var link = elem.browser_download_url;
-
-                    downloadItems.push(`<tr><td order="${order}" class="first-td">${logo}</td><td>${os}</td><td class="is-hidden-touch has-text-centered">${version}</td><td class="is-hidden-touch has-text-centered">${size}</td><td><a href="${link}"><i class="far fa-arrow-alt-circle-down"></i>&nbsp;&nbsp;Download</a></td></tr>`);
-                }
-                downloadItems.sort();
-                downloadsTable += downloadItems.join("");
-                downloadsTable += `<tr><td class="first-td">${dockerLogo}</td><td><b>Docker</b></td><td class="release-version is-hidden-touch has-text-centered">${releaseVersion}</td><td class="is-hidden-touch has-text-centered">--</td><td><a rel="noopener" target="_blank" href="https://hub.docker.com/repository/docker/arturolang/arturo"><i class="far fa-arrow-alt-circle-right"></i>&nbsp;&nbsp;Docker Hub</a></td></tr>`
-                setDiv("downloads",downloadsTable);
-                
-            });*/
-        })
     }
 });

@@ -276,3 +276,47 @@
         background: transparent;
     }
 }
+
+#runbutton {
+    .play {
+        display: block;
+    }
+    .processing {
+        display: none;
+        animation: spin 1s linear infinite;
+    }
+    &.working {
+        .play {
+            display: none;
+        }
+        .processing {
+            display: block;
+        }
+    }
+}
+
+#expanderIcon {
+    .doexpand {
+        display: block;
+    }
+    .docompress {
+        display: none;
+    }
+    &.expanded {
+        .doexpand {
+            display: none;
+        }
+        .docompress {
+            display: block;
+        }
+    }
+}
+
+@keyframes spinaround {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
