@@ -241,10 +241,10 @@ jobs:
               with:
                 switches: -avzr --delete
                 path: tmpdocs/
-                remote_path: /var/www/arturo-lang.io/v/master
-                remote_host: arturo-lang.io
-                remote_user: root
-                remote_key: ${{ secrets.ARTUROLANG }}
+                remote_path: /usr/local/www/arturo/web/main/public/versions/test
+                remote_host: 188.245.97.105 
+                remote_user: web
+                remote_key: ${{ secrets.FREEBSD_WEB_DEPLOYMENT }}
 
             - name: Upload complete website artifact
               uses: 'actions/upload-artifact@v4'
