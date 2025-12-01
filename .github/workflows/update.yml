@@ -94,7 +94,7 @@ jobs:
                     # - {os: linux,   arch: arm64, mode: full}
                     # - {os: linux,   arch: arm64, mode: full, support: legacy}
                     # - {os: linux,   arch: arm64, mode: mini}
-                    # - {os: freebsd, arch: amd64, mode: full}
+                    - {os: freebsd, arch: amd64, mode: full}
                     # - {os: freebsd, arch: amd64, mode: mini}
                     # - {os: macos,   arch: amd64, mode: full}
                     # - {os: macos,   arch: amd64, mode: mini}
@@ -115,7 +115,7 @@ jobs:
             - name: Install Arturo
               uses: arturo-lang/arturo-action@v2
               with: 
-                do: compile
+                #do: compile
                 token: ${{ secrets.GITHUB_TOKEN }}
                 os: ${{ matrix.os }}
                 arch: ${{ matrix.arch }}
