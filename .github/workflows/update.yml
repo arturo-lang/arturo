@@ -258,6 +258,17 @@ jobs:
                 remote_user: web
                 remote_key: ${{ secrets.FREEBSD_WEB_DEPLOYMENT }}
 
+            - name: Extract and move FreeBSD binary
+              uses: appleboy/ssh-action@v1.2.0
+              with:
+                host: 188.245.97.105
+                username: web
+                key: ${{ secrets.FREEBSD_WEB_DEPLOYMENT }}
+                script: |
+                  cd /usr/local/www/arturo/web/main/public/versions/test
+                  unzip -o binaries/*-freebsd-amd64.zip
+                  mv arturo backend/
+
             - name: Upload complete website artifact
               uses: 'actions/upload-artifact@v4'
               with:
