@@ -296,14 +296,14 @@ githubMarkdown: function [src][
 
         write.directory ø join.path @[loc "favico"]
 
-        loop filter list "theme/backend" => [in? "." &] 'res [ 
+        loop filter list "backend" => [in? "." &] 'res [ 
             folderPath: join.path @[loc "backend" extract.basename res]
-            call {_showInfoLine} @["create" call {_routeDiagram} @[res -- "theme/backend/"] false]
+            call {_showInfoLine} @["create" call {_routeDiagram} @[res -- "backend/"] false]
             write.directory ø join.path @[loc "backend" extract.basename res] 
             loop list res 'item [
-                tgt: join.path @[loc item -- "theme/"]
+                tgt: join.path @[loc item]
 
-                call {_showInfoLine} @["copy" call {_routeDiagram} @[item -- "theme/backend/"] false]
+                call {_showInfoLine} @["copy" call {_routeDiagram} @[item -- "backend/"] false]
                 execute ~"cp |item| |tgt|"
             ]
         ]
