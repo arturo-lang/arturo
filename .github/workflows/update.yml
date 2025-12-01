@@ -78,59 +78,59 @@ jobs:
             #     git push origin master
 
     # Step 2: Build all binaries with new version
-    Binaries:
-        runs-on: ${{ 
-            (matrix.os == 'linux')   && (matrix.support == 'legacy' && (matrix.arch == 'arm64' && 'ubuntu-22.04-arm' || 'ubuntu-22.04') || matrix.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-latest') ||
-            (matrix.os == 'macos')   && (matrix.arch == 'arm64' && 'macos-latest' || 'macOS-15-intel') ||
-            (matrix.os == 'windows') && 'windows-latest' || 
-                                        'ubuntu-latest'  }}
-        needs: Build
-        strategy:
-            matrix:
-                include: 
-                    # - {os: linux,   arch: amd64, mode: full}
-                    # - {os: linux,   arch: amd64, mode: full, support: legacy}
-                    # - {os: linux,   arch: amd64, mode: mini}
-                    # - {os: linux,   arch: arm64, mode: full}
-                    # - {os: linux,   arch: arm64, mode: full, support: legacy}
-                    # - {os: linux,   arch: arm64, mode: mini}
-                    #- {os: freebsd, arch: amd64, mode: full}
-                    # - {os: freebsd, arch: amd64, mode: mini}
-                    # - {os: macos,   arch: amd64, mode: full}
-                    # - {os: macos,   arch: amd64, mode: mini}
-                    # - {os: macos,   arch: arm64, mode: full}
-                    # - {os: macos,   arch: arm64, mode: mini}
-                    # - {os: windows, arch: amd64, mode: full}
-                    # - {os: windows, arch: amd64, mode: mini}
-                    - {os: web}
+    # Binaries:
+    #     runs-on: ${{ 
+    #         (matrix.os == 'linux')   && (matrix.support == 'legacy' && (matrix.arch == 'arm64' && 'ubuntu-22.04-arm' || 'ubuntu-22.04') || matrix.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-latest') ||
+    #         (matrix.os == 'macos')   && (matrix.arch == 'arm64' && 'macos-latest' || 'macOS-15-intel') ||
+    #         (matrix.os == 'windows') && 'windows-latest' || 
+    #                                     'ubuntu-latest'  }}
+    #     needs: Build
+    #     strategy:
+    #         matrix:
+    #             include: 
+    #                 # - {os: linux,   arch: amd64, mode: full}
+    #                 # - {os: linux,   arch: amd64, mode: full, support: legacy}
+    #                 # - {os: linux,   arch: amd64, mode: mini}
+    #                 # - {os: linux,   arch: arm64, mode: full}
+    #                 # - {os: linux,   arch: arm64, mode: full, support: legacy}
+    #                 # - {os: linux,   arch: arm64, mode: mini}
+    #                 #- {os: freebsd, arch: amd64, mode: full}
+    #                 # - {os: freebsd, arch: amd64, mode: mini}
+    #                 # - {os: macos,   arch: amd64, mode: full}
+    #                 # - {os: macos,   arch: amd64, mode: mini}
+    #                 # - {os: macos,   arch: arm64, mode: full}
+    #                 # - {os: macos,   arch: arm64, mode: mini}
+    #                 # - {os: windows, arch: amd64, mode: full}
+    #                 # - {os: windows, arch: amd64, mode: mini}
+    #                 - {os: web}
 
-        name: Build ${{ matrix.os }}-${{ matrix.arch || 'js' }}-${{ matrix.mode || 'mini' }}${{ matrix.support == 'legacy' && '-legacy' || '' }}
-        defaults:
-            run:
-                shell: ${{ 
-                    (matrix.os == 'freebsd') && 'freebsd {0}' ||
-                    (matrix.os == 'windows') && 'msys2 {0}'   || 
-                                                'bash'        }}
-        steps:
-            - name: Install Arturo
-              uses: arturo-lang/arturo-action@v2
-              with: 
-                do: compile
-                token: ${{ secrets.GITHUB_TOKEN }}
-                os: ${{ matrix.os }}
-                arch: ${{ matrix.arch }}
-                mode: ${{ matrix.mode }}
-                support: ${{ matrix.support }}
-                src: master
-                metadata: ${{ needs.Build.outputs.version_tag }}
-                create_artifact: 'true'
-                artifact_version: ${{ needs.Build.outputs.version_tag }}
+    #     name: Build ${{ matrix.os }}-${{ matrix.arch || 'js' }}-${{ matrix.mode || 'mini' }}${{ matrix.support == 'legacy' && '-legacy' || '' }}
+    #     defaults:
+    #         run:
+    #             shell: ${{ 
+    #                 (matrix.os == 'freebsd') && 'freebsd {0}' ||
+    #                 (matrix.os == 'windows') && 'msys2 {0}'   || 
+    #                                             'bash'        }}
+    #     steps:
+    #         - name: Install Arturo
+    #           uses: arturo-lang/arturo-action@v2
+    #           with: 
+    #             do: compile
+    #             token: ${{ secrets.GITHUB_TOKEN }}
+    #             os: ${{ matrix.os }}
+    #             arch: ${{ matrix.arch }}
+    #             mode: ${{ matrix.mode }}
+    #             support: ${{ matrix.support }}
+    #             src: master
+    #             metadata: ${{ needs.Build.outputs.version_tag }}
+    #             create_artifact: 'true'
+    #             artifact_version: ${{ needs.Build.outputs.version_tag }}
 
     # Step 3: Generate documentation and combine with binaries
     Documentation:
         runs-on: ubuntu-latest
         name: Generate Documentation & Deploy
-        needs: [Build, Binaries]
+        needs: [Build]
         defaults:
             run:
                 shell: bash
