@@ -226,7 +226,7 @@ jobs:
                 arturo tools/preprocessjs.art \
                   --basePath:"/test" \
                   --keywordPredicates:"$(arturo tools/getbuiltins.art 1)" \
-                  --keywordRest:""
+                  --keywordRest:"$(arturo tools/getbuiltins.art 2)"
 
                 mv details.art docs/website/data/setup.art
                 rm -rf tmpdocs  # Remove if exists
