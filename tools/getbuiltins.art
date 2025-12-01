@@ -4,13 +4,12 @@ builtins1: []
 builtins2: []
 
 loop symbols [k,v][
-    switch suffix? k "?" -> 'builtins1 ++ k
-                         -> 'builtins2 ++ k
+    switch suffix? k "?" -> 'builtins1 ++ chop to :string k
+                         -> 'builtins2 ++ to :string k
 ]
 print "-here1"
-map 'builtins1 => chop
-sort 'builtins1
-sort 'builtins2
+builtins1: sort builtins1
+builtins2: sort builtins2 -- ["builtins1" "builtins2"]
 print "-here2"
 if arg\0 = "1" [
     print "ARG 0 = 1"
