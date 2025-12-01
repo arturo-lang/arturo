@@ -60,7 +60,7 @@ jobs:
             #     # Read version
             #     if [ -f "version/version" ]; then
             #         version=$(cat version/version)
-            #     else
+            #     else 
             #         version=$(git describe --tags --abbrev=0 2>/dev/null || echo "0.9.83")
             #     fi
                 
