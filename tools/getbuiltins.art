@@ -11,11 +11,10 @@ print "-here1"
 builtins1: sort builtins1
 builtins2: sort builtins2 -- ["builtins1" "builtins2"]
 print "-here2"
-if arg\0 = "1" [
+switch arg\0 = "1" [
     print "ARG 0 = 1"
     prints [join.with:"|" builtins1]
-]
-if arg\0 = "2" [
+][
     print "ARG 0 = 2"
     prints [join.with:"|" builtins2]
 ]
