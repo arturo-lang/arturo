@@ -123,6 +123,7 @@ sortedBinaries: #.raw flatten arrange binaries [pfm,v][ index values platforms p
 
 ; Get version and build date from environment
 version: arg\0
+versionAlias: arg\1
 buildDate: strip execute ~"date -u '+%Y-%m-%d %H:%M:%S UTC'"
 
 ; Generate the _index.art file
@@ -148,3 +149,19 @@ inspect sort # to :block output
 
 print "\nGenerated _index.art:"
 print read "docs/website/pages/_index.art"
+
+
+[versionPart,buildPart]: split.by:"+" to :string sys\version
+
+Details: #[
+    version: versionPart
+    build: 0
+    arch: ~"|sys\cpu\arch|/|sys\os|"
+    branch: versionAlias
+]
+
+if or? [contains? buildPart "."][3 < to :integer buildPart][
+    Details\build: ~"|buildPart| @ |sys\built|"
+]
+
+write express Details "details.art"
