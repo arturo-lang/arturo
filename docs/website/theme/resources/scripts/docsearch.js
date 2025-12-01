@@ -22,7 +22,7 @@
 
     // Initialize search with base path
     window.initDocSearch = function() {
-        basePath = '%<[BASEPATH]>%';
+        basePath = '%<[BASE_PATH]>%';
         initSearch();
     };
 
