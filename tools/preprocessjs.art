@@ -1,4 +1,6 @@
+print "inside preprocessjs.art"
 import'recase!
+print "after import"
 
 changes: #[
     "docs/website/theme/resources/scripts/docsearch.js": [
@@ -13,11 +15,17 @@ changes: #[
     ]
 ]
 
+inspect args
+
 loop changes [file, replacements][
+    print ["Processing:" file]
     content: << file
     loop replacements 'rep [
+        print ["- replacing:" rep]
         content: replace content "%<[" ++ (upper recase.snake rep) ++ "]>%"
                                  args\[recase.camel rep]
     ]
     content >> file
 ]
+
+print "end--"
