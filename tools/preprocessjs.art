@@ -1,5 +1,82 @@
 print "inside preprocessjs.art"
-import'recase!
+export module [
+    ;---------------------------
+    ; Helpers
+    ;---------------------------
+
+    allCaps?: function [s][
+        and? 1 < size s
+            every? s 'ch -> or? [upper? ch]
+                                [numeric? ch]
+    ]
+
+    ;---------------------------
+    ; Private methods
+    ;---------------------------
+
+    separated: method [s][
+        ; crazy regex credit:
+        ; https://stackoverflow.com/a/62527131/1270812
+        prepared: s | replace {/(*UTF8)([^[\p{L}\d]+|(?<=[\p{Ll}\d])(?=\p{Lu})|(?<=\p{Lu})(?=\p{Lu}[\p{Ll}\d])|(?<=[\p{L}\d])(?=\p{Lu}[\p{Ll}\d]))/} " "
+                    | split.words
+        
+        return map prepared 'word [
+            (\allCaps? word)? -> word
+                              -> lower word
+        ]
+    ]
+
+    titleCase: method [s][
+        join map \separated s => capitalize
+    ]
+
+    camelCase: method [s][
+        join map.with:'i \separated s 'x [
+            (i=0)? -> x
+                   -> capitalize x
+        ]
+    ]
+
+    withSeparator: method [s,sep][
+        join.with:sep \separated s
+    ]
+
+    ;---------------------------
+    ; Public methods
+    ;---------------------------
+
+    recase: method.public [str :string][
+        ;; description: « convert case of given string
+        ;; options: [
+        ;;      title: « convert to TitleCase
+        ;;      camel: « convert to camelCase
+        ;;      snake: « convert to snake_case
+        ;;      kebab: « convert to kebab-case
+        ;;      plain: « convert to plain case
+        ;;      custom: :char :string « use custom separator
+        ;; ]
+        ;; returns: :string
+        ;; example: {
+        ;;      recase.snake "This is an example"
+        ;;      ; => "this_is_an_example"
+        ;;
+        ;;      recase.camel "Print SQL"
+        ;;      ; => "printSQL"
+        ;; }
+        ret: str
+
+        if attr 'title -> ret: \titleCase ret
+        if attr 'camel -> ret: \camelCase ret
+        if attr 'snake -> ret: \withSeparator ret "_"
+        if attr 'kebab -> ret: \withSeparator ret "-"
+        if attr 'plain -> ret: \withSeparator ret " "
+        
+        if customSep: <= attr 'custom ->
+            ret: \withSeparator ret customSep
+        
+        return ret
+    ]
+]!
 print "after import"
 
 changes: #[
