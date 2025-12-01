@@ -11,8 +11,11 @@ map 'builtins1 => chop
 sort 'builtins1
 sort 'builtins2
 
-print ["builtins1:" join.with:"|" builtins1]
-print ""
-print ["builtins2:" join.with:"|" builtins2]
+if arg\0 = "1" [
+    prints [join.with:"|" builtins1]
+]
+if arg\0 = "2" [
+    prints [join.with:"|" builtins2]
+]
 
-print ["total:" (size builtins1) + (size builtins2)]
+;print ["total:" (size builtins1) + (size builtins2)]
