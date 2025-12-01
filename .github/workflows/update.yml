@@ -215,13 +215,18 @@ jobs:
                 echo "RUNNING: indexgen"
                 arturo tools/indexgen.art
                 echo "RUNNING: preprocessor"
+                echo "RUNNING: preprocessor"
                 arturo -p install recase
+                echo "=== CALL 1 START ==="
                 arturo tools/getbuiltins.art 1
-                arturo tools/getbuiltins.art 2
+                echo "=== CALL 1 END ==="
+                echo "=== CALL 2 START ==="
+                #arturo tools/getbuiltins.art 2
+                echo "=== CALL 2 END ==="
                 arturo tools/preprocessjs.art \
                   --basePath:"/test" \
                   --keywordPredicates:"$(arturo tools/getbuiltins.art 1)" \
-                  --keywordRest:"$(arturo tools/getbuiltins.art 2)"
+                  --keywordRest:""
 
                 mv details.art docs/website/data/setup.art
                 rm -rf tmpdocs  # Remove if exists
