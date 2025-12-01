@@ -94,7 +94,7 @@ jobs:
                     # - {os: linux,   arch: arm64, mode: full}
                     # - {os: linux,   arch: arm64, mode: full, support: legacy}
                     # - {os: linux,   arch: arm64, mode: mini}
-                    - {os: freebsd, arch: amd64, mode: full}
+                    #- {os: freebsd, arch: amd64, mode: full}
                     # - {os: freebsd, arch: amd64, mode: mini}
                     # - {os: macos,   arch: amd64, mode: full}
                     # - {os: macos,   arch: amd64, mode: mini}
@@ -102,7 +102,7 @@ jobs:
                     # - {os: macos,   arch: arm64, mode: mini}
                     # - {os: windows, arch: amd64, mode: full}
                     # - {os: windows, arch: amd64, mode: mini}
-                    - {os: web}
+                    #- {os: web}
 
         name: Build ${{ matrix.os }}-${{ matrix.arch || 'js' }}-${{ matrix.mode || 'mini' }}${{ matrix.support == 'legacy' && '-legacy' || '' }}
         defaults:
