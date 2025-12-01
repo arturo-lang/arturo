@@ -236,7 +236,7 @@ jobs:
                 arturo ../../tools/miniwebize/webize.art --build --at: ../../tmpdocs
                 cd ../..
                 mkdir -p tmpdocs/backend
-                cp -r backend/* tmpdocs/backend/
+                cp -r docs/website/backend/* tmpdocs/backend/
                 echo "RUNNING: genaiguide"
                 arturo tools/genaiguide.art
                 mv tools/aiguide.md tmpdocs/llms.txt
