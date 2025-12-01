@@ -1,6 +1,6 @@
 #!/usr/bin/env arturo
-builtins1: new []
-builtins2: new []
+builtins1: []
+builtins2: []
 
 loop symbols [k,v][
     switch suffix? k "?" -> 'builtins1 ++ k
