@@ -215,6 +215,8 @@ jobs:
                 echo "RUNNING: indexgen"
                 arturo tools/indexgen.art
                 echo "RUNNING: preprocessor"
+                arturo tools/getbuiltins.art 1
+                arturo tools/getbuiltins.art 2
                 arturo tools/preprocessjs.art \
                   --basePath:"/test" \
                   --keywordPredicates:"$(arturo tools/getbuiltins.art 1)" \
