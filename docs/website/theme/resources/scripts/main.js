@@ -33,11 +33,11 @@ Prism.languages.arturo = {
         alias: 'boolean'
     },
     'keyword1': {
-        pattern: /\b(?:%<[KEYWORD_PREDICATES]>%)\?/,
+        pattern: /\b(?:%<[keywordPredicates]>%)\?/,
         alias: 'keyword'
     },
     'keyword2': {
-        pattern: /\b(?:%<[KEYWORD_REST]>%)\b/,
+        pattern: /\b(?:%<[keywordRest]>%)\b/,
         alias: 'keyword'
     },
     'sugar': {
