@@ -15,9 +15,9 @@ changes: #[
 
 loop changes [file, replacements][
     content: << file
-    loop replacemenents 'rep [
+    loop replacements 'rep [
         content: replace content "%<[" ++ upper recase.snake rep ++ "]>%"
-                                 arg\[recase.camel rep]
+                                 args\[recase.camel rep]
     ]
     content >> file
 ]
