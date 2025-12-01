@@ -21,8 +21,8 @@
     searchInput.parentNode.insertBefore(dropdown, searchInput.nextSibling);
 
     // Initialize search with base path
-    window.initDocSearch = function(basePathValue = '') {
-        basePath = basePathValue;
+    window.initDocSearch = function() {
+        basePath = '%<[SEARCH_BASEPATH]>%';
         initSearch();
     };
 
