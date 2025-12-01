@@ -212,7 +212,7 @@ jobs:
                 # version : 0.9.84-beta
 
                 arturo tools/preprocessjs.art \
-                  --searchBasePath:"/test" \
+                  --basePath:"/test" \
                   --keywordPredicates:"$(arturo tools/getbuiltins.art 1)" \
                   --keywordRest:"$(arturo tools/getbuiltins.art 2)"
 
