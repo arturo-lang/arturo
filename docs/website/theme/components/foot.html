@@ -35,10 +35,10 @@
     <script src="<||= linkTo {resources/scripts/docsearch.js} ||>"></script>
     <script>
         // Initialize doc search with base path
-        <|| switch prefix? Data\setup\version "v" [ ||>
+        <|| switch prefix? Data\setup\branch "v" [ ||>
             initDocSearch('');
         <|| ][ ||>
-            initDocSearch('/<||= Data\setup\version ||>');
+            initDocSearch('/<||= Data\setup\branch ||>');
         <|| ] ||>
     </script>
 <|| ] ||>
