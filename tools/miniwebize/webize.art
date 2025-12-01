@@ -30,6 +30,7 @@ Paths: #[
     resourceData:       "|project|/theme/resources/data"
     resourceScripts:	"|project|/theme/resources/scripts"
     resourceStyles: 	"|project|/theme/resources/styles"
+    backend:            "|project|/backend"
 ]
 
 Settings: #[]
@@ -294,6 +295,18 @@ githubMarkdown: function [src][
         call {_showHeader} ["finalizing"]
 
         write.directory ø join.path @[loc "favico"]
+
+        loop filter list "theme/backend" => [in? "." &] 'res [ 
+            folderPath: join.path @[loc "backend" extract.basename res]
+            call {_showInfoLine} @["create" call {_routeDiagram} @[res -- "theme/backend/"] false]
+            write.directory ø join.path @[loc "backend" extract.basename res] 
+            loop list res 'item [
+                tgt: join.path @[loc item -- "theme/"]
+
+                call {_showInfoLine} @["copy" call {_routeDiagram} @[item -- "theme/backend/"] false]
+                execute ~"cp |item| |tgt|"
+            ]
+        ]
 
         loop filter list "theme/resources" => [in? "." &] 'res [ 
             folderPath: join.path @[loc "resources" extract.basename res]
