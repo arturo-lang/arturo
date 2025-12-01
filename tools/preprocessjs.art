@@ -1,0 +1,20 @@
+import'recase!
+
+changes: #[
+    "docs/website/theme/resources/scripts/docsearch.js": [
+        "search base path"
+    ]
+    "main.js": [
+        "keyword predicates"
+        "keyword rest"
+    ]
+]
+
+loop changes [file, replacements][
+    content: << file
+    loop replacemenents 'rep [
+        content: replace content "%<[" ++ upper recase.snake rep ++ "]>%"
+                                 arg\[recase.camel rep]
+    ]
+    content >> file
+]
