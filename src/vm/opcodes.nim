@@ -250,25 +250,26 @@ type
         # [0xA0-0xAF]
         # branching
         opIf            = 0xA0      # ()                # cond,bl           # X
-        opIfE           = 0xA1      # ()                # cond,bl           # cond
-        opUnless        = 0xA2      # ()                # cond,bl           # X
-        opUnlessE       = 0xA3      # ()                # cond,bl           # cond
-        opElse          = 0xA4      # ()                # success           # X
-        opSwitch        = 0xA5      # ()                # cond,a,b          # X
-        opWhile         = 0xA6      # ()                # cond,bl           # X
+        opUnless        = 0xA1      # ()                # cond,bl           # X
+        opSwitch        = 0xA2      # ()                # cond,a,b          # X
+        opWhile         = 0xA3      # ()                # cond,bl           # X
 
-        opReturn        = 0xA7      # ()                # value             #
-        opBreak         = 0xA8      # ()                #                   #
-        opContinue      = 0xA9      # ()                #                   #
+        opReturn        = 0xA4      # ()                # value             #
+        opBreak         = 0xA5      # ()                #                   #
+        opContinue      = 0xA6      # ()                #      
+        
+        RSRV7           = 0xA7      #
+        RSRV8           = 0xA8      #
+        RSRV9           = 0xA9      #
 
         # converters
         opTo            = 0xAA      # ()                # tp,value          # result
         opToS           = 0xAB      # ()                # value             # result
         opToI           = 0xAC      # ()                # value             # result
 
-        RSRV7           = 0xAD      #    
-        RSRV8           = 0xAE      #
-        RSRV9           = 0xAF      #
+        RSRV10           = 0xAD      #    
+        RSRV11           = 0xAE      #
+        RSRV12           = 0xAF      #
 
         # [0xB0-0xBF]
         # generators
@@ -294,8 +295,8 @@ type
         # i/o operations
         opPrint         = 0xBD      # ()                # value             #
 
-        RSRV10          = 0xBE      #
-        RSRV11          = 0xBF      #
+        RSRV13          = 0xBE      #
+        RSRV14          = 0xBF      #
 
         #---------------------------------
         # LOW-LEVEL OPERATIONS
@@ -344,8 +345,8 @@ type
         
         opRet           = 0xDC      # ()                #                   #
 
-        RSRV12          = 0xDD      #
-        RSRV13          = 0xDE      #
+        RSRV15          = 0xDD      #
+        RSRV16          = 0xDE      #
 
         # the end
         opEnd           = 0xDF      # ()                #                   #

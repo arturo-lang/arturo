@@ -543,35 +543,6 @@ proc defineModule*(moduleName: string) =
             #=======================================================
             push(x)
             push(x)
-
-    # TODO(Core\else) should be marked as deprecated
-    #   https://github.com/arturo-lang/arturo/pull/1735
-    #  labels: library,→ Core, deprecated
-    builtin "else",
-        alias       = unaliased, 
-        op          = opElse,
-        rule        = PrefixPrecedence,
-        description = "perform action, if last condition was not true",
-        args        = {
-            "otherwise" : {Block,Bytecode}
-        },
-        attrs       = NoAttrs,
-        returns     = {Nothing},
-        example     = """
-            x: 2
-            z: 3
-            
-            if? x>z [
-                print "x was greater than z"
-            ]
-            else [
-                print "nope, x was not greater than z"
-            ]
-        """:
-            #=======================================================
-            let y = stack.pop() # pop the value of the previous operation (hopefully an 'if?' or 'when?')
-            if isFalse(y): 
-                execUnscoped(x)  
             
     builtin "ensure",
         alias       = unaliased, 
@@ -1826,54 +1797,6 @@ proc defineModule*(moduleName: string) =
     # Predicates
     #----------------------------
 
-    # TODO(Core\if?) do we get rid of this?
-    #   obviously, this is not needed and it is not
-    #   meant to be used as a substitute for if-else
-    #   however, does it make sense to keep a version
-    #   of `if` that also returns whether the condition
-    #   succeeded or not? why? (or "why not?")
-    #   btw, an almost identical solution would be:
-    #   ```
-    #   if <= some condition [ ... ]#
-    #   ```
-    #  labels: library,→ Core, open discussion
-    builtin "if?",
-        alias       = unaliased, 
-        op          = opIfE,
-        rule        = PrefixPrecedence,
-        description = "perform action, if given condition is not false or null and return condition result",
-        args        = {
-            "condition" : {Any},
-            "action"    : {Block}
-        },
-        attrs       = NoAttrs,
-        returns     = {Logical},
-        example     = """
-            x: 2
-            
-            result: if? x=2 -> print "yes, that's right!"
-            ; yes, that's right!
-            
-            print result
-            ; true
-            ..........
-            x: 2
-            z: 3
-            
-            if? x>z [
-                print "x was greater than z"
-            ]
-            else [
-                print "nope, x was not greater than z"
-            ]
-        """:
-            #=======================================================
-            let condition = not (xKind==Null or isFalse(x))
-            if condition: 
-                execUnscoped(y)
-
-            push(newLogical(condition))
-
     builtin "set?",
         alias       = unaliased, 
         op          = opNop,
@@ -1892,87 +1815,6 @@ proc defineModule*(moduleName: string) =
         """:
             #=======================================================
             push(newLogical(SymExists(x.s)))
-
-    builtin "unless?",
-        alias       = unaliased, 
-        op          = opUnlessE,
-        rule        = PrefixPrecedence,
-        description = "perform action, if given condition is false or null and return condition result",
-        args        = {
-            "condition" : {Any},
-            "action"    : {Block,Bytecode}
-        },
-        attrs       = NoAttrs,
-        returns     = {Logical},
-        example     = """
-            x: 2
-            
-            result: unless? x=1 -> print "yep, x is not 1!"
-            ; yep, x is not 1!
-            
-            print result
-            ; true
-            
-            z: 1
-            
-            unless? x>z [
-                print "yep, x was not greater than z"
-            ]
-            else [
-                print "x was greater than z"
-            ]
-            ; x was greater than z
-        """:
-            #=======================================================
-            let condition = xKind==Null or isFalse(x)
-            if condition: 
-                execUnscoped(y)
-
-            push(newLogical(condition))
-
-    # TODO(Core\when?) should be marked as deprecated
-    #   https://github.com/arturo-lang/arturo/pull/1735
-    #  labels: library,→ Core, deprecated
-    builtin "when?",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "check if a specific condition is fulfilled and, if so, execute given action",
-        args        = {
-            "condition" : {Block},
-            "action"    : {Block}
-        },
-        attrs       = NoAttrs,
-        returns     = {Logical},
-        example     = """
-            ; DEPRECATED!
-            a: 2
-            case [a]
-                when? [<2] -> print "a is less than 2"
-                when? [=2] -> print "a is 2"
-                else       -> print "a is greater than 2"
-        """:
-            #=======================================================
-            let z = stack.pop()
-            if isFalse(z):
-
-                let top = sTop()
-
-                var newb: Value = newBlock()
-                for old in top.a:
-                    newb.a.add(old)
-                for cond in x.a:
-                    newb.a.add(cond)
-
-                execUnscoped(newb)
-
-                if isTrue(sTop()):
-                    execUnscoped(y)
-                    discard stack.pop()
-                    discard stack.pop()
-                    push(newLogical(true))
-            else:
-                push(z)
 
     #----------------------------
     # Constants
