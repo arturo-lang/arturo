@@ -8,6 +8,7 @@ The command line is where the whole journey starts: whether you want to try out 
 
 - [Using the command line](#using-the-command-line)
    * [Run a script](#run-a-script)
+   * [Evaluate a code string](#evaluate-a-code-string)
    * [Start the interactive console](#start-the-interactive-console)
    * [Working with bytecode](#working-with-bytecode)
 - [Package manager](#package-manager)
@@ -28,6 +29,28 @@ To run an Arturo script, all you have to do is pass the main script's path to Ar
 ```bash
 arturo <script>
 ```
+
+<h4 id="evaluate-a-code-string">Evaluate a code string</h4>
+
+To evaluate code strings, call Arturo with `--evaluate`, `-e` followed by a string consisting of Arturo code:
+
+```bash
+arturo --evaluate <string>
+```
+
+Please note that double quotes in a double-quoted string must be escaped with the backslash character:
+
+```bash
+arturo -e "print \"Hello, World!\""
+```
+
+If the code string doesn't contain quotation marks, it can also be enclosed in single quotation marks. In that case, escaping isn't necessary. For example:
+
+```bash
+arturo -e 'print "Hello, World!"'
+```
+
+Strings can contain multiple statements and/or blocks, separated by commas or spaces, or, if the preceding character is not alphabetic, concatenated.
 
 <h4 id="start-the-interactive-console">Start the interactive console</h4>
 

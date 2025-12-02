@@ -506,7 +506,7 @@ proc processBlock*(
         if (not fn.isNil) and fn.fnKind == BuiltinFunction:
             if (op = fn.op; op != opNop):
                 callType = 
-                    if op in {opIf, opIfE, opUnless, opUnlessE, opElse, opSwitch, opWhile}:
+                    if op in {opIf, opUnless, opSwitch, opWhile}:
                         SpecialCall
                     else:
                         BuiltinCall

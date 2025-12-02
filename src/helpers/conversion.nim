@@ -537,6 +537,14 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat:Value = nil): Val
                     else:
                         throwCannotConvert()
 
+            of Path,
+               PathLabel,
+               PathLiteral:
+                if tp == Block:
+                    return newBlock(y.p)
+                else:
+                    throwCannotConvert()
+
             of Symbol:
                 case tp:
                     of String:
@@ -634,7 +642,4 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat:Value = nil): Val
                Database,
                Socket,
                Nothing,
-               Any,
-               Path,
-               PathLabel,
-               PathLiteral: throwCannotConvert()
+               Any: throwCannotConvert()

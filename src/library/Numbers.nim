@@ -1050,7 +1050,7 @@ proc defineModule*(moduleName: string) =
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "get a random integer between given limits",
+        description = "get a random number between given limits",
         args        = {
             "lowerLimit"    : {Integer, Floating, Rational},
             "upperLimit"    : {Integer, Floating, Rational}

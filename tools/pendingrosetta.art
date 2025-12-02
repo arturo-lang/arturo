@@ -1,0 +1,292 @@
+; this is a draft
+; not really meant to be used right now
+
+import'progressive!
+import'tabular!
+import'unidecode!
+
+;------------------------------------------
+; Configuration
+;------------------------------------------
+
+API_URL: "https://rosettacode.org/w/api.php"
+
+;------------------------------------------
+; Helper Functions
+;------------------------------------------
+
+fetchCategory: function [category][
+    results: []
+    continue: ""
+    
+    while ø [
+        params: #[
+            action: "query"
+            list: "categorymembers"
+            cmtitle: ~"Category:|category|"
+            cmlimit: "500"
+            format: "json"
+        ]
+        
+        unless empty? continue ->
+            params\cmcontinue: continue
+
+        response: request API_URL params
+        if response\status <> 200 [
+           break
+        ]
+        body: read.json response\body
+        
+        'results ++ map body\query\categorymembers 'page ->
+            page\title
+            
+        switch key? body 'continue 
+            -> continue: body\continue\cmcontinue
+            -> break
+    ]
+    
+    return results
+]
+
+fetchTaskSolution: function [taskName, language][
+    ;print "in fetchTaskSolution"
+    errorMsg: function [msg][
+        #[
+            code: "",
+            output: msg
+            rebol?: true
+        ]
+    ]
+    ;------------------------------------------
+    ; Fetch the raw wikitext for the task
+    ;------------------------------------------
+    
+    params: #[
+        action: "parse"
+        page: taskName
+        prop: "wikitext"
+        format: "json"
+    ]
+    ;print ["making request with:" params]
+    response: request API_URL params
+    if response\status <> 200 [
+        return errorMsg "HTTP error"
+    ]
+    body: ø
+    ;print "getting response"
+    if try [
+        body: read.json response\body
+    ] [
+        ;print "before returning json error"
+        return errorMsg "JSON error"
+    ]
+    ;print "HERE"
+    
+    ; Check if page exists
+    unless key? body\parse 'wikitext [
+        return errorMsg "Parsing error"
+    ]
+    
+    ; Get the wikitext content
+    wikitext: first values body\parse\wikitext
+
+    ;------------------------------------------
+    ; Extract the section for the given language
+    ;------------------------------------------
+
+    syntaxStart: {<syntaxhighlight}
+    rebolSyntax: {<syntaxhighlight lang="rebol">}
+    arturoSyntax: {<syntaxhighlight lang="arturo">}
+    syntaxEnd: {</syntaxhighlight>}
+
+    preStart: {<pre>}
+    preEnd: {</pre>}
+    
+    ; Create the header pattern to search for
+    headerStart: "=={{header|"
+    headerPattern: headerStart ++ language ++ "}}=="
+
+    ;print ["===>" size split.by:headerPattern wikitext "sections found"]
+    main: last split.by:headerPattern wikitext
+    if main = wikitext ->
+        return errorMsg "No section"
+    main: strip first split.by:headerStart main
+
+    code?: false
+    output?: false
+
+    hasOldRebolTag?: false
+
+    code: ""
+    output: ""
+
+    i: 0
+    while [i < size main][
+        substr: drop.times: i main
+        ch: main\[i]
+
+        when.has: substr [
+            [|prefix? syntaxEnd][
+                i: i + dec size syntaxEnd
+                code?: false
+            ]
+            [|prefix? preEnd][
+                output?: false
+            ]
+        ]
+
+        if code?    -> code: code ++ ch
+        if output?  -> output: output ++ ch
+
+        when.has: substr [
+            [|prefix? syntaxStart][
+                when.has: substr [
+                    [|prefix? rebolSyntax][
+                        i: i + dec size rebolSyntax
+                        hasOldRebolTag?: true
+                        code?: true
+                    ]
+                    [|prefix? arturoSyntax][
+                        i: i + dec size arturoSyntax
+                        code?: true
+                    ]
+                    true [
+                        return errorMsg "No code section"
+                    ]
+                ]
+            ]
+            [|prefix? preStart][
+                i: i + dec size preStart
+                output?: true
+            ]
+        ]
+
+        i: i + 1
+    ]
+
+    return #[
+        code: code
+        output: output
+        rebol?: hasOldRebolTag?
+    ]
+]
+
+checkSolution: function [fname,name][
+    ;print ["in checkSolution with:" fname "/" name]
+    ;print exists? ~"examples/rosetta/|fname|.art"
+    ;print exists? ~"examples/rosetta/|fname|.res"
+    source: ""
+    try [
+        source: read.file ~"examples/rosetta/|fname|.art"
+    ]
+    ;print "getting output"
+    output: ""
+    try [output: read.file ~"examples/rosetta/|fname|.res"]
+    ;print "read local files"
+
+    fetched: fetchTaskSolution name "Arturo"
+
+    ; print "after fetching"
+    ; inspect fetched
+
+    ; print ["source:" source]
+    ; print ["output:" output]
+    ; ;return fetched
+
+    codeMsg: (fetched\code = source)? -> color #green "✓" [
+        (fetched\code = "")? -> color #red to :string fetched\output
+                             -> color #red to :string levenshtein fetched\code source
+    ]
+
+    outputMsg: (fetched\code = source)? -> color #green "✓" [
+        color #red to :string levenshtein fetched\code source
+    ]
+
+    return #[
+        codeOK?: codeMsg
+        outputOK?: outputMsg
+        oldTags?: (not? fetched\rebol?)? -> color #green "✓" -> color #red "x"
+    ]
+    return ""
+]
+; hello world - web server 
+; matched to: Hello world/Web server 
+; inspect checkSolution "hello world - graphical" "Hello world/Graphical"
+;inspect checkSolution "interactive programming (repl)" "Interactive programming (repl)"
+;inspect checkSolution "introspection" "Introspection"
+prints " • Fetching remote tasks implemented in Arturo..."
+rcTasks: "arturo" 
+    | fetchCategory
+    | filter => [& = "Category:Arturo User"]
+print color #green " OK"
+
+prints " • Getting local tasks..."
+localTasks: "examples/rosetta" 
+    | list
+    | select => [suffix? & ".art"]
+    | map => [extract.filename &]
+print color #green " OK"
+
+print " • Matching tasks..."
+result: #[]
+loop.keep localTasks 'tsk [
+    ;processing tsk
+    sanitized: strip first split.by:"--" replace tsk " - " "/"
+    found: ø
+    loop rcTasks 'rct [
+        if sanitized = unidecode lower rct [
+            found: rct
+            break
+        ]
+    ]
+    result\[tsk]: found
+]
+
+unmatchedRcTasks: difference rcTasks values result
+
+loop result [k,v][
+    if null? v [
+        print color #gray "\tNot found: " ++ k
+        sanitized: strip first split.by:"--" replace k " - " "/"
+        found: minimum unmatchedRcTasks 'rct ->
+            levenshtein sanitized unidecode lower rct
+        result\[k]: found
+        print color #gray "\t\t-> Matched with: " ++ found
+    ]
+]
+
+result | values
+       | join.with:"\n"
+       | write "rctasks.txt"
+
+; unmatchedRcTasks: difference rcTasks values result
+; nofTasks: (size unmatchedRcTasks) + size unique values result
+
+; print color #cyan repeat "-" 60
+; print [" •  Found" size result "files"]
+; print [" • " nofTasks "tasks solved in total (" size unmatchedRcTasks "only on RC )"]
+; print color #cyan repeat "-" 60
+
+; print " • Checking tasks..."
+; stats: #[]
+; tblrows: []
+; result: #.raw flatten arrange result [k,v]-> v
+; progressive\loop keys result 'kk [
+;     vv: result\[kk]
+;     ;print kk
+;     processing kk
+
+;     ; print ["checking:" kk]
+;     ; print ["matched to:" vv]
+;     ; print ""
+
+;     check: checkSolution kk vv
+;     ;stats\[kk]: checkSolution kk vv
+
+;     'tblrows ++ @[flatten @[vv values check]]
+;     ;;print color #cyan repeat "=" 50
+;     ;;print color #cyan repeat "=" 50
+; ]
+
+; ;inspect rows
+; print tabular.header:["Task" "Solution" "Output" "Clean tags?"] tblrows

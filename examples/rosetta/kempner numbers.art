@@ -1,0 +1,35 @@
+; by @Krenium
+
+valp: $[n p][
+    s: 0
+    while [n <> 0][
+        n: n / p
+        's + n
+    ]
+    s
+]
+
+K: $[p e][
+    if e =< p -> return e * p
+    t: p * (e * p - 1) / p
+    while [(valp t p) < e] -> 't + p
+    t
+]
+
+kempner: $[n][
+    if n = 1 -> return 1
+    n | factors.prime
+      | chunk => [&]
+      | map 'x -> K x\0 size x
+      | max
+]
+
+1..50 | map => kempner
+      | split.every:10
+      | loop => print
+
+print ""
+
+77135679311..77135679321
+  | map => kempner
+  | loop => print

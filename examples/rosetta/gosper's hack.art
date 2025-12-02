@@ -1,0 +1,16 @@
+; by @Krenium
+
+gospersHack: function [n][
+    c: and n neg n
+    r: n + c
+    or div shr xor r n 2 c r
+]
+
+loop [1 3 7 15] 'n [
+    prints ~"|n|: "
+    do.times:10 [
+        n: gospersHack n
+        prints -> n
+    ]
+    print ""
+]

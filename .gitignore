@@ -1,6 +1,7 @@
 /*bin/*
 !/bin/placeholder
 /.cache
+.unitt/
 /test*.*
 .sass-cache
 benchmark_results*

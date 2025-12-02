@@ -1,4 +1,4 @@
-name: "TODO -> Issue"
+name: "TODO"
 on:
   push:
     branches:
@@ -6,7 +6,7 @@ on:
     tags-ignore:
       - '**'
 jobs:
-  build:
+  Generate:
     runs-on: "ubuntu-latest"
     steps:
       - uses: "actions/checkout@master"

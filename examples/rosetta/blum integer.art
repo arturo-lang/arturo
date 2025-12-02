@@ -1,0 +1,17 @@
+blum?: function [n][
+    if any? @[n < 21, even? n, zero? n % 5] 
+        -> return false
+
+    f: factors.prime n
+    if or? [2 <> size f][f\0 = f\1] 
+        -> return false
+    
+    every? f => [3 = & % 4]
+]
+
+print "First 50 Blum numbers:"
+1..∞ | select.first: 50 => blum?
+     | split.every: 10
+     | loop => [print map & 'x -> pad to :string x 4]
+
+print ["\n26828th Blum number:" select.n:26828 1..∞ => blum?]

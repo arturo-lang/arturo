@@ -27,9 +27,6 @@ when defined(GMP):
 #=======================================
 # Definitions
 #=======================================
-
-# TODO(Arithmetic) add `powmod` built-in function?
-#  labels: library, enhancement, open discussion
  
 proc defineModule*(moduleName: string) =
 

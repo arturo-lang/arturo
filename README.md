@@ -5,7 +5,7 @@
 
 <h1>Arturo</h1> 
 
-### Simple, expressive & portable<br>programming language for efficient scripting<br><br>![License](https://img.shields.io/github/license/arturo-lang/arturo?style=for-the-badge) ![Language](https://img.shields.io/badge/language-Nim-6A7FC8.svg?style=for-the-badge)   [![Build Status](https://img.shields.io/github/actions/workflow/status/arturo-lang/arturo/linux.yml?branch=master&style=for-the-badge)](https://github.com/arturo-lang/arturo/actions) <a href="https://discord.gg/YdVK2CB" target="_blank">![Chat on Discord](https://img.shields.io/discord/765519132186640445?color=orange&label=@Discord&style=for-the-badge)</a>
+### Simple, expressive & portable<br>programming language for efficient scripting<br><br>![License](https://img.shields.io/github/license/arturo-lang/arturo?style=for-the-badge) ![Language](https://img.shields.io/badge/language-Nim-6A7FC8.svg?style=for-the-badge)   [![Build Status](https://img.shields.io/github/actions/workflow/status/arturo-lang/arturo/ci.yml?branch=master&style=for-the-badge)](https://github.com/arturo-lang/arturo/actions) <a href="https://discord.gg/YdVK2CB" target="_blank">![Chat on Discord](https://img.shields.io/discord/765519132186640445?color=orange&label=@Discord&style=for-the-badge)</a>
 </div>
 
 ---
@@ -188,30 +188,19 @@ So...
 
 ### How can I donate?
 
-We have different options for you:
+Our main sponsor channel is [GitHub Sponsors](https://github.com/sponsors/drkameleon).
 
-- [GitHub Sponsors](https://github.com/sponsors/drkameleon)
-- [Patreon](https://patreon.com/arturolang)
+You may also donate via crypto:
 
-You may also donate [via Bitcoin](https://blockchain.info/address/bc1qpjlmktrz79muz4yksm8aadz3d3srh0rmnn3hhd):
-
-<img width="150" src="docs/images/bitc.png"/>
+- **BTC**: `bc1qpjlmktrz79muz4yksm8aadz3d3srh0rmnn3hhd`
+- **ETH**: `0x8552a389ea3d77e0e13573a642cff5ef745447b9`
+- **SOL**: `FS47tEruHesSbWFPdhqbJpixtwHVgU38DvJYYYLRk2MS`
 
 ### Sponsors
 
 Every little bit counts and the least we could do is to thank you all for your help and making us stick to the project:
 
-<!--<div align="center">-->
-<h4>🩶 Silver sponsors</h4>
-
-<a href="https://github.com/hcengineering"><img align="center" width="100" src="https://avatars.githubusercontent.com/u/87086734?s=200&v=4"/><br><b>Huly® Platform™</b></a>
-<!--</div>-->
-
-<!--<div align="center">-->
-<h4>⚡️ Bronze sponsors</h4>
-
 <a href="https://github.com/BNAndras"><img align="center" width="50" src="https://avatars.githubusercontent.com/u/20251272?v=4"/></a>
-<!--</div>-->
 
 -----------------------------
 

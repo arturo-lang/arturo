@@ -121,7 +121,7 @@ var
     DoNot*, DoAnd*, DoOr*                                                   : BuiltinAction
     DoEq*, DoNe*, DoGt*, DoGe*, DoLt*, DoLe*                                : BuiltinAction
     DoGet*, DoSet*                                                          : BuiltinAction
-    DoIf*, DoIfE*, DoUnless*, DoUnlessE*, DoElse*, DoSwitch*, DoWhile*      : BuiltinAction
+    DoIf*, DoUnless*, DoSwitch*, DoWhile*                                   : BuiltinAction
     DoReturn*, DoBreak*, DoContinue*                                        : BuiltinAction
     DoTo*                                                                   : BuiltinAction
     DoArray*, DoDict*, DoFunc*, DoRange*                                    : BuiltinAction

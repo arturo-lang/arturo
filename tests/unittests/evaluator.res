@@ -690,23 +690,23 @@
 
         input: [print "before" if x [print "here" return true] print "after"] 
         data: [before x here after] 
-        code: [32 189 65 199 4 34 189 21 167 35 189 223] (12 bytes) 
+        code: [32 189 65 199 4 34 189 21 164 35 189 223] (12 bytes) 
 
         input: [print "before" if not? x [print "here" return false] print "after"] 
         data: [before x here after] 
-        code: [32 189 65 197 4 34 189 22 167 35 189 223] (12 bytes) 
+        code: [32 189 65 197 4 34 189 22 164 35 189 223] (12 bytes) 
 
         input: [print "before" if x = 2 [print "here" return true] print "after"] 
         data: [before x here after] 
-        code: [32 189 3 65 203 4 34 189 21 167 35 189 223] (13 bytes) 
+        code: [32 189 3 65 203 4 34 189 21 164 35 189 223] (13 bytes) 
 
         input: [print "before" if x > 2 [print "here" return true] print "after"] 
         data: [before x here after] 
-        code: [32 189 3 65 211 4 34 189 21 167 35 189 223] (13 bytes) 
+        code: [32 189 3 65 211 4 34 189 21 164 35 189 223] (13 bytes) 
 
         input: [print "before" if x =< 2 [print "here" return true] print "after"] 
         data: [before x here after] 
-        code: [32 189 3 65 205 4 34 189 21 167 35 189 223] (13 bytes) 
+        code: [32 189 3 65 205 4 34 189 21 164 35 189 223] (13 bytes) 
 
 
         >--------------------------------------------------
@@ -715,23 +715,23 @@
 
         input: [print "before" unless x [print "here" return false] print "after"] 
         data: [before x here after] 
-        code: [32 189 65 197 4 34 189 22 167 35 189 223] (12 bytes) 
+        code: [32 189 65 197 4 34 189 22 164 35 189 223] (12 bytes) 
 
         input: [print "before" unless not? x [print "here" return true] print "after"] 
         data: [before x here after] 
-        code: [32 189 65 199 4 34 189 21 167 35 189 223] (12 bytes) 
+        code: [32 189 65 199 4 34 189 21 164 35 189 223] (12 bytes) 
 
         input: [print "before" unless x = 2 [print "here" return false] print "after"] 
         data: [before x here after] 
-        code: [32 189 3 65 201 4 34 189 22 167 35 189 223] (13 bytes) 
+        code: [32 189 3 65 201 4 34 189 22 164 35 189 223] (13 bytes) 
 
         input: [print "before" unless x > 2 [print "here" return false] print "after"] 
         data: [before x here after] 
-        code: [32 189 3 65 205 4 34 189 22 167 35 189 223] (13 bytes) 
+        code: [32 189 3 65 205 4 34 189 22 164 35 189 223] (13 bytes) 
 
         input: [print "before" unless x =< 2 [print "here" return false] print "after"] 
         data: [before x here after] 
-        code: [32 189 3 65 211 4 34 189 22 167 35 189 223] (13 bytes) 
+        code: [32 189 3 65 211 4 34 189 22 164 35 189 223] (13 bytes) 
 
 
         >--------------------------------------------------
@@ -739,24 +739,24 @@
         >--------------------------------------------------
 
         input: [print "before" switch a [1] [2] print "after"] 
-        data: [before a after] 
-        code: [32 189 65 199 3 2 216 1 3 34 189 223] (12 bytes) 
+        data: [before [2] [1] a after] 
+        code: [32 189 33 34 67 162 36 189 223] (9 bytes) 
 
         input: [(x = 1) ? -> 1 -> 2] 
-        data: [x] 
-        code: [2 64 203 3 2 216 1 3 223] (9 bytes) 
+        data: [[2] [1] x] 
+        code: [32 33 2 66 147 162 223] (7 bytes) 
 
         input: [print "before" return (x < 1) ? -> true -> false print "after"] 
         data: [before [false] [true] x after] 
-        code: [32 189 33 34 2 67 151 165 167 36 189 223] (12 bytes) 
+        code: [32 189 33 34 2 67 151 162 164 36 189 223] (12 bytes) 
 
         input: [print "before" z: (x < 1) ? -> true -> false print "after"] 
         data: [before [false] [true] x z after] 
-        code: [32 189 33 34 2 67 151 165 52 37 189 223] (12 bytes) 
+        code: [32 189 33 34 2 67 151 162 52 37 189 223] (12 bytes) 
 
         input: [print "before" z: 3 + (x >= 1) ? -> 1 -> 2 print "after"] 
         data: [before [2] [1] x z after] 
-        code: [32 189 33 34 2 67 150 165 4 128 52 37 189 223] (14 bytes) 
+        code: [32 189 33 34 2 67 150 162 4 128 52 37 189 223] (14 bytes) 
 
 
         >--------------------------------------------------
@@ -769,4 +769,4 @@
 
         input: [while ∅ [print "hello"]] 
         data: [[print hello]] 
-        code: [32 27 166 223] (4 bytes)
+        code: [32 27 163 223] (4 bytes) 

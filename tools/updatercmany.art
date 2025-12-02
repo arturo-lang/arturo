@@ -1,0 +1,9 @@
+rcTasks: sort map read.lines ./"../rctasks.txt" => strip
+
+print "---------------------------------------------------------------------"
+print " updating RC syntax tags"
+print "---------------------------------------------------------------------"
+
+loop rcTasks 'pageTitle [
+    execute.directly ~{arturo tools/updatercsyntax.art "|pageTitle|"}
+]

@@ -28,7 +28,7 @@ suite "General Tests" [
         assert -> every? combine.by: k someBlock 'el -> k = size el
         assert -> every? combine.repeated.by: k someBlock 'el -> k = size el
     ]
-    
+
     test.prop "combine A is a shortcut for combine.by: (size A) A" [
         n: 2
         assert -> equal? 
@@ -61,7 +61,7 @@ suite "Matematical Properties" [
         assert -> 1 = combine.count someBlock
         assert -> 1 = combine.count.by: (size someBlock) someBlock
     ]
-    
+
     test.prop "C[n:0] = 1" [
         assert -> 1 = combine.count.by: 0 someBlock 
     ]
@@ -77,7 +77,10 @@ suite "Matematical Properties" [
     test.prop "C[n:k] = n! / (k! * (n - k)!)" [
         sample: [[A B C] [I J K L] [D E F G H] [D E F G H I J]]
 
-        loop [1 2 3] 'k -> loop sample 'Set [
+        loop [1 2 3] 'kVar -> loop sample 'SetVar [
+            Set: new SetVar
+            k: new kVar
+
             default: kCombinations size Set k
             repeating: kMulticombination size Set k
 
@@ -110,7 +113,7 @@ suite "Specific Tests" [
         assert -> result = combine.by: 2 [A B C]
         assert -> equal? size result combine.count.by: 2 [A B C]
     ]
-    
+
     test "combine.repeated.by: 2 [A B C]" [
         result: [
             [A A] [A B] 

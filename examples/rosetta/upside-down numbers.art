@@ -1,0 +1,29 @@
+updowns: function [n][
+    result: [5]
+    
+    s: 1
+    while [n > size result][
+        perms: permutate.repeated.by: s @1..9
+        loop perms 'perm -> 
+            'result ++ to :integer join to [:string] perm ++ 
+                map reverse perm 'digit -> 10 - digit
+        
+        loop perms 'perm ->
+            'result ++ to :integer join to [:string] perm ++ [5] ++ 
+                map reverse perm 'digit -> 10 - digit
+        
+        inc 's
+    ]
+    
+    return result
+]
+
+res: updowns 50000
+
+print "First 50 upside-down numbers:"
+loop split.every: 10 first.n: 50 res 'row ->
+    print map row 'item -> pad to :string item 5
+
+print ""
+loop [500 5000 50000] 'idx ->
+    print [pad ~"|idx|th:" 9 res\[idx-1]]

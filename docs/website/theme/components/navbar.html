@@ -19,9 +19,12 @@
         <div class="navbar-end">
             
             <||= if contains? pagePath "documentation" [||>
-                <input class="navbar-item is-hidden-touch" id="searchbar" type="search" placeholder="Search...">
-                <i id="searchbar-icon" class="fa fa-search is-hidden-touch"></i>
+                <div class="navbar-item is-hidden-touch search-container">
+                    <input id="searchbar" type="search" placeholder="Search documentation...">
+                    <i id="searchbar-icon" class="fa fa-search"></i>
+                </div>
             <|| ] ||>
+
             <a class="<||= if contains? pagePath "documentation" [||>is-active<||]||> navbar-item is-tab is-warning" href="<||= linkTo{documentation} ||>">
                 <!--<i class="far fa-file-alt"></i>&nbsp;&nbsp;-->Documentation
             </a>

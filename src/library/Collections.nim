@@ -1410,8 +1410,6 @@ proc defineModule*(moduleName: string) =
             "step"  : ({Integer},"use step between range values")
         },
         returns     = {Range},
-        # TODO(Collections\range) add documentation example
-        #  labels: library, documentation, example
         example     = """
         ; range of :integers
 
@@ -2445,7 +2443,7 @@ proc defineModule*(moduleName: string) =
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "keep first N elements from given collection and return the remaining ones",
+        description = "keep first N elements from given collection",
         args        = {
             "collection": {String, Block, Range, Literal, PathLiteral},
             "number"    : {Integer}

@@ -16,7 +16,7 @@
 # Compilation & Linking
 #=======================================
 
-when defined(macosx) and defined(arm64):
+when defined(macosx):
     {.passL: "-L/opt/homebrew/lib".}
     
 {.passL: "-lmpfr -lgmp".}
