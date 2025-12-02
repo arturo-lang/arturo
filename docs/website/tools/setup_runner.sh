@@ -14,7 +14,7 @@ if [ $# -lt 1 ]; then
     echo "  $0 /path/to/release/backend/arturo"
     echo ""
     echo "If template_id is not provided, it will be derived from the binary path"
-    exit 1
+    #exit 1
 fi
 
 ARTURO_BIN="$1"
