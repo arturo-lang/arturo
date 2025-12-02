@@ -434,21 +434,21 @@ proc evaluateBlock*(blok: Node, consts: var ValueArray, it: var VBinary, isDicti
                     when defined(PROFILER):
                         if alreadyProcessed:
                             hookOptimProfiler("opIf")
-                of opIfE:       
-                    optimizeConditional(consts, it, item, withPotentialElse=true, withInversion=true)
-                    when defined(PROFILER):
-                        if alreadyProcessed:
-                            hookOptimProfiler("opIfE")
+                # of opIfE:       
+                #     optimizeConditional(consts, it, item, withPotentialElse=true, withInversion=true)
+                #     when defined(PROFILER):
+                #         if alreadyProcessed:
+                #             hookOptimProfiler("opIfE")
                 of opUnless:    
                     optimizeConditional(consts, it, item)
                     when defined(PROFILER):
                         if alreadyProcessed:
                             hookOptimProfiler("opUnless")
-                of opUnlessE:   
-                    optimizeConditional(consts, it, item, withPotentialElse=true)
-                    when defined(PROFILER):
-                        if alreadyProcessed:
-                            hookOptimProfiler("opUnlessE")
+                # of opUnlessE:   
+                #     optimizeConditional(consts, it, item, withPotentialElse=true)
+                #     when defined(PROFILER):
+                #         if alreadyProcessed:
+                #             hookOptimProfiler("opUnlessE")
                 of opSwitch:    
                     # TODO(VM/eval) `switch` not working properly in `print` block?
                     #  For example this: https://github.com/arturo-lang/arturo/blob/even-more-RC-problem-solving/examples/rosetta/practical%20numbers.art#L24-L25
@@ -466,13 +466,6 @@ proc evaluateBlock*(blok: Node, consts: var ValueArray, it: var VBinary, isDicti
                     when defined(PROFILER):
                         if alreadyProcessed:
                             hookOptimProfiler("opWhile")
-                of opElse:
-                    # `else` is not handled separately
-                    # if it's a try?/else block for example, 
-                    # it's to be handled as a normal op below
-                    # if it's an if?/else or unless?/else construct, 
-                    # it has already been above ^
-                    discard
                 else:
                     discard # won't reach here
 
