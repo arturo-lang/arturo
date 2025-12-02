@@ -36,15 +36,13 @@
 
                         loop sort keys get pageTree\documentation\library last chop pagePath 'fff [ 
                             fun: replace replace fff "_" "" "-" "?"
-                            if? :function = type var fun [
-                                if? '?' = last fun [
+                            switch :function = type var fun [
+                                switch '?' = last fun [
                                     predicateCount: predicateCount + 1 
-                                ]
-                                else [
+                                ] [
                                     functionCount: functionCount + 1
                                 ]
-                            ]
-                            else [
+                            ] [
                                 constantCount: constantCount + 1
                             ]
                         ]

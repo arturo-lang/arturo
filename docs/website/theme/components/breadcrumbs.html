@@ -12,15 +12,14 @@
             pageRoute: slice pageRoute 1 (size pageRoute)-1
             loop.with:'pidx pageRoute 'pp [
                 'pathSoFar ++ pp
-                if? pp=last pageRoute [
+                switch pp=last pageRoute [
                     lastItem: pp 
                     if not? and? [contains? pageRoute "library"]
                                  [and? [0 =< pidx-2]["library"= pageRoute\[pidx-2]]] [
                         lastItem: join.with:" " map split.words lastItem 'x -> capitalize replace x "-" "?"
                     ]
                     'pathItems ++ ~{<li class="is-active"><a href="#">|replace lastItem "-" "?"|</a></li>}
-                ] 
-                else [
+                ] [
                     'pathItems ++ ~{<li><a href="|linkTo join.path pathSoFar|">|capitalize pp|</a></li>}
                 ] 
             ]
