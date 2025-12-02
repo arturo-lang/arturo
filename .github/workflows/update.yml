@@ -197,12 +197,12 @@ jobs:
                   if [ -n "$name" ]; then
                     echo "Downloading: $name"
                     curl -L -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-                      "$url" -o "binaries/${name}.zip"
+                      "$url" -o "files/${name}.zip"
                   fi
                 done
                 
                 echo "Downloaded artifacts:"
-                ls -lh binaries/
+                ls -lh files/
 
             - name: "Generate website"
               env:
@@ -232,18 +232,18 @@ jobs:
             - name: Copy binaries to website
               run: |
                 # Create binaries directory in website output
-                mkdir -p tmpdocs/binaries
+                mkdir -p tmpdocs/files
                 
                 # Copy all binary zips
                 echo "Copying binaries..."
-                cp binaries/*.zip tmpdocs/binaries/
+                cp files/*.zip tmpdocs/files/
                 
                 # Create version file
-                echo "${{ needs.Build.outputs.version_tag }}" > tmpdocs/binaries/VERSION
+                echo "${{ needs.Build.outputs.version_tag }}" > tmpdocs/files/VERSION
                 
                 # Verify binaries were copied
                 echo "Binaries in tmpdocs:"
-                ls -lh tmpdocs/binaries/
+                ls -lh tmpdocs/files/
                 
             - name: Synchronize to website
               uses: burnett01/rsync-deployments@7.0.2
@@ -262,9 +262,10 @@ jobs:
                 username: web
                 key: ${{ secrets.FREEBSD_WEB_DEPLOYMENT }}
                 script: |
-                  cd /usr/local/www/arturo/web/main/public/versions/test
-                  unzip -o binaries/*-freebsd-amd64.zip
-                  mv arturo backend/
+                  cd /usr/local/www/arturo/main/versions/test
+                  unzip -o files/*-freebsd-amd64.zip
+                  mkdir -p bin
+                  mv arturo bin/
 
             - name: Upload complete website artifact
               uses: 'actions/upload-artifact@v4'
@@ -276,6 +277,6 @@ jobs:
               run: |
                 echo "🎉 Build & Documentation Complete!"
                 echo "Version: ${{ needs.Build.outputs.version_tag }}"
-                echo "Binaries built: $(ls binaries/ | wc -l)"
+                echo "Binaries built: $(ls files/ | wc -l)"
                 echo "Website deployed to: https://arturo-lang.io/test"
-                echo "Binaries available at: https://arturo-lang.io/test/binaries/"
+                echo "Binaries available at: https://arturo-lang.io/test/files"
