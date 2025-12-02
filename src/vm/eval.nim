@@ -342,10 +342,11 @@ template optimizeConditional(
             # get jump distance
             var jumpDistance =
                 when withPotentialElse:
-                    if elseIt.len > 255:
-                        rightIt.len + 3
-                    else:
-                        rightIt.len + 2
+                    0
+                    # if elseIt.len > 255:
+                    #     rightIt.len + 3
+                    # else:
+                    #     rightIt.len + 2
                 elif withLoop:
                     if (leftIt.len + rightIt.len) > 255:
                         rightIt.len + 3
@@ -367,10 +368,11 @@ template optimizeConditional(
             # finally add some potential else block
             # preceded by an appropriate jump around it
             when withPotentialElse:
-                it.addOpWithNumber(opGoto, elseIt.len, hasShortcut=false)
+                discard
+                # it.addOpWithNumber(opGoto, elseIt.len, hasShortcut=false)
 
-                # add the else block
-                it.add(elseIt)
+                # # add the else block
+                # it.add(elseIt)
             elif withLoop:
                 let upDistance = leftIt.len + jumpDistance
                 it.addOpWithNumber(opGoup, upDistance, hasShortcut=false)
