@@ -250,7 +250,7 @@ jobs:
               with:
                 switches: -avzr --delete
                 path: tmpdocs/
-                remote_path: /usr/local/www/arturo/web/main/public/versions/test
+                remote_path: /usr/local/www/arturo/main/versions/test
                 remote_host: 188.245.97.105 
                 remote_user: web
                 remote_key: ${{ secrets.FREEBSD_WEB_DEPLOYMENT }}
@@ -267,6 +267,8 @@ jobs:
                   mkdir -p bin
                   mv arturo bin/
 
+                  sudo /usr/local/sbin/arturo_setup_runner test
+
             - name: Upload complete website artifact
               uses: 'actions/upload-artifact@v4'
               with:
@@ -278,5 +280,5 @@ jobs:
                 echo "🎉 Build & Documentation Complete!"
                 echo "Version: ${{ needs.Build.outputs.version_tag }}"
                 echo "Binaries built: $(ls files/ | wc -l)"
-                echo "Website deployed to: https://arturo-lang.io/test"
-                echo "Binaries available at: https://arturo-lang.io/test/files"
+                echo "Website deployed to: https://188.245.97.105 /test"
+                echo "Binaries available at: https://188.245.97.105/test/files"
