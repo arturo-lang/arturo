@@ -434,6 +434,9 @@ proc evaluateBlock*(blok: Node, consts: var ValueArray, it: var VBinary, isDicti
                     when defined(PROFILER):
                         if alreadyProcessed:
                             hookOptimProfiler("opIf")
+                # TODO(VM/eval) properly clean up commented-out opcodes
+                #  it could also give us some margin to optimize `optimizeConditional` further
+                #  labels: vm, cleanup, evaluator
                 # of opIfE:       
                 #     optimizeConditional(consts, it, item, withPotentialElse=true, withInversion=true)
                 #     when defined(PROFILER):
