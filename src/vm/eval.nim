@@ -248,6 +248,10 @@ func doesNotContainBranching(node: Node): bool  =
 #
 #  labels: vm, evaluator, enhancement, open discussion
 
+# TODO(VM/eval) clean up leftover `withPotentialElse` code
+#  since `ifE` and `unlessE` have been removed, we should clean up
+#  the related code here.
+#  labels: vm, evaluator, cleanup
 template optimizeConditional(
     consts: var ValueArray, 
     it: var VBinary, 
