@@ -326,10 +326,11 @@ template optimizeConditional(
             evaluateBlock(rightNode, consts, rightIt)
 
             when withPotentialElse:
-                # separately ast+evaluate else child block     
-                var elseIt: VBinary
-                let (elseAstNode,_) = generateAst(elseChild.value, reuseArities=true)
-                evaluateBlock(elseAstNode, consts, elseIt)
+                discard
+                # # separately ast+evaluate else child block     
+                # var elseIt: VBinary
+                # let (elseAstNode,_) = generateAst(elseChild.value, reuseArities=true)
+                # evaluateBlock(elseAstNode, consts, elseIt)
 
             # get operand & added to the instructions
             let (newOp, replaceOp) = 
