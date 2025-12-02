@@ -1,38 +1,55 @@
 <?php
 header('Access-Control-Allow-Origin: http://188.245.97.105');
+header('Content-Type: application/json');
 
 $rest_json = file_get_contents("php://input");
 $_POST = json_decode($rest_json, true);
 $code = $_POST['c'];
-if (trim($_POST['i'])!="") {
-	$temp_file = "/tmp/art_".$_POST['i'];
-}
-else {
-	$temp_file = tempnam(sys_get_temp_dir(), 'art_');
-}
-file_put_contents($temp_file, $code."\n");
 
-$i = exec ("timeout -v --signal=9 10s /var/www/arturo-lang.io/arturo $temp_file 2>&1 | aha --no-header --black",$output, $ret);
+if (empty($code)) {
+    echo json_encode(["text" => "No code provided", "code" => "", "result" => -1]);
+    exit;
+}
 
+// Generate unique ID
+$exec_id = !empty($_POST['i']) ? $_POST['i'] : uniqid('art_', true);
+$jail_name = "arturo_" . preg_replace('/[^a-zA-Z0-9]/', '_', $exec_id);
+$jail_path = "/zroot/jails/run/" . $jail_name;
+
+// Clone template jail
+exec("sudo /sbin/zfs clone zroot/jails/arturo_runner@clean zroot/jails/run/$jail_name 2>&1", $clone_out, $clone_ret);
+
+if ($clone_ret !== 0) {
+    error_log("Failed to clone jail: " . implode("\n", $clone_out));
+    echo json_encode(["text" => "System error", "code" => $exec_id, "result" => -1]);
+    exit;
+}
+
+// Write code file
+$code_file = $jail_path . "/tmp/main.art";
+file_put_contents($code_file, $code . "\n");
+chmod($code_file, 0644);
+
+// Run in jail with timeout and library path
+$cmd = "sudo /usr/sbin/jail -c name=$jail_name path=$jail_path exec.start=\"/bin/sh -c 'HOME=/root LD_LIBRARY_PATH=/usr/local/lib timeout --kill-after=2s 5s /usr/local/bin/arturo /tmp/main.art'\" exec.stop=\"\" 2>&1";
+exec($cmd, $output, $ret);
+
+// Cleanup (jail auto-stops, just destroy ZFS)
+exec("sudo /sbin/zfs destroy zroot/jails/run/$jail_name 2>&1");
+
+// Process output
 $txt = "";
-foreach ($output as $outp)
-{
-	$txt .= str_replace("\t","&nbsp;&nbsp;&nbsp;&nbsp;",$outp). "<br>";
+foreach ($output as $line) {
+    $txt .= str_replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;", $line) . "<br>";
 }
 
-if ($txt==""){ $txt = "[no output]"; }
+if (empty($txt)) {
+    $txt = "[no output]";
+}
 
-$final = array(
-	"text" => $txt,
-	"code" => str_replace("art_","",str_replace("/tmp/", "", $temp_file)),
-	"result" => $ret,
-	"i" => $i,
-	"output" => $output, 
-	"output2" => $output2,
-	"ret" => $ret,
-	"ret2" => $ret2
-);
-
-echo json_encode($final);
-
+echo json_encode([
+    "text" => $txt,
+    "code" => $exec_id,
+    "result" => $ret
+]);
 ?>
