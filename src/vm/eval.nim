@@ -271,25 +271,26 @@ template optimizeConditional(
     var canWeOptimize = false
 
     when withPotentialElse:
-        var elseChild: Node
-        when isSwitch:
-            elseChild = cleanedChildren[2]
-            canWeOptimize = right.kind == ConstantValue and right.value.kind == Block and
-                            elseChild.kind == ConstantValue and elseChild.value.kind == Block
-        else:
-            let previousI = i
-            let elseNode = getNextNonNewlineNode(blok, i, nLen)
+        discard
+        # var elseChild: Node
+        # when isSwitch:
+        #     elseChild = cleanedChildren[2]
+        #     canWeOptimize = right.kind == ConstantValue and right.value.kind == Block and
+        #                     elseChild.kind == ConstantValue and elseChild.value.kind == Block
+        # else:
+        #     let previousI = i
+        #     let elseNode = getNextNonNewlineNode(blok, i, nLen)
 
-            if (not elseNode.isNil) and elseNode.kind == SpecialCall and elseNode.op == opElse:
-                var j = -1
-                elseChild = getNextNonNewlineNode(elseNode, j, elseNode.children.len)
-                if not elseChild.isNil:
-                    canWeOptimize = right.kind == ConstantValue and right.value.kind == Block and
-                                    elseChild.kind == ConstantValue and elseChild.value.kind == Block
-                else:
-                    i = previousI
-            else:
-                i = previousI
+        #     if (not elseNode.isNil) and elseNode.kind == SpecialCall and elseNode.op == opElse:
+        #         var j = -1
+        #         elseChild = getNextNonNewlineNode(elseNode, j, elseNode.children.len)
+        #         if not elseChild.isNil:
+        #             canWeOptimize = right.kind == ConstantValue and right.value.kind == Block and
+        #                             elseChild.kind == ConstantValue and elseChild.value.kind == Block
+        #         else:
+        #             i = previousI
+        #     else:
+        #         i = previousI
     else:
         when withLoop:
             canWeOptimize = right.kind == ConstantValue and right.value.kind == Block and 
