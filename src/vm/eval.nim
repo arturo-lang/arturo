@@ -248,6 +248,10 @@ func doesNotContainBranching(node: Node): bool  =
 #
 #  labels: vm, evaluator, enhancement, open discussion
 
+# TODO(VM/eval) clean up leftover `withPotentialElse` code
+#  since `ifE` and `unlessE` have been removed, we should clean up
+#  the related code here.
+#  labels: vm, evaluator, cleanup
 template optimizeConditional(
     consts: var ValueArray, 
     it: var VBinary, 
@@ -267,25 +271,26 @@ template optimizeConditional(
     var canWeOptimize = false
 
     when withPotentialElse:
-        var elseChild: Node
-        when isSwitch:
-            elseChild = cleanedChildren[2]
-            canWeOptimize = right.kind == ConstantValue and right.value.kind == Block and
-                            elseChild.kind == ConstantValue and elseChild.value.kind == Block
-        else:
-            let previousI = i
-            let elseNode = getNextNonNewlineNode(blok, i, nLen)
+        discard
+        # var elseChild: Node
+        # when isSwitch:
+        #     elseChild = cleanedChildren[2]
+        #     canWeOptimize = right.kind == ConstantValue and right.value.kind == Block and
+        #                     elseChild.kind == ConstantValue and elseChild.value.kind == Block
+        # else:
+        #     let previousI = i
+        #     let elseNode = getNextNonNewlineNode(blok, i, nLen)
 
-            if (not elseNode.isNil) and elseNode.kind == SpecialCall and elseNode.op == opElse:
-                var j = -1
-                elseChild = getNextNonNewlineNode(elseNode, j, elseNode.children.len)
-                if not elseChild.isNil:
-                    canWeOptimize = right.kind == ConstantValue and right.value.kind == Block and
-                                    elseChild.kind == ConstantValue and elseChild.value.kind == Block
-                else:
-                    i = previousI
-            else:
-                i = previousI
+        #     if (not elseNode.isNil) and elseNode.kind == SpecialCall and elseNode.op == opElse:
+        #         var j = -1
+        #         elseChild = getNextNonNewlineNode(elseNode, j, elseNode.children.len)
+        #         if not elseChild.isNil:
+        #             canWeOptimize = right.kind == ConstantValue and right.value.kind == Block and
+        #                             elseChild.kind == ConstantValue and elseChild.value.kind == Block
+        #         else:
+        #             i = previousI
+        #     else:
+        #         i = previousI
     else:
         when withLoop:
             canWeOptimize = right.kind == ConstantValue and right.value.kind == Block and 
@@ -321,10 +326,11 @@ template optimizeConditional(
             evaluateBlock(rightNode, consts, rightIt)
 
             when withPotentialElse:
-                # separately ast+evaluate else child block     
-                var elseIt: VBinary
-                let (elseAstNode,_) = generateAst(elseChild.value, reuseArities=true)
-                evaluateBlock(elseAstNode, consts, elseIt)
+                discard
+                # # separately ast+evaluate else child block     
+                # var elseIt: VBinary
+                # let (elseAstNode,_) = generateAst(elseChild.value, reuseArities=true)
+                # evaluateBlock(elseAstNode, consts, elseIt)
 
             # get operand & added to the instructions
             let (newOp, replaceOp) = 
@@ -336,10 +342,11 @@ template optimizeConditional(
             # get jump distance
             var jumpDistance =
                 when withPotentialElse:
-                    if elseIt.len > 255:
-                        rightIt.len + 3
-                    else:
-                        rightIt.len + 2
+                    0
+                    # if elseIt.len > 255:
+                    #     rightIt.len + 3
+                    # else:
+                    #     rightIt.len + 2
                 elif withLoop:
                     if (leftIt.len + rightIt.len) > 255:
                         rightIt.len + 3
@@ -361,10 +368,11 @@ template optimizeConditional(
             # finally add some potential else block
             # preceded by an appropriate jump around it
             when withPotentialElse:
-                it.addOpWithNumber(opGoto, elseIt.len, hasShortcut=false)
+                discard
+                # it.addOpWithNumber(opGoto, elseIt.len, hasShortcut=false)
 
-                # add the else block
-                it.add(elseIt)
+                # # add the else block
+                # it.add(elseIt)
             elif withLoop:
                 let upDistance = leftIt.len + jumpDistance
                 it.addOpWithNumber(opGoup, upDistance, hasShortcut=false)
@@ -434,21 +442,24 @@ proc evaluateBlock*(blok: Node, consts: var ValueArray, it: var VBinary, isDicti
                     when defined(PROFILER):
                         if alreadyProcessed:
                             hookOptimProfiler("opIf")
-                of opIfE:       
-                    optimizeConditional(consts, it, item, withPotentialElse=true, withInversion=true)
-                    when defined(PROFILER):
-                        if alreadyProcessed:
-                            hookOptimProfiler("opIfE")
+                # TODO(VM/eval) properly clean up commented-out opcodes
+                #  it could also give us some margin to optimize `optimizeConditional` further
+                #  labels: vm, cleanup, evaluator
+                # of opIfE:       
+                #     optimizeConditional(consts, it, item, withPotentialElse=true, withInversion=true)
+                #     when defined(PROFILER):
+                #         if alreadyProcessed:
+                #             hookOptimProfiler("opIfE")
                 of opUnless:    
                     optimizeConditional(consts, it, item)
                     when defined(PROFILER):
                         if alreadyProcessed:
                             hookOptimProfiler("opUnless")
-                of opUnlessE:   
-                    optimizeConditional(consts, it, item, withPotentialElse=true)
-                    when defined(PROFILER):
-                        if alreadyProcessed:
-                            hookOptimProfiler("opUnlessE")
+                # of opUnlessE:   
+                #     optimizeConditional(consts, it, item, withPotentialElse=true)
+                #     when defined(PROFILER):
+                #         if alreadyProcessed:
+                #             hookOptimProfiler("opUnlessE")
                 of opSwitch:    
                     # TODO(VM/eval) `switch` not working properly in `print` block?
                     #  For example this: https://github.com/arturo-lang/arturo/blob/even-more-RC-problem-solving/examples/rosetta/practical%20numbers.art#L24-L25
@@ -466,13 +477,6 @@ proc evaluateBlock*(blok: Node, consts: var ValueArray, it: var VBinary, isDicti
                     when defined(PROFILER):
                         if alreadyProcessed:
                             hookOptimProfiler("opWhile")
-                of opElse:
-                    # `else` is not handled separately
-                    # if it's a try?/else block for example, 
-                    # it's to be handled as a normal op below
-                    # if it's an if?/else or unless?/else construct, 
-                    # it has already been above ^
-                    discard
                 else:
                     discard # won't reach here
 
