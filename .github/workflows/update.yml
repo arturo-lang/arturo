@@ -182,7 +182,7 @@ jobs:
 
             - name: Download all binary artifacts
               run: |
-                mkdir -p binaries
+                mkdir -p files
                 
                 # Get the run ID
                 RUN_ID="${{ github.run_id }}"
