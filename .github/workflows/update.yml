@@ -268,7 +268,7 @@ jobs:
                   mv arturo bin/
 
                   sudo /usr/local/sbin/arturo_setup_runner test
-
+ 
             - name: Upload complete website artifact
               uses: 'actions/upload-artifact@v4'
               with:
