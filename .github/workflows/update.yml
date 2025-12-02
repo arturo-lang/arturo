@@ -266,7 +266,7 @@ jobs:
                   unzip -o files/*-freebsd-amd64.zip
                   mkdir -p bin
                   mv arturo bin/
-
+                  chmod +x tools/setup_runner.sh
                   sudo /usr/local/sbin/arturo_setup_runner test
  
             - name: Upload complete website artifact
