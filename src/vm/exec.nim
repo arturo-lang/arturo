@@ -763,12 +763,13 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 # [0xA0-0xAF]
                 # branching
                 of opIf                 : DoIf()
-                of opIfE                : DoIfE()
                 of opUnless             : DoUnless()
-                of opUnlessE            : DoUnlessE()
-                of opElse               : DoElse()
                 of opSwitch             : DoSwitch()
                 of opWhile              : DoWhile()
+
+                of RSRV7                : discard
+                of RSRV8                : discard
+                of RSRV9                : discard
 
                 of opReturn             : DoReturn()
                 of opBreak              : DoBreak()
@@ -783,9 +784,9 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                     stack.push(VINTEGERT)
                     DoTo()
 
-                of RSRV7                : discard
-                of RSRV8                : discard
-                of RSRV9                : discard
+                of RSRV10               : discard
+                of RSRV11               : discard
+                of RSRV12               : discard
 
                 # [0xB0-0xBF]
                 # generators          
@@ -810,8 +811,8 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 # i/o operations
                 of opPrint              : DoPrint()
 
-                of RSRV10               : discard
-                of RSRV11               : discard
+                of RSRV13               : discard
+                of RSRV14               : discard
 
                 #---------------------------------
                 # LOW-LEVEL OPERATIONS
@@ -899,8 +900,8 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 of opRet                :
                     discard
 
-                of RSRV12               : discard
-                of RSRV13               : discard
+                of RSRV15               : discard
+                of RSRV16               : discard
 
                 of opEnd                :
                     break
