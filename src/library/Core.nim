@@ -1816,43 +1816,6 @@ proc defineModule*(moduleName: string) =
             #=======================================================
             push(newLogical(SymExists(x.s)))
 
-    builtin "unless?",
-        alias       = unaliased, 
-        op          = opUnlessE,
-        rule        = PrefixPrecedence,
-        description = "perform action, if given condition is false or null and return condition result",
-        args        = {
-            "condition" : {Any},
-            "action"    : {Block,Bytecode}
-        },
-        attrs       = NoAttrs,
-        returns     = {Logical},
-        example     = """
-            x: 2
-            
-            result: unless? x=1 -> print "yep, x is not 1!"
-            ; yep, x is not 1!
-            
-            print result
-            ; true
-            
-            z: 1
-            
-            unless? x>z [
-                print "yep, x was not greater than z"
-            ]
-            else [
-                print "x was greater than z"
-            ]
-            ; x was greater than z
-        """:
-            #=======================================================
-            let condition = xKind==Null or isFalse(x)
-            if condition: 
-                execUnscoped(y)
-
-            push(newLogical(condition))
-
     #----------------------------
     # Constants
     #----------------------------
