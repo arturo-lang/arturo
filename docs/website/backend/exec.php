@@ -11,8 +11,7 @@ if (empty($code)) {
     exit;
 }
 
-// Automatically determine version from path
-$version = basename(dirname(dirname(__DIR__)));
+$version = basename(dirname(__DIR__));
 $template_name = "arturo_runner_" . $version;
 
 // Generate unique ID
@@ -24,8 +23,13 @@ $jail_path = "/zroot/jails/run/" . $jail_name;
 exec("sudo /sbin/zfs clone zroot/jails/{$template_name}@clean zroot/jails/run/$jail_name 2>&1", $clone_out, $clone_ret);
 
 if ($clone_ret !== 0) {
-    error_log("Failed to clone jail for version '$version': " . implode("\n", $clone_out));
-    echo json_encode(["text" => "System error", "code" => $exec_id, "result" => -1]);
+    $error_msg = "Failed to clone jail for version '$version' (template: $template_name): " . implode("\n", $clone_out);
+    error_log($error_msg);
+    echo json_encode([
+        "text" => "System error: " . htmlspecialchars($error_msg), 
+        "code" => $exec_id, 
+        "result" => -1
+    ]);
     exit;
 }
 
