@@ -9,6 +9,15 @@ editor.commands.addCommand({
     name: 'executeCode',
     bindKey: {win: 'Ctrl-Enter', mac: 'Command-Enter'},
     exec: function(editor) {
+        // Simulate button click with hover effect
+        var runbutton = document.getElementById('runbutton');
+        runbutton.classList.add('hover-effect');
+        
+        // Remove hover effect after a short delay
+        setTimeout(function() {
+            runbutton.classList.remove('hover-effect');
+        }, 200);
+        
         execCode();
     },
     readOnly: false
