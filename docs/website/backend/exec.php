@@ -5,6 +5,10 @@ header('Content-Type: application/json');
 $rest_json = file_get_contents("php://input");
 $_POST = json_decode($rest_json, true);
 $code = $_POST['c'];
+$columns = isset($_POST['cols']) ? intval($_POST['cols']) : 80;
+
+// Clamp columns to reasonable values
+$columns = max(40, min(200, $columns));
 
 if (empty($code)) {
     echo json_encode(["text" => "No code provided", "code" => "", "result" => -1]);
@@ -12,7 +16,7 @@ if (empty($code)) {
 }
 
 // SIZE LIMIT CHECK
-define('MAX_CODE_SIZE', 10000); // 10KB limit (~300 lines)
+define('MAX_CODE_SIZE', 10000);
 if (strlen($code) > MAX_CODE_SIZE) {
     echo json_encode([
         "text" => "Error: Code exceeds maximum size limit (" . number_format(MAX_CODE_SIZE) . " characters)",
@@ -61,7 +65,8 @@ file_put_contents($code_file, $code . "\n");
 chmod($code_file, 0644);
 
 // Run in jail with timeout, pipe through aha for color conversion
-$cmd = "sudo /usr/sbin/jail -c name=$jail_name path=$jail_path exec.start=\"/bin/sh -c 'HOME=/root LD_LIBRARY_PATH=/usr/local/lib timeout --kill-after=3s 10s /usr/local/bin/arturo /tmp/main.art 2>&1 | /usr/local/bin/aha --no-header --black'\" exec.stop=\"\" 2>&1";
+// Use the terminal width from the browser
+$cmd = "sudo /usr/sbin/jail -c name=$jail_name path=$jail_path exec.start=\"/bin/sh -c 'HOME=/root LD_LIBRARY_PATH=/usr/local/lib COLUMNS=$columns LINES=24 timeout --kill-after=3s 10s /usr/local/bin/arturo /tmp/main.art 2>&1 | /usr/local/bin/aha --no-header --black'\" exec.stop=\"\" 2>&1";
 exec($cmd, $output, $ret);
 
 // Cleanup (jail auto-stops, just destroy ZFS)
