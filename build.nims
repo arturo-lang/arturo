@@ -572,7 +572,7 @@ cmd test, "Run test suite":
 
     unless paths.global.performTests():
         quit paths.local.performTests().toErrorCode
-
+ 
 cmd benchmark, "Run benchmark suite":
     ## benchmark:
     ##     Runs benchmark suite
