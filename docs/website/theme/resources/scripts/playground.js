@@ -1,4 +1,5 @@
 window.snippetId = "";
+window.loadedCode = ""; // Track what code was originally loaded
 var editor = ace.edit("editor");
 document.getElementsByTagName("textarea")[0].setAttribute("aria-label", "code snippet");
 editor.setTheme("ace/theme/monokai");
@@ -33,9 +34,18 @@ window.previousCode = "";
 function execCode() {
     var runbutton = document.getElementById('runbutton');
     if (!runbutton.innerHTML.includes("notch")) {
-        if (editor.getValue()!=previousCode) {
-            previousCode = editor.getValue();
-            //runbutton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" fill="currentColor" viewBox="0 0 256 256"><path d="M236,128a108,108,0,0,1-216,0c0-42.52,24.73-81.34,63-98.9A12,12,0,1,1,93,50.91C63.24,64.57,44,94.83,44,128a84,84,0,0,0,168,0c0-33.17-19.24-63.43-49-77.09A12,12,0,1,1,173,29.1C211.27,46.66,236,85.48,236,128Z"></path></svg>`;
+        var currentCode = editor.getValue();
+        
+        if (currentCode != previousCode) {
+            previousCode = currentCode;
+            
+            // Only send snippet ID if code hasn't changed from what was loaded
+            // Practically, this means:
+            // - If user loaded abc123 and didn't change it -> reuse abc123
+            // - If user loaded abc123 and did change it -> create new snippet
+            // - If working on own snippet -> keep reusing it
+            var snippetToSend = (currentCode === window.loadedCode) ? window.snippetId : "";
+            
             runbutton.classList.add('working');
             document.getElementById("terminal_output").innerHTML = "";
             ajaxPost("http://188.245.97.105/%<[basePath]>%/backend/exec.php",
@@ -44,14 +54,15 @@ function execCode() {
                 var got = JSON.parse(result);
                 document.getElementById("terminal_output").innerHTML = got.text;
                 window.snippetId = got.code;
+                window.loadedCode = currentCode; // Update what we consider "loaded"
                 window.history.replaceState({code: got.code, text: got.text}, `${got.code} - Playground | Arturo programming language`, `http://188.245.97.105/%<[basePath]>%/%playground/?${got.code}`);
 
                 runbutton.classList.remove('working');
 
                 window.scroll.animateScroll(document.querySelector("#terminal"));
             }, {
-                c:editor.getValue(),
-                i:window.snippetId
+                c: currentCode,
+                i: snippetToSend
             });
         }
     }
@@ -63,6 +74,8 @@ function getSnippet(cd) {
     function (result) {
         var got = JSON.parse(result);
         editor.setValue(got.text);
+        window.loadedCode = got.text; // Remember original code
+        window.snippetId = cd;
         editor.clearSelection();
         editor.resize(true);
         editor.scrollToLine(1,0,true,true,function(){});
@@ -78,6 +91,8 @@ function getExample(cd) {
     function (result) {
         var got = JSON.parse(result);
         editor.setValue(got.text+"\n");
+        window.loadedCode = got.text+"\n"; // Remember original code
+        window.snippetId = ""; // Examples start fresh
         editor.clearSelection();
         editor.resize(true);
         editor.scrollToLine(1,0,true,true,function(){});
