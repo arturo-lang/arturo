@@ -1,10 +1,39 @@
 window.snippetId = "";
 window.loadedCode = "";
 window.loadedFromUrl = false;
+window.terminalColumns = 80; // Default fallback
+
 var editor = ace.edit("editor");
 document.getElementsByTagName("textarea")[0].setAttribute("aria-label", "code snippet");
 editor.setTheme("ace/theme/monokai");
 editor.getSession().setMode("ace/mode/arturo");
+
+// Calculate terminal width in columns
+function calculateTerminalColumns() {
+    var terminal = document.getElementById('terminal');
+    if (!terminal) return 80;
+    
+    // Create a temporary span to measure character width
+    var testSpan = document.createElement('span');
+    testSpan.style.visibility = 'hidden';
+    testSpan.style.position = 'absolute';
+    testSpan.style.fontFamily = window.getComputedStyle(terminal).fontFamily;
+    testSpan.style.fontSize = window.getComputedStyle(terminal).fontSize;
+    testSpan.textContent = 'M';
+    document.body.appendChild(testSpan);
+    
+    var charWidth = testSpan.offsetWidth;
+    document.body.removeChild(testSpan);
+    
+    // Get terminal width in pixels
+    var terminalWidth = terminal.offsetWidth;
+    
+    // Calculate columns (subtract padding)
+    var columns = Math.floor((terminalWidth - 40) / charWidth);
+    
+    // Clamp between reasonable values
+    return Math.max(40, Math.min(200, columns));
+}
 
 // Add keyboard shortcut for code execution
 editor.commands.addCommand({
@@ -65,7 +94,8 @@ function execCode() {
                 window.scroll.animateScroll(document.querySelector("#terminal"));
             }, {
                 c: currentCode,
-                i: snippetToSend
+                i: snippetToSend,
+                cols: window.terminalColumns
             });
         }
     }
@@ -127,6 +157,9 @@ function parse_query_string(query) {
 }
 
 document.addEventListener("DOMContentLoaded", function() {
+    // Calculate initial terminal width
+    window.terminalColumns = calculateTerminalColumns();
+    
     // Check for snippet ID in URL path (e.g., /playground/abc123)
     var pathParts = window.location.pathname.split('/');
     var snippetId = pathParts[pathParts.length - 1];
@@ -144,6 +177,11 @@ document.addEventListener("DOMContentLoaded", function() {
             document.getElementById('scriptName').innerHTML = `${qs.example}.art`;
         }
     }
+});
+
+// Recalculate terminal width on window resize
+window.addEventListener('resize', function() {
+    window.terminalColumns = calculateTerminalColumns();
 });
 
 function shareLink(){
