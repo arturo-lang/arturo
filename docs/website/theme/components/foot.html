@@ -30,7 +30,7 @@
 <||]||>
 <script src="<||= linkTo {resources/scripts/main.js} ||>"></script>
 
-<||= if contains? pagePath "documentation" [ ||>
+<||= if or? contains? pagePath "documentation" contains? pagePath "playground" [ ||>
     <script src="<||= linkTo {resources/scripts/fuse.js} ||>"></script>
     <script src="<||= linkTo {resources/scripts/docsearch.js} ||>"></script>
     <script>
