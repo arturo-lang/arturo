@@ -19,7 +19,7 @@ function execCode() {
                 var got = JSON.parse(result);
                 document.getElementById("terminal_output").innerHTML = got.text;
                 window.snippetId = got.code;
-                window.history.replaceState({code: got.code, text: got.text}, `${got.code} - Playground | Arturo programming language`, `http://188.245.97.105/%<[basePath]>%playground/?${got.code}`);
+                window.history.replaceState({code: got.code, text: got.text}, `${got.code} - Playground | Arturo programming language`, `http://188.245.97.105/%<[basePath]>%/%playground/?${got.code}`);
 
                 runbutton.classList.remove('working');
 
@@ -33,7 +33,7 @@ function execCode() {
 }
 
 function getSnippet(cd) {
-    ajaxPost("http://188.245.97.105/%<[basePath]>/backend/%get.php",
+    ajaxPost("http://188.245.97.105/%<[basePath]>%/backend/get.php",
     
     function (result) {
         var got = JSON.parse(result);
@@ -106,7 +106,7 @@ function shareLink(){
         Bulma().alert({
             type: 'info',
             title: 'Share this script',
-            body:  `<input id='snippet-link' class='input is-info' value='http://188.245.97.105/%<[basePath]>%playground?${window.snippetId}'>`,
+            body:  `<input id='snippet-link' class='input is-info' value='http://188.245.97.105/%<[basePath]>%/playground?${window.snippetId}'>`,
             confirm: {
                 label: 'Copy link',
                 onClick: function(){
