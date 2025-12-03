@@ -1,20 +1,19 @@
 <?php
-header('Access-Control-Allow-Origin: http://188.245.97.105/');
+header('Access-Control-Allow-Origin: http://188.245.97.105');
+header('Content-Type: application/json');
 
 $rest_json = file_get_contents("php://input");
 $_POST = json_decode($rest_json, true);
-$code = $_POST['i'];
-$code_file = "/tmp/art_".$_POST['i'];
 
-$txt = "";
-if (file_exists($code_file)) {
-    $txt = file_get_contents($code_file);
+require_once __DIR__ . '/db.php';
+$db = new SnippetDB();
+
+$snippet_id = $_POST['i'] ?? '';
+$code = $db->get($snippet_id);
+
+if ($code !== null) {
+    echo json_encode(["text" => $code]);
+} else {
+    echo json_encode(["text" => "# Snippet not found"]);
 }
-
-$final = array(
-    "text" => $txt
-);
-
-echo json_encode($final);
-
 ?>
