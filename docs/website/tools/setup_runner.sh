@@ -86,6 +86,7 @@ mkdir -p "$JAIL_ROOT/etc"
 cp "$ARTURO_BIN" "$JAIL_ROOT/usr/local/bin/arturo"
 cp /bin/sh "$JAIL_ROOT/bin/"
 cp /usr/bin/timeout "$JAIL_ROOT/usr/bin/"
+cp /usr/local/bin/aha "$JAIL_ROOT/usr/local/bin/"
 
 # Copy all system libraries
 cp -a /lib/*.so* "$JAIL_ROOT/lib/" 2>/dev/null
