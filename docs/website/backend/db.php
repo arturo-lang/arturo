@@ -3,14 +3,7 @@ class SnippetDB {
     private $db;
     
     function __construct() {
-        $db_path = __DIR__ . '/../../../../shared/data/snippets.db';
-        
-        // Create directory if it doesn't exist
-        $dir = dirname($db_path);
-        if (!is_dir($dir)) {
-            mkdir($dir, 0775, true);
-        }
-        
+        $db_path = '/usr/local/www/arturo/main/shared/data/snippets.db';
         $this->db = new SQLite3($db_path);
         
         // Create table if not exists
@@ -18,8 +11,8 @@ class SnippetDB {
             CREATE TABLE IF NOT EXISTS snippets (
                 id TEXT PRIMARY KEY,
                 code TEXT NOT NULL,
-                created_at INTEGER DEFAULT (strftime("%s", "now")),
-                last_accessed INTEGER DEFAULT (strftime("%s", "now")),
+                created_at INTEGER,
+                last_accessed INTEGER,
                 execution_count INTEGER DEFAULT 1
             )
         ');
@@ -53,25 +46,44 @@ class SnippetDB {
     }
     
     function save($id, $code) {
-        $stmt = $this->db->prepare('
-            INSERT INTO snippets (id, code) VALUES (:id, :code)
-            ON CONFLICT(id) DO UPDATE SET 
-                code = :code,
-                last_accessed = strftime("%s", "now"),
-                execution_count = execution_count + 1
-        ');
-        $stmt->bindValue(':id', $id, SQLITE3_TEXT);
-        $stmt->bindValue(':code', $code, SQLITE3_TEXT);
+        $now = time();
+        
+        // Check if snippet exists
+        if ($this->exists($id)) {
+            // Update existing snippet
+            $stmt = $this->db->prepare('
+                UPDATE snippets 
+                SET code = :code,
+                    last_accessed = :now,
+                    execution_count = execution_count + 1
+                WHERE id = :id
+            ');
+            $stmt->bindValue(':id', $id, SQLITE3_TEXT);
+            $stmt->bindValue(':code', $code, SQLITE3_TEXT);
+            $stmt->bindValue(':now', $now, SQLITE3_INTEGER);
+        } else {
+            // Insert new snippet
+            $stmt = $this->db->prepare('
+                INSERT INTO snippets (id, code, created_at, last_accessed, execution_count)
+                VALUES (:id, :code, :now, :now, 1)
+            ');
+            $stmt->bindValue(':id', $id, SQLITE3_TEXT);
+            $stmt->bindValue(':code', $code, SQLITE3_TEXT);
+            $stmt->bindValue(':now', $now, SQLITE3_INTEGER);
+        }
+        
         return $stmt->execute();
     }
     
     function get($id) {
+        $now = time();
+        
         // Update last_accessed when retrieving
         $update = $this->db->prepare('
-            UPDATE snippets SET last_accessed = strftime("%s", "now") 
-            WHERE id = :id
+            UPDATE snippets SET last_accessed = :now WHERE id = :id
         ');
         $update->bindValue(':id', $id, SQLITE3_TEXT);
+        $update->bindValue(':now', $now, SQLITE3_INTEGER);
         $update->execute();
         
         // Get the code
@@ -83,8 +95,9 @@ class SnippetDB {
     }
     
     function cleanup() {
-        // Delete snippets not accessed in 2 years
-        $this->db->exec('DELETE FROM snippets WHERE last_accessed < strftime("%s", "now", "-2 years")');
+        // Delete snippets not accessed in 2 years (63072000 seconds)
+        $cutoff = time() - (2 * 365 * 24 * 60 * 60);
+        $this->db->exec("DELETE FROM snippets WHERE last_accessed < $cutoff");
         $this->db->exec('VACUUM');
     }
 }
