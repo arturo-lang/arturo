@@ -1,6 +1,6 @@
 window.snippetId = "";
-window.loadedCode = ""; // Track what code was originally loaded from URL
-window.loadedFromUrl = false; // Track if we loaded this snippet from URL
+window.loadedCode = "";
+window.loadedFromUrl = false;
 var editor = ace.edit("editor");
 document.getElementsByTagName("textarea")[0].setAttribute("aria-label", "code snippet");
 editor.setTheme("ace/theme/monokai");
@@ -13,15 +13,11 @@ editor.commands.addCommand({
     exec: function(editor) {
         var runbutton = document.getElementById('runbutton');
         
-        // Don't execute if already processing
         if (runbutton.classList.contains('working')) {
             return;
         }
         
-        // Simulate button hover effect
         runbutton.classList.add('hover-effect');
-        
-        // Remove effect after a short delay
         setTimeout(function() {
             runbutton.classList.remove('hover-effect');
         }, 200);
@@ -40,22 +36,14 @@ function execCode() {
         if (currentCode != previousCode) {
             previousCode = currentCode;
             
-            // Determine snippet ID to send:
-            // 1. If we loaded from URL and code changed -> create new snippet (fork)
-            // 2. Otherwise -> reuse current snippet ID (update)
+            // Determine whether to create new snippet or update existing
             var snippetToSend = "";
             if (window.loadedFromUrl && currentCode !== window.loadedCode) {
-                // Code was loaded from URL and has been modified -> fork it
                 snippetToSend = "";
-                window.loadedFromUrl = false; // Now it's ours
+                window.loadedFromUrl = false;
             } else {
-                // Reuse current snippet ID (either updating our own, or running unchanged shared code)
                 snippetToSend = window.snippetId;
             }
-            
-            console.log('Loaded from URL:', window.loadedFromUrl);
-            console.log('Code changed:', currentCode !== window.loadedCode);
-            console.log('Sending snippet ID:', snippetToSend);
             
             runbutton.classList.add('working');
             document.getElementById("terminal_output").innerHTML = "";
@@ -67,12 +55,13 @@ function execCode() {
                 window.snippetId = got.code;
                 window.loadedCode = currentCode;
                 
-                console.log('New snippet ID:', window.snippetId);
-                
-                window.history.replaceState({code: got.code, text: got.text}, `${got.code} - Playground | Arturo programming language`, `http://188.245.97.105/%<[basePath]>%/playground/?${got.code}`);
+                window.history.replaceState(
+                    {code: got.code, text: got.text}, 
+                    `${got.code} - Playground | Arturo programming language`, 
+                    `http://188.245.97.105/%<[basePath]>%/playground/${got.code}`
+                );
 
                 runbutton.classList.remove('working');
-
                 window.scroll.animateScroll(document.querySelector("#terminal"));
             }, {
                 c: currentCode,
@@ -90,7 +79,7 @@ function getSnippet(cd) {
         editor.setValue(got.text);
         window.loadedCode = got.text;
         window.snippetId = cd;
-        window.loadedFromUrl = true; // Mark that this was loaded from URL
+        window.loadedFromUrl = true;
         editor.clearSelection();
         editor.resize(true);
         editor.scrollToLine(1,0,true,true,function(){});
@@ -122,47 +111,47 @@ function parse_query_string(query) {
     var vars = query.split("&");
     var query_string = {};
     for (var i = 0; i < vars.length; i++) {
-      var pair = vars[i].split("=");
-      var key = decodeURIComponent(pair[0]);
-      var value = decodeURIComponent(pair[1]);
-      // If first entry with this name
-      if (typeof query_string[key] === "undefined") {
-        query_string[key] = decodeURIComponent(value);
-        // If second entry with this name
-      } else if (typeof query_string[key] === "string") {
-        var arr = [query_string[key], decodeURIComponent(value)];
-        query_string[key] = arr;
-        // If third or later entry with this name
-      } else {
-        query_string[key].push(decodeURIComponent(value));
-      }
+        var pair = vars[i].split("=");
+        var key = decodeURIComponent(pair[0]);
+        var value = decodeURIComponent(pair[1]);
+        if (typeof query_string[key] === "undefined") {
+            query_string[key] = decodeURIComponent(value);
+        } else if (typeof query_string[key] === "string") {
+            var arr = [query_string[key], decodeURIComponent(value)];
+            query_string[key] = arr;
+        } else {
+            query_string[key].push(decodeURIComponent(value));
+        }
     }
     return query_string;
-  }
-  
+}
 
 document.addEventListener("DOMContentLoaded", function() {
-    if (window.location.search != "") {
+    // Check for snippet ID in URL path (e.g., /playground/abc123)
+    var pathParts = window.location.pathname.split('/');
+    var snippetId = pathParts[pathParts.length - 1];
+    
+    if (snippetId && snippetId !== 'playground' && snippetId !== '') {
+        getSnippet(snippetId);
+    } 
+    // Fallback to query string for examples (e.g., ?example=hello)
+    else if (window.location.search != "") {
         var query = window.location.search.substring(1);
         var qs = parse_query_string(query);
-
-        if (qs.example !== undefined){
+        
+        if (qs.example !== undefined) {
             getExample(qs.example);
             document.getElementById('scriptName').innerHTML = `${qs.example}.art`;
-        }
-        else {
-            var code = window.location.search.replace("?","");
-            getSnippet(code);
         }
     }
 });
 
 function shareLink(){
-    if (window.snippetId!=""){
+    if (window.snippetId != "") {
         Bulma().alert({
             type: 'info',
             title: 'Share this script',
-            body:  `<input id='snippet-link' class='input is-info' value='http://188.245.97.105/%<[basePath]>%/playground?${window.snippetId}'>`,
+            body: `<input id='snippet-link' class='input is-info' value='http://188.245.97.105/%<[basePath]>%/playground/${window.snippetId}'>`,
             confirm: {
                 label: 'Copy link',
                 onClick: function(){
@@ -170,7 +159,7 @@ function shareLink(){
                     copyText.select();
                     copyText.setSelectionRange(0, 99999);
                     document.execCommand("copy");
-                    (window.getSelection ? window.getSelection() : document.selection).empty()
+                    (window.getSelection ? window.getSelection() : document.selection).empty();
                     Bulma().alert({
                         type: 'success',
                         title: 'Copied',
@@ -182,9 +171,10 @@ function shareLink(){
         });
     }
 }
+
 window.expanded = false;
 function toggleExpand(){
-    if (window.expanded){
+    if (window.expanded) {
         window.expanded = false;
         document.querySelector(".doccols").style.display = "flex";
         document.querySelector("#expanderIcon").classList.remove("expanded");
@@ -192,8 +182,7 @@ function toggleExpand(){
         document.querySelector("#sharebutton").classList.remove("expanded");
         document.querySelector("#expander").classList.remove("expanded");
         document.querySelector("#wordwrapper").classList.remove("expanded");
-    }
-    else {
+    } else {
         window.expanded = true;
         document.querySelector(".doccols").style.display = "inherit";
         document.querySelector("#expanderIcon").classList.add("expanded");
@@ -206,13 +195,12 @@ function toggleExpand(){
 
 window.wordwrap = false;
 function toggleWordWrap(){
-    if (window.wordwrap){
+    if (window.wordwrap) {
         window.wordwrap = false;
         editor.setOption("wrap", false);
         document.querySelector("#wordwrapperIcon").classList.remove("fa-align-justify");
         document.querySelector("#wordwrapperIcon").classList.add("fa-align-left");
-    }
-    else {
+    } else {
         window.wordwrap = true;
         editor.setOption("wrap", true);
         document.querySelector("#wordwrapperIcon").classList.remove("fa-align-left");
