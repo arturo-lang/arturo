@@ -12,7 +12,7 @@ if (empty($code)) {
 }
 
 // SIZE LIMIT CHECK
-define('MAX_CODE_SIZE', 50000); // 50KB limit
+define('MAX_CODE_SIZE', 10000); // 10KB limit (~300 lines)
 if (strlen($code) > MAX_CODE_SIZE) {
     echo json_encode([
         "text" => "Error: Code exceeds maximum size limit (" . number_format(MAX_CODE_SIZE) . " characters)",
@@ -27,13 +27,13 @@ $version = basename(dirname(__DIR__));
 $template_name = "arturo_runner_" . $version;
 
 // Generate unique ID
-$exec_id = !empty($_POST['i']) ? $_POST['i'] : uniqid('art_', true);
+require_once __DIR__ . '/db.php';
+$db = new SnippetDB();
+$exec_id = !empty($_POST['i']) ? $_POST['i'] : $db->generateUniqueId();
 $jail_name = "arturo_" . preg_replace('/[^a-zA-Z0-9]/', '_', $exec_id);
 $jail_path = "/zroot/jails/run/" . $jail_name;
 
 // Save snippet to database
-require_once __DIR__ . '/db.php';
-$db = new SnippetDB();
 $db->save($exec_id, $code);
 
 // Occasionally cleanup old snippets (1% chance)
