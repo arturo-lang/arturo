@@ -61,7 +61,7 @@
         <||= if contains? pagePath "playground" [||>
             <link rel="stylesheet" href="<||= linkTo {resources/styles/playground.css} ||>">
         <|| ] ||>
-        <||= if contains? pagePath "documentation" [ ||>
+        <||= if or? contains? pagePath "documentation" contains? pagePath "playground" [ ||>
             <link rel="stylesheet" href="<||= linkTo {resources/styles/search.css} ||>">
         <|| ] ||>
     </head>
