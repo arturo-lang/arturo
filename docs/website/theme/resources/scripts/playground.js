@@ -1,5 +1,6 @@
 window.snippetId = "";
-window.loadedCode = ""; // Track what code was originally loaded
+window.loadedCode = ""; // Track what code was originally loaded from URL
+window.loadedFromUrl = false; // Track if we loaded this snippet from URL
 var editor = ace.edit("editor");
 document.getElementsByTagName("textarea")[0].setAttribute("aria-label", "code snippet");
 editor.setTheme("ace/theme/monokai");
@@ -39,12 +40,22 @@ function execCode() {
         if (currentCode != previousCode) {
             previousCode = currentCode;
             
-            // Only send snippet ID if code hasn't changed from what was loaded
-            // Practically, this means:
-            // - If user loaded abc123 and didn't change it -> reuse abc123
-            // - If user loaded abc123 and did change it -> create new snippet
-            // - If working on own snippet -> keep reusing it
-            var snippetToSend = (currentCode === window.loadedCode) ? window.snippetId : "";
+            // Determine snippet ID to send:
+            // 1. If we loaded from URL and code changed -> create new snippet (fork)
+            // 2. Otherwise -> reuse current snippet ID (update)
+            var snippetToSend = "";
+            if (window.loadedFromUrl && currentCode !== window.loadedCode) {
+                // Code was loaded from URL and has been modified -> fork it
+                snippetToSend = "";
+                window.loadedFromUrl = false; // Now it's ours
+            } else {
+                // Reuse current snippet ID (either updating our own, or running unchanged shared code)
+                snippetToSend = window.snippetId;
+            }
+            
+            console.log('Loaded from URL:', window.loadedFromUrl);
+            console.log('Code changed:', currentCode !== window.loadedCode);
+            console.log('Sending snippet ID:', snippetToSend);
             
             runbutton.classList.add('working');
             document.getElementById("terminal_output").innerHTML = "";
@@ -54,8 +65,11 @@ function execCode() {
                 var got = JSON.parse(result);
                 document.getElementById("terminal_output").innerHTML = got.text;
                 window.snippetId = got.code;
-                window.loadedCode = currentCode; // Update what we consider "loaded"
-                window.history.replaceState({code: got.code, text: got.text}, `${got.code} - Playground | Arturo programming language`, `http://188.245.97.105/%<[basePath]>%/%playground/?${got.code}`);
+                window.loadedCode = currentCode;
+                
+                console.log('New snippet ID:', window.snippetId);
+                
+                window.history.replaceState({code: got.code, text: got.text}, `${got.code} - Playground | Arturo programming language`, `http://188.245.97.105/%<[basePath]>%/playground/?${got.code}`);
 
                 runbutton.classList.remove('working');
 
@@ -74,8 +88,9 @@ function getSnippet(cd) {
     function (result) {
         var got = JSON.parse(result);
         editor.setValue(got.text);
-        window.loadedCode = got.text; // Remember original code
+        window.loadedCode = got.text;
         window.snippetId = cd;
+        window.loadedFromUrl = true; // Mark that this was loaded from URL
         editor.clearSelection();
         editor.resize(true);
         editor.scrollToLine(1,0,true,true,function(){});
@@ -91,8 +106,9 @@ function getExample(cd) {
     function (result) {
         var got = JSON.parse(result);
         editor.setValue(got.text+"\n");
-        window.loadedCode = got.text+"\n"; // Remember original code
-        window.snippetId = ""; // Examples start fresh
+        window.loadedCode = got.text+"\n";
+        window.snippetId = "";
+        window.loadedFromUrl = false;
         editor.clearSelection();
         editor.resize(true);
         editor.scrollToLine(1,0,true,true,function(){});
