@@ -284,7 +284,7 @@
     }
     .processing {
         display: none;
-        animation: spin 1s linear infinite;
+        animation: spinaround 1s linear infinite;
     }
     &.working {
         .play {
