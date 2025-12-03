@@ -41,7 +41,8 @@
         background: gray;
     }
 
-    &:not(.working):hover {
+    &:not(.working):hover,
+    &:not(.working).hover-effect {
         box-shadow: 0px 0px 6px 3px grey;
     }
 }
