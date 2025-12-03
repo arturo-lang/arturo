@@ -2,7 +2,17 @@ window.snippetId = "";
 var editor = ace.edit("editor");
 document.getElementsByTagName("textarea")[0].setAttribute("aria-label", "code snippet");
 editor.setTheme("ace/theme/monokai");
-editor.getSession().setMode("ace/mode/arturo"); 
+editor.getSession().setMode("ace/mode/arturo");
+
+// Add keyboard shortcut for code execution
+editor.commands.addCommand({
+    name: 'executeCode',
+    bindKey: {win: 'Ctrl-Enter', mac: 'Command-Enter'},
+    exec: function(editor) {
+        execCode();
+    },
+    readOnly: false
+});
 
 window.previousCode = "";
 function execCode() {
