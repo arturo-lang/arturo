@@ -30,6 +30,7 @@ function calculateTerminalColumns() {
     
     // Calculate columns (subtract padding)
     var columns = Math.floor((terminalWidth - 40) / charWidth);
+    columns = columns - 3; // Fine-tune 
     
     // Clamp between reasonable values
     return Math.max(40, Math.min(200, columns));
