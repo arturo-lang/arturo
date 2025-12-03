@@ -11,16 +11,20 @@ if (empty($code)) {
     exit;
 }
 
+// Automatically determine version from path
+$version = basename(dirname(dirname(__DIR__)));
+$template_name = "arturo_runner_" . $version;
+
 // Generate unique ID
 $exec_id = !empty($_POST['i']) ? $_POST['i'] : uniqid('art_', true);
 $jail_name = "arturo_" . preg_replace('/[^a-zA-Z0-9]/', '_', $exec_id);
 $jail_path = "/zroot/jails/run/" . $jail_name;
 
 // Clone template jail
-exec("sudo /sbin/zfs clone zroot/jails/arturo_runner@clean zroot/jails/run/$jail_name 2>&1", $clone_out, $clone_ret);
+exec("sudo /sbin/zfs clone zroot/jails/{$template_name}@clean zroot/jails/run/$jail_name 2>&1", $clone_out, $clone_ret);
 
 if ($clone_ret !== 0) {
-    error_log("Failed to clone jail: " . implode("\n", $clone_out));
+    error_log("Failed to clone jail for version '$version': " . implode("\n", $clone_out));
     echo json_encode(["text" => "System error", "code" => $exec_id, "result" => -1]);
     exit;
 }
