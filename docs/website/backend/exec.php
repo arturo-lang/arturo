@@ -39,7 +39,7 @@ file_put_contents($code_file, $code . "\n");
 chmod($code_file, 0644);
 
 // Run in jail with timeout and library path
-$cmd = "sudo /usr/sbin/jail -c name=$jail_name path=$jail_path exec.start=\"/bin/sh -c 'HOME=/root LD_LIBRARY_PATH=/usr/local/lib timeout --kill-after=2s 5s /usr/local/bin/arturo /tmp/main.art'\" exec.stop=\"\" 2>&1";
+$cmd = "sudo /usr/sbin/jail -c name=$jail_name path=$jail_path exec.start=\"/bin/sh -c 'HOME=/root LD_LIBRARY_PATH=/usr/local/lib timeout --kill-after=3s 10s /usr/local/bin/arturo /tmp/main.art'\" exec.stop=\"\" 2>&1";
 exec($cmd, $output, $ret);
 
 // Cleanup (jail auto-stops, just destroy ZFS)
