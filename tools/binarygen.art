@@ -17,7 +17,7 @@ platforms: #[
 binaries: #[]
 
 ; Process all binary zip files
-loop sort list "binaries" 'filename [
+loop sort list "files" 'filename [
     print ["Processing file:" filename]
     if suffix? filename ".zip" [
         artifactName: extract.filename filename
