@@ -85,7 +85,7 @@ loop sort list "binaries" 'filename [
             
             ; Create entry
             entry: #[
-                path: ~"binaries/|artifactName|.zip"
+                path: ~"files/|artifactName|.zip"
                 size: fileSize
                 checksum: checksum
             ]
