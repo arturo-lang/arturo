@@ -11,6 +11,7 @@ if (empty($code)) {
     exit;
 }
 
+// Automatically determine version from path
 $version = basename(dirname(__DIR__));
 $template_name = "arturo_runner_" . $version;
 
@@ -38,8 +39,8 @@ $code_file = $jail_path . "/tmp/main.art";
 file_put_contents($code_file, $code . "\n");
 chmod($code_file, 0644);
 
-// Run in jail with timeout and library path
-$cmd = "sudo /usr/sbin/jail -c name=$jail_name path=$jail_path exec.start=\"/bin/sh -c 'HOME=/root LD_LIBRARY_PATH=/usr/local/lib timeout --kill-after=3s 10s /usr/local/bin/arturo /tmp/main.art'\" exec.stop=\"\" 2>&1";
+// Run in jail with timeout, pipe through aha for color conversion
+$cmd = "sudo /usr/sbin/jail -c name=$jail_name path=$jail_path exec.start=\"/bin/sh -c 'HOME=/root LD_LIBRARY_PATH=/usr/local/lib timeout --kill-after=3s 10s /usr/local/bin/arturo /tmp/main.art 2>&1 | /usr/local/bin/aha --no-header --black'\" exec.stop=\"\" 2>&1";
 exec($cmd, $output, $ret);
 
 // Cleanup (jail auto-stops, just destroy ZFS)
@@ -47,11 +48,11 @@ exec("sudo /sbin/zfs destroy zroot/jails/run/$jail_name 2>&1");
 
 // Process output
 $txt = "";
-foreach ($output as $line) {
-    $txt .= str_replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;", $line) . "<br>";
+foreach ($output as $outp) {
+    $txt .= str_replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;", $outp) . "<br>";
 }
 
-if (empty($txt)) {
+if ($txt == "") {
     $txt = "[no output]";
 }
 
