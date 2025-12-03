@@ -229,6 +229,24 @@ jobs:
                 arturo tools/genaiguide.art
                 mv tools/aiguide.md tmpdocs/llms.txt
 
+            - name: Copy Rosetta Code examples
+              run: |
+                # Create examples directory
+                mkdir -p tmpdocs/examples
+                
+                # Copy all .art files from examples/rosetta recursively
+                if [ -d "examples/rosetta" ]; then
+                  echo "Copying Rosetta Code examples..."
+                  find examples/rosetta -name "*.art" -type f -exec cp {} tmpdocs/examples/ \;
+                  
+                  # List what was copied
+                  echo "Examples copied:"
+                  ls -1 tmpdocs/examples/ | wc -l
+                  echo "files"
+                else
+                  echo "Warning: examples/rosetta directory not found"
+                fi
+
             - name: Copy binaries to website
               run: |
                 # Create binaries directory in website output
