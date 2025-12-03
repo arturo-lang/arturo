@@ -11,6 +11,17 @@ if (empty($code)) {
     exit;
 }
 
+// SIZE LIMIT CHECK
+define('MAX_CODE_SIZE', 50000); // 50KB limit
+if (strlen($code) > MAX_CODE_SIZE) {
+    echo json_encode([
+        "text" => "Error: Code exceeds maximum size limit (" . number_format(MAX_CODE_SIZE) . " characters)",
+        "code" => "",
+        "result" => -1
+    ]);
+    exit;
+}
+
 // Automatically determine version from path
 $version = basename(dirname(__DIR__));
 $template_name = "arturo_runner_" . $version;
@@ -19,6 +30,16 @@ $template_name = "arturo_runner_" . $version;
 $exec_id = !empty($_POST['i']) ? $_POST['i'] : uniqid('art_', true);
 $jail_name = "arturo_" . preg_replace('/[^a-zA-Z0-9]/', '_', $exec_id);
 $jail_path = "/zroot/jails/run/" . $jail_name;
+
+// Save snippet to database
+require_once __DIR__ . '/db.php';
+$db = new SnippetDB();
+$db->save($exec_id, $code);
+
+// Occasionally cleanup old snippets (1% chance)
+if (rand(1, 100) === 1) {
+    $db->cleanup();
+}
 
 // Clone template jail
 exec("sudo /sbin/zfs clone zroot/jails/{$template_name}@clean zroot/jails/run/$jail_name 2>&1", $clone_out, $clone_ret);
