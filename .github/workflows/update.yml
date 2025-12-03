@@ -212,7 +212,7 @@ jobs:
                 arturo tools/sitegen.art
                 arturo tools/indexgen.art
                 arturo tools/preprocessjs.art \
-                  --basePath:"/test" \
+                  --basePath:"test" \
                   --keywordPredicates:"$(arturo tools/getbuiltins.art 1)" \
                   --keywordRest:"$(arturo tools/getbuiltins.art 2)"
 
