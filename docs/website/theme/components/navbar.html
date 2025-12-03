@@ -41,7 +41,7 @@
     <div id="navbarMain" class="navbar-menu">
         <div class="navbar-end">
             
-            <||= if contains? pagePath "documentation" [||>
+            <||= if or? contains? pagePath "documentation" contains? pagePath "playground" [||>
                 <div class="navbar-item is-hidden-touch search-container">
                     <input id="searchbar" type="search" placeholder="Search documentation...">
                     <svg id="searchbar-icon" xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" fill="currentColor" viewBox="0 0 256 256"><path d="M232.49,215.51,185,168a92.12,92.12,0,1,0-17,17l47.53,47.54a12,12,0,0,0,17-17ZM44,112a68,68,0,1,1,68,68A68.07,68.07,0,0,1,44,112Z"></path></svg>
@@ -54,9 +54,10 @@
             <a class="<||= if contains? pagePath "playground" [||>is-active<||]||> navbar-item is-tab " href="<||= linkTo{playground} ||>">
                 Playground
             </a>
-            <!-- <a class="<||= if contains? pagePath "packages" [||>is-active<||]||> navbar-item is-tab " href="<||= linkTo{packages} ||>">
+            <a id="package-navitem" class="<||= if contains? pagePath "packages" [||>is-active<||]||> navbar-item is-tab " href="/packages">
                 Packages
             </a>
+            <!--
             <a class="<||= if contains? pagePath "blog" [||>is-active<||]||> navbar-item is-tab " href="<||= linkTo{blog} ||>">
                 Blog
             </a> -->
