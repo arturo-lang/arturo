@@ -708,6 +708,58 @@ hr.section-separator {
         background: linear-gradient(to bottom, $dark-purple2, $dark-purple 25px);
         background-image: -webkit-linear-gradient(top, $dark-purple2, $dark-purple 25px);
     }
+
+    .table {
+        background-color: $dark-purple2;
+        color: $dark-fg2;
+        
+        th {
+            color: $dark-fg;
+            border-bottom-color: #444;
+        }
+        
+        td {
+            border-color: #333;
+            border-bottom-color: #333;
+        }
+        
+        thead {
+            td, th {
+                border-bottom-color: #444;
+            }
+        }
+        
+        tbody tr {
+            &:hover {
+                background-color: lighten($dark-purple2, 3%);
+            }
+        }
+        
+        &.is-striped {
+            tbody tr:not(.is-selected) {
+                &:nth-child(even) {
+                    background-color: lighten($dark-purple2, 2%);
+                }
+            }
+        }
+        
+        &.is-hoverable {
+            tbody tr:not(.is-selected):hover {
+                background-color: lighten($dark-purple2, 4%);
+            }
+        }
+    }
+    
+    #downloads {
+        a {
+            color: #8ae190;
+            
+            &:hover {
+                border-top-color: #8ae190;
+                border-bottom-color: #8ae190;
+            }
+        }
+    }
 }
 
 @mixin alertStyle($color) {
