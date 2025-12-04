@@ -76,6 +76,12 @@ nav ul li a {
     background: linear-gradient(0deg, $purple-fade 50%, $main-purple 100%);
 }
 
+@media screen and (min-width: 769px), print {
+    .hero-body {
+        padding: 1rem 3rem;
+    }
+}
+
 .breadcrumb a {
     padding: 0;
     margin: 0 .75em;
