@@ -56,7 +56,6 @@
         // Add event listeners
         const modal = document.getElementById('doc-modal');
         const closeBtn = document.getElementById('doc-modal-close');
-        const closeBtnFooter = document.getElementById('doc-modal-close-btn');
         const openTabBtn = document.getElementById('doc-modal-open-tab');
         const background = modal.querySelector('.modal-background');
         
@@ -68,7 +67,6 @@
         };
         
         closeBtn.addEventListener('click', closeModal);
-        closeBtnFooter.addEventListener('click', closeModal);
         background.addEventListener('click', closeModal);
         
         openTabBtn.addEventListener('click', () => {
