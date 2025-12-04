@@ -363,3 +363,17 @@
     transform: rotate(360deg);
   }
 }
+
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    overflow: hidden;
+}
+
+main {
+    margin: 0;
+    padding: 0;
+    height: calc(100vh - 52px); // Subtract navbar height
+    overflow: hidden;
+}
