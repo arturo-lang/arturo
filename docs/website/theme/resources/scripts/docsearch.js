@@ -56,7 +56,6 @@
         // Add event listeners
         const modal = document.getElementById('doc-modal');
         const closeBtn = document.getElementById('doc-modal-close');
-        const openTabBtn = document.getElementById('doc-modal-open-tab');
         const background = modal.querySelector('.modal-background');
         
         let currentUrl = '';
@@ -68,12 +67,6 @@
         
         closeBtn.addEventListener('click', closeModal);
         background.addEventListener('click', closeModal);
-        
-        openTabBtn.addEventListener('click', () => {
-            if (currentUrl) {
-                window.open(currentUrl, '_blank');
-            }
-        });
         
         // Store current URL for the "Open in New Tab" button
         modal.addEventListener('doc-url-changed', (e) => {
