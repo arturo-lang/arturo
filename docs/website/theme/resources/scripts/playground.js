@@ -147,7 +147,7 @@ function execCode() {
 
                 runbutton.classList.remove('working');
                 updateButtonStates(); // Update states after execution
-                window.scroll.animateScroll(document.querySelector("#terminal"));
+                window.scroll.animateScroll(document.querySelector("#terminal"), null, {updateURL: false});
             }, {
                 c: currentCode,
                 i: snippetToSend,
