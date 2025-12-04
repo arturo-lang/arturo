@@ -493,6 +493,28 @@ li.source-link {
     }
 }
 
+.box {
+    &.community {
+        .main-icon {
+            display: block;
+        }
+        .hover-icon {
+            display: none;
+        }
+
+        &:hover {
+            border: 1px solid #E6E6E6;
+
+            .main-icon {
+                display: none;
+            }
+            .hover-icon {
+                display: block;
+            }
+        }
+    }
+}
+
 ////
 
 .switch {
@@ -603,6 +625,7 @@ li.source-link {
 hr.section-separator {
    margin-top: 3rem;
 }
+
 
 /////
 
