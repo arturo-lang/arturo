@@ -321,6 +321,23 @@
     }
 }
 
+#wordwrapperIcon {
+    .dowrap {
+        display: block;
+    }
+    .donowrap {
+        display: none;
+    }
+    &.wrapped {
+        .dowrap {
+            display: none;
+        }
+        .donowrap {
+            display: block;
+        }
+    }
+}
+
 #expanderIcon {
     .doexpand {
         display: block;
