@@ -36,13 +36,27 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: opacity 0.2s ease;
 
     &.working {
         background: gray;
+        opacity: 1;
+        cursor: wait;
+        pointer-events: all;
     }
 
-    &:not(.working):hover,
-    &:not(.working).hover-effect {
+    &.disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+        pointer-events: none;
+
+        svg {
+            opacity: 0.5;
+        }
+    }
+
+    &:not(.working):not(.disabled):hover,
+    &:not(.working):not(.disabled).hover-effect {
         box-shadow: 0px 0px 6px 3px grey;
     }
 }
@@ -61,12 +75,23 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: opacity 0.2s ease;
 
     &.working {
         background: gray;
     }
 
-    &:not(.working):hover {
+    &.disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+        pointer-events: none;
+
+        svg {
+            opacity: 0.5;
+        }
+    }
+
+    &:not(.working):not(.disabled):hover {
         box-shadow: 0px 0px 6px 3px grey;
     }
 }
