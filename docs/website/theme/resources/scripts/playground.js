@@ -1,6 +1,7 @@
 window.snippetId = "";
 window.loadedCode = "";
 window.loadedFromUrl = false;
+window.loadedFromExample = false; // NEW: Track if current code is an unmodified example
 window.terminalColumns = 80; // Default fallback
 
 var editor = ace.edit("editor");
@@ -80,6 +81,10 @@ editor.commands.addCommand({
 
 // Listen for editor changes to update button states
 editor.getSession().on('change', function() {
+    // NEW: If user modifies code from an example, it's no longer an unmodified example
+    if (window.loadedFromExample && editor.getValue() !== window.loadedCode) {
+        window.loadedFromExample = false;
+    }
     updateButtonStates();
 });
 
@@ -100,10 +105,18 @@ function execCode() {
             
             // Determine whether to create new snippet or update existing
             var snippetToSend = "";
-            if (window.loadedFromUrl && currentCode !== window.loadedCode) {
+            
+            // If it's an unmodified example, don't save to database
+            if (window.loadedFromExample && currentCode === window.loadedCode) {
+                snippetToSend = "SKIP_SAVE"; // Special flag to tell backend not to save
+            }
+            // If loaded from URL and modified, create new snippet
+            else if (window.loadedFromUrl && currentCode !== window.loadedCode) {
                 snippetToSend = "";
                 window.loadedFromUrl = false;
-            } else {
+            } 
+            // Otherwise use existing snippet ID (empty string creates new)
+            else {
                 snippetToSend = window.snippetId;
             }
             
@@ -114,14 +127,23 @@ function execCode() {
             function (result) {
                 var got = JSON.parse(result);
                 document.getElementById("terminal_output").innerHTML = got.text;
-                window.snippetId = got.code;
-                window.loadedCode = currentCode;
                 
-                window.history.replaceState(
-                    {code: got.code, text: got.text}, 
-                    `${got.code} - Playground | Arturo programming language`, 
-                    `http://188.245.97.105/%<[basePath]>%/playground/${got.code}`
-                );
+                // Only update snippetId if we actually saved (backend will return empty code if skipped)
+                if (got.code && got.code !== "") {
+                    window.snippetId = got.code;
+                    window.loadedCode = currentCode;
+                    window.loadedFromExample = false; // No longer an unmodified example
+                    
+                    // Update URL with snippet ID
+                    window.history.replaceState(
+                        {code: got.code, text: got.text}, 
+                        `${got.code} - Playground | Arturo programming language`, 
+                        `http://188.245.97.105/%<[basePath]>%/playground/${got.code}`
+                    );
+                } else {
+                    // Example executed without saving - don't update URL
+                    window.loadedCode = currentCode;
+                }
 
                 runbutton.classList.remove('working');
                 updateButtonStates(); // Update states after execution
@@ -166,6 +188,7 @@ function getExample(cd) {
         window.loadedCode = got.text+"\n";
         window.snippetId = "";
         window.loadedFromUrl = false;
+        window.loadedFromExample = true;
         editor.clearSelection();
         editor.resize(true);
         editor.scrollToLine(1,0,true,true,function(){});
