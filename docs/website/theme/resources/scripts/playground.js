@@ -36,6 +36,27 @@ function calculateTerminalColumns() {
     return Math.max(40, Math.min(200, columns));
 }
 
+// Update button states based on current editor state
+function updateButtonStates() {
+    var currentCode = editor.getValue();
+    var runButton = document.getElementById('runbutton');
+    var shareButton = document.getElementById('sharebutton');
+    
+    // Update run button state
+    if (currentCode === window.previousCode) {
+        runButton.classList.add('disabled');
+    } else {
+        runButton.classList.remove('disabled');
+    }
+    
+    // Update share button state
+    if (!currentCode.trim() || !window.snippetId) {
+        shareButton.classList.add('disabled');
+    } else {
+        shareButton.classList.remove('disabled');
+    }
+}
+
 // Add keyboard shortcut for code execution
 editor.commands.addCommand({
     name: 'executeCode',
@@ -43,7 +64,7 @@ editor.commands.addCommand({
     exec: function(editor) {
         var runbutton = document.getElementById('runbutton');
         
-        if (runbutton.classList.contains('working')) {
+        if (runbutton.classList.contains('working') || runbutton.classList.contains('disabled')) {
             return;
         }
         
@@ -57,9 +78,20 @@ editor.commands.addCommand({
     readOnly: false
 });
 
+// Listen for editor changes to update button states
+editor.getSession().on('change', function() {
+    updateButtonStates();
+});
+
 window.previousCode = "";
 function execCode() {
     var runbutton = document.getElementById('runbutton');
+    
+    // Don't execute if disabled or already working
+    if (runbutton.classList.contains('disabled') || runbutton.classList.contains('working')) {
+        return;
+    }
+    
     if (!runbutton.innerHTML.includes("notch")) {
         var currentCode = editor.getValue();
         
@@ -92,6 +124,7 @@ function execCode() {
                 );
 
                 runbutton.classList.remove('working');
+                updateButtonStates(); // Update states after execution
                 window.scroll.animateScroll(document.querySelector("#terminal"));
             }, {
                 c: currentCode,
@@ -115,6 +148,10 @@ function getSnippet(cd) {
         editor.resize(true);
         editor.scrollToLine(1,0,true,true,function(){});
         editor.gotoLine(1,0,true);
+        
+        // Update button states after loading snippet
+        window.previousCode = got.text;
+        updateButtonStates();
     }, {
         i:cd
     });
@@ -133,6 +170,10 @@ function getExample(cd) {
         editor.resize(true);
         editor.scrollToLine(1,0,true,true,function(){});
         editor.gotoLine(1,0,true);
+        
+        // Update button states after loading example
+        window.previousCode = "";
+        updateButtonStates();
     }, {
         i:cd
     });
@@ -177,6 +218,9 @@ document.addEventListener("DOMContentLoaded", function() {
             getExample(qs.example);
             document.getElementById('scriptName').innerHTML = `${qs.example}.art`;
         }
+    } else {
+        // Initialize button states for empty editor
+        updateButtonStates();
     }
 });
 
@@ -186,6 +230,13 @@ window.addEventListener('resize', function() {
 });
 
 function shareLink(){
+    var shareButton = document.getElementById('sharebutton');
+    
+    // Don't share if button is disabled
+    if (shareButton.classList.contains('disabled')) {
+        return;
+    }
+    
     if (window.snippetId != "") {
         Bulma().alert({
             type: 'info',
