@@ -154,7 +154,12 @@
                 modalBody.innerHTML = contentClone.innerHTML;
                 
                 modalBody.classList.add('playground-modal-content');
-                
+
+                // Highlight code blocks with Prism
+                if (typeof Prism !== 'undefined') {
+                    Prism.highlightAllUnder(modalBody);
+                }
+
                 // Make all links in the modal open in the same modal (if they're doc links)
                 // or in new tabs (if they're external)
                 const links = modalBody.querySelectorAll('a');
