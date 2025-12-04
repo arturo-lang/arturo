@@ -125,7 +125,34 @@
             
             if (mainContent) {
                 // Clone the content
-                modalBody.innerHTML = mainContent.innerHTML;
+                const contentClone = mainContent.cloneNode(true);
+                
+                // Remove breadcrumbs navigation (first nav.breadcrumb element)
+                const breadcrumbs = contentClone.querySelector('nav.breadcrumb');
+                if (breadcrumbs) {
+                    breadcrumbs.remove();
+                }
+                
+                // Remove the "Related" section
+                // Find the h4 with "Related" text and remove it + the following content div
+                const headings = contentClone.querySelectorAll('h4.title');
+                headings.forEach(heading => {
+                    if (heading.textContent.trim() === 'Related') {
+                        // Remove the heading
+                        const relatedHeading = heading;
+                        // Remove the next sibling (the content div with the list)
+                        const relatedContent = relatedHeading.nextElementSibling;
+                        if (relatedContent) {
+                            relatedContent.remove();
+                        }
+                        relatedHeading.remove();
+                    }
+                });
+                
+                modalBody.innerHTML = contentClone.innerHTML;
+                
+                // Add a class to the modal body for potential styling overrides
+                modalBody.classList.add('playground-modal-content');
                 
                 // Add a class to the modal body for potential styling overrides
                 modalBody.classList.add('playground-modal-content');
