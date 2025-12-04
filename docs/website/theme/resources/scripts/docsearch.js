@@ -7,6 +7,7 @@
     let searchData = [];
     let currentIndex = -1;
     let basePath = '';
+    let useModal = false; // NEW: Track if we should use modal instead of navigation
     
     // DOM elements
     const searchInput = document.getElementById('searchbar');
@@ -20,11 +21,161 @@
     dropdown.className = 'search-dropdown';
     searchInput.parentNode.insertBefore(dropdown, searchInput.nextSibling);
 
-    // Initialize search with base path
-    window.initDocSearch = function() {
+    // Initialize search with base path and optional modal parameter
+    window.initDocSearch = function(showInModal) {
         basePath = '/%<[basePath]>%';
+        useModal = showInModal || false;
         initSearch();
+        
+        if (useModal) {
+            createModalElement();
+        }
     };
+
+    // Create modal element for documentation display
+    function createModalElement() {
+        const modalHtml = `
+            <div id="doc-modal" class="modal">
+                <div class="modal-background"></div>
+                <div class="modal-card" style="width: 90%; max-width: 1200px; max-height: 90vh;">
+                    <header class="modal-card-head">
+                        <p class="modal-card-title" id="doc-modal-title">Documentation</p>
+                        <button class="delete" aria-label="close" id="doc-modal-close"></button>
+                    </header>
+                    <section class="modal-card-body doc-modal-content" id="doc-modal-body">
+                        <div class="has-text-centered">
+                            <span class="loader"></span>
+                        </div>
+                    </section>
+                    <footer class="modal-card-foot">
+                        <button class="button" id="doc-modal-open-tab">Open in New Tab</button>
+                        <button class="button" id="doc-modal-close-btn">Close</button>
+                    </footer>
+                </div>
+            </div>
+        `;
+        
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+        
+        // Add event listeners
+        const modal = document.getElementById('doc-modal');
+        const closeBtn = document.getElementById('doc-modal-close');
+        const closeBtnFooter = document.getElementById('doc-modal-close-btn');
+        const openTabBtn = document.getElementById('doc-modal-open-tab');
+        const background = modal.querySelector('.modal-background');
+        
+        let currentUrl = '';
+        
+        const closeModal = () => {
+            modal.classList.remove('is-active');
+            document.documentElement.classList.remove('is-clipped');
+        };
+        
+        closeBtn.addEventListener('click', closeModal);
+        closeBtnFooter.addEventListener('click', closeModal);
+        background.addEventListener('click', closeModal);
+        
+        openTabBtn.addEventListener('click', () => {
+            if (currentUrl) {
+                window.open(currentUrl, '_blank');
+            }
+        });
+        
+        // Store current URL for the "Open in New Tab" button
+        modal.addEventListener('doc-url-changed', (e) => {
+            currentUrl = e.detail.url;
+        });
+        
+        // Close modal on ESC key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modal.classList.contains('is-active')) {
+                closeModal();
+            }
+        });
+    }
+
+    // Show documentation in modal
+    async function showDocInModal(url, title) {
+        const modal = document.getElementById('doc-modal');
+        const modalTitle = document.getElementById('doc-modal-title');
+        const modalBody = document.getElementById('doc-modal-body');
+        
+        // Show modal with loading state
+        modal.classList.add('is-active');
+        document.documentElement.classList.add('is-clipped');
+        modalTitle.textContent = title || 'Documentation';
+        modalBody.innerHTML = '<div class="has-text-centered"><div class="loader"></div></div>';
+        
+        // Dispatch event with current URL
+        modal.dispatchEvent(new CustomEvent('doc-url-changed', { detail: { url } }));
+        
+        try {
+            const response = await fetch(url);
+            if (!response.ok) throw new Error('Failed to load documentation');
+            
+            const html = await response.text();
+            
+            // Parse the HTML to extract just the main content
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            
+            // Extract the main content column (the documentation content)
+            // Based on your structure, it's in: .column.is-9.p-6.mb-6
+            const mainContent = doc.querySelector('.column.is-9.p-6.mb-6');
+            
+            if (mainContent) {
+                // Clone the content
+                modalBody.innerHTML = mainContent.innerHTML;
+                
+                // Add a class to the modal body for potential styling overrides
+                modalBody.classList.add('playground-modal-content');
+                
+                // Make all links in the modal open in the same modal (if they're doc links)
+                // or in new tabs (if they're external)
+                const links = modalBody.querySelectorAll('a');
+                links.forEach(link => {
+                    const href = link.getAttribute('href');
+                    if (!href) return;
+                    
+                    // If it's a documentation link, open in modal
+                    if (href.includes('/documentation/')) {
+                        link.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            const fullUrl = new URL(href, window.location.origin).href;
+                            const linkText = link.textContent.trim();
+                            showDocInModal(fullUrl, linkText);
+                        });
+                    } 
+                    // If it's an internal link but not documentation, open in new tab
+                    else if (href.startsWith('/') || href.includes(window.location.hostname)) {
+                        link.setAttribute('target', '_blank');
+                        link.setAttribute('rel', 'noopener');
+                    }
+                    // External links already work fine
+                });
+                
+                // Initialize copy buttons if they exist
+                if (typeof Clipboard !== 'undefined') {
+                    const clipboard = new Clipboard('.copy');
+                }
+                
+                // Scroll modal body to top
+                modalBody.scrollTop = 0;
+                
+            } else {
+                modalBody.innerHTML = '<div class="notification is-warning">Could not extract documentation content.</div>';
+            }
+            
+        } catch (error) {
+            console.error('Error loading documentation:', error);
+            modalBody.innerHTML = `
+                <div class="notification is-danger">
+                    <strong>Error loading documentation</strong><br>
+                    ${error.message}
+                </div>
+            `;
+        }
+    }
 
     // Load search data and initialize Fuse
     async function initSearch() {
@@ -127,6 +278,7 @@
         div.className = 'search-result-item';
         div.setAttribute('data-index', index);
         div.setAttribute('data-url', basePath + '/documentation/' + item.url);
+        div.setAttribute('data-title', item.name);
 
         const nameMatch = matches.find(m => m.key === 'name');
         const descMatch = matches.find(m => m.key === 'desc');
@@ -191,7 +343,7 @@
         // Click handler
         div.addEventListener('click', (e) => {
             e.preventDefault();
-            navigateToResult(div.getAttribute('data-url'));
+            navigateToResult(div.getAttribute('data-url'), div.getAttribute('data-title'));
         });
 
         // Hover handler
@@ -283,9 +435,14 @@
         });
     }
 
-    // Navigate to result
-    function navigateToResult(url) {
-        window.location.href = url;
+    // Navigate to result - use modal if enabled, otherwise normal navigation
+    function navigateToResult(url, title) {
+        if (useModal) {
+            showDocInModal(url, title);
+            hideDropdown(); // Close the search dropdown
+        } else {
+            window.location.href = url;
+        }
     }
 
     // Keyboard navigation
@@ -313,7 +470,8 @@
                 const targetIndex = currentIndex >= 0 ? currentIndex : 0;
                 if (items[targetIndex]) {
                     const url = items[targetIndex].getAttribute('data-url');
-                    navigateToResult(url);
+                    const title = items[targetIndex].getAttribute('data-title');
+                    navigateToResult(url, title);
                 }
                 break;
             

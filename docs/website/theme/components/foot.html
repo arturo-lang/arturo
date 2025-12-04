@@ -34,7 +34,7 @@
     <script src="<||= linkTo {resources/scripts/fuse.js} ||>"></script>
     <script src="<||= linkTo {resources/scripts/docsearch.js} ||>"></script>
     <script>
-        initDocSearch();
+        initDocSearch(<||= switch contains? pagePath "playground" ["true"]["false"] ||>);
     </script>
 <|| ] ||>
 </body>
