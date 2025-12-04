@@ -5,6 +5,10 @@ changes: #[
     "docs/website/theme/resources/scripts/playground.js": [
         'basePath
     ]
+    "docs/website/theme/resources/scripts/mode-arturo.js": [
+        'keywordPredicates
+        'keywordRest
+    ]
     "docs/website/theme/resources/scripts/main.js": [
         'keywordPredicates
         'keywordRest
