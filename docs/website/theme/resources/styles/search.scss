@@ -216,6 +216,10 @@
 
 // Dark mode support
 .darkmode {
+    #searchbar {
+        background-color: black;
+    }
+    
     .search-dropdown {
         background: $dark-purple2;
         border-color: lighten($main-purple, 10%);

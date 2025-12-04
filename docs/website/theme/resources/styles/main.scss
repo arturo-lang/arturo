@@ -695,8 +695,12 @@ hr.section-separator {
     .footer {
         background: black;
 
-        a.footer-icon {
-            color: #DAD;
+        a:not(.footer-icon) {
+            color: #888;
+        }
+
+        strong {
+            color: inherit;
         }
     }
 
