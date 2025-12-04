@@ -39,10 +39,10 @@
                 <div class="modal-background"></div>
                 <div class="modal-card"">
                     <header class="modal-card-head">
-                        <p class="modal-card-title" id="doc-modal-title">Documentation</p>
+                        <p class="modal-card-title" id="doc-modal-title">Quick Reference</p>
                         <button class="delete" aria-label="close" id="doc-modal-close"></button>
                     </header>
-                    <section class="modal-card-body doc-modal-content" id="doc-modal-body" style="border-bottom-left-radius: 5px; border-bottom-right-radius: 5px;">
+                    <section class="modal-card-body doc-modal-content" id="doc-modal-body">
                         <div class="has-text-centered">
                             <span class="loader"></span>
                         </div>

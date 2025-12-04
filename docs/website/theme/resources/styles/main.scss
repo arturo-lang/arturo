@@ -149,6 +149,11 @@ a.navbar-item:hover {
         width: 75%;
         max-width: 1200px; 
         max-height: 80vh;
+
+        .modal-card-body {
+            border-bottom-left-radius: 6px; 
+            border-bottom-right-radius: 6px;
+        }
     }
 }
 
