@@ -42,15 +42,11 @@
                         <p class="modal-card-title" id="doc-modal-title">Documentation</p>
                         <button class="delete" aria-label="close" id="doc-modal-close"></button>
                     </header>
-                    <section class="modal-card-body doc-modal-content" id="doc-modal-body">
+                    <section class="modal-card-body doc-modal-content" id="doc-modal-body" style="border-bottom-left-radius: 5px; border-bottom-right-radius: 5px;">
                         <div class="has-text-centered">
                             <span class="loader"></span>
                         </div>
                     </section>
-                    <footer class="modal-card-foot">
-                        <button class="button" id="doc-modal-open-tab">Open in New Tab</button>
-                        <button class="button" id="doc-modal-close-btn">Close</button>
-                    </footer>
                 </div>
             </div>
         `;
@@ -151,10 +147,6 @@
                 
                 modalBody.innerHTML = contentClone.innerHTML;
                 
-                // Add a class to the modal body for potential styling overrides
-                modalBody.classList.add('playground-modal-content');
-                
-                // Add a class to the modal body for potential styling overrides
                 modalBody.classList.add('playground-modal-content');
                 
                 // Make all links in the modal open in the same modal (if they're doc links)
