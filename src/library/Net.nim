@@ -97,7 +97,6 @@ proc defineModule*(moduleName: string) =
             ; opens Arturo's official website in a new browser window
             """:
                 #=======================================================
-                when defined(SAFE): Error_OperationNotPermitted("browse")
                 openDefaultBrowser(x.s)
         
         builtin "download",
@@ -122,7 +121,6 @@ proc defineModule*(moduleName: string) =
             ; (downloads file with a different name)
             """:
                 #=======================================================
-                when defined(SAFE): Error_OperationNotPermitted("download")
                 let path = x.s
 
                 var target: string
@@ -159,7 +157,6 @@ proc defineModule*(moduleName: string) =
                     "recipient@somemail.com" "Hello from Arturo" "Arturo rocks!"                
                 """:
                     #=======================================================
-                    when defined(SAFE): Error_OperationNotPermitted("mail")
                     let recipient = x.s
                     let title = y.s
                     let message = z.s
@@ -240,8 +237,6 @@ proc defineModule*(moduleName: string) =
             ; ...same as above...
             """:
                 #=======================================================
-                when defined(SAFE): Error_OperationNotPermitted("request")
-
                 var url = x.s
                 var meth: HttpMethod = HttpGet 
 
@@ -433,8 +428,6 @@ proc defineModule*(moduleName: string) =
             ]
             """:
                 #=======================================================
-                when defined(SAFE): Error_OperationNotPermitted("serve")
-
                 # get parameters
                 let routes = x
                 var port = 18966
