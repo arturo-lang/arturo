@@ -250,7 +250,24 @@ ace.define("ace/mode/arturo_highlight_rules",["require","exports","module","ace/
         this.HighlightRules = ArturoHighlightRules;
         this.foldingRules = new ArturoFoldMode();
         this.$outdent = new MatchingBraceOutdent();
-        this.$behaviour = this.$defaultBehaviour;
+        this.$behaviour = {
+            autoclosing: {
+                pairs: {
+                    "[": "]",
+                    "(": ")",
+                    "{": "}",
+                    '"': '"'
+                }
+            },
+            autowrap: {
+                pairs: {
+                    "[": "]",
+                    "(": ")",
+                    "{": "}",
+                    '"': '"'
+                }
+            }
+        };
     };
     oop.inherits(Mode, TextMode);
     
