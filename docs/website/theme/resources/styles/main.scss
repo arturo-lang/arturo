@@ -495,6 +495,9 @@ li.source-link {
 
 .box {
     &.community {
+        opacity: 0.7;
+        border: 1px solid transparent;
+
         .main-icon {
             display: block;
         }
@@ -503,6 +506,7 @@ li.source-link {
         }
 
         &:hover {
+            opacity: 1.0;
             border: 1px solid #E6E6E6;
 
             .main-icon {
