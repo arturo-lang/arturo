@@ -23,10 +23,10 @@ ace.define("ace/mode/arturo_highlight_rules",["require","exports","module","ace/
                 {token : "paren.parens-start", regex : "[(]"},
                 {token : "paren.parens-end", regex : "\\)"},
                 {token : "support.constant", regex : 
-                    "\\b(?:%<[keywordPredicates]>)\\?(?!:)"
+                    "\\b(?:%<[keywordPredicates]>%)\\?(?!:)"
                 },
                 {token : "support.constant", regex : 
-                    "\\b(%<[keywordRest]>)\\b(?!:)"
+                    "\\b(%<[keywordRest]>%)\\b(?!:)"
                 },
                 {token : "constant.other", regex : /\:\w[-\w'*.?!]*/}, 
                 {token : "variable", regex : /\w[-\w'*.?!]*\:/}, 
