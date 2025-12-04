@@ -139,7 +139,7 @@
                 // Remove top margin from title
                 const titleLevel = contentClone.querySelector('.level.mt-6.is-mobile');
                 if (titleLevel) {
-                    titleLevel.style.marginTop = '0rem';
+                    titleLevel.style.setProperty('margin-top', '0rem', 'important');
                 }
                 
                 modalBody.innerHTML = contentClone.innerHTML;
