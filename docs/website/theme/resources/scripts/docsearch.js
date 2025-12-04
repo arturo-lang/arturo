@@ -90,7 +90,7 @@
         // Show modal with loading state
         modal.classList.add('is-active');
         document.documentElement.classList.add('is-clipped');
-        modalTitle.textContent = title || 'Documentation';
+        modalTitle.textContent = 'Quick reference';
         modalBody.innerHTML = '<div class="has-text-centered"><div class="loader"></div></div>';
         
         // Dispatch event with current URL
