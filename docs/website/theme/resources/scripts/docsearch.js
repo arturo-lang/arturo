@@ -145,6 +145,12 @@
                     }
                 });
                 
+                // Remove top margin from title
+                const titleLevel = contentClone.querySelector('.level.mt-6.is-mobile');
+                if (titleLevel) {
+                    titleLevel.style.marginTop = '0rem';
+                }
+                
                 modalBody.innerHTML = contentClone.innerHTML;
                 
                 modalBody.classList.add('playground-modal-content');
