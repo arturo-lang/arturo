@@ -288,12 +288,10 @@ function toggleWordWrap(){
     if (window.wordwrap) {
         window.wordwrap = false;
         editor.setOption("wrap", false);
-        document.querySelector("#wordwrapperIcon").classList.remove("fa-align-justify");
-        document.querySelector("#wordwrapperIcon").classList.add("fa-align-left");
+        document.querySelector("#wordwrapperIcon").classList.remove("wrapped");
     } else {
         window.wordwrap = true;
         editor.setOption("wrap", true);
-        document.querySelector("#wordwrapperIcon").classList.remove("fa-align-left");
-        document.querySelector("#wordwrapperIcon").classList.add("fa-align-justify");
+        document.querySelector("#wordwrapperIcon").classList.add("wrapped");
     }
 }
