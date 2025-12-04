@@ -600,6 +600,10 @@ li.source-link {
 	-o-transition: All 0.3s ease;
 }
 
+hr.section-separator {
+   margin-top: 3rem;
+}
+
 /////
 
 #showAll {
@@ -643,6 +647,7 @@ li.source-link {
     .box.cta {
         background: $dark-purple2;
         color: $dark-fg2;
+        border-bottom-color: inherit;
     }
 
     .title, .subtitle {
@@ -659,6 +664,17 @@ li.source-link {
         }
     }
 
+    .features {
+        .card {
+            background: inherit;
+            border: inherit;
+        }
+    }
+
+    hr.section-separator {
+        background-color: $dark-purple2;
+    }
+
     .sidebar {
         filter: invert(1);
     }
@@ -668,7 +684,7 @@ li.source-link {
     }
 
     code {
-        background: black;
+        /*background: black;*/
         color: #DAD;
     }
 
