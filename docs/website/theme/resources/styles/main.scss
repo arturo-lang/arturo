@@ -144,6 +144,23 @@ a.navbar-item:hover {
     margin-bottom:2em;
 }
 
+#doc-modal {
+    .modal-card {
+        width: 75%;
+        max-width: 1200px; 
+        max-height: 80vh;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    #doc-modal {
+        .modal-card {
+            width: 90%;
+            max-height: 90vh;
+        }
+    }
+}
+
 .card {
     box-shadow: none !important;
     border: 1px solid #E6E6E6;

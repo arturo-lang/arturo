@@ -37,7 +37,7 @@
         const modalHtml = `
             <div id="doc-modal" class="modal">
                 <div class="modal-background"></div>
-                <div class="modal-card" style="width: 90%; max-width: 1200px; max-height: 90vh;">
+                <div class="modal-card"">
                     <header class="modal-card-head">
                         <p class="modal-card-title" id="doc-modal-title">Documentation</p>
                         <button class="delete" aria-label="close" id="doc-modal-close"></button>
