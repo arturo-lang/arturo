@@ -699,6 +699,11 @@ hr.section-separator {
             color: #DAD;
         }
     }
+
+    .switch {
+        background: linear-gradient(to bottom, $dark-purple2, $dark-purple 25px);
+        background-image: -webkit-linear-gradient(top, $dark-purple2, $dark-purple 25px);
+    }
 }
 
 @mixin alertStyle($color) {
