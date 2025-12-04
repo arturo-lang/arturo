@@ -483,8 +483,9 @@ li.source-link {
 #metrics-box {
     border-radius:0; 
     margin-bottom: 1em;
-    
-    box-shadow: 0 .25em .5em -.0625em rgba(10, 10, 10, .1), 0 0 0 1px rgba(10, 10, 10, .02);
+
+    box-shadow: none;
+    border-bottom: 3px solid $main-purple;
 
     #metrics-container {
         margin-top: -1.25rem !important;
