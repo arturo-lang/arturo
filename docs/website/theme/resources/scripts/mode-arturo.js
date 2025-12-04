@@ -236,22 +236,21 @@ ace.define("ace/mode/arturo_highlight_rules",["require","exports","module","ace/
     exports.MatchingBraceOutdent = MatchingBraceOutdent;
     });
     
-    ace.define("ace/mode/arturo",["require","exports","module","ace/lib/oop","ace/mode/text","ace/mode/arturo_highlight_rules","ace/mode/folding/cstyle","ace/mode/matching_brace_outdent","ace/mode/behaviour/cstyle","ace/range"], function(require, exports, module) {
+    ace.define("ace/mode/arturo",["require","exports","module","ace/lib/oop","ace/mode/text","ace/mode/arturo_highlight_rules","ace/mode/folding/cstyle","ace/mode/matching_brace_outdent","ace/range"], function(require, exports, module) {
     "use strict";
-
+    
     var oop = require("../lib/oop");
     var TextMode = require("./text").Mode;
     var ArturoHighlightRules = require("./arturo_highlight_rules").ArturoHighlightRules;
     var ArturoFoldMode = require("./folding/cstyle").FoldMode;
     var MatchingBraceOutdent = require("./matching_brace_outdent").MatchingBraceOutdent;
-    var CstyleBehaviour = require("./behaviour/cstyle").CstyleBehaviour;
     var Range = require("../range").Range;
     
     var Mode = function() {
         this.HighlightRules = ArturoHighlightRules;
         this.foldingRules = new ArturoFoldMode();
         this.$outdent = new MatchingBraceOutdent();
-        this.$behaviour = new CstyleBehaviour();
+        this.$behaviour = this.$defaultBehaviour;
     };
     oop.inherits(Mode, TextMode);
     
