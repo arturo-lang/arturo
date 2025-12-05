@@ -309,7 +309,7 @@
    -ms-transition: opacity .75s ease-in-out;
    -o-transition: opacity .75s ease-in-out;
    transition: opacity .75s ease-in-out;
-   height: calc(100vh - 165px);
+   max-height: calc(100vh - 165px);
    overflow-y: auto;
    line-break: anywhere !important;
 
