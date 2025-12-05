@@ -124,37 +124,37 @@ function execCode() {
             runbutton.classList.add('working');
             document.getElementById("terminal_output").innerHTML = "";
             ajaxPost("http://188.245.97.105/%<[basePath]>%/backend/exec.php",
-
-            function (result) {
-                var got = JSON.parse(result);
-                document.getElementById("terminal_output").innerHTML = got.text;
-                
-                // Only update snippetId if we actually saved (backend will return empty code if skipped)
-                if (got.code && got.code !== "") {
-                    window.snippetId = got.code;
-                    window.loadedCode = currentCode;
-                    window.loadedFromExample = false; // No longer an unmodified example
+                function (result) {
+                    var got = JSON.parse(result);
+                    document.getElementById("terminal_output").innerHTML = got.text;
                     
-                    // Update URL with snippet ID
-                    window.history.replaceState(
-                        {code: got.code, text: got.text}, 
-                        `${got.code} - Playground | Arturo programming language`, 
-                        `http://188.245.97.105/%<[basePath]>%/playground/${got.code}`
-                    );
-                } else {
-                    // Example executed without saving - don't update URL
-                    window.loadedCode = currentCode;
-                }
+                    // Only update snippetId if we actually saved (backend will return empty code if skipped)
+                    if (got.code && got.code !== "") {
+                        window.snippetId = got.code;
+                        window.loadedCode = currentCode;
+                        window.loadedFromExample = false; // No longer an unmodified example
+                        
+                        // Update URL with snippet ID
+                        window.history.replaceState(
+                            {code: got.code, text: got.text}, 
+                            `${got.code} - Playground | Arturo programming language`, 
+                            `http://188.245.97.105/%<[basePath]>%/playground/${got.code}`
+                        );
+                    } else {
+                        // Example executed without saving - don't update URL
+                        window.loadedCode = currentCode;
+                    }
 
-                runbutton.classList.remove('working');
-                updateButtonStates(); // Update states after execution
-                window.scroll.animateScroll(document.querySelector("#terminal"), null, {updateURL: false});
-            }, {
-                c: currentCode,
-                i: snippetToSend,
-                cols: window.terminalColumns,
-                args: window.commandLineArgs
-            });
+                    runbutton.classList.remove('working');
+                    updateButtonStates(); // Update states after execution
+                    window.scroll.animateScroll(document.querySelector("#terminal"), null, {updateURL: false});
+                }, {
+                    c: currentCode,
+                    i: snippetToSend,
+                    cols: window.terminalColumns,
+                    args: window.commandLineArgs
+                }
+            );
         }
     }
 }
