@@ -128,6 +128,40 @@
     }
 }
 
+#argsbutton {
+    position: absolute;
+    top: 59px;
+    left: calc(50vw - 100px);
+    color: white;
+    z-index: 5;
+
+    a {
+        color: #777;
+        border: 0;
+        
+        &:hover {
+            color: #BBB;
+        }
+    }
+}
+
+#examplesbutton {
+    position: absolute;
+    top: 59px;
+    left: calc(50vw - 130px);
+    color: white;
+    z-index: 5;
+
+    a {
+        color: #777;
+        border: 0;
+        
+        &:hover {
+            color: #BBB;
+        }
+    }
+}
+
 @media (max-width: 768px) {
     #runbutton {
         left: calc(100vw - 90px);
@@ -143,6 +177,14 @@
 
     #wordwrapper {
         left: calc(100vw - 70px);
+    }
+
+    #argsbutton {
+        left: calc(100vw - 100px);
+    }
+
+    #examplesbutton {
+        left: calc(100vw - 130px);
     }
 }
 
@@ -160,6 +202,14 @@
 
 #wordwrapper.expanded {
     left: calc(100vw - 70px);
+}
+
+#argsbutton.expanded {
+    left: calc(100vw - 100px);
+}
+
+#examplesbutton.expanded {
+    left: calc(100vw - 130px);
 }
 
 /* Tooltip container */
@@ -365,23 +415,51 @@
 // Toast notification for word wrap toggle
 #toast-notification {
     position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(0, 0, 0, 0.85);
+    top: calc(52px + (100vh - 52px)/2 - 30px); // Center vertically in the editor area (below navbar)
+    left: 25%; // Center horizontally over the left column (editor)
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
-    padding: 12px 24px;
-    border-radius: 6px;
-    font-size: 14px;
-    font-weight: 500;
+    padding: 14px 28px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
     z-index: 10000;
     pointer-events: none;
     opacity: 0;
-    transition: opacity 0.2s ease;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4), 
+                0 4px 8px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
     white-space: nowrap;
+    letter-spacing: 0.3px;
 
     &.show {
         opacity: 1;
+        transform: translateX(-50%) translateY(-5px); // Slight upward movement on show
     }
+}
+
+// Responsive: center over editor on mobile too
+@media (max-width: 768px) {
+    #toast-notification {
+        left: 50%;
+        top: calc(52px + (100vh - 52px)/2 - 30px);
+    }
+}
+
+// Loader for examples dialog
+.loader {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #667eea;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
