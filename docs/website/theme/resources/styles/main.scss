@@ -146,7 +146,9 @@ a.navbar-item:hover {
 
 #doc-modal {
     .modal-card {
-        width: 75%;
+        transform: scale(0.8);
+
+        width: 65%;
         max-width: 1200px; 
         max-height: 80vh;
 
@@ -160,7 +162,7 @@ a.navbar-item:hover {
 @media screen and (max-width: 768px) {
     #doc-modal {
         .modal-card {
-            width: 90%;
+            width: 100%;
             max-height: 90vh;
         }
     }
