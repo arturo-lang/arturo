@@ -48,7 +48,6 @@
     &.disabled {
         opacity: 0.4;
         cursor: not-allowed;
-        pointer-events: none;
 
         svg {
             opacity: 0.5;
@@ -84,7 +83,6 @@
     &.disabled {
         opacity: 0.4;
         cursor: not-allowed;
-        pointer-events: none;
 
         svg {
             opacity: 0.5;
