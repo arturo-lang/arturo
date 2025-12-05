@@ -145,27 +145,34 @@
         margin-right: -21.5px;
         transition: width 0.3s ease, border-left-color 0.3s ease, border-right-color 0.3s ease;
         
-        // Hide the native search cancel button (X)
         &::-webkit-search-cancel-button {
             display: none;
             -webkit-appearance: none;
         }
         
-        // When minimized, make it look like just an icon
         cursor: pointer;
         
-        // When minimized and has content, still hide cursor
         &:not(:focus) {
             cursor: pointer;
-            caret-color: transparent; // Hide the text cursor when not focused
+            caret-color: transparent; 
+            color: transparent; 
+            
+            &::placeholder {
+                color: transparent; 
+            }
         }
 
         &:focus {
             width: 30vw;
             border-left: 2px solid darken($main-purple, 10%);
             border-right: 2px solid $main-purple;
-            cursor: text; // Normal text cursor when focused
-            caret-color: auto; // Show normal caret when focused
+            cursor: text; 
+            caret-color: auto; 
+            color: inherit; 
+            
+            &::placeholder {
+                color: #999;
+            }
         }
 
         &:focus + #searchbar-icon {
