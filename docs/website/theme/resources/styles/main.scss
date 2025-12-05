@@ -152,6 +152,15 @@ a.navbar-item:hover {
         max-width: 1200px; 
         max-height: 80vh;
 
+        .modal-card-title {
+            display: flex;
+            align-items: center;
+
+            span.main-title {
+                margin-left: 0.75rem;
+            }
+        }
+
         .modal-card-body {
             border-bottom-left-radius: 6px; 
             border-bottom-right-radius: 6px;
