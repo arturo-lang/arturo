@@ -145,6 +145,10 @@ a.navbar-item:hover {
 }
 
 #doc-modal {
+    .modal-background {
+        background-color: rgba(10, 10, 10, .50);
+    }
+    
     .modal-card {
         transform: scale(0.8);
 
