@@ -19,7 +19,8 @@
     const dropdown = document.createElement('div');
     dropdown.id = 'search-dropdown';
     dropdown.className = 'search-dropdown';
-    searchInput.parentNode.insertBefore(dropdown, searchInput.nextSibling);
+    const icon = document.getElementById('searchbar-icon');
+    searchInput.parentNode.insertBefore(dropdown, icon.nextSibling);
 
     // Initialize search with base path and optional modal parameter
     window.initDocSearch = function(showInModal) {
