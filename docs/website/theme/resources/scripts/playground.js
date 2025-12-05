@@ -312,9 +312,32 @@ function toggleWordWrap(){
         window.wordwrap = false;
         editor.setOption("wrap", false);
         document.querySelector("#wordwrapperIcon").classList.remove("wrapped");
+        showToast("Word wrap: OFF");
     } else {
         window.wordwrap = true;
         editor.setOption("wrap", true);
         document.querySelector("#wordwrapperIcon").classList.add("wrapped");
+        showToast("Word wrap: ON");
     }
+}
+
+// Show toast notification
+function showToast(message) {
+    let toast = document.getElementById('toast-notification');
+    
+    // Create toast element if it doesn't exist
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'toast-notification';
+        document.body.appendChild(toast);
+    }
+    
+    // Set message and show
+    toast.textContent = message;
+    toast.classList.add('show');
+    
+    // Hide after 1.5 seconds
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 1500);
 }
