@@ -474,6 +474,9 @@
 
     // Navigate to result - use modal if enabled, otherwise normal navigation
     function navigateToResult(url, title) {
+        // Clear the search input
+        searchInput.value = '';
+        
         if (useModal) {
             showDocInModal(url, title);
             hideDropdown(); // Close the search dropdown
