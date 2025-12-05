@@ -3,6 +3,7 @@ window.loadedCode = "";
 window.loadedFromUrl = false;
 window.loadedFromExample = false; // NEW: Track if current code is an unmodified example
 window.terminalColumns = 80; // Default fallback
+window.commandLineArgs = ""; // Store command-line arguments
 
 var editor = ace.edit("editor");
 document.getElementsByTagName("textarea")[0].setAttribute("aria-label", "code snippet");
@@ -151,7 +152,8 @@ function execCode() {
             }, {
                 c: currentCode,
                 i: snippetToSend,
-                cols: window.terminalColumns
+                cols: window.terminalColumns,
+                args: window.commandLineArgs
             });
         }
     }
@@ -295,6 +297,8 @@ function toggleExpand(){
         document.querySelector("#sharebutton").classList.remove("expanded");
         document.querySelector("#expander").classList.remove("expanded");
         document.querySelector("#wordwrapper").classList.remove("expanded");
+        document.querySelector("#argsbutton").classList.remove("expanded");
+        document.querySelector("#examplesbutton").classList.remove("expanded");
     } else {
         window.expanded = true;
         document.querySelector(".doccols").style.display = "inherit";
@@ -303,6 +307,8 @@ function toggleExpand(){
         document.querySelector("#sharebutton").classList.add("expanded");
         document.querySelector("#expander").classList.add("expanded");
         document.querySelector("#wordwrapper").classList.add("expanded");
+        document.querySelector("#argsbutton").classList.add("expanded");
+        document.querySelector("#examplesbutton").classList.add("expanded");
     }
 }
 
@@ -340,4 +346,100 @@ function showToast(message) {
     setTimeout(() => {
         toast.classList.remove('show');
     }, 1500);
+}
+
+// Show command-line arguments dialog
+function showArgsDialog() {
+    Bulma().alert({
+        type: 'info',
+        title: 'Command-line Arguments',
+        body: `
+            <div class="field">
+                <label class="label">Arguments</label>
+                <div class="control">
+                    <input id='cmdline-args' class='input' type='text' placeholder='Enter command-line arguments...' value='${window.commandLineArgs}'>
+                </div>
+                <p class="help">These arguments will be passed to your script when executed</p>
+            </div>
+        `,
+        confirm: {
+            label: 'Save',
+            onClick: function(){
+                var argsInput = document.getElementById("cmdline-args");
+                if (argsInput) {
+                    window.commandLineArgs = argsInput.value;
+                    showToast(window.commandLineArgs ? "Arguments saved" : "Arguments cleared");
+                }
+            }
+        },
+        cancel: 'Cancel'
+    });
+    
+    // Focus the input after modal opens
+    setTimeout(() => {
+        const input = document.getElementById("cmdline-args");
+        if (input) input.focus();
+    }, 100);
+}
+
+// Load and show examples dialog
+function showExamplesDialog() {
+    // Show loading state
+    Bulma().alert({
+        type: 'info',
+        title: 'Load Example',
+        body: '<div class="has-text-centered"><div class="loader"></div><p>Loading examples...</p></div>',
+        cancel: 'Close'
+    });
+    
+    // Fetch examples list
+    ajaxPost("http://188.245.97.105/%<[basePath]>%/backend/getexamples.php",
+    function (result) {
+        var examples = JSON.parse(result);
+        
+        // Build examples list HTML
+        var examplesHtml = '<div class="examples-list" style="max-height: 400px; overflow-y: auto;">';
+        
+        if (examples && examples.length > 0) {
+            examples.forEach(function(example) {
+                var displayName = example.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                examplesHtml += `
+                    <div class="example-item" style="padding: 12px; border-bottom: 1px solid #f0f0f0; cursor: pointer; transition: background-color 0.15s;" 
+                         onmouseover="this.style.backgroundColor='#f9f9f9'" 
+                         onmouseout="this.style.backgroundColor='white'"
+                         onclick="loadExampleFromDialog('${example}')">
+                        <div style="font-weight: 600; color: #363636;">${displayName}</div>
+                        <div style="font-size: 12px; color: #999; font-family: monospace;">${example}.art</div>
+                    </div>
+                `;
+            });
+        } else {
+            examplesHtml += '<div style="padding: 32px; text-align: center; color: #999;">No examples available</div>';
+        }
+        
+        examplesHtml += '</div>';
+        
+        // Show examples dialog
+        Bulma().alert({
+            type: 'info',
+            title: 'Load Example',
+            body: examplesHtml,
+            cancel: 'Close'
+        });
+    }, {});
+}
+
+// Load example from dialog selection
+function loadExampleFromDialog(exampleName) {
+    // Close the modal
+    var modal = document.querySelector('.modal.is-active');
+    if (modal) {
+        modal.classList.remove('is-active');
+        document.documentElement.classList.remove('is-clipped');
+    }
+    
+    // Load the example
+    getExample(exampleName);
+    document.getElementById('scriptName').innerHTML = `${exampleName}.art`;
+    showToast(`Loaded: ${exampleName}`);
 }
