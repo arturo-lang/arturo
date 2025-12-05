@@ -350,16 +350,36 @@ function showToast(message) {
     if (!toast) {
         toast = document.createElement('div');
         toast.id = 'toast-notification';
+        toast.style.cssText = `
+            position: fixed;
+            left: 25%;
+            top: calc(52px + (100vh - 52px)/2 - 30px);
+            transform: translateX(-50%);
+            background: rgba(45, 45, 45, 0.95);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 0.2px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            z-index: 10000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        `;
         document.body.appendChild(toast);
     }
     
     // Set message and show
     toast.textContent = message;
-    toast.classList.add('show');
+    toast.style.opacity = '1';
+    toast.style.transform = 'translateX(-50%) translateY(-3px)';
     
     // Hide after 1.5 seconds
     setTimeout(() => {
-        toast.classList.remove('show');
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(-50%)';
     }, 1500);
 }
 
@@ -370,11 +390,11 @@ function showArgsDialog() {
         title: 'Command-line Arguments',
         body: `
             <div class="field">
-                <label class="label">Arguments</label>
+                <label class="label" style="font-size: 14px; font-weight: 600;">Arguments</label>
                 <div class="control">
-                    <input id='cmdline-args' class='input' type='text' placeholder='Enter command-line arguments...' value='${window.commandLineArgs}'>
+                    <input id='cmdline-args' class='input' type='text' placeholder='e.g., arg1 arg2 arg3' value='${window.commandLineArgs}' style="font-size: 14px;">
                 </div>
-                <p class="help">These arguments will be passed to your script when executed</p>
+                <p class="help" style="font-size: 12px;">Space-separated arguments passed to your script</p>
             </div>
         `,
         confirm: {
@@ -382,7 +402,7 @@ function showArgsDialog() {
             onClick: function(){
                 var argsInput = document.getElementById("cmdline-args");
                 if (argsInput) {
-                    window.commandLineArgs = argsInput.value;
+                    window.commandLineArgs = argsInput.value.trim();
                     showToast(window.commandLineArgs ? "Arguments saved" : "Arguments cleared");
                 }
             }
@@ -390,11 +410,12 @@ function showArgsDialog() {
         cancel: 'Cancel'
     });
     
-    // Focus the input after modal opens
+    // Apply minimal modal styling
     setTimeout(() => {
+        applyModalStyling();
         const input = document.getElementById("cmdline-args");
         if (input) input.focus();
-    }, 100);
+    }, 50);
 }
 
 // Load and show examples dialog
@@ -403,28 +424,38 @@ function showExamplesDialog() {
     Bulma().alert({
         type: 'info',
         title: 'Load Example',
-        body: '<div class="has-text-centered"><div class="loader"></div><p>Loading examples...</p></div>',
+        body: '<div class="has-text-centered" style="padding: 32px;"><div class="loader"></div><p style="margin-top: 16px; color: #666;">Loading examples...</p></div>',
         cancel: 'Close'
     });
+    
+    applyModalStyling();
     
     // Fetch examples list
     ajaxPost("http://188.245.97.105/%<[basePath]>%/backend/getexamples.php",
     function (result) {
         var examples = JSON.parse(result);
         
-        // Build examples list HTML
-        var examplesHtml = '<div class="examples-list" style="max-height: 400px; overflow-y: auto;">';
+        // Build examples list HTML with search
+        var examplesHtml = `
+            <div class="field" style="margin-bottom: 12px;">
+                <div class="control">
+                    <input id="examples-search" class="input is-small" type="text" placeholder="Search examples..." style="font-size: 13px;">
+                </div>
+            </div>
+            <div id="examples-list" style="max-height: 400px; overflow-y: auto; border: 1px solid #e8e8e8; border-radius: 4px;">
+        `;
         
         if (examples && examples.length > 0) {
             examples.forEach(function(example) {
                 var displayName = example.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
                 examplesHtml += `
-                    <div class="example-item" style="padding: 12px; border-bottom: 1px solid #f0f0f0; cursor: pointer; transition: background-color 0.15s;" 
-                         onmouseover="this.style.backgroundColor='#f9f9f9'" 
+                    <div class="example-item" data-name="${example.toLowerCase()}" data-display="${displayName.toLowerCase()}" 
+                         style="padding: 10px 12px; border-bottom: 1px solid #f0f0f0; cursor: pointer; transition: background-color 0.12s;" 
+                         onmouseover="this.style.backgroundColor='#f5f5f5'" 
                          onmouseout="this.style.backgroundColor='white'"
                          onclick="loadExampleFromDialog('${example}')">
-                        <div style="font-weight: 600; color: #363636;">${displayName}</div>
-                        <div style="font-size: 12px; color: #999; font-family: monospace;">${example}.art</div>
+                        <div style="font-weight: 600; color: #363636; font-size: 14px;">${displayName}</div>
+                        <div style="font-size: 11px; color: #999; font-family: 'Fira Code Arturo', monospace; margin-top: 2px;">${example}.art</div>
                     </div>
                 `;
             });
@@ -441,20 +472,84 @@ function showExamplesDialog() {
             body: examplesHtml,
             cancel: 'Close'
         });
+        
+        // Setup search functionality and styling
+        setTimeout(() => {
+            applyModalStyling();
+            
+            var searchInput = document.getElementById('examples-search');
+            if (searchInput) {
+                searchInput.focus();
+                searchInput.addEventListener('input', function() {
+                    var query = this.value.toLowerCase();
+                    var items = document.querySelectorAll('.example-item');
+                    
+                    items.forEach(function(item) {
+                        var name = item.getAttribute('data-name');
+                        var display = item.getAttribute('data-display');
+                        
+                        if (name.includes(query) || display.includes(query)) {
+                            item.style.display = '';
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+                });
+            }
+        }, 50);
     }, {});
 }
 
 // Load example from dialog selection
 function loadExampleFromDialog(exampleName) {
-    // Close the modal
+    // Close the modal first
     var modal = document.querySelector('.modal.is-active');
     if (modal) {
         modal.classList.remove('is-active');
         document.documentElement.classList.remove('is-clipped');
     }
     
-    // Load the example
-    getExample(exampleName);
-    document.getElementById('scriptName').innerHTML = `${exampleName}.art`;
-    showToast(`Loaded: ${exampleName}`);
+    // Then load the example
+    setTimeout(() => {
+        getExample(exampleName);
+        document.getElementById('scriptName').innerHTML = `${exampleName}.art`;
+        showToast(`Loaded: ${exampleName}`);
+    }, 100);
+}
+
+function applyModalStyling() {
+    var style = document.getElementById('custom-modal-style');
+    if (!style) {
+        style = document.createElement('style');
+        style.id = 'custom-modal-style';
+        style.textContent = `
+            .modal-card-head {
+                background-color: #f8f8f8 !important;
+                padding: 12px 16px !important;
+                border-bottom: 1px solid #e0e0e0 !important;
+            }
+            .modal-card-title {
+                font-size: 16px !important;
+                font-weight: 600 !important;
+                color: #333 !important;
+            }
+            .modal-card-body {
+                padding: 16px !important;
+            }
+            .modal-card-foot {
+                background-color: #f8f8f8 !important;
+                padding: 12px 16px !important;
+                border-top: 1px solid #e0e0e0 !important;
+            }
+            .button.is-info {
+                background-color: #666 !important;
+                border-color: #666 !important;
+            }
+            .button.is-info:hover {
+                background-color: #555 !important;
+                border-color: #555 !important;
+            }
+        `;
+        document.head.appendChild(style);
+    }
 }
