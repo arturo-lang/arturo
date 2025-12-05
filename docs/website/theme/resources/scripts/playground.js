@@ -327,6 +327,21 @@ function toggleWordWrap(){
     }
 }
 
+function toggleTerminalInfo() {
+    var info = document.getElementById('terminal-info');
+    var button = document.getElementById('terminal-info-toggle');
+    
+    if (info.style.display === 'none') {
+        info.style.display = 'block';
+        button.style.background = 'rgba(255,255,255,0.15)';
+        button.style.color = '#aaa';
+    } else {
+        info.style.display = 'none';
+        button.style.background = 'rgba(255,255,255,0.1)';
+        button.style.color = '#888';
+    }
+}
+
 // Show toast notification
 function showToast(message) {
     let toast = document.getElementById('toast-notification');
