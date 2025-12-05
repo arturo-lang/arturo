@@ -8,6 +8,7 @@
     let currentIndex = -1;
     let basePath = '';
     let useModal = false; // NEW: Track if we should use modal instead of navigation
+    let isDropdownHovered = false; // Track if mouse is over dropdown
     
     // DOM elements
     const searchInput = document.getElementById('searchbar');
@@ -21,6 +22,15 @@
     dropdown.className = 'search-dropdown';
     const icon = document.getElementById('searchbar-icon');
     searchInput.parentNode.insertBefore(dropdown, icon.nextSibling);
+
+    // Add mouseenter/mouseleave handlers for the dropdown
+    dropdown.addEventListener('mouseenter', () => {
+        isDropdownHovered = true;
+    });
+
+    dropdown.addEventListener('mouseleave', () => {
+        isDropdownHovered = false;
+    });
 
     // Initialize search with base path and optional modal parameter
     window.initDocSearch = function(showInModal) {
@@ -434,6 +444,7 @@
     // Show dropdown
     function showDropdown() {
         dropdown.classList.add('is-active');
+        searchInput.classList.add('keep-open');
     }
 
     // Hide dropdown
@@ -441,6 +452,9 @@
         dropdown.classList.remove('is-active');
         dropdown.innerHTML = '';
         currentIndex = -1;
+        if (!searchInput.matches(':focus')) {
+            searchInput.classList.remove('keep-open');
+        }
     }
 
     // Set active result
@@ -520,6 +534,17 @@
         if (searchInput.value.trim().length >= 2) {
             performSearch(searchInput.value.trim());
         }
+    });
+
+    // Handle blur event - delay to allow dropdown clicks
+    searchInput.addEventListener('blur', () => {
+        // Delay removing keep-open to allow click events to fire
+        setTimeout(() => {
+            if (!isDropdownHovered && !searchInput.matches(':focus')) {
+                searchInput.classList.remove('keep-open');
+                hideDropdown();
+            }
+        }, 200);
     });
 
     // Close dropdown when clicking outside
