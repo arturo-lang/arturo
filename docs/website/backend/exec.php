@@ -6,6 +6,7 @@ $rest_json = file_get_contents("php://input");
 $_POST = json_decode($rest_json, true);
 $code = $_POST['c'];
 $columns = isset($_POST['cols']) ? intval($_POST['cols']) : 80;
+$args = isset($_POST['args']) ? trim($_POST['args']) : ''; // NEW: Get command-line arguments
 
 // Clamp columns to reasonable values
 $columns = max(40, min(200, $columns));
@@ -72,9 +73,17 @@ $code_file = $jail_path . "/tmp/main.art";
 file_put_contents($code_file, $code . "\n");
 chmod($code_file, 0644);
 
+// Build command with arguments, if provided
+$arturo_cmd = "/usr/local/bin/arturo /tmp/main.art";
+if (!empty($args)) {
+    // Escape arguments for shell
+    $escaped_args = escapeshellcmd($args);
+    $arturo_cmd .= " " . $escaped_args;
+}
+
 // Run in jail with timeout, pipe through aha for color conversion
 // Use the terminal width from the browser
-$cmd = "sudo /usr/sbin/jail -c name=$jail_name path=$jail_path exec.start=\"/bin/sh -c 'HOME=/root LD_LIBRARY_PATH=/usr/local/lib COLUMNS=$columns LINES=24 timeout --kill-after=3s 10s /usr/local/bin/arturo /tmp/main.art 2>&1 | /usr/local/bin/aha --no-header --black'\" exec.stop=\"\" 2>&1";
+$cmd = "sudo /usr/sbin/jail -c name=$jail_name path=$jail_path exec.start=\"/bin/sh -c 'HOME=/root LD_LIBRARY_PATH=/usr/local/lib COLUMNS=$columns LINES=24 timeout --kill-after=3s 10s $arturo_cmd 2>&1 | /usr/local/bin/aha --no-header --black'\" exec.stop=\"\" 2>&1";
 exec($cmd, $output, $ret);
 
 // Cleanup (jail auto-stops, just destroy ZFS)
