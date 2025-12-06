@@ -33,11 +33,11 @@ Prism.languages.arturo = {
         alias: 'boolean'
     },
     'keyword1': {
-        pattern: /\b(?:absolute|all|and|any|ascii|attr|attribute|attributeLabel|between|binary|block|bytecode|char|color|complex|contains|database|date|dictionary|disjoint|empty|equal|even|every|exists|false|floating|friday|function|future|greater|greaterOrEqual|hidden|if|in|infinite|inline|integer|intersect|is|key|label|leap|less|lessOrEqual|literal|logical|lower|match|monday|nand|negative|nor|not|notEqual|null|numeric|object|odd|one|or|past|path|pathLabel|positive|prefix|prime|quantity|range|rational|regex|same|saturday|send|set|some|sorted|standalone|string|subset|suffix|sunday|superset|superuser|symbol|symbolLiteral|thursday|today|true|try|tuesday|type|unless|upper|version|wednesday|when|whitespace|word|xnor|xor|zero)\?/,
+        pattern: /\b(?:%<[keywordPredicates]>%)\?/,
         alias: 'keyword'
     },
     'keyword2': {
-        pattern: /\b(?:abs|accept|acos|acosh|acsec|acsech|actan|actanh|add|after|alert|alias|alphabet|and|angle|append|arg|args|arity|arrange|array|as|asec|asech|asin|asinh|atan|atan2|atanh|attr|attrs|average|before|benchmark|blend|break|browse|builtins1|builtins2|call|capitalize|case|ceil|chop|chunk|clamp|clear|clip|close|cluster|coalesce|collect|color|combine|compare|config|conj|connect|continue|copy|cos|cosh|couple|crc|csec|csech|ctan|ctanh|cursor|darken|dec|decode|decouple|define|delete|denominator|desaturate|deviation|dialog|dictionary|difference|digest|digits|div|divmod|do|download|drop|dup|else|empty|encode|ensure|enumerate|env|epsilon|escape|execute|exit|exp|extend|extract|factorial|factors|false|fdiv|filter|first|flatten|floor|fold|from|function|gamma|gather|gcd|get|goto|grayscale|hash|hypot|if|in|inc|indent|index|infinite|info|input|insert|inspect|intersection|invert|jaro|join|keys|kurtosis|last|lcm|let|levenshtein|lighten|list|listen|ln|log|loop|lower|mail|map|match|max|maximum|maybe|median|min|minimum|mod|module|move|mul|nand|neg|new|nor|normalize|not|now|null|numerator|open|or|outdent|pad|palette|panic|path|pause|permissions|permutate|pi|pop|popup|pow|powerset|powmod|prepend|print|prints|process|product|query|random|range|read|receive|reciprocal|relative|remove|rename|render|repeat|replace|request|return|reverse|rotate|round|sample|saturate|script|sec|sech|select|send|serve|set|shl|shr|shuffle|sin|sinh|size|skewness|slice|sort|spin|split|sqrt|squeeze|stack|store|strip|sub|sum|switch|symbols|symlink|sys|take|tally|tan|tanh|terminal|terminate|timestamp|to|translate|true|truncate|try|type|unclip|union|unique|unless|unplug|until|unzip|upper|values|var|variance|volume|webview|while|with|wordwrap|write|xnor|xor|zip)\b/,
+        pattern: /\b(?:%<[keywordRest]>%)\b/,
         alias: 'keyword'
     },
     'sugar': {
@@ -428,47 +428,5 @@ document.addEventListener('DOMContentLoaded', () => {
             var parsed = JSON.parse(data);
             setDiv("stargazers",parsed.items[0].stargazers_count);
         });
-
-        ajaxGet("https://api.github.com/repos/arturo-lang/arturo/releases", function (data){
-            var parsed = JSON.parse(data);
-            /*console.log(parsed);*/
-            //var releaseVersion = parsed[0].tag_name;
-            //setClass("release-version", parsed[0].tag_name);
-            //setClass("release-version-mini", `${parsed[0].tag_name}<sup>*</sup>`);
-            //setDiv("release-date", parsed[0].published_at);
-			/*
-            ajaxGet(parsed[0].assets_url, function (data){
-                var parsed = JSON.parse(data);
-                var downloadsTable = `<tr><th></th><th></th><th class="is-hidden-touch has-text-centered">Version</th><th class="is-hidden-touch has-text-centered">Compressed file size</th><th></th></tr>`;
-                var downloadItems = [];
-                for (var i = 0; i < parsed.length; i++){
-                    var elem = parsed[i];
-                    var logo = "";
-                    var os = "";
-                    var order = "";
-                    var version = releaseVersion;
-                    if (elem.name.includes("Linux")) { order = 1; logo = linuxLogo; os = "<b>Linux</b>"; }
-                    else if (elem.name.includes("macOS")) { order = 2; logo = macosLogo; os = "<b>macOS</b>"; }
-                    else if (elem.name.includes("Windows")) { order = 3; logo = windowsLogo; os = "<b>Windows</b>"; }
-                    else if (elem.name.includes("FreeBSD")) { order = 4; logo = bsdLogo; os = "<b>FreeBSD</b>"; }
-                    else if (elem.name.includes("arm-")) { order = 5; logo = raspberryLogo; os = "<b>arm</b>"; }
-                    else if (elem.name.includes("arm64-")) { order = 6; logo = raspberryLogo; os = "<b>arm64</b>"; }
-					else if (elem.name.includes("Web")) { order = 7; logo = webLogo; os = "<b>Web</b>"; }
-                    if (elem.name.includes("mini")) { 
-						version += "<sup>*</sup>"; 
-						os += "<sup class='is-hidden-desktop'>*</sup>";
-					}
-                    var size = ((elem.size)/(1024*1024)).toFixed(2) + " MB";
-                    var link = elem.browser_download_url;
-
-                    downloadItems.push(`<tr><td order="${order}" class="first-td">${logo}</td><td>${os}</td><td class="is-hidden-touch has-text-centered">${version}</td><td class="is-hidden-touch has-text-centered">${size}</td><td><a href="${link}"><i class="far fa-arrow-alt-circle-down"></i>&nbsp;&nbsp;Download</a></td></tr>`);
-                }
-                downloadItems.sort();
-                downloadsTable += downloadItems.join("");
-                downloadsTable += `<tr><td class="first-td">${dockerLogo}</td><td><b>Docker</b></td><td class="release-version is-hidden-touch has-text-centered">${releaseVersion}</td><td class="is-hidden-touch has-text-centered">--</td><td><a rel="noopener" target="_blank" href="https://hub.docker.com/repository/docker/arturolang/arturo"><i class="far fa-arrow-alt-circle-right"></i>&nbsp;&nbsp;Docker Hub</a></td></tr>`
-                setDiv("downloads",downloadsTable);
-                
-            });*/
-        })
     }
 });
