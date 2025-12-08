@@ -20,6 +20,24 @@
     font-family: 'Fira Code Arturo', monospace !important;
     white-space: pre-wrap;
     color: white;
+
+    #terminal-info-toggle {
+        position: absolute; 
+        top: 15px; 
+        right: 15px; 
+        width: 24px; 
+        height: 24px; 
+        border-radius: 50%; 
+        background: rgba(255,255,255,0.1); 
+        border: 1px solid rgba(255,255,255,0.2); 
+        color: #888; 
+        cursor: pointer; 
+        font-size: 14px; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        transition: all 0.2s;
+    }
 }
 
 #runbutton {
