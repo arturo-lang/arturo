@@ -15,6 +15,7 @@
 }
 
 #terminal {
+    position: relative;
     padding: 1em;
     background: black;
     font-family: 'Fira Code Arturo', monospace !important;
@@ -37,6 +38,12 @@
         align-items: center; 
         justify-content: center; 
         transition: all 0.2s;
+
+        &:hover {
+            background: rgba(255,255,255,0.15);
+            border-color: rgba(255,255,255,0.3);
+            color: #aaa;
+        }
     }
 }
 
