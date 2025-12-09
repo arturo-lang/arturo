@@ -529,25 +529,45 @@
 }
 
 #doc-modal {
-    .modal-card-head {
-        background-color: $main-purple;
-        
+    .modal-background {
+        background-color: rgba(10, 10, 10, .50);
+    }
+    
+    .modal-card {
+        width: 65%;
+        max-width: 1200px; 
+        max-height: 80vh;
+        font-size: 12.5px;
+
         .modal-card-title {
-            color: white;
-            font-size: 16px;
-            
+            display: flex;
+            align-items: center;
+
             svg {
                 fill: white;
                 color: white;
             }
-            
-            .doc-link {
-                color: rgba(255, 255, 255, 0.9);
+
+            span.main-title {
+                margin-left: 0.75rem;
+                font-weight: 600;
+            }
+
+            span.doc-link {
+                margin-left: auto;
+                margin-right: 1.5rem;
+                font-size: small;
+                color: rgba(255, 255, 255, 0.85);
                 
                 &:hover {
-                    color: white;
+                    color: rgba(255, 255, 255, 1);
                 }
             }
+        }
+
+        .modal-card-body {
+            border-bottom-left-radius: 6px; 
+            border-bottom-right-radius: 6px;
         }
     }
 }
