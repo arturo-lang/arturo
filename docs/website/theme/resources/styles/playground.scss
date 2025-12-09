@@ -37,6 +37,16 @@ main {
             display: none;
         }
     }
+    
+    @media (max-width: 768px) {
+        flex-direction: column;
+        
+        .column {
+            flex: none !important;
+            width: 100% !important;
+            height: 50% !important;
+        }
+    }
 }
 
 #editor {
@@ -254,17 +264,21 @@ main {
     }
 }
 
-#expander {
+.editor-toolbar {
     position: absolute;
-    top: 6px;
+    top: -44px;
     right: 0;
-    color: white;
+    display: flex;
+    gap: 8px;
+    align-items: center;
     z-index: 20;
     padding: 8px;
-
+    
     a {
         color: #777;
         border: 0;
+        display: flex;
+        align-items: center;
         
         &:hover {
             color: #BBB;
@@ -272,49 +286,12 @@ main {
     }
 }
 
-#wordwrapper {
-    position: absolute;
-    top: 6px;
-    right: 30px;
-    color: white;
-    z-index: 20;
-    padding: 8px;
-
-    a {
-        color: #777;
-        border: 0;
-        
-        &:hover {
-            color: #BBB;
-        }
-    }
-}
-
-#argsbutton {
-    position: absolute;
-    top: 6px;
-    right: 60px;
-    color: white;
-    z-index: 20;
-    padding: 8px;
-
-    a {
-        color: #777;
-        border: 0;
-        
-        &:hover {
-            color: #BBB;
-        }
-    }
-}
-
+#expander,
+#wordwrapper,
+#argsbutton,
 #examplesbutton {
-    position: absolute;
-    top: 6px;
-    right: 90px;
     color: white;
-    z-index: 20;
-    padding: 8px;
+}
 
     a {
         color: #777;
