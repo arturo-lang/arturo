@@ -481,3 +481,49 @@
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+
+// Uniform modal styling
+.modal-card {
+    .modal-card-head {
+        background-color: #f8f8f8;
+        padding: 12px 16px;
+        border-bottom: 1px solid #e0e0e0;
+        
+        .modal-card-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #363636;
+        }
+    }
+    
+    .modal-card-body {
+        padding: 16px;
+    }
+    
+    .modal-card-foot {
+        background-color: #f8f8f8;
+        padding: 12px 16px;
+        border-top: 1px solid #e0e0e0;
+        
+        .button.is-info {
+            background-color: #666;
+            border-color: #666;
+            
+            &:hover {
+                background-color: #555;
+                border-color: #555;
+            }
+        }
+    }
+}
+
+// Special styling for doc modal
+#doc-modal {
+    .modal-card-head {
+        background-color: $main-purple;
+        
+        .modal-card-title {
+            color: white;
+        }
+    }
+}
