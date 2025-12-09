@@ -190,7 +190,10 @@ function execCode() {
                                         updateButtonStates();
                                         window.scroll.animateScroll(document.querySelector("#terminal"), null, {updateURL: false});
                                     } else if (data.line) {
-                                        document.getElementById("terminal_output").innerHTML += data.line;
+                                        var terminalOutput = document.getElementById("terminal_output");
+                                        terminalOutput.innerHTML += data.line;
+                                        // Auto-scroll to bottom
+                                        terminalOutput.scrollTop = terminalOutput.scrollHeight;
                                     }
                                 } catch (e) {
                                     console.error('Parse error:', e);
@@ -205,16 +208,43 @@ function execCode() {
                 read();
             })
             .catch(error => {
-                console.error('Fetch error:', error);
+                console.error('Error:', error);
                 runbutton.classList.remove('working');
-                updateButtonStates();
-                document.getElementById("terminal_output").innerHTML = "Error: Could not connect to server";
+                
                 if (statusEl) {
-                    statusEl.innerHTML = '<div class="status-left"><span class="status-error">Connection Error</span></div>';
+                    statusEl.innerHTML = `
+                        <div class="status-left">
+                            <span class="status-error">Connection Error</span>
+                            <span>Failed to execute script</span>
+                        </div>
+                    `;
                 }
             });
         }
     }
+}
+
+function ajaxPost(url, callback, vars) {
+    var xhr = new XMLHttpRequest();
+    
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+            callback(xhr.responseText);
+        }
+    }
+    
+    xhr.open("POST", url, true);
+    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    
+    var params = "";
+    for (var key in vars) {
+        if (params != "") {
+            params += "&";
+        }
+        params += key + "=" + encodeURIComponent(vars[key]);
+    }
+    
+    xhr.send(params);
 }
 
 function getSnippet(cd) {
@@ -331,7 +361,7 @@ window.addEventListener('resize', function() {
     window.terminalColumns = calculateTerminalColumns();
 });
 
-function shareLink(){
+function shareLink() {
     var shareButton = document.getElementById('sharebutton');
     
     if (shareButton.classList.contains('disabled')) {
@@ -342,29 +372,28 @@ function shareLink(){
         Bulma().alert({
             type: 'info',
             title: 'Share this script',
-            body: `<input id='snippet-link' class='input is-info' value='http://188.245.97.105/%<[basePath]>%/playground/${window.snippetId}'>`,
-            confirm: {
-                label: 'Copy link',
-                onClick: function(){
-                    var copyText = document.getElementById("snippet-link");
-                    copyText.select();
-                    copyText.setSelectionRange(0, 99999);
-                    document.execCommand("copy");
-                    (window.getSelection ? window.getSelection() : document.selection).empty();
-                    Bulma().alert({
-                        type: 'success',
-                        title: 'Copied',
-                        body: 'Ready to go!'
-                    });
-                }
-            },
-            cancel: 'Close'
+            body: `<input id='snippet-link' class='input is-small' value='http://188.245.97.105/%<[basePath]>%/playground/${window.snippetId}' style="font-size: 13px;">`,
+            cancel: false
         });
+        
+        setTimeout(() => {
+            var input = document.getElementById('snippet-link');
+            if (input) {
+                input.select();
+                input.setSelectionRange(0, 99999);
+                
+                navigator.clipboard.writeText(input.value).then(() => {
+                    showToast("Link copied to clipboard!");
+                }).catch(() => {
+                    showToast("Link ready to copy");
+                });
+            }
+        }, 50);
     }
 }
 
 window.expanded = false;
-function toggleExpand(){
+function toggleExpand() {
     if (window.innerWidth <= 768) {
         return;
     }
@@ -374,16 +403,18 @@ function toggleExpand(){
         document.querySelector(".doccols").classList.remove("expanded");
         document.querySelector("#expanderIcon").classList.remove("expanded");
         localStorage.setItem('playground-expanded', 'false');
+        showToast("Normal view");
     } else {
         window.expanded = true;
         document.querySelector(".doccols").classList.add("expanded");
         document.querySelector("#expanderIcon").classList.add("expanded");
         localStorage.setItem('playground-expanded', 'true');
+        showToast("Full-screen editor");
     }
 }
 
 window.wordwrap = false;
-function toggleWordWrap(){
+function toggleWordWrap() {
     if (window.wordwrap) {
         window.wordwrap = false;
         editor.setOption("wrap", false);
@@ -448,28 +479,43 @@ function showArgsDialog() {
             <div class="field">
                 <label class="label" style="font-size: 14px; font-weight: 600;">Arguments</label>
                 <div class="control">
-                    <input id='cmdline-args' class='input' type='text' placeholder='e.g., arg1 arg2 arg3' value='${window.commandLineArgs}' style="font-size: 14px;">
+                    <input id='cmdline-args' class='input is-small' type='text' placeholder='e.g., arg1 arg2 arg3' value='${window.commandLineArgs}' style="font-size: 13px;">
                 </div>
-                <p class="help" style="font-size: 12px;">Space-separated arguments passed to your script</p>
+                <p class="help" style="font-size: 11px;">Space-separated arguments passed to your script</p>
+            </div>
+            <div style="display: flex; justify-content: flex-end; margin-top: 1.5rem;">
+                <button class="button is-info is-small is-rounded" onclick="saveArgs()" style="font-size: 13px;">Save</button>
             </div>
         `,
-        confirm: {
-            label: 'Save',
-            onClick: function(){
-                var argsInput = document.getElementById("cmdline-args");
-                if (argsInput) {
-                    window.commandLineArgs = argsInput.value.trim();
-                    showToast(window.commandLineArgs ? "Arguments saved" : "Arguments cleared");
-                }
-            }
-        },
-        cancel: 'Cancel'
+        cancel: false
     });
     
     setTimeout(() => {
         const input = document.getElementById("cmdline-args");
-        if (input) input.focus();
+        if (input) {
+            input.focus();
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    saveArgs();
+                }
+            });
+        }
     }, 50);
+}
+
+function saveArgs() {
+    var argsInput = document.getElementById("cmdline-args");
+    if (argsInput) {
+        window.commandLineArgs = argsInput.value.trim();
+        showToast(window.commandLineArgs ? "Arguments saved" : "Arguments cleared");
+    }
+    
+    // Close the modal
+    var modal = document.querySelector('.modal.is-active');
+    if (modal) {
+        modal.classList.remove('is-active');
+        document.documentElement.classList.remove('is-clipped');
+    }
 }
 
 function showExamplesDialog() {
@@ -512,7 +558,7 @@ function showExamplesDialog() {
             type: 'info',
             title: 'Load Example',
             body: examplesHtml,
-            cancel: 'Close'
+            cancel: false
         });
         
         setTimeout(() => {
