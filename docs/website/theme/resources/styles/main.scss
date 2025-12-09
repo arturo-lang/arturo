@@ -156,36 +156,41 @@ a.navbar-item:hover {
 
         .modal-card-head {
             background-color: $main-purple;
+            padding: 12px 16px;
+            border-bottom: 1px solid darken($main-purple, 5%);
         }
 
         .modal-card-title {
             display: flex;
             align-items: center;
             color: white;
-            font-size: 13px;
+            font-size: 15px;
             font-weight: 600;
 
             svg {
                 fill: white;
                 color: white;
-                width: 16px;
-                height: 16px;
             }
 
             span.main-title {
                 margin-left: 0.75rem;
                 font-weight: 600;
-                font-size: 13px;
             }
 
             span.doc-link {
                 margin-left: auto;
                 margin-right: 1.5rem;
-                font-size: 11px;
-                color: white;
+                font-size: 14px;
+                color: rgba(255, 255, 255, 0.9);
                 
-                &:hover {
-                    color: rgba(255, 255, 255, 0.85);
+                a {
+                    color: rgba(255, 255, 255, 0.9);
+                    border-bottom: 1px solid transparent;
+                    
+                    &:hover {
+                        color: white;
+                        border-bottom: 1px solid white;
+                    }
                 }
             }
         }
@@ -193,19 +198,21 @@ a.navbar-item:hover {
         .modal-card-body {
             border-bottom-left-radius: 6px; 
             border-bottom-right-radius: 6px;
-            font-size: 10px;
+            padding: 16px;
+            font-size: 12.5px;
             
-            * {
-                font-size: 10px !important;
+            p, li, td, th, div, span {
+                font-size: 12.5px;
             }
             
             h1, h2, h3, h4, h5, h6 {
-                font-size: 11px !important;
-                font-weight: 600 !important;
+                font-weight: 600;
             }
             
-            h1 { font-size: 13px !important; }
-            h2 { font-size: 12px !important; }
+            h1 { font-size: 18px; }
+            h2 { font-size: 16px; }
+            h3 { font-size: 14px; }
+            h4 { font-size: 13px; }
         }
     }
 }
