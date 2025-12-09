@@ -84,8 +84,9 @@ $is_example = ($skip_save && !empty($example_name));
 
 if ($is_example) {
     // For unmodified examples, use the file directly from /examples directory
-    $example_file = "/examples/" . basename($example_name) . ".art";
-    $arturo_cmd = "/usr/local/bin/arturo " . $example_file;
+    // Change working directory to /examples so relative paths work
+    $escaped_example = escapeshellarg(basename($example_name) . ".art");
+    $arturo_cmd = "cd /examples && /usr/local/bin/arturo " . $escaped_example;
 } else {
     // Write code file for regular snippets or modified examples
     $code_file = $jail_path . "/tmp/main.art";
