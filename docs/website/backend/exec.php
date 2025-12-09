@@ -84,9 +84,9 @@ $is_example = ($skip_save && !empty($example_name));
 
 if ($is_example) {
     // For unmodified examples, use the file directly from /examples directory
-    // Change working directory to /examples so relative paths work
+    // Set PWD so relative paths work correctly
     $escaped_example = escapeshellarg(basename($example_name) . ".art");
-    $arturo_cmd = "/bin/sh -c 'cd /examples && /usr/local/bin/arturo " . $escaped_example . "'";
+    $arturo_cmd = "PWD=/examples /usr/local/bin/arturo /examples/" . $escaped_example;
 } else {
     // Write code file for regular snippets or modified examples
     $code_file = $jail_path . "/tmp/main.art";
