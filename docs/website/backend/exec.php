@@ -78,13 +78,23 @@ if ($clone_ret !== 0) {
     exit;
 }
 
-// Write code file
-$code_file = $jail_path . "/tmp/main.art";
-file_put_contents($code_file, $code . "\n");
-chmod($code_file, 0644);
+// Check if this is an unmodified example
+$example_name = isset($_POST['example']) ? $_POST['example'] : '';
+$is_example = ($skip_save && !empty($example_name));
+
+if ($is_example) {
+    // For unmodified examples, use the file directly from /examples directory
+    $example_file = "/examples/" . basename($example_name) . ".art";
+    $arturo_cmd = "/usr/local/bin/arturo " . $example_file;
+} else {
+    // Write code file for regular snippets or modified examples
+    $code_file = $jail_path . "/tmp/main.art";
+    file_put_contents($code_file, $code . "\n");
+    chmod($code_file, 0644);
+    $arturo_cmd = "/usr/local/bin/arturo /tmp/main.art";
+}
 
 // Build command with arguments, if provided
-$arturo_cmd = "/usr/local/bin/arturo /tmp/main.art";
 if (!empty($args)) {
     // Escape arguments for shell
     $escaped_args = escapeshellcmd($args);
