@@ -368,7 +368,13 @@ function shareLink() {
         Bulma().alert({
             type: 'info',
             title: 'Share this script',
-            body: `<input id='snippet-link' class='input is-small' value='http://188.245.97.105/%<[basePath]>%/playground/${window.snippetId}' style="font-size: 13px;">`,
+            body: `
+                <input id='snippet-link' class='input is-small' value='http://188.245.97.105/%<[basePath]>%/playground/${window.snippetId}' style="font-size: 13px;">
+                <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 1.5rem;">
+                    <button class="button is-small is-rounded" onclick="closeShareDialog()" style="font-size: 13px;">Close</button>
+                    <button class="button is-info is-small is-rounded" onclick="copyShareLink()" style="font-size: 13px;">Copy</button>
+                </div>
+            `,
             cancel: false
         });
         
@@ -377,14 +383,36 @@ function shareLink() {
             if (input) {
                 input.select();
                 input.setSelectionRange(0, 99999);
-                
-                navigator.clipboard.writeText(input.value).then(() => {
-                    showToast("Link copied to clipboard!");
-                }).catch(() => {
-                    showToast("Link ready to copy");
-                });
             }
         }, 50);
+    }
+}
+
+function copyShareLink() {
+    var input = document.getElementById('snippet-link');
+    if (input) {
+        navigator.clipboard.writeText(input.value).then(() => {
+            showToast("Link copied to clipboard!");
+            closeShareDialog();
+        }).catch(() => {
+            showToast("Failed to copy");
+        });
+    }
+}
+
+function closeShareDialog() {
+    var modal = document.querySelector('.modal.is-active');
+    if (modal) {
+        modal.classList.remove('is-active');
+        document.documentElement.classList.remove('is-clipped');
+    }
+}
+
+function closeShareDialog() {
+    var modal = document.querySelector('.modal.is-active');
+    if (modal) {
+        modal.classList.remove('is-active');
+        document.documentElement.classList.remove('is-clipped');
     }
 }
 
@@ -459,8 +487,6 @@ function showToast(message) {
         document.body.appendChild(toast);
     }
     
-    // Set position class based on expanded state
-    toast.className = window.expanded ? 'expanded' : '';
     toast.textContent = message;
     
     // Trigger show
