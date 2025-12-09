@@ -119,6 +119,7 @@ main {
    flex: 1;
    overflow-y: auto;
    line-break: anywhere !important;
+   scroll-behavior: smooth;
 
    ::-webkit-scrollbar {
         background: none;
@@ -194,15 +195,16 @@ main {
 
 #runbutton {
     position: absolute;
-    top: calc(52px + (100vh - 52px)/2 - 70px);
-    right: 30px;
-    width: 60px;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%) translateY(-35px);
+    width: 54px;
+    height: 54px;
     z-index: 20;
     background: darkorange;
-    height: 60px;
     border-radius: 50px;
     color: white;
-    font-size: 2em;
+    font-size: 1.8em;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -232,15 +234,16 @@ main {
 
 #sharebutton {
     position: absolute;
-    top: calc(52px + (100vh - 52px)/2 + 10px);
-    right: 30px;
-    width: 60px;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%) translateY(25px);
+    width: 54px;
+    height: 54px;
     z-index: 20;
     background: #15AABF;
-    height: 60px;
     border-radius: 50px;
     color: white;
-    font-size: 2em;
+    font-size: 1.8em;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -295,12 +298,19 @@ main {
 
 @media (max-width: 768px) {
     #runbutton,
-    #sharebutton,
-    #expander,
-    #wordwrapper,
-    #argsbutton,
-    #examplesbutton {
-        right: 30px;
+    #sharebutton {
+        right: 15px;
+        width: 48px;
+        height: 48px;
+        font-size: 1.6em;
+    }
+    
+    #runbutton {
+        transform: translateY(-50%) translateY(-30px);
+    }
+    
+    #sharebutton {
+        transform: translateY(-50%) translateY(22px);
     }
 }
 
@@ -509,11 +519,20 @@ main {
         background-color: #f8f8f8;
         padding: 12px 16px;
         border-bottom: 1px solid #e0e0e0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
         
         .modal-card-title {
             font-size: 15px;
             font-weight: 600;
             color: #363636;
+            margin: 0;
+        }
+        
+        .delete {
+            position: static;
+            margin: 0;
         }
     }
     
@@ -522,19 +541,7 @@ main {
     }
     
     .modal-card-foot {
-        background-color: #f8f8f8;
-        padding: 12px 16px;
-        border-top: 1px solid #e0e0e0;
-        
-        .button.is-info {
-            background-color: #666;
-            border-color: #666;
-            
-            &:hover {
-                background-color: #555;
-                border-color: #555;
-            }
-        }
+        display: none; // Hide footer by default - we'll use custom buttons in body when needed
     }
 }
 
@@ -556,5 +563,9 @@ main {
     
     &.resizing {
         background: #4e4d42;
+    }
+    
+    @media (max-width: 768px) {
+        display: none; // Hide on mobile
     }
 }
