@@ -91,25 +91,45 @@ if (!empty($args)) {
     $arturo_cmd .= " " . $escaped_args;
 }
 
-// Run in jail with timeout -> pipe through aha for color conversion
-// (Using the terminal width from the browser container's dimensions)
-$cmd = "sudo /usr/sbin/jail -c name=$jail_name path=$jail_path exec.start=\"/bin/sh -c 'HOME=/root LD_LIBRARY_PATH=/usr/local/lib COLUMNS=$columns LINES=24 timeout --kill-after=3s 10s $arturo_cmd 2>&1 | /usr/local/bin/aha --no-header --black'\" exec.stop=\"\" 2>&1";
-
 if ($stream) {
+    // For streaming, run without aha first to avoid buffering, then colorize each line
+    $cmd = "sudo /usr/sbin/jail -c name=$jail_name path=$jail_path exec.start=\"/bin/sh -c 'HOME=/root LD_LIBRARY_PATH=/usr/local/lib COLUMNS=$columns LINES=24 timeout --kill-after=3s 10s $arturo_cmd 2>&1'\" exec.stop=\"\" 2>&1";
+    
     // Disable PHP buffering for streaming
     ini_set('output_buffering', 'off');
     ini_set('zlib.output_compression', false);
     if (ob_get_level()) ob_end_clean();
     
     $handle = popen($cmd, 'r');
+    stream_set_blocking($handle, false);
     
+    $buffer = '';
     while (!feof($handle)) {
-        $line = fgets($handle);
-        if ($line !== false) {
-            $formatted = str_replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;", trim($line));
-            echo "data: " . json_encode(["line" => $formatted . "<br>"]) . "\n\n";
-            flush();
+        $chunk = fread($handle, 1024);
+        if ($chunk !== false && $chunk !== '') {
+            $buffer .= $chunk;
+            $lines = explode("\n", $buffer);
+            $buffer = array_pop($lines);
+            
+            foreach ($lines as $line) {
+                if ($line !== '') {
+                    // Colorize each line individually
+                    $colorized = shell_exec("echo " . escapeshellarg($line) . " | /usr/local/bin/aha --no-header --black");
+                    $formatted = str_replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;", trim($colorized));
+                    echo "data: " . json_encode(["line" => $formatted]) . "\n\n";
+                    flush();
+                }
+            }
         }
+        usleep(10000);
+    }
+    
+    // Send any remaining buffered content
+    if ($buffer !== '') {
+        $colorized = shell_exec("echo " . escapeshellarg($buffer) . " | /usr/local/bin/aha --no-header --black");
+        $formatted = str_replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;", trim($colorized));
+        echo "data: " . json_encode(["line" => $formatted]) . "\n\n";
+        flush();
     }
     
     $ret = pclose($handle);
@@ -123,6 +143,10 @@ if ($stream) {
     flush();
     
 } else {
+    // Run in jail with timeout, pipe through aha for color conversion
+    // Use the terminal width from the browser
+    $cmd = "sudo /usr/sbin/jail -c name=$jail_name path=$jail_path exec.start=\"/bin/sh -c 'HOME=/root LD_LIBRARY_PATH=/usr/local/lib COLUMNS=$columns LINES=24 timeout --kill-after=3s 10s $arturo_cmd 2>&1 | /usr/local/bin/aha --no-header --black'\" exec.stop=\"\" 2>&1";
+    
     // Original batch execution
     exec($cmd, $output, $ret);
     
