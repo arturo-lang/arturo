@@ -84,8 +84,9 @@ $is_example = ($skip_save && !empty($example_name));
 
 if ($is_example) {
     // For unmodified examples, execute from /examples directory
-    $escaped_example = escapeshellarg(basename($example_name) . ".art");
-    $arturo_cmd = "/usr/local/bin/arturo " . $escaped_example . "";
+    $example_file = basename($example_name) . ".art";
+    // Escape for the nested shell context - use backslash-escaped quotes
+    $arturo_cmd = "/usr/local/bin/arturo \\\"examples/" . str_replace('"', '\\"', $example_file) . "\\\"";
 } else {
     // Write code file for regular snippets or modified examples
     $code_file = $jail_path . "/tmp/main.art";
@@ -96,9 +97,8 @@ if ($is_example) {
 
 // Build command with arguments, if provided
 if (!empty($args)) {
-    // Escape arguments for shell
-    $escaped_args = escapeshellcmd($args);
-    $arturo_cmd .= " " . $escaped_args;
+    $escaped_args = str_replace('"', '\\"', $args);
+    $arturo_cmd .= " \\\"" . $escaped_args . "\\\"";
 }
 
 if ($stream) {
