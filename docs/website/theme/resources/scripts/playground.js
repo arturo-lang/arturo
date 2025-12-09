@@ -451,7 +451,6 @@ function showArgsDialog() {
     });
     
     setTimeout(() => {
-        applyModalStyling();
         const input = document.getElementById("cmdline-args");
         if (input) input.focus();
     }, 50);
@@ -499,8 +498,6 @@ function showExamplesDialog() {
         });
         
         setTimeout(() => {
-            applyModalStyling();
-            
             var searchInput = document.getElementById('examples-search');
             if (searchInput) {
                 searchInput.focus();
@@ -536,41 +533,4 @@ function loadExampleFromDialog(exampleName) {
         document.getElementById('scriptName').innerHTML = `${exampleName}.art`;
         showToast(`Loaded: ${exampleName}`);
     }, 100);
-}
-
-function applyModalStyling() {
-    var style = document.getElementById('custom-modal-style');
-    if (!style) {
-        style = document.createElement('style');
-        style.id = 'custom-modal-style';
-        style.textContent = `
-            .modal-card-head {
-                background-color: #f8f8f8 !important;
-                padding: 12px 16px !important;
-                border-bottom: 1px solid #e0e0e0 !important;
-            }
-            .modal-card-title {
-                font-size: 16px !important;
-                font-weight: 600 !important;
-                color: #333 !important;
-            }
-            .modal-card-body {
-                padding: 16px !important;
-            }
-            .modal-card-foot {
-                background-color: #f8f8f8 !important;
-                padding: 12px 16px !important;
-                border-top: 1px solid #e0e0e0 !important;
-            }
-            .button.is-info {
-                background-color: #666 !important;
-                border-color: #666 !important;
-            }
-            .button.is-info:hover {
-                background-color: #555 !important;
-                border-color: #555 !important;
-            }
-        `;
-        document.head.appendChild(style);
-    }
 }
