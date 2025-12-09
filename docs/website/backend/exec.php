@@ -83,10 +83,9 @@ $example_name = isset($_POST['example']) ? $_POST['example'] : '';
 $is_example = ($skip_save && !empty($example_name));
 
 if ($is_example) {
-    // For unmodified examples, use the file directly from /examples directory
-    // Set PWD so relative paths work correctly
+    // For unmodified examples, execute from /examples directory
     $escaped_example = escapeshellarg(basename($example_name) . ".art");
-    $arturo_cmd = "PWD=/examples /usr/local/bin/arturo /examples/" . $escaped_example;
+    $arturo_cmd = "/usr/local/bin/arturo " . $escaped_example . "";
 } else {
     // Write code file for regular snippets or modified examples
     $code_file = $jail_path . "/tmp/main.art";
