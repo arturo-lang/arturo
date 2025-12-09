@@ -4,6 +4,7 @@ window.loadedFromUrl = false;
 window.loadedFromExample = false;
 window.terminalColumns = 80;
 window.commandLineArgs = "";
+window.pageLoaded = false;
 
 var editor = ace.edit("editor");
 document.getElementsByTagName("textarea")[0].setAttribute("aria-label", "code snippet");
@@ -255,7 +256,9 @@ document.addEventListener("DOMContentLoaded", function() {
     
     var savedWordwrap = localStorage.getItem('playground-wordwrap');
     if (savedWordwrap === 'true') {
-        toggleWordWrap();
+        editor.setOption("wrap", true);
+        document.querySelector("#wordwrapperIcon").classList.add("wrapped");
+        window.wordwrap = true;
     }
     
     var savedTerminalInfo = localStorage.getItem('playground-terminal-info');
@@ -284,6 +287,11 @@ document.addEventListener("DOMContentLoaded", function() {
     } else {
         updateButtonStates();
     }
+    
+    // Mark page as loaded after initial setup
+    setTimeout(() => {
+        window.pageLoaded = true;
+    }, 100);
 });
 
 window.addEventListener('resize', function() {
@@ -331,6 +339,7 @@ function toggleExpand(){
     if (window.expanded) {
         window.expanded = false;
         document.querySelector(".doccols").style.display = "flex";
+        document.querySelector(".doccols").classList.remove("expanded");
         document.querySelector("#expanderIcon").classList.remove("expanded");
         document.querySelector("#runbutton").classList.remove("expanded");
         document.querySelector("#sharebutton").classList.remove("expanded");
@@ -342,6 +351,7 @@ function toggleExpand(){
     } else {
         window.expanded = true;
         document.querySelector(".doccols").style.display = "inherit";
+        document.querySelector(".doccols").classList.add("expanded");
         document.querySelector("#expanderIcon").classList.add("expanded");
         document.querySelector("#runbutton").classList.add("expanded");
         document.querySelector("#sharebutton").classList.add("expanded");
@@ -388,6 +398,11 @@ function toggleTerminalInfo() {
 }
 
 function showToast(message) {
+    // Don't show toast on page load, only on user actions
+    if (!window.pageLoaded) {
+        return;
+    }
+    
     let toast = document.getElementById('toast-notification');
     
     if (!toast) {
@@ -395,8 +410,6 @@ function showToast(message) {
         toast.id = 'toast-notification';
         toast.style.cssText = `
             position: fixed;
-            left: 25%;
-            top: calc(52px + (100vh - 52px)/2 - 30px);
             transform: translateX(-50%);
             background: rgba(45, 45, 45, 0.95);
             color: white;
@@ -414,6 +427,12 @@ function showToast(message) {
         document.body.appendChild(toast);
     }
     
+    // Calculate position based on expanded state
+    const left = window.expanded ? '50%' : '25%';
+    const top = 'calc(52px + (100vh - 52px)/2 - 30px)';
+    
+    toast.style.left = left;
+    toast.style.top = top;
     toast.textContent = message;
     toast.style.opacity = '1';
     toast.style.transform = 'translateX(-50%) translateY(-3px)';
