@@ -485,6 +485,9 @@ function showExamplesDialog() {
                 <div class="control">
                     <input id="examples-search" class="input is-small" type="text" placeholder="Search examples..." style="font-size: 13px;">
                 </div>
+                <p class="help" style="font-size: 11px; color: #999; margin-top: 4px;">
+                    <span id="examples-count">${examples.length}</span> examples available
+                </p>
             </div>
             <div id="examples-list" style="max-height: 400px; overflow-y: auto; border: 1px solid #e8e8e8; border-radius: 4px;">
         `;
@@ -494,12 +497,11 @@ function showExamplesDialog() {
                 var displayName = example.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
                 examplesHtml += `
                     <div class="example-item" data-name="${example.toLowerCase()}" data-display="${displayName.toLowerCase()}" 
-                         style="padding: 10px 12px; border-bottom: 1px solid #f0f0f0; cursor: pointer; transition: background-color 0.12s;" 
+                         style="padding: 12px 16px; border-bottom: 1px solid #f0f0f0; cursor: pointer; transition: background-color 0.12s;" 
                          onmouseover="this.style.backgroundColor='#f5f5f5'" 
                          onmouseout="this.style.backgroundColor='white'"
                          onclick="loadExampleFromDialog('${example}')">
                         <div style="font-weight: 600; color: #363636; font-size: 14px;">${displayName}</div>
-                        <div style="font-size: 11px; color: #999; font-family: 'Fira Code Arturo', monospace; margin-top: 2px;">${example}.art</div>
                     </div>
                 `;
             });
@@ -523,6 +525,7 @@ function showExamplesDialog() {
                 searchInput.addEventListener('input', function() {
                     var query = this.value.toLowerCase();
                     var items = document.querySelectorAll('.example-item');
+                    var visibleCount = 0;
                     
                     items.forEach(function(item) {
                         var name = item.getAttribute('data-name');
@@ -530,10 +533,13 @@ function showExamplesDialog() {
                         
                         if (name.includes(query) || display.includes(query)) {
                             item.style.display = '';
+                            visibleCount++;
                         } else {
                             item.style.display = 'none';
                         }
                     });
+                    
+                    document.getElementById('examples-count').textContent = visibleCount;
                 });
             }
         }, 50);
