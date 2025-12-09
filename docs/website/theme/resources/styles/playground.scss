@@ -467,8 +467,8 @@ main {
 #toast-notification {
     position: fixed;
     top: calc(52px + (100vh - 52px)/2 - 30px);
-    left: 25%;
-    transform: translateX(-50%);
+    left: 50%;
+    transform: translate(-50%, -50%);
     background: $main-purple;
     color: white;
     padding: 14px 28px;
@@ -479,7 +479,7 @@ main {
     pointer-events: none;
     opacity: 0;
     transition: opacity 0.25s ease, transform 0.25s ease;
-    box-shadow: 0 8px 24px rgba(114, 83, 237, 0.4), 
+    box-shadow: 0 8px 24px rgba(106, 21, 107, 0.4), 
                 0 4px 8px rgba(0, 0, 0, 0.2),
                 inset 0 1px 0 rgba(255, 255, 255, 0.2);
     white-space: nowrap;
@@ -487,11 +487,7 @@ main {
 
     &.show {
         opacity: 1;
-        transform: translateX(-50%) translateY(-5px);
-    }
-    
-    &.expanded {
-        left: 50%;
+        transform: translate(-50%, -50%) translateY(-5px);
     }
 }
 
@@ -518,32 +514,23 @@ main {
 
 .modal-card {
     .modal-card-head {
-        background-color: #f8f8f8;
-        padding: 12px 16px;
-        border-bottom: 1px solid #e0e0e0;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
+        background-color: #fafafa;
+        padding: 16px 20px;
+        border-bottom: 1px solid #dbdbdb;
         
         .modal-card-title {
-            font-size: 15px;
+            font-size: 16px;
             font-weight: 600;
             color: #363636;
-            margin: 0;
-        }
-        
-        .delete {
-            position: static;
-            margin: 0;
         }
     }
     
     .modal-card-body {
-        padding: 16px;
+        padding: 20px;
     }
     
     .modal-card-foot {
-        display: none; // Hide footer by default - we'll use custom buttons in body when needed
+        display: none;
     }
 }
 
