@@ -298,9 +298,8 @@ window.addEventListener('DOMContentLoaded', function() {
     if (savedTerminalInfo === 'true') {
         var info = document.getElementById('terminal-info');
         var button = document.getElementById('terminal-info-toggle');
-        info.style.display = 'block';
-        button.style.background = 'rgba(255,255,255,0.15)';
-        button.style.color = '#aaa';
+        info.classList.add('visible');
+        button.classList.add('active');
     }
     
     var pathParts = window.location.pathname.split('/');
@@ -371,13 +370,11 @@ function toggleExpand(){
     
     if (window.expanded) {
         window.expanded = false;
-        document.querySelector(".doccols").style.display = "flex";
         document.querySelector(".doccols").classList.remove("expanded");
         document.querySelector("#expanderIcon").classList.remove("expanded");
         localStorage.setItem('playground-expanded', 'false');
     } else {
         window.expanded = true;
-        document.querySelector(".doccols").style.display = "inherit";
         document.querySelector(".doccols").classList.add("expanded");
         document.querySelector("#expanderIcon").classList.add("expanded");
         localStorage.setItem('playground-expanded', 'true');
@@ -405,16 +402,14 @@ function toggleTerminalInfo() {
     var info = document.getElementById('terminal-info');
     var button = document.getElementById('terminal-info-toggle');
     
-    if (info.style.display === 'none') {
-        info.style.display = 'block';
-        button.style.background = 'rgba(255,255,255,0.15)';
-        button.style.color = '#aaa';
-        localStorage.setItem('playground-terminal-info', 'true');
-    } else {
-        info.style.display = 'none';
-        button.style.background = 'rgba(255,255,255,0.1)';
-        button.style.color = '#888';
+    if (info.classList.contains('visible')) {
+        info.classList.remove('visible');
+        button.classList.remove('active');
         localStorage.setItem('playground-terminal-info', 'false');
+    } else {
+        info.classList.add('visible');
+        button.classList.add('active');
+        localStorage.setItem('playground-terminal-info', 'true');
     }
 }
 
@@ -429,38 +424,18 @@ function showToast(message) {
     if (!toast) {
         toast = document.createElement('div');
         toast.id = 'toast-notification';
-        toast.style.cssText = `
-            position: fixed;
-            transform: translateX(-50%);
-            background: rgba(45, 45, 45, 0.95);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 6px;
-            font-size: 13px;
-            font-weight: 500;
-            letter-spacing: 0.2px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-            z-index: 10000;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.2s ease, transform 0.2s ease;
-        `;
         document.body.appendChild(toast);
     }
     
-    // Calculate position based on expanded state
-    const left = window.expanded ? '50%' : '25%';
-    const top = 'calc(52px + (100vh - 52px)/2 - 30px)';
-    
-    toast.style.left = left;
-    toast.style.top = top;
+    // Set position class based on expanded state
+    toast.className = window.expanded ? 'expanded' : '';
     toast.textContent = message;
-    toast.style.opacity = '1';
-    toast.style.transform = 'translateX(-50%) translateY(-3px)';
+    
+    // Trigger show
+    setTimeout(() => toast.classList.add('show'), 10);
     
     setTimeout(() => {
-        toast.style.opacity = '0';
-        toast.style.transform = 'translateX(-50%)';
+        toast.classList.remove('show');
     }, 1500);
 }
 
