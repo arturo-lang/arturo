@@ -23,6 +23,19 @@ main {
         margin: 0;
         padding: 0;
         height: 100%;
+        position: relative;
+    }
+    
+    &.expanded {
+        display: inherit;
+        
+        .column:first-child {
+            flex: 0 0 100% !important;
+        }
+        
+        .column:last-child {
+            display: none;
+        }
     }
 }
 
@@ -69,11 +82,22 @@ main {
             border-color: rgba(255,255,255,0.3);
             color: #aaa;
         }
+        
+        &.active {
+            background: rgba(255,255,255,0.15);
+            color: #aaa;
+        }
     }
 }
 
 #terminal-info {
     flex-shrink: 0;
+    display: none;
+    color: gray;
+    
+    &.visible {
+        display: block;
+    }
 }
 
 #terminal_output {
@@ -161,7 +185,7 @@ main {
 #runbutton {
     position: absolute;
     top: calc(52px + (100vh - 52px)/2 - 70px);
-    left: calc(50% - 90px);
+    right: 30px;
     width: 60px;
     z-index: 1001;
     background: darkorange;
@@ -199,7 +223,7 @@ main {
 #sharebutton {
     position: absolute;
     top: calc(52px + (100vh - 52px)/2 + 10px);
-    left: calc(50% - 90px);
+    right: 30px;
     width: 60px;
     z-index: 1001;
     background: #15AABF;
@@ -233,7 +257,7 @@ main {
 #expander {
     position: absolute;
     top: 59px;
-    left: calc(50% - 40px);
+    right: 0;
     color: white;
     z-index: 1001;
 
@@ -250,7 +274,7 @@ main {
 #wordwrapper {
     position: absolute;
     top: 59px;
-    left: calc(50% - 70px);
+    right: 30px;
     color: white;
     z-index: 1001;
 
@@ -267,7 +291,7 @@ main {
 #argsbutton {
     position: absolute;
     top: 59px;
-    left: calc(50% - 100px);
+    right: 60px;
     color: white;
     z-index: 1001;
 
@@ -284,7 +308,7 @@ main {
 #examplesbutton {
     position: absolute;
     top: 61px;
-    left: calc(50% - 130px);
+    right: 90px;
     color: white;
     z-index: 1001;
 
@@ -299,60 +323,13 @@ main {
 }
 
 @media (max-width: 768px) {
-    #runbutton {
-        left: calc(100% - 90px);
-    }
-
-    #sharebutton {
-        left: calc(100% - 90px);
-    }
-
-    #expander {
-        display: none;
-    }
-
-    #wordwrapper {
-        left: calc(100% - 40px);
-    }
-
-    #argsbutton {
-        left: calc(100% - 70px);
-    }
-
+    #runbutton,
+    #sharebutton,
+    #expander,
+    #wordwrapper,
+    #argsbutton,
     #examplesbutton {
-        left: calc(100% - 100px);
-    }
-}
-
-#runbutton.expanded {
-    left: calc(100% - 90px);
-}
-
-#sharebutton.expanded {
-    left: calc(100% - 90px);
-}
-
-#expander.expanded {
-    left: calc(100% - 40px);
-}
-
-#wordwrapper.expanded {
-    left: calc(100% - 70px);
-}
-
-#argsbutton.expanded {
-    left: calc(100% - 100px);
-}
-
-#examplesbutton.expanded {
-    left: calc(100% - 130px);
-}
-
-@media (min-width: 769px) {
-    .doccols.expanded {
-        #expander {
-            display: block !important;
-        }
+        right: 30px;
     }
 }
 
@@ -529,17 +506,16 @@ main {
         opacity: 1;
         transform: translateX(-50%) translateY(-5px);
     }
+    
+    &.expanded {
+        left: 50%;
+    }
 }
 
 @media (max-width: 768px) {
     #toast-notification {
         left: 50%;
-        top: calc(52px + (100vh - 52px)/2 - 30px);
     }
-}
-
-.doccols.expanded #toast-notification {
-    left: 50%;
 }
 
 .loader {
@@ -599,7 +575,7 @@ main {
     width: 4px;
     background: #272822;
     cursor: col-resize;
-    z-index: 1000;
+    z-index: 999;
     transition: background 0.2s;
     transform: translateX(-50%);
     
