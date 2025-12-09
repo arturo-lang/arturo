@@ -102,6 +102,18 @@ cp /etc/resolv.conf "$JAIL_ROOT/etc/"
 chmod 1777 "$JAIL_ROOT/tmp"
 
 #==================================================
+# Copy examples directory
+#==================================================
+
+EXAMPLES_DIR=$(dirname "$ARTURO_BIN" | xargs dirname)/examples
+if [ -d "$EXAMPLES_DIR" ]; then
+    echo "Copying examples directory..."
+    mkdir -p "$JAIL_ROOT/examples"
+    cp -r "$EXAMPLES_DIR"/* "$JAIL_ROOT/examples/"
+    echo "✓ Examples copied"
+fi
+
+#==================================================
 # Install all Arturo packages
 #==================================================
 
