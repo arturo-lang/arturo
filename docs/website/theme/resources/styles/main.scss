@@ -150,15 +150,25 @@ a.navbar-item:hover {
     }
     
     .modal-card {
-        transform: scale(0.8);
-
         width: 65%;
         max-width: 1200px; 
         max-height: 80vh;
 
+        .modal-card-head {
+            background-color: $main-purple;
+        }
+
         .modal-card-title {
             display: flex;
             align-items: center;
+            color: white;
+            font-size: 20px;
+            font-weight: 600;
+
+            svg {
+                fill: white;
+                color: white;
+            }
 
             span.main-title {
                 margin-left: 0.75rem;
@@ -168,13 +178,19 @@ a.navbar-item:hover {
             span.doc-link {
                 margin-left: auto;
                 margin-right: 1.5rem;
-                font-size: small;
+                font-size: 16px;
+                color: rgba(255, 255, 255, 0.85);
+                
+                &:hover {
+                    color: rgba(255, 255, 255, 1);
+                }
             }
         }
 
         .modal-card-body {
             border-bottom-left-radius: 6px; 
             border-bottom-right-radius: 6px;
+            font-size: 12.5px;
         }
     }
 }
