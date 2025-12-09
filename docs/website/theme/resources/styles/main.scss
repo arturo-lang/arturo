@@ -162,27 +162,30 @@ a.navbar-item:hover {
             display: flex;
             align-items: center;
             color: white;
-            font-size: 20px;
+            font-size: 13px;
             font-weight: 600;
 
             svg {
                 fill: white;
                 color: white;
+                width: 16px;
+                height: 16px;
             }
 
             span.main-title {
                 margin-left: 0.75rem;
                 font-weight: 600;
+                font-size: 13px;
             }
 
             span.doc-link {
                 margin-left: auto;
                 margin-right: 1.5rem;
-                font-size: 16px;
-                color: rgba(255, 255, 255, 0.85);
+                font-size: 11px;
+                color: white;
                 
                 &:hover {
-                    color: rgba(255, 255, 255, 1);
+                    color: rgba(255, 255, 255, 0.85);
                 }
             }
         }
@@ -190,7 +193,19 @@ a.navbar-item:hover {
         .modal-card-body {
             border-bottom-left-radius: 6px; 
             border-bottom-right-radius: 6px;
-            font-size: 12.5px;
+            font-size: 10px;
+            
+            * {
+                font-size: 10px !important;
+            }
+            
+            h1, h2, h3, h4, h5, h6 {
+                font-size: 11px !important;
+                font-weight: 600 !important;
+            }
+            
+            h1 { font-size: 13px !important; }
+            h2 { font-size: 12px !important; }
         }
     }
 }
