@@ -112,13 +112,11 @@ if ($stream) {
             $buffer = array_pop($lines);
             
             foreach ($lines as $line) {
-                if ($line !== '') {
-                    // Colorize each line individually
-                    $colorized = shell_exec("echo " . escapeshellarg($line) . " | /usr/local/bin/aha --no-header --black");
-                    $formatted = str_replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;", trim($colorized));
-                    echo "data: " . json_encode(["line" => $formatted]) . "\n\n";
-                    flush();
-                }
+                // Colorize each line individually
+                $colorized = shell_exec("echo " . escapeshellarg($line) . " | /usr/local/bin/aha --no-header --black");
+                $formatted = str_replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;", rtrim($colorized));
+                echo "data: " . json_encode(["line" => $formatted . "<br>"]) . "\n\n";
+                flush();
             }
         }
         usleep(10000);
@@ -127,8 +125,8 @@ if ($stream) {
     // Send any remaining buffered content
     if ($buffer !== '') {
         $colorized = shell_exec("echo " . escapeshellarg($buffer) . " | /usr/local/bin/aha --no-header --black");
-        $formatted = str_replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;", trim($colorized));
-        echo "data: " . json_encode(["line" => $formatted]) . "\n\n";
+        $formatted = str_replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;", rtrim($colorized));
+        echo "data: " . json_encode(["line" => $formatted . "<br>"]) . "\n\n";
         flush();
     }
     
