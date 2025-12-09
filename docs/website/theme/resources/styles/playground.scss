@@ -5,6 +5,19 @@
     src: url('../fonts/FiraCode-Regular.ttf') format('truetype');
   }
 
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+@media (max-width: 768px) {
+    html, body {
+        overflow: auto;
+    }
+}
+
 #editor {
     height: calc(100vh - 103px);
     font-family: 'Fira Code Arturo', monospace !important;
@@ -572,17 +585,22 @@
 
 .doccols {
     position: relative;
+    height: calc(100vh - 52px);
+    margin: 0;
+    padding: 0;
 }
 
 .resize-handle {
     position: absolute;
     top: 0;
     bottom: 0;
+    left: 50%;
     width: 4px;
     background: #272822;
     cursor: col-resize;
     z-index: 10;
     transition: background 0.2s;
+    transform: translateX(-50%);
     
     &:hover {
         background: #3e3d32;
