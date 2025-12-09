@@ -120,7 +120,7 @@ function execCode() {
             var statusEl = document.getElementById('terminal-status');
             if (statusEl) {
                 statusEl.style.display = 'flex';
-                statusEl.innerHTML = '<div class="status-left"><span>Running...</span></div>';
+                statusEl.innerHTML = '<span>Running...</span><span></span>';
             }
             
             var payload = {
@@ -179,10 +179,8 @@ function execCode() {
                                         
                                         if (statusEl) {
                                             statusEl.innerHTML = `
-                                                <div class="status-left">
-                                                    <span class="${statusClass}">${statusText}</span>
-                                                    <span>Execution time: ${duration}s</span>
-                                                </div>
+                                                <span class="${statusClass}">${statusText}</span>
+                                                <span>Execution time: ${duration}s</span>
                                             `;
                                         }
                                         
@@ -213,10 +211,8 @@ function execCode() {
                 
                 if (statusEl) {
                     statusEl.innerHTML = `
-                        <div class="status-left">
-                            <span class="status-error">Connection Error</span>
-                            <span>Failed to execute script</span>
-                        </div>
+                        <span class="status-error">Connection Error</span>
+                        <span>Failed to execute script</span>
                     `;
                 }
             });
@@ -402,12 +398,16 @@ function toggleExpand() {
         window.expanded = false;
         document.querySelector(".doccols").classList.remove("expanded");
         document.querySelector("#expanderIcon").classList.remove("expanded");
+        document.body.style.overflow = '';
+        document.documentElement.style.overflow = '';
         localStorage.setItem('playground-expanded', 'false');
         showToast("Normal view");
     } else {
         window.expanded = true;
         document.querySelector(".doccols").classList.add("expanded");
         document.querySelector("#expanderIcon").classList.add("expanded");
+        document.body.style.overflow = 'hidden';
+        document.documentElement.style.overflow = 'hidden';
         localStorage.setItem('playground-expanded', 'true');
         showToast("Full-screen editor");
     }
@@ -483,7 +483,8 @@ function showArgsDialog() {
                 </div>
                 <p class="help" style="font-size: 11px;">Space-separated arguments passed to your script</p>
             </div>
-            <div style="display: flex; justify-content: flex-end; margin-top: 1.5rem;">
+            <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 1.5rem;">
+                <button class="button is-small is-rounded" onclick="closeArgsDialog()" style="font-size: 13px;">Close</button>
                 <button class="button is-info is-small is-rounded" onclick="saveArgs()" style="font-size: 13px;">Save</button>
             </div>
         `,
@@ -501,6 +502,14 @@ function showArgsDialog() {
             });
         }
     }, 50);
+}
+
+function closeArgsDialog() {
+    var modal = document.querySelector('.modal.is-active');
+    if (modal) {
+        modal.classList.remove('is-active');
+        document.documentElement.classList.remove('is-clipped');
+    }
 }
 
 function saveArgs() {
@@ -552,7 +561,12 @@ function showExamplesDialog() {
             examplesHtml += '<div style="padding: 32px; text-align: center; color: #999;">No examples available</div>';
         }
         
-        examplesHtml += '</div>';
+        examplesHtml += `
+            </div>
+            <div style="display: flex; justify-content: flex-end; margin-top: 1.5rem;">
+                <button class="button is-small is-rounded" onclick="closeExamplesDialog()" style="font-size: 13px;">Close</button>
+            </div>
+        `;
         
         Bulma().alert({
             type: 'info',
@@ -582,11 +596,22 @@ function showExamplesDialog() {
                         }
                     });
                     
-                    document.getElementById('examples-count').textContent = visibleCount;
+                    var countEl = document.getElementById('examples-count');
+                    if (countEl) {
+                        countEl.textContent = visibleCount;
+                    }
                 });
             }
         }, 50);
     }, {});
+}
+
+function closeExamplesDialog() {
+    var modal = document.querySelector('.modal.is-active');
+    if (modal) {
+        modal.classList.remove('is-active');
+        document.documentElement.classList.remove('is-clipped');
+    }
 }
 
 function loadExampleFromDialog(exampleName) {
