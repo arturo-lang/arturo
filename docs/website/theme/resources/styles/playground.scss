@@ -17,10 +17,14 @@
 #terminal {
     position: relative;
     padding: 1em;
+    padding-bottom: 3em;
     background: black;
     font-family: 'Fira Code Arturo', monospace !important;
     white-space: pre-wrap;
     color: white;
+    height: calc(100vh - 52px);
+    display: flex;
+    flex-direction: column;
 
     #terminal-info-toggle {
         position: absolute; 
@@ -45,6 +49,10 @@
             color: #aaa;
         }
     }
+}
+
+#terminal-info {
+    flex-shrink: 0;
 }
 
 #runbutton {
@@ -338,7 +346,7 @@
    -ms-transition: opacity .75s ease-in-out;
    -o-transition: opacity .75s ease-in-out;
    transition: opacity .75s ease-in-out;
-   max-height: calc(100vh - 165px);
+   flex: 1;
    overflow-y: auto;
    line-break: anywhere !important;
 
@@ -377,6 +385,39 @@
     }
     ::-webkit-scrollbar-corner {
         background: transparent;
+    }
+}
+
+#terminal-status {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2em;
+    background: #1a1a1a;
+    border-top: 1px solid #333;
+    padding: 0.4em 1em;
+    font-size: 11px;
+    color: #888;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    
+    .status-left {
+        display: flex;
+        gap: 1em;
+    }
+    
+    .status-error {
+        color: #ff6b6b;
+    }
+    
+    .status-timeout {
+        color: #ffa500;
+    }
+    
+    .status-success {
+        color: #51cf66;
     }
 }
 
