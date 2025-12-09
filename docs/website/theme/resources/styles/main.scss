@@ -204,8 +204,11 @@ a.navbar-item:hover {
             padding: 16px;
             overflow-y: auto;
 
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+
             * {
-                transform: scale(0.8);
+                transform: scale(0.9);
             }
         }
     }
