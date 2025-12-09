@@ -266,11 +266,11 @@ main {
 
 .editor-toolbar {
     position: absolute;
-    top: -44px;
+    top: 3px;
     right: 0;
     display: flex;
     gap: 8px;
-    align-items: center;
+    align-items: baseline;
     z-index: 20;
     padding: 8px;
     
@@ -278,7 +278,7 @@ main {
         color: #777;
         border: 0;
         display: flex;
-        align-items: center;
+        align-items: baseline;
         
         &:hover {
             color: #BBB;
