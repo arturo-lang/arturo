@@ -17,7 +17,7 @@
 #terminal {
     position: relative;
     padding: 1em;
-    padding-bottom: 3em;
+    padding-bottom: 0;
     background: black;
     font-family: 'Fira Code Arturo', monospace !important;
     white-space: pre-wrap;
@@ -53,6 +53,88 @@
 
 #terminal-info {
     flex-shrink: 0;
+}
+
+#terminal_output {
+    -webkit-transition: opacity .75s ease-in-out;
+   -moz-transition: opacity .75s ease-in-out;
+   -ms-transition: opacity .75s ease-in-out;
+   -o-transition: opacity .75s ease-in-out;
+   transition: opacity .75s ease-in-out;
+   flex: 1;
+   overflow-y: auto;
+   line-break: anywhere !important;
+
+   ::-webkit-scrollbar {
+        background: none;
+        width: 16px;
+        height: 16px;
+    }
+    ::-webkit-scrollbar-thumb {
+        border: solid 0 rgba(0, 0, 0, 0);
+        border-right-width: 4px;
+        border-left-width: 4px;
+        -webkit-border-radius: 9px 4px;
+        border-radius: 9px 4px;
+        -webkit-box-shadow: inset 0 0 0 1px rgba(128, 128, 128, 0.2), inset 0 0 0 4px rgba(128, 128, 128, 0.2);
+        box-shadow: inset 0 0 0 1px rgba(128, 128, 128, 0.2), inset 0 0 0 4px rgba(128, 128, 128, 0.2);
+    }
+    ::-webkit-scrollbar-track-piece {
+        margin: 4px 0;
+    }
+    ::-webkit-scrollbar-thumb:horizontal {
+        border-right-width: 0;
+        border-left-width: 0;
+        border-top-width: 4px;
+        border-bottom-width: 4px;
+        -webkit-border-radius: 4px 9px;
+        border-radius: 4px 9px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+        -webkit-box-shadow:
+        inset 0 0 0 1px rgba(128,128,128,0.9),
+        inset 0 0 0 4px rgba(128,128,128,0.9);
+        box-shadow:
+        inset 0 0 0 1px rgba(128,128,128,0.9),
+        inset 0 0 0 4px rgba(128,128,128,0.9);
+    }
+    ::-webkit-scrollbar-corner {
+        background: transparent;
+    }
+}
+
+#terminal-status {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2em;
+    background: #1a1a1a;
+    border-top: 1px solid #333;
+    padding: 0.4em 1em;
+    font-size: 11px;
+    color: #888;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0;
+    
+    .status-left {
+        display: flex;
+        gap: 1em;
+    }
+    
+    .status-error {
+        color: #ff6b6b;
+    }
+    
+    .status-timeout {
+        color: #ffa500;
+    }
+    
+    .status-success {
+        color: #51cf66;
+    }
 }
 
 #runbutton {
@@ -340,87 +422,6 @@
     .ace_scrollbar-h{margin: 0 2px}    
 }
 
-#terminal_output {
-    -webkit-transition: opacity .75s ease-in-out;
-   -moz-transition: opacity .75s ease-in-out;
-   -ms-transition: opacity .75s ease-in-out;
-   -o-transition: opacity .75s ease-in-out;
-   transition: opacity .75s ease-in-out;
-   flex: 1;
-   overflow-y: auto;
-   line-break: anywhere !important;
-
-   ::-webkit-scrollbar {
-        background: none;
-        width: 16px;
-        height: 16px;
-    }
-    ::-webkit-scrollbar-thumb {
-        border: solid 0 rgba(0, 0, 0, 0);
-        border-right-width: 4px;
-        border-left-width: 4px;
-        -webkit-border-radius: 9px 4px;
-        border-radius: 9px 4px;
-        -webkit-box-shadow: inset 0 0 0 1px rgba(128, 128, 128, 0.2), inset 0 0 0 4px rgba(128, 128, 128, 0.2);
-        box-shadow: inset 0 0 0 1px rgba(128, 128, 128, 0.2), inset 0 0 0 4px rgba(128, 128, 128, 0.2);
-    }
-    ::-webkit-scrollbar-track-piece {
-        margin: 4px 0;
-    }
-    ::-webkit-scrollbar-thumb:horizontal {
-        border-right-width: 0;
-        border-left-width: 0;
-        border-top-width: 4px;
-        border-bottom-width: 4px;
-        -webkit-border-radius: 4px 9px;
-        border-radius: 4px 9px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-        -webkit-box-shadow:
-        inset 0 0 0 1px rgba(128,128,128,0.9),
-        inset 0 0 0 4px rgba(128,128,128,0.9);
-        box-shadow:
-        inset 0 0 0 1px rgba(128,128,128,0.9),
-        inset 0 0 0 4px rgba(128,128,128,0.9);
-    }
-    ::-webkit-scrollbar-corner {
-        background: transparent;
-    }
-}
-
-#terminal-status {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 2em;
-    background: #1a1a1a;
-    border-top: 1px solid #333;
-    padding: 0.4em 1em;
-    font-size: 11px;
-    color: #888;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    
-    .status-left {
-        display: flex;
-        gap: 1em;
-    }
-    
-    .status-error {
-        color: #ff6b6b;
-    }
-    
-    .status-timeout {
-        color: #ffa500;
-    }
-    
-    .status-success {
-        color: #51cf66;
-    }
-}
-
 #runbutton {
     .play {
         display: block;
@@ -566,5 +567,28 @@
                 border-color: #555;
             }
         }
+    }
+}
+
+.doccols {
+    position: relative;
+}
+
+.resize-handle {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: #272822;
+    cursor: col-resize;
+    z-index: 10;
+    transition: background 0.2s;
+    
+    &:hover {
+        background: #3e3d32;
+    }
+    
+    &.resizing {
+        background: #4e4d42;
     }
 }
