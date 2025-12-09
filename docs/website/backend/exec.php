@@ -1,12 +1,22 @@
 <?php
 header('Access-Control-Allow-Origin: http://188.245.97.105');
-header('Content-Type: application/json');
 
 $rest_json = file_get_contents("php://input");
 $_POST = json_decode($rest_json, true);
+$stream = isset($_POST['stream']) ? $_POST['stream'] : false;
+
+if ($stream) {
+    header('Content-Type: text/event-stream');
+    header('Cache-Control: no-cache');
+    header('Connection: keep-alive');
+    header('X-Accel-Buffering: no');
+} else {
+    header('Content-Type: application/json');
+}
+
 $code = $_POST['c'];
 $columns = isset($_POST['cols']) ? intval($_POST['cols']) : 80;
-$args = isset($_POST['args']) ? trim($_POST['args']) : ''; // NEW: Get command-line arguments
+$args = isset($_POST['args']) ? trim($_POST['args']) : ''; // Get command-line arguments
 
 // Clamp columns to reasonable values
 $columns = max(40, min(200, $columns));
@@ -81,28 +91,59 @@ if (!empty($args)) {
     $arturo_cmd .= " " . $escaped_args;
 }
 
-// Run in jail with timeout, pipe through aha for color conversion
-// Use the terminal width from the browser
+// Run in jail with timeout -> pipe through aha for color conversion
+// (Using the terminal width from the browser container's dimensions)
 $cmd = "sudo /usr/sbin/jail -c name=$jail_name path=$jail_path exec.start=\"/bin/sh -c 'HOME=/root LD_LIBRARY_PATH=/usr/local/lib COLUMNS=$columns LINES=24 timeout --kill-after=3s 10s $arturo_cmd 2>&1 | /usr/local/bin/aha --no-header --black'\" exec.stop=\"\" 2>&1";
-exec($cmd, $output, $ret);
+
+if ($stream) {
+    // Disable PHP buffering for streaming
+    ini_set('output_buffering', 'off');
+    ini_set('zlib.output_compression', false);
+    if (ob_get_level()) ob_end_clean();
+    
+    $handle = popen($cmd, 'r');
+    
+    while (!feof($handle)) {
+        $line = fgets($handle);
+        if ($line !== false) {
+            $formatted = str_replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;", trim($line));
+            echo "data: " . json_encode(["line" => $formatted . "<br>"]) . "\n\n";
+            flush();
+        }
+    }
+    
+    $ret = pclose($handle);
+    
+    // Send completion event
+    echo "data: " . json_encode([
+        "done" => true,
+        "code" => $skip_save ? "" : $exec_id,
+        "result" => $ret
+    ]) . "\n\n";
+    flush();
+    
+} else {
+    // Original batch execution
+    exec($cmd, $output, $ret);
+    
+    // Process output
+    $txt = "";
+    foreach ($output as $outp) {
+        $txt .= str_replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;", $outp) . "<br>";
+    }
+    
+    if ($txt == "") {
+        $txt = "[no output]";
+    }
+    
+    // Return empty code if we skipped saving
+    echo json_encode([
+        "text" => $txt,
+        "code" => $skip_save ? "" : $exec_id,
+        "result" => $ret
+    ]);
+}
 
 // Cleanup (jail auto-stops, just destroy ZFS)
 exec("sudo /sbin/zfs destroy zroot/jails/run/$jail_name 2>&1");
-
-// Process output
-$txt = "";
-foreach ($output as $outp) {
-    $txt .= str_replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;", $outp) . "<br>";
-}
-
-if ($txt == "") {
-    $txt = "[no output]";
-}
-
-// Return empty code if we skipped saving
-echo json_encode([
-    "text" => $txt,
-    "code" => $skip_save ? "" : $exec_id,
-    "result" => $ret
-]);
 ?>

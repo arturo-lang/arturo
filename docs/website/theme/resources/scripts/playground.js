@@ -107,35 +107,78 @@ function execCode() {
             
             runbutton.classList.add('working');
             document.getElementById("terminal_output").innerHTML = "";
-            ajaxPost("http://188.245.97.105/%<[basePath]>%/backend/exec.php",
-                function (result) {
-                    var got = JSON.parse(result);
-                    document.getElementById("terminal_output").innerHTML = got.text;
-                    
-                    if (got.code && got.code !== "") {
-                        window.snippetId = got.code;
-                        window.loadedCode = currentCode;
-                        window.loadedFromExample = false;
+            
+            var payload = {
+                c: currentCode,
+                i: snippetToSend,
+                cols: window.terminalColumns,
+                args: window.commandLineArgs,
+                stream: true
+            };
+            
+            fetch("http://188.245.97.105/%<[basePath]>%/backend/exec.php", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(response => {
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                
+                function read() {
+                    reader.read().then(({ done, value }) => {
+                        if (done) {
+                            runbutton.classList.remove('working');
+                            updateButtonStates();
+                            return;
+                        }
                         
-                        window.history.replaceState(
-                            {code: got.code, text: got.text}, 
-                            `${got.code} - Playground | Arturo programming language`, 
-                            `http://188.245.97.105/%<[basePath]>%/playground/${got.code}`
-                        );
-                    } else {
-                        window.loadedCode = currentCode;
-                    }
-
-                    runbutton.classList.remove('working');
-                    updateButtonStates();
-                    window.scroll.animateScroll(document.querySelector("#terminal"), null, {updateURL: false});
-                }, {
-                    c: currentCode,
-                    i: snippetToSend,
-                    cols: window.terminalColumns,
-                    args: window.commandLineArgs
+                        const chunk = decoder.decode(value, { stream: true });
+                        const lines = chunk.split('\n');
+                        
+                        lines.forEach(line => {
+                            if (line.startsWith('data: ')) {
+                                try {
+                                    const data = JSON.parse(line.substring(6));
+                                    
+                                    if (data.done) {
+                                        if (data.code && data.code !== "") {
+                                            window.snippetId = data.code;
+                                            window.loadedCode = currentCode;
+                                            window.loadedFromExample = false;
+                                            
+                                            window.history.replaceState(
+                                                {code: data.code}, 
+                                                `${data.code} - Playground | Arturo programming language`, 
+                                                `http://188.245.97.105/%<[basePath]>%/playground/${data.code}`
+                                            );
+                                        } else {
+                                            window.loadedCode = currentCode;
+                                        }
+                                        
+                                        runbutton.classList.remove('working');
+                                        updateButtonStates();
+                                        window.scroll.animateScroll(document.querySelector("#terminal"), null, {updateURL: false});
+                                    } else if (data.line) {
+                                        document.getElementById("terminal_output").innerHTML += data.line;
+                                    }
+                                } catch (e) {
+                                    console.error('Parse error:', e);
+                                }
+                            }
+                        });
+                        
+                        read();
+                    });
                 }
-            );
+                
+                read();
+            })
+            .catch(error => {
+                document.getElementById("terminal_output").innerHTML = `<span class="error">Error: ${error.message}</span>`;
+                runbutton.classList.remove('working');
+                updateButtonStates();
+            });
         }
     }
 }
