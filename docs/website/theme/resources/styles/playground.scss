@@ -27,13 +27,20 @@ main {
     }
     
     &.expanded {
-        display: inherit;
+        flex-direction: column;
         
         .column:first-child {
-            flex: 0 0 100% !important;
+            flex: 0 0 50% !important;
+            height: 50%;
         }
         
         .column:last-child {
+            flex: 0 0 50% !important;
+            height: 50%;
+            display: block;
+        }
+        
+        .resize-handle {
             display: none;
         }
     }
@@ -174,11 +181,6 @@ main {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    
-    .status-left {
-        display: flex;
-        gap: 1em;
-    }
     
     .status-error {
         color: #ff6b6b;
@@ -467,7 +469,7 @@ main {
     top: calc(52px + (100vh - 52px)/2 - 30px);
     left: 25%;
     transform: translateX(-50%);
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: $main-purple;
     color: white;
     padding: 14px 28px;
     border-radius: 8px;
@@ -477,7 +479,7 @@ main {
     pointer-events: none;
     opacity: 0;
     transition: opacity 0.25s ease, transform 0.25s ease;
-    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4), 
+    box-shadow: 0 8px 24px rgba(114, 83, 237, 0.4), 
                 0 4px 8px rgba(0, 0, 0, 0.2),
                 inset 0 1px 0 rgba(255, 255, 255, 0.2);
     white-space: nowrap;
