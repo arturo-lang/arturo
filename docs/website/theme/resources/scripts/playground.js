@@ -5,6 +5,7 @@ window.loadedFromExample = false;
 window.terminalColumns = 80;
 window.commandLineArgs = "";
 window.pageLoaded = false;
+window.currentExampleName = "";
 
 var editor = ace.edit("editor");
 document.getElementsByTagName("textarea")[0].setAttribute("aria-label", "code snippet");
@@ -75,16 +76,13 @@ editor.commands.addCommand({
 editor.getSession().on('change', function() {
     if (window.loadedFromExample && editor.getValue() !== window.loadedCode) {
         window.loadedFromExample = false;
+        window.currentExampleName = "";
     }
     updateButtonStates();
 });
 
 window.previousCode = "";
 function execCode() {
-    const startTime = Date.now();
-    document.getElementById('terminal-status').style.display = 'flex';
-    document.getElementById('terminal-status').innerHTML = '<div class="status-left"><span>Running...</span></div>';
-
     var runbutton = document.getElementById('runbutton');
     
     if (runbutton.classList.contains('disabled') || runbutton.classList.contains('working')) {
@@ -98,13 +96,17 @@ function execCode() {
             previousCode = currentCode;
             
             var snippetToSend = "";
+            var exampleName = "";
             
             if (window.loadedFromExample && currentCode === window.loadedCode) {
                 snippetToSend = "SKIP_SAVE";
+                exampleName = window.currentExampleName || "";
             }
             else if (window.loadedFromUrl && currentCode !== window.loadedCode) {
                 snippetToSend = "";
                 window.loadedFromUrl = false;
+                window.loadedFromExample = false;
+                window.currentExampleName = "";
             } 
             else {
                 snippetToSend = window.snippetId;
@@ -113,12 +115,20 @@ function execCode() {
             runbutton.classList.add('working');
             document.getElementById("terminal_output").innerHTML = "";
             
+            const startTime = Date.now();
+            var statusEl = document.getElementById('terminal-status');
+            if (statusEl) {
+                statusEl.style.display = 'flex';
+                statusEl.innerHTML = '<div class="status-left"><span>Running...</span></div>';
+            }
+            
             var payload = {
                 c: currentCode,
                 i: snippetToSend,
                 cols: window.terminalColumns,
                 args: window.commandLineArgs,
-                stream: true
+                stream: true,
+                example: exampleName
             };
             
             fetch("http://188.245.97.105/%<[basePath]>%/backend/exec.php", {
@@ -147,21 +157,11 @@ function execCode() {
                                     const data = JSON.parse(line.substring(6));
                                     
                                     if (data.done) {
-                                        const duration = ((Date.now() - startTime) / 1000).toFixed(2);
-                                        const statusClass = data.result === 0 ? 'status-success' : 'status-error';
-                                        const statusText = data.result === 0 ? 'Completed' : 'Error';
-                                        
-                                        document.getElementById('terminal-status').innerHTML = `
-                                            <div class="status-left">
-                                                <span class="${statusClass}">${statusText}</span>
-                                                <span>Execution time: ${duration}s</span>
-                                            </div>
-                                        `;
-                                        
                                         if (data.code && data.code !== "") {
                                             window.snippetId = data.code;
                                             window.loadedCode = currentCode;
                                             window.loadedFromExample = false;
+                                            window.currentExampleName = "";
                                             
                                             window.history.replaceState(
                                                 {code: data.code}, 
@@ -170,6 +170,19 @@ function execCode() {
                                             );
                                         } else {
                                             window.loadedCode = currentCode;
+                                        }
+                                        
+                                        const duration = ((Date.now() - startTime) / 1000).toFixed(2);
+                                        const statusClass = data.result === 0 ? 'status-success' : 'status-error';
+                                        const statusText = data.result === 0 ? 'Completed' : 'Error';
+                                        
+                                        if (statusEl) {
+                                            statusEl.innerHTML = `
+                                                <div class="status-left">
+                                                    <span class="${statusClass}">${statusText}</span>
+                                                    <span>Execution time: ${duration}s</span>
+                                                </div>
+                                            `;
                                         }
                                         
                                         runbutton.classList.remove('working');
@@ -230,6 +243,7 @@ function getExample(cd) {
         window.snippetId = "";
         window.loadedFromUrl = false;
         window.loadedFromExample = true;
+        window.currentExampleName = cd;
         editor.clearSelection();
         editor.resize(true);
         editor.scrollToLine(1,0,true,true,function(){});
