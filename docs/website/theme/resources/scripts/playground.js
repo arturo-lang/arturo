@@ -1,21 +1,19 @@
 window.snippetId = "";
 window.loadedCode = "";
 window.loadedFromUrl = false;
-window.loadedFromExample = false; // NEW: Track if current code is an unmodified example
-window.terminalColumns = 80; // Default fallback
-window.commandLineArgs = ""; // Store command-line arguments
+window.loadedFromExample = false;
+window.terminalColumns = 80;
+window.commandLineArgs = "";
 
 var editor = ace.edit("editor");
 document.getElementsByTagName("textarea")[0].setAttribute("aria-label", "code snippet");
 editor.setTheme("ace/theme/monokai");
 editor.getSession().setMode("ace/mode/arturo");
 
-// Calculate terminal width in columns
 function calculateTerminalColumns() {
     var terminal = document.getElementById('terminal');
     if (!terminal) return 80;
     
-    // Create a temporary span to measure character width
     var testSpan = document.createElement('span');
     testSpan.style.visibility = 'hidden';
     testSpan.style.position = 'absolute';
@@ -27,31 +25,25 @@ function calculateTerminalColumns() {
     var charWidth = testSpan.offsetWidth;
     document.body.removeChild(testSpan);
     
-    // Get terminal width in pixels
     var terminalWidth = terminal.offsetWidth;
     
-    // Calculate columns (subtract padding)
     var columns = Math.floor((terminalWidth - 40) / charWidth);
-    columns = columns - 3; // Fine-tune 
+    columns = columns - 3;
     
-    // Clamp between reasonable values
     return Math.max(40, Math.min(200, columns));
 }
 
-// Update button states based on current editor state
 function updateButtonStates() {
     var currentCode = editor.getValue();
     var runButton = document.getElementById('runbutton');
     var shareButton = document.getElementById('sharebutton');
     
-    // Update run button state
     if (currentCode === window.previousCode) {
         runButton.classList.add('disabled');
     } else {
         runButton.classList.remove('disabled');
     }
     
-    // Update share button state
     if (!currentCode.trim() || !window.snippetId) {
         shareButton.classList.add('disabled');
     } else {
@@ -59,7 +51,6 @@ function updateButtonStates() {
     }
 }
 
-// Add keyboard shortcut for code execution
 editor.commands.addCommand({
     name: 'executeCode',
     bindKey: {win: 'Ctrl-Enter', mac: 'Command-Enter'},
@@ -80,9 +71,7 @@ editor.commands.addCommand({
     readOnly: false
 });
 
-// Listen for editor changes to update button states
 editor.getSession().on('change', function() {
-    // NEW: If user modifies code from an example, it's no longer an unmodified example
     if (window.loadedFromExample && editor.getValue() !== window.loadedCode) {
         window.loadedFromExample = false;
     }
@@ -93,7 +82,6 @@ window.previousCode = "";
 function execCode() {
     var runbutton = document.getElementById('runbutton');
     
-    // Don't execute if disabled or already working
     if (runbutton.classList.contains('disabled') || runbutton.classList.contains('working')) {
         return;
     }
@@ -104,19 +92,15 @@ function execCode() {
         if (currentCode != previousCode) {
             previousCode = currentCode;
             
-            // Determine whether to create new snippet or update existing
             var snippetToSend = "";
             
-            // If it's an unmodified example, don't save to database
             if (window.loadedFromExample && currentCode === window.loadedCode) {
-                snippetToSend = "SKIP_SAVE"; // Special flag to tell backend not to save
+                snippetToSend = "SKIP_SAVE";
             }
-            // If loaded from URL and modified, create new snippet
             else if (window.loadedFromUrl && currentCode !== window.loadedCode) {
                 snippetToSend = "";
                 window.loadedFromUrl = false;
             } 
-            // Otherwise use existing snippet ID (empty string creates new)
             else {
                 snippetToSend = window.snippetId;
             }
@@ -128,25 +112,22 @@ function execCode() {
                     var got = JSON.parse(result);
                     document.getElementById("terminal_output").innerHTML = got.text;
                     
-                    // Only update snippetId if we actually saved (backend will return empty code if skipped)
                     if (got.code && got.code !== "") {
                         window.snippetId = got.code;
                         window.loadedCode = currentCode;
-                        window.loadedFromExample = false; // No longer an unmodified example
+                        window.loadedFromExample = false;
                         
-                        // Update URL with snippet ID
                         window.history.replaceState(
                             {code: got.code, text: got.text}, 
                             `${got.code} - Playground | Arturo programming language`, 
                             `http://188.245.97.105/%<[basePath]>%/playground/${got.code}`
                         );
                     } else {
-                        // Example executed without saving - don't update URL
                         window.loadedCode = currentCode;
                     }
 
                     runbutton.classList.remove('working');
-                    updateButtonStates(); // Update states after execution
+                    updateButtonStates();
                     window.scroll.animateScroll(document.querySelector("#terminal"), null, {updateURL: false});
                 }, {
                     c: currentCode,
@@ -173,7 +154,6 @@ function getSnippet(cd) {
         editor.scrollToLine(1,0,true,true,function(){});
         editor.gotoLine(1,0,true);
         
-        // Update button states after loading snippet
         window.previousCode = got.text;
         updateButtonStates();
     }, {
@@ -196,7 +176,6 @@ function getExample(cd) {
         editor.scrollToLine(1,0,true,true,function(){});
         editor.gotoLine(1,0,true);
         
-        // Update button states after loading example
         window.previousCode = "";
         updateButtonStates();
     }, {
@@ -224,17 +203,33 @@ function parse_query_string(query) {
 }
 
 document.addEventListener("DOMContentLoaded", function() {
-    // Calculate initial terminal width
     window.terminalColumns = calculateTerminalColumns();
     
-    // Check for snippet ID in URL path (e.g., /playground/abc123)
+    var savedExpanded = localStorage.getItem('playground-expanded');
+    if (savedExpanded === 'true' && window.innerWidth > 768) {
+        toggleExpand();
+    }
+    
+    var savedWordwrap = localStorage.getItem('playground-wordwrap');
+    if (savedWordwrap === 'true') {
+        toggleWordWrap();
+    }
+    
+    var savedTerminalInfo = localStorage.getItem('playground-terminal-info');
+    if (savedTerminalInfo === 'true') {
+        var info = document.getElementById('terminal-info');
+        var button = document.getElementById('terminal-info-toggle');
+        info.style.display = 'block';
+        button.style.background = 'rgba(255,255,255,0.15)';
+        button.style.color = '#aaa';
+    }
+    
     var pathParts = window.location.pathname.split('/');
     var snippetId = pathParts[pathParts.length - 1];
     
     if (snippetId && snippetId !== 'playground' && snippetId !== '') {
         getSnippet(snippetId);
     } 
-    // Fallback to query string for examples (e.g., ?example=hello)
     else if (window.location.search != "") {
         var query = window.location.search.substring(1);
         var qs = parse_query_string(query);
@@ -244,12 +239,10 @@ document.addEventListener("DOMContentLoaded", function() {
             document.getElementById('scriptName').innerHTML = `${qs.example}.art`;
         }
     } else {
-        // Initialize button states for empty editor
         updateButtonStates();
     }
 });
 
-// Recalculate terminal width on window resize
 window.addEventListener('resize', function() {
     window.terminalColumns = calculateTerminalColumns();
 });
@@ -257,7 +250,6 @@ window.addEventListener('resize', function() {
 function shareLink(){
     var shareButton = document.getElementById('sharebutton');
     
-    // Don't share if button is disabled
     if (shareButton.classList.contains('disabled')) {
         return;
     }
@@ -289,6 +281,10 @@ function shareLink(){
 
 window.expanded = false;
 function toggleExpand(){
+    if (window.innerWidth <= 768) {
+        return;
+    }
+    
     if (window.expanded) {
         window.expanded = false;
         document.querySelector(".doccols").style.display = "flex";
@@ -299,6 +295,7 @@ function toggleExpand(){
         document.querySelector("#wordwrapper").classList.remove("expanded");
         document.querySelector("#argsbutton").classList.remove("expanded");
         document.querySelector("#examplesbutton").classList.remove("expanded");
+        localStorage.setItem('playground-expanded', 'false');
     } else {
         window.expanded = true;
         document.querySelector(".doccols").style.display = "inherit";
@@ -309,6 +306,7 @@ function toggleExpand(){
         document.querySelector("#wordwrapper").classList.add("expanded");
         document.querySelector("#argsbutton").classList.add("expanded");
         document.querySelector("#examplesbutton").classList.add("expanded");
+        localStorage.setItem('playground-expanded', 'true');
     }
 }
 
@@ -319,11 +317,13 @@ function toggleWordWrap(){
         editor.setOption("wrap", false);
         document.querySelector("#wordwrapperIcon").classList.remove("wrapped");
         showToast("Word wrap: OFF");
+        localStorage.setItem('playground-wordwrap', 'false');
     } else {
         window.wordwrap = true;
         editor.setOption("wrap", true);
         document.querySelector("#wordwrapperIcon").classList.add("wrapped");
         showToast("Word wrap: ON");
+        localStorage.setItem('playground-wordwrap', 'true');
     }
 }
 
@@ -335,18 +335,18 @@ function toggleTerminalInfo() {
         info.style.display = 'block';
         button.style.background = 'rgba(255,255,255,0.15)';
         button.style.color = '#aaa';
+        localStorage.setItem('playground-terminal-info', 'true');
     } else {
         info.style.display = 'none';
         button.style.background = 'rgba(255,255,255,0.1)';
         button.style.color = '#888';
+        localStorage.setItem('playground-terminal-info', 'false');
     }
 }
 
-// Show toast notification
 function showToast(message) {
     let toast = document.getElementById('toast-notification');
     
-    // Create toast element if it doesn't exist
     if (!toast) {
         toast = document.createElement('div');
         toast.id = 'toast-notification';
@@ -371,19 +371,16 @@ function showToast(message) {
         document.body.appendChild(toast);
     }
     
-    // Set message and show
     toast.textContent = message;
     toast.style.opacity = '1';
     toast.style.transform = 'translateX(-50%) translateY(-3px)';
     
-    // Hide after 1.5 seconds
     setTimeout(() => {
         toast.style.opacity = '0';
         toast.style.transform = 'translateX(-50%)';
     }, 1500);
 }
 
-// Show command-line arguments dialog
 function showArgsDialog() {
     Bulma().alert({
         type: 'info',
@@ -410,7 +407,6 @@ function showArgsDialog() {
         cancel: 'Cancel'
     });
     
-    // Apply minimal modal styling
     setTimeout(() => {
         applyModalStyling();
         const input = document.getElementById("cmdline-args");
@@ -418,24 +414,11 @@ function showArgsDialog() {
     }, 50);
 }
 
-// Load and show examples dialog
 function showExamplesDialog() {
-    // Show loading state
-    Bulma().alert({
-        type: 'info',
-        title: 'Load Example',
-        body: '<div class="has-text-centered" style="padding: 32px;"><div class="loader"></div><p style="margin-top: 16px; color: #666;">Loading examples...</p></div>',
-        cancel: 'Close'
-    });
-    
-    applyModalStyling();
-    
-    // Fetch examples list
     ajaxPost("http://188.245.97.105/%<[basePath]>%/backend/getexamples.php",
     function (result) {
         var examples = JSON.parse(result);
         
-        // Build examples list HTML with search
         var examplesHtml = `
             <div class="field" style="margin-bottom: 12px;">
                 <div class="control">
@@ -465,7 +448,6 @@ function showExamplesDialog() {
         
         examplesHtml += '</div>';
         
-        // Show examples dialog
         Bulma().alert({
             type: 'info',
             title: 'Load Example',
@@ -473,7 +455,6 @@ function showExamplesDialog() {
             cancel: 'Close'
         });
         
-        // Setup search functionality and styling
         setTimeout(() => {
             applyModalStyling();
             
@@ -500,16 +481,13 @@ function showExamplesDialog() {
     }, {});
 }
 
-// Load example from dialog selection
 function loadExampleFromDialog(exampleName) {
-    // Close the modal first
     var modal = document.querySelector('.modal.is-active');
     if (modal) {
         modal.classList.remove('is-active');
         document.documentElement.classList.remove('is-clipped');
     }
     
-    // Then load the example
     setTimeout(() => {
         getExample(exampleName);
         document.getElementById('scriptName').innerHTML = `${exampleName}.art`;
