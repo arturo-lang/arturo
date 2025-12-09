@@ -293,16 +293,6 @@ main {
     color: white;
 }
 
-    a {
-        color: #777;
-        border: 0;
-        
-        &:hover {
-            color: #BBB;
-        }
-    }
-}
-
 @media (max-width: 768px) {
     #runbutton,
     #sharebutton,
