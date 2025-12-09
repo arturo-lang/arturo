@@ -366,6 +366,151 @@ code[class*=language-], pre[class*=language-] {
     margin-bottom:0!important
 }
 
+$sidebarHighlight: #E7E7E7;
+$sidebarFg: black;
+$sidebarFront: $main-purple;
+$sidebarWhite: white;
+
+.sidebar {
+    background:$sidebarHighlight; 
+    padding-right:0px !important;
+    position: sticky;
+    height: calc(100vh - 40px); 
+    overflow-y:auto;
+    top: 40px;
+    bottom: 0;
+
+    &::-webkit-scrollbar {
+        width: 2px;
+    }
+     
+    &::-webkit-scrollbar-track {
+        box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+    }
+     
+    &::-webkit-scrollbar-thumb {
+        background-color:$main-purple;
+        outline: 1px solid $main-purple;
+    }
+
+    .menu-list li ul {
+        border-left: 1px solid #bbbbbb;
+    }
+
+    .menu-list a {
+        border-radius: 10px 0px 0px 10px;
+        color: $sidebarFg;
+    
+        &.is-active {
+            background-color: $sidebarWhite;
+            color: $sidebarFront;
+        }
+
+        &:not(.is-active):hover {
+            background-color:darken($sidebarHighlight, 2%);
+            color: darken($sidebarFg, 10%);
+        }
+    }
+}
+
+hr {
+    height: 10px;
+}
+
+a.footer-icon {
+    text-shadow: rgba(255, 255, 255, 0.5) 0px 3px 3px;
+    font-size: 40px;
+    font-weight: bold;
+    color: #DDD;
+
+    &.github:hover {
+        border: 0;
+        color: #302F2F;
+    }
+
+    &.twitter:hover {
+        border: 0;
+        color: #1FA1F1;
+    }
+
+    &.discord:hover {
+        border: 0;
+        color: #6F84D5;
+    }
+}
+
+pre[class*=language-] {
+    position: relative;
+    overflow: visible;
+
+    .copy {
+        content: "copy";
+        padding: 2px 10px 0;
+        position: absolute;
+        top: 0;
+        right: 0;
+        transform: translate(-10px, -90%);
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+        color: #CCC;
+        background: #272822;
+        cursor: pointer;
+        font-size: 0.8em;
+
+        &:hover {
+            color: #fff;
+            text-align: center;
+            -webkit-animation: glow 1s ease-in-out infinite alternate;
+            -moz-animation: glow 1s ease-in-out infinite alternate;
+            animation: glow 1s ease-in-out infinite alternate;
+        }
+    }
+
+    &:hover .copy {
+        transform: translate(-10px, -100%);
+    }
+}
+
+@-webkit-keyframes glow {
+    from {
+        text-shadow: 0 0 10px #fff;
+    }
+    to {
+        text-shadow: 0 0 20px #fff;
+    }
+}
+
+code[class*=language-], pre[class*=language-] {
+    white-space: pre-wrap; 
+}
+
+@media (max-width: 768px) {
+    .is-grouped-multiline {
+        justify-content: center !important;
+    }
+
+    .card {
+        border: 0;
+    }
+}
+
+.exampleletter {
+    font-size: 2rem;
+    display: block;
+    list-style: none;
+    background: #363636;
+    color: #E7E7E7;
+    width: 3rem;
+    line-height: 3rem;
+    text-align: center;
+    margin-top: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+#navbarMain {
+    font-weight: 500;
+}
+
 .highlight {
     font-weight: 500;
     color: hsl(348, 100%, 61%);
