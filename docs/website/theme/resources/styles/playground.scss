@@ -6,7 +6,7 @@
   }
 
 #editor {
-    height: calc(100vh - 103px); /* navbar: 52 + tabs+margin: 51 */
+    height: calc(100vh - 103px);
     font-family: 'Fira Code Arturo', monospace !important;
     text-shadow: 0 1px rgba(0,0,0,.3);
     line-height: 1.5;
@@ -197,7 +197,7 @@
     }
 
     #expander {
-        left: calc(100vw - 40px);
+        display: none;
     }
 
     #wordwrapper {
@@ -237,13 +237,11 @@
     left: calc(100vw - 130px);
 }
 
-/* Tooltip container */
 .tooltip {
     position: relative;
     display: inline-block;
-    border-bottom: 1px dotted black; /* If you want dots under the hoverable text */
+    border-bottom: 1px dotted black;
   
-  /* Tooltip text */
   .tooltiptext {
     visibility: hidden;
     width: 120px;
@@ -253,7 +251,6 @@
     padding: 5px 0;
     border-radius: 6px;
    
-    /* Position the tooltip text - see examples below! */
     position: absolute;
     z-index: 1000;
 
@@ -261,7 +258,7 @@
         content: " ";
         position: absolute;
         top: 50%;
-        left: 100%; /* To the right of the tooltip */
+        left: 100%;
         margin-top: -5px;
         border-width: 5px;
         border-style: solid;
@@ -269,7 +266,6 @@
       }
   }
   
-  /* Show the tooltip text when you mouse over the tooltip container */
   &:hover .tooltiptext {
     visibility: visible;
   }
@@ -437,11 +433,10 @@
   }
 }
 
-// Toast notification for word wrap toggle
 #toast-notification {
     position: fixed;
-    top: calc(52px + (100vh - 52px)/2 - 30px); // Center vertically in the editor area (below navbar)
-    left: 25%; // Center horizontally over the left column (editor)
+    top: calc(52px + (100vh - 52px)/2 - 30px);
+    left: 25%;
     transform: translateX(-50%);
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
@@ -461,11 +456,10 @@
 
     &.show {
         opacity: 1;
-        transform: translateX(-50%) translateY(-5px); // Slight upward movement on show
+        transform: translateX(-50%) translateY(-5px);
     }
 }
 
-// Responsive: center over editor on mobile too
 @media (max-width: 768px) {
     #toast-notification {
         left: 50%;
@@ -473,7 +467,6 @@
     }
 }
 
-// Loader for examples dialog
 .loader {
     border: 4px solid #f3f3f3;
     border-top: 4px solid #667eea;
