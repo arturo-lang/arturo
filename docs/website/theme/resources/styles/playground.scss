@@ -172,7 +172,7 @@
 
 #examplesbutton {
     position: absolute;
-    top: 59px;
+    top: 61px;
     left: calc(50vw - 130px);
     color: white;
     z-index: 5;
@@ -235,6 +235,14 @@
 
 #examplesbutton.expanded {
     left: calc(100vw - 130px);
+}
+
+@media (min-width: 769px) {
+    .doccols.expanded {
+        #expander {
+            display: block !important;
+        }
+    }
 }
 
 .tooltip {
@@ -467,6 +475,10 @@
     }
 }
 
+.doccols.expanded #toast-notification {
+    left: 50%;
+}
+
 .loader {
     border: 4px solid #f3f3f3;
     border-top: 4px solid #667eea;
@@ -482,7 +494,6 @@
     100% { transform: rotate(360deg); }
 }
 
-// Uniform modal styling
 .modal-card {
     .modal-card-head {
         background-color: #f8f8f8;
@@ -517,13 +528,26 @@
     }
 }
 
-// Special styling for doc modal
 #doc-modal {
     .modal-card-head {
         background-color: $main-purple;
         
         .modal-card-title {
             color: white;
+            font-size: 16px;
+            
+            svg {
+                fill: white;
+                color: white;
+            }
+            
+            .doc-link {
+                color: rgba(255, 255, 255, 0.9);
+                
+                &:hover {
+                    color: white;
+                }
+            }
         }
     }
 }
