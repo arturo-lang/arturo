@@ -588,3 +588,47 @@ function loadExampleFromDialog(exampleName) {
         showToast(`Loaded: ${exampleName}`);
     }, 100);
 }
+
+// Resizable columns
+document.addEventListener('DOMContentLoaded', function() {
+    const doccols = document.querySelector('.doccols');
+    const cols = doccols.querySelectorAll('.column');
+    
+    if (cols.length === 2) {
+        const handle = document.createElement('div');
+        handle.className = 'resize-handle';
+        doccols.appendChild(handle);
+        
+        let isResizing = false;
+        
+        handle.addEventListener('mousedown', function(e) {
+            isResizing = true;
+            handle.classList.add('resizing');
+            document.body.style.cursor = 'col-resize';
+            e.preventDefault();
+        });
+        
+        document.addEventListener('mousemove', function(e) {
+            if (!isResizing) return;
+            
+            const containerRect = doccols.getBoundingClientRect();
+            const offsetX = e.clientX - containerRect.left;
+            const percentage = (offsetX / containerRect.width) * 100;
+            
+            if (percentage > 20 && percentage < 80) {
+                cols[0].style.flex = `0 0 ${percentage}%`;
+                cols[1].style.flex = `0 0 ${100 - percentage}%`;
+                handle.style.left = `${percentage}%`;
+                window.terminalColumns = calculateTerminalColumns();
+            }
+        });
+        
+        document.addEventListener('mouseup', function() {
+            if (isResizing) {
+                isResizing = false;
+                handle.classList.remove('resizing');
+                document.body.style.cursor = '';
+            }
+        });
+    }
+});
