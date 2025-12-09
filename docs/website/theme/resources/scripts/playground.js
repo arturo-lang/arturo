@@ -81,6 +81,10 @@ editor.getSession().on('change', function() {
 
 window.previousCode = "";
 function execCode() {
+    const startTime = Date.now();
+    document.getElementById('terminal-status').style.display = 'flex';
+    document.getElementById('terminal-status').innerHTML = '<div class="status-left"><span>Running...</span></div>';
+
     var runbutton = document.getElementById('runbutton');
     
     if (runbutton.classList.contains('disabled') || runbutton.classList.contains('working')) {
@@ -143,6 +147,17 @@ function execCode() {
                                     const data = JSON.parse(line.substring(6));
                                     
                                     if (data.done) {
+                                        const duration = ((Date.now() - startTime) / 1000).toFixed(2);
+                                        const statusClass = data.result === 0 ? 'status-success' : 'status-error';
+                                        const statusText = data.result === 0 ? 'Completed' : 'Error';
+                                        
+                                        document.getElementById('terminal-status').innerHTML = `
+                                            <div class="status-left">
+                                                <span class="${statusClass}">${statusText}</span>
+                                                <span>Execution time: ${duration}s</span>
+                                            </div>
+                                        `;
+                                        
                                         if (data.code && data.code !== "") {
                                             window.snippetId = data.code;
                                             window.loadedCode = currentCode;
