@@ -198,7 +198,7 @@ function getSnippet(cd) {
         editor.scrollToLine(1,0,true,true,function(){});
         editor.gotoLine(1,0,true);
         
-        window.previousCode = got.text;
+        window.previousCode = "";
         updateButtonStates();
     }, {
         i:cd
