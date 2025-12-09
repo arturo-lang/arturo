@@ -187,7 +187,7 @@ main {
     top: calc(52px + (100vh - 52px)/2 - 70px);
     right: 30px;
     width: 60px;
-    z-index: 1001;
+    z-index: 20;
     background: darkorange;
     height: 60px;
     border-radius: 50px;
@@ -225,7 +225,7 @@ main {
     top: calc(52px + (100vh - 52px)/2 + 10px);
     right: 30px;
     width: 60px;
-    z-index: 1001;
+    z-index: 20;
     background: #15AABF;
     height: 60px;
     border-radius: 50px;
@@ -256,10 +256,11 @@ main {
 
 #expander {
     position: absolute;
-    top: 59px;
+    top: 6px;
     right: 0;
     color: white;
-    z-index: 1001;
+    z-index: 20;
+    padding: 8px;
 
     a {
         color: #777;
@@ -273,10 +274,11 @@ main {
 
 #wordwrapper {
     position: absolute;
-    top: 59px;
+    top: 6px;
     right: 30px;
     color: white;
-    z-index: 1001;
+    z-index: 20;
+    padding: 8px;
 
     a {
         color: #777;
@@ -290,10 +292,11 @@ main {
 
 #argsbutton {
     position: absolute;
-    top: 59px;
+    top: 6px;
     right: 60px;
     color: white;
-    z-index: 1001;
+    z-index: 20;
+    padding: 8px;
 
     a {
         color: #777;
@@ -307,10 +310,11 @@ main {
 
 #examplesbutton {
     position: absolute;
-    top: 61px;
+    top: 6px;
     right: 90px;
     color: white;
-    z-index: 1001;
+    z-index: 20;
+    padding: 8px;
 
     a {
         color: #777;
@@ -575,7 +579,7 @@ main {
     width: 4px;
     background: #272822;
     cursor: col-resize;
-    z-index: 999;
+    z-index: 10;
     transition: background 0.2s;
     transform: translateX(-50%);
     
