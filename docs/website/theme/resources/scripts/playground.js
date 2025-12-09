@@ -204,9 +204,13 @@ function execCode() {
                 read();
             })
             .catch(error => {
-                document.getElementById("terminal_output").innerHTML = `<span class="error">Error: ${error.message}</span>`;
+                console.error('Fetch error:', error);
                 runbutton.classList.remove('working');
                 updateButtonStates();
+                document.getElementById("terminal_output").innerHTML = "Error: Could not connect to server";
+                if (statusEl) {
+                    statusEl.innerHTML = '<div class="status-left"><span class="status-error">Connection Error</span></div>';
+                }
             });
         }
     }
@@ -275,7 +279,7 @@ function parse_query_string(query) {
     return query_string;
 }
 
-document.addEventListener("DOMContentLoaded", function() {
+window.addEventListener('DOMContentLoaded', function() {
     window.terminalColumns = calculateTerminalColumns();
     
     var savedExpanded = localStorage.getItem('playground-expanded');
@@ -370,24 +374,12 @@ function toggleExpand(){
         document.querySelector(".doccols").style.display = "flex";
         document.querySelector(".doccols").classList.remove("expanded");
         document.querySelector("#expanderIcon").classList.remove("expanded");
-        document.querySelector("#runbutton").classList.remove("expanded");
-        document.querySelector("#sharebutton").classList.remove("expanded");
-        document.querySelector("#expander").classList.remove("expanded");
-        document.querySelector("#wordwrapper").classList.remove("expanded");
-        document.querySelector("#argsbutton").classList.remove("expanded");
-        document.querySelector("#examplesbutton").classList.remove("expanded");
         localStorage.setItem('playground-expanded', 'false');
     } else {
         window.expanded = true;
         document.querySelector(".doccols").style.display = "inherit";
         document.querySelector(".doccols").classList.add("expanded");
         document.querySelector("#expanderIcon").classList.add("expanded");
-        document.querySelector("#runbutton").classList.add("expanded");
-        document.querySelector("#sharebutton").classList.add("expanded");
-        document.querySelector("#expander").classList.add("expanded");
-        document.querySelector("#wordwrapper").classList.add("expanded");
-        document.querySelector("#argsbutton").classList.add("expanded");
-        document.querySelector("#examplesbutton").classList.add("expanded");
         localStorage.setItem('playground-expanded', 'true');
     }
 }
