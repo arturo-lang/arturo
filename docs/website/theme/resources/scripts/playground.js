@@ -579,8 +579,8 @@ function showExamplesDialog() {
             var searchInput = document.getElementById('examples-search');
             if (searchInput) {
                 searchInput.focus();
-                searchInput.addEventListener('input', function() {
-                    var query = this.value.toLowerCase();
+                searchInput.addEventListener('input', function(e) {
+                    var query = e.target.value.toLowerCase();
                     var items = document.querySelectorAll('.example-item');
                     var visibleCount = 0;
                     
@@ -602,7 +602,7 @@ function showExamplesDialog() {
                     }
                 });
             }
-        }, 50);
+        }, 100);
     }, {});
 }
 
