@@ -3,23 +3,31 @@
 @font-face {
     font-family: "Fira Code Arturo";
     src: url('../fonts/FiraCode-Regular.ttf') format('truetype');
-  }
-
-html, body {
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
 }
 
-@media (max-width: 768px) {
-    html, body {
-        overflow: auto;
+main {
+    height: calc(100vh - 52px);
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+}
+
+.doccols {
+    position: relative;
+    height: 100%;
+    margin: 0 !important;
+    padding: 0;
+    display: flex;
+    
+    .column {
+        margin: 0;
+        padding: 0;
+        height: 100%;
     }
 }
 
 #editor {
-    height: calc(100vh - 103px);
+    height: calc(100% - 51px);
     font-family: 'Fira Code Arturo', monospace !important;
     text-shadow: 0 1px rgba(0,0,0,.3);
     line-height: 1.5;
@@ -30,12 +38,12 @@ html, body {
 #terminal {
     position: relative;
     padding: 1em;
-    padding-bottom: 0;
+    padding-bottom: 2em;
     background: black;
     font-family: 'Fira Code Arturo', monospace !important;
     white-space: pre-wrap;
     color: white;
-    height: calc(100vh - 52px);
+    height: 100%;
     display: flex;
     flex-direction: column;
 
@@ -125,12 +133,12 @@ html, body {
     background: #1a1a1a;
     border-top: 1px solid #333;
     padding: 0.4em 1em;
+    margin: 0;
     font-size: 11px;
     color: #888;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin: 0;
     
     .status-left {
         display: flex;
@@ -153,9 +161,9 @@ html, body {
 #runbutton {
     position: absolute;
     top: calc(52px + (100vh - 52px)/2 - 70px);
-    left: calc(50vw - 90px);
+    left: calc(50% - 90px);
     width: 60px;
-    z-index: 5;
+    z-index: 1001;
     background: darkorange;
     height: 60px;
     border-radius: 50px;
@@ -191,9 +199,9 @@ html, body {
 #sharebutton {
     position: absolute;
     top: calc(52px + (100vh - 52px)/2 + 10px);
-    left: calc(50vw - 90px);
+    left: calc(50% - 90px);
     width: 60px;
-    z-index: 5;
+    z-index: 1001;
     background: #15AABF;
     height: 60px;
     border-radius: 50px;
@@ -225,9 +233,9 @@ html, body {
 #expander {
     position: absolute;
     top: 59px;
-    left: calc(50vw - 40px);
+    left: calc(50% - 40px);
     color: white;
-    z-index: 5;
+    z-index: 1001;
 
     a {
         color: #777;
@@ -242,9 +250,9 @@ html, body {
 #wordwrapper {
     position: absolute;
     top: 59px;
-    left: calc(50vw - 70px);
+    left: calc(50% - 70px);
     color: white;
-    z-index: 5;
+    z-index: 1001;
 
     a {
         color: #777;
@@ -259,9 +267,9 @@ html, body {
 #argsbutton {
     position: absolute;
     top: 59px;
-    left: calc(50vw - 100px);
+    left: calc(50% - 100px);
     color: white;
-    z-index: 5;
+    z-index: 1001;
 
     a {
         color: #777;
@@ -276,9 +284,9 @@ html, body {
 #examplesbutton {
     position: absolute;
     top: 61px;
-    left: calc(50vw - 130px);
+    left: calc(50% - 130px);
     color: white;
-    z-index: 5;
+    z-index: 1001;
 
     a {
         color: #777;
@@ -292,11 +300,11 @@ html, body {
 
 @media (max-width: 768px) {
     #runbutton {
-        left: calc(100vw - 90px);
+        left: calc(100% - 90px);
     }
 
     #sharebutton {
-        left: calc(100vw - 90px);
+        left: calc(100% - 90px);
     }
 
     #expander {
@@ -304,40 +312,40 @@ html, body {
     }
 
     #wordwrapper {
-        left: calc(100vw - 40px);
+        left: calc(100% - 40px);
     }
 
     #argsbutton {
-        left: calc(100vw - 70px);
+        left: calc(100% - 70px);
     }
 
     #examplesbutton {
-        left: calc(100vw - 100px);
+        left: calc(100% - 100px);
     }
 }
 
 #runbutton.expanded {
-    left: calc(100vw - 90px);
+    left: calc(100% - 90px);
 }
 
 #sharebutton.expanded {
-    left: calc(100vw - 90px);
+    left: calc(100% - 90px);
 }
 
 #expander.expanded {
-    left: calc(100vw - 40px);
+    left: calc(100% - 40px);
 }
 
 #wordwrapper.expanded {
-    left: calc(100vw - 70px);
+    left: calc(100% - 70px);
 }
 
 #argsbutton.expanded {
-    left: calc(100vw - 100px);
+    left: calc(100% - 100px);
 }
 
 #examplesbutton.expanded {
-    left: calc(100vw - 130px);
+    left: calc(100% - 130px);
 }
 
 @media (min-width: 769px) {
@@ -583,13 +591,6 @@ html, body {
     }
 }
 
-.doccols {
-    position: relative;
-    height: calc(100vh - 52px);
-    margin: 0;
-    padding: 0;
-}
-
 .resize-handle {
     position: absolute;
     top: 0;
@@ -598,7 +599,7 @@ html, body {
     width: 4px;
     background: #272822;
     cursor: col-resize;
-    z-index: 10;
+    z-index: 1000;
     transition: background 0.2s;
     transform: translateX(-50%);
     
