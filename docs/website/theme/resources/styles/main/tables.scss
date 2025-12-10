@@ -29,6 +29,8 @@
             font-weight: 600;
             
             svg {
+                transform: rotate(180deg);
+                
                 .outline { opacity: 0.0 }
                 .filled { opacity: 1.0 }
             }
