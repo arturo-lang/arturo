@@ -239,7 +239,8 @@ function updateButtonStates() {
         runButton.classList.remove('disabled');
     }
     
-    if (!currentCode.trim() || !window.snippetId) {
+    // Enable share button as long as there's code to share
+    if (!currentCode.trim()) {
         shareButton.classList.add('disabled');
     } else {
         shareButton.classList.remove('disabled');
@@ -590,6 +591,15 @@ function showToast(message) {
     }
     
     toast.textContent = message;
+    
+    // Calculate the center of the editor column dynamically
+    var editorColumn = document.querySelector('.doccols .column:first-child');
+    if (editorColumn) {
+        var rect = editorColumn.getBoundingClientRect();
+        var centerX = rect.left + (rect.width / 2);
+        toast.style.left = centerX + 'px';
+        toast.style.transform = 'translate(-50%, -50%)';
+    }
     
     // Trigger show
     setTimeout(() => toast.classList.add('show'), 10);
