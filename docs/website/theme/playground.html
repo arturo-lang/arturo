@@ -94,4 +94,20 @@
             </div>
         </div>
 
+        <!-- Documentation Modal (for search results) -->
+        <div id="doc-modal" class="modal">
+            <div class="modal-background"></div>
+            <div class="modal-card">
+                <header class="modal-card-head">
+                    <p class="modal-card-title" id="doc-modal-title"></p>
+                    <button class="delete" aria-label="close" id="doc-modal-close"></button>
+                </header>
+                <section class="modal-card-body doc-modal-content" id="doc-modal-body">
+                    <div class="has-text-centered">
+                        <span class="loader"></span>
+                    </div>
+                </section>
+            </div>
+        </div>
+
 <||= importPartial "components/foot.html" ||>
