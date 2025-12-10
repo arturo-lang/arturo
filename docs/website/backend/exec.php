@@ -41,15 +41,18 @@ if (strlen($code) > MAX_CODE_SIZE) {
 $version = basename(dirname(__DIR__));
 $template_name = "arturo_runner_" . $version;
 
-// Check if we should skip saving (for unchanged examples)
+// Check if we should skip saving (for execution without saving)
 $snippet_id_input = !empty($_POST['i']) ? $_POST['i'] : '';
 $skip_save = ($snippet_id_input === 'SKIP_SAVE');
 
-// Generate unique ID only if we're actually saving
+// Generate unique ID only if we're actually saving (when share button is pressed)
 $exec_id = "";
 if (!$skip_save) {
     require_once __DIR__ . '/db.php';
     $db = new SnippetDB();
+    
+    // If empty string sent, generate new ID (from share button)
+    // If existing ID sent, update that snippet
     $exec_id = !empty($snippet_id_input) ? $snippet_id_input : $db->generateUniqueId();
     
     // Save snippet to database

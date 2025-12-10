@@ -29,7 +29,9 @@
     }
     
     .modal-card-foot {
-        display: none;
+        padding: 12px 20px;
+        background-color: #fafafa;
+        border-top: 1px solid #dbdbdb;
     }
 
     @media (max-width: 768px) {
