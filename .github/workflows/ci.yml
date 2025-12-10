@@ -58,6 +58,7 @@ jobs:
                 submodules: recursive
                 path: arturo
                 ref: ${{ github.ref }}
+                fetch-depth: 0
 
             - name: Prepare artifact version
               id: version
