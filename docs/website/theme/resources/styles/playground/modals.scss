@@ -150,7 +150,7 @@
 #toast-notification {
     position: fixed;
     top: calc(52px + (100vh - 52px)/2 - 30px);
-    left: 50%;
+    /* left position set dynamically by JavaScript */
     transform: translate(-50%, -50%);
     background: $main-purple;
     color: white;
@@ -171,11 +171,5 @@
     &.show {
         opacity: 1;
         transform: translate(-50%, -50%) translateY(-5px);
-    }
-}
-
-@media (max-width: 768px) {
-    #toast-notification {
-        left: 50%;
     }
 }
