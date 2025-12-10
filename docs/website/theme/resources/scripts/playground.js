@@ -120,14 +120,12 @@ function execCode() {
                 snippetToSend = "SKIP_SAVE";
                 exampleName = window.currentExampleName || "";
             }
-            else if (window.loadedFromUrl && currentCode !== window.loadedCode) {
-                snippetToSend = "";
+            else {
+                // Never save on execution - only when sharing
+                snippetToSend = "SKIP_SAVE";
                 window.loadedFromUrl = false;
                 window.loadedFromExample = false;
                 window.currentExampleName = "";
-            } 
-            else {
-                snippetToSend = window.snippetId;
             }
             
             runbutton.classList.add('working');
@@ -175,20 +173,9 @@ function execCode() {
                                     const data = JSON.parse(line.substring(6));
                                     
                                     if (data.done) {
-                                        if (data.code && data.code !== "") {
-                                            window.snippetId = data.code;
-                                            window.loadedCode = currentCode;
-                                            window.loadedFromExample = false;
-                                            window.currentExampleName = "";
-                                            
-                                            window.history.replaceState(
-                                                {code: data.code}, 
-                                                `${data.code} - Playground | Arturo programming language`, 
-                                                `http://188.245.97.105/%<[basePath]>%/playground/${data.code}`
-                                            );
-                                        } else {
-                                            window.loadedCode = currentCode;
-                                        }
+                                        // Don't update snippet ID on execution
+                                        // Only shareLink() will save and get an ID
+                                        window.loadedCode = currentCode;
                                         
                                         const duration = ((Date.now() - startTime) / 1000).toFixed(2);
                                         const statusClass = data.result === 0 ? 'status-success' : 'status-error';
@@ -270,22 +257,74 @@ function shareLink() {
         return;
     }
     
-    if (window.snippetId != "") {
-        var modal = document.getElementById('share-modal');
-        var input = document.getElementById('snippet-link');
-        
-        input.value = `http://188.245.97.105/%<[basePath]>%/playground/${window.snippetId}`;
-        
-        modal.classList.add('is-active');
-        document.documentElement.classList.add('is-clipped');
-        
-        setTimeout(() => {
-            if (input) {
-                input.select();
-                input.setSelectionRange(0, 99999);
-            }
-        }, 50);
+    var currentCode = editor.getValue();
+    
+    // If we already have a snippet ID for this exact code, just show it
+    if (window.snippetId != "" && currentCode === window.loadedCode) {
+        showShareModal(window.snippetId);
+        return;
     }
+    
+    // Otherwise, save the snippet first
+    var payload = {
+        c: currentCode,
+        i: "",  // Empty means generate new ID
+        cols: window.terminalColumns,
+        args: window.commandLineArgs,
+        stream: false,
+        example: ""
+    };
+    
+    showToast("Saving snippet...");
+    
+    fetch("http://188.245.97.105/%<[basePath]>%/backend/exec.php", {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.code && data.code !== "") {
+            window.snippetId = data.code;
+            window.loadedCode = currentCode;
+            window.loadedFromUrl = true;
+            window.loadedFromExample = false;
+            window.currentExampleName = "";
+            
+            // Update browser history
+            window.history.replaceState(
+                {code: data.code}, 
+                `${data.code} - Playground | Arturo programming language`, 
+                `http://188.245.97.105/%<[basePath]>%/playground/${data.code}`
+            );
+            
+            showShareModal(data.code);
+            updateButtonStates();
+        } else {
+            showToast("Failed to save snippet");
+        }
+    })
+    .catch(error => {
+        console.error('Error saving snippet:', error);
+        showToast("Failed to save snippet");
+    });
+}
+
+function showShareModal(snippetId) {
+    var modal = document.getElementById('share-modal');
+    var input = document.getElementById('snippet-link');
+    
+    input.value = `http://188.245.97.105/%<[basePath]>%/playground/${snippetId}`;
+    
+    modal.classList.add('is-active');
+    document.documentElement.classList.add('is-clipped');
+    
+    setTimeout(() => {
+        if (input) {
+            input.select();
+            input.setSelectionRange(0, 99999);
+        }
+    }, 50);
 }
 
 function copyShareLink() {
