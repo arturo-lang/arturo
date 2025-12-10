@@ -153,11 +153,11 @@ octicon: function [icon][
 
 postprocessAlerts: function [src][
     replace src [
-        {/<blockquote>\n<p>\[!TIP\]/}
-        {/<blockquote>\n<p>\[!NOTE\]/}
-        {/<blockquote>\n<p>\[!IMPORTANT\]/}
-        {/<blockquote>\n<p>\[!WARNING\]/}
-        {/<blockquote>\n<p>\[!CAUTION\]/}
+        {/<blockquote>\n<p[^>]*>\[!TIP\]/}
+        {/<blockquote>\n<p[^>]*>\[!NOTE\]/}
+        {/<blockquote>\n<p[^>]*>\[!IMPORTANT\]/}
+        {/<blockquote>\n<p[^>]*>\[!WARNING\]/}
+        {/<blockquote>\n<p[^>]*>\[!CAUTION\]/}
      ]@[
         ~"<blockquote class='alert alert-tip'>\n<p><b class='alert-message'>|octicon 'lightbulb|Tip</b><br>\n"
         ~"<blockquote class='alert alert-note'>\n<p><b class='alert-message'>|octicon 'info|Note</b><br>\n"
