@@ -5,13 +5,20 @@
 
     .modal-card-head {
         background-color: #fafafa;
-        padding: 16px 20px;
+        padding: 12px 20px;
         border-bottom: 1px solid #dbdbdb;
         
         .modal-card-title {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 600;
             color: #363636;
+        }
+
+        .delete {
+            max-height: 15px;
+            max-width: 15px;
+            min-height: 15px;
+            min-width: 15px;
         }
     }
     
@@ -45,6 +52,7 @@
                 display: flex;
                 align-items: center;
                 color: white;
+                font-size: 20px;
 
                 svg {
                     fill: white;
@@ -75,15 +83,10 @@
         }
 
         .modal-card-body {
-            // padding: 16px;
-            // overflow-y: auto;
-
             padding-top: 2rem;
             padding-bottom: 2rem;
 
-            // * {
-            //     transform: scale(0.9);
-            // }
+            zoom: 0.85;
         }
     }
 }
