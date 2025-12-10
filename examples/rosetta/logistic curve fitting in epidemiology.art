@@ -57,8 +57,8 @@ solve: function [fn][
     return result
 ]
 
-r: solve 'f
-r0: exp 12 * r
+r: round.to:7 solve 'f
+r0: round.to:7 exp 12 * r
 
 print ["r =" r]
 print ["R0 =" r0]
