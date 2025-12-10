@@ -26,4 +26,72 @@
                 </div>
             </div>
         </main>
+
+        <!-- Share Modal -->
+        <div id="share-modal" class="modal">
+            <div class="modal-background" onclick="closeShareDialog()"></div>
+            <div class="modal-card">
+                <header class="modal-card-head">
+                    <p class="modal-card-title">Share this script</p>
+                    <button class="delete" aria-label="close" onclick="closeShareDialog()"></button>
+                </header>
+                <section class="modal-card-body">
+                    <input id="snippet-link" class="input is-small" readonly style="font-size: 13px;">
+                </section>
+                <footer class="modal-card-foot" style="justify-content: flex-end; gap: 8px;">
+                    <button class="button is-small is-rounded" onclick="closeShareDialog()" style="font-size: 13px;">Close</button>
+                    <button class="button is-info is-small is-rounded" onclick="copyShareLink()" style="font-size: 13px;">Copy</button>
+                </footer>
+            </div>
+        </div>
+
+        <!-- Command-line Arguments Modal -->
+        <div id="args-modal" class="modal">
+            <div class="modal-background" onclick="closeArgsDialog()"></div>
+            <div class="modal-card">
+                <header class="modal-card-head">
+                    <p class="modal-card-title">Command-line Arguments</p>
+                    <button class="delete" aria-label="close" onclick="closeArgsDialog()"></button>
+                </header>
+                <section class="modal-card-body">
+                    <div class="field">
+                        <label class="label" style="font-size: 14px; font-weight: 600;">Arguments</label>
+                        <div class="control">
+                            <input id="cmdline-args" class="input is-small" type="text" placeholder="e.g., arg1 arg2 arg3" style="font-size: 13px;">
+                        </div>
+                        <p class="help" style="font-size: 11px;">Space-separated arguments passed to your script</p>
+                    </div>
+                </section>
+                <footer class="modal-card-foot" style="justify-content: flex-end; gap: 8px;">
+                    <button class="button is-small is-rounded" onclick="closeArgsDialog()" style="font-size: 13px;">Close</button>
+                    <button class="button is-info is-small is-rounded" onclick="saveArgs()" style="font-size: 13px;">Save</button>
+                </footer>
+            </div>
+        </div>
+
+        <!-- Examples Modal -->
+        <div id="examples-modal" class="modal">
+            <div class="modal-background" onclick="closeExamplesDialog()"></div>
+            <div class="modal-card">
+                <header class="modal-card-head">
+                    <p class="modal-card-title">Load Example</p>
+                    <button class="delete" aria-label="close" onclick="closeExamplesDialog()"></button>
+                </header>
+                <section class="modal-card-body">
+                    <div class="field" style="margin-bottom: 12px;">
+                        <div class="control">
+                            <input id="examples-search" class="input is-small" type="text" placeholder="Search examples..." style="font-size: 13px;">
+                        </div>
+                        <p class="help" style="font-size: 11px; color: #999; margin-top: 4px;">
+                            <span id="examples-count">0</span> examples available
+                        </p>
+                    </div>
+                    <div id="examples-list" style="max-height: 400px; overflow-y: auto; border: 1px solid #e8e8e8; border-radius: 4px;"></div>
+                </section>
+                <footer class="modal-card-foot" style="justify-content: flex-end;">
+                    <button class="button is-small is-rounded" onclick="closeExamplesDialog()" style="font-size: 13px;">Close</button>
+                </footer>
+            </div>
+        </div>
+
 <||= importPartial "components/foot.html" ||>
