@@ -1,0 +1,62 @@
+.editor-toolbar {
+    position: absolute;
+    top: 3px;
+    right: 0;
+    display: flex;
+    gap: 8px;
+    align-items: baseline;
+    z-index: 20;
+    padding: 8px;
+    
+    a {
+        color: #777;
+        border: 0;
+        display: flex;
+        align-items: baseline;
+        
+        &:hover {
+            color: #BBB;
+        }
+    }
+}
+
+#expander,
+#wordwrapper,
+#argsbutton,
+#examplesbutton {
+    color: white;
+}
+
+#wordwrapperIcon {
+    .dowrap {
+        display: block;
+    }
+    .donowrap {
+        display: none;
+    }
+    &.wrapped {
+        .dowrap {
+            display: none;
+        }
+        .donowrap {
+            display: block;
+        }
+    }
+}
+
+#expanderIcon {
+    .doexpand {
+        display: block;
+    }
+    .docompress {
+        display: none;
+    }
+    &.expanded {
+        .doexpand {
+            display: none;
+        }
+        .docompress {
+            display: block;
+        }
+    }
+}

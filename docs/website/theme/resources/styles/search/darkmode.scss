@@ -1,0 +1,69 @@
+.darkmode {
+    #searchbar {
+        background-color: black;
+    }
+    
+    .search-dropdown {
+        background: $dark-purple2;
+        border-color: lighten($main-purple, 10%);
+    }
+
+    .search-result-item {
+        border-bottom-color: rgba(255, 255, 255, 0.1);
+
+        &:hover,
+        &.is-active {
+            background-color: lighten($dark-purple2, 5%);
+        }
+    }
+
+    .search-result-name {
+        color: $dark-fg;
+
+        mark {
+            background-color: rgba(138, 225, 144, 0.12);
+            color: #8ae190;
+            font-weight: 600;
+        }
+    }
+
+    .search-result-attr-key {
+        color: #999;
+        
+        mark {
+            background-color: rgba(138, 225, 144, 0.12);
+            color: #8ae190;
+            font-weight: 600;
+        }
+    }
+
+    .search-result-attr-desc {
+        color: #aaa;
+    }
+
+    .search-result-description {
+        color: $dark-fg2;
+
+        mark {
+            background-color: rgba(138, 225, 144, 0.08);
+            color: $dark-fg;
+            font-weight: 500;
+        }
+    }
+
+    .search-result-category {
+        background-color: lighten($main-purple, 10%);
+    }
+
+    .search-no-results {
+        color: #888;
+        
+        strong {
+            color: $dark-fg2;
+        }
+    }
+
+    .search-dropdown::-webkit-scrollbar-track {
+        background: $dark-purple;
+    }
+}

@@ -1,0 +1,39 @@
+.table {
+    td, th {
+        vertical-align: middle;
+    }
+}
+
+#downloads {
+    td:last-child {
+        text-align: center;
+    }
+
+    a {
+        border: 0;
+        padding: 0.5em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+
+        svg {
+            transition: transform 0.2s ease;
+        }
+
+        &:hover {
+            color: #3273dc;
+            
+            svg {
+                transform: translateY(2px);
+            }
+        }
+    }
+
+    @media screen and (max-width: 768px) {
+        th:nth-child(3), 
+        td:nth-child(3) {
+            display: table-cell !important;
+        }
+    }
+}

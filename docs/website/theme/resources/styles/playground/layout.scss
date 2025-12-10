@@ -1,0 +1,80 @@
+@font-face {
+    font-family: "Fira Code Arturo";
+    src: url('../fonts/FiraCode-Regular.ttf') format('truetype');
+}
+
+main {
+    height: calc(100vh - 52px);
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+}
+
+.doccols {
+    position: relative;
+    height: 100%;
+    margin: 0 !important;
+    padding: 0;
+    display: flex;
+    
+    .column {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        position: relative;
+    }
+    
+    &.expanded {
+        flex-direction: column;
+        
+        .column:first-child {
+            flex: 0 0 50% !important;
+            height: 50%;
+        }
+        
+        .column:last-child {
+            flex: 0 0 50% !important;
+            height: 50%;
+            display: block;
+        }
+        
+        .resize-handle {
+            display: none;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        flex-direction: column;
+        
+        .column {
+            flex: none !important;
+            width: 100% !important;
+            height: 50% !important;
+        }
+    }
+}
+
+.resize-handle {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 4px;
+    background: #272822;
+    cursor: col-resize;
+    z-index: 10;
+    transition: background 0.2s;
+    transform: translateX(-50%);
+    
+    &:hover {
+        background: #3e3d32;
+    }
+    
+    &.resizing {
+        background: #4e4d42;
+    }
+    
+    @media (max-width: 768px) {
+        display: none;
+    }
+}

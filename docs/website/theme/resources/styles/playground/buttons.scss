@@ -1,0 +1,106 @@
+#runbutton {
+    position: absolute;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%) translateY(-35px);
+    width: 54px;
+    height: 54px;
+    z-index: 20;
+    background: darkorange;
+    border-radius: 50px;
+    color: white;
+    font-size: 1.8em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.2s ease;
+
+    .play {
+        display: block;
+    }
+    .processing {
+        display: none;
+        animation: spinaround 1s linear infinite;
+    }
+
+    &.working {
+        background: gray;
+        opacity: 1;
+        cursor: wait;
+        pointer-events: all;
+
+        .play {
+            display: none;
+        }
+        .processing {
+            display: block;
+        }
+    }
+
+    &.disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+
+        svg {
+            opacity: 0.5;
+        }
+    }
+
+    &:not(.working):not(.disabled):hover,
+    &:not(.working):not(.disabled).hover-effect {
+        box-shadow: 0px 0px 6px 3px grey;
+    }
+}
+
+#sharebutton {
+    position: absolute;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%) translateY(25px);
+    width: 54px;
+    height: 54px;
+    z-index: 20;
+    background: #15AABF;
+    border-radius: 50px;
+    color: white;
+    font-size: 1.8em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.2s ease;
+
+    &.working {
+        background: gray;
+    }
+
+    &.disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+
+        svg {
+            opacity: 0.5;
+        }
+    }
+
+    &:not(.working):not(.disabled):hover {
+        box-shadow: 0px 0px 6px 3px grey;
+    }
+}
+
+@media (max-width: 768px) {
+    #runbutton,
+    #sharebutton {
+        right: 15px;
+        width: 48px;
+        height: 48px;
+        font-size: 1.6em;
+    }
+    
+    #runbutton {
+        transform: translateY(-50%) translateY(-30px);
+    }
+    
+    #sharebutton {
+        transform: translateY(-50%) translateY(22px);
+    }
+}

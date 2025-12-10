@@ -1,0 +1,49 @@
+@mixin alertStyle($color) {
+    border-left-color: $color; 
+    .alert-message {
+        color: $color;
+        svg {
+            fill: $color;
+        }
+    }
+}
+
+blockquote {
+    &.alert {
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+        padding-left: 1rem;
+        
+        background-color: inherit !important;
+        border-left-width: 5px;
+        border-left-style: solid;
+
+        .alert-message {
+            display: inline-flex;
+            align-items: center;
+            margin-bottom: 0.7rem;
+
+            font-weight: 600;
+
+            svg {
+                margin-right: 0.5rem;
+            }
+        }
+
+        &.alert-tip         { 
+            @include alertStyle(#428546);
+        }
+        &.alert-note        { 
+            @include alertStyle(#296BD3); 
+        }
+        &.alert-important   { 
+            @include alertStyle(#7A58D7); 
+        }
+        &.alert-warning     { 
+            @include alertStyle(#936821); 
+        }
+        &.alert-caution     { 
+            @include alertStyle(#BF3536);
+        }
+    }
+}

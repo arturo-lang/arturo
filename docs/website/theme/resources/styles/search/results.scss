@@ -1,0 +1,122 @@
+.search-result-item {
+    padding: 12px 16px;
+    cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background-color 0.15s ease;
+
+    &:last-child {
+        border-bottom: 0;
+    }
+
+    &:hover,
+    &.is-active {
+        background-color: #f9f9f9;
+    }
+}
+
+.search-result-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.search-result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.search-result-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: #363636;
+    transition: color 0.15s ease;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: calc(100% - 80px);
+
+    mark {
+        background-color: rgba(106, 21, 107, 0.06);
+        color: $main-purple;
+        font-weight: 600;
+        padding: 0 1px;
+        border-radius: 1px;
+    }
+}
+
+.search-result-attr-key {
+    color: #999;
+    font-weight: 500;
+    font-size: 14px;
+    
+    mark {
+        background-color: rgba(106, 21, 107, 0.06);
+        color: $main-purple;
+        font-weight: 600;
+        padding: 0 1px;
+        border-radius: 1px;
+    }
+}
+
+.search-result-attr-desc {
+    font-style: italic;
+    color: #777;
+}
+
+.search-result-category {
+    font-size: 11px;
+    font-weight: 600;
+    color: $main-purple;
+    background-color: #f9f9f9;
+    padding: 3px 6px;
+    border-radius: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
+    align-self: center;
+    line-height: 1.2;
+}
+
+.search-result-description {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.4;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    mark {
+        background-color: rgba(106, 21, 107, 0.05);
+        color: #363636;
+        font-weight: 500;
+        padding: 0 1px;
+        border-radius: 1px;
+    }
+}
+
+.search-no-results {
+    padding: 32px 16px;
+    text-align: center;
+    color: #999;
+}
+
+.search-no-results-icon {
+    font-size: 32px;
+    margin-bottom: 12px;
+    opacity: 0.5;
+}
+
+.search-no-results-text {
+    font-size: 14px;
+    
+    strong {
+        color: #666;
+    }
+}
+
+.search-result-item.is-active {
+    box-shadow: inset 0 1px 0 rgba(106, 21, 107, 0.3),
+                inset 0 -1px 0 rgba(106, 21, 107, 0.3);
+}

@@ -1,0 +1,12 @@
+.tabs {
+    margin-bottom: 10px !important;
+
+    ul {
+        border-bottom-color: #6b6b6b;
+    }
+    
+    li.is-active a {
+        border-bottom-color: #20d929;
+        color: #20d929;
+    }
+}
