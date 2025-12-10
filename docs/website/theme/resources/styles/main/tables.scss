@@ -19,13 +19,18 @@
 
         svg {
             transition: transform 0.2s ease;
+
+            .outline { opacity: 1.0 }
+            .filled { opacity: 0.0 }
         }
 
         &:hover {
             color: #3273dc;
+            font-weight: 600;
             
             svg {
-                transform: translateY(2px);
+                .outline { opacity: 0.0 }
+                .filled { opacity: 1.0 }
             }
         }
     }
