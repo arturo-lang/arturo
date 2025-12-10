@@ -1024,7 +1024,19 @@ myFunc "hello"   ; works with string
 myFunc [1 2 3]   ; works with block
 ```
 
-You won't typically create `:any` values directly, but you'll see it used in function documentation and type checking contexts to indicate maximum flexibility in what values are accepted.
+The keyword `any` (whose value is... `:any`) is also used in `case` statements as a catch-all pattern:
+
+```arturo
+x: 5
+case x [
+    1   -> print "x is one"
+    2   -> print "x is two"
+    any -> print "x is something else"
+]
+; x is something else
+```
+
+You won't typically create `:any` values directly, but you'll see it used in function documentation, type checking contexts, and as a pattern matcher to indicate maximum flexibility in what values are accepted.
 
 <h2 id="important-concepts">Important concepts</h2>
 
