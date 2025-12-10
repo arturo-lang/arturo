@@ -24,14 +24,20 @@
     
     .modal-card-body {
         padding: 20px;
-        border-bottom-left-radius: 6px;
-        border-bottom-right-radius: 6px;
+
+        &:last-child {
+            border-bottom-left-radius: 6px;
+            border-bottom-right-radius: 6px;
+        }
     }
     
     .modal-card-foot {
         padding: 8px 20px;
         background-color: #fafafa;
         border-top: 1px solid #dbdbdb;
+        display: flex; 
+        justify-content: flex-start; 
+        gap: 8px;
     }
 
     @media (max-width: 768px) {
