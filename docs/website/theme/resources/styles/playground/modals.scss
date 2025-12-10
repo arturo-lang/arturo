@@ -1,4 +1,8 @@
 .modal-card {
+    .modal-background {
+        background-color: rgba(10, 10, 10, .50);
+    }
+
     .modal-card-head {
         background-color: #fafafa;
         padding: 16px 20px;
@@ -13,6 +17,8 @@
     
     .modal-card-body {
         padding: 20px;
+        border-bottom-left-radius: 6px;
+        border-bottom-right-radius: 6px;
     }
     
     .modal-card-foot {
@@ -21,9 +27,6 @@
 }
 
 #doc-modal {
-    .modal-background {
-        background-color: rgba(10, 10, 10, .50);
-    }
     
     .modal-card {
         width: 55%;
@@ -32,57 +35,51 @@
 
         .modal-card-head {
             background-color: $main-purple;
-            padding: 12px 16px;
             border-bottom: 1px solid darken($main-purple, 5%);
-        }
 
-        .modal-card-title {
-            display: flex;
-            align-items: center;
-            color: white;
-            font-size: 15px;
-            font-weight: 600;
-
-            svg {
-                fill: white;
+            .modal-card-title {
+                display: flex;
+                align-items: center;
                 color: white;
-            }
 
-            span.main-title {
-                margin-left: 0.75rem;
-                font-weight: 600;
-            }
+                svg {
+                    fill: white;
+                    color: white;
+                }
 
-            span.doc-link {
-                margin-left: auto;
-                margin-right: 1.5rem;
-                font-size: 14px;
-                color: rgba(255, 255, 255, 0.9);
-                
-                a {
+                span.main-title {
+                    margin-left: 0.75rem;
+                }
+
+                span.doc-link {
+                    margin-left: auto;
+                    margin-right: 1.5rem;
+                    font-size: 14px;
                     color: rgba(255, 255, 255, 0.9);
-                    border-bottom: 1px solid transparent;
                     
-                    &:hover {
-                        color: white;
-                        border-bottom: 1px solid white;
+                    a {
+                        color: rgba(255, 255, 255, 0.9);
+                        border-bottom: 1px solid transparent;
+                        
+                        &:hover {
+                            color: white;
+                            border-bottom: 1px solid white;
+                        }
                     }
                 }
             }
         }
 
         .modal-card-body {
-            border-bottom-left-radius: 6px; 
-            border-bottom-right-radius: 6px;
-            padding: 16px;
-            overflow-y: auto;
+            // padding: 16px;
+            // overflow-y: auto;
 
             padding-top: 2rem;
             padding-bottom: 2rem;
 
-            * {
-                transform: scale(0.9);
-            }
+            // * {
+            //     transform: scale(0.9);
+            // }
         }
     }
 }
