@@ -35,9 +35,8 @@ Here, you'll find everything you may need to know about the language (and perhap
        - [:block](#block)
        - [:dictionary](#dictionary)
        - [:store](#store)
-       - [:error](#error)
-       - [:module](#module)
        - [:object](#object)
+       - [:module](#module)
        - [:function](#function)
        - [:method](#method)
        - [:unit](#unit)
@@ -48,6 +47,7 @@ Here, you'll find everything you may need to know about the language (and perhap
        - [:socket](#socket)
        - [:binary](#binary)
        - [:bytecode](#bytecode)
+       - [:error](#error)
        - [:any](#any)
 - [Important concepts](#important-concepts)
    * [Precedence and evaluation](#precedence-and-evaluation)
@@ -681,48 +681,6 @@ d: store "mystore" ; initialize your Store and
 d\name: "John"     ; and you can use it as any normal dictionary
 ```
 
-<h4 id="error">:error</h4>
-
-Error values represent runtime errors in Arturo. They are typically created automatically when something goes wrong, but can also be constructed manually for error handling purposes.
-
-While you cannot create error values with literal syntax, they can be generated using the <code><a href="../library/core/throw">throw</a></code> function or caught during error handling:
-
-```arturo
-; Errors are typically caught when operations fail
-result: try [
-    ; some operation that might fail
-]
-
-if error? result [
-    print ["An error occurred:" result]
-]
-```
-
-Error values contain information about what went wrong and can be inspected to handle different error conditions appropriately.
-
-<h4 id="module">:module</h4>
-
-Module values represent encapsulated namespaces in Arturo, created using the <code><a href="../library/core/module">module</a></code> function. Modules allow you to organize code and create isolated scopes with their own functions and variables.
-
-```arturo
-myModule: module [
-    privateVar: 10
-    
-    publicFunc: function [x][
-        x + privateVar
-    ]
-]
-
-; Access module members
-print myModule\publicFunc 5  ; prints 15
-```
-
-Modules are particularly useful for:
-- Creating libraries and reusable code
-- Encapsulating implementation details
-- Avoiding naming conflicts
-- Organizing larger programs
-
 <h4 id="object">:object</h4>
 
 Object values are intimately related to custom types, as we have already seen above.
@@ -738,6 +696,73 @@ newClient: to :person ["John" "Doe"]!
 
 Technically, Objects are nothing but supercharged Dictionaries that come with a twist:
 their functions (see: methods) can have access to their own fields and methods, *from within* - using `this`. But other than that, don't let them scare you: it's just another tool in our toolkit! ;-)
+
+<h4 id="module">:module</h4>
+
+Module values represent encapsulated namespaces in Arturo, created using the <code><a href="../library/core/module">module</a></code> function. Modules allow you to organize code and create isolated scopes with their own functions and variables.
+
+By default, only methods marked with `.public` are accessible from outside the module. You can use <code><a href="../library/core/export">export</a></code> to make the module's public members available in the outer scope:
+
+```arturo
+ui: module [
+    ; private method - not accessible outside
+    namedRule: method [title :string width :integer][
+        title: ~" |title| "
+        pad.center.with: '=' title width
+    ]
+
+    ; public method - accessible via export
+    section: method.public [title :string content :string width :integer][
+        ~{
+            |\namedRule title width|
+            |content|
+            |\namedRule title width|
+        }
+    ]
+]
+
+export ui!
+
+print section "Hello" "World" 50
+; ===================== Hello ======================
+; World
+; ===================== Hello ======================
+```
+
+Modules can also be initialized with parameters using `.with:`:
+
+```arturo
+ui: [
+    init: method [symbol :char][
+        \symbol: symbol
+    ]
+
+    namedRule: method [title :string width :integer][
+        title: ~" |title| "
+        pad.center.with: \symbol title width
+    ]
+
+    section: method.public [title :string content :string width :integer][
+        ~{
+            |\namedRule title width|
+            |content|
+            |\namedRule title width|
+        }
+    ]
+]
+
+export module.with: ['~'] ui!  
+print section "Example" "This is an example" 40
+; ~~~~~~~~~~~~~~~ Example ~~~~~~~~~~~~~~~~
+; This is an example
+; ~~~~~~~~~~~~~~~ Example ~~~~~~~~~~~~~~~~
+```
+
+Modules are particularly useful for:
+- Creating libraries and reusable code
+- Encapsulating implementation details (private vs public methods)
+- Avoiding naming conflicts
+- Organizing larger programs
 
 <h4 id="function">:function</h4>
 
@@ -1008,6 +1033,26 @@ inspect bcode
 ; ]
 ```
 
+<h4 id="error">:error</h4>
+
+Error values represent runtime errors in Arturo. They are typically created automatically when something goes wrong, but can also be constructed manually for error handling purposes.
+
+While you cannot create error values with literal syntax, they can be generated using the <code><a href="../library/core/throw">throw</a></code> function or caught during error handling:
+
+```arturo
+; Errors are typically caught when operations fail
+result: try [
+    ; some operation that might fail
+]
+
+if error? result [
+    print ["An error occurred:" result]
+]
+```
+
+Error values contain information about what went wrong and can be inspected to handle different error conditions appropriately.
+
+
 <h4 id="any">:any</h4>
 
 The `:any` type is a special meta-type used primarily in type specifications and function signatures. It represents any possible value type and is used to indicate that a function parameter or return value can be of any type.
@@ -1024,7 +1069,7 @@ myFunc "hello"   ; works with string
 myFunc [1 2 3]   ; works with block
 ```
 
-The keyword `any` (whose value is... `:any`) is also used in `case` statements as a catch-all pattern:
+The keyword `any` is also used in `case` statements as a catch-all pattern:
 
 ```arturo
 x: 5
