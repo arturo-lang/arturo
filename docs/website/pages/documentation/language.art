@@ -87,15 +87,13 @@ Once you learn what the language [**building blocks**](#the-basics) are & a few 
 
 So, let's get to the gist of the matter!
 
-> [!NOTE] This worked!
-
 <h2 id="the-basics">The basics</h2>
 
 <h3 id="words">Words</h3>
 
 *Words* in Arturo are pretty much like words in English: a series of characters separated by *spaces* or some [*symbol*](#symbols). E.g.: `this is a series of words` (in this case, `this`, `is`, `a`, `series`, `of`, `words` are all - well... - *words*).
 
-> 💡 In Arturo, a word can start with any letter or underscore followed by any letter/numbers/underscore or a question mark (`?`).
+> [!TIP] In Arturo, a word can start with any letter or followed by any letter/numbers/underscore or a question mark (`?`).
 
 As with a real (spoken) language, every word has a specific meaning. And if you don't know the meaning of a word, you'll have to look it up in the dictionary. That's pretty much the way things work in Arturo as well.
 
@@ -276,7 +274,7 @@ split.words "hello world"
 
 ; = ["hello" "world"]
 ```
-> 💡 The order in which you pass the different attributes does <u>not</u> matter. Also, there is no issue at all whether you want to use spaces between them and the surrounding function call; Arturo will still be able to parse them and recognize them fine.
+> [!TIP] The order in which you pass the different attributes does <u>not</u> matter. Also, there is no issue at all whether you want to use spaces between them and the surrounding function call; Arturo will still be able to parse them and recognize them fine.
 
 <h4 id="attributeLabel">:attributeLabel</h4>
 
@@ -294,7 +292,7 @@ split .every: 2 "hello world"
 
 Values are the very core of Arturo and are used to refer to pretty much all the different kinds of data you can have.
 
-> 💡 Words, labels, and symbols - that we already saw above - can be considered "values" as well; and treated as such, unless we proceed to evaluate them!
+> [!IMPORTANT] Words, labels, and symbols - that we already saw above - can be considered "values" as well; and treated as such, unless we proceed to evaluate them!
 
 We could split values into 2 categories: a) literal values - that is, values you can directly define in your code and b) constructible - values that are created using some function.
 
@@ -666,7 +664,7 @@ What the `#` function here does is:
 - retrieve only the words/variables defined in there
 - return a dictionary with the aforementioned words
 
-> 💡 As you can probably assume from the above definition, a dictionary block doesn't necessarily have to contain just labels and word definitions - it may contain whatever you want, even function calls; only it will return you back just a table with the defined words in there.
+> [!IMPORTANT] As you can probably assume from the above definition, a dictionary block doesn't necessarily have to contain just labels and word definitions - it may contain whatever you want, even function calls; only it will return you back just a table with the defined words in there.
 
 <h4 id="store">:store</h4>
 
@@ -1130,7 +1128,7 @@ Re-visiting our previous, seemingly paradoxical, example:
 ```arturo
 2 * 3 + 4
 ```
-> 💡 Remember: our `+` and `*` operators are nothing but simple *infix* aliases to the functions <code><a href="../library/arithmetic/add">add</a></code> and <code><a href="../library/arithmetic/mul">mul</a></code> respectively -- nothing more!
+> [!IMPORTANT] Remember: our `+` and `*` operators are nothing but simple *infix* aliases to the functions <code><a href="../library/arithmetic/add">add</a></code> and <code><a href="../library/arithmetic/mul">mul</a></code> respectively -- nothing more!
 
 This is as if we had written (moving the operators in front):
 
@@ -1454,7 +1452,7 @@ When we create a new object (e.g. `p: to :person ["John"]`), if we attempt to us
 
 <h3 id="pipe-operator">Pipe operator: `|`</h3>
 
-> ⚠️ This is experimental and may still not be stable enough for use in production scripts
+> [!WARNING] This is experimental and may still not be stable enough for use in production scripts
 
 The *pipe* operator is an easy way of reversing the default *prefix* notation of function calls and simulating what in OOP languages is called *function chain*.
 
