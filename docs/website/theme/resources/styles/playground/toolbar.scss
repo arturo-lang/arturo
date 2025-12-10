@@ -60,3 +60,9 @@
         }
     }
 }
+
+@media screen and (max-width: 768px) {
+    #expander {
+        display: none;
+    }
+}
