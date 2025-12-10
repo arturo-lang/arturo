@@ -24,6 +24,10 @@
     .modal-card-foot {
         display: none;
     }
+
+    @media (max-width: 768px) {
+        width: 90vw;
+    }
 }
 
 #doc-modal {
