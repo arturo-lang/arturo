@@ -2019,7 +2019,7 @@ proc defineModule*(moduleName: string) =
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "sort given block in ascending order",
+        description = "sort given collection in ascending order",
         args        = {
             "collection": {Block, Dictionary, Literal, PathLiteral}
         },
