@@ -2381,7 +2381,7 @@ proc defineModule*(moduleName: string) =
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "reduce adjacent elements in given collection",
+        description = "reduce adjacent duplicate elements in given collection",
         args        = {
             "collection": {String, Block, Literal, PathLiteral}
         },
