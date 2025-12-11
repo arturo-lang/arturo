@@ -1903,7 +1903,7 @@ proc defineModule*(moduleName: string) =
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "get given collection shuffled",
+        description = "randomize the order of elements in given collection",
         args        = {
             "collection": {Block, Literal, PathLiteral}
         },
