@@ -2216,7 +2216,7 @@ proc defineModule*(moduleName: string) =
         alias       = unaliased,
         op          = opSplit,
         rule        = PrefixPrecedence,
-        description = "split collection to components",
+        description = "split collection into parts based on criteria",
         args        = {
             "collection": {String, Block, Literal, PathLiteral}
         },
