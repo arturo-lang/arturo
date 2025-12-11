@@ -590,7 +590,7 @@ proc defineModule*(moduleName: string) =
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "get new dictionary by merging given ones",
+        description = "merge given dictionary into parent",
         args        = {
             "parent"    : {Dictionary, Literal, PathLiteral},
             "additional": {Dictionary}
