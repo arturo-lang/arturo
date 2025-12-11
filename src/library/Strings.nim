@@ -727,7 +727,7 @@ proc defineModule*(moduleName: string) =
         alias       = unaliased, 
         op          = opReplace,
         rule        = PrefixPrecedence,
-        description = "replace every matched substring/s by given replacement string and return result",
+        description = "replace every matched substring/s with given replacement string and return result",
         args        = {
             "string"        : {String, Literal,PathLiteral},
             "match"         : {String, Regex, Block},
