@@ -7,7 +7,7 @@
     
     li {
         a {
-            padding: .5em 75em;
+            padding: .5em .75em;
         }
 
         // &.is-active {
@@ -20,10 +20,19 @@
         &.left-tab-item {
             a {
                 border-bottom-color: #6b6b6b;
-                color: #6b6b6b;
-                
-                &:hover {
-                    color: #ababab;
+                color: #ababab;
+            }
+
+            &.disabled {
+                a {
+                    color: #6b6b6b;
+                    cursor: default;
+                }
+            }
+
+            &:not(.disabled):hover {
+                a {
+                    color: #20d929;
                 }
             }
         }
