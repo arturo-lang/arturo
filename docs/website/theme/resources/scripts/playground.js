@@ -11,7 +11,7 @@ window.terminalColumns = 80;
 window.commandLineArgs = "";
 window.pageLoaded = false;
 window.currentExampleName = "";
-window.expanded = false;
+window.expanded = true; // Default to horizontal/2-column mode
 window.wordwrap = false;
 window.isExecuting = false;
 
@@ -870,9 +870,10 @@ window.addEventListener('DOMContentLoaded', function() {
     // Calculate terminal columns
     window.terminalColumns = calculateTerminalColumns();
     
-    // Restore expanded state
+    // Restore expanded state (default is true/horizontal)
     var savedExpanded = localStorage.getItem('playground-expanded');
-    if (savedExpanded === 'true' && window.innerWidth > 768) {
+    if (savedExpanded === 'false' && window.innerWidth > 768) {
+        // User prefers vertical mode, toggle from default horizontal
         toggleExpand();
     }
     
