@@ -224,7 +224,7 @@ proc defineModule*(moduleName: string) =
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "print full dump of given value to screen",
+        description = "print detailed structure and type information of given value",
         args        = {
             "value" : {Any}
         },
