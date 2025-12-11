@@ -2,28 +2,32 @@
     margin-bottom: 10px !important;
 
     ul {
-        border-bottom-color: #6b6b6b;
+        border-bottom: 1px solid #dbdbdb;
     }
     
     li {
         a {
             padding: .5em .75em;
+            border-bottom: 2px solid transparent;
+            color: #7a7a7a;
+            transition: all 0.2s ease;
+            
+            &:hover {
+                border-bottom-color: #b5b5b5;
+                color: #363636;
+            }
         }
 
         &.is-active {
             a {
                 border-bottom-color: #667eea;
                 color: #667eea;
-            }
-        }
-
-        a {
-            border-bottom-color: #dbdbdb;
-            color: #7a7a7a;
-            
-            &:hover {
-                border-bottom-color: #b5b5b5;
-                color: #363636;
+                font-weight: 600;
+                
+                &:hover {
+                    border-bottom-color: #667eea;
+                    color: #667eea;
+                }
             }
         }
     }
