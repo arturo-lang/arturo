@@ -2653,7 +2653,7 @@ proc defineModule*(moduleName: string) =
         },
         attrs       = {
             "at"    : ({Integer}, "check at given location within collection"),
-            "deep"    : ({Logical}, "searches recursively in deep for a value.")
+            "deep"    : ({Logical}, "search for a value recursively")
         },
         returns     = {Logical},
         example     = """
@@ -2801,7 +2801,7 @@ proc defineModule*(moduleName: string) =
         },
         attrs       = {
             "at"    : ({Integer}, "check at given location within collection"),
-            "deep"    : ({Logical}, "searches recursively in deep for a value.")
+            "deep"    : ({Logical}, "search for a value recursively")
         },
         returns     = {Logical},
         example     = """
