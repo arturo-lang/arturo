@@ -18,7 +18,7 @@
         height: 24px; 
         border-radius: 50%; 
         background: rgba(255,255,255,0.1); 
-        border: 1px solid rgba(255,255,255,0.2); 
+        border: 0;
         color: #888; 
         cursor: pointer; 
         font-size: 14px; 
@@ -26,6 +26,7 @@
         align-items: center; 
         justify-content: center; 
         transition: all 0.2s;
+        padding: 3px;
 
         &:hover {
             background: rgba(255,255,255,0.15);
