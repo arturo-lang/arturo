@@ -362,7 +362,7 @@ proc defineModule*(moduleName: string) =
             alias       = unaliased, 
             op          = opNop,
             rule        = PrefixPrecedence,
-            description = "pause program's execution~for the given amount of time",
+            description = "pause program's execution for the given amount of time",
             args        = {
                 "time"  : {Integer, Quantity}
             },

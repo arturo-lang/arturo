@@ -1004,7 +1004,7 @@ proc defineModule*(moduleName: string) =
         alias       = unaliased,
         op          = opLoop,
         rule        = PrefixPrecedence,
-        description = "iterate through collection, executing given action for each item",
+        description = "iterate through collection, executing given block for each item",
         args        = {
             "collection"    : {Integer,String,Block,Range,Inline,Dictionary,Object},
             "params"        : {Literal,Block,Null},

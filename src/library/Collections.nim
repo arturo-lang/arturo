@@ -358,7 +358,7 @@ proc defineModule*(moduleName: string) =
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "get combination of elements in given collections as array of tuples",
+        description = "combine elements of given collections into an array of tuples",
         args        = {
             "collectionA"   : {Block},
             "collectionB"   : {Block}
@@ -376,7 +376,7 @@ proc defineModule*(moduleName: string) =
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "get tuple of collections from a coupled collection of tuples",
+        description = "separate a collection of tuples into a tuple of collections",
         args        = {
             "collection": {Block, Literal, PathLiteral}
         },
@@ -402,7 +402,7 @@ proc defineModule*(moduleName: string) =
         alias       = sharp,
         op          = opDict,
         rule        = PrefixPrecedence,
-        description = "create dictionary from given block or file, by getting all internal symbols",
+        description = "create dictionary from given block or file, by evaluating and retrieving all defined symbols",
         args        = {
             "source": {String,Block}
         },
@@ -561,7 +561,7 @@ proc defineModule*(moduleName: string) =
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "empty given collection",
+        description = "remove all elements from given collection",
         args        = {
             "collection": {Literal, PathLiteral}
         },
@@ -590,7 +590,7 @@ proc defineModule*(moduleName: string) =
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "get new dictionary by merging given ones",
+        description = "merge given dictionary into parent",
         args        = {
             "parent"    : {Dictionary, Literal, PathLiteral},
             "additional": {Dictionary}
@@ -665,7 +665,7 @@ proc defineModule*(moduleName: string) =
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "flatten given collection by eliminating nested blocks",
+        description = "flatten given collection by recursively eliminating nested blocks",
         args        = {
             "collection": {Block, Literal, PathLiteral},
         },
@@ -1492,7 +1492,7 @@ proc defineModule*(moduleName: string) =
         },
         attrs       = {
             "key"       : ({Logical}, "remove dictionary key"),
-            "once"      : ({Logical}, "remove only first occurence"),
+            "once"      : ({Logical}, "remove only first occurrence"),
             "index"     : ({Logical}, "remove specific index"),
             "prefix"    : ({Logical}, "remove first matching prefix from string"),
             "suffix"    : ({Logical}, "remove first matching suffix from string"),
@@ -1712,10 +1712,10 @@ proc defineModule*(moduleName: string) =
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "right-rotate collection by given distance",
+        description = "rotate collection elements by given offset",
         args        = {
             "collection": {String, Block, Literal, PathLiteral},
-            "distance"  : {Integer}
+            "offset"    : {Integer}
         },
         attrs       = {
             "left"  : ({Logical}, "left rotation")
@@ -1728,21 +1728,21 @@ proc defineModule*(moduleName: string) =
             rotate 1..6 4                   ; => [3 4 5 6 1 2]
         """:
             #=======================================================
-            let distance = if (not hadAttr("left")): -y.i else: y.i
+            let offset = if (not hadAttr("left")): -y.i else: y.i
 
             if xKind in {Literal, PathLiteral}:
                 ensureInPlaceAny()
                 if InPlaced.kind == String:
                     InPlaced.s = toSeq(runes(InPlaced.s)).map((w) => $(w))
-                                 .rotatedLeft(distance).join("")
+                                 .rotatedLeft(offset).join("")
                 elif InPlaced.kind == Block:
-                    InPlaced.a.rotateLeft(distance)
+                    InPlaced.a.rotateLeft(offset)
             else:
                 if xKind == String:
                     push(newString(toSeq(runes(x.s)).map((w) => $(w))
-                                 .rotatedLeft(distance).join("")))
+                                 .rotatedLeft(offset).join("")))
                 elif xKind == Block:
-                    push(newBlock(x.a.rotatedLeft(distance)))
+                    push(newBlock(x.a.rotatedLeft(offset)))
 
     builtin "sample",
         alias       = unaliased,
@@ -1903,7 +1903,7 @@ proc defineModule*(moduleName: string) =
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "get given collection shuffled",
+        description = "randomize the order of elements in given collection",
         args        = {
             "collection": {Block, Literal, PathLiteral}
         },
@@ -1967,7 +1967,7 @@ proc defineModule*(moduleName: string) =
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "get a slice of collection between given indices",
+        description = "extract a sub-collection between given indices",
         args        = {
             "collection": {String, Block, Literal, PathLiteral},
             "from"      : {Integer},
@@ -2019,7 +2019,7 @@ proc defineModule*(moduleName: string) =
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "sort given block in ascending order",
+        description = "sort given collection in ascending order",
         args        = {
             "collection": {Block, Dictionary, Literal, PathLiteral}
         },
@@ -2210,13 +2210,13 @@ proc defineModule*(moduleName: string) =
 
     # TODO(Collections\split) Add better support for unicode strings
     #  Currently, simple split works fine - but using different attributes (at, every, by, etc) doesn't
-    #  labels: library,bug
+    #  labels: library,bug 
 
     builtin "split",
         alias       = unaliased,
         op          = opSplit,
         rule        = PrefixPrecedence,
-        description = "split collection to components",
+        description = "split collection into parts based on criteria",
         args        = {
             "collection": {String, Block, Literal, PathLiteral}
         },
@@ -2381,7 +2381,7 @@ proc defineModule*(moduleName: string) =
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "reduce adjacent elements in given collection",
+        description = "reduce adjacent duplicate elements in given collection",
         args        = {
             "collection": {String, Block, Literal, PathLiteral}
         },
@@ -2530,7 +2530,7 @@ proc defineModule*(moduleName: string) =
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "find number of occurences of each value within given block and return as dictionary",
+        description = "find number of occurrences of each value within given block and return as dictionary",
         args        = {
             "collection": {String, Block}
         },
@@ -2544,24 +2544,24 @@ proc defineModule*(moduleName: string) =
             ; => [1:5 2:5 4:3 3:2 5:3 6:3 7:1]
         """:
             #=======================================================
-            var occurences = initOrderedTable[string,Value]()
+            var occurrences = initOrderedTable[string,Value]()
 
             if xKind == String:
                 for r in runes(x.s): 
                     let str = $(r)
-                    if not occurences.hasKey(str):
-                        occurences[str] = newInteger(0)
+                    if not occurrences.hasKey(str):
+                        occurrences[str] = newInteger(0)
 
-                    occurences[str].i += 1
+                    occurrences[str].i += 1
             else:
                 for item in x.a:
                     let str = $(item)
-                    if not occurences.hasKey(str):
-                        occurences[str] = newInteger(0)
+                    if not occurrences.hasKey(str):
+                        occurrences[str] = newInteger(0)
                         
-                    occurences[str].i += 1
+                    occurrences[str].i += 1
             
-            push(newDictionary(occurences))
+            push(newDictionary(occurrences))
 
     builtin "unique",
         alias       = unaliased,
@@ -2653,7 +2653,7 @@ proc defineModule*(moduleName: string) =
         },
         attrs       = {
             "at"    : ({Integer}, "check at given location within collection"),
-            "deep"    : ({Logical}, "searches recursively in deep for a value.")
+            "deep"    : ({Logical}, "search for a value recursively")
         },
         returns     = {Logical},
         example     = """
@@ -2801,7 +2801,7 @@ proc defineModule*(moduleName: string) =
         },
         attrs       = {
             "at"    : ({Integer}, "check at given location within collection"),
-            "deep"    : ({Logical}, "searches recursively in deep for a value.")
+            "deep"    : ({Logical}, "search for a value recursively")
         },
         returns     = {Logical},
         example     = """

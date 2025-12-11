@@ -111,7 +111,7 @@ proc defineModule*(moduleName: string) =
         alias       = unaliased, 
         op          = opBNot,
         rule        = PrefixPrecedence,
-        description = "calculate the binary complement the given value",
+        description = "calculate the binary complement of the given value",
         args        = {
             "value" : {Integer,Binary,Literal,PathLiteral}
         },

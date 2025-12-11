@@ -392,7 +392,7 @@ proc defineModule*(moduleName: string) =
             alias       = unaliased, 
             op          = opNop,
             rule        = PrefixPrecedence,
-            description = "get matches within string, using given regular expression",
+            description = "get matches within string, using given pattern or regular expression",
             args        = {
                 "string": {String},
                 "regex" : {Regex, String, Char}
@@ -727,7 +727,7 @@ proc defineModule*(moduleName: string) =
         alias       = unaliased, 
         op          = opReplace,
         rule        = PrefixPrecedence,
-        description = "replace every matched substring/s by given replacement string and return result",
+        description = "replace every matched substring/s with given replacement string and return result",
         args        = {
             "string"        : {String, Literal,PathLiteral},
             "match"         : {String, Regex, Block},
