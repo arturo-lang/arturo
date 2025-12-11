@@ -14,16 +14,17 @@
 .toolbar-left,
 .toolbar-right {
     display: flex;
-    gap: 8px;
     align-items: center;
 }
 
 .toolbar-left {
     flex: 1;
+    gap: 8px;
 }
 
 .toolbar-right {
     flex-shrink: 0;
+    gap: 1px;
 }
 
 .toolbar-item {
