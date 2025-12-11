@@ -79,16 +79,16 @@ main {
 
 .resize-handle {
     position: absolute;
-    background: #373832;
-    z-index: 10;
+    background: #4e4d42;
+    z-index: 100;
     transition: background 0.2s;
     
     &:hover {
-        background: #4e4d42;
+        background: #5e5d52;
     }
     
     &.resizing {
-        background: #5e5d52;
+        background: #6e6d62;
     }
     
     @media (max-width: 768px) {

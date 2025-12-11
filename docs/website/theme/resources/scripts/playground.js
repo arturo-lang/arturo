@@ -890,29 +890,41 @@ document.addEventListener('DOMContentLoaded', function() {
             if (isHorizontal) {
                 // Horizontal layout - resize left/right
                 const offsetX = e.clientX - containerRect.left;
-                const percentage = (offsetX / containerRect.width) * 100;
                 
-                if (percentage > 20 && percentage < 80) {
-                    cols[0].style.flex = `0 0 ${percentage}%`;
-                    cols[1].style.flex = `0 0 ${100 - percentage}%`;
-                    handle.style.left = `${percentage}%`;
-                    handle.style.top = '';
-                    window.terminalColumns = calculateTerminalColumns();
-                    editor.resize();
-                }
+                // Calculate minimum width needed for toolbar (roughly 400px to show all items with labels)
+                const minLeftWidth = 400;
+                const minRightWidth = 200;
+                const maxLeftWidth = containerRect.width - minRightWidth;
+                
+                // Clamp the offset to respect minimum widths
+                const clampedOffsetX = Math.max(minLeftWidth, Math.min(maxLeftWidth, offsetX));
+                const percentage = (clampedOffsetX / containerRect.width) * 100;
+                
+                cols[0].style.flex = `0 0 ${percentage}%`;
+                cols[1].style.flex = `0 0 ${100 - percentage}%`;
+                handle.style.left = `${percentage}%`;
+                handle.style.top = '';
+                window.terminalColumns = calculateTerminalColumns();
+                editor.resize();
             } else {
                 // Vertical layout - resize top/bottom
                 const offsetY = e.clientY - containerRect.top;
-                const percentage = (offsetY / containerRect.height) * 100;
                 
-                if (percentage > 20 && percentage < 80) {
-                    cols[0].style.flex = `0 0 ${percentage}%`;
-                    cols[1].style.flex = `0 0 ${100 - percentage}%`;
-                    handle.style.top = `${percentage}%`;
-                    handle.style.left = '';
-                    window.terminalColumns = calculateTerminalColumns();
-                    editor.resize();
-                }
+                // Calculate minimum heights
+                const minTopHeight = 200;
+                const minBottomHeight = 150;
+                const maxTopHeight = containerRect.height - minBottomHeight;
+                
+                // Clamp the offset to respect minimum heights
+                const clampedOffsetY = Math.max(minTopHeight, Math.min(maxTopHeight, offsetY));
+                const percentage = (clampedOffsetY / containerRect.height) * 100;
+                
+                cols[0].style.flex = `0 0 ${percentage}%`;
+                cols[1].style.flex = `0 0 ${100 - percentage}%`;
+                handle.style.top = `${percentage}%`;
+                handle.style.left = '';
+                window.terminalColumns = calculateTerminalColumns();
+                editor.resize();
             }
         });
         
