@@ -14,8 +14,8 @@
                     <a href="javascript:void(0)" data-scroll-ignore onclick="execCode()" title="Run script" aria-label="execute code snippet"><div class="action-button" id="runbutton"><svg class="play" xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" fill="currentColor" viewBox="0 0 256 256"><||= phosphor 'bold "play-circle" ||></svg><svg class="processing" xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" fill="currentColor" viewBox="0 0 256 256"><||= phosphor 'bold "circle-notch" ||></svg></div></a>
                     <div class="tabs">
                         <ul>
-                            <li class="left-tab-item" id="new-menuitem"><a href="javascript:void(0)" onclick="newScript()"><span class="icon is-small"><svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" fill="currentColor" viewBox="0 0 256 256"><||= phosphor 'regular 'file ||></svg></span><span class="item-label">New</span></a></li>
-                            <li class="left-tab-item" id="load-menuitem"><a href="javascript:void(0)" onclick="showExamplesDialog()"><span class="icon is-small"><svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" fill="currentColor" viewBox="0 0 256 256"><||= phosphor 'regular "folder-open" ||></svg></span><span class="item-label">Load</span></a></li>
+                            <li class="left-tab-item" id="new-menuitem"><a href="javascript:void(0)" onclick="newSnippet()"><span class="icon is-small"><svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" fill="currentColor" viewBox="0 0 256 256"><||= phosphor 'regular 'file ||></svg></span><span class="item-label">New</span></a></li>
+                            <li class="left-tab-item" id="load-menuitem"><a href="javascript:void(0)" onclick="loadSnippet()"><span class="icon is-small"><svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" fill="currentColor" viewBox="0 0 256 256"><||= phosphor 'regular "folder-open" ||></svg></span><span class="item-label">Load</span></a></li>
                             <li class="left-tab-item" id="save-menuitem"><a href="javascript:void(0)" onclick="saveSnippet()"><span class="icon is-small"><svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" fill="currentColor" viewBox="0 0 256 256"><||= phosphor 'regular "floppy-disk" ||></svg></span><span class="item-label">Save</span></a></li>
                             <li class="left-tab-item" id="download-menuitem"><a href="javascript:void(0)" onclick="downloadSnippet()"><span class="icon is-small"><svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" fill="currentColor" viewBox="0 0 256 256"><||= phosphor 'regular 'download ||></svg></span><span class="item-label">Download</span></a></li>
                         </ul>
@@ -29,13 +29,13 @@
             </div>
         </main>
 
-        <!-- Share Modal -->
-        <div id="share-modal" class="modal">
-            <div class="modal-background" onclick="closeShareDialog()"></div>
+        <!-- Save Modal -->
+        <div id="save-modal" class="modal">
+            <div class="modal-background" onclick="closeSaveModal()"></div>
             <div class="modal-card">
                 <header class="modal-card-head">
                     <p class="modal-card-title">Save this script</p>
-                    <button class="delete" aria-label="close" onclick="closeShareDialog()"></button>
+                    <button class="delete" aria-label="close" onclick="closeSaveModal()"></button>
                 </header>
                 <section class="modal-card-body">
                     <input id="snippet-link" class="input is-small" readonly style="font-size: 13px;">
@@ -48,11 +48,11 @@
 
         <!-- Command-line Arguments Modal -->
         <div id="args-modal" class="modal">
-            <div class="modal-background" onclick="closeArgsDialog()"></div>
+            <div class="modal-background" onclick="closeArgsModal()"></div>
             <div class="modal-card">
                 <header class="modal-card-head">
                     <p class="modal-card-title">Command-line Arguments</p>
-                    <button class="delete" aria-label="close" onclick="closeArgsDialog()"></button>
+                    <button class="delete" aria-label="close" onclick="closeArgsModal()"></button>
                 </header>
                 <section class="modal-card-body">
                     <div class="field">
@@ -69,13 +69,13 @@
             </div>
         </div>
 
-        <!-- Examples Modal -->
-        <div id="examples-modal" class="modal">
-            <div class="modal-background" onclick="closeExamplesDialog()"></div>
+        <!-- Load Modal -->
+        <div id="load-modal" class="modal">
+            <div class="modal-background" onclick="closeLoadModal()"></div>
             <div class="modal-card">
                 <header class="modal-card-head">
                     <p class="modal-card-title">Load Example</p>
-                    <button class="delete" aria-label="close" onclick="closeExamplesDialog()"></button>
+                    <button class="delete" aria-label="close" onclick="closeLoadModal()"></button>
                 </header>
                 <section class="modal-card-body">
                     <div class="field" style="margin-bottom: 12px;">
