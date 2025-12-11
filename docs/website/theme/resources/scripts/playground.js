@@ -995,8 +995,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Horizontal layout - resize left/right
                 const offsetX = e.clientX - containerRect.left;
                 
-                // Calculate minimum width needed for toolbar
-                const minLeftWidth = 400;
+                // Get the actual toolbar width to use as minimum
+                const toolbar = document.querySelector('.unified-toolbar');
+                const toolbarWidth = toolbar ? toolbar.offsetWidth : 400;
+                const minLeftWidth = Math.max(toolbarWidth, 400);
                 const minRightWidth = 200;
                 const maxLeftWidth = containerRect.width - minRightWidth;
                 
