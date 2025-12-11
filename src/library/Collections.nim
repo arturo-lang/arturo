@@ -2210,7 +2210,7 @@ proc defineModule*(moduleName: string) =
 
     # TODO(Collections\split) Add better support for unicode strings
     #  Currently, simple split works fine - but using different attributes (at, every, by, etc) doesn't
-    #  labels: library,bug
+    #  labels: library,bug 
 
     builtin "split",
         alias       = unaliased,
