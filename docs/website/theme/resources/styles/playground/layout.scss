@@ -22,6 +22,7 @@ main {
         margin: 0;
         padding: 0;
         position: relative;
+        overflow: hidden;
     }
     
     // Vertical layout (default)
@@ -63,16 +64,42 @@ main {
     }
     
     @media (max-width: 768px) {
-        flex-direction: column;
+        // Force vertical layout on mobile - override any horizontal class
+        flex-direction: column !important;
         
         .column {
-            flex: none !important;
+            // Reset any flex values and ensure visibility
+            flex: 0 0 50% !important;
             width: 100% !important;
-            height: 50% !important;
+            height: auto !important;
+            display: block !important;
+            min-height: 0 !important;
+        }
+        
+        // Ensure first column (editor) is visible
+        .column:first-child {
+            flex: 0 0 50% !important;
+            overflow: auto !important;
+        }
+        
+        // Ensure second column (terminal) is visible
+        .column:last-child {
+            flex: 0 0 50% !important;
+            overflow: auto !important;
         }
         
         .resize-handle {
-            display: none;
+            // Force row-resize handle on mobile
+            display: block !important;
+            visibility: visible !important;
+            cursor: row-resize !important;
+            width: 100% !important;
+            height: 4px !important;
+            left: 0 !important;
+            right: 0 !important;
+            top: 50% !important;
+            bottom: auto !important;
+            transform: translateY(-50%) !important;
         }
     }
 }
@@ -80,7 +107,7 @@ main {
 .resize-handle {
     position: absolute;
     background: #4e4d42;
-    z-index: 100;
+    z-index: 50;
     transition: background 0.2s;
     
     &:hover {
@@ -89,9 +116,5 @@ main {
     
     &.resizing {
         background: #6e6d62;
-    }
-    
-    @media (max-width: 768px) {
-        display: none;
     }
 }

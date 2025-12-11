@@ -935,7 +935,9 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Function to update handle position based on actual column size
         window.updateHandlePosition = function() {
-            const isHorizontal = window.expanded;
+            const isMobile = window.innerWidth <= 768;
+            const isHorizontal = window.expanded && !isMobile;
+            
             if (isHorizontal) {
                 const col0Rect = cols[0].getBoundingClientRect();
                 const doccolsRect = doccols.getBoundingClientRect();
@@ -951,10 +953,33 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         };
         
+        // Media query to handle mobile layout changes
+        const mobileMediaQuery = window.matchMedia('(max-width: 768px)');
+        function handleMobileChange(e) {
+            if (e.matches) {
+                // Mobile: force vertical layout
+                doccols.classList.remove('horizontal');
+                cols[0].style.flex = '0 0 50%';
+                cols[1].style.flex = '0 0 50%';
+                setTimeout(window.updateHandlePosition, 50);
+            } else {
+                // Desktop: restore saved state
+                const savedExpanded = localStorage.getItem('playground-expanded');
+                if (savedExpanded === 'true') {
+                    doccols.classList.add('horizontal');
+                } else {
+                    doccols.classList.remove('horizontal');
+                }
+                setTimeout(window.updateHandlePosition, 50);
+            }
+        }
+        mobileMediaQuery.addListener(handleMobileChange);
+        
         handle.addEventListener('mousedown', function(e) {
             isResizing = true;
             handle.classList.add('resizing');
-            const isHorizontal = window.expanded;
+            const isMobile = window.innerWidth <= 768;
+            const isHorizontal = window.expanded && !isMobile;
             document.body.style.cursor = isHorizontal ? 'col-resize' : 'row-resize';
             e.preventDefault();
         });
@@ -963,7 +988,8 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!isResizing) return;
             
             const containerRect = doccols.getBoundingClientRect();
-            const isHorizontal = window.expanded;
+            const isMobile = window.innerWidth <= 768;
+            const isHorizontal = window.expanded && !isMobile;
             
             if (isHorizontal) {
                 // Horizontal layout - resize left/right
