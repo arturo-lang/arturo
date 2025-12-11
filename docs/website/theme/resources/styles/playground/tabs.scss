@@ -6,6 +6,10 @@
     }
     
     li {
+        a {
+            padding: .5em 75em;
+        }
+        
         &.is-active {
             a {
                 border-bottom-color: #20d929;
