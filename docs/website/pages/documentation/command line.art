@@ -1,8 +1,5 @@
-; TODO(Documentation\Command line) update terminal options & flags
-;  The current list of command-line flags should be updated. Some are missing completely (e.g. `--no-color` option), and some are not up-to-date, e.g. everything related to the compilation from/to bytecode.
-;  labels: documentation, easy
 content:{!md
-The command line is where the whole journey starts: whether you want to try out something fast in the REPL, or run a script. Or even install extern packages directly.
+The command line is where your Arturo journey begins: whether you want to experiment in the REPL, run a script, manage packages, or work with bytecode.
 
 ---
 
@@ -10,6 +7,7 @@ The command line is where the whole journey starts: whether you want to try out 
    * [Run a script](#run-a-script)
    * [Evaluate a code string](#evaluate-a-code-string)
    * [Start the interactive console](#start-the-interactive-console)
+   * [Bundle an executable](#bundle-an-executable)
    * [Working with bytecode](#working-with-bytecode)
 - [Package manager](#package-manager)
    * [List available packages](#list-available-packages)
@@ -17,6 +15,9 @@ The command line is where the whole journey starts: whether you want to try out 
    * [Install a new package](#install-a-new-package)
    * [Uninstall a package](#uninstall-a-package)
    * [Update all packages](#update-all-packages)
+- [Display options](#display-options)
+   * [Mute output colors](#mute-colors)
+   * [Version and help](#version-help)
 
 ---
 
@@ -24,118 +25,177 @@ The command line is where the whole journey starts: whether you want to try out 
 
 <h4 id="run-a-script">Run a script</h4>
 
-To run an Arturo script, all you have to do is pass the main script's path to Arturo:
+To run an Arturo script, simply pass the script's path to Arturo:
 
 ```bash
 arturo <script>
 ```
 
+> [!TIP] Script files typically use the `.art` extension
+
 <h4 id="evaluate-a-code-string">Evaluate a code string</h4>
 
-To evaluate code strings, call Arturo with `--evaluate`, `-e` followed by a string consisting of Arturo code:
+To evaluate code strings directly, use `--evaluate` or `-e` followed by your Arturo code:
 
 ```bash
 arturo --evaluate <string>
 ```
 
-Please note that double quotes in a double-quoted string must be escaped with the backslash character:
+Double quotes within a double-quoted string must be escaped with a backslash:
 
 ```bash
 arturo -e "print \"Hello, World!\""
 ```
 
-If the code string doesn't contain quotation marks, it can also be enclosed in single quotation marks. In that case, escaping isn't necessary. For example:
+Alternatively, if your code doesn't contain quotes, you can use single quotes to avoid escaping:
 
 ```bash
 arturo -e 'print "Hello, World!"'
 ```
 
-Strings can contain multiple statements and/or blocks, separated by commas or spaces, or, if the preceding character is not alphabetic, concatenated.
+Strings can contain multiple statements and/or blocks, separated by commas or spaces, or concatenated when the preceding character is non-alphabetic.
 
 <h4 id="start-the-interactive-console">Start the interactive console</h4>
 
-To start the interactive console (see: *REPL*), just open up your terminal and type:
+To start the interactive console (REPL), simply type:
 
 ```bash
 arturo
 ```
 
-This is is what Arturo's interactive console looks like:
+Or explicitly use:
+
+```bash
+arturo --repl
+```
+
+This is what Arturo's interactive console looks like:
 
 ![REPL](https://arturo-lang.io/resources/images/repl.png)
 
-Here you may easily try things out and see things first hand. :)
+Here you can easily experiment and see results immediately.
+
+<h4 id="bundle-an-executable">Bundle an executable</h4>
+
+You can bundle your Arturo script into a standalone executable:
+
+```bash
+arturo --bundle <script>
+```
+
+To specify a custom name for the executable:
+
+```bash
+arturo --bundle <script> --as myapp
+```
+
+> [!CAUTION] This feature is experimental and may change in future versions
 
 <h4 id="working-with-bytecode">Working with bytecode</h4>
 
-Since Arturo is, internally, a bytecode-based VM, it also allows you to save and read bytecode directly. 
+Since Arturo is internally a bytecode-based VM, you can save and read bytecode directly.
 
-> [!NOTE] Bytecode, also termed portable code or p-code, is a form of instruction set designed for efficient execution by a software interpreter. Unlike human-readable source code, bytecodes are compact numeric codes, constants, and references (normally numeric addresses) that encode the result of compiler parsing and performing semantic analysis of things like type, scope, and nesting depths of program objects.
+> [!NOTE] Bytecode is a form of instruction set designed for efficient execution by a software interpreter. Unlike human-readable source code, bytecodes are compact numeric codes, constants, and references that encode the result of compiler parsing and semantic analysis.
 
-This way, you will be able to share your code, without sharing your source, or accelerate your script's execution (since when reading a bytecode file in, the initial parsing & evaluation phase has already been completed).
+This allows you to share your code without exposing the source, or accelerate script execution by skipping the initial parsing phase.
 
-##### To write a bytecode file from a script:
-
-```bash
-arturo -c path/to/your/script.art
-```
-
-This will output a `path/to/your/script.art.bcode` file.
-
-##### To read and execute a bytecode file:
+##### Compile to bytecode:
 
 ```bash
-arturo -x path/to/your/script.art.bcode
+arturo --compile <script>
 ```
+
+This generates a `<script>.bcode` file alongside your script.
+
+##### Execute bytecode:
+
+```bash
+arturo --execute <script>.bcode
+```
+
+> [!CAUTION] Bytecode compilation and execution are experimental features
 
 <h3 id="package-manager">Package manager</h3>
 
-Although Arturo's philosophy is batteries-included - so you'll most likely need nothing that is not already included - Arturo also comes with a ready-to-use package manager, to make your life even easier.
+Although Arturo's philosophy is batteries-included, it also comes with a built-in package manager for additional functionality.
 
 <h4 id="list-available-packages">List available packages</h4>
 
-To list all available packages, just type:
+To list all locally installed packages:
 
 ```bash
-arturo -p list
+arturo --package list
 ```
 
-This will show you all the packages you have installed locally.)
+<h4 id="list-remote-packages">List remote packages</h4>
 
-<h4 id="list-remote-packags">List remote packages</h4>
-
-If you want to fetch a list of *all* packages available to download from the [official repository](https://pkgr.art), just type:
+To fetch all packages available from the [official repository](https://pkgr.art):
 
 ```bash
-arturo -p remote
+arturo --package remote
 ```
 
 <h4 id="install-a-new-package">Install a new package</h4>
 
-To install a package
+To install a package:
 
 ```bash
-arturo -p install grafito
+arturo --package install grafito
 ```
 
-> [!TIP] If you do e.g. `import 'grafito!` from within the REPL or your Arturo script, if the package isn't already installed, it'll automatically be taken care of - so, nothing to worry about! ;-)
+You can optionally specify a version:
 
+```bash
+arturo --package install grafito 1.0.2
+```
+
+> [!TIP] If you use `import 'grafito!` in the REPL or a script and the package isn't installed, Arturo will automatically install it for you
 
 <h4 id="uninstall-a-package">Uninstall a package</h4>
 
-In order to uninstall a package you have previously, you just have to type:
+To uninstall a previously installed package:
 
 ```bash
-arturo -p uninstall grafito
+arturo --package uninstall grafito
+```
+
+You can also specify a version to uninstall:
+
+```bash
+arturo --package uninstall grafito 1.0.2
 ```
 
 <h4 id="update-all-packages">Update all packages</h4>
 
-If you want to update all of your local packages, there's no reason to uninstall/reinstall anything. Just type:
+To update all locally installed packages to their latest versions:
 
 ```bash
-arturo -p update
+arturo --package update
 ```
 
-And *all* of your packages will be automatically up-to-date.
+<h3 id="display-options">Display options</h3>
+
+<h4 id="mute-colors">Mute output colors</h4>
+
+To disable colored output:
+
+```bash
+arturo --no-color <script>
+```
+
+This is useful when redirecting output to files or when working in environments that don't support ANSI colors.
+
+<h4 id="version-help">Version and help</h4>
+
+To display the current version:
+
+```bash
+arturo --version
+```
+
+To show the help screen:
+
+```bash
+arturo --help
+```
 }
