@@ -148,7 +148,12 @@ permalink: function [tag][
 iconsPath: ./"icons"
 
 octicon: function [icon][
-    read ~"|iconsPath|/|icon|.svg"
+    read ~"|iconsPath|/octicons/|icon|.svg"
+]
+
+phosphor: function [category, icon][
+    resu: read ~"|iconsPath|/phosphor/|category|/|icon|.svg"
+    replace replace resu {/<svg[^>]+>/} "" "</svg>" ""
 ]
 
 postprocessAlerts: function [src][
