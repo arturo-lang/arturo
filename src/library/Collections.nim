@@ -561,7 +561,7 @@ proc defineModule*(moduleName: string) =
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "empty given collection",
+        description = "remove all elements from given collection",
         args        = {
             "collection": {Literal, PathLiteral}
         },
