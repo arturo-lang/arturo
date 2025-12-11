@@ -1712,10 +1712,10 @@ proc defineModule*(moduleName: string) =
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "right-rotate collection by given distance",
+        description = "rotate collection elements by given offset",
         args        = {
             "collection": {String, Block, Literal, PathLiteral},
-            "distance"  : {Integer}
+            "offset"    : {Integer}
         },
         attrs       = {
             "left"  : ({Logical}, "left rotation")
@@ -1728,21 +1728,21 @@ proc defineModule*(moduleName: string) =
             rotate 1..6 4                   ; => [3 4 5 6 1 2]
         """:
             #=======================================================
-            let distance = if (not hadAttr("left")): -y.i else: y.i
+            let offset = if (not hadAttr("left")): -y.i else: y.i
 
             if xKind in {Literal, PathLiteral}:
                 ensureInPlaceAny()
                 if InPlaced.kind == String:
                     InPlaced.s = toSeq(runes(InPlaced.s)).map((w) => $(w))
-                                 .rotatedLeft(distance).join("")
+                                 .rotatedLeft(offset).join("")
                 elif InPlaced.kind == Block:
-                    InPlaced.a.rotateLeft(distance)
+                    InPlaced.a.rotateLeft(offset)
             else:
                 if xKind == String:
                     push(newString(toSeq(runes(x.s)).map((w) => $(w))
-                                 .rotatedLeft(distance).join("")))
+                                 .rotatedLeft(offset).join("")))
                 elif xKind == Block:
-                    push(newBlock(x.a.rotatedLeft(distance)))
+                    push(newBlock(x.a.rotatedLeft(offset)))
 
     builtin "sample",
         alias       = unaliased,
