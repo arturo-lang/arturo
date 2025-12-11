@@ -376,7 +376,7 @@ proc defineModule*(moduleName: string) =
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "get tuple of collections from a coupled collection of tuples",
+        description = "separate a collection of tuples into a tuple of collections",
         args        = {
             "collection": {Block, Literal, PathLiteral}
         },
