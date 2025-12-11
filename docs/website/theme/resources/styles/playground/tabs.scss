@@ -9,15 +9,15 @@
         a {
             padding: .5em 75em;
         }
-        
-        &.is-active {
-            a {
-                border-bottom-color: #20d929;
-                color: #20d929;
-            }
-        }
 
-        &.extra-item {
+        // &.is-active {
+        //     a {
+        //         border-bottom-color: #20d929;
+        //         color: #20d929;
+        //     }
+        // }
+
+        &.left-tab-item {
             a {
                 border-bottom-color: #6b6b6b;
                 color: #6b6b6b;
