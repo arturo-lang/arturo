@@ -356,7 +356,7 @@ function closeSaveModal() {
 // COMMAND-LINE ARGUMENTS FUNCTIONALITY
 // =============================================================================
 
-function showArgsDialog() {
+function showArgsModal() {
     var modal = document.getElementById('args-modal');
     var input = document.getElementById('cmdline-args');
     
@@ -372,7 +372,7 @@ function showArgsDialog() {
     }, 50);
 }
 
-function closeArgsDialog() {
+function closeArgsModal() {
     var modal = document.getElementById('args-modal');
     if (modal) {
         modal.classList.remove('is-active');
@@ -386,18 +386,18 @@ function saveArgs() {
         window.commandLineArgs = argsInput.value.trim();
         showToast(window.commandLineArgs ? "Arguments saved" : "Arguments cleared");
     }
-    closeArgsDialog();
+    closeArgsModal();
 }
 
 // =============================================================================
-// EXAMPLES FUNCTIONALITY
+// LOAD FUNCTIONALITY
 // =============================================================================
 
-function showExamplesDialog() {
+function loadSnippet() {
     ajaxPost("http://188.245.97.105/%<[basePath]>%/backend/getexamples.php",
     function (result) {
         var examples = JSON.parse(result);
-        var modal = document.getElementById('examples-modal');
+        var modal = document.getElementById('load-modal');
         var examplesList = document.getElementById('examples-list');
         var examplesCount = document.getElementById('examples-count');
         var searchInput = document.getElementById('examples-search');
@@ -426,7 +426,7 @@ function showExamplesDialog() {
                     this.style.backgroundColor = 'white';
                 });
                 item.addEventListener('click', function() {
-                    loadExampleFromDialog(example);
+                    loadExampleFromList(example);
                 });
                 
                 examplesList.appendChild(item);
@@ -444,16 +444,16 @@ function showExamplesDialog() {
     }, {});
 }
 
-function closeExamplesDialog() {
-    var modal = document.getElementById('examples-modal');
+function closeLoadModal() {
+    var modal = document.getElementById('load-modal');
     if (modal) {
         modal.classList.remove('is-active');
         document.documentElement.classList.remove('is-clipped');
     }
 }
 
-function loadExampleFromDialog(exampleName) {
-    closeExamplesDialog();
+function loadExampleFromList(exampleName) {
+    closeLoadModal();
     
     setTimeout(() => {
         getExample(exampleName);
