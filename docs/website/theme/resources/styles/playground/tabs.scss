@@ -10,30 +10,20 @@
             padding: .5em .75em;
         }
 
-        // &.is-active {
-        //     a {
-        //         border-bottom-color: #20d929;
-        //         color: #20d929;
-        //     }
-        // }
-
-        &.left-tab-item {
+        &.is-active {
             a {
-                border-bottom-color: #6b6b6b;
-                color: #ababab;
+                border-bottom-color: #667eea;
+                color: #667eea;
             }
+        }
 
-            &.disabled {
-                a {
-                    color: #6b6b6b;
-                    cursor: default;
-                }
-            }
-
-            &:not(.disabled):hover {
-                a {
-                    color: #20d929;
-                }
+        a {
+            border-bottom-color: #dbdbdb;
+            color: #7a7a7a;
+            
+            &:hover {
+                border-bottom-color: #b5b5b5;
+                color: #363636;
             }
         }
     }

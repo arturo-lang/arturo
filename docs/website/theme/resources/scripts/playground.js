@@ -13,6 +13,32 @@ window.pageLoaded = false;
 window.currentExampleName = "";
 window.expanded = false;
 window.wordwrap = false;
+window.isExecuting = false;
+
+// =============================================================================
+// LOCAL STORAGE FOR SNIPPETS
+// =============================================================================
+
+function getLocalSnippets() {
+    const stored = localStorage.getItem('playground-snippets');
+    return stored ? JSON.parse(stored) : {};
+}
+
+function saveLocalSnippet(id, code, alias = '') {
+    const snippets = getLocalSnippets();
+    snippets[id] = {
+        code: code,
+        alias: alias,
+        timestamp: Date.now()
+    };
+    localStorage.setItem('playground-snippets', JSON.stringify(snippets));
+}
+
+function deleteLocalSnippet(id) {
+    const snippets = getLocalSnippets();
+    delete snippets[id];
+    localStorage.setItem('playground-snippets', JSON.stringify(snippets));
+}
 
 // =============================================================================
 // ACE EDITOR INITIALIZATION
@@ -128,6 +154,10 @@ function execCode() {
                 window.currentExampleName = "";
             }
             
+            // Set editor to readonly during execution
+            window.isExecuting = true;
+            editor.setReadOnly(true);
+            
             runbutton.classList.add('working');
             document.getElementById("terminal_output").innerHTML = "";
             
@@ -160,6 +190,9 @@ function execCode() {
                     reader.read().then(({ done, value }) => {
                         if (done) {
                             runbutton.classList.remove('working');
+                            window.isExecuting = false;
+                            editor.setReadOnly(false);
+                            editor.focus();
                             updateButtonStates();
                             return;
                         }
@@ -189,6 +222,9 @@ function execCode() {
                                         }
                                         
                                         runbutton.classList.remove('working');
+                                        window.isExecuting = false;
+                                        editor.setReadOnly(false);
+                                        editor.focus();
                                         updateButtonStates();
                                         window.scroll.animateScroll(document.querySelector("#terminal"), null, {updateURL: false});
                                     } else if (data.line) {
@@ -212,76 +248,89 @@ function execCode() {
             .catch(error => {
                 console.error('Error:', error);
                 runbutton.classList.remove('working');
-                
-                if (statusEl) {
-                    statusEl.innerHTML = `
-                        <span class="status-error">Connection Error</span>
-                        <span>Failed to execute script</span>
-                    `;
-                }
+                window.isExecuting = false;
+                editor.setReadOnly(false);
+                editor.focus();
+                updateButtonStates();
             });
         }
     }
 }
 
 // =============================================================================
-// BUTTON STATE MANAGEMENT
+// SNIPPET MANAGEMENT
 // =============================================================================
 
-function updateButtonStates() {
-    var currentCode = editor.getValue();
-    var runButton = document.getElementById('runbutton');
-    
-    var saveMenuItem = document.getElementById('save-menuitem');
-    var downloadMenuItem = document.getElementById('download-menuitem');
-    
-    if (currentCode === window.previousCode) {
-        runButton.classList.add('disabled');
-    } else {
-        runButton.classList.remove('disabled');
-    }
-    
-    // Enable save & download menu item 
-    // provided there's some code first
-    if (!currentCode.trim()) {
-        saveMenuItem.classList.add('disabled');
-        downloadMenuItem.classList.add('disabled');
-    } else {
-        saveMenuItem.classList.remove('disabled');
-        downloadMenuItem.classList.remove('disabled');
-    }
+function hasUnsavedChanges() {
+    const currentCode = editor.getValue();
+    return currentCode !== window.loadedCode;
 }
 
-// =============================================================================
-// SAVE FUNCTIONALITY
-// =============================================================================
+function newSnippet() {
+    if (hasUnsavedChanges()) {
+        if (!confirm('You have unsaved changes. Are you sure you want to create a new script?')) {
+            return;
+        }
+    }
+    
+    editor.setValue('', -1);
+    window.snippetId = "";
+    window.loadedCode = "";
+    window.loadedFromUrl = false;
+    window.loadedFromExample = false;
+    window.currentExampleName = "";
+    document.getElementById("terminal_output").innerHTML = "";
+    
+    var statusEl = document.getElementById('terminal-status');
+    if (statusEl) {
+        statusEl.style.display = 'none';
+    }
+    
+    updateButtonStates();
+    showToast("New script");
+}
+
+function downloadSnippet() {
+    const code = editor.getValue();
+    const blob = new Blob([code], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    
+    // Use snippet alias if available, otherwise use default name
+    let filename = 'main.art';
+    if (window.snippetId) {
+        const snippets = getLocalSnippets();
+        if (snippets[window.snippetId] && snippets[window.snippetId].alias) {
+            filename = snippets[window.snippetId].alias + '.art';
+        } else {
+            filename = window.snippetId + '.art';
+        }
+    }
+    
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    showToast("Downloaded: " + filename);
+}
 
 function saveSnippet() {
-    var saveMenuItem = document.getElementById('save-menuitem');
-    
-    if (saveMenuItem.classList.contains('disabled')) {
-        return;
-    }
+    showToast("Saving...");
     
     var currentCode = editor.getValue();
     
-    // If we already have a snippet ID for this exact code, just show it
-    if (window.snippetId != "" && currentCode === window.loadedCode) {
-        showSaveModal(window.snippetId);
-        return;
-    }
+    // Use existing snippet ID if we're updating
+    var snippetToSend = window.snippetId || "";
     
-    // Otherwise, save the snippet first
     var payload = {
         c: currentCode,
-        i: "",  // Empty means generate new ID
+        i: snippetToSend,
         cols: window.terminalColumns,
-        args: window.commandLineArgs,
-        stream: false,
-        example: ""
+        args: window.commandLineArgs
     };
-    
-    showToast("Saving snippet...");
     
     fetch("http://188.245.97.105/%<[basePath]>%/backend/exec.php", {
         method: 'POST',
@@ -290,286 +339,359 @@ function saveSnippet() {
     })
     .then(response => response.json())
     .then(data => {
-        if (data.code && data.code !== "") {
+        if (data.code) {
             window.snippetId = data.code;
             window.loadedCode = currentCode;
             window.loadedFromUrl = true;
             window.loadedFromExample = false;
             window.currentExampleName = "";
             
-            // Update browser history
-            window.history.replaceState(
-                {code: data.code}, 
-                `${data.code} - Playground | Arturo programming language`, 
-                `http://188.245.97.105/%<[basePath]>%/playground/${data.code}`
-            );
+            // Save locally without alias initially
+            saveLocalSnippet(data.code, currentCode, '');
             
-            showSaveModal(data.code);
+            var shareLink = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '/' + data.code);
+            document.getElementById('snippet-link').value = shareLink;
+            
+            // Clear alias input
+            document.getElementById('snippet-alias').value = '';
+            
             updateButtonStates();
-        } else {
-            showToast("Failed to save snippet");
+            
+            // Show modal after a brief delay
+            setTimeout(() => {
+                showSaveModal();
+            }, 300);
         }
     })
     .catch(error => {
-        console.error('Error saving snippet:', error);
-        showToast("Failed to save snippet");
+        console.error('Error:', error);
+        showToast("Save failed");
     });
 }
 
-function showSaveModal(snippetId) {
-    var modal = document.getElementById('save-modal');
-    var input = document.getElementById('snippet-link');
+function getSnippet(snippetId) {
+    var payload = { i: snippetId };
     
-    input.value = `http://188.245.97.105/%<[basePath]>%/playground/${snippetId}`;
-    
-    modal.classList.add('is-active');
-    document.documentElement.classList.add('is-clipped');
-    
-    setTimeout(() => {
-        if (input) {
-            input.select();
-            input.setSelectionRange(0, 99999);
-        }
-    }, 50);
+    fetch("http://188.245.97.105/%<[basePath]>%/backend/get.php", {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    })
+    .then(response => response.json())
+    .then(data => {
+        editor.setValue(data.text, -1);
+        window.snippetId = snippetId;
+        window.loadedCode = data.text;
+        window.loadedFromUrl = true;
+        window.loadedFromExample = false;
+        window.currentExampleName = "";
+        updateButtonStates();
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
 }
 
-function copyShareLink() {
-    var input = document.getElementById('snippet-link');
-    if (input) {
-        navigator.clipboard.writeText(input.value).then(() => {
-            showToast("Link copied to clipboard!");
-            closeSaveModal();
-        }).catch(() => {
-            showToast("Failed to copy");
-        });
-    }
+function getExample(exampleName) {
+    var payload = { c: '', i: 'SKIP_SAVE', example: exampleName };
+    
+    fetch("http://188.245.97.105/%<[basePath]>%/backend/exec.php", {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    })
+    .then(response => response.json())
+    .then(data => {
+        // For examples, we need to fetch the actual code from the examples directory
+        // Since exec.php only executes, we'll load from getexamples.php structure
+        fetch(`http://188.245.97.105/%<[basePath]>%/examples/${exampleName}.art`)
+            .then(response => response.text())
+            .then(code => {
+                editor.setValue(code, -1);
+                window.loadedCode = code;
+                window.loadedFromExample = true;
+                window.currentExampleName = exampleName;
+                window.snippetId = "";
+                window.loadedFromUrl = false;
+                updateButtonStates();
+            })
+            .catch(error => {
+                console.error('Error loading example:', error);
+            });
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+
+// =============================================================================
+// MODAL MANAGEMENT
+// =============================================================================
+
+function showSaveModal() {
+    document.getElementById('save-modal').classList.add('is-active');
+    document.getElementById('snippet-link').select();
 }
 
 function closeSaveModal() {
-    var modal = document.getElementById('save-modal');
-    if (modal) {
-        modal.classList.remove('is-active');
-        document.documentElement.classList.remove('is-clipped');
-    }
+    document.getElementById('save-modal').classList.remove('is-active');
 }
 
-// =============================================================================
-// COMMAND-LINE ARGUMENTS FUNCTIONALITY
-// =============================================================================
+function copyShareLink() {
+    var linkInput = document.getElementById('snippet-link');
+    linkInput.select();
+    document.execCommand('copy');
+    
+    // Get alias and save if provided
+    var alias = document.getElementById('snippet-alias').value.trim();
+    if (alias && window.snippetId) {
+        saveLocalSnippet(window.snippetId, editor.getValue(), alias);
+    }
+    
+    showToast("Link copied!");
+    closeSaveModal();
+}
 
 function showArgsModal() {
-    var modal = document.getElementById('args-modal');
-    var input = document.getElementById('cmdline-args');
-    
-    input.value = window.commandLineArgs;
-    
-    modal.classList.add('is-active');
-    document.documentElement.classList.add('is-clipped');
-    
-    setTimeout(() => {
-        if (input) {
-            input.focus();
-        }
-    }, 50);
+    document.getElementById('cmdline-args').value = window.commandLineArgs;
+    document.getElementById('args-modal').classList.add('is-active');
+    document.getElementById('cmdline-args').focus();
 }
 
 function closeArgsModal() {
-    var modal = document.getElementById('args-modal');
-    if (modal) {
-        modal.classList.remove('is-active');
-        document.documentElement.classList.remove('is-clipped');
-    }
+    document.getElementById('args-modal').classList.remove('is-active');
 }
 
 function saveArgs() {
-    var argsInput = document.getElementById("cmdline-args");
-    if (argsInput) {
-        window.commandLineArgs = argsInput.value.trim();
-        showToast(window.commandLineArgs ? "Arguments saved" : "Arguments cleared");
-    }
+    window.commandLineArgs = document.getElementById('cmdline-args').value;
     closeArgsModal();
+    showToast("Arguments saved");
 }
 
-// =============================================================================
-// LOAD FUNCTIONALITY
-// =============================================================================
-
-function loadSnippet() {
-    ajaxPost("http://188.245.97.105/%<[basePath]>%/backend/getexamples.php",
-    function (result) {
-        var examples = JSON.parse(result);
-        var modal = document.getElementById('load-modal');
-        var examplesList = document.getElementById('examples-list');
-        var examplesCount = document.getElementById('examples-count');
-        var searchInput = document.getElementById('examples-search');
-        
-        // Clear previous content
-        examplesList.innerHTML = '';
-        searchInput.value = '';
-        examplesCount.textContent = examples.length;
-        
-        if (examples && examples.length > 0) {
-            examples.forEach(function(example) {
-                var displayName = example.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-                
-                var item = document.createElement('div');
-                item.className = 'example-item';
-                item.setAttribute('data-name', example.toLowerCase());
-                item.setAttribute('data-display', displayName.toLowerCase());
-                item.style.cssText = 'padding: 12px 16px; border-bottom: 1px solid #f0f0f0; cursor: pointer; transition: background-color 0.12s;';
-                
-                item.innerHTML = `<div style="font-weight: 600; color: #363636; font-size: 14px;">${displayName}</div>`;
-                
-                item.addEventListener('mouseover', function() {
-                    this.style.backgroundColor = '#f5f5f5';
-                });
-                item.addEventListener('mouseout', function() {
-                    this.style.backgroundColor = 'white';
-                });
-                item.addEventListener('click', function() {
-                    loadExampleFromList(example);
-                });
-                
-                examplesList.appendChild(item);
-            });
-        } else {
-            examplesList.innerHTML = '<div style="padding: 32px; text-align: center; color: #999;">No examples available</div>';
-        }
-        
-        modal.classList.add('is-active');
-        document.documentElement.classList.add('is-clipped');
-        
-        setTimeout(() => {
-            searchInput.focus();
-        }, 100);
-    }, {});
+function showLoadModal() {
+    loadExamplesList();
+    document.getElementById('load-modal').classList.add('is-active');
+    
+    // Show examples tab by default
+    showLoadTab('examples');
 }
 
 function closeLoadModal() {
-    var modal = document.getElementById('load-modal');
-    if (modal) {
-        modal.classList.remove('is-active');
-        document.documentElement.classList.remove('is-clipped');
+    document.getElementById('load-modal').classList.remove('is-active');
+}
+
+function showLoadTab(tab) {
+    const examplesTab = document.getElementById('load-examples-tab');
+    const snippetsTab = document.getElementById('load-snippets-tab');
+    const examplesContent = document.getElementById('examples-content');
+    const snippetsContent = document.getElementById('snippets-content');
+    
+    if (tab === 'examples') {
+        examplesTab.classList.add('is-active');
+        snippetsTab.classList.remove('is-active');
+        examplesContent.style.display = 'block';
+        snippetsContent.style.display = 'none';
+    } else {
+        snippetsTab.classList.add('is-active');
+        examplesTab.classList.remove('is-active');
+        snippetsContent.style.display = 'block';
+        examplesContent.style.display = 'none';
+        loadUserSnippets();
     }
 }
 
-function loadExampleFromList(exampleName) {
-    closeLoadModal();
+function loadExamplesList() {
+    fetch("http://188.245.97.105/%<[basePath]>%/backend/getexamples.php")
+        .then(response => response.json())
+        .then(examples => {
+            window.allExamples = examples;
+            renderExamples(examples);
+        })
+        .catch(error => {
+            console.error('Error loading examples:', error);
+            document.getElementById('examples-list').innerHTML = '<div style="padding: 20px; text-align: center; color: #999;">Error loading examples</div>';
+        });
+}
+
+function renderExamples(examples) {
+    var list = document.getElementById('examples-list');
+    var count = document.getElementById('examples-count');
     
-    setTimeout(() => {
-        getExample(exampleName);
-        //document.getElementById('scriptName').innerHTML = `${exampleName}.art`;
-        showToast(`Loaded example`);
-    }, 100);
-}
-
-function filterExamples() {
-    var searchInput = document.getElementById('examples-search');
-    var query = searchInput.value.toLowerCase();
-    var items = document.querySelectorAll('.example-item');
-    var visibleCount = 0;
+    count.textContent = examples.length;
     
-    items.forEach(function(item) {
-        var name = item.getAttribute('data-name');
-        var display = item.getAttribute('data-display');
-        
-        if (name.includes(query) || display.includes(query)) {
-            item.style.display = '';
-            visibleCount++;
-        } else {
-            item.style.display = 'none';
-        }
-    });
-    
-    var countEl = document.getElementById('examples-count');
-    if (countEl) {
-        countEl.textContent = visibleCount;
-    }
-}
-
-// =============================================================================
-// SNIPPET LOADING FUNCTIONS
-// =============================================================================
-
-function getSnippet(cd) {
-    ajaxPost("http://188.245.97.105/%<[basePath]>%/backend/get.php",
-    function (result) {
-        var got = JSON.parse(result);
-        editor.setValue(got.text);
-        window.loadedCode = got.text;
-        window.snippetId = cd;
-        window.loadedFromUrl = true;
-        editor.clearSelection();
-        editor.resize(true);
-        editor.scrollToLine(1,0,true,true,function(){});
-        editor.gotoLine(1,0,true);
-        
-        window.previousCode = "";
-        updateButtonStates();
-    }, {
-        i:cd
-    });
-}
-
-function getExample(cd) {
-    ajaxPost("http://188.245.97.105/%<[basePath]>%/backend/example.php",
-    function (result) {
-        var got = JSON.parse(result);
-        editor.setValue(got.text+"\n");
-        window.loadedCode = got.text+"\n";
-        window.snippetId = "";
-        window.loadedFromUrl = false;
-        window.loadedFromExample = true;
-        window.currentExampleName = cd;
-        editor.clearSelection();
-        editor.resize(true);
-        editor.scrollToLine(1,0,true,true,function(){});
-        editor.gotoLine(1,0,true);
-        
-        window.previousCode = "";
-        updateButtonStates();
-    }, {
-        i:cd
-    });
-}
-
-// =============================================================================
-// VIEW TOGGLE FUNCTIONS
-// =============================================================================
-
-function toggleExpand() {
-    if (window.innerWidth <= 768) {
+    if (examples.length === 0) {
+        list.innerHTML = '<div style="padding: 20px; text-align: center; color: #999;">No examples found</div>';
         return;
     }
     
-    if (window.expanded) {
-        window.expanded = false;
-        document.querySelector(".doccols").classList.remove("expanded");
-        document.querySelector("#expanderIcon").classList.remove("expanded");
-        document.body.style.overflow = '';
-        document.documentElement.style.overflow = '';
-        localStorage.setItem('playground-expanded', 'false');
-        showToast("Normal view");
-    } else {
-        window.expanded = true;
-        document.querySelector(".doccols").classList.add("expanded");
-        document.querySelector("#expanderIcon").classList.add("expanded");
-        document.body.style.overflow = 'hidden';
-        document.documentElement.style.overflow = 'hidden';
-        localStorage.setItem('playground-expanded', 'true');
-        showToast("Full-screen editor");
+    var html = '<div style="padding: 8px;">';
+    examples.forEach(function(example) {
+        html += `
+            <div class="example-item" onclick="loadExample('${example}')">
+                <span class="example-name">${example}</span>
+            </div>
+        `;
+    });
+    html += '</div>';
+    
+    list.innerHTML = html;
+}
+
+function loadUserSnippets() {
+    const snippets = getLocalSnippets();
+    const list = document.getElementById('snippets-list');
+    const keys = Object.keys(snippets);
+    
+    if (keys.length === 0) {
+        list.innerHTML = '<div style="padding: 20px; text-align: center; color: #999;">No saved snippets</div>';
+        return;
     }
+    
+    // Sort by timestamp (newest first)
+    keys.sort((a, b) => snippets[b].timestamp - snippets[a].timestamp);
+    
+    let html = '<div style="padding: 8px;">';
+    keys.forEach(id => {
+        const snippet = snippets[id];
+        const displayName = snippet.alias || id;
+        const date = new Date(snippet.timestamp).toLocaleDateString();
+        
+        html += `
+            <div class="snippet-item">
+                <div class="snippet-item-main" onclick="loadLocalSnippet('${id}')">
+                    <span class="snippet-name">${displayName}</span>
+                    <span class="snippet-date">${date}</span>
+                </div>
+                <button class="snippet-delete" onclick="event.stopPropagation(); deleteSnippet('${id}')" title="Delete">×</button>
+            </div>
+        `;
+    });
+    html += '</div>';
+    
+    list.innerHTML = html;
+}
+
+function loadExample(exampleName) {
+    closeLoadModal();
+    
+    fetch(`http://188.245.97.105/%<[basePath]>%/examples/${exampleName}.art`)
+        .then(response => response.text())
+        .then(code => {
+            editor.setValue(code, -1);
+            window.loadedCode = code;
+            window.loadedFromExample = true;
+            window.currentExampleName = exampleName;
+            window.snippetId = "";
+            window.loadedFromUrl = false;
+            updateButtonStates();
+            showToast("Loaded: " + exampleName);
+        })
+        .catch(error => {
+            console.error('Error loading example:', error);
+            showToast("Failed to load example");
+        });
+}
+
+function loadLocalSnippet(id) {
+    const snippets = getLocalSnippets();
+    const snippet = snippets[id];
+    
+    if (!snippet) {
+        showToast("Snippet not found");
+        return;
+    }
+    
+    closeLoadModal();
+    
+    editor.setValue(snippet.code, -1);
+    window.snippetId = id;
+    window.loadedCode = snippet.code;
+    window.loadedFromUrl = true;
+    window.loadedFromExample = false;
+    window.currentExampleName = "";
+    updateButtonStates();
+    
+    const displayName = snippet.alias || id;
+    showToast("Loaded: " + displayName);
+}
+
+function deleteSnippet(id) {
+    if (!confirm('Delete this snippet?')) {
+        return;
+    }
+    
+    deleteLocalSnippet(id);
+    loadUserSnippets();
+    showToast("Snippet deleted");
+}
+
+function filterExamples() {
+    var searchTerm = document.getElementById('examples-search').value.toLowerCase();
+    
+    if (!window.allExamples) return;
+    
+    var filtered = window.allExamples.filter(function(example) {
+        return example.toLowerCase().includes(searchTerm);
+    });
+    
+    renderExamples(filtered);
+}
+
+function loadSnippet() {
+    showLoadModal();
+}
+
+// =============================================================================
+// BUTTON STATE MANAGEMENT
+// =============================================================================
+
+function updateButtonStates() {
+    // Implementation depends on your business logic
+    // This is placeholder to maintain compatibility
+}
+
+// =============================================================================
+// LAYOUT MANAGEMENT
+// =============================================================================
+
+function toggleExpand() {
+    window.expanded = !window.expanded;
+    
+    var cols = document.querySelectorAll('.doccols .column');
+    var expanderIcon = document.querySelector("#expanderIcon");
+    
+    if (window.expanded) {
+        cols[0].style.flex = '0 0 100%';
+        cols[1].style.flex = '0 0 0%';
+        cols[1].style.display = 'none';
+        expanderIcon.classList.add("expanded");
+        showToast("Editor only");
+        localStorage.setItem('playground-expanded', 'true');
+    } else {
+        cols[0].style.flex = '0 0 50%';
+        cols[1].style.flex = '0 0 50%';
+        cols[1].style.display = 'block';
+        expanderIcon.classList.remove("expanded");
+        showToast("Split view");
+        localStorage.setItem('playground-expanded', 'false');
+    }
+    
+    // Recalculate terminal columns
+    window.terminalColumns = calculateTerminalColumns();
+    
+    // Trigger editor resize
+    editor.resize();
 }
 
 function toggleWordWrap() {
-    if (window.wordwrap) {
-        window.wordwrap = false;
+    window.wordwrap = !window.wordwrap;
+    
+    if (!window.wordwrap) {
         editor.setOption("wrap", false);
         document.querySelector("#wordwrapperIcon").classList.remove("wrapped");
         showToast("Word wrap: OFF");
         localStorage.setItem('playground-wordwrap', 'false');
     } else {
-        window.wordwrap = true;
         editor.setOption("wrap", true);
         document.querySelector("#wordwrapperIcon").classList.add("wrapped");
         showToast("Word wrap: ON");
@@ -605,6 +727,7 @@ function showToast(message) {
     // Trigger show
     setTimeout(() => toast.classList.add('show'), 10);
     
+    // Auto-hide after 1.5 seconds
     setTimeout(() => {
         toast.classList.remove('show');
     }, 1500);
@@ -700,7 +823,6 @@ window.addEventListener('DOMContentLoaded', function() {
         
         if (qs.example !== undefined) {
             getExample(qs.example);
-            //document.getElementById('scriptName').innerHTML = `${qs.example}.art`;
         }
     } else {
         updateButtonStates();
@@ -747,6 +869,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 cols[1].style.flex = `0 0 ${100 - percentage}%`;
                 handle.style.left = `${percentage}%`;
                 window.terminalColumns = calculateTerminalColumns();
+                
+                // Trigger editor resize
+                editor.resize();
             }
         });
         
@@ -782,4 +907,5 @@ document.addEventListener('DOMContentLoaded', function() {
 
 window.addEventListener('resize', function() {
     window.terminalColumns = calculateTerminalColumns();
+    editor.resize();
 });
