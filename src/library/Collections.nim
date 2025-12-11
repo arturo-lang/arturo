@@ -665,7 +665,7 @@ proc defineModule*(moduleName: string) =
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "flatten given collection by eliminating nested blocks",
+        description = "flatten given collection by recursively eliminating nested blocks",
         args        = {
             "collection": {Block, Literal, PathLiteral},
         },
