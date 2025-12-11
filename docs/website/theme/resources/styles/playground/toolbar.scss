@@ -60,8 +60,12 @@
     
     &.disabled {
         a {
-            color: #6b6b6b;
-            cursor: default;
+            color: #4a4a4a;
+            cursor: not-allowed;
+            
+            &:hover {
+                color: #4a4a4a;
+            }
         }
     }
 }

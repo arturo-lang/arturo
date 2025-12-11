@@ -267,6 +267,12 @@ function hasUnsavedChanges() {
 }
 
 function newSnippet() {
+    // Check if button is disabled
+    const newButton = document.getElementById('new-menuitem');
+    if (newButton.classList.contains('disabled')) {
+        return;
+    }
+    
     if (hasUnsavedChanges()) {
         if (!confirm('You have unsaved changes. Are you sure you want to create a new script?')) {
             return;
@@ -291,6 +297,12 @@ function newSnippet() {
 }
 
 function downloadSnippet() {
+    // Check if button is disabled
+    const downloadButton = document.getElementById('download-menuitem');
+    if (downloadButton.classList.contains('disabled')) {
+        return;
+    }
+    
     // Show confirmation dialog
     let filename = 'main.art';
     if (window.snippetId) {
@@ -326,6 +338,12 @@ function downloadSnippet() {
 }
 
 function saveSnippet() {
+    // Check if button is disabled
+    const saveButton = document.getElementById('save-menuitem');
+    if (saveButton.classList.contains('disabled')) {
+        return;
+    }
+    
     showToast("Saving...");
     
     var currentCode = editor.getValue();
@@ -669,8 +687,41 @@ function loadSnippet() {
 // =============================================================================
 
 function updateButtonStates() {
-    // Implementation depends on your business logic
-    // This is placeholder to maintain compatibility
+    const currentCode = editor.getValue();
+    const isEmpty = currentCode.trim() === '';
+    const hasChanges = currentCode !== window.loadedCode;
+    
+    // New button - disabled if editor is empty
+    const newButton = document.getElementById('new-menuitem');
+    if (isEmpty) {
+        newButton.classList.add('disabled');
+    } else {
+        newButton.classList.remove('disabled');
+    }
+    
+    // Run button - disabled if editor is empty or currently executing
+    const runButton = document.getElementById('runbutton');
+    if (isEmpty || window.isExecuting) {
+        runButton.classList.add('disabled');
+    } else {
+        runButton.classList.remove('disabled');
+    }
+    
+    // Save button - disabled if editor is empty
+    const saveButton = document.getElementById('save-menuitem');
+    if (isEmpty) {
+        saveButton.classList.add('disabled');
+    } else {
+        saveButton.classList.remove('disabled');
+    }
+    
+    // Download button - disabled if editor is empty
+    const downloadButton = document.getElementById('download-menuitem');
+    if (isEmpty) {
+        downloadButton.classList.add('disabled');
+    } else {
+        downloadButton.classList.remove('disabled');
+    }
 }
 
 // =============================================================================
@@ -709,6 +760,14 @@ function toggleExpand() {
     
     // Trigger editor resize
     editor.resize();
+    
+    // Update handle position after layout settles
+    setTimeout(() => {
+        const handle = document.querySelector('.resize-handle');
+        if (handle && window.updateHandlePosition) {
+            window.updateHandlePosition();
+        }
+    }, 50);
 }
 
 function toggleWordWrap() {
@@ -873,6 +932,24 @@ document.addEventListener('DOMContentLoaded', function() {
         
         let isResizing = false;
         
+        // Function to update handle position based on actual column size
+        window.updateHandlePosition = function() {
+            const isHorizontal = window.expanded;
+            if (isHorizontal) {
+                const col0Rect = cols[0].getBoundingClientRect();
+                const doccolsRect = doccols.getBoundingClientRect();
+                const percentage = ((col0Rect.width) / doccolsRect.width) * 100;
+                handle.style.left = `${percentage}%`;
+                handle.style.top = '';
+            } else {
+                const col0Rect = cols[0].getBoundingClientRect();
+                const doccolsRect = doccols.getBoundingClientRect();
+                const percentage = ((col0Rect.height) / doccolsRect.height) * 100;
+                handle.style.top = `${percentage}%`;
+                handle.style.left = '';
+            }
+        };
+        
         handle.addEventListener('mousedown', function(e) {
             isResizing = true;
             handle.classList.add('resizing');
@@ -891,7 +968,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Horizontal layout - resize left/right
                 const offsetX = e.clientX - containerRect.left;
                 
-                // Calculate minimum width needed for toolbar (roughly 400px to show all items with labels)
+                // Calculate minimum width needed for toolbar
                 const minLeftWidth = 400;
                 const minRightWidth = 200;
                 const maxLeftWidth = containerRect.width - minRightWidth;
@@ -902,8 +979,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 cols[0].style.flex = `0 0 ${percentage}%`;
                 cols[1].style.flex = `0 0 ${100 - percentage}%`;
-                handle.style.left = `${percentage}%`;
-                handle.style.top = '';
+                
+                // Update handle position after a brief delay to let layout settle
+                requestAnimationFrame(window.updateHandlePosition);
+                
                 window.terminalColumns = calculateTerminalColumns();
                 editor.resize();
             } else {
@@ -921,8 +1000,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 cols[0].style.flex = `0 0 ${percentage}%`;
                 cols[1].style.flex = `0 0 ${100 - percentage}%`;
-                handle.style.top = `${percentage}%`;
-                handle.style.left = '';
+                
+                // Update handle position after a brief delay to let layout settle
+                requestAnimationFrame(window.updateHandlePosition);
+                
                 window.terminalColumns = calculateTerminalColumns();
                 editor.resize();
             }
@@ -933,8 +1014,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 isResizing = false;
                 handle.classList.remove('resizing');
                 document.body.style.cursor = '';
+                // Final position update
+                requestAnimationFrame(window.updateHandlePosition);
             }
         });
+        
+        // Initial handle position
+        setTimeout(window.updateHandlePosition, 100);
+        
+        // Update on window resize
+        window.addEventListener('resize', window.updateHandlePosition);
     }
     
     // Setup event listener for args dialog Enter key
@@ -952,6 +1041,9 @@ document.addEventListener('DOMContentLoaded', function() {
     if (examplesSearch) {
         examplesSearch.addEventListener('input', filterExamples);
     }
+    
+    // Initial button state update
+    updateButtonStates();
 });
 
 // =============================================================================
