@@ -241,13 +241,14 @@ function updateButtonStates() {
         runButton.classList.remove('disabled');
     }
     
-    // Enable save & download menu item provided there's some code first
+    // Enable save & download menu item 
+    // provided there's some code first
     if (!currentCode.trim()) {
         saveMenuItem.classList.add('disabled');
         downloadMenuItem.classList.add('disabled');
     } else {
         saveMenuItem.classList.remove('disabled');
-        downloadMenuItem.classList.add('disabled');
+        downloadMenuItem.classList.remove('disabled');
     }
 }
 
@@ -457,7 +458,7 @@ function loadExampleFromList(exampleName) {
     
     setTimeout(() => {
         getExample(exampleName);
-        document.getElementById('scriptName').innerHTML = `${exampleName}.art`;
+        //document.getElementById('scriptName').innerHTML = `${exampleName}.art`;
         showToast(`Loaded example`);
     }, 100);
 }
