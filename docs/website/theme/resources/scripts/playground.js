@@ -291,12 +291,7 @@ function newSnippet() {
 }
 
 function downloadSnippet() {
-    const code = editor.getValue();
-    const blob = new Blob([code], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    
-    // Use snippet alias if available, otherwise use default name
+    // Show confirmation dialog
     let filename = 'main.art';
     if (window.snippetId) {
         const snippets = getLocalSnippets();
@@ -307,14 +302,27 @@ function downloadSnippet() {
         }
     }
     
+    const userFilename = prompt('Save as:', filename);
+    if (!userFilename) {
+        return; // User cancelled
+    }
+    
+    // Ensure .art extension
+    const finalFilename = userFilename.endsWith('.art') ? userFilename : userFilename + '.art';
+    
+    const code = editor.getValue();
+    const blob = new Blob([code], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    
     a.href = url;
-    a.download = filename;
+    a.download = finalFilename;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
     
-    showToast("Downloaded: " + filename);
+    showToast("Downloaded: " + finalFilename);
 }
 
 function saveSnippet() {
@@ -346,21 +354,19 @@ function saveSnippet() {
             window.loadedFromExample = false;
             window.currentExampleName = "";
             
-            // Save locally without alias initially
-            saveLocalSnippet(data.code, currentCode, '');
-            
             var shareLink = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '/' + data.code);
             document.getElementById('snippet-link').value = shareLink;
             
-            // Clear alias input
+            // Clear alias input and hide disclosure
             document.getElementById('snippet-alias').value = '';
+            document.getElementById('alias-disclosure').style.display = 'none';
             
             updateButtonStates();
             
-            // Show modal after a brief delay
+            // Wait for toast to completely disappear before showing modal
             setTimeout(() => {
                 showSaveModal();
-            }, 300);
+            }, 2000);
         }
     })
     .catch(error => {
@@ -437,19 +443,36 @@ function closeSaveModal() {
     document.getElementById('save-modal').classList.remove('is-active');
 }
 
+function toggleAliasDisclosure() {
+    const disclosure = document.getElementById('alias-disclosure');
+    const toggle = document.getElementById('alias-toggle');
+    
+    if (disclosure.style.display === 'none') {
+        disclosure.style.display = 'block';
+        toggle.textContent = '▼';
+    } else {
+        disclosure.style.display = 'none';
+        toggle.textContent = '▶';
+    }
+}
+
+function saveSnippetWithAlias() {
+    var alias = document.getElementById('snippet-alias').value.trim();
+    if (alias && window.snippetId) {
+        saveLocalSnippet(window.snippetId, editor.getValue(), alias);
+        showToast("Saved locally: " + alias);
+    } else if (window.snippetId) {
+        saveLocalSnippet(window.snippetId, editor.getValue(), '');
+        showToast("Saved locally");
+    }
+    closeSaveModal();
+}
+
 function copyShareLink() {
     var linkInput = document.getElementById('snippet-link');
     linkInput.select();
     document.execCommand('copy');
-    
-    // Get alias and save if provided
-    var alias = document.getElementById('snippet-alias').value.trim();
-    if (alias && window.snippetId) {
-        saveLocalSnippet(window.snippetId, editor.getValue(), alias);
-    }
-    
     showToast("Link copied!");
-    closeSaveModal();
 }
 
 function showArgsModal() {
@@ -659,20 +682,25 @@ function toggleExpand() {
     
     var cols = document.querySelectorAll('.doccols .column');
     var expanderIcon = document.querySelector("#expanderIcon");
+    var doccols = document.querySelector('.doccols');
     
     if (window.expanded) {
-        cols[0].style.flex = '0 0 100%';
-        cols[1].style.flex = '0 0 0%';
-        cols[1].style.display = 'none';
+        // Horizontal layout - editor on left, terminal on right
+        doccols.classList.add('horizontal');
+        cols[0].style.flex = '0 0 50%';
+        cols[1].style.flex = '0 0 50%';
+        cols[1].style.display = 'block';
         expanderIcon.classList.add("expanded");
-        showToast("Editor only");
+        showToast("Split horizontally");
         localStorage.setItem('playground-expanded', 'true');
     } else {
+        // Vertical layout - editor on top, terminal on bottom
+        doccols.classList.remove('horizontal');
         cols[0].style.flex = '0 0 50%';
         cols[1].style.flex = '0 0 50%';
         cols[1].style.display = 'block';
         expanderIcon.classList.remove("expanded");
-        showToast("Split view");
+        showToast("Split vertically");
         localStorage.setItem('playground-expanded', 'false');
     }
     
@@ -710,19 +738,14 @@ function showToast(message) {
     }
     
     const toast = document.getElementById('toast-notification');
-    const editorColumn = document.querySelector('.doccols .column:first-child');
     
-    if (!toast || !editorColumn) return;
+    if (!toast) return;
     
     toast.textContent = message;
     
-    // Get the editor column dimensions and position
-    const rect = editorColumn.getBoundingClientRect();
-    
-    // Position toast at the center of the editor column
-    // Using fixed positioning relative to viewport
-    toast.style.left = (rect.left + rect.width / 2) + 'px';
-    toast.style.top = (rect.top + rect.height / 2) + 'px';
+    // Position toast at center-top of window
+    toast.style.left = '50%';
+    toast.style.top = '30%';
     
     // Trigger show
     setTimeout(() => toast.classList.add('show'), 10);
@@ -853,7 +876,8 @@ document.addEventListener('DOMContentLoaded', function() {
         handle.addEventListener('mousedown', function(e) {
             isResizing = true;
             handle.classList.add('resizing');
-            document.body.style.cursor = 'col-resize';
+            const isHorizontal = window.expanded;
+            document.body.style.cursor = isHorizontal ? 'col-resize' : 'row-resize';
             e.preventDefault();
         });
         
@@ -861,17 +885,34 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!isResizing) return;
             
             const containerRect = doccols.getBoundingClientRect();
-            const offsetX = e.clientX - containerRect.left;
-            const percentage = (offsetX / containerRect.width) * 100;
+            const isHorizontal = window.expanded;
             
-            if (percentage > 20 && percentage < 80) {
-                cols[0].style.flex = `0 0 ${percentage}%`;
-                cols[1].style.flex = `0 0 ${100 - percentage}%`;
-                handle.style.left = `${percentage}%`;
-                window.terminalColumns = calculateTerminalColumns();
+            if (isHorizontal) {
+                // Horizontal layout - resize left/right
+                const offsetX = e.clientX - containerRect.left;
+                const percentage = (offsetX / containerRect.width) * 100;
                 
-                // Trigger editor resize
-                editor.resize();
+                if (percentage > 20 && percentage < 80) {
+                    cols[0].style.flex = `0 0 ${percentage}%`;
+                    cols[1].style.flex = `0 0 ${100 - percentage}%`;
+                    handle.style.left = `${percentage}%`;
+                    handle.style.top = '';
+                    window.terminalColumns = calculateTerminalColumns();
+                    editor.resize();
+                }
+            } else {
+                // Vertical layout - resize top/bottom
+                const offsetY = e.clientY - containerRect.top;
+                const percentage = (offsetY / containerRect.height) * 100;
+                
+                if (percentage > 20 && percentage < 80) {
+                    cols[0].style.flex = `0 0 ${percentage}%`;
+                    cols[1].style.flex = `0 0 ${100 - percentage}%`;
+                    handle.style.top = `${percentage}%`;
+                    handle.style.left = '';
+                    window.terminalColumns = calculateTerminalColumns();
+                    editor.resize();
+                }
             }
         });
         

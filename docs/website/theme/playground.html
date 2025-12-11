@@ -78,20 +78,27 @@
                 <section class="modal-card-body">
                     <div class="field">
                         <label class="label" style="font-size: 14px; font-weight: 600;">Share Link</label>
-                        <div class="control">
-                            <input id="snippet-link" class="input is-small" readonly style="font-size: 13px;">
+                        <div class="control" style="display: flex; gap: 8px;">
+                            <input id="snippet-link" class="input is-small" readonly style="font-size: 13px; flex: 1;">
+                            <button class="button is-small" onclick="copyShareLink()" style="font-size: 13px;">Copy</button>
                         </div>
                     </div>
                     <div class="field" style="margin-top: 16px;">
-                        <label class="label" style="font-size: 14px; font-weight: 600;">Alias (optional)</label>
-                        <div class="control">
-                            <input id="snippet-alias" class="input is-small" type="text" placeholder="e.g., my-project" style="font-size: 13px;">
+                        <div style="display: flex; align-items: center; cursor: pointer;" onclick="toggleAliasDisclosure()">
+                            <span id="alias-toggle" style="font-size: 12px; margin-right: 6px; user-select: none;">▶</span>
+                            <label class="label" style="font-size: 14px; font-weight: 600; margin: 0; cursor: pointer;">Save to My Snippets (optional)</label>
                         </div>
-                        <p class="help" style="font-size: 11px;">Give this snippet a memorable name for your local library</p>
+                        <div id="alias-disclosure" style="display: none; margin-top: 12px;">
+                            <div class="control">
+                                <input id="snippet-alias" class="input is-small" type="text" placeholder="Enter a name for this snippet..." style="font-size: 13px;">
+                            </div>
+                            <p class="help" style="font-size: 11px;">Give this snippet a memorable name to save it in your local library</p>
+                        </div>
                     </div>
                 </section>
                 <footer class="modal-card-foot">
-                    <button class="button is-info is-small is-rounded" onclick="copyShareLink()" style="font-size: 13px;">Copy Link</button>
+                    <button class="button is-info is-small is-rounded" onclick="saveSnippetWithAlias()" style="font-size: 13px;">Save</button>
+                    <button class="button is-small is-rounded" onclick="closeSaveModal()" style="font-size: 13px;">Close</button>
                 </footer>
             </div>
         </div>
