@@ -140,10 +140,10 @@ proc defineModule*(moduleName: string) =
                 alias       = unaliased, 
                 op          = opNop,
                 rule        = PrefixPrecedence,
-                description = "send mail using given title and message to selected recipient",
+                description = "send mail using given subject and message to selected recipient",
                 args        = {
                     "recipient" : {String},
-                    "title"     : {String},
+                    "subject"   : {String},
                     "message"   : {String}
                 },
                 attrs       = {
@@ -161,7 +161,7 @@ proc defineModule*(moduleName: string) =
                     #=======================================================
                     when defined(SAFE): Error_OperationNotPermitted("mail")
                     let recipient = x.s
-                    let title = y.s
+                    let subject = y.s
                     let message = z.s
 
                     if checkAttr("using"):
@@ -173,7 +173,7 @@ proc defineModule*(moduleName: string) =
                     #  perhaps, this could be also done in a more "templated" way; at least, for Config values
                     #  labels: library, bug
 
-                    var mesg = createMessage(title, message, @[recipient])
+                    var mesg = createMessage(subject, message, @[recipient])
                     let smtpConn = newSmtp(useSsl = true, debug=true)
                     smtpConn.connect(config["server"].s, Port 465)
                     smtpConn.auth(config["username"].s, config["password"].s)

@@ -76,7 +76,7 @@ proc defineModule*(moduleName: string) =
             alias       = unaliased, 
             op          = opNop,
             rule        = PrefixPrecedence,
-            description = "extract components from path",
+            description = "extract components from path, url, or color",
             args        = {
                 "path"  : {String,Color}
             },
