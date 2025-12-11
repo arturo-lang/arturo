@@ -932,7 +932,7 @@ document.addEventListener('DOMContentLoaded', function() {
         doccols.appendChild(handle);
         
         let isResizing = false;
-        let minLeftWidth = 400; // Store calculated minimum
+        let minLeftWidth = 500; // Store calculated minimum - default 500px
         
         // Function to update handle position based on actual column size
         window.updateHandlePosition = function() {
@@ -980,9 +980,8 @@ document.addEventListener('DOMContentLoaded', function() {
             isResizing = true;
             handle.classList.add('resizing');
             
-            // Calculate toolbar width ONCE at the start of drag
-            const toolbar = document.querySelector('.unified-toolbar');
-            minLeftWidth = toolbar ? Math.max(toolbar.offsetWidth, 400) : 400;
+            // Use fixed 500px minimum for horizontal dragging
+            minLeftWidth = 500;
             
             const isMobile = window.innerWidth <= 768;
             const isHorizontal = window.expanded && !isMobile;
@@ -1001,8 +1000,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Horizontal layout - resize left/right
                 const offsetX = e.clientX - containerRect.left;
                 
-                // Calculate minimum width needed for toolbar
-                const minLeftWidth = 400;
                 const minRightWidth = 200;
                 const maxLeftWidth = containerRect.width - minRightWidth;
                 
@@ -1013,8 +1010,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 cols[0].style.flex = `0 0 ${percentage}%`;
                 cols[1].style.flex = `0 0 ${100 - percentage}%`;
                 
-                // Update handle position after a brief delay to let layout settle
-                requestAnimationFrame(window.updateHandlePosition);
+                // Update handle position directly without requestAnimationFrame
+                const col0Width = cols[0].getBoundingClientRect().width;
+                const handlePercentage = (col0Width / containerRect.width) * 100;
+                handle.style.left = `${handlePercentage}%`;
                 
                 window.terminalColumns = calculateTerminalColumns();
                 editor.resize();
@@ -1034,8 +1033,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 cols[0].style.flex = `0 0 ${percentage}%`;
                 cols[1].style.flex = `0 0 ${100 - percentage}%`;
                 
-                // Update handle position after a brief delay to let layout settle
-                requestAnimationFrame(window.updateHandlePosition);
+                // Update handle position directly without requestAnimationFrame
+                const col0Height = cols[0].getBoundingClientRect().height;
+                const handlePercentage = (col0Height / containerRect.height) * 100;
+                handle.style.top = `${handlePercentage}%`;
                 
                 window.terminalColumns = calculateTerminalColumns();
                 editor.resize();
@@ -1047,8 +1048,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 isResizing = false;
                 handle.classList.remove('resizing');
                 document.body.style.cursor = '';
-                // Final position update
-                requestAnimationFrame(window.updateHandlePosition);
+                // Final position update only
+                window.updateHandlePosition();
             }
         });
         
