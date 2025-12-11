@@ -372,19 +372,18 @@ function saveSnippet() {
             window.loadedFromExample = false;
             window.currentExampleName = "";
             
+            // Automatically save to local storage with empty alias (will show ID)
+            saveLocalSnippet(data.code, currentCode, '');
+            
             var shareLink = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '/' + data.code);
             document.getElementById('snippet-link').value = shareLink;
-            
-            // Clear alias input and hide disclosure
-            document.getElementById('snippet-alias').value = '';
-            document.getElementById('alias-disclosure').style.display = 'none';
             
             updateButtonStates();
             
             // Wait for toast to completely disappear before showing modal
             setTimeout(() => {
                 showSaveModal();
-            }, 2000);
+            }, 1700);
         }
     })
     .catch(error => {
@@ -459,31 +458,6 @@ function showSaveModal() {
 
 function closeSaveModal() {
     document.getElementById('save-modal').classList.remove('is-active');
-}
-
-function toggleAliasDisclosure() {
-    const disclosure = document.getElementById('alias-disclosure');
-    const toggle = document.getElementById('alias-toggle');
-    
-    if (disclosure.style.display === 'none') {
-        disclosure.style.display = 'block';
-        toggle.textContent = '▼';
-    } else {
-        disclosure.style.display = 'none';
-        toggle.textContent = '▶';
-    }
-}
-
-function saveSnippetWithAlias() {
-    var alias = document.getElementById('snippet-alias').value.trim();
-    if (alias && window.snippetId) {
-        saveLocalSnippet(window.snippetId, editor.getValue(), alias);
-        showToast("Saved locally: " + alias);
-    } else if (window.snippetId) {
-        saveLocalSnippet(window.snippetId, editor.getValue(), '');
-        showToast("Saved locally");
-    }
-    closeSaveModal();
 }
 
 function copyShareLink() {
@@ -600,9 +574,10 @@ function loadUserSnippets() {
         html += `
             <div class="snippet-item">
                 <div class="snippet-item-main" onclick="loadLocalSnippet('${id}')">
-                    <span class="snippet-name">${displayName}</span>
+                    <span class="snippet-name" id="snippet-name-${id}">${displayName}</span>
                     <span class="snippet-date">${date}</span>
                 </div>
+                <button class="snippet-edit" onclick="event.stopPropagation(); editSnippetAlias('${id}')" title="Edit name">✎</button>
                 <button class="snippet-delete" onclick="event.stopPropagation(); deleteSnippet('${id}')" title="Delete">×</button>
             </div>
         `;
@@ -610,6 +585,32 @@ function loadUserSnippets() {
     html += '</div>';
     
     list.innerHTML = html;
+}
+
+function editSnippetAlias(id) {
+    const snippets = getLocalSnippets();
+    const snippet = snippets[id];
+    
+    if (!snippet) return;
+    
+    const currentAlias = snippet.alias || id;
+    const newAlias = prompt('Edit name:', currentAlias);
+    
+    if (newAlias === null) return; // User cancelled
+    
+    const trimmedAlias = newAlias.trim();
+    
+    // Update the alias (empty string if they clear it)
+    saveLocalSnippet(id, snippet.code, trimmedAlias);
+    
+    // Refresh the list
+    loadUserSnippets();
+    
+    if (trimmedAlias) {
+        showToast('Renamed to: ' + trimmedAlias);
+    } else {
+        showToast('Name cleared');
+    }
 }
 
 function loadExample(exampleName) {

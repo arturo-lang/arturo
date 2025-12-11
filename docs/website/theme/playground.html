@@ -72,7 +72,7 @@
             <div class="modal-background" onclick="closeSaveModal()"></div>
             <div class="modal-card">
                 <header class="modal-card-head">
-                    <p class="modal-card-title">Save this script</p>
+                    <p class="modal-card-title">Snippet saved</p>
                     <button class="delete" aria-label="close" onclick="closeSaveModal()"></button>
                 </header>
                 <section class="modal-card-body">
@@ -82,22 +82,10 @@
                             <input id="snippet-link" class="input is-small" readonly style="font-size: 13px; flex: 1;">
                             <button class="button is-small" onclick="copyShareLink()" style="font-size: 13px;">Copy</button>
                         </div>
-                    </div>
-                    <div class="field" style="margin-top: 16px;">
-                        <div style="display: flex; align-items: center; cursor: pointer;" onclick="toggleAliasDisclosure()">
-                            <span id="alias-toggle" style="font-size: 12px; margin-right: 6px; user-select: none;">▶</span>
-                            <label class="label" style="font-size: 14px; font-weight: 600; margin: 0; cursor: pointer;">Save to My Snippets (optional)</label>
-                        </div>
-                        <div id="alias-disclosure" style="display: none; margin-top: 12px;">
-                            <div class="control">
-                                <input id="snippet-alias" class="input is-small" type="text" placeholder="Enter a name for this snippet..." style="font-size: 13px;">
-                            </div>
-                            <p class="help" style="font-size: 11px;">Give this snippet a memorable name to save it in your local library</p>
-                        </div>
+                        <p class="help" style="font-size: 11px;">This link will allow anyone to view and run your code</p>
                     </div>
                 </section>
                 <footer class="modal-card-foot">
-                    <button class="button is-info is-small is-rounded" onclick="saveSnippetWithAlias()" style="font-size: 13px;">Save</button>
                     <button class="button is-small is-rounded" onclick="closeSaveModal()" style="font-size: 13px;">Close</button>
                 </footer>
             </div>

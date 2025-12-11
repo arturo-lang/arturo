@@ -1,6 +1,13 @@
+.modal {
+    z-index: 1000;
+}
+
 .modal-card {
+    z-index: 1000;
+    
     .modal-background {
         background-color: rgba(10, 10, 10, .50);
+        z-index: 999;
     }
 
     .modal-card-head {
@@ -246,16 +253,27 @@
         flex-shrink: 0;
     }
     
+    .snippet-edit,
     .snippet-delete {
         background: none;
         border: none;
         color: #999;
-        font-size: 24px;
+        font-size: 18px;
         line-height: 1;
         cursor: pointer;
         padding: 0 8px;
         transition: color 0.15s ease;
         flex-shrink: 0;
+    }
+    
+    .snippet-edit {
+        &:hover {
+            color: #667eea;
+        }
+    }
+    
+    .snippet-delete {
+        font-size: 24px;
         
         &:hover {
             color: #ff3860;
