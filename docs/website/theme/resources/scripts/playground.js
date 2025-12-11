@@ -932,6 +932,7 @@ document.addEventListener('DOMContentLoaded', function() {
         doccols.appendChild(handle);
         
         let isResizing = false;
+        let minLeftWidth = 400; // Store calculated minimum
         
         // Function to update handle position based on actual column size
         window.updateHandlePosition = function() {
@@ -978,6 +979,11 @@ document.addEventListener('DOMContentLoaded', function() {
         handle.addEventListener('mousedown', function(e) {
             isResizing = true;
             handle.classList.add('resizing');
+            
+            // Calculate toolbar width ONCE at the start of drag
+            const toolbar = document.querySelector('.unified-toolbar');
+            minLeftWidth = toolbar ? Math.max(toolbar.offsetWidth, 400) : 400;
+            
             const isMobile = window.innerWidth <= 768;
             const isHorizontal = window.expanded && !isMobile;
             document.body.style.cursor = isHorizontal ? 'col-resize' : 'row-resize';
@@ -995,10 +1001,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Horizontal layout - resize left/right
                 const offsetX = e.clientX - containerRect.left;
                 
-                // Get the actual toolbar width to use as minimum
-                const toolbar = document.querySelector('.unified-toolbar');
-                const toolbarWidth = toolbar ? toolbar.offsetWidth : 400;
-                const minLeftWidth = Math.max(toolbarWidth, 400);
+                // Calculate minimum width needed for toolbar
+                const minLeftWidth = 400;
                 const minRightWidth = 200;
                 const maxLeftWidth = containerRect.width - minRightWidth;
                 
