@@ -984,7 +984,7 @@ proc defineModule*(moduleName: string) =
             alias       = unaliased, 
             op          = opNop,
             rule        = PrefixPrecedence,
-            description = "modular exponentation: calculate the result of (base^exponent) % divider",
+            description = "modular exponentiation: calculate the result of (base^exponent) % divider",
             args        = {
                 "base"      : {Integer},
                 "exponent"  : {Integer},
