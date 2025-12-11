@@ -402,7 +402,7 @@ proc defineModule*(moduleName: string) =
         alias       = sharp,
         op          = opDict,
         rule        = PrefixPrecedence,
-        description = "create dictionary from given block or file, by getting all internal symbols",
+        description = "create dictionary from given block or file, by evaluating and retrieving all defined symbols",
         args        = {
             "source": {String,Block}
         },
