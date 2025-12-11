@@ -159,16 +159,16 @@
     background: $main-purple;
     color: $dark-fg;
     padding: 14px 28px;
-    border-radius: 8px;
+    border-radius: 4px;
     font-size: 15px;
     font-weight: 600;
     z-index: 10000;
     pointer-events: none;
-    opacity: 0;
+    opacity: 0.95 !important;
     transition: opacity 0.25s ease, transform 0.25s ease;
-    box-shadow: 0 8px 24px rgba(63, 12, 64, 0.4), 
-                0 4px 8px rgba(0, 0, 0, 0.2),
-                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 12px rgba(63, 12, 64, .3), 
+            0 2px 4px rgba(0, 0, 0, .15), 
+            inset 0 1px 0 hsla(0, 0%, 100%, .2);
     white-space: nowrap;
     letter-spacing: 0.3px;
 
