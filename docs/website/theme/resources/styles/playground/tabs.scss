@@ -5,8 +5,23 @@
         border-bottom-color: #6b6b6b;
     }
     
-    li.is-active a {
-        border-bottom-color: #20d929;
-        color: #20d929;
+    li {
+        &.is-active {
+            a {
+                border-bottom-color: #20d929;
+                color: #20d929;
+            }
+        }
+
+        &.extra-item {
+            a {
+                border-bottom-color: #6b6b6b;
+                color: #6b6b6b;
+                
+                &:hover {
+                    color: #ababab;
+                }
+            }
+        }
     }
 }
