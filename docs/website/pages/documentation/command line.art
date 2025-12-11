@@ -22,7 +22,6 @@ The command line is where your Arturo journey begins: whether you want to experi
 ---
 
 <h3 id="using-the-command-line">Using the command line</h3>
-
 <h4 id="run-a-script">Run a script</h4>
 
 To run an Arturo script, simply pass the script's path to Arturo:
@@ -143,12 +142,6 @@ To install a package:
 arturo --package install grafito
 ```
 
-You can optionally specify a version:
-
-```bash
-arturo --package install grafito 1.0.2
-```
-
 > [!TIP] If you use `import 'grafito!` in the REPL or a script and the package isn't installed, Arturo will automatically install it for you
 
 <h4 id="uninstall-a-package">Uninstall a package</h4>
@@ -174,7 +167,6 @@ arturo --package update
 ```
 
 <h3 id="display-options">Display options</h3>
-
 <h4 id="mute-colors">Mute output colors</h4>
 
 To disable colored output:
