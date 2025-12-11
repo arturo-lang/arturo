@@ -231,7 +231,9 @@ function execCode() {
 function updateButtonStates() {
     var currentCode = editor.getValue();
     var runButton = document.getElementById('runbutton');
-    var shareButton = document.getElementById('sharebutton');
+    
+    var saveMenuItem = document.getElementById('save-menuitem');
+    var downloadMenuItem = document.getElementById('download-menuitem');
     
     if (currentCode === window.previousCode) {
         runButton.classList.add('disabled');
@@ -241,9 +243,11 @@ function updateButtonStates() {
     
     // Enable share button as long as there's code to share
     if (!currentCode.trim()) {
-        shareButton.classList.add('disabled');
+        saveMenuItem.classList.add('disabled');
+        downloadMenuItem.classList.add('disabled');
     } else {
-        shareButton.classList.remove('disabled');
+        saveMenuItem.classList.remove('disabled');
+        downloadMenuItem.classList.add('disabled');
     }
 }
 
@@ -695,7 +699,7 @@ window.addEventListener('DOMContentLoaded', function() {
         
         if (qs.example !== undefined) {
             getExample(qs.example);
-            document.getElementById('scriptName').innerHTML = `${qs.example}.art`;
+            //document.getElementById('scriptName').innerHTML = `${qs.example}.art`;
         }
     } else {
         updateButtonStates();
