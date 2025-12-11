@@ -65,9 +65,9 @@ content: {!md
 
 ## Welcome to Arturo!
 
-In this section, you will find everything (or - hopefully - mostly everything) you need, in order to get successfully started with Arturo. As you will sooner or later realize, Arturo is practically a no-syntax language, that is: designed to make it easier for you to get the gist of it, so that you can be productive without bothering too much with the language.
+In this section, you will find everything (or hopefully, almost everything) you need to get started successfully. As you will soon discover, Arturo is practically a **no-syntax** language. It is designed to be intuitive, allowing you to be productive without getting bogged down by complex language rules.
 
-Here's what you can find here...
+Here is an overview of what you'll find:
 
 <h3 class="title is-4 is-spaced mt-6">At a glance</h3>
 
