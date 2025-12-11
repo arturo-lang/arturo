@@ -1967,7 +1967,7 @@ proc defineModule*(moduleName: string) =
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "get a slice of collection between given indices",
+        description = "extract a sub-collection between given indices",
         args        = {
             "collection": {String, Block, Literal, PathLiteral},
             "from"      : {Integer},
