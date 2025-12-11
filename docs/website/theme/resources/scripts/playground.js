@@ -454,7 +454,7 @@ function loadExampleFromDialog(exampleName) {
     setTimeout(() => {
         getExample(exampleName);
         document.getElementById('scriptName').innerHTML = `${exampleName}.art`;
-        showToast(`Loaded: ${exampleName}`);
+        showToast(`Loaded example`);
     }, 100);
 }
 
