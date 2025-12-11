@@ -4,7 +4,7 @@
         <||= importPartial "components/navbar.html" ||>
         
         <main>
-            <div class="columns doccols">
+            <div class="columns doccols horizontal">
                 <div class="column" id="editor-container">
                     <div class="unified-toolbar">
                         <div class="toolbar-left">
@@ -49,7 +49,7 @@
                             </div>
                             <div class="toolbar-item" id="expander">
                                 <a href="javascript:void(0)" onclick="toggleExpand()" title="Switch layout">
-                                    <div id="expanderIcon">
+                                    <div id="expanderIcon" class="expanded">
                                         <svg class="doexpand" xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" fill="currentColor" viewBox="0 0 256 256"><||= phosphor 'regular "square-split-vertical" ||></svg>
                                         <svg class="docompress" xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" fill="currentColor" viewBox="0 0 256 256"><||= phosphor 'regular "square-split-horizontal" ||></svg>
                                     </div>
