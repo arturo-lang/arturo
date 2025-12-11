@@ -582,24 +582,20 @@ function showToast(message) {
         return;
     }
     
-    let toast = document.getElementById('toast-notification');
+    const toast = document.getElementById('toast-notification');
+    const editorColumn = document.querySelector('.doccols .column:first-child');
     
-    if (!toast) {
-        toast = document.createElement('div');
-        toast.id = 'toast-notification';
-        document.body.appendChild(toast);
-    }
+    if (!toast || !editorColumn) return;
     
     toast.textContent = message;
     
-    // Calculate the center of the editor column dynamically
-    var editorColumn = document.querySelector('.doccols .column:first-child');
-    if (editorColumn) {
-        var rect = editorColumn.getBoundingClientRect();
-        var centerX = rect.left + (rect.width / 2);
-        toast.style.left = centerX + 'px';
-        toast.style.transform = 'translate(-50%, -50%)';
-    }
+    // Get the editor column dimensions and position
+    const rect = editorColumn.getBoundingClientRect();
+    
+    // Position toast at the center of the editor column
+    // Using fixed positioning relative to viewport
+    toast.style.left = (rect.left + rect.width / 2) + 'px';
+    toast.style.top = (rect.top + rect.height / 2) + 'px';
     
     // Trigger show
     setTimeout(() => toast.classList.add('show'), 10);
