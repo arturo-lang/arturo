@@ -358,7 +358,7 @@ proc defineModule*(moduleName: string) =
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "get combination of elements in given collections as array of tuples",
+        description = "combine elements of given collections into an array of tuples",
         args        = {
             "collectionA"   : {Block},
             "collectionB"   : {Block}
