@@ -60,18 +60,18 @@ main {
     bottom: 0;
     left: 50%;
     width: 4px;
-    background: #272822;
+    background: #373832;
     cursor: col-resize;
     z-index: 10;
     transition: background 0.2s;
     transform: translateX(-50%);
     
     &:hover {
-        background: #3e3d32;
+        background: #4e4d42;
     }
     
     &.resizing {
-        background: #4e4d42;
+        background: #5e5d52;
     }
     
     @media (max-width: 768px) {
