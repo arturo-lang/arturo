@@ -1,11 +1,12 @@
 #editor-container {
-    padding-bottom:0; 
+    padding-bottom: 0; 
     background: #272822; 
-    padding-right: 0
+    padding-right: 0;
+    position: relative;
 }
 
 #editor {
-    height: calc(100% - 51px);
+    height: calc(100% - 43px);
     font-family: 'Fira Code Arturo', monospace !important;
     text-shadow: 0 1px rgba(0,0,0,.3);
     line-height: 1.5;
