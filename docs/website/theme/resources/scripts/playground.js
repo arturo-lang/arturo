@@ -174,7 +174,7 @@ function execCode() {
                                     
                                     if (data.done) {
                                         // Don't update snippet ID on execution
-                                        // Only shareLink() will save and get an ID
+                                        // Only saveSnippet() will save and get an ID
                                         window.loadedCode = currentCode;
                                         
                                         const duration = ((Date.now() - startTime) / 1000).toFixed(2);
@@ -241,7 +241,7 @@ function updateButtonStates() {
         runButton.classList.remove('disabled');
     }
     
-    // Enable share button as long as there's code to share
+    // Enable save & download menu item provided there's some code first
     if (!currentCode.trim()) {
         saveMenuItem.classList.add('disabled');
         downloadMenuItem.classList.add('disabled');
@@ -252,13 +252,13 @@ function updateButtonStates() {
 }
 
 // =============================================================================
-// SHARE FUNCTIONALITY
+// SAVE FUNCTIONALITY
 // =============================================================================
 
-function shareLink() {
-    var shareButton = document.getElementById('sharebutton');
+function saveSnippet() {
+    var saveMenuItem = document.getElementById('save-menuitem');
     
-    if (shareButton.classList.contains('disabled')) {
+    if (saveMenuItem.classList.contains('disabled')) {
         return;
     }
     
@@ -266,7 +266,7 @@ function shareLink() {
     
     // If we already have a snippet ID for this exact code, just show it
     if (window.snippetId != "" && currentCode === window.loadedCode) {
-        showShareModal(window.snippetId);
+        showSaveModal(window.snippetId);
         return;
     }
     
@@ -303,7 +303,7 @@ function shareLink() {
                 `http://188.245.97.105/%<[basePath]>%/playground/${data.code}`
             );
             
-            showShareModal(data.code);
+            showSaveModal(data.code);
             updateButtonStates();
         } else {
             showToast("Failed to save snippet");
@@ -315,8 +315,8 @@ function shareLink() {
     });
 }
 
-function showShareModal(snippetId) {
-    var modal = document.getElementById('share-modal');
+function showSaveModal(snippetId) {
+    var modal = document.getElementById('save-modal');
     var input = document.getElementById('snippet-link');
     
     input.value = `http://188.245.97.105/%<[basePath]>%/playground/${snippetId}`;
@@ -337,15 +337,15 @@ function copyShareLink() {
     if (input) {
         navigator.clipboard.writeText(input.value).then(() => {
             showToast("Link copied to clipboard!");
-            closeShareDialog();
+            closeSaveModal();
         }).catch(() => {
             showToast("Failed to copy");
         });
     }
 }
 
-function closeShareDialog() {
-    var modal = document.getElementById('share-modal');
+function closeSaveModal() {
+    var modal = document.getElementById('save-modal');
     if (modal) {
         modal.classList.remove('is-active');
         document.documentElement.classList.remove('is-clipped');
