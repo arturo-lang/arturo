@@ -392,7 +392,7 @@ proc defineModule*(moduleName: string) =
             alias       = unaliased, 
             op          = opNop,
             rule        = PrefixPrecedence,
-            description = "get matches within string, using given regular expression",
+            description = "get matches within string, using given pattern or regular expression",
             args        = {
                 "string": {String},
                 "regex" : {Regex, String, Char}
