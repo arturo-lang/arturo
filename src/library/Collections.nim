@@ -1492,7 +1492,7 @@ proc defineModule*(moduleName: string) =
         },
         attrs       = {
             "key"       : ({Logical}, "remove dictionary key"),
-            "once"      : ({Logical}, "remove only first occurence"),
+            "once"      : ({Logical}, "remove only first occurrence"),
             "index"     : ({Logical}, "remove specific index"),
             "prefix"    : ({Logical}, "remove first matching prefix from string"),
             "suffix"    : ({Logical}, "remove first matching suffix from string"),
@@ -2530,7 +2530,7 @@ proc defineModule*(moduleName: string) =
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "find number of occurences of each value within given block and return as dictionary",
+        description = "find number of occurrences of each value within given block and return as dictionary",
         args        = {
             "collection": {String, Block}
         },
@@ -2544,24 +2544,24 @@ proc defineModule*(moduleName: string) =
             ; => [1:5 2:5 4:3 3:2 5:3 6:3 7:1]
         """:
             #=======================================================
-            var occurences = initOrderedTable[string,Value]()
+            var occurrences = initOrderedTable[string,Value]()
 
             if xKind == String:
                 for r in runes(x.s): 
                     let str = $(r)
-                    if not occurences.hasKey(str):
-                        occurences[str] = newInteger(0)
+                    if not occurrences.hasKey(str):
+                        occurrences[str] = newInteger(0)
 
-                    occurences[str].i += 1
+                    occurrences[str].i += 1
             else:
                 for item in x.a:
                     let str = $(item)
-                    if not occurences.hasKey(str):
-                        occurences[str] = newInteger(0)
+                    if not occurrences.hasKey(str):
+                        occurrences[str] = newInteger(0)
                         
-                    occurences[str].i += 1
+                    occurrences[str].i += 1
             
-            push(newDictionary(occurences))
+            push(newDictionary(occurrences))
 
     builtin "unique",
         alias       = unaliased,
