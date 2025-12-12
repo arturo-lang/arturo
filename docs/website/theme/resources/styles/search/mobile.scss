@@ -32,15 +32,21 @@
     max-width: 100%;
     margin: 0;
     padding: 0;
+    margin-top: -56px;
 }
 
 .mobile-search-container {
-    background: white;
+    background: inherit; // Default to inherit
     width: 100%;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     padding-top: 0;
+    
+    // Only show white background when there are search results
+    &:has(.mobile-search-dropdown.has-results) {
+        background: white;
+    }
 }
 
 .mobile-search-header {
@@ -188,7 +194,11 @@
 
 .darkmode {
     .mobile-search-container {
-        background: $dark-purple2;
+        background: inherit;
+        
+        &:has(.mobile-search-dropdown.has-results) {
+            background: $dark-purple2;
+        }
     }
     
     .mobile-search-header {
