@@ -239,7 +239,8 @@ check_deps() {
 ################################################
 
 get_version() {
-    local version_url="$BASE_URL/$VERSION_TYPE/files/VERSION"
+    local path=$([ "$VERSION_TYPE" = "latest" ] && echo "latest/" || echo "")
+    local version_url="$BASE_URL/${path}files/VERSION"
     VERSION=$(curl -sf "$version_url") || error "Could not fetch version information"
     info "version: $VERSION"
 }
@@ -256,7 +257,8 @@ build_artifact_name() {
 
 download_arturo() {
     TMP_DIR=$(mktemp -d 2>/dev/null || mktemp -d -t arturo)
-    local url="$BASE_URL/$VERSION_TYPE/files/${ARTIFACT_NAME}.zip"
+    local path=$([ "$VERSION_TYPE" = "latest" ] && echo "latest/" || echo "")
+    local url="$BASE_URL/${path}files/${ARTIFACT_NAME}.zip"
     
     info "downloading: $url"
     curl -fSL "$url" -o "$TMP_DIR/arturo.zip" || error "Download failed. Try --mini variant or check your connection."
