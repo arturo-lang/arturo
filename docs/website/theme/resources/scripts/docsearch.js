@@ -353,8 +353,7 @@
         mobileSearchDropdown.classList.remove('is-loading');
         
         if (results.length === 0) {
-            mobileSearchDropdown.classList.remove('has-results');
-            mobileSearchDropdown.innerHTML = `
+            const noResultsHTML = `
                 <div class="search-no-results">
                     <div class="search-no-results-icon">
                         <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" fill="currentColor" viewBox="0 0 256 256"><path d="M128,20A108,108,0,1,0,236,128,108.12,108.12,0,0,0,128,20Zm0,192a84,84,0,1,1,84-84A84.09,84.09,0,0,1,128,212ZM108,108A16,16,0,1,1,92,92,16,16,0,0,1,108,108Zm72,0a16,16,0,1,1-16-16A16,16,0,0,1,180,108Z"></path></svg>
@@ -364,28 +363,37 @@
                     </div>
                 </div>
             `;
-            setTimeout(() => mobileSearchDropdown.classList.add('has-results'), 10);
+            mobileSearchDropdown.innerHTML = noResultsHTML;
+            requestAnimationFrame(() => {
+                mobileSearchDropdown.classList.add('has-results');
+            });
             return;
         }
 
-        const fragment = document.createDocumentFragment();
-        results.forEach((result, index) => {
+        let resultsHTML = '';
+        results.forEach((result) => {
             const item = result.item;
-            const resultEl = createMobileResultElement(item, query, result.matches);
-            fragment.appendChild(resultEl);
+            resultsHTML += createMobileResultHTML(item, query, result.matches);
         });
         
-        mobileSearchDropdown.innerHTML = '';
-        mobileSearchDropdown.appendChild(fragment);
-        setTimeout(() => mobileSearchDropdown.classList.add('has-results'), 10);
+        mobileSearchDropdown.innerHTML = resultsHTML;
+        
+        mobileSearchDropdown.querySelectorAll('.search-result-item').forEach(div => {
+            div.addEventListener('click', (e) => {
+                e.preventDefault();
+                const url = div.getAttribute('data-url');
+                const title = div.getAttribute('data-title');
+                closeMobileSearch();
+                navigateToResult(url, title);
+            });
+        });
+        
+        requestAnimationFrame(() => {
+            mobileSearchDropdown.classList.add('has-results');
+        });
     }
 
-    function createMobileResultElement(item, query, matches = []) {
-        const div = document.createElement('div');
-        div.className = 'search-result-item';
-        div.setAttribute('data-url', basePath + '/documentation/' + item.url);
-        div.setAttribute('data-title', item.name);
-
+    function createMobileResultHTML(item, query, matches = []) {
         const nameMatch = matches.find(m => m.key === 'name');
         const descMatch = matches.find(m => m.key === 'desc');
 
@@ -407,13 +415,15 @@
         }
 
         const highlightedName = highlightFuseMatch(item.name, nameMatch);
+        const url = basePath + '/documentation/' + item.url;
+        const title = item.name;
         
-        let html;
+        let contentHTML;
         if (matchedAttrKey !== null) {
             const highlightedAttrKey = highlightText(matchedAttrKey, queryLower);
             const highlightedAttrValue = highlightText(matchedAttrValue, queryLower);
             
-            html = `
+            contentHTML = `
                 <div class="search-result-content">
                     <div class="search-result-header">
                         <span class="search-result-name">
@@ -427,7 +437,7 @@
         } else {
             const highlightedDesc = highlightFuseMatch(item.desc || '', descMatch);
             
-            html = `
+            contentHTML = `
                 <div class="search-result-content">
                     <div class="search-result-header">
                         <span class="search-result-name">${highlightedName}</span>
@@ -438,17 +448,7 @@
             `;
         }
         
-        div.innerHTML = html;
-
-        div.addEventListener('click', (e) => {
-            e.preventDefault();
-            const url = div.getAttribute('data-url');
-            const title = div.getAttribute('data-title');
-            closeMobileSearch();
-            navigateToResult(url, title);
-        });
-
-        return div;
+        return `<div class="search-result-item" data-url="${url}" data-title="${escapeHtml(title)}">${contentHTML}</div>`;
     }
 
     // =============================================================================
