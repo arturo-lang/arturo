@@ -301,7 +301,7 @@
         if (mobileSearchInput) mobileSearchInput.value = '';
         if (mobileSearchDropdown) {
             mobileSearchDropdown.innerHTML = '';
-            mobileSearchDropdown.classList.remove('is-loading', 'has-results');
+            mobileSearchDropdown.classList.remove('has-results');
         }
     }
 
@@ -309,7 +309,7 @@
         if (!fuse || !query || query.length < 2) {
             if (mobileSearchDropdown) {
                 mobileSearchDropdown.innerHTML = '';
-                mobileSearchDropdown.classList.remove('is-loading', 'has-results');
+                mobileSearchDropdown.classList.remove('has-results');
             }
             return;
         }
@@ -349,8 +349,6 @@
 
     function displayMobileResults(results, query) {
         if (!mobileSearchDropdown) return;
-        
-        mobileSearchDropdown.classList.remove('is-loading');
         
         if (results.length === 0) {
             const noResultsHTML = `
@@ -740,14 +738,9 @@
             if (query.length < 2) {
                 if (mobileSearchDropdown) {
                     mobileSearchDropdown.innerHTML = '';
-                    mobileSearchDropdown.classList.remove('is-loading', 'has-results');
+                    mobileSearchDropdown.classList.remove('has-results');
                 }
                 return;
-            }
-            
-            if (mobileSearchDropdown) {
-                mobileSearchDropdown.classList.add('is-loading');
-                mobileSearchDropdown.classList.remove('has-results');
             }
             
             mobileSearchTimeout = setTimeout(() => {
