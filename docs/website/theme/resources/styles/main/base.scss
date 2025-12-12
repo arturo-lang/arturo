@@ -9,6 +9,14 @@ html,body {
     letter-spacing: -0.39px;
 }
 
+.title {
+    font-weight: 700;
+}
+
+.subtitle {
+    font-weight: 600;
+}
+
 a {
     &:hover {
         color: #3273dc;
