@@ -11,27 +11,47 @@ window.terminalColumns = 80;
 window.commandLineArgs = "";
 window.pageLoaded = false;
 window.currentExampleName = "";
-window.expanded = true; // Default to horizontal/2-column mode
+window.expanded = true;
 window.wordwrap = false;
 window.isExecuting = false;
+window.isReadOnly = false;
 
 // =============================================================================
-// LOCAL STORAGE FOR SNIPPETS
+// SESSION OWNERSHIP MANAGEMENT
+// =============================================================================
+
+function getMySnippets() {
+    const stored = localStorage.getItem('my-snippets');
+    return stored ? JSON.parse(stored) : {};
+}
+
+function addMySnippet(id, alias = '') {
+    const snippets = getMySnippets();
+    snippets[id] = {
+        alias: alias,
+        created: Date.now()
+    };
+    localStorage.setItem('my-snippets', JSON.stringify(snippets));
+}
+
+function ownsSnippet(id) {
+    const snippets = getMySnippets();
+    return snippets.hasOwnProperty(id);
+}
+
+function removeMySnippet(id) {
+    const snippets = getMySnippets();
+    delete snippets[id];
+    localStorage.setItem('my-snippets', JSON.stringify(snippets));
+}
+
+// =============================================================================
+// LOCAL STORAGE FOR SNIPPETS (deprecated - keeping for migration)
 // =============================================================================
 
 function getLocalSnippets() {
     const stored = localStorage.getItem('playground-snippets');
     return stored ? JSON.parse(stored) : {};
-}
-
-function saveLocalSnippet(id, code, alias = '') {
-    const snippets = getLocalSnippets();
-    snippets[id] = {
-        code: code,
-        alias: alias,
-        timestamp: Date.now()
-    };
-    localStorage.setItem('playground-snippets', JSON.stringify(snippets));
 }
 
 function deleteLocalSnippet(id) {
@@ -50,7 +70,6 @@ editor.setTheme("ace/theme/monokai");
 editor.getSession().setMode("ace/mode/arturo");
 editor.setShowPrintMargin(false);
 
-// Add keyboard shortcut for execution
 editor.commands.addCommand({
     name: 'executeCode',
     bindKey: {win: 'Ctrl-Enter', mac: 'Command-Enter'},
@@ -71,7 +90,6 @@ editor.commands.addCommand({
     readOnly: false
 });
 
-// Track editor changes
 editor.getSession().on('change', function() {
     if (window.loadedFromExample && editor.getValue() !== window.loadedCode) {
         window.loadedFromExample = false;
@@ -100,7 +118,6 @@ function calculateTerminalColumns() {
     document.body.removeChild(testSpan);
     
     var terminalWidth = terminal.offsetWidth;
-    
     var columns = Math.floor((terminalWidth - 40) / charWidth);
     columns = columns - 3;
     
@@ -139,22 +156,11 @@ function execCode() {
         if (currentCode != previousCode) {
             previousCode = currentCode;
             
-            var snippetToSend = "";
             var exampleName = "";
-            
             if (window.loadedFromExample && currentCode === window.loadedCode) {
-                snippetToSend = "SKIP_SAVE";
                 exampleName = window.currentExampleName || "";
             }
-            else {
-                // Never save on execution - only when sharing
-                snippetToSend = "SKIP_SAVE";
-                window.loadedFromUrl = false;
-                window.loadedFromExample = false;
-                window.currentExampleName = "";
-            }
             
-            // Set editor to readonly during execution
             window.isExecuting = true;
             editor.setReadOnly(true);
             
@@ -170,7 +176,6 @@ function execCode() {
             
             var payload = {
                 c: currentCode,
-                i: snippetToSend,
                 cols: window.terminalColumns,
                 args: window.commandLineArgs,
                 stream: true,
@@ -206,32 +211,21 @@ function execCode() {
                                     const data = JSON.parse(line.substring(6));
                                     
                                     if (data.done) {
-                                        // Don't update snippet ID on execution
-                                        // Only saveSnippet() will save and get an ID
-                                        window.loadedCode = currentCode;
-                                        
-                                        const duration = ((Date.now() - startTime) / 1000).toFixed(2);
-                                        const statusClass = data.result === 0 ? 'status-success' : 'status-error';
-                                        const statusText = data.result === 0 ? 'Completed' : 'Error';
-                                        
+                                        const elapsed = ((Date.now() - startTime) / 1000).toFixed(2);
                                         if (statusEl) {
-                                            statusEl.innerHTML = `
-                                                <span class="${statusClass}">${statusText}</span>
-                                                <span>Execution time: ${duration}s</span>
-                                            `;
+                                            const exitMsg = data.result === 0 
+                                                ? `<span style="color: #50fa7b;">✓ Exited with code 0</span>`
+                                                : `<span style="color: #ff5555;">✗ Exited with code ${data.result}</span>`;
+                                            statusEl.innerHTML = `${exitMsg}<span>${elapsed}s</span>`;
                                         }
                                         
-                                        runbutton.classList.remove('working');
-                                        window.isExecuting = false;
-                                        editor.setReadOnly(false);
-                                        editor.focus();
-                                        updateButtonStates();
-                                        window.scroll.animateScroll(document.querySelector("#terminal"), null, {updateURL: false});
+                                        if (data.error) {
+                                            showToast(data.error, 'error');
+                                        }
                                     } else if (data.line) {
-                                        var terminalOutput = document.getElementById("terminal_output");
-                                        terminalOutput.innerHTML += data.line;
-                                        // Auto-scroll to bottom
-                                        terminalOutput.scrollTop = terminalOutput.scrollHeight;
+                                        document.getElementById("terminal_output").innerHTML += data.line;
+                                        var terminal = document.getElementById("terminal");
+                                        terminal.scrollTop = terminal.scrollHeight;
                                     }
                                 } catch (e) {
                                     console.error('Parse error:', e);
@@ -246,12 +240,11 @@ function execCode() {
                 read();
             })
             .catch(error => {
-                console.error('Error:', error);
                 runbutton.classList.remove('working');
                 window.isExecuting = false;
                 editor.setReadOnly(false);
-                editor.focus();
-                updateButtonStates();
+                console.error('Execution error:', error);
+                showToast('Execution failed: ' + error.message, 'error');
             });
         }
     }
@@ -261,200 +254,181 @@ function execCode() {
 // SNIPPET MANAGEMENT
 // =============================================================================
 
-function hasUnsavedChanges() {
-    const currentCode = editor.getValue();
-    return currentCode !== window.loadedCode;
-}
-
 function newSnippet() {
-    // Check if button is disabled
-    const newButton = document.getElementById('new-menuitem');
-    if (newButton.classList.contains('disabled')) {
-        return;
-    }
+    if (window.isExecuting) return;
     
-    if (hasUnsavedChanges()) {
-        if (!confirm('You have unsaved changes. Are you sure you want to create a new script?')) {
+    if (editor.getValue().trim() !== "") {
+        if (!confirm("Start a new snippet? Current code will be lost if not saved.")) {
             return;
         }
     }
     
-    editor.setValue('', -1);
+    editor.setValue("");
     window.snippetId = "";
     window.loadedCode = "";
+    window.previousCode = "";
     window.loadedFromUrl = false;
     window.loadedFromExample = false;
     window.currentExampleName = "";
-    document.getElementById("terminal_output").innerHTML = "";
+    window.isReadOnly = false;
     
+    document.getElementById("terminal_output").innerHTML = "";
     var statusEl = document.getElementById('terminal-status');
-    if (statusEl) {
-        statusEl.style.display = 'none';
-    }
+    if (statusEl) statusEl.style.display = 'none';
     
     updateButtonStates();
-    showToast("New script");
+    editor.focus();
+    
+    window.history.pushState({}, '', window.location.pathname.split('/').slice(0, -1).join('/') + '/');
 }
 
-function downloadSnippet() {
-    // Check if button is disabled
-    const downloadButton = document.getElementById('download-menuitem');
-    if (downloadButton.classList.contains('disabled')) {
+function saveSnippet() {
+    if (window.isExecuting) return;
+    
+    const currentCode = editor.getValue();
+    if (!currentCode.trim()) {
+        showToast('Nothing to save', 'error');
         return;
     }
     
-    // Show confirmation dialog
-    let filename = 'main.art';
-    if (window.snippetId) {
-        const snippets = getLocalSnippets();
-        if (snippets[window.snippetId] && snippets[window.snippetId].alias) {
-            filename = snippets[window.snippetId].alias + '.art';
+    const idToSend = (window.snippetId && ownsSnippet(window.snippetId)) ? window.snippetId : '';
+    
+    fetch("http://188.245.97.105/%<[basePath]>%/backend/save.php", {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            c: currentCode,
+            i: idToSend
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            window.snippetId = data.id;
+            addMySnippet(data.id);
+            window.loadedFromUrl = false;
+            window.isReadOnly = false;
+            updateButtonStates();
+            
+            const fullUrl = window.location.origin + window.location.pathname.split('/').slice(0, -1).join('/') + '/' + data.id;
+            document.getElementById('snippet-link').value = fullUrl;
+            document.getElementById('save-modal').classList.add('is-active');
+            
+            window.history.pushState({}, '', window.location.pathname.split('/').slice(0, -1).join('/') + '/' + data.id);
         } else {
-            filename = window.snippetId + '.art';
+            showToast('Failed to save: ' + (data.error || 'Unknown error'), 'error');
         }
+    })
+    .catch(error => {
+        console.error('Save error:', error);
+        showToast('Save failed: ' + error.message, 'error');
+    });
+}
+
+function downloadSnippet() {
+    if (window.isExecuting) return;
+    
+    const currentCode = editor.getValue();
+    if (!currentCode.trim()) {
+        showToast('Nothing to download', 'error');
+        return;
     }
     
-    const userFilename = prompt('Save as:', filename);
-    if (!userFilename) {
-        return; // User cancelled
-    }
-    
-    // Ensure .art extension
-    const finalFilename = userFilename.endsWith('.art') ? userFilename : userFilename + '.art';
-    
-    const code = editor.getValue();
-    const blob = new Blob([code], { type: 'text/plain' });
+    const blob = new Blob([currentCode], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    
     a.href = url;
-    a.download = finalFilename;
+    a.download = 'script.art';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    
-    showToast("Downloaded: " + finalFilename);
 }
 
-function saveSnippet() {
-    // Check if button is disabled
-    const saveButton = document.getElementById('save-menuitem');
-    if (saveButton.classList.contains('disabled')) {
-        return;
-    }
-    
-    showToast("Saving...");
-    
-    var currentCode = editor.getValue();
-    
-    // Use existing snippet ID if we're updating
-    var snippetToSend = window.snippetId || "";
-    
-    var payload = {
-        c: currentCode,
-        i: snippetToSend,
-        cols: window.terminalColumns,
-        args: window.commandLineArgs
-    };
-    
-    fetch("http://188.245.97.105/%<[basePath]>%/backend/exec.php", {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.code) {
-            window.snippetId = data.code;
-            window.loadedCode = currentCode;
-            window.loadedFromUrl = true;
-            window.loadedFromExample = false;
-            window.currentExampleName = "";
-            
-            // Automatically save to local storage with empty alias (will show ID)
-            saveLocalSnippet(data.code, currentCode, '');
-            
-            var shareLink = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '/' + data.code);
-            document.getElementById('snippet-link').value = shareLink;
-            
-            updateButtonStates();
-            
-            // Wait for toast to completely disappear before showing modal
-            setTimeout(() => {
-                showSaveModal();
-            }, 1700);
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        showToast("Save failed");
-    });
-}
-
-function getSnippet(snippetId) {
-    var payload = { i: snippetId };
-    
+function getSnippet(id) {
     fetch("http://188.245.97.105/%<[basePath]>%/backend/get.php", {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body: JSON.stringify({ i: id })
     })
     .then(response => response.json())
     .then(data => {
-        editor.setValue(data.text, -1);
-        window.snippetId = snippetId;
-        window.loadedCode = data.text;
-        window.loadedFromUrl = true;
-        window.loadedFromExample = false;
-        window.currentExampleName = "";
-        updateButtonStates();
+        if (data.text && !data.text.startsWith("# Snippet not found")) {
+            editor.setValue(data.text, -1);
+            window.snippetId = id;
+            window.loadedCode = data.text;
+            window.previousCode = "";
+            window.loadedFromUrl = true;
+            window.loadedFromExample = false;
+            window.currentExampleName = "";
+            window.isReadOnly = !ownsSnippet(id);
+            
+            if (window.isReadOnly) {
+                fetch("http://188.245.97.105/%<[basePath]>%/backend/visit.php", {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ i: id })
+                }).catch(err => console.error('Visit tracking failed:', err));
+            }
+            
+            updateButtonStates();
+            editor.focus();
+        } else {
+            showToast('Snippet not found', 'error');
+        }
     })
     .catch(error => {
-        console.error('Error:', error);
+        console.error('Load error:', error);
+        showToast('Failed to load snippet', 'error');
     });
 }
 
-function getExample(exampleName) {
-    var payload = { c: '', i: 'SKIP_SAVE', example: exampleName };
+// =============================================================================
+// BUTTON STATE MANAGEMENT
+// =============================================================================
+
+function updateButtonStates() {
+    const hasContent = editor.getValue().trim() !== "";
+    const isExecuting = window.isExecuting;
     
-    fetch("http://188.245.97.105/%<[basePath]>%/backend/exec.php", {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-    })
-    .then(response => response.json())
-    .then(data => {
-        // For examples, we need to fetch the actual code from the examples directory
-        // Since exec.php only executes, we'll load from getexamples.php structure
-        fetch(`http://188.245.97.105/%<[basePath]>%/examples/${exampleName}.art`)
-            .then(response => response.text())
-            .then(code => {
-                editor.setValue(code, -1);
-                window.loadedCode = code;
-                window.loadedFromExample = true;
-                window.currentExampleName = exampleName;
-                window.snippetId = "";
-                window.loadedFromUrl = false;
-                updateButtonStates();
-            })
-            .catch(error => {
-                console.error('Error loading example:', error);
-            });
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
+    const runButton = document.getElementById('runbutton');
+    const saveMenuItem = document.getElementById('save-menuitem');
+    const downloadMenuItem = document.getElementById('download-menuitem');
+    
+    if (isExecuting) {
+        runButton.classList.add('disabled');
+        if (saveMenuItem) saveMenuItem.classList.add('disabled');
+        if (downloadMenuItem) downloadMenuItem.classList.add('disabled');
+    } else {
+        if (hasContent) {
+            runButton.classList.remove('disabled');
+            if (saveMenuItem) saveMenuItem.classList.remove('disabled');
+            if (downloadMenuItem) downloadMenuItem.classList.remove('disabled');
+        } else {
+            runButton.classList.add('disabled');
+            if (saveMenuItem) saveMenuItem.classList.add('disabled');
+            if (downloadMenuItem) downloadMenuItem.classList.add('disabled');
+        }
+    }
+    
+    if (saveMenuItem) {
+        const saveLink = saveMenuItem.querySelector('a');
+        const saveLabel = saveMenuItem.querySelector('.item-label');
+        if (saveLink && saveLabel) {
+            if (window.isReadOnly && hasContent) {
+                saveLabel.textContent = 'Fork';
+                saveLink.title = 'Fork and save as new snippet';
+            } else {
+                saveLabel.textContent = 'Save';
+                saveLink.title = 'Save and share';
+            }
+        }
+    }
 }
 
 // =============================================================================
 // MODAL MANAGEMENT
 // =============================================================================
-
-function showSaveModal() {
-    document.getElementById('save-modal').classList.add('is-active');
-    document.getElementById('snippet-link').select();
-}
 
 function closeSaveModal() {
     document.getElementById('save-modal').classList.remove('is-active');
@@ -463,14 +437,20 @@ function closeSaveModal() {
 function copyShareLink() {
     var linkInput = document.getElementById('snippet-link');
     linkInput.select();
-    document.execCommand('copy');
-    showToast("Link copied!");
+    linkInput.setSelectionRange(0, 99999);
+    
+    navigator.clipboard.writeText(linkInput.value).then(function() {
+        showToast('Link copied to clipboard!', 'success');
+    }, function() {
+        document.execCommand('copy');
+        showToast('Link copied to clipboard!', 'success');
+    });
 }
 
 function showArgsModal() {
     document.getElementById('cmdline-args').value = window.commandLineArgs;
     document.getElementById('args-modal').classList.add('is-active');
-    document.getElementById('cmdline-args').focus();
+    setTimeout(() => document.getElementById('cmdline-args').focus(), 100);
 }
 
 function closeArgsModal() {
@@ -480,15 +460,19 @@ function closeArgsModal() {
 function saveArgs() {
     window.commandLineArgs = document.getElementById('cmdline-args').value;
     closeArgsModal();
-    showToast("Arguments saved");
+    editor.focus();
 }
 
-function showLoadModal() {
-    loadExamplesList();
-    document.getElementById('load-modal').classList.add('is-active');
+// =============================================================================
+// LOAD MODAL
+// =============================================================================
+
+function loadSnippet() {
+    if (window.isExecuting) return;
     
-    // Show examples tab by default
+    document.getElementById('load-modal').classList.add('is-active');
     showLoadTab('examples');
+    loadExamplesList();
 }
 
 function closeLoadModal() {
@@ -507,222 +491,136 @@ function showLoadTab(tab) {
         examplesContent.style.display = 'block';
         snippetsContent.style.display = 'none';
     } else {
-        snippetsTab.classList.add('is-active');
         examplesTab.classList.remove('is-active');
-        snippetsContent.style.display = 'block';
+        snippetsTab.classList.add('is-active');
         examplesContent.style.display = 'none';
-        loadUserSnippets();
+        snippetsContent.style.display = 'block';
+        loadMySnippets();
     }
 }
 
 function loadExamplesList() {
     fetch("http://188.245.97.105/%<[basePath]>%/backend/getexamples.php")
-        .then(response => response.json())
-        .then(examples => {
-            window.allExamples = examples;
-            renderExamples(examples);
-        })
-        .catch(error => {
-            console.error('Error loading examples:', error);
-            document.getElementById('examples-list').innerHTML = '<div style="padding: 20px; text-align: center; color: #999;">Error loading examples</div>';
-        });
+    .then(response => response.json())
+    .then(data => {
+        window.examplesList = data;
+        displayExamples(data);
+    })
+    .catch(error => console.error('Error loading examples:', error));
 }
 
-function renderExamples(examples) {
-    var list = document.getElementById('examples-list');
-    var count = document.getElementById('examples-count');
+function displayExamples(examples) {
+    const list = document.getElementById('examples-list');
+    const count = document.getElementById('examples-count');
     
-    count.textContent = examples.length;
+    if (count) count.textContent = examples.length;
     
     if (examples.length === 0) {
         list.innerHTML = '<div style="padding: 20px; text-align: center; color: #999;">No examples found</div>';
         return;
     }
     
-    var html = '<div style="padding: 8px;">';
-    examples.forEach(function(example) {
-        html += `
-            <div class="example-item" onclick="loadExample('${example}')">
-                <span class="example-name">${example}</span>
-            </div>
-        `;
-    });
-    html += '</div>';
-    
-    list.innerHTML = html;
-}
-
-function loadUserSnippets() {
-    const snippets = getLocalSnippets();
-    const list = document.getElementById('snippets-list');
-    const keys = Object.keys(snippets);
-    
-    if (keys.length === 0) {
-        list.innerHTML = '<div style="padding: 20px; text-align: center; color: #999;">No saved snippets</div>';
-        return;
-    }
-    
-    // Sort by timestamp (newest first)
-    keys.sort((a, b) => snippets[b].timestamp - snippets[a].timestamp);
-    
-    let html = '<div style="padding: 8px;">';
-    keys.forEach(id => {
-        const snippet = snippets[id];
-        const displayName = snippet.alias || id;
-        const date = new Date(snippet.timestamp).toLocaleDateString();
-        
-        html += `
-            <div class="snippet-item">
-                <div class="snippet-item-main" onclick="loadLocalSnippet('${id}')">
-                    <span class="snippet-name" id="snippet-name-${id}">${displayName}</span>
-                    <span class="snippet-date">${date}</span>
-                </div>
-                <button class="snippet-edit" onclick="event.stopPropagation(); editSnippetAlias('${id}')" title="Edit name">✎</button>
-                <button class="snippet-delete" onclick="event.stopPropagation(); deleteSnippet('${id}')" title="Delete">×</button>
-            </div>
-        `;
-    });
-    html += '</div>';
-    
-    list.innerHTML = html;
-}
-
-function editSnippetAlias(id) {
-    const snippets = getLocalSnippets();
-    const snippet = snippets[id];
-    
-    if (!snippet) return;
-    
-    const currentAlias = snippet.alias || id;
-    const newAlias = prompt('Edit name:', currentAlias);
-    
-    if (newAlias === null) return; // User cancelled
-    
-    const trimmedAlias = newAlias.trim();
-    
-    // Update the alias (empty string if they clear it)
-    saveLocalSnippet(id, snippet.code, trimmedAlias);
-    
-    // Refresh the list
-    loadUserSnippets();
-    
-    if (trimmedAlias) {
-        showToast('Renamed to: ' + trimmedAlias);
-    } else {
-        showToast('Name cleared');
-    }
-}
-
-function loadExample(exampleName) {
-    closeLoadModal();
-    
-    fetch(`http://188.245.97.105/%<[basePath]>%/examples/${exampleName}.art`)
-        .then(response => response.text())
-        .then(code => {
-            editor.setValue(code, -1);
-            window.loadedCode = code;
-            window.loadedFromExample = true;
-            window.currentExampleName = exampleName;
-            window.snippetId = "";
-            window.loadedFromUrl = false;
-            updateButtonStates();
-            showToast("Loaded: " + exampleName);
-        })
-        .catch(error => {
-            console.error('Error loading example:', error);
-            showToast("Failed to load example");
-        });
-}
-
-function loadLocalSnippet(id) {
-    const snippets = getLocalSnippets();
-    const snippet = snippets[id];
-    
-    if (!snippet) {
-        showToast("Snippet not found");
-        return;
-    }
-    
-    closeLoadModal();
-    
-    editor.setValue(snippet.code, -1);
-    window.snippetId = id;
-    window.loadedCode = snippet.code;
-    window.loadedFromUrl = true;
-    window.loadedFromExample = false;
-    window.currentExampleName = "";
-    updateButtonStates();
-    
-    const displayName = snippet.alias || id;
-    showToast("Loaded: " + displayName);
-}
-
-function deleteSnippet(id) {
-    if (!confirm('Delete this snippet?')) {
-        return;
-    }
-    
-    deleteLocalSnippet(id);
-    loadUserSnippets();
-    showToast("Snippet deleted");
+    list.innerHTML = examples.map(ex => `
+        <div class="example-item" onclick="selectExample('${ex.replace(/'/g, "\\'")}')">
+            <span class="example-name">${ex}</span>
+        </div>
+    `).join('');
 }
 
 function filterExamples() {
-    var searchTerm = document.getElementById('examples-search').value.toLowerCase();
+    const search = document.getElementById('examples-search').value.toLowerCase();
+    if (!window.examplesList) return;
     
-    if (!window.allExamples) return;
-    
-    var filtered = window.allExamples.filter(function(example) {
-        return example.toLowerCase().includes(searchTerm);
-    });
-    
-    renderExamples(filtered);
+    const filtered = window.examplesList.filter(ex => ex.toLowerCase().includes(search));
+    displayExamples(filtered);
 }
 
-function loadSnippet() {
-    showLoadModal();
+function selectExample(name) {
+    getExample(name);
+    closeLoadModal();
+}
+
+function getExample(name) {
+    fetch("http://188.245.97.105/%<[basePath]>%/backend/example.php", {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ i: name })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.text && !data.text.startsWith("# Example not found")) {
+            editor.setValue(data.text, -1);
+            window.loadedCode = data.text;
+            window.previousCode = "";
+            window.loadedFromExample = true;
+            window.currentExampleName = name;
+            window.loadedFromUrl = false;
+            window.snippetId = "";
+            window.isReadOnly = false;
+            
+            document.getElementById("terminal_output").innerHTML = "";
+            var statusEl = document.getElementById('terminal-status');
+            if (statusEl) statusEl.style.display = 'none';
+            
+            updateButtonStates();
+            editor.focus();
+        }
+    })
+    .catch(error => console.error('Error loading example:', error));
+}
+
+function loadMySnippets() {
+    const list = document.getElementById('snippets-list');
+    const mySnippets = getMySnippets();
+    const ids = Object.keys(mySnippets).sort((a, b) => mySnippets[b].created - mySnippets[a].created);
+    
+    if (ids.length === 0) {
+        list.innerHTML = '<div style="padding: 20px; text-align: center; color: #999;">No saved snippets yet</div>';
+        return;
+    }
+    
+    list.innerHTML = ids.map(id => {
+        const snippet = mySnippets[id];
+        const alias = snippet.alias || id;
+        const date = new Date(snippet.created).toLocaleDateString();
+        
+        return `
+            <div class="snippet-item" onclick="selectMySnippet('${id}')">
+                <div class="snippet-info">
+                    <span class="snippet-alias">${alias}</span>
+                    <span class="snippet-meta">${id} • ${date}</span>
+                </div>
+                <button class="snippet-delete" onclick="event.stopPropagation(); deleteMySnippet('${id}')" title="Delete">✕</button>
+            </div>
+        `;
+    }).join('');
+}
+
+function selectMySnippet(id) {
+    getSnippet(id);
+    closeLoadModal();
+}
+
+function deleteMySnippet(id) {
+    if (confirm('Delete this snippet from your list?')) {
+        removeMySnippet(id);
+        deleteLocalSnippet(id);
+        loadMySnippets();
+    }
 }
 
 // =============================================================================
-// BUTTON STATE MANAGEMENT
+// TOAST NOTIFICATIONS
 // =============================================================================
 
-function updateButtonStates() {
-    const currentCode = editor.getValue();
-    const isEmpty = currentCode.trim() === '';
-    const hasChanges = currentCode !== window.loadedCode;
+function showToast(message, type = 'info') {
+    const toast = document.getElementById('toast-notification');
+    toast.textContent = message;
+    toast.className = 'toast-' + type + ' show';
     
-    // New button - disabled if editor is empty
-    const newButton = document.getElementById('new-menuitem');
-    if (isEmpty) {
-        newButton.classList.add('disabled');
-    } else {
-        newButton.classList.remove('disabled');
-    }
-    
-    // Run button - disabled if editor is empty or currently executing
-    const runButton = document.getElementById('runbutton');
-    if (isEmpty || window.isExecuting) {
-        runButton.classList.add('disabled');
-    } else {
-        runButton.classList.remove('disabled');
-    }
-    
-    // Save button - disabled if editor is empty
-    const saveButton = document.getElementById('save-menuitem');
-    if (isEmpty) {
-        saveButton.classList.add('disabled');
-    } else {
-        saveButton.classList.remove('disabled');
-    }
-    
-    // Download button - disabled if editor is empty
-    const downloadButton = document.getElementById('download-menuitem');
-    if (isEmpty) {
-        downloadButton.classList.add('disabled');
-    } else {
-        downloadButton.classList.remove('disabled');
-    }
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 3000);
 }
 
 // =============================================================================
@@ -730,118 +628,56 @@ function updateButtonStates() {
 // =============================================================================
 
 function toggleExpand() {
+    if (window.isExecuting) return;
+    
+    const doccols = document.querySelector('.doccols');
+    const expanderIcon = document.getElementById('expanderIcon');
+    const isMobile = window.innerWidth <= 768;
+    
+    if (isMobile) return;
+    
     window.expanded = !window.expanded;
     
-    var cols = document.querySelectorAll('.doccols .column');
-    var expanderIcon = document.querySelector("#expanderIcon");
-    var doccols = document.querySelector('.doccols');
-    
     if (window.expanded) {
-        // Horizontal layout - editor on left, terminal on right
         doccols.classList.add('horizontal');
-        cols[0].style.flex = '0 0 50%';
-        cols[1].style.flex = '0 0 50%';
-        cols[1].style.display = 'block';
-        expanderIcon.classList.add("expanded");
-        showToast("Split horizontally");
-        localStorage.setItem('playground-expanded', 'true');
+        expanderIcon.classList.remove('compressed');
+        expanderIcon.classList.add('expanded');
     } else {
-        // Vertical layout - editor on top, terminal on bottom
         doccols.classList.remove('horizontal');
-        cols[0].style.flex = '0 0 50%';
-        cols[1].style.flex = '0 0 50%';
-        cols[1].style.display = 'block';
-        expanderIcon.classList.remove("expanded");
-        showToast("Split vertically");
-        localStorage.setItem('playground-expanded', 'false');
+        expanderIcon.classList.add('compressed');
+        expanderIcon.classList.remove('expanded');
     }
     
-    // Recalculate terminal columns
-    window.terminalColumns = calculateTerminalColumns();
+    localStorage.setItem('playground-expanded', window.expanded);
     
-    // Trigger editor resize
-    editor.resize();
-    
-    // Update handle position after layout settles
     setTimeout(() => {
-        const handle = document.querySelector('.resize-handle');
-        if (handle && window.updateHandlePosition) {
+        window.terminalColumns = calculateTerminalColumns();
+        editor.resize();
+        if (window.updateHandlePosition) {
             window.updateHandlePosition();
         }
     }, 50);
 }
 
 function toggleWordWrap() {
+    if (window.isExecuting) return;
+    
     window.wordwrap = !window.wordwrap;
+    editor.getSession().setUseWrapMode(window.wordwrap);
     
-    if (!window.wordwrap) {
-        editor.setOption("wrap", false);
-        document.querySelector("#wordwrapperIcon").classList.remove("wrapped");
-        showToast("Word wrap: OFF");
-        localStorage.setItem('playground-wordwrap', 'false');
-    } else {
-        editor.setOption("wrap", true);
-        document.querySelector("#wordwrapperIcon").classList.add("wrapped");
-        showToast("Word wrap: ON");
+    const icon = document.querySelector("#wordwrapperIcon");
+    if (window.wordwrap) {
+        icon.classList.add("wrapped");
         localStorage.setItem('playground-wordwrap', 'true');
+    } else {
+        icon.classList.remove("wrapped");
+        localStorage.setItem('playground-wordwrap', 'false');
     }
-}
-
-// =============================================================================
-// UI HELPERS
-// =============================================================================
-
-function showToast(message) {
-    // Don't show toast on page load, only on user actions
-    if (!window.pageLoaded) {
-        return;
-    }
-    
-    const toast = document.getElementById('toast-notification');
-    
-    if (!toast) return;
-    
-    toast.textContent = message;
-    
-    // Position toast at center-top of window
-    toast.style.left = '50%';
-    toast.style.top = '30%';
-    
-    // Trigger show
-    setTimeout(() => toast.classList.add('show'), 10);
-    
-    // Auto-hide after 1.5 seconds
-    setTimeout(() => {
-        toast.classList.remove('show');
-    }, 1500);
 }
 
 // =============================================================================
 // UTILITY FUNCTIONS
 // =============================================================================
-
-function ajaxPost(url, callback, vars) {
-    var xhr = new XMLHttpRequest();
-    
-    xhr.onreadystatechange = function() {
-        if (xhr.readyState == 4 && xhr.status == 200) {
-            callback(xhr.responseText);
-        }
-    }
-    
-    xhr.open("POST", url, true);
-    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    
-    var params = "";
-    for (var key in vars) {
-        if (params != "") {
-            params += "&";
-        }
-        params += key + "=" + encodeURIComponent(vars[key]);
-    }
-    
-    xhr.send(params);
-}
 
 function parse_query_string(query) {
     var vars = query.split("&");
@@ -863,47 +699,49 @@ function parse_query_string(query) {
 }
 
 // =============================================================================
-// INITIALIZATION - DOM CONTENT LOADED
+// INITIALIZATION - ON LOAD
 // =============================================================================
 
-window.addEventListener('DOMContentLoaded', function() {
-    // Calculate terminal columns
+window.addEventListener('load', function() {
     window.terminalColumns = calculateTerminalColumns();
     
-    // Restore expanded state (default is true/horizontal)
-    var savedExpanded = localStorage.getItem('playground-expanded');
-    if (savedExpanded === 'false' && window.innerWidth > 768) {
-        // User prefers vertical mode, toggle from default horizontal
-        toggleExpand();
+    const savedExpanded = localStorage.getItem('playground-expanded');
+    if (savedExpanded === 'false') {
+        window.expanded = false;
+        document.querySelector('.doccols').classList.remove('horizontal');
+        document.querySelector("#expanderIcon").classList.add('compressed');
+        document.querySelector("#expanderIcon").classList.remove('expanded');
+    } else {
+        window.expanded = true;
+        document.querySelector('.doccols').classList.add('horizontal');
+        document.querySelector("#expanderIcon").classList.remove('compressed');
+        document.querySelector("#expanderIcon").classList.add('expanded');
     }
     
-    // Restore word wrap state
-    var savedWordwrap = localStorage.getItem('playground-wordwrap');
+    const savedWordwrap = localStorage.getItem('playground-wordwrap');
     if (savedWordwrap === 'true') {
-        editor.setOption("wrap", true);
+        editor.getSession().setUseWrapMode(true);
         document.querySelector("#wordwrapperIcon").classList.add("wrapped");
         window.wordwrap = true;
     }
     
-    // Restore terminal info state
-    var savedTerminalInfo = localStorage.getItem('playground-terminal-info');
+    const savedTerminalInfo = localStorage.getItem('playground-terminal-info');
     if (savedTerminalInfo === 'true') {
-        var info = document.getElementById('terminal-info');
-        var button = document.getElementById('terminal-info-toggle');
+        const info = document.getElementById('terminal-info');
+        const button = document.getElementById('terminal-info-toggle');
         info.classList.add('visible');
         button.classList.add('active');
     }
     
-    // Load snippet or example from URL
-    var pathParts = window.location.pathname.split('/');
-    var snippetId = pathParts[pathParts.length - 1];
+    const pathParts = window.location.pathname.split('/');
+    const snippetId = pathParts[pathParts.length - 1];
     
     if (snippetId && snippetId !== 'playground' && snippetId !== '') {
         getSnippet(snippetId);
     } 
     else if (window.location.search != "") {
-        var query = window.location.search.substring(1);
-        var qs = parse_query_string(query);
+        const query = window.location.search.substring(1);
+        const qs = parse_query_string(query);
         
         if (qs.example !== undefined) {
             getExample(qs.example);
@@ -912,7 +750,6 @@ window.addEventListener('DOMContentLoaded', function() {
         updateButtonStates();
     }
     
-    // Mark page as loaded after initial setup
     setTimeout(() => {
         window.pageLoaded = true;
     }, 100);
@@ -923,7 +760,6 @@ window.addEventListener('DOMContentLoaded', function() {
 // =============================================================================
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Setup resizable columns
     const doccols = document.querySelector('.doccols');
     const cols = doccols.querySelectorAll('.column');
     
@@ -933,9 +769,8 @@ document.addEventListener('DOMContentLoaded', function() {
         doccols.appendChild(handle);
         
         let isResizing = false;
-        let minLeftWidth = 500; // Store calculated minimum - default 500px
+        let minLeftWidth = 500;
         
-        // Function to update handle position based on actual column size
         window.updateHandlePosition = function() {
             const isMobile = window.innerWidth <= 768;
             const isHorizontal = window.expanded && !isMobile;
@@ -955,17 +790,14 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         };
         
-        // Media query to handle mobile layout changes
         const mobileMediaQuery = window.matchMedia('(max-width: 768px)');
         function handleMobileChange(e) {
             if (e.matches) {
-                // Mobile: force vertical layout
                 doccols.classList.remove('horizontal');
                 cols[0].style.flex = '0 0 50%';
                 cols[1].style.flex = '0 0 50%';
                 setTimeout(window.updateHandlePosition, 50);
             } else {
-                // Desktop: restore saved state
                 const savedExpanded = localStorage.getItem('playground-expanded');
                 if (savedExpanded === 'true') {
                     doccols.classList.add('horizontal');
@@ -980,8 +812,6 @@ document.addEventListener('DOMContentLoaded', function() {
         handle.addEventListener('mousedown', function(e) {
             isResizing = true;
             handle.classList.add('resizing');
-            
-            // Use fixed 500px minimum for horizontal dragging
             minLeftWidth = 500;
             
             const isMobile = window.innerWidth <= 768;
@@ -998,20 +828,15 @@ document.addEventListener('DOMContentLoaded', function() {
             const isHorizontal = window.expanded && !isMobile;
             
             if (isHorizontal) {
-                // Horizontal layout - resize left/right
                 const offsetX = e.clientX - containerRect.left;
-                
                 const minRightWidth = 200;
                 const maxLeftWidth = containerRect.width - minRightWidth;
-                
-                // Clamp the offset to respect minimum widths
                 const clampedOffsetX = Math.max(minLeftWidth, Math.min(maxLeftWidth, offsetX));
                 const percentage = (clampedOffsetX / containerRect.width) * 100;
                 
                 cols[0].style.flex = `0 0 ${percentage}%`;
                 cols[1].style.flex = `0 0 ${100 - percentage}%`;
                 
-                // Update handle position directly without requestAnimationFrame
                 const col0Width = cols[0].getBoundingClientRect().width;
                 const handlePercentage = (col0Width / containerRect.width) * 100;
                 handle.style.left = `${handlePercentage}%`;
@@ -1019,22 +844,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 window.terminalColumns = calculateTerminalColumns();
                 editor.resize();
             } else {
-                // Vertical layout - resize top/bottom
                 const offsetY = e.clientY - containerRect.top;
-                
-                // Calculate minimum heights
                 const minTopHeight = 200;
                 const minBottomHeight = 150;
                 const maxTopHeight = containerRect.height - minBottomHeight;
-                
-                // Clamp the offset to respect minimum heights
                 const clampedOffsetY = Math.max(minTopHeight, Math.min(maxTopHeight, offsetY));
                 const percentage = (clampedOffsetY / containerRect.height) * 100;
                 
                 cols[0].style.flex = `0 0 ${percentage}%`;
                 cols[1].style.flex = `0 0 ${100 - percentage}%`;
                 
-                // Update handle position directly without requestAnimationFrame
                 const col0Height = cols[0].getBoundingClientRect().height;
                 const handlePercentage = (col0Height / containerRect.height) * 100;
                 handle.style.top = `${handlePercentage}%`;
@@ -1049,20 +868,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 isResizing = false;
                 handle.classList.remove('resizing');
                 document.body.style.cursor = '';
-                // Final position update only
                 window.updateHandlePosition();
             }
         });
         
-        // Initial handle position
         setTimeout(window.updateHandlePosition, 100);
-        
-        // Update on window resize
         window.addEventListener('resize', window.updateHandlePosition);
     }
     
-    // Setup event listener for args dialog Enter key
-    var argsInput = document.getElementById('cmdline-args');
+    const argsInput = document.getElementById('cmdline-args');
     if (argsInput) {
         argsInput.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
@@ -1071,13 +885,11 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Setup event listener for examples search
-    var examplesSearch = document.getElementById('examples-search');
+    const examplesSearch = document.getElementById('examples-search');
     if (examplesSearch) {
         examplesSearch.addEventListener('input', filterExamples);
     }
     
-    // Initial button state update
     updateButtonStates();
 });
 
