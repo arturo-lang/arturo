@@ -12,17 +12,17 @@ set -e
 # CONSTANTS
 ################################################
 
-REPO="arturo-lang/arturo"
+BASE_URL="https://arturo-lang.io"
 INSTALL_DIR="$HOME/.arturo"
 BIN_DIR="$INSTALL_DIR/bin"
 TMP_DIR=""
 
-VERSION_TYPE="release"
+VERSION_TYPE="stable"
 BUILD_VARIANT="full"
 
 for arg in "$@"; do
     case $arg in
-        --nightly|-n) VERSION_TYPE="nightly"; REPO="arturo-lang/nightly";;
+        --nightly|-n) VERSION_TYPE="latest";;
         --mini|-m)    BUILD_VARIANT="mini";;
     esac
 done
@@ -238,26 +238,16 @@ check_deps() {
 # DOWNLOAD & INSTALL
 ################################################
 
-get_latest_release() {
-    local api_url="https://api.github.com/repos/$REPO/releases"
-    
-    if [ "$VERSION_TYPE" = "nightly" ]; then
-        RELEASE_TAG=$(curl -sf "$api_url" | grep '"tag_name"' | grep -o '[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}' | head -n1)
-    else
-        RELEASE_TAG=$(curl -sf "$api_url/latest" | grep '"tag_name"' | sed -E 's/.*"tag_name": "([^"]+)".*/\1/')
-    fi
-    
-    [ -z "$RELEASE_TAG" ] && error "Could not determine latest release"
-    info "version: $RELEASE_TAG"
+get_version() {
+    local version_url="$BASE_URL/$VERSION_TYPE/files/VERSION"
+    VERSION=$(curl -sf "$version_url") || error "Could not fetch version information"
+    info "version: $VERSION"
 }
 
 build_artifact_name() {
-    local base="arturo"
-    local version_str=""
+    local prefix=$([ "$VERSION_TYPE" = "latest" ] && echo "nightly" || echo "$VERSION")
     
-    [ "$VERSION_TYPE" = "nightly" ] && version_str="-nightly.$(echo "$RELEASE_TAG" | tr -d '-')" || version_str="-$RELEASE_TAG"
-    
-    ARTIFACT_NAME="${base}${version_str}-${OS}-${ARCH}"
+    ARTIFACT_NAME="arturo-${prefix}-${OS}-${ARCH}"
     [ "$BUILD_VARIANT" != "full" ] && ARTIFACT_NAME="${ARTIFACT_NAME}-${BUILD_VARIANT}"
     [ "$NEEDS_LEGACY" = true ] && ARTIFACT_NAME="${ARTIFACT_NAME}-legacy"
     
@@ -266,9 +256,10 @@ build_artifact_name() {
 
 download_arturo() {
     TMP_DIR=$(mktemp -d 2>/dev/null || mktemp -d -t arturo)
-    local url="https://github.com/$REPO/releases/download/$RELEASE_TAG/${ARTIFACT_NAME}.zip"
+    local url="$BASE_URL/$VERSION_TYPE/files/${ARTIFACT_NAME}.zip"
     
-    curl -fSL "$url" -o "$TMP_DIR/arturo.zip" || error "Download failed"
+    info "downloading: $url"
+    curl -fSL "$url" -o "$TMP_DIR/arturo.zip" || error "Download failed. Try --mini variant or check your connection."
     command_exists unzip || error "unzip is required but not installed"
     unzip -q "$TMP_DIR/arturo.zip" -d "$TMP_DIR" || error "Failed to extract archive"
 }
@@ -299,7 +290,7 @@ main() {
     detect_system
     
     section "Resolving version..."
-    get_latest_release
+    get_version
     build_artifact_name
     
     section "Checking dependencies..."
