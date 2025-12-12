@@ -33,7 +33,7 @@
         <!-- Mobile Search Icon -->
         <||= if or? contains? pagePath "documentation" contains? pagePath "playground" [||>
             <a role="button" class="mobile-search-trigger" aria-label="search">
-                <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" fill="currentColor" viewBox="0 0 256 256"><||= phosphor 'bold "magnifying-glass" ||></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" fill="currentColor" viewBox="0 0 256 256"><||= phosphor 'bold "magnifying-glass" ||></svg>
             </a>
         <|| ] ||>
         
@@ -80,7 +80,7 @@
             <div class="mobile-search-container">
                 <div class="mobile-search-header">
                     <input id="mobile-searchbar" type="search" placeholder="Search documentation..." autofocus>
-                    <button class="delete is-large mobile-search-close" aria-label="close"></button>
+                    <button class="delete mobile-search-close" aria-label="close"></button>
                 </div>
                 <div id="mobile-search-dropdown" class="mobile-search-dropdown"></div>
             </div>
