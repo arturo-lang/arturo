@@ -70,8 +70,8 @@
 
     #searchbar-icon {
         position: relative;
-        left: calc(-1 * 4.7vw + 42.5px);
         top: 16px;
+        right: 20px;
         transition: left 0.3s ease;
         pointer-events: none;
     }
