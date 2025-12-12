@@ -13,8 +13,8 @@
     let searchData = [];
     let currentIndex = -1;
     let basePath = '';
-    let useModal = false; // Track if we should use modal instead of navigation
-    let isDropdownHovered = false; // Track if mouse is over dropdown
+    let useModal = false;
+    let isDropdownHovered = false;
     
     // =============================================================================
     // DOM ELEMENTS & INITIALIZATION
@@ -23,29 +23,36 @@
     const searchInput = document.getElementById('searchbar');
     const searchIcon = document.getElementById('searchbar-icon');
     
-    if (!searchInput) return;
+    const mobileSearchInput = document.getElementById('mobile-searchbar');
+    const mobileSearchDropdown = document.getElementById('mobile-search-dropdown');
+    const mobileSearchModal = document.getElementById('mobile-search-modal');
+    const mobileSearchTrigger = document.querySelector('.mobile-search-trigger');
+    const mobileSearchClose = document.querySelector('.mobile-search-close');
+    const modalBackground = mobileSearchModal ? mobileSearchModal.querySelector('.modal-background') : null;
+    
+    if (!searchInput && !mobileSearchInput) return;
 
-    // Create dropdown container
-    const dropdown = document.createElement('div');
-    dropdown.id = 'search-dropdown';
-    dropdown.className = 'search-dropdown';
-    const icon = document.getElementById('searchbar-icon');
-    searchInput.parentNode.insertBefore(dropdown, icon.nextSibling);
+    let dropdown = null;
+    if (searchInput) {
+        dropdown = document.createElement('div');
+        dropdown.id = 'search-dropdown';
+        dropdown.className = 'search-dropdown';
+        const icon = document.getElementById('searchbar-icon');
+        searchInput.parentNode.insertBefore(dropdown, icon.nextSibling);
 
-    // Add mouseenter/mouseleave handlers for the dropdown
-    dropdown.addEventListener('mouseenter', () => {
-        isDropdownHovered = true;
-    });
+        dropdown.addEventListener('mouseenter', () => {
+            isDropdownHovered = true;
+        });
 
-    dropdown.addEventListener('mouseleave', () => {
-        isDropdownHovered = false;
-    });
+        dropdown.addEventListener('mouseleave', () => {
+            isDropdownHovered = false;
+        });
+    }
 
     // =============================================================================
     // PUBLIC API
     // =============================================================================
 
-    // Initialize search with base path and optional modal parameter
     window.initDocSearch = function(showInModal) {
         basePath = '/%<[basePath]>%';
         useModal = showInModal || false;
@@ -60,7 +67,6 @@
     // SEARCH INITIALIZATION
     // =============================================================================
 
-    // Load search data and initialize Fuse
     async function initSearch() {
         try {
             const response = await fetch(basePath + '/resources/data/index.json');
@@ -92,7 +98,6 @@
     // MODAL MANAGEMENT (for Playground)
     // =============================================================================
 
-    // Setup modal event listeners (modal HTML is in playground.html)
     function setupModalEventListeners() {
         const modal = document.getElementById('doc-modal');
         if (!modal) {
@@ -111,7 +116,6 @@
         closeBtn.addEventListener('click', closeModal);
         background.addEventListener('click', closeModal);
         
-        // Close modal on ESC key
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && modal.classList.contains('is-active')) {
                 closeModal();
@@ -119,13 +123,11 @@
         });
     }
 
-    // Show documentation in modal
     async function showDocInModal(url, title) {
         const modal = document.getElementById('doc-modal');
         const modalTitle = document.getElementById('doc-modal-title');
         const modalBody = document.getElementById('doc-modal-body');
         
-        // Show modal with loading state
         modal.classList.add('is-active');
         document.documentElement.classList.add('is-clipped');
         modalTitle.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#000000" viewBox="0 0 256 256"><path d="M180,232a12,12,0,0,1-12,12H88a12,12,0,0,1,0-24h80A12,12,0,0,1,180,232Zm40-128a91.51,91.51,0,0,1-35.17,72.35A12.26,12.26,0,0,0,180,186v2a20,20,0,0,1-20,20H96a20,20,0,0,1-20-20v-2a12,12,0,0,0-4.7-9.51A91.57,91.57,0,0,1,36,104.52C35.73,54.69,76,13.2,125.79,12A92,92,0,0,1,220,104Zm-24,0a68,68,0,0,0-69.65-68C89.56,36.88,59.8,67.55,60,104.38a67.71,67.71,0,0,0,26.1,53.19A35.87,35.87,0,0,1,100,184h56.1A36.13,36.13,0,0,1,170,157.49,67.68,67.68,0,0,0,196,104Zm-20.07-5.32a48.5,48.5,0,0,0-31.91-40,12,12,0,0,0-8,22.62,24.31,24.31,0,0,1,16.09,20,12,12,0,0,0,23.86-2.64Z"></path></svg><span class="main-title">${title}</span><span class="doc-link"><a href="${url}" target="_blank">Open in new tab &gt;</a></span>`;
@@ -137,24 +139,19 @@
             
             const html = await response.text();
             
-            // Parse the HTML to extract just the main content
             const parser = new DOMParser();
             const doc = parser.parseFromString(html, 'text/html');
             
-            // Extract the main content column (the documentation content)
             const mainContent = doc.querySelector('.column.is-9.p-6.mb-6');
             
             if (mainContent) {
-                // Clone the content
                 const contentClone = mainContent.cloneNode(true);
                 
-                // Remove breadcrumbs navigation
                 const breadcrumbs = contentClone.querySelector('nav.breadcrumb');
                 if (breadcrumbs) {
                     breadcrumbs.remove();
                 }
                 
-                // Remove the "Related" section
                 const headings = contentClone.querySelectorAll('h4.title');
                 headings.forEach(heading => {
                     if (heading.textContent.trim() === 'Related') {
@@ -167,7 +164,6 @@
                     }
                 });
                 
-                // Remove top margin from title
                 const titleLevel = contentClone.querySelector('.level.mt-6.is-mobile');
                 if (titleLevel) {
                     titleLevel.remove();
@@ -176,18 +172,15 @@
                 modalBody.innerHTML = contentClone.innerHTML;
                 modalBody.classList.add('playground-modal-content');
 
-                // Highlight code blocks with Prism
                 if (typeof Prism !== 'undefined') {
                     Prism.highlightAllUnder(modalBody);
                 }
 
-                // Make all links in the modal open appropriately
                 const links = modalBody.querySelectorAll('a');
                 links.forEach(link => {
                     const href = link.getAttribute('href');
                     if (!href) return;
                     
-                    // If it's a documentation link, open in modal
                     if (href.includes('/documentation/')) {
                         link.addEventListener('click', (e) => {
                             e.preventDefault();
@@ -196,19 +189,16 @@
                             showDocInModal(fullUrl, linkText);
                         });
                     } 
-                    // If it's an internal link but not documentation, open in new tab
                     else if (href.startsWith('/') || href.includes(window.location.hostname)) {
                         link.setAttribute('target', '_blank');
                         link.setAttribute('rel', 'noopener');
                     }
                 });
                 
-                // Initialize copy buttons if they exist
                 if (typeof Clipboard !== 'undefined') {
                     const clipboard = new Clipboard('.copy');
                 }
                 
-                // Scroll modal body to top
                 modalBody.scrollTop = 0;
                 
             } else {
@@ -230,7 +220,6 @@
     // SEARCH FUNCTIONALITY
     // =============================================================================
 
-    // Perform search
     function performSearch(query) {
         if (!fuse || !query || query.length < 2) {
             hideDropdown();
@@ -243,16 +232,13 @@
                 const item = result.item;
                 let bonus = 0;
                 
-                // Name starts with query?
                 if (item.name && item.name.toLowerCase().startsWith(queryLower)) {
                     bonus = 1000;
                 }
-                // Name contains query?
                 else if (item.name && item.name.toLowerCase().includes(queryLower)) {
                     bonus = 500;
                 }
                 
-                // Attr key starts with query?
                 if (item.attr && typeof item.attr === 'object') {
                     for (const key of Object.keys(item.attr)) {
                         if (key.toLowerCase().startsWith(queryLower)) {
@@ -273,7 +259,6 @@
         displayResults(results, query);
     }
 
-    // Display search results
     function displayResults(results, query) {
         if (results.length === 0) {
             showNoResults(query);
@@ -291,21 +276,108 @@
 
         showDropdown();
         
-        // Automatically select the first result
         if (results.length > 0) {
             setActiveResult(0);
         }
     }
 
     // =============================================================================
-    // RESULT ELEMENT CREATION
+    // MOBILE SEARCH
     // =============================================================================
 
-    // Create result element
-    function createResultElement(item, index, query, matches = []) {
+    function openMobileSearch() {
+        if (!mobileSearchModal) return;
+        mobileSearchModal.classList.add('is-active');
+        document.documentElement.classList.add('is-clipped');
+        setTimeout(() => {
+            if (mobileSearchInput) mobileSearchInput.focus();
+        }, 100);
+    }
+
+    function closeMobileSearch() {
+        if (!mobileSearchModal) return;
+        mobileSearchModal.classList.remove('is-active');
+        document.documentElement.classList.remove('is-clipped');
+        if (mobileSearchInput) mobileSearchInput.value = '';
+        if (mobileSearchDropdown) {
+            mobileSearchDropdown.innerHTML = '';
+            mobileSearchDropdown.classList.remove('is-loading');
+        }
+    }
+
+    function performMobileSearch(query) {
+        if (!fuse || !query || query.length < 2) {
+            if (mobileSearchDropdown) {
+                mobileSearchDropdown.innerHTML = '';
+                mobileSearchDropdown.classList.remove('is-loading');
+            }
+            return;
+        }
+
+        const queryLower = query.toLowerCase();
+        const results = fuse.search(query)
+            .map(result => {
+                const item = result.item;
+                let bonus = 0;
+                
+                if (item.name && item.name.toLowerCase().startsWith(queryLower)) {
+                    bonus = 1000;
+                }
+                else if (item.name && item.name.toLowerCase().includes(queryLower)) {
+                    bonus = 500;
+                }
+                
+                if (item.attr && typeof item.attr === 'object') {
+                    for (const key of Object.keys(item.attr)) {
+                        if (key.toLowerCase().startsWith(queryLower)) {
+                            bonus = Math.max(bonus, 900);
+                            break;
+                        }
+                    }
+                }
+                
+                return {
+                    ...result,
+                    adjustedScore: result.score - (bonus / 1000)
+                };
+            })
+            .sort((a, b) => a.adjustedScore - b.adjustedScore)
+            .slice(0, 8);
+            
+        displayMobileResults(results, query);
+    }
+
+    function displayMobileResults(results, query) {
+        if (!mobileSearchDropdown) return;
+        
+        mobileSearchDropdown.classList.remove('is-loading');
+        
+        if (results.length === 0) {
+            mobileSearchDropdown.innerHTML = `
+                <div class="search-no-results">
+                    <div class="search-no-results-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" fill="currentColor" viewBox="0 0 256 256"><path d="M128,20A108,108,0,1,0,236,128,108.12,108.12,0,0,0,128,20Zm0,192a84,84,0,1,1,84-84A84.09,84.09,0,0,1,128,212ZM108,108A16,16,0,1,1,92,92,16,16,0,0,1,108,108Zm72,0a16,16,0,1,1-16-16A16,16,0,0,1,180,108Z"></path></svg>
+                    </div>
+                    <div class="search-no-results-text">
+                        No results found for<br>"<strong>${escapeHtml(query)}</strong>"
+                    </div>
+                </div>
+            `;
+            return;
+        }
+
+        mobileSearchDropdown.innerHTML = '';
+
+        results.forEach((result, index) => {
+            const item = result.item;
+            const resultEl = createMobileResultElement(item, query, result.matches);
+            mobileSearchDropdown.appendChild(resultEl);
+        });
+    }
+
+    function createMobileResultElement(item, query, matches = []) {
         const div = document.createElement('div');
         div.className = 'search-result-item';
-        div.setAttribute('data-index', index);
         div.setAttribute('data-url', basePath + '/documentation/' + item.url);
         div.setAttribute('data-title', item.name);
 
@@ -314,11 +386,8 @@
 
         const queryLower = query.toLowerCase();
         const nameLower = item.name ? item.name.toLowerCase() : '';
-        
-        // Does name match?
         const hasNameMatch = nameLower.includes(queryLower);
         
-        // Find attribute match
         let matchedAttrKey = null;
         let matchedAttrValue = null;
         
@@ -336,7 +405,6 @@
         
         let html;
         if (matchedAttrKey !== null) {
-            // Show attribute format with highlighting
             const highlightedAttrKey = highlightText(matchedAttrKey, queryLower);
             const highlightedAttrValue = highlightText(matchedAttrValue, queryLower);
             
@@ -352,7 +420,6 @@
                 </div>
             `;
         } else {
-            // Show normal format
             const highlightedDesc = highlightFuseMatch(item.desc || '', descMatch);
             
             html = `
@@ -368,13 +435,88 @@
         
         div.innerHTML = html;
 
-        // Click handler
+        div.addEventListener('click', (e) => {
+            e.preventDefault();
+            const url = div.getAttribute('data-url');
+            const title = div.getAttribute('data-title');
+            closeMobileSearch();
+            navigateToResult(url, title);
+        });
+
+        return div;
+    }
+
+    // =============================================================================
+    // RESULT ELEMENT CREATION
+    // =============================================================================
+
+    function createResultElement(item, index, query, matches = []) {
+        const div = document.createElement('div');
+        div.className = 'search-result-item';
+        div.setAttribute('data-index', index);
+        div.setAttribute('data-url', basePath + '/documentation/' + item.url);
+        div.setAttribute('data-title', item.name);
+
+        const nameMatch = matches.find(m => m.key === 'name');
+        const descMatch = matches.find(m => m.key === 'desc');
+
+        const queryLower = query.toLowerCase();
+        const nameLower = item.name ? item.name.toLowerCase() : '';
+        
+        const hasNameMatch = nameLower.includes(queryLower);
+        
+        let matchedAttrKey = null;
+        let matchedAttrValue = null;
+        
+        if (!hasNameMatch && item.attr && typeof item.attr === 'object') {
+            for (const [key, value] of Object.entries(item.attr)) {
+                if (key.toLowerCase().includes(queryLower)) {
+                    matchedAttrKey = key;
+                    matchedAttrValue = String(value);
+                    break;
+                }
+            }
+        }
+
+        const highlightedName = highlightFuseMatch(item.name, nameMatch);
+        
+        let html;
+        if (matchedAttrKey !== null) {
+            const highlightedAttrKey = highlightText(matchedAttrKey, queryLower);
+            const highlightedAttrValue = highlightText(matchedAttrValue, queryLower);
+            
+            html = `
+                <div class="search-result-content">
+                    <div class="search-result-header">
+                        <span class="search-result-name">
+                            ${highlightedName}<span class="search-result-attr-key">.${highlightedAttrKey}</span>
+                        </span>
+                        <span class="search-result-category">${item.modl}</span>
+                    </div>
+                    <div class="search-result-description search-result-attr-desc">${highlightedAttrValue}</div>
+                </div>
+            `;
+        } else {
+            const highlightedDesc = highlightFuseMatch(item.desc || '', descMatch);
+            
+            html = `
+                <div class="search-result-content">
+                    <div class="search-result-header">
+                        <span class="search-result-name">${highlightedName}</span>
+                        <span class="search-result-category">${item.modl}</span>
+                    </div>
+                    <div class="search-result-description">${highlightedDesc}</div>
+                </div>
+            `;
+        }
+        
+        div.innerHTML = html;
+
         div.addEventListener('click', (e) => {
             e.preventDefault();
             navigateToResult(div.getAttribute('data-url'), div.getAttribute('data-title'));
         });
 
-        // Hover handler
         div.addEventListener('mouseenter', () => {
             setActiveResult(index);
         });
@@ -382,7 +524,6 @@
         return div;
     }
 
-    // Show no results message
     function showNoResults(query) {
         dropdown.innerHTML = `
             <div class="search-no-results">
@@ -401,7 +542,6 @@
     // TEXT HIGHLIGHTING UTILITIES
     // =============================================================================
 
-    // Highlight matching text using Fuse.js match indices
     function highlightFuseMatch(text, match) {
         if (!match || !match.indices) return escapeHtml(text);
 
@@ -418,7 +558,6 @@
         return result;
     }
 
-    // Highlight query text in string
     function highlightText(text, query) {
         if (!text || !query) return escapeHtml(text);
         
@@ -434,7 +573,6 @@
         return `${before}<mark>${match}</mark>${after}`;
     }
 
-    // Escape HTML
     function escapeHtml(text) {
         const div = document.createElement('div');
         div.textContent = text;
@@ -445,14 +583,14 @@
     // DROPDOWN MANAGEMENT
     // =============================================================================
 
-    // Show dropdown
     function showDropdown() {
+        if (!dropdown) return;
         dropdown.classList.add('is-active');
         searchInput.classList.add('keep-open');
     }
 
-    // Hide dropdown
     function hideDropdown() {
+        if (!dropdown) return;
         dropdown.classList.remove('is-active');
         dropdown.innerHTML = '';
         currentIndex = -1;
@@ -461,7 +599,6 @@
         }
     }
 
-    // Set active result
     function setActiveResult(index) {
         const items = dropdown.querySelectorAll('.search-result-item');
         items.forEach((item, i) => {
@@ -479,10 +616,8 @@
     // NAVIGATION
     // =============================================================================
 
-    // Navigate to result - use modal if enabled, otherwise normal navigation
     function navigateToResult(url, title) {
-        // Clear the search input
-        searchInput.value = '';
+        if (searchInput) searchInput.value = '';
         
         if (useModal) {
             showDocInModal(url, title);
@@ -516,7 +651,6 @@
             
             case 'Enter':
                 e.preventDefault();
-                // If no item selected, use first result
                 const targetIndex = currentIndex >= 0 ? currentIndex : 0;
                 if (items[targetIndex]) {
                     const url = items[targetIndex].getAttribute('data-url');
@@ -537,43 +671,104 @@
     // EVENT LISTENERS
     // =============================================================================
 
-    let searchTimeout;
-    searchInput.addEventListener('input', (e) => {
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(() => {
-            performSearch(e.target.value.trim());
-        }, 150);
-    });
+    if (searchInput) {
+        let searchTimeout;
+        searchInput.addEventListener('input', (e) => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                performSearch(e.target.value.trim());
+            }, 150);
+        });
 
-    searchInput.addEventListener('keydown', handleKeyboard);
+        searchInput.addEventListener('keydown', handleKeyboard);
 
-    searchInput.addEventListener('focus', () => {
-        if (searchInput.value.trim().length >= 2) {
-            performSearch(searchInput.value.trim());
-        }
-    });
-
-    // Handle blur event - delay to allow dropdown clicks
-    searchInput.addEventListener('blur', () => {
-        setTimeout(() => {
-            if (!isDropdownHovered && !searchInput.matches(':focus')) {
-                searchInput.classList.remove('keep-open');
-                hideDropdown();
+        searchInput.addEventListener('focus', () => {
+            if (searchInput.value.trim().length >= 2) {
+                performSearch(searchInput.value.trim());
             }
-        }, 200);
-    });
+        });
 
-    // Close dropdown when clicking outside
+        searchInput.addEventListener('blur', () => {
+            setTimeout(() => {
+                if (!isDropdownHovered && !searchInput.matches(':focus')) {
+                    searchInput.classList.remove('keep-open');
+                    hideDropdown();
+                }
+            }, 200);
+        });
+
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+            }
+        });
+    }
+
     document.addEventListener('click', (e) => {
-        if (!searchInput.contains(e.target) && !dropdown.contains(e.target)) {
+        if (searchInput && !searchInput.contains(e.target) && dropdown && !dropdown.contains(e.target)) {
             hideDropdown();
         }
     });
 
-    // Prevent form submission
-    searchInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
+    if (mobileSearchTrigger) {
+        mobileSearchTrigger.addEventListener('click', (e) => {
             e.preventDefault();
+            openMobileSearch();
+        });
+    }
+
+    if (mobileSearchClose) {
+        mobileSearchClose.addEventListener('click', closeMobileSearch);
+    }
+
+    if (modalBackground) {
+        modalBackground.addEventListener('click', closeMobileSearch);
+    }
+
+    if (mobileSearchInput) {
+        let mobileSearchTimeout;
+        
+        mobileSearchInput.addEventListener('input', (e) => {
+            clearTimeout(mobileSearchTimeout);
+            const query = e.target.value.trim();
+            
+            if (query.length < 2) {
+                if (mobileSearchDropdown) {
+                    mobileSearchDropdown.innerHTML = '';
+                    mobileSearchDropdown.classList.remove('is-loading');
+                }
+                return;
+            }
+            
+            if (mobileSearchDropdown) {
+                mobileSearchDropdown.classList.add('is-loading');
+            }
+            
+            mobileSearchTimeout = setTimeout(() => {
+                performMobileSearch(query);
+            }, 150);
+        });
+
+        mobileSearchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const firstResult = mobileSearchDropdown ? mobileSearchDropdown.querySelector('.search-result-item') : null;
+                if (firstResult) {
+                    const url = firstResult.getAttribute('data-url');
+                    const title = firstResult.getAttribute('data-title');
+                    closeMobileSearch();
+                    navigateToResult(url, title);
+                }
+            } else if (e.key === 'Escape') {
+                e.preventDefault();
+                closeMobileSearch();
+            }
+        });
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && mobileSearchModal && mobileSearchModal.classList.contains('is-active')) {
+            closeMobileSearch();
         }
     });
 
