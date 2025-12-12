@@ -29,9 +29,6 @@ when not defined(WEB):
 
 import vm/lib
 
-when defined(SAFE):
-    import vm/errors
-
 #=======================================
 # Definitions
 #=======================================
@@ -241,7 +238,6 @@ proc defineModule*(moduleName: string) =
             ; data.txt
             """:
                 #=======================================================
-                when defined(SAFE): Error_OperationNotPermitted("list")
                 let recursive = (hadAttr("recursive"))
                 let relative = (hadAttr("relative"))
                 let path = x.s

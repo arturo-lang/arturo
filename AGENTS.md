@@ -36,4 +36,4 @@
 
 ## Security & Configuration Tips
 - Prereqs: Nim toolchain and a C/C++ compiler. Some features depend on system libs (e.g., SSL, WebKit on Linux).
-- Use `--log` when troubleshooting builds and `--mode:safe/mini` when minimization is needed.
+- Use `--log` when troubleshooting builds and `--mode:mini` when minimization is needed.
