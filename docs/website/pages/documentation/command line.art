@@ -152,12 +152,6 @@ To uninstall a previously installed package:
 arturo --package uninstall grafito
 ```
 
-You can also specify a version to uninstall:
-
-```bash
-arturo --package uninstall grafito 1.0.2
-```
-
 <h4 id="update-all-packages">Update all packages</h4>
 
 To update all locally installed packages to their latest versions:
