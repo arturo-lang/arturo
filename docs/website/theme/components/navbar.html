@@ -6,28 +6,39 @@
                 <source srcset="<||= linkTo {resources/images/navlogo.png} ||>" type="image/png">
                 <img class="navlogo" src="<||= linkTo {resources/images/navlogo.png} ||>" width="28" height="28" alt="arturo logo">
             </picture>
-            &nbsp;&nbsp;<h1 id="mainTitle" style="font-weight: inherit !important;">Arturo</h1></a>
-                <div id="version-dropdown" class="dropdown is-hoverable">
-                    <div class="dropdown-trigger">
-                        <button class="button" aria-haspopup="true" aria-controls="dropdown-menu">
-                            <span class="version-id">@latest</span>
-                            <span class="icon is-small">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="0.9em" height="0.9em" fill="currentColor" viewBox="0 0 256 256"><path d="M216.49,104.49l-80,80a12,12,0,0,1-17,0l-80-80a12,12,0,0,1,17-17L128,159l71.51-71.52a12,12,0,0,1,17,17Z"></path></svg>
-                            </span>
-                        </button>
-                    </div>
-                    <div class="dropdown-menu" id="dropdown-menu" role="menu">
-                        <div class="dropdown-content">
-                            <a href="<||= getCanonical "http://188.245.97.105/latest/" ||>" class="dropdown-item is-active">
-                                @latest
-                            </a>
-                            <hr class="dropdown-divider">
-                            <a href="<||= getCanonical "http://188.245.97.105/" ||>" class="dropdown-item">
-                                v0.10.0
-                            </a>
-                        </div>
-                    </div>
+            &nbsp;&nbsp;<h1 id="mainTitle" style="font-weight: inherit !important;">Arturo</h1>
+        </a>
+        <div id="version-dropdown" class="dropdown is-hoverable">
+            <div class="dropdown-trigger">
+                <button class="button" aria-haspopup="true" aria-controls="dropdown-menu">
+                    <span class="version-id">@latest</span>
+                    <span class="icon is-small">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="0.9em" height="0.9em" fill="currentColor" viewBox="0 0 256 256"><path d="M216.49,104.49l-80,80a12,12,0,0,1-17,0l-80-80a12,12,0,0,1,17-17L128,159l71.51-71.52a12,12,0,0,1,17,17Z"></path></svg>
+                    </span>
+                </button>
+            </div>
+            <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                <div class="dropdown-content">
+                    <a href="<||= getCanonical "http://188.245.97.105/latest/" ||>" class="dropdown-item is-active">
+                        @latest
+                    </a>
+                    <hr class="dropdown-divider">
+                    <a href="<||= getCanonical "http://188.245.97.105/" ||>" class="dropdown-item">
+                        v0.10.0
+                    </a>
                 </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Search Icon -->
+        <||= if or? contains? pagePath "documentation" contains? pagePath "playground" [||>
+            <a role="button" class="mobile-search-trigger" aria-label="search">
+                <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" fill="currentColor" viewBox="0 0 256 256">
+                    <path d="M232.49,215.51,185,168a92.12,92.12,0,1,0-17,17l47.53,47.54a12,12,0,0,0,17-17ZM44,112a68,68,0,1,1,68,68A68.07,68.07,0,0,1,44,112Z"></path>
+                </svg>
+            </a>
+        <|| ] ||>
+        
         <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarMain">
             <span aria-hidden="true"></span>
             <span aria-hidden="true"></span>
@@ -42,6 +53,7 @@
                 <div class="navbar-item is-hidden-mobile search-container">
                     <input id="searchbar" type="search" placeholder="Search documentation...">
                     <svg id="searchbar-icon" xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" fill="currentColor" viewBox="0 0 256 256"><path d="M232.49,215.51,185,168a92.12,92.12,0,1,0-17,17l47.53,47.54a12,12,0,0,0,17-17ZM44,112a68,68,0,1,1,68,68A68.07,68.07,0,0,1,44,112Z"></path></svg>
+                    <div id="search-dropdown" class="search-dropdown"></div>
                 </div>
             <|| ] ||>
 
@@ -61,3 +73,19 @@
         </div>
     </div>
 </nav>
+
+<!-- Mobile Search Modal -->
+<||= if or? contains? pagePath "documentation" contains? pagePath "playground" [||>
+    <div id="mobile-search-modal" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-content mobile-search-modal-content">
+            <div class="mobile-search-container">
+                <div class="mobile-search-header">
+                    <input id="mobile-searchbar" type="search" placeholder="Search documentation..." autofocus>
+                    <button class="delete is-large mobile-search-close" aria-label="close"></button>
+                </div>
+                <div id="mobile-search-dropdown" class="mobile-search-dropdown"></div>
+            </div>
+        </div>
+    </div>
+<|| ] ||>
