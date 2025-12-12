@@ -4,13 +4,9 @@
     align-items: center;
     justify-content: center;
     padding: 0 0.75rem;
-    color: #6a156b;
+    color: #4a4a4a;
     cursor: pointer;
     margin-left: auto;
-    
-    &:hover {
-        color: darken(#6a156b, 10%);
-    }
     
     svg {
         display: block;
@@ -238,6 +234,6 @@
     }
     
     .mobile-search-trigger {
-        color: #4a4a4a
+        color: white;
     }
 }
