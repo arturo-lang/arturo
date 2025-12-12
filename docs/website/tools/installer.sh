@@ -22,8 +22,7 @@ BUILD_VARIANT="full"
 
 for arg in "$@"; do
     case $arg in
-        --nightly|-n) VERSION_TYPE="latest";;
-        --mini|-m)    BUILD_VARIANT="mini";;
+        --mini|-m) BUILD_VARIANT="mini";;
     esac
 done
 
