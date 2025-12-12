@@ -1,4 +1,9 @@
 <?php
+// =============================================================================
+// CODE EXECUTION ENDPOINT
+// =============================================================================
+// Executes Arturo code in isolated jail, enforces rate limits
+
 header('Access-Control-Allow-Origin: http://188.245.97.105');
 
 $rest_json = file_get_contents("php://input");
@@ -14,11 +19,50 @@ if ($stream) {
     header('Content-Type: application/json');
 }
 
+require_once __DIR__ . '/db.php';
+$db = new SnippetDB();
+
+// =========================================================================
+// RATE LIMITING CHECK
+// =========================================================================
+
+$ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+
+if (!$db->checkRateLimit($ip, 60)) {
+    $error = json_encode([
+        "text" => "Rate limit exceeded. Maximum 60 executions per hour.",
+        "code" => "",
+        "result" => -1
+    ]);
+    
+    if ($stream) {
+        echo "data: " . json_encode([
+            "done" => true,
+            "error" => "Rate limit exceeded",
+            "code" => "",
+            "result" => -1
+        ]) . "\n\n";
+    } else {
+        echo $error;
+    }
+    exit;
+}
+
+$db->recordExecution($ip);
+
+// Occasionally cleanup old rate limit entries (1% chance)
+if (rand(1, 100) === 1) {
+    $db->cleanupRateLimits();
+}
+
+// =========================================================================
+// PARAMETER VALIDATION
+// =========================================================================
+
 $code = $_POST['c'];
 $columns = isset($_POST['cols']) ? intval($_POST['cols']) : 80;
-$args = isset($_POST['args']) ? trim($_POST['args']) : ''; // Get command-line arguments
+$args = isset($_POST['args']) ? trim($_POST['args']) : '';
 
-// Clamp columns to reasonable values
 $columns = max(40, min(200, $columns));
 
 if (empty($code)) {
@@ -26,7 +70,6 @@ if (empty($code)) {
     exit;
 }
 
-// SIZE LIMIT CHECK
 define('MAX_CODE_SIZE', 10000);
 if (strlen($code) > MAX_CODE_SIZE) {
     echo json_encode([
@@ -37,37 +80,19 @@ if (strlen($code) > MAX_CODE_SIZE) {
     exit;
 }
 
-// Automatically determine version from path
+// =========================================================================
+// JAIL SETUP
+// =========================================================================
+
 $version = basename(dirname(__DIR__));
 $template_name = "arturo_runner_" . $version;
 
-// Check if we should skip saving (for execution without saving)
-$snippet_id_input = !empty($_POST['i']) ? $_POST['i'] : '';
-$skip_save = ($snippet_id_input === 'SKIP_SAVE');
+$example_name = isset($_POST['example']) ? $_POST['example'] : '';
+$is_example = !empty($example_name);
 
-// Generate unique ID only if we're actually saving (when share button is pressed)
-$exec_id = "";
-if (!$skip_save) {
-    require_once __DIR__ . '/db.php';
-    $db = new SnippetDB();
-    
-    // If empty string sent, generate new ID (from share button)
-    // If existing ID sent, update that snippet
-    $exec_id = !empty($snippet_id_input) ? $snippet_id_input : $db->generateUniqueId();
-    
-    // Save snippet to database
-    $db->save($exec_id, $code);
-    
-    // Occasionally cleanup old snippets (1% chance)
-    if (rand(1, 100) === 1) {
-        $db->cleanup();
-    }
-}
-
-$jail_name = "arturo_" . preg_replace('/[^a-zA-Z0-9]/', '_', $skip_save ? 'example_' . uniqid() : $exec_id);
+$jail_name = "arturo_" . preg_replace('/[^a-zA-Z0-9]/', '_', ($is_example ? 'example_' : 'exec_') . uniqid());
 $jail_path = "/zroot/jails/run/" . $jail_name;
 
-// Clone template jail
 exec("sudo /sbin/zfs clone zroot/jails/{$template_name}@clean zroot/jails/run/$jail_name 2>&1", $clone_out, $clone_ret);
 
 if ($clone_ret !== 0) {
@@ -75,40 +100,38 @@ if ($clone_ret !== 0) {
     error_log($error_msg);
     echo json_encode([
         "text" => "System error: " . htmlspecialchars($error_msg), 
-        "code" => $skip_save ? "" : $exec_id, 
+        "code" => "", 
         "result" => -1
     ]);
     exit;
 }
 
-// Check if this is an unmodified example
-$example_name = isset($_POST['example']) ? $_POST['example'] : '';
-$is_example = ($skip_save && !empty($example_name));
+// =========================================================================
+// PREPARE EXECUTION COMMAND
+// =========================================================================
 
 if ($is_example) {
-    // For unmodified examples, execute from /examples directory
     $example_file = basename($example_name) . ".art";
-    // Escape for the nested shell context - use backslash-escaped quotes
     $arturo_cmd = "/usr/local/bin/arturo \\\"examples/" . str_replace('"', '\\"', $example_file) . "\\\"";
 } else {
-    // Write code file for regular snippets or modified examples
     $code_file = $jail_path . "/tmp/main.art";
     file_put_contents($code_file, $code . "\n");
     chmod($code_file, 0644);
     $arturo_cmd = "/usr/local/bin/arturo /tmp/main.art";
 }
 
-// Build command with arguments, if provided
 if (!empty($args)) {
     $escaped_args = str_replace('"', '\\"', $args);
     $arturo_cmd .= " \\\"" . $escaped_args . "\\\"";
 }
 
+// =========================================================================
+// EXECUTION
+// =========================================================================
+
 if ($stream) {
-    // For streaming, run without aha first to avoid buffering, then colorize each line
     $cmd = "sudo /usr/sbin/jail -c name=$jail_name path=$jail_path exec.start=\"/bin/sh -c 'HOME=/root LD_LIBRARY_PATH=/usr/local/lib COLUMNS=$columns LINES=24 timeout --kill-after=3s 10s $arturo_cmd 2>&1'\" exec.stop=\"\" 2>&1";
     
-    // Disable PHP buffering for streaming
     ini_set('output_buffering', 'off');
     ini_set('zlib.output_compression', false);
     if (ob_get_level()) ob_end_clean();
@@ -125,7 +148,6 @@ if ($stream) {
             $buffer = array_pop($lines);
             
             foreach ($lines as $line) {
-                // Colorize each line individually
                 $colorized = shell_exec("echo " . escapeshellarg($line) . " | /usr/local/bin/aha --no-header --black");
                 $formatted = str_replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;", rtrim($colorized));
                 echo "data: " . json_encode(["line" => $formatted . "<br>"]) . "\n\n";
@@ -135,7 +157,6 @@ if ($stream) {
         usleep(10000);
     }
     
-    // Send any remaining buffered content
     if ($buffer !== '') {
         $colorized = shell_exec("echo " . escapeshellarg($buffer) . " | /usr/local/bin/aha --no-header --black");
         $formatted = str_replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;", rtrim($colorized));
@@ -145,23 +166,18 @@ if ($stream) {
     
     $ret = pclose($handle);
     
-    // Send completion event
     echo "data: " . json_encode([
         "done" => true,
-        "code" => $skip_save ? "" : $exec_id,
+        "code" => "",
         "result" => $ret
     ]) . "\n\n";
     flush();
     
 } else {
-    // Run in jail with timeout, pipe through aha for color conversion
-    // Use the terminal width from the browser
     $cmd = "sudo /usr/sbin/jail -c name=$jail_name path=$jail_path exec.start=\"/bin/sh -c 'HOME=/root LD_LIBRARY_PATH=/usr/local/lib COLUMNS=$columns LINES=24 timeout --kill-after=3s 10s $arturo_cmd 2>&1 | /usr/local/bin/aha --no-header --black'\" exec.stop=\"\" 2>&1";
     
-    // Original batch execution
     exec($cmd, $output, $ret);
     
-    // Process output
     $txt = "";
     foreach ($output as $outp) {
         $txt .= str_replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;", $outp) . "<br>";
@@ -171,14 +187,16 @@ if ($stream) {
         $txt = "[no output]";
     }
     
-    // Return empty code if we skipped saving
     echo json_encode([
         "text" => $txt,
-        "code" => $skip_save ? "" : $exec_id,
+        "code" => "",
         "result" => $ret
     ]);
 }
 
-// Cleanup (jail auto-stops, just destroy ZFS)
+// =========================================================================
+// CLEANUP
+// =========================================================================
+
 exec("sudo /sbin/zfs destroy zroot/jails/run/$jail_name 2>&1");
 ?>
