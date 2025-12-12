@@ -301,7 +301,7 @@
         if (mobileSearchInput) mobileSearchInput.value = '';
         if (mobileSearchDropdown) {
             mobileSearchDropdown.innerHTML = '';
-            mobileSearchDropdown.classList.remove('is-loading');
+            mobileSearchDropdown.classList.remove('is-loading', 'has-results');
         }
     }
 
@@ -309,7 +309,7 @@
         if (!fuse || !query || query.length < 2) {
             if (mobileSearchDropdown) {
                 mobileSearchDropdown.innerHTML = '';
-                mobileSearchDropdown.classList.remove('is-loading');
+                mobileSearchDropdown.classList.remove('is-loading', 'has-results');
             }
             return;
         }
@@ -353,6 +353,7 @@
         mobileSearchDropdown.classList.remove('is-loading');
         
         if (results.length === 0) {
+            mobileSearchDropdown.classList.remove('has-results');
             mobileSearchDropdown.innerHTML = `
                 <div class="search-no-results">
                     <div class="search-no-results-icon">
@@ -363,16 +364,20 @@
                     </div>
                 </div>
             `;
+            setTimeout(() => mobileSearchDropdown.classList.add('has-results'), 10);
             return;
         }
 
-        mobileSearchDropdown.innerHTML = '';
-
+        const fragment = document.createDocumentFragment();
         results.forEach((result, index) => {
             const item = result.item;
             const resultEl = createMobileResultElement(item, query, result.matches);
-            mobileSearchDropdown.appendChild(resultEl);
+            fragment.appendChild(resultEl);
         });
+        
+        mobileSearchDropdown.innerHTML = '';
+        mobileSearchDropdown.appendChild(fragment);
+        setTimeout(() => mobileSearchDropdown.classList.add('has-results'), 10);
     }
 
     function createMobileResultElement(item, query, matches = []) {
@@ -735,13 +740,14 @@
             if (query.length < 2) {
                 if (mobileSearchDropdown) {
                     mobileSearchDropdown.innerHTML = '';
-                    mobileSearchDropdown.classList.remove('is-loading');
+                    mobileSearchDropdown.classList.remove('is-loading', 'has-results');
                 }
                 return;
             }
             
             if (mobileSearchDropdown) {
                 mobileSearchDropdown.classList.add('is-loading');
+                mobileSearchDropdown.classList.remove('has-results');
             }
             
             mobileSearchTimeout = setTimeout(() => {
