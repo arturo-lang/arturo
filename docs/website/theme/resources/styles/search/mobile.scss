@@ -234,10 +234,6 @@
     }
     
     .mobile-search-trigger {
-        color: lighten(#6a156b, 20%);
-        
-        &:hover {
-            color: lighten(#6a156b, 30%);
-        }
+        color: #4a4a4a
     }
 }
