@@ -187,6 +187,16 @@
         transform: translate(-50%, -50%) translateY(-5px);
         transition: opacity 0.25s ease, transform 0.25s ease, visibility 0s linear 0s;
     }
+    
+    &.toast-error {
+        background: #ff3860;
+        color: white;
+    }
+    
+    &.toast-success {
+        background: #50fa7b;
+        color: #1e1e1e;
+    }
 }
 
 // Example list styles
@@ -215,10 +225,11 @@
 .snippet-item {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     padding: 12px 16px;
     border-bottom: 1px solid #f0f0f0;
     transition: background-color 0.15s ease;
-    gap: 8px;
+    cursor: pointer;
     
     &:hover {
         background-color: #f8f8f8;
@@ -228,16 +239,15 @@
         border-bottom: none;
     }
     
-    .snippet-item-main {
+    .snippet-info {
         flex: 1;
         display: flex;
-        justify-content: space-between;
-        align-items: center;
-        cursor: pointer;
+        flex-direction: column;
+        gap: 4px;
         min-width: 0;
     }
     
-    .snippet-name {
+    .snippet-alias {
         font-size: 14px;
         color: #363636;
         font-weight: 500;
@@ -246,34 +256,21 @@
         white-space: nowrap;
     }
     
-    .snippet-date {
-        font-size: 12px;
+    .snippet-meta {
+        font-size: 11px;
         color: #999;
-        margin-left: 12px;
-        flex-shrink: 0;
     }
     
-    .snippet-edit,
     .snippet-delete {
         background: none;
         border: none;
         color: #999;
-        font-size: 18px;
+        font-size: 20px;
         line-height: 1;
         cursor: pointer;
-        padding: 0 8px;
+        padding: 4px 8px;
         transition: color 0.15s ease;
         flex-shrink: 0;
-    }
-    
-    .snippet-edit {
-        &:hover {
-            color: #667eea;
-        }
-    }
-    
-    .snippet-delete {
-        font-size: 24px;
         
         &:hover {
             color: #ff3860;
