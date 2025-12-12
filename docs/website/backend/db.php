@@ -1,4 +1,9 @@
 <?php
+// =============================================================================
+// DATABASE HANDLER
+// =============================================================================
+// Manages snippet storage, rate limiting, and visit tracking
+
 class SnippetDB {
     private $db;
     
@@ -6,17 +11,31 @@ class SnippetDB {
         $db_path = '/usr/local/www/arturo/main/shared/data/snippets.db';
         $this->db = new SQLite3($db_path);
         
-        // Create table if not exists
+        // Create snippets table
         $this->db->exec('
             CREATE TABLE IF NOT EXISTS snippets (
                 id TEXT PRIMARY KEY,
                 code TEXT NOT NULL,
                 created_at INTEGER,
                 last_accessed INTEGER,
-                execution_count INTEGER DEFAULT 1
+                visit_count INTEGER DEFAULT 0
+            )
+        ');
+        
+        // Create rate limiting table
+        $this->db->exec('
+            CREATE TABLE IF NOT EXISTS rate_limits (
+                ip TEXT,
+                hour INTEGER,
+                count INTEGER,
+                PRIMARY KEY (ip, hour)
             )
         ');
     }
+    
+    // =========================================================================
+    // SNIPPET MANAGEMENT
+    // =========================================================================
     
     function generateUniqueId($length = 6) {
         $chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -28,13 +47,11 @@ class SnippetDB {
                 $id .= $chars[random_int(0, 61)];
             }
             
-            // Check if ID already exists
             if (!$this->exists($id)) {
                 return $id;
             }
         }
         
-        // If we couldn't find a unique ID in 10 attempts, try with one more character
         return $this->generateUniqueId($length + 1);
     }
     
@@ -48,45 +65,28 @@ class SnippetDB {
     function save($id, $code) {
         $now = time();
         
-        // Check if snippet exists
         if ($this->exists($id)) {
-            // Update existing snippet
             $stmt = $this->db->prepare('
                 UPDATE snippets 
                 SET code = :code,
-                    last_accessed = :now,
-                    execution_count = execution_count + 1
+                    last_accessed = :now
                 WHERE id = :id
             ');
-            $stmt->bindValue(':id', $id, SQLITE3_TEXT);
-            $stmt->bindValue(':code', $code, SQLITE3_TEXT);
-            $stmt->bindValue(':now', $now, SQLITE3_INTEGER);
         } else {
-            // Insert new snippet
             $stmt = $this->db->prepare('
-                INSERT INTO snippets (id, code, created_at, last_accessed, execution_count)
-                VALUES (:id, :code, :now, :now, 1)
+                INSERT INTO snippets (id, code, created_at, last_accessed, visit_count)
+                VALUES (:id, :code, :now, :now, 0)
             ');
-            $stmt->bindValue(':id', $id, SQLITE3_TEXT);
-            $stmt->bindValue(':code', $code, SQLITE3_TEXT);
-            $stmt->bindValue(':now', $now, SQLITE3_INTEGER);
         }
+        
+        $stmt->bindValue(':id', $id, SQLITE3_TEXT);
+        $stmt->bindValue(':code', $code, SQLITE3_TEXT);
+        $stmt->bindValue(':now', $now, SQLITE3_INTEGER);
         
         return $stmt->execute();
     }
     
     function get($id) {
-        $now = time();
-        
-        // Update last_accessed when retrieving
-        $update = $this->db->prepare('
-            UPDATE snippets SET last_accessed = :now WHERE id = :id
-        ');
-        $update->bindValue(':id', $id, SQLITE3_TEXT);
-        $update->bindValue(':now', $now, SQLITE3_INTEGER);
-        $update->execute();
-        
-        // Get the code
         $stmt = $this->db->prepare('SELECT code FROM snippets WHERE id = :id');
         $stmt->bindValue(':id', $id, SQLITE3_TEXT);
         $result = $stmt->execute();
@@ -94,11 +94,64 @@ class SnippetDB {
         return $row ? $row['code'] : null;
     }
     
+    function recordVisit($id) {
+        $stmt = $this->db->prepare('
+            UPDATE snippets 
+            SET visit_count = visit_count + 1,
+                last_accessed = :now
+            WHERE id = :id
+        ');
+        $stmt->bindValue(':id', $id, SQLITE3_TEXT);
+        $stmt->bindValue(':now', time(), SQLITE3_INTEGER);
+        return $stmt->execute();
+    }
+    
     function cleanup() {
-        // Delete snippets not accessed in 2 years (63072000 seconds)
         $cutoff = time() - (2 * 365 * 24 * 60 * 60);
         $this->db->exec("DELETE FROM snippets WHERE last_accessed < $cutoff");
         $this->db->exec('VACUUM');
+    }
+    
+    // =========================================================================
+    // RATE LIMITING
+    // =========================================================================
+    
+    function checkRateLimit($ip, $limit = 60) {
+        $current_hour = floor(time() / 3600);
+        
+        $stmt = $this->db->prepare('
+            SELECT count FROM rate_limits 
+            WHERE ip = :ip AND hour = :hour
+        ');
+        $stmt->bindValue(':ip', $ip, SQLITE3_TEXT);
+        $stmt->bindValue(':hour', $current_hour, SQLITE3_INTEGER);
+        $result = $stmt->execute();
+        $row = $result->fetchArray(SQLITE3_ASSOC);
+        
+        if (!$row) {
+            return true;
+        }
+        
+        return $row['count'] < $limit;
+    }
+    
+    function recordExecution($ip) {
+        $current_hour = floor(time() / 3600);
+        
+        $stmt = $this->db->prepare('
+            INSERT INTO rate_limits (ip, hour, count)
+            VALUES (:ip, :hour, 1)
+            ON CONFLICT(ip, hour) DO UPDATE SET count = count + 1
+        ');
+        $stmt->bindValue(':ip', $ip, SQLITE3_TEXT);
+        $stmt->bindValue(':hour', $current_hour, SQLITE3_INTEGER);
+        
+        return $stmt->execute();
+    }
+    
+    function cleanupRateLimits() {
+        $cutoff_hour = floor(time() / 3600) - 24;
+        $this->db->exec("DELETE FROM rate_limits WHERE hour < $cutoff_hour");
     }
 }
 ?>
