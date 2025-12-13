@@ -236,7 +236,7 @@ function execCode() {
                                         // Successful execution
                                         statusMsg = 'Success';
                                         statusColor = '#50fa7b';
-                                    } else if (data.result === 124 || data.result === 137 || terminalOutput.includes('timed out') || terminalOutput.includes('timeout')) {
+                                    } else if (data.result === 124 || data.result === 137 || terminalOutput.includes('timed out') || terminalOutput.includes('timeout') || elapsed > 10 ) {
                                         // Timeout: 124 = timeout, 137 = killed (timeout --kill-after), or timeout in output
                                         statusMsg = 'Timeout';
                                         statusColor = '#ffb86c';
