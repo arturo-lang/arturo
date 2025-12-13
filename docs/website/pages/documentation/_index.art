@@ -69,7 +69,7 @@ In this section, you will find everything (or hopefully, almost everything) you 
 
 Here is an overview of what you'll find:
 
-<h3 class="title is-4 is-spaced mt-6">At a glance</h3>
+<h3 class="subtitle is-4 is-spaced mt-6">At a glance</h3>
 
 <div id="at-a-glance">
 <div class="columns">
@@ -82,7 +82,7 @@ Here is an overview of what you'll find:
     <!--<i class="ph-play-circle-bold" style="font-size: 100px; margin-top: 1rem;"></i>-->
   </div>
   <div class="card-content has-text-centered">
-      <h4 class="is-5">Getting Started</h4>
+      <h4 class="is-5"><b>Getting Started</b></h4>
   </div>
   </div></a>
 </div>
@@ -94,7 +94,7 @@ Here is an overview of what you'll find:
     <!--<i class="ph-magic-wand-bold" style="font-size: 100px; margin-top: 1rem;"></i>-->
   </div>
   <div class="card-content has-text-centered">
-      <h4 class="is-5">In A Nutshell</h4>
+      <h4 class="is-5"><b>In A Nutshell</b></h4>
   </div>
   </div></a>
 </div>
@@ -106,7 +106,7 @@ Here is an overview of what you'll find:
     <!--<i class="ph-tree-bold" style="font-size: 100px; margin-top: 1rem;"></i>-->
   </div>
   <div class="card-content has-text-centered">
-      <h4 class="is-5">Language</h4>
+      <h4 class="is-5"><b>Language</b></h4>
   </div>
   </div></a>
 </div>
@@ -120,7 +120,7 @@ Here is an overview of what you'll find:
     <!--<i class="ph-monitor-bold" style="font-size: 100px; margin-top: 1rem;"></i>-->
   </div>
   <div class="card-content has-text-centered">
-      <h4 class="is-5">Command Line</h4>
+      <h4 class="is-5"><b>Command Line</b></h4>
   </div>
   </div></a>
 </div>
@@ -133,7 +133,7 @@ Here is an overview of what you'll find:
     <!--<i class="ph-books-bold" style="font-size: 100px; margin-top: 1rem;"></i>-->
   </div>
   <div class="card-content has-text-centered">
-      <h4 class="is-5">Library</h4>
+      <h4 class="is-5"><b>Library</b></h4>
   </div>
   </div></a>
 </div>
@@ -145,7 +145,7 @@ Here is an overview of what you'll find:
     <!--<i class="ph-flask-bold" style="font-size: 100px; margin-top: 1rem;"></i>-->
   </div>
   <div class="card-content has-text-centered">
-      <h4 class="is-5">Examples</h4>
+      <h4 class="is-5"><b>Examples</b></h4>
   </div>
   </div></a>
 </div>
