@@ -123,15 +123,3 @@
         display: none;
     }
 }
-
-// Additional breakpoint for very constrained spaces
-@media screen and (max-width: 640px) {
-    .unified-toolbar {
-        gap: 4px;
-    }
-    
-    .toolbar-left,
-    .toolbar-right {
-        gap: 4px;
-    }
-}
