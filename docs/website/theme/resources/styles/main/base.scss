@@ -10,11 +10,15 @@ html,body {
 }
 
 .title {
-    font-weight: 700;
+    &:not(.default) {
+        font-weight: 700;
+    }
 }
 
 .subtitle {
-    font-weight: 600;
+    &:not(.default) {
+        font-weight: 600;
+    }
 }
 
 a {
