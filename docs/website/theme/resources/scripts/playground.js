@@ -334,23 +334,26 @@ function saveSnippet() {
             window.isReadOnly = false;
             updateButtonStates();
             
+            window.history.pushState({}, '', window.location.pathname.split('/').slice(0, -1).join('/') + '/' + data.id);
+            
             if (wasUpdate) {
                 // Just re-saved existing snippet - show toast only
                 showToast('Snippet updated', 'success');
             } else {
-                // New snippet or fork - show share modal
-                const fullUrl = window.location.origin + window.location.pathname.split('/').slice(0, -1).join('/') + '/' + data.id;
-                document.getElementById('snippet-link').value = fullUrl;
-                document.getElementById('save-modal').classList.add('is-active');
-                
+                // New snippet or fork - show toast, then modal after delay
                 if (data.forked) {
                     showToast('Forked as new snippet', 'success');
                 } else {
                     showToast('Snippet saved', 'success');
                 }
+                
+                // Show modal after toast disappears
+                setTimeout(() => {
+                    const fullUrl = window.location.origin + window.location.pathname.split('/').slice(0, -1).join('/') + '/' + data.id;
+                    document.getElementById('snippet-link').value = fullUrl;
+                    document.getElementById('save-modal').classList.add('is-active');
+                }, 3200);
             }
-            
-            window.history.pushState({}, '', window.location.pathname.split('/').slice(0, -1).join('/') + '/' + data.id);
         } else {
             showToast('Failed to save: ' + (data.error || 'Unknown error'), 'error');
         }
@@ -379,6 +382,8 @@ function downloadSnippet() {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+    
+    showToast('Script downloaded', 'success');
 }
 
 function getSnippet(id) {
@@ -490,6 +495,9 @@ function updateButtonStates() {
             if (window.isReadOnly && hasContent) {
                 saveLabel.textContent = 'Fork';
                 saveLink.title = 'Fork and save as new snippet';
+            } else if (window.snippetId && ownsSnippet(window.snippetId) && window.creatorIpMatches && hasContent) {
+                saveLabel.textContent = 'Update';
+                saveLink.title = 'Update this snippet';
             } else {
                 saveLabel.textContent = 'Save';
                 saveLink.title = 'Save and share';
@@ -512,10 +520,16 @@ function copyShareLink() {
     linkInput.setSelectionRange(0, 99999);
     
     navigator.clipboard.writeText(linkInput.value).then(function() {
-        showToast('Link copied to clipboard!', 'success');
+        closeSaveModal();
+        setTimeout(() => {
+            showToast('Link copied to clipboard!', 'success');
+        }, 100);
     }, function() {
         document.execCommand('copy');
-        showToast('Link copied to clipboard!', 'success');
+        closeSaveModal();
+        setTimeout(() => {
+            showToast('Link copied to clipboard!', 'success');
+        }, 100);
     });
 }
 
@@ -659,17 +673,59 @@ function loadMySnippets() {
         
         return `
             <div class="snippet-item">
-                <div class="snippet-info" onclick="selectMySnippet('${id}')">
-                    <span class="snippet-alias">${alias}</span>
+                <div class="snippet-info" onclick="if (!event.target.classList.contains('snippet-alias-input')) selectMySnippet('${id}')">
+                    <span class="snippet-alias" id="alias-${id}" ondblclick="event.stopPropagation(); startEditAlias('${id}')">${escapeHtml(alias)}</span>
                     <span class="snippet-meta">${id} • ${date}</span>
                 </div>
                 <div class="snippet-actions">
-                    <button class="snippet-edit" onclick="event.stopPropagation(); editSnippetAlias('${id}')" title="Edit alias">✎</button>
+                    <button class="snippet-edit" onclick="event.stopPropagation(); startEditAlias('${id}')" title="Edit alias">✎</button>
                     <button class="snippet-delete" onclick="event.stopPropagation(); deleteMySnippet('${id}')" title="Delete">✕</button>
                 </div>
             </div>
         `;
     }).join('');
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+function startEditAlias(id) {
+    const snippets = getMySnippets();
+    const currentAlias = snippets[id]?.alias || id;
+    const aliasSpan = document.getElementById('alias-' + id);
+    
+    if (!aliasSpan || aliasSpan.querySelector('input')) return;
+    
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.value = currentAlias;
+    input.className = 'snippet-alias-input';
+    input.style.cssText = 'width: 100%; font-size: 14px; padding: 2px 4px; border: 1px solid #667eea; border-radius: 3px; outline: none;';
+    
+    const saveEdit = () => {
+        const newAlias = input.value.trim();
+        if (newAlias && newAlias !== currentAlias) {
+            updateSnippetAlias(id, newAlias);
+        }
+        loadMySnippets();
+    };
+    
+    input.addEventListener('blur', saveEdit);
+    input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            saveEdit();
+        } else if (e.key === 'Escape') {
+            loadMySnippets();
+        }
+    });
+    
+    aliasSpan.textContent = '';
+    aliasSpan.appendChild(input);
+    input.focus();
+    input.select();
 }
 
 function selectMySnippet(id) {
@@ -681,17 +737,6 @@ function deleteMySnippet(id) {
     if (confirm('Delete this snippet from your list?')) {
         removeMySnippet(id);
         deleteLocalSnippet(id);
-        loadMySnippets();
-    }
-}
-
-function editSnippetAlias(id) {
-    const snippets = getMySnippets();
-    const currentAlias = snippets[id]?.alias || id;
-    const newAlias = prompt('Enter a new alias for this snippet:', currentAlias);
-    
-    if (newAlias !== null && newAlias.trim() !== '') {
-        updateSnippetAlias(id, newAlias.trim());
         loadMySnippets();
     }
 }
