@@ -840,10 +840,14 @@ function toggleExpand() {
         doccols.classList.add('horizontal');
         expanderIcon.classList.remove('compressed');
         expanderIcon.classList.add('expanded');
+
+        showToast("Layout: column mode");
     } else {
         doccols.classList.remove('horizontal');
         expanderIcon.classList.add('compressed');
         expanderIcon.classList.remove('expanded');
+        
+        showToast("Layout: stack mode");
     }
     
     localStorage.setItem('playground-expanded', window.expanded);
@@ -867,9 +871,13 @@ function toggleWordWrap() {
     if (window.wordwrap) {
         icon.classList.add("wrapped");
         localStorage.setItem('playground-wordwrap', 'true');
+
+        showToast("Wordwrap: on");
     } else {
         icon.classList.remove("wrapped");
         localStorage.setItem('playground-wordwrap', 'false');
+
+        showToast("Wordwrap: off");
     }
 }
 
