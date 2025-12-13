@@ -43,7 +43,7 @@
                             aliasList: new join.with:"\n" aliasList
                             replace replace postprocessAlerts read.markdown replace W\content "%ALIAS_LIST%" aliasList "<ul>" "<ulbd>" "</ul>" "</ulbd>"
                         ] [ 
-                            replace replace postprocessAlerts read.markdown W\content "<ul>" "<ulbd>" "</ul>" "</ulbd>"  
+                            replace replace replace postprocessAlerts read.markdown W\content "<ul>" "<ulbd>" "</ul>" "</ulbd>" "%DOWNLOADS%" importPartial "components/downloads.html"
                         ] 
                     ] ||>
 
