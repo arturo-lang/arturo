@@ -18,7 +18,8 @@ class SnippetDB {
                 code TEXT NOT NULL,
                 created_at INTEGER,
                 last_accessed INTEGER,
-                visit_count INTEGER DEFAULT 0
+                visit_count INTEGER DEFAULT 0,
+                creator_ip TEXT
             )
         ');
         
@@ -62,7 +63,7 @@ class SnippetDB {
         return $result->fetchArray() !== false;
     }
     
-    function save($id, $code) {
+    function save($id, $code, $creator_ip) {
         $now = time();
         
         if ($this->exists($id)) {
@@ -72,16 +73,19 @@ class SnippetDB {
                     last_accessed = :now
                 WHERE id = :id
             ');
+            $stmt->bindValue(':id', $id, SQLITE3_TEXT);
+            $stmt->bindValue(':code', $code, SQLITE3_TEXT);
+            $stmt->bindValue(':now', $now, SQLITE3_INTEGER);
         } else {
             $stmt = $this->db->prepare('
-                INSERT INTO snippets (id, code, created_at, last_accessed, visit_count)
-                VALUES (:id, :code, :now, :now, 0)
+                INSERT INTO snippets (id, code, created_at, last_accessed, visit_count, creator_ip)
+                VALUES (:id, :code, :now, :now, 0, :creator_ip)
             ');
+            $stmt->bindValue(':id', $id, SQLITE3_TEXT);
+            $stmt->bindValue(':code', $code, SQLITE3_TEXT);
+            $stmt->bindValue(':now', $now, SQLITE3_INTEGER);
+            $stmt->bindValue(':creator_ip', $creator_ip, SQLITE3_TEXT);
         }
-        
-        $stmt->bindValue(':id', $id, SQLITE3_TEXT);
-        $stmt->bindValue(':code', $code, SQLITE3_TEXT);
-        $stmt->bindValue(':now', $now, SQLITE3_INTEGER);
         
         return $stmt->execute();
     }
@@ -92,6 +96,14 @@ class SnippetDB {
         $result = $stmt->execute();
         $row = $result->fetchArray(SQLITE3_ASSOC);
         return $row ? $row['code'] : null;
+    }
+    
+    function getCreatorIp($id) {
+        $stmt = $this->db->prepare('SELECT creator_ip FROM snippets WHERE id = :id');
+        $stmt->bindValue(':id', $id, SQLITE3_TEXT);
+        $result = $stmt->execute();
+        $row = $result->fetchArray(SQLITE3_ASSOC);
+        return $row ? $row['creator_ip'] : null;
     }
     
     function recordVisit($id) {
