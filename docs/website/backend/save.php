@@ -15,6 +15,7 @@ $db = new SnippetDB();
 
 $code = $_POST['c'] ?? '';
 $snippet_id = $_POST['i'] ?? '';
+$ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
 
 if (empty($code)) {
     echo json_encode([
@@ -42,7 +43,7 @@ if (!empty($snippet_id)) {
     $id = $db->generateUniqueId();
 }
 
-$result = $db->save($id, $code);
+$result = $db->save($id, $code, $ip);
 
 if ($result) {
     echo json_encode([
