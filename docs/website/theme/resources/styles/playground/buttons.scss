@@ -1,0 +1,68 @@
+.action-button {
+    position: absolute;
+    top: 50%;
+    right: 20px;
+    width: 54px;
+    height: 54px;
+    z-index: 20;
+    border-radius: 50px;
+    color: white;
+    font-size: 1.8em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.2s ease;
+    cursor: pointer;
+
+    &.working {
+        background: gray;
+        opacity: 1;
+        cursor: wait;
+        pointer-events: all;
+    }
+
+    &.disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+
+        svg {
+            opacity: 0.5;
+        }
+    }
+
+    &:not(.working):not(.disabled):hover,
+    &:not(.working):not(.disabled).hover-effect {
+        box-shadow: 0px 0px 6px 3px grey;
+    }
+}
+
+#runbutton {
+    transform: translateY(-50%) translateY(0px);
+    background: darkorange;
+
+    .play {
+        display: block;
+    }
+    .processing {
+        display: none;
+        animation: spinaround 1s linear infinite;
+    }
+
+    &.working {
+        .play {
+            display: none;
+        }
+        .processing {
+            display: block;
+        }
+    }
+}
+
+@media (max-width: 768px) {
+    .action-button {
+        right: 15px;
+        width: 48px;
+        height: 48px;
+        font-size: 1.6em;
+    }
+}

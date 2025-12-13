@@ -16,6 +16,8 @@ postprocess: #.raw [
     {!html </blockquote>}       {!html </blockquote></div>}
     {!html <code class="language-red">}  {!html <code class="language-arturo">}
     {!html <pre><code}          {!html <pre class="mt-4 mb-4 is-size-7-touch is-size-6"><code}
+    {!html <p class="pt-1 pb-1"><h(\d)} {!html <h$1}
+    {!html <\/h(\d)><\/p>}      {!html </h$1>}
 ]
 
 routes: #.raw [
@@ -31,4 +33,5 @@ routes: #.raw [
     {library/[^/]+/[^/]+\.art}              "function.html"
     {_index\.art}                           "index.html"
     {documentation/[^/]+\.art}              "docpage.html"
+    {error/404.art}                         "404.html"
 ]

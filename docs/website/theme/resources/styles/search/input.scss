@@ -1,0 +1,136 @@
+#searchbar {
+    position: relative;
+}
+
+.search-container {
+    padding: 0;
+    align-items: normal;
+    position: relative;
+    z-index: 100;
+    
+    #searchbar {
+        border: 0;
+        border-radius: 0;
+        border-left: 2px solid transparent;
+        border-right: 2px solid #CCC;
+        outline: none;
+        width: 5vw;
+        font-size: 1.2em;
+        padding-left: 50px;
+        margin-top: 0px;
+        line-height: 1.9em;
+        padding-right: 15.5px;
+        margin-right: -21.5px;
+        transition: width 0.3s ease, border-left-color 0.3s ease, border-right-color 0.3s ease;
+        
+        &::-webkit-search-cancel-button {
+            display: none;
+            -webkit-appearance: none;
+        }
+        
+        cursor: pointer;
+        
+        &:not(:focus) {
+            cursor: pointer;
+            caret-color: transparent; 
+            color: transparent; 
+            
+            &::placeholder {
+                color: transparent; 
+            }
+        }
+
+        &:focus {
+            width: 30vw;
+            border-left: 2px solid darken($main-purple, 10%);
+            border-right: 2px solid $main-purple;
+            cursor: text; 
+            caret-color: auto; 
+            color: inherit; 
+            
+            &::placeholder {
+                color: #999;
+            }
+        }
+
+        &:focus + #searchbar-icon {
+            left: calc(-1 * 30vw + 42.5px);
+        }
+        
+        &:focus,
+        &.keep-open {
+            width: 30vw;
+            border-left: 2px solid darken($main-purple, 10%);
+            border-right: 2px solid $main-purple;
+        }
+        
+        &.keep-open + #searchbar-icon {
+            left: calc(-1 * 30vw + 42.5px);
+        }
+    }
+
+    #searchbar-icon {
+        position: relative;
+        top: 16px;
+        right: 20px;
+        transition: left 0.3s ease;
+        pointer-events: none;
+    }
+
+    .search-dropdown {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
+        border: 2px solid $main-purple;
+        border-top: 0;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        max-height: 0;
+        overflow: hidden;
+        opacity: 0;
+        transition: all 0.2s ease;
+        z-index: 1000;
+        margin-top: 0px;
+        border-radius: 0 0 4px 4px;
+
+        &.is-active {
+            max-height: 500px;
+            overflow-y: auto;
+            opacity: 1;
+        }
+
+        &.is-loading {
+            &::after {
+                content: '';
+                display: block;
+                margin: 20px auto;
+                width: 30px;
+                height: 30px;
+                border: 3px solid #f3f3f3;
+                border-top: 3px solid $main-purple;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+            }
+        }
+
+        &::-webkit-scrollbar {
+            width: 0px;
+        }
+        
+        &::-webkit-scrollbar-track {
+            box-shadow: inset 0 0 6px rgba(255, 255, 255, 1.0);
+        }
+        
+        &::-webkit-scrollbar-thumb {
+            background: #fff;
+            border-radius: 0;
+        }
+    }
+}
+
+@media (max-width: 1023px) {
+    .search-dropdown {
+        display: none !important;
+    }
+}

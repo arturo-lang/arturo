@@ -24,11 +24,13 @@ Paths: #[
     dataPath:           "|project|/data"
     pages:				"|project|/pages"
     theme:              "|project|/theme"
+    resourceFavicon: 	"|project|/theme/resources/favicon"
     resourceFonts:  	"|project|/theme/resources/fonts"
     resourceImages: 	"|project|/theme/resources/images"
     resourceData:       "|project|/theme/resources/data"
     resourceScripts:	"|project|/theme/resources/scripts"
     resourceStyles: 	"|project|/theme/resources/styles"
+    backend:            "|project|/backend"
 ]
 
 Settings: #[]
@@ -146,16 +148,21 @@ permalink: function [tag][
 iconsPath: ./"icons"
 
 octicon: function [icon][
-    read ~"|iconsPath|/|icon|.svg"
+    read ~"|iconsPath|/octicons/|icon|.svg"
+]
+
+phosphor: function [category, icon][
+    resu: read ~"|iconsPath|/phosphor/|category|/|icon|.svg"
+    replace replace resu {/<svg[^>]+>/} "" "</svg>" ""
 ]
 
 postprocessAlerts: function [src][
     replace src [
-        {/<blockquote>\n<p>\[!TIP\]/}
-        {/<blockquote>\n<p>\[!NOTE\]/}
-        {/<blockquote>\n<p>\[!IMPORTANT\]/}
-        {/<blockquote>\n<p>\[!WARNING\]/}
-        {/<blockquote>\n<p>\[!CAUTION\]/}
+        {/<blockquote>\n<p[^>]*>\[!TIP\]/}
+        {/<blockquote>\n<p[^>]*>\[!NOTE\]/}
+        {/<blockquote>\n<p[^>]*>\[!IMPORTANT\]/}
+        {/<blockquote>\n<p[^>]*>\[!WARNING\]/}
+        {/<blockquote>\n<p[^>]*>\[!CAUTION\]/}
      ]@[
         ~"<blockquote class='alert alert-tip'>\n<p><b class='alert-message'>|octicon 'lightbulb|Tip</b><br>\n"
         ~"<blockquote class='alert alert-note'>\n<p><b class='alert-message'>|octicon 'info|Note</b><br>\n"
@@ -292,12 +299,31 @@ githubMarkdown: function [src][
         ;-------------------------
         call {_showHeader} ["finalizing"]
 
+        write.directory ø join.path @[loc "favico"]
+
+        inspect list "backend"
+        ; loop filter list "backend" => [in? "." &] 'res [ 
+        ;     folderPath: join.path @[loc "backend" extract.basename res]
+        ;     call {_showInfoLine} @["create" call {_routeDiagram} @[res -- "backend/"] false]
+        ;     write.directory ø join.path @[loc "backend" extract.basename res] 
+        ;     loop list res 'item [
+        ;         tgt: join.path @[loc item]
+
+        ;         call {_showInfoLine} @["copy" call {_routeDiagram} @[item -- "backend/"] false]
+        ;         execute ~"cp |item| |tgt|"
+        ;     ]
+        ; ]
+
         loop filter list "theme/resources" => [in? "." &] 'res [ 
             folderPath: join.path @[loc "resources" extract.basename res]
             call {_showInfoLine} @["create" call {_routeDiagram} @[res -- "theme/resources/"] false]
             write.directory ø join.path @[loc "resources" extract.basename res] 
             loop list res 'item [
                 tgt: join.path @[loc item -- "theme/"]
+
+                if contains? res "favico" [
+                    tgt: join.path @[loc "favico" "extra"]
+                ]
                 
                 when [
                     [in? extract.extension item [".scss" ".sass"]] [
@@ -306,9 +332,11 @@ githubMarkdown: function [src][
                         execute ~"sass --style compressed |item| |newTgt|"
                     ]
                     [in? extract.extension item [".png"]][
-                        call {_showInfoLine} @["compress" call {_routeDiagram} @[item -- "theme/resources/"] false]
-                        newTgt: replace tgt extract.extension tgt ".webp"
-                        execute ~"cwebp |item| -o |newTgt|"
+                        unless contains? res "favico" [
+                            call {_showInfoLine} @["compress" call {_routeDiagram} @[item -- "theme/resources/"] false]
+                            newTgt: replace tgt extract.extension tgt ".webp"
+                            execute ~"cwebp |item| -o |newTgt|"
+                        ]
 
                         call {_showInfoLine} @["copy" call {_routeDiagram} @[item -- "theme/resources/"] false]
                         execute ~"cp |item| |extract.directory tgt|"

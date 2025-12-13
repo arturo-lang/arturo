@@ -1,0 +1,288 @@
+.modal {
+    z-index: 1000;
+}
+
+.modal-card {
+    z-index: 1000;
+    
+    .modal-background {
+        background-color: rgba(10, 10, 10, .50);
+        z-index: 999;
+    }
+
+    .modal-card-head {
+        background-color: #fafafa;
+        padding: 12px 20px;
+        border-bottom: 1px solid #dbdbdb;
+        
+        .modal-card-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #363636;
+        }
+
+        .delete {
+            max-height: 15px;
+            max-width: 15px;
+            min-height: 15px;
+            min-width: 15px;
+        }
+    }
+    
+    .modal-card-body {
+        padding: 20px;
+
+        &:last-child {
+            border-bottom-left-radius: 6px;
+            border-bottom-right-radius: 6px;
+        }
+    }
+    
+    .modal-card-foot {
+        padding: 8px 20px;
+        background-color: #fafafa;
+        border-top: 1px solid #dbdbdb;
+        display: flex; 
+        justify-content: flex-start; 
+        gap: 8px;
+    }
+
+    @media (max-width: 768px) {
+        width: 90vw;
+    }
+}
+
+#doc-modal {
+    
+    .modal-card {
+        width: 55%;
+        max-width: 1200px; 
+        max-height: 80vh;
+
+        .modal-card-head {
+            background-color: $main-purple;
+            border-bottom: 1px solid darken($main-purple, 5%);
+
+            .modal-card-title {
+                display: flex;
+                align-items: center;
+                color: white;
+                font-size: 20px;
+
+                svg {
+                    fill: white;
+                    color: white;
+                }
+
+                span.main-title {
+                    margin-left: 0.75rem;
+                }
+
+                span.doc-link {
+                    margin-left: auto;
+                    margin-right: 1.5rem;
+                    font-size: 14px;
+                    color: rgba(255, 255, 255, 0.9);
+                    
+                    a {
+                        color: rgba(255, 255, 255, 0.9);
+                        border-bottom: 1px solid transparent;
+                        
+                        &:hover {
+                            color: white;
+                            border-bottom: 1px solid white;
+                        }
+                    }
+                }
+            }
+        }
+
+        .modal-card-body {
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+
+            zoom: 0.8;
+        }
+    }
+}
+
+@media screen and (max-width: 768px) {
+    #doc-modal {
+        .modal-card {
+            width: 90vw;
+            max-height: 90vh;
+        }
+    }
+}
+
+
+.loader {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #667eea;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
+}
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted black;
+  
+    .tooltiptext {
+        visibility: hidden;
+        width: 120px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        padding: 5px 0;
+        border-radius: 6px;
+       
+        position: absolute;
+        z-index: 1000;
+
+        &::after {
+            content: " ";
+            position: absolute;
+            top: 50%;
+            left: 100%;
+            margin-top: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: transparent transparent transparent black;
+        }
+    }
+  
+    &:hover .tooltiptext {
+        visibility: visible;
+    }
+}
+
+#toast-notification {
+    position: fixed;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, $main-purple 0%, $purple-fade 100%);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    z-index: 10000;
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s ease, transform 0.25s ease, visibility 0s linear 0.25s;
+    box-shadow: 0 2px 8px rgba(31, 6, 32, 0.3);
+    white-space: nowrap;
+
+    &.show {
+        opacity: 1;
+        visibility: visible;
+        transform: translateX(-50%) translateY(0);
+        transition: opacity 0.25s ease, transform 0.25s ease, visibility 0s linear 0s;
+    }
+    
+    &.toast-error {
+        background: linear-gradient(135deg, #ff3860 0%, #dc2f4f 100%);
+        color: white;
+    }
+    
+    &.toast-success {
+        background: linear-gradient(135deg, #50fa7b 0%, #3fcc62 100%);
+        color: #1e1e1e;
+    }
+}
+
+// Example list styles
+.example-item {
+    padding: 12px 16px;
+    cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background-color 0.15s ease;
+    
+    &:hover {
+        background-color: #f8f8f8;
+    }
+    
+    &:last-child {
+        border-bottom: none;
+    }
+    
+    .example-name {
+        font-size: 14px;
+        color: #363636;
+        font-weight: 500;
+    }
+}
+
+// Snippet list styles
+.snippet-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background-color 0.15s ease;
+    
+    &:hover {
+        background-color: #f8f8f8;
+    }
+    
+    &:last-child {
+        border-bottom: none;
+    }
+    
+    .snippet-info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        min-width: 0;
+        cursor: pointer;
+    }
+    
+    .snippet-alias {
+        font-size: 14px;
+        color: #363636;
+        font-weight: 500;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    
+    .snippet-meta {
+        font-size: 11px;
+        color: #999;
+    }
+    
+    .snippet-actions {
+        display: flex;
+        gap: 4px;
+        flex-shrink: 0;
+    }
+    
+    .snippet-edit,
+    .snippet-delete {
+        background: none;
+        border: none;
+        color: #999;
+        font-size: 18px;
+        line-height: 1;
+        cursor: pointer;
+        padding: 4px 8px;
+        transition: color 0.15s ease;
+        flex-shrink: 0;
+        
+        &:hover {
+            color: #667eea;
+        }
+    }
+    
+    .snippet-delete:hover {
+        color: #ff3860;
+    }
+}

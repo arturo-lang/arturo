@@ -1,0 +1,125 @@
+.unified-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 8px 8px 12px;
+    margin-right: 2px;
+    background: #272822;
+    border-bottom: 1px solid #6b6b6b;
+    position: relative;
+    z-index: 20;
+    min-height: 43px;
+}
+
+.toolbar-left,
+.toolbar-right {
+    display: flex;
+    align-items: center;
+}
+
+.toolbar-left {
+    flex: 1;
+    gap: 8px;
+}
+
+.toolbar-right {
+    flex-shrink: 0;
+    gap: 1px;
+}
+
+.toolbar-item {
+    display: flex;
+    align-items: center;
+    
+    a {
+        color: #ababab;
+        border: 0;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 8px;
+        text-decoration: none;
+        white-space: nowrap;
+        transition: color 0.2s ease;
+        
+        &:hover {
+            color: #20d929;
+        }
+    }
+    
+    .icon {
+        display: flex;
+        align-items: center;
+        flex-shrink: 0;
+    }
+    
+    .item-label {
+        font-size: 14px;
+        font-weight: 500;
+    }
+    
+    &.disabled {
+        a {
+            color: #4a4a4a;
+            cursor: default;
+            
+            &:hover {
+                color: #4a4a4a;
+            }
+        }
+    }
+}
+
+// Word wrap icon states
+#wordwrapperIcon {
+    .dowrap {
+        display: block;
+    }
+    .donowrap {
+        display: none;
+    }
+    &.wrapped {
+        .dowrap {
+            display: none;
+        }
+        .donowrap {
+            display: block;
+        }
+    }
+}
+
+// Expander icon states
+#expanderIcon {
+    .doexpand {
+        display: block;
+    }
+    .docompress {
+        display: none;
+    }
+    &.expanded {
+        .doexpand {
+            display: none;
+        }
+        .docompress {
+            display: block;
+        }
+    }
+}
+
+// Responsive behavior - hide labels on smaller screens or when space is constrained
+@media screen and (max-width: 1024px) {
+    .toolbar-left .toolbar-item .item-label {
+        display: none;
+    }
+    
+    .toolbar-left .toolbar-item a {
+        padding: 4px;
+    }
+}
+
+// On very small screens, hide the expander completely
+@media screen and (max-width: 768px) {
+    #expander {
+        display: none;
+    }
+}

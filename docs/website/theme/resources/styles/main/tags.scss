@@ -1,0 +1,24 @@
+.tag:not(body) {
+    border-radius: 0 !important;
+    color: #FFF;
+
+    &.is-stars {
+        background-color:#999;
+        color: #FFF;
+    }
+
+    &.is-license {
+        background-color: #97ca00;
+        color:#FFF;
+    }
+
+    &.is-chat {
+        background-color:#ff7d37;
+        color:#FFF;
+    }
+
+    &.is-build {
+        background-color: #45cb11;
+        color:#FFF;
+    }
+}

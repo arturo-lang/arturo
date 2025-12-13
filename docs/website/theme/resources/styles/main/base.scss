@@ -1,0 +1,128 @@
+@font-face {
+    font-family: "Fira Code Arturo";
+    src: url('../fonts/FiraCode-Regular.ttf') format('truetype');
+}
+
+html,body {
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    letter-spacing: -0.39px;
+}
+
+.title {
+    &:not(.default) {
+        font-weight: 700;
+    }
+}
+
+.subtitle {
+    &:not(.default) {
+        font-weight: 600;
+    }
+}
+
+a {
+    &:hover {
+        color: #3273dc;
+        border-bottom:1px solid #3273dc;
+    }
+}
+
+nav ul li a {
+    border-bottom: 1px solid white;
+
+    &:hover {
+        color: #3273dc !important;
+    }
+}
+
+code[class*=language-], pre[class*=language-] { 
+    font-family: 'Fira Code Arturo', monospace !important; 
+}
+
+sup {
+    font-variant: all-small-caps;
+}
+
+.fab {
+    vertical-align: middle;
+}
+
+.logo-secondary {
+    color: #BBB;
+}
+
+.first-td {
+    text-align: center !important;
+}
+
+.doccols:last-child {
+    margin-bottom:0!important
+}
+
+.semibold {
+    font-weight: 500;
+}
+
+.screenshot {
+    mix-blend-mode: luminosity; 
+    opacity: 66%;
+    border-radius: 10px;
+
+    &:hover {
+        opacity: 100%;
+    }
+}
+
+.motto {
+    -webkit-background-clip: text; 
+    -moz-background-clip: text; 
+    background-clip: text; 
+    color: transparent; 
+    text-shadow: rgba(255,255,255,0.5) 0px 3px 3px; 
+    font-size:40px; 
+    font-weight:bold; 
+    color:#DDD;
+    margin-bottom:2em;
+}
+
+hr.section-separator {
+   margin-top: 3rem;
+}
+
+#showAll {
+    a {
+        color: #777;
+        border-bottom: 1px dashed #777;
+
+        &:hover {
+            color: #363636;
+            border-bottom: 1px solid #363636;
+            text-decoration: none;
+        }
+    }
+}
+
+@media screen and (max-width: 768px) {
+    body, html {
+        overflow-x: hidden;
+    }
+
+    .container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    
+    .hero-body {
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+    }
+    
+    pre.installer {
+        border-radius: 0 !important;
+    }
+    
+    #community .column {
+        padding: 0.75rem 0 !important;
+    }
+}

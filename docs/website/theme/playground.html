@@ -1,26 +1,169 @@
 <||= importPartial "components/head.html" ||>
     <body data-prismjs-copy-timeout="500">
         
-    <||= importPartial "components/navbar.html" ||>
+        <||= importPartial "components/navbar.html" ||>
         
         <main>
-            <div id="wordwrapper"><a href="#" onclick="toggleWordWrap()" title="toggle word wrap"><i id="wordwrapperIcon" class="fas fa-align-left" aria-hidden="true"></i></a></div>
-            <div id="expander"><a href="#" onclick="toggleExpand()" title="toggle full size"><i id="expanderIcon" class="fas fa-expand-alt"></i></a></div>
-            <a href="#" onclick="execCode()" title="Run script" aria-label="execute code snippet"><div id="runbutton"><i class="far fa-play-circle" aria-hidden="true"></i></div></a>
-            <a href="#" onclick="shareLink()" title="Share link" aria-label="share code snippet"><div id="sharebutton"><i class="fas fa-share-alt" aria-hidden="true"></i></div></a>
-            <div class="columns doccols">
-                <div class="column" style="padding-bottom:0; background: #272822; padding-right: 0">
-                    <div class="tabs">
-                        <ul>
-                            <li class="is-active"><a href="#"><span class="icon is-small"><i class="far fa-file" aria-hidden="true"></i></span><span id="scriptName">main.art</span></a></li>
-                            <!--<li><a href="#" style="border-bottom: 0;"><span class="icon is-small"><i class="fas fa-plus-square" aria-hidden="true"></i></span><span>&nbsp;&nbsp;&nbsp;</span></a></li>-->
-                        </ul>
+            <div class="columns doccols horizontal">
+                <div class="column" id="editor-container">
+                    <div class="unified-toolbar">
+                        <div class="toolbar-left">
+                            <div class="toolbar-item" id="new-menuitem">
+                                <a href="javascript:void(0)" onclick="newSnippet()" title="New script">
+                                    <span class="icon"><svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" fill="currentColor" viewBox="0 0 256 256"><||= phosphor 'regular 'file ||></svg></span>
+                                    <span class="item-label">New</span>
+                                </a>
+                            </div>
+                            <div class="toolbar-item" id="load-menuitem">
+                                <a href="javascript:void(0)" onclick="loadSnippet()" title="Load example or snippet">
+                                    <span class="icon"><svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" fill="currentColor" viewBox="0 0 256 256"><||= phosphor 'regular "folder-open" ||></svg></span>
+                                    <span class="item-label">Load</span>
+                                </a>
+                            </div>
+                            <div class="toolbar-item" id="save-menuitem">
+                                <a href="javascript:void(0)" onclick="saveSnippet()" title="Save and share">
+                                    <span class="icon"><svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" fill="currentColor" viewBox="0 0 256 256"><||= phosphor 'regular "floppy-disk" ||></svg></span>
+                                    <span class="item-label">Save</span>
+                                </a>
+                            </div>
+                            <div class="toolbar-item" id="download-menuitem">
+                                <a href="javascript:void(0)" onclick="downloadSnippet()" title="Download script">
+                                    <span class="icon"><svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" fill="currentColor" viewBox="0 0 256 256"><||= phosphor 'regular 'download ||></svg></span>
+                                    <span class="item-label">Download</span>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="toolbar-right">
+                            <div class="toolbar-item" id="argsbutton">
+                                <a href="javascript:void(0)" onclick="showArgsModal()" title="Command-line arguments">
+                                    <span class="icon"><svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" fill="currentColor" viewBox="0 0 256 256"><||= phosphor 'regular 'terminal ||></svg></span>
+                                </a>
+                            </div>
+                            <div class="toolbar-item" id="wordwrapper">
+                                <a href="javascript:void(0)" onclick="toggleWordWrap()" title="Toggle word wrap">
+                                    <div id="wordwrapperIcon">
+                                        <svg class="dowrap" xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" fill="currentColor" viewBox="0 0 256 256"><||= phosphor 'regular "text-align-justify" ||></svg>
+                                        <svg class="donowrap" xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" fill="currentColor" viewBox="0 0 256 256"><||= phosphor 'regular "text-align-left" ||></svg>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="toolbar-item" id="expander">
+                                <a href="javascript:void(0)" onclick="toggleExpand()" title="Switch layout">
+                                    <div id="expanderIcon" class="expanded">
+                                        <svg class="doexpand" xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" fill="currentColor" viewBox="0 0 256 256"><||= phosphor 'regular "square-split-vertical" ||></svg>
+                                        <svg class="docompress" xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" fill="currentColor" viewBox="0 0 256 256"><||= phosphor 'regular "square-split-horizontal" ||></svg>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
                     </div>
+                    <a href="javascript:void(0)" data-scroll-ignore onclick="execCode()" title="Run script" aria-label="execute code snippet"><div class="action-button" id="runbutton"><svg class="play" xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" fill="currentColor" viewBox="0 0 256 256"><||= phosphor 'bold "play-circle" ||></svg><svg class="processing" xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" fill="currentColor" viewBox="0 0 256 256"><||= phosphor 'bold "circle-notch" ||></svg></div></a>
                     <div id="editor"></div>
+                    <div id="toast-notification"></div>
                 </div>
                 <div class="column" style="background: black;">
-                    <div id="terminal"><span style="color:gray;"># v/0.9.83 @ 2023-02-10T16:02:25+00:00<br># arch: x86_64/linux @safe</span><br><br><div id="terminal_output"></div></div>
+                    <div id="terminal"><button id="terminal-info-toggle" onclick="toggleTerminalInfo()" title="Toggle system info"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 256 256"><||= phosphor 'duotone 'info ||></svg></button><div id="terminal-info" style="color:gray;"># version : <||= Data\setup\version ||><br># build   : <||= Data\setup\build ||><br># arch    : amd64/freebsd<br><br></div><div id="terminal_output"></div><div id="terminal-status" style="display: none;"></div></div>
                 </div>
             </div>
         </main>
+
+        <!-- Save Modal -->
+        <div id="save-modal" class="modal">
+            <div class="modal-background" onclick="closeSaveModal()"></div>
+            <div class="modal-card">
+                <header class="modal-card-head">
+                    <p class="modal-card-title">Snippet saved</p>
+                    <button class="delete" aria-label="close" onclick="closeSaveModal()"></button>
+                </header>
+                <section class="modal-card-body">
+                    <div class="field">
+                        <label class="label" style="font-size: 14px; font-weight: 600;">Share Link</label>
+                        <div class="control" style="display: flex; gap: 8px;">
+                            <input id="snippet-link" class="input is-small" readonly style="font-size: 13px; flex: 1;">
+                            <button class="button is-small" onclick="copyShareLink()" style="font-size: 13px;">Copy</button>
+                        </div>
+                        <p class="help" style="font-size: 11px;">This link will allow anyone to view and run your code</p>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- Command-line Arguments Modal -->
+        <div id="args-modal" class="modal">
+            <div class="modal-background" onclick="closeArgsModal()"></div>
+            <div class="modal-card">
+                <header class="modal-card-head">
+                    <p class="modal-card-title">Command-line Arguments</p>
+                    <button class="delete" aria-label="close" onclick="closeArgsModal()"></button>
+                </header>
+                <section class="modal-card-body">
+                    <div class="field">
+                        <label class="label" style="font-size: 14px; font-weight: 600;">Arguments</label>
+                        <div class="control">
+                            <input id="cmdline-args" class="input is-small" type="text" placeholder="e.g., arg1 arg2 arg3" style="font-size: 13px;">
+                        </div>
+                        <p class="help" style="font-size: 11px;">Space-separated arguments passed to your script</p>
+                    </div>
+                </section>
+                <footer class="modal-card-foot">
+                    <button class="button is-info is-small is-rounded" onclick="saveArgs()" style="font-size: 13px;">Save</button>
+                </footer>
+            </div>
+        </div>
+
+        <!-- Load Modal -->
+        <div id="load-modal" class="modal">
+            <div class="modal-background" onclick="closeLoadModal()"></div>
+            <div class="modal-card">
+                <header class="modal-card-head">
+                    <p class="modal-card-title">Load Script</p>
+                    <button class="delete" aria-label="close" onclick="closeLoadModal()"></button>
+                </header>
+                <section class="modal-card-body">
+                    <div class="tabs is-small" style="margin-bottom: 12px;">
+                        <ul>
+                            <li id="load-examples-tab" class="is-active">
+                                <a onclick="showLoadTab('examples')">Examples</a>
+                            </li>
+                            <li id="load-snippets-tab">
+                                <a onclick="showLoadTab('snippets')">My Snippets</a>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div id="examples-content">
+                        <div class="field" style="margin-bottom: 12px;">
+                            <div class="control">
+                                <input id="examples-search" class="input is-small" type="text" placeholder="Search examples..." style="font-size: 13px;">
+                            </div>
+                            <p class="help" style="font-size: 11px; color: #999; margin-top: 4px;">
+                                <span id="examples-count">0</span> examples available
+                            </p>
+                        </div>
+                        <div id="examples-list" style="max-height: calc(60vh - 250px); min-height: 200px; overflow-y: auto; border: 1px solid #e8e8e8; border-radius: 4px;"></div>
+                    </div>
+                    
+                    <div id="snippets-content" style="display: none;">
+                        <div id="snippets-list" style="max-height: calc(60vh - 250px); min-height: 200px; overflow-y: auto; border: 1px solid #e8e8e8; border-radius: 4px;"></div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- Documentation Modal (for search results) -->
+        <div id="doc-modal" class="modal">
+            <div class="modal-background"></div>
+            <div class="modal-card">
+                <header class="modal-card-head">
+                    <p class="modal-card-title" id="doc-modal-title"></p>
+                    <button class="delete" aria-label="close" id="doc-modal-close"></button>
+                </header>
+                <section class="modal-card-body doc-modal-content" id="doc-modal-body">
+                    <div class="has-text-centered">
+                        <span class="loader"></span>
+                    </div>
+                </section>
+            </div>
+        </div>
+
 <||= importPartial "components/foot.html" ||>

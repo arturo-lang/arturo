@@ -1,0 +1,227 @@
+<||= importPartial "components/head.html" ||>
+    <body data-prismjs-copy-timeout="500">
+        
+        <||= importPartial "components/navbar.html" ||>
+        
+        <main>
+            <style>
+                .error-container {
+                    min-height: calc(100vh - 200px);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    background: linear-gradient(135deg, #1f0620 0%, #3f0c40 50%, #580059 100%);
+                    position: relative;
+                    overflow: hidden;
+                }
+                
+                /* Subtle animated background pattern */
+                .error-container::before {
+                    content: '';
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background-image: 
+                        radial-gradient(circle at 20% 50%, rgba(106, 21, 107, 0.3) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(88, 0, 89, 0.3) 0%, transparent 50%),
+                        radial-gradient(circle at 40% 20%, rgba(63, 12, 64, 0.2) 0%, transparent 50%);
+                    animation: float 20s ease-in-out infinite;
+                    pointer-events: none;
+                }
+                
+                @keyframes float {
+                    0%, 100% { transform: translateY(0px); }
+                    50% { transform: translateY(-20px); }
+                }
+                
+                .error-content {
+                    text-align: center;
+                    position: relative;
+                    z-index: 1;
+                    padding: 60px 20px;
+                    max-width: 600px;
+                }
+                
+                .error-code {
+                    font-size: 140px;
+                    font-weight: 900;
+                    letter-spacing: -5px;
+                    background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.7) 100%);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    background-clip: text;
+                    line-height: 1;
+                    margin-bottom: 20px;
+                    animation: glow 3s ease-in-out infinite;
+                }
+                
+                @keyframes glow {
+                    0%, 100% { opacity: 1; }
+                    50% { opacity: 0.8; }
+                }
+                
+                .error-message {
+                    font-size: 28px;
+                    font-weight: 600;
+                    margin-bottom: 16px;
+                    color: rgba(255, 255, 255, 0.95);
+                    letter-spacing: -0.5px;
+                }
+                
+                .error-description {
+                    font-size: 16px;
+                    color: rgba(255, 255, 255, 0.7);
+                    margin-bottom: 40px;
+                    line-height: 1.6;
+                    font-weight: 400;
+                }
+                
+                .error-actions {
+                    display: flex;
+                    gap: 16px;
+                    justify-content: center;
+                    flex-wrap: wrap;
+                }
+                
+                .error-btn {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 8px;
+                    padding: 14px 32px;
+                    border-radius: 6px;
+                    text-decoration: none;
+                    font-weight: 500;
+                    font-size: 15px;
+                    transition: all 0.3s ease;
+                    border: none;
+                    cursor: pointer;
+                }
+                
+                .error-btn-primary {
+                    background: linear-gradient(135deg, #6a156b 0%, #580059 100%);
+                    color: white;
+                    box-shadow: 0 4px 16px rgba(106, 21, 107, 0.4);
+                }
+                
+                .error-btn-primary:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 6px 20px rgba(106, 21, 107, 0.6);
+                    color: white;
+                }
+                
+                .error-btn-secondary {
+                    background: rgba(255, 255, 255, 0.1);
+                    color: white;
+                    border: 1px solid rgba(255, 255, 255, 0.2);
+                    backdrop-filter: blur(10px);
+                }
+                
+                .error-btn-secondary:hover {
+                    background: rgba(255, 255, 255, 0.15);
+                    border-color: rgba(255, 255, 255, 0.3);
+                    transform: translateY(-2px);
+                    color: white;
+                }
+                
+                .error-suggestions {
+                    margin-top: 60px;
+                    padding-top: 40px;
+                    border-top: 1px solid rgba(255, 255, 255, 0.1);
+                }
+                
+                .error-suggestions h3 {
+                    font-size: 14px;
+                    text-transform: uppercase;
+                    letter-spacing: 1px;
+                    color: rgba(255, 255, 255, 0.5);
+                    margin-bottom: 20px;
+                    font-weight: 600;
+                }
+                
+                .error-links {
+                    display: flex;
+                    gap: 24px;
+                    justify-content: center;
+                    flex-wrap: wrap;
+                }
+                
+                .error-links a {
+                    color: rgba(255, 255, 255, 0.7);
+                    text-decoration: none;
+                    font-size: 14px;
+                    transition: color 0.2s ease;
+                    font-weight: 500;
+                }
+                
+                .error-links a:hover {
+                    color: white;
+                }
+                
+                @media (max-width: 768px) {
+                    .error-code {
+                        font-size: 100px;
+                    }
+                    
+                    .error-message {
+                        font-size: 22px;
+                    }
+                    
+                    .error-description {
+                        font-size: 15px;
+                    }
+                    
+                    .error-btn {
+                        padding: 12px 24px;
+                        font-size: 14px;
+                    }
+                    
+                    .error-actions {
+                        flex-direction: column;
+                    }
+                    
+                    .error-links {
+                        flex-direction: column;
+                        gap: 16px;
+                    }
+                }
+            </style>
+            
+            <div class="error-container">
+                <div class="error-content">
+                    <div class="error-code">404</div>
+                    <h1 class="error-message">Page Not Found</h1>
+                    <p class="error-description">
+                        The page you're looking for doesn't exist or has been moved.<br>
+                        Let's get you back on track.
+                    </p>
+                    
+                    <div class="error-actions">
+                        <a href="<||= linkTo {} ||>" class="error-btn error-btn-primary">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 256 256">
+                                <path d="M219.31,108.68l-80-80a16,16,0,0,0-22.62,0l-80,80A15.87,15.87,0,0,0,32,120v96a8,8,0,0,0,8,8h64a8,8,0,0,0,8-8V160h32v56a8,8,0,0,0,8,8h64a8,8,0,0,0,8-8V120A15.87,15.87,0,0,0,219.31,108.68Z"></path>
+                            </svg>
+                            Back to Home
+                        </a>
+                        <a href="<||= linkTo {documentation} ||>" class="error-btn error-btn-secondary">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 256 256">
+                                <path d="M216,40H40A16,16,0,0,0,24,56V200a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A16,16,0,0,0,216,40ZM128,152a8,8,0,0,1-8,8H72a8,8,0,0,1,0-16h48A8,8,0,0,1,128,152Zm56-32a8,8,0,0,1-8,8H72a8,8,0,0,1,0-16H176A8,8,0,0,1,184,120Zm0-32a8,8,0,0,1-8,8H72a8,8,0,0,1,0-16H176A8,8,0,0,1,184,88Z"></path>
+                            </svg>
+                            Documentation
+                        </a>
+                    </div>
+                    
+                    <div class="error-suggestions">
+                        <h3>Popular Pages</h3>
+                        <div class="error-links">
+                            <a href="<||= linkTo {playground} ||>">Playground</a>
+                            <a href="<||= linkTo {documentation/language} ||>">Language Reference</a>
+                            <a href="<||= linkTo {documentation/library} ||>">Library</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+<||= importPartial "components/foot.html" ||>

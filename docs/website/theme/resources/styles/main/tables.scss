@@ -1,0 +1,46 @@
+.table {
+    td, th {
+        vertical-align: middle;
+    }
+}
+
+#downloads {
+    td:last-child {
+        text-align: center;
+    }
+
+    a {
+        border: 0;
+        padding: 0.5em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+
+        svg {
+            transition: transform 0.2s ease;
+
+            .outline { opacity: 1.0 }
+            .filled { opacity: 0.0 }
+        }
+
+        &:hover {
+            color: #3273dc;
+            font-weight: 600;
+            
+            svg {
+                transform: rotate(90deg);
+                
+                .outline { opacity: 0.0 }
+                .filled { opacity: 1.0 }
+            }
+        }
+    }
+
+    @media screen and (max-width: 768px) {
+        th:nth-child(3), 
+        td:nth-child(3) {
+            display: table-cell !important;
+        }
+    }
+}
