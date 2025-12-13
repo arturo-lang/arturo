@@ -22,9 +22,7 @@ Getting started with Arturo is simple: download a binary and start coding. No co
 
 Arturo comes as a standalone executable - no installation required. Just download the binary for your platform and you're ready to code:
 
-&nbsp;&nbsp;&nbsp;&nbsp;
-### <p align="center">[⇩ Download Arturo](https://arturo-lang.io/#download)</p>
-&nbsp;&nbsp;&nbsp;&nbsp;
+%DOWNLOADS%
 
 Available for macOS, Linux, Windows, and more.
 
