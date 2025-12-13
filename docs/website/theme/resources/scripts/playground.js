@@ -17,6 +17,7 @@ window.isExecuting = false;
 window.isReadOnly = false;
 window.cooldownActive = false;
 window.creatorIpMatches = false;
+window.hasUnsavedChanges = false;
 
 // =============================================================================
 // SESSION OWNERSHIP MANAGEMENT
@@ -235,8 +236,8 @@ function execCode() {
                                         // Successful execution
                                         statusMsg = 'Success';
                                         statusColor = '#50fa7b';
-                                    } else if (data.result === 124 || data.result === 137) {
-                                        // Timeout: 124 = timeout, 137 = killed (timeout --kill-after)
+                                    } else if (data.result === 124 || data.result === 137 || terminalOutput.includes('timed out') || terminalOutput.includes('timeout')) {
+                                        // Timeout: 124 = timeout, 137 = killed (timeout --kill-after), or timeout in output
                                         statusMsg = 'Timeout';
                                         statusColor = '#ffb86c';
                                     } else if (terminalOutput.includes('<script>') || terminalOutput.includes('Error')) {
@@ -259,9 +260,13 @@ function execCode() {
                                     showToast(data.error, 'error');
                                 }
                             } else if (data.line) {
-                                document.getElementById("terminal_output").innerHTML += data.line;
-                                var terminal = document.getElementById("terminal");
-                                terminal.scrollTop = terminal.scrollHeight;
+                                // Filter out jail execution errors - don't show to user
+                                const lineText = data.line.replace(/<[^>]*>/g, ''); // Strip HTML to check text
+                                if (!lineText.startsWith('jail: /bin/sh')) {
+                                    document.getElementById("terminal_output").innerHTML += data.line;
+                                    var terminal = document.getElementById("terminal");
+                                    terminal.scrollTop = terminal.scrollHeight;
+                                }
                             }
                         } catch (e) {
                             console.error('Parse error:', e);
@@ -304,6 +309,13 @@ function startCooldown() {
 function newSnippet() {
     if (window.isExecuting) return;
     
+    // Warn if there are unsaved changes
+    if (window.hasUnsavedChanges && editor.getValue().trim() !== "") {
+        if (!confirm("Start a new snippet? Current code will be lost if not saved.")) {
+            return;
+        }
+    }
+    
     editor.setValue("");
     window.snippetId = "";
     window.loadedCode = "";
@@ -313,6 +325,7 @@ function newSnippet() {
     window.currentExampleName = "";
     window.isReadOnly = false;
     window.creatorIpMatches = false;
+    window.hasUnsavedChanges = false;
     
     document.getElementById("terminal_output").innerHTML = "";
     var statusEl = document.getElementById('terminal-status');
@@ -356,7 +369,11 @@ function saveSnippet() {
             addMySnippet(data.id);
             window.loadedFromUrl = false;
             window.isReadOnly = false;
-            updateButtonStates();
+            
+            // Force button state update after a small delay to ensure everything is set
+            setTimeout(() => {
+                updateButtonStates();
+            }, 50);
             
             window.history.pushState({}, '', window.location.pathname.split('/').slice(0, -1).join('/') + '/' + data.id);
             
@@ -506,12 +523,24 @@ function updateButtonStates() {
         if (saveMenuItem) saveMenuItem.classList.add('disabled');
         if (downloadMenuItem) downloadMenuItem.classList.add('disabled');
     } else {
-        if (hasContent) {
-            if (saveMenuItem) saveMenuItem.classList.remove('disabled');
-            if (downloadMenuItem) downloadMenuItem.classList.remove('disabled');
-        } else {
-            if (saveMenuItem) saveMenuItem.classList.add('disabled');
-            if (downloadMenuItem) downloadMenuItem.classList.add('disabled');
+        // Save button logic: disabled if no content OR no unsaved changes
+        const canSave = hasContent && window.hasUnsavedChanges;
+        
+        if (saveMenuItem) {
+            if (canSave) {
+                saveMenuItem.classList.remove('disabled');
+            } else {
+                saveMenuItem.classList.add('disabled');
+            }
+        }
+        
+        // Download is always enabled if there's content
+        if (downloadMenuItem) {
+            if (hasContent) {
+                downloadMenuItem.classList.remove('disabled');
+            } else {
+                downloadMenuItem.classList.add('disabled');
+            }
         }
     }
     
@@ -878,7 +907,7 @@ window.addEventListener('load', function() {
     window.addEventListener('beforeunload', function(e) {
         if (window.hasUnsavedChanges && editor.getValue().trim() !== '') {
             e.preventDefault();
-            e.returnValue = '';
+            e.returnValue = ''; // Modern browsers ignore custom message
             return '';
         }
     });
