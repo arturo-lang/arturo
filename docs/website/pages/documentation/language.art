@@ -62,9 +62,9 @@ This single page provides the definitive reference: everything you need to know 
 - [Syntactic sugar](#syntactic-sugar)
    * [Right-arrow operator: `->`](#right-arrow-operator)
    * [Fat right-arrow operator: `=>`](#fat-right-arrow-operator)
-   * [Double-colon operator: `::`](#double-colon-operator)
-   * [Exclamation-mark operator: `!`](#exclamation-mark-operator)
    * [Pipe operator: `|`](#pipe-operator)
+   * [Exclamation-mark operator: `!`](#exclamation-mark-operator)
+   * [Double-colon operator: `::`](#double-colon-operator)
 - [Conclusion](#conclusion)
 
 ---
@@ -1403,54 +1403,6 @@ print select 1..10 => even?
 
 That's surely much more readable, isn't it?
 
-<h3 id="double-colon-operator">Double-colon operator: `::`</h3>
-
-The *double-colon* operator does something very simple: it wraps everything in a block - until the end of... the current block:
-
-```arturo
-do [
-    print :: 
-        "This is a number:"
-        123
-]
-```
-
-Is equivalent to:
-
-```arturo
-do [
-    print ["This is a number:" 123]
-]
-```
-
-<h3 id="exclamation-mark-operator">Exclamation-mark operator: `!`</h3>
-
-Explaining the *exclamation-mark* can be a bit tricky, but if you want the short version: 
-it wraps everything that follows in a <code><a href="../library/core/do">do</a></code> block (more or less).
-
-Or the shorter version:
-
-- Have you just created a new custom-type object? (e.g. `to :myObject []`)?
-- Have you imported an external package? (e.g. `import 'somePackage`)?
-
-Then just put `!` at the end of the statement (e.g. `import 'somePackage!`) and everything will work as you expect.
-
-**The long explanation:**
-
-Arturo, when parsing a block of code, has to know which symbols correspond to function calls and how many arguments they take. The exact same is valid for object methods. 
-
-When we create a new object (e.g. `p: to :person ["John"]`), if we attempt to use `p\someMethod` from the exact same block where this `p` value was initialized, there is no possible way to know beforehand that e.g. `someMethod` is a method. We'll know that only *after* `to :person ["John"]` has been executed. But then, it's already too late. So, how do we make sure that Arturo knows about the object before we attempt to call inner methods? By putting a "stopper" after the object creation, and that stopper is our beloved... `!`.
-
-> 💡 Technically we could achieve the same thing without the `!` sugar:
-> ```arturo
-> p: to :person ["John"]
-> do [
->     p\sayHello
-> ]
-> ```
-> That would work too, for all practical purposes. But: `!` is looking good. And it's also far more performant, based on the way it's implemented internally! ;-)
-
-
 <h3 id="pipe-operator">Pipe operator: `|`</h3>
 
 > [!WARNING] This is experimental and may still not be stable enough for use in production scripts
@@ -1480,6 +1432,53 @@ which would be like writing:
 
 ```arturo
 print select map 1..10 'x [2*x] 'x [even? x] 
+```
+
+<h3 id="exclamation-mark-operator">Exclamation-mark operator: `!`</h3>
+
+Explaining the *exclamation-mark* can be a bit tricky, but if you want the short version: 
+it wraps everything that follows in a <code><a href="../library/core/do">do</a></code> block (more or less).
+
+Or the shorter version:
+
+- Have you just created a new custom-type object? (e.g. `to :myObject []`)?
+- Have you imported an external package? (e.g. `import 'somePackage`)?
+
+Then just put `!` at the end of the statement (e.g. `import 'somePackage!`) and everything will work as you expect.
+
+**The long explanation:**
+
+Arturo, when parsing a block of code, has to know which symbols correspond to function calls and how many arguments they take. The exact same is valid for object methods. 
+
+When we create a new object (e.g. `p: to :person ["John"]`), if we attempt to use `p\someMethod` from the exact same block where this `p` value was initialized, there is no possible way to know beforehand that e.g. `someMethod` is a method. We'll know that only *after* `to :person ["John"]` has been executed. But then, it's already too late. So, how do we make sure that Arturo knows about the object before we attempt to call inner methods? By putting a "stopper" after the object creation, and that stopper is our beloved... `!`.
+
+> 💡 Technically we could achieve the same thing without the `!` sugar:
+> ```arturo
+> p: to :person ["John"]
+> do [
+>     p\sayHello
+> ]
+> ```
+> That would work too, for all practical purposes. But: `!` is looking good. And it's also far more performant, based on the way it's implemented internally! ;-)
+
+<h3 id="double-colon-operator">Double-colon operator: `::`</h3>
+
+The *double-colon* operator does something very simple: it wraps everything in a block - until the end of... the current block:
+
+```arturo
+do [
+    print :: 
+        "This is a number:"
+        123
+]
+```
+
+Is equivalent to:
+
+```arturo
+do [
+    print ["This is a number:" 123]
+]
 ```
 
 ----
