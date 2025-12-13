@@ -31,5 +31,10 @@
         initDocSearch(<||= switch contains? pagePath "playground" ["true"]["false"] ||>);
     </script>
 <|| ] ||>
+<||= unless contains? pagePath "playground" [ ||>
+    <button id="scrollToTop" class="scroll-to-top" aria-label="Scroll to top">
+    ↑
+    </button>
+<|| ] ||>
 </body>
 </html>
