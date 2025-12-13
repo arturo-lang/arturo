@@ -145,6 +145,9 @@ buildDate: "} ++ buildDate ++ {"
 ; Write to file
 write output "docs/website/pages/_index.art" 
 
+newGettingStarted: replace read "docs/website/pages/documentation/getting started.art" "content: {!md" output ++ "\ncontent: {!md"
+write newGettingStarted "docs/website/pages/documentation/getting started.art"
+
 inspect sort # to :block output
 
 print "\nGenerated _index.art:"
