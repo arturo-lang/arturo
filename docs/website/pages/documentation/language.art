@@ -1405,8 +1405,6 @@ That's surely much more readable, isn't it?
 
 <h3 id="pipe-operator">Pipe operator: `|`</h3>
 
-> [!WARNING] This is experimental and may still not be stable enough for use in production scripts
-
 The *pipe* operator is an easy way of reversing the default *prefix* notation of function calls and simulating what in OOP languages is called *function chain*.
 
 Let's take this simple example:
