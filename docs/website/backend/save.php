@@ -35,11 +35,27 @@ if (strlen($code) > MAX_CODE_SIZE) {
     exit;
 }
 
-// If ID provided, update existing snippet
-// If no ID, generate new one
+// Determine the ID to use with security checks
+$was_forked = false;
 if (!empty($snippet_id)) {
-    $id = $snippet_id;
+    // User wants to update existing snippet - verify ownership
+    if ($db->exists($snippet_id)) {
+        $creator_ip = $db->getCreatorIp($snippet_id);
+        
+        // Only allow update if IP matches creator
+        if ($creator_ip === $ip) {
+            $id = $snippet_id;
+        } else {
+            // IP doesn't match - force fork (new snippet)
+            $id = $db->generateUniqueId();
+            $was_forked = true;
+        }
+    } else {
+        // Snippet doesn't exist - create new one with requested ID
+        $id = $snippet_id;
+    }
 } else {
+    // No ID provided - generate new one
     $id = $db->generateUniqueId();
 }
 
@@ -48,7 +64,8 @@ $result = $db->save($id, $code, $ip);
 if ($result) {
     echo json_encode([
         "success" => true,
-        "id" => $id
+        "id" => $id,
+        "forked" => $was_forked
     ]);
 } else {
     echo json_encode([
