@@ -66,20 +66,20 @@ Arturo comes in two flavors: **Full** and **Mini**.
 
 <h4 id="full-builds">Full builds</h4>
 
-Get the complete Arturo experience - batteries included and ready to build anything. Create stunning GUI applications, crunch numbers with arbitrary precision, connect securely over HTTPS, and tap into a growing ecosystem of packages. Full builds give you everything Arturo has to offer, right out of the box.
+Get the complete Arturo experience - batteries included and ready to build anything. Full builds give you everything Arturo has to offer, right out of the box.
 
-**This is the default build.** If you're not sure which one to pick, go with Full.
+> [!TIP] In a few words: **This is the default build.** If you're not sure which one to pick, go with Full.
 
 <h4 id="mini-builds">Mini builds</h4>
 
-A lean, mean ~2MB binary with zero dependencies - perfect for containers, embedded systems, or when you need Arturo's power without the extras.
+A lean, mean ~2MB binary with (almost) zero dependencies - perfect for containers, embedded systems, or when you need Arturo's power without the extras.
 
 **What Mini doesn't include:**
-- No `webview` function (GUI operations unavailable)
-- Limited precision arithmetic (no GMP/MPFR, falls back to native integers/floats)
+- No `webview` function or other UI-related capabilities
+- Limited precision arithmetic)
 - No HTTPS support (HTTP only)
 - No package manager functionality
-- No database support (SQLite unavailable)
+- No built-in database support
 - No built-in parsers (HTML, Markdown, TOML, XML)
 
 > [!TIP] Mini builds are ideal for scripting, automation, and server-side tasks where UI and arbitrary precision aren't needed
@@ -87,7 +87,7 @@ A lean, mean ~2MB binary with zero dependencies - perfect for containers, embedd
 <h3 id="alternative-methods">Alternative methods</h3>
 <h4 id="homebrew">Homebrew</h4>
 
-macOS users can install via Homebrew:
+macOS/Linux users can install via Homebrew:
 
 ```bash
 brew install arturo
