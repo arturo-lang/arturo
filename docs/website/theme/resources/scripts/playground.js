@@ -15,6 +15,8 @@ window.expanded = true;
 window.wordwrap = false;
 window.isExecuting = false;
 window.isReadOnly = false;
+window.cooldownActive = false;
+window.creatorIpMatches = false;
 
 // =============================================================================
 // SESSION OWNERSHIP MANAGEMENT
@@ -32,6 +34,14 @@ function addMySnippet(id, alias = '') {
         created: Date.now()
     };
     localStorage.setItem('my-snippets', JSON.stringify(snippets));
+}
+
+function updateSnippetAlias(id, alias) {
+    const snippets = getMySnippets();
+    if (snippets[id]) {
+        snippets[id].alias = alias;
+        localStorage.setItem('my-snippets', JSON.stringify(snippets));
+    }
 }
 
 function ownsSnippet(id) {
@@ -146,108 +156,117 @@ function toggleTerminalInfo() {
 function execCode() {
     var runbutton = document.getElementById('runbutton');
     
-    if (runbutton.classList.contains('disabled') || runbutton.classList.contains('working')) {
+    if (runbutton.classList.contains('disabled') || runbutton.classList.contains('working') || window.cooldownActive) {
         return;
     }
     
-    if (!runbutton.innerHTML.includes("notch")) {
-        var currentCode = editor.getValue();
+    var currentCode = editor.getValue();
+    
+    var exampleName = "";
+    if (window.loadedFromExample && currentCode === window.loadedCode) {
+        exampleName = window.currentExampleName || "";
+    }
+    
+    window.isExecuting = true;
+    editor.setReadOnly(true);
+    
+    runbutton.classList.add('working');
+    document.getElementById("terminal_output").innerHTML = "";
+    
+    const startTime = Date.now();
+    var statusEl = document.getElementById('terminal-status');
+    if (statusEl) {
+        statusEl.style.display = 'flex';
+        statusEl.innerHTML = '<span>Running...</span><span></span>';
+    }
+    
+    var payload = {
+        c: currentCode,
+        cols: window.terminalColumns,
+        args: window.commandLineArgs,
+        stream: true,
+        example: exampleName
+    };
+    
+    fetch("http://188.245.97.105/%<[basePath]>%/backend/exec.php", {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    })
+    .then(response => {
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
         
-        if (currentCode != previousCode) {
-            previousCode = currentCode;
-            
-            var exampleName = "";
-            if (window.loadedFromExample && currentCode === window.loadedCode) {
-                exampleName = window.currentExampleName || "";
-            }
-            
-            window.isExecuting = true;
-            editor.setReadOnly(true);
-            
-            runbutton.classList.add('working');
-            document.getElementById("terminal_output").innerHTML = "";
-            
-            const startTime = Date.now();
-            var statusEl = document.getElementById('terminal-status');
-            if (statusEl) {
-                statusEl.style.display = 'flex';
-                statusEl.innerHTML = '<span>Running...</span><span></span>';
-            }
-            
-            var payload = {
-                c: currentCode,
-                cols: window.terminalColumns,
-                args: window.commandLineArgs,
-                stream: true,
-                example: exampleName
-            };
-            
-            fetch("http://188.245.97.105/%<[basePath]>%/backend/exec.php", {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            })
-            .then(response => {
-                const reader = response.body.getReader();
-                const decoder = new TextDecoder();
-                
-                function read() {
-                    reader.read().then(({ done, value }) => {
-                        if (done) {
-                            runbutton.classList.remove('working');
-                            window.isExecuting = false;
-                            editor.setReadOnly(false);
-                            editor.focus();
-                            updateButtonStates();
-                            return;
-                        }
-                        
-                        const chunk = decoder.decode(value, { stream: true });
-                        const lines = chunk.split('\n');
-                        
-                        lines.forEach(line => {
-                            if (line.startsWith('data: ')) {
-                                try {
-                                    const data = JSON.parse(line.substring(6));
-                                    
-                                    if (data.done) {
-                                        const elapsed = ((Date.now() - startTime) / 1000).toFixed(2);
-                                        if (statusEl) {
-                                            const exitMsg = data.result === 0 
-                                                ? `<span style="color: #50fa7b;">✓ Exited with code 0</span>`
-                                                : `<span style="color: #ff5555;">✗ Exited with code ${data.result}</span>`;
-                                            statusEl.innerHTML = `${exitMsg}<span>${elapsed}s</span>`;
-                                        }
-                                        
-                                        if (data.error) {
-                                            showToast(data.error, 'error');
-                                        }
-                                    } else if (data.line) {
-                                        document.getElementById("terminal_output").innerHTML += data.line;
-                                        var terminal = document.getElementById("terminal");
-                                        terminal.scrollTop = terminal.scrollHeight;
-                                    }
-                                } catch (e) {
-                                    console.error('Parse error:', e);
-                                }
-                            }
-                        });
-                        
-                        read();
-                    });
+        function read() {
+            reader.read().then(({ done, value }) => {
+                if (done) {
+                    runbutton.classList.remove('working');
+                    window.isExecuting = false;
+                    editor.setReadOnly(false);
+                    editor.focus();
+                    
+                    startCooldown();
+                    updateButtonStates();
+                    return;
                 }
                 
+                const chunk = decoder.decode(value, { stream: true });
+                const lines = chunk.split('\n');
+                
+                lines.forEach(line => {
+                    if (line.startsWith('data: ')) {
+                        try {
+                            const data = JSON.parse(line.substring(6));
+                            
+                            if (data.done) {
+                                const elapsed = ((Date.now() - startTime) / 1000).toFixed(2);
+                                if (statusEl) {
+                                    const exitMsg = data.result === 0 
+                                        ? `<span style="color: #50fa7b;">✓ Exited with code 0</span>`
+                                        : `<span style="color: #ff5555;">✗ Exited with code ${data.result}</span>`;
+                                    statusEl.innerHTML = `${exitMsg}<span>${elapsed}s</span>`;
+                                }
+                                
+                                if (data.error) {
+                                    showToast(data.error, 'error');
+                                }
+                            } else if (data.line) {
+                                document.getElementById("terminal_output").innerHTML += data.line;
+                                var terminal = document.getElementById("terminal");
+                                terminal.scrollTop = terminal.scrollHeight;
+                            }
+                        } catch (e) {
+                            console.error('Parse error:', e);
+                        }
+                    }
+                });
+                
                 read();
-            })
-            .catch(error => {
-                runbutton.classList.remove('working');
-                window.isExecuting = false;
-                editor.setReadOnly(false);
-                console.error('Execution error:', error);
-                showToast('Execution failed: ' + error.message, 'error');
             });
         }
-    }
+        
+        read();
+    })
+    .catch(error => {
+        runbutton.classList.remove('working');
+        window.isExecuting = false;
+        editor.setReadOnly(false);
+        console.error('Execution error:', error);
+        showToast('Execution failed: ' + error.message, 'error');
+        
+        startCooldown();
+        updateButtonStates();
+    });
+}
+
+function startCooldown() {
+    window.cooldownActive = true;
+    updateButtonStates();
+    
+    setTimeout(() => {
+        window.cooldownActive = false;
+        updateButtonStates();
+    }, 5000);
 }
 
 // =============================================================================
@@ -271,6 +290,7 @@ function newSnippet() {
     window.loadedFromExample = false;
     window.currentExampleName = "";
     window.isReadOnly = false;
+    window.creatorIpMatches = false;
     
     document.getElementById("terminal_output").innerHTML = "";
     var statusEl = document.getElementById('terminal-status');
@@ -291,7 +311,8 @@ function saveSnippet() {
         return;
     }
     
-    const idToSend = (window.snippetId && ownsSnippet(window.snippetId)) ? window.snippetId : '';
+    const canUpdate = window.snippetId && ownsSnippet(window.snippetId) && window.creatorIpMatches;
+    const idToSend = canUpdate ? window.snippetId : '';
     
     fetch("http://188.245.97.105/%<[basePath]>%/backend/save.php", {
         method: 'POST',
@@ -305,6 +326,7 @@ function saveSnippet() {
     .then(data => {
         if (data.success) {
             window.snippetId = data.id;
+            window.creatorIpMatches = true;
             addMySnippet(data.id);
             window.loadedFromUrl = false;
             window.isReadOnly = false;
@@ -315,6 +337,12 @@ function saveSnippet() {
             document.getElementById('save-modal').classList.add('is-active');
             
             window.history.pushState({}, '', window.location.pathname.split('/').slice(0, -1).join('/') + '/' + data.id);
+            
+            if (!canUpdate) {
+                showToast('Forked as new snippet', 'success');
+            } else {
+                showToast('Snippet saved', 'success');
+            }
         } else {
             showToast('Failed to save: ' + (data.error || 'Unknown error'), 'error');
         }
@@ -361,14 +389,41 @@ function getSnippet(id) {
             window.loadedFromUrl = true;
             window.loadedFromExample = false;
             window.currentExampleName = "";
-            window.isReadOnly = !ownsSnippet(id);
             
-            if (window.isReadOnly) {
+            const hasLocalOwnership = ownsSnippet(id);
+            
+            if (!hasLocalOwnership) {
+                window.isReadOnly = true;
+                window.creatorIpMatches = false;
+                
                 fetch("http://188.245.97.105/%<[basePath]>%/backend/visit.php", {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ i: id })
                 }).catch(err => console.error('Visit tracking failed:', err));
+            } else {
+                fetch("http://188.245.97.105/%<[basePath]>%/backend/visit.php", {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ i: id })
+                })
+                .then(response => response.json())
+                .then(visitData => {
+                    if (visitData.success && visitData.ip_match) {
+                        window.isReadOnly = false;
+                        window.creatorIpMatches = true;
+                    } else {
+                        window.isReadOnly = true;
+                        window.creatorIpMatches = false;
+                    }
+                    updateButtonStates();
+                })
+                .catch(err => {
+                    console.error('Visit tracking failed:', err);
+                    window.isReadOnly = true;
+                    window.creatorIpMatches = false;
+                    updateButtonStates();
+                });
             }
             
             updateButtonStates();
@@ -395,7 +450,7 @@ function updateButtonStates() {
     const saveMenuItem = document.getElementById('save-menuitem');
     const downloadMenuItem = document.getElementById('download-menuitem');
     
-    if (isExecuting) {
+    if (isExecuting || window.cooldownActive) {
         runButton.classList.add('disabled');
         if (saveMenuItem) saveMenuItem.classList.add('disabled');
         if (downloadMenuItem) downloadMenuItem.classList.add('disabled');
@@ -557,6 +612,7 @@ function getExample(name) {
             window.loadedFromUrl = false;
             window.snippetId = "";
             window.isReadOnly = false;
+            window.creatorIpMatches = false;
             
             document.getElementById("terminal_output").innerHTML = "";
             var statusEl = document.getElementById('terminal-status');
@@ -585,12 +641,15 @@ function loadMySnippets() {
         const date = new Date(snippet.created).toLocaleDateString();
         
         return `
-            <div class="snippet-item" onclick="selectMySnippet('${id}')">
-                <div class="snippet-info">
+            <div class="snippet-item">
+                <div class="snippet-info" onclick="selectMySnippet('${id}')">
                     <span class="snippet-alias">${alias}</span>
                     <span class="snippet-meta">${id} • ${date}</span>
                 </div>
-                <button class="snippet-delete" onclick="event.stopPropagation(); deleteMySnippet('${id}')" title="Delete">✕</button>
+                <div class="snippet-actions">
+                    <button class="snippet-edit" onclick="event.stopPropagation(); editSnippetAlias('${id}')" title="Edit alias">✎</button>
+                    <button class="snippet-delete" onclick="event.stopPropagation(); deleteMySnippet('${id}')" title="Delete">✕</button>
+                </div>
             </div>
         `;
     }).join('');
@@ -605,6 +664,17 @@ function deleteMySnippet(id) {
     if (confirm('Delete this snippet from your list?')) {
         removeMySnippet(id);
         deleteLocalSnippet(id);
+        loadMySnippets();
+    }
+}
+
+function editSnippetAlias(id) {
+    const snippets = getMySnippets();
+    const currentAlias = snippets[id]?.alias || id;
+    const newAlias = prompt('Enter a new alias for this snippet:', currentAlias);
+    
+    if (newAlias !== null && newAlias.trim() !== '') {
+        updateSnippetAlias(id, newAlias.trim());
         loadMySnippets();
     }
 }
