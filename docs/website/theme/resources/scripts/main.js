@@ -385,7 +385,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		});
 	}
 
-    var element =  document.getElementById('stargazers');
+    var element =  document.getElementById('version-switch');
     if (typeof(element) != 'undefined' && element != null)
     {
         function setDiv(div,content){
