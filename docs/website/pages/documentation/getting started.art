@@ -14,6 +14,7 @@ Getting started with Arturo is simple: download a binary and start coding. No co
    * [Homebrew](#homebrew)
    * [Docker](#docker)
    * [Nightly builds](#nightly-builds)
+- [What's next?](#whats-next)
 
 ---
 
@@ -118,4 +119,14 @@ curl -sSL https://get.arturo-lang.io/latest | sh
 Or download directly from the [nightly releases](https://github.com/arturo-lang/nightly/releases).
 
 > [!NOTE] Nightly builds include the latest developments but may be less stable than official releases
+
+<h3 id="whats-next">What's next?</h3>
+
+Now that you've got Arturo running, here's where to go:
+
+- **[In a Nutshell](../nutshell)** - Get up to speed fast with a quick tour of Arturo's syntax and core concepts
+- **[Language Reference](../language)** - Dive deep into everything Arturo has to offer
+- **[Standard Library](../library)** - Explore the built-in functions at your fingertips
+
+Happy coding! 🚀
 }
