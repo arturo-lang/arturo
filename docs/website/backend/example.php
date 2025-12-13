@@ -16,7 +16,8 @@ $example_name = $_POST['i'] ?? '';
 $example_name = urldecode($example_name);
 
 // SECURITY: Prevent path traversal attacks
-if (preg_match('/[^a-zA-Z0-9_-]/', $example_name)) {
+// Only allow alphanumeric, dash, underscore, and spaces
+if (preg_match('/[^a-zA-Z0-9_\- ]/', $example_name)) {
     echo json_encode(["text" => "# Invalid example name"]);
     exit;
 }
