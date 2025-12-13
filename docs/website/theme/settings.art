@@ -33,4 +33,5 @@ routes: #.raw [
     {library/[^/]+/[^/]+\.art}              "function.html"
     {_index\.art}                           "index.html"
     {documentation/[^/]+\.art}              "docpage.html"
+    {error/404.art}                         "404.html"
 ]
