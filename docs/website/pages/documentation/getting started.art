@@ -76,7 +76,7 @@ A lean, mean ~2MB binary with (almost) zero dependencies - perfect for container
 
 **What Mini doesn't include:**
 - No `webview` function or other UI-related capabilities
-- Limited precision arithmetic)
+- Limited precision arithmetic
 - No HTTPS support (HTTP only)
 - No package manager functionality
 - No built-in database support
