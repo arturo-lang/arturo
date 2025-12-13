@@ -105,6 +105,10 @@ editor.getSession().on('change', function() {
         window.loadedFromExample = false;
         window.currentExampleName = "";
     }
+    
+    // Track if there are unsaved changes
+    window.hasUnsavedChanges = (editor.getValue().trim() !== window.loadedCode.trim());
+    
     updateButtonStates();
 });
 
@@ -221,10 +225,34 @@ function execCode() {
                             if (data.done) {
                                 const elapsed = ((Date.now() - startTime) / 1000).toFixed(2);
                                 if (statusEl) {
-                                    const exitMsg = data.result === 0 
-                                        ? `<span style="color: #50fa7b;">✓ Exited with code 0</span>`
-                                        : `<span style="color: #ff5555;">✗ Exited with code ${data.result}</span>`;
-                                    statusEl.innerHTML = `${exitMsg}<span>${elapsed}s</span>`;
+                                    let statusMsg = '';
+                                    let statusColor = '';
+                                    
+                                    // Get terminal output to analyze errors
+                                    const terminalOutput = document.getElementById("terminal_output").textContent || '';
+                                    
+                                    if (data.result === 0) {
+                                        // Successful execution
+                                        statusMsg = 'Success';
+                                        statusColor = '#50fa7b';
+                                    } else if (data.result === 124 || data.result === 137) {
+                                        // Timeout: 124 = timeout, 137 = killed (timeout --kill-after)
+                                        statusMsg = 'Timeout';
+                                        statusColor = '#ffb86c';
+                                    } else if (terminalOutput.includes('<script>') || terminalOutput.includes('Error')) {
+                                        // Arturo runtime error
+                                        statusMsg = 'Runtime Error';
+                                        statusColor = '#ff5555';
+                                    } else {
+                                        // Generic error
+                                        statusMsg = 'Error';
+                                        statusColor = '#ff5555';
+                                    }
+                                    
+                                    const icon = data.result === 0 ? '✓' : 
+                                                (data.result === 124 || data.result === 137) ? '⏱' : '✗';
+                                    
+                                    statusEl.innerHTML = `<span style="color: ${statusColor};">${icon} ${statusMsg}</span><span>${elapsed}s</span>`;
                                 }
                                 
                                 if (data.error) {
@@ -276,12 +304,6 @@ function startCooldown() {
 function newSnippet() {
     if (window.isExecuting) return;
     
-    if (editor.getValue().trim() !== "") {
-        if (!confirm("Start a new snippet? Current code will be lost if not saved.")) {
-            return;
-        }
-    }
-    
     editor.setValue("");
     window.snippetId = "";
     window.loadedCode = "";
@@ -329,6 +351,8 @@ function saveSnippet() {
             
             window.snippetId = data.id;
             window.creatorIpMatches = true;
+            window.loadedCode = editor.getValue(); // Update loaded code
+            window.hasUnsavedChanges = false; // Clear unsaved flag
             addMySnippet(data.id);
             window.loadedFromUrl = false;
             window.isReadOnly = false;
@@ -338,13 +362,13 @@ function saveSnippet() {
             
             if (wasUpdate) {
                 // Just re-saved existing snippet - show toast only
-                showToast('Snippet updated', 'success');
+                showToast('Snippet updated');
             } else {
                 // New snippet or fork - show toast, then modal after delay
                 if (data.forked) {
-                    showToast('Forked as new snippet', 'success');
+                    showToast('Forked as new snippet');
                 } else {
-                    showToast('Snippet saved', 'success');
+                    showToast('Snippet saved');
                 }
                 
                 // Show modal after toast disappears
@@ -383,7 +407,7 @@ function downloadSnippet() {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
     
-    showToast('Script downloaded', 'success');
+    showToast('Script downloaded');
 }
 
 function getSnippet(id) {
@@ -402,6 +426,7 @@ function getSnippet(id) {
             window.loadedFromUrl = true;
             window.loadedFromExample = false;
             window.currentExampleName = "";
+            window.hasUnsavedChanges = false;
             
             const hasLocalOwnership = ownsSnippet(id);
             
@@ -442,7 +467,9 @@ function getSnippet(id) {
             updateButtonStates();
             editor.focus();
         } else {
+            // Snippet not found - redirect to clean playground
             showToast('Snippet not found', 'error');
+            window.history.pushState({}, '', window.location.pathname.split('/').slice(0, -1).join('/') + '/');
         }
     })
     .catch(error => {
@@ -519,18 +546,28 @@ function copyShareLink() {
     linkInput.select();
     linkInput.setSelectionRange(0, 99999);
     
-    navigator.clipboard.writeText(linkInput.value).then(function() {
-        closeSaveModal();
-        setTimeout(() => {
-            showToast('Link copied to clipboard!', 'success');
-        }, 100);
-    }, function() {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(linkInput.value).then(function() {
+            closeSaveModal();
+            setTimeout(() => {
+                showToast('Link copied to clipboard!');
+            }, 100);
+        }).catch(function() {
+            // Fallback to execCommand
+            document.execCommand('copy');
+            closeSaveModal();
+            setTimeout(() => {
+                showToast('Link copied to clipboard!');
+            }, 100);
+        });
+    } else {
+        // Fallback for older browsers
         document.execCommand('copy');
         closeSaveModal();
         setTimeout(() => {
-            showToast('Link copied to clipboard!', 'success');
+            showToast('Link copied to clipboard!');
         }, 100);
-    });
+    }
 }
 
 function showArgsModal() {
@@ -836,6 +873,15 @@ function parse_query_string(query) {
 
 window.addEventListener('load', function() {
     window.terminalColumns = calculateTerminalColumns();
+    
+    // Warn before leaving page if there are unsaved changes
+    window.addEventListener('beforeunload', function(e) {
+        if (window.hasUnsavedChanges && editor.getValue().trim() !== '') {
+            e.preventDefault();
+            e.returnValue = '';
+            return '';
+        }
+    });
     
     const savedExpanded = localStorage.getItem('playground-expanded');
     if (savedExpanded === 'false') {
