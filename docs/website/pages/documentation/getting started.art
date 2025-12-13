@@ -124,7 +124,7 @@ Or download directly from the [nightly releases](https://github.com/arturo-lang/
 
 Now that you've got Arturo running, here's where to go:
 
-- **[In a Nutshell](../nutshell)** - Get up to speed fast with a quick tour of Arturo's syntax and core concepts
+- **[In a Nutshell](../in-a-nutshell)** - Get up to speed fast with a quick tour of Arturo's syntax and core concepts
 - **[Language Reference](../language)** - Dive deep into everything Arturo has to offer
 - **[Standard Library](../library)** - Explore the built-in functions at your fingertips
 
