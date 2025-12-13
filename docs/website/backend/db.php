@@ -120,7 +120,12 @@ class SnippetDB {
     
     function cleanup() {
         $cutoff = time() - (2 * 365 * 24 * 60 * 60);
-        $this->db->exec("DELETE FROM snippets WHERE last_accessed < $cutoff");
+        
+        // Use prepared statement for safety
+        $stmt = $this->db->prepare('DELETE FROM snippets WHERE last_accessed < :cutoff');
+        $stmt->bindValue(':cutoff', $cutoff, SQLITE3_INTEGER);
+        $stmt->execute();
+        
         $this->db->exec('VACUUM');
     }
     
@@ -163,7 +168,11 @@ class SnippetDB {
     
     function cleanupRateLimits() {
         $cutoff_hour = floor(time() / 3600) - 24;
-        $this->db->exec("DELETE FROM rate_limits WHERE hour < $cutoff_hour");
+        
+        // Use prepared statement for safety
+        $stmt = $this->db->prepare('DELETE FROM rate_limits WHERE hour < :cutoff_hour');
+        $stmt->bindValue(':cutoff_hour', $cutoff_hour, SQLITE3_INTEGER);
+        $stmt->execute();
     }
 }
 ?>
