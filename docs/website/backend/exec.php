@@ -130,7 +130,7 @@ if ($is_example) {
     }
     
     $example_file = basename($example_name) . ".art";
-    $arturo_cmd = "/usr/local/bin/arturo " . escapeshellarg("examples/" . $example_file);
+    $arturo_cmd = "/usr/local/bin/arturo \\\"examples/" . str_replace('"', '\\"', $example_file) . "\\\"";
 } else {
     $code_file = $jail_path . "/tmp/main.art";
     file_put_contents($code_file, $code . "\n");
@@ -139,8 +139,9 @@ if ($is_example) {
 }
 
 if (!empty($args)) {
-    // SECURITY: Properly escape arguments to prevent command injection
-    $arturo_cmd .= " " . escapeshellarg($args);
+    // SECURITY: Escape quotes in arguments
+    $escaped_args = str_replace('"', '\\"', $args);
+    $arturo_cmd .= " \\\"" . $escaped_args . "\\\"";
 }
 
 // =========================================================================
