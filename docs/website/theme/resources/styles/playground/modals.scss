@@ -162,29 +162,28 @@
 
 #toast-notification {
     position: fixed;
-    top: 50%;
+    top: 80px;
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translateX(-50%);
     background: linear-gradient(135deg, $main-purple 0%, $purple-fade 100%);
     color: white;
-    padding: 16px 32px;
-    border-radius: 6px;
-    font-size: 15px;
+    padding: 12px 24px;
+    border-radius: 4px;
+    font-size: 14px;
     font-weight: 500;
     z-index: 10000;
     pointer-events: none;
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0s linear 0.3s;
-    box-shadow: 0 4px 16px rgba(31, 6, 32, 0.4);
+    transition: opacity 0.25s ease, transform 0.25s ease, visibility 0s linear 0.25s;
+    box-shadow: 0 2px 8px rgba(31, 6, 32, 0.3);
     white-space: nowrap;
-    letter-spacing: 0.3px;
 
     &.show {
         opacity: 1;
         visibility: visible;
-        transform: translate(-50%, -50%) translateY(-8px);
-        transition: opacity 0.3s ease, transform 0.3s ease, visibility 0s linear 0s;
+        transform: translateX(-50%) translateY(0);
+        transition: opacity 0.25s ease, transform 0.25s ease, visibility 0s linear 0s;
     }
     
     &.toast-error {
