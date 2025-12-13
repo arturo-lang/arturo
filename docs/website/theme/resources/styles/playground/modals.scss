@@ -165,38 +165,35 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: $main-purple;
-    color: $dark-fg;
-    padding: 14px 28px;
-    border-radius: 4px;
+    background: linear-gradient(135deg, $main-purple 0%, $purple-fade 100%);
+    color: white;
+    padding: 16px 32px;
+    border-radius: 6px;
     font-size: 15px;
-    font-weight: 600;
+    font-weight: 500;
     z-index: 10000;
     pointer-events: none;
-    // Start hidden
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.25s ease, transform 0.25s ease, visibility 0s linear 0.25s;
-    box-shadow: 0 4px 12px rgba(63, 12, 64, .3), 
-            0 2px 4px rgba(0, 0, 0, .15), 
-            inset 0 1px 0 hsla(0, 0%, 100%, .2);
+    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0s linear 0.3s;
+    box-shadow: 0 4px 16px rgba(31, 6, 32, 0.4);
     white-space: nowrap;
     letter-spacing: 0.3px;
 
     &.show {
-        opacity: 0.95;
+        opacity: 1;
         visibility: visible;
-        transform: translate(-50%, -50%) translateY(-5px);
-        transition: opacity 0.25s ease, transform 0.25s ease, visibility 0s linear 0s;
+        transform: translate(-50%, -50%) translateY(-8px);
+        transition: opacity 0.3s ease, transform 0.3s ease, visibility 0s linear 0s;
     }
     
     &.toast-error {
-        background: #ff3860;
+        background: linear-gradient(135deg, #ff3860 0%, #dc2f4f 100%);
         color: white;
     }
     
     &.toast-success {
-        background: #50fa7b;
+        background: linear-gradient(135deg, #50fa7b 0%, #3fcc62 100%);
         color: #1e1e1e;
     }
 }
