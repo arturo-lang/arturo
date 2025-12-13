@@ -8,6 +8,12 @@ header('Access-Control-Allow-Origin: http://188.245.97.105');
 
 $rest_json = file_get_contents("php://input");
 $_POST = json_decode($rest_json, true);
+
+// Validate JSON decode
+if (!is_array($_POST)) {
+    $_POST = [];
+}
+
 $stream = isset($_POST['stream']) ? $_POST['stream'] : false;
 
 if ($stream) {
@@ -111,8 +117,19 @@ if ($clone_ret !== 0) {
 // =========================================================================
 
 if ($is_example) {
+    // SECURITY: Sanitize example name to prevent command injection
+    if (preg_match('/[^a-zA-Z0-9_-]/', $example_name)) {
+        echo json_encode([
+            "text" => "Error: Invalid example name",
+            "code" => "",
+            "result" => -1
+        ]);
+        exec("sudo /sbin/zfs destroy zroot/jails/run/$jail_name 2>&1");
+        exit;
+    }
+    
     $example_file = basename($example_name) . ".art";
-    $arturo_cmd = "/usr/local/bin/arturo \\\"examples/" . str_replace('"', '\\"', $example_file) . "\\\"";
+    $arturo_cmd = "/usr/local/bin/arturo " . escapeshellarg("examples/" . $example_file);
 } else {
     $code_file = $jail_path . "/tmp/main.art";
     file_put_contents($code_file, $code . "\n");
@@ -121,8 +138,8 @@ if ($is_example) {
 }
 
 if (!empty($args)) {
-    $escaped_args = str_replace('"', '\\"', $args);
-    $arturo_cmd .= " \\\"" . $escaped_args . "\\\"";
+    // SECURITY: Properly escape arguments to prevent command injection
+    $arturo_cmd .= " " . escapeshellarg($args);
 }
 
 // =========================================================================

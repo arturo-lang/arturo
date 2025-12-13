@@ -10,6 +10,11 @@ header('Content-Type: application/json');
 $rest_json = file_get_contents("php://input");
 $_POST = json_decode($rest_json, true);
 
+// Validate JSON decode
+if (!is_array($_POST)) {
+    $_POST = [];
+}
+
 require_once __DIR__ . '/db.php';
 $db = new SnippetDB();
 
