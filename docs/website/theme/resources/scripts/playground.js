@@ -325,6 +325,8 @@ function saveSnippet() {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
+            const wasUpdate = (window.snippetId === data.id && !data.forked);
+            
             window.snippetId = data.id;
             window.creatorIpMatches = true;
             addMySnippet(data.id);
@@ -332,17 +334,23 @@ function saveSnippet() {
             window.isReadOnly = false;
             updateButtonStates();
             
-            const fullUrl = window.location.origin + window.location.pathname.split('/').slice(0, -1).join('/') + '/' + data.id;
-            document.getElementById('snippet-link').value = fullUrl;
-            document.getElementById('save-modal').classList.add('is-active');
+            if (wasUpdate) {
+                // Just re-saved existing snippet - show toast only
+                showToast('Snippet updated', 'success');
+            } else {
+                // New snippet or fork - show share modal
+                const fullUrl = window.location.origin + window.location.pathname.split('/').slice(0, -1).join('/') + '/' + data.id;
+                document.getElementById('snippet-link').value = fullUrl;
+                document.getElementById('save-modal').classList.add('is-active');
+                
+                if (data.forked) {
+                    showToast('Forked as new snippet', 'success');
+                } else {
+                    showToast('Snippet saved', 'success');
+                }
+            }
             
             window.history.pushState({}, '', window.location.pathname.split('/').slice(0, -1).join('/') + '/' + data.id);
-            
-            if (!canUpdate) {
-                showToast('Forked as new snippet', 'success');
-            } else {
-                showToast('Snippet saved', 'success');
-            }
         } else {
             showToast('Failed to save: ' + (data.error || 'Unknown error'), 'error');
         }
@@ -450,17 +458,26 @@ function updateButtonStates() {
     const saveMenuItem = document.getElementById('save-menuitem');
     const downloadMenuItem = document.getElementById('download-menuitem');
     
+    // Run button: disabled during execution OR cooldown
     if (isExecuting || window.cooldownActive) {
         runButton.classList.add('disabled');
+    } else {
+        if (hasContent) {
+            runButton.classList.remove('disabled');
+        } else {
+            runButton.classList.add('disabled');
+        }
+    }
+    
+    // Save/Download: only disabled during execution, NOT during cooldown
+    if (isExecuting) {
         if (saveMenuItem) saveMenuItem.classList.add('disabled');
         if (downloadMenuItem) downloadMenuItem.classList.add('disabled');
     } else {
         if (hasContent) {
-            runButton.classList.remove('disabled');
             if (saveMenuItem) saveMenuItem.classList.remove('disabled');
             if (downloadMenuItem) downloadMenuItem.classList.remove('disabled');
         } else {
-            runButton.classList.add('disabled');
             if (saveMenuItem) saveMenuItem.classList.add('disabled');
             if (downloadMenuItem) downloadMenuItem.classList.add('disabled');
         }
