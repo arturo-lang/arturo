@@ -264,7 +264,7 @@ Let's say we used the function <code><a href="../library/collections/split">spli
 ```arturo
 split "hello world"
 
-; => [`h` `e` `l` `l` `o` ` ` `w` `o` `r` `l` `d` ]
+; => ["h" "e" "l" "l" "o" " " "w" "o" "r" "l" "d"]
 ```
 That does what it says: splits the string into an array of `:char`s.
 
