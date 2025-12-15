@@ -119,7 +119,7 @@ if ($clone_ret !== 0) {
 if ($is_example) {
     // SECURITY: Sanitize example name to prevent command injection
     // Only allow alphanumeric, dash, underscore, and spaces
-    if (preg_match('/[^a-zA-Z0-9_\- ]/', $example_name)) {
+    if (preg_match('/[^a-zA-Z0-9_\-\' +^]/', $example_name)) {
         echo json_encode([
             "text" => "Error: Invalid example name",
             "code" => "",
