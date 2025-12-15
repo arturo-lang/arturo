@@ -32,7 +32,7 @@ loop select list libDocPath => validDocFile? 'modl [
             modl: capitalize moduleName
             attr: attributes
             exam: examples
-            url: ~"library/|moduleName|/|fileName|/"
+            url: ~"library/|moduleName|/|lower fileName|/"
         ]
         ; commandName: replace fname cmd ["-" ".art"] ["?" ""]
         ;inspect entry
