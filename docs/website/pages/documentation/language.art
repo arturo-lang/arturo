@@ -266,7 +266,7 @@ split "hello world"
 
 ; => ["h" "e" "l" "l" "o" " " "w" "o" "r" "l" "d"]
 ```
-That does what it says: splits the string into an array of `:char`s.
+That does what it says: splits the string into an array of strings.
 
 What if we want to split the string into words? For that, there is the `.words` attribute for the function <code><a href="../library/collections/split">split</a></code>. So:
 
