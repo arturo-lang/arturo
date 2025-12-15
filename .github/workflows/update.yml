@@ -233,7 +233,7 @@ jobs:
             - name: Generate tutorial
               run: |
                 sudo apt-get install pandoc texlive-latex-base texlive-fonts-recommended texlive-extra-utils texlive-latex-extra
-                pandoc tmpdocs/llms.txt -f markdown_github -t pdf -o tmpdocs/tutorial.pdf
+                pandoc -f gfm -t pdf tmpdocs/llms.txt -o tmpdocs/tutorial.pdf
 
             - name: Copy Rosetta Code examples
               run: |
