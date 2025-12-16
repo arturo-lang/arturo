@@ -191,6 +191,8 @@ if ($stream) {
             
             foreach ($lines as $line) {
                 $colorized = shell_exec("echo " . escapeshellarg($line) . " | /usr/local/bin/aha --no-header --black");
+                // Strip any newlines that aha preserves within the HTML
+                $colorized = str_replace(["\r\n", "\n", "\r"], '', $colorized);
                 $formatted = str_replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;", rtrim($colorized));
                 echo "data: " . json_encode(["line" => $formatted . "<br>"]) . "\n\n";
                 flush();
@@ -201,6 +203,8 @@ if ($stream) {
     
     if ($buffer !== '') {
         $colorized = shell_exec("echo " . escapeshellarg($buffer) . " | /usr/local/bin/aha --no-header --black");
+        // Strip any newlines that aha preserves within the HTML
+        $colorized = str_replace(["\r\n", "\n", "\r"], '', $colorized);
         $formatted = str_replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;", rtrim($colorized));
         echo "data: " . json_encode(["line" => $formatted . "<br>"]) . "\n\n";
         flush();
