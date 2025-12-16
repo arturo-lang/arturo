@@ -113,13 +113,13 @@ if ($clone_ret !== 0) {
 }
 
 // =========================================================================
-// PREPARE EXECUTION COMMAND
+// PREPARE EXECUTION SCRIPT
 // =========================================================================
 
 if ($is_example) {
-    // SECURITY: Sanitize example name to prevent command injection
+    // SECURITY: Sanitize example name to prevent path traversal
     // Only allow alphanumeric, dash, underscore, and spaces
-    if (preg_match('/[^a-zA-Z0-9_\-\' +^]/', $example_name)) {
+    if (preg_match('/[^a-zA-Z0-9_\-\' ]/', $example_name)) {
         echo json_encode([
             "text" => "Error: Invalid example name",
             "code" => "",
@@ -130,26 +130,49 @@ if ($is_example) {
     }
     
     $example_file = basename($example_name) . ".art";
-    $arturo_cmd = "/usr/local/bin/arturo \\\"examples/" . str_replace('"', '\\"', $example_file) . "\\\"";
+    $arturo_target = "examples/" . $example_file;
 } else {
     $code_file = $jail_path . "/tmp/main.art";
     file_put_contents($code_file, $code . "\n");
     chmod($code_file, 0644);
-    $arturo_cmd = "/usr/local/bin/arturo /tmp/main.art";
+    $arturo_target = "/tmp/main.art";
 }
 
+// Build command arguments array
+$arturo_args = [$arturo_target];
 if (!empty($args)) {
-    // SECURITY: Escape quotes in arguments
-    $escaped_args = str_replace('"', '\\"', $args);
-    $arturo_cmd .= " \\\"" . $escaped_args . "\\\"";
+    $arturo_args[] = $args;
 }
+
+// Write execution script to jail
+$exec_script = $jail_path . "/tmp/run.sh";
+$script_content  = "#!/bin/sh\n";
+$script_content .= "HOME=/root\n";
+$script_content .= "LD_LIBRARY_PATH=/usr/local/lib\n";
+$script_content .= "COLUMNS=$columns\n";
+$script_content .= "LINES=24\n";
+$script_content .= "export HOME LD_LIBRARY_PATH COLUMNS LINES\n";
+$script_content .= "timeout --kill-after=3s 10s /usr/local/bin/arturo";
+
+// Add arguments with proper quoting
+foreach ($arturo_args as $arg) {
+    // Use single quotes and escape any single quotes in the argument
+    $escaped_arg = str_replace("'", "'\\''", $arg);
+    $script_content .= " '" . $escaped_arg . "'";
+}
+
+$script_content .= " 2>&1\n";
+
+file_put_contents($exec_script, $script_content);
+chmod($exec_script, 0755);
 
 // =========================================================================
 // EXECUTION
 // =========================================================================
 
 if ($stream) {
-    $cmd = "sudo /usr/sbin/jail -c name=$jail_name path=$jail_path exec.start=\"/bin/sh -c 'HOME=/root LD_LIBRARY_PATH=/usr/local/lib COLUMNS=$columns LINES=24 timeout --kill-after=3s 10s $arturo_cmd 2>&1'\" exec.stop=\"\" 2>&1";
+    // Simple command - just run the script
+    $cmd = "sudo /usr/sbin/jail -c name=$jail_name path=$jail_path exec.start='/tmp/run.sh' exec.stop='' 2>&1";
     
     ini_set('output_buffering', 'off');
     ini_set('zlib.output_compression', false);
@@ -193,7 +216,12 @@ if ($stream) {
     flush();
     
 } else {
-    $cmd = "sudo /usr/sbin/jail -c name=$jail_name path=$jail_path exec.start=\"/bin/sh -c 'HOME=/root LD_LIBRARY_PATH=/usr/local/lib COLUMNS=$columns LINES=24 timeout --kill-after=3s 10s $arturo_cmd 2>&1 | /usr/local/bin/aha --no-header --black'\" exec.stop=\"\" 2>&1";
+    // Non-streaming: pipe through aha
+    $exec_script_aha = $jail_path . "/tmp/run_aha.sh";
+    file_put_contents($exec_script_aha, "#!/bin/sh\n/tmp/run.sh | /usr/local/bin/aha --no-header --black\n");
+    chmod($exec_script_aha, 0755);
+    
+    $cmd = "sudo /usr/sbin/jail -c name=$jail_name path=$jail_path exec.start='/tmp/run_aha.sh' exec.stop='' 2>&1";
     
     exec($cmd, $output, $ret);
     
