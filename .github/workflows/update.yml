@@ -37,7 +37,7 @@ jobs:
             - name: Increment build number and get version info
               id: version-info
               run: |
-                version_tag="TEST"
+                version_tag="LATEST"
                 echo "VERSION_TAG=${version_tag}" >> "$GITHUB_OUTPUT"
             
             # - name: Configure Git
@@ -209,11 +209,11 @@ jobs:
               env:
                 VERSION_TAG: ${{ needs.Build.outputs.version_tag }}
               run: |
-                arturo tools/binarygen.art  "$VERSION_TAG" test
+                arturo tools/binarygen.art  "$VERSION_TAG" latest
                 arturo tools/sitegen.art
                 arturo tools/indexgen.art
                 arturo tools/preprocessjs.art \
-                  --basePath:"test" \
+                  --basePath:"latest" \
                   --keywordPredicates:"$(arturo tools/getbuiltins.art 1)" \
                   --keywordRest:"$(arturo tools/getbuiltins.art 2)"
 
@@ -274,7 +274,7 @@ jobs:
               with:
                 switches: -avzr --delete
                 path: tmpdocs/
-                remote_path: /usr/local/www/arturo/main/versions/test
+                remote_path: /usr/local/www/arturo/main/versions/latest
                 remote_host: 188.245.97.105 
                 remote_user: web
                 remote_key: ${{ secrets.FREEBSD_WEB_DEPLOYMENT }}
@@ -286,12 +286,12 @@ jobs:
                 username: web
                 key: ${{ secrets.FREEBSD_WEB_DEPLOYMENT }}
                 script: |
-                  cd /usr/local/www/arturo/main/versions/test
+                  cd /usr/local/www/arturo/main/versions/latest
                   unzip -o files/*-freebsd-amd64.zip
                   mkdir -p bin
                   mv arturo bin/
                   chmod +x tools/setup_runner.sh
-                  sudo /usr/local/sbin/arturo_setup_runner test
+                  sudo /usr/local/sbin/arturo_setup_runner latest
  
             - name: Upload complete website artifact
               uses: 'actions/upload-artifact@v4'
@@ -304,5 +304,5 @@ jobs:
                 echo "🎉 Build & Documentation Complete!"
                 echo "Version: ${{ needs.Build.outputs.version_tag }}"
                 echo "Binaries built: $(ls files/ | wc -l)"
-                echo "Website deployed to: https://188.245.97.105 /test"
-                echo "Binaries available at: https://188.245.97.105/test/files"
+                echo "Website deployed to: https://188.245.97.105 /latest"
+                echo "Binaries available at: https://188.245.97.105/latest/files"
