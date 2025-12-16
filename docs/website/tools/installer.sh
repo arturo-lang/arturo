@@ -12,7 +12,7 @@ set -e
 # CONSTANTS
 ################################################
 
-BASE_URL="https://arturo-lang.io"
+BASE_URL="http://188.245.97.105"
 INSTALL_DIR="$HOME/.arturo"
 BIN_DIR="$INSTALL_DIR/bin"
 TMP_DIR=""
@@ -35,6 +35,7 @@ GREEN='\033[1;32m'
 MAGENTA='\033[1;35m'
 CYAN='\033[1;36m'
 GRAY='\033[0;90m'
+WHITE='\033[1m'
 CLEAR='\033[0m'
 
 ################################################
@@ -44,8 +45,9 @@ CLEAR='\033[0m'
 print() { printf "%b" "$1"; }
 println() { printf "%b\n" "$1"; }
 error() { println "${RED}✗ $1${CLEAR}" >&2; exit 1; }
-info() { println "${GRAY}  $1${CLEAR}"; }
-section() { println "\n${MAGENTA}●${CLEAR} $1"; }
+info() { println "${GRAY}      $1${CLEAR}"; }
+info2() { print "${GRAY}      $1${CLEAR}"; }
+section() { println "\n ${MAGENTA}●${CLEAR} $1"; }
 command_exists() { command -v "$1" >/dev/null 2>&1; }
 
 cleanup() {
@@ -53,42 +55,70 @@ cleanup() {
 }
 trap cleanup EXIT INT TERM
 
+show_spinner() {
+    local pid=$1
+    local message=$2
+    local spin='|/-\'
+    local i=0
+    
+    # Only show spinner if we have a proper terminal
+    if [ -t 1 ] 2>/dev/null; then
+        printf " %s " "$message"
+        while kill -0 $pid 2>/dev/null; do
+            case $i in
+                0) c='|' ;;
+                1) c='/' ;;
+                2) c='-' ;;
+                3) c='\' ;;
+            esac
+            printf "\b${GRAY}%s${CLEAR}" "$c"
+            i=$(( (i+1) % 4 ))
+            sleep 0.1
+        done
+        printf "\b \b"  # Clear spinner
+    fi
+    wait $pid
+    return $?
+}
+
 show_header() {
-    println "======================================"
-    println "${GREEN}"
-    println "               _                    "
-    println "              | |                   "
-    println "     __ _ _ __| |_ _   _ _ __ ___   "
-    println "    / _\` | '__| __| | | | '__/ _ \\ "
-    println "   | (_| | |  | |_| |_| | | | (_) | "
-    println "    \__,_|_|   \__|\__,_|_|  \___/  "
-    println "                                    "
-    println "${CLEAR}"
-    print "     \033[1mArturo"
-    print " Programming Language\033[0m\n"
-    println "      (c)2025 Yanis Zafirópulos"
-    println ""
-    println "======================================"
+    println "${GREEN}              _                    "
+    println "             | |                   "
+    println "    __ _ _ __| |_ _   _ _ __ ___   "
+    println "   / _\` | '__| __| | | | '__/ _ \\ "
+    println "  | (_| | |  | |_| |_| | | | (_) | "
+    println "   \__,_|_|   \__|\__,_|_|  \___/  ${CLEAR}"
+    println "   (c)2019-2025 Yanis Zafirópulos"
+    println "${CYAN}"
+    println "======================================================="
     println " ► Installer"
-    println "======================================"
+    println "======================================================="
     print "${CLEAR}"
 }
 
 show_footer() {
-    println ""
-    print "${GRAY}"
-    println " :---------------------------------------------------------"
-    println " : Arturo has been successfully installed!"
-    println " :"
-    println " : To run it, add this to your \$PATH:"
-    println " :"
-    println " :    export PATH=\$HOME/.arturo/bin:\$PATH"
-    println " :"
-    println " : Add it to your $SHELL_RC"
-    println " : to set it automatically on every shell session."
-    println " :"
-    println " : Rock on! :)"
-    println " :---------------------------------------------------------"
+    println "${CYAN}"
+    println "======================================================="
+    println " ► Quick setup"
+    println "======================================================="
+    println "${CLEAR}"
+    println "   Arturo has been successfully installed!"
+    println "  "
+    println "   To be able to run it from anywhere,"
+    println "   update your \$PATH:"
+    println "       ${GRAY}export PATH=\$HOME/.arturo/bin:\$PATH${CLEAR}"
+    println "  "
+    println "   Add it to your $SHELL_RC"
+    println "   to set it automatically on every shell session."
+    println "  "
+    if [ -n "$MISSING_PACKAGES" ]; then
+        if [ -n "$INSTALL_CMD" ]; then
+            println "   To install missing dependencies:"
+            println "       ${GRAY}$INSTALL_CMD $MISSING_PACKAGES${CLEAR}\n"
+        fi
+    fi
+
+    println "   Rock on! 🤘"
     print "${CLEAR}"
     println ""
 }
@@ -138,8 +168,12 @@ detect_system() {
         case "$ID" in
             ubuntu|debian|linuxmint|pop)
                 PKG_MANAGER="apt"
-                [ "$ID" = "ubuntu" ] && [ "${VERSION_ID%%.*}" -lt 24 ] && NEEDS_LEGACY=true
-                [ "$ID" = "debian" ] && [ "${VERSION_ID%%.*}" -lt 13 ] && NEEDS_LEGACY=true
+                if [ "$ID" = "ubuntu" ]; then
+                    [ "${VERSION_ID%%.*}" -lt 24 ] && NEEDS_LEGACY=true
+                fi
+                if [ "$ID" = "debian" ]; then
+                    [ "${VERSION_ID%%.*}" -lt 13 ] && NEEDS_LEGACY=true
+                fi
                 ;;
             fedora|centos|rhel|almalinux|rocky)
                 PKG_MANAGER=$(command_exists dnf && echo "dnf" || echo "yum")
@@ -164,7 +198,9 @@ detect_system() {
         if [ -n "$GLIBC_VERSION" ]; then
             MAJOR=$(echo "$GLIBC_VERSION" | cut -d. -f1)
             MINOR=$(echo "$GLIBC_VERSION" | cut -d. -f2)
-            [ "$MAJOR" -lt 2 ] || [ "$MAJOR" -eq 2 -a "$MINOR" -lt 35 ] && NEEDS_LEGACY=true
+            if [ "$MAJOR" -lt 2 ] || [ "$MAJOR" -eq 2 -a "$MINOR" -lt 35 ]; then
+                NEEDS_LEGACY=true
+            fi
         fi
     fi
     
@@ -225,11 +261,8 @@ check_deps() {
     esac
     
     if [ -n "$MISSING_PACKAGES" ]; then
-        println "\n${CYAN}Note: Missing required packages for full mode:${CLEAR}"
-        info "$MISSING_PACKAGES"
-        if [ -n "$INSTALL_CMD" ]; then
-            println "\n${GREEN}  $INSTALL_CMD $MISSING_PACKAGES${CLEAR}\n"
-        fi
+        info "required packages:${CLEAR}"
+        info "    $MISSING_PACKAGES"
     fi
 }
 
@@ -240,43 +273,63 @@ check_deps() {
 get_version() {
     local path=$([ "$VERSION_TYPE" = "latest" ] && echo "latest/" || echo "")
     local version_url="$BASE_URL/${path}files/VERSION"
+
     VERSION=$(curl -sf "$version_url") || error "Could not fetch version information"
+    VERSION="nightly.20251206"
     info "version: $VERSION"
 }
 
-build_artifact_name() {
-    local prefix=$([ "$VERSION_TYPE" = "latest" ] && echo "nightly" || echo "$VERSION")
-    
-    ARTIFACT_NAME="arturo-${prefix}-${OS}-${ARCH}"
+download_arturo() {
+    ARTIFACT_NAME="arturo-${VERSION}-${OS}-${ARCH}"
     [ "$BUILD_VARIANT" != "full" ] && ARTIFACT_NAME="${ARTIFACT_NAME}-${BUILD_VARIANT}"
     [ "$NEEDS_LEGACY" = true ] && ARTIFACT_NAME="${ARTIFACT_NAME}-legacy"
-    
-    info "artifact: $ARTIFACT_NAME"
-}
 
-download_arturo() {
     TMP_DIR=$(mktemp -d 2>/dev/null || mktemp -d -t arturo)
     local path=$([ "$VERSION_TYPE" = "latest" ] && echo "latest/" || echo "")
     local url="$BASE_URL/${path}files/${ARTIFACT_NAME}.zip"
+    local generic_error="Download failed. Something went wrong, please check your connection."
     
-    info "downloading: $url"
-    curl -fSL "$url" -o "$TMP_DIR/arturo.zip" || error "Download failed. Try --mini variant or check your connection."
+    info2 "archive: $url"
+
+    if command -v curl > /dev/null 2>&1; then
+        curl -fsSL "$url" -o "$TMP_DIR/arturo.zip" 2>&1 &
+        show_spinner $! "" || error "$generic_error"
+    elif command -v wget > /dev/null 2>&1; then
+        wget -q -O "$TMP_DIR/arturo.zip" "$url" 2>&1 &
+        show_spinner $! "" || error "$generic_error"
+    else
+        error "curl/wget not found. Please install one of them to continue."
+    fi
+    println ""
+    
     command_exists unzip || error "unzip is required but not installed"
     unzip -q "$TMP_DIR/arturo.zip" -d "$TMP_DIR" || error "Failed to extract archive"
 }
 
 install_arturo() {
+    info "into: ${BIN_DIR}"
     mkdir -p "$BIN_DIR" || error "Could not create installation directory"
     
-    [ -f "$TMP_DIR/arturo" ] && cp "$TMP_DIR/arturo" "$BIN_DIR/" && chmod +x "$BIN_DIR/arturo"
-    [ -f "$TMP_DIR/arturo.exe" ] && cp "$TMP_DIR/arturo.exe" "$BIN_DIR/"
-    [ -f "$TMP_DIR/cacert.pem" ] && cp "$TMP_DIR/cacert.pem" "$BIN_DIR/"
+    if [ -f "$TMP_DIR/arturo" ]; then
+        cp "$TMP_DIR/arturo" "$BIN_DIR/" || error "Failed to copy arturo binary"
+        chmod +x "$BIN_DIR/arturo" || error "Failed to make arturo executable"
+    fi
     
-    for dll in "$TMP_DIR"/*.dll; do
-        [ -f "$dll" ] && cp "$dll" "$BIN_DIR/"
-    done
+    if [ -f "$TMP_DIR/arturo.exe" ]; then
+        cp "$TMP_DIR/arturo.exe" "$BIN_DIR/" || error "Failed to copy arturo.exe"
+    fi
     
-    [ ! -f "$BIN_DIR/arturo" ] && [ ! -f "$BIN_DIR/arturo.exe" ] && error "Binary not found in archive"
+    if [ -f "$TMP_DIR/cacert.pem" ]; then
+        cp "$TMP_DIR/cacert.pem" "$BIN_DIR/" || error "Failed to copy cacert.pem"
+    fi
+    
+    if ls "$TMP_DIR"/*.dll 1> /dev/null 2>&1; then
+        cp "$TMP_DIR"/*.dll "$BIN_DIR/" || error "Failed to copy DLL files"
+    fi
+    
+    if [ ! -f "$BIN_DIR/arturo" ] && [ ! -f "$BIN_DIR/arturo.exe" ]; then
+        error "Binary not found in archive"
+    fi
 }
 
 ################################################
@@ -287,23 +340,21 @@ main() {
     show_header
     
     section "Checking environment..."
-    println ""
     detect_system
     
     section "Resolving version..."
     get_version
-    build_artifact_name
+
+    section "Downloading..."
+    download_arturo
     
     section "Checking dependencies..."
     check_deps
     
-    section "Downloading..."
-    download_arturo
-    
     section "Installing..."
     install_arturo
     
-    section "Done!"
+    section "Done! ✓"
     show_footer
 }
 
