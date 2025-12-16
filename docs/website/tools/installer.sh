@@ -286,10 +286,12 @@ download_arturo() {
 
     TMP_DIR=$(mktemp -d 2>/dev/null || mktemp -d -t arturo)
     local path=$([ "$VERSION_TYPE" = "latest" ] && echo "latest/" || echo "")
-    local url="$BASE_URL/${path}files/${ARTIFACT_NAME}.zip"
+    local url="${path}files/${ARTIFACT_NAME}.zip"
     local generic_error="Download failed. Something went wrong, please check your connection."
     
     info2 "archive: $url"
+
+    url="$BASE_URL/$url"
 
     if command -v curl > /dev/null 2>&1; then
         curl -fsSL "$url" -o "$TMP_DIR/arturo.zip" 2>&1 &
