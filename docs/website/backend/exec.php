@@ -113,7 +113,25 @@ if ($clone_ret !== 0) {
 }
 
 // =========================================================================
-// PREPARE EXECUTION SCRIPT
+// COPY RUN SCRIPT TO JAIL
+// =========================================================================
+
+$run_script_source = __DIR__ . '/run.sh';
+$run_script_dest = $jail_path . '/tmp/run.sh';
+
+if (!copy($run_script_source, $run_script_dest)) {
+    echo json_encode([
+        "text" => "Error: Failed to copy execution script to jail",
+        "code" => "",
+        "result" => -1
+    ]);
+    exec("sudo /sbin/zfs destroy zroot/jails/run/$jail_name 2>&1");
+    exit;
+}
+chmod($run_script_dest, 0755);
+
+// =========================================================================
+// PREPARE EXECUTION ARGUMENTS
 // =========================================================================
 
 if ($is_example) {
@@ -138,41 +156,23 @@ if ($is_example) {
     $arturo_target = "/tmp/main.art";
 }
 
-// Build command arguments array
-$arturo_args = [$arturo_target];
+// Build run.sh invocation
+// Format: /tmp/run.sh <columns> <script_path> [args...]
+$run_args = [$columns, $arturo_target];
 if (!empty($args)) {
-    $arturo_args[] = $args;
+    $run_args[] = $args;
 }
 
-// Write execution script to jail
-$exec_script = $jail_path . "/tmp/run.sh";
-$script_content  = "#!/bin/sh\n";
-$script_content .= "HOME=/root\n";
-$script_content .= "LD_LIBRARY_PATH=/usr/local/lib\n";
-$script_content .= "COLUMNS=$columns\n";
-$script_content .= "LINES=24\n";
-$script_content .= "export HOME LD_LIBRARY_PATH COLUMNS LINES\n";
-$script_content .= "timeout --kill-after=3s 10s /usr/local/bin/arturo";
-
-// Add arguments with proper quoting
-foreach ($arturo_args as $arg) {
-    // Use single quotes and escape any single quotes in the argument
-    $escaped_arg = str_replace("'", "'\\''", $arg);
-    $script_content .= " '" . $escaped_arg . "'";
-}
-
-$script_content .= " 2>&1\n";
-
-file_put_contents($exec_script, $script_content);
-chmod($exec_script, 0755);
+// Build the command with proper shell escaping
+$escaped_args = array_map('escapeshellarg', $run_args);
+$run_command = '/tmp/run.sh ' . implode(' ', $escaped_args);
 
 // =========================================================================
 // EXECUTION
 // =========================================================================
 
 if ($stream) {
-    // Simple command - just run the script
-    $cmd = "sudo /usr/sbin/jail -c name=$jail_name path=$jail_path exec.start='/tmp/run.sh' exec.stop='' 2>&1";
+    $cmd = "sudo /usr/sbin/jail -c name=$jail_name path=$jail_path exec.start=" . escapeshellarg($run_command) . " exec.stop='' 2>&1";
     
     ini_set('output_buffering', 'off');
     ini_set('zlib.output_compression', false);
@@ -217,11 +217,8 @@ if ($stream) {
     
 } else {
     // Non-streaming: pipe through aha
-    $exec_script_aha = $jail_path . "/tmp/run_aha.sh";
-    file_put_contents($exec_script_aha, "#!/bin/sh\n/tmp/run.sh | /usr/local/bin/aha --no-header --black\n");
-    chmod($exec_script_aha, 0755);
-    
-    $cmd = "sudo /usr/sbin/jail -c name=$jail_name path=$jail_path exec.start='/tmp/run_aha.sh' exec.stop='' 2>&1";
+    $run_command_aha = $run_command . ' | /usr/local/bin/aha --no-header --black';
+    $cmd = "sudo /usr/sbin/jail -c name=$jail_name path=$jail_path exec.start=" . escapeshellarg($run_command_aha) . " exec.stop='' 2>&1";
     
     exec($cmd, $output, $ret);
     
