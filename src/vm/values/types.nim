@@ -59,11 +59,6 @@ type
     #  or... could this be encapsulated in our existing `:type` values?
     #  labels: vm, values, enhancement, open discussion
 
-    # TODO(Vm/values/types) add new `:exception` type?
-    #  this could work well with a new potential `try?`/`catch` syntax, 
-    #  or a `throw` method
-    #  labels: vm, values, enhancement, open discussion
-
     ValueKind* = enum
         Null            = 0
         Logical         = 1
@@ -260,9 +255,6 @@ type
             else:
                 discard
 
-    # TODO(VM/values/types) Re-optimize Value object size
-    #  Quantity + Rational values specifically
-    #  labels: vm, values, enhancement
     Value* {.final,acyclic.} = ref object
         info*   : ValueInfo
 

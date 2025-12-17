@@ -16,13 +16,6 @@
 #  `[1,2,3], [2,3,4], [3,4,5], [4,5,6], [5,6,7], [6,7,8], [7,8,9], [8,9,10]`
 #  labels: library, enhancement
 
-# TODO(Iterators) should support empty collections
-#  right now, if we do e.g. `loop [] 'x []`, it will crash.
-#  the same happens with empty dictionaries. This is a total mess, since
-#  we'd have to check if the given array/dictionary is `empty?` beforehand.
-#  This has to be prioritized!
-#  labels: library, bug, critical, :block, :dictionary
-
 #=======================================
 # Pragmas
 #=======================================
@@ -277,8 +270,6 @@ template iterateBlockWithParams(
 
     finalizeLeakless()
 
-# TODO(Iterators) we should make sure that params block is either literals or words
-#  labels: library, enhancement, error handling, performance
 template fetchParamsBlock() {.dirty.} =
     var params: seq[string]
     if hasIndex: params.add(withIndex.s)

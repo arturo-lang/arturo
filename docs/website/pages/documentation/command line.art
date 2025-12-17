@@ -1,6 +1,3 @@
-; TODO(Documentation\Command line) update terminal options & flags
-;  The current list of command-line flags should be updated. Some are missing completely (e.g. `--no-color` option), and some are not up-to-date, e.g. everything related to the compilation from/to bytecode.
-;  labels: documentation, easy
 content:{!md
 The command line is where the whole journey starts: whether you want to try out something fast in the REPL, or run a script. Or even install extern packages directly.
 
@@ -17,7 +14,7 @@ The command line is where the whole journey starts: whether you want to try out 
    * [Install a new package](#install-a-new-package)
    * [Uninstall a package](#uninstall-a-package)
    * [Update all packages](#update-all-packages)
-
+ 
 ---
 
 <h3 id="using-the-command-line">Using the command line</h3>

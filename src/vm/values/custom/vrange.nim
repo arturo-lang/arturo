@@ -20,12 +20,6 @@
 #  so that somebody can e.g. select.first:3 167126537612537126536127..∞ => prime?
 # labels: enhancement, values, open discussion
 
-# TODO(VRange) Should properly handly a zero `.step`
-#  this for example: `@ range.step:0 1 10`
-#  returns: `[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]`
-#  while it should return an empty block
-#  labels: values, bug
-
 type
     GenericRange[T] = ref object
         start*      : T

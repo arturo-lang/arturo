@@ -52,8 +52,6 @@ template throwConversionFailed(hnt: string = ""): untyped =
 # Methods
 #=======================================
 
-# TODO(Converters) Make sure `convertedValueToType` works fine + add tests
-#  labels: library, cleanup, unit-test
 proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat:Value = nil): Value =
     if unlikely(y.kind == tp):
         return y
@@ -307,10 +305,6 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat:Value = nil): Val
                     else:
                         throwCannotConvert()
 
-            # TODO(Converters) Block -> String conversion not supported!
-            #  as incredible as it may sound `to :string [1 2 3]` is not supported
-            #  this must be fixed ASAP
-            #  labels: library, bug, enhancement, critical
             of Block:
                 case tp:
                     of Complex:
