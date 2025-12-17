@@ -260,9 +260,6 @@ type
             else:
                 discard
 
-    # TODO(VM/values/types) Re-optimize Value object size
-    #  Quantity + Rational values specifically
-    #  labels: vm, values, enhancement
     Value* {.final,acyclic.} = ref object
         info*   : ValueInfo
 
