@@ -1227,8 +1227,6 @@ proc defineModule*(moduleName: string) =
             "with"  : ({Block},"use given initialization parameters"),
         },
         returns     = {Module},
-        # TODO(Core\module) add documentation example
-        #  labels: library, documentation, easy
         example     = """
         ui: module [
 
