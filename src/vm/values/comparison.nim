@@ -66,11 +66,6 @@ when defined(GMP):
 #  see also: https://github.com/arturo-lang/arturo/pull/1139
 #  labels: enhancement,values,error handling,open discussion
 
-# TODO(VM/value/comparison) rewrite all `==`, `<`, `>` methods to use `getValuePair`?
-#  This would follow closely the implementations found in VM/values/operators
-#  This could be a good idea for cleaner code, but we should thoroughly benchmark it before!
-#  labels: enhancement, cleanup, benchmark,performance, values
-
 # TODO(VM/values/comparison) Verify all value types are properly handled by all overloads
 #  labels: vm, values, enhancement, unit-test
 

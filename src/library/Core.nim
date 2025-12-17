@@ -431,8 +431,6 @@ proc defineModule*(moduleName: string) =
             #=======================================================
             discard
 
-    # TODO(Core\do) not working well with Bytecode?
-    #  labels: bug, critical, library, values
     builtin "do",
         alias       = unaliased, 
         op          = opNop,
@@ -1227,8 +1225,6 @@ proc defineModule*(moduleName: string) =
             "with"  : ({Block},"use given initialization parameters"),
         },
         returns     = {Module},
-        # TODO(Core\module) add documentation example
-        #  labels: library, documentation, easy
         example     = """
         ui: module [
 

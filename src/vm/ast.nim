@@ -650,12 +650,6 @@ proc processBlock*(
         else:
             target.addTerminal(baseNode)
 
-    # TODO(VM/ast) verify attributes are correctly processed when using pipes
-    #  example:
-    #  ```
-    #  1..10 | loop.with:'i 'x -> print [i x]
-    #  ```
-    #  labels: vm,ast,bug
     template addPotentialTrailingPipe(target: var Node): untyped =
         var added = false
         if i < nLen - 1:

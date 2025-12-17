@@ -305,8 +305,6 @@ proc defineModule*(moduleName: string) =
                             headers = headers
                         )
                     else:
-                        # TODO(Net\request) show warning/error when trying to use SSL certificates in MINI builds
-                        #  labels: library, error handling, enhancement
                         client = newHttpClient(
                             userAgent = agent,
                             proxy = proxy, 

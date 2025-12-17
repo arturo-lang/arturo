@@ -246,15 +246,6 @@ proc defineModule*(moduleName: string) =
         #  also see: https://github.com/arturo-lang/arturo/pull/1008#issuecomment-1450571702
         #  labels:library,enhancement
 
-        # TODO(Files\read) show a warning in case an unsupported attribute is used in MINI builds
-        #  right now, passing e.g. `.html` in a MINI build will silently fail, but
-        #  the results might be too confusing: 
-        #  https://github.com/arturo-lang/arturo/pull/1008#issuecomment-1451696988
-        #
-        #  In that case, instead of just ignoring the passed option - as we normally do -
-        #  we should something: an error? a "warning"? it doesn't matter. But something *must*
-        #  be shown to avoid perplexing the user.
-        #  labels: library, enhancement
         builtin "read",
             alias       = doublearrowleft, 
             op          = opNop,

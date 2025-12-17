@@ -90,10 +90,6 @@ when not defined(WEB):
     # Methods
     #=======================================
 
-    # TODO(Helpers/repl) Special characters not working anymore?
-    #  For example: accented characters or the - very useful and common - null alias `ø`
-    #  labels: helpers, repl, bug, critical
-
     proc replInput*(
         prompt: string, 
         historyPath: string = ReplHistoryPath, 
