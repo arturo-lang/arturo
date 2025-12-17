@@ -11,10 +11,6 @@
 #=======================================
 # Types
 #=======================================
-# TODO(values/custom/vsymbol) add symbol for `**`
-#  apart from the use this could have in Grafito (which could most like be attached to something like `any`)
-#  it seems inconsistent to have `++`, `--`, etc but not this one...
-#  labels: vm,values,enhancement
 
 type 
     VSymbol* = enum
