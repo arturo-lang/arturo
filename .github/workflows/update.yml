@@ -113,7 +113,7 @@ jobs:
                                                 'bash'        }}
         steps:
             - name: Install Arturo
-              uses: arturo-lang/arturo-action@v2
+              uses: arturo-lang/arturo-action@main
               with: 
                 do: fetch
                 token: ${{ secrets.GITHUB_TOKEN }}
