@@ -52,8 +52,6 @@ template throwConversionFailed(hnt: string = ""): untyped =
 # Methods
 #=======================================
 
-# TODO(Converters) Make sure `convertedValueToType` works fine + add tests
-#  labels: library, cleanup, unit-test
 proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat:Value = nil): Value =
     if unlikely(y.kind == tp):
         return y
