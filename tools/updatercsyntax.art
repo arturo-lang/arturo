@@ -162,7 +162,7 @@ bodyPre: fetchTaskBody pageTitle "Arturo"
     bodyPost: replace bodyPre pattern replacement
     unless bodyPre = bodyPost [
         ;print color #green "> Updating..."
-        switch login "drkameleon" "REDACTED" [
+        switch login "drkameleon" read ./"RCPW" [
             ;print "\t> Logged in"
 
             print (editPage pageTitle bodyPost "updated syntax highlighting mode for Arturo")? 
