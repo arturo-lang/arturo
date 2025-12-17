@@ -230,10 +230,10 @@ jobs:
                 arturo tools/genaiguide.art
                 mv tools/aiguide.md tmpdocs/llms.txt
 
-            - name: Generate tutorial
-              run: |
-                sudo apt-get install pandoc texlive-latex-base texlive-fonts-recommended texlive-extra-utils texlive-latex-extra
-                sed 's/[^\x00-\x7F]//g' tmpdocs/llms.txt | pandoc -f gfm -t pdf -o tmpdocs/tutorial.pdf
+            # - name: Generate tutorial
+            #   run: |
+            #     sudo apt-get install pandoc texlive-latex-base texlive-fonts-recommended texlive-extra-utils texlive-latex-extra
+            #     sed 's/[^\x00-\x7F]//g' tmpdocs/llms.txt | pandoc -f gfm -t pdf -o tmpdocs/tutorial.pdf
 
             - name: Copy Rosetta Code examples
               run: |
