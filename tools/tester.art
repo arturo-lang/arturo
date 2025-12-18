@@ -71,7 +71,7 @@ canExecute?: function [scr][
             "Ultra useful primes"
             "Unicode strings"
             "Wieferich primes"
-            "Xml/Input"
+            "XML/Input"
         ] -> return false
     ]
 
