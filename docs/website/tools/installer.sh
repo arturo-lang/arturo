@@ -275,7 +275,6 @@ get_version() {
     local version_url="$BASE_URL/${path}files/VERSION"
 
     VERSION=$(curl -sf "$version_url") || error "Could not fetch version information"
-    VERSION="nightly.20251206"
     info "version: $VERSION"
 }
 
