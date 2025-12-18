@@ -63,8 +63,8 @@ canExecute?: function [scri][
             "sequence of primorial primes"
             "smallest power of 6 whose decimal expansion contains n"
             "sort a list of object identifiers"
-            "sorting algorithms - cycle sort"
-            "sorting algorithms - pancake sort"
+            "Sorting algorithms/Cycle sort"
+            "Sorting algorithms/Pancake sort"
             "special factorials"
             "square root by hand"
             "super-d numbers"
@@ -104,10 +104,9 @@ runSet: function [title,location].export:[supersuccess,supertotal,superskipped][
             expected: replace expected {═} ""
         ]
         expected: split.lines strip expected
-
-        prints pad.right ((color #magenta "\n- Running: ") ++ truncate.preserve extract.filename script 40) 70
-        switch canExecute? script [
-
+        friendlyName: decode.url script
+        prints pad.right ((color #magenta "\n- Running: ") ++ truncate.preserve extract.filename friendlyName 40) 70
+        switch canExecute? friendlyName [
             ;tim: benchmark.get [
                 result: execute ~{|sys\binary| --no-color "|script|"}
                 cleanResult: ""
