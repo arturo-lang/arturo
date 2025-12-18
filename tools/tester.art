@@ -101,7 +101,7 @@ runSet: function [title,location].export:[supersuccess,supertotal,superskipped][
             expected: replace expected {═} ""
         ]
         expected: split.lines strip expected
-        friendlyName: decode.url extract.filename script
+        friendlyName: decode.url script
         prints pad.right ((color #magenta "\n- Running: ") ++ truncate.preserve friendlyName 40) 70
         switch canExecute? friendlyName [
             ;tim: benchmark.get [
