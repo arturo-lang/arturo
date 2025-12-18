@@ -1,18 +1,22 @@
 #!/usr/bin/env arturo
-builtins1: new []
-builtins2: new []
+;print "IN GETBUILTINS"
+builtins1: []
+builtins2: []
 
 loop symbols [k,v][
-    switch suffix? k "?" -> 'builtins1 ++ k
-                         -> 'builtins2 ++ k
+    switch suffix? k "?" -> 'builtins1 ++ chop to :string k
+                         -> 'builtins2 ++ to :string k
+]
+;print "-here1"
+builtins1: sort builtins1
+builtins2: sort builtins2 -- ["builtins1" "builtins2"]
+;print "-here2"
+switch arg\0 = "1" [
+    ;print "ARG 0 = 1"
+    prints [join.with:"|" builtins1]
+][
+    ;print "ARG 0 = 2"
+    prints [join.with:"|" builtins2]
 ]
 
-map 'builtins1 => chop
-sort 'builtins1
-sort 'builtins2
-
-print ["builtins1:" join.with:"|" builtins1]
-print ""
-print ["builtins2:" join.with:"|" builtins2]
-
-print ["total:" (size builtins1) + (size builtins2)]
+;print ["total:" (size builtins1) + (size builtins2)]

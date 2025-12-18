@@ -1,66 +1,132 @@
 content: {!md
-There are different ways to get started with Arturo.  
-Pick the one that suits you best and you are ready to go :)
+Getting started with Arturo is simple: download a binary and start coding. No complex installation, no dependencies to manage - just pure simplicity.
 
 ---
 
-- [Pre-built binaries](#pre-built-binaries)
-- [The alternative way](#the-alternative-way)
-- [Manually](#manually)
-- [Other methods](#other-methods)
-   * [Docker](#docker)
+- [Quick start](#quick-start)
+   * [Download and run](#download-and-run)
+   * [One-line install](#one-line-install)
+- [Try it out](#try-it-out)
+- [Build variants](#build-variants)
+   * [Full builds](#full-builds)
+   * [Mini builds](#mini-builds)
+- [Alternative methods](#alternative-methods)
    * [Homebrew](#homebrew)
+   * [Docker](#docker)
+   * [Nightly builds](#nightly-builds)
+- [What's next?](#whats-next)
 
 ---
 
-<h3 id="pre-built-binaries">Pre-built binaries</h3>
+<h3 id="quick-start">Quick start</h3>
+<h4 id="download-and-run">Download and run</h4>
 
-Arturo comes with its own pre-built binaries - for, practically, all OSes - so, technically, it doesn't require any "installation". All you have to do is download one of them and run it - that's it!
+Arturo comes as a standalone executable - no real "installation" required. If you want to get started fast and easy, just download the binary for your platform and you're ready to code:
 
-&nbsp;&nbsp;&nbsp;&nbsp;
-### <p align="center">[⇩ Download Arturo](https://arturo-lang.io/#download)</p>
-&nbsp;&nbsp;&nbsp;&nbsp;
+%DOWNLOADS%
 
-> ➤ Wanna be as up-to-date as possible?    
->     
-> Head over to the [Nightlies repo](https://github.com/arturo-lang/nightly/releases) and simply download the latest release!
+> [!TIP] After downloading, you may want to add Arturo to your PATH for easier access
 
-<h3 id="the-alternative-way">The alternative way</h3>
+<h4 id="one-line-install">One-line install</h4>
+
+For Unix and macOS, install the latest stable release with a single command:
 
 ```bash
 curl -sSL https://get.arturo-lang.io | sh
 ```
 
-For Unix/Mac, you may also copy-paste the code above in your terminal and Arturo's most recent stable version will be automatically installed.
-To get the most recent (nightly) build, just use: `curl -sSL https://get.arturo-lang.io/latest | sh`
+This automatically downloads the binary and adds it to your PATH.
 
-<h3 id="manually">Manually</h3>
+<h3 id="try-it-out">Try it out</h3>
 
-In order to build Arturo manually, you may have a look here at the [instructions here](https://github.com/arturo-lang/arturo/wiki/Building-Arturo).
+Confirm everything's working:
 
-<h3 id="other-methods">Other methods</h3>
+```bash
+arturo --version
+```
 
-<h4 id="docker">Docker</h4>
+Jump into the interactive REPL:
 
-Although it won't cut it, if what you need is the real-deal compiler for everyday use, if you just need a taste of it, the Docker image will absolutely do.
+```bash
+arturo
+```
 
-Just use the existing docker image:
+Or run a quick one-liner:
 
-	docker run -it arturolang/arturo
+```bash
+arturo -e 'print "Hello, Arturo!"'
+```
 
-or (to run a specific local script):
+<h3 id="build-variants">Build variants</h3>
 
-	docker run -it -v $(pwd):/home arturolang/arturo <yourscript.art>
+Arturo comes in two flavors: **Full** and **Mini**.
 
+<h4 id="full-builds">Full builds</h4>
+
+Get the complete Arturo experience - batteries included and ready to build anything. Full builds give you everything Arturo has to offer, right out of the box.
+
+> [!TIP] In a few words: **This is the default build.** If you're not sure which one to pick, go with Full.
+
+<h4 id="mini-builds">Mini builds</h4>
+
+A lean, mean ~2MB binary with (almost) zero dependencies - perfect for containers, embedded systems, or when you need Arturo's power without the extras.
+
+**What Mini doesn't include:**
+- No `webview` function or other UI-related capabilities
+- Limited precision arithmetic
+- No HTTPS support (HTTP only)
+- No package manager functionality
+- No built-in database support
+- No built-in parsers (HTML, Markdown, TOML, XML)
+
+> [!TIP] Mini builds are ideal for scripting, automation, and server-side tasks where UI and arbitrary precision aren't needed
+
+<h3 id="alternative-methods">Alternative methods</h3>
 <h4 id="homebrew">Homebrew</h4>
 
-If you are on macOS, you can easily install Arturo using [Homebrew](https://brew.sh/) as well - although I cannot guarantee it will be the latest version:
+macOS/Linux users can install via Homebrew:
 
 ```bash
 brew install arturo
 ```
 
-> ➤ Trouble with the installation?    
->    
-> If there is any issue with the installation, just let me know (by opening an issue) and I'll try to fix it. In any case, it would be safer to try one of the pre-built binaries.*
+> [!NOTE] Homebrew may not always have the latest version. For the most recent release, use the direct download.
+
+<h4 id="docker">Docker</h4>
+
+For quick experimentation without local installation:
+
+```bash
+docker run -it arturolang/arturo
+```
+
+To run a local script:
+
+```bash
+docker run -it -v $(pwd):/home arturolang/arturo yourscript.art
+```
+
+> [!CAUTION] The Docker image is suitable for testing but not recommended for daily development
+
+<h4 id="nightly-builds">Nightly builds</h4>
+
+For the absolute latest features:
+
+```bash
+curl -sSL https://get.arturo-lang.io/latest | sh
+```
+
+Or download directly from the [nightly releases](https://github.com/arturo-lang/nightly/releases).
+
+> [!NOTE] Nightly builds include the latest developments but may be less stable than official releases
+
+<h3 id="whats-next">What's next?</h3>
+
+Now that you've got Arturo running, here's where to go:
+
+- **[In a Nutshell](../in-a-nutshell)** - Get up to speed fast with a quick tour of Arturo's syntax and core concepts
+- **[Language Reference](../language)** - Dive deep into everything Arturo has to offer
+- **[Standard Library](../library)** - Explore the built-in functions at your fingertips
+
+Happy coding! 🚀
 }

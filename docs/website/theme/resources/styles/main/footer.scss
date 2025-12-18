@@ -1,0 +1,39 @@
+.footer {
+    padding-bottom: 3em;
+    position: relative;
+    border-top: 1px solid #EEE;
+
+    small {
+        color: #BBB;
+
+        a {
+            color: #888;
+
+            &:hover {
+                border-bottom: 1px solid #888;
+            }
+        }
+    }
+}
+
+a.footer-icon {
+    text-shadow: rgba(255, 255, 255, 0.5) 0px 3px 3px;
+    font-size: 40px;
+    font-weight: bold;
+    color: #DDD;
+
+    &.github:hover {
+        border: 0;
+        color: #302F2F;
+    }
+
+    &.twitter:hover {
+        border: 0;
+        color: #1FA1F1;
+    }
+
+    &.discord:hover {
+        border: 0;
+        color: #6F84D5;
+    }
+}

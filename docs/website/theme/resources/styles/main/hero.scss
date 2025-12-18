@@ -1,0 +1,28 @@
+.hero {
+    background: $purple-fade;
+    background: linear-gradient(0deg, $purple-fade 50%, $main-purple 100%);
+
+    .button {
+        transition: all 0.3s ease;
+        
+        &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+    }
+}
+
+@media screen and (min-width: 769px), print {
+    .hero-body {
+        padding: 1rem 3rem;
+    }
+}
+
+.hero.is-halfheight {
+    @media screen and (max-width: 1023px) {
+        .hero-body {
+            padding-top: 4rem;
+            padding-bottom: 3rem;
+        }
+    }
+}
