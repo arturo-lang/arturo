@@ -40,7 +40,7 @@ canExecute?: function [scr][
             "Curzon numbers"
             "Fermat pseudoprimes"
             "Hamming numbers"
-            "Iban"
+            "IBAN"
             "Integer overflow"
             "Integer roots"
             "Jacobsthal numbers"
