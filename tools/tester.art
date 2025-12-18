@@ -46,7 +46,6 @@ canExecute?: function [scr][
             "Jacobsthal numbers"
             "Left factorials"
             "Long multiplication"
-            "Loops - continue"
             "Lucas-lehmer test"
             "Magic constant"
             "Miller-rabin primality test"
@@ -72,7 +71,7 @@ canExecute?: function [scr][
             "Ultra useful primes"
             "Unicode strings"
             "Wieferich primes"
-            "Xml - input"
+            "Xml/input"
         ] -> return false
     ]
 
