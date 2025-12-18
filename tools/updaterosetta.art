@@ -163,14 +163,20 @@ tasks: rc\implemented "Arturo"
 ; Keep the ones whose files we can easily spot
 ; and have a solution (= are used as unit-tests)
 tasks: select tasks 'task [
-   res: and? exists? ~"examples/rosetta/|lower task\title|.art"
-             exists? ~"examples/rosetta/|lower task\title|.res"
-   unless res [
-       unless exists? ~"examples/rosetta/|lower task\title|.art" [
-            print task\title
-       ]
-   ]
-   res
+    ftitle: replace encode.url.slashes task\title "+" " "
+
+    unless res: <= exists? ~"|ftitle|.art" [
+        print [task\title "<==" ftitle]
+    ]
+
+    ; res: and? exists? ~"examples/rosetta/|ftitle|.art"
+    ;           exists? ~"examples/rosetta/|ftitle|.res"
+    ; unless res [
+    ;     unless exists? ~"examples/rosetta/|ftitle|.art" [
+    ;         print [task\title "<---" ftitle]
+    ;     ]
+    ; ]
+    res
 ]
 
 notOKs: map read.lines ./"notok.lst" => strip
