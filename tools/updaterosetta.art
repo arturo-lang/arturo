@@ -258,6 +258,7 @@ localTasks: map sort select list ./"../examples/rosetta" => [suffix? & ".art"]
 ; (e.g. Hello world/Newbie which is mostly takes with
 ;       just one line of code...)
 localTasks: filter localTasks 'task -> contains? [
+    "Call a foreign-language function"
     "Create an HTML table"
     "Find prime numbers of the form n*n*n+2"
     "Hello world/Newbie"
