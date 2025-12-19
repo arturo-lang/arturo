@@ -237,7 +237,7 @@ showIntro
 
 ; Configuration
 ; (see "Caveats" above^)
-ignoreNonUnitTests?: true   
+ignoreNonUnitTests?: false 
 ignoreFragmented?: true
 
 ; Connect to RosettaCode
