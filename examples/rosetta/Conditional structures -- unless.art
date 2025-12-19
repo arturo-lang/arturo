@@ -1,0 +1,4 @@
+itRains: false
+
+unless itRains ->
+    print "We are going for a walk!"
