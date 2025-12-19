@@ -1,4 +1,4 @@
-; modulinos - 1
+; Modulinos -- Library
  
 meaningOfLife: function [][
     42
