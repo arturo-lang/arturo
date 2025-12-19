@@ -1,0 +1,18 @@
+fib: function [n][
+    if n < 2 -> return 1
+    
+    a: 1
+    b: 1
+    
+    loop 2..n 'x [
+        tmp: a + b
+        a: b
+        b: tmp
+    ]
+    
+    return b
+]
+
+loop 1..25 'x [
+    print ["Fibonacci of" x "=" fib x]
+]
