@@ -1,3 +1,22 @@
+;=================================================================================
+; Script to update RC solutions
+; based on our repo solutions
+;---------------------------------------------------------------------------------
+; Caveats:
+;   - Tasks/solutions that are given in a segmented
+;     way are not to be handled (e.g. Conditional structures)
+;   - Tasks that do not have a corresponding .res file
+;     are not used as unit-tests and thus we should not
+;     automatically update, unless we manually verify they are
+;     correct first
+;   - There are some concrete RC tasks that are not being parsed
+;     correctly. See also: https://github.com/drkameleon/rosetta.art/issues
+;=================================================================================
+
+;==================================
+; Rosetta API & Helpers
+;==================================
+
 import 'rosetta!
 
 API_URL: "https://rosettacode.org/w/api.php"
@@ -154,86 +173,146 @@ fetchTaskBody: function [taskName][
     return wikitext
 ]
 
+;==================================
+; Helper routines
+;==================================
+
+COPYRIGHT_PATTERN: {/; by @\w+/}
+
+showIntro: function [][
+    line: repeat "-" 50
+    print line
+    print " RC Updater"
+    print line
+    print " For Arturo. In Arturo."
+    print line
+]
+
+getRemoteTask: function [ttl][
+    loop remoteTasks 't [
+        if t\title = ttl ->
+            return t
+    ]
+    return null
+]
+
+solutionsEqual?: function [a,b][
+    equal? strip replace a COPYRIGHT_PATTERN ""
+           strip replace b COPYRIGHT_PATTERN ""
+]
+
+cleanedContent: function [c][
+    {<syntaxhighlight lang="arturo">} ++ 
+        (strip replace c COPYRIGHT_PATTERN "") ++
+    {</syntaxhighlight>}
+]
+
+doubleCheck: function [remoteContent,previousSolution][
+    patterns: [
+        {<syntaxhighlight lang="arturo">}
+        {<syntaxhighlight lang="rebol">}
+        {<syntaxhighlight lang=rebol>}
+    ]
+
+    loop patterns 'pattern [
+        searchable: pattern ++ previousSolution ++ {</syntaxhighlight>}
+        if contains? remoteContent searchable ->
+            return searchable
+    ]
+
+    return ø
+]
+
+diff: function [a,b][
+    a >> "diff_a"
+    b >> "diff_b"
+    execute {diff diff_a diff_b}
+]
+
+;==================================
+; Main setup
+;==================================
+
+showIntro
+
+; Configuration
+; (see "Caveats" above^)
+ignoreNonUnitTests?: false 
+ignoreFragmented?: true
+
 ; Connect to RosettaCode
 rc: to :Rosetta []!
 
-; Get all implemented tasks for Arturo
-tasks: rc\implemented "Arturo"
+; Get all implemented tasks in Arturo
+remoteTasks: rc\implemented "Arturo"
 
-; Keep the ones whose files we can easily spot
-; and have a solution (= are used as unit-tests)
-tasks: select tasks 'task [
-   res: and? exists? ~"examples/rosetta/|lower task\title|.art"
-             exists? ~"examples/rosetta/|lower task\title|.res"
-   unless res [
-       unless exists? ~"examples/rosetta/|lower task\title|.art" [
-            print task\title
-       ]
-   ]
-   res
-]
+; Get all task titles from example filenames
+localTasks: map sort select list ./"../examples/rosetta" => [suffix? & ".art"] 
+                'file -> #[
+                    title: decode.url extract.filename file
+                    file: extract.filename file
+                ]
 
-notOKs: map read.lines ./"notok.lst" => strip
+; Filter the ones that cannot be correctly parsed (for now)
+; Some may have to do with the very nature of the task
+; (e.g. Hello world/Newbie which is mostly takes with
+;       just one line of code...)
+localTasks: filter localTasks 'task -> contains? [
+    "Call a foreign-language function"
+    "Create an HTML table"
+    "Find prime numbers of the form n*n*n+2"
+    "Hello world/Newbie"
+    "Hello world/Web server"
+    "Interactive programming (repl)" 
+    "Parameterized SQL statement"
+    "Sockets"
+] task\title
 
-;loop select tasks 'task -> contains? notOKs task\title 'task [!
-print size tasks
-loop [] 'task [!
-    prints pad.right truncate task\title 60 60
+loop.with:'i localTasks 'task [
+    ; show progress
+    prints ["[" pad to :string i+1 3 "/" size localTasks "]"]
+    prints pad.right truncate task\title 49 55
 
-    arturo: task\solution "Arturo"
-    have: strip (first arturo\code) ?? ""
-    got: strip (read ~"examples/rosetta/|lower task\title|.art") ?? ""
-
-    haveblock: {<syntaxhighlight lang="arturo">} ++ have ++ {</syntaxhighlight>}
-    haveblock2: {<syntaxhighlight lang="rebol">} ++ have ++ {</syntaxhighlight>}
-    gotblock: {<syntaxhighlight lang="arturo">} ++ got ++ {</syntaxhighlight>}
-
-    haveOK?: or? [contains? task\content haveblock][contains? task\content haveblock2]
-    gotOK?: contains? task\content gotblock
-
-    copyrightOK?: have = strip replace got {/; by @\w+/} ""
-
-    unless copyrightOK? [
-        gotblock: {<syntaxhighlight lang="arturo">} ++ (strip replace got {/; by @\w+/} "") ++ {</syntaxhighlight>}
+    ; check configuration
+    ; in case we have to omit file
+    if any? @[
+        and? -> ignoreNonUnitTests?
+             -> not? exists? ~./{../examples/rosetta/|task\file|.res}
+        and? -> ignoreFragmented?
+             -> contains? task\file "--"
+    ][
+        print color.bold #orange "--"
+        continue
     ]
 
-    ;print [haveOK? gotOK?]
+    ; proceed as usual
+    status: color.bold #red "X"
+    if remoteTask: <= getRemoteTask task\title [!
+        if solution: <= remoteTask\solution "Arturo" [!
+            remote: first solution\code
+            local: strip read.file ~./{../examples/rosetta/|task\file|.art}
 
-    ; task\content >> "content"
-    ; haveblock >> "haveblock"
-    ; have >> "have"
-    ; got >> "got"
+            ok?: solutionsEqual? remote local
+            status: ok? ? -> color #green "OK" -> color #red "Hmm..."
 
-    ;print have
+            unless ok? [
+                diffs: split.lines diff remote local
+                print color #gray "\n\t\t" ++ join.with:"\n\t\t" diffs
+                if "y" = input "\tProceed? [y/other]: " [
+                    if found: <= doubleCheck remoteTask\content remote [
+                        newContent: replace remoteTask\content found 
+                                                            cleanedContent local
 
-    correct: replace replace task\content haveblock gotblock haveblock2 gotblock
-    
-
-    switch or? have = got copyrightOK? [
-        print color #green "OK"
-    ][
-        switch haveOK? [
-            print color.bold #red "X"
-            print execute "diff have got"
-            prints "\tUpdate? [y/n]"
-            ch: input ø
-            switch ch = 'y' [
-                print "\nupdating..."
-
-                switch login "drkameleon" read.file ./"PW" [
-                    ;print "\t> Logged in"
-
-                    print (editPage task\title correct "updated Arturo solution")? 
-                        -> color #green "[  DONE ]"
-                        -> color #red   "[ ERROR ]"
-                ][
-                    print color #red "[ ERROR*]"
+                        if login "drkameleon" read.file ./"PW" [
+                            status: (editPage task\title newContent "updated Arturo solution")?
+                                -> color #green "> EDITED"
+                                -> color #red "> FAILED"
+                        ]
+                    ]
                 ]
-            ][
-                print ""
             ]
-        ][
-            print color.bold #red "X"
         ]
     ]
+
+    print status
 ]

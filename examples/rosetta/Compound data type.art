@@ -1,0 +1,27 @@
+define :Point [
+    init: constructor [x :integer, y :integer]
+
+	distance: method [other][
+        sqrt (\x - other\x)^2 + (\y - other\y)^2
+    ]
+    
+    string: method [][
+        "Point(" ++ (to :string \x) ++ "," 
+		         ++ (to :string \y) ++ ")"
+    ]
+]
+
+pt: to :Point [6 7]!
+print ["point A's x coordinate is:" pt\x]
+
+; set a field
+pt\y: 3
+
+; stringify using custom magic method
+print ["point A:" pt]
+
+pt2: to :Point [2 5]!
+print ["point B:" pt2]
+
+
+print ["Distance between points:" pt\distance pt2]

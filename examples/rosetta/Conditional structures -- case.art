@@ -1,0 +1,7 @@
+x: 2
+
+case x [
+    1   -> print "x is one!"
+    2   -> print "x is two!"
+    any -> print "x is none of the above"
+]

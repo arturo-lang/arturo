@@ -1,0 +1,24 @@
+➜  $ arturo 
+
+Arturo  
+(c) 2019-2025 Yanis Zafirópulos
+
+# version : 0.9.84-beta
+# build   : 3417.nightly.20251217 @ 2025-12-17T20:54:28+01:00
+# arch    : amd64/macos
+
+# Type help to get a list of all available functions with a short description
+# Type lookup "something" to lookup a specific function by name/description or type
+# Type info 'symbol for info about a specific symbol or built-in function
+
+# For multi-line input, just add a blank space at the end of a line
+# Use TAB for auto-completion, UP for navigating history
+
+# Launching interactive console - rock on! 🤘
+
+$> f: function [x y sep]-> x ++ (repeat sep 2) ++ y
+
+$> f "Rosetta" "Code" ":"
+=> Rosetta::Code
+
+$> 

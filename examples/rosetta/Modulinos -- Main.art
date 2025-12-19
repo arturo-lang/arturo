@@ -1,4 +1,4 @@
-do relative "modulinos -- library.art"
+do ./"Modulinos -- Library.art"
  
 print ~"Life means |meaningOfLife|."
 print "Death means invisible scary skeletons."

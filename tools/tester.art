@@ -13,9 +13,7 @@ supersuccess: 0
 superskipped: 0
 supertotal: 0
 
-canExecute?: function [scri][
-    scr: extract.filename scri
-
+canExecute?: function [scr][
     if sys\os = "freebsd" [
         if in? scr [
             "quantities"
@@ -33,48 +31,47 @@ canExecute?: function [scri][
             "quantities"
             "sorting"
 
-            "ackermann function"
-            "arbitrary-precision integers (included)"
-            "arithmetic derivative"
-            "bell numbers"
-            "benford's law"
-            "combinations and permutations"
-            "curzon numbers"
-            "fermat pseudoprimes"
-            "hamming numbers"
-            "iban"
-            "integer overflow"
-            "integer roots"
-            "jacobsthal numbers"
-            "left factorials"
-            "long multiplication"
-            "loops - continue"
-            "lucas-lehmer test"
-            "magic constant"
-            "miller-rabin primality test"
-            "modular exponentiation"
-            "next special primes"
-            "pell's equation"
-            "penta-power prime seeds"
-            "permutations - derangements"
-            "primorial numbers"
-            "quad-power prime seeds"
-            "repunit primes"
-            "sequence of primorial primes"
-            "smallest power of 6 whose decimal expansion contains n"
-            "sort a list of object identifiers"
-            "sorting algorithms - cycle sort"
-            "sorting algorithms - pancake sort"
-            "special factorials"
-            "square root by hand"
-            "super-d numbers"
-            "super-poulet numbers"
-            "sylvester's sequence"
-            "trigonometric functions"
-            "ultra useful primes"
-            "unicode strings"
-            "wieferich primes"
-            "xml - input"
+            "Ackermann function"
+            "Arbitrary-precision integers (included)"
+            "Arithmetic derivative"
+            "Bell numbers"
+            "Benford's law"
+            "Combinations and permutations"
+            "Curzon numbers"
+            "Fermat pseudoprimes"
+            "Hamming numbers"
+            "IBAN"
+            "Integer overflow"
+            "Integer roots"
+            "Jacobsthal numbers"
+            "Left factorials"
+            "Long multiplication"
+            "Lucas-Lehmer test"
+            "Magic constant"
+            "Miller-Rabin primality test"
+            "Modular exponentiation"
+            "Next special primes"
+            "Pell's equation"
+            "Penta-power prime seeds"
+            "Permutations - derangements"
+            "Primorial numbers"
+            "Quad-power prime seeds"
+            "Repunit primes"
+            "Sequence of primorial primes"
+            "Smallest power of 6 whose decimal expansion contains n"
+            "Sort a list of object identifiers"
+            "Sorting algorithms/Cycle sort"
+            "Sorting algorithms/Pancake sort"
+            "Special factorials"
+            "Square root by hand"
+            "Super-d numbers"
+            "Super-Poulet numbers"
+            "Sylvester's sequence"
+            "Trigonometric functions"
+            "Ultra useful primes"
+            "Unicode strings"
+            "Wieferich primes"
+            "XML/Input"
         ] -> return false
     ]
 
@@ -104,10 +101,9 @@ runSet: function [title,location].export:[supersuccess,supertotal,superskipped][
             expected: replace expected {═} ""
         ]
         expected: split.lines strip expected
-
-        prints pad.right ((color #magenta "\n- Running: ") ++ truncate.preserve extract.filename script 40) 70
-        switch canExecute? script [
-
+        friendlyName: decode.url extract.filename script
+        prints pad.right ((color #magenta "\n- Running: ") ++ truncate.preserve friendlyName 40) 70
+        switch canExecute? friendlyName [
             ;tim: benchmark.get [
                 result: execute ~{|sys\binary| --no-color "|script|"}
                 cleanResult: ""
