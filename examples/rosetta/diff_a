@@ -1,0 +1,31 @@
+Letters: append `A`..`Z` `a`..`z`
+encrypt: function [msg, key][
+    pos: 0
+    result: new ""
+    loop msg 'c ->
+        if in? c Letters [
+            'result ++ to :char (((to :integer key\[pos]) + to :integer upper c) % 26) + to :integer `A`
+            pos: (pos + 1) % size key
+        ]
+    return result
+]
+
+decrypt: function [msg, key][
+    pos: 0
+    result: new ""
+    loop msg 'c [
+        'result ++ to :char ((26 + (to :integer c) - to :integer key\[pos]) % 26) + to :integer `A`
+        pos: (pos + 1) % size key
+    ]
+    return result
+]
+
+text: "Beware the Jabberwock, my son! The jaws that bite, the claws that catch!"
+key: "VIGENERECIPHER"
+
+encr: encrypt text key
+decr: decrypt encr key
+
+print text
+print encr
+print decr
