@@ -275,11 +275,16 @@ check_deps() {
             INSTALL_CMD="pkg install -y"
             ;;
         macos:brew)
-            for p in gmp mpfr; do
-                brew list "$p" >/dev/null 2>&1 || MISSING_PACKAGES="$MISSING_PACKAGES $p"
-            done
-            MISSING_PACKAGES=$(echo "$MISSING_PACKAGES" | xargs)
-            INSTALL_CMD="brew install"
+            if ! command_exists brew; then
+                MISSING_PACKAGES="gmp mpfr"
+                INSTALL_CMD="/bin/bash -c \"\$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\" && brew install"
+            else
+                for p in gmp mpfr; do
+                    brew list "$p" >/dev/null 2>&1 || MISSING_PACKAGES="$MISSING_PACKAGES $p"
+                done
+                MISSING_PACKAGES=$(echo "$MISSING_PACKAGES" | xargs)
+                INSTALL_CMD="brew install"
+            fi
             ;;
     esac
     
