@@ -224,8 +224,6 @@ function Download-Arturo {
         Write-Error-Custom "Download failed. Something went wrong, please check your connection."
     }
     
-    Write-Host ""
-    
     # Extract archive
     try {
         Expand-Archive -Path $zipPath -DestinationPath $script:TMP_DIR -Force
