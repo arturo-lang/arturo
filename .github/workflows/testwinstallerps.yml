@@ -1,0 +1,41 @@
+name: Test Installer - Powershell
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+concurrency: 
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+jobs:
+  test-windows:
+    strategy:
+      matrix:
+        os: 
+          - windows-latest   # Currently Windows Server 2022
+          - windows-2022     # Windows Server 2022
+          - windows-2019     # Windows Server 2019
+      fail-fast: false
+    
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Install Arturo
+        shell: powershell
+        run: |
+          & "${{ github.workspace }}\docs\website\tools\installer.ps1"
+      
+      - name: Add to PATH and test
+        shell: powershell
+        run: |
+          $env:PATH = "$env:USERPROFILE\.arturo\bin;$env:PATH"
+          arturo -v
+      
+      - name: Show Windows version
+        shell: powershell
+        run: |
+          Get-ComputerInfo | Select-Object WindowsProductName, WindowsVersion, OsArchitecture
