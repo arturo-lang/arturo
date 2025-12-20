@@ -10,7 +10,6 @@ jobs:
     strategy:
       matrix:
         os: 
-          - macos-13          # Intel (being deprecated)
           - macos-14          # M1 (ARM)
           - macos-15          # M1/M2 (ARM)
           - macos-15-intel    # Intel
