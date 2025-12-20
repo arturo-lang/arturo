@@ -115,6 +115,7 @@ function Show-Header {
     Write-ColorLine "=======================================================" "Cyan"
     Write-ColorLine " > Installer" "Cyan"
     Write-ColorLine "=======================================================" "Cyan"
+    Write-ColorLine "" "White"
 }
 
 function Show-Footer {
