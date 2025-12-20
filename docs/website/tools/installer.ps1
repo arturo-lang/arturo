@@ -320,7 +320,7 @@ function Main {
         Write-Section "Installing..."
         Install-Arturo
         
-        Write-Section "Done! ✓"
+        Write-Section "Done!"
         Show-Footer
     } finally {
         Cleanup
