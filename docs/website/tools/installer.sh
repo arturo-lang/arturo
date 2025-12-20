@@ -268,7 +268,7 @@ check_deps() {
             INSTALL_CMD="sudo xbps-install -y"
             ;;
         freebsd:pkg)
-            for p in webkit2-gtk3 mpfr; do
+            for p in webkit2-gtk_41 mpfr; do
                 pkg info "$p" >/dev/null 2>&1 || MISSING_PACKAGES="$MISSING_PACKAGES $p"
             done
             MISSING_PACKAGES=$(echo "$MISSING_PACKAGES" | xargs)
