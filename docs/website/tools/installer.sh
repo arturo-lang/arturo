@@ -231,7 +231,7 @@ check_deps() {
             ;;
         linux:pacman)
             pacman -Q webkit2gtk-4.1 >/dev/null 2>&1 || MISSING_PACKAGES="webkit2gtk-4.1"
-            INSTALL_CMD="sudo pacman -S --noconfirm"
+            INSTALL_CMD="sudo pacman -Syu --noconfirm"
             ;;
         linux:zypper)
             rpm -q libwebkit2gtk-4_1-0 >/dev/null 2>&1 || MISSING_PACKAGES="libwebkit2gtk-4_1-0"
