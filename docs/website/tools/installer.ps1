@@ -49,7 +49,7 @@ function Write-ColorLine {
 
 function Write-Error-Custom {
     param([string]$Message)
-    Write-ColorLine " ✗ $Message" "Red"
+    Write-ColorLine " X $Message" "Red"
     exit 1
 }
 
@@ -66,7 +66,7 @@ function Write-Info-NoNewline {
 function Write-Section {
     param([string]$Message)
     Write-Host ""
-    Write-Color " ● " "Magenta"
+    Write-Color " * " "Magenta"
     Write-ColorLine $Message "White"
 }
 
@@ -94,8 +94,9 @@ function Get-WebContent {
         if ($OutFile) {
             Invoke-WebRequest -Uri $Url -OutFile $OutFile -UseBasicParsing
         } else {
-            $response = Invoke-WebRequest -Uri $Url -UseBasicParsing
-            return $response.Content
+            # Use Invoke-RestMethod for plain text to avoid encoding issues
+            $content = Invoke-RestMethod -Uri $Url
+            return $content.Trim()
         }
     } catch {
         throw "Download failed: $_"
@@ -109,10 +110,10 @@ function Show-Header {
     Write-ColorLine "   / _`` | '__| __| | | | '__/ _ \  " "Green"
     Write-ColorLine "  | (_| | |  | |_| |_| | | | (_) | " "Green"
     Write-ColorLine "   \__,_|_|   \__|\__,_|_|  \___/  " "Green"
-    Write-ColorLine "   (c)2019-2025 Yanis Zafirópulos" "Green"
+    Write-ColorLine "   (c)2019-2025 Yanis Zafiropulos" "Green"
     Write-ColorLine "" "Cyan"
     Write-ColorLine "=======================================================" "Cyan"
-    Write-ColorLine " ► Installer" "Cyan"
+    Write-ColorLine " > Installer" "Cyan"
     Write-ColorLine "=======================================================" "Cyan"
     Write-ColorLine "" "White"
 }
@@ -120,7 +121,7 @@ function Show-Header {
 function Show-Footer {
     Write-ColorLine "" "Cyan"
     Write-ColorLine "=======================================================" "Cyan"
-    Write-ColorLine " ► Quick setup" "Cyan"
+    Write-ColorLine " > Quick setup" "Cyan"
     Write-ColorLine "=======================================================" "Cyan"
     Write-ColorLine "" "White"
     Write-ColorLine "   Arturo has been successfully installed!" "White"
@@ -139,7 +140,7 @@ function Show-Footer {
         Write-ColorLine "  " "White"
     }
     
-    Write-ColorLine "   Rock on! 🤘" "White"
+    Write-ColorLine "   Rock on!" "White"
     Write-ColorLine "" "White"
 }
 
@@ -319,7 +320,7 @@ function Main {
         Write-Section "Installing..."
         Install-Arturo
         
-        Write-Section "Done!"
+        Write-Section "Done! ✓"
         Show-Footer
     } finally {
         Cleanup
