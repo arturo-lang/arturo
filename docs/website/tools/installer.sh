@@ -299,12 +299,20 @@ download_arturo() {
         wget -q -O "$TMP_DIR/arturo.zip" "$url" 2>&1 &
         show_spinner $! "" || error "$generic_error"
     else
-        error "curl/wget not found. Please install one of them to continue."
+        error "curl/wget required but not found. Please install one of them first to be able to continue."
     fi
     println ""
     
-    command_exists unzip || error "unzip is required but not installed"
-    unzip -q "$TMP_DIR/arturo.zip" -d "$TMP_DIR" || error "Failed to extract archive"
+    if command_exists unzip; then
+        unzip -q "$TMP_DIR/arturo.zip" -d "$TMP_DIR" || error "Failed to extract archive"
+    elif command_exists python3; then
+        python3 -m zipfile -e "$TMP_DIR/arturo.zip" "$TMP_DIR" || error "Failed to extract archive"
+    elif command_exists python; then
+        python -m zipfile -e "$TMP_DIR/arturo.zip" "$TMP_DIR" || error "Failed to extract archive"
+    else
+        error "unzip required but not found. Please install it first to be able to continue."
+    fi
+}
 }
 
 install_arturo() {
