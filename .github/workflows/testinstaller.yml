@@ -13,7 +13,8 @@ concurrency:
     cancel-in-progress: true
 
 jobs:
-  test-unix:
+  unix:
+    name: ${{ matrix.os }}
     strategy:
       matrix:
         os: 
@@ -63,7 +64,7 @@ jobs:
             cat /etc/os-release
           fi
 
-  test-freebsd:
+  freebsd:
     runs-on: ubuntu-latest
     
     steps:
@@ -77,14 +78,14 @@ jobs:
           sync: rsync
           prepare: |
             pkg update
-            pkg install -y curl bash
+            pkg install -y curl bash mpfr webkit2-gtk_41
           run: |
             curl -sSL https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/docs/website/tools/installer.sh | sh
             export PATH=$HOME/.arturo/bin:$PATH
             arturo -v
             freebsd-version
 
-  test-windows-bash:
+  windows-bash:
     strategy:
       matrix:
         os: 
@@ -113,7 +114,7 @@ jobs:
         shell: powershell
         run: Get-ComputerInfo | Select-Object WindowsProductName, WindowsVersion, OsArchitecture
 
-  test-windows-powershell:
+  windows-powershell:
     strategy:
       matrix:
         os: 
