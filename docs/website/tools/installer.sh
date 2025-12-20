@@ -230,7 +230,7 @@ detect_system() {
         info "distro: $DISTRO_NAME"
     fi
     info "shell: $(basename "$SHELL")"
-    info "download: $DOWNLOAD_TOOL"
+    info "downloader: $DOWNLOAD_TOOL"
 }
 
 ################################################
