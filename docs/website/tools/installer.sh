@@ -179,12 +179,8 @@ detect_system() {
     
     if [ "$OS" = "freebsd" ]; then
         PKG_MANAGER="pkg"
-        DISTRO_NAME="FreeBSD"
     elif [ "$OS" = "macos" ]; then
         PKG_MANAGER="brew"
-        DISTRO_NAME="macOS"
-    elif [ "$OS" = "windows" ]; then
-        DISTRO_NAME="Windows"
     elif [ "$OS" = "linux" ] && [ -f /etc/os-release ]; then
         . /etc/os-release
         DISTRO_NAME="$NAME"
