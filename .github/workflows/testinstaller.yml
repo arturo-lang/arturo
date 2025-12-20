@@ -1,4 +1,4 @@
-name: Test Installers
+name: Test Installer
 
 on:
   pull_request:
@@ -24,9 +24,10 @@ jobs:
           - macos-15-intel    # Intel
           - macos-26          # M3 (ARM) - Beta
           # Linux
-          - ubuntu-latest
+          - ubuntu-24.04
           - ubuntu-22.04
-          - ubuntu-20.04
+          - ubuntu-24.04-arm
+          - ubuntu-22.04-arm
       fail-fast: false
     
     runs-on: ${{ matrix.os }}
