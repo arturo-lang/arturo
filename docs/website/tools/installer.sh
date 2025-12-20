@@ -148,6 +148,16 @@ detect_system() {
         */fish) SHELL_RC="~/.config/fish/config.fish";;
         *)      SHELL_RC="~/.profile";;
     esac
+
+
+    # Detect download tool
+    if command_exists curl; then
+        DOWNLOAD_TOOL="curl"
+    elif command_exists wget; then
+        DOWNLOAD_TOOL="wget"
+    else
+        error "curl/wget required but not found. Please install one of them first to be able to continue."
+    fi
     
     NEEDS_LEGACY=false
     PKG_MANAGER=""
