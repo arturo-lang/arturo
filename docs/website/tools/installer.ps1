@@ -115,7 +115,6 @@ function Show-Header {
     Write-ColorLine "=======================================================" "Cyan"
     Write-ColorLine " > Installer" "Cyan"
     Write-ColorLine "=======================================================" "Cyan"
-    Write-ColorLine "" "White"
 }
 
 function Show-Footer {
@@ -168,6 +167,7 @@ function Detect-System {
     Write-Info "arch: $script:ARCH"
     Write-Info "shell: PowerShell"
     Write-Info "downloader: $script:DOWNLOAD_TOOL"
+    Write-Host ""
 }
 
 ################################################
@@ -182,6 +182,7 @@ function Check-Dependencies {
     # Windows binaries are typically self-contained
     # No external dependencies needed for the full build
     $script:MISSING_PACKAGES = ""
+    Write-Host ""
 }
 
 ################################################
@@ -195,6 +196,7 @@ function Get-Version {
     try {
         $script:VERSION = (Get-WebContent -Url $version_url).Trim()
         Write-Info "version: $script:VERSION"
+        Write-Host ""
     } catch {
         Write-Error-Custom "Could not fetch version information"
     }
@@ -227,6 +229,7 @@ function Download-Arturo {
     # Extract archive
     try {
         Expand-Archive -Path $zipPath -DestinationPath $script:TMP_DIR -Force
+        Write-Host ""
     } catch {
         Write-Error-Custom "Failed to extract archive"
     }
@@ -283,6 +286,8 @@ function Install-Arturo {
     if (-not $foundBinary) {
         Write-Error-Custom "Binary not found in archive"
     }
+    
+    Write-Host ""
 }
 
 function Cleanup {
