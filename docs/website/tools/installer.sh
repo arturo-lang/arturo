@@ -313,7 +313,6 @@ download_arturo() {
         error "unzip required but not found. Please install it first to be able to continue."
     fi
 }
-}
 
 install_arturo() {
     info "into: ${BIN_DIR}"
