@@ -272,7 +272,7 @@ check_deps() {
                 pkg info "$p" >/dev/null 2>&1 || MISSING_PACKAGES="$MISSING_PACKAGES $p"
             done
             MISSING_PACKAGES=$(echo "$MISSING_PACKAGES" | xargs)
-            INSTALL_CMD="sudo pkg install -y"
+            INSTALL_CMD="pkg install -y"
             ;;
         macos:brew)
             for p in gmp mpfr; do
