@@ -50,6 +50,21 @@ info2() { print "${GRAY}      $1${CLEAR}"; }
 section() { println "\n ${MAGENTA}●${CLEAR} $1"; }
 command_exists() { command -v "$1" >/dev/null 2>&1; }
 
+fetch() {
+    local url="$1"
+    local output="$2"
+    
+    if [ "$DOWNLOAD_TOOL" = "curl" ]; then
+        if [ "$output" = "-" ]; then
+            curl -sf "$url"
+        else
+            curl -fsSL "$url" -o "$output"
+        fi
+    else
+        wget -qO "$output" "$url"
+    fi
+}
+
 cleanup() {
     [ -n "$TMP_DIR" ] && [ -d "$TMP_DIR" ] && rm -rf "$TMP_DIR"
 }
@@ -148,8 +163,7 @@ detect_system() {
         */fish) SHELL_RC="~/.config/fish/config.fish";;
         *)      SHELL_RC="~/.profile";;
     esac
-
-
+    
     # Detect download tool
     if command_exists curl; then
         DOWNLOAD_TOOL="curl"
@@ -218,6 +232,7 @@ detect_system() {
     info "arch: $ARCH"
     info "distro: $DISTRO_NAME"
     info "shell: $(basename "$SHELL")"
+    info "download: $DOWNLOAD_TOOL"
 }
 
 ################################################
@@ -284,7 +299,7 @@ get_version() {
     local path=$([ "$VERSION_TYPE" = "latest" ] && echo "latest/" || echo "")
     local version_url="$BASE_URL/${path}files/VERSION"
 
-    VERSION=$(curl -sf "$version_url") || error "Could not fetch version information"
+    VERSION=$(fetch "$version_url" -) || error "Could not fetch version information"
     info "version: $VERSION"
 }
 
@@ -296,21 +311,13 @@ download_arturo() {
     TMP_DIR=$(mktemp -d 2>/dev/null || mktemp -d -t arturo)
     local path=$([ "$VERSION_TYPE" = "latest" ] && echo "latest/" || echo "")
     local url="${path}files/${ARTIFACT_NAME}.zip"
-    local generic_error="Download failed. Something went wrong, please check your connection."
     
     info2 "archive: $url"
 
     url="$BASE_URL/$url"
 
-    if command -v curl > /dev/null 2>&1; then
-        curl -fsSL "$url" -o "$TMP_DIR/arturo.zip" 2>&1 &
-        show_spinner $! "" || error "$generic_error"
-    elif command -v wget > /dev/null 2>&1; then
-        wget -q -O "$TMP_DIR/arturo.zip" "$url" 2>&1 &
-        show_spinner $! "" || error "$generic_error"
-    else
-        error "curl/wget required but not found. Please install one of them first to be able to continue."
-    fi
+    fetch "$url" "$TMP_DIR/arturo.zip" 2>&1 &
+    show_spinner $! "" || error "Download failed. Something went wrong, please check your connection."
     println ""
     
     if command_exists unzip; then
