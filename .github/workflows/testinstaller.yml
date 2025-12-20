@@ -1,4 +1,4 @@
-name: Test Installer
+name: Test Installers
 
 on:
   pull_request:
@@ -9,26 +9,120 @@ concurrency:
     cancel-in-progress: true
 
 jobs:
-  test-macos:
+  test-unix:
     strategy:
       matrix:
         os: 
+          # macOS
           - macos-14          # M1 (ARM)
           - macos-15          # M1/M2 (ARM)
           - macos-15-intel    # Intel
           - macos-26          # M3 (ARM) - Beta
+          # Linux
+          - ubuntu-latest
+          - ubuntu-22.04
+          - ubuntu-20.04
       fail-fast: false
     
     runs-on: ${{ matrix.os }}
     
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
       - name: Install Arturo
-        run: curl -sSL http://188.245.97.105/latest/tools/installer.sh | sh
+        run: curl -sSL https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/docs/website/tools/installer.sh | sh
       
       - name: Add to PATH and test
         run: |
           export PATH=$HOME/.arturo/bin:$PATH
           arturo -v
       
-      - name: Show macOS version
-        run: sw_vers
+      - name: Show OS version
+        run: |
+          if [[ "$OSTYPE" == "darwin"* ]]; then
+            sw_vers
+          else
+            cat /etc/os-release
+          fi
+
+  test-freebsd:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Test installer on FreeBSD
+        uses: vmactions/freebsd-vm@v1
+        with:
+          usesh: true
+          sync: rsync
+          prepare: |
+            pkg update
+            pkg install -y curl bash
+          run: |
+            curl -sSL https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/docs/website/tools/installer.sh | sh
+            export PATH=$HOME/.arturo/bin:$PATH
+            arturo -v
+            freebsd-version
+
+  test-windows-bash:
+    strategy:
+      matrix:
+        os: 
+          - windows-latest
+          - windows-2022
+          - windows-2019
+      fail-fast: false
+    
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Install Arturo (Git Bash)
+        shell: bash
+        run: curl -sSL https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/docs/website/tools/installer.sh | sh
+      
+      - name: Add to PATH and test
+        shell: bash
+        run: |
+          export PATH=$HOME/.arturo/bin:$PATH
+          arturo -v
+      
+      - name: Show Windows version
+        shell: powershell
+        run: Get-ComputerInfo | Select-Object WindowsProductName, WindowsVersion, OsArchitecture
+
+  test-windows-powershell:
+    strategy:
+      matrix:
+        os: 
+          - windows-latest
+          - windows-2022
+          - windows-2019
+      fail-fast: false
+    
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Install Arturo (PowerShell)
+        shell: powershell
+        run: |
+          $script = Invoke-RestMethod -Uri "https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/docs/website/tools/installer.ps1"
+          Invoke-Expression $script
+
+      - name: Add to PATH and test
+        shell: powershell
+        run: |
+          $env:PATH = "$env:USERPROFILE\.arturo\bin;$env:PATH"
+          arturo -v
+      
+      - name: Show Windows version
+        shell: powershell
+        run: Get-ComputerInfo | Select-Object WindowsProductName, WindowsVersion, OsArchitecture
