@@ -34,6 +34,19 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
       
+      - name: Install dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          
+          # Detect Ubuntu version and install correct webkit
+          UBUNTU_VERSION=$(lsb_release -rs)
+          if [[ "$UBUNTU_VERSION" < "24.04" ]]; then
+            sudo apt-get install -y libwebkit2gtk-4.0-37
+          else
+            sudo apt-get install -y libwebkit2gtk-4.1-0
+          fi
+      
       - name: Install Arturo
         run: curl -sSL https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/docs/website/tools/installer.sh | sh
       
