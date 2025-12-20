@@ -65,7 +65,7 @@ function Write-Info-NoNewline {
 
 function Write-Section {
     param([string]$Message)
-    Write-Host ""
+    Write-Host " "
     Write-Color " * " "Magenta"
     Write-ColorLine $Message "White"
 }
@@ -111,18 +111,18 @@ function Show-Header {
     Write-ColorLine "  | (_| | |  | |_| |_| | | | (_) | " "Green"
     Write-ColorLine "   \__,_|_|   \__|\__,_|_|  \___/  " "Green"
     Write-ColorLine "   (c)2019-2025 Yanis Zafiropulos" "Green"
-    Write-ColorLine "" "Cyan"
+    Write-ColorLine " " "Cyan"
     Write-ColorLine "=======================================================" "Cyan"
     Write-ColorLine " > Installer" "Cyan"
     Write-ColorLine "=======================================================" "Cyan"
 }
 
 function Show-Footer {
-    Write-ColorLine "" "Cyan"
+    Write-ColorLine " " "Cyan"
     Write-ColorLine "=======================================================" "Cyan"
     Write-ColorLine " > Quick setup" "Cyan"
     Write-ColorLine "=======================================================" "Cyan"
-    Write-ColorLine "" "White"
+    Write-ColorLine " " "White"
     Write-ColorLine "   Arturo has been successfully installed!" "White"
     Write-ColorLine "  " "White"
     Write-ColorLine "   To be able to run it from anywhere," "White"
@@ -140,7 +140,7 @@ function Show-Footer {
     }
     
     Write-ColorLine "   Rock on!" "White"
-    Write-ColorLine "" "White"
+    Write-ColorLine " " "White"
 }
 
 ################################################
@@ -213,7 +213,7 @@ function Download-Arturo {
     $url = "$BASE_URL/${path}files/${ARTIFACT_NAME}.zip"
     
     Write-Info-NoNewline "archive: ${path}files/${ARTIFACT_NAME}.zip"
-    Write-Host ""
+    Write-Host " "
     
     $zipPath = Join-Path $script:TMP_DIR "arturo.zip"
     
