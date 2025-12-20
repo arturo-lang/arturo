@@ -1,0 +1,33 @@
+name: Test Installer - Windows
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test-windows:
+    strategy:
+      matrix:
+        os: 
+          - windows-latest   # Currently Windows Server 2022
+          - windows-2022     # Windows Server 2022
+          - windows-2019     # Windows Server 2019
+      fail-fast: false
+    
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+      - name: Install Arturo
+        shell: bash
+        run: curl -sSL http://188.245.97.105/latest/tools/installer.sh | sh
+      
+      - name: Add to PATH and test
+        shell: bash
+        run: |
+          export PATH=$HOME/.arturo/bin:$PATH
+          arturo -v
+      
+      - name: Show Windows version
+        shell: powershell
+        run: |
+          Get-ComputerInfo | Select-Object WindowsProductName, WindowsVersion, OsArchitecture
