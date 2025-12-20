@@ -44,7 +44,7 @@ CLEAR='\033[0m'
 
 print() { printf "%b" "$1"; }
 println() { printf "%b\n" "$1"; }
-error() { println "${RED}✗ $1${CLEAR}" >&2; exit 1; }
+error() { println " ${RED}✗ $1${CLEAR}" >&2; exit 1; }
 info() { println "${GRAY}      $1${CLEAR}"; }
 info2() { print "${GRAY}      $1${CLEAR}"; }
 section() { println "\n ${MAGENTA}●${CLEAR} $1"; }
