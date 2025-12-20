@@ -230,7 +230,9 @@ detect_system() {
     
     info "os: $OS"
     info "arch: $ARCH"
-    info "distro: $DISTRO_NAME"
+    if [ "$OS" = "linux" ]; then
+        info "distro: $DISTRO_NAME"
+    fi
     info "shell: $(basename "$SHELL")"
     info "download: $DOWNLOAD_TOOL"
 }
