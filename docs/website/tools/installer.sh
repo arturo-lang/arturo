@@ -182,9 +182,19 @@ detect_system() {
         PKG_MANAGER="pkg"
     elif [ "$OS" = "macos" ]; then
         PKG_MANAGER="brew"  # Default
-        # If port exists but brew doesn't, use port
-        if (command_exists port || [ -x /opt/local/bin/port ]) && ! command_exists brew; then
-            PKG_MANAGER="port"
+
+        for p in gmp mpfr; do
+            if (command_exists port || [ -x /opt/local/bin/port ]) && \
+            (port installed "$p" 2>/dev/null || /opt/local/bin/port installed "$p" 2>/dev/null) | grep -q "^  $p @"; then
+                PKG_MANAGER="port"
+                break
+            fi
+        done
+        
+        if [ "$PKG_MANAGER" = "brew" ] && ! command_exists brew; then
+            if command_exists port || [ -x /opt/local/bin/port ]; then
+                PKG_MANAGER="port"
+            fi
         fi
     elif [ "$OS" = "linux" ] && [ -f /etc/os-release ]; then
         . /etc/os-release
@@ -280,16 +290,8 @@ check_deps() {
             INSTALL_CMD="pkg install -y"
             ;;
         macos:brew)
-            # Check if packages exist in either brew or port
             for p in gmp mpfr; do
-                if command_exists brew && brew list "$p" >/dev/null 2>&1; then
-                    continue  # Found in brew
-                elif (command_exists port || [ -x /opt/local/bin/port ]) && \
-                     (port installed "$p" 2>/dev/null || /opt/local/bin/port installed "$p" 2>/dev/null) | grep -q "^  $p @"; then
-                    continue  # Found in port
-                else
-                    MISSING_PACKAGES="$MISSING_PACKAGES $p"
-                fi
+                brew list "$p" >/dev/null 2>&1 || MISSING_PACKAGES="$MISSING_PACKAGES $p"
             done
             MISSING_PACKAGES=$(echo "$MISSING_PACKAGES" | xargs)
             
@@ -302,19 +304,10 @@ check_deps() {
             fi
             ;;
         macos:port)
-            # Check if packages exist in either port or brew
             for p in gmp mpfr; do
-                if (command_exists port || [ -x /opt/local/bin/port ]) && \
-                   (port installed "$p" 2>/dev/null || /opt/local/bin/port installed "$p" 2>/dev/null) | grep -q "^  $p @"; then
-                    continue  # Found in port
-                elif command_exists brew && brew list "$p" >/dev/null 2>&1; then
-                    continue  # Found in brew
-                else
-                    MISSING_PACKAGES="$MISSING_PACKAGES $p"
-                fi
+                (port installed "$p" 2>/dev/null || /opt/local/bin/port installed "$p" 2>/dev/null) | grep -q "^  $p @" || MISSING_PACKAGES="$MISSING_PACKAGES $p"
             done
             MISSING_PACKAGES=$(echo "$MISSING_PACKAGES" | xargs)
-            
             [ -n "$MISSING_PACKAGES" ] && INSTALL_CMD="sudo port install"
             ;;
     esac
