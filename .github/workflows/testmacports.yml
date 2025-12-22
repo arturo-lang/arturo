@@ -79,10 +79,11 @@ jobs:
         run: |
             ./build.nims --install --log
             
+
             echo "$HOME/.arturo/bin" >> $GITHUB_PATH
-            
-            arturo -v
-            arturo -e "inspect sys"
+            ls -la bin
+            bin/arturo -v
+            bin/arturo -e "inspect sys"
         shell: bash
 
         
