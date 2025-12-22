@@ -35,6 +35,15 @@ jobs:
         run: |
           echo "=== Building Arturo with Homebrew libraries ==="
           ./build.nims --install --log
+          echo "=== Automatically fixing library paths to use @rpath ==="
+          
+          # Get all dependencies with /opt/homebrew in their path
+          for lib in $(otool -L bin/arturo | grep /opt/homebrew | awk '{print $1}'); do
+            libname=$(basename "$lib")
+            echo "Changing $lib to @rpath/$libname"
+            install_name_tool -change "$lib" "@rpath/$libname" bin/arturo
+          done
+
           echo "$HOME/.arturo/bin" >> $GITHUB_PATH
           ls -la bin
         shell: bash

@@ -30,6 +30,7 @@ proc fullBuildConfig() =
         --passL:"-L/opt/local/lib"
         --passL:"-Wl,-rpath,/opt/homebrew/lib"
         --passL:"-Wl,-rpath,/opt/local/lib"
+        --passL:"-Wl,-headerpad_max_install_names"
     --define:ssl
  
 proc docgenBuildConfig() =
