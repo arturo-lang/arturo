@@ -1,7 +1,6 @@
 name: Test MacPorts GMP/MPFR
 
 on:
-  pull_request:
   workflow_dispatch:
 
 jobs:
@@ -37,11 +36,11 @@ jobs:
             echo "✓ MPFR successfully uninstalled"
           fi
           
-      - name: Install MacPorts
+      - name: Install MacPorts for Tahoe
         run: |
-          echo "=== Installing MacPorts ==="
-          curl -LO https://github.com/macports/macports-base/releases/download/v2.9.3/MacPorts-2.9.3-14-Sonoma.pkg
-          sudo installer -pkg MacPorts-2.9.3-14-Sonoma.pkg -target /
+          echo "=== Installing MacPorts for macOS Tahoe ==="
+          curl -LO https://github.com/macports/macports-base/releases/download/v2.11.6/MacPorts-2.11.6-26-Tahoe.pkg
+          sudo installer -pkg MacPorts-2.11.6-26-Tahoe.pkg -target /
           echo "/opt/local/bin:/opt/local/sbin:$PATH" >> $GITHUB_PATH
           
       - name: Verify MacPorts installation
