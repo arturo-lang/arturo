@@ -1,3 +1,4 @@
+#!/usr/bin/env nim
 ######################################################
 # Arturo
 # Programming Language + Bytecode VM compiler
@@ -180,10 +181,20 @@ detect_system() {
     if [ "$OS" = "freebsd" ]; then
         PKG_MANAGER="pkg"
     elif [ "$OS" = "macos" ]; then
-        # Detect if we have Homebrew or MacPorts
-        if command_exists brew; then
+        # Check for MacPorts in standard location even if not in PATH
+        HAS_BREW=false
+        HAS_PORT=false
+        
+        command_exists brew && HAS_BREW=true
+        if command_exists port || [ -x /opt/local/bin/port ]; then
+            HAS_PORT=true
+        fi
+        
+        # Prefer Homebrew if both exist (maintains existing behavior)
+        # Use MacPorts only if Homebrew is not installed
+        if [ "$HAS_BREW" = true ]; then
             PKG_MANAGER="brew"
-        elif command_exists port; then
+        elif [ "$HAS_PORT" = true ]; then
             PKG_MANAGER="port"
         else
             PKG_MANAGER="brew"  # Default to brew if neither is installed
@@ -283,37 +294,93 @@ check_deps() {
             ;;
         macos:brew)
             if ! command_exists brew; then
-                MISSING_PACKAGES="gmp mpfr"
-                INSTALL_CMD="/bin/bash -c \"\$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\" && brew install"
+                # Homebrew not installed, check if MacPorts has the packages
+                if [ -x /opt/local/bin/port ]; then
+                    local port_has_all=true
+                    for p in gmp mpfr; do
+                        /opt/local/bin/port installed "$p" 2>/dev/null | grep -q "^  $p @" || port_has_all=false
+                    done
+                    
+                    if [ "$port_has_all" = true ]; then
+                        # MacPorts has everything, don't suggest Homebrew
+                        MISSING_PACKAGES=""
+                    else
+                        # Suggest Homebrew installation
+                        MISSING_PACKAGES="gmp mpfr"
+                        INSTALL_CMD="/bin/bash -c \"\$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\" && brew install"
+                    fi
+                else
+                    # Neither Homebrew nor MacPorts, suggest Homebrew
+                    MISSING_PACKAGES="gmp mpfr"
+                    INSTALL_CMD="/bin/bash -c \"\$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\" && brew install"
+                fi
             else
+                # Homebrew is installed, check packages in both Homebrew and MacPorts
+                local missing_from_brew=""
                 for p in gmp mpfr; do
-                    brew list "$p" >/dev/null 2>&1 || MISSING_PACKAGES="$MISSING_PACKAGES $p"
+                    brew list "$p" >/dev/null 2>&1 || missing_from_brew="$missing_from_brew $p"
                 done
-                MISSING_PACKAGES=$(echo "$MISSING_PACKAGES" | xargs)
-                INSTALL_CMD="brew install"
+                missing_from_brew=$(echo "$missing_from_brew" | xargs)
+                
+                if [ -n "$missing_from_brew" ]; then
+                    # Check if MacPorts has them
+                    if [ -x /opt/local/bin/port ]; then
+                        local port_has_all=true
+                        for p in gmp mpfr; do
+                            /opt/local/bin/port installed "$p" 2>/dev/null | grep -q "^  $p @" || port_has_all=false
+                        done
+                        
+                        if [ "$port_has_all" = true ]; then
+                            # MacPorts has everything, no need to install via Homebrew
+                            MISSING_PACKAGES=""
+                        else
+                            # Not in MacPorts either, suggest Homebrew
+                            MISSING_PACKAGES="$missing_from_brew"
+                            INSTALL_CMD="brew install"
+                        fi
+                    else
+                        # Only Homebrew exists, suggest Homebrew
+                        MISSING_PACKAGES="$missing_from_brew"
+                        INSTALL_CMD="brew install"
+                    fi
+                fi
             fi
             ;;
         macos:port)
+            # MacPorts is the primary package manager
             # Check if packages are installed via MacPorts
+            local missing_from_port=""
             for p in gmp mpfr; do
-                port installed "$p" 2>/dev/null | grep -q "^  $p @" || MISSING_PACKAGES="$MISSING_PACKAGES $p"
+                if [ -x /opt/local/bin/port ]; then
+                    /opt/local/bin/port installed "$p" 2>/dev/null | grep -q "^  $p @" || missing_from_port="$missing_from_port $p"
+                else
+                    missing_from_port="$missing_from_port $p"
+                fi
             done
-            MISSING_PACKAGES=$(echo "$MISSING_PACKAGES" | xargs)
+            missing_from_port=$(echo "$missing_from_port" | xargs)
             
-            # If packages are missing, check if they might be in Homebrew
-            if [ -n "$MISSING_PACKAGES" ] && command_exists brew; then
-                local homebrew_has_all=true
-                for p in gmp mpfr; do
-                    brew list "$p" >/dev/null 2>&1 || homebrew_has_all=false
-                done
-                
-                # If Homebrew has them all, don't suggest installing via MacPorts
-                if [ "$homebrew_has_all" = true ]; then
-                    MISSING_PACKAGES=""
+            if [ -n "$missing_from_port" ]; then
+                # Check if Homebrew has them
+                if command_exists brew; then
+                    local brew_has_all=true
+                    for p in gmp mpfr; do
+                        brew list "$p" >/dev/null 2>&1 || brew_has_all=false
+                    done
+                    
+                    if [ "$brew_has_all" = true ]; then
+                        # Homebrew has everything, don't suggest MacPorts
+                        MISSING_PACKAGES=""
+                    else
+                        # Not in Homebrew either, suggest MacPorts
+                        MISSING_PACKAGES="$missing_from_port"
+                        INSTALL_CMD="sudo port install"
+                    fi
+                else
+                    # Only MacPorts exists, suggest MacPorts
+                    MISSING_PACKAGES="$missing_from_port"
+                    INSTALL_CMD="sudo port install"
                 fi
             fi
-            
-            [ -n "$MISSING_PACKAGES" ] && INSTALL_CMD="sudo port install"
             ;;
     esac
     
