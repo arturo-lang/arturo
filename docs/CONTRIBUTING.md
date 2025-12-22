@@ -120,8 +120,58 @@ Before contributing to Arturo, you need to make sure you have all needed depende
 Our compiler is written in Nim, which depends on GCC.
 
 
+#### Windows Programmers
 
+If you want to contribute on a Windows host system, please notice you must have some tools and libraries installed before proceed.
 
+Arturo compilation depends on it, and without it, it's impossible to compile.
+
+**Installing Nim**
+You need to install Nim in order to compile Arturo.
+
+You may install it manually via the [official installer](https://nim-lang.org/install.html).
+If you prefer, you can install from scoop or choco.
+
+```
+choco install nim
+```
+
+or
+
+```
+scoop bucket add main
+scoop install main/nim
+```
+
+**Installing MSYS2 and GCC**
+
+Nim depends on GCC and Arturo for Windows depends on some libraries for Mingw64.
+
+In order to get this working, [install MSYS2 from their official website](https://www.msys2.org/).
+
+Then open the Mingw64 instance and run:
+
+```sh
+pacman -S base-devel p7zip unzip mingw-w64-x86_64-toolchain
+```
+
+If you wish, you can also add Mingw64's bin to your `PATH`.
+Search for "Environment Variables" and add `<msys64's path>/mingw64/bin` to your `PATH`.
+
+**Additional DLLs**
+
+Before compile, make sure you have all needed runtime dependencies at you `bin` folder.
+
+```sh
+cp src/extras/webview/deps/dlls/x64/webview.dll bin
+cp src/extras/webview/deps/dlls/x64/WebView2Loader.dll bin
+curl -L https://arturo-lang.s3.amazonaws.com/libgmp-10.dll -o bin/libgmp-10.dll
+curl -L https://arturo-lang.s3.amazonaws.com/libmpfr-6.dll -o bin/libmpfr-6.dll
+curl -L https://arturo-lang.s3.amazonaws.com/sqlite3_64.dll -o bin/sqlite3_64.dll
+curl -L https://arturo-lang.s3.amazonaws.com/libgcc_s_seh-1.dll -o bin/libgcc_s_seh-1.dll
+curl -L https://curl.se/ca/cacert.pem -o bin/cacert.pem
+cp /mingw64/bin/libwinpthread-1.dll bin
+```
 
 
 ### Pull requests
