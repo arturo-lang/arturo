@@ -180,7 +180,14 @@ detect_system() {
     if [ "$OS" = "freebsd" ]; then
         PKG_MANAGER="pkg"
     elif [ "$OS" = "macos" ]; then
-        PKG_MANAGER="brew"
+        # Detect if we have Homebrew or MacPorts
+        if command_exists brew; then
+            PKG_MANAGER="brew"
+        elif command_exists port; then
+            PKG_MANAGER="port"
+        else
+            PKG_MANAGER="brew"  # Default to brew if neither is installed
+        fi
     elif [ "$OS" = "linux" ] && [ -f /etc/os-release ]; then
         . /etc/os-release
         DISTRO_NAME="$NAME"
@@ -285,6 +292,28 @@ check_deps() {
                 MISSING_PACKAGES=$(echo "$MISSING_PACKAGES" | xargs)
                 INSTALL_CMD="brew install"
             fi
+            ;;
+        macos:port)
+            # Check if packages are installed via MacPorts
+            for p in gmp mpfr; do
+                port installed "$p" 2>/dev/null | grep -q "^  $p @" || MISSING_PACKAGES="$MISSING_PACKAGES $p"
+            done
+            MISSING_PACKAGES=$(echo "$MISSING_PACKAGES" | xargs)
+            
+            # If packages are missing, check if they might be in Homebrew
+            if [ -n "$MISSING_PACKAGES" ] && command_exists brew; then
+                local homebrew_has_all=true
+                for p in gmp mpfr; do
+                    brew list "$p" >/dev/null 2>&1 || homebrew_has_all=false
+                done
+                
+                # If Homebrew has them all, don't suggest installing via MacPorts
+                if [ "$homebrew_has_all" = true ]; then
+                    MISSING_PACKAGES=""
+                fi
+            fi
+            
+            [ -n "$MISSING_PACKAGES" ] && INSTALL_CMD="sudo port install"
             ;;
     esac
     
