@@ -13,32 +13,59 @@ jobs:
     runs-on: macos-26
     
     steps:
+      - name: Checkout Arturo repo
+        uses: actions/checkout@v4
+        with:
+            repository: arturo-lang/arturo
+            submodules: recursive
+            ref: ${{ github.ref }}
+      
       - name: Check initial Homebrew GMP/MPFR installation
         run: |
           echo "=== Checking Homebrew installations ==="
           brew list gmp || echo "GMP not installed via Homebrew"
           brew list mpfr || echo "MPFR not installed via Homebrew"
           
-      - name: Uninstall Homebrew GMP/MPFR if present
+      - name: Install Nim via Homebrew
         run: |
-          echo "=== Uninstalling Homebrew packages ==="
-          brew uninstall --ignore-dependencies gmp mpfr || echo "Packages not installed or already removed"
+          echo "=== Installing Nim ==="
+          brew install nim
           
-      - name: Verify uninstallation
+      - name: Build Arturo with Homebrew GMP/MPFR
         run: |
-          echo "=== Verifying uninstallation ==="
+          echo "=== Building Arturo with Homebrew libraries ==="
+          ./build.nims --install --log
+          echo "$HOME/.arturo/bin" >> $GITHUB_PATH
+          ls -la bin
+        shell: bash
+        
+      - name: Test Arturo with Homebrew libraries
+        run: |
+          echo "=== Testing with Homebrew GMP/MPFR ==="
+          bin/arturo -v
+          bin/arturo -e "inspect sys"
+          bin/arturo -e "print 2 ^ 100"
+          
+      - name: Uninstall Homebrew GMP/MPFR
+        run: |
+          echo "=== Uninstalling Homebrew GMP/MPFR ==="
+          brew uninstall --ignore-dependencies gmp mpfr
+          
+      - name: Verify Homebrew uninstallation
+        run: |
+          echo "=== Verifying Homebrew uninstallation ==="
           if brew list gmp 2>/dev/null; then
-            echo "ERROR: GMP still installed"
+            echo "ERROR: GMP still installed via Homebrew"
             exit 1
           else
-            echo "✓ GMP successfully uninstalled"
+            echo "✓ GMP successfully uninstalled from Homebrew"
           fi
           
           if brew list mpfr 2>/dev/null; then
-            echo "ERROR: MPFR still installed"
+            echo "ERROR: MPFR still installed via Homebrew"
             exit 1
           else
-            echo "✓ MPFR successfully uninstalled"
+            echo "✓ MPFR successfully uninstalled from Homebrew"
           fi
           
       - name: Install MacPorts for Tahoe
@@ -46,7 +73,6 @@ jobs:
           echo "=== Installing MacPorts for macOS Tahoe ==="
           curl -LO https://github.com/macports/macports-base/releases/download/v2.11.6/MacPorts-2.11.6-26-Tahoe.pkg
           sudo installer -pkg MacPorts-2.11.6-26-Tahoe.pkg -target /
-          echo "/opt/local/bin:/opt/local/sbin:$PATH" >> $GITHUB_PATH
           
       - name: Verify MacPorts installation
         run: |
@@ -58,7 +84,7 @@ jobs:
         run: |
           export PATH=/opt/local/bin:/opt/local/sbin:$PATH
           sudo port selfupdate
-          sudo port install gmp mpfr nim
+          sudo port install gmp mpfr
           
       - name: Verify MacPorts GMP/MPFR installation
         run: |
@@ -67,23 +93,10 @@ jobs:
           ls -la /opt/local/lib/libmpfr* || echo "MPFR not found"
           ls -la /opt/local/include/gmp.h || echo "GMP header not found"
           ls -la /opt/local/include/mpfr.h || echo "MPFR header not found"
-
-      - name: Checkout Arturo repo (Linux/macOS/Windows)
-        uses: actions/checkout@v4
-        with:
-            repository: arturo-lang/arturo
-            submodules: recursive
-            ref: ${{ github.ref }}
-      
-      - name: Build Arturo (Linux/macOS/Web)
+          
+      - name: Test Arturo with MacPorts libraries
         run: |
-            ./build.nims --install --log
-            
-
-            echo "$HOME/.arturo/bin" >> $GITHUB_PATH
-            ls -la bin
-            bin/arturo -v
-            bin/arturo -e "inspect sys"
-        shell: bash
-
-        
+          echo "=== Testing Arturo binary (built with Homebrew) on MacPorts libraries ==="
+          bin/arturo -v
+          bin/arturo -e "inspect sys"
+          bin/arturo -e "print 2 ^ 100"
