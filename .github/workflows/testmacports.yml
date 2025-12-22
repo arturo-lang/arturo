@@ -10,7 +10,7 @@ concurrency:
 
 jobs:
   test-macports:
-    runs-on: macos-latest
+    runs-on: macos-26
     
     steps:
       - name: Check initial Homebrew GMP/MPFR installation
