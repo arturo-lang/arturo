@@ -113,6 +113,17 @@ Anybody with an interest in programming languages, compiler design and/or some k
 
 Let's have a look!
 
+### Environment Setup
+
+Before contributing to Arturo, you need to make sure you have all needed dependencies to compile it.
+
+Our compiler is written in Nim, which depends on GCC.
+
+
+
+
+
+
 ### Pull requests
 
 Pull requests are the best way to propose changes to the codebase and are actively encouraged:
