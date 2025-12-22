@@ -224,6 +224,22 @@ curl -L https://curl.se/ca/cacert.pem -o bin/cacert.pem
 cp /mingw64/bin/libwinpthread-1.dll bin
 ```
 
+#### FreeBSD Programmers
+
+**Install nim and its dependencies**
+
+```sh
+pkg update
+pkg install -y wget curl bash ca_root_nss jq
+pkg install -y pkgconf openssl
+pkg install -y nim git
+```
+
+**Install dependencies**
+
+```sh
+pkg install -y gtk3 mpfr webkit2-gtk_41
+```
 
 ### Pull requests
 
