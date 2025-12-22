@@ -1,0 +1,65 @@
+name: Test MacPorts GMP/MPFR
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test-macports:
+    runs-on: macos-latest
+    
+    steps:
+      - name: Check initial Homebrew GMP/MPFR installation
+        run: |
+          echo "=== Checking Homebrew installations ==="
+          brew list gmp || echo "GMP not installed via Homebrew"
+          brew list mpfr || echo "MPFR not installed via Homebrew"
+          
+      - name: Uninstall Homebrew GMP/MPFR if present
+        run: |
+          echo "=== Uninstalling Homebrew packages ==="
+          brew uninstall --ignore-dependencies gmp mpfr || echo "Packages not installed or already removed"
+          
+      - name: Verify uninstallation
+        run: |
+          echo "=== Verifying uninstallation ==="
+          if brew list gmp 2>/dev/null; then
+            echo "ERROR: GMP still installed"
+            exit 1
+          else
+            echo "✓ GMP successfully uninstalled"
+          fi
+          
+          if brew list mpfr 2>/dev/null; then
+            echo "ERROR: MPFR still installed"
+            exit 1
+          else
+            echo "✓ MPFR successfully uninstalled"
+          fi
+          
+      - name: Install MacPorts
+        run: |
+          echo "=== Installing MacPorts ==="
+          curl -LO https://github.com/macports/macports-base/releases/download/v2.9.3/MacPorts-2.9.3-14-Sonoma.pkg
+          sudo installer -pkg MacPorts-2.9.3-14-Sonoma.pkg -target /
+          echo "/opt/local/bin:/opt/local/sbin:$PATH" >> $GITHUB_PATH
+          
+      - name: Verify MacPorts installation
+        run: |
+          export PATH=/opt/local/bin:/opt/local/sbin:$PATH
+          which port
+          port version
+          
+      - name: Install GMP and MPFR via MacPorts
+        run: |
+          export PATH=/opt/local/bin:/opt/local/sbin:$PATH
+          sudo port selfupdate
+          sudo port install gmp mpfr
+          
+      - name: Verify MacPorts GMP/MPFR installation
+        run: |
+          echo "=== Verifying MacPorts installations ==="
+          ls -la /opt/local/lib/libgmp* || echo "GMP not found"
+          ls -la /opt/local/lib/libmpfr* || echo "MPFR not found"
+          ls -la /opt/local/include/gmp.h || echo "GMP header not found"
+          ls -la /opt/local/include/mpfr.h || echo "MPFR header not found"
