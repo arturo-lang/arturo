@@ -134,44 +134,44 @@ proc miniBuild*() =
     if hostOS=="freebsd" or hostOS=="openbsd" or hostOS=="netbsd":
         --verbosity:3
 
-proc compressBinary(config: BuildConfig) =
-
-    if (not config.shouldCompress) or (not config.webVersion):
-        return
-
-    section "Post-processing..."
-
-    log "compressing binary..."
-    let minBin = config.binary.replace(".js",".min.js")
-
-    let CompressionResult =
-        gorgeEx fmt"uglifyjs {config.binary} -c -m ""toplevel,reserved=['A$']"" -c -o {minBin}"
-
-    if CompressionResult.exitCode != QuitSuccess:
-        warn "uglifyjs: 3rd-party tool not available"
-        minBin.writeFile readFile(config.binary)
-    
-    recompressJS(minBin, config)
-
 proc postProcess(config: BuildConfig) =
-    ## Fix library paths on macOS to use @rpath for Homebrew/MacPorts compatibility
-    if hostOS != "macosx":
+    if ((not config.shouldCompress) or (not config.webVersion)) and (hostOS != "macosx"):
         return
+
+    section "Post-processing"
     
-    log "fixing library paths for macOS compatibility..."
+    if hostOS == "macosx":
+        ## Fix library paths on macOS to use @rpath 
+        ## for Homebrew/MacPorts compatibility
     
-    let otoolResult = gorgeEx fmt"otool -L {config.binary}"
-    if otoolResult.exitCode != QuitSuccess:
-        return
-    
-    for line in otoolResult.output.splitLines():
-        let trimmed = line.strip()
-        if "/opt/homebrew" in trimmed:
-            let libPath = trimmed.split()[0]
-            let libName = libPath.splitPath().tail
-            let changeResult = gorgeEx fmt"install_name_tool -change {libPath} @rpath/{libName} {config.binary}"
-            if changeResult.exitCode == QuitSuccess:
-                log fmt"  changed {libPath} -> @rpath/{libName}"
+        log "fixing library paths for macOS compatibility..."
+        
+        let otoolResult = gorgeEx fmt"otool -L {config.binary}"
+        if otoolResult.exitCode != QuitSuccess:
+            return
+        
+        for line in otoolResult.output.splitLines():
+            let trimmed = line.strip()
+            if "/opt/homebrew" in trimmed:
+                let libPath = trimmed.split()[0]
+                let libName = libPath.splitPath().tail
+                let changeResult = gorgeEx fmt"install_name_tool -change {libPath} @rpath/{libName} {config.binary}"
+                if changeResult.exitCode == QuitSuccess:
+                    log fmt"  changed {libPath} -> @rpath/{libName}"
+
+    if config.shouldCompress and config.webVersion:
+
+        log "compressing javascript..."
+        let minBin = config.binary.replace(".js",".min.js")
+
+        let CompressionResult =
+            gorgeEx fmt"uglifyjs {config.binary} -c -m ""toplevel,reserved=['A$']"" -c -o {minBin}"
+
+        if CompressionResult.exitCode != QuitSuccess:
+            warn "uglifyjs: 3rd-party tool not available"
+            minBin.writeFile readFile(config.binary)
+        
+        recompressJS(minBin, config)
 
 proc verifyDirectories*() =
     ## Create target dirs recursively, if they don't exist
@@ -237,7 +237,7 @@ proc installAll*(config: BuildConfig, targetFile: string) =
         if not config.shouldInstall:
             return
 
-        section "Installing..."
+        section "Installation"
 
         if config.webVersion:
             log "Web builds can't be installed, please don't use --install"
@@ -261,9 +261,9 @@ proc showBuildInfo*(config: BuildConfig) =
         build = "version/build".staticRead()
 
     if config.generateBundle:
-        section "Bundling..."
+        section "Bundling"
     else:
-        section "Building..."
+        section "Compilation"
     log fmt"version: {version}/{build}"
     log fmt"config: {config.version}"
 
@@ -306,7 +306,6 @@ proc buildArturo*(config: BuildConfig, targetFile: string) =
         config.showInfo()
         config.tryCompilation()
         config.postProcess()
-        config.compressBinary()
 
         if config.shouldInstall:
             config.installAll(targetFile)
