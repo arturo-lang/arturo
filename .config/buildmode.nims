@@ -26,7 +26,7 @@ proc fullBuildConfig() =
     if hostOS == "macosx": 
         --passC:"-I/opt/homebrew/include"
     --define:ssl
-
+ 
 proc docgenBuildConfig() =
     fullBuildConfig()
     --define:DOCGEN
