@@ -119,6 +119,45 @@ Before contributing to Arturo, you need to make sure you have all needed depende
 
 Our compiler is written in Nim, which depends on GCC.
 
+#### Ubuntu Programmers
+
+**Install Nim**
+
+You need to install Nim in order to compile Arturo.
+The easiest way to install it is from the apt-get package manager.
+
+```sh
+apt-get install nim
+```
+
+But the recommended way is to use *choosenim*:
+
+```sh
+curl https://nim-lang.org/choosenim/init.sh -sSf | sh
+```
+
+**Install dependencies**
+
+```sh
+sudo apt-get update
+sudo apt-get install libgtk-3-dev libmpfr-dev
+```
+
+Now, you need to add Webkit, but we have some little details to it.
+
+If you're on Ubuntu 24.04 or greater, install:
+
+```sh
+sudo apt-get install -y libwebkit2gtk-4.1-dev
+```
+
+But if you're on an older version:
+
+```sh
+sudo apt-get install -y libwebkit2gtk-4.0-dev
+```
+
+This happens because 4.0 version of Webkit does not exist for newer versions of Ubuntu.
 
 #### Windows Programmers
 
