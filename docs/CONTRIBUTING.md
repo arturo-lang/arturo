@@ -159,6 +159,22 @@ sudo apt-get install -y libwebkit2gtk-4.0-dev
 
 This happens because 4.0 version of Webkit does not exist for newer versions of Ubuntu.
 
+#### MacOS Programmers
+
+You need to install Nim in order to compile Arturo.
+The easiest way is install the latest version of clang, and then install nim from brew.
+
+```sh
+xcode-select --install
+brew install nim
+```
+
+But you can also install nim from *choosenim*, which is the recommended way:
+
+```sh
+curl https://nim-lang.org/choosenim/init.sh -sSf | sh
+```
+
 #### Windows Programmers
 
 **Installing Nim**
