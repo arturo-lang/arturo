@@ -134,6 +134,7 @@ But the recommended way is to use *choosenim*:
 
 ```sh
 curl https://nim-lang.org/choosenim/init.sh -sSf | sh
+choosenim 2.2.6
 ```
 
 **Install dependencies**
@@ -173,6 +174,7 @@ But you can also install nim from *choosenim*, which is the recommended way:
 
 ```sh
 curl https://nim-lang.org/choosenim/init.sh -sSf | sh
+choosenim 2.2.6
 ```
 
 #### Windows Programmers
@@ -193,6 +195,8 @@ or
 scoop bucket add main
 scoop install main/nim
 ```
+
+If you're using scoop, choosenim won't be needed. Scoop already have version management built-in.
 
 **Installing MSYS2 and GCC**
 
