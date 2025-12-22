@@ -86,7 +86,7 @@ jobs:
         run: |
           export PATH=/opt/local/bin:/opt/local/sbin:$PATH
           sudo port selfupdate
-          sudo port install gmp mpfr
+          sudo port install gmp
       
       - name: Verify MacPorts installation
         run: |
@@ -99,6 +99,7 @@ jobs:
       
       - name: Add to PATH and test
         run: |
+          sudo port install mpfr
           export PATH=$HOME/.arturo/bin:$PATH
           arturo -v
           arturo -e "print 2 ^ 100"
