@@ -24,9 +24,12 @@ proc fullBuildConfig() =
     --define:GMP
     --define:useOpenssl3
     if hostOS == "macosx":
-        --passC:"-I/opt/homebrew/include -I/opt/local/include"
-        --passL:"-L/opt/homebrew/lib -L/opt/local/lib"
-        --passL:"-Wl,-rpath,/opt/homebrew/lib -Wl,-rpath,/opt/local/lib"
+        --passC:"-I/opt/homebrew/include"
+        --passC:"-I/opt/local/include"
+        --passL:"-L/opt/homebrew/lib"
+        --passL:"-L/opt/local/lib"
+        --passL:"-Wl,-rpath,/opt/homebrew/lib"
+        --passL:"-Wl,-rpath,/opt/local/lib"
     --define:ssl
  
 proc docgenBuildConfig() =
