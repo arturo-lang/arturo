@@ -23,8 +23,14 @@ proc webBuildConfig() =
 proc fullBuildConfig() =
     --define:GMP
     --define:useOpenssl3
-    if hostOS == "macosx": 
+    if hostOS == "macosx":
         --passC:"-I/opt/homebrew/include"
+        --passC:"-I/opt/local/include"
+        --passL:"-L/opt/homebrew/lib"
+        --passL:"-L/opt/local/lib"
+        --passL:"-Wl,-rpath,/opt/homebrew/lib"
+        --passL:"-Wl,-rpath,/opt/local/lib"
+        --passL:"-Wl,-headerpad_max_install_names"
     --define:ssl
 
 proc docgenBuildConfig() =
