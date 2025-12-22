@@ -153,6 +153,26 @@ proc compressBinary(config: BuildConfig) =
     
     recompressJS(minBin, config)
 
+proc postProcess(config: BuildConfig) =
+    ## Fix library paths on macOS to use @rpath for Homebrew/MacPorts compatibility
+    if hostOS != "macosx":
+        return
+    
+    log "fixing library paths for macOS compatibility..."
+    
+    let otoolResult = gorgeEx fmt"otool -L {config.binary}"
+    if otoolResult.exitCode != QuitSuccess:
+        return
+    
+    for line in otoolResult.output.splitLines():
+        let trimmed = line.strip()
+        if "/opt/homebrew" in trimmed:
+            let libPath = trimmed.split()[0]
+            let libName = libPath.splitPath().tail
+            let changeResult = gorgeEx fmt"install_name_tool -change {libPath} @rpath/{libName} {config.binary}"
+            if changeResult.exitCode == QuitSuccess:
+                log fmt"  changed {libPath} -> @rpath/{libName}"
+
 proc verifyDirectories*() =
     ## Create target dirs recursively, if they don't exist
     log "setting up directories..."
@@ -285,6 +305,7 @@ proc buildArturo*(config: BuildConfig, targetFile: string) =
 
         config.showInfo()
         config.tryCompilation()
+        config.postProcess()
         config.compressBinary()
 
         if config.shouldInstall:
