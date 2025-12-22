@@ -14,7 +14,6 @@ concurrency:
 
 jobs:
   unix:
-    name: ${{ matrix.os }}
     strategy:
       matrix:
         os: 
@@ -23,6 +22,7 @@ jobs:
           - macos-15          # M1/M2 (ARM)
           - macos-15-intel    # Intel
           - macos-26          # M3 (ARM) - Beta
+
           # Linux
           - ubuntu-24.04
           - ubuntu-22.04
@@ -66,7 +66,6 @@ jobs:
           fi
 
   macos-macports:
-    name: macOS with MacPorts
     runs-on: macos-26
     
     steps:
@@ -82,7 +81,7 @@ jobs:
           curl -LO https://github.com/macports/macports-base/releases/download/v2.11.6/MacPorts-2.11.6-26-Tahoe.pkg
           sudo installer -pkg MacPorts-2.11.6-26-Tahoe.pkg -target /
       
-      - name: Install GMP and MPFR via MacPorts
+      - name: Install GMP
         run: |
           export PATH=/opt/local/bin:/opt/local/sbin:$PATH
           sudo port selfupdate
@@ -92,31 +91,21 @@ jobs:
         run: |
           export PATH=/opt/local/bin:/opt/local/sbin:$PATH
           port installed gmp mpfr
-          #ls -la /opt/local/lib/libgmp* /opt/local/lib/libmpfr*
       
       - name: Install Arturo
-        run: curl -sSL https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/docs/website/tools/installer.sh | sh
+        run: |
+           # and check whether it picks GMP from MacPorts
+           curl -sSL https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/docs/website/tools/installer.sh | sh
       
       - name: Add to PATH and test
         run: |
+          # now, do install MPFR via MacPorts...
+          export PATH=/opt/local/bin:/opt/local/sbin:$PATH
           sudo port install mpfr
+
+          # ...and test again
           export PATH=$HOME/.arturo/bin:$PATH
           arturo -v
-          arturo -e "print 2 ^ 100"
-      
-      - name: Show detected package manager
-        run: |
-          if command -v brew >/dev/null 2>&1; then
-            echo "Homebrew: FOUND"
-          else
-            echo "Homebrew: NOT FOUND"
-          fi
-          if command -v port >/dev/null 2>&1; then
-            echo "MacPorts: FOUND"
-            port version
-          else
-            echo "MacPorts: NOT FOUND"
-          fi
 
   freebsd:
     runs-on: ubuntu-latest
