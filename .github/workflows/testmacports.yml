@@ -58,7 +58,7 @@ jobs:
         run: |
           export PATH=/opt/local/bin:/opt/local/sbin:$PATH
           sudo port selfupdate
-          sudo port install gmp mpfr
+          sudo port install gmp mpfr nim
           
       - name: Verify MacPorts GMP/MPFR installation
         run: |
@@ -67,3 +67,22 @@ jobs:
           ls -la /opt/local/lib/libmpfr* || echo "MPFR not found"
           ls -la /opt/local/include/gmp.h || echo "GMP header not found"
           ls -la /opt/local/include/mpfr.h || echo "MPFR header not found"
+
+      - name: Checkout Arturo repo (Linux/macOS/Windows)
+        uses: actions/checkout@v4
+        with:
+            repository: arturo-lang/arturo
+            submodules: recursive
+            ref: ${{ github.ref }}
+      
+      - name: Build Arturo (Linux/macOS/Web)
+        run: |
+            ./build.nims --install --log
+            
+            echo "$HOME/.arturo/bin" >> $GITHUB_PATH
+            
+            arturo -v
+            arturo -e "inspect sys"
+        shell: bash
+
+        
