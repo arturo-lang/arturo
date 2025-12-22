@@ -92,7 +92,7 @@ jobs:
         run: |
           export PATH=/opt/local/bin:/opt/local/sbin:$PATH
           port installed gmp mpfr
-          ls -la /opt/local/lib/libgmp* /opt/local/lib/libmpfr*
+          #ls -la /opt/local/lib/libgmp* /opt/local/lib/libmpfr*
       
       - name: Install Arturo
         run: curl -sSL https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/docs/website/tools/installer.sh | sh
