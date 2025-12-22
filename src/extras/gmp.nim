@@ -16,9 +16,6 @@
 # Compilation & Linking
 #=======================================
 
-when defined(macosx):
-    {.passL: "-L/opt/homebrew/lib".}
-    
 {.passL: "-lmpfr -lgmp".}
 
 {.push header: "<gmp.h>", cdecl.}
