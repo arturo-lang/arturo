@@ -122,10 +122,6 @@ Our compiler is written in Nim, which depends on GCC.
 
 #### Windows Programmers
 
-If you want to contribute on a Windows host system, please notice you must have some tools and libraries installed before proceed.
-
-Arturo compilation depends on it, and without it, it's impossible to compile.
-
 **Installing Nim**
 You need to install Nim in order to compile Arturo.
 
