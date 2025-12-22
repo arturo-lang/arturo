@@ -65,6 +65,58 @@ jobs:
             cat /etc/os-release
           fi
 
+  macos-macports:
+    name: macOS with MacPorts
+    runs-on: macos-26
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Uninstall Homebrew GMP/MPFR if present
+        run: |
+          brew uninstall --ignore-dependencies gmp mpfr 2>/dev/null || echo "Homebrew packages not installed"
+      
+      - name: Install MacPorts
+        run: |
+          curl -LO https://github.com/macports/macports-base/releases/download/v2.11.6/MacPorts-2.11.6-26-Tahoe.pkg
+          sudo installer -pkg MacPorts-2.11.6-26-Tahoe.pkg -target /
+      
+      - name: Install GMP and MPFR via MacPorts
+        run: |
+          export PATH=/opt/local/bin:/opt/local/sbin:$PATH
+          sudo port selfupdate
+          sudo port install gmp mpfr
+      
+      - name: Verify MacPorts installation
+        run: |
+          export PATH=/opt/local/bin:/opt/local/sbin:$PATH
+          port installed gmp mpfr
+          ls -la /opt/local/lib/libgmp* /opt/local/lib/libmpfr*
+      
+      - name: Install Arturo
+        run: curl -sSL https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/docs/website/tools/installer.sh | sh
+      
+      - name: Add to PATH and test
+        run: |
+          export PATH=$HOME/.arturo/bin:$PATH
+          arturo -v
+          arturo -e "print 2 ^ 100"
+      
+      - name: Show detected package manager
+        run: |
+          if command -v brew >/dev/null 2>&1; then
+            echo "Homebrew: FOUND"
+          else
+            echo "Homebrew: NOT FOUND"
+          fi
+          if command -v port >/dev/null 2>&1; then
+            echo "MacPorts: FOUND"
+            port version
+          else
+            echo "MacPorts: NOT FOUND"
+          fi
+
   freebsd:
     runs-on: ubuntu-latest
     
