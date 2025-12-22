@@ -37,7 +37,7 @@ jobs:
             - name: Increment build number and get version info
               id: version-info
               run: |
-                version_tag="nightly.20251218"
+                version_tag="nightly.20251222"
                 echo "VERSION_TAG=${version_tag}" >> "$GITHUB_OUTPUT"
             
             # - name: Configure Git
