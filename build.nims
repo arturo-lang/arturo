@@ -139,7 +139,7 @@ proc postProcess(config: BuildConfig) =
         return
 
     section "Post-processing"
-    
+ 
     if hostOS == "macosx":
         ## Fix library paths on macOS to use @rpath 
         ## for Homebrew/MacPorts compatibility
