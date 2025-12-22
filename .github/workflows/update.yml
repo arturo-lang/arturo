@@ -39,7 +39,7 @@ jobs:
               run: |
                 version_tag="nightly.20251222"
                 echo "VERSION_TAG=${version_tag}" >> "$GITHUB_OUTPUT"
-            
+
             # - name: Configure Git
             #   run: |
             #     git config user.name "GitHub Actions Bot"
