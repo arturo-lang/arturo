@@ -167,13 +167,13 @@ You need to install Nim in order to compile Arturo.
 You may install it manually via the [official installer](https://nim-lang.org/install.html).
 If you prefer, you can install from scoop or choco.
 
-```
+```sh
 choco install nim
 ```
 
 or
 
-```
+```sh
 scoop bucket add main
 scoop install main/nim
 ```
