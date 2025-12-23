@@ -2,10 +2,10 @@ name: Test Installer
 
 on:
   pull_request:
-    paths:
-      - 'docs/website/tools/installer.sh'
-      - 'docs/website/tools/installer.ps1'
-      - '.github/workflows/testinstaller.yml'
+    # paths:
+    #   - 'docs/website/tools/installer.sh'
+    #   - 'docs/website/tools/installer.ps1'
+    #   - '.github/workflows/testinstaller.yml'
   workflow_dispatch:
     
 concurrency: 
