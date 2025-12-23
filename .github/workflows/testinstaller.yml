@@ -29,6 +29,9 @@ jobs:
         runs-on: ${{ matrix.os }}
         
         steps:
+            - name: Setup MacPorts
+              if: matrix.pkg_manager == 'macports'
+              uses: melusina-org/setup-macports@v1
 
             - name: Uninstall Homebrew
               if: matrix.pkg_manager == 'macports'
@@ -37,10 +40,6 @@ jobs:
                   NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/uninstall.sh)"
                   sudo rm -rf /usr/local/Homebrew /usr/local/Caskroom /usr/local/Cellar /usr/local/bin/brew
                   sudo find /usr/local/bin -type l -delete 2>/dev/null || true
-
-            - name: Setup MacPorts
-              if: matrix.pkg_manager == 'macports'
-              uses: melusina-org/setup-macports@v1
 
             - name: Install dependencies
               if: matrix.pkg_manager == 'macports'
