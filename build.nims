@@ -152,7 +152,9 @@ proc postProcess(config: BuildConfig) =
         
         for line in otoolResult.output.splitLines():
             let trimmed = line.strip()
-            if "/opt/homebrew" in trimmed:
+
+            # "Fix" MacPorts dependencies
+            if "/opt/homebrew" in trimmed or "/usr/local/opt/" in trimmed or "/opt/local" in trimmed:
                 let libPath = trimmed.split()[0]
                 let libName = libPath.splitPath().tail
                 let changeResult = gorgeEx fmt"install_name_tool -change {libPath} @rpath/{libName} {config.binary}"
