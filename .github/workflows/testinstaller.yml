@@ -136,26 +136,31 @@ jobs:
     
     runs-on: ${{ matrix.os }}
     
+    defaults:
+      run:
+        shell: ${{ matrix.shell_type }}
+    
     steps:
-
-      - name: Install Arturo
-        shell: ${{ matrix.shell_type }}
-        run: |
-          if [[ "${{ matrix.shell_type }}" == "bash" ]]; then
-            curl -sSL https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/docs/website/tools/installer.sh | sh
-          else
-            $script = Invoke-RestMethod -Uri "https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/docs/website/tools/installer.ps1"
-            Invoke-Expression $script
-          fi
+      - name: Install Arturo (Bash)
+        if: matrix.shell_type == 'bash'
+        run: curl -sSL https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/docs/website/tools/installer.sh | sh
       
-      - name: Add to PATH and test
-        shell: ${{ matrix.shell_type }}
+      - name: Install Arturo (PowerShell)
+        if: matrix.shell_type == 'powershell'
         run: |
-          if [[ "${{ matrix.shell_type }}" == "bash" ]]; then
-            export PATH=$HOME/.arturo/bin:$PATH
-          else
-            $env:PATH = "$env:USERPROFILE\.arturo\bin;$env:PATH"
-          fi
+          $script = Invoke-RestMethod -Uri "https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/docs/website/tools/installer.ps1"
+          Invoke-Expression $script
+      
+      - name: Add to PATH and test (Bash)
+        if: matrix.shell_type == 'bash'
+        run: |
+          export PATH=$HOME/.arturo/bin:$PATH
+          arturo -v
+      
+      - name: Add to PATH and test (PowerShell)
+        if: matrix.shell_type == 'powershell'
+        run: |
+          $env:PATH = "$env:USERPROFILE\.arturo\bin;$env:PATH"
           arturo -v
       
       - name: Show Windows version
