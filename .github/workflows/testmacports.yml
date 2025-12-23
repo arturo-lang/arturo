@@ -85,7 +85,7 @@ jobs:
         run: |
           export PATH=/opt/local/bin:/opt/local/sbin:$PATH
           sudo port selfupdate
-          sudo port install gmp mpfr
+          sudo port install gmp mpfr libiconv
           
       - name: Verify MacPorts GMP/MPFR installation
         run: |
