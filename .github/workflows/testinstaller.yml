@@ -22,12 +22,25 @@ jobs:
           - macos-15          # M1/M2 (ARM)
           - macos-15-intel    # Intel
           - macos-26          # M3 (ARM) - Beta
-
+          
           # Linux
           - ubuntu-24.04
           - ubuntu-22.04
           - ubuntu-24.04-arm
           - ubuntu-22.04-arm
+        
+        pkg_manager: [homebrew]
+        
+        include:
+          - os: macos-14
+            pkg_manager: macports
+          - os: macos-15
+            pkg_manager: macports
+          - os: macos-15-intel
+            pkg_manager: macports
+          - os: macos-26
+            pkg_manager: macports
+            
       fail-fast: false
     
     runs-on: ${{ matrix.os }}
@@ -35,6 +48,25 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      
+      - name: Setup package manager (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          if [[ "${{ matrix.pkg_manager }}" == "macports" ]]; then
+            # Uninstall Homebrew completely
+            NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/uninstall.sh)"
+            sudo rm -rf /usr/local/Homebrew /usr/local/Caskroom /usr/local/Cellar /usr/local/bin/brew
+            sudo find /usr/local/bin -type l -delete 2>/dev/null || true
+            
+            # Install MacPorts
+            curl -LO https://github.com/macports/macports-base/releases/download/v2.11.6/MacPorts-2.11.6-26-Tahoe.pkg
+            sudo installer -pkg MacPorts-2.11.6-26-Tahoe.pkg -target /
+            
+            # Install dependencies via MacPorts
+            export PATH=/opt/local/bin:/opt/local/sbin:$PATH
+            sudo port selfupdate
+            sudo port install gmp mpfr libiconv
+          fi
       
       - name: Install dependencies (Linux)
         if: runner.os == 'Linux'
@@ -54,6 +86,10 @@ jobs:
       
       - name: Add to PATH and test
         run: |
+          if [[ "${{ matrix.pkg_manager }}" == "macports" ]]; then
+            export PATH=/opt/local/bin:/opt/local/sbin:$PATH
+          fi
+          
           export PATH=$HOME/.arturo/bin:$PATH
           arturo -v
       
@@ -64,58 +100,6 @@ jobs:
           else
             cat /etc/os-release
           fi
-
-  macos-macports:
-    runs-on: macos-26
-    
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      
-      - name: Uninstall Homebrew completely
-        run: |
-          # Run the official Homebrew uninstall script
-          NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/uninstall.sh)"
-          
-          # Remove any remaining Homebrew directories
-          sudo rm -rf /usr/local/Homebrew
-          sudo rm -rf /usr/local/Caskroom
-          sudo rm -rf /usr/local/Cellar
-          sudo rm -rf /usr/local/bin/brew
-          
-          # Clean up any symlinks
-          sudo find /usr/local/bin -type l -delete 2>/dev/null || true
-      
-      - name: Install MacPorts
-        run: |
-          curl -LO https://github.com/macports/macports-base/releases/download/v2.11.6/MacPorts-2.11.6-26-Tahoe.pkg
-          sudo installer -pkg MacPorts-2.11.6-26-Tahoe.pkg -target /
-      
-      - name: Install GMP
-        run: |
-          export PATH=/opt/local/bin:/opt/local/sbin:$PATH
-          sudo port selfupdate
-          sudo port install gmp libiconv
-      
-      - name: Verify MacPorts installation
-        run: |
-          export PATH=/opt/local/bin:/opt/local/sbin:$PATH
-          port installed gmp mpfr
-      
-      - name: Install Arturo
-        run: |
-          # and check whether it picks GMP from MacPorts
-          curl -sSL https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/docs/website/tools/installer.sh | sh
-      
-      - name: Add to PATH and test
-        run: |
-          # now, do install MPFR via MacPorts...
-          export PATH=/opt/local/bin:/opt/local/sbin:$PATH
-          sudo port install mpfr
-
-          # ...and test again
-          export PATH=$HOME/.arturo/bin:$PATH
-          arturo -v
 
   freebsd:
     runs-on: ubuntu-latest
