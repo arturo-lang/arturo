@@ -29,7 +29,7 @@ when not defined(WEB):
     import extras/checksums/md5, extras/checksums/sha1
 
 import base64, uri
-when not defined(freebsd) and not defined(WEB):
+when not defined(WEB):
     import extras/encodings
 
 import helpers/strings
@@ -139,7 +139,7 @@ proc defineModule*(moduleName: string) =
                     push(newString(x.s.urlencode(encodeSpaces=spaces, encodeSlashes=slashes)))
 
             elif checkAttr("from"):
-                when not defined(freebsd) and not defined(WEB):
+                when not defined(WEB):
                     var src = aFrom.s
                     var dest = "UTF-8"
                     if checkAttr("to"):
@@ -155,7 +155,7 @@ proc defineModule*(moduleName: string) =
                         push(newString(x.s))
 
             elif checkAttr("to"):
-                when not defined(freebsd) and not defined(WEB):
+                when not defined(WEB):
                     var src = "CP1252"
                     var dest = aTo.s
 
