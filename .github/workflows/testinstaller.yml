@@ -77,14 +77,25 @@ jobs:
           # Run the official Homebrew uninstall script
           NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/uninstall.sh)"
           
-          # Remove any remaining Homebrew directories
+          # Remove the paths.d file that failed to delete
+          sudo rm -f /etc/paths.d/homebrew
+          
+          # Remove all remaining Homebrew directories (Apple Silicon location)
+          sudo rm -rf /opt/homebrew
+          
+          # Remove Intel Mac locations (just in case)
           sudo rm -rf /usr/local/Homebrew
           sudo rm -rf /usr/local/Caskroom
           sudo rm -rf /usr/local/Cellar
           sudo rm -rf /usr/local/bin/brew
           
-          # Clean up any symlinks
-          sudo find /usr/local/bin -type l -delete 2>/dev/null || true
+          # Clean up user caches
+          rm -rf ~/Library/Caches/Homebrew
+          rm -rf ~/Library/Logs/Homebrew
+          
+          # Verify removal
+          echo "Homebrew removed. Checking for any remaining brew command..."
+          which brew && echo "WARNING: brew still found in PATH" || echo "brew successfully removed"
       
       - name: Install MacPorts
         run: |
@@ -95,7 +106,7 @@ jobs:
         run: |
           export PATH=/opt/local/bin:/opt/local/sbin:$PATH
           sudo port selfupdate
-          sudo port install gmp libiconv
+          sudo port install gmp
       
       - name: Verify MacPorts installation
         run: |
