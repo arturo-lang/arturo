@@ -30,11 +30,7 @@ jobs:
         
         steps:
 
-            - name: Setup MacPorts
-              if: matrix.pkg_manager == 'macports'
-              uses: melusina-org/setup-macports@v1
-
-            - name: Uninstall Homebrew (MacPorts only)
+            - name: Uninstall Homebrew
               if: matrix.pkg_manager == 'macports'
               run: |
                   # Uninstall Homebrew completely
@@ -42,12 +38,16 @@ jobs:
                   sudo rm -rf /usr/local/Homebrew /usr/local/Caskroom /usr/local/Cellar /usr/local/bin/brew
                   sudo find /usr/local/bin -type l -delete 2>/dev/null || true
 
-            - name: Install dependencies (MacPorts)
+            - name: Setup MacPorts
+              if: matrix.pkg_manager == 'macports'
+              uses: melusina-org/setup-macports@v1
+
+            - name: Install dependencies
               if: matrix.pkg_manager == 'macports'
               run: |
                   export PATH=/opt/local/bin:/opt/local/sbin:$PATH
                   sudo port selfupdate
-                  sudo port install gmp libiconv
+                  sudo port install gmp mpfr libiconv
                   port installed gmp mpfr libiconv
             
             - name: Install Arturo
