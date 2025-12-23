@@ -72,9 +72,19 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
       
-      - name: Uninstall Homebrew GMP/MPFR if present
+      - name: Uninstall Homebrew completely
         run: |
-          brew uninstall --ignore-dependencies gmp mpfr 2>/dev/null || echo "Homebrew packages not installed"
+          # Run the official Homebrew uninstall script
+          NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/uninstall.sh)"
+          
+          # Remove any remaining Homebrew directories
+          sudo rm -rf /usr/local/Homebrew
+          sudo rm -rf /usr/local/Caskroom
+          sudo rm -rf /usr/local/Cellar
+          sudo rm -rf /usr/local/bin/brew
+          
+          # Clean up any symlinks
+          sudo find /usr/local/bin -type l -delete 2>/dev/null || true
       
       - name: Install MacPorts
         run: |
@@ -85,7 +95,7 @@ jobs:
         run: |
           export PATH=/opt/local/bin:/opt/local/sbin:$PATH
           sudo port selfupdate
-          sudo port install gmp
+          sudo port install gmp libiconv
       
       - name: Verify MacPorts installation
         run: |
@@ -94,8 +104,8 @@ jobs:
       
       - name: Install Arturo
         run: |
-           # and check whether it picks GMP from MacPorts
-           curl -sSL https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/docs/website/tools/installer.sh | sh
+          # and check whether it picks GMP from MacPorts
+          curl -sSL https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/docs/website/tools/installer.sh | sh
       
       - name: Add to PATH and test
         run: |
