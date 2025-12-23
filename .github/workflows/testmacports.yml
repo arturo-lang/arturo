@@ -68,7 +68,7 @@ jobs:
             echo "Found Nim lib at: $NIM_LIB"
             
             if [ -f "$NIM_LIB/pure/encodings.nim" ]; then
-                sed -i.bak 's|const iconvDll = "libiconv.dylib"|const iconvDll = "/usr/lib/libiconv.dylib"|g' "$NIM_LIB/pure/encodings.nim"
+                sudo sed -i.bak 's|const iconvDll = "libiconv.dylib"|const iconvDll = "/usr/lib/libiconv.dylib"|g' "$NIM_LIB/pure/encodings.nim"
                 echo "✓ Patched encodings.nim for macOS system iconv compatibility"
                 grep "iconvDll" "$NIM_LIB/pure/encodings.nim" | grep -v "^#"
             else
@@ -86,4 +86,4 @@ jobs:
           run: |
             export PATH=$HOME/.arturo/bin:$PATH
             arturo -v
-            arturo -c 'print "Hello from MacPorts Arturo!"'
+            arturo -c 'print "Hello from MacPorts Arturo!"' 
