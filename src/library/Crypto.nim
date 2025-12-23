@@ -30,7 +30,7 @@ when not defined(WEB):
 
 import base64, uri
 when not defined(freebsd) and not defined(WEB):
-    import encodings
+    import extras/encodings
 
 import helpers/strings
 import helpers/url
