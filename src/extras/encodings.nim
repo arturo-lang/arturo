@@ -315,7 +315,7 @@ else:
 
   when defined(bsd):
     {.pragma: importIconv, cdecl, header: "<iconv.h>".}
-    when defined(openbsd):
+    when defined(freebsd) or defined(openbsd):
       {.passL: "-liconv".}
   else:
     {.pragma: importIconv, cdecl, dynlib: iconvDll.}
