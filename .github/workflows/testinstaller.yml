@@ -13,44 +13,24 @@ concurrency:
     cancel-in-progress: true
 
 jobs:
-  unix:
+  macos:
     strategy:
       matrix:
         os: 
-          # macOS
           - macos-14          # M1 (ARM)
           - macos-15          # M1/M2 (ARM)
           - macos-15-intel    # Intel
           - macos-26          # M3 (ARM) - Beta
-          
-          # Linux
-          - ubuntu-24.04
-          - ubuntu-22.04
-          - ubuntu-24.04-arm
-          - ubuntu-22.04-arm
         
-        pkg_manager: [homebrew]
-        
-        include:
-          - os: macos-14
-            pkg_manager: macports
-          - os: macos-15
-            pkg_manager: macports
-          - os: macos-15-intel
-            pkg_manager: macports
-          - os: macos-26
-            pkg_manager: macports
+        pkg_manager: [homebrew, macports]
             
       fail-fast: false
     
     runs-on: ${{ matrix.os }}
     
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      
-      - name: Setup package manager (macOS)
-        if: runner.os == 'macOS'
+
+      - name: Setup package manager
         run: |
           if [[ "${{ matrix.pkg_manager }}" == "macports" ]]; then
             # Uninstall Homebrew completely
@@ -65,11 +45,42 @@ jobs:
             # Install dependencies via MacPorts
             export PATH=/opt/local/bin:/opt/local/sbin:$PATH
             sudo port selfupdate
-            sudo port install gmp mpfr libiconv
+            sudo port install gmp libiconv
+            
+            # Verify installation
+            port installed gmp mpfr libiconv
           fi
       
-      - name: Install dependencies (Linux)
-        if: runner.os == 'Linux'
+      - name: Install Arturo
+        run: curl -sSL https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/docs/website/tools/installer.sh | sh
+      
+      - name: Add to PATH and test
+        run: |
+          if [[ "${{ matrix.pkg_manager }}" == "macports" ]]; then
+            export PATH=/opt/local/bin:/opt/local/sbin:$PATH
+          fi
+          
+          export PATH=$HOME/.arturo/bin:$PATH
+          arturo -v
+      
+      - name: Show OS version
+        run: sw_vers
+
+  linux:
+    strategy:
+      matrix:
+        os: 
+          - ubuntu-24.04
+          - ubuntu-22.04
+          - ubuntu-24.04-arm
+          - ubuntu-22.04-arm
+      fail-fast: false
+    
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+
+      - name: Install dependencies
         run: |
           sudo apt-get update
           
@@ -86,27 +97,16 @@ jobs:
       
       - name: Add to PATH and test
         run: |
-          if [[ "${{ matrix.pkg_manager }}" == "macports" ]]; then
-            export PATH=/opt/local/bin:/opt/local/sbin:$PATH
-          fi
-          
           export PATH=$HOME/.arturo/bin:$PATH
           arturo -v
       
       - name: Show OS version
-        run: |
-          if [[ "$OSTYPE" == "darwin"* ]]; then
-            sw_vers
-          else
-            cat /etc/os-release
-          fi
+        run: cat /etc/os-release
 
   freebsd:
     runs-on: ubuntu-latest
     
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
       
       - name: Test installer on FreeBSD
         uses: vmactions/freebsd-vm@v1
@@ -122,60 +122,40 @@ jobs:
             arturo -v
             freebsd-version
 
-  windows-bash:
+  windows:
     strategy:
       matrix:
         os: 
           - windows-latest
           - windows-2022
           - windows-2019
+        
+        shell_type: [bash, powershell]
+      
       fail-fast: false
     
     runs-on: ${{ matrix.os }}
     
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      
-      - name: Install Arturo (Git Bash)
-        shell: bash
-        run: curl -sSL https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/docs/website/tools/installer.sh | sh
+
+      - name: Install Arturo
+        shell: ${{ matrix.shell_type }}
+        run: |
+          if [[ "${{ matrix.shell_type }}" == "bash" ]]; then
+            curl -sSL https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/docs/website/tools/installer.sh | sh
+          else
+            $script = Invoke-RestMethod -Uri "https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/docs/website/tools/installer.ps1"
+            Invoke-Expression $script
+          fi
       
       - name: Add to PATH and test
-        shell: bash
+        shell: ${{ matrix.shell_type }}
         run: |
-          export PATH=$HOME/.arturo/bin:$PATH
-          arturo -v
-      
-      - name: Show Windows version
-        shell: powershell
-        run: Get-ComputerInfo | Select-Object WindowsProductName, WindowsVersion, OsArchitecture
-
-  windows-powershell:
-    strategy:
-      matrix:
-        os: 
-          - windows-latest
-          - windows-2022
-          - windows-2019
-      fail-fast: false
-    
-    runs-on: ${{ matrix.os }}
-    
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      
-      - name: Install Arturo (PowerShell)
-        shell: powershell
-        run: |
-          $script = Invoke-RestMethod -Uri "https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/docs/website/tools/installer.ps1"
-          Invoke-Expression $script
-
-      - name: Add to PATH and test
-        shell: powershell
-        run: |
-          $env:PATH = "$env:USERPROFILE\.arturo\bin;$env:PATH"
+          if [[ "${{ matrix.shell_type }}" == "bash" ]]; then
+            export PATH=$HOME/.arturo/bin:$PATH
+          else
+            $env:PATH = "$env:USERPROFILE\.arturo\bin;$env:PATH"
+          fi
           arturo -v
       
       - name: Show Windows version
