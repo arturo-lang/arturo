@@ -37,7 +37,7 @@ jobs:
             - name: Increment build number and get version info
               id: version-info
               run: |
-                version_tag="nightly.20251222"
+                version_tag="nightly.20251223"
                 echo "VERSION_TAG=${version_tag}" >> "$GITHUB_OUTPUT"
 
             # - name: Configure Git
@@ -115,16 +115,16 @@ jobs:
             - name: Install Arturo
               uses: arturo-lang/arturo-action@main
               with: 
-                do: compile
+                do: fetch
                 token: ${{ secrets.GITHUB_TOKEN }}
                 os: ${{ matrix.os }}
                 arch: ${{ matrix.arch }}
                 mode: ${{ matrix.mode }}
                 support: ${{ matrix.support }}
-                src: ${{ github.ref }}
-                metadata: "patchedEncodings"#${{ needs.Build.outputs.version_tag }}
-                #create_artifact: 'true'
-                #artifacts_only: 'true'
+                #src: ${{ github.ref }}
+                metadata: ${{ needs.Build.outputs.version_tag }}
+                create_artifact: 'true'
+                artifacts_only: 'true'
                 #artifact_version: ${{ needs.Build.outputs.version_tag }}
 
     # Step 3: Generate documentation and combine with binaries
