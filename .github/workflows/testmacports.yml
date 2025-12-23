@@ -16,29 +16,10 @@ jobs:
         - name: Checkout repository
           uses: actions/checkout@v4
 
-        - name: Install Nim and patch encodings
+        - name: Install Nim
           run: |
             brew install nim 
-            
-            # # Patch Nim's encodings.nim to use system iconv (avoids MacPorts conflict)
-            # NIM_LIB=$(nim dump 2>&1 | grep "/lib/pure$" | head -1 | sed 's|/pure$||')
-            
-            # if [ -z "$NIM_LIB" ]; then
-            #     echo "⚠ Could not find Nim lib directory"
-            #     exit 1
-            # fi
-            
-            # echo "Found Nim lib at: $NIM_LIB"
-            
-            # if [ -f "$NIM_LIB/pure/encodings.nim" ]; then
-            #     sudo sed -i.bak 's|const iconvDll = "libiconv.dylib"|const iconvDll = "/usr/lib/libiconv.dylib"|g' "$NIM_LIB/pure/encodings.nim"
-            #     echo "✓ Patched encodings.nim for macOS system iconv compatibility"
-            #     grep "iconvDll" "$NIM_LIB/pure/encodings.nim" | grep -v "^#"
-            # else
-            #     echo "⚠ encodings.nim not found at $NIM_LIB/pure/encodings.nim"
-            #     exit 1
-            # fi
-        
+
         - name: Build Arturo from source
           run: |
             export PATH=/opt/local/bin:/opt/local/sbin:$PATH
