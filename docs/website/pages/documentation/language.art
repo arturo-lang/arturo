@@ -393,7 +393,7 @@ or
 if (type x) = :integer [ print "it's an integer!" ]
 ```
 
-> 💡 If you want to define your own custom types (think "classes" in OOP languages), we have <code><a href="../library/types/define">define</a></code> for that: e.g. 
+> [!TIP] If you want to define your own custom types (think "classes" in OOP languages), we have <code><a href="../library/types/define">define</a></code> for that: e.g. 
 > ```arturo
 > define :person [
 >    init: method [name :string][
@@ -462,7 +462,7 @@ A string is nothing but a series of characters, seen as one unit. In Arturo, to 
   line
   ```
 
-> 💡 If you want your string to contain sub-expressions that will be evaluated on the fly - that is *string interpolation* - all you have to do is include your code inside the string within pipe-bars and then call the function <code><a href="../library/string/render">render</a></code> (or `~`) to process it accordingly: e.g. 
+> [!TIP] If you want your string to contain sub-expressions that will be evaluated on the fly - that is *string interpolation* - all you have to do is include your code inside the string within pipe-bars and then call the function <code><a href="../library/string/render">render</a></code> (or `~`) to process it accordingly: e.g. 
 > ```arturo
 > x: 2
 > print ~"my variable is: |x|"
@@ -560,7 +560,7 @@ user\[x]: "Jane"
 print user\name ; ok, now it should print "Jane"
 ```
 
-> 💡 If we are inside a custom type, an easy way to refer to fields of the same object is using `this`. However, Arturo comes with a shortcut: e.g. 
+> [!TIP] If we are inside a custom type, an easy way to refer to fields of the same object is using `this`. However, Arturo comes with a shortcut: e.g. 
 > ```arturo
 > define :person [
 >    init: constructor [name :string]
@@ -1450,7 +1450,7 @@ Arturo, when parsing a block of code, has to know which symbols correspond to fu
 
 When we create a new object (e.g. `p: to :person ["John"]`), if we attempt to use `p\someMethod` from the exact same block where this `p` value was initialized, there is no possible way to know beforehand that e.g. `someMethod` is a method. We'll know that only *after* `to :person ["John"]` has been executed. But then, it's already too late. So, how do we make sure that Arturo knows about the object before we attempt to call inner methods? By putting a "stopper" after the object creation, and that stopper is our beloved... `!`.
 
-> 💡 Technically we could achieve the same thing without the `!` sugar:
+> [!NOTE] Technically we could achieve the same thing without the `!` sugar:
 > ```arturo
 > p: to :person ["John"]
 > do [
