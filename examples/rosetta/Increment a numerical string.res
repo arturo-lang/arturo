@@ -1,1 +1,0 @@
-The next number is: 12350

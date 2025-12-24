@@ -1,6 +1,0 @@
-{
-    This code 
-    should be able to write 
-    a file 
-    to magnetic tape
-} >> "TAPE.FILE"

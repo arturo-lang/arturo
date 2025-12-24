@@ -1,2 +1,0 @@
-loop read.lines "myfile.txt" 'line ->
-    print line

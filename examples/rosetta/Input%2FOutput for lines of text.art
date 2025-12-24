@@ -1,8 +1,0 @@
-printLine: function [line]-> print line
-
-lineCount: to :integer strip input ""
-
-do.times:lineCount [
-    line: input ""
-    printLine line
-]

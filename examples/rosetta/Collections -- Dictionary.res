@@ -1,1 +1,0 @@
-[name:john surname:doe age:34 preferredFood:[fruit pizza] country:Spain]

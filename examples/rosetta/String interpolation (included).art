@@ -1,3 +1,0 @@
-sizeOfLamb: "little"
-
-print ~"Mary had a |sizeOfLamb| lamb."

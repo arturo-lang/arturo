@@ -1,8 +1,0 @@
-loop 1..5 'num [
-    when.has: num [
-        [< 2]   -> print [num ": it's less than 2"]
-        [= 2]   -> print [num ": it's 2!"]
-        [= 3]   -> print [num ": it's 3!"]
-        true    -> print [num ": the number is too big"]
-    ]
-]

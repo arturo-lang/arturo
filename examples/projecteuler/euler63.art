@@ -1,2 +1,0 @@
-print sum map  1..10 'd [size collect 1..100 'i [i = size digits d ^ i]]
-

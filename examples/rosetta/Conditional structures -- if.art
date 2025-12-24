@@ -1,4 +1,0 @@
-arturoIsAwesome: true
-
-if arturoIsAwesome ->
-    print "Yes, it is!"

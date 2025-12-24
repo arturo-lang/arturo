@@ -1,8 +1,0 @@
-smith?: function [z][
-    (prime? z) ? -> false
-                 -> (sum digits z) = sum map factors.prime z 'num [sum digits num]
-]
-
-loop split.every:10 select 1..10000 => smith? 'row [
-    print map row 'r -> pad to :string r 6
-]

@@ -43,7 +43,7 @@ fetchCategory: function [category][
     return results
 ]
 
-competitors: arg
+competitors: arg ?? ["Ruby" "Python"]
 
 print "Fetching all programming tasks..."
 allTasks: fetchCategory "Programming_Tasks"

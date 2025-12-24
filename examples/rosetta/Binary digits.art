@@ -1,3 +1,0 @@
-print to :string .format:".b" 5
-print to :string .format:".b" 50
-print to :string .format:".b" 9000

@@ -1,3 +1,0 @@
-loop 1..40 'i ->
-	print ["number in base 10:" pad to :string i 2 
-		   "number in octal:" pad to :string .format:"o" i 2]

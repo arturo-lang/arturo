@@ -1,1 +1,0 @@
-blk:[print (("blk:" ++ (as .code blk) ++ "do blk") = input "") ? -> "accept" -> "reject"]do blk

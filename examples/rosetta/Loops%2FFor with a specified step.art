@@ -1,3 +1,0 @@
-loop 0..10 .step:2 'i [
-	print i
-]

@@ -1,9 +1,0 @@
-hanoi: function [n f dir via][
-	if n>0 [
-		hanoi n-1 f via dir
-		print ["Move disk" n "from" f "to" dir]
-		hanoi n-1 via dir f
-	]
-]
- 
-hanoi 3 'L 'M 'R

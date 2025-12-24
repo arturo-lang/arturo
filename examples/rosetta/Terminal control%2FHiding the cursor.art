@@ -1,7 +1,0 @@
-cursor false
-print "hiding the cursor"
-
-pause 2000
-
-cursor true
-print "showing the cursor"

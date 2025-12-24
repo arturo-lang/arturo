@@ -1,4 +1,0 @@
-a: ["John" "Bob" "Mary" "Serena"]
-b: ["Jim" "Mary" "John" "Bob"]
- 
-print difference.symmetric a b

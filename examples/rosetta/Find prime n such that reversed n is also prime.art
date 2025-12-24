@@ -1,3 +1,0 @@
-print 
-    select 1..499 'x ->
-        and? [prime? x][prime? to :integer reverse to :string x]

@@ -1,8 +1,0 @@
-output: "output.txt"
-docs:   "docs"
-
-"" >> output
-write.directory ø docs
-
-"" >> join.path ["/" output]
-write.directory ø join.path ["/" docs]

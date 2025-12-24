@@ -1,8 +1,0 @@
-fib: $[x][
-	switch x<2 -> 1
-			   -> (fib x-1) + (fib x-2)
-]
-
-loop 1..25 [x][
-	print ["Fibonacci of" x "=" fib x]
-]
