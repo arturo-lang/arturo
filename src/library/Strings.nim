@@ -300,6 +300,9 @@ proc defineModule*(moduleName: string) =
             ..........
             join.with:'-' ["Hello" "world"]
             ; => "Hello-world"
+            ..........
+            join.words ["This" "is" "a" "sentence."]
+            ; => "This is a sentence."
         """:
             #=======================================================
             if (hadAttr("path")):
