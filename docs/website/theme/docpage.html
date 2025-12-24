@@ -28,7 +28,7 @@
                            'functionList ++ ~{<a href='|href|'>|fn|</a>}
                         ]
                         loop Data\librarySymbols [fn nm href][
-                            'symbolList ++ ~{<a href='|href|'><b style='white-space: nowrap'>|replace replace fn "<" "&lt;" ">" "&gt;"|</b></a>} 
+                            'symbolList ++ ~{<a href='|href|'><b class="symbol-capsule">|replace replace fn "<" "&lt;" ">" "&gt;"|</b></a>} 
                         ]
                         functionList: new join.with:" ▪︎ " functionList
                         symbolList: new join.with:{&nbsp;&nbsp;&nbsp;} symbolList
