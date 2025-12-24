@@ -277,7 +277,8 @@ proc defineModule*(moduleName: string) =
         },
         attrs       = {
             "with"  : ({String, Char},"use given separator"),
-            "path"  : ({Logical},"join as path components")
+            "path"  : ({Logical},"join as path components"),
+            "words" : ({Logical},"join with spaces as separator")
         },
         returns     = {String,Nothing},
         example     = """
@@ -314,6 +315,10 @@ proc defineModule*(moduleName: string) =
                         sep = aWith.s
                     else:
                         sep = $(aWith.c)
+                elif hadAttr("words"):
+                    sep = " "
+                else:
+                    sep = ""
 
                 if xKind in {Literal, PathLiteral}:
                     ensureInPlaceAny()
