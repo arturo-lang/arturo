@@ -16,3 +16,20 @@ describe "Join Operations" [
     ]
 
 ]
+
+describe "Join Lines Operations" [
+
+    it "join with lines separates words by \\n" [
+        expects -> equal? "a\nb\nc" join.lines ["a", "b", "c"]
+    ]
+
+    it "join with lines is the same as join.with: '\\n' separator" [
+        data: ["hello", "world"]
+        expects -> equal? (join.lines data) (data join.with: '\n' data)
+    ]
+
+    it "join with lines on empty list returns empty string" [
+        expects -> equal? "" join.lines []
+    ]
+
+]
