@@ -8,6 +8,9 @@ postprocess: #.raw [
     {!html <h4 id="([^"]*)">}   {!html <h4 id="$1" class="subtitle is-size-5-touch is-size-4 is-spaced mt-6">}
     {!html <h4>}                {!html <h4 class="subtitle is-size-5-touch is-size-4 is-spaced mt-6">}
 
+    {!html <h5 id="([^"]*)">}   {!html <h5 id="$1" class="subtitle is-size-6-touch is-size-5 is-spaced mt-4">}
+    {!html <h5>}                {!html <h5 class="subtitle is-size-6-touch is-size-5 is-spaced mt-4">}
+
     {!html <p>}                 {!html <p class="pt-1 pb-1">}
     {!html <table>}             {!html <table class="table is-stripped is-hoverable is-fullwidth">}
     {!html <ulbd>}              {!html <div class="content"><ul>}
