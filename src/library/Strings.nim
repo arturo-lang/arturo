@@ -320,6 +320,8 @@ proc defineModule*(moduleName: string) =
                         sep = $(aWith.c)
                 elif hadAttr("words"):
                     sep = " "
+                elif hadAttr("lines"):
+                    sep = "\n"
                 else:
                     sep = ""
 
