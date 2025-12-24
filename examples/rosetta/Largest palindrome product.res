@@ -1,1 +1,0 @@
-Largest palindromic product of two 3-digit integers: 913 x 993 = 906609

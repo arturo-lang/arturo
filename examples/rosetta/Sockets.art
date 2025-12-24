@@ -1,3 +1,0 @@
-socket: connect.to:"localhost" 256
-send socket "Hello Socket World"
-unplug socket

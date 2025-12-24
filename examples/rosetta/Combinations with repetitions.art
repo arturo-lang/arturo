@@ -1,3 +1,0 @@
-print combine.repeated.by:2 ["iced" "jam" "plain"]
-
-print combine.count.repeated.by:3 @1..10

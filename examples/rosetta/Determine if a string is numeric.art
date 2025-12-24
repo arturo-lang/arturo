@@ -1,7 +1,0 @@
-print numeric? "hello world"
-print numeric? "1234"
-print numeric? "1234 hello world"
-print numeric? "12.34"
-print numeric? "0x2bf"
-print numeric? "!#@$"
-print numeric? "-15"

@@ -1,3 +1,0 @@
-primesBelow: $[n] -> [2] ++ (select 3..n-1 .step: 2 => prime?)
-
-print sum primesBelow 2000000

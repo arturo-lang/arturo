@@ -1,2 +1,0 @@
-print ["lowercase letters:" @'a'..'z']
-print ["uppercase letters:" @'A'..'Z']

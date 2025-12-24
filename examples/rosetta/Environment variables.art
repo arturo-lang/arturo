@@ -1,3 +1,0 @@
-print ["path:" env\PATH]
-print ["user:" env\USER]
-print ["home:" env\HOME]

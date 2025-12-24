@@ -1,9 +1,0 @@
-ifStatement: function [block, condition][
-    if condition -> do block
-]
-alias.infix {??} 'ifStatement
-
-do [
-    variable: true
-    [print "Variable is true!"] ?? variable
-]

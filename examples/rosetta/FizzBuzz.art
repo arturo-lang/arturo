@@ -1,8 +1,0 @@
-loop 1..100 [x][
-	when [
-		zero? x % 15 	-> print "FizzBuzz"
-		zero? x % 3		-> print "Fizz"
-		zero? x % 5  	-> print "Buzz"
-		true   			-> print x
-	]
-]

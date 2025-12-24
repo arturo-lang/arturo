@@ -1,8 +1,0 @@
-notes: "notes.txt"
-switch empty? arg [
-    if exists? notes -> print read notes
-][
-    output: (to :string now) ++ "\n" ++
-            "\t" ++ (join.with:" " to [:string] arg) ++ "\n"
-    write.append output notes
-]

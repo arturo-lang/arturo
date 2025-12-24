@@ -1,2 +1,0 @@
-print select 0..100000 'n ->
-    (sort unique digits n) = sort unique digits.base:16 n

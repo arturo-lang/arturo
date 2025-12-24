@@ -1,8 +1,0 @@
-sums: []
-loop 1..99 'a [
-	loop 1..99 'b [
-		'sums ++ sum map split to :string a^b => [to :integer]
-	]
-]
-
-print max sums

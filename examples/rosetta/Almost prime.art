@@ -1,6 +1,0 @@
-almostPrime: function [k, listLen][
-    select.first: listLen 1..infinite 'n [k = size factors.prime n]
-]
-
-loop 1..5 'x ->
-    print ["k:" x "=>" almostPrime x 10]

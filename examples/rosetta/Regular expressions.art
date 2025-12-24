@@ -1,7 +1,0 @@
-s: "This is a string"
- 
-if contains? s {/string$/} -> print "yes, it ends with 'string'"
- 
-replace 's {/[as]/} "x"
-
-print s

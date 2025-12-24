@@ -1,8 +1,0 @@
-words: read.lines relative "unixdict.txt"
-
-containsMoreThan3Es?: function [w][
-    not? or? [4 > match.count w "e"]
-             [some? ["a" "i" "o" "u"] 'v -> contains? w v]
-]
-
-print.lines select words => containsMoreThan3Es?

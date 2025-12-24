@@ -1,7 +1,0 @@
-loop 0..33 'i ->
-    print [
-        pad to :string .format:".b" i 6
-        pad to :string .format:".o" i 2
-        pad to :string i 2
-        pad to :string .format:".x" i 2
-    ]

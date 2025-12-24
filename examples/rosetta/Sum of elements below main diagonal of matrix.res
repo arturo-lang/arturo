@@ -1,1 +1,0 @@
-Sum below diagonal is 69

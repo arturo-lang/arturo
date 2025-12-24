@@ -1,3 +1,0 @@
-loop arg 'a [
-	print a
-]

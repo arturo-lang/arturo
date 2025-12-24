@@ -1,6 +1,0 @@
-loop 0..5 'x [
-	loop 0..x 'y [
-		prints "*"
-	]
-	print ""
-]

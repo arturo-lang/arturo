@@ -1,5 +1,0 @@
-benchmark [
-    print "starting function"
-    pause 2000
-    print "function ended"
-]

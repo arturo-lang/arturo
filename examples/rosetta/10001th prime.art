@@ -1,1 +1,0 @@
-print select.n:10001 2..infinite => prime?

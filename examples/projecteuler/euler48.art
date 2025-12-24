@@ -1,1 +1,0 @@
-print last.n: 10 to :string sum map 1..1000 'x -> x^x

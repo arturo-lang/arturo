@@ -1,7 +1,0 @@
-x: 2
-xInfo: info.get 'x
-
-print [
-    "address of x:" xInfo\address 
-    "->" from.hex xInfo\address
-]

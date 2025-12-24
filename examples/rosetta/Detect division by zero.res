@@ -1,1 +1,0 @@
-division by zero

@@ -1,5 +1,0 @@
-value: 0
-until [
-	value: value + 1
-	print value
-] [ 0 = value%6 ]
