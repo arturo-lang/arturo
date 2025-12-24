@@ -6,6 +6,8 @@ Getting started with Arturo is simple: download a binary and start coding. No co
 - [Quick start](#quick-start)
    * [Download and run](#download-and-run)
    * [One-line install](#one-line-install)
+      - [Unix-like systems](#unix-like-systems)
+      - [Windows](#windows)
 - [Try it out](#try-it-out)
 - [Build variants](#build-variants)
    * [Full builds](#full-builds)
@@ -13,7 +15,6 @@ Getting started with Arturo is simple: download a binary and start coding. No co
 - [Alternative methods](#alternative-methods)
    * [Homebrew](#homebrew)
    * [Docker](#docker)
-   * [Nightly builds](#nightly-builds)
 - [What's next?](#whats-next)
 
 ---
@@ -29,30 +30,40 @@ Arturo comes as a standalone executable - no real "installation" required. If yo
 
 <h4 id="one-line-install">One-line install</h4>
 
-For Unix and macOS, install the latest stable release with a single command:
+Install Arturo with a single command that automatically downloads the binary and adds it to your PATH:
 
+<h5 id="unix-like-systems">Unix-like systems</h5>
+
+For Linux, macOS, FreeBSD, or Windows (WSL/Git Bash/MSYS2):
 ```bash
 curl -sSL https://get.arturo-lang.io | sh
 ```
 
-This automatically downloads the binary and adds it to your PATH.
+Or using wget:
+```bash
+wget -qO- https://get.arturo-lang.io | sh
+```
+
+<h5 id="windows">Windows</h5>
+
+If you're on Windows, the command above will likely work for you. But if you prefer PowerShell, we've got you covered too:
+```powershell
+iwr -useb https://get.arturo-lang.io/ps | iex
+```
 
 <h3 id="try-it-out">Try it out</h3>
 
 Confirm everything's working:
-
 ```bash
 arturo --version
 ```
 
 Jump into the interactive REPL:
-
 ```bash
 arturo
 ```
 
 Or run a quick one-liner:
-
 ```bash
 arturo -e 'print "Hello, Arturo!"'
 ```
@@ -85,7 +96,6 @@ A lean, mean ~2MB binary with (almost) zero dependencies - perfect for container
 <h4 id="homebrew">Homebrew</h4>
 
 macOS/Linux users can install via Homebrew:
-
 ```bash
 brew install arturo
 ```
@@ -95,30 +105,16 @@ brew install arturo
 <h4 id="docker">Docker</h4>
 
 For quick experimentation without local installation:
-
 ```bash
 docker run -it arturolang/arturo
 ```
 
 To run a local script:
-
 ```bash
 docker run -it -v $(pwd):/home arturolang/arturo yourscript.art
 ```
 
 > [!CAUTION] The Docker image is suitable for testing but not recommended for daily development
-
-<h4 id="nightly-builds">Nightly builds</h4>
-
-For the absolute latest features:
-
-```bash
-curl -sSL https://get.arturo-lang.io/latest | sh
-```
-
-Or download directly from the [nightly releases](https://github.com/arturo-lang/nightly/releases).
-
-> [!NOTE] Nightly builds include the latest developments but may be less stable than official releases
 
 <h3 id="whats-next">What's next?</h3>
 
