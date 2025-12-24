@@ -52,7 +52,7 @@ jobs:
                                                 'bash'        }}
 
         steps:
-            - name: Checkout Arturo sources for testing
+            - name: Checkout Arturo sources
               uses: actions/checkout@v4
               with:
                 submodules: recursive
