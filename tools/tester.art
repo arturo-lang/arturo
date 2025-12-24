@@ -90,7 +90,7 @@ runSet: function [title,location].export:[supersuccess,supertotal,superskipped][
     print (color #cyan.bold ~"  |title|") ++ pad "passed?" 65 - size title
     print "====================================================================="
 
-    unless exists? ~ location ->
+    unless exists? absolute location ->
         panic ~"Location doesn't exist: |location|"
 
     tests: sort select list relative location 'loc -> contains? loc ".res"
