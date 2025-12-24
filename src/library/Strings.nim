@@ -303,6 +303,12 @@ proc defineModule*(moduleName: string) =
             ..........
             join.words ["This" "is" "a" "sentence."]
             ; => "This is a sentence."
+            ..........
+            $> join.lines ["# Recipe", "", "1. Apple", "2. Banana"]
+            => # Recipe
+
+            1. Apple
+            2. Banana
         """:
             #=======================================================
             if (hadAttr("path")):
