@@ -89,6 +89,10 @@ runSet: function [title,location].export:[supersuccess,supertotal,superskipped][
     print "====================================================================="
     print (color #cyan.bold ~"  |title|") ++ pad "passed?" 65 - size title
     print "====================================================================="
+
+    unless exists? absolute location ->
+        panic ~"Location doesn't exist: |location|"
+
     tests: sort select list relative location 'loc -> contains? loc ".res"
     success: 0
 
@@ -158,7 +162,7 @@ print color #gray ~"  Release: @|sys\release|\n"
 supertime: in's benchmark.get [
     runSet "Unit Tests" "../tests/unittests"
     ;runSet "Errors" "../tests/errors"
-    runSet "Examples" "../examples/rosetta"
+    runSet "Examples" "../examples/src/rosetta"
 ]
 
 if supersuccess < supertotal-errorMargin [

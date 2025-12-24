@@ -1,5 +1,0 @@
-day
-throne
-
-cheese
-fix

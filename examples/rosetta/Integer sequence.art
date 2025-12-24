@@ -1,5 +1,0 @@
-i:0 
-while ø [
-    print i
-    inc 'i
-]

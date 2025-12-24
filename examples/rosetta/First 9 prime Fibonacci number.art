@@ -1,9 +1,0 @@
-fib: $[x][
-	switch x<2 -> 1
-			   -> (fib x-1) + (fib x-2)
-]
-
-firstPrimeFibos: select.first:9 2..∞ 'n -> prime? fib n
-
-loop firstPrimeFibos 'f ->
-    print ["F(" ++ (to :string f+1) ++ ") =" fib f]

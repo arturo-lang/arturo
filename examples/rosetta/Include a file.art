@@ -1,6 +1,0 @@
-; import a file
-do {file.art}
-
-; import another file
-; from relative folder location
-do relative "another_file.art"

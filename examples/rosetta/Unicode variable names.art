@@ -1,4 +1,0 @@
-"Δ": 1
-"Δ": inc var "Δ"
-
-print ["Delta =>" var "Δ"]

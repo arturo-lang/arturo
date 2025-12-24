@@ -1,3 +1,0 @@
-factorial: $[n]-> product 1..n
-
-print sum digits factorial 100

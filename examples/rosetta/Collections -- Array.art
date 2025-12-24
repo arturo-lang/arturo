@@ -1,8 +1,0 @@
-; initialize array
-arr: ["one" 2 "three" "four"]
- 
-; add an element to the array
-arr: arr ++ 5
-
-; print it
-print arr

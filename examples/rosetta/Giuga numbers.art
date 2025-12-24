@@ -1,9 +1,0 @@
-giuga?: function [n][
-    if prime? n -> return false
-    unless positive? size facts: <= factors.prime n -> return false
-
-    every? facts 'f ->
-        zero? (dec n/f) % f
-]
-
-print.lines select.first:4 1..∞ => giuga?

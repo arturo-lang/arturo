@@ -1,3 +1,0 @@
-emptyDir?: function [folder]-> empty? list folder
-
-print emptyDir? "."

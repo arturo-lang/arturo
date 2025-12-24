@@ -1,3 +1,0 @@
-attractive?: function [x] -> prime? size factors.prime x
-
-print select 1..120 => attractive?

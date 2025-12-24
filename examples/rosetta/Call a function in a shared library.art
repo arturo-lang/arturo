@@ -1,9 +1,0 @@
-getCurlVersion: function [][
-    if throws? [ 
-        call.external:'curl "curl_version" .expect: :string [] 
-    ][
-        "library not found"
-    ]
-]
-
-print ["curl version:" getCurlVersion]

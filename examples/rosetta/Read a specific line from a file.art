@@ -1,5 +1,0 @@
-lineToRead: 3
-
-lineRead: get read.lines "myfile.txt" lineToRead
-
-print lineRead

@@ -52,7 +52,7 @@ jobs:
                                                 'bash'        }}
 
         steps:
-            - name: Checkout Arturo sources for testing
+            - name: Checkout Arturo sources
               uses: actions/checkout@v4
               with:
                 submodules: recursive
@@ -89,6 +89,13 @@ jobs:
                 metadata: ${{ steps.version.outputs.VERSION }}
                 create_artifact: 'true'
                 artifact_version: ${{ steps.version.outputs.VERSION }}
+
+            - if: env.arturoCanRun == 'true'
+              name: Checkout examples repository
+              uses: actions/checkout@v4
+              with:
+                repository: arturo-lang/examples
+                path: arturo/examples
 
             - if: env.arturoCanRun == 'true'
               name: Run tests

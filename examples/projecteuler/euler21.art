@@ -1,9 +1,0 @@
-sumOfDivisors: function [n]-> sum (factors n)--n
-
-amicable?: $[a] [
-	b: sumOfDivisors a
-	return (a <> b) ∧ (a = sumOfDivisors b)
-]
-
-upperLimit: 9999
-print sum select 2..upperLimit => amicable?

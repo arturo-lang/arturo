@@ -1,3 +1,0 @@
-print select 2008..2121 'year [
-    sunday? to :date.format:"dd-MM-YYYY" ~"25-12-|year|"
-]

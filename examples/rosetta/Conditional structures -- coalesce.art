@@ -1,7 +1,0 @@
-good: function [name][
-    what: (attr'what) ?? "morning"
-    print ["Good" what name "!"]
-]
-
-good "Nick"
-good.what:"night" "John"

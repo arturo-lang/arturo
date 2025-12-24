@@ -1,5 +1,0 @@
-roman: read ./"euler89.txt"
-pattern: {/DCCCC|LXXXX|VIIII|CCCC|XXXX|IIII/}
-replacement: "kk"
-
-print (size roman) - size replace roman pattern replacement

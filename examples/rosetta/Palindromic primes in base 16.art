@@ -1,6 +1,0 @@
-palindrome?: function [a][
-    and? -> prime? a
-         -> equal? digits.base:16 a reverse digits.base:16 a
-]
-
-print map select 1..500 => palindrome? 'x -> to :string .format:".X" x

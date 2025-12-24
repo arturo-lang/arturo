@@ -1,8 +1,0 @@
-; create a dictionary
-d: #[
-	name: 		"john"
-	surname: 	"doe"
-	age: 		34
-]
-
-print d

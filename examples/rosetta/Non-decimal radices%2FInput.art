@@ -1,5 +1,0 @@
-print to :integer "10"      ; 10
-
-print 0x10          ; 16
-print 0o120         ; 80
-print 0b10101       ; 21

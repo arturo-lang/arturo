@@ -1,9 +1,0 @@
-loop 0..1000 'i [
-    bin: to :string .format:".b" i
-    if even? size bin [
-        half: (size bin)/2
-        if equal? slice bin 0 dec half
-                  slice bin half dec size bin ->
-            print [pad to :string i 4 ":" bin]
-    ]
-]

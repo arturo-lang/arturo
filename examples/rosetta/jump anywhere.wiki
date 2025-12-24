@@ -1,3 +1,0 @@
-Arturo has no GOTO equivalent and no labels.
-
-Apart from exceptions handling (with '''try''' and '''throws?'''), Arturo has '''continue''' (''to continue to next iteration - within a loop'') and '''break''' (''to leave a loop'').

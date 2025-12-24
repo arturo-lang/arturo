@@ -1,2 +1,0 @@
-print ["Terminal width:" terminal\width]
-print ["Terminal height:" terminal\height]

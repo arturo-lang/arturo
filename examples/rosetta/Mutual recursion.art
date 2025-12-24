@@ -1,9 +1,0 @@
-f: $[n][ switch n=0 -> 1 -> n-m f n-1 ]
-m: $[n][ switch n=0 -> 0 -> n-f m n-1 ]
- 
-loop 0..20 'i [
-	print ["f(" i ")=" f i]
-	print ["m(" i ")=" m i]
-	print ""
-]
- 

@@ -1,4 +1,0 @@
-str: input "Enter a string: "
-num: to :integer input "Enter an integer: "
-
-print ["Got:" str "," num]

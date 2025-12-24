@@ -1,7 +1,0 @@
-stripComments: function [str][
-    strip replace str {/[#;].+/} ""
-]
-
-loop ["apples, pears # and bananas", "apples, pears ; and bananas"] 'str [
-    print [str "->" stripComments str]
-]

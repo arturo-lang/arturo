@@ -1,1 +1,0 @@
-Number chains for integers <100000000 that end with an 89 value: 85744333
