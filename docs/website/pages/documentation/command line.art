@@ -1,6 +1,6 @@
 content:{!md
 The command line is where your Arturo journey begins: whether you want to experiment in the REPL, run a script, manage packages, or work with bytecode.
-
+ 
 ---
 
 - [Using the command line](#using-the-command-line)
