@@ -1,17 +1,7 @@
 name: Update
 
 on:
-    push:
-        branches:
-            - 'master'
-        tags-ignore:
-            - '**'
-    pull_request:
-        paths-ignore:
-            - 'docs/*'
-            - '*.yml'
-            - '*.md'
-            - 'LICENSE'
+    workflow_dispatch:
  
 concurrency: 
     group: ${{ github.workflow }}-${{ github.ref }}
