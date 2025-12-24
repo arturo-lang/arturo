@@ -15,7 +15,7 @@ jobs:
             contents: write
         outputs:
             version_tag: ${{ steps.version-info.outputs.VERSION_TAG }}
-            
+
         steps:
             - name: Checkout code
               uses: actions/checkout@v3
