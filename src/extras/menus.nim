@@ -2,7 +2,7 @@
 # Windows management
 # and utilities
 #
-# (c) 2024 Yanis Zafirópulos
+# (c) 2019-2026 Yanis Zafirópulos
 # 
 # @license: see LICENSE file
 # @file: extras/windows.nim
