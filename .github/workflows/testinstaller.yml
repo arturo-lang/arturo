@@ -1,0 +1,166 @@
+name: Test Installer
+
+on:
+    pull_request:
+        paths:
+          - 'docs/website/tools/installer.sh'
+          - 'docs/website/tools/installer.ps1'
+          - '.github/workflows/testinstaller.yml'
+    workflow_dispatch:
+    
+concurrency: 
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    macos:
+        strategy:
+            matrix:
+                os: 
+                    - macos-14          # M1 (ARM)
+                    - macos-15          # M1/M2 (ARM)
+                    - macos-15-intel    # Intel
+                    - macos-26          # M3 (ARM) - Beta
+                
+                pkg_manager: [homebrew, macports]
+                    
+            fail-fast: false
+        
+        runs-on: ${{ matrix.os }}
+        
+        steps:
+            - name: Setup MacPorts
+              if: matrix.pkg_manager == 'macports'
+              uses: melusina-org/setup-macports@v1
+
+            - name: Uninstall Homebrew
+              if: matrix.pkg_manager == 'macports'
+              run: |
+                  # Uninstall Homebrew completely
+                  NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/uninstall.sh)"
+                  sudo rm -rf /usr/local/Homebrew /usr/local/Caskroom /usr/local/Cellar /usr/local/bin/brew
+                  sudo find /usr/local/bin -type l -delete 2>/dev/null || true
+
+            - name: Install dependencies
+              if: matrix.pkg_manager == 'macports'
+              run: |
+                  export PATH=/opt/local/bin:/opt/local/sbin:$PATH
+                  sudo port selfupdate
+                  sudo port install gmp mpfr libiconv
+                  port installed gmp mpfr libiconv
+            
+            - name: Install Arturo
+              run: curl -sSL https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/docs/website/tools/installer.sh | sh
+            
+            - name: Add to PATH and test
+              run: |
+                  if [[ "${{ matrix.pkg_manager }}" == "macports" ]]; then
+                      export PATH=/opt/local/bin:/opt/local/sbin:$PATH
+                  fi
+                  
+                  export PATH=$HOME/.arturo/bin:$PATH
+                  arturo -v
+            
+            - name: Show OS version
+              run: sw_vers
+
+    linux:
+        strategy:
+            matrix:
+                os: 
+                    - ubuntu-24.04
+                    - ubuntu-22.04
+                    - ubuntu-24.04-arm
+                    - ubuntu-22.04-arm
+            fail-fast: false
+        
+        runs-on: ${{ matrix.os }}
+        
+        steps:
+
+            - name: Install dependencies
+              run: |
+                  sudo apt-get update
+                  
+                  # Detect Ubuntu version and install correct webkit
+                  UBUNTU_VERSION=$(lsb_release -rs)
+                  if [[ "$UBUNTU_VERSION" < "24.04" ]]; then
+                      sudo apt-get install -y libwebkit2gtk-4.0-37
+                  else
+                      sudo apt-get install -y libwebkit2gtk-4.1-0
+                  fi
+            
+            - name: Install Arturo
+              run: curl -sSL https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/docs/website/tools/installer.sh | sh
+            
+            - name: Add to PATH and test
+              run: |
+                  export PATH=$HOME/.arturo/bin:$PATH
+                  arturo -v
+            
+            - name: Show OS version
+              run: cat /etc/os-release
+
+    freebsd:
+        runs-on: ubuntu-latest
+        
+        steps:
+            
+            - name: Test installer on FreeBSD
+              uses: vmactions/freebsd-vm@v1
+              with:
+                  usesh: true
+                  sync: rsync
+                  prepare: |
+                      pkg update
+                      pkg install -y curl bash mpfr webkit2-gtk_41
+                  run: |
+                      curl -sSL https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/docs/website/tools/installer.sh | sh
+                      export PATH=$HOME/.arturo/bin:$PATH
+                      arturo -v
+                      freebsd-version
+
+    windows:
+        strategy:
+            matrix:
+                os: 
+                    - windows-latest
+                    - windows-2022
+                    - windows-2019
+                
+                shell_type: [bash, powershell]
+            
+            fail-fast: false
+        
+        runs-on: ${{ matrix.os }}
+        
+        defaults:
+            run:
+                shell: ${{ matrix.shell_type }}
+        
+        steps:
+            - name: Install Arturo (Bash)
+              if: matrix.shell_type == 'bash'
+              run: curl -sSL https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/docs/website/tools/installer.sh | sh
+            
+            - name: Install Arturo (PowerShell)
+              if: matrix.shell_type == 'powershell'
+              run: |
+                  $script = Invoke-RestMethod -Uri "https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/docs/website/tools/installer.ps1"
+                  Invoke-Expression $script
+            
+            - name: Add to PATH and test (Bash)
+              if: matrix.shell_type == 'bash'
+              run: |
+                  export PATH=$HOME/.arturo/bin:$PATH
+                  arturo -v
+            
+            - name: Add to PATH and test (PowerShell)
+              if: matrix.shell_type == 'powershell'
+              run: |
+                  $env:PATH = "$env:USERPROFILE\.arturo\bin;$env:PATH"
+                  arturo -v
+            
+            - name: Show Windows version
+              shell: powershell
+              run: Get-ComputerInfo | Select-Object WindowsProductName, WindowsVersion, OsArchitecture

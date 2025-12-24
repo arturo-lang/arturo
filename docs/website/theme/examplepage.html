@@ -30,17 +30,17 @@
                             switch and? previousFirst <> first ti 
                                         'l' <> first ti [
                                 previousFirst: first ti
-                                ~{</ul><p class="exampleletter">|upper to :string previousFirst|</p><ul><li><a href="https://arturo-lang.io/playground?example=|encode.url.spaces ti|" target="_blank">|capitalize ti|</a></li>}
+                                ~{</ul><p class="exampleletter">|upper to :string previousFirst|</p><ul><li><a href="|linkTo {playground}|?example=|ti|" target="_blank">|replace decode.url ti "--" "&mdash;"|</a></li>}
                             ] [
-                                ~{<li><a href="https://arturo-lang.io/playground?example=|encode.url.spaces ti|" target="_blank">|capitalize ti|</a></li>}
+                                ~{<li><a href="|linkTo {playground}|?example=|ti|" target="_blank">|replace decode.url ti "--" "&mdash;"|</a></li>}
                             ]
                         ] "%EXAMPLES_1%" join.with:"\n" map first.n:halfM Data\rosetta [ti][
                             switch and? previousFirst <> first ti 
                                         not? numeric? to :string first ti [
                                 previousFirst: first ti
-                                ~{</ul><p class="exampleletter">|upper to :string previousFirst|</p><ul><li><a href="https://arturo-lang.io/playground?example=|encode.url.spaces ti|" target="_blank">|capitalize ti|</a></li>}
+                                ~{</ul><p class="exampleletter">|upper to :string previousFirst|</p><ul><li><a href="|linkTo {playground}|?example=|ti|" target="_blank">|replace decode.url ti "--" "&mdash;"|</a></li>}
                             ] [
-                                ~{<li><a href="https://arturo-lang.io/playground?example=|encode.url.spaces ti|" target="_blank">|capitalize ti|</a></li>}
+                                ~{<li><a href="|linkTo {playground}|?example=|ti|" target="_blank">|replace decode.url ti "--" "&mdash;"|</a></li>}
                             ]
                         ] 
                     ||>

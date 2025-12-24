@@ -28,7 +28,7 @@
                            'functionList ++ ~{<a href='|href|'>|fn|</a>}
                         ]
                         loop Data\librarySymbols [fn nm href][
-                            'symbolList ++ ~{<a href='|href|'><b>|replace replace fn "<" "&lt;" ">" "&gt;"|</b></a>} 
+                            'symbolList ++ ~{<a href='|href|'><b class="symbol-capsule">|replace replace fn "<" "&lt;" ">" "&gt;"|</b></a>} 
                         ]
                         functionList: new join.with:" ▪︎ " functionList
                         symbolList: new join.with:{&nbsp;&nbsp;&nbsp;} symbolList
@@ -41,9 +41,9 @@
                                 'aliasList ++ ~{<tr><td><code>|replace replace fn "<" "&lt;" ">" "&gt;"|</code></td><td><a href='|linkTo "documentation/library/" ++ href|'>|nm|</a></td></tr>} 
                             ]
                             aliasList: new join.with:"\n" aliasList
-                            replace replace read.markdown replace W\content "%ALIAS_LIST%" aliasList "<ul>" "<ulbd>" "</ul>" "</ulbd>"
+                            replace replace postprocessAlerts read.markdown replace W\content "%ALIAS_LIST%" aliasList "<ul>" "<ulbd>" "</ul>" "</ulbd>"
                         ] [ 
-                            replace replace read.markdown W\content "<ul>" "<ulbd>" "</ul>" "</ulbd>"  
+                            replace replace replace postprocessAlerts read.markdown W\content "<ul>" "<ulbd>" "</ul>" "</ulbd>" "%DOWNLOADS%" importPartial "components/downloads.html"
                         ] 
                     ] ||>
 

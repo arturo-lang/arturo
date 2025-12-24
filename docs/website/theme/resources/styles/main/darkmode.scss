@@ -1,0 +1,139 @@
+.darkmode {
+    body {
+        background: $dark-purple;
+        color: $dark-fg;
+    }
+
+    .navbar {
+        background: $dark-purple;
+
+        .navbar-brand {
+            filter: invert(1);
+        }
+
+        .navbar-item {
+            color: #888;
+
+            &:hover {
+                color: #EEE;
+            }
+        }
+    }
+
+    .box.cta {
+        background: $dark-purple2;
+        color: $dark-fg2;
+        border-bottom-color: inherit;
+    }
+
+    .title, .subtitle {
+        color: $dark-fg;
+    }
+
+    .card {
+        background: $dark-purple2;
+        color: $dark-fg2;
+        border: 1px solid #000;
+
+        svg {
+            filter: invert(0.8);
+        }
+    }
+
+    .features {
+        .card {
+            background: inherit;
+            border: inherit;
+        }
+    }
+
+    hr.section-separator {
+        background-color: $dark-purple2;
+    }
+
+    .sidebar {
+        filter: invert(1);
+    }
+
+    a {
+        color: #8ae190;
+    }
+
+    code {
+        background: inherit;
+        color: #DAD;
+    }
+
+    .motto {
+        text-shadow: rgba(0, 0, 0, 50%) 0px 3px 3px
+    }
+
+    .footer {
+        background: black;
+
+        a:not(.footer-icon) {
+            color: #888;
+        }
+
+        strong {
+            color: inherit;
+        }
+    }
+
+    .switch {
+        background: linear-gradient(to bottom, $dark-purple2, $dark-purple 25px);
+        background-image: -webkit-linear-gradient(top, $dark-purple2, $dark-purple 25px);
+    }
+
+    .table {
+        background-color: $dark-purple2;
+        color: $dark-fg2;
+        
+        th {
+            color: $dark-fg;
+            border-bottom-color: #444;
+        }
+        
+        td {
+            border-color: #333;
+            border-bottom-color: #333;
+        }
+        
+        thead {
+            td, th {
+                border-bottom-color: #444;
+            }
+        }
+        
+        tbody tr {
+            &:hover {
+                background-color: lighten($dark-purple2, 3%);
+            }
+        }
+        
+        &.is-striped {
+            tbody tr:not(.is-selected) {
+                &:nth-child(even) {
+                    background-color: lighten($dark-purple2, 2%);
+                }
+            }
+        }
+        
+        &.is-hoverable {
+            tbody tr:not(.is-selected):hover {
+                background-color: lighten($dark-purple2, 4%);
+            }
+        }
+    }
+    
+    #downloads {
+        a {
+            color: #8ae190;
+            
+            &:hover {
+                border-top-color: #8ae190;
+                border-bottom-color: #8ae190;
+            }
+        }
+    }
+}

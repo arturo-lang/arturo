@@ -1,4 +1,0 @@
-do relative "modulinos -- library.art"
- 
-print ~"Life means |meaningOfLife|."
-print "Death means invisible scary skeletons."

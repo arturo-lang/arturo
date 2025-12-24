@@ -1,0 +1,79 @@
+<div class="columns" style="margin-top: 1em; margin-bottom: 1em">
+    <div class="column is-8 is-offset-2">
+        <div style="float:right">
+            <label class="switch" for="version-switch">
+                <input id="version-switch" class="switch-input" type="checkbox" checked="" 
+                    aria-label="Toggle between full and mini version">
+                <span class="switch-label" data-on="FULL" data-off="MINI" aria-hidden="true"></span> 
+                <span class="switch-handle" aria-hidden="true"></span> 
+            </label>
+        </div>
+        <table id="downloads" class="table is-striped is-fullwidth">
+            <tbody>
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th class="has-text-centered"><span class="is-hidden-touch">Architecture</span></th>
+                    <th class="is-hidden-touch has-text-centered">Size</th>
+                    <th></th>
+                </tr>
+                <|| itemOrder: 1 ||>
+                <||= loop W\binaries [platform, platformData][ ||>
+                    <|| 
+                        platformIcon: platformData\icon
+                        arches: platformData\arch
+                    ||>
+                    <||= loop arches [arch, versions][ ||>
+                        <|| 
+                            ; Determine display name for architecture
+                            archDisplay: arch
+                            
+                            ; Check if we have full version
+                            hasFull?: key? versions 'full
+                            
+                            ; Check if we have mini version
+                            hasMini?: key? versions 'mini
+                        ||>
+                        
+                        <tr>
+                            <td order="<||= itemOrder ||>" class="first-td">
+                                <|| itemOrder: itemOrder + 1 ||>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 32 32"><path fill="currentColor" d="<||= platformIcon ||>"></path></svg>
+                            </td>
+                            <td><b><||= capitalize platform ||></b></td>
+                            <td class="has-text-centered"><||= arch ||></td>
+                            <td class="is-hidden-touch has-text-centered">
+                                <span id="<||= platform ||>-<||= arch ||>-full-size" class="full-version">
+                                    <||= (hasFull?)? -> versions\full\size -> "--" ||>
+                                </span>
+                                <span id="<||= platform ||>-<||= arch ||>-mini-size" class="mini-version is-hidden">
+                                    <||= (hasMini?)? -> versions\mini\size -> "--" ||>
+                                </span>
+                            </td>
+                            <td>
+                                <span id="<||= platform ||>-<||= arch ||>-full-download" class="full-version">
+                                    <|| switch hasFull? [ ||>
+                                        <a href="<||= versions\full\path ||>" title="<||= versions\full\checksum ||>"><svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" fill="currentColor" viewBox="0 0 256 256"><||= phosphor 'regular "caret-circle-right" ||></svg>&nbsp;&nbsp;Download</a>
+                                    <|| ][ ||>
+                                        <|| switch hasMini? [ ||>
+                                            <i><small>*MINI build only</small></i>
+                                        <|| ][ ||>
+                                            <i><small>*Not available</small></i>
+                                        <|| ] ||>
+                                    <|| ] ||>
+                                </span>
+                                <span id="<||= platform ||>-<||= arch ||>-mini-download" class="mini-version is-hidden">
+                                    <|| switch hasMini? [ ||>
+                                        <a href="<||= versions\mini\path ||>" title="<||= versions\mini\checksum ||>"><svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" fill="currentColor" viewBox="0 0 256 256"><||= phosphor 'regular "caret-circle-right" ||></svg>&nbsp;&nbsp;Download</a>
+                                    <|| ][ ||>
+                                        <i><small>*Not available</small></i>
+                                    <|| ] ||>
+                                </span>
+                            </td>
+                        </tr>
+                    <|| ] ||>
+                <|| ] ||>
+            </tbody>
+        </table>
+    </div>
+</div>

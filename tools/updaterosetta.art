@@ -1,0 +1,318 @@
+;=================================================================================
+; Script to update RC solutions
+; based on our repo solutions
+;---------------------------------------------------------------------------------
+; Caveats:
+;   - Tasks/solutions that are given in a segmented
+;     way are not to be handled (e.g. Conditional structures)
+;   - Tasks that do not have a corresponding .res file
+;     are not used as unit-tests and thus we should not
+;     automatically update, unless we manually verify they are
+;     correct first
+;   - There are some concrete RC tasks that are not being parsed
+;     correctly. See also: https://github.com/drkameleon/rosetta.art/issues
+;=================================================================================
+
+;==================================
+; Rosetta API & Helpers
+;==================================
+
+import 'rosetta!
+
+API_URL: "https://rosettacode.org/w/api.php"
+SESSION_COOKIES: #[]
+
+LOGIN_TRIES: 2
+
+login: function [username, password][
+    loop LOGIN_TRIES 'x [
+        tokenParams: #[
+            action: "query"
+            meta: "tokens"
+            type: "login"
+            format: "json"
+        ]
+        
+        tokenResp: request.get API_URL tokenParams
+        if tokenResp\status <> 200 -> return false
+        
+        cookies: tokenResp\headers\["set-cookie"]
+        if string? cookies -> cookies: @[cookies]
+        
+        loop cookies 'cookie [
+            parts: split.by:";" cookie
+            nameVal: split.by:"=" first parts
+            if 2 = size nameVal ->
+                SESSION_COOKIES\[first nameVal]: last nameVal
+        ]
+        
+        tokenData: read.json tokenResp\body
+        loginToken: tokenData\query\tokens\logintoken
+        
+        cookieStr: join.with:"; " map keys SESSION_COOKIES 'k -> join @[k "=" SESSION_COOKIES\[k]]
+        
+        loginParams: #[
+            action: "login"
+            lgname: username
+            lgpassword: password
+            lgtoken: loginToken
+            format: "json"
+        ]
+        
+        loginResp: request.post .headers: #[
+            Cookie: cookieStr
+        ] API_URL loginParams
+
+        if loginResp\status <> 200 -> return false
+        
+        newCookies: loginResp\headers\["set-cookie"]
+        if string? newCookies -> newCookies: @[newCookies]
+        
+        loop newCookies 'cookie [
+            parts: split.by:";" cookie
+            nameVal: split.by:"=" first parts
+            if 2 = size nameVal ->
+                SESSION_COOKIES\[first nameVal]: last nameVal
+        ]
+        
+        loginData: read.json loginResp\body
+        
+        if loginData\login\result = "Success" -> return true
+
+        pause 1500
+    ]
+
+    return false
+]
+
+editPage: function [title, content, summary][
+    cookieStr: join.with:"; " map keys SESSION_COOKIES 'k -> join @[k "=" SESSION_COOKIES\[k]]
+    
+    userParams: #[
+        action: "query"
+        meta: "userinfo"
+        format: "json"
+    ]
+    
+    userResp: request.get .headers: #[Cookie: cookieStr] API_URL userParams
+    
+    userData: read.json userResp\body
+    
+    if key? userData\query\userinfo 'anon [
+        print "ERROR: Not logged in!"
+        return false
+    ]
+    
+    tokenParams: #[
+        action: "query"
+        meta: "tokens"
+        format: "json"
+    ]
+    
+    tokenResp: request.get .headers: #[Cookie: cookieStr] API_URL tokenParams
+    tokenData: read.json tokenResp\body
+    
+    if key? tokenData 'error [
+        print ["Token Error:" tokenData\error\code "-" tokenData\error\info]
+        return false
+    ]
+    
+    editToken: tokenData\query\tokens\csrftoken
+    
+    editParams: #[
+        action: "edit"
+        title: title
+        text: content
+        summary: summary
+        token: editToken
+        minor: "true"
+        format: "json"
+    ]
+    
+    editResp: request.post .headers: #[Cookie: cookieStr] API_URL editParams
+    
+    if editResp\status <> 200 -> return false
+    
+    editData: read.json editResp\body
+    
+    if key? editData 'error -> return false
+    
+    return key? editData 'edit
+]
+
+fetchTaskBody: function [taskName][
+    errorMsg: function [msg][
+        #[
+            code: "",
+            output: msg
+            rebol?: true
+        ]
+    ]
+    
+    params: #[
+        action: "parse"
+        page: taskName
+        prop: "wikitext"
+        format: "json"
+    ]
+    response: request API_URL params
+    if response\status <> 200 [
+        return ""
+    ]
+    body: ø
+    if try [
+        body: read.json response\body
+    ] [
+        return ""
+    ]
+    
+    unless key? body\parse 'wikitext -> return ""
+    
+    wikitext: first values body\parse\wikitext
+
+    return wikitext
+]
+
+;==================================
+; Helper routines
+;==================================
+
+COPYRIGHT_PATTERN: {/; by @\w+/}
+
+showIntro: function [][
+    line: repeat "-" 50
+    print line
+    print " RC Updater"
+    print line
+    print " For Arturo. In Arturo."
+    print line
+]
+
+getRemoteTask: function [ttl][
+    loop remoteTasks 't [
+        if t\title = ttl ->
+            return t
+    ]
+    return null
+]
+
+solutionsEqual?: function [a,b][
+    equal? strip replace a COPYRIGHT_PATTERN ""
+           strip replace b COPYRIGHT_PATTERN ""
+]
+
+cleanedContent: function [c][
+    {<syntaxhighlight lang="arturo">} ++ 
+        (strip replace c COPYRIGHT_PATTERN "") ++
+    {</syntaxhighlight>}
+]
+
+doubleCheck: function [remoteContent,previousSolution][
+    patterns: [
+        {<syntaxhighlight lang="arturo">}
+        {<syntaxhighlight lang="rebol">}
+        {<syntaxhighlight lang=rebol>}
+    ]
+
+    loop patterns 'pattern [
+        searchable: pattern ++ previousSolution ++ {</syntaxhighlight>}
+        if contains? remoteContent searchable ->
+            return searchable
+    ]
+
+    return ø
+]
+
+diff: function [a,b][
+    a >> "diff_a"
+    b >> "diff_b"
+    execute {diff diff_a diff_b}
+]
+
+;==================================
+; Main setup
+;==================================
+
+showIntro
+
+; Configuration
+; (see "Caveats" above^)
+ignoreNonUnitTests?: false 
+ignoreFragmented?: true
+
+; Connect to RosettaCode
+rc: to :Rosetta []!
+
+; Get all implemented tasks in Arturo
+remoteTasks: rc\implemented "Arturo"
+
+; Get all task titles from example filenames
+localTasks: map sort select list ./"../examples/rosetta" => [suffix? & ".art"] 
+                'file -> #[
+                    title: decode.url extract.filename file
+                    file: extract.filename file
+                ]
+
+; Filter the ones that cannot be correctly parsed (for now)
+; Some may have to do with the very nature of the task
+; (e.g. Hello world/Newbie which is mostly takes with
+;       just one line of code...)
+localTasks: filter localTasks 'task -> contains? [
+    "Call a foreign-language function"
+    "Create an HTML table"
+    "Find prime numbers of the form n*n*n+2"
+    "Hello world/Newbie"
+    "Hello world/Web server"
+    "Interactive programming (repl)" 
+    "Parameterized SQL statement"
+    "Sockets"
+] task\title
+
+loop.with:'i localTasks 'task [
+    ; show progress
+    prints ["[" pad to :string i+1 3 "/" size localTasks "]"]
+    prints pad.right truncate task\title 49 55
+
+    ; check configuration
+    ; in case we have to omit file
+    if any? @[
+        and? -> ignoreNonUnitTests?
+             -> not? exists? ~./{../examples/rosetta/|task\file|.res}
+        and? -> ignoreFragmented?
+             -> contains? task\file "--"
+    ][
+        print color.bold #orange "--"
+        continue
+    ]
+
+    ; proceed as usual
+    status: color.bold #red "X"
+    if remoteTask: <= getRemoteTask task\title [!
+        if solution: <= remoteTask\solution "Arturo" [!
+            remote: first solution\code
+            local: strip read.file ~./{../examples/rosetta/|task\file|.art}
+
+            ok?: solutionsEqual? remote local
+            status: ok? ? -> color #green "OK" -> color #red "Hmm..."
+
+            unless ok? [
+                diffs: split.lines diff remote local
+                print color #gray "\n\t\t" ++ join.with:"\n\t\t" diffs
+                if "y" = input "\tProceed? [y/other]: " [
+                    if found: <= doubleCheck remoteTask\content remote [
+                        newContent: replace remoteTask\content found 
+                                                            cleanedContent local
+
+                        if login "drkameleon" read.file ./"PW" [
+                            status: (editPage task\title newContent "updated Arturo solution")?
+                                -> color #green "> EDITED"
+                                -> color #red "> FAILED"
+                        ]
+                    ]
+                ]
+            ]
+        ]
+    ]
+
+    print status
+]

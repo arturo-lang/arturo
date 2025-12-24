@@ -1,0 +1,8 @@
+; Modulinos -- Library
+ 
+meaningOfLife: function [][
+    42
+]
+
+if standalone? ->
+    print ~"Library: The meaning of life is |meaningOfLife|"

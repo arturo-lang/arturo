@@ -1,0 +1,4 @@
+do ./"Modulinos -- Library.art"
+ 
+print ~"Life means |meaningOfLife|."
+print "Death means invisible scary skeletons."

@@ -1,0 +1,31 @@
+changes: #[
+    "docs/website/theme/resources/scripts/docsearch.js": [
+        'basePath
+    ]
+    "docs/website/theme/resources/scripts/playground.js": [
+        'basePath
+    ]
+    "docs/website/theme/resources/scripts/mode-arturo.js": [
+        'keywordPredicates
+        'keywordRest
+    ]
+    "docs/website/theme/resources/scripts/main.js": [
+        'keywordPredicates
+        'keywordRest
+    ]
+]
+
+inspect args
+
+loop changes [file, replacements][
+    print ["Processing:" file]
+    content: << file
+    loop replacements 'rep [
+        print ["- replacing:" rep]
+        content: replace content "%<[" ++ (to :string rep) ++ "]>%"
+                                 args\[to :string rep]
+    ]
+    content >> file
+]
+
+print "end--"

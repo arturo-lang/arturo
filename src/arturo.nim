@@ -192,7 +192,7 @@ when isMainModule and not defined(WEB):
 
         var action: CmdAction = noAction
         var runConsole  = static readFile("src/scripts/console.art")
-        #var runUpdate   = static readFile("src/scripts/update.art")
+        var runUpdate   = static readFile("src/scripts/update.art")
         var muted: bool = not isColorFriendlyTerminal()
         var bundleName: string = ""
 
@@ -213,9 +213,9 @@ when isMainModule and not defined(WEB):
                             code = runConsole
                         of "e","evaluate":
                             action = evalCode
-                        # of "u","update":
-                        #     action = evalCode
-                        #     code = runUpdate
+                        of "u","update":
+                            action = evalCode
+                            code = runUpdate
                         of "p", "package":
                             when not defined(MINI):
                                 action = packagerMode

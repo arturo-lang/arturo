@@ -1,9 +1,10 @@
 modules: ""
 content:{!md
 
-The Standard Library is split into different modules/dictionaries in order to keep things better organized.  
 
-Here is the complete list of modules, each one containing all the defined words/functions:
+The Standard Library is divided into distinct modules for better organization. 
+
+Below is the complete list of modules, each detailing its defined words and functions:
 
 ---
 
@@ -23,7 +24,7 @@ Here is the complete list of modules, each one containing all the defined words/
 
 <h3 id="symbol-index">Symbol index</h3>
 
-<p align="justify">
+<p>
 %SYMBOL_LIST%
 </p>
 }
