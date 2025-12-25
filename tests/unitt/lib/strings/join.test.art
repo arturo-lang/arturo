@@ -1,0 +1,18 @@
+import {unitt}!
+
+describe "Join Operations" [
+
+    it "join with words separates words by spaces" [
+        expects -> equal? "a b c" join.words ["a", "b", "c"]
+    ]
+
+    it "join with words is the same as join.with: ' ' separator" [
+        data: ["hello", "world"]
+        expects -> equal? (join.words data) (data join.with: ' ' data)
+    ]
+
+    it "join with words on empty list returns empty string" [
+        expects -> equal? "" join.words []
+    ]
+
+]
