@@ -2,7 +2,7 @@
 ######################################################
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2025 Yanis Zafirópulos
+# (c) 2019-2026 Yanis Zafirópulos
 #
 # @file: build.nims
 ######################################################
