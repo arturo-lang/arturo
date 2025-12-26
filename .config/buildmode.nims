@@ -43,6 +43,7 @@ proc fullBuildConfig() =
         
         --passL:"-Wl,-headerpad_max_install_names"
     --define:ssl
+    --define:DOCGEN
 
 proc docgenBuildConfig() =
     fullBuildConfig()
