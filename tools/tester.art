@@ -14,6 +14,10 @@ superskipped: 0
 supertotal: 0
 
 canExecute?: function [scr][
+    ; TODO(unittests/lib.collections) Test failing for FreeBSD builds
+    ;  probable reason is `store` trying to save to a path that hasn't been 
+    ;  configured yet inside our VM
+    ;  labels: freebsd, unit-test
     if sys\os = "freebsd" [
         if in? scr [
             "lib.collections"
