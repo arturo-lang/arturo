@@ -278,6 +278,7 @@ proc defineModule*(moduleName: string) =
         attrs       = {
             "with"  : ({String, Char},"use given separator"),
             "path"  : ({Logical},"join as path components"),
+            "lines" : ({Logical},"join with newlines as separator."),
             "words" : ({Logical},"join with spaces as separator")
         },
         returns     = {String,Nothing},
