@@ -91,16 +91,11 @@ jobs:
                 artifact_version: ${{ steps.version.outputs.VERSION }}
 
             - if: env.arturoCanRun == 'true'
-              name: Checkout examples repository
-              uses: actions/checkout@v4
-              with:
-                repository: arturo-lang/examples
-                path: arturo/examples
-
-            - if: env.arturoCanRun == 'true'
               name: Run tests
               run: |
                 cd $GITHUB_WORKSPACE/arturo 
+                git clone https://github.com/arturo-lang/examples.git examples
+
                 arturo -v
                 arturo tools/tester.art
 
