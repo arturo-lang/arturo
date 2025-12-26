@@ -305,6 +305,8 @@ proc defineModule*(moduleName: string) =
             join.words ["This" "is" "a" "sentence."]
             ; => "This is a sentence."
             ..........
+            ; This example uses the universal new line character
+            ; If you need to use carriage return for some reason, use join.with: "\\r\\n" instead.
             $> join.lines ["# Recipe", "", "1. Apple", "2. Banana"]
             => # Recipe
 
