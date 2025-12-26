@@ -91,20 +91,19 @@ jobs:
                 artifact_version: ${{ steps.version.outputs.VERSION }}
 
             - if: env.arturoCanRun == 'true'
-              name: Checkout examples repository
-              uses: actions/checkout@v4
-              with:
-                repository: arturo-lang/examples
-                path: arturo/examples
-
-            - if: env.arturoCanRun == 'true'
               name: Run tests
               run: |
                 cd $GITHUB_WORKSPACE/arturo 
+                git clone https://github.com/arturo-lang/examples.git examples
+
                 arturo -v
-                arturo tools/tester.art
+                if ! arturo tools/tester.art; then
+                    exit 1
+                fi
 
                 if [ "${{ matrix.mode }}" = "full" ]; then
                     arturo -p install unitt
-                    arturo tools/unitt-tester.art
+                    if ! arturo tools/unitt-tester.art; then
+                        exit 1
+                    fi
                 fi
