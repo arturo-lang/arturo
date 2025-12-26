@@ -13,6 +13,10 @@ supersuccess: 0
 superskipped: 0
 supertotal: 0
 
+if and? sys\os = "freebsd" sys\release<>'mini [
+    panic.code:1 "HAD TO QUIT!"
+]
+
 canExecute?: function [scr][
     if sys\os = "freebsd" [
         if in? scr [
@@ -91,7 +95,7 @@ runSet: function [title,location].export:[supersuccess,supertotal,superskipped][
     print "====================================================================="
 
     unless exists? absolute location ->
-        panic ~"Location doesn't exist: |location|"
+        panic.code:1 ~"Location doesn't exist: |location|"
 
     tests: sort select list relative location 'loc -> contains? loc ".res"
     success: 0

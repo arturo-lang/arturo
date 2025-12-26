@@ -97,7 +97,10 @@ jobs:
                 git clone https://github.com/arturo-lang/examples.git examples
 
                 arturo -v
-                arturo tools/tester.art
+                if ! arturo tools/tester.art; then
+                    echo ">> Some tests failed!"
+                    exit 1
+                fi
 
                 if [ "${{ matrix.mode }}" = "full" ]; then
                     arturo -p install unitt
