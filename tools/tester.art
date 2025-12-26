@@ -13,6 +13,10 @@ supersuccess: 0
 superskipped: 0
 supertotal: 0
 
+if and? sys\os = "freebsd" sys\release<>'mini [
+    panic.code:1 "HAD TO QUIT!"
+]
+
 canExecute?: function [scr][
     if sys\os = "freebsd" [
         if in? scr [
