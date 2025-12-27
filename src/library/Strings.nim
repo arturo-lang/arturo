@@ -278,6 +278,7 @@ proc defineModule*(moduleName: string) =
         attrs       = {
             "with"  : ({String, Char},"use given separator"),
             "path"  : ({Logical},"join as path components"),
+            "lines" : ({Logical},"join with newlines as separator."),
             "words" : ({Logical},"join with spaces as separator")
         },
         returns     = {String,Nothing},
@@ -303,6 +304,14 @@ proc defineModule*(moduleName: string) =
             ..........
             join.words ["This" "is" "a" "sentence."]
             ; => "This is a sentence."
+            ..........
+            ; This example uses the universal new line character
+            ; If you need to use carriage return for some reason, use join.with: "\\r\\n" instead.
+            $> join.lines ["# Recipe", "", "1. Apple", "2. Banana"]
+            => # Recipe
+
+            1. Apple
+            2. Banana
         """:
             #=======================================================
             if (hadAttr("path")):
@@ -320,6 +329,8 @@ proc defineModule*(moduleName: string) =
                         sep = $(aWith.c)
                 elif hadAttr("words"):
                     sep = " "
+                elif hadAttr("lines"):
+                    sep = "\n"
                 else:
                     sep = ""
 
