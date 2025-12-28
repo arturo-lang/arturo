@@ -1,0 +1,40 @@
+import {unitt}!
+import relative {../../commons/functions}!
+
+
+suite "flatten" [
+
+    test "flattens nested blocks entirely" [
+        assert -> [1 2 3 4 5 6] = flatten [[1 2 3] [4 5 6]]
+    ]
+
+    test "in-place and path in-place flattens" [
+        blk: [[1 2 3] [4 5 6]]
+        a: new blk
+        b: #[b: new blk]
+
+        flatten 'a
+        flatten 'b\b
+
+        assert -> a = b\b
+    ]
+
+]
+
+suite "flatten.once" [
+
+    test "only one level is flattened" [
+        assert -> [1 2 3 4 [5 6]] = flatten.once [1 [2 3] [4 [5 6]]]
+    ]
+
+    test "in-place and path in-place flattens a single level too" [
+        blk: [1 [2 3] [4 [5 6]]]
+        a: new blk
+        b: #[b: new blk]
+
+        flatten.once 'a
+        flatten.once 'b\b
+
+        assert -> a = b\b
+    ]
+]
