@@ -1,0 +1,85 @@
+import {unitt}!
+import relative {../../commons/functions}!
+
+
+suite "in?" [
+
+    test "matches strings and regexes" [
+        str: "Arturo"
+        assert -> in? "Art" str
+        assert -> in? 't' str
+        assert -> in? {/[Art]/} str
+        assert -> not? in? "Football" str
+        assert -> in?.at:0 "Art" str
+        assert -> not? in?.at:2 "Art" str
+    ]
+
+    test "verifies block membership" [
+        block: ["Arturo" "Python" "Ruby"]
+        assert -> in? "Arturo" block
+        assert -> not? in? "F#" block
+        assert -> in?.at:0 "Arturo" block
+        assert -> not? in?.at:2 "Python" block
+    ]
+
+    test "supports range membership" [
+        rng: 1..10
+        assert -> in? 5 rng
+        assert -> not? in? 0 rng
+        assert -> in? 5 1..10
+        assert -> not? in? 0 1..10
+        assert -> in?.at:0 1 1..10
+        assert -> not? in?.at:0 0 1..10
+    ]
+
+    test "works with dictionaries" [
+        dict: #[ name: "John" surname: "Doe" ]
+        assert -> in? "name" keys dict
+        assert -> in?.at:0 "name" keys dict
+        assert -> not? in?.at:1 "name" keys dict
+        assert -> not? in? "id" keys dict
+        assert -> in? "John" dict
+        assert -> in?.at:0 "John" dict
+        assert -> not? in?.at:1 "John" dict
+        assert -> not? in? "Jane" dict
+    ]
+
+]
+
+
+suite "in?.deep" [
+
+    nested: [1 2 4 [3 4 [5 6] 7] 8 [9 10]]
+
+    test "finds values inside nested blocks" [
+        assert -> in?.deep 6 nested
+        assert -> in?.deep 5 nested
+        assert -> in?.deep 8 nested
+        assert -> in?.deep 9 nested
+        assert -> in?.deep 3 nested
+        assert -> in?.deep 4 nested
+        assert -> in?.deep 2 nested
+        assert -> in?.deep 1 nested
+        assert -> in?.deep 10 nested
+        assert -> not? in?.deep 0 nested
+        assert -> not? in?.deep 11 nested
+    ]
+
+    test "recursively searches dictionaries" [
+        user: #[
+            name: "John"
+            surname: "Doe"
+            mom: #[
+                name: "Jane"
+                surname: "Doe"
+            ]
+        ]
+
+        assert -> in?.deep "John" user
+        assert -> in?.deep "Jane" user
+        assert -> in?.deep "Doe" user
+        assert -> not? in?.deep "Joshep" user
+        assert -> not? in?.deep "Juan" user
+    ]
+
+]
