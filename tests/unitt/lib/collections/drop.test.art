@@ -1,0 +1,63 @@
+import {unitt}!
+import relative {../../commons/functions}!
+
+
+suite "drop - string" [
+    text: "art"
+
+    test "keeps the original value when no element should be removed" [
+        assert -> "art" = drop.times:0 text
+    ]
+
+    test "removes prefix elements and stops at the string end" [
+        assert -> "rt" = drop text
+        assert -> "t" = drop.times:2 text
+        assert -> "" = drop.times:3 text
+        assert -> "" = drop.times:4 text
+    ]
+
+    test "supports negative counts to trim the suffix" [
+        assert -> "art" = drop.times: neg 0 text
+        assert -> "ar" = drop.times: neg 1 text
+        assert -> "a" = drop.times: neg 2 text
+        assert -> "" = drop.times: neg 3 text
+        assert -> "" = drop.times: neg 4 text
+    ]
+]
+
+
+suite "drop - block" [
+    block: [a b c]
+
+    test "positive counts remove elements from the start" [
+        assert -> [a b c] = drop.times:0 block
+        assert -> [b c] = drop block
+        assert -> [c] = drop.times:2 block
+        assert -> [] = drop.times:3 block
+        assert -> [] = drop.times:4 block
+    ]
+
+    test "negative counts trim ending elements" [
+        assert -> [a b c] = drop.times: neg 0 block
+        assert -> [a b] = drop.times: neg 1 block
+        assert -> [a] = drop.times: neg 2 block
+        assert -> [] = drop.times: neg 3 block
+        assert -> [] = drop.times: neg 4 block
+    ]
+]
+
+
+suite "drop - in-place equivalence" [
+
+    test "string drop respects in-place helpers" [
+        [reference inplaced pathInplaced]: fullInplaceEquivalence "art" 'drop []
+        assert -> reference = inplaced
+        assert -> reference = pathInplaced
+    ]
+
+    test "block drop respects in-place helpers" [
+        [reference inplaced pathInplaced]: fullInplaceEquivalence [a b c] 'drop []
+        assert -> reference = inplaced
+        assert -> reference = pathInplaced
+    ]
+]
