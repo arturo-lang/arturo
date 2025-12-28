@@ -1,0 +1,44 @@
+import {unitt}!
+import relative {../../commons/functions}!
+
+suite "repeat" [
+
+    test "repeats :string" [
+        assert -> "hellohellohello" = repeat "hello" 3
+    ]
+
+    test "repeats :block" [
+        assert -> [5 5 5] = repeat 5 3
+    ]
+
+    test "preserves the :block internal structure" [
+        assert -> [[1 2 3] [1 2 3] [1 2 3]] = repeat [[1 2 3]] 3
+    ]
+
+    test "is empty when repeating 0 times" [
+        assert -> "" = repeat "hello" 0
+        assert -> [] = repeat [] 0
+    ]
+
+    test "repeats :string in-place" [
+        str: "hi"
+        repeat 'str 4
+        assert -> "hihihihi" = str
+    ]
+
+    test "repeats :block in-place" [
+        blk: [A B]
+        repeat 'blk 3
+        assert -> [A B A B A B] = blk
+    ]
+
+    test "repeats nested :block in-place" [
+        example: #[value: [1 2]]
+        repeat 'example\value 2
+        expects.be: 'equal? [
+            #[value: [1 2 1 2]]     
+            example
+        ]
+    ]
+
+]
