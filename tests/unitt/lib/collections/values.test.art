@@ -1,0 +1,27 @@
+import {unitt}!
+import relative {../../commons/functions}!
+
+suite "values" [
+
+    test "extracts :dictionary values by insertion order" [
+        user: #[name: "John" surname: "Doe"]
+        assert -> ["John" "Doe"] = values user
+    ]
+
+    test "duplicates a :block" [
+        assert -> ["zero" "one" "two"] = values ["zero" "one" "two"]
+    ]
+
+    test "converts ranges into blocks" [
+        assert -> [0 1 2 3 4 5 6 7 8 9 10] = values range 0 10
+        assert -> [5 6 7 8 9 10] = values 5..10
+    ]
+
+    test "lists all :object's values" [
+        define :person [name, surname]
+        p: to :person ["John" "Doe"]
+        assert -> ["John" "Doe"] = values p
+    ]
+
+]
+
