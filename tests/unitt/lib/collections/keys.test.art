@@ -1,0 +1,27 @@
+import {unitt}!
+import relative {../../commons/functions}!
+
+
+suite "keys" [
+
+    test "returns all keys of a :dictionary" [
+        user: #[ name: "John" surname: "Doe" ]
+        assert -> ["name" "surname"] = keys user
+    ]
+
+    test "returns all keys of an :object" [
+        define :person [
+            init: method [name, surname][
+                this\name: capitalize name
+                this\surname: surname
+            ]
+            string: method [][
+                ~"NAME: |this\name|, SURNAME: |this\surname|"
+            ]
+        ]
+
+        p: to :person ["John" "Doe"]
+        assert -> every? ["name" "surname"] => [contains? keys p &]
+    ]
+
+]
