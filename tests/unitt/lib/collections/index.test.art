@@ -1,0 +1,33 @@
+import {unitt}!
+import relative {../../commons/functions}!
+
+
+suite "index" [
+
+    test "locates substrings inside strings" [
+        assert -> 0 = index "Arturo" "Art"
+        assert -> 3 = index "Arturo" "uro"
+    ]
+
+    test "allows maps to map values back to keys" [
+        user: #[
+            name: "John"
+            surname: "Doe"
+        ]
+        assert -> "name" = index user "John"
+        assert -> "surname" = index user "Doe"
+    ]
+
+    test "works on blocks" [
+        a: ["zero" "one" "two"]
+        assert -> 0 = index a "zero"
+        assert -> 1 = index a "one"
+        assert -> 2 = index a "two"
+    ]
+
+    test "finds numbers inside ranges" [
+        assert -> 1 = index range 0 10 1
+        assert -> 0 = index 5..10 5
+    ]
+
+]
