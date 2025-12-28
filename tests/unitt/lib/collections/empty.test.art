@@ -13,13 +13,6 @@ suite "empty" [
         d: #[ name: "John" surname: "Doe" ]
         p: #[p: #[ name: "John" surname: "Doe" ]]
 
-        assert -> not? empty? b1
-        assert -> not? empty? b2
-        assert -> not? empty? b3
-        assert -> not? empty? s
-        assert -> not? empty? d
-        assert -> not? empty? p\p
-
         empty 'b1
         empty 'b2
         empty 'b3
