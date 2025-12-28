@@ -1,0 +1,71 @@
+import {unitt}!
+import relative {../../commons/functions}!
+
+
+suite "first" [
+
+    test "returns the head of strings, blocks, and ranges" [
+        assert -> 'A' = first "Arturo"
+        assert -> "A" <> first "Arturo"
+        assert -> "one" = first ["one" "two" "three"]
+        assert -> 5 = first 5..10
+    ]
+
+    test "first.n grabs prefixes" [
+        assert -> "Art" = first.n: 3 "Arturo"
+        assert -> "Artur" = first.n: 5 "Arturo"
+        assert -> ["one" "two"] = first.n: 2 ["one" "two" "three"]
+        assert -> (0..2) = first.n: 3 (range 0 5)
+    ]
+
+    test "first works with large and stepping ranges" [
+        a: range 0 499
+        b: range.step: 2 1 499
+        c: range.step: 3 2 499
+
+        assert -> 0 = first a
+        assert -> 1 = first b
+        assert -> 2 = first c
+        assert -> [0 1 2] = @first.n: 3 a
+        assert -> [1 3 5] = @first.n: 3 b
+        assert -> [2 5 8] = @first.n: 3 c
+        assert -> (0..2) = first.n: 3 a
+        assert -> (range.step: 2 1 5) = first.n: 3 b
+        assert -> (range.step: 3 2 8) = first.n: 3 c
+    ]
+
+    test "first handles char ranges" [
+        a: range 'a' 'l'
+        b: range.step: 2 'a' 'l'
+
+        assert -> 'a' = first a
+        assert -> 'a' = first b
+        assert -> ['a' 'b'] = @first.n: 2 a
+        assert -> ['a' 'c'] = @first.n: 2 b
+        assert -> ('a'..'b') = first.n: 2 a
+        assert -> (range.step: 2 'a' 'c') = first.n: 2 b
+    ]
+
+    test "first respects reverse ranges" [
+        assert -> 5 = first range.step: 2 5 0
+        assert -> [5 4 3] = @first.n: 3 (range 5 0)
+        assert -> [5 3] = @first.n: 2 (range.step: 2 5 0)
+        assert -> (5..3) = first.n: 3 (range 5 0)
+        assert -> (range.step: 2 5 3) = first.n: 2 (range.step: 2 5 0)
+        assert -> 0 = first.n: 1 range 0 5
+        assert -> 5 = first.n: 1 (range 5 0)
+        assert -> 0 = first.n: 0 range 0 5
+        assert -> 5 = first.n: 0 (range 5 0)
+    ]
+
+    test "first throws for negative n values" [
+        expects.to: 'throws? [[ first.n: (neg 2) range 0 5 ]]
+    ]
+
+    test "out-of-bounds n values clamps the head" [
+        expects.be: 'equal? [ "Arturo", first.n: 10 "Arturo" ]
+        expects.be: 'equal? [ ["one" "two" "three"], first.n: 10 ["one" "two" "three"] ]
+        expects.be: 'equal? [ (0..5), first.n: 10 (range 0 5) ]
+    ]
+
+]
