@@ -1,0 +1,48 @@
+import {unitt}!
+import relative {../../commons/functions}!
+
+
+suite "one?" [
+
+    test "treats nil-like values as false" [
+        assert -> not? one? null
+        assert -> not? one? ø
+        assert -> not? one? infinite
+        assert -> not? one? ∞
+    ]
+
+    test "validates numbers" [
+        assert -> one? 1
+        assert -> not? one? 0
+        assert -> not? one? 5
+        assert -> one? 1.0
+        assert -> not? one? 1.1
+        assert -> not? one? 0.0
+        assert -> not? one? 0.1
+        assert -> not? one? 5
+    ]
+
+    test "handles strings" [
+        assert -> one? "1"
+        assert -> one? "0"
+        assert -> not? one? ""
+        assert -> not? one? "Arturo"
+    ]
+
+    test "works with dictionaries" [
+        assert -> one? #[name: "Jane"]
+        assert -> not? one? #[]
+        assert -> not? one? #[name: "Jane" surname: "Doe"]
+    ]
+
+    test "evaluates blocks and ranges" [
+        assert -> one? [a]
+        assert -> not? one? []
+        assert -> not? one? [a b]
+        assert -> not? one? [a b c d e f]
+        assert -> one? 0..0
+        assert -> not? one? 0..1
+        assert -> not? one? 0..10
+    ]
+
+]
