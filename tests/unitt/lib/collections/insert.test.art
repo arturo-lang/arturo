@@ -1,0 +1,39 @@
+import {unitt}!
+import relative {../../commons/functions}!
+
+
+suite "insert" [
+
+    test "inserts into :string" [
+        expects.be: 'equal? [
+            "Arturo Programming Language" 
+            insert "Arturo Language" 6 " Programming"
+        ]
+    ]
+
+    test "inserts :char into :string" [
+        expects.be: 'equal? [
+            "CPython" 
+            insert "Python" 0 'C'
+        ]
+    ]
+
+    test "inserts in-place" [
+        py: "Python", insert 'py 0 'C'
+        art: "Arturo Language", insert 'art 6 " Programming"
+        assert -> "CPython" = py
+        assert -> "Arturo Programming Language" = art
+    ]
+
+    test "in-place path preprends correctly" [
+        blk: "Python"
+        a: new blk
+        b: #[b: new blk]
+
+        insert 'a 0 'C'
+        insert 'b\b 0 'C'
+
+        assert -> a = b\b
+    ]
+
+]
