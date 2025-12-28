@@ -1,0 +1,29 @@
+import {unitt}!
+import relative {../../commons/functions}!
+
+
+suite "extend" [
+
+    test "adds new entries to dictionaries" [
+        person: #[ name: "john" surname: "doe" ]
+        assert -> (#[ name: "john" surname: "doe" age: 35 ])
+            = extend person #[ age: 35 ]
+    ]
+
+    test "in-place references are updated by extend" [
+        person: #[ name: "john" surname: "doe" ]
+        extend 'person #[ age: 35 ]
+        assert -> (#[ name: "john" surname: "doe" age: 35 ]) = person
+    ]
+
+    test "in-place references for path also works" [
+        person: #[ name: "john" surname: "doe" ]
+        a: new person
+        b: #[b: new person]
+
+        extend 'a #[ age: 35 ]
+        extend 'b\b #[ age: 35 ]
+        assert -> a = b\b
+    ]
+
+]
