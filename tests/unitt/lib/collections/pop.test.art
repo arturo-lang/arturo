@@ -1,0 +1,49 @@
+import {unitt}!
+import relative {../../commons/functions}!
+
+suite "pop" [
+
+    test "removes final block element" [
+        blk: [0 1 2 3 4 5]
+        value: pop 'blk
+
+        assert -> [0 1 2 3 4] = blk
+        assert -> 5 = value
+    ]
+
+    test "removes multiple block elements" [
+        blk: [0 1 2 3 4]
+        value: pop.n: 2 'blk
+
+        assert -> [0 1 2] = blk
+        assert -> [3 4] = value
+    ]
+
+    test "removes final char from string" [
+        str: "Arturoo"
+        value: pop 'str
+
+        assert -> "Arturo" = str
+        assert -> 'o' = value
+    ]
+
+    test "removes multiple chars from string" [
+        str: "Arturo"
+        value: pop.n: 3 'str
+
+        assert -> "Art" = str
+        assert -> "uro" = value
+    ]
+
+    test "supports in-place" [
+        blk: [0 1 2 3 4]
+        a: new blk
+        b: #[b: new blk]
+
+        pop 'a
+        pop 'b\b
+
+        assert -> a = b\b
+    ]
+
+]
