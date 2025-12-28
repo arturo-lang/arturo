@@ -1,0 +1,18 @@
+import {unitt}!
+import relative {../../commons/functions}!
+
+suite "sample" [
+
+    test "returns an element present in the source" [
+        block: ["apple" "appricot" "banana"]
+        assert -> in? (sample block) block
+        assert -> string? (sample block)
+    ]
+
+    test "works with ranges and preserves the type" [
+        rng: 'a'..'z'
+        assert -> in? (sample rng) rng
+        assert -> char? (sample rng)
+    ]
+
+]
