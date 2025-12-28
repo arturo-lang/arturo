@@ -1,0 +1,37 @@
+import {unitt}!
+import relative {../../commons/functions}!
+
+
+suite "key?" [
+
+    test "checks :dictionary's key" [
+        user: #[ name: "John" surname: "Doe" ]
+        assert -> key? user 'name
+        assert -> key? user "name"
+        assert -> key? user 'surname
+        assert -> key? user "surname"
+        assert -> not? key? user 'age
+        assert -> not? key? user "age"
+    ]
+
+    test "checks :objects's key" [
+        define :person [
+            init: method [name, surname][
+                this\name: capitalize name
+                this\surname: surname
+            ]
+            string: method [][
+                ~"NAME: |this\name|, SURNAME: |this\surname|"
+            ]
+        ]
+
+        p: to :person ["John" "Doe"]
+        assert -> key? p 'name
+        assert -> key? p "name"
+        assert -> key? p 'surname
+        assert -> key? p "surname"
+        assert -> not? key? p 'age
+        assert -> not? key? p "age"
+    ]
+
+]
