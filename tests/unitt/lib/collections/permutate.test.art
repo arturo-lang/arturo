@@ -1,0 +1,34 @@
+import {unitt}!
+import relative {../../commons/functions}!
+
+
+suite "permutate" [
+
+    test "produces permutations with and without repeats" [
+        assert -> [[A B C] [A C B] [B A C] [B C A] [C A B] [C B A]]
+            = permutate [A B C]
+        assert -> [[A A A] [A A B] [A A C] [A B A] [A B B] [A B C]
+            [A C A] [A C B] [A C C] [B A A] [B A B] [B A C] [B B A] [B B B]
+            [B B C] [B C A] [B C B] [B C C] [C A A] [C A B] [C A C]
+            [C B A] [C B B] [C B C] [C C A] [C C B] [C C C]]
+            = permutate.repeated [A B C]
+        assert -> [[A B] [A C] [B A] [B C] [C A] [C B]] = permutate.by:2 [A B C]
+        assert -> [[A A] [A B] [A C] [B A] [B B] [B C] [C A] [C B] [C C]]
+            = permutate.repeated.by:2 [A B C]
+    ]
+
+    test "reports counts" [
+        assert -> 6 = permutate.count [A B C]
+        assert -> 6 = permutate.count.by: 2 [A B C]
+        assert -> 27 = permutate.count.repeated [A B C]
+        assert -> 9 = permutate.count.repeated.by:2 [A B C]
+        assert -> 1 = permutate.count.by: 0 [A B C]
+        assert -> [[]] = permutate.by: 0 [A B C]
+        assert -> 0 = permutate.count.by: 10 [A B C]
+        assert -> [] = permutate.by: 10 [A B C]
+        assert -> 8 = permutate.count.repeated.by: 3 [A B]
+        assert -> [[A A A] [A A B] [A B A] [A B B] [B A A] [B A B] [B B A] [B B B]]
+            = permutate.repeated.by:3 [A B]
+    ]
+
+]
