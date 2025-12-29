@@ -12,6 +12,7 @@ concurrency:
 jobs:
   Bump:
     runs-on: ubuntu-latest
+    if: github.event.head_commit.author.email != 'actions@github.com'
     permissions:
       contents: write
     
