@@ -1,0 +1,60 @@
+name: Bump Build Number
+
+on:
+  push:
+    branches:
+      - master
+
+concurrency:
+  group: bump-build-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.PAT_TOKEN }}
+      
+      - name: Configure Git
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "actions@github.com"
+      
+      - name: Increment build number
+        id: bump
+        run: |
+          # Read current build number
+          current_build=$(cat version/build)
+          
+          # Increment it
+          new_build=$((current_build + 1))
+          
+          # Update the file
+          echo $new_build > version/build
+          
+          # Output for logging
+          echo "previous=$current_build" >> $GITHUB_OUTPUT
+          echo "current=$new_build" >> $GITHUB_OUTPUT
+          
+          echo "✨ Bumped build: $current_build → $new_build"
+      
+      - name: Commit and push
+        run: |
+          git add version/build
+          git commit -m "Bump build to ${{ steps.bump.outputs.current }}"
+          git push origin master
+      
+      - name: Summary
+        run: |
+          echo "### 🎯 Build Number Updated" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Previous:** ${{ steps.bump.outputs.previous }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Current:** ${{ steps.bump.outputs.current }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit:** $(git rev-parse --short HEAD)" >> $GITHUB_STEP_SUMMARY
