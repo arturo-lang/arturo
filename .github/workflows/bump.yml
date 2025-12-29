@@ -42,5 +42,5 @@ jobs:
       - name: Commit and push
         run: |
             git add version/build
-            git commit -m "Bump build to ${{ steps.bump.outputs.current }}"
+            git commit -m "Bump build to ${{ steps.bump.outputs.current }} [skip ci]"
             git push origin master
