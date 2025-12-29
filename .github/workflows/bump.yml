@@ -1,13 +1,13 @@
-name: Bump Build Number
+name: Bump Build
 
 on:
-  push:
-    branches:
-      - master
+    push:
+        branches:
+            - master
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: false
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: false
 
 jobs:
   bump:
@@ -19,25 +19,25 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
-          token: ${{ secrets.PAT_TOKEN }}
+            fetch-depth: 0
+            token: ${{ secrets.PAT_TOKEN }}
       
       - name: Configure Git
         run: |
-          git config user.name "GitHub Actions Bot"
-          git config user.email "actions@github.com"
+            git config user.name "GitHub Actions Bot"
+            git config user.email "actions@github.com"
       
       - name: Increment build number
         id: bump
         run: |
-          current_build=$(cat version/build)
-          new_build=$((current_build + 1))
-          echo $new_build > version/build
-          
-          echo "Bumped build: $current_build → $new_build"
+            current_build=$(cat version/build)
+            new_build=$((current_build + 1))
+            echo $new_build > version/build
+            
+            echo "Bumped build: $current_build → $new_build"
       
       - name: Commit and push
         run: |
-          git add version/build
-          git commit -m "Bump build to ${{ steps.bump.outputs.current }}"
-          git push origin master
+            git add version/build
+            git commit -m "Bump build to ${{ steps.bump.outputs.current }}"
+            git push origin master
