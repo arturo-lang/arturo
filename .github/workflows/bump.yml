@@ -1,4 +1,4 @@
-name: Bump Build
+name: Build number
 
 on:
     push:
@@ -10,8 +10,9 @@ concurrency:
     cancel-in-progress: false
 
 jobs:
-  bump:
+  Bump:
     runs-on: ubuntu-latest
+    if: github.event.head_commit.author.email != 'actions@github.com'
     permissions:
       contents: write
     
@@ -33,6 +34,8 @@ jobs:
             current_build=$(cat version/build)
             new_build=$((current_build + 1))
             echo $new_build > version/build
+
+            echo "current=$new_build" >> $GITHUB_OUTPUT
             
             echo "Bumped build: $current_build → $new_build"
       
