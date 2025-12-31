@@ -26,20 +26,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
       
-      - name: Install Nim (Bash)
-        if: matrix.shell_type == 'bash'
-        run: |
-          curl https://nim-lang.org/choosenim/init.sh -sSf | sh -s -- -y
-          echo "$HOME/.nimble/bin" >> $GITHUB_PATH
-      
-      - name: Install Nim (PowerShell)
-        if: matrix.shell_type == 'powershell'
-        run: |
-          Invoke-WebRequest -Uri "https://nim-lang.org/download/nim-2.2.0_x64.zip" -OutFile "nim.zip"
-          Expand-Archive -Path "nim.zip" -DestinationPath "$env:USERPROFILE"
-          $nimPath = Get-ChildItem -Path "$env:USERPROFILE\nim-*" -Directory | Select-Object -First 1
-          $env:PATH = "$nimPath\bin;$env:PATH"
-          echo "$nimPath\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+      - name: Setup Nim
+        uses: jiro4989/setup-nim-action@v2
+        with:
+          nim-version: 'stable'
       
       - name: Create test file
         shell: bash
