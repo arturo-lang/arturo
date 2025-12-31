@@ -96,7 +96,7 @@ jobs:
       - name: Test 4 - Async with timeout
         run: |
           @"
-          import osproc, os
+          import osproc, os, streams
           echo "Test 4:"
           let p = startProcess("cmd.exe", args = ["/c", "echo Hi"], options = {poUsePath, poStdErrToStdOut})
           sleep(1000)
@@ -104,7 +104,11 @@ jobs:
               echo "Still running - HANG DETECTED"
               terminate(p)
           else:
-              echo "Output: ", outputStream(p).readAll()
+              var output = ""
+              var line = ""
+              while outputStream(p).readLine(line):
+                  output.add(line & "\n")
+              echo "Output: ", output
               echo "Exit: ", waitForExit(p)
           close(p)
           "@ | Out-File -Encoding utf8 test4.nim
@@ -114,7 +118,7 @@ jobs:
       - name: Test 4 - Async with timeout (bash)
         run: |
           cat > test4.nim << 'EOF'
-          import osproc, os
+          import osproc, os, streams
           echo "Test 4:"
           let p = startProcess("cmd.exe", args = ["/c", "echo Hi"], options = {poUsePath, poStdErrToStdOut})
           sleep(1000)
@@ -122,7 +126,11 @@ jobs:
               echo "Still running - HANG DETECTED"
               terminate(p)
           else:
-              echo "Output: ", outputStream(p).readAll()
+              var output = ""
+              var line = ""
+              while outputStream(p).readLine(line):
+                  output.add(line & "\n")
+              echo "Output: ", output
               echo "Exit: ", waitForExit(p)
           close(p)
           EOF
