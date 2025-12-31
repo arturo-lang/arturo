@@ -1,0 +1,57 @@
+name: Test execCmdEx
+
+on:
+  pull_request:
+
+jobs:
+  test-nim-exec:
+    strategy:
+      matrix:
+        os: 
+          - windows-latest
+          - windows-2022
+          - windows-2019
+        
+        shell_type: [bash, powershell]
+      
+      fail-fast: false
+    
+    runs-on: ${{ matrix.os }}
+    
+    defaults:
+      run:
+        shell: ${{ matrix.shell_type }}
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Install Nim (Bash)
+        if: matrix.shell_type == 'bash'
+        run: |
+          curl https://nim-lang.org/choosenim/init.sh -sSf | sh -s -- -y
+          echo "$HOME/.nimble/bin" >> $GITHUB_PATH
+      
+      - name: Install Nim (PowerShell)
+        if: matrix.shell_type == 'powershell'
+        run: |
+          Invoke-WebRequest -Uri "https://nim-lang.org/download/nim-2.2.0_x64.zip" -OutFile "nim.zip"
+          Expand-Archive -Path "nim.zip" -DestinationPath "$env:USERPROFILE"
+          $nimPath = Get-ChildItem -Path "$env:USERPROFILE\nim-*" -Directory | Select-Object -First 1
+          $env:PATH = "$nimPath\bin;$env:PATH"
+          echo "$nimPath\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+      
+      - name: Create test file
+        shell: bash
+        run: |
+          cat > test.nim << 'EOF'
+          import osproc
+          echo execCmdEx "echo 'Hi!'"
+          EOF
+      
+      - name: Run Nim test
+        run: nim r test.nim
+      
+      - name: Show Windows version
+        shell: powershell
+        run: Get-ComputerInfo | Select-Object WindowsProductName, WindowsVersion, OsArchitecture
