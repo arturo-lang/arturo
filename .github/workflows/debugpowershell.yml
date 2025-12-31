@@ -33,67 +33,142 @@ jobs:
         with:
           nim-version: 'stable'
       
-      - name: Create test file
-        shell: bash
-        run: |
-          cat > test.nim << 'EOF'
-          import osproc
-          echo execCmdEx "echo 'Hi!'"
-          EOF
-      
       - name: Test 1 - Simple command without poEvalCommand
         run: |
-            cat > test1.nim << 'EOF'
-            import osproc
-            echo "Test 1:"
-            echo execCmdEx("dir", options = {poUsePath})
-            EOF
-            nim r test1.nim
+          @"
+          import osproc
+          echo "Test 1:"
+          echo execCmdEx("dir", options = {poUsePath})
+          "@ | Out-File -Encoding utf8 test1.nim
+          nim r test1.nim
+        if: matrix.shell_type == 'powershell'
+
+      - name: Test 1 - Simple command without poEvalCommand (bash)
+        run: |
+          cat > test1.nim << 'EOF'
+          import osproc
+          echo "Test 1:"
+          echo execCmdEx("dir", options = {poUsePath})
+          EOF
+          nim r test1.nim
+        if: matrix.shell_type == 'bash'
 
       - name: Test 2 - Check which shell is used
         run: |
-            cat > test2.nim << 'EOF'
-            import osproc
-            echo "Test 2:"
-            echo execCmdEx("echo %COMSPEC%", options = {poEvalCommand, poUsePath})
-            EOF
-            nim r test2.nim
+          @"
+          import osproc
+          echo "Test 2:"
+          echo execCmdEx("echo %COMSPEC%", options = {poEvalCommand, poUsePath})
+          "@ | Out-File -Encoding utf8 test2.nim
+          nim r test2.nim
+        if: matrix.shell_type == 'powershell'
+
+      - name: Test 2 - Check which shell is used (bash)
+        run: |
+          cat > test2.nim << 'EOF'
+          import osproc
+          echo "Test 2:"
+          echo execCmdEx("echo %COMSPEC%", options = {poEvalCommand, poUsePath})
+          EOF
+          nim r test2.nim
+        if: matrix.shell_type == 'bash'
 
       - name: Test 3 - Explicit cmd.exe
         run: |
-            cat > test3.nim << 'EOF'
-            import osproc
-            echo "Test 3:"
-            echo execCmdEx("cmd.exe /c echo Hi", options = {poUsePath})
-            EOF
-            nim r test3.nim
+          @"
+          import osproc
+          echo "Test 3:"
+          echo execCmdEx("cmd.exe /c echo Hi", options = {poUsePath})
+          "@ | Out-File -Encoding utf8 test3.nim
+          nim r test3.nim
+        if: matrix.shell_type == 'powershell'
+
+      - name: Test 3 - Explicit cmd.exe (bash)
+        run: |
+          cat > test3.nim << 'EOF'
+          import osproc
+          echo "Test 3:"
+          echo execCmdEx("cmd.exe /c echo Hi", options = {poUsePath})
+          EOF
+          nim r test3.nim
+        if: matrix.shell_type == 'bash'
 
       - name: Test 4 - Async with timeout
         run: |
-            cat > test4.nim << 'EOF'
-            import osproc, os
-            echo "Test 4:"
-            let p = startProcess("cmd.exe", args = ["/c", "echo Hi"], options = {poUsePath, poStdErrToStdOut})
-            sleep(1000)
-            if running(p):
-                echo "Still running - HANG DETECTED"
-                terminate(p)
-            else:
-                echo "Output: ", outputStream(p).readAll()
-                echo "Exit: ", waitForExit(p)
-            close(p)
-            EOF
-            nim r test4.nim
+          @"
+          import osproc, os
+          echo "Test 4:"
+          let p = startProcess("cmd.exe", args = ["/c", "echo Hi"], options = {poUsePath, poStdErrToStdOut})
+          sleep(1000)
+          if running(p):
+              echo "Still running - HANG DETECTED"
+              terminate(p)
+          else:
+              echo "Output: ", outputStream(p).readAll()
+              echo "Exit: ", waitForExit(p)
+          close(p)
+          "@ | Out-File -Encoding utf8 test4.nim
+          nim r test4.nim
+        if: matrix.shell_type == 'powershell'
+
+      - name: Test 4 - Async with timeout (bash)
+        run: |
+          cat > test4.nim << 'EOF'
+          import osproc, os
+          echo "Test 4:"
+          let p = startProcess("cmd.exe", args = ["/c", "echo Hi"], options = {poUsePath, poStdErrToStdOut})
+          sleep(1000)
+          if running(p):
+              echo "Still running - HANG DETECTED"
+              terminate(p)
+          else:
+              echo "Output: ", outputStream(p).readAll()
+              echo "Exit: ", waitForExit(p)
+          close(p)
+          EOF
+          nim r test4.nim
+        if: matrix.shell_type == 'bash'
 
       - name: Test 5 - Original failing case
         run: |
-            cat > test5.nim << 'EOF'
-            import osproc
-            echo "Test 5:"
-            echo execCmdEx("echo 'Hi!'")
-            EOF
-            nim r test5.nim
+          @"
+          import osproc
+          echo "Test 5:"
+          echo execCmdEx("echo 'Hi!'")
+          "@ | Out-File -Encoding utf8 test5.nim
+          nim r test5.nim
+        if: matrix.shell_type == 'powershell'
+
+      - name: Test 5 - Original failing case (bash)
+        run: |
+          cat > test5.nim << 'EOF'
+          import osproc
+          echo "Test 5:"
+          echo execCmdEx("echo 'Hi!'")
+          EOF
+          nim r test5.nim
+        if: matrix.shell_type == 'bash'
+
+      - name: Test 6 - Real executable (ping)
+        run: |
+          @"
+          import osproc
+          echo "Test 6:"
+          echo execCmdEx("ping.exe 127.0.0.1 -n 1")
+          "@ | Out-File -Encoding utf8 test6.nim
+          nim r test6.nim
+        if: matrix.shell_type == 'powershell'
+
+      - name: Test 6 - Real executable (ping) (bash)
+        run: |
+          cat > test6.nim << 'EOF'
+          import osproc
+          echo "Test 6:"
+          echo execCmdEx("ping.exe 127.0.0.1 -n 1")
+          EOF
+          nim r test6.nim
+        if: matrix.shell_type == 'bash'
       
       - name: Show Windows version
-        shell: powershell
         run: Get-ComputerInfo | Select-Object WindowsProductName, WindowsVersion, OsArchitecture
+        if: matrix.shell_type == 'powershell'
