@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2025 Yanis Zafirópulos
+# (c) 2019-2026 Yanis Zafirópulos
 #
 # @file: library/Shell.nim
 #=======================================================
@@ -499,7 +499,7 @@ proc defineModule*(moduleName: string) =
             inspect sys
             ;[ :dictionary
             ;        author     :        Yanis Zafirópulos :string
-            ;        copyright  :        (c) 2019-2025 :string
+            ;        copyright  :        (c) 2019-2026 :string
             ;        version    :        0.9.84-alpha+3126 :version
             ;        built      :        [ :date
             ;                hour        :                16 :integer
