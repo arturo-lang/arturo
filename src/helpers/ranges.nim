@@ -143,9 +143,42 @@ func `[]`*(rng: VRange, idx: HSlice, returnValue: bool): VRange =
             forward:    rng.forward
         )
 
+template arithmeticProgressionContains(target, start, step): bool =
+    ## Mathematical definiton:
+    ## 
+    ## Given an arithmetic progression defined as:
+    ## a, a + d, a + 2d, a + 3d, ...
+    ## 
+    ## When we want to check if a number x is part of this progression, 
+    ## we need to determine if there exists an integer n such that:
+    ## 
+    ## (x - a) / d ∈ Z
+
+    (target - start) mod step == 0
+
+template forwardContains(rng: VRange, v: int): bool =
+    if rng.infinite:
+        v >= rng.start and arithmeticProgressionContains(v, rng.start, rng.step)
+    else:
+        v >= rng.start and v <= rng.stop and arithmeticProgressionContains(v, rng.start, rng.step)
+
+template backwardContains(rng: VRange, v: int): bool =
+    if rng.infinite:
+        v <= rng.start and arithmeticProgressionContains(v, rng.start, rng.step)
+    else:
+        v <= rng.start and v >= rng.stop and arithmeticProgressionContains(v, rng.start, rng.step)
+
 
 proc contains*(rng: VRange, v: Value): bool {.inline.} =
-    rng.find(v) >= 0
+    let value: int = if rng.numeric: 
+        v.i
+    else: 
+        int(ord(v.c))
+
+    if rng.forward:
+        forwardContains(rng, value)
+    else:
+        backwardContains(rng, value)
 
 func min*(rng: VRange): (int,Value) {.inline.} =
     if rng.forward: 
