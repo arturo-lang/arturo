@@ -1,0 +1,59 @@
+import {unitt}!
+import relative {../../commons/functions}!
+
+suite "size - string" [
+
+    test "counts utf8 graphemes" [
+        assert -> 5 = size "こんいちわ"
+        assert -> 1 = size "私"
+        assert -> 13 = size "Good morning!"
+        assert -> 0 = size ""
+    ]
+
+]
+
+suite "size - block" [
+
+    test "counts elements" [
+        assert -> 3 = size ["one" "two" "three"]
+        assert -> 0 = size []
+    ]
+
+]
+
+suite "size - range" [
+
+    test "handles inclusive ranges" [
+        assert -> 11 = size 0..10
+        assert -> 1 = size 0..0
+    ]
+
+]
+
+suite "size - dictionary" [
+
+    test "counts entries" [
+        assert -> 2 = size #[name: "John" surname: "Doe"]
+        assert -> 0 = size #[]
+    ]
+
+]
+
+suite "size - object" [
+
+    test "counts fields on objects" [
+        define :person [name, surname]
+        p: to :person ["John" "Doe"]
+        assert -> 2 = size p
+    ]
+
+]
+
+suite "size - null" [
+
+    test "treats nullish values as zero" [
+        assert -> 0 = size null
+        assert -> 0 = size ø
+    ]
+
+]

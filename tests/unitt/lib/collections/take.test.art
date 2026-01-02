@@ -1,0 +1,114 @@
+import {unitt}!
+import relative {../../commons/functions}!
+
+suite "take :string" [
+
+    test "returns empty :string for zero count" [
+        assert -> "" = take "art" 0
+    ]
+
+    test "takes prefixes as a string for positive counts" [
+        assert -> "ar" = take "art" 2
+    ]
+
+    test "takes suffix for negative counts" [
+        assert -> "rt" = take "art" neg 2
+    ]
+
+    test "clamps out of bounds counts" [
+        assert -> "art" = take "art" 4
+        assert -> "art" = take "art" neg 4
+    ]
+]
+
+suite "take :block" [
+
+    test "returns empty :block for zero count" [
+        assert -> [] = take [a b c] 0
+    ]
+
+    test "takes the entire :block for out of bounds positive count" [
+        assert -> [a b c] = take [a b c] 4
+        assert -> [a b c] = take [a b c] neg 4
+    ]
+
+    test "takes prefixes for positive counts" [
+        assert -> [a b] = take [a b c] 2
+    ]
+
+    test "takes suffixes for negative count" [
+        assert -> [a b c] = take [a b c] neg 4
+    ]
+
+]
+
+suite "take :range" [
+
+    test "returns empty :block for zero count" [
+        assert -> [] = take 1..3 0
+    ]
+
+    test "takes prefixes as a block for positive counts" [
+        assert -> [1 2] = take 1..3 2
+    ]
+
+    test "takes suffix for negative counts" [
+        assert -> [2 3] = take 1..3 neg 2
+    ]
+
+    test "restricts inclusive ranges" [
+        assert -> [1 2 3] = take 1..3 4
+    ]
+
+]
+
+suite "take in-place" [
+
+    test "returns empty :string for :string with zero count" [
+        [reference inplaced pathInplaced]: fullInplaceEquivalence "art" 'take @[0]
+        assert -> "" = reference
+        assert -> reference = inplaced
+        assert -> reference = pathInplaced
+    ]
+
+    test "takes :string prefix with positive count" [
+        [reference inplaced pathInplaced]: fullInplaceEquivalence "art" 'take @[2]
+        assert -> "ar" = reference
+        assert -> reference = inplaced
+        assert -> reference = pathInplaced
+    ]
+
+    test "takes :string suffix with negative count" [
+        [reference inplaced pathInplaced]: fullInplaceEquivalence "art" 'take @[neg 1]
+        assert -> "t" = reference
+        assert -> reference = inplaced
+        assert -> reference = pathInplaced
+    ]
+
+    test "takes :block prefix with positive count" [
+        [reference inplaced pathInplaced]: fullInplaceEquivalence [a b c] 'take @[2]
+        assert -> [a b] = reference
+        assert -> reference = inplaced
+        assert -> reference = pathInplaced
+    ]
+
+    test "takes :block suffix with negative count" [
+        [reference inplaced pathInplaced]: fullInplaceEquivalence [a b c] 'take @[neg 1]
+        assert -> [c] = reference
+        assert -> reference = inplaced
+        assert -> reference = pathInplaced
+    ]
+
+    test "takes :range prefix with positive count" [
+        [reference inplaced]: inplaceEquivalence 1..3 'take @[2]
+        assert -> [1 2] = reference
+        assert -> reference = inplaced
+    ]
+
+    test "takes :range suffix with negative count" [
+        [reference inplaced]: inplaceEquivalence 1..3 'take @[neg 1]
+        assert -> [3] = reference
+        assert -> reference = inplaced
+    ]
+
+]

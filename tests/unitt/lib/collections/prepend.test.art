@@ -1,0 +1,126 @@
+import {unitt}!
+import relative {../../commons/functions}!
+
+; NOTE: Prepend is very similar to append, but notice we don't test magic-methods,
+; since prepend has no such feature.
+
+
+suite "Generic testing" [
+
+    test "keeps order when prepending" [
+        assert -> ["a" "b" "c" "d"] = prepend ["b" "c" "d"] ["a"]
+        assert -> ["b" "c" "d" "a"] = prepend ["c" "d" "a"] ["b"]
+        assert -> ["a" "b" "c" "d"] <> prepend ["a" "b" "c"] ["d"]
+    ]
+
+]
+
+suite "Test :binary operations" [
+
+    integers: [0 1]
+    binaries: map integers 'x -> to :binary x
+
+    test ":binary ++ :binary results in :binary" [
+        loop permutate.repeated new binaries 'entries [
+            a: first entries
+            b: last entries
+            assert -> binary? prepend b a
+        ]
+    ]
+
+    test ":binary ++ :binary | prepend 00 01 = 01 00" [
+        [a b]: new binaries
+        correct: to :binary [1 0]
+        assert -> correct = prepend a b
+    ]
+    
+    test ":binary ++ :integer | prepend 00 01 = 01 00" [
+        a: first new binaries
+        b: 1
+        correct: to :binary [1 0]
+        assert -> correct = prepend a b
+    ]
+
+    test.prop ":binary ++ :binary | in-place has the same behavior" [
+        [a b]: new binaries
+
+        [ref inp]: inplaceEquivalence (a) 'prepend @[b]
+        assert -> ref = inp
+    ]
+   
+    test.prop ":binary ++ :integer | in-place has the same behavior" [
+        [a]: first new binaries
+        b: 1
+
+        [reference inplaced pathInplaced]: fullInplaceEquivalence (a) 'prepend @[b]
+        assert -> reference = inplaced
+        assert -> inplaced  = pathInplaced
+    ]
+
+]
+
+suite "Test :string operations" [
+
+    test "prepending strings produces expected result" [
+        assert -> "Arturo" = prepend "uro" "Art"
+        assert -> "Arturo" = prepend 'o' "Artur"
+        assert -> "Arturo" = prepend "rturo" 'A'
+    ]
+
+    test "prepending characters yields strings" [
+        assert -> string? prepend 'H' 'i'
+        assert -> string? prepend 'H' "igh"
+        assert -> string? prepend "Ph" 'i'
+        assert -> equal? prepend "Artur" 'o' prepend "Artur" 'o'
+    ]
+
+    test "string in-place properties" [
+        [reference inplaced pathInplaced]: fullInplaceEquivalence "Art" 'prepend ["uro"]
+        assert -> reference = inplaced
+        assert -> inplaced = pathInplaced
+
+        [reference inplaced pathInplaced]: fullInplaceEquivalence "Artur" 'prepend ['o']
+        assert -> reference = inplaced
+        assert -> inplaced = pathInplaced
+
+        [reference inplaced pathInplaced]: fullInplaceEquivalence 'H' 'prepend ['i']
+        assert -> reference = inplaced
+        assert -> inplaced = pathInplaced
+    ]
+
+]
+
+suite "Test :block operations" [
+
+    interpreted: ["Arturo" "Ruby" "Python" "Wren"]
+    compiled: ["C" "C++" "Nim" "Rust" "Smalltalk"]
+    languages: shuffle (prepend interpreted compiled)
+
+    test ":block prepend keeps structure" [
+        assert -> block? prepend [] []
+        assert -> block? prepend interpreted compiled
+        assert -> ["A" "r" "t"] = prepend ["r" "t"] ["A"]
+    ]
+
+    test "prepending blocks stays flat" [
+        a: @[sample languages]
+        b: @[sample languages]
+        assert -> all? map (prepend a b) 'x -> not? block? x
+        assert -> [] = prepend [] []
+    ]
+
+    test "empty block prepended by value" [
+        assert -> [1] = prepend [] 1
+    ]
+
+    test "block in-place matches reference" [
+        [reference inplaced pathInplaced]: fullInplaceEquivalence [1 2 3] 'prepend -> [4 5 6]
+        assert -> reference = inplaced
+        assert -> inplaced = pathInplaced
+
+        [reference inplaced pathInplaced]: fullInplaceEquivalence [1 2 3] 'prepend [5]
+        assert -> reference = inplaced
+        assert -> inplaced = pathInplaced
+    ]
+
+]

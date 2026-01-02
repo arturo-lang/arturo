@@ -1,0 +1,73 @@
+import {unitt}!
+import relative {../../commons/functions}!
+
+
+suite "last" [
+
+    test "returns tail for strings, blocks, ranges" [
+        assert -> 'o' = last "Arturo"
+        assert -> "o" <> last "Arturo"
+        assert -> "uro" = last.n: 3 "Arturo"
+        assert -> "three" = last ["one" "two" "three"]
+        assert -> ["two" "three"] = last.n: 2 ["one" "two" "three"]
+        assert -> 10 = last 5..10
+        assert -> (8..10) = last.n: 3 5..10
+    ]
+
+    test "handles infinite ranges" [
+        assert -> infinite = last 5..infinite
+        assert -> infinite = last.n: 2 5..infinite
+    ]
+
+    test "works with large and stepping numeric ranges" [
+        a: range 0 499
+        b: range.step: 2 0 499
+        c: range.step: 3 0 499
+
+        assert -> 499 = last a
+        assert -> 498 = last b
+        assert -> 498 = last c
+        assert -> [497 498 499] = @last.n: 3 a
+        assert -> [494 496 498] = @last.n: 3 b
+        assert -> [492 495 498] = @last.n: 3 c
+        assert -> (497..499) = last.n: 3 a
+        assert -> (range.step: 2 494 498) = last.n: 3 b
+        assert -> (range.step: 3 492 498) = last.n: 3 c
+    ]
+
+    test "supports char ranges" [
+        a: range 'a' 'l'
+        b: range.step: 2 'a' 'l'
+
+        assert -> 'l' = last a
+        assert -> 'k' = last b
+        assert -> ['k' 'l'] = @last.n: 2 a
+        assert -> ['i' 'k'] = @last.n: 2 b
+        assert -> ('k'..'l') = last.n: 2 a
+        assert -> (range.step: 2 'i' 'k') = last.n: 2 b
+    ]
+
+    test "respects reversed ranges" [
+        assert -> 1 = last range.step: 2 5 0
+        assert -> [2 1 0] = @last.n: 3 range 5 0
+        assert -> [3 1] = @last.n: 2 range.step: 2 5 0
+        assert -> (2..0) = last.n: 3 range 5 0
+        assert -> (range.step: 2 3 1) = last.n: 2 range.step: 2 5 0
+    ]
+
+    test "throws for negative n values" [
+        expects.to: 'throws? [[ last.n: (neg 2) range 0 5 ]]
+    ]
+
+    test "out-of-bounds n values clamps the tail" [
+        ; TODO(Collections\last): Should clamp for :string, just like `first.n` does.
+        ;   The current test returns: => "\x00\x00\x00\x00Arturo" 
+        ; expects.be: 'equal? [ "Arturo", last.n: 10 "Arturo" ]
+        
+        ; TODO(Collections\last): Should clamp for :block, just like `first.n` does.
+        ; expects.be: 'equal? [ ["one" "two" "three"], last.n: 10 ["one" "two" "three"] ]
+
+        expects.be: 'equal? [ (0..5), last.n: 10 (range 0 5) ]
+    ]
+
+]

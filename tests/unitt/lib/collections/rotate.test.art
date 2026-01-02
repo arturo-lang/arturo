@@ -1,0 +1,39 @@
+import {unitt}!
+import relative {../../commons/functions}!
+
+suite "rotate" [
+
+    test "rotates blocks and strings using clockwise and counter-clockwise helpers" [
+        assert -> [e a b c d] = rotate [a b c d e] 1
+        assert -> [d e a b c] = rotate [a b c d e] 2
+        assert -> [b c d e a] = rotate.left [a b c d e] 1
+        assert -> [c d e a b] = rotate.left [a b c d e] 2
+
+        assert -> "oHell" = rotate "Hello" 1
+        assert -> "loHel" = rotate "Hello" 2
+        assert -> "elloH" = rotate.left "Hello" 1
+        assert -> "lloHe" = rotate.left "Hello" 2
+    ]
+
+    test "rotates in-place" [
+        blk: [a b c d e]
+        str: "Hello"
+
+        rotate 'blk 2
+        rotate.left 'str 2
+
+        assert -> [d e a b c] = blk
+        assert -> "lloHe" = str
+    ]
+
+    test "rotates in-place nested-value" [
+        example: #[value: [a b c d e]]
+        rotate 'example\value 2
+        expects.be: 'equal? [
+            #[value: [d e a b c]]     
+            example
+        ]
+    ]
+
+]
+

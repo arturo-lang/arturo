@@ -1,0 +1,59 @@
+import {unitt}!
+import relative {../../commons/functions}!
+
+suite "reverse" [
+
+    ; :block
+
+    test "reverses :block" [
+        assert -> [4 3 2 1] = reverse [1 2 3 4]
+    ]
+
+    test "reverses :block in-place" [
+        a: [1 2 3 4]
+        reverse 'a
+        assert -> [4 3 2 1] = a
+    ]
+
+    ; :string
+
+    test "reverses :string" [
+        assert -> "dlroW olleH" = reverse "Hello World"
+    ]
+
+    test "reverses :string in-place" [
+        str: "Hello World"
+        reverse 'str
+        assert -> "dlroW olleH" = str
+    ]
+
+    ; :range
+
+    test "reverses :range" [
+        assert -> (10..0) = reverse 0..10
+    ]
+
+    test "reverse :range with step" [
+        assert -> [10 8 6 4 2 0] = @reverse range.step:2 0 10
+    ]
+
+    test "reverses :range in-place" [
+        r: 0..10
+        reverse 'r
+        assert -> (10..0) = r
+    ]
+
+]
+
+
+suite "reverse.exact" [
+
+    test "reverses complementary ranges" [
+        assert -> [9 7 5 3 1] = @reverse range.step:2 0 9
+    ]
+
+    test "reverses ordinary ranges with the exact same numbers" [
+        assert -> [8 6 4 2 0] = @reverse.exact range.step:2 0 9
+    ]
+
+]

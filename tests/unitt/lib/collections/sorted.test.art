@@ -1,0 +1,27 @@
+import {unitt}!
+import relative {../../commons/functions}!
+
+suite "sorted?" [
+
+    test "detects ascending order" [
+        assert -> sorted? [1 2 3 4 5]
+        assert -> sorted? ["Arturo" "Python" "Ruby"]
+    ]
+
+    test "rejects unordered collections" [
+        assert -> not? sorted? [4 3 2 1 5]
+        assert -> not? sorted? [5 4 3 2 1]
+        assert -> not? sorted? ["Python" "Ruby" "Arturo"]
+        assert -> not? sorted? ["Ruby" "Python" "Arturo"]
+    ]
+
+    test "supports descending mode" [
+        assert -> sorted?.descending [5 4 3 2 1]
+        assert -> sorted?.descending ["Ruby" "Python" "Arturo"]
+        assert -> not? sorted?.descending [4 3 2 1 5]
+        assert -> not? sorted?.descending [1 2 3 4 5]
+        assert -> not? sorted?.descending ["Python" "Ruby" "Arturo"]
+        assert -> not? sorted?.descending ["Arturo" "Python" "Ruby"]
+    ]
+
+]

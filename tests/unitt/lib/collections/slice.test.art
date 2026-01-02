@@ -1,0 +1,35 @@
+import {unitt}!
+import relative {../../commons/functions}!
+
+suite "slice" [
+
+    test "slices :string" [
+        assert -> "Art" = slice "Arturo" 0 2
+    ]
+
+    test "slices :string in-place" [
+        str: "Arturo"
+        slice 'str 0 2
+        assert -> "Art" = str
+    ]
+
+    test "slices :block" [
+        assert -> ["C" "C++" "Nim"]
+            = slice ["Arturo" "Python" "Ruby" "C" "C++" "Nim" "Wren"] 3 5
+    ]
+
+    test "slices :block in-place" [
+        arr: ["Arturo" "Python" "Ruby" "C" "C++" "Nim" "Wren"]
+        slice 'arr 3 5
+        assert -> ["C" "C++" "Nim"] = arr
+    ]
+
+    test "slices nested values in-place" [
+        example: #[values: ["Arturo" "Python" "Ruby" "C" "C++" "Nim" "Wren"]]
+        expected: #[values: ["C" "C++" "Nim"]]
+
+        slice 'example\values 3 5
+        assert -> expected = example
+    ]
+
+]

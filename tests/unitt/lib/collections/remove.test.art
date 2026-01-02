@@ -1,0 +1,203 @@
+import {unitt}!
+import relative {../../commons/functions}!
+
+suite "remove" [
+
+    ; :string
+
+    test "removes substring from :string" [
+        assert -> "Art" = remove "Arturo" "uro"
+        assert -> "Art" = "Arturo" -- "uro"
+    ]
+
+    test "removes :char from :string" [
+        assert -> "Artur" = remove "Arturo" 'o'
+        assert -> "Artur" = "Arturo" -- 'o'
+    ]
+
+    test "removes substrings in-place" [
+        str: "Arturo"
+        remove 'str "uro"
+        assert -> "Art" = str
+    ]
+
+    test "removes :char in-place" [
+        str: "Arturo"
+        'str -- 'o'
+        assert -> "Artur" = str
+    ]
+
+    ; :dictionary
+
+    test "removes :dictionary values" [
+        user: #[ name: "John" surname: "Doe" id: "Doe" ]
+        remove 'user "Doe"
+        assert -> (#[ name: "John" ]) = user
+    ]
+
+    test "removes :dictionary values in-place" [
+        user: #[ name: "John" surname: "Doe" id: "Doe" ]
+        'user -- "Doe"
+        assert -> (#[ name: "John" ]) = user
+    ]
+
+    test "removes :dictionary nested values in-place" [
+        user: #[name: "John" surname: "Doe" address: #[city: "New York" country: "USA"]]
+        expected: #[name: "John" surname: "Doe" address: #[city: "New York"]]
+
+        remove 'user\address "USA"
+        assert -> expected = user
+    ]
+
+    ; :block
+
+    test "removes single value of :block" [
+        expects.be: 'equal? [[1 2 3] [1 2 3 4] -- 4]
+    ]
+
+    test "removes all occurrences of value in :block" [
+        expects.be: 'equal? [[1 3 4 1 3 4] [1 2 3 4 1 2 3 4] -- 2]
+    ]
+
+    test "removes multiple values in :block" [
+        expects.be: 'equal? [[1 4 1 4] [1 2 3 4 1 2 3 4] -- [2 3]]
+    ]
+
+    test "doesn't remove nested block for [...values] calls" [
+        expects.be: 'equal? [[[3 4] [3 4]] [3 4 [3 4] 3 4 [3 4]] -- [3 4]]
+    ]
+
+    test "removes :block values in-place" [
+        a: [1 2 3 4 1 2 3 4]
+        b: [2 3]
+
+        remove 'a b
+        assert -> equal? [1 4 1 4] a
+    ]
+]
+
+
+suite "remove.once" [
+
+    ; :string
+
+    test "removes substring once" [
+        assert -> "Arturo" = remove.once "Aurorturo" "uro"
+    ]
+
+    test "removes a single :char" [
+        assert -> "Arturo" = remove.once "Artturo" 't'
+    ]
+
+    test "removes substring once in-place" [
+        str: "Aurorturo"
+        remove.once 'str "uro"
+        assert -> "Arturo" = str
+    ]
+
+    ; :dictionary
+
+    test "removes a single :dictionary value" [
+        user: #[ name: "John" surname: "Doe" id: "Doe" ]
+        assert -> (#[ name: "John" id: "Doe" ]) = remove.once user "Doe"
+    ]
+    
+    test "removes a single :dictionary value in-place" [
+        user: #[ name: "John" surname: "Doe" id: "Doe" ]
+        remove.once 'user "Doe"
+        assert -> (#[ name: "John" id: "Doe" ]) = user
+    ]
+
+    ; :block
+
+    test "removes a single value from :block" [
+        expects.be: 'equal? [[1 3 4 1 2] remove.once [1 2 3 4 1 2] 2]
+    ]
+
+    test "removes a single value from :block in-place" [
+        a: [1 2 3 4 1 2]
+        remove.once 'a 2
+        assert -> equal? [1 3 4 1 2] a
+    ]
+
+]
+
+suite "remove.prefix" [
+
+    test "removes prefixes from :string" [
+        assert -> "empty --flag" = remove.prefix "--empty --flag" "--"
+        assert -> "empty --flag" = "--empty --flag" --.prefix "--"
+    ]
+
+    test "removes prefixes in-place" [
+        str: "--empty --flag"
+        remove.prefix 'str "--"
+        assert -> "empty --flag" = str
+    ]
+]
+
+suite "remove.suffix" [
+
+    test "removes suffixes from :string" [
+        assert -> "test.txt file" = remove.suffix "test.txt file.txt" ".txt"
+        assert -> "test.txt file" = "test.txt file.txt" --.suffix ".txt"
+    ]
+
+    test "removes suffixes in-place" [
+        str: "test.txt file.txt"
+        remove.suffix 'str ".txt"
+        assert -> "test.txt file" = str
+    ]
+]
+
+
+suite "remove.key" [
+
+    test "removes keys from :dictionary" [
+        assert -> (#[name: "John"]) = remove.key #[name: "John" surname: "Doe"] "surname"
+    ]
+
+    test "removes keys in-place" [
+        dict: #[ name: "John" surname: "Doe" ]
+        remove.key 'dict "surname"
+        assert -> (#[name: "John"]) = dict
+    ]
+]
+
+
+suite "remove.instance" [
+
+    test "removes nested blocks when removing instances" [
+        expects.be: 'equal? [
+            [3 4 3 4] 
+            remove.instance [3 4 [3 4] 3 4 [3 4]] [3 4]
+        ]
+    ]
+
+    test "removes instance in-place" [
+        a: [1 2 [1 2] 3 4 1 2 [1 2] 3 4]
+        b: [1 2]
+
+        remove.instance 'a b
+        assert -> equal? [1 2 3 4 1 2 3 4] a
+    ]
+
+]
+
+
+; suite "remove.index" [
+
+;     test "removes at index" [
+;         assert -> equal? ['b 'c 'd] ['a 'b 'c 'd] remove.index:0
+;         assert -> equal? ['a 'c 'd] ['a 'b 'c 'd] remove.index:1
+;         assert -> equal? ['a 'b 'd] ['a 'b 'c 'd] remove.index:2
+;         assert -> equal? ['a 'b 'c] ['a 'b 'c 'd] remove.index:3
+;     ]
+
+;     test "removes in-place at index" [
+;         a: ['a 'b 'c 'd]
+;         remove.index:1 'a
+;         assert -> equal? ['a 'c 'd] a
+;     ]
+
+; ]

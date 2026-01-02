@@ -1,0 +1,41 @@
+import {unitt}!
+import relative {../../commons/functions}!
+
+suite "squeeze" [
+
+    test "squeezes empty collections as empty" [
+        assert -> [] = squeeze []
+        assert -> "" = squeeze ""
+    ]
+
+    test "sqeezes :block" [
+        assert -> [1 2 3 4 2] = squeeze [1 1 2 3 4 2]
+        assert -> [1 [4 2 3] 4 5 [6 7]] = squeeze [1 [4 2 3] 4 4 5 5 [6 7] [6 7]]
+    ]
+
+    test "squeezes :block in-place" [
+        a: [1 1 2 3 4 2]
+        squeeze 'a
+        assert -> [1 2 3 4 2] = a
+    ]
+
+    test "squeezes :string" [
+        assert -> "helo world" = squeeze "hellllo wooooorrrrld"
+    ]
+
+    test "squeezes :string in-place" [
+        str: "hellllo wooooorrrrld"
+        squeeze 'str
+        assert -> "helo world" = str
+    ]
+
+    test "squeezes nested in-place" [
+        example: #[value: [1 1 2 2 3 3]]
+        squeeze 'example\value
+        expects.be: 'equal? [
+            #[value: [1 2 3]]     
+            example
+        ]
+    ]
+
+]

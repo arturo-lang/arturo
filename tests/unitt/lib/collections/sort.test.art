@@ -1,0 +1,211 @@
+import {unitt}!
+import relative {../../commons/functions}!
+
+suite "sort" [
+
+    test "sorts :block" [
+        assert -> [1 2 3 4 5] = sort [5 2 3 1 4]
+    ]
+
+    test "sorts :string" [ 
+        assert -> ["arturo" "c" "nim"] = sort ["c" "nim" "arturo"]
+    ]
+
+    test "sorts :dictionary by values" [
+        example: #[ langc: "C" art: "Arturo" nim: "Nim" coffee: "CoffeeScript" ]
+        expected: (#[art: "Arturo" coffee: "CoffeeScript" langc: "C" nim: "Nim" ])
+
+        assert -> expected = sort example
+    ]
+]
+
+suite "sort.descending" [
+
+    test "sorts :block in descending order" [
+        assert -> [5 4 3 2 1] = sort.descending [5 2 3 1 4]
+    ]
+
+    test "sorts [:string] in descending order" [ 
+        assert -> ["nim" "c" "arturo"] = sort.descending ["c" "nim" "arturo"]
+    ]
+
+    test "also sorts :block in-place" [
+        arr: [5 2 3 1 4]
+        sort.descending 'arr
+        assert -> [5 4 3 2 1] = arr
+    ]
+
+    test "sorts :dictionary by values in descending order" [
+        example: #[ langc: "C" art: "Arturo" nim: "Nim" coffee: "CoffeeScript" ]
+        expected: (#[nim: "Nim" langc: "C" coffee: "CoffeeScript" art: "Arturo" ])
+
+        assert -> expected = sort.descending example
+    ]
+
+    test "sorts :dictionary by values in descending order" [
+        example: #[ langc: "C" art: "Arturo" nim: "Nim" coffee: "CoffeeScript" ]
+        expected: (#[nim: "Nim" langc: "C" coffee: "CoffeeScript" art: "Arturo" ])
+
+        sort.descending 'example
+        assert -> expected = example 
+    ]
+]
+
+suite "sort with encoding" [
+
+    test "puts special characters last when no encoding defined" [
+        assert -> ["abaco" "barco" "ábaco"] = sort ["ábaco" "abaco" "barco"]
+    ]
+
+    test "spanish encoding sorts special characters correctly" [
+        assert -> ["abaco" "ábaco" "barco"] = sort.as: 'es ["abaco" "ábaco" "barco"]
+    ]
+
+    test "also sorts in-place" [
+        arr: ["ábaco" "abaco" "barco"]
+        sort.as: 'es 'arr
+        assert -> ["abaco" "ábaco" "barco"] = arr
+    ]
+]
+
+suite "sort case sensitive" [
+    example: ["apple" "Apple" "banana" "cherry" "Date"]
+
+    test "is case in-sensitive by default" [
+        expected: ["apple" "Apple" "banana" "cherry" "Date"]
+        assert -> expected = sort example
+    ]
+
+    test "Upcase takes precedence for case sensitive sorting" [
+        expected: ["Apple" "Date" "apple" "banana" "cherry"]
+        assert -> expected = sort.sensitive example
+    ]
+
+    test "also sorts in-place with case sensitivity" [
+        example: new example
+        sort.sensitive 'example
+        assert -> ["Apple" "Date" "apple" "banana" "cherry"] = example
+    ]
+]
+
+suite "sorts with all options" [
+
+    test "sorts :blocks with all options combined" [
+        arr: ["ábaco" "barco" "Barco" "abaco"]
+        expected: ["barco" "ábaco" "abaco" "Barco"]
+
+        assert -> expected = sort.descending.sensitive.as: 'es arr
+    ]
+
+]
+
+suite "sort :dictionary by value" [
+
+    test "sorts by its value" [
+        dict: #[ b: 2 a: 1 d: 4 c: 3 ]
+        expected: (#[ a: 1 b: 2 c: 3 d: 4 ])
+
+        assert -> expected = sort.values dict
+    ]
+
+    test "also sorts :dictionary by its value in-place" [
+        dict: #[ b: 2 a: 1 d: 4 c: 3 ]
+        expected: (#[ a: 1 b: 2 c: 3 d: 4 ])
+
+        sort.values 'dict
+        assert -> expected = dict
+    ]
+
+    test "sorts :dictionary by its value in descending order" [
+        dict: #[ b: 2 a: 1 d: 4 c: 3 ]
+        expected: (#[ d: 4 c: 3 b: 2 a: 1 ])
+
+        assert -> expected = sort.values.descending dict
+    ]
+
+    test "also sorts :dictionary by its value in descending order in-place" [
+        dict: #[ b: 2 a: 1 d: 4 c: 3 ]
+        expected: (#[ d: 4 c: 3 b: 2 a: 1 ])
+
+        sort.values.descending 'dict
+        assert -> expected = dict
+    ]
+
+    test "supports case sensitive value sorting" [
+        dict: #[ key1: "apple" key2: "Apple" key3: "banana" key4: "cherry" key5: "Date" ]
+        expected: (#[ key2: "Apple" key5: "Date" key1: "apple" key3: "banana" key4: "cherry" ])
+
+        assert -> expected = sort.sensitive.values dict
+    ]
+
+    test "also supports case sensitive value sorting in-place" [
+        dict: #[ key1: "apple" key2: "Apple" key3: "banana" key4: "cherry" key5: "Date" ]
+        expected: (#[ key2: "Apple" key5: "Date" key1: "apple" key3: "banana" key4: "cherry" ])
+
+        sort.sensitive.values 'dict
+        assert -> expected = dict
+    ]
+
+    test "supports case sensitive value sorting in descending order" [
+        dict: #[ key1: "apple" key2: "Apple" key3: "banana" key4: "cherry" key5: "Date" ]
+        expected: (#[ key4: "cherry" key3: "banana" key1: "apple" key5: "Date" key2: "Apple" ])
+
+        assert -> expected = sort.sensitive.descending.values dict
+    ]
+
+    test "also supports case sensitive value sorting in descending order in-place" [
+        dict: #[ key1: "apple" key2: "Apple" key3: "banana" key4: "cherry" key5: "Date" ]
+        expected: (#[ key4: "cherry" key3: "banana" key1: "apple" key5: "Date" key2: "Apple" ])
+
+        sort.sensitive.descending.values 'dict
+        assert -> expected = dict
+    ]
+
+    test "supports encoding when sorting by values" [
+        dict: #[ key1: "abaco" key2: "ábaco" key3: "barco" ]
+        expected: (#[ key1: "abaco" key2: "ábaco" key3: "barco" ])
+
+        assert -> expected = sort.values.as: 'es dict
+    ]
+
+    test "also supports encoding when sorting by values in-place" [
+        dict: #[ key1: "abaco" key2: "ábaco" key3: "barco" ]
+        expected: (#[ key1: "abaco" key2: "ábaco" key3: "barco" ])
+
+        sort.values.as: 'es 'dict
+        assert -> expected = dict
+    ]
+
+    test "supports encoding when sorting by values in descending order" [
+        dict: #[ key1: "abaco" key2: "ábaco" key3: "barco" ]
+        expected: (#[ key3: "barco" key2: "ábaco" key1: "abaco" ])
+
+        assert -> expected = sort.values.descending.as: 'es dict
+    ]
+
+    test "also supports encoding when sorting by values in descending order in-place" [
+        dict: #[ key1: "abaco" key2: "ábaco" key3: "barco" ]
+        expected: (#[ key3: "barco" key2: "ábaco" key1: "abaco" ])
+
+        sort.values.descending.as: 'es 'dict
+        assert -> expected = dict
+
+    ]
+
+    test "path literal dictionaries stay synchronized when sorting by values" [
+        dict: #[ name: "John" surname: "Doe" age: 35 income: 5000]
+        a: new dict
+        b: #[b: new dict]
+        sort.values 'a
+        sort.values 'b\b
+        assert -> a = b\b
+    ]
+
+    test "sorts values using all supported options together" [
+        dict: #[ key1: "abaco" key2: "ábaco" key3: "barco" key4: "Barco" ]
+        expected: (#[ key2: "ábaco" key3: "barco" key4: "Barco" key1: "abaco" ])
+
+        assert -> expected = sort.sensitive.values.descending.as: 'es dict
+    ]
+
+]

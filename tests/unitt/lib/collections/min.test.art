@@ -1,0 +1,29 @@
+import {unitt}!
+import relative {../../commons/functions}!
+
+
+suite "min" [
+
+    test "returns min in integer blocks" [
+        assert -> 1 = min [4 2 8 5 9 1]
+        assert -> 5 = min.index [4 2 8 5 9 1]
+    ]
+
+    test "works on strings" [
+        assert -> "Boston" = min ["Granada" "Manchester" "Boston"]
+        assert -> 2 = min.index ["Granada" "Manchester" "Boston"]
+    ]
+
+    test "supports literal blocks" [
+        assert -> 'boston = min ['granada 'manchester 'boston]
+        assert -> 2 = min.index ['granada 'manchester 'boston]
+    ]
+
+    test "handles ranges" [
+        assert -> 0 = min 0..10
+        assert -> 0 = min range 10 0
+        assert -> 5 = min.index 10..5
+        assert -> 0 = min.index range 5 10
+    ]
+
+]

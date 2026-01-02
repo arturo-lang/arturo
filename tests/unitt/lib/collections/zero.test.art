@@ -1,0 +1,49 @@
+import {unitt}!
+import relative {../../commons/functions}!
+
+suite "zero?" [
+
+    test "accepts nullish values" [
+        assert -> zero? null
+        assert -> zero? ø
+        assert -> not? zero? infinite
+        assert -> not? zero? ∞
+    ]
+
+    test "evaluates numbers accurately" [
+        assert -> zero? 0
+        assert -> not? zero? 1
+        assert -> not? zero? 5
+        assert -> zero? 0.0
+        assert -> not? zero? 0.1
+        assert -> not? zero? 1.0
+        assert -> not? zero? 1.1
+    ]
+
+    test "works with strings" [
+        assert -> zero? ""
+        assert -> not? zero? "0"
+        assert -> not? zero? "1"
+        assert -> not? zero? "Arturo"
+    ]
+
+    test "works with dictionaries" [
+        assert -> zero? #[]
+        assert -> not? zero? #[name: "Jane"]
+        assert -> not? zero? #[name: "Jane" surname: "Doe"]
+    ]
+
+    test "works with blocks" [
+        assert -> zero? []
+        assert -> not? zero? [a]
+        assert -> not? zero? [a b]
+        assert -> not? zero? [a b c d e f]
+    ]
+
+    test "ranges always have a value" [
+        assert -> not? zero? 0..0
+        assert -> not? zero? 0..1
+        assert -> not? zero? 0..10
+    ]
+
+]

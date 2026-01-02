@@ -1,0 +1,29 @@
+import {unitt}!
+import relative {../../commons/functions}!
+
+
+suite "max" [
+
+    test "returns max in integer blocks" [
+        assert -> 9 = max [4 2 8 5 9 1]
+        assert -> 4 = max.index [4 2 8 5 9 1]
+    ]
+
+    test "works on strings" [
+        assert -> "Manchester" = max ["Granada" "Manchester" "Boston"]
+        assert -> 1 = max.index ["Granada" "Manchester" "Boston"]
+    ]
+
+    test "supports literal blocks" [
+        assert -> 'manchester = max ['granada 'manchester 'boston]
+        assert -> 1 = max.index ['granada 'manchester 'boston]
+    ]
+
+    test "returns max elements from ranges" [
+        assert -> 10 = max 0..10
+        assert -> 10 = max range 0 10
+        assert -> 5 = max.index 5..10
+        assert -> 5 = max.index range 5 10
+    ]
+
+]

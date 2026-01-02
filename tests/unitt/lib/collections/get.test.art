@@ -1,0 +1,166 @@
+import {unitt}!
+import relative {../../commons/functions}!
+
+
+suite "get" [
+
+    test "indexes strings" [
+        s: "Arturo"
+        i: 0
+        assert -> 'r' = get s 1
+        assert -> 'r' = s\1
+        assert -> 'r' = s\[i + 1]
+        assert -> "Art" = get s 0..2
+        assert -> "Artur" = get s 0..4
+        assert -> "Arturo" = get s 0..5
+        assert -> "orutrA" = get s 5..0
+        assert -> "rutrA" = get s 4..0
+        assert -> "trA" = get s 2..0
+        assert -> "r" = get s 1..1
+        assert -> "Art" = s\[0..2]
+        assert -> "Artur" = s\[0..4]
+        assert -> "Arturo" = s\[0..5]
+        assert -> "orutrA" = s\[5..0]
+        assert -> "rutrA" = s\[4..0]
+        assert -> "trA" = s\[2..0]
+        assert -> "r" = s\[1..1]
+    ]
+
+]
+
+suite "get - date" [
+
+    test "returns the correct month and day" [
+        d: to :date .format: "MMM dd" "Jan 15"
+        assert -> 1 = d\month
+        assert -> 15 = d\day
+    ]
+
+]
+
+suite "get - binary" [
+
+    test "reads numeric bytes" [
+        bi: to :binary 65000
+        assert -> 0xE8 = get bi 1
+    ]
+
+]
+
+suite "get - dictionary" [
+
+    test "retrieves values through symbols and strings" [
+        user: #[
+            name: "John"
+            surname: "Doe"
+        ]
+
+        assert -> "John" = user\name
+        assert -> "John" = user\["name"]
+        assert -> "John" = get user 'name
+        assert -> "Doe" = get user 'surname
+        assert -> "Doe" = user\["surname"]
+    ]
+
+]
+
+suite "get - object" [
+
+    test "matches property accessors" [
+        define :person [
+            init: method [name, surname][
+                this\name: capitalize name
+                this\surname: surname
+            ]
+        ]
+
+        p: to :person ["John" "Doe"]
+        assert -> "John" = get p 'name
+        assert -> "Doe" = get p 'surname
+        assert -> "John" = get p "name"
+        assert -> "Doe" = get p "surname"
+        assert -> "John" = p\name
+        assert -> "Doe" = p\surname
+        assert -> "John" = p\["name"]
+        assert -> "Doe" = p\["surname"]
+    ]
+
+]
+
+suite "get - store" [
+
+    test "supports db-like stores" [
+        p: store "test.db"
+        p\name: "John"
+        p\surname: "Doe"
+
+        assert -> "John" = get p 'name
+        assert -> "Doe" = get p 'surname
+        assert -> "John" = get p "name"
+        assert -> "Doe" = get p "surname"
+        assert -> "John" = p\name
+        assert -> "Doe" = p\surname
+        assert -> "John" = p\["name"]
+        assert -> "Doe" = p\["surname"]
+    ]
+
+]
+
+suite "get - block and ranges" [
+
+    test "indexes blocks and range sequences" [
+        block: ["zero" "one" "two"]
+        assert -> "zero" = get block 0
+        assert -> "zero" = block\0
+        assert -> "one" = get block 1
+        assert -> "one" = block\1
+        assert -> "two" = get block 2
+        assert -> "two" = block\2
+    ]
+
+    test "gets values from ranges" [
+        assert -> 1 = get range 0 10 1
+        assert -> 5 = get 5..10 0
+    ]
+
+]
+
+suite "get - bytecode" [
+
+    test "provides metadata members" [
+        bt: to :bytecode [print "hello"]
+        assert -> ["hello"] = bt\data
+        assert -> [32 189 223] = bt\code
+        assert -> ["hello"] = get bt 'data
+        assert -> [32 189 223] = get bt 'code
+        assert -> ["hello"] = get bt "data"
+        assert -> [32 189 223] = get bt "code"
+        assert -> ["hello"] = bt\["data"]
+        assert -> [32 189 223] = bt\["code"]
+    ]
+
+]
+
+suite "get - complex" [
+
+    test "exposes real and imaginary parts" [
+        a: to :complex [1 2]
+        assert -> 1 = a\re
+        assert -> 2 = a\im
+        assert -> 1 = a\real
+        assert -> 2 = a\imaginary
+        assert -> 1 = a\["re"]
+        assert -> 1 = a\["real"]
+        assert -> 2 = a\["im"]
+        assert -> 2 = a\["imaginary"]
+        assert -> 1 = get a 're
+        assert -> 1 = get a 'real
+        assert -> 2 = get a 'im
+        assert -> 2 = get a 'imaginary
+        assert -> 1 = a\0
+        assert -> 2 = a\1
+        assert -> 1 = get a 0
+        assert -> 2 = get a 1
+    ]
+
+]

@@ -1,0 +1,237 @@
+import {unitt}!
+
+windows?: (sys\os = "windows")
+
+suite "split" [
+
+    test "splits :string into [:char]" [
+        assert -> ["A" "r" "t" "u" "r" "o"] = split "Arturo"
+    ]
+
+    test "splits :string in-place" [
+        str: "Arturo"
+        split 'str
+        assert -> ["A" "r" "t" "u" "r" "o"] = str
+    ]
+
+    test "keeps blocks intact when not chunking" [
+        assert -> [[1 2 3] [4 5 6] [7 8]] = split [[1 2 3] [4 5 6] [7 8]]
+    ]
+
+    test "splits nested in-place values" [
+        example: #[values: "Arturo"]
+        expected: #[values: ["A" "r" "t" "u" "r" "o"]]
+
+        split 'example\values
+        assert -> expected = example
+    ]
+
+]
+
+suite "split.every" [
+
+    test "splits :string into [:string]" [
+        assert -> ["Art" "uro"] = split.every: 3 "Arturo"
+    ]
+
+    test "splits :string in-place" [
+        str: "Arturo"
+        split.every: 3 'str
+        assert -> ["Art" "uro"] = str
+    ]
+
+    test "groups :block elements by chunk size" [
+        assert -> [[1 2 3] [4 5 6] [7 8]] = split.every: 3 [1 2 3 4 5 6 7 8]
+    ]
+
+    test "splits :block in-place" [
+        example: [1 2 3 4 5 6 7 8]
+        split.every: 3 'example
+        assert -> [[1 2 3] [4 5 6] [7 8]] = example
+    ]
+]
+
+suite "split.words" [
+
+    test "splits a :string by spaces" [
+        assert -> ["Arturo" "Programming" "Language"]
+            = split.words "Arturo Programming Language"
+    ]
+
+    test "splits a :string by word in-place" [
+        str: "Arturo Programming Language"
+        split.words 'str
+        assert -> ["Arturo" "Programming" "Language"] = str
+    ]
+
+    test ".word takes precedence over .every" [
+        assert.be: 'equal? [
+            split.words "Arturo Programming Language"
+            split.words.every:2 "Arturo Programming Language"
+        ]
+    ]
+
+]
+
+
+suite "split.lines" [
+    example: {
+        {
+            "object": "value",
+            "array": ["value", "value"],
+        }
+    }
+
+    expected: [
+        "{" 
+        "    \"object\": \"value\"," 
+        "    \"array\": [\"value\", \"value\"]," 
+        "}"
+    ]
+
+    test "splits :string by newline" [
+        assert -> expected = split.lines example
+    ]
+
+    test "splits :string by newline in-place" [
+        example: new example
+        split.lines 'example
+        assert -> expected = example
+    ]
+
+    test ".lines takes precedence over .every" [
+        assert.be: 'equal? [
+            split.lines example 
+            split.lines.every:2 example
+        ]
+    ]
+
+]
+
+
+suite "split.by" [
+
+    example2: {
+        Arturo is an independently-developed,
+        modern programming language,
+        vaguely related to various other ones
+        - including but not limited to:
+        Logo, Rebol, Forth, Ruby, Haskell, D, Smalltalk, Tcl,
+        and Lisp.
+    }
+    expected2: [
+        "Arturo is an independently" 
+        "developed"
+        "modern programming language"
+        "vaguely related to various other ones"
+        " including but not limited to"
+        "Logo" 
+        " Rebol" 
+        " Forth" 
+        " Ruby" 
+        " Haskell"
+        " D" 
+        " Smalltalk" 
+        " Tcl" 
+        "and Lisp"
+    ]
+
+    test "splits :string by :char" [
+        assert -> ["Arturo" " Nim" " Ruby"] = split.by: "," "Arturo, Nim, Ruby"
+    ]
+
+    test "splits :string by :char in-place" [
+        str: "Arturo, Nim, Ruby"
+        split.by: "," 'str
+        assert -> ["Arturo" " Nim" " Ruby"] = str
+    ]
+
+    test "splits :string by :string" [
+        assert -> ["Arturo" "Nim" "Ruby"] = split.by: ", " "Arturo, Nim, Ruby"
+    ]
+
+    test "splits :string by :string in-place" [
+        str: "Arturo, Nim, Ruby"
+        split.by: ", " 'str
+        assert -> ["Arturo" "Nim" "Ruby"] = str
+    ]
+
+    test "splits :string by :regex" [
+        assert -> ["Arturo" "Nim" "Ruby"] = split.by: {/,/} "Arturo,Nim,Ruby"
+    ]
+
+    test "splits :string by :regex in-place" [
+        str: "Arturo,Nim,Ruby"
+        split.by: {/,/} 'str
+        assert -> ["Arturo" "Nim" "Ruby"] = str
+    ]
+
+    test "splits :string by multiple delimiters" [
+        assert -> expected2 = split.by: ["," "-" ":" "\n" "."] example2
+    ]
+
+    test "splits :string by multiple delimiters in-place" [
+        example2: new example2
+        split.by: ["," "-" ":" "\n" "."] 'example2
+        assert -> expected2 = example2
+    ]
+
+]
+
+suite "split.at" [
+
+    test "splits :string at the given index" [
+        assert -> ["hell" "oworld"] = split.at: 4 "helloworld"
+    ]
+
+    test "splits :string at the given index in-place" [
+        str: "helloworld"
+        split.at: 4 'str
+        assert -> ["hell" "oworld"] = str
+    ]
+
+    test "splits :block at the given index" [
+        assert -> [["Arturo" " Nim" " Ruby" " Python"] [" C" " CoffeeScript"]]
+            = split.at: 4 ["Arturo" " Nim" " Ruby" " Python" " C" " CoffeeScript"]
+    ]
+
+    test "splits :block at the given index in-place" [
+        arr: ["Arturo" " Nim" " Ruby" " Python" " C" " CoffeeScript"]
+        split.at: 4 'arr
+        assert -> [["Arturo" " Nim" " Ruby" " Python"] [" C" " CoffeeScript"]] = arr
+    ]
+]
+
+suite "split.path" [
+
+    test "splits unix paths" [
+        assert -> ["directory" "wofilerld"] = split.path "directory/wofilerld"
+        assert -> ["usr" "bin"] = split.path "/usr/bin"
+    ]
+
+    test "splits unix paths in-place" [
+        p: "directory/wofilerld"
+        split.path 'p
+        assert -> ["directory" "wofilerld"] = p
+    
+        p2: "/usr/bin"
+        split.path 'p2
+        assert -> ["usr" "bin"] = p2
+    ]
+
+    test.skip: not? windows? "splits windows specific paths" [
+        assert -> ["directory" "wofilerld"] = split.path "directory\\wofilerld"
+        assert -> ["usr" "bin"] = split.path "\\usr\\bin"
+    ]
+
+    test.skip: not? windows? "splits windows specific paths in-place" [
+        p: "directory\\wofilerld"
+        split.path 'p
+        assert -> ["directory" "wofilerld"] = p
+    
+        p2: "\\usr\\bin"
+        split.path 'p2
+        assert -> ["usr" "bin"] = p2
+    ]
+
+]

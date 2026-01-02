@@ -1,0 +1,40 @@
+import {unitt}!
+import relative {../../commons/functions}!
+
+
+suite "empty" [
+
+    test "empties-in place" [
+
+        b1: ["Arturo" "C" "Python" "Ruby"]
+        b2: [1 2 3 4 5 6 7 8 9 10]
+        b3: @['north 'south 'east 'west]
+        s: "Arturo"
+        d: #[ name: "John" surname: "Doe" ]
+        p: #[p: #[ name: "John" surname: "Doe" ]]
+
+        empty 'b1
+        empty 'b2
+        empty 'b3
+        empty 's
+        empty 'd
+        empty 'p\p
+
+        assert -> empty? b1
+        assert -> empty? b2
+        assert -> empty? b3
+        assert -> empty? s
+        assert -> empty? d
+        assert -> empty? p\p
+    ]
+
+    test "empty? identifies empty containers" [
+        assert -> empty? []
+        assert -> empty? @[]
+        assert -> empty? ""
+        assert -> empty? #[]
+        assert -> not? empty? #[ name: "" ]
+        assert -> not? empty? (#[p: #[ name: "John" ]])
+    ]
+
+]
