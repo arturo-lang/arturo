@@ -26,11 +26,10 @@ import algorithm, hashes, options
 import sequtils, sugar
 
 when not defined(WEB):
-    import oids
+    import oids, os
+
     import helpers/ffi
-    when not defined(MINI):
-        import os
-        import vm/[packager]
+    import vm/packager
 else:
     import random
 
@@ -868,7 +867,7 @@ proc defineModule*(moduleName: string) =
             if condition: 
                 execUnscoped(y)
 
-    when (not defined(MINI)) or defined(BUNDLE):
+    when not defined(WEB):
         # TODO(Core/__VerbosePackager) Find an elegant way to inject hidden functions
         #  labels: library, enhancement, cleanup
         builtin "__VerbosePackager",
@@ -883,7 +882,7 @@ proc defineModule*(moduleName: string) =
             """:
                 #=======================================================
                 VerbosePackager = true
-
+                
         # TODO(Core/import) `.lean` not always working properly
         #  basically, if you make 2 imports of the same package, one `.lean` and another normal one
         #  the 2nd one breaks. Does it have to do with our `execDictionary`?
@@ -1020,7 +1019,6 @@ proc defineModule*(moduleName: string) =
 
                     if multiple:
                         push(newBlock(ret))
-
 
     # TOOD(Core\let) Update thrown errors
     # Basically those errors are placeholders, and need to be replaced very soon.
