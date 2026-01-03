@@ -13,9 +13,6 @@
 when not defined(WEB):
     import asyncdispatch, httpClient, os
 
-when defined(SAFE):
-    import vm/errors
-
 when not defined(WEB):
     import helpers/url
 
@@ -50,11 +47,9 @@ proc getSource*(src: string): DataSource {.inline.} =
                 return (GetSym("_portable").d["embed"].d[src].s, FileData)
                             
         if src.isUrl():
-            when defined(SAFE): Error_OperationNotPermitted("read")
             let content = waitFor (newAsyncHttpClient().getContent(src))
             result = (content, WebData)
         elif src.fileExists():
-            when defined(SAFE): Error_OperationNotPermitted("read")
             result = (readFile(src), FileData)
         else:
             result = (src, TextData)

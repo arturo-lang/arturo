@@ -166,7 +166,6 @@ proc defineModule*(moduleName: string) =
             ; /Users/drkameleon/.arturo/bin:/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
             """:
                 #=======================================================
-                when defined(SAFE): Error_OperationNotPermitted("env")
                 var res: ValueDict = initOrderedTable[string,Value]()
 
                 for k,v in envPairs():
@@ -236,8 +235,6 @@ proc defineModule*(moduleName: string) =
             => 0
             """:
                 #=======================================================
-                when defined(SAFE): Error_OperationNotPermitted("execute")
-
                 # get arguments & options
                 var cmd = x.s
                 var args: seq[string]

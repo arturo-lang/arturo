@@ -54,7 +54,7 @@ when defined(BUNDLE):
 # TODO(Files) add function to enable writing/reading to/from binary files
 #  this should obviously support writing a 16-bit int, and all this
 #  labels: library, enhancement, new feature, open discussion
-
+ 
 proc defineModule*(moduleName: string) =
 
     #----------------------------
@@ -84,8 +84,6 @@ proc defineModule*(moduleName: string) =
             ; copied whole folder
             """:
                 #=======================================================
-                when defined(SAFE): Error_OperationNotPermitted("copy")
-
                 var target = y.s
                 if (hadAttr("directory")): 
                     try:
@@ -115,8 +113,6 @@ proc defineModule*(moduleName: string) =
             ; file deleted
             """:
                 #=======================================================
-                when defined(SAFE): Error_OperationNotPermitted("delete")
-                
                 if (hadAttr("directory")): 
                     try:
                         removeDir(x.s)
@@ -146,8 +142,6 @@ proc defineModule*(moduleName: string) =
             ; moved whole folder
             """:
                 #=======================================================
-                when defined(SAFE): Error_OperationNotPermitted("move")
-
                 var target = y.s
                 if (hadAttr("directory")): 
                     try:
@@ -196,8 +190,6 @@ proc defineModule*(moduleName: string) =
             ; gave write permission to 'others'
             """:
                 #=======================================================
-                when defined(SAFE): Error_OperationNotPermitted("permissions")
-
                 try:
                     if (checkAttr("set")):
                         var source = x.s
@@ -364,8 +356,6 @@ proc defineModule*(moduleName: string) =
             ; file renamed
             """:
                 #=======================================================
-                when defined(SAFE): Error_OperationNotPermitted("rename")
-
                 var source = x.s
                 var target = y.s
                 if (hadAttr("directory")): 
@@ -404,8 +394,6 @@ proc defineModule*(moduleName: string) =
             ; to our desktop
             """:
                 #=======================================================
-                when defined(SAFE): Error_OperationNotPermitted("symlink")
-
                 var source = x.s
                 var target = y.s
                 try:
@@ -458,8 +446,6 @@ proc defineModule*(moduleName: string) =
             unzip "folder" "archive.zip"
             """:
                 #=======================================================
-                when defined(SAFE): Error_OperationNotPermitted("unzip")
-
                 miniz.unzip(y.s, x.s)
 
         builtin "volume",
@@ -478,8 +464,6 @@ proc defineModule*(moduleName: string) =
             ; (size in bytes)
             """:
                 #=======================================================
-                when defined(SAFE): Error_OperationNotPermitted("volume")
-
                 push newQuantity(toQuantity(int(getFileSize(x.s)), parseAtoms("B")))
 
         builtin "write",
@@ -510,8 +494,6 @@ proc defineModule*(moduleName: string) =
             write.append "Yes, Hello again!" "somefile.txt"
             """:
                 #=======================================================
-                when defined(SAFE): Error_OperationNotPermitted("write")
-
                 if xKind==Bytecode:
                     let dataS = codify(newBlock(y.trans.constants), unwrapped=true, safeStrings=true)
                     let codeS = x.trans.instructions
@@ -547,8 +529,6 @@ proc defineModule*(moduleName: string) =
             zip "dest.zip" ["file1.txt" "img.png"]
             """:
                 #=======================================================
-                when defined(SAFE): Error_OperationNotPermitted("zip")
-
                 let files: seq[string] = y.a.map((z)=>z.s)
                 miniz.zip(files, x.s)
 
@@ -572,8 +552,6 @@ proc defineModule*(moduleName: string) =
             ]
             """:
                 #=======================================================
-                when defined(SAFE): Error_OperationNotPermitted("directory?")
-
                 push newLogical(dirExists(x.s))
 
         builtin "exists?",
@@ -592,8 +570,6 @@ proc defineModule*(moduleName: string) =
             ]
             """:
                 #=======================================================
-                when defined(SAFE): Error_OperationNotPermitted("exists?")
-
                 push newLogical(fileExists(x.s) or dirExists(x.s) or symlinkExists(x.s))
 
         builtin "file?",
@@ -612,8 +588,6 @@ proc defineModule*(moduleName: string) =
             ]
             """:
                 #=======================================================
-                when defined(SAFE): Error_OperationNotPermitted("file?")
-
                 push newLogical(fileExists(x.s))
 
         builtin "hidden?",
@@ -631,8 +605,6 @@ proc defineModule*(moduleName: string) =
             hidden? ".git"          ; => true
             """:
                 #=======================================================
-                when defined(SAFE): Error_OperationNotPermitted("hidden?")
-
                 push newLogical(isHidden(x.s))
 
         builtin "symlink?",
@@ -651,6 +623,4 @@ proc defineModule*(moduleName: string) =
             ]
             """:
                 #=======================================================
-                when defined(SAFE): Error_OperationNotPermitted("symlink?")
-
                 push newLogical(symlinkExists(x.s))
