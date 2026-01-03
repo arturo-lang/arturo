@@ -89,21 +89,6 @@ proc cleanChildren(node: Node): seq[Node] =
             if subnode.kind != NewlineNode:
                 subnode
 
-proc getNextNonNewlineNode(blok: Node, i: var int, nLen: int): Node =
-    result = nil
-    if i + 1 >= nlen: return
-    result = blok.children[i+1]
-
-    var j = i+1
-    while result.kind == NewlineNode and j + 1 < nLen:
-        j += 1
-        result = blok.children[j]
-
-    if result.kind == NewlineNode: 
-        result = nil
-    else:
-        i = j
-
 proc addConst(consts: var ValueArray, instructions: var VBinary, v: Value, op: OpCode, hasShortcut: static bool=true) {.inline.} =
     var indx = consts.indexOfValue(v)
     if indx == -1:
