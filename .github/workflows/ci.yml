@@ -101,7 +101,7 @@ jobs:
                     exit 1
                 fi
 
-                if [ "${{ matrix.mode }}" = "full" ]; then
+                if [ "${{ matrix.mode }}" != "mini" ]; then
                     arturo -p install unitt
                     if ! arturo tools/unitt-tester.art; then
                         exit 1
