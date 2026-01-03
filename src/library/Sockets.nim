@@ -23,12 +23,9 @@ when not defined(WEB):
     import std/net as netsock except Socket
     import nativesockets
 
-    import vm/values/custom/[vsocket]
-
-import vm/lib
-
-when not defined(WEB):
+    import vm/lib
     import vm/errors
+    import vm/values/custom/[vsocket]
 
 #=======================================
 # Definitions
