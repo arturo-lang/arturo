@@ -867,22 +867,22 @@ proc defineModule*(moduleName: string) =
             if condition: 
                 execUnscoped(y)
 
-    # TODO(Core/__VerbosePackager) Find an elegant way to inject hidden functions
-    #  labels: library, enhancement, cleanup
-    builtin "__VerbosePackager",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "",
-        args        = NoArgs,
-        attrs       = NoAttrs,
-        returns     = {Nothing,Dictionary,Block},
-        example     = """
-        """:
-            #=======================================================
-            VerbosePackager = true
-
     when not defined(WEB):
+        # TODO(Core/__VerbosePackager) Find an elegant way to inject hidden functions
+        #  labels: library, enhancement, cleanup
+        builtin "__VerbosePackager",
+            alias       = unaliased, 
+            op          = opNop,
+            rule        = PrefixPrecedence,
+            description = "",
+            args        = NoArgs,
+            attrs       = NoAttrs,
+            returns     = {Nothing,Dictionary,Block},
+            example     = """
+            """:
+                #=======================================================
+                VerbosePackager = true
+                
         # TODO(Core/import) `.lean` not always working properly
         #  basically, if you make 2 imports of the same package, one `.lean` and another normal one
         #  the 2nd one breaks. Does it have to do with our `execDictionary`?
