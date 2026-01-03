@@ -29,8 +29,7 @@ when not defined(NOSQLITE):
 
 when not defined(WEB):
     import helpers/stores
-
-import vm/lib
+    import vm/lib
 
 #=======================================
 # Definitions
