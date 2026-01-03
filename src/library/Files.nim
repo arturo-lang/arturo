@@ -36,9 +36,7 @@ when not defined(WEB):
     import helpers/io
     import helpers/jsonobject
     
-import vm/lib
-
-when not defined(WEB):
+    import vm/lib/
     import vm/[bytecode, errors, parse]
 
 when defined(BUNDLE):
