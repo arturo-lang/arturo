@@ -32,10 +32,12 @@ import vm/[
     globals, 
     parse, 
     profiler, 
-    runtime,
     stack, 
     values/value
 ]
+
+when not defined(WEB):
+    import vm/runtime
 
 import vm/values/custom/[vbinary]
 
