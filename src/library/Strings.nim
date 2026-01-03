@@ -334,6 +334,8 @@ proc defineModule*(moduleName: string) =
                 else:
                     sep = ""
 
+                # Trigger CI
+
                 if xKind in {Literal, PathLiteral}:
                     ensureInPlaceAny()
                     SetInPlaceAny(newString(InPlaced.a.map(proc (v:Value):string = $(v)).join(sep)))
