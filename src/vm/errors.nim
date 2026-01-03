@@ -122,16 +122,17 @@ proc formatMessage(s: string): string =
 
     return ret
 
-func lineTrunc(s: string, padding: int): string =
-    let lines = s.splitLines()
-    if lines.len > 5:
-        result = lines[0..4].join("\n")
-        result &= "\n" & "..."
-        result = strip(result)
-    else:
-        result = s
-    
-    result = indent(result, padding)
+when not defined(WEB):
+    func lineTrunc(s: string, padding: int): string =
+        let lines = s.splitLines()
+        if lines.len > 5:
+            result = lines[0..4].join("\n")
+            result &= "\n" & "..."
+            result = strip(result)
+        else:
+            result = s
+        
+        result = indent(result, padding)
 
 func `~~`*(s: string, inputs: seq[string]): string =
     var replacements: seq[string]

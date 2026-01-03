@@ -26,7 +26,9 @@ import vm/[globals, errors, stack]
 
 import vm/values/types
 import vm/values/value
-import vm/values/printable
+
+when not defined(WEB):
+    import vm/values/printable
 
 import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vquantity, vrange, vrational, vversion]
 

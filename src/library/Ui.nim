@@ -19,7 +19,8 @@
 # Libraries
 #=======================================
 
-import vm/lib
+when not defined(MINI):
+    import vm/lib
 
 when not defined(NOWEBVIEW):
     import algorithm, hashes, os, tables

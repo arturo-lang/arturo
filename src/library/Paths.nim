@@ -25,9 +25,8 @@ when not defined(WEB):
     import helpers/path
     import helpers/url
 
+    import vm/lib
     import vm/runtime
-
-import vm/lib
 
 #=======================================
 # Definitions

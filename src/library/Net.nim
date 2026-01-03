@@ -63,12 +63,9 @@ when not defined(WEB):
     import helpers/url
     import helpers/webviews
 
-import vm/lib
-import vm/errors
-import vm/values/custom/verror
-
-when not defined(WEB):
-    import vm/[env, exec]
+    import vm/lib
+    import vm/[env, errors, exec]
+    import vm/values/custom/verror
 
 #=======================================
 # Definitions
