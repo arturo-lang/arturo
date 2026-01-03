@@ -28,9 +28,9 @@ import sequtils, sugar
 when not defined(WEB):
     import oids
     import helpers/ffi
+    import vm/packager
     when not defined(MINI):
         import os
-        import vm/[packager]
 else:
     import random
 
@@ -883,143 +883,143 @@ proc defineModule*(moduleName: string) =
             #=======================================================
             VerbosePackager = true
 
-    # TODO(Core/import) `.lean` not always working properly
-    #  basically, if you make 2 imports of the same package, one `.lean` and another normal one
-    #  the 2nd one breaks. Does it have to do with our `execDictionary`?
-    #  labels: library, bug, unit-test
-    builtin "import",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "import given package",
-        args        = {
-            "package"   : {String,Literal,Block}
-        },
-        attrs       = {
-            "version"   : ({Version},"specify package version"),
-            "min"       : ({Logical},"get any version >= the specified one"),
-            "branch"    : ({String,Literal},"use specific branch for repository url (default: main)"),
-            "latest"    : ({Logical},"always check for the latest version available"),
-            "lean"      : ({Logical},"return as a dictionary, instead of importing in main namespace"),
-            "only"      : ({Block},"import only selected symbols, if available"),
-            "verbose"   : ({Logical},"output extra information")
-        },
-        returns     = {Nothing,Dictionary,Block},
-        example     = """
-            import "dummy"                      ; import the package 'dummy'
-            do ::
-                print dummyFunc 10              ; and use it :)
-            ..........
-            import.version:0.0.3 "dummy"        ; import a specific version
+    when not defined(WEB):
+        # TODO(Core/import) `.lean` not always working properly
+        #  basically, if you make 2 imports of the same package, one `.lean` and another normal one
+        #  the 2nd one breaks. Does it have to do with our `execDictionary`?
+        #  labels: library, bug, unit-test
+        builtin "import",
+            alias       = unaliased, 
+            op          = opNop,
+            rule        = PrefixPrecedence,
+            description = "import given package",
+            args        = {
+                "package"   : {String,Literal,Block}
+            },
+            attrs       = {
+                "version"   : ({Version},"specify package version"),
+                "min"       : ({Logical},"get any version >= the specified one"),
+                "branch"    : ({String,Literal},"use specific branch for repository url (default: main)"),
+                "latest"    : ({Logical},"always check for the latest version available"),
+                "lean"      : ({Logical},"return as a dictionary, instead of importing in main namespace"),
+                "only"      : ({Block},"import only selected symbols, if available"),
+                "verbose"   : ({Logical},"output extra information")
+            },
+            returns     = {Nothing,Dictionary,Block},
+            example     = """
+                import "dummy"                      ; import the package 'dummy'
+                do ::
+                    print dummyFunc 10              ; and use it :)
+                ..........
+                import.version:0.0.3 "dummy"        ; import a specific version
 
-            import.min.version:0.0.3 "dummy"    ; import at least the give version;
-                                                ; if there is a newer one, it will pull this one
-            ..........
-            import.latest "dummy"               ; whether we already have the package or not
-                                                ; always try to pull the latest version
-            ..........
-            import "https://github.com/arturo-lang/dummy-package"
-            ; we may also import user repositories directly
+                import.min.version:0.0.3 "dummy"    ; import at least the give version;
+                                                    ; if there is a newer one, it will pull this one
+                ..........
+                import.latest "dummy"               ; whether we already have the package or not
+                                                    ; always try to pull the latest version
+                ..........
+                import "https://github.com/arturo-lang/dummy-package"
+                ; we may also import user repositories directly
 
-            import.branch:"main" "https://github.com/arturo-lang/dummy-package"
-            ; even specifying the branch to pull
-            ..........
-            import "somefile.art"               ; importing a local file is possible
+                import.branch:"main" "https://github.com/arturo-lang/dummy-package"
+                ; even specifying the branch to pull
+                ..........
+                import "somefile.art"               ; importing a local file is possible
 
-            import "somepackage"                ; the same works if we have a folder that
-                                                ; is actually structured like a package
-            ..........
-            d: import.lean "dummy"              ; importing a package as a dictionary
-                                                ; for better namespace isolation
+                import "somepackage"                ; the same works if we have a folder that
+                                                    ; is actually structured like a package
+                ..........
+                d: import.lean "dummy"              ; importing a package as a dictionary
+                                                    ; for better namespace isolation
 
-            do [
-                print d\dummyFunc 10            ; works fine :)
-            ]
-        """:
-            #=======================================================
-            
-            var branch = "main"
-            let latest = hadAttr("latest")
-            let verbose = hadAttr("verbose")
-            let lean = hadAttr("lean")
-            var importOnly: seq[string] = @[]
-
-            when defined(BUNDLE):
-                let (src, path) = getBundledResource(x.s)
-                pushFrame(path, fromFile=true)
-
-                let parsed = doParse(src, isFile=false)
-                if not parsed.isNil:
-                    if importOnly.len > 0:
-                        let got = execScopedModule(parsed, importOnly)
-                        for k,v in got.pairs:
-                            if importOnly.contains(k) or k.startsWith("__module"):
-                                SetSym(k, v)
-                    else:
-                        execUnscoped(parsed)
-                discardFrame()
-            else:
-                var verspec = (true, NoPackageVersion)
-                var pkgs: seq[string]
-                if xKind in {String, Literal}:
-                    pkgs.add(x.s)
-                else:
-                    pkgs = x.a.map((p)=>p.s)
-
-                let multiple = pkgs.len > 1
+                do [
+                    print d\dummyFunc 10            ; works fine :)
+                ]
+            """:
+                #=======================================================
                 
-                if checkAttr("version"):
-                    verspec = (hadAttr("min"), aVersion.version)
+                var branch = "main"
+                let latest = hadAttr("latest")
+                let verbose = hadAttr("verbose")
+                let lean = hadAttr("lean")
+                var importOnly: seq[string] = @[]
 
-                if checkAttr("branch"):
-                    branch = aBranch.s
+                when defined(BUNDLE):
+                    let (src, path) = getBundledResource(x.s)
+                    pushFrame(path, fromFile=true)
 
-                if checkAttr("only"):
-                    importOnly = aOnly.a.map((w) =>  w.s)
-
-                let verboseBefore = VerbosePackager
-                if verbose:
-                    VerbosePackager = true
-
-                var ret: ValueArray
-
-                for pkg in pkgs:
-                    if (let res = getEntryForPackage(pkg, verspec, branch, latest); res.isSome):
-                        let src = res.get()
-
-                        if not src.fileExists():
-                            Error_PackageNotValid(pkg)
-
-                        pushFrame(src, fromFile=true)
-
-                        if not lean:
-                            let parsed = doParse(src, isFile=true)
-                            if not parsed.isNil:
-                                if importOnly.len > 0:
-                                    let got = execScopedModule(parsed, importOnly)
-                                    for k,v in got.pairs:
-                                        if importOnly.contains(k) or k.startsWith("__module"):
-                                            SetSym(k, v)
-                                else:
-                                    execUnscoped(parsed)
+                    let parsed = doParse(src, isFile=false)
+                    if not parsed.isNil:
+                        if importOnly.len > 0:
+                            let got = execScopedModule(parsed, importOnly)
+                            for k,v in got.pairs:
+                                if importOnly.contains(k) or k.startsWith("__module"):
+                                    SetSym(k, v)
                         else:
-                            let parsed = doParse(src, isFile=true)
-                            if not parsed.isNil:
-                                let got = execScopedModule(parsed, importOnly)
-                                if multiple:
-                                    ret.add(newDictionary(got))
-                                else:
-                                    push(newDictionary(got))
-
-                        discardFrame()              
+                            execUnscoped(parsed)
+                    discardFrame()
+                else:
+                    var verspec = (true, NoPackageVersion)
+                    var pkgs: seq[string]
+                    if xKind in {String, Literal}:
+                        pkgs.add(x.s)
                     else:
-                        Error_PackageNotFound(pkg)
+                        pkgs = x.a.map((p)=>p.s)
 
-                VerbosePackager = verboseBefore
+                    let multiple = pkgs.len > 1
+                    
+                    if checkAttr("version"):
+                        verspec = (hadAttr("min"), aVersion.version)
 
-                if multiple:
-                    push(newBlock(ret))
+                    if checkAttr("branch"):
+                        branch = aBranch.s
 
+                    if checkAttr("only"):
+                        importOnly = aOnly.a.map((w) =>  w.s)
+
+                    let verboseBefore = VerbosePackager
+                    if verbose:
+                        VerbosePackager = true
+
+                    var ret: ValueArray
+
+                    for pkg in pkgs:
+                        if (let res = getEntryForPackage(pkg, verspec, branch, latest); res.isSome):
+                            let src = res.get()
+
+                            if not src.fileExists():
+                                Error_PackageNotValid(pkg)
+
+                            pushFrame(src, fromFile=true)
+
+                            if not lean:
+                                let parsed = doParse(src, isFile=true)
+                                if not parsed.isNil:
+                                    if importOnly.len > 0:
+                                        let got = execScopedModule(parsed, importOnly)
+                                        for k,v in got.pairs:
+                                            if importOnly.contains(k) or k.startsWith("__module"):
+                                                SetSym(k, v)
+                                    else:
+                                        execUnscoped(parsed)
+                            else:
+                                let parsed = doParse(src, isFile=true)
+                                if not parsed.isNil:
+                                    let got = execScopedModule(parsed, importOnly)
+                                    if multiple:
+                                        ret.add(newDictionary(got))
+                                    else:
+                                        push(newDictionary(got))
+
+                            discardFrame()              
+                        else:
+                            Error_PackageNotFound(pkg)
+
+                    VerbosePackager = verboseBefore
+
+                    if multiple:
+                        push(newBlock(ret))
 
     # TOOD(Core\let) Update thrown errors
     # Basically those errors are placeholders, and need to be replaced very soon.
