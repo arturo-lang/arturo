@@ -26,11 +26,10 @@ import algorithm, hashes, options
 import sequtils, sugar
 
 when not defined(WEB):
-    import oids
+    import oids, os
+
     import helpers/ffi
     import vm/packager
-    when not defined(MINI):
-        import os
 else:
     import random
 
