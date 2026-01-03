@@ -54,7 +54,7 @@ when defined(BUNDLE):
 # TODO(Files) add function to enable writing/reading to/from binary files
 #  this should obviously support writing a 16-bit int, and all this
 #  labels: library, enhancement, new feature, open discussion
-
+ 
 proc defineModule*(moduleName: string) =
 
     #----------------------------
