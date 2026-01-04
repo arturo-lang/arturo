@@ -119,6 +119,17 @@ Before contributing to Arturo, you need to make sure you have all needed depende
 
 Our compiler is written in Nim, which depends on GCC.
 
+Now, for the complete environment setup you may also have a look at the Github action: https://github.com/arturo-lang/arturo-action/blob/main/action.yml - it's doing practically a complete setup with anything needed for each system.
+
+> [!CAUTION]
+>
+> Careful not to be confused with the fetch/compile mode: fetch just retrieves a prebuilt binary, so it just sets up the runtime environment, while compile - which is what you're interested in - sets up the environment for building Arturo too 😉
+
+> [!IMPORTANT]
+> 
+> Have in mind this is a quick guide based on Github Actions CI and this may require additional steps or less steps depending on your system.
+> This setup is not intended for end-users, but for documenting steps for us, developers, and other contributors, so have it in mind before proceeding.
+
 #### Ubuntu Programmers
 
 **Install Nim**
@@ -177,6 +188,8 @@ curl https://nim-lang.org/choosenim/init.sh -sSf | sh
 choosenim 2.2.6
 ```
 
+Normally both work fine and are up-to-date
+
 #### Windows Programmers
 
 **Installing Nim**
@@ -231,6 +244,10 @@ cp /mingw64/bin/libwinpthread-1.dll bin
 #### FreeBSD Programmers
 
 **Install nim and its dependencies**
+
+For FreeBSD, We're installing Nim with `pkg install nim`. Which will probably fetch the previous Nim release, until all ports are updated, which AFAIK takes some time. 
+
+Would choosenim work? Perhaps, but haven't tested it.
 
 ```sh
 pkg update
