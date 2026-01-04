@@ -10,6 +10,8 @@
 # Libraries
 #=======================================
 
+import std/math
+
 import vm/values/custom/vrange
 
 import vm/values/comparison
@@ -143,7 +145,7 @@ func `[]`*(rng: VRange, idx: HSlice, returnValue: bool): VRange =
             forward:    rng.forward
         )
 
-template arithmeticProgressionContains(target, start, step): bool =
+func forwardOrBackwardContains(rng: VRange, v: int): bool {.inline.} =
     ## Mathematical definiton:
     ## 
     ## Given an arithmetic progression defined as:
@@ -154,31 +156,27 @@ template arithmeticProgressionContains(target, start, step): bool =
     ## 
     ## (x - a) / d ∈ Z
 
-    (target - start) mod step == 0
-
-template forwardContains(rng: VRange, v: int): bool =
-    if rng.infinite:
-        v >= rng.start and arithmeticProgressionContains(v, rng.start, rng.step)
+    let inRange = if rng.forward:
+        v >= rng.start and (rng.infinite or v <= rng.stop)
     else:
-        v >= rng.start and v <= rng.stop and arithmeticProgressionContains(v, rng.start, rng.step)
+        v <= rng.start and (rng.infinite or v >= rng.stop)
+    
+    inRange and (v - rng.start) mod rng.step == 0
 
-template backwardContains(rng: VRange, v: int): bool =
-    if rng.infinite:
-        v <= rng.start and arithmeticProgressionContains(v, rng.start, rng.step)
-    else:
-        v <= rng.start and v >= rng.stop and arithmeticProgressionContains(v, rng.start, rng.step)
-
+func seemsInteger(x: float): bool {.inline.} =
+    result = x == x.floor()
 
 proc contains*(rng: VRange, v: Value): bool {.inline.} =
-    let value: int = if rng.numeric: 
-        v.i
+    if rng.numeric:
+        if v.kind == Integer: 
+            forwardOrBackwardContains(rng, v.i)
+        else:
+            if v.kind == Floating and seemsInteger(v.f):
+                forwardOrBackwardContains(rng, int(v.f))
+            else:
+                false
     else: 
-        int(ord(v.c))
-
-    if rng.forward:
-        forwardContains(rng, value)
-    else:
-        backwardContains(rng, value)
+        forwardOrBackwardContains(rng, ord(v.c))
 
 func min*(rng: VRange): (int,Value) {.inline.} =
     if rng.forward: 
