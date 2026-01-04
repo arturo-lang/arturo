@@ -8,7 +8,7 @@ describe "Join Operations" [
 
     it "join with words is the same as join.with: ' ' separator" [
         data: ["hello", "world"]
-        expects -> equal? (join.words data) (data join.with: ' ' data)
+        expects -> equal? (join.words data) (join.with: ' ' data)
     ]
 
     it "join with words on empty list returns empty string" [
@@ -25,7 +25,7 @@ describe "Join Lines Operations" [
 
     it "join with lines is the same as join.with: '\\n' separator" [
         data: ["hello", "world"]
-        expects -> equal? (join.lines data) (data join.with: '\n' data)
+        expects -> equal? (join.lines data) (join.with: '\n' data)
     ]
 
     it "join with lines on empty list returns empty string" [
