@@ -171,7 +171,7 @@ template backwardContains(rng: VRange, v: int): bool =
 
 proc contains*(rng: VRange, v: Value): bool {.inline.} =
     let value: int = if rng.numeric: 
-        v.i
+        v.asInt()
     else: 
         int(ord(v.c))
 
