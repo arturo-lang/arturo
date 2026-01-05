@@ -113,6 +113,155 @@ Anybody with an interest in programming languages, compiler design and/or some k
 
 Let's have a look!
 
+### Environment Setup
+
+Before contributing to Arturo, you need to make sure you have all needed dependencies to compile it.
+
+Our compiler is written in Nim, which depends on GCC.
+
+Now, for the complete environment setup you may also have a look at the Github action: https://github.com/arturo-lang/arturo-action/blob/main/action.yml - it's doing practically a complete setup with anything needed for each system.
+
+> [!CAUTION]
+>
+> Careful not to be confused with the fetch/compile mode: fetch just retrieves a prebuilt binary, so it just sets up the runtime environment, while compile - which is what you're interested in - sets up the environment for building Arturo too 😉
+
+> [!IMPORTANT]
+> 
+> Have in mind this is a quick guide based on Github Actions CI and this may require additional steps or less steps depending on your system.
+> This setup is not intended for end-users, but for documenting steps for us, developers, and other contributors, so have it in mind before proceeding.
+
+#### Ubuntu Programmers
+
+**Install Nim**
+
+You need to install Nim in order to compile Arturo.
+The easiest way to install it is from the apt-get package manager.
+
+```sh
+apt-get install nim
+```
+
+But the recommended way is to use *choosenim*:
+
+```sh
+curl https://nim-lang.org/choosenim/init.sh -sSf | sh
+choosenim 2.2.6
+```
+
+**Install dependencies**
+
+```sh
+sudo apt-get update
+sudo apt-get install libgtk-3-dev libmpfr-dev
+```
+
+Now, you need to add Webkit, but we have some little details to it.
+
+If you're on Ubuntu 24.04 or greater, install:
+
+```sh
+sudo apt-get install -y libwebkit2gtk-4.1-dev
+```
+
+But if you're on an older version:
+
+```sh
+sudo apt-get install -y libwebkit2gtk-4.0-dev
+```
+
+This happens because 4.0 version of Webkit does not exist for newer versions of Ubuntu.
+
+#### MacOS Programmers
+
+You need to install Nim in order to compile Arturo.
+The easiest way is install the latest version of clang, and then install nim from brew.
+
+```sh
+xcode-select --install
+brew install nim
+```
+
+But you can also install nim from *choosenim*, which is the recommended way:
+
+```sh
+curl https://nim-lang.org/choosenim/init.sh -sSf | sh
+choosenim 2.2.6
+```
+
+Normally both work fine and are up-to-date
+
+#### Windows Programmers
+
+**Installing Nim**
+You need to install Nim in order to compile Arturo.
+
+You may install it manually via the [official installer](https://nim-lang.org/install.html).
+If you prefer, you can install from scoop or choco.
+
+```sh
+choco install nim
+```
+
+or
+
+```sh
+scoop bucket add main
+scoop install main/nim
+```
+
+If you're using scoop, choosenim won't be needed. Scoop already have version management built-in.
+
+**Installing MSYS2 and GCC**
+
+Nim depends on GCC and Arturo for Windows depends on some libraries for Mingw64.
+
+In order to get this working, [install MSYS2 from their official website](https://www.msys2.org/).
+
+Then open the Mingw64 instance and run:
+
+```sh
+pacman -S base-devel p7zip unzip mingw-w64-x86_64-toolchain
+```
+
+If you wish, you can also add Mingw64's bin to your `PATH`.
+Search for "Environment Variables" and add `<msys64's path>/mingw64/bin` to your `PATH`.
+
+**Additional DLLs**
+
+Before compile, make sure you have all needed runtime dependencies at you `bin` folder.
+
+```sh
+cp src/extras/webview/deps/dlls/x64/webview.dll bin
+cp src/extras/webview/deps/dlls/x64/WebView2Loader.dll bin
+curl -L https://arturo-lang.s3.amazonaws.com/libgmp-10.dll -o bin/libgmp-10.dll
+curl -L https://arturo-lang.s3.amazonaws.com/libmpfr-6.dll -o bin/libmpfr-6.dll
+curl -L https://arturo-lang.s3.amazonaws.com/sqlite3_64.dll -o bin/sqlite3_64.dll
+curl -L https://arturo-lang.s3.amazonaws.com/libgcc_s_seh-1.dll -o bin/libgcc_s_seh-1.dll
+curl -L https://curl.se/ca/cacert.pem -o bin/cacert.pem
+cp /mingw64/bin/libwinpthread-1.dll bin
+```
+
+#### FreeBSD Programmers
+
+**Install nim and its dependencies**
+
+For FreeBSD, We're installing Nim with `pkg install nim`. Which will probably fetch the previous Nim release, until all ports are updated, which AFAIK takes some time. 
+
+Would choosenim work? Perhaps, but haven't tested it.
+
+```sh
+pkg update
+pkg install -y wget curl bash ca_root_nss jq
+pkg install -y pkgconf openssl
+pkg install -y nim git
+```
+
+**Install dependencies**
+
+```sh
+pkg install -y gtk3 mpfr webkit2-gtk_41
+```
+
 ### Pull requests
 
 Pull requests are the best way to propose changes to the codebase and are actively encouraged:
