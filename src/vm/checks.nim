@@ -61,6 +61,9 @@ proc showWrongValueAttrTypeError*(fName: string, attr: string, actual: Value, ex
 
     Error_IncompatibleBlockValueAttribute(fName, "." & attr, actualStr, acceptedStr)
 
+proc showUnsupportedMiniFeatureError*(fName: string) =
+    Error_UnsupportedFeature(fName, "MINI builds")
+
 #=======================================
 # Methods
 #=======================================

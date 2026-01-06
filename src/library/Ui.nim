@@ -19,8 +19,9 @@
 # Libraries
 #=======================================
 
-when not defined(MINI):
-    import vm/lib
+# when not defined(MINI):
+    
+import vm/lib
 
 when not defined(NOWEBVIEW):
     import algorithm, hashes, os, tables
@@ -91,23 +92,21 @@ proc defineModule*(moduleName: string) =
 
                 showAlertDialog(x.s, y.s, alertIcon)
 
-    when not defined(NOCLIPBOARD):
-
-        builtin "clip",
-            alias       = unaliased, 
-            op          = opNop,
-            rule        = PrefixPrecedence,
-            description = "set clipboard content to given text",
-            args        = {
-                "content"   : {String}
-            },
-            attrs       = NoAttrs,
-            returns     = {Nothing},
-            example     = """
+    builtinUnless NOCLIPBOARD, "clip",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "set clipboard content to given text",
+        args        = {
+            "content"   : {String}
+        },
+        attrs       = NoAttrs,
+        returns     = {Nothing},
+        example     = """
             clip "this is something to be pasted into the clipboard"
-            """:
-                #=======================================================
-                setClipboard(x.s)
+        """:
+            #=======================================================
+            setClipboard(x.s)
 
     when not defined(NODIALOGS):
 

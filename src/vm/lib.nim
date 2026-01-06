@@ -73,6 +73,92 @@ macro addAttrTypes*(attrs: untyped): untyped =
         result.add quote do:
             addOne(`attrs`, `i`)
 
+template makeBuiltin*(n: string, alias: VSymbol, op: OpCode, rule: PrecedenceKind, description: string, args: untyped, attrs: static openArray[(string,(set[ValueKind],string))], returns: ValueSpec, example: string, act: untyped): untyped =
+    when args.len==1 and args==NoArgs:  
+        const argsLen = 0
+    else:                               
+        const argsLen = static args.len
+
+    when defined(DOCGEN):
+        const cleanExample = replace(strutils.strip(example),"\n            ","\n")
+    else:
+        const cleanExample = ""
+
+    let b = newBuiltin(
+        when not defined(WEB): description else: "",
+        when not defined(WEB): moduleName else: "",
+        when not defined(WEB): static (instantiationInfo().line) else: 0,
+        static argsLen, 
+        when not defined(WEB): args.toOrderedTable else: initOrderedTable[string,ValueSpec](),
+        when not defined(WEB): attrs.toOrderedTable else: initOrderedTable[string,(ValueSpec,string)](),
+        returns, 
+        cleanExample, 
+        op,
+        proc () =
+            act
+    )
+
+    SetSym(n, b)
+
+    when n=="add"               : DoAdd = b.action()
+    elif n=="sub"               : DoSub = b.action()
+    elif n=="mul"               : DoMul = b.action()
+    elif n=="div"               : DoDiv = b.action()
+    elif n=="fdiv"              : DoFdiv = b.action()
+    elif n=="mod"               : DoMod = b.action()
+    elif n=="pow"               : DoPow = b.action()
+    elif n=="neg"               : DoNeg = b.action()
+    elif n=="inc"               : DoInc = b.action()
+    elif n=="dec"               : DoDec = b.action()
+    elif n=="not"               : DoBNot = b.action()
+    elif n=="and"               : DoBAnd = b.action()
+    elif n=="or"                : DoBOr = b.action()
+    elif n=="shl"               : DoShl = b.action()
+    elif n=="shr"               : DoShr = b.action()
+    elif n=="not?"              : DoNot = b.action()
+    elif n=="and?"              : DoAnd = b.action()
+    elif n=="or?"               : DoOr = b.action()
+    elif n=="equal?"            : DoEq = b.action()
+    elif n=="notEqual?"         : DoNe = b.action()
+    elif n=="greater?"          : DoGt = b.action()
+    elif n=="greaterOrEqual?"   : DoGe = b.action()
+    elif n=="less?"             : DoLt = b.action()
+    elif n=="lessOrEqual?"      : DoLe = b.action()
+    elif n=="get"               : DoGet = b.action()
+    elif n=="set"               : DoSet = b.action()
+    elif n=="if"                : DoIf = b.action()
+    elif n=="unless"            : DoUnless = b.action()
+    elif n=="switch"            : DoSwitch = b.action()
+    elif n=="while"             : DoWhile = b.action()
+    elif n=="return"            : DoReturn = b.action()
+    elif n=="break"             : DoBreak = b.action()
+    elif n=="continue"          : DoContinue = b.action()
+    elif n=="to"                : DoTo = b.action()
+    elif n=="array"             : DoArray = b.action()
+    elif n=="dictionary"        : DoDict = b.action()
+    elif n=="function"          : DoFunc = b.action()  
+    elif n=="range"             : DoRange = b.action()
+    elif n=="loop"              : DoLoop = b.action()
+    elif n=="map"               : DoMap = b.action() 
+    elif n=="select"            : DoSelect = b.action()
+    elif n=="size"              : DoSize = b.action()
+    elif n=="replace"           : DoReplace = b.action()
+    elif n=="split"             : DoSplit = b.action()
+    elif n=="join"              : DoJoin = b.action()
+    elif n=="reverse"           : DoReverse = b.action()
+    elif n=="append"            : DoAppend = b.action()
+    elif n=="print"             : DoPrint = b.action()
+
+    when alias != unaliased:
+        # if Aliases.hasKey(alias):
+        #     echo "Already aliased! -> " & $(alias)
+        #     echo "was aliased to: " & Aliases[alias].name.s
+        #     echo "and trying to realias to: " & n
+        Aliases[alias] = AliasBinding(
+            precedence: rule,
+            name: newWord(n)
+        )
+
 template builtin*(n: string, alias: VSymbol, op: OpCode, rule: PrecedenceKind, description: string, args: untyped, attrs: static openArray[(string,(set[ValueKind],string))], returns: ValueSpec, example: string, act: untyped):untyped =
     ## add new builtin, function with given name, alias, 
     ## rule, etc - followed by the code block to be 
@@ -82,101 +168,26 @@ template builtin*(n: string, alias: VSymbol, op: OpCode, rule: PrecedenceKind, d
         when defined(DEV):
             static: echo " -> " & n
 
-        when args.len==1 and args==NoArgs:  
-            const argsLen = 0
-        else:                               
-            const argsLen = static args.len
+        makeBuiltin(n, alias, op, rule, description, args, attrs, returns, example):
+            hookProcProfiler("lib/require"):
+                require(n, args)
 
-        when defined(DOCGEN):
-            const cleanExample = replace(strutils.strip(example),"\n            ","\n")
-        else:
-            const cleanExample = ""
+            when attrs != NoAttrs:
+                addAttrTypes(attrs)
 
-        let b = newBuiltin(
-            when not defined(WEB): description else: "",
-            when not defined(WEB): moduleName else: "",     # `moduleName` comes from the main library module definition!
-            when not defined(WEB): static (instantiationInfo().line) else: 0,
-            static argsLen, 
-            when not defined(WEB): args.toOrderedTable else: initOrderedTable[string,ValueSpec](),
-            when not defined(WEB): attrs.toOrderedTable else: initOrderedTable[string,(ValueSpec,string)](),
-            returns, 
-            cleanExample, 
-            op,
-            proc () =
-                hookProcProfiler("lib/require"):
-                    require(n, args)
+            {.emit: "////implementation: " & (static (instantiationInfo().filename.replace(".nim"))) & "/" & n .}
 
-                when attrs != NoAttrs:
-                    addAttrTypes(attrs)
+            hookFunctionProfiler(n):
+                act
 
-                {.emit: "////implementation: " & (static (instantiationInfo().filename.replace(".nim"))) & "/" & n .}
+            {.emit: "////end: " & (static (instantiationInfo().filename.replace(".nim"))) & "/" & n .}
 
-                hookFunctionProfiler(n):
-                    act
-
-                {.emit: "////end: " & (static (instantiationInfo().filename.replace(".nim"))) & "/" & n .}
-        )
-
-        SetSym(n, b)
-
-        when n=="add"               : DoAdd = b.action()
-        elif n=="sub"               : DoSub = b.action()
-        elif n=="mul"               : DoMul = b.action()
-        elif n=="div"               : DoDiv = b.action()
-        elif n=="fdiv"              : DoFdiv = b.action()
-        elif n=="mod"               : DoMod = b.action()
-        elif n=="pow"               : DoPow = b.action()
-        elif n=="neg"               : DoNeg = b.action()
-        elif n=="inc"               : DoInc = b.action()
-        elif n=="dec"               : DoDec = b.action()
-        elif n=="not"               : DoBNot = b.action()
-        elif n=="and"               : DoBAnd = b.action()
-        elif n=="or"                : DoBOr = b.action()
-        elif n=="shl"               : DoShl = b.action()
-        elif n=="shr"               : DoShr = b.action()
-        elif n=="not?"              : DoNot = b.action()
-        elif n=="and?"              : DoAnd = b.action()
-        elif n=="or?"               : DoOr = b.action()
-        elif n=="equal?"            : DoEq = b.action()
-        elif n=="notEqual?"         : DoNe = b.action()
-        elif n=="greater?"          : DoGt = b.action()
-        elif n=="greaterOrEqual?"   : DoGe = b.action()
-        elif n=="less?"             : DoLt = b.action()
-        elif n=="lessOrEqual?"      : DoLe = b.action()
-        elif n=="get"               : DoGet = b.action()
-        elif n=="set"               : DoSet = b.action()
-        elif n=="if"                : DoIf = b.action()
-        elif n=="unless"            : DoUnless = b.action()
-        elif n=="switch"            : DoSwitch = b.action()
-        elif n=="while"             : DoWhile = b.action()
-        elif n=="return"            : DoReturn = b.action()
-        elif n=="break"             : DoBreak = b.action()
-        elif n=="continue"          : DoContinue = b.action()
-        elif n=="to"                : DoTo = b.action()
-        elif n=="array"             : DoArray = b.action()
-        elif n=="dictionary"        : DoDict = b.action()
-        elif n=="function"          : DoFunc = b.action()  
-        elif n=="range"             : DoRange = b.action()
-        elif n=="loop"              : DoLoop = b.action()
-        elif n=="map"               : DoMap = b.action() 
-        elif n=="select"            : DoSelect = b.action()
-        elif n=="size"              : DoSize = b.action()
-        elif n=="replace"           : DoReplace = b.action()
-        elif n=="split"             : DoSplit = b.action()
-        elif n=="join"              : DoJoin = b.action()
-        elif n=="reverse"           : DoReverse = b.action()
-        elif n=="append"            : DoAppend = b.action()
-        elif n=="print"             : DoPrint = b.action()
-
-        when alias != unaliased:
-            # if Aliases.hasKey(alias):
-            #     echo "Already aliased! -> " & $(alias)
-            #     echo "was aliased to: " & Aliases[alias].name.s
-            #     echo "and trying to realias to: " & n
-            Aliases[alias] = AliasBinding(
-                precedence: rule,
-                name: newWord(n)
-            )
+template builtinUnless*(flag: untyped, n: string, alias: VSymbol, op: OpCode, rule: PrecedenceKind, description: string, args: untyped, attrs: static openArray[(string,(set[ValueKind],string))], returns: ValueSpec, example: string, act: untyped): untyped =
+    when not defined(flag):
+        builtin(n, alias, op, rule, description, args, attrs, returns, example, act)
+    else:
+        makeBuiltin(n, alias, op, rule, description, args, attrs, returns, example):
+            showUnsupportedMiniFeatureError(n)
 
 template adhoc*(description: string, args: untyped, attrs: static openArray[(string,(set[ValueKind],string))], returns: ValueSpec, act: untyped): untyped =
     ## create new builtin, but not in the global namespace;
