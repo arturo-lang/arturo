@@ -119,7 +119,7 @@ Before contributing to Arturo, you need to make sure you have all needed depende
 
 Our compiler is written in Nim, which depends on GCC.
 
-Now, for the complete environment setup you may also have a look at the Github action: https://github.com/arturo-lang/arturo-action/blob/main/action.yml - it's doing practically a complete setup with anything needed for each system.
+Now, for the complete environment setup you may also have a look at the Github action: https://github.com/arturo-lang/setup-arturo/blob/main/action.yml - it's doing practically a complete setup with anything needed for each system.
 
 > [!CAUTION]
 >
