@@ -34,38 +34,6 @@ const
     NoAttrs*     = static {"" : ({Nothing},"")}     ## Shortcut for no attributes
 
 #=======================================
-# Helpers
-#=======================================
-
-template calculateArgsLen(args: untyped): untyped =
-    ## Calculate args length at compile time
-    when args.len == 1 and args == NoArgs:
-        const argsLen = 0
-    else:
-        const argsLen = static args.len
-
-template cleanExample(example: string): untyped =
-    ## Clean up example text for documentation
-    when defined(DOCGEN):
-        const cleanExample = replace(strutils.strip(example), "\n            ", "\n")
-    else:
-        const cleanExample = ""
-
-template conditionalArgsTable(args: untyped): untyped =
-    ## Get args as OrderedTable or empty table based on WEB flag
-    when not defined(WEB):
-        args.toOrderedTable
-    else:
-        initOrderedTable[string, ValueSpec]()
-
-template conditionalAttrsTable(attrs: untyped): untyped =
-    ## Get attrs as OrderedTable or empty table based on WEB flag
-    when not defined(WEB):
-        attrs.toOrderedTable
-    else:
-        initOrderedTable[string, (ValueSpec, string)]()
-
-#=======================================
 # Templates
 #=======================================
 
@@ -89,16 +57,23 @@ macro addAttrTypes*(attrs: untyped): untyped =
             addOne(`attrs`, `i`)
 
 template makeBuiltin*(n: string, alias: VSymbol, op: OpCode, rule: PrecedenceKind, description: string, args: untyped, attrs: static openArray[(string,(set[ValueKind],string))], returns: ValueSpec, example: string, act: untyped): untyped =
-    calculateArgsLen(args)
-    cleanExample(example)
+    when args.len == 1 and args == NoArgs:
+        const argsLen = 0
+    else:
+        const argsLen = static args.len
+
+    when defined(DOCGEN):
+        const cleanExample = replace(strutils.strip(example), "\n            ", "\n")
+    else:
+        const cleanExample = ""
 
     let b = newBuiltin(
         when not defined(WEB): description else: "",
         when not defined(WEB): moduleName else: "",
         when not defined(WEB): static (instantiationInfo().line) else: 0,
         argsLen,
-        conditionalArgsTable(args),
-        conditionalAttrsTable(attrs),
+        when not defined(WEB): args.toOrderedTable else: initOrderedTable[string, ValueSpec](),
+        when not defined(WEB): attrs.toOrderedTable else: initOrderedTable[string, (ValueSpec, string)](),
         returns,
         cleanExample,
         op,
@@ -199,15 +174,18 @@ template adhoc*(description: string, args: untyped, attrs: static openArray[(str
     ## dictionaries or objects at runtime,
     ## e.g. `window` methods 
 
-    calculateArgsLen(args)
+    when args.len == 1 and args == NoArgs:
+        const argsLen = 0
+    else:
+        const argsLen = static args.len
 
     newBuiltin(
         when not defined(WEB): description else: "",
         "",
         0,
         argsLen,
-        conditionalArgsTable(args),
-        conditionalAttrsTable(attrs),
+        when not defined(WEB): args.toOrderedTable else: initOrderedTable[string, ValueSpec](),
+        when not defined(WEB): attrs.toOrderedTable else: initOrderedTable[string, (ValueSpec, string)](),
         returns,
         "",
         opNop,
