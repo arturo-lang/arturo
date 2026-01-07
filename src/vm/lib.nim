@@ -34,7 +34,7 @@ const
     NoAttrs*     = static {"" : ({Nothing},"")}     ## Shortcut for no attributes
 
 #=======================================
-# Templates
+# Helpers
 #=======================================
 
 macro attrTypes*(name: static[string], types: static[set[ValueKind]]): untyped =
@@ -63,6 +63,10 @@ template registerAlias(n: string, alias: VSymbol, rule: PrecedenceKind): untyped
             precedence: rule,
             name: newWord(n)
         )
+
+#=======================================
+# Templates
+#=======================================
 
 template makeBuiltin*(n: string, alias: VSymbol, op: OpCode, rule: PrecedenceKind, description: string, args: untyped, attrs: static openArray[(string,(set[ValueKind],string))], returns: ValueSpec, example: string, act: untyped): untyped =
     when args.len == 1 and args == NoArgs:
