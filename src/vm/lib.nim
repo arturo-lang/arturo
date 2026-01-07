@@ -56,6 +56,14 @@ macro addAttrTypes*(attrs: untyped): untyped =
         result.add quote do:
             addOne(`attrs`, `i`)
 
+template registerAlias(n: string, alias: VSymbol, rule: PrecedenceKind): untyped =
+    ## Register an alias for a builtin or constant
+    when alias != unaliased:
+        Aliases[alias] = AliasBinding(
+            precedence: rule,
+            name: newWord(n)
+        )
+
 template makeBuiltin*(n: string, alias: VSymbol, op: OpCode, rule: PrecedenceKind, description: string, args: untyped, attrs: static openArray[(string,(set[ValueKind],string))], returns: ValueSpec, example: string, act: untyped): untyped =
     when args.len == 1 and args == NoArgs:
         const argsLen = 0
@@ -133,11 +141,7 @@ template makeBuiltin*(n: string, alias: VSymbol, op: OpCode, rule: PrecedenceKin
         elif n == "append":            DoAppend = b.action()
         elif n == "print":             DoPrint = b.action()
 
-        when alias != unaliased:
-            Aliases[alias] = AliasBinding(
-                precedence: rule,
-                name: newWord(n)
-            )
+        registerAlias(n, alias, rule)
     else:
         b
 
@@ -172,6 +176,10 @@ template builtinUnless*(flag: untyped, n: string, alias: VSymbol, op: OpCode, ru
             showUnsupportedMiniFeatureError(n)
 
 template adhoc*(description: string, args: untyped, attrs: static openArray[(string,(set[ValueKind],string))], returns: ValueSpec, act: untyped): untyped =
+    ## create new builtin, but not in the global namespace;
+    ## mainly used to create function in custom
+    ## dictionaries or objects at runtime,
+    ## e.g. `window` methods 
     makeBuiltin("", unaliased, opNop, PrefixPrecedence, description, args, attrs, returns, ""):
         require("", args)
 
@@ -206,7 +214,7 @@ template constant*(n: string, alias: VSymbol, description: string, v: Value): un
         SetSym(n, v)
         var vInfo = ValueInfo(
             descr: description,
-            module: moduleName,     # `moduleName` comes from the main library module definition!
+            module: moduleName,
             kind: v.kind
         )
 
@@ -215,8 +223,4 @@ template constant*(n: string, alias: VSymbol, description: string, v: Value): un
 
         GetSym(n).info = vInfo
 
-        when alias != unaliased:
-            Aliases[alias] = AliasBinding(
-                precedence: PrefixPrecedence,
-                name: newWord(n)
-            )
+        registerAlias(n, alias, PrefixPrecedence)
