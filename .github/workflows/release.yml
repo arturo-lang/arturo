@@ -97,7 +97,7 @@ jobs:
 
         steps:
             - name: Build Arturo
-              uses: arturo-lang/arturo-action@v2
+              uses: arturo-lang/setup-arturo@v2
               with: 
                 do: compile
                 token: ${{ secrets.GITHUB_TOKEN }}
