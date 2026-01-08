@@ -1,0 +1,93 @@
+name: Feature request
+description: Suggest an improvement for the Arturo language
+title: ""
+labels: [enhancement]
+assignees: [drkameleon, RickBarretto]
+body:
+  - type: markdown
+    attributes:
+      description: |
+        Thanks for proposing a feature for Arturo.
+
+  - type: input
+    id: summary
+    attributes:
+      label: Summary
+      description: One-line description of the requested feature.
+      placeholder: e.g., Add pattern-guarded function clauses
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+      description: Who is impacted and what limitation or friction exists today?
+      placeholder: Describe the current pain point when using the language, standard library, VM/runtime, or tooling.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+      description: Describe the desired behavior, new syntax, API, or workflow. Include how it should behave across platforms/targets.
+      placeholder: Outline the feature semantics, examples, and any constraints.
+    validations:
+      required: true
+
+  - type: markdown
+    id: examples
+    attributes:
+      label: Example code or script
+      description: Minimal Arturo snippet showing the feature in action. Include expected output or VM effects.
+      placeholder: |
+        ; minimal script demonstrating the feature
+        print [...]
+      render: shell
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      description: Where does this feature primarily belong?
+      multiple: true
+      options:
+        - Language syntax or semantics
+        - VM/runtime
+        - Standard library
+        - REPL / CLI
+				- Packages
+        - Tooling
+        - FFI
+        - Web
+        - Other
+    validations:
+      required: false
+
+  - type: textarea
+    id: compatibility
+    attributes:
+      label: Impact and compatibility
+      description: Note any breaking changes, performance implications, or interactions with existing modules.
+      placeholder: Breaking changes, migrations, performance expectations, platform considerations.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: readiness
+    attributes:
+      label: Readiness
+      description: Help us understand next steps.
+      options:
+        - label: I can help with implementation
+        - label: I can help with tests/spec updates
+        - label: I can help with docs/examples
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Links, prior art in other languages, related issues, or constraints.
+      placeholder: References, comparisons, design notes.
+	
