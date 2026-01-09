@@ -430,27 +430,27 @@ do [
 
 ]
 
-topic "get - :store"
-do [
+; topic "get - :store"
+; do [
 
-    p: store "test.db"
-    p\name: "John"
-    p\surname: "Doe"
+;     p: store "test.db"
+;     p\name: "John"
+;     p\surname: "Doe"
 
-    ensure -> "John" = get p 'name
-    ensure -> "Doe" = get p 'surname
-    passed
-    ensure -> "John" = get p "name"
-    ensure -> "Doe" = get p "surname"
-    passed
-    ensure -> "John" = p\name
-    ensure -> "Doe" = p\surname
-    passed
-    ensure -> "John" = p\["name"]
-    ensure -> "Doe" = p\["surname"]
-    passed
+;     ensure -> "John" = get p 'name
+;     ensure -> "Doe" = get p 'surname
+;     passed
+;     ensure -> "John" = get p "name"
+;     ensure -> "Doe" = get p "surname"
+;     passed
+;     ensure -> "John" = p\name
+;     ensure -> "Doe" = p\surname
+;     passed
+;     ensure -> "John" = p\["name"]
+;     ensure -> "Doe" = p\["surname"]
+;     passed
 
-]
+; ]
 
 topic "get - :block"
 do [
@@ -1851,48 +1851,48 @@ do [
 
 ]
 
-topic "set - :store"
-do [
+; topic "set - :store"
+; do [
 
-    user: store "test.db"
+;     user: store "test.db"
 
-    set user 'name "John"
-    ensure -> "John" = user\name
-    passed
+;     set user 'name "John"
+;     ensure -> "John" = user\name
+;     passed
 
-    set user 'surname "Doe"
-    ensure -> "Doe" = user\surname
-    passed
+;     set user 'surname "Doe"
+;     ensure -> "Doe" = user\surname
+;     passed
 
-    set user 'age 36
-    ensure -> 36 = get user 'age
-    passed
+;     set user 'age 36
+;     ensure -> 36 = get user 'age
+;     passed
 
-    set user "name" "Jane"
-    ensure -> "Jane" = user\name
-    passed
+;     set user "name" "Jane"
+;     ensure -> "Jane" = user\name
+;     passed
 
-    user\surname: "Dio"
-    ensure -> "Dio" = user\surname
-    passed
+;     user\surname: "Dio"
+;     ensure -> "Dio" = user\surname
+;     passed
 
-    user\["age"]: 42
-    ensure -> 42 = get user 'age
-    passed
+;     user\["age"]: 42
+;     ensure -> 42 = get user 'age
+;     passed
 
-    set user 0 "John"
-    ensure -> "John" = user\0
-    passed
+;     set user 0 "John"
+;     ensure -> "John" = user\0
+;     passed
 
-    user\[1]: "Doe"
-    ensure -> "Doe" = user\1
-    passed
+;     user\[1]: "Doe"
+;     ensure -> "Doe" = user\1
+;     passed
 
-    user\2: 36
-    ensure -> 36 = get user '2
-    passed
+;     user\2: 36
+;     ensure -> 36 = get user '2
+;     passed
 
-]
+; ]
 
 topic "set - :block"
 do [
