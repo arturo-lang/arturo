@@ -107,12 +107,6 @@
 [+] passed!
 [+] passed!
 
->> get - :store
-[+] passed!
-[+] passed!
-[+] passed!
-[+] passed!
-
 >> get - :block
 [+] passed!
 [+] passed!
@@ -497,17 +491,6 @@
 [+] passed!
 
 >> set - :object
-[+] passed!
-[+] passed!
-[+] passed!
-[+] passed!
-[+] passed!
-[+] passed!
-
->> set - :store
-[+] passed!
-[+] passed!
-[+] passed!
 [+] passed!
 [+] passed!
 [+] passed!
