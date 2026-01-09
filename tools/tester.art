@@ -25,7 +25,6 @@ canExecute?: function [scr][
     
     if sys\os = "freebsd" [
         if in? scr [
-            "lib.collections"
             "quantities"
         ] -> return false
     ]
