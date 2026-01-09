@@ -69,6 +69,9 @@ template registerAlias(n: string, alias: VSymbol, rule: PrecedenceKind): untyped
 #=======================================
 
 template makeBuiltin*(n: string, alias: VSymbol, op: OpCode, rule: PrecedenceKind, description: string, args: untyped, attrs: static openArray[(string,(set[ValueKind],string))], returns: ValueSpec, example: string, act: untyped): untyped =
+    when defined(DEV):
+        static: echo " -> " & n
+
     when args.len == 1 and args == NoArgs:
         const argsLen = 0
     else:
@@ -90,7 +93,18 @@ template makeBuiltin*(n: string, alias: VSymbol, op: OpCode, rule: PrecedenceKin
         cleanExample,
         op,
         proc () =
-            act
+            hookProcProfiler("lib/require"):
+                require(n, args)
+
+            when attrs != NoAttrs:
+                addAttrTypes(attrs)
+
+            {.emit: "////implementation: " & (static (instantiationInfo().filename.replace(".nim"))) & "/" & n .}
+
+            hookFunctionProfiler(n):
+                act
+
+            {.emit: "////end: " & (static (instantiationInfo().filename.replace(".nim"))) & "/" & n .}
     )
 
     when n != "":
@@ -155,22 +169,8 @@ template builtin*(n: string, alias: VSymbol, op: OpCode, rule: PrecedenceKind, d
     ## executed when the function is called
     
     when not defined(BUNDLE) or BundleSymbols.contains(n):
-        when defined(DEV):
-            static: echo " -> " & n
-
         makeBuiltin(n, alias, op, rule, description, args, attrs, returns, example):
-            hookProcProfiler("lib/require"):
-                require(n, args)
-
-            when attrs != NoAttrs:
-                addAttrTypes(attrs)
-
-            {.emit: "////implementation: " & (static (instantiationInfo().filename.replace(".nim"))) & "/" & n .}
-
-            hookFunctionProfiler(n):
-                act
-
-            {.emit: "////end: " & (static (instantiationInfo().filename.replace(".nim"))) & "/" & n .}
+            act
 
 template builtinUnless*(flag: untyped, n: string, alias: VSymbol, op: OpCode, rule: PrecedenceKind, description: string, args: untyped, attrs: static openArray[(string,(set[ValueKind],string))], returns: ValueSpec, example: string, act: untyped): untyped =
     when not defined(flag):
@@ -185,11 +185,6 @@ template adhoc*(description: string, args: untyped, attrs: static openArray[(str
     ## dictionaries or objects at runtime,
     ## e.g. `window` methods 
     makeBuiltin("", unaliased, opNop, PrefixPrecedence, description, args, attrs, returns, ""):
-        require("", args)
-
-        when attrs != NoAttrs:
-            addAttrTypes(attrs)
-
         act
 
 template adhocPrivate*(args: untyped, attrs: static openArray[(string,(set[ValueKind],string))], act: untyped): untyped =
