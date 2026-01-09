@@ -1,0 +1,3322 @@
+; helper function
+debug: $[variable][
+    print[variable type variable]
+]
+
+topic: $[topic :string] -> print ~"\n>> |topic|"
+passed: $[] -> print "[+] passed!"
+
+
+; ==> Tests
+
+; couple don't support literals yet
+topic "couple"
+do [
+    ensure -> [["one" 1] ["two" 2] ["three" 3]] = couple ["one" "two" "three"] [1 2 3]
+    passed
+]
+
+topic "drop - :string < :string :string"
+do [
+
+    ensure -> "art" = drop.times:0 "art"
+    passed
+
+    ensure -> "rt" = drop "art"
+    ensure -> "t" = drop.times:2 "art"
+    passed
+
+    ensure -> "" = drop.times:3 "art"
+    ensure -> "" = drop.times:4 "art"
+    passed
+
+    ensure -> "art" = drop.times: neg 0 "art"
+    passed
+
+    ensure -> "ar" = drop.times: neg 1 "art"
+    ensure -> "a" = drop.times: neg 2 "art"
+    passed
+
+    ensure -> "" = drop.times: neg 3 "art"
+    ensure -> "" = drop.times: neg 4 "art"
+    passed
+
+]
+
+topic "drop - :string < :string (literal) :string"
+do [
+
+    a: "art", drop.times:0 'a
+    ensure -> "art" = a
+    passed
+
+    a: "art", drop 'a
+    ensure -> "rt" = a
+    a: "art", drop.times:2 'a
+    ensure -> "t" = a
+    passed
+
+    a: "art", drop.times:3 'a
+    ensure -> "" = a
+    a: "art", drop.times:4 'a
+    ensure -> "" = a
+    passed
+
+    a: "art", drop.times: neg 0 'a
+    ensure -> "art" = a
+    passed
+
+    a: "art", drop.times: neg 1 'a
+    ensure -> "ar" = a
+    a: "art", drop.times: neg 2 'a
+    ensure -> "a" = a
+    passed
+
+    a: "art", drop.times: neg 3 'a
+    ensure -> "" = a
+    a: "art", drop.times: neg 4 'a
+    ensure -> "" = a
+    passed
+
+]
+topic "drop - :string < :string (pathLiteral) :string"
+do [
+
+    str: "art", 
+    
+    a: new str
+    b: #[b: new str]
+
+    drop 'a
+    drop 'b\b
+    ensure -> a = b\b
+    passed
+
+]
+
+topic "drop - :block < :block :block"
+do [
+
+    ensure -> [a b c] = drop.times:0 [a b c]
+    passed
+
+    ensure -> [b c] = drop [a b c]
+    ensure -> [c] = drop.times:2 [a b c]
+    passed
+
+    ensure -> [] = drop.times:3 [a b c]
+    ensure -> [] = drop.times:4 [a b c]
+    passed
+
+    ensure -> [a b c] = drop.times: neg 0 [a b c]
+    passed
+
+    ensure -> [a b] = drop.times: neg 1 [a b c]
+    ensure -> [a] = drop.times: neg 2 [a b c]
+    passed
+
+    ensure -> [] = drop.times: neg 3 [a b c]
+    ensure -> [] = drop.times: neg 4 [a b c]
+    passed
+
+]
+
+topic "drop - :block < :block (literal) :block"
+do [
+
+    a: [a b c], drop.times:0 'a
+    ensure -> [a b c] = a
+    passed
+
+    a: [a b c], drop 'a
+    ensure -> [b c] = a
+    a: [a b c], drop.times:2 'a
+    ensure -> [c] = a
+    passed
+
+    a: [a b c], drop.times:3 'a
+    ensure -> [] = a
+    a: [a b c], drop.times:4 'a
+    ensure -> [] = a
+    passed
+
+    a: [a b c], drop.times: neg 0 'a
+    ensure -> [a b c] = a
+    passed
+
+    a: [a b c], drop.times: neg 1 'a
+    ensure -> [a b] = a
+    a: [a b c], drop.times: neg 2 'a
+    ensure -> [a] = a
+    passed
+
+    a: [a b c], drop.times: neg 3 'a
+    ensure -> [] = a
+    a: [a b c], drop.times: neg 4 'a
+    ensure -> [] = a
+    passed
+
+]
+
+topic "empty - empty?"
+do [
+    b1: ["Arturo" "C" "Python" "Ruby"]
+    b2: [1 2 3 4 5 6 7 8 9 10]
+    b3: @['north 'south 'east 'west]
+    s: "Arturo"
+    d: #[ name: "John" surname: "Doe"]
+    p: #[p: #[ name: "John" surname: "Doe"]]
+
+    empty 'b1
+    empty 'b2
+    empty 'b3
+    empty 's
+    empty 'd
+    empty 'p\p
+
+    ensure -> empty? b1
+    passed
+    ensure -> empty? b2
+    passed
+    ensure -> empty? b3
+    passed
+    ensure -> empty? s
+    passed
+    ensure -> empty? d
+    passed
+    ensure -> empty? p\p
+    passed
+]
+
+
+topic "extend"
+do [
+
+    person: #[ name: "john" surname: "doe" ]
+    ensure -> (#[ name: "john" surname: "doe" age: 35 ]) = extend person #[ age: 35 ]
+    passed
+]
+
+topic "extend (literal)"
+do [
+
+    person: #[ name: "john" surname: "doe" ]
+    extend 'person #[ age: 35 ]
+    ensure -> (#[ name: "john" surname: "doe" age: 35 ]) = person
+    passed
+]
+
+topic "extend (pathLiteral)"
+do [
+
+    person: #[ name: "john" surname: "doe" ]
+    
+    a: new person
+    b: #[b: new person]
+
+    extend 'a #[ age: 35 ]
+    extend 'b\b #[ age: 35 ]
+    ensure -> a = b\b
+    passed
+]
+
+topic "first - .n"
+do [
+
+    ensure -> 'A' = first "Arturo"
+    passed
+    ensure -> "A" <> first "Arturo"
+    passed
+    ensure -> "Art" = first.n: 3 "Arturo"
+    passed
+
+    ensure -> "one" = first ["one" "two" "three"]
+    passed
+    ensure -> ["one" "two"] = first.n: 2 ["one" "two" "three"]
+    passed
+
+    ensure -> 5 = first 5..10
+    passed
+    ensure -> (@5..7) = @first.n: 3 5..10
+    passed
+
+
+    ; --- New tests for range
+    a: range 0 499
+    b: range.step: 2 1 499
+    c: range.step: 3 2 499
+
+    ensure -> 0 = first a
+    ensure -> 1 = first b
+    ensure -> 2 = first c
+    passed
+
+    ensure -> [0 1 2] = @first.n: 3 a
+    ensure -> [1 3 5] = @first.n: 3 b
+    ensure -> [2 5 8] = @first.n: 3 c
+    ensure -> (0..2) = first.n: 3 a
+    ensure -> (range.step: 2 1 5) = first.n: 3 b
+    ensure -> (range.step: 3 2 8) = first.n: 3 c
+    passed
+
+
+    a: range 'a' 'l'
+    b: range.step: 2 'a' 'l'
+
+    ensure -> 'a' = first a
+    ensure -> 'a' = first b
+    passed
+
+    ensure -> ['a' 'b'] = @first.n: 2 a
+    ensure -> ['a' 'c'] = @first.n: 2 b
+    ensure -> ('a'..'b') = first.n: 2 a
+    ensure -> (range.step: 2 'a' 'c') = first.n: 2 b
+    passed
+
+    ensure -> 5 = first range.step: 2 5 0
+    ensure -> [5 4 3] = @first.n: 3 range 5 0
+    ensure -> [5 3] = @first.n: 2 range.step: 2 5 0
+    ensure -> (5..3) = first.n: 3 range 5 0
+    ensure -> (range.step: 2 5 3) = first.n: 2 range.step: 2 5 0
+    passed
+
+    ensure -> 0 = first.n: 1 range 0 5
+    ensure -> 5 = first.n: 1 range 5 0
+    ensure -> 0 = first.n: 0 range 0 5
+    ensure -> 5 = first.n: 0 range 5 0
+    passed
+
+    if throws? -> first.n: neg 2 range 0 5 -> passed
+
+    if not? throws? -> first.n: 7 range 0 5 -> passed
+
+]
+
+topic "flatten"
+do [
+
+    ensure -> [1 2 3 4 5 6] = flatten [[1 2 3] [4 5 6]]
+    passed
+
+    a: [[1 2 3] [4 5 6]], flatten 'a
+    ensure -> [1 2 3 4 5 6] = a
+    passed
+    
+    blk: [[1 2 3] [4 5 6]], 
+    
+    a: new blk
+    b: #[b: new blk]
+    
+    flatten 'a
+    flatten 'b\b
+    ensure -> a = b\b
+    passed
+
+]
+
+topic "flatten.once"
+do [
+
+    ensure -> [1 2 3 4 [5 6]] = flatten.once [1 [2 3] [4 [5 6]]]
+    passed
+
+    a: [1 [2 3] [4 [5 6]]], flatten.once 'a
+    ensure -> [1 2 3 4 [5 6]] = a
+    passed
+
+]
+
+topic "get - :string"
+do [
+
+    ensure -> 'r' = get "Arturo" 1
+    passed
+
+    s: "Arturo"
+
+    ensure -> 'r' = s\1
+    passed
+
+    i: 0
+    ensure -> 'r' = s\[i + 1]
+    passed
+
+    ensure -> "Art"    = get s 0..2
+    ensure -> "Artur"  = get s 0..4
+    ensure -> "Arturo" = get s 0..5
+    ensure -> "orutrA" = get s 5..0
+    ensure -> "rutrA"  = get s 4..0
+    ensure -> "trA"    = get s 2..0
+    ensure -> "r"      = get s 1..1
+    passed
+
+    ensure -> "Art" = s\[0..2]
+    ensure -> "Artur" = s\[0..4]
+    ensure -> "Arturo" = s\[0..5]
+    ensure -> "orutrA" = s\[5..0]
+    ensure -> "rutrA" = s\[4..0]
+    ensure -> "trA" = s\[2..0]
+    ensure -> "r" = s\[1..1]
+    passed
+
+]
+
+topic "get - :date"
+do [
+
+    d: to :date .format: "MMM dd" "Jan 15"
+
+    ensure -> 1 = d\month
+    passed
+    ensure -> 15 = d\day
+    passed
+]
+
+topic "get - :binary"
+do [
+    bi: to :binary 65000
+    ensure -> 0xE8 = get bi 1
+    passed
+]
+
+
+topic "get - :dictionary"
+do [
+
+    user: #[
+        name: "John"
+        surname: "Doe"
+    ]
+
+    ensure -> "John" = user\name
+    passed
+    ensure -> "John" = user\["name"]
+    passed
+    ensure -> "John" = get user 'name
+    passed
+    ensure -> "Doe" = get user 'surname
+    passed
+    ensure -> "Doe" = user\["surname"]
+    passed
+
+]
+
+topic "get - :object"
+do [
+    define :person [
+        init: method [name, surname][
+            this\name: capitalize name
+            this\surname: surname
+        ]
+
+        string: method [][
+            ~"NAME: |this\name|, SURNAME: |this\surname|"
+        ]
+    ]
+
+    p: to :person ["John" "Doe"]
+    ensure -> "John" = get p 'name
+    ensure -> "Doe" = get p 'surname
+    passed
+    ensure -> "John" = get p "name"
+    ensure -> "Doe" = get p "surname"
+    passed
+    ensure -> "John" = p\name
+    ensure -> "Doe" = p\surname
+    passed
+    ensure -> "John" = p\["name"]
+    ensure -> "Doe" = p\["surname"]
+    passed
+
+]
+
+topic "get - :store"
+do [
+
+    p: store "test.db"
+    p\name: "John"
+    p\surname: "Doe"
+
+    ensure -> "John" = get p 'name
+    ensure -> "Doe" = get p 'surname
+    passed
+    ensure -> "John" = get p "name"
+    ensure -> "Doe" = get p "surname"
+    passed
+    ensure -> "John" = p\name
+    ensure -> "Doe" = p\surname
+    passed
+    ensure -> "John" = p\["name"]
+    ensure -> "Doe" = p\["surname"]
+    passed
+
+]
+
+topic "get - :block"
+do [
+
+    a: ["zero" "one" "two"]
+    ensure -> "zero" = get a 0
+    ensure -> "zero" = a\0
+    passed
+    ensure -> "one" = get a 1
+    ensure -> "one" = a\1
+    passed
+    ensure -> "two" = get a 2
+    ensure -> "two" = a\2
+    passed
+
+]
+
+topic "get - :range"
+do [
+    ensure -> 1 = get range 0 10 1
+    passed
+    ensure -> 5 = get 5..10 0
+    passed
+]
+
+topic "get - :bytecode"
+do [
+    bt: to :bytecode [print "hello"]
+    ensure -> ["hello"] = bt\data
+    ensure -> [32 189 223] = bt\code
+    passed
+    ensure -> ["hello"] = get bt 'data
+    ensure -> [32 189 223] = get bt 'code
+    passed
+    ensure -> ["hello"] = get bt "data"
+    ensure -> [32 189 223] = get bt "code"
+    passed
+    ensure -> ["hello"] = bt\["data"]
+    ensure -> [32 189 223] = bt\["code"]
+    passed
+]
+
+topic "get - :complex"
+do [
+
+    a: to :complex [1 2]
+
+    ensure -> 1 = a\re
+    ensure -> 1 = a\real
+    passed
+
+    ensure -> 2 = a\im
+    ensure -> 2 = a\imaginary
+    passed
+
+    ensure -> 1 = a\["re"]
+    ensure -> 1 = a\["real"]
+    passed
+
+    ensure -> 2 = a\["im"]
+    ensure -> 2 = a\["imaginary"]
+    passed
+
+    ensure -> 1 = get a 're
+    ensure -> 1 = get a 'real
+    passed
+
+    ensure -> 2 = get a 'im
+    ensure -> 2 = get a 'imaginary
+    passed
+
+    ensure -> 1 = a\0
+    ensure -> 1 = a\0
+    passed
+
+    ensure -> 2 = a\1
+    ensure -> 2 = a\1
+    ensure -> 2 = a\1
+    passed
+
+    ensure -> 1 = get a 0
+    ensure -> 1 = get a 0
+    passed
+
+    ensure -> 2 = get a 1
+    ensure -> 2 = get a 1
+    ensure -> 2 = get a 1
+    passed
+
+]
+
+topic "in? - :string"
+do [
+    str: "Arturo"
+    ensure -> in? "Art" str        ; :string
+    passed
+    ensure -> in? 't' str           ; :char
+    passed
+    ensure -> in? {/[Art]/} str     ; :regex
+    passed
+    ensure -> not? in? "Football" str
+    passed
+    ensure -> in?.at:0 "Art" str
+    passed
+    ensure -> not? in?.at:2 "Art" str
+    passed
+]
+
+topic "in? - :block"
+do [
+    block: ["Arturo" "Python" "Ruby"]
+    ensure -> in? "Arturo" block
+    passed
+    ensure -> not? in? "F#" block
+    passed
+    ensure -> in?.at:0 "Arturo" block
+    passed
+    ensure -> not? in?.at:2 "Python" block
+    passed
+]
+
+topic "in? - with nested :block"
+do [
+    nested: [["Arturo" "Python" "Ruby"] ["C" "C++" "Nim"]]
+    ensure -> not? in? "Arturo" nested
+    passed
+    ensure -> in? ["C" "C++" "Nim"] nested
+    passed
+    ensure -> not? in?.at:0 ["C" "C++" "Nim"] nested
+    passed
+    ensure -> not? in?.at:1 "Python" nested
+    passed
+]
+
+topic "in? - with :range"
+do [
+    rng: 1..10
+    ensure -> in? 5 rng
+    passed
+    ensure -> not? in? 0 rng
+    passed
+    ensure -> in? 5 1..10
+    passed
+    ensure -> not? in? 0 1..10
+    passed
+    ensure -> in?.at:0 1 1..10
+    passed
+    ensure -> not? in?.at:0 0 1..10
+    passed
+]
+
+topic "in? - with :dictionary"
+do [
+    dict: #[ name: "John" surname: "Doe"]
+    ensure -> in? "name" keys dict
+    passed
+    ensure -> in?.at:0 "name" keys dict
+    passed
+    ensure -> not? in?.at:1 "name" keys dict
+    passed
+    ensure -> not? in? "id" keys dict
+    passed
+    ensure -> in? "John" dict
+    passed
+    ensure -> in?.at:0 "John" dict
+    passed
+    ensure -> not? in?.at:1 "John" dict
+    passed
+    ensure -> not? in? "Jane" dict
+    passed
+
+]
+
+topic "in?.deep - with :block"
+do [
+
+    ensure -> in?.deep 6 [1 2 4 [3 4 [5 6] 7] 8 [9 10]]
+    ensure -> in?.deep 5 [1 2 4 [3 4 [5 6] 7] 8 [9 10]]
+    ensure -> in?.deep 8 [1 2 4 [3 4 [5 6] 7] 8 [9 10]]
+    ensure -> in?.deep 9 [1 2 4 [3 4 [5 6] 7] 8 [9 10]]
+    ensure -> in?.deep 3 [1 2 4 [3 4 [5 6] 7] 8 [9 10]]
+    ensure -> in?.deep 4 [1 2 4 [3 4 [5 6] 7] 8 [9 10]]
+    ensure -> in?.deep 2 [1 2 4 [3 4 [5 6] 7] 8 [9 10]]
+    ensure -> in?.deep 1 [1 2 4 [3 4 [5 6] 7] 8 [9 10]]
+    ensure -> in?.deep 10 [1 2 4 [3 4 [5 6] 7] 8 [9 10]]
+    passed
+    ensure -> not? in?.deep 0 [1 2 4 [3 4 [5 6] 7] 8 [9 10]]
+    ensure -> not? in?.deep 11 [1 2 4 [3 4 [5 6] 7] 8 [9 10]]
+    passed
+
+]
+
+topic "in?.deep - with :dictionary"
+do [
+
+    user: #[
+        name: "John"
+        surname: "Doe"
+        mom: #[
+            name: "Jane"
+            surname: "Doe"
+        ]
+    ]
+
+    ensure -> in?.deep "John" user
+    ensure -> in?.deep "Jane" user
+    ensure -> in?.deep "Doe" user
+    passed
+    ensure -> not? in?.deep "Joshep" user
+    ensure -> not? in?.deep "Juan" user
+    passed
+
+]
+
+
+topic "index - :string"
+do [
+
+    ensure -> 0 = index "Arturo" "Art"
+    passed
+    ensure -> 3 = index "Arturo" "uro"
+    passed
+
+]
+
+topic "index - :dictionary"
+do [
+
+    user: #[
+        name: "John"
+        surname: "Doe"
+    ]
+
+    ensure -> "name" = index user "John"
+    passed
+    ensure -> "surname" = index user "Doe"
+    passed
+
+]
+
+topic "index - :block"
+do [
+
+    a: ["zero" "one" "two"]
+    ensure -> 0 = index a "zero"
+    passed
+    ensure -> 1 = index a "one"
+    passed
+    ensure -> 2 = index a "two"
+    passed
+
+]
+
+topic "index - :range"
+do [
+    ensure -> 1 = index range 0 10 1
+    passed
+    ensure -> 0 = index 5..10 5
+    passed
+]
+
+topic "insert - :string"
+do [
+
+    ensure -> "CPython" = insert "Python" 0 'C'
+    passed
+    ensure -> "Arturo Programming Language"
+        = insert "Arturo Language" 6 " Programming"
+    passed
+
+]
+
+topic "insert - :string (literal)"
+do [
+
+    py: "Python", insert 'py 0 'C'
+    art: "Arturo Language", insert 'art 6 " Programming"
+
+    ensure -> "CPython" = py
+    passed
+    ensure -> "Arturo Programming Language" = art
+    passed
+
+]
+
+topic "insert - :string (pathLiteral)"
+do [
+
+    blk: "Python", 
+    
+    a: new blk
+    b: #[b: new blk]
+    
+    insert 'a 0 'C'
+    insert 'b\b 0 'C'
+
+    ensure -> a = b\b
+    passed
+
+]
+
+
+topic "get - :dictionary"
+do [
+
+    user: #[
+        name: "John"
+        surname: "Doe"
+    ]
+
+    ensure -> (#[name: "John" surname: "Doe" age: 36])
+        = insert user "age" 36
+    passed
+
+]
+
+topic "get - :dictionary (literal)"
+do [
+
+    user: #[
+        name: "John"
+        surname: "Doe"
+    ]
+
+    insert 'user "age" 36
+
+    ensure -> (#[name: "John" surname: "Doe" age: 36]) = user
+    passed
+
+]
+
+topic "get - :block"
+do [
+
+    a: ["zero" "two" "three"]
+    ensure -> ["zero" "one" "two" "three"]
+        = insert a 1 "one"
+    passed
+
+]
+
+topic "get - :block (literal)"
+do [
+
+    a: ["zero" "two" "three"]
+    insert 'a 1 "one"
+    ensure -> ["zero" "one" "two" "three"]
+        = a
+    passed
+
+]
+
+topic "key? - :dictionary"
+do [
+
+    user: #[ name: "John" surname: "Doe" ]
+    ensure -> key? user 'name
+    ensure -> key? user "name"
+    passed
+    ensure -> key? user 'surname
+    ensure -> key? user "surname"
+    passed
+    ensure -> not? key? user 'age
+    ensure -> not? key? user "age"
+    passed
+
+]
+
+topic "key? - :object"
+do [
+
+    define :person [
+        init: method [name, surname][
+            this\name: capitalize name
+            this\surname: surname
+        ]
+
+        string: method [][
+            ~"NAME: |this\name|, SURNAME: |this\surname|"
+        ]
+    ]
+
+    p: to :person ["John" "Doe"]
+    ensure -> key? p 'name
+    ensure -> key? p "name"
+    passed
+    ensure -> key? p 'surname
+    ensure -> key? p "surname"
+    passed
+    ensure -> not? key? p 'age
+    ensure -> not? key? p "age"
+    passed
+]
+
+
+topic "keys - :dictionary"
+do [
+
+    user: #[ name: "John" surname: "Doe" ]
+    ensure -> ["name" "surname"] = keys user
+    passed
+
+]
+
+topic "keys - :object"
+do [
+
+    define :person [
+        init: method [name, surname][
+            this\name: capitalize name
+            this\surname: surname
+        ]
+
+        string: method [][
+            ~"NAME: |this\name|, SURNAME: |this\surname|"
+        ]
+    ]
+
+    p: to :person ["John" "Doe"]
+    ensure -> every? ["name" "surname"] => [contains? keys p &]
+    passed
+]
+
+topic "last - .n"
+do [
+
+    ensure -> 'o' = last "Arturo"
+    passed
+    ensure -> "o" <> last "Arturo"
+    passed
+    ensure -> "uro" = last.n: 3 "Arturo"
+    passed
+
+    ensure -> "three" = last ["one" "two" "three"]
+    passed
+    ensure -> ["two" "three"] = last.n: 2 ["one" "two" "three"]
+    passed
+
+    ensure -> 10 = last 5..10
+    passed
+    ensure -> (8..10) = last.n: 3 5..10
+    passed
+
+    ensure -> infinite = last 5..infinite
+    passed
+    ensure -> infinite = last.n: 2 5..infinite
+    passed
+
+    ; --- New tests for range
+    a: range 0 499
+    b: range.step: 2 0 499
+    c: range.step: 3 0 499
+
+    ensure -> 499 = last a
+    ensure -> 498 = last b
+    ensure -> 498 = last c
+    passed
+
+    ensure -> [497, 498, 499] = @last.n: 3 a
+    ensure -> [494, 496, 498] = @last.n: 3 b
+    ensure -> [492, 495, 498] = @last.n: 3 c
+    ensure -> (497..499) = last.n: 3 a
+    ensure -> (range.step: 2 494 498) = last.n: 3 b
+    ensure -> (range.step: 3 492 498) = last.n: 3 c
+    passed
+
+
+    a: range 'a' 'l'
+    b: range.step: 2 'a' 'l'
+
+    ensure -> 'l' = last a
+    ensure -> 'k' = last b
+    passed
+
+    ensure -> ['k' 'l'] = @last.n: 2 a
+    ensure -> ['i' 'k'] = @last.n: 2 b
+    ensure -> ('k'..'l') = last.n: 2 a
+    ensure -> (range.step: 2 'i' 'k') = last.n: 2 b
+    passed
+
+    ensure -> 1 = last range.step: 2 5 0
+    ensure -> [2 1 0] = @last.n: 3 range 5 0
+    ensure -> [3 1] = @last.n: 2 range.step: 2 5 0
+    ensure -> (2..0) = last.n: 3 range 5 0
+    ensure -> (range.step: 2 3 1) = last.n: 2 range.step: 2 5 0
+    passed
+
+    ensure -> 5 = last.n: 1 range 0 5
+    ensure -> 0 = last.n: 1 range 5 0
+    ensure -> 5 = last.n: 0 range 0 5
+    ensure -> 0 = last.n: 0 range 5 0
+    passed
+
+    if throws? -> last.n: neg 2 range 0 5 -> passed
+
+    if not? throws? -> last.n: 7 range 0 5 -> passed
+
+
+]
+
+topic "max - [:integer] - .index"
+do [
+    ensure -> 9 = max [4 2 8 5 9 1]
+    passed
+    ensure -> 4 = max.index [4 2 8 5 9 1]
+    passed
+]
+
+topic "max - [:string] - .index"
+do [
+    ensure -> "Manchester" = max ["Granada" "Manchester" "Boston"]
+    passed
+    ensure -> 1 = max.index ["Granada" "Manchester" "Boston"]
+    passed
+]
+
+topic "max - [:literal] - .index"
+do [
+    ensure -> 'manchester = max ['granada 'manchester 'boston]
+    passed
+    ensure -> 1 = max.index ['granada 'manchester 'boston]
+    passed
+]
+
+topic "max - :range - .index"
+do [
+    ensure -> 10 = max 0..10
+    ensure -> 10 = max range 0 10
+    passed
+    ensure -> 5 = max.index 5..10
+    ensure -> 5 = max.index range 5 10
+    passed
+]
+
+
+topic "min - [:integer] - .index"
+do [
+    ensure -> 1 = min [4 2 8 5 9 1]
+    passed
+    ensure -> 5 = min.index [4 2 8 5 9 1]
+    passed
+]
+
+topic "min - [:string] - .index"
+do [
+    ensure -> "Boston" = min ["Granada" "Manchester" "Boston"]
+    passed
+    ensure -> 2 = min.index ["Granada" "Manchester" "Boston"]
+    passed
+]
+
+topic "min - [:literal] - .index"
+do [
+    ensure -> 'boston = min ['granada 'manchester 'boston]
+    passed
+    ensure -> 2 = min.index ['granada 'manchester 'boston]
+    passed
+]
+
+topic "min - :range - .index"
+do [
+    ensure -> 0 = min 0..10
+    ensure -> 0 = min range 10 0
+    passed
+    ensure -> 5 = min.index 10..5
+    ensure -> 0 = min.index range 5 10
+    passed
+]
+
+topic "one?"
+do [
+
+    ensure -> not? one? null
+    ensure -> not? one? ø
+    ensure -> not? one? infinite
+    ensure -> not? one? ∞
+    passed
+
+    ensure -> one? 1
+    ensure -> not? one? 0
+    ensure -> not? one? 5
+    passed
+
+    ensure -> one? 1.0
+    ensure -> not? one? 1.1
+    ensure -> not? one? 0.0
+    ensure -> not? one? 0.1
+    ensure -> not? one? 5
+    passed
+
+    ensure -> one? "1"
+    ensure -> one? "0"
+    ensure -> not? one? ""
+    ensure -> not? one? "Arturo"
+    passed
+
+    ensure -> one? #[name: "Jane"]
+    ensure -> not? one? #[]
+    ensure -> not? one? #[name: "Jane" surname: "Doe"]
+    passed
+
+    ensure -> one? [a]
+    ensure -> not? one? []
+    ensure -> not? one? [a b]
+    ensure -> not? one? [a b c d e f]
+    passed
+
+    ensure -> one? 0..0
+    ensure -> not? one? 0..1
+    ensure -> not? one? 0..10
+    passed
+
+]
+
+
+topic "permutate"
+do [
+
+    ensure -> [[A B C] [A C B] [B A C] [B C A] [C A B] [C B A]]
+        = permutate [A B C]
+    passed
+
+    ensure -> [
+        [A A A] [A A B] [A A C] [A B A] [A B B] [A B C] [A C A] [A C B] [A C C]
+        [B A A] [B A B] [B A C] [B B A] [B B B] [B B C] [B C A] [B C B] [B C C]
+        [C A A] [C A B] [C A C] [C B A] [C B B] [C B C] [C C A] [C C B] [C C C]]
+        = permutate.repeated [A B C]
+    passed
+
+    ensure -> [[A B] [A C] [B A] [B C] [C A] [C B]]
+        = permutate.by:2 [A B C]
+    passed
+
+    ensure -> [[A A] [A B] [A C] [B A] [B B] [B C] [C A] [C B] [C C]]
+        = permutate.repeated.by:2 [A B C]
+    passed
+
+    ensure -> 6 = permutate.count [A B C]
+    passed
+    ensure -> 6 = permutate.count.by: 2 [A B C]
+    passed
+    ensure -> 27 = permutate.count.repeated [A B C]
+    passed
+    ensure -> 9 = permutate.count.repeated.by:2 [A B C]
+    passed
+
+    ensure -> 1 = permutate.count.by: 0 [A B C]
+    passed
+    ensure -> [[]] = permutate.by: 0 [A B C]
+    passed
+    ensure -> 0 = permutate.count.by: 10 [A B C]
+    passed
+    ensure -> [] = permutate.by: 10 [A B C]
+    passed
+    ensure -> 8 = permutate.count.repeated.by: 3 [A B]
+    passed
+    ensure -> [[A A A] [A A B] [A B A] [A B B] [B A A] [B A B] [B B A] [B B B]]
+        = permutate.repeated.by:3 [A B]
+    passed
+
+]
+
+
+topic "pop"
+do [
+
+    topic "pop - :block .n"
+
+    a: [0 1 2 3 4 5]
+    b: pop 'a
+
+    ensure -> [0 1 2 3 4] = a
+    ensure -> 5 = b
+    passed
+
+    b: pop.n: 2 'a
+
+    ensure -> [0 1 2] = a
+    ensure -> [3 4] = b
+    passed
+
+
+    topic "pop - :string .n"
+
+    a: "Arturoo"
+    b: pop 'a
+
+    ensure -> "Arturo" = a
+    ensure -> 'o' = b
+    passed
+
+    b: pop.n: 3 'a
+
+    ensure -> "Art" = a
+    ensure -> "uro" = b
+    passed
+
+
+]
+
+topic "pop - pathLiteral"
+do [
+    blk: [0 1 2 3 4]
+    a: new blk
+    b: #[b: new blk]
+
+    pop 'a
+    pop 'b\b
+    ensure -> a = b\b
+    passed
+]
+
+
+topic "prepend"
+do [
+
+    topic "prepend - :binary < :binary :binary"
+    do [
+        b0: to :binary 0
+        b1: to :binary 1
+
+        ensure -> to :string .format:".b" 1 = prepend b1 b0
+        passed
+    ]
+
+    topic "prepend - :binary < :binary (literal) :binary"
+    do [
+        b0: to :binary 0
+        b1: to :binary 1
+        prepend 'b1 b0
+
+        ensure -> to :string .format:".b" 1 = b1
+        passed
+    ]
+
+    topic "prepend - :binary < :binary :integer"
+    do [
+        b: to :binary 1
+        ensure -> to :string .format:".b" = prepend b 0
+        passed
+    ]
+
+    topic "prepend - :binary < :binary (literal) :integer"
+    do [
+        b: to :binary 1
+        prepend 'b 0
+        ensure -> to :string .format:".b" 0 = b
+        passed
+    ]
+
+    topic "prepend - :string < :string + :string"
+    do [
+        ensure -> "Arturo" = prepend "uro" "Art"
+        passed
+    ]
+
+    topic "prepend - :string < :string (literal) + :string"
+    do [
+        s: "uro"
+        prepend 's "Art"
+        ensure -> "Arturo" = s
+        passed
+    ]
+
+    topic "prepend - :string < :string + :char"
+    do [
+        ensure -> "Arturo" = prepend "rturo" 'A'
+        passed
+    ]
+
+    topic "prepend - :string < :string (literal) + :char"
+    do [
+        s: "rturo"
+        prepend 's 'A'
+        ensure -> "Arturo" = s
+        passed
+    ]
+
+    topic "prepend - :string < :char + :char"
+    do [
+        ensure -> "ba" = prepend 'a' 'b'
+        passed
+    ]
+
+    topic "prepend - :string < :char (literal) + :char"
+    do [
+        c: 'a'
+        prepend 'c 'b'
+        ensure -> "ba" = c
+        passed
+    ]
+
+    topic "prepend - :string < :char + :string"
+    do [
+        ensure -> "Arturo" = prepend "rturo" 'A'
+        passed
+    ]
+
+    topic "prepend - :string < :char (literal) + :string"
+    do [
+        c: "rturo"
+        prepend 'c 'A'
+        ensure -> "Arturo" = c
+        passed
+    ]
+
+    topic "prepend - [:string] < [:string] + :string"
+    do [
+        ensure -> ["Art" "u" "r" "o"] = prepend ["u" "r" "o"] "Art"
+        passed
+        ensure -> ["L" "a" "n" "g" "u" "a" "g" "e"] = prepend ["a" "n" "g" "u" "a" "g" "e"] "L"
+        passed
+    ]
+
+    topic "prepend - [:string] < [:string] (literal) + :string"
+    do [
+        a: ["u" "r" "o"]
+        prepend 'a "Art"
+        ensure -> ["Art" "u" "r" "o"] = a
+        passed
+
+        a: ["a" "n" "g" "u" "a" "g" "e"]
+        prepend 'a "L"
+        ensure -> ["L" "a" "n" "g" "u" "a" "g" "e"] = a
+        passed
+    ]
+
+    topic "prepend - [:string] < [:string] (pathLiteral) + :string"
+    do [
+        blk: ["u" "r" "o"]
+
+        a: new blk
+        b: #[b: new blk]
+
+        prepend 'a "Art"
+        prepend 'b\b "Art"
+        ensure -> a = b\b
+        passed
+    ]
+
+    topic "prepend - [:string] < [:string] + :string - testing precedence"
+    do [
+
+        ensure -> ["egau" "u" "a" "g" "e"] =  prepend ["u" "a" "g" "e"] prepend "u" prepend "a" prepend "g" "e"
+        passed
+    ]
+
+    topic "prepend - :block < :block + :block"
+    do [
+
+        ensure -> [102230 'literal "string" ] = prepend ['literal "string" ] 102230
+        passed
+    ]
+
+    topic "prepend - :block < :block (literal) + :block"
+    do [
+
+        a: ['literal "string" ]
+        prepend 'a 102230
+        ensure -> [ 102230 'literal "string" ] = a
+        passed
+    ]
+
+]
+
+topic "remove - :string"
+do [
+
+    ensure -> "Art" = remove "Arturo" "uro"
+    ensure -> "Art" = "Arturo" -- "uro"
+    passed
+
+    ensure -> "Artur" = remove "Arturo" 'o'
+    ensure -> "Artur" = "Arturo" -- 'o'
+    passed
+
+    ensure -> "C+" = remove.once "C++" "+"
+    ensure -> "C+" = remove.once "C++" '+'
+    ensure -> "C+" = "C++" --.once "+"
+    ensure -> "C+" = "C++" --.once '+'
+    passed
+
+    ; ensure -> "Rby" = remove.index "Ruby" 1
+    ; ensure -> "Rby" = "Ruby" --.index 1
+    ; passed
+
+    ensure -> "empty --flag" = remove.prefix "--empty --flag" "--"
+    ensure -> "empty --flag" = "--empty --flag" --.prefix "--"
+    passed
+
+    ensure -> "test.txt file" = remove.suffix "test.txt file.txt" ".txt"
+    ensure -> "test.txt file" = "test.txt file.txt" --.suffix ".txt"
+    passed
+
+]
+
+topic "remove - :string (literal)"
+do [
+
+    a: "Arturo", remove 'a "uro"
+    ensure -> "Art" = a
+
+    a: "Arturo", 'a -- "uro"
+    ensure -> "Art" = a
+
+    passed
+
+    a: "Arturo", remove 'a 'o'
+    ensure -> "Artur" = a
+
+    a: "Arturo", 'a -- 'o'
+    ensure -> "Artur" = a
+
+    passed
+
+    a: "C++", remove.once 'a "+"
+    ensure -> "C+" = a
+
+    a: "C++", remove.once 'a '+'
+    ensure -> "C+" = a
+
+    a: "C++", 'a --.once "+"
+    ensure -> "C+" = a
+
+    a: "C++", 'a --.once '+'
+    ensure -> "C+" = a
+
+    passed
+
+    ; a: "Ruby", remove.index 'a 1
+    ; ensure -> "Rby" = a
+
+    ; a: "Ruby", 'a --.index 1
+    ; ensure -> "Rby" = a
+    ; passed
+
+    a: "--empty --flag", remove.prefix 'a "--"
+    ensure -> "empty --flag" = a
+
+    a: "--empty --flag", 'a --.prefix "--"
+    ensure -> "empty --flag" = a
+    passed
+
+    a: "test.txt file.txt", remove.suffix 'a ".txt"
+    ensure -> "test.txt file" = a
+
+    a: "test.txt file.txt", 'a --.suffix ".txt"
+    ensure -> "test.txt file" = a
+    passed
+
+]
+topic "remove - :string (pathLiteral)"
+do [
+
+    str: "Arturo", 
+    
+    a: new str
+    b: #[b: new str]
+    
+    remove 'a "uro"
+    remove 'b\b "uro"
+    ensure -> a = b\b
+    passed
+
+]
+
+topic "remove - :dictionary"
+do [
+
+    ensure -> (#[name: "John"]) = remove #[name: "John" surname: "Doe"] "Doe"
+    ensure -> (#[name: "John"]) = (#[name: "John" surname: "Doe"]) -- "Doe"
+    passed
+
+    ensure -> (#[name: "John"]) = remove.key #[name: "John" surname: "Doe"] "surname"
+    ensure -> (#[name: "John"]) = remove.key #[name: "John" surname: "Doe"] 'surname
+    ensure -> (#[name: "John"]) = (#[name: "John" surname: "Doe"]) --.key "surname"
+    ensure -> (#[name: "John"]) = (#[name: "John" surname: "Doe"]) --.key 'surname
+    passed
+
+]
+
+topic "remove - :dictionary (literal)"
+do [
+
+    u: #[name: "John" surname: "Doe"], remove 'u "Doe"
+    ensure -> (#[name: "John"]) = u
+
+    u: #[name: "John" surname: "Doe"], 'u -- "Doe"
+    ensure -> (#[name: "John"]) = u
+
+    passed
+
+    u: #[name: "John" surname: "Doe"], remove.key 'u "surname"
+    ensure -> (#[name: "John"]) = u
+
+    u: #[name: "John" surname: "Doe"], 'u --.key "surname"
+    ensure -> (#[name: "John"]) = u
+
+    u: #[name: "John" surname: "Doe"], remove.key 'u 'surname
+    ensure -> (#[name: "John"]) = u
+
+    u: #[name: "John" surname: "Doe"], 'u --.key 'surname
+    ensure -> (#[name: "John"]) = u
+
+    passed
+
+]
+
+topic "remove - :dictionary (pathLiteral)"
+do [
+
+    u: #[name: "John" surname: "Doe"]
+    
+    a: new u
+    b: #[b: new u]
+    
+    remove 'a "Doe"
+    remove 'b\b "Doe"
+    ensure -> a = b\b
+    passed
+
+]
+
+topic "remove - :block"
+do [
+
+    ensure -> [[1 2] 3 4 [1 2] 3 4]
+        = remove [1 2 [1 2] 3 4 1 2 [1 2] 3 4] [1 2]
+
+    ensure -> [[1 2] 3 4 [1 2] 3 4]
+        = [1 2 [1 2] 3 4 1 2 [1 2] 3 4] -- [1 2]
+
+    passed
+
+    ensure -> [1 2 3 4 1 2 [1 2] 3 4]
+        = remove.index [1 2 [1 2] 3 4 1 2 [1 2] 3 4] 2
+
+    ensure -> [1 2 3 4 1 2 [1 2] 3 4]
+        = [1 2 [1 2] 3 4 1 2 [1 2] 3 4] --.index 2
+
+    passed
+
+
+    ensure -> [[1 2] 3 4 1 2 [1 2] 3 4]
+        = remove.once [1 2 [1 2] 3 4 1 2 [1 2] 3 4] [1 2]
+
+    ensure -> [[1 2] 3 4 1 2 [1 2] 3 4]
+        = [1 2 [1 2] 3 4 1 2 [1 2] 3 4] --.once [1 2]
+
+    passed
+
+
+    ensure -> [1 2 3 4 1 2 3 4]
+        = remove.instance [1 2 [1 2] 3 4 1 2 [1 2] 3 4] [1 2]
+
+    ensure -> [1 2 3 4 1 2 3 4]
+        = [1 2 [1 2] 3 4 1 2 [1 2] 3 4] --.instance [1 2]
+
+    passed
+
+
+    ensure -> [1 2 3 4 1 2 [1 2] 3 4]
+        = remove.instance.once [1 2 [1 2] 3 4 1 2 [1 2] 3 4] [1 2]
+
+    ensure -> [1 2 3 4 1 2 [1 2] 3 4]
+        = [1 2 [1 2] 3 4 1 2 [1 2] 3 4] --.instance.once [1 2]
+
+    passed
+
+]
+
+topic "remove - :block (literal)"
+do [
+
+    b: [1 2 [1 2] 3 4 1 2 [1 2] 3 4], remove 'b [1 2]
+    ensure -> [[1 2] 3 4 [1 2] 3 4] = b
+
+    b: [1 2 [1 2] 3 4 1 2 [1 2] 3 4], 'b -- [1 2]
+    ensure -> [[1 2] 3 4 [1 2] 3 4] = b
+
+    passed
+
+
+    b: [1 2 [1 2] 3 4 1 2 [1 2] 3 4], remove.index 'b 2
+    ensure -> [1 2 3 4 1 2 [1 2] 3 4] = b
+
+    b: [1 2 [1 2] 3 4 1 2 [1 2] 3 4], 'b --.index 2
+    ensure -> [1 2 3 4 1 2 [1 2] 3 4] = b
+
+    passed
+
+
+    b: [1 2 [1 2] 3 4 1 2 [1 2] 3 4], remove.once 'b [1 2]
+    ensure -> [[1 2] 3 4 1 2 [1 2] 3 4] =  b
+
+    b: [1 2 [1 2] 3 4 1 2 [1 2] 3 4], 'b --.once [1 2]
+    ensure -> [[1 2] 3 4 1 2 [1 2] 3 4] = b
+
+    passed
+
+
+    b: [1 2 [1 2] 3 4 1 2 [1 2] 3 4], remove.instance 'b [1 2]
+    ensure -> [1 2 3 4 1 2 3 4] =  b
+
+    b: [1 2 [1 2] 3 4 1 2 [1 2] 3 4], 'b --.instance [1 2]
+    ensure -> [1 2 3 4 1 2 3 4] = b
+
+    passed
+
+
+    b: [1 2 [1 2] 3 4 1 2 [1 2] 3 4], remove.instance.once 'b [1 2]
+    ensure -> [1 2 3 4 1 2 [1 2] 3 4] =  b
+
+    b: [1 2 [1 2] 3 4 1 2 [1 2] 3 4], 'b --.instance.once [1 2]
+    ensure -> [1 2 3 4 1 2 [1 2] 3 4] = b
+
+    passed
+
+]
+
+topic "remove - :block (pathLiteral)"
+do [
+
+    blk: [1 2 [1 2] 3 4 1 2 [1 2] 3 4], 
+    
+    a: new blk
+    b: #[b: new blk]
+
+    remove 'a [1 2]
+    remove 'b\b [1 2]
+    ensure -> a = b\b
+
+    passed
+]
+
+topic "repeat"
+do [
+    ensure -> "hellohellohello" = repeat "hello" 3
+    passed
+    ensure -> [5 5 5] = repeat 5 3
+    passed
+    ensure -> [[1 2 3] [1 2 3] [1 2 3]] = repeat [[1 2 3]] 3
+    passed
+]
+
+topic "repeat (literal)"
+do [
+
+    string: "hello", repeat 'string 3
+    ensure -> "hellohellohello" = string
+    passed
+
+    number: 5, repeat 'number 3
+    ensure -> [5 5 5] = number
+    passed
+
+    array: [[1 2 3]], repeat 'array 3
+    ensure -> [[1 2 3] [1 2 3] [1 2 3]] = array
+    passed
+
+]
+
+topic "repeat (pathLiteral)"
+do [
+
+    string: "hello"
+    
+    a: new string
+    b: #[b: new string]
+
+    repeat 'a 3
+    repeat 'b\b 3
+    ensure -> a = b\b
+    passed
+
+]
+
+topic "reverse"
+do [
+    ensure -> [4 3 2 1] = reverse [1 2 3 4]
+    passed
+    ensure -> [[7 8 9] [4 5 6] [1 2 3]] = reverse [[1 2 3] [4 5 6] [7 8 9]]
+    passed
+    ensure -> "dlroW olleH" = reverse "Hello World"
+    passed
+    ensure -> (10..0) = reverse 0..10
+    ensure -> (10..0) = reverse.exact 0..10
+    passed
+]
+
+topic "reverse (literal)"
+do [
+
+    a: [1 2 3 4], reverse 'a
+    ensure -> [4 3 2 1] = a
+    passed
+
+    a: [[1 2 3] [4 5 6] [7 8 9]], reverse 'a
+    ensure -> [[7 8 9] [4 5 6] [1 2 3]] = a
+    passed
+
+    a: "Hello World", reverse 'a
+    ensure -> "dlroW olleH" = a
+    passed
+
+    a:  0..10, reverse 'a
+    ensure -> (10..0) = a
+
+    a: 0..10, reverse.exact 'a
+    ensure -> (10..0) = a
+    passed
+
+]
+
+topic "reverse (pathLiteral)"
+do [
+
+    blk: [1 2 3 4]
+    a: new blk
+    b: #[b: new blk]
+    
+    reverse 'a
+    reverse 'b\b
+    ensure -> a = b\b
+    passed
+
+]
+
+topic "rotate"
+do [
+
+    ensure -> [e a b c d] = rotate [a b c d e] 1
+    ensure -> [d e a b c] = rotate [a b c d e] 2
+    ensure -> [b c d e a] = rotate.left [a b c d e] 1
+    ensure -> [c d e a b] = rotate.left [a b c d e] 2
+    passed
+
+    ensure -> "oHell" = rotate "Hello" 1
+    ensure -> "loHel" = rotate "Hello" 2
+    ensure -> "elloH" = rotate.left "Hello" 1
+    ensure -> "lloHe" = rotate.left "Hello" 2
+    passed
+
+]
+
+topic "rotate"
+do [
+
+    a: [a b c d e], rotate 'a 2
+    ensure -> [d e a b c] = a
+    a: [a b c d e], rotate.left 'a 2
+    ensure -> [c d e a b] = a
+    passed
+
+    a: "Hello", rotate 'a 2
+    ensure -> "loHel" = a
+    a: "Hello", rotate.left 'a 2
+    ensure -> "lloHe" = a
+    passed
+
+]
+
+topic "rotate - pathLiteral"
+do [
+
+    blk: [a b c d e], 
+    
+    a: new blk
+    b: #[b: new blk]
+
+    rotate 'a 2
+    rotate 'b\b 2
+
+    ensure -> a = b\b
+    passed
+
+]
+
+topic "sample"
+do [
+
+    a: ["apple" "appricot" "banana"]
+    ensure -> in? (sample a) a
+    ensure -> string? (sample a)
+    passed
+
+    a: 'a'..'z'
+    ensure -> in? (sample a) a
+    ensure -> char? (sample a)
+    passed
+
+]
+
+
+topic "set - :string"
+do [
+
+    a: "Aaturo", set a 1 'r'
+    ensure -> "Arturo" = a
+    passed
+
+    a: "Aaturo", set a 1 "r"
+    ensure -> "Arturo" = a
+    passed
+
+    a: "Aaturo", a: "Arturo"
+    ensure -> "Arturo" = a
+    passed
+
+    a: "Aaturo", a\1: 'r'
+    ensure -> "Arturo" = a
+    passed
+
+    a: "Aaturo", a\[1]: 'r'
+    ensure -> "Arturo" = a
+    passed
+
+]
+
+topic "set - :binary"
+do [
+
+    bi: to :binary 65000
+    set bi 0 1
+
+    ensure -> "01 E8" = ~"|bi|"
+    passed
+
+
+    bi: to :binary 65000
+    bi\0: 1
+
+    ensure -> "01 E8" = ~"|bi|"
+    passed
+
+]
+
+topic "set - :dictionary"
+do [
+
+    user: #[]
+
+    set user 'name "John"
+    ensure -> "John" = user\name
+    passed
+
+    set user 'surname "Doe"
+    ensure -> "Doe" = user\surname
+    passed
+
+    set user 'age 36
+    ensure -> 36 = get user 'age
+    passed
+
+    set user "name" "Jane"
+    ensure -> "Jane" = user\name
+    passed
+
+    user\surname: "Dio"
+    ensure -> "Dio" = user\surname
+    passed
+
+    user\["age"]: 42
+    ensure -> 42 = get user 'age
+    passed
+
+]
+
+topic "set - :object"
+do [
+
+    define :person [name, surname]
+    user: to :person ["some" "name"]
+
+    set user 'name "John"
+    ensure -> "John" = user\name
+    passed
+
+    set user 'surname "Doe"
+    ensure -> "Doe" = user\surname
+    passed
+
+    set user 'age 36
+    ensure -> 36 = get user 'age
+    passed
+
+    set user "name" "Jane"
+    ensure -> "Jane" = user\name
+    passed
+
+    user\surname: "Dio"
+    ensure -> "Dio" = user\surname
+    passed
+
+    user\["age"]: 42
+    ensure -> 42 = get user 'age
+    passed
+
+]
+
+topic "set - :store"
+do [
+
+    user: store "test.db"
+
+    set user 'name "John"
+    ensure -> "John" = user\name
+    passed
+
+    set user 'surname "Doe"
+    ensure -> "Doe" = user\surname
+    passed
+
+    set user 'age 36
+    ensure -> 36 = get user 'age
+    passed
+
+    set user "name" "Jane"
+    ensure -> "Jane" = user\name
+    passed
+
+    user\surname: "Dio"
+    ensure -> "Dio" = user\surname
+    passed
+
+    user\["age"]: 42
+    ensure -> 42 = get user 'age
+    passed
+
+    set user 0 "John"
+    ensure -> "John" = user\0
+    passed
+
+    user\[1]: "Doe"
+    ensure -> "Doe" = user\1
+    passed
+
+    user\2: 36
+    ensure -> 36 = get user '2
+    passed
+
+]
+
+topic "set - :block"
+do [
+
+    a: ["zero" "one" "two"]
+
+    set a 0 "0"
+    ensure -> "0" = a\0
+    passed
+    a\[1]: "1"
+    ensure -> "1" = a\1
+    passed
+
+]
+
+topic "set - :bytecode"
+do [
+
+    bt: to :bytecode [print "hello"]
+
+    ; set bt 'data ["world!"]
+    ; bt\code\0: 42
+
+    ; ensure -> ["world"] = bt\data
+    ; passed
+
+    ; ensure -> [42 189 218] = bt\code
+    ; passed
+
+]
+
+topic "shuffle"
+do [
+
+    a: shuffle [1 2 3 4 5 6]
+    ensure -> 6 = size a
+    ensure -> every? a 'item [ type? item :integer ]
+    passed
+
+    a: shuffle ["Manchester" "Granada" "Boston" "Davos"]
+    ensure -> 4 = size a
+    ensure -> every? a 'item [ type? item :string ]
+    passed
+
+]
+
+
+topic "size"
+do [
+
+    ; :string
+    ensure -> 5 = size "こんいちわ"
+    ensure -> 1 = size "私"
+    ensure -> 13 = size "Good morning!"
+    ensure -> 0 = size ""
+    passed
+
+    ensure -> 3 = size ["one" "two" "three"]
+    ensure -> 0 = size []
+    passed
+
+    ensure -> 11 = size 0..10
+    ensure -> 1 = size 0..0
+    passed
+
+    ensure -> 2 = size #[name: "John", surname: "Doe"]
+    ensure -> 0 = size #[]
+    passed
+
+    define :person [name, surname]
+    p: to :person ["John" "Doe"]
+
+    ensure -> 2 = size p
+    passed
+
+    ensure -> 0 = size null
+    ensure -> 0 = size ø
+    passed
+
+]
+
+
+topic "slice"
+do [
+
+    ensure -> "Art" = slice "Arturo" 0 2
+    passed
+
+    ensure -> ["C" "C++" "Nim"]
+        = slice ["Arturo" "Python" "Ruby" "C" "C++" "Nim" "Wren"] 3 5
+    passed
+
+]
+
+topic "slice - (literal)"
+do [
+
+    a: "Arturo", slice 'a 0 2
+    ensure -> "Art" = a
+    passed
+
+    a: ["Arturo" "Python" "Ruby" "C" "C++" "Nim" "Wren"], slice 'a 3 5
+    ensure -> ["C" "C++" "Nim"] = a
+    passed
+
+]
+
+topic "slice - (pathLiteral)"
+do [
+
+    str: "Arturo", 
+    
+    a: new str
+    b: #[b: new str]
+
+    slice 'a 0 2
+    slice 'b\b 0 2
+    
+    ensure -> a = b\b
+    passed
+
+]
+
+
+topic "sort - + .descending"
+do [
+
+    ensure -> [1 2 3 4 5] = sort [5 2 3 1 4]
+    passed
+
+    ensure -> ["Arturo" "arturo" "c" "C" "CoffeeScript" "coffeescript" "nim" "Nim"]
+        = sort ["c" "C" "CoffeeScript" "nim" "Arturo" "coffeescript" "arturo" "Nim"]
+    passed
+
+    ensure -> (#[art: "Arturo" coffee: "CoffeeScript" langc: "C" nim: "Nim" ])
+        = sort #[ langc: "C" art: "Arturo" nim: "Nim" coffee: "CoffeeScript" ]
+    passed
+
+
+
+    ; .descending
+
+    ensure -> [5 4 3 2 1] = sort.descending [5 2 3 1 4]
+    passed
+
+    ensure -> ["Nim" "CoffeeScript" "C" "Arturo"]
+        = sort.descending ["C" "Arturo" "Nim" "CoffeeScript"]
+    passed
+
+    ensure -> (#[nim: "Nim" langc: "C" coffee: "CoffeeScript" art: "Arturo" ])
+        = sort.descending #[ langc: "C" art: "Arturo" nim: "Nim" coffee: "CoffeeScript" ]
+    passed
+
+
+    ; .sensitive
+
+    ensure -> ["Arturo" "C" "CoffeeScript" "Nim" "arturo" "c" "coffeescript" "nim"]
+        = sort.sensitive ["c" "C" "CoffeeScript" "nim" "Arturo" "coffeescript" "arturo" "Nim"]
+    passed
+
+    ensure -> ["nim" "coffeescript" "c" "arturo" "Nim" "CoffeeScript" "C" "Arturo"]
+        = sort.sensitive.descending ["c" "C" "CoffeeScript" "nim" "Arturo" "coffeescript" "arturo" "Nim"]
+    passed
+
+
+    ; .as
+
+    a: ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
+
+    ensure -> ["ábaco" "aberración" "abismo" "dos" "perversión" "tres" "uno" "Uno"]
+        = sort.as: 'es a
+    passed
+
+    ensure -> ["uno" "Uno" "tres" "perversión" "dos" "abismo" "aberración" "ábaco"]
+        = sort.descending.as: 'es a
+    passed
+
+
+]
+
+topic "sort - + .descending (literal)"
+do [
+
+
+    a: [5 2 3 1 4], sort 'a
+    ensure -> [1 2 3 4 5] = a
+    passed
+
+    a: ["c" "C" "CoffeeScript" "nim" "Arturo" "coffeescript" "arturo" "Nim"]
+    sort 'a
+    ensure -> ["Arturo" "arturo" "c" "C" "CoffeeScript" "coffeescript" "nim" "Nim"]
+        = a
+    passed
+
+    a: #[ langc: "C" art: "Arturo" nim: "Nim" coffee: "CoffeeScript" ], sort 'a
+    ensure -> (#[art: "Arturo" coffee: "CoffeeScript" langc: "C" nim: "Nim" ])
+        = a
+    passed
+
+
+    ; .descending
+
+    a: [5 2 3 1 4], sort.descending 'a
+    ensure -> [5 4 3 2 1] = a
+    passed
+
+    a: ["C" "Arturo" "Nim" "CoffeeScript"], sort.descending 'a
+    ensure -> ["Nim" "CoffeeScript" "C" "Arturo"]
+        = a
+    passed
+
+    a: #[ langc: "C" art: "Arturo" nim: "Nim" coffee: "CoffeeScript" ], sort.descending 'a
+    ensure -> (#[nim: "Nim" langc: "C" coffee: "CoffeeScript" art: "Arturo" ])
+        = a
+    passed
+
+
+    ; .sensitive
+
+    a: ["c" "C" "CoffeeScript" "nim" "Arturo" "coffeescript" "arturo" "Nim"]
+    sort.sensitive 'a
+    ensure -> ["Arturo" "C" "CoffeeScript" "Nim" "arturo" "c" "coffeescript" "nim"]
+        = a
+    passed
+
+    a: ["c" "C" "CoffeeScript" "nim" "Arturo" "coffeescript" "arturo" "Nim"]
+    sort.sensitive.descending 'a
+    ensure -> ["nim" "coffeescript" "c" "arturo" "Nim" "CoffeeScript" "C" "Arturo"]
+        =  a
+    passed
+
+
+    ; .as
+
+    a: ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
+    sort.as: 'es 'a
+    ensure -> ["ábaco" "aberración" "abismo" "dos" "perversión" "tres" "uno" "Uno"]
+        = a
+    passed
+
+    a: ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
+    sort.descending.as: 'es 'a
+    ensure -> ["uno" "Uno" "tres" "perversión" "dos" "abismo" "aberración" "ábaco"]
+        = a
+    passed
+
+]
+
+topic "sort - .values"
+do [
+
+
+    ensure -> (#[age: 35 income: 5000 surname: "Doe" name: "John" ])
+        = sort.values #[ name: "John" surname: "Doe" age: 35 income: 5000]
+    passed
+
+    ensure -> (#[name: "John" surname: "Doe" age: 35 income: 5000 ])
+        = sort.values.descending #[ name: "John" surname: "Doe" age: 35 income: 5000]
+    passed
+
+
+    ; .sensitive
+
+    ensure -> (#[a: "A" b: "c" c: "a" d: "C" e: "b" g: "B" ])
+        = sort.sensitive #[b: "c" a: "A"  c: "a" e: "b" d:"C" g: "B" ]
+    passed
+
+    ensure -> (#[g: "B" e: "b" d: "C" c: "a" b: "c" a: "A" ])
+        = sort.sensitive.descending #[b: "c" a: "A"  c: "a" e: "b" d:"C" g: "B" ]
+    passed
+
+    ensure -> (#[a: "A" g: "B" d: "C" c: "a" e: "b" b: "c" ])
+        = sort.sensitive.values #[b: "c" a: "A"  c: "a" e: "b" d:"C" g: "B" ]
+    passed
+
+    ensure -> (#[b: "c" e: "b" c: "a" d: "C" g: "B" a: "A" ])
+        = sort.sensitive.descending.values #[b: "c" a: "A"  c: "a" e: "b" d:"C" g: "B" ]
+    passed
+
+
+    ; .as
+
+    a: #[a: "uno", b:"dos",c:"tres",d:"Uno",e:"perversión",f:"ábaco",g:"abismo", h:"aberración"]
+
+    ensure -> (#[f: "ábaco" h: "aberración" g: "abismo" b: "dos" e: "perversión" c: "tres" a: "uno" d: "Uno" ])
+        = sort.values.as: 'es a
+    passed
+
+    ensure -> (#[a: "uno" d: "Uno" c: "tres" e: "perversión" b: "dos" g: "abismo" h: "aberración" f: "ábaco" ])
+        = sort.values.descending.as: 'es a
+    passed
+
+
+]
+
+topic "sort - .values (literal)"
+do [
+
+    user: #[ name: "John" surname: "Doe" age: 35 income: 5000]
+    sort.values 'user
+    ensure -> (#[age: 35 income: 5000 surname: "Doe" name: "John" ])
+        = user
+    passed
+
+    user: #[ name: "John" surname: "Doe" age: 35 income: 5000]
+    sort.values.descending 'user
+    ensure -> (#[name: "John" surname: "Doe" age: 35 income: 5000 ])
+        = user
+    passed
+
+
+    ; .sensitive
+
+    a: #[b: "c" a: "A"  c: "a" e: "b" d:"C" g: "B" ]
+    sort.sensitive 'a
+    ensure -> (#[a: "A" b: "c" c: "a" d: "C" e: "b" g: "B" ])
+        = a
+    passed
+
+    a: #[b: "c" a: "A"  c: "a" e: "b" d:"C" g: "B" ]
+    sort.sensitive.descending 'a
+    ensure -> (#[g: "B" e: "b" d: "C" c: "a" b: "c" a: "A" ])
+        = a
+    passed
+
+    a: #[b: "c" a: "A"  c: "a" e: "b" d:"C" g: "B" ]
+    sort.sensitive.values 'a
+    ensure -> (#[a: "A" g: "B" d: "C" c: "a" e: "b" b: "c" ])
+        = a
+    passed
+
+    a: #[b: "c" a: "A"  c: "a" e: "b" d:"C" g: "B" ]
+    sort.sensitive.descending.values 'a
+    ensure -> (#[b: "c" e: "b" c: "a" d: "C" g: "B" a: "A" ])
+        = a
+    passed
+
+
+    ; .as
+
+    a: #[a: "uno", b:"dos",c:"tres",d:"Uno",e:"perversión",f:"ábaco",g:"abismo", h:"aberración"]
+    sort.values.as: 'es 'a
+    ensure -> (#[f: "ábaco" h: "aberración" g: "abismo" b: "dos" e: "perversión" c: "tres" a: "uno" d: "Uno" ])
+        = a
+    passed
+
+    a: #[a: "uno", b:"dos",c:"tres",d:"Uno",e:"perversión",f:"ábaco",g:"abismo", h:"aberración"]
+    sort.values.descending.as: 'es 'a
+    ensure -> (#[a: "uno" d: "Uno" c: "tres" e: "perversión" b: "dos" g: "abismo" h: "aberración" f: "ábaco" ])
+        = a
+    passed
+
+]
+
+topic "sort - .values (pathLiteral)"
+do [
+
+    user: #[ name: "John" surname: "Doe" age: 35 income: 5000]
+    
+    a: new user
+    b: #[b: new user]
+    
+    sort.values 'a
+    sort.values 'b\b
+    ensure -> a = b\b
+    passed
+
+
+    ; .sensitive
+
+    dict: #[b: "c" a: "A"  c: "a" e: "b" d:"C" g: "B" ]
+
+    a: new dict
+    b: #[b: new dict]
+    
+    sort.sensitive 'a
+    sort.sensitive 'b\b
+    ensure -> a = b\b
+    passed
+
+    dict: #[b: "c" a: "A"  c: "a" e: "b" d:"C" g: "B" ]
+    
+    a: new dict
+    b: #[b: new dict]
+
+    sort.sensitive.descending 'a
+    sort.sensitive.descending 'b\b
+    ensure -> a = b\b
+    passed
+
+    dict: #[b: "c" a: "A"  c: "a" e: "b" d:"C" g: "B" ]
+    
+    a: new dict
+    b: #[b: new dict]
+    
+    sort.sensitive.values 'a
+    sort.sensitive.values 'b\b
+    ensure -> a = b\b
+    passed
+
+    dict: #[b: "c" a: "A"  c: "a" e: "b" d:"C" g: "B" ]
+    
+    a: new dict
+    b: #[b: new dict]
+    
+    sort.sensitive.descending.values 'a
+    sort.sensitive.descending.values 'b\b
+    ensure -> a = b\b
+    passed
+
+
+    ; .as
+
+    dict: #[a: "uno", b:"dos",c:"tres",d:"Uno",e:"perversión",f:"ábaco",g:"abismo", h:"aberración"]
+    
+    a: new dict
+    b: #[b: new dict]
+    
+    sort.values.as: 'es 'a
+    sort.values.as: 'es 'b\b
+    ensure -> a = b\b
+    passed
+
+    dict: #[a: "uno", b:"dos",c:"tres",d:"Uno",e:"perversión",f:"ábaco",g:"abismo", h:"aberración"]
+    
+    a: new dict
+    b: #[b: new dict]
+
+    sort.values.descending.as: 'es 'a
+    sort.values.descending.as: 'es 'b\b
+    ensure -> a = b\b
+    passed
+
+
+]
+
+topic "sort - .by"
+do [
+
+    users: @[
+        #[ name: "John" surname: "Doe" ]
+        #[ name: "Jane" surname: "Doe" ]
+        #[ name: "John" surname: "Wick" ]
+        #[ name: "Arnold" surname: "Schwarzenegger" ]
+    ]
+
+    result: @[
+        #[name: "John" surname: "Doe" ]
+        #[name: "Jane" surname: "Doe" ]
+        #[name: "Arnold" surname: "Schwarzenegger" ]
+        #[name: "John" surname: "Wick" ]
+    ]
+
+
+    ; => SIGSEGV: Illegal storage access. (Attempt to read from nil?)
+    ; ensure -> result = sort.by: "surname" users
+    ; ensure -> result = sort.by: 'surname users
+    ; passed
+
+
+    ; .descending
+
+    users: @[
+        #[ name: "John" surname: "Doe" ]
+        #[ name: "Jane" surname: "Doe" ]
+        #[ name: "John" surname: "Wick" ]
+        #[ name: "Arnold" surname: "Schwarzenegger" ]
+    ]
+
+    result: [
+        #[name: "John" surname: "Wick" ]
+        #[name: "Arnold" surname: "Schwarzenegger" ]
+        #[name: "John" surname: "Doe" ]
+        #[name: "Jane" surname: "Doe" ]
+    ]
+
+    ; => SIGSEGV: Illegal storage access. (Attempt to read from nil?)
+    ; ensure -> result = sort.descending.by: "surname" users
+    ; ensure -> result = sort.descending.by: 'surname users
+    ; passed
+
+
+
+    ; .sensitive
+
+    users: @[
+        #[ name: "John" surname: "poe" ]
+        #[ name: "Jane" surname: "Poe" ]
+        #[ name: "John" surname: "Paul" ]
+        #[ name: "Arnold" surname: "paul" ]
+    ]
+
+    result: [
+        #[ name: "John" surname: "Paul" ]
+        #[ name: "Jane" surname: "Poe" ]
+        #[ name: "Arnold" surname: "paul" ]
+        #[ name: "John" surname: "poe" ]
+    ]
+
+    ; => SIGSEGV: Illegal storage access. (Attempt to read from nil?)
+    ; ensure -> result = sort.sensitive.by: "surname" users
+    ; ensure -> result = sort.sensitive.by: 'surname users
+    ; passed
+
+
+
+    ; .as
+
+    ; words: @[
+    ;     #[a: "uno" b: "ábaco"]
+    ;     #[a: "dos" b: "perversión"]
+    ;     #[a: "tres" b: "aberración"]
+    ;     #[a: "abismo" b: "abaco"]
+    ; ]
+
+    ; result: [
+    ;     #[a: "abismo" b: "abaco" ]
+    ;     #[a: "uno" b: "ábaco" ]
+    ;     #[a: "tres" b: "aberración" ]
+    ;     #[a: "dos" b: "perversión" ]
+    ; ]
+
+    ; ensure -> result = sort.sensitive.by: "b" words
+    ; ensure -> result = sort.sensitive.by: 'b words
+    ; passed
+
+
+]
+
+
+topic "sorted?"
+do [
+
+    ensure -> sorted? [1 2 3 4 5]
+    ensure -> sorted? ["Arturo" "Python" "Ruby"]
+    passed
+
+    ensure -> not? sorted? [4 3 2 1 5]
+    ensure -> not? sorted? [5 4 3 2 1]
+    ensure -> not? sorted? ["Python" "Ruby" "Arturo"]
+    ensure -> not? sorted? ["Ruby" "Python" "Arturo"]
+    passed
+
+    ; .descending
+    ensure -> sorted?.descending [5 4 3 2 1]
+    ensure -> sorted?.descending ["Ruby" "Python" "Arturo"]
+    passed
+
+    ensure -> not? sorted?.descending [4 3 2 1 5]
+    ensure -> not? sorted?.descending [1 2 3 4 5]
+    ensure -> not? sorted?.descending ["Python" "Ruby" "Arturo"]
+    ensure -> not? sorted?.descending ["Arturo" "Python" "Ruby"]
+    passed
+
+]
+
+topic "split - + .every"
+do [
+
+    ensure -> ["A" "r" "t" "u" "r" "o"] = split "Arturo"
+    passed
+
+    ensure -> ["Art" "uro"] = split.every: 3 "Arturo"
+    passed
+
+    ; Don't do anyting for :block type
+    ensure -> [[1 2 3] [4 5 6] [7 8]] = split [[1 2 3] [4 5 6] [7 8]]
+    passed
+
+    ensure -> [[[1 2 3] [4 5 6]] [[7 8]]] = split.every: 2 [[1 2 3] [4 5 6] [7 8]]
+    passed
+
+]
+
+topic "split - + .every (literal)"
+do [
+
+    a: "Arturo", split 'a
+    ensure -> ["A" "r" "t" "u" "r" "o"] = a
+    passed
+
+    a: "Arturo", split.every: 3 'a
+    ensure -> ["Art" "uro"] = a
+    passed
+
+    ; Don't do anyting for :block type
+    a: [[1 2 3] [4 5 6] [7 8]], split 'a
+    ensure -> [[1 2 3] [4 5 6] [7 8]] = a
+    passed
+
+    a: [[1 2 3] [4 5 6] [7 8]], split.every: 2 'a
+    ensure -> [[[1 2 3] [4 5 6]] [[7 8]]] = a
+    passed
+
+]
+
+topic "split - + .every (pathLiteral)"
+do [
+
+    str: "Arturo"
+    
+    a: new str
+    b: #[b: new str]
+
+    split 'a
+    split 'b\b
+
+    ensure -> a = b\b
+    passed
+
+]
+
+topic "split - .words"
+do [
+
+    ensure -> ["Arturo" "Programming" "Language"] = split.words "Arturo Programming Language"
+    passed
+
+    ; Don't change behavior
+    ensure -> ["Arturo" "Programming" "Language"] = split.words.every:2 "Arturo Programming Language"
+    passed
+
+]
+
+topic "split - .words (literal)"
+do [
+
+    a: "Arturo Programming Language", split.words 'a
+    ensure -> ["Arturo" "Programming" "Language"] = a
+    passed
+
+    ; Don't change behavior
+    a: "Arturo Programming Language", split.words.every:2 'a
+    ensure -> ["Arturo" "Programming" "Language"] = a
+    passed
+
+]
+
+topic "split - .words (pathLiteral)"
+do [
+
+    str: "Arturo Programming Language", 
+
+    a: new str
+    b: #[b: new str]
+
+    split.words 'a
+    split.words 'b\b
+
+    ensure -> a = b\b
+    passed
+
+]
+
+topic "split - .lines"
+do [
+
+    string: {
+        {
+            "object": "value",
+            "array": ["value", "value"],
+        }
+    }
+
+    expected: ["{" "    \"object\": \"value\"," "    \"array\": [\"value\", \"value\"]," "}"]
+
+    ensure -> expected = split.lines string
+    passed
+
+    ; Don't change behavior
+    ensure -> expected = split.lines.every: 2 string
+    passed
+
+]
+
+topic "split - .lines (literal)"
+do [
+
+    string: {
+        {
+            "object": "value",
+            "array": ["value", "value"],
+        }
+    }
+
+    expected: ["{" "    \"object\": \"value\"," "    \"array\": [\"value\", \"value\"]," "}"]
+
+    split.lines 'string
+
+    ensure -> expected = string
+    passed
+
+
+    string: {
+        {
+            "object": "value",
+            "array": ["value", "value"],
+        }
+    }
+
+    ; Don't change behavior
+    split.lines.every: 2 'string
+    ensure -> expected = string
+    passed
+
+]
+
+topic "split - .lines (pathLiteral)"
+do [
+
+    string: {
+        {
+            "object": "value",
+            "array": ["value", "value"],
+        }
+    }
+
+    a: new string
+    b: #[b: new string]
+
+    split.lines 'a
+    split.lines 'b\b
+
+    ensure -> a = b\b
+    passed
+
+]
+
+topic "split - .by"
+do [
+    ensure -> ["Arturo" " Nim" " Ruby" " Python", " C", " CoffeeScript"]
+        = split.by: "," "Arturo, Nim, Ruby, Python, C, CoffeeScript"
+    passed
+
+    ensure -> ["Arturo" " Nim" " Ruby" " Python", " C", " CoffeeScript"]
+        = split.by: {/,/} "Arturo, Nim, Ruby, Python, C, CoffeeScript"
+    passed
+
+    ensure -> ["Arturo" " Nim" " Ruby" " Python", " C", " CoffeeScript"]
+        = split.by: ',' "Arturo, Nim, Ruby, Python, C, CoffeeScript"
+    passed
+
+    sample: {
+        Arturo is an independently-developed,
+        modern programming language,
+        vaguely related to various other ones
+        - including but not limited to:
+        Logo, Rebol, Forth, Ruby, Haskell, D, Smalltalk, Tcl,
+        and Lisp.
+    }
+
+    result: [
+        "Arturo is an independently" "developed"
+        "modern programming language"
+        "vaguely related to various other ones"
+        " including but not limited to"
+        "Logo" " Rebol" " Forth" " Ruby" " Haskell"
+        " D" " Smalltalk" " Tcl" "and Lisp"
+    ]
+
+    ensure -> result
+        = split.by: ["," "-" ":" "\n" "."] sample
+    passed
+
+]
+
+topic "split - .by (literal)"
+do [
+    sample: "Arturo, Nim, Ruby, Python, C, CoffeeScript", split.by: "," 'sample
+    ensure -> ["Arturo" " Nim" " Ruby" " Python", " C", " CoffeeScript"]
+        = sample
+    passed
+
+    sample: "Arturo, Nim, Ruby, Python, C, CoffeeScript", split.by: {/,/} 'sample
+    ensure -> ["Arturo" " Nim" " Ruby" " Python", " C", " CoffeeScript"]
+        = sample
+    passed
+
+    sample: {
+        Arturo is an independently-developed,
+        modern programming language,
+        vaguely related to various other ones
+        - including but not limited to:
+        Logo, Rebol, Forth, Ruby, Haskell, D, Smalltalk, Tcl,
+        and Lisp.
+    }
+
+    result: [
+        "Arturo is an independently" "developed"
+        "modern programming language"
+        "vaguely related to various other ones"
+        " including but not limited to"
+        "Logo" " Rebol" " Forth" " Ruby" " Haskell"
+        " D" " Smalltalk" " Tcl" "and Lisp"
+    ]
+
+    split.by: ["," "-" ":" "\n" "."] 'sample
+    ensure -> result = sample
+    passed
+
+]
+
+topic "split - .by (literal)"
+do [
+
+    sample: {
+        Arturo is an independently-developed,
+        modern programming language,
+        vaguely related to various other ones
+        - including but not limited to:
+        Logo, Rebol, Forth, Ruby, Haskell, D, Smalltalk, Tcl,
+        and Lisp.
+    }
+
+    a: new sample
+    b: #[b: new sample]
+    split.by: ["," "-" ":" "\n" "."] 'a
+    split.by: ["," "-" ":" "\n" "."] 'b\b
+    ensure -> a = b\b
+    passed
+
+]
+
+topic "split - .at"
+do [
+
+    ensure -> ["hell" "oworld"] = split.at: 4 "helloworld"
+    passed
+
+    ensure -> [["Arturo" " Nim" " Ruby" " Python"] [" C" " CoffeeScript"]]
+        = split.at: 4 ["Arturo" " Nim" " Ruby" " Python", " C", " CoffeeScript"]
+    passed
+
+]
+
+topic "split - .at (literal)"
+do [
+
+    a: "helloworld", split.at: 4 'a
+    ensure -> ["hell" "oworld"] = a
+    passed
+
+    a: ["Arturo" " Nim" " Ruby" " Python", " C", " CoffeeScript"], split.at: 4 'a
+    ensure -> [["Arturo" " Nim" " Ruby" " Python"] [" C" " CoffeeScript"]] = a
+    passed
+
+]
+
+topic "split - .at (pathLiteral)"
+do [
+
+    str: "helloworld"
+
+    a: new str
+    b: #[b: new str] 
+    split.at: 4 'a
+    split.at: 4 'b\b
+
+    ensure -> a = b\b
+    passed
+
+]
+
+topic "split - .path"
+do [
+
+    (sys\os = "windows")? [
+            ; Accepts \\ and / paths
+            ensure -> ["directory" "wofilerld"] = split.path "directory\\wofilerld"
+            ensure -> ["usr" "bin"] = split.path "\\usr\\bin"
+            passed
+
+            ensure -> ["directory" "wofilerld"] = split.path "directory/wofilerld"
+            ensure -> ["usr" "bin"] = split.path "/usr/bin"
+            passed
+
+        ][
+            ; Accepts / paths
+            ensure -> ["directory" "wofilerld"] = split.path "directory/wofilerld"
+            passed
+
+            ensure -> ["usr" "bin"] = split.path "/usr/bin"
+            passed
+
+    ]
+
+]
+
+topic "split - .path (literal)"
+do [
+
+    (sys\os = "windows")? [
+            ; Accepts \\ and / paths
+            p: "directory\\wofilerld", split.path 'p
+            p2: "\\usr\\bin", split.path 'p2
+            ensure -> ["directory" "wofilerld"] = p
+            ensure -> ["usr" "bin"] = p2
+            passed
+
+            p: "directory/wofilerld", split.path 'p
+            p2: "/usr/bin", split.path 'p2
+            ensure -> ["directory" "wofilerld"] = p
+            ensure -> ["usr" "bin"] = p2
+            passed
+
+        ][
+            ; Accepts / paths
+            p: "directory/wofilerld", split.path 'p
+            ensure -> ["directory" "wofilerld"] = p
+            passed
+
+            p: "/usr/bin", split.path 'p
+            ensure -> ["usr" "bin"] =  p
+            passed
+
+    ]
+
+]
+
+topic "split - .path (pathLiteral)"
+do [
+
+    (sys\os = "windows")? [
+            ; Accepts \\ and / paths
+            str: "directory\\wofilerld", 
+            
+            a: new str
+            b: #[ b: new str ]
+
+            split.path 'a 
+            split.path 'b\b
+            
+            ensure -> a = b\b
+
+        ][
+            ; Accepts / paths
+            str: "directory\\wofilerld", 
+            
+            a: new str
+            b: #[ b: new str ]
+
+            split.path 'a 
+            split.path 'b\b
+            
+            ensure -> a = b\b
+
+    ]
+
+]
+
+
+topic "squeeze"
+do [
+
+    ensure -> [1 2 3 4 2 3 4 5 6 7]
+        = squeeze [1 1 2 3 4 2 3 4 4 5 5 6 7]
+    passed
+
+    ensure -> [1 [4 2 3] 1 2 3 [4 2 3] 4 5 [6 7]]
+        = squeeze [1 [4 2 3] 1 2 3 [4 2 3] 4 4 5 5 [6 7] [6 7]]
+    passed
+
+    ensure -> "helo world" = squeeze "hellllo wooooorrrrld"
+    passed
+
+]
+
+topic "squeeze - (literal)"
+do [
+
+    a: [1 1 2 3 4 2 3 4 4 5 5 6 7], squeeze 'a
+    ensure -> [1 2 3 4 2 3 4 5 6 7] =  a
+    passed
+
+    a: [1 [4 2 3] 1 2 3 [4 2 3] 4 4 5 5 [6 7] [6 7]]
+    squeeze 'a
+    ensure -> [1 [4 2 3] 1 2 3 [4 2 3] 4 5 [6 7]] = a
+    passed
+
+    a: "hellllo wooooorrrrld", squeeze 'a
+    ensure -> "helo world" =  a
+    passed
+
+]
+
+topic "squeeze - (pathLiteral)"
+do [
+
+    blk: [1 1 2 3 4 2 3 4 4 5 5 6 7]
+    a: new blk
+    b: #[b: new blk]
+    
+    squeeze 'a
+    squeeze 'b\b
+
+    ensure -> a = b\b
+    passed
+
+    blk: [1 [4 2 3] 1 2 3 [4 2 3] 4 4 5 5 [6 7] [6 7]]
+
+    a: new blk
+    b: #[b: new blk]
+    
+    squeeze 'a
+    squeeze 'b\b
+
+    ensure -> a = b\b
+    passed
+
+    str: "hellllo wooooorrrrld"
+
+    a: new str
+    b: #[b: new str]
+    
+    squeeze 'a
+    squeeze 'b\b
+
+    ensure -> a = b\b
+    passed
+
+]
+
+topic "take - :string < :string :string"
+do [
+
+    ensure -> "" = take "art" 0
+    passed
+
+    ensure -> "a" = take "art" 1
+    ensure -> "ar" = take "art" 2
+    passed
+
+    ensure -> "art" = take "art" 3
+    ensure -> "art" = take "art" 4
+    passed
+
+    ensure -> "" = take "art" neg 0
+    passed
+
+    ensure -> "t" = take "art" neg 1
+    ensure -> "rt" = take "art" neg 2
+    passed
+
+    ensure -> "art" = take "art" neg 3
+    ensure -> "art" = take "art" neg 4
+    passed
+
+]
+
+topic "take - :string < :string (literal) :string"
+do [
+
+    a: "art", take 'a 0
+    ensure -> "" = a
+    passed
+
+    a: "art", take 'a 1
+    ensure -> "a" = a
+    a: "art", take 'a 2
+    ensure -> "ar" = a
+    passed
+
+    a: "art", take 'a 3
+    ensure -> "art" = a
+    a: "art", take 'a 4
+    ensure -> "art" = a
+    passed
+
+    a: "art", take 'a neg 0
+    ensure -> "" = a
+    passed
+
+    a: "art", take 'a neg 1
+    ensure -> "t" = a
+    a: "art", take 'a neg 2
+    ensure -> "rt" = a
+    passed
+
+    a: "art", take 'a neg 3
+    ensure -> "art" = a
+    a: "art", take 'a neg 4
+    ensure -> "art" = a
+    passed
+
+]
+
+
+topic "take - :string < :string (pathLiteral) :string"
+do [
+
+    str: "art"
+
+    a: new str
+    b: #[b: new str] 
+    
+    take 'a 0
+    take 'b\b 0
+    ensure -> a = b\b
+    passed
+
+]
+
+topic "take - :block < :block :block"
+do [
+
+    ensure -> [] = take [a b c] 0
+    passed
+
+    ensure -> [a] = take [a b c] 1
+    ensure -> [a b] = take [a b c] 2
+    passed
+
+    ensure -> [a b c] = take [a b c] 3
+    ensure -> [a b c] = take [a b c] 4
+    passed
+
+    ensure -> [] = take [a b c] neg 0
+    passed
+
+    ensure -> [c] = take [a b c] neg 1
+    ensure -> [b c] = take [a b c] neg 2
+    passed
+
+    ensure -> [a b c] = take [a b c] neg 3
+    ensure -> [a b c] = take [a b c] neg 4
+    passed
+
+]
+
+topic "take - :block < :block (literal) :block"
+do [
+
+    a: [a b c], take 'a 0
+    ensure -> [] = a
+    passed
+
+    a: [a b c], take 'a 1
+    ensure -> [a] = a
+    a: [a b c], take 'a 2
+    ensure -> [a b] = a
+    passed
+
+    a: [a b c], take 'a 3
+    ensure -> [a b c] = a
+    a: [a b c], take 'a 4
+    ensure -> [a b c] = a
+    passed
+
+    a: [a b c], take 'a neg 0
+    ensure -> [] = a
+    passed
+
+    a: [a b c], take 'a neg 1
+    ensure -> [c] = a
+    a: [a b c], take 'a neg 2
+    ensure -> [b c] = a
+    passed
+
+    a: [a b c], take 'a neg 3
+    ensure -> [a b c] = a
+    a: [a b c], take 'a neg 4
+    ensure -> [a b c] = a
+    passed
+
+]
+
+topic "take - :block < :block (pathLiteral) :block"
+do [
+
+    blk: [a b c] 
+    
+    a: new blk 
+    b: #[b: new blk] 
+    
+    take 'a 0
+    take 'b\b 0
+    ensure -> a = b\b
+    passed
+
+]
+
+topic "take - :range < :range :integer"
+do [
+
+    ensure -> [] = take 1..3 0
+    passed
+
+    ensure -> [1] = take 1..3 1
+    ensure -> [1 2] = take 1..3 2
+    passed
+
+    ensure -> [1 2 3] = take 1..3 3
+    ensure -> [1 2 3] = take 1..3 4
+    passed
+
+    ensure -> [] = take 1..3 neg 0
+    passed
+
+    ensure -> [3] = take 1..3 neg 1
+    ensure -> [2 3] = take 1..3 neg 2
+    passed
+
+    ensure -> [1 2 3] = take 1..3 neg 3
+    ensure -> [1 2 3] = take 1..3 neg 4
+    passed
+
+]
+
+topic "take - :block < :range (literal) :integer"
+do [
+
+    a: 1..3, take 'a 0
+    ensure -> [] = a
+    passed
+
+    a: 1..3, take 'a 1
+    ensure -> [1] = a
+    a: 1..3, take 'a 2
+    ensure -> [1 2] = a
+    passed
+
+    a: 1..3, take 'a 3
+    ensure -> [1 2 3] = a
+    a: 1..3, take 'a 4
+    ensure -> [1 2 3] = a
+    passed
+
+    a: 1..3, take 'a neg 0
+    ensure -> [] = a
+    passed
+
+    a: 1..3, take 'a neg 1
+    ensure -> [3] = a
+    a: 1..3, take 'a neg 2
+    ensure -> [2 3] = a
+    passed
+
+    a: 1..3, take 'a neg 3
+    ensure -> [1 2 3] = a
+    a: 1..3, take 'a neg 4
+    ensure -> [1 2 3] = a
+    passed
+
+]
+
+topic "take - :block < :range (pathLiteral) :integer"
+do [
+
+    ; TODO(lib.collections) revise tests for `take`
+    ;  it doesn't appear to be working well
+    ;  labels: unit-test, :block, :range, :integer
+
+    rng: 1..3
+
+    a: new rng
+    b: #[b: new rng]
+
+    take 'a 0
+    take 'b\b 0
+    
+    ; ensure -> a = b\b
+    ; passed
+
+]
+
+
+topic "tally"
+do [
+    ensure -> (#[h: 1 e: 1 l: 3 o: 2 W: 1 r: 1 d: 1 ])
+        = tally "helloWorld"
+    passed
+
+    ensure -> (#["1": 5 "2": 5 "4": 3 "3": 2 "5": 3 "6": 3 "7": 1 ])
+        = tally [1 2 4 1 3 5 6 2 6 3 5 7 2 4 2 4 5 6 2 1 1 1]
+    passed
+]
+
+
+topic "unique"
+do [
+
+    ensure -> [1 2 4 3] = unique [1 2 4 1 3 2]
+    passed
+
+    ensure -> "helo wrd" = unique "hellllo wooooorrrrld"
+    passed
+
+    a: (unique.id "art-")
+    ensure -> prefix? a "art-"
+    ensure -> 4 < size a
+    passed
+
+]
+
+topic "unique - literal"
+do [
+
+    a: [1 2 4 1 3 2], unique 'a
+    ensure -> [1 2 4 3] = a
+    passed
+
+    a: "hellllo wooooorrrrld", unique 'a
+    ensure -> "helo wrd" = a
+    passed
+
+    ; Don't work for literals
+    a: "art-", unique.id 'a
+    ensure -> "art-" = a
+    ensure -> 4 = size a
+    passed
+
+]
+
+topic "unique - pathLiteral"
+do [
+
+    blk: [1 2 4 1 3 2], 
+    
+    a: new blk
+    b: #[b: new blk]
+
+    unique 'a
+    unique 'b\b
+
+    print a
+    print b\b
+
+    ensure -> a = b\b
+    passed
+
+    str: "hellllo wooooorrrrld", 
+    
+    a: new str
+    b: #[b: new str]
+
+    unique 'a
+    unique 'b\b
+
+    ensure -> a = b\b
+    passed
+
+]
+
+
+topic "values - :dictionary"
+do [
+
+    user: #[
+        name: "John"
+        surname: "Doe"
+    ]
+
+    ensure -> ["John" "Doe"] = values user
+    passed
+]
+
+topic "values - :object"
+do [
+    define :person [name, surname]
+    p: to :person ["John" "Doe"]
+
+    ensure -> ["John" "Doe"] = values p
+    passed
+
+]
+
+topic "values - :block"
+do [
+
+    ensure -> ["zero" "one" "two"] = values ["zero" "one" "two"]
+    passed
+
+]
+
+topic "values - :range"
+do [
+    ensure -> [0 1 2 3 4 5 6 7 8 9 10] = values range 0 10
+    passed
+    ensure -> [5 6 7 8 9 10] = values 5..10
+    passed
+]
+
+topic "zero?"
+do [
+
+    ensure -> zero? null
+    ensure -> zero? ø
+    ensure -> not? zero? infinite
+    ensure -> not? zero? ∞
+    passed
+
+    ensure -> zero? 0
+    ensure -> not? zero? 1
+    ensure -> not? zero? 5
+    passed
+
+    ensure -> zero? 0.0
+    ensure -> not? zero? 0.1
+    ensure -> not? zero? 1.0
+    ensure -> not? zero? 1.1
+    ensure -> not? zero? 5
+    passed
+
+    ensure -> zero? ""
+    ensure -> not? zero? "0"
+    ensure -> not? zero? "1"
+    ensure -> not? zero? "Arturo"
+    passed
+
+    ensure -> zero? #[]
+    ensure -> not? zero? #[name: "Jane"]
+    ensure -> not? zero? #[name: "Jane" surname: "Doe"]
+    passed
+
+    ensure -> zero? []
+    ensure -> not? zero? [a]
+    ensure -> not? zero? [a b]
+    ensure -> not? zero? [a b c d e f]
+    passed
+
+    ; range always have at least one element
+    ensure -> not? zero? 0..0
+    ensure -> not? zero? 0..1
+    ensure -> not? zero? 0..10
+    passed
+
+]
