@@ -25,7 +25,6 @@ canExecute?: function [scr][
     
     if sys\os = "freebsd" [
         if in? scr [
-            ;"lib.collections"
             "quantities"
         ] -> return false
     ]
@@ -36,7 +35,6 @@ canExecute?: function [scr][
 
             "branching"
             "lib.comparison"
-            ; "lib.collections"
             "lib.files"
             "quantities"
             "sorting"
