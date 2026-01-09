@@ -36,7 +36,7 @@ canExecute?: function [scr][
 
             "branching"
             "lib.comparison"
-            "lib.collections"
+            ; "lib.collections"
             "lib.files"
             "quantities"
             "sorting"
