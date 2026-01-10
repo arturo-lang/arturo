@@ -55,15 +55,15 @@ body:
       required: false
 
   - type: input
-    label: OS
     attributes:
+      label: OS
       description: The operating system you are using (e.g., Windows 11, macOS Ventura, Ubuntu 20.04).
     validations:
       required: true
 
   - type: input
-    label: Version
     attributes:
+      label: Version
       description: Arturo's version and build. You can find this by running `arturo --version`.
     validations:
       required: true
