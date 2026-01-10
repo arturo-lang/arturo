@@ -8,29 +8,24 @@ body:
   - type: input
     id: summary
     attributes:
-      label: Summary
+      label: At a Glance
       description: One-line description of the requested feature.
-      placeholder: e.g., Add pattern-guarded function clauses
-      value: "This PR proposes to..."
     validations:
       required: true
 
   - type: textarea
     id: problem
     attributes:
-      label: What problem does this solve?
+      label: Current Issue
       description: Who is impacted and what limitation or friction exists today?
-      placeholder: Describe the current pain point when using the language, standard library, VM/runtime, or tooling.
     validations:
       required: true
 
   - type: textarea
     id: proposal
     attributes:
-      label: Proposed behavior
-      description: Describe the desired behavior, new syntax, API, or workflow. Include how it should behave across platforms/targets.
-      placeholder: Outline the feature semantics, examples, and any constraints.
-      value: The proposal is to... 
+      label: Proposal
+      description: Describe the desired behavior, new syntax, API, or workflow.
     validations:
       required: true
 
@@ -39,12 +34,20 @@ body:
     attributes:
       label: Code examples
       description: Provide code snippets demonstrating the proposed feature in use.
-      value: |
-        **Description**
+      placeholder: |
+        **Before**
+
         ```art
-        $>
+        $> example code here
+        => result
         ```
-      render: markdown
+
+        **After**
+
+        ```art
+        $> example code here
+        => result
+        ```
 
   - type: dropdown
     id: area
@@ -53,11 +56,11 @@ body:
       description: Where does this feature primarily belong?
       multiple: true
       options:
-        - Language syntax or semantics
+        - Syntax or semantics
         - VM/runtime
         - Standard library
         - REPL / CLI
-        - Packages
+        - Packages / Package manager
         - Tooling
         - FFI
         - Web
@@ -70,7 +73,9 @@ body:
     attributes:
       label: Impact and compatibility
       description: Note any breaking changes, performance implications, or interactions with existing modules.
-      placeholder: Breaking changes, migrations, performance expectations, platform considerations.
+      placeholder: |
+        - Breaks compatibility with ...
+        - Performance is degraded in order of...
     validations:
       required: false
 
@@ -89,4 +94,5 @@ body:
     attributes:
       label: Additional context
       description: Links, prior art in other languages, related issues, or constraints.
-      placeholder: References, comparisons, design notes.
+      placeholder: |
+        - Related to: #(issue number)
