@@ -19,8 +19,6 @@ body:
     attributes:
       label: Current Behavior
       description: A clear and concise description of what is happening.
-      placeholder: |
-        ## Current Behavior
     validations:
       required: false
 
@@ -29,8 +27,6 @@ body:
     attributes:
       label: Expected Behavior
       description: A clear and concise description of what you expected to happen.
-      placeholder: |
-        ## Expected Behavior
     validations:
       required: false
 
@@ -40,8 +36,6 @@ body:
       label: Steps To Reproduce
       description: A step-by-step list of what you did to encounter the bug.
       placeholder: |
-        ## Steps To Reproduce
-
         1. In this environment...
         1. With this config...
         1. Run '...'
