@@ -58,6 +58,8 @@ body:
         1. With this config...
         1. Run '...'
         1. See error...
+      value: |
+        ## Steps To Reproduce
       render: markdown
     validations:
       required: false
