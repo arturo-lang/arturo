@@ -41,7 +41,7 @@ body:
     validations:
       required: false
 
-  - type: textarea
+  - type: markdown
     id: Steps To Reproduce
     attributes:
       value: |
