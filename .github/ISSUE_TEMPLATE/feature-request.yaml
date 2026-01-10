@@ -36,12 +36,6 @@ body:
 
   - type: markdown
     id: examples
-    attributes:
-      label: Example code or script
-      description: Minimal Arturo snippet showing the feature in action. Include expected output or VM effects.
-      placeholder: |
-        ; minimal script demonstrating the feature
-        print [...]
 
   - type: dropdown
     id: area
