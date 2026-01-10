@@ -11,7 +11,6 @@ body:
       label: Summary
       description: One-line description of the requested feature.
       placeholder: e.g., Add pattern-guarded function clauses
-      value: "This PR proposes to..."
     validations:
       required: true
 
@@ -30,7 +29,6 @@ body:
       label: Proposed behavior
       description: Describe the desired behavior, new syntax, API, or workflow. Include how it should behave across platforms/targets.
       placeholder: Outline the feature semantics, examples, and any constraints.
-      value: The proposal is to... 
     validations:
       required: true
 
