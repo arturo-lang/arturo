@@ -10,7 +10,9 @@ body:
     attributes:
       label: Summary
       description: One-line description of the requested feature.
-      placeholder: e.g., Add pattern-guarded function clauses
+      placeholder: |
+        ## At a Glance
+
     validations:
       required: true
 
@@ -19,7 +21,9 @@ body:
     attributes:
       label: What problem does this solve?
       description: Who is impacted and what limitation or friction exists today?
-      placeholder: Describe the current pain point when using the language, standard library, VM/runtime, or tooling.
+      placeholder: |
+        ## Issue
+
     validations:
       required: true
 
@@ -28,7 +32,9 @@ body:
     attributes:
       label: Proposed behavior
       description: Describe the desired behavior, new syntax, API, or workflow. Include how it should behave across platforms/targets.
-      placeholder: Outline the feature semantics, examples, and any constraints.
+      placeholder: |
+        ## Proposal
+
     validations:
       required: true
 
@@ -38,7 +44,8 @@ body:
       label: Code examples
       description: Provide code snippets demonstrating the proposed feature in use.
       value: |
-        **Description**
+        ## Examples
+
         ```art
         $>
         ```
@@ -50,11 +57,11 @@ body:
       description: Where does this feature primarily belong?
       multiple: true
       options:
-        - Language syntax or semantics
+        - Syntax or semantics
         - VM/runtime
         - Standard library
         - REPL / CLI
-        - Packages
+        - Packages / Package manager
         - Tooling
         - FFI
         - Web
@@ -67,7 +74,8 @@ body:
     attributes:
       label: Impact and compatibility
       description: Note any breaking changes, performance implications, or interactions with existing modules.
-      placeholder: Breaking changes, migrations, performance expectations, platform considerations.
+      placeholder: |
+        ## Compatibility Considerations
     validations:
       required: false
 
@@ -86,4 +94,7 @@ body:
     attributes:
       label: Additional context
       description: Links, prior art in other languages, related issues, or constraints.
-      placeholder: References, comparisons, design notes.
+      placeholder: |
+        ## Additional Context
+
+        - Related to: #(issue number)
