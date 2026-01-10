@@ -34,14 +34,17 @@ body:
     validations:
       required: true
 
-  - type: markdown
+  - type: textarea
     id: examples
     attributes:
+      label: Code examples
+      description: Provide code snippets demonstrating the proposed feature in use.
       value: |
         **Description**
         ```art
         $>
         ```
+      render: markdown
 
   - type: dropdown
     id: area

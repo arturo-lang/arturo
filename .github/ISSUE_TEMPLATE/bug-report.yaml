@@ -6,6 +6,7 @@ assignees: ['drkameleon', 'RickBarretto']
 body:
 
   - type: checkboxes
+    id: existing-issue
     attributes:
       label: Is there an existing issue for this?
       description: Please search to see if an issue already exists for the bug you encountered.
@@ -14,7 +15,7 @@ body:
           required: true
 
   - type: input
-    id: Summary
+    id: summary
     attributes:
       label: Summary
       description: A clear and concise description of what the bug is.
@@ -23,38 +24,48 @@ body:
     validations:
       required: true
 
-  - type: markdown
-    id: Current Behavior
+  - type: textarea
+    id: current-behavior
     attributes:
+      label: Current Behavior
+      description: A clear and concise description of what is happening.
       value: |
         ## Current Behavior
-
+      render: markdown
     validations:
       required: false
 
-  - type: markdown
-    id: Expected Behavior
+  - type: textarea
+    id: expected-behavior
     attributes:
+      label: Expected Behavior
+      description: A clear and concise description of what you expected to happen.
       value: |
         ## Expected Behavior
-
+      render: markdown
     validations:
       required: false
 
-  - type: markdown
-    id: Steps To Reproduce
+  - type: textarea
+    id: steps-to-reproduce
     attributes:
-      value: |
+      label: Steps To Reproduce
+      description: A step-by-step list of what you did to encounter the bug.
+      placeholder: |
         ## Steps To Reproduce
 
         1. In this environment...
         1. With this config...
         1. Run '...'
         1. See error...
+      value: |
+        ## Steps To Reproduce
+      render: markdown
     validations:
       required: false
 
   - type: input
+    id: os
     attributes:
       label: OS
       description: The operating system you are using (e.g., Windows 11, macOS Ventura, Ubuntu 20.04).
@@ -62,6 +73,7 @@ body:
       required: true
 
   - type: input
+    id: version
     attributes:
       label: Version
       description: Arturo's version and build. You can find this by running `arturo --version`.
@@ -69,6 +81,7 @@ body:
       required: true
 
   - type: textarea
+    id: additional-context
     attributes:
       label: Anything else?
       description: |
