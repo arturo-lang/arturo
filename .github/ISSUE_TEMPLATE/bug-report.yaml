@@ -24,17 +24,20 @@ body:
       required: true
 
   - type: markdown
+    id: Current Behavior
     attributes:
-      label: Current Behavior
-      description: A concise description of what you're experiencing.
-      required: true
+      value: |
+        ## Current Behavior
+
     validations:
       required: false
 
   - type: markdown
+    id: Expected Behavior
     attributes:
-      label: Expected Behavior
-      description: A concise description of what you expected to happen.
+      value: |
+        ## Expected Behavior
+
     validations:
       required: false
 
