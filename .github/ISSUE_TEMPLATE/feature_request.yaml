@@ -57,7 +57,7 @@ body:
         - VM/runtime
         - Standard library
         - REPL / CLI
-				- Packages
+        - Packages
         - Tooling
         - FFI
         - Web
