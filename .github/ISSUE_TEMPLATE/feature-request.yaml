@@ -42,7 +42,6 @@ body:
         ```art
         $>
         ```
-      render: markdown
 
   - type: dropdown
     id: area
