@@ -42,7 +42,7 @@ body:
       required: false
 
   - type: textarea
-    id: Steps To Reproduce
+    id: steps-to-reproduce
     attributes:
       label: Steps To Reproduce
       description: A step-by-step list of what you did to encounter the bug.
