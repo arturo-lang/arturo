@@ -1,13 +1,9 @@
 name: Feature request
 description: Suggest an improvement for the Arturo language
-title: ""
+title: "[Scope]: Feature Description"
 labels: [enhancement]
 assignees: [drkameleon, RickBarretto]
 body:
-  - type: markdown
-    attributes:
-      description: |
-        Thanks for proposing a feature for Arturo.
 
   - type: input
     id: summary
@@ -15,6 +11,7 @@ body:
       label: Summary
       description: One-line description of the requested feature.
       placeholder: e.g., Add pattern-guarded function clauses
+      value: "This PR proposes to..."
     validations:
       required: true
 
@@ -33,18 +30,18 @@ body:
       label: Proposed behavior
       description: Describe the desired behavior, new syntax, API, or workflow. Include how it should behave across platforms/targets.
       placeholder: Outline the feature semantics, examples, and any constraints.
+      value: The proposal is to... 
     validations:
       required: true
 
   - type: markdown
     id: examples
     attributes:
-      label: Example code or script
-      description: Minimal Arturo snippet showing the feature in action. Include expected output or VM effects.
-      placeholder: |
-        ; minimal script demonstrating the feature
-        print [...]
-      render: shell
+      value: |
+        **Description**
+        ```art
+        $>
+        ```
 
   - type: dropdown
     id: area
@@ -57,7 +54,7 @@ body:
         - VM/runtime
         - Standard library
         - REPL / CLI
-				- Packages
+        - Packages
         - Tooling
         - FFI
         - Web
@@ -90,4 +87,3 @@ body:
       label: Additional context
       description: Links, prior art in other languages, related issues, or constraints.
       placeholder: References, comparisons, design notes.
-	
