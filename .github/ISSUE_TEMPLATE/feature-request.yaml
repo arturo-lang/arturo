@@ -42,7 +42,6 @@ body:
       placeholder: |
         ; minimal script demonstrating the feature
         print [...]
-      render: shell
 
   - type: dropdown
     id: area
