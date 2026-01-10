@@ -15,6 +15,7 @@ body:
       label: Summary
       description: One-line description of the requested feature.
       placeholder: e.g., Add pattern-guarded function clauses
+      value: "This PR proposes to..."
     validations:
       required: true
 
