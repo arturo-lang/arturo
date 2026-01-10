@@ -36,6 +36,12 @@ body:
 
   - type: markdown
     id: examples
+    attributes:
+      value: |
+        **Description**
+        ```art
+        $>
+        ```
 
   - type: dropdown
     id: area
