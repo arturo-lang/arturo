@@ -6,6 +6,7 @@ assignees: ['drkameleon', 'RickBarretto']
 body:
 
   - type: checkboxes
+    id: existing-issue
     attributes:
       label: Is there an existing issue for this?
       description: Please search to see if an issue already exists for the bug you encountered.
@@ -14,7 +15,7 @@ body:
           required: true
 
   - type: input
-    id: Summary
+    id: summary
     attributes:
       label: Summary
       description: A clear and concise description of what the bug is.
@@ -24,7 +25,7 @@ body:
       required: true
 
   - type: markdown
-    id: Current Behavior
+    id: current-behavior
     attributes:
       value: |
         ## Current Behavior
@@ -33,7 +34,7 @@ body:
       required: false
 
   - type: markdown
-    id: Expected Behavior
+    id: expected-behavior
     attributes:
       value: |
         ## Expected Behavior
@@ -58,6 +59,7 @@ body:
       required: false
 
   - type: input
+    id: os
     attributes:
       label: OS
       description: The operating system you are using (e.g., Windows 11, macOS Ventura, Ubuntu 20.04).
@@ -65,6 +67,7 @@ body:
       required: true
 
   - type: input
+    id: version
     attributes:
       label: Version
       description: Arturo's version and build. You can find this by running `arturo --version`.
@@ -72,6 +75,7 @@ body:
       required: true
 
   - type: textarea
+    id: additional-context
     attributes:
       label: Anything else?
       description: |
