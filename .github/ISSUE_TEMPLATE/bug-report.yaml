@@ -41,11 +41,12 @@ body:
     validations:
       required: false
 
-  - type: markdown
+  - type: textarea
+    id: Steps To Reproduce
     attributes:
-      label: Steps To Reproduce
-      description: Steps to reproduce the behavior.
-      placeholder: |
+      value: |
+        ## Steps To Reproduce
+
         1. In this environment...
         1. With this config...
         1. Run '...'
