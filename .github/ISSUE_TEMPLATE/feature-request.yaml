@@ -8,33 +8,24 @@ body:
   - type: input
     id: summary
     attributes:
-      label: Summary
+      label: At a Glance
       description: One-line description of the requested feature.
-      placeholder: |
-        ## At a Glance
-
     validations:
       required: true
 
   - type: textarea
     id: problem
     attributes:
-      label: What problem does this solve?
+      label: Current Issue
       description: Who is impacted and what limitation or friction exists today?
-      placeholder: |
-        ## Issue
-
     validations:
       required: true
 
   - type: textarea
     id: proposal
     attributes:
-      label: Proposed behavior
-      description: Describe the desired behavior, new syntax, API, or workflow. Include how it should behave across platforms/targets.
-      placeholder: |
-        ## Proposal
-
+      label: Proposal
+      description: Describe the desired behavior, new syntax, API, or workflow.
     validations:
       required: true
 
@@ -43,11 +34,19 @@ body:
     attributes:
       label: Code examples
       description: Provide code snippets demonstrating the proposed feature in use.
-      value: |
-        ## Examples
+      placeholder: |
+        **Before**
 
         ```art
-        $>
+        $> example code here
+        => result
+        ```
+
+        **After**
+
+        ```art
+        $> example code here
+        => result
         ```
 
   - type: dropdown
@@ -75,7 +74,8 @@ body:
       label: Impact and compatibility
       description: Note any breaking changes, performance implications, or interactions with existing modules.
       placeholder: |
-        ## Compatibility Considerations
+        - Breaks compatibility with ...
+        - Performance is degraded in order of...
     validations:
       required: false
 
@@ -95,6 +95,4 @@ body:
       label: Additional context
       description: Links, prior art in other languages, related issues, or constraints.
       placeholder: |
-        ## Additional Context
-
         - Related to: #(issue number)
