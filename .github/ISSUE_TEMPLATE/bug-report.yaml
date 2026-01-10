@@ -13,10 +13,15 @@ body:
         - label: I have searched the existing issues
           required: true
 
-  - type: markdown
+  - type: input
+    id: Summary
     attributes:
-      label: Description
+      label: Summary
       description: A clear and concise description of what the bug is.
+      placeholder: e.g., "Arturo crashes when using pattern-matching in function `clauses`"
+      value: "I have encountered a bug where..."
+    validations:
+      required: true
 
   - type: markdown
     attributes:
