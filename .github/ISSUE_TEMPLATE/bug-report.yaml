@@ -1,6 +1,6 @@
 name: Bug Report
 description: Describe the problems you have found
-title: ""
+title: "[Scope]: Bug Description"
 labels: ["bug"]
 assignees: ['drkameleon', 'RickBarretto']
 body:

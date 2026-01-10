@@ -1,6 +1,6 @@
 name: Feature request
 description: Suggest an improvement for the Arturo language
-title: ""
+title: "[Scope]: Feature Description"
 labels: [enhancement]
 assignees: [drkameleon, RickBarretto]
 body:
