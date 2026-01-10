@@ -41,16 +41,19 @@ body:
     validations:
       required: false
 
-  - type: markdown
+  - type: textarea
     id: Steps To Reproduce
     attributes:
-      value: |
+      label: Steps To Reproduce
+      description: A step-by-step list of what you did to encounter the bug.
+      placeholder: |
         ## Steps To Reproduce
 
         1. In this environment...
         1. With this config...
         1. Run '...'
         1. See error...
+      render: markdown
     validations:
       required: false
 
