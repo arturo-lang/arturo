@@ -79,7 +79,7 @@ proc defineModule*(moduleName: string) =
             ; 10
             
             print multiply.with: 6 5
-            ; 60
+            ; 30
         """:
             #=======================================================
             let val = popAttr(x.s)
