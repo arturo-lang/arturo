@@ -25,10 +25,14 @@ const
     ArturoVersion*          = static readFile("version/version").strip()        ## The current version of Arturo
     ArturoRevision*         = static readFile("version/revision").strip()       ## The current revision number
     ArturoMetadata*         = static readFile("version/metadata").strip()       ## The metadata string (if any)
+    ArturoCodename*         = static readFile("version/codename").strip()       ## The codename for official releases
 
     ArturoVersionString*    = ArturoVersion &                                   ## The version string with revision and metadata
                               (if ArturoVersion.contains("-dev"): 
-                                "+" & ArturoRevision & (if ArturoMetadata != "": "." & ArturoMetadata else: "")
+                                  "+" & ArturoRevision & (if ArturoMetadata != "": "." & ArturoMetadata else: "")
+                               else: "") &
+                              (if ArturoCodename != "" and not ArturoVersion.contains("-dev"):
+                                  " \"" & ArturoCodename & "\""
                                else: "")
 
     ArturoVersionText*      = "arturo " &                                       ## What the user see for `arturo --version`
