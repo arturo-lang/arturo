@@ -271,7 +271,7 @@ proc showBuildInfo*(config: BuildConfig) =
 
     if not config.silentCompilation:
         log fmt"flags: {params}"
-
+ 
 #=======================================
 # Methods
 #=======================================
