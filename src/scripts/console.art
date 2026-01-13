@@ -44,15 +44,16 @@ LongHeader: {
 }
 
 vv: to :string sys\version
-[versionPart,buildPart]: split.by:"+" to :string sys\version
+[versionPart,revisionPart]: split.by:"+" to :string sys\version
 
-Details: {# version : |versionPart|} ++ "\n"
+Details: {# version  : |versionPart|} ++ "\n"
 
-if or? [contains? buildPart "."][3 < to :integer buildPart][
-    Details: Details ++ {# build   : |buildPart| @ |sys\built|} ++ "\n"
+if or? [contains? revisionPart "."][3 < to :integer revisionPart][
+                        
+    Details: Details ++ {# snapshot : |revisionPart| @ |sys\built|} ++ "\n"
 ]
 
-Details: Details ++ {# arch    : |sys\cpu\arch|/|sys\os|}
+Details: Details ++ {# arch     : |sys\cpu\arch|/|sys\os|}
 
 BR: "\n"
 
