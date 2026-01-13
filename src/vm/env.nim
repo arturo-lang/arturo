@@ -97,7 +97,7 @@ proc parseCmdlineArguments*(): ValueDict =
 proc getSystemInfo*(): ValueDict =
     ## return system info as a Dictionary value
     var versionStr = ArturoVersion
-    versionStr &= "+" & ArturoBuild
+    versionStr &= "+" & ArturoRevision
     if ArturoMetadata != "":
         versionStr &= "." & ArturoMetadata
     try:
