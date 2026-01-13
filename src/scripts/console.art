@@ -47,7 +47,7 @@ vv: to :string sys\version
 parts: split.by:"+" vv
 versionPart: first parts
 revisionPart: (and? 
-    [not contains? versionPart "-dev"]
+    [not? contains? versionPart "-dev"]
     [size parts > 1]
 )? -> last parts -> ""
 
