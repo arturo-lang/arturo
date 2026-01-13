@@ -11,46 +11,49 @@ fi
 VERSION="$1"
 CODENAME="$2"
 
-echo "=========================================="
-echo "| Arturo   | Release > Trigger"
-echo "|=========================================="
-echo "| Version  :  $VERSION"
-echo "| Codename : $CODENAME"
-echo "| Tag      : v$VERSION"
-echo "|=========================================="
+echo ""
+echo " |=================================================================="
+echo " | Arturo   | Release > Trigger"
+echo " |=================================================================="
+echo " | Version  :  $VERSION"
+echo " | Codename : $CODENAME"
+echo " | Tag      : v$VERSION"
+echo " |=================================================================="
 echo ""
 
-read -p "Proceed with release? (y/N): " -n 1 -r
+read -p " Proceed with release? (y/N): " -n 1 -r
 echo
 if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-    echo "Aborted."
+    echo " Aborted."
     exit 1
 fi
 
-# Update version files
+echo ""
+echo " - Updating version files..."
 # echo "$VERSION" > version/version
 # echo "$CODENAME" > version/codename
 # echo "0" > version/revision
 # echo "" > version/metadata
 
-# # Commit & tag
+echo " - Committing changes..."
 # git add version/*
 # git commit -m "Release $VERSION \"$CODENAME\""
+echo " - Tagging release..."
 # git tag "v$VERSION"
 
-# Push
-echo ""
-echo "Pushing to remote..."
+echo " - Pushing to remote..."
 # git push origin master
 # git push origin "v$VERSION"
 
 echo ""
-echo "-----------------------------------------------------------"
-echo "✅ Release tagged and pushed!"
+echo "------------------------------------------------------"
+echo " ✅ Release tagged and pushed!"
+echo "------------------------------------------------------"
 echo ""
-echo "GitHub Actions will now build and"
-echo "release Arturo $VERSION \"$CODENAME\""
+echo " GitHub Actions will now build and"
+echo " release Arturo $VERSION \"$CODENAME\""
 echo ""
-echo "Next steps:"
-echo "  - Wait for release workflow to complete"
-echo "  - Run tools/release_finalize.sh <NEXT_VERSION>"
+echo " Next steps:"
+echo "   - Wait for release workflow to complete"
+echo "   - Run tools/release_finalize.sh <NEXT_VERSION>"
+echo ""
