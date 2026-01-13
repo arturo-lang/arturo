@@ -8,7 +8,7 @@ on:
     workflow_dispatch:
         inputs:
             version:
-                description: 'Version to release (e.g., 0.9.85)'
+                description: 'Version to release (e.g., 0.10.0)'
                 required: true
                 type: string
 
@@ -17,17 +17,18 @@ concurrency:
     cancel-in-progress: true
 
 jobs:
-    Prepare:
+    Validate:
         runs-on: ubuntu-latest
         outputs:
-            version: ${{ steps.metadata.outputs.version }}
-            tag_name: ${{ steps.metadata.outputs.tag_name }}
-            git_sha: ${{ steps.metadata.outputs.git_sha }}
+            version: ${{ steps.extract.outputs.version }}
+            tag_name: ${{ steps.extract.outputs.tag_name }}
         steps:
             - uses: actions/checkout@v4
+              with:
+                ref: ${{ github.ref }}
             
-            - name: Prepare metadata
-              id: metadata
+            - name: Extract and validate version
+              id: extract
               run: |
                 # Extract version from tag or workflow input
                 if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
@@ -41,18 +42,57 @@ jobs:
                 echo "version=$VERSION" >> $GITHUB_OUTPUT
                 echo "tag_name=$TAG_NAME" >> $GITHUB_OUTPUT
                 
-                # Get the commit SHA for this tag/release
-                if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-                    ARTURO_SHA=$(gh api repos/arturo-lang/arturo/commits/master --jq '.sha[0:7]')
-                else
-                    ARTURO_SHA=$(git rev-parse --short HEAD)
+                # Read version files
+                FILE_VERSION=$(cat version/version | tr -d '\n\r')
+                FILE_REVISION=$(cat version/revision | tr -d '\n\r')
+                FILE_METADATA=$(cat version/metadata | tr -d '\n\r')
+                FILE_CODENAME=$(cat version/codename | tr -d '\n\r')
+                
+                echo "=========================================="
+                echo "Release Validation"
+                echo "=========================================="
+                echo "Tag version:     $VERSION"
+                echo "File version:    $FILE_VERSION"
+                echo "Revision:        $FILE_REVISION"
+                echo "Metadata:        $FILE_METADATA"
+                echo "Codename:        $FILE_CODENAME"
+                echo "=========================================="
+                
+                # Validate version matches
+                if [ "$VERSION" != "$FILE_VERSION" ]; then
+                    echo "❌ ERROR: Tag version ($VERSION) doesn't match version/version ($FILE_VERSION)"
+                    exit 1
                 fi
-                echo "git_sha=$ARTURO_SHA" >> $GITHUB_OUTPUT
-              env:
-                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                
+                # Validate revision is 0
+                if [ "$FILE_REVISION" != "0" ]; then
+                    echo "❌ ERROR: Revision must be 0 for releases (found: $FILE_REVISION)"
+                    exit 1
+                fi
+                
+                # Validate metadata is empty
+                if [ -n "$FILE_METADATA" ]; then
+                    echo "❌ ERROR: Metadata must be empty for releases (found: $FILE_METADATA)"
+                    exit 1
+                fi
+                
+                # Validate codename exists
+                if [ -z "$FILE_CODENAME" ]; then
+                    echo "❌ ERROR: Codename must be set for releases"
+                    exit 1
+                fi
+                
+                # Validate version doesn't contain -dev
+                if [[ "$FILE_VERSION" == *"-dev"* ]]; then
+                    echo "❌ ERROR: Version cannot contain '-dev' for releases"
+                    exit 1
+                fi
+                
+                echo "✅ All validations passed!"
+                echo "📦 Ready to release: Arturo $VERSION \"$FILE_CODENAME\""
 
     Build:
-        needs: Prepare
+        needs: Validate
         runs-on: ${{ 
             (matrix.os == 'linux')   && (matrix.support == 'legacy' && (matrix.arch == 'arm64' && 'ubuntu-22.04-arm' || 'ubuntu-22.04') || matrix.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-latest') ||
             (matrix.os == 'macos')   && (matrix.arch == 'arm64' && 'macos-latest' || 'macOS-15-intel') ||
@@ -62,7 +102,6 @@ jobs:
         strategy:
             matrix:
                 include: 
-                    # Linux builds
                     - {os: linux,   arch: amd64}
                     - {os: linux,   arch: amd64,    support: legacy}
                     - {os: linux,   arch: amd64,    mode: safe}
@@ -70,22 +109,14 @@ jobs:
                     - {os: linux,   arch: arm64}
                     - {os: linux,   arch: arm64,    support: legacy}
                     - {os: linux,   arch: arm64,    mode: mini}
-                    
-                    # FreeBSD builds
                     - {os: freebsd, arch: amd64}
                     - {os: freebsd, arch: amd64,    mode: mini}
-                    
-                    # macOS builds
                     - {os: macos,   arch: amd64}
                     - {os: macos,   arch: amd64,    mode: mini}
                     - {os: macos,   arch: arm64}
                     - {os: macos,   arch: arm64,    mode: mini}
-                    
-                    # Windows builds
                     - {os: windows, arch: amd64}
                     - {os: windows, arch: amd64,    mode: mini}
-                    
-                    # Web build
                     - {os: web,     arch: js,       mode: mini}
  
         defaults:
@@ -97,7 +128,7 @@ jobs:
 
         steps:
             - name: Build Arturo
-              uses: arturo-lang/setup-arturo@v2
+              uses: arturo-lang/arturo-action@v2
               with: 
                 do: compile
                 token: ${{ secrets.GITHUB_TOKEN }}
@@ -105,18 +136,19 @@ jobs:
                 arch: ${{ matrix.arch }}
                 mode: ${{ matrix.mode }}
                 support: ${{ matrix.support }}
-                src: ${{ needs.Prepare.outputs.tag_name }}
-                metadata: ${{ needs.Prepare.outputs.version }}
+                src: ${{ needs.Validate.outputs.tag_name }}
                 create_artifact: 'true'
-                artifact_version: ${{ needs.Prepare.outputs.version }}
+                artifact_version: ${{ needs.Validate.outputs.version }}
 
     Release:
         runs-on: ubuntu-latest
         needs: 
-            - Prepare
+            - Validate
             - Build
         steps:
             - uses: actions/checkout@v4
+              with:
+                ref: ${{ needs.Validate.outputs.tag_name }}
             
             - name: Download artifacts
               uses: dawidd6/action-download-artifact@v11
@@ -126,33 +158,38 @@ jobs:
                 path: ./assets
                 skip_unpack: true
 
-            - name: Create source archive
-              run: |
-                VERSION=${{ needs.Prepare.outputs.version }}
-                TAG=${{ needs.Prepare.outputs.tag_name }}
-                
-                git clone --depth 1 --branch $TAG https://github.com/arturo-lang/arturo.git arturo-source
-                cd arturo-source
-                git archive --format=zip --prefix=arturo-$VERSION/ HEAD > ../assets/arturo-$VERSION-src.zip
-                git archive --format=tar.gz --prefix=arturo-$VERSION/ HEAD > ../assets/arturo-$VERSION-src.tar.gz
-  
             - name: Debug environment
               run: |
-                echo "Version: ${{ needs.Prepare.outputs.version }}"
-                echo "Tag: ${{ needs.Prepare.outputs.tag_name }}"
-                echo "Commit: ${{ needs.Prepare.outputs.git_sha }}"
+                echo "Version: ${{ needs.Validate.outputs.version }}"
+                echo "Tag: ${{ needs.Validate.outputs.tag_name }}"
+                echo "Codename: $(cat version/codename)"
                 echo "Assets:"
                 ls -laR ./assets
 
             - name: Create release
               run: |
-                BODY="**Official Release v${{ needs.Prepare.outputs.version }}**
-
-**Commit:** [\`${{ needs.Prepare.outputs.git_sha }}\`](https://github.com/arturo-lang/arturo/commit/${{ needs.Prepare.outputs.git_sha }})"
+                CODENAME=$(cat version/codename)
+                COMMIT_SHA=$(git rev-parse HEAD)
+                COMMIT_SHORT=$(git rev-parse --short HEAD)
                 
-                gh release create "${{ needs.Prepare.outputs.tag_name }}" \
-                  --title "Arturo ${{ needs.Prepare.outputs.version }}" \
-                  --notes "$BODY" \
+                cat > release-notes.md << EOF
+                **Arturo ${{ needs.Validate.outputs.version }} "${CODENAME}"**
+                
+                Official release of Arturo ${{ needs.Validate.outputs.version }}.
+                
+                **Commit:** [\`${COMMIT_SHORT}\`](https://github.com/arturo-lang/arturo/commit/${COMMIT_SHA})
+                EOF
+                
+                gh release create "${{ needs.Validate.outputs.tag_name }}" \
+                  --title "Arturo ${{ needs.Validate.outputs.version }} \"${CODENAME}\"" \
+                  --notes-file release-notes.md \
                   ./assets/*
               env:
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    Deploy:
+        uses: arturo-lang/website/.github/workflows/deploy.yml@main
+        needs: Release
+        secrets: inherit
+        with:
+            channel: 'stable'
