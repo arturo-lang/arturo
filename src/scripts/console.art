@@ -48,7 +48,7 @@ parts: split.by:"+" vv
 versionPart: first parts
 revisionPart: (and? 
     [not? contains? versionPart "-dev"]
-    [size parts > 1]
+    [1 < size parts]
 )? -> last parts -> ""
 
 Details: {# version  : |versionPart|}
