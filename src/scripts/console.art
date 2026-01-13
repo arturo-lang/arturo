@@ -54,7 +54,7 @@ revisionPart: (and?
 Details: {# version  : |versionPart|}
 
 unless empty? sys\codename ->
-    Details: Details ++ { "|sys\codename|"}
+    Details: Details ++ " " ++ { "|sys\codename|"}
 
 Details: Details ++ "\n"
 
