@@ -494,39 +494,39 @@ proc defineModule*(moduleName: string) =
         returns     = {Dictionary},
         example     = """
             inspect sys
-            ;[ :dictionary
-            ;        author     :        Yanis Zafirópulos :string
-            ;        copyright  :        (c) 2019-2026 :string
-            ;        version    :        0.9.84-alpha+3126 :version
-            ;        built      :        [ :date
-            ;                hour        :                16 :integer
-            ;                minute      :                19 :integer
-            ;                second      :                25 :integer
-            ;                nanosecond  :                0 :integer
-            ;                day         :                12 :integer
-            ;                Day         :                Wednesday :string
-            ;                days        :                163 :integer
-            ;                month       :                6 :integer
-            ;                Month       :                June :string
-            ;                year        :                2024 :integer
-            ;                utc         :                -7200 :integer
-            ;        ]
-            ;        deps       :        [ :dictionary
-            ;                gmp     :                6.3.0 :version
-            ;                mpfr    :                4.2.1 :version
-            ;                sqlite  :                3.39.5 :version
-            ;                pcre    :                8.45.0 :version
-            ;        ]
-            ;        binary     :        /Users/drkameleon/.arturo/bin/arturo :string
-            ;        cpu        :        [ :dictionary
-            ;                arch    :                amd64 :literal
-            ;                endian  :                little :literal
-            ;                cores   :                8 :integer
-            ;        ]
-            ;        os         :        macos :string
-            ;        hostname   :        drkameleons-MBP.home :string
-            ;        release    :        full :literal
-            ;]
+            ; [ :dictionary
+            ;         author     :        Yanis Zafirópulos :string
+            ;         copyright  :        (c) 2019-2026 :string
+            ;         version    :        0.10.0-dev+3454 :version
+            ;         codename   :         :string
+            ;         built      :        [ :date
+            ;                 hour        :                12 :integer
+            ;                 minute      :                56 :integer
+            ;                 second      :                12 :integer
+            ;                 nanosecond  :                0 :integer
+            ;                 day         :                13 :integer
+            ;                 Day         :                Tuesday :string
+            ;                 days        :                12 :integer
+            ;                 month       :                1 :integer
+            ;                 Month       :                January :string
+            ;                 year        :                2026 :integer
+            ;                 utc         :                -3600 :integer
+            ;         ]
+            ;         deps       :        [ :dictionary
+            ;                 gmp     :                6.3.0 :version
+            ;                 mpfr    :                4.2.1 :version
+            ;                 sqlite  :                3.43.2 :version
+            ;         ]
+            ;         binary     :        /Users/drkameleon/.arturo/bin/arturo :string
+            ;         cpu        :        [ :dictionary
+            ;                 arch    :                amd64 :literal
+            ;                 endian  :                little :literal
+            ;                 cores   :                8 :integer
+            ;         ]
+            ;         os         :        macos :literal
+            ;         hostname   :        drkameleons-MacBook-Pro.local :string
+            ;         release    :        full :literal
+            ; ]
         """:
             #=======================================================
             push newDictionary(getSystemInfo())
