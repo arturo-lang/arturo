@@ -248,7 +248,7 @@ proc defineModule*(moduleName: string) =
                 elif relative:
                     contents = toSeq(walkDir(path, relative = true)).map((x) => x[1])
                 else:
-                    contents = toSeq(walkDirs(path))
+                    contents = toSeq(walkPattern(path))
 
                 push(newStringBlock(contents))
 
