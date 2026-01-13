@@ -1,5 +1,5 @@
 
-exe: switch "windows" = sys\os 
+exe: switch sys\os = 'windows
     -> "unitt.bat" 
     -> "unitt"
 

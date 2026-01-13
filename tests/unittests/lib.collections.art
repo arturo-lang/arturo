@@ -2759,7 +2759,7 @@ do [
 topic "split - .path"
 do [
 
-    (sys\os = "windows")? [
+    (sys\os = 'windows)? [
             ; Accepts \\ and / paths
             ensure -> ["directory" "wofilerld"] = split.path "directory\\wofilerld"
             ensure -> ["usr" "bin"] = split.path "\\usr\\bin"
@@ -2784,7 +2784,7 @@ do [
 topic "split - .path (literal)"
 do [
 
-    (sys\os = "windows")? [
+    (sys\os = 'windows)? [
             ; Accepts \\ and / paths
             p: "directory\\wofilerld", split.path 'p
             p2: "\\usr\\bin", split.path 'p2
@@ -2815,7 +2815,7 @@ do [
 topic "split - .path (pathLiteral)"
 do [
 
-    (sys\os = "windows")? [
+    (sys\os = 'windows)? [
             ; Accepts \\ and / paths
             str: "directory\\wofilerld", 
             
