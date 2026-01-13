@@ -260,13 +260,13 @@ proc showBuildInfo*(config: BuildConfig) =
     let
         params = flags.join(" ")
         version = "version/version".staticRead()
-        build = "version/build".staticRead()
+        revision = "version/revision".staticRead()
 
     if config.generateBundle:
         section "Bundling"
     else:
         section "Compilation"
-    log fmt"version: {version}/{build}"
+    log fmt"version: {version} @ {revision}"
     log fmt"config: {config.version}"
 
     if not config.silentCompilation:
