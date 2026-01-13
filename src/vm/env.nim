@@ -137,9 +137,6 @@ proc getSystemInfo*(): ValueDict =
 
         when not defined(NOSQLITE):
             result["deps"].d["sqlite"] = newVersion($(sqlite3.libversion()))
-
-        let pcreVersion = ($(pcre.version())).split(" ")[0] & ".0"
-        result["deps"].d["pcre"] = newVersion(pcreVersion)
         
     except CatchableError:
         discard
