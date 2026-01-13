@@ -981,7 +981,7 @@ do [
 
     ;; Since just `.git` is considered hidden in windows
     ;; and every folder/file that starts with `.` is considered hidden
-    (sys\os = "windows")? [
+    (sys\os = 'windows)? [
         if and?
             hidden? ".git"
             every? ["README.md" "src" ".gitignore" ".cache" ".github"]

@@ -44,11 +44,11 @@ chooseAsset: $[][
 	]
 	
 	base: 0
-	if? 'mini = release -> base: 1
+	if 'mini = release -> base: 1
 
 	case sys\os [
-		"macos"  	-> return base + 0
-		"linux"  	-> return base + 2
+		'macos  	-> return base + 0
+		'linux  	-> return base + 2
 		else -> panic unsupportedOS sys\os
 ]
 
@@ -88,7 +88,7 @@ downloadArturo: $[url :string tempFile :string][
 		prefix? url « https://github.com/arturo-lang/nightly/releases/download
 
 	ensure.that: "Is the correct OS" ->
-		in? sys\os lower url
+		in? to :string sys\os lower url
 
 	ensure.that: "Is the same version kind" ->
 		contains? url sys\release

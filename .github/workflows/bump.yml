@@ -1,4 +1,4 @@
-name: Build number
+name: Revision
 
 on:
     push:
@@ -28,20 +28,20 @@ jobs:
             git config user.name "GitHub Actions Bot"
             git config user.email "actions@github.com"
       
-      - name: Increment build number
+      - name: Increment revision number
         id: bump
         run: |
-            current_build=$(cat version/build)
-            new_build=$((current_build + 1))
-            echo $new_build > version/build
+            current_revision=$(cat version/revision)
+            new_revision=$((current_revision + 1))
+            echo $new_revision > version/revision
 
-            echo "current=$new_build" >> $GITHUB_OUTPUT
-            
-            echo "Bumped build: $current_build → $new_build"
-      
+            echo "current=$new_revision" >> $GITHUB_OUTPUT
+
+            echo "Bumped revision: $current_revision → $new_revision"
+
       - name: Commit and push
         run: |
-            git add version/build
-            git commit -m "Bump build to ${{ steps.bump.outputs.current }} [skip ci]"
+            git add version/revision
+            git commit -m "Bump revision to ${{ steps.bump.outputs.current }} [skip ci]"
             git push origin master
  

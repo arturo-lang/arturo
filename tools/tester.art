@@ -23,7 +23,7 @@ canExecute?: function [scr][
     ;  we have to investigate why...
     ;  labels: freebsd, unit-test
     
-    if sys\os = "freebsd" [
+    if sys\os = 'freebsd [
         if in? scr [
             "quantities"
         ] -> return false

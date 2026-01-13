@@ -292,7 +292,7 @@ when isMainModule and not defined(WEB):
             of showHelp:
                 printHelp()
             of showVersion:
-                echo ArturoVersionTxt
+                echo ArturoVersionText
             of noAction:
                 discard
     else:

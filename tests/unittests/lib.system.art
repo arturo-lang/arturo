@@ -24,7 +24,7 @@ do [
               or? 
                 equal? sys\cpu\endian 'little
                 equal? sys\cpu\endian 'big
-    ensure -> string? sys\os
+    ensure -> literal? sys\os
     passed
     
 ]
