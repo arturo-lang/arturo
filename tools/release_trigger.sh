@@ -30,20 +30,20 @@ fi
 
 echo ""
 echo " - Updating version files..."
-# echo "$VERSION" > version/version
-# echo "$CODENAME" > version/codename
-# echo "0" > version/revision
-# echo "" > version/metadata
+echo "$VERSION" > version/version
+echo "$CODENAME" > version/codename
+echo "0" > version/revision
+echo "" > version/metadata
 
 echo " - Committing changes..."
-# git add version/*
-# git commit -m "Release $VERSION \"$CODENAME\""
+git add version/*
+git commit -m "Release $VERSION \"$CODENAME\""
 echo " - Tagging release..."
-# git tag "v$VERSION"
+git tag "v$VERSION"
 
 echo " - Pushing to remote..."
-# git push origin master
-# git push origin "v$VERSION"
+git push origin master
+git push origin "v$VERSION"
 
 echo ""
 echo " ------------------------------------------------------"
