@@ -22,8 +22,6 @@ when defined(GMP):
 when not defined(NOSQLITE):
     import extras/db_connector/sqlite3
 
-import pcre
-
 import os, strutils, tables, times, system
 
 import helpers/system
