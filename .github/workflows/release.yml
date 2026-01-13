@@ -171,17 +171,22 @@ jobs:
                 COMMIT_SHA=$(git rev-parse HEAD)
                 COMMIT_SHORT=$(git rev-parse --short HEAD)
                 
-                cat > release-notes.md << EOF
+                cat > release-header.md << EOF
                 **Arturo ${{ needs.Validate.outputs.version }} "${CODENAME}"**
                 
                 Official release of Arturo ${{ needs.Validate.outputs.version }}.
                 
                 **Commit:** [\`${COMMIT_SHORT}\`](https://github.com/arturo-lang/arturo/commit/${COMMIT_SHA})
+                
+                ---
+                
                 EOF
                 
+                # Generate release notes
                 gh release create "${{ needs.Validate.outputs.tag_name }}" \
                   --title "Arturo ${{ needs.Validate.outputs.version }} \"${CODENAME}\"" \
-                  --notes-file release-notes.md \
+                  --notes-file release-header.md \
+                  --generate-notes \
                   ./assets/*
               env:
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
