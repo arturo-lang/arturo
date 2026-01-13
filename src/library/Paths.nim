@@ -245,8 +245,10 @@ proc defineModule*(moduleName: string) =
 
                 if recursive:
                     contents = toSeq(walkDirRec(path, relative = relative))
+                elif relative:
+                    contents = toSeq(walkDir(path, relative = true)).map((x) => x[1])
                 else:
-                    contents = toSeq(walkDir(path, relative = relative)).map((x) => x[1])
+                    contents = toSeq(walkDirs(path))
 
                 push(newStringBlock(contents))
 
