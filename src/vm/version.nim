@@ -22,16 +22,15 @@ import helpers/system
 #=======================================
 
 const 
-    ArturoVersion*      = static readFile("version/version").strip()        ## The current version of Arturo
-    ArturoRevision*     = static readFile("version/revision").strip()       ## The current revision number
-    ArturoMetadata*     = static readFile("version/metadata").strip()       ## The metadata string (if any)
+    ArturoVersion*          = static readFile("version/version").strip()        ## The current version of Arturo
+    ArturoRevision*         = static readFile("version/revision").strip()       ## The current revision number
+    ArturoMetadata*         = static readFile("version/metadata").strip()       ## The metadata string (if any)
 
-    ArturoVersionString* = ArturoVersion &                                  ## The version string with revision and metadata
-                           (if ArturoVersion.contains("-dev"): 
+    ArturoVersionString*    = ArturoVersion &                                   ## The version string with revision and metadata
+                              (if ArturoVersion.contains("-dev"): 
                                 "+" & ArturoRevision & (if ArturoMetadata != "": "." & ArturoMetadata else: "")
-                            else: "")
+                               else: "")
 
-    ArturoVersionText*   = "arturo " &                                      ## What the user see for `arturo --version`
-                            ArturoVersionString &                   
-                            " (" & systemArch & "/" & systemOs & ")"
-                        
+    ArturoVersionText*      = "arturo " &                                       ## What the user see for `arturo --version`
+                               ArturoVersionString &                   
+                               " (" & systemArch & "/" & systemOs & ")"
