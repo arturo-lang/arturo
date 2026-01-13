@@ -136,7 +136,6 @@ jobs:
                 arch: ${{ matrix.arch }}
                 mode: ${{ matrix.mode }}
                 support: ${{ matrix.support }}
-                src: ${{ needs.Validate.outputs.tag_name }}
                 create_artifact: 'true'
                 artifact_version: ${{ needs.Validate.outputs.version }}
 
