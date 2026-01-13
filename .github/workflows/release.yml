@@ -47,7 +47,7 @@ jobs:
                 FILE_REVISION=$(cat version/revision | tr -d '\n\r')
                 FILE_METADATA=$(cat version/metadata | tr -d '\n\r')
                 FILE_CODENAME=$(cat version/codename | tr -d '\n\r')
-                
+                    
                 echo "=========================================="
                 echo "Release Validation"
                 echo "=========================================="
