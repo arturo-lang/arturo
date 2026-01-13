@@ -30,11 +30,11 @@ const
     ArturoVersionString*    = ArturoVersion &                                   ## The version string with revision and metadata
                               (if ArturoVersion.contains("-dev"): 
                                   "+" & ArturoRevision & (if ArturoMetadata != "": "." & ArturoMetadata else: "")
-                               else: "") &
-                              (if ArturoCodename != "" and not ArturoVersion.contains("-dev"):
-                                  " \"" & ArturoCodename & "\""
                                else: "")
 
     ArturoVersionText*      = "arturo " &                                       ## What the user see for `arturo --version`
-                               ArturoVersionString &                   
+                               ArturoVersionString &     
+                              (if ArturoCodename != "" and not ArturoVersion.contains("-dev"):
+                                  " \"" & ArturoCodename & "\""
+                               else: "") &     
                                " (" & systemArch & "/" & systemOs & ")"
