@@ -96,15 +96,11 @@ proc parseCmdlineArguments*(): ValueDict =
 
 proc getSystemInfo*(): ValueDict =
     ## return system info as a Dictionary value
-    var versionStr = ArturoVersion
-    versionStr &= "+" & ArturoRevision
-    if ArturoMetadata != "":
-        versionStr &= "." & ArturoMetadata
     try:
         result = {
             "author"    : newString("Yanis Zafirópulos"),
             "copyright" : newString("(c) 2019-2026"),
-            "version"   : newVersion(versionStr),
+            "version"   : newVersion(ArturoVersionString),
             "built"     : newDate(parse(CompileDate & " " & CompileTime, "yyyy-MM-dd HH:mm:ss")),
             "deps"      : newDictionary(),
             "binary"    : 
