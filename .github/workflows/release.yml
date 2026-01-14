@@ -181,22 +181,23 @@ jobs:
                   grep "^Merge pull request #" | \
                   sed -E 's/Merge pull request #([0-9]+) from .*/\1/')
                 
-                # Build GraphQL
+                # Build GraphQL query fields
                 QUERY_BODY=""
                 for num in $PR_NUMS; do
                   [ -n "$num" ] && QUERY_BODY="${QUERY_BODY}pr${num}: pullRequest(number: ${num}) { title labels(first: 10) { nodes { name } } } "
                 done
                 
-                # Execute GraphQL
+                # Execute GraphQL with error handling
                 DATA=$(gh api graphql -f query="{
                   repository(owner: \"arturo-lang\", name: \"arturo\") {
                     ${QUERY_BODY}
                   }
-                }")
+                }" 2>&1 || echo '{"data":{"repository":{}}}')
                 
-                # Parse and categorize
+                # Parse and categorize (will skip missing PRs automatically)
                 CHANGELOG=$(echo "$DATA" | jq -r '
                   .data.repository | to_entries[] | 
+                  select(.value != null) |
                   select(.value.labels.nodes | map(.name) | 
                     (contains(["new feature"]) or contains(["enhancement"]) or contains(["bug"]))) |
                   {
@@ -219,7 +220,6 @@ jobs:
                   }
                 ')
                 
-                # Create release notes
                 cat > release-notes.md << EOF
                 **Arturo ${{ needs.Validate.outputs.version }} "${CODENAME}"**
                 
