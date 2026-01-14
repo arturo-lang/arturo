@@ -34,17 +34,17 @@ fi
 
 echo ""
 echo " - Updating version files..."
-# echo "$NEXT_VERSION" > version/version
-# echo "" > version/codename
-# echo "1" > version/revision
-# echo "" > version/metadata
+echo "$NEXT_VERSION" > version/version
+echo "" > version/codename
+echo "1" > version/revision
+echo "" > version/metadata
 
 echo " - Committing changes..."
-# git add version/*
-# git commit -m "Bump to $NEXT_VERSION"
+git add version/*
+git commit -m "Bump to $NEXT_VERSION"
 
 echo " - Pushing to remote..."
-# git push origin master
+
 
 echo ""
 echo " ------------------------------------------------------"

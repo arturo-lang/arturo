@@ -48,7 +48,7 @@ echo "" > version/metadata
 
 echo " - Committing changes..."
 git add version/*
-git commit -m "$COMMIT_MSG [skip ci]"
+git commit -m "$COMMIT_MSG"
 echo " - Tagging release..."
 git tag "v$VERSION"
 
