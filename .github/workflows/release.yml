@@ -181,7 +181,7 @@ jobs:
                   grep "^Merge pull request #" | \
                   sed -E 's/Merge pull request #([0-9]+) from .*/\1/' | tr '\n' ',')
                 
-                # Batch fetch all PRs via GraphQL
+                # Fetch all PRs
                 DATA=$(gh api graphql -f query="
                 {
                   repository(owner: \"arturo-lang\", name: \"arturo\") {
