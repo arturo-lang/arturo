@@ -3,13 +3,23 @@
 set -e
 
 if [ $# -lt 2 ]; then
-    echo "Usage: $0 <version> <codename>"
+    echo "Usage: $0 <version> <codename> [test]"
     echo "Example: $0 0.10.0 'Arizona Bark'"
+    echo "         $0 0.10.0 'Arizona Bark' test"
     exit 1
 fi
 
 VERSION="$1"
 CODENAME="$2"
+TEST_MODE="${3:-}"
+
+if [ "$TEST_MODE" = "test" ]; then
+    COMMIT_MSG="Test pre-release $VERSION \"$CODENAME\""
+    MODE_LABEL="TEST"
+else
+    COMMIT_MSG="Release $VERSION \"$CODENAME\""
+    MODE_LABEL="PRODUCTION"
+fi
 
 echo ""
 echo " |=================================================================="
@@ -18,6 +28,7 @@ echo " |=================================================================="
 echo " | Version  : $VERSION"
 echo " | Codename : $CODENAME"
 echo " | Tag      : v$VERSION"
+echo " | MODE     : $MODE_LABEL" 
 echo " |=================================================================="
 echo ""
 
@@ -37,7 +48,7 @@ echo "" > version/metadata
 
 echo " - Committing changes..."
 git add version/*
-git commit -m "Test pre-release $VERSION \"$CODENAME\" [skip ci]"
+git commit -m "$COMMIT_MSG [skip ci]"
 echo " - Tagging release..."
 git tag "v$VERSION"
 
