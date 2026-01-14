@@ -15,7 +15,7 @@ echo ""
 echo " |=================================================================="
 echo " | Arturo   | Release > Trigger"
 echo " |=================================================================="
-echo " | Version  :  $VERSION"
+echo " | Version  : $VERSION"
 echo " | Codename : $CODENAME"
 echo " | Tag      : v$VERSION"
 echo " |=================================================================="
@@ -37,7 +37,7 @@ echo "" > version/metadata
 
 echo " - Committing changes..."
 git add version/*
-git commit -m "Release $VERSION \"$CODENAME\""
+git commit -m "Test pre-release $VERSION \"$CODENAME\""
 echo " - Tagging release..."
 git tag "v$VERSION"
 
