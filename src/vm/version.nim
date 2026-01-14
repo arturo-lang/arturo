@@ -35,6 +35,6 @@ const
     ArturoVersionText*      = "arturo " &                                       ## What the user see for `arturo --version`
                                ArturoVersionString &     
                               (if ArturoCodename != "" and not ArturoVersion.contains("-dev"):
-                                  " \"" & ArturoCodename & "\""
+                                  " " & ArturoCodename
                                else: "") &     
                                " (" & systemArch & "/" & systemOs & ")"
