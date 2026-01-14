@@ -37,7 +37,7 @@ echo "" > version/metadata
 
 echo " - Committing changes..."
 git add version/*
-git commit -m "Test pre-release $VERSION \"$CODENAME\""
+git commit -m "Test pre-release $VERSION \"$CODENAME\" [skip ci]"
 echo " - Tagging release..."
 git tag "v$VERSION"
 
