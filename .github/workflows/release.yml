@@ -176,49 +176,36 @@ jobs:
                 
                 echo "Generating release notes from $PREV_TAG to $CURR_TAG"
                 
-                # Extract PR numbers - ONLY from commits in this range
-                PR_NUMS=$(git log ${PREV_TAG}..${CURR_TAG} --merges --first-parent --pretty=format:"%s" | \
-                  grep "^Merge pull request #" | \
-                  sed -E 's/Merge pull request #([0-9]+) from .*/\1/' | \
-                  sort -u)
+                # Get the date of the previous tag
+                PREV_DATE=$(git log -1 --format=%ai $PREV_TAG)
                 
-                # Fetch PRs ONE BY ONE (avoids giant GraphQL response)
-                echo "## 🎉 New Features" > /tmp/features.txt
-                echo "" >> /tmp/features.txt
-                echo "## 🐛 Bug Fixes" > /tmp/bugs.txt
-                echo "" >> /tmp/bugs.txt
-                echo "## 🚀 Enhancements" > /tmp/enhancements.txt
-                echo "" >> /tmp/enhancements.txt
+                echo "Getting PRs merged after: $PREV_DATE"
                 
-                for num in $PR_NUMS; do
-                  echo "Processing PR #$num..."
-                  PR_DATA=$(gh pr view $num --json title,labels 2>/dev/null || echo "")
-                  
-                  if [ -n "$PR_DATA" ]; then
-                    TITLE=$(echo "$PR_DATA" | jq -r '.title')
-                    LABELS=$(echo "$PR_DATA" | jq -r '.labels[].name')
-                    
-                    if echo "$LABELS" | grep -q "new feature"; then
-                      echo "- $TITLE (#$num)" >> /tmp/features.txt
-                    elif echo "$LABELS" | grep -q "bug"; then
-                      echo "- $TITLE (#$num)" >> /tmp/bugs.txt
-                    elif echo "$LABELS" | grep -q "enhancement"; then
-                      echo "- $TITLE (#$num)" >> /tmp/enhancements.txt
-                    fi
-                  fi
-                done
+                # Get PRs merged AFTER the previous tag date
+                gh pr list --state merged --base master --limit 1000 --json number,mergedAt,title,labels | \
+                  jq --arg prev_date "$PREV_DATE" -r '
+                    .[] | 
+                    select(.mergedAt > $prev_date) |
+                    select(.labels | map(.name) | (contains(["new feature"]) or contains(["bug"]) or contains(["enhancement"]))) |
+                    if (.labels | map(.name) | contains(["new feature"])) then
+                      "FEATURE|\(.title) (#\(.number))"
+                    elif (.labels | map(.name) | contains(["bug"])) then
+                      "BUG|\(.title) (#\(.number))"
+                    elif (.labels | map(.name) | contains(["enhancement"])) then
+                      "ENHANCE|\(.title) (#\(.number))"
+                    else empty end
+                  ' | awk -F'|' '
+                    /^FEATURE/ { features = features "- " $2 "\n" }
+                    /^BUG/ { bugs = bugs "- " $2 "\n" }
+                    /^ENHANCE/ { enhancements = enhancements "- " $2 "\n" }
+                    END {
+                      if (features) printf "## 🎉 New Features\n\n%s\n", features
+                      if (bugs) printf "## 🐛 Bug Fixes\n\n%s\n", bugs
+                      if (enhancements) printf "## 🚀 Enhancements\n\n%s\n", enhancements
+                    }
+                  ' > /tmp/changelog.txt
                 
-                # Build changelog
-                CHANGELOG=""
-                if [ $(wc -l < /tmp/features.txt) -gt 2 ]; then
-                  CHANGELOG="${CHANGELOG}$(cat /tmp/features.txt)"$'\n\n'
-                fi
-                if [ $(wc -l < /tmp/bugs.txt) -gt 2 ]; then
-                  CHANGELOG="${CHANGELOG}$(cat /tmp/bugs.txt)"$'\n\n'
-                fi
-                if [ $(wc -l < /tmp/enhancements.txt) -gt 2 ]; then
-                  CHANGELOG="${CHANGELOG}$(cat /tmp/enhancements.txt)"
-                fi
+                CHANGELOG=$(cat /tmp/changelog.txt)
                 
                 cat > release-notes.md << EOF
                 **Arturo ${{ needs.Validate.outputs.version }} "${CODENAME}"**
