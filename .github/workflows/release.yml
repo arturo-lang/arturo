@@ -208,7 +208,7 @@ jobs:
                 CHANGELOG=$(cat /tmp/changelog.txt)
                 
                 cat > release-notes.md << EOF
-                **Arturo ${{ needs.Validate.outputs.version }} "${CODENAME}"**
+                **Arturo ${{ needs.Validate.outputs.version }} ${CODENAME}**
                 
                 Official release of Arturo ${{ needs.Validate.outputs.version }}.
                 
@@ -222,7 +222,7 @@ jobs:
                 EOF
                 
                 gh release create "${{ needs.Validate.outputs.tag_name }}" \
-                  --title "Arturo ${{ needs.Validate.outputs.version }} \"${CODENAME}\"" \
+                  --title "Arturo ${{ needs.Validate.outputs.version }} ${CODENAME}" \
                   --notes-file release-notes.md \
                   ./assets/*
               env:
