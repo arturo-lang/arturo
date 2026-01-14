@@ -170,7 +170,53 @@ jobs:
                 COMMIT_SHA=$(git rev-parse HEAD)
                 COMMIT_SHORT=$(git rev-parse --short HEAD)
                 
-                cat > release-header.md << EOF
+                # Find previous release tag
+                PREV_TAG=$(git tag --sort=-version:refname | grep "^v[0-9]*\.[0-9]*\.[0-9]*$" | sed -n '2p')
+                CURR_TAG="${{ needs.Validate.outputs.tag_name }}"
+                
+                echo "Generating release notes from $PREV_TAG to $CURR_TAG"
+                
+                # Get all PR numbers
+                PR_NUMS=$(git log ${PREV_TAG}..${CURR_TAG} --merges --pretty=format:"%s" | \
+                  grep "^Merge pull request #" | \
+                  sed -E 's/Merge pull request #([0-9]+) from .*/\1/' | tr '\n' ',')
+                
+                # Batch fetch all PRs via GraphQL
+                DATA=$(gh api graphql -f query="
+                {
+                  repository(owner: \"arturo-lang\", name: \"arturo\") {
+                    $(echo $PR_NUMS | tr ',' '\n' | while read num; do
+                      [ -n "$num" ] && echo "pr$num: pullRequest(number: $num) { title labels(first: 10) { nodes { name } } }"
+                    done)
+                  }
+                }" 2>/dev/null)
+                
+                # Parse and categorize
+                CHANGELOG=$(echo "$DATA" | jq -r '
+                  .data.repository | to_entries[] | 
+                  select(.value.labels.nodes | map(.name) | 
+                    (contains(["new feature"]) or contains(["enhancement"]) or contains(["bug"]))) |
+                  {
+                    title: .value.title,
+                    num: (.key | ltrimstr("pr")),
+                    labels: [.value.labels.nodes[].name]
+                  } |
+                  if (.labels | contains(["new feature"])) then "FEATURE|- \(.title) (#\(.num))"
+                  elif (.labels | contains(["bug"])) then "BUG|- \(.title) (#\(.num))"
+                  elif (.labels | contains(["enhancement"])) then "ENHANCE|- \(.title) (#\(.num))"
+                  else empty end
+                ' | awk -F'|' '
+                  /^FEATURE/ { features = features $2 "\n" }
+                  /^BUG/ { bugs = bugs $2 "\n" }
+                  /^ENHANCE/ { enhancements = enhancements $2 "\n" }
+                  END {
+                    if (features) printf "## 🎉 New Features\n\n%s\n", features
+                    if (bugs) printf "## 🐛 Bug Fixes\n\n%s\n", bugs
+                    if (enhancements) printf "## 🚀 Enhancements\n\n%s\n", enhancements
+                  }
+                ')
+                
+                cat > release-notes.md << EOF
                 **Arturo ${{ needs.Validate.outputs.version }} "${CODENAME}"**
                 
                 Official release of Arturo ${{ needs.Validate.outputs.version }}.
@@ -179,13 +225,14 @@ jobs:
                 
                 ---
                 
+                ${CHANGELOG}
+                
+                **Full Changelog**: https://github.com/arturo-lang/arturo/compare/${PREV_TAG}...v${{ needs.Validate.outputs.version }}
                 EOF
                 
-                # Generate release notes
                 gh release create "${{ needs.Validate.outputs.tag_name }}" \
                   --title "Arturo ${{ needs.Validate.outputs.version }} \"${CODENAME}\"" \
-                  --notes-file release-header.md \
-                  --generate-notes \
+                  --notes-file release-notes.md \
                   ./assets/*
               env:
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
