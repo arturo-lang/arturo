@@ -167,32 +167,54 @@ jobs:
 
             - name: Create release
               run: |
+                set -x  # Enable debug mode
+                
                 CODENAME=$(cat version/codename)
                 COMMIT_SHA=$(git rev-parse HEAD)
                 COMMIT_SHORT=$(git rev-parse --short HEAD)
                 
-                # Find previous release tag
+                echo "===== STEP 1: Find previous tag ====="
                 PREV_TAG=$(git tag --sort=-version:refname | grep "^v[0-9]*\.[0-9]*\.[0-9]*$" | sed -n '2p')
                 CURR_TAG="${{ needs.Validate.outputs.tag_name }}"
+                echo "PREV_TAG: [$PREV_TAG]"
+                echo "CURR_TAG: [$CURR_TAG]"
                 
-                echo "Generating release notes from $PREV_TAG to $CURR_TAG"
-                
-                # Get all PR numbers
+                echo "===== STEP 2: Extract PR numbers ====="
                 PR_NUMS=$(git log ${PREV_TAG}..${CURR_TAG} --merges --pretty=format:"%s" | \
                   grep "^Merge pull request #" | \
                   sed -E 's/Merge pull request #([0-9]+) from .*/\1/' | tr '\n' ',')
+                echo "PR_NUMS: $PR_NUMS"
+                PR_COUNT=$(echo "$PR_NUMS" | tr ',' '\n' | grep -v '^$' | wc -l)
+                echo "PR_COUNT: $PR_COUNT"
                 
-                # Fetch all PRs
-                DATA=$(gh api graphql -f query="
-                {
+                echo "===== STEP 3: Build GraphQL query ====="
+                QUERY_BODY=$(echo $PR_NUMS | tr ',' '\n' | while read num; do
+                  [ -n "$num" ] && echo "pr$num: pullRequest(number: $num) { title labels(first: 10) { nodes { name } } }"
+                done)
+                echo "QUERY_BODY length: ${#QUERY_BODY}"
+                echo "QUERY_BODY first 1000 chars:"
+                echo "${QUERY_BODY:0:1000}"
+                
+                echo "===== STEP 4: Execute GraphQL ====="
+                DATA=$(gh api graphql -f query="{
                   repository(owner: \"arturo-lang\", name: \"arturo\") {
-                    $(echo $PR_NUMS | tr ',' '\n' | while read num; do
-                      [ -n "$num" ] && echo "pr$num: pullRequest(number: $num) { title labels(first: 10) { nodes { name } } }"
-                    done)
+                    $QUERY_BODY
                   }
-                }" 2>/dev/null)
+                }" 2>&1)
+                EXIT_CODE=$?
+                echo "GraphQL exit code: $EXIT_CODE"
+                echo "DATA length: ${#DATA}"
+                echo "DATA first 1000 chars:"
+                echo "${DATA:0:1000}"
                 
-                # Parse and categorize
+                if [ $EXIT_CODE -ne 0 ]; then
+                  echo "===== GRAPHQL FAILED ====="
+                  echo "Full error output:"
+                  echo "$DATA"
+                  exit 1
+                fi
+                
+                echo "===== STEP 5: Parse and categorize ====="
                 CHANGELOG=$(echo "$DATA" | jq -r '
                   .data.repository | to_entries[] | 
                   select(.value.labels.nodes | map(.name) | 
@@ -217,6 +239,11 @@ jobs:
                   }
                 ')
                 
+                echo "CHANGELOG length: ${#CHANGELOG}"
+                echo "CHANGELOG:"
+                echo "$CHANGELOG"
+                
+                echo "===== STEP 6: Create release notes file ====="
                 cat > release-notes.md << EOF
                 **Arturo ${{ needs.Validate.outputs.version }} "${CODENAME}"**
                 
@@ -231,6 +258,10 @@ jobs:
                 **Full Changelog**: https://github.com/arturo-lang/arturo/compare/${PREV_TAG}...v${{ needs.Validate.outputs.version }}
                 EOF
                 
+                echo "===== release-notes.md content: ====="
+                cat release-notes.md
+                
+                echo "===== STEP 7: Create GitHub release ====="
                 gh release create "${{ needs.Validate.outputs.tag_name }}" \
                   --title "Arturo ${{ needs.Validate.outputs.version }} \"${CODENAME}\"" \
                   --notes-file release-notes.md \
