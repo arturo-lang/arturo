@@ -1361,7 +1361,12 @@ inline notify::notify(std::string const &title,
 
     // For XP support
     nid->cbSize = NOTIFYICONDATAW_V2_SIZE;
-    nid->hWnd = nullptr;
+    nid->hWnd = ::GetConsoleWindow();
+
+    // Shell_NotifyIcon requires a valid window handle; fall back to the
+    // foreground window if the process has no console.
+    if (!nid->hWnd)
+        nid->hWnd = ::GetForegroundWindow();
     nid->uID = 0;
 
     // Flag Description:
