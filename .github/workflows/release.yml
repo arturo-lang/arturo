@@ -176,49 +176,49 @@ jobs:
                 
                 echo "Generating release notes from $PREV_TAG to $CURR_TAG"
                 
-                # Extract PR numbers
-                PR_NUMS=$(git log ${PREV_TAG}..${CURR_TAG} --merges --pretty=format:"%s" | \
+                # Extract PR numbers - ONLY from commits in this range
+                PR_NUMS=$(git log ${PREV_TAG}..${CURR_TAG} --merges --first-parent --pretty=format:"%s" | \
                   grep "^Merge pull request #" | \
-                  sed -E 's/Merge pull request #([0-9]+) from .*/\1/')
+                  sed -E 's/Merge pull request #([0-9]+) from .*/\1/' | \
+                  sort -u)
                 
-                # Build GraphQL query fields
-                QUERY_BODY=""
+                # Fetch PRs ONE BY ONE (avoids giant GraphQL response)
+                echo "## 🎉 New Features" > /tmp/features.txt
+                echo "" >> /tmp/features.txt
+                echo "## 🐛 Bug Fixes" > /tmp/bugs.txt
+                echo "" >> /tmp/bugs.txt
+                echo "## 🚀 Enhancements" > /tmp/enhancements.txt
+                echo "" >> /tmp/enhancements.txt
+                
                 for num in $PR_NUMS; do
-                  [ -n "$num" ] && QUERY_BODY="${QUERY_BODY}pr${num}: pullRequest(number: ${num}) { title labels(first: 10) { nodes { name } } } "
+                  echo "Processing PR #$num..."
+                  PR_DATA=$(gh pr view $num --json title,labels 2>/dev/null || echo "")
+                  
+                  if [ -n "$PR_DATA" ]; then
+                    TITLE=$(echo "$PR_DATA" | jq -r '.title')
+                    LABELS=$(echo "$PR_DATA" | jq -r '.labels[].name')
+                    
+                    if echo "$LABELS" | grep -q "new feature"; then
+                      echo "- $TITLE (#$num)" >> /tmp/features.txt
+                    elif echo "$LABELS" | grep -q "bug"; then
+                      echo "- $TITLE (#$num)" >> /tmp/bugs.txt
+                    elif echo "$LABELS" | grep -q "enhancement"; then
+                      echo "- $TITLE (#$num)" >> /tmp/enhancements.txt
+                    fi
+                  fi
                 done
                 
-                # Execute GraphQL with error handling
-                DATA=$(gh api graphql -f query="{
-                  repository(owner: \"arturo-lang\", name: \"arturo\") {
-                    ${QUERY_BODY}
-                  }
-                }" 2>&1 || echo '{"data":{"repository":{}}}')
-                
-                # Parse and categorize (will skip missing PRs automatically)
-                CHANGELOG=$(echo "$DATA" | jq -r '
-                  .data.repository | to_entries[] | 
-                  select(.value != null) |
-                  select(.value.labels.nodes | map(.name) | 
-                    (contains(["new feature"]) or contains(["enhancement"]) or contains(["bug"]))) |
-                  {
-                    title: .value.title,
-                    num: (.key | ltrimstr("pr")),
-                    labels: [.value.labels.nodes[].name]
-                  } |
-                  if (.labels | contains(["new feature"])) then "FEATURE|- \(.title) (#\(.num))"
-                  elif (.labels | contains(["bug"])) then "BUG|- \(.title) (#\(.num))"
-                  elif (.labels | contains(["enhancement"])) then "ENHANCE|- \(.title) (#\(.num))"
-                  else empty end
-                ' | awk -F'|' '
-                  /^FEATURE/ { features = features $2 "\n" }
-                  /^BUG/ { bugs = bugs $2 "\n" }
-                  /^ENHANCE/ { enhancements = enhancements $2 "\n" }
-                  END {
-                    if (features) printf "## 🎉 New Features\n\n%s\n", features
-                    if (bugs) printf "## 🐛 Bug Fixes\n\n%s\n", bugs
-                    if (enhancements) printf "## 🚀 Enhancements\n\n%s\n", enhancements
-                  }
-                ')
+                # Build changelog
+                CHANGELOG=""
+                if [ $(wc -l < /tmp/features.txt) -gt 2 ]; then
+                  CHANGELOG="${CHANGELOG}$(cat /tmp/features.txt)"$'\n\n'
+                fi
+                if [ $(wc -l < /tmp/bugs.txt) -gt 2 ]; then
+                  CHANGELOG="${CHANGELOG}$(cat /tmp/bugs.txt)"$'\n\n'
+                fi
+                if [ $(wc -l < /tmp/enhancements.txt) -gt 2 ]; then
+                  CHANGELOG="${CHANGELOG}$(cat /tmp/enhancements.txt)"
+                fi
                 
                 cat > release-notes.md << EOF
                 **Arturo ${{ needs.Validate.outputs.version }} "${CODENAME}"**
