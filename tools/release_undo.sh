@@ -24,15 +24,15 @@ if [[ ! $REPLY =~ ^[Yy]$ ]]; then
     exit 1
 fi
 
+echo " - Pulling changes..."
+git pull origin master
+
 echo ""
 echo " - Updating version files..."
 echo "$VERSION" > version/version
 echo "" > version/codename
 echo "$REVISION" > version/revision
 echo "" > version/metadata
-
-echo " - Pulling changes..."
-git pull origin master
 
 echo " - Committing changes..."
 git add version/*

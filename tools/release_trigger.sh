@@ -39,6 +39,9 @@ if [[ ! $REPLY =~ ^[Yy]$ ]]; then
     exit 1
 fi
 
+echo " - Pulling changes..."
+git pull origin master
+
 echo ""
 echo " - Updating version files..."
 echo "$VERSION" > version/version
