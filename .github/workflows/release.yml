@@ -174,55 +174,18 @@ jobs:
                 PREV_TAG=$(git tag --sort=-version:refname | grep "^v[0-9]*\.[0-9]*\.[0-9]*$" | sed -n '2p')
                 CURR_TAG="${{ needs.Validate.outputs.tag_name }}"
                 
-                echo "Generating release notes from $PREV_TAG to $CURR_TAG"
+                # Generate release notes
+                bash tools/generatereleasenotes.sh \
+                  "$PREV_TAG" \
+                  "$CURR_TAG" \
+                  "${{ needs.Validate.outputs.version }}" \
+                  "$CODENAME" \
+                  "$COMMIT_SHA" \
+                  "$COMMIT_SHORT"
                 
-                # Get the date of the previous tag
-                PREV_DATE=$(git log -1 --format=%ai $PREV_TAG)
-                
-                echo "Getting PRs merged after: $PREV_DATE"
-                
-                # Get PRs merged AFTER the previous tag date
-                gh pr list --state merged --base master --limit 1000 --json number,mergedAt,title,labels | \
-                  jq --arg prev_date "$PREV_DATE" -r '
-                    .[] | 
-                    select(.mergedAt > $prev_date) |
-                    select(.labels | map(.name) | (contains(["new feature"]) or contains(["bug"]) or contains(["enhancement"]))) |
-                    if (.labels | map(.name) | contains(["new feature"])) then
-                      "FEATURE|\(.title) (#\(.number))"
-                    elif (.labels | map(.name) | contains(["bug"])) then
-                      "BUG|\(.title) (#\(.number))"
-                    elif (.labels | map(.name) | contains(["enhancement"])) then
-                      "ENHANCE|\(.title) (#\(.number))"
-                    else empty end
-                  ' | awk -F'|' '
-                    /^FEATURE/ { features = features "- " $2 "\n" }
-                    /^BUG/ { bugs = bugs "- " $2 "\n" }
-                    /^ENHANCE/ { enhancements = enhancements "- " $2 "\n" }
-                    END {
-                      if (features) printf "## 🎉 New Features\n\n%s\n", features
-                      if (bugs) printf "## 🐛 Bug Fixes\n\n%s\n", bugs
-                      if (enhancements) printf "## 🚀 Enhancements\n\n%s\n", enhancements
-                    }
-                  ' > /tmp/changelog.txt
-                
-                CHANGELOG=$(cat /tmp/changelog.txt)
-                
-                cat > release-notes.md << EOF
-                **Arturo ${{ needs.Validate.outputs.version }} ${CODENAME}**
-                
-                Official release of Arturo ${{ needs.Validate.outputs.version }}.
-                
-                **Commit:** [\`${COMMIT_SHORT}\`](https://github.com/arturo-lang/arturo/commit/${COMMIT_SHA})
-                
-                ---
-                
-                ${CHANGELOG}
-                
-                **Full Changelog**: https://github.com/arturo-lang/arturo/compare/${PREV_TAG}...v${{ needs.Validate.outputs.version }}
-                EOF
-                
+                # Create release
                 gh release create "${{ needs.Validate.outputs.tag_name }}" \
-                  --title "Arturo ${{ needs.Validate.outputs.version }} ${CODENAME}" \
+                  --title "Arturo ${{ needs.Validate.outputs.version }} \"${CODENAME}\"" \
                   --notes-file release-notes.md \
                   ./assets/*
               env:
