@@ -50,9 +50,10 @@ gh pr list --state merged --base master --limit 1000 --json number,mergedAt,auth
     map({user: .[0], count: length}) |
     sort_by(.count) |
     reverse |
+    map(select(.user != "app/dependabot")) |
     .[] |
-    "- [@\(.user)](https://github.com/\(.user)) (\(.count) PR\(if .count > 1 then "s" else "" end))"
-  ' > /tmp/contributors.txt
+    "<a href=\"https://github.com/\(.user)\"><img src=\"https://github.com/\(.user).png?size=50\" width=\"50\" height=\"50\" style=\"border-radius: 50%;\" alt=\"@\(.user)\"/></a>"
+  ' | tr '\n' ' ' > /tmp/contributors.txt
 
 CONTRIBUTORS=$(cat /tmp/contributors.txt)
 
