@@ -59,18 +59,15 @@ CONTRIBUTORS=$(cat /tmp/contributors.txt)
 
 # Generate release notes
 cat > release-notes.md << EOF
-
-**Commit:** [\`${COMMIT_SHORT}\`](https://github.com/arturo-lang/arturo/commit/${COMMIT_SHA})
-
 ---
 
 ${CHANGELOG}
 
+**Full Changelog**: https://github.com/arturo-lang/arturo/compare/${PREV_TAG}...${CURR_TAG}
+
 ## 👥 Contributors
 
 ${CONTRIBUTORS}
-
-**Full Changelog**: https://github.com/arturo-lang/arturo/compare/${PREV_TAG}...${CURR_TAG}
 EOF
 
 echo "Release notes generated successfully!"
