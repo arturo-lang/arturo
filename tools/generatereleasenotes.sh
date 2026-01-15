@@ -59,9 +59,6 @@ CONTRIBUTORS=$(cat /tmp/contributors.txt)
 
 # Generate release notes
 cat > release-notes.md << EOF
-**Arturo ${VERSION} "${CODENAME}"**
-
-Official release of Arturo ${VERSION}.
 
 **Commit:** [\`${COMMIT_SHORT}\`](https://github.com/arturo-lang/arturo/commit/${COMMIT_SHA})
 

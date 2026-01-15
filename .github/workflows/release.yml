@@ -185,7 +185,7 @@ jobs:
                 
                 # Create release
                 gh release create "${{ needs.Validate.outputs.tag_name }}" \
-                  --title "Arturo ${{ needs.Validate.outputs.version }} \"${CODENAME}\"" \
+                  --title "Arturo ${{ needs.Validate.outputs.version }} ${CODENAME}" \
                   --notes-file release-notes.md \
                   ./assets/*
               env:
