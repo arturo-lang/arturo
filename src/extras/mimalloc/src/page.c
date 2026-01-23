@@ -291,7 +291,7 @@ static mi_page_t* mi_page_fresh_alloc(mi_heap_t* heap, mi_page_queue_t* pq, size
   mi_assert_internal(full_block_size >= block_size);
   mi_page_init(heap, page, full_block_size, heap->tld);
   mi_heap_stat_increase(heap, pages, 1);
-  mi_heap_stat_increase(heap, page_bins[_mi_page_bin(page)], 1);
+  mi_heap_stat_increase(heap, page_bins[_mi_page_stats_bin(page)], 1);
   if (pq != NULL) { mi_page_queue_push(heap, pq, page); }
   mi_assert_expensive(_mi_page_is_valid(page));
   return page;
@@ -817,6 +817,7 @@ static mi_page_t* mi_page_queue_find_free_ex(mi_heap_t* heap, mi_page_queue_t* p
   } // for each page
 
   mi_heap_stat_counter_increase(heap, page_searches, count);
+  mi_heap_stat_counter_increase(heap, page_searches_count, 1);
 
   // set the page to the best candidate
   if (page_candidate != NULL) {
@@ -982,9 +983,9 @@ static mi_page_t* mi_find_page(mi_heap_t* heap, size_t size, size_t huge_alignme
 
 // Generic allocation routine if the fast path (`alloc.c:mi_page_malloc`) does not succeed.
 // Note: in debug mode the size includes MI_PADDING_SIZE and might have overflowed.
-// The `huge_alignment` is normally 0 but is set to a multiple of MI_SEGMENT_SIZE for
-// very large requested alignments in which case we use a huge segment.
-void* _mi_malloc_generic(mi_heap_t* heap, size_t size, bool zero, size_t huge_alignment) mi_attr_noexcept
+// The `huge_alignment` is normally 0 but is set to a multiple of MI_SLICE_SIZE for
+// very large requested alignments in which case we use a huge singleton page.
+void* _mi_malloc_generic(mi_heap_t* heap, size_t size, bool zero, size_t huge_alignment, size_t* usable) mi_attr_noexcept
 {
   mi_assert_internal(heap != NULL);
 
@@ -1030,17 +1031,9 @@ void* _mi_malloc_generic(mi_heap_t* heap, size_t size, bool zero, size_t huge_al
   mi_assert_internal(mi_page_block_size(page) >= size);
 
   // and try again, this time succeeding! (i.e. this should never recurse through _mi_page_malloc)
-  void* p;
-  if mi_unlikely(zero && mi_page_is_huge(page)) {
-    // note: we cannot call _mi_page_malloc with zeroing for huge blocks; we zero it afterwards in that case.
-    p = _mi_page_malloc(heap, page, size);
-    mi_assert_internal(p != NULL);
-    _mi_memzero_aligned(p, mi_page_usable_block_size(page));
-  }
-  else {
-    p = _mi_page_malloc_zero(heap, page, size, zero);
-    mi_assert_internal(p != NULL);
-  }
+  void* const p = _mi_page_malloc_zero(heap, page, size, zero, usable);
+  mi_assert_internal(p != NULL);
+
   // move singleton pages to the full queue
   if (page->reserved == page->used) {
     mi_page_to_full(page, mi_page_queue_of(page));
