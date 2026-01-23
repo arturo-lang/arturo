@@ -1,7 +1,7 @@
 import ../db_common
 
 
-template dbFormatImpl*(formatstr: SqlQuery, dbQuote: proc (s: string): string, args: varargs[string]): string =
+template dbFormatImpl*(formatstr: SqlQuery, dbQuote: proc (s: string): string {.nimcall.}, args: varargs[string]): string =
   var res = ""
   var a = 0
   for c in items(string(formatstr)):
