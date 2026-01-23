@@ -60,6 +60,19 @@ jobs:
                 ref: ${{ github.ref }}
                 fetch-depth: 0
 
+            - name: Debug commit info
+              shell: bash
+              run: |
+                echo "Event name: ${{ github.event_name }}"
+                echo "Head commit message: ${{ github.event.head_commit.message }}"
+                echo "PR title: ${{ github.event.pull_request.title }}"
+                echo "Ref: ${{ github.ref }}"
+                echo "Ref name: ${{ github.ref_name }}"
+                
+                # Get the actual latest commit message
+                cd $GITHUB_WORKSPACE/arturo
+                git log -1 --pretty=%B
+
             - name: Prepare artifact version
               id: version
               shell: bash
