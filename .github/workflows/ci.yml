@@ -114,7 +114,11 @@ jobs:
                 create_artifact: 'true'
                 artifact_version: ${{ steps.version.outputs.VERSION }}
  
-            - if: env.arturoCanRun == 'true' && !contains(github.event.head_commit.message, '[skip tests]')
+            - if: |
+                env.arturoCanRun == 'true' && (
+                  (github.event_name == 'push' && !contains(github.event.head_commit.message, '[skip tests]')) ||
+                  (github.event_name == 'pull_request' && !contains(github.event.pull_request.head.commit.message, '[skip tests]'))
+                )
               name: Run tests
               run: |
                 cd $GITHUB_WORKSPACE/arturo 
