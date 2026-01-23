@@ -316,14 +316,14 @@ func shaTransform[T; n, r: static int](ctx: var ShaContextVariant[T, n, r]) =
     (h, g, f, e, d, c, b, a) = (g, f, e, d + t1, c, b, a, t1 + t2)
 
   # Update state with permutation
-  inc ctx.state[0], a
-  inc ctx.state[1], b
-  inc ctx.state[2], c
-  inc ctx.state[3], d
-  inc ctx.state[4], e
-  inc ctx.state[5], f
-  inc ctx.state[6], g
-  inc ctx.state[7], h
+  ctx.state[0] += a
+  ctx.state[1] += b
+  ctx.state[2] += c
+  ctx.state[3] += d
+  ctx.state[4] += e
+  ctx.state[5] += f
+  ctx.state[6] += g
+  ctx.state[7] += h
 
 proc shaUpdate[T; n, r: static int](
     ctx: var ShaContextVariant[T, n, r],
@@ -337,7 +337,7 @@ proc shaUpdate[T; n, r: static int](
     if ctx.datalen == n:
       ctx.shaTransform()
 
-      inc ctx.bitlen, uint64(n * 8)
+      ctx.bitlen += uint64(n * 8)
       ctx.datalen = 0
 
 proc shaFinalize[T; n, r: static int](
@@ -350,7 +350,7 @@ proc shaFinalize[T; n, r: static int](
   ctx.data[ctx.datalen] = 0x80
   ctx.data.fill(ctx.datalen + 1, ctx.data.high, 0)
 
-  inc ctx.bitlen, uint64(ctx.datalen * 8)
+  ctx.bitlen += uint64(ctx.datalen * 8)
 
   # If writing the end marker caused the block to fill up
   # enough so that we can't write the total bit length, we

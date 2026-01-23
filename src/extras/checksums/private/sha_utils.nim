@@ -34,7 +34,7 @@ when defined(js):
           # simple.
           doAssert false
 
-        (lo: forceUnsigned x, hi: 0)
+        (lo: forceUnsigned x, hi: 0'u32)
       else:
         (lo: forceUnsigned x, hi: forceUnsigned(x shr 32))
 
@@ -71,6 +71,9 @@ when defined(js):
     (forceUnsigned nlo, forceUnsigned (nhi + carry))
 
   proc inc*(a: var CompatUint64; b: CompatUint64) {.inline.} =
+    a = a + b
+
+  proc `+=`*(a: var CompatUint64; b: CompatUint64) {.inline.} =
     a = a + b
 
   proc `shl`*(a: CompatUint64; offset: int): CompatUint64 =

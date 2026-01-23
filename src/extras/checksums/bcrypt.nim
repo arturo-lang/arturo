@@ -418,11 +418,9 @@ proc parseSalt*(salt: string): Salt {.raises: ValueError.} =
   elif segments[3].len < 22:
     raise newException(ValueError, "bad bcrypt salt length")
 
+  result = Salt(costFactor: costFactor, subversion: segments[1][1], saltBytes: nullSalt)
   # We only want the salt but we may have been passed a full salted hash
   segments[3][0..<22].decodeBcrypt64(result.saltBytes)
-
-  result.subversion = segments[1][1]
-  result.costFactor = costFactor
 
 proc generateSalt*(cost: CostFactor): Salt {.raises: ResourceExhaustedError.} =
   ## Generates a new, random salt with the provided `CostFactor`. Only salts with
@@ -435,9 +433,7 @@ proc generateSalt*(cost: CostFactor): Salt {.raises: ResourceExhaustedError.} =
   if not urandom(randBytes):
     raise newException(ResourceExhaustedError, "Unable to retrieve enough randomness for salt")
 
-  result.costFactor = cost
-  result.saltBytes = randBytes
-  result.subversion = 'b'
+  result = Salt(costFactor: cost, saltBytes: randBytes, subversion: 'b')
 
 proc bcrypt*(password: openArray[char]; salt: Salt): SaltedHash =
   ## Produces a `SaltedHash` from the given password string and salt.
