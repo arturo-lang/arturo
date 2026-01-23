@@ -12,6 +12,9 @@
 
 #pragma once
 
+#include "pfd.h"
+#include "string.h"
+
 #if _WIN32
 #ifndef WIN32_LEAN_AND_MEAN
 #   define WIN32_LEAN_AND_MEAN 1
