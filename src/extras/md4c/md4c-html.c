@@ -2,7 +2,7 @@
  * MD4C: Markdown parser for C
  * (http://github.com/mity/md4c)
  *
- * Copyright (c) 2016-2019 Martin Mitas
+ * Copyright (c) 2016-2024 Martin Mitáš
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -169,7 +169,7 @@ static void
 render_utf8_codepoint(MD_HTML* r, unsigned codepoint,
                       void (*fn_append)(MD_HTML*, const MD_CHAR*, MD_SIZE))
 {
-    static const MD_CHAR utf8_replacement_char[] = { 0xef, 0xbf, 0xbd };
+    static const MD_CHAR utf8_replacement_char[] = { (char)0xef, (char)0xbf, (char)0xbd };
 
     unsigned char utf8[4];
     size_t n;
@@ -195,7 +195,7 @@ render_utf8_codepoint(MD_HTML* r, unsigned codepoint,
     }
 
     if(0 < codepoint  &&  codepoint <= 0x10ffff)
-        fn_append(r, (char*)utf8, n);
+        fn_append(r, (char*)utf8, (MD_SIZE)n);
     else
         fn_append(r, utf8_replacement_char, 3);
 }
@@ -231,7 +231,7 @@ render_entity(MD_HTML* r, const MD_CHAR* text, MD_SIZE size,
         return;
     } else {
         /* Named entity (e.g. "&nbsp;"). */
-        const struct entity* ent;
+        const ENTITY* ent;
 
         ent = entity_lookup(text, size);
         if(ent != NULL) {
@@ -344,8 +344,6 @@ render_open_img_span(MD_HTML* r, const MD_SPAN_IMG_DETAIL* det)
     render_attribute(r, &det->src, render_url_escaped);
 
     RENDER_VERBATIM(r, "\" alt=\"");
-
-    r->image_nesting_level++;
 }
 
 static void
@@ -357,8 +355,6 @@ render_close_img_span(MD_HTML* r, const MD_SPAN_IMG_DETAIL* det)
     }
 
     RENDER_VERBATIM(r, (r->flags & MD_HTML_FLAG_XHTML) ? "\" />" : "\">");
-
-    r->image_nesting_level--;
 }
 
 static void
@@ -435,25 +431,26 @@ static int
 enter_span_callback(MD_SPANTYPE type, void* detail, void* userdata)
 {
     MD_HTML* r = (MD_HTML*) userdata;
+    int inside_img = (r->image_nesting_level > 0);
 
-    if(r->image_nesting_level > 0) {
-        /* We are inside a Markdown image label. Markdown allows to use any
-         * emphasis and other rich contents in that context similarly as in
-         * any link label.
-         *
-         * However, unlike in the case of links (where that contents becomes
-         * contents of the <a>...</a> tag), in the case of images the contents
-         * is supposed to fall into the attribute alt: <img alt="...">.
-         *
-         * In that context we naturally cannot output nested HTML tags. So lets
-         * suppress them and only output the plain text (i.e. what falls into
-         * text() callback).
-         *
-         * This make-it-a-plain-text approach is the recommended practice by
-         * CommonMark specification (for HTML output).
-         */
+    /* We are inside a Markdown image label. Markdown allows to use any emphasis
+     * and other rich contents in that context similarly as in any link label.
+     *
+     * However, unlike in the case of links (where that contents becomescontents
+     * of the <a>...</a> tag), in the case of images the contents is supposed to
+     * fall into the attribute alt: <img alt="...">.
+     *
+     * In that context we naturally cannot output nested HTML tags. So lets
+     * suppress them and only output the plain text (i.e. what falls into text()
+     * callback).
+     *
+     * CommonMark specification declares this a recommended practice for HTML
+     * output.
+     */
+    if(type == MD_SPAN_IMG)
+        r->image_nesting_level++;
+    if(inside_img)
         return 0;
-    }
 
     switch(type) {
         case MD_SPAN_EM:                RENDER_VERBATIM(r, "<em>"); break;
@@ -476,20 +473,17 @@ leave_span_callback(MD_SPANTYPE type, void* detail, void* userdata)
 {
     MD_HTML* r = (MD_HTML*) userdata;
 
-    if(r->image_nesting_level > 0) {
-        /* Ditto as in enter_span_callback(), except we have to allow the
-         * end of the <img> tag. */
-        if(r->image_nesting_level == 1  &&  type == MD_SPAN_IMG)
-            render_close_img_span(r, (MD_SPAN_IMG_DETAIL*) detail);
+    if(type == MD_SPAN_IMG)
+        r->image_nesting_level--;
+    if(r->image_nesting_level > 0)
         return 0;
-    }
 
     switch(type) {
         case MD_SPAN_EM:                RENDER_VERBATIM(r, "</em>"); break;
         case MD_SPAN_STRONG:            RENDER_VERBATIM(r, "</strong>"); break;
         case MD_SPAN_U:                 RENDER_VERBATIM(r, "</u>"); break;
         case MD_SPAN_A:                 RENDER_VERBATIM(r, "</a>"); break;
-        case MD_SPAN_IMG:               /*noop, handled above*/ break;
+        case MD_SPAN_IMG:               render_close_img_span(r, (MD_SPAN_IMG_DETAIL*) detail); break;
         case MD_SPAN_CODE:              RENDER_VERBATIM(r, "</code>"); break;
         case MD_SPAN_DEL:               RENDER_VERBATIM(r, "</del>"); break;
         case MD_SPAN_LATEXMATH:         /*fall through*/
@@ -555,13 +549,13 @@ md_html(const MD_CHAR* input, MD_SIZE input_size,
         if(strchr("\"&<>", ch) != NULL)
             render.escape_map[i] |= NEED_HTML_ESC_FLAG;
 
-        if(!ISALNUM(ch)  &&  strchr("-_.+!*(),%#@?=;:/,+$", ch) == NULL)
+        if(!ISALNUM(ch)  &&  strchr("~-_.+!*(),%#@?=;:/,+$", ch) == NULL)
             render.escape_map[i] |= NEED_URL_ESC_FLAG;
     }
 
     /* Consider skipping UTF-8 byte order mark (BOM). */
     if(renderer_flags & MD_HTML_FLAG_SKIP_UTF8_BOM  &&  sizeof(MD_CHAR) == 1) {
-        static const MD_CHAR bom[3] = { 0xef, 0xbb, 0xbf };
+        static const MD_CHAR bom[3] = { (char)0xef, (char)0xbb, (char)0xbf };
         if(input_size >= sizeof(bom)  &&  memcmp(input, bom, sizeof(bom)) == 0) {
             input += sizeof(bom);
             input_size -= sizeof(bom);
@@ -571,7 +565,9 @@ md_html(const MD_CHAR* input, MD_SIZE input_size,
     return md_parse(input, input_size, &parser, (void*) &render);
 }
 
-
+/*************************************
+ ***  Memory buffer implementation  ***
+ *************************************/
 
 static void
 membuf_init(struct membuffer* buf, MD_SIZE new_asize)
