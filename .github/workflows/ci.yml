@@ -60,42 +60,6 @@ jobs:
                 ref: ${{ github.ref }}
                 fetch-depth: 0
 
-            - name: Debug everything
-              shell: bash
-              run: |
-                echo "=== Event Info ==="
-                echo "Event name: ${{ github.event_name }}"
-                echo ""
-                echo "=== GitHub Context ==="
-                echo "github.event.head_commit.message:"
-                echo "${{ github.event.head_commit.message }}"
-                echo ""
-                echo "github.event.pull_request.head.commit.message:"
-                echo "${{ github.event.pull_request.head.commit.message }}"
-                echo ""
-                echo "github.event.pull_request.head.sha: ${{ github.event.pull_request.head.sha }}"
-                echo ""
-                echo "=== Git Log ==="
-                cd $GITHUB_WORKSPACE/arturo
-                echo "git log -1 --pretty=%B:"
-                git log -1 --pretty=%B
-                echo ""
-                echo "git log -1 --pretty=%B HEAD:"
-                git log -1 --pretty=%B HEAD
-                echo ""
-                if [ "${{ github.event_name }}" = "pull_request" ]; then
-                  echo "git log -1 --pretty=%B ${{ github.event.pull_request.head.sha }}:"
-                  git log -1 --pretty=%B ${{ github.event.pull_request.head.sha }}
-                fi
-                echo ""
-                echo "=== Check for [skip tests] ==="
-                COMMIT_MSG=$(git log -1 --pretty=%B ${{ github.event.pull_request.head.sha }})
-                if echo "$COMMIT_MSG" | grep -q "\[skip tests\]"; then
-                  echo "FOUND: [skip tests] in commit message"
-                else
-                  echo "NOT FOUND: [skip tests] not in commit message"
-                fi
-
             - name: Prepare artifact version
               id: version
               shell: bash
