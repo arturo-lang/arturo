@@ -1,7 +1,7 @@
 //
 //  Portable File Dialogs
 //
-//  Copyright © 2018—2020 Sam Hocevar <sam@hocevar.net>
+//  Copyright © 2018–2022 Sam Hocevar <sam@hocevar.net>
 //
 //  This library is free software. It comes without any warranty, to
 //  the extent permitted by applicable law. You can redistribute it
@@ -10,6 +10,8 @@
 //  See http://www.wtfpl.net/ for more details.
 //
 
+#pragma once
+
 #include "pfd.h"
 #include "string.h"
 
@@ -17,15 +19,14 @@
 #ifndef WIN32_LEAN_AND_MEAN
 #   define WIN32_LEAN_AND_MEAN 1
 #endif
-#define NTDDI_VERSION 0x0A000006 //NTDDI_WIN10_RS5
-#define _WIN32_WINNT 0x0A00 // _WIN32_WINNT_WIN10, the _WIN32_WINNT macro must also be defined when defining NTDDI_VERSION
-#include <Windows.h>
+#include <windows.h>
 #include <commdlg.h>
-#include <ShlObj.h>
-#include <ShObjIdl.h> // IFileDialog
+#include <shlobj.h>
+#include <shobjidl.h> // IFileDialog
 #include <shellapi.h>
 #include <strsafe.h>
 #include <future>     // std::async
+#include <userenv.h>  // GetUserProfileDirectory()
 
 #elif __EMSCRIPTEN__
 #include <emscripten.h>
@@ -42,9 +43,11 @@
 #include <cstdio>     // popen()
 #include <cstdlib>    // std::getenv()
 #include <fcntl.h>    // fcntl()
-#include <unistd.h>   // read(), pipe(), dup2()
+#include <unistd.h>   // read(), pipe(), dup2(), getuid()
 #include <csignal>    // ::kill, std::signal
+#include <sys/stat.h> // stat()
 #include <sys/wait.h> // waitpid()
+#include <pwd.h>      // getpwnam()
 #endif
 
 #include <string>   // std::string
@@ -93,8 +96,7 @@ enum class choice
 
 enum class icon
 {
-    none = 0,
-    info,
+    info = 0,
     warning,
     error,
     question,
@@ -223,7 +225,7 @@ protected:
         {
         public:
             proc(dll const &lib, std::string const &sym)
-              : m_proc(reinterpret_cast<T *>(::GetProcAddress(lib.handle, sym.c_str())))
+              : m_proc(reinterpret_cast<T *>((void *)::GetProcAddress(lib.handle, sym.c_str())))
             {}
 
             operator bool() const { return m_proc != nullptr; }
@@ -318,6 +320,17 @@ protected:
 };
 
 } // namespace internal
+
+//
+// The path class provides some platform-specific path constants
+//
+
+class path : protected internal::platform
+{
+public:
+    static std::string home();
+    static std::string separator();
+};
 
 //
 // The notify widget
@@ -471,6 +484,42 @@ static inline bool starts_with(std::string const &str, std::string const &prefix
         str.compare(0, prefix.size(), prefix) == 0;
 }
 
+// This is necessary until C++17 which will have std::filesystem::is_directory
+
+static inline bool is_directory(std::string const &path)
+{
+#if _WIN32
+    auto attr = GetFileAttributesA(path.c_str());
+    return attr != INVALID_FILE_ATTRIBUTES && (attr & FILE_ATTRIBUTE_DIRECTORY);
+#elif __EMSCRIPTEN__
+    // TODO
+    return false;
+#else
+    struct stat s;
+    return stat(path.c_str(), &s) == 0 && S_ISDIR(s.st_mode);
+#endif
+}
+
+// This is necessary because getenv is not thread-safe
+
+static inline std::string getenv(std::string const &str)
+{
+#if _MSC_VER
+    char *buf = nullptr;
+    size_t size = 0;
+    if (_dupenv_s(&buf, &size, str.c_str()) == 0 && buf)
+    {
+        std::string ret(buf);
+        free(buf);
+        return ret;
+    }
+    return "";
+#else
+    auto buf = std::getenv(str.c_str());
+    return buf ? buf : "";
+#endif
+}
+
 } // namespace internal
 
 // settings implementation
@@ -481,6 +530,11 @@ inline settings::settings(bool resync)
 
     if (flags(flag::is_scanned))
         return;
+
+    auto pfd_verbose = internal::getenv("PFD_VERBOSE");
+    auto match_no = std::regex("(|0|no|false)", std::regex_constants::icase);
+    if (!std::regex_match(pfd_verbose, match_no))
+        flags(flag::is_verbose) = true;
 
 #if _WIN32
     flags(flag::is_vista) = internal::is_vista();
@@ -493,10 +547,10 @@ inline settings::settings(bool resync)
     // If multiple helpers are available, try to default to the best one
     if (flags(flag::has_zenity) && flags(flag::has_kdialog))
     {
-        auto desktop_name = std::getenv("XDG_SESSION_DESKTOP");
-        if (desktop_name && desktop_name == std::string("gnome"))
+        auto desktop_name = internal::getenv("XDG_SESSION_DESKTOP");
+        if (desktop_name == std::string("gnome"))
             flags(flag::has_kdialog) = false;
-        else if (desktop_name && desktop_name == std::string("KDE"))
+        else if (desktop_name == std::string("KDE"))
             flags(flag::has_zenity) = false;
     }
 #endif
@@ -510,6 +564,9 @@ inline bool settings::available()
     return true;
 #elif __APPLE__
     return true;
+#elif __EMSCRIPTEN__
+    // FIXME: Return true after implementation is complete.
+    return false;
 #else
     settings tmp;
     return tmp.flags(flag::has_zenity) ||
@@ -579,6 +636,58 @@ inline bool &settings::flags(flag in_flag)
     return const_cast<bool &>(static_cast<settings const *>(this)->flags(in_flag));
 }
 
+// path implementation
+inline std::string path::home()
+{
+#if _WIN32
+    // First try the USERPROFILE environment variable
+    auto user_profile = internal::getenv("USERPROFILE");
+    if (user_profile.size() > 0)
+        return user_profile;
+    // Otherwise, try GetUserProfileDirectory()
+    HANDLE token = nullptr;
+    DWORD len = MAX_PATH;
+    char buf[MAX_PATH] = { '\0' };
+    if (OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &token))
+    {
+        dll userenv("userenv.dll");
+        dll::proc<BOOL WINAPI (HANDLE, LPSTR, LPDWORD)> get_user_profile_directory(userenv, "GetUserProfileDirectoryA");
+        get_user_profile_directory(token, buf, &len);
+        CloseHandle(token);
+        if (*buf)
+            return buf;
+    }
+#elif __EMSCRIPTEN__
+    return "/";
+#else
+    // First try the HOME environment variable
+    auto home = internal::getenv("HOME");
+    if (home.size() > 0)
+        return home;
+    // Otherwise, try getpwuid_r()
+    size_t len = 4096;
+#if defined(_SC_GETPW_R_SIZE_MAX)
+    auto size_max = sysconf(_SC_GETPW_R_SIZE_MAX);
+    if (size_max != -1)
+        len = size_t(size_max);
+#endif
+    std::vector<char> buf(len);
+    struct passwd pwd, *result;
+    if (getpwuid_r(getuid(), &pwd, buf.data(), buf.size(), &result) == 0)
+        return result->pw_dir;
+#endif
+    return "/";
+}
+
+inline std::string path::separator()
+{
+#if _WIN32
+    return "\\";
+#else
+    return "/";
+#endif
+}
+
 // executor implementation
 
 inline std::string internal::executor::result(int *exit_code /* = nullptr */)
@@ -599,11 +708,14 @@ inline bool internal::executor::kill()
         EnumWindows(&enum_windows_callback, (LPARAM)this);
         for (auto hwnd : m_windows)
             if (previous_windows.find(hwnd) == previous_windows.end())
+            {
                 SendMessage(hwnd, WM_CLOSE, 0, 0);
+                // Also send IDNO in case of a Yes/No or Abort/Retry/Ignore messagebox
+                SendMessage(hwnd, WM_COMMAND, IDNO, 0);
+            }
     }
 #elif __EMSCRIPTEN__ || __NX__
     // FIXME: do something
-    (void)timeout;
     return false; // cannot kill
 #else
     ::kill(m_pid, SIGKILL);
@@ -844,7 +956,7 @@ inline HANDLE internal::platform::new_style_context::create()
         // crash with error “default context is already set”.
         sizeof(act_ctx),
         ACTCTX_FLAG_RESOURCE_NAME_VALID | ACTCTX_FLAG_ASSEMBLY_DIRECTORY_VALID,
-        "shell32.dll", 0, 0, sys_dir.c_str(), (LPCSTR)124,
+        "shell32.dll", 0, 0, sys_dir.c_str(), (LPCSTR)124, nullptr, 0,
     };
 
     return ::CreateActCtxA(&act_ctx);
@@ -911,7 +1023,7 @@ inline std::string internal::dialog::get_icon_name(icon _icon)
     }
 }
 
-// THis is only used for debugging purposes
+// This is only used for debugging purposes
 inline std::ostream& operator <<(std::ostream &s, std::vector<std::string> const &v)
 {
     int not_first = 0;
@@ -1095,6 +1207,13 @@ inline internal::file_dialog::file_dialog(type in_type,
 
         return "";
     });
+#elif __EMSCRIPTEN__
+    // FIXME: do something
+    (void)in_type;
+    (void)title;
+    (void)default_path;
+    (void)filters;
+    (void)options;
 #else
     auto command = desktop_helper();
 
@@ -1117,7 +1236,14 @@ inline internal::file_dialog::file_dialog(type in_type,
         }
 
         if (default_path.size())
-            script += " default location " + osascript_quote(default_path);
+        {
+            if (in_type == type::folder || is_directory(default_path))
+                script += " default location ";
+            else
+                script += " default name ";
+            script += osascript_quote(default_path);
+        }
+
         script += " with prompt " + osascript_quote(title);
 
         if (in_type == type::open)
@@ -1141,11 +1267,18 @@ inline internal::file_dialog::file_dialog(type in_type,
                 if (pat == "*" || pat == "*.*")
                     has_filter = false;
                 else if (internal::starts_with(pat, "*."))
-                    filter_list += (filter_list.size() == 0 ? "" : ",") +
-                                   osascript_quote(pat.substr(2, pat.size() - 2));
+                    filter_list += "," + osascript_quote(pat.substr(2, pat.size() - 2));
             }
+
             if (has_filter && filter_list.size() > 0)
-                script += " of type {" + filter_list + "}";
+            {
+                // There is a weird AppleScript bug where file extensions of length != 3 are
+                // ignored, e.g. type{"txt"} works, but type{"json"} does not. Fortunately if
+                // the whole list starts with a 3-character extension, everything works again.
+                // We use "///" for such an extension because we are sure it cannot appear in
+                // an actual filename.
+                script += " of type {\"///\"" + filter_list + "}";
+            }
         }
 
         if (in_type == type::open && (options & opt::multiselect))
@@ -1167,7 +1300,14 @@ inline internal::file_dialog::file_dialog(type in_type,
     else if (is_zenity())
     {
         command.push_back("--file-selection");
-        command.push_back("--filename=" + default_path);
+
+        // If the default path is a directory, make sure it ends with "/" otherwise zenity will
+        // open the file dialog in the parent directory.
+        auto filename_arg = "--filename=" + default_path;
+        if (in_type != type::folder && !ends_with(default_path, "/") && internal::is_directory(default_path))
+            filename_arg += "/";
+        command.push_back(filename_arg);
+
         command.push_back("--title");
         command.push_back(title);
         command.push_back("--separator=\n");
@@ -1304,7 +1444,7 @@ inline std::string internal::file_dialog::select_folder_vista(IFileDialog *ifd, 
     }
 
     // Set the dialog title and option to select folders
-    ifd->SetOptions(FOS_PICKFOLDERS);
+    ifd->SetOptions(FOS_PICKFOLDERS | FOS_FORCEFILESYSTEM);
     ifd->SetTitle(m_wtitle.c_str());
 
     hr = ifd->Show(GetActiveWindow());
@@ -1314,15 +1454,27 @@ inline std::string internal::file_dialog::select_folder_vista(IFileDialog *ifd, 
         hr = ifd->GetResult(&item);
         if (SUCCEEDED(hr))
         {
-            wchar_t* wselected = nullptr;
-            item->GetDisplayName(SIGDN_FILESYSPATH, &wselected);
-            item->Release();
-
-            if (wselected)
+            wchar_t* wname = nullptr;
+            // This is unlikely to fail because we use FOS_FORCEFILESYSTEM, but try
+            // to output a debug message just in case.
+            if (SUCCEEDED(item->GetDisplayName(SIGDN_FILESYSPATH, &wname)))
             {
-                result = internal::wstr2str(std::wstring(wselected));
-                dll::proc<void WINAPI (LPVOID)>(ole32_dll(), "CoTaskMemFree")(wselected);
+                result = internal::wstr2str(std::wstring(wname));
+                dll::proc<void WINAPI (LPVOID)>(ole32_dll(), "CoTaskMemFree")(wname);
             }
+            else
+            {
+                if (SUCCEEDED(item->GetDisplayName(SIGDN_NORMALDISPLAY, &wname)))
+                {
+                    auto name = internal::wstr2str(std::wstring(wname));
+                    dll::proc<void WINAPI (LPVOID)>(ole32_dll(), "CoTaskMemFree")(wname);
+                    std::cerr << "pfd: failed to get path for " << name << std::endl;
+                }
+                else
+                    std::cerr << "pfd: item of unknown type selected" << std::endl;
+            }
+
+            item->Release();
         }
     }
 
@@ -1361,12 +1513,7 @@ inline notify::notify(std::string const &title,
 
     // For XP support
     nid->cbSize = NOTIFYICONDATAW_V2_SIZE;
-    nid->hWnd = ::GetConsoleWindow();
-
-    // Shell_NotifyIcon requires a valid window handle; fall back to the
-    // foreground window if the process has no console.
-    if (!nid->hWnd)
-        nid->hWnd = ::GetForegroundWindow();
+    nid->hWnd = nullptr;
     nid->uID = 0;
 
     // Flag Description:
@@ -1408,6 +1555,10 @@ inline notify::notify(std::string const &title,
 
     // Display the new icon
     Shell_NotifyIconW(NIM_ADD, nid.get());
+#elif __EMSCRIPTEN__
+    // FIXME: do something
+    (void)title;
+    (void)message;
 #else
     auto command = desktop_helper();
 
@@ -1454,14 +1605,12 @@ inline message::message(std::string const &title,
     // Use MB_SYSTEMMODAL rather than MB_TOPMOST to ensure the message window is brought
     // to front. See https://github.com/samhocevar/portable-file-dialogs/issues/52
     UINT style = MB_SYSTEMMODAL;
-    if (_icon != icon::none){
-        switch (_icon)
-        {
-            case icon::warning: style |= MB_ICONWARNING; break;
-            case icon::error: style |= MB_ICONERROR; break;
-            case icon::question: style |= MB_ICONQUESTION; break;
-            /* case icon::info: */ default: style |= MB_ICONINFORMATION; break;
-        }
+    switch (_icon)
+    {
+        case icon::warning: style |= MB_ICONWARNING; break;
+        case icon::error: style |= MB_ICONERROR; break;
+        case icon::question: style |= MB_ICONQUESTION; break;
+        /* case icon::info: */ default: style |= MB_ICONINFORMATION; break;
     }
 
     switch (_choice)
@@ -1494,14 +1643,12 @@ inline message::message(std::string const &title,
 
 #elif __EMSCRIPTEN__
     std::string full_message;
-    if (_icon != icon::none){
-        switch (_icon)
-        {
-            case icon::warning: full_message = "⚠️"; break;
-            case icon::error: full_message = "⛔"; break;
-            case icon::question: full_message = "❓"; break;
-            /* case icon::info: */ default: full_message = "ℹ"; break;
-        }
+    switch (_icon)
+    {
+        case icon::warning: full_message = "⚠️"; break;
+        case icon::error: full_message = "⛔"; break;
+        case icon::question: full_message = "❓"; break;
+        /* case icon::info: */ default: full_message = "ℹ"; break;
     }
 
     full_message += ' ' + title + "\n\n" + text;
@@ -1522,57 +1669,55 @@ inline message::message(std::string const &title,
     {
         std::string script = "display dialog " + osascript_quote(text) +
                              " with title " + osascript_quote(title);
+        auto if_cancel = button::cancel;
         switch (_choice)
         {
             case choice::ok_cancel:
                 script += "buttons {\"OK\", \"Cancel\"}"
                           " default button \"OK\""
                           " cancel button \"Cancel\"";
-                m_mappings[256] = button::cancel;
                 break;
             case choice::yes_no:
                 script += "buttons {\"Yes\", \"No\"}"
                           " default button \"Yes\""
                           " cancel button \"No\"";
-                m_mappings[256] = button::no;
+                if_cancel = button::no;
                 break;
             case choice::yes_no_cancel:
                 script += "buttons {\"Yes\", \"No\", \"Cancel\"}"
                           " default button \"Yes\""
                           " cancel button \"Cancel\"";
-                m_mappings[256] = button::cancel;
                 break;
             case choice::retry_cancel:
                 script += "buttons {\"Retry\", \"Cancel\"}"
                           " default button \"Retry\""
                           " cancel button \"Cancel\"";
-                m_mappings[256] = button::cancel;
                 break;
             case choice::abort_retry_ignore:
                 script += "buttons {\"Abort\", \"Retry\", \"Ignore\"}"
-                          " default button \"Retry\""
+                          " default button \"Abort\""
                           " cancel button \"Retry\"";
-                m_mappings[256] = button::cancel;
+                if_cancel = button::retry;
                 break;
             case choice::ok: default:
                 script += "buttons {\"OK\"}"
                           " default button \"OK\""
                           " cancel button \"OK\"";
-                m_mappings[256] = button::ok;
+                if_cancel = button::ok;
                 break;
         }
-        if (_icon != icon::none){
-            script += " with icon ";
-            switch (_icon)
-            {
-                #define PFD_OSX_ICON(n) "alias ((path to library folder from system domain) as text " \
-                    "& \"CoreServices:CoreTypes.bundle:Contents:Resources:" n ".icns\")"
-                case icon::info: default: script += PFD_OSX_ICON("ToolBarInfo"); break;
-                case icon::warning: script += "caution"; break;
-                case icon::error: script += "stop"; break;
-                case icon::question: script += PFD_OSX_ICON("GenericQuestionMarkIcon"); break;
-                #undef PFD_OSX_ICON
-            }
+        m_mappings[1] = if_cancel;
+        m_mappings[256] = if_cancel; // XXX: I think this was never correct
+        script += " with icon ";
+        switch (_icon)
+        {
+            #define PFD_OSX_ICON(n) "alias ((path to library folder from system domain) as text " \
+                "& \"CoreServices:CoreTypes.bundle:Contents:Resources:" n ".icns\")"
+            case icon::info: default: script += PFD_OSX_ICON("ToolBarInfo"); break;
+            case icon::warning: script += "caution"; break;
+            case icon::error: script += "stop"; break;
+            case icon::question: script += PFD_OSX_ICON("GenericQuestionMarkIcon"); break;
+            #undef PFD_OSX_ICON
         }
 
         command.push_back("-e");
@@ -1606,6 +1751,7 @@ inline message::message(std::string const &title,
 
         command.insert(command.end(), { "--title", title,
                                         "--width=300", "--height=0", // sensible defaults
+                                        "--no-markup", // do not interpret text as Pango markup
                                         "--text", text,
                                         "--icon-name=dialog-" + get_icon_name(_icon) });
     }
@@ -1658,8 +1804,7 @@ inline button message::result()
     auto ret = m_async->result(&exit_code);
     // osascript will say "button returned:Cancel\n"
     // and others will just say "Cancel\n"
-    if (exit_code < 0 || // this means cancel
-        internal::ends_with(ret, "Cancel\n"))
+    if (internal::ends_with(ret, "Cancel\n"))
         return button::cancel;
     if (internal::ends_with(ret, "OK\n"))
         return button::ok;
