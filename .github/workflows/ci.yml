@@ -90,7 +90,7 @@ jobs:
                 create_artifact: 'true'
                 artifact_version: ${{ steps.version.outputs.VERSION }}
 
-            - if: env.arturoCanRun == 'true'
+            - if: env.arturoCanRun == 'true' && !contains(github.event.head_commit.message, '[skip tests]')
               name: Run tests
               run: |
                 cd $GITHUB_WORKSPACE/arturo 
