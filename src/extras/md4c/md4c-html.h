@@ -2,7 +2,7 @@
  * MD4C: Markdown parser for C
  * (http://github.com/mity/md4c)
  *
- * Copyright (c) 2016-2017 Martin Mitas
+ * Copyright (c) 2016-2024 Martin Mitáš
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -39,6 +39,11 @@
 #define MD_HTML_FLAG_SKIP_UTF8_BOM          0x0004
 #define MD_HTML_FLAG_XHTML                  0x0008
 
+struct membuffer {
+    char* data;
+    size_t asize;
+    size_t size;
+};
 
 /* Render Markdown into HTML.
  *
@@ -49,19 +54,13 @@
  * Callback process_output() gets called with chunks of HTML output.
  * (Typical implementation may just output the bytes to a file or append to
  * some buffer).
- * Param userdata is just propgated back to process_output() callback.
+ * Param userdata is just propagated back to process_output() callback.
  * Param parser_flags are flags from md4c.h propagated to md_parse().
  * Param render_flags is bitmask of MD_HTML_FLAG_xxxx.
  *
  * Returns -1 on error (if md_parse() fails.)
  * Returns 0 on success.
  */
-struct membuffer {
-    char* data;
-    size_t asize;
-    size_t size;
-};
-
 int md_html(const MD_CHAR* input, MD_SIZE input_size,
             void (*process_output)(const MD_CHAR*, MD_SIZE, void*),
             void* userdata, unsigned parser_flags, unsigned renderer_flags);
