@@ -60,30 +60,6 @@ jobs:
                 ref: ${{ github.ref }}
                 fetch-depth: 0
 
-            - name: Check if tests should be skipped
-              id: check_skip
-              shell: bash
-              run: |
-                cd $GITHUB_WORKSPACE/arturo
-                
-                if [ "${{ github.event_name }}" = "pull_request" ]; then
-                  # For PRs, get the actual HEAD commit (not the merge commit)
-                  COMMIT_MSG=$(git log -1 --pretty=%B ${{ github.event.pull_request.head.sha }})
-                else
-                  # For pushes, just get the latest commit
-                  COMMIT_MSG=$(git log -1 --pretty=%B)
-                fi
-                
-                echo "Commit message: $COMMIT_MSG"
-                
-                if echo "$COMMIT_MSG" | grep -q "\[skip tests\]"; then
-                  echo "SKIP_TESTS=true" >> "$GITHUB_OUTPUT"
-                  echo "Tests will be skipped"
-                else
-                  echo "SKIP_TESTS=false" >> "$GITHUB_OUTPUT"
-                  echo "Tests will run"
-                fi
-
             - name: Prepare artifact version
               id: version
               shell: bash
