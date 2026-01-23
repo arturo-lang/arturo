@@ -90,7 +90,24 @@ jobs:
                 create_artifact: 'true'
                 artifact_version: ${{ steps.version.outputs.VERSION }}
 
-            - if: env.arturoCanRun == 'true'
+            - name: Check if tests should be skipped
+              id: check_skip
+              shell: bash
+              run: |
+                cd $GITHUB_WORKSPACE/arturo
+                if [ "${{ github.event_name }}" = "pull_request" ]; then
+                    COMMIT_MSG=$(git log -1 --pretty=%B ${{ github.event.pull_request.head.sha }})
+                else
+                    COMMIT_MSG=$(git log -1 --pretty=%B HEAD)
+                fi
+                
+                if echo "$COMMIT_MSG" | grep -q "\[skip tests\]"; then
+                    echo "skip=true" >> "$GITHUB_OUTPUT"
+                else
+                    echo "skip=false" >> "$GITHUB_OUTPUT"
+                fi
+
+            - if: env.arturoCanRun == 'true' && steps.check_skip.outputs.skip != 'true'
               name: Run tests
               run: |
                 cd $GITHUB_WORKSPACE/arturo 
