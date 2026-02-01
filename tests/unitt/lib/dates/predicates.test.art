@@ -44,39 +44,30 @@ describe "saturday?" [
 ]
 
 describe "today?" [
-    it "is today" [
-        expects.be: 'today? -> now
-    ]
-    it "is not today" [
-        expects.be: 'not? -> today? after.days: 1 now
-    ]
+    it "is today" [ expects.be: 'today? -> now ]
+    it "is not today" [ expects.be: 'not? -> today? after.days: 1 now ]
 ]
 
 describe "past?" [
-    it "is past" [
-        expects.be: 'past? -> before.days: 1 now
-    ]
-    it "is not past" [
-        expects.be: 'not? -> past? after.days: 1 now    
-    ]
+    it "is past" [ expects.be: 'past? -> before.days: 1 now ]
+    it "is not past" [ expects.be: 'not? -> past? after.days: 1 now ]
 ]
 
 describe "future?" [
-    it "is future" [
-        expects.be: 'future? -> after.days: 1 now
-    ]
-    it "is not future" [
-        expects.be: 'not? -> future? before.days: 1 now
-    ]
+    it "is future" [ expects.be: 'future? -> after.days: 1 now ]
+    it "is not future" [ expects.be: 'not? -> future? before.days: 1 now ]
 ]
 
 describe "leap?" [
+
     it "is leap year" [
         expects.be: 'leap? -> date 2020 2 29
         expects.be: 'leap? -> date 2000 2 29
     ]
+
     it "is not leap year" [
         expects.be: 'not? -> leap? date 2021 2 28
         expects.be: 'not? -> leap? date 1900 2 28
     ]
+
 ]
