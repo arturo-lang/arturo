@@ -1,0 +1,82 @@
+import {unitt}!
+
+date: $[year :integer month :integer day :integer][
+    ensure -> year > 0
+    ensure -> month <=> 1 12
+    ensure -> day <=> 1 31
+
+    to :date .format: "yyyy-M-d" ~"|year|-|month|-|day|"
+]
+
+describe "sunday?" [
+    it "is sunday" [ expects.be: 'sunday? -> date 2026 2 1 ]
+    it "is not sunday" [ expects.be: 'not? -> sunday? date 2024 3 15 ]
+]
+
+describe "monday?" [
+    it "is monday" [ expects.be: 'monday? -> date 2024 3 18 ]
+    it "is not monday" [ expects.be: 'not? -> monday? date 2024 3 15 ]
+]
+
+describe "tuesday?" [
+    it "is tuesday" [ expects.be: 'tuesday? -> date 2024 3 19 ]
+    it "is not tuesday" [ expects.be: 'not? -> tuesday? date 2024 3 15 ]
+]
+
+describe "wednesday?" [
+    it "is wednesday" [ expects.be: 'wednesday? -> date 2024 3 20 ]
+    it "is not wednesday" [ expects.be: 'not? -> wednesday? date 2024 3 15 ]
+]
+
+describe "thursday?" [
+    it "is thursday" [ expects.be: 'thursday? -> date 2024 3 21 ]
+    it "is not thursday" [ expects.be: 'not? -> thursday? date 2024 3 15 ]
+]
+
+describe "friday?" [
+    it "is friday" [ expects.be: 'friday? -> date 2024 3 22 ]
+    it "is not friday" [ expects.be: 'not? -> friday? date 2026 2 1 ]
+]
+
+describe "saturday?" [
+    it "is saturday" [ expects.be: 'saturday? -> date 2024 3 23 ]
+    it "is not saturday" [ expects.be: 'not? -> saturday? date 2024 3 15 ]
+]
+
+describe "today?" [
+    it "is today" [
+        expects.be: 'today? -> now
+    ]
+    it "is not today" [
+        expects.be: 'not? -> today? after.days: 1 now
+    ]
+]
+
+describe "past?" [
+    it "is past" [
+        expects.be: 'past? -> before.days: 1 now
+    ]
+    it "is not past" [
+        expects.be: 'not? -> past? after.days: 1 now    
+    ]
+]
+
+describe "future?" [
+    it "is future" [
+        expects.be: 'future? -> after.days: 1 now
+    ]
+    it "is not future" [
+        expects.be: 'not? -> future? before.days: 1 now
+    ]
+]
+
+describe "leap?" [
+    it "is leap year" [
+        expects.be: 'leap? -> date 2020 2 29
+        expects.be: 'leap? -> date 2000 2 29
+    ]
+    it "is not leap year" [
+        expects.be: 'not? -> leap? date 2021 2 28
+        expects.be: 'not? -> leap? date 1900 2 28
+    ]
+]
