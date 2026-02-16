@@ -261,7 +261,7 @@ proc defineModule*(moduleName: string) =
                 var proxy: Proxy = nil
                 if checkAttr("proxy"):
                     proxy = newProxy(aProxy.s)
-
+ 
                 var body: string
                 var multipart: MultipartData = nil
                 if meth != HttpGet:
@@ -530,8 +530,16 @@ proc defineModule*(moduleName: string) =
                         ).join("\c\L")
 
                         # send response
+                        let bodyStr = if responseDict["body"].kind == Binary:
+                                var s = newString(responseDict["body"].n.len)
+                                if s.len > 0:
+                                    copyMem(addr s[0], addr responseDict["body"].n[0], s.len)
+                                s
+                            else:
+                                responseDict["body"].s
+
                         req.respond(newServerResponse(
-                            responseDict["body"].s,
+                            bodyStr,
                             HttpCode(responseDict["status"].i),
                             headerStr
                         ))
