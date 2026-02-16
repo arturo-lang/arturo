@@ -261,7 +261,7 @@ proc defineModule*(moduleName: string) =
                 var proxy: Proxy = nil
                 if checkAttr("proxy"):
                     proxy = newProxy(aProxy.s)
-
+ 
                 var body: string
                 var multipart: MultipartData = nil
                 if meth != HttpGet:
