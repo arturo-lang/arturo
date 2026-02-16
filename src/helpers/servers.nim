@@ -55,7 +55,7 @@ proc newServerResponse*(body = "", status = Http200, headers = ""): ServerRespon
 #=======================================
 
 proc respond*(req: ServerRequest, resp: ServerResponse) =
-    send(req.Request, resp.status, resp.body, some(len($(resp.body))), resp.headers)
+    send(req.Request, resp.status, resp.body, some(resp.body.len), resp.headers)
 
 proc startServer*(handler: RequestHandler, port: int = 18966) =
     let settings = initSettings(port.Port)
