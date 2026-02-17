@@ -122,7 +122,7 @@ jobs:
                     arturo -p install unitt
                     if ! arturo tools/unitt-tester.art; then
                         echo $CWD
-                        ls -lart .unitt/
+                        ls -aRt .unitt
                         cat C:\\Users\\runneradmin\\.arturo\\packages\\bin\\unitt.bat
                         exit 1
                     fi
