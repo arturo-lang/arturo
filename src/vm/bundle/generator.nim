@@ -242,8 +242,7 @@ proc addImplicit(syms: var seq[string]) =
         syms.add(@["any?", "array", "is?", "ensure"])
 
     if syms.contains("add"):
-        syms.add("inc")
-        syms.add("mul")
+        syms.add(@["inc", "mul"])
 
     if syms.contains("sub"):
         syms.add("dec")
