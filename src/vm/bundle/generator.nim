@@ -270,6 +270,9 @@ proc addImplicit(syms: var seq[string]) =
     if syms.contains("define"):
         syms.add(@["ensure", "function", "if", "greater?", "equal?", "return", "neg", "to"])
 
+    if syms.contains("is"):
+        syms.add("function")
+
     if syms.contains("function") or syms.contains("method"):
         syms.add(@["any?", "array", "is?", "ensure"])
 
