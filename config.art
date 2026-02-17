@@ -1,0 +1,3 @@
+path: "tests/unitt"
+suffix: ".test.art"
+binary: "./bin/arturo"
