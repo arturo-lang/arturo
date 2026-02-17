@@ -236,10 +236,16 @@ proc analyzeFile(conf: BundleConfig, filename: string) =
 
 proc addImplicit(syms: var seq[string]) =
     if syms.contains("define"):
-        syms.add(@["ensure", "function", "if", "greater?", "equal?", "return", "neg"])
+        syms.add(@["ensure", "function", "if", "greater?", "equal?", "return", "neg", "to"])
 
     if syms.contains("function") or syms.contains("method"):
         syms.add(@["any?", "array", "is?", "ensure"])
+
+    if syms.contains("add"):
+        syms.add(@["inc", "mul"])
+
+    if syms.contains("sub"):
+        syms.add("dec")
 
 #=======================================
 # Methods
