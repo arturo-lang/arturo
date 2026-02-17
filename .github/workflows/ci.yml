@@ -121,9 +121,6 @@ jobs:
                 if [ "${{ matrix.mode }}" != "mini" ]; then
                     arturo -p install unitt
                     if ! arturo tools/unitt-tester.art; then
-                        echo $CWD
-                        ls -aRt .unitt
-                        cat C:\\Users\\runneradmin\\.arturo\\packages\\bin\\unitt.bat
                         exit 1
                     fi
                 fi
