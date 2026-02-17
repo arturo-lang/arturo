@@ -59,6 +59,9 @@ const
     ImportCall      = "import"
     RelativeCall    = "relative"
     ReadCall        = "read"
+    DoCall          = "do"
+    DictionaryCall  = "dictionary"
+    ArrayCall       = "array"
 
     MiniKillers     = @[
         "close", "open", "query",                       # Database
@@ -199,12 +202,41 @@ proc analyzeBlock(conf: BundleConfig, filename: string, bl: ValueArray) =
                         if afterNextItem.kind != Null and nextItem.isRelativeCall():
                             let fname = relativePathTo(afterNextItem.s)
                             conf.files[conf.cleanedPath(fname)] = readFile(fname)
+                            let (_, _, ext) = splitFile(fname)
+                            if ext == ".art":
+                                conf.analyzeFile(fname)
+       
+                    elif item.s == DoCall:
+                        if afterNextItem.kind != Null and nextItem.isRelativeCall():
+                            let fname = relativePathTo(afterNextItem.s)
+                            conf.files[conf.cleanedPath(fname)] = readFile(fname)
+                            let (_, _, ext) = splitFile(fname)
+                            if ext == ".art":
+                                conf.analyzeFile(fname)
+
+                    elif item.s == DictionaryCall:
+                        if afterNextItem.kind != Null and nextItem.isRelativeCall():
+                            let fname = relativePathTo(afterNextItem.s)
+                            conf.files[conf.cleanedPath(fname)] = readFile(fname)
+
+                    elif item.s == ArrayCall:
+                        if afterNextItem.kind != Null and nextItem.isRelativeCall():
+                            let fname = relativePathTo(afterNextItem.s)
+                            conf.files[conf.cleanedPath(fname)] = readFile(fname)
         
             of Symbol:
                 if (let aliased = Aliases.getOrDefault(item.m, NoAliasBinding); aliased != NoAliasBinding):
                     if (let symv = Syms.getOrDefault(aliased.name.s, nil); not symv.isNil):
                         if symv.isStdlibSymbol():
                             conf.symbols.add(aliased.name.s)
+                
+                if item.m in [sharp, at]:
+                    if i+1 < bl.len and i+2 < bl.len:
+                        let nextItem = bl[i+1]
+                        let afterNextItem = bl[i+2]
+                        if afterNextItem.kind != Null and nextItem.isRelativeCall():
+                            let fname = relativePathTo(afterNextItem.s)
+                            conf.files[conf.cleanedPath(fname)] = readFile(fname)
 
             of Inline, Block:
                 conf.analyzeBlock(filename, item.a)
