@@ -59,6 +59,7 @@ const
     ImportCall      = "import"
     RelativeCall    = "relative"
     ReadCall        = "read"
+    DoCall          = "do"
 
     MiniKillers     = @[
         "close", "open", "query",                       # Database
@@ -196,6 +197,11 @@ proc analyzeBlock(conf: BundleConfig, filename: string, bl: ValueArray) =
                                 conf.analyzeFile(src)
 
                     elif item.s == ReadCall:
+                        if afterNextItem.kind != Null and nextItem.isRelativeCall():
+                            let fname = relativePathTo(afterNextItem.s)
+                            conf.files[conf.cleanedPath(fname)] = readFile(fname)
+       
+                    elif item.s == DoCall:
                         if afterNextItem.kind != Null and nextItem.isRelativeCall():
                             let fname = relativePathTo(afterNextItem.s)
                             conf.files[conf.cleanedPath(fname)] = readFile(fname)
