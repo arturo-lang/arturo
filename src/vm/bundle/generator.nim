@@ -231,11 +231,6 @@ proc analyzeBlock(conf: BundleConfig, filename: string, bl: ValueArray) =
                             conf.symbols.add(aliased.name.s)
                 
                 if item.m in [sharp, at]:
-                    if item.m == sharp:
-                        conf.symbols.add("dictionary")
-                    else:
-                        conf.symbols.add("array")
-
                     if i+1 < bl.len and i+2 < bl.len:
                         let nextItem = bl[i+1]
                         let afterNextItem = bl[i+2]
