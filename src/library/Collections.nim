@@ -47,6 +47,9 @@ import vm/values/custom/[vbinary, vrange]
 
 import vm/errors as err
 
+when defined(BUNDLE):
+    import vm/bundle/resources
+
 #=======================================
 # Definitions
 #=======================================
