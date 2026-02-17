@@ -230,17 +230,12 @@ proc analyzeBlock(conf: BundleConfig, filename: string, bl: ValueArray) =
                         if symv.isStdlibSymbol():
                             conf.symbols.add(aliased.name.s)
                 
-                if item.m == sharp:
-                    conf.symbols.add("dictionary")
-                    if i+1 < bl.len and i+2 < bl.len:
-                        let nextItem = bl[i+1]
-                        let afterNextItem = bl[i+2]
-                        if afterNextItem.kind != Null and nextItem.isRelativeCall():
-                            let fname = relativePathTo(afterNextItem.s)
-                            conf.files[conf.cleanedPath(fname)] = readFile(fname)
-                
-                elif item.m == at:
-                    conf.symbols.add("array")
+                if item.m in [sharp, at]:
+                    if item.m == sharp:
+                        conf.symbols.add("dictionary")
+                    else:
+                        conf.symbols.add("array")
+
                     if i+1 < bl.len and i+2 < bl.len:
                         let nextItem = bl[i+1]
                         let afterNextItem = bl[i+2]
