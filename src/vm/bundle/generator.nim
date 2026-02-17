@@ -244,6 +244,9 @@ proc addImplicit(syms: var seq[string]) =
     if syms.contains("add"):
         syms.add("inc")
 
+    if syms.contains("sub"):
+        syms.add("dec")
+
 #=======================================
 # Methods
 #=======================================
