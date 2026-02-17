@@ -238,6 +238,15 @@ proc analyzeBlock(conf: BundleConfig, filename: string, bl: ValueArray) =
                         if afterNextItem.kind != Null and nextItem.isRelativeCall():
                             let fname = relativePathTo(afterNextItem.s)
                             conf.files[conf.cleanedPath(fname)] = readFile(fname)
+                
+                elif item.m == at:
+                    conf.symbols.add("array")
+                    if i+1 < bl.len and i+2 < bl.len:
+                        let nextItem = bl[i+1]
+                        let afterNextItem = bl[i+2]
+                        if afterNextItem.kind != Null and nextItem.isRelativeCall():
+                            let fname = relativePathTo(afterNextItem.s)
+                            conf.files[conf.cleanedPath(fname)] = readFile(fname)
 
             of Inline, Block:
                 conf.analyzeBlock(filename, item.a)
