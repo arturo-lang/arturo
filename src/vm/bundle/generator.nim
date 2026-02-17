@@ -61,6 +61,7 @@ const
     ReadCall        = "read"
     DoCall          = "do"
     DictionaryCall  = "dictionary"
+    ArrayCall       = "array"
 
     MiniKillers     = @[
         "close", "open", "query",                       # Database
@@ -214,6 +215,11 @@ proc analyzeBlock(conf: BundleConfig, filename: string, bl: ValueArray) =
                                 conf.analyzeFile(fname)
 
                     elif item.s == DictionaryCall:
+                        if afterNextItem.kind != Null and nextItem.isRelativeCall():
+                            let fname = relativePathTo(afterNextItem.s)
+                            conf.files[conf.cleanedPath(fname)] = readFile(fname)
+
+                    elif item.s == ArrayCall:
                         if afterNextItem.kind != Null and nextItem.isRelativeCall():
                             let fname = relativePathTo(afterNextItem.s)
                             conf.files[conf.cleanedPath(fname)] = readFile(fname)
