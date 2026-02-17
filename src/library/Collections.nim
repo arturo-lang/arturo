@@ -464,7 +464,10 @@ proc defineModule*(moduleName: string) =
                 else:
                     dict = execDictionary(x)
             elif xKind==String:
-                let (src, tp) = getSource(x.s)
+                when defined(BUNDLE):
+                    let (src, tp) = (getBundledResource(x.s)[0], FileData)
+                else:
+                    let (src, tp) = getSource(x.s)
 
                 if tp!=TextData:
                     dict = execDictionary(doParse(src, isFile=false))#, isIsolated=true)
