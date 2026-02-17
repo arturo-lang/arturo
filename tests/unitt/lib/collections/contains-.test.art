@@ -148,14 +148,14 @@ suite "test .at attribute" [
         ]
     ]
 
-    test.skip "negative index should verify from backyards" [
-        assert -> contains?.at: neg 1 str (last str)
-        assert -> contains?.at: neg 1 blk (last blk)
-        assert -> contains?.at: neg 1 dict (last dict)
-    ]
+    ; test.skip "negative index should verify from backyards" [
+    ;     assert -> contains?.at: neg 1 str (last str)
+    ;     assert -> contains?.at: neg 1 blk (last blk)
+    ;     assert -> contains?.at: neg 1 dict (last dict)
+    ; ]
     
-    test.skip "should throw for index out of bounds" [
-        assert -> throws? [contains?.at: 2 [0 1] 0]
-    ]
+    ; test.skip "should throw for index out of bounds" [
+    ;     assert -> throws? [contains?.at: 2 [0 1] 0]
+    ; ]
 
 ]
