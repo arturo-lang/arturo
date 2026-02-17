@@ -213,7 +213,11 @@ proc defineModule*(moduleName: string) =
                         push(newBlock(arr))
                     elif xKind==String:
                         let stop = SP
-                        let (_{.inject.}, tp) = getSource(x.s)
+
+                        when defined(BUNDLE):
+                            let (_{.inject.}, tp) = (getBundledResource(x.s)[0], FileData)
+                        else:
+                            let (_{.inject.}, tp) = getSource(x.s)
 
                         if tp!=TextData:
                             execUnscoped(doParse(x.s, isFile=false))
