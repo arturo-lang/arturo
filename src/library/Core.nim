@@ -1357,7 +1357,10 @@ proc defineModule*(moduleName: string) =
         """:
             #=======================================================
             if xKind == String:
-                let (src, _) = getSource(x.s)
+                when defined(BUNDLE):
+                    let (src, _) = (getBundledResource(x.s)[0], FileData)
+                else:
+                    let (src, _) = getSource(x.s)
                 
                 let ret = doParse(src, isFile=false)
                 if unlikely(hadAttr("data")):
