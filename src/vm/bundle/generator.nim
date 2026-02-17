@@ -217,6 +217,15 @@ proc analyzeBlock(conf: BundleConfig, filename: string, bl: ValueArray) =
                     if (let symv = Syms.getOrDefault(aliased.name.s, nil); not symv.isNil):
                         if symv.isStdlibSymbol():
                             conf.symbols.add(aliased.name.s)
+                
+                if item.m == sharp:
+                    conf.symbols.add("dictionary")
+                    if i+1 < bl.len and i+2 < bl.len:
+                        let nextItem = bl[i+1]
+                        let afterNextItem = bl[i+2]
+                        if afterNextItem.kind != Null and nextItem.isRelativeCall():
+                            let fname = relativePathTo(afterNextItem.s)
+                            conf.files[conf.cleanedPath(fname)] = readFile(fname)
 
             of Inline, Block:
                 conf.analyzeBlock(filename, item.a)
