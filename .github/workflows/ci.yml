@@ -125,4 +125,5 @@ jobs:
                     # if ! arturo tools/unitt-tester.art; then
                     #     exit 1
                     # fi
+                    :
                 fi
