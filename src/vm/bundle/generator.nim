@@ -267,6 +267,10 @@ proc analyzeFile(conf: BundleConfig, filename: string) =
         conf.analyzeBlock(filename, doParse(filename, isFile=true).a)
 
 proc addImplicit(syms: var seq[string]) =
+    # TODO(bundle/generator) Quantity values require `to`
+    #  but it's not currently handled.
+    #  we should probably add it as an implicit symbol no matter what(?)
+    #  labels: bundler,bug
     if syms.contains("define"):
         syms.add(@["ensure", "function", "if", "greater?", "equal?", "return", "neg", "to"])
 
