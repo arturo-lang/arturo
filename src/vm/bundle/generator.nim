@@ -201,11 +201,17 @@ proc analyzeBlock(conf: BundleConfig, filename: string, bl: ValueArray) =
                         if afterNextItem.kind != Null and nextItem.isRelativeCall():
                             let fname = relativePathTo(afterNextItem.s)
                             conf.files[conf.cleanedPath(fname)] = readFile(fname)
+                            let (_, _, ext) = splitFile(fname)
+                            if ext == ".art":
+                                conf.analyzeFile(fname)
        
                     elif item.s == DoCall:
                         if afterNextItem.kind != Null and nextItem.isRelativeCall():
                             let fname = relativePathTo(afterNextItem.s)
                             conf.files[conf.cleanedPath(fname)] = readFile(fname)
+                            let (_, _, ext) = splitFile(fname)
+                            if ext == ".art":
+                                conf.analyzeFile(fname)
 
                     elif item.s == DictionaryCall:
                         if afterNextItem.kind != Null and nextItem.isRelativeCall():
