@@ -123,7 +123,7 @@ jobs:
                     if ! arturo tools/unitt-tester.art; then
                         echo $CWD
                         ls -lart .unitt/
-                        cat C:\Users\runneradmin\.arturo\packages\bin\unitt.bat
+                        cat C:\\Users\\runneradmin\\.arturo\\packages\\bin\\unitt.bat
                         exit 1
                     fi
                 fi
