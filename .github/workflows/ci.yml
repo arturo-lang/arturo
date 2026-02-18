@@ -113,8 +113,6 @@ jobs:
                 cd $GITHUB_WORKSPACE/arturo 
                 git clone https://github.com/arturo-lang/examples.git examples
 
-                ls -a
-
                 arturo -v
                 if ! arturo tools/tester.art; then
                     exit 1
