@@ -670,6 +670,16 @@ func Error_OperationNotPermitted*(operation: string) =
             not permitted in online playground
         """ ~~ @[operation]
 
+func Error_UnsupportedFeature*(feature: string, context: string) =
+    panic:
+        toError VMErr, """
+            Cannot perform:
+                _$#_
+                
+            Functionality not available 
+            in $#
+        """ ~~ @[feature, context]
+
 #------------------------
 # UI Errors
 #------------------------
