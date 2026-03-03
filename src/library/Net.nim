@@ -172,6 +172,7 @@ proc defineModule*(moduleName: string) =
                     smtpConn.connect(config["server"].s, Port 465)
                     smtpConn.auth(config["username"].s, config["password"].s)
                     smtpConn.sendmail(config["username"].s, @[recipient], $mesg)
+                    smtpConn.close()
 
         # TODO(Net\request) could it work for Web/JS builds?
         #  it could easily be a hidden Ajax request
