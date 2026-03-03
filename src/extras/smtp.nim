@@ -45,7 +45,7 @@
 ## For SSL support this module relies on OpenSSL. If you want to
 ## enable SSL, compile with `-d:ssl`.
 
-import net, strutils, strtabs, base64, options, sequtils, strformat
+import net, strutils, strtabs, base64, sequtils, strformat
 import asyncnet, asyncdispatch
 
 when defined(nimPreviewSlimSystem):
@@ -118,7 +118,8 @@ proc toEmail(value: string | Email): Email =
     value
 
 proc createMessage*[T: Email | string](
-    mSubject, mBody: string,
+    mSubject: string,
+    mBody: string,
     sender: T,
     mTo: seq[T] = @[],
     mCc: seq[T] = @[],
@@ -167,8 +168,12 @@ proc createMessage*(mSubject, mBody: string, mTo, mCc: seq[string],
   for n, v in items(otherHeaders):
     result.msgOtherHeaders[n] = v
 
-proc createMessage*(mSubject, mBody: string, mTo,
-                    mCc: seq[string] = @[]): Message {.deprecated: "use `createMessage` overloads with a `sender`".} =
+proc createMessage*(
+  mSubject: string, 
+  mBody: string,
+  mTo: seq[string] = @[],
+  mCc: seq[string] = @[]
+): Message {.deprecated: "use `createMessage` overloads with a `sender`".} =
   ## Alternate version of the above.
   ##
   ## You need to make sure that `mSubject`, `mTo` and `mCc` don't contain
