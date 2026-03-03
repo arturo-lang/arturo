@@ -426,7 +426,7 @@ proc defineModule*(moduleName: string) =
                 # get parameters
                 let routes = x
                 var port = 18966
-                var verbose = not (hadAttr("verbose"))
+                var verbose = not (hadAttr("silent"))
                 if checkAttr("port"):
                     port = aPort.i
             
