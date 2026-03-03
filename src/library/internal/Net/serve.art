@@ -76,23 +76,29 @@ serveInternal: function [Request][
 
     getServerResponse: [
         loop keys ROUTES\[Request\method] 'pattern [
-            if not? empty? match Request\path "^"++pattern++"$" [
-                action: ROUTES\[Request\method]\[pattern]
+            loop keys ROUTES\[Request\method] 'pattern [
+                matched?: (regex? pattern)? 
+                    -> not? empty? match Request\path ("^" ++ (to :string pattern) ++ "$")
+                    -> pattern = Request\path
 
-                if throws? [
-                    (block? var'action)? [
-                        serverResponse\body: do action
-                    ][
-                        serverResponse\body: callActionFunction var'action pattern
+                if matched? [
+                    action: ROUTES\[Request\method]\[pattern]
+
+                    if throws? [
+                        (block? var'action)? [
+                            serverResponse\body: do action
+                        ][
+                            serverResponse\body: callActionFunction var'action pattern
+                        ]
+                        if null? serverResponse\status ->
+                            serverResponse\status: 200 ; OK
+                    ] [
+                        serverResponse\body: "Internal Server Error"
+                        serverResponse\status: 500
                     ]
-                    if null? serverResponse\status ->
-                        serverResponse\status: 200 ; OK
-                ] [
-                    serverResponse\body: "Internal Server Error"
-                    serverResponse\status: 500
-                ]
 
-                break
+                    break
+                ]
             ]
         ]
     ]
