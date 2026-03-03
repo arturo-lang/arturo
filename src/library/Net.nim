@@ -167,7 +167,7 @@ proc defineModule*(moduleName: string) =
                     #  perhaps, this could be also done in a more "templated" way; at least, for Config values
                     #  labels: library, bug
 
-                    var mesg = createMessage(subject, message, @[recipient])
+                    var mesg = createMessage(subject, message, sender=config["username"].s, mTo= @[recipient])
                     let smtpConn = newSmtp(useSsl = true, debug=true)
                     smtpConn.connect(config["server"].s, Port 465)
                     smtpConn.auth(config["username"].s, config["password"].s)
