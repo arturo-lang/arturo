@@ -456,10 +456,12 @@ proc defineModule*(moduleName: string) =
 
                         # get query components, if any
                         if reqPath.contains("?"):
-                            let parts = reqPath.split("?")
-                            reqPath = parts[0]
+                            let parts = reqPath.split("?", maxsplit=1)
+                            reqPath = decodeUrl(parts[0])
                             for k,v in decodeQuery(parts[1]):
                                 reqQuery[k] = newString(v)
+                        else:
+                            reqPath = decodeUrl(reqPath)
 
                         # carefully parse request body, if any
                         var reqBodyV: Value
