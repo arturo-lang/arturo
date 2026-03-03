@@ -28,8 +28,6 @@ serveInternal: function [Request][
         benchmark: 0.0
     ]
 
-    customServerStatus: false
-
     emit: function [str][
         servedContent: "text/plain"
 
