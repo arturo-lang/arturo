@@ -483,7 +483,8 @@ proc defineModule*(moduleName: string) =
                                 "uri": newString(initialReqPath),
                                 "body": reqBodyV,
                                 "query": newDictionary(reqQuery),
-                                "headers": newStringDictionary(reqHeaders, collapseBlocks=true)
+                                "headers": newStringDictionary(reqHeaders, collapseBlocks=true),
+                                "ip": newString(req.ip())
                             }.toOrderedTable)
 
                         # the response
