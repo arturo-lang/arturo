@@ -1,0 +1,7 @@
+tests: [
+    helpers/combinatorics.nim
+]
+
+loop tests 'test [
+    execute.directly ~{nim --skipParentCfg --verbosity: 0 --warning:all:off --hint:all:off --path: src r src/|test|}
+]
