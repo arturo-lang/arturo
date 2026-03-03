@@ -90,6 +90,8 @@ serveInternal: function [Request][
                     if null? serverResponse\status ->
                         serverResponse\status: 200 ; OK
                 ] -> serverResponse\status: 500 ; Internal Server Error
+
+                break
             ]
         ]
     ]
