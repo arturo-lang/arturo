@@ -421,3 +421,4 @@ proc close*(smtp: Smtp | AsyncSmtp) {.multisync.} =
   ## Disconnects from the SMTP server and closes the socket.
   await smtp.debugSend("QUIT\c\L")
   smtp.sock.close()
+  
