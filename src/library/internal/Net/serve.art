@@ -87,7 +87,10 @@ serveInternal: function [Request][
                     ]
                     if null? serverResponse\status ->
                         serverResponse\status: 200 ; OK
-                ] -> serverResponse\status: 500 ; Internal Server Error
+                ] [
+                    serverResponse\body: "Internal Server Error"
+                    serverResponse\status: 500
+                ]
 
                 break
             ]
@@ -96,8 +99,10 @@ serveInternal: function [Request][
 
     serverResponse\benchmark: benchmark.get getServerResponse
 
-    if null? serverResponse\status ->
-        serverResponse\status: 404 ; Not Found
+    if null? serverResponse\status [
+        serverResponse\body: "Not Found"
+        serverResponse\status: 404
+    ]
 
     return serverResponse
 ]
