@@ -52,6 +52,10 @@ jobs:
                                                 'bash'        }}
 
         steps:
+            #---------------------------
+            # Build
+            #---------------------------
+
             - name: Checkout Arturo sources
               uses: actions/checkout@v4
               with:
@@ -90,6 +94,42 @@ jobs:
                 create_artifact: 'true'
                 artifact_version: ${{ steps.version.outputs.VERSION }}
 
+            #---------------------------
+            # Nim-level tests
+            #---------------------------
+
+            - name: Install Nim (Windows)
+              if: matrix.os == 'windows' && matrix.mode != 'mini'
+              shell: msys2 {0}
+              run: |
+                    mkdir nim
+                    curl -L https://nim-lang.org/download/nim-2.2.6_x64.zip -o nim.zip
+                    7z x nim.zip -onim
+                    rm nim.zip
+
+            - name: Install Nim (FreeBSD)
+              if: matrix.os == 'freebsd' && matrix.mode != 'mini'
+              shell: freebsd {0}
+              run: |
+                pkg install -y nim git zip
+
+            - if: matrix.os != 'web' && matrix.mode != 'mini'
+              name: Run Nim-level tests
+              run: |
+                cd $GITHUB_WORKSPACE/arturo
+
+                if [ "${{ matrix.os }}" = "windows" ]; then
+                    export PATH="${{ github.workspace }}/nim/nim-2.2.6/bin":$PATH
+                elif [ "${{ matrix.os }}" = "freebsd" ]; then
+                    export PATH="/usr/local/nim/bin:$PATH"
+                fi
+
+                arturo tools/nimtester.art
+            
+            #---------------------------
+            # Arturo unit-tests
+            #---------------------------
+
             - name: Check if tests should be skipped
               id: check_skip
               shell: bash
@@ -107,48 +147,21 @@ jobs:
                     echo "skip=false" >> "$GITHUB_OUTPUT"
                 fi
 
-            - name: Install Nim (Windows)
-              if: matrix.os == 'windows'
-              shell: msys2 {0}
-              run: |
-                    mkdir nim
-                    curl -L https://nim-lang.org/download/nim-2.2.6_x64.zip -o nim.zip
-                    7z x nim.zip -onim
-                    rm nim.zip
 
-            - name: Install Nim (FreeBSD)
-              if: matrix.os == 'freebsd'
-              shell: freebsd {0}
+            - if: env.arturoCanRun == 'true' && steps.check_skip.outputs.skip != 'true'
+              name: Run tests
               run: |
-                pkg install -y nim git zip
+                cd $GITHUB_WORKSPACE/arturo 
+                git clone https://github.com/arturo-lang/examples.git examples
 
-            - if: matrix.os != 'web' && matrix.mode != 'mini'
-              name: Run Nim-level tests
-              run: |
-                cd $GITHUB_WORKSPACE/arturo
-
-                if [ "${{ matrix.os }}" = "windows" ]; then
-                    export PATH="${{ github.workspace }}/nim/nim-2.2.6/bin":$PATH
-                elif [ "${{ matrix.os }}" = "freebsd" ]; then
-                    export PATH="/usr/local/nim/bin:$PATH"
+                arturo -v
+                if ! arturo tools/tester.art; then
+                    exit 1
                 fi
 
-                nim --skipParentCfg --verbosity: 0 --warning:all:off --hint:all:off --path: src r src/helpers/combinatorics.nim
-
-            # - if: env.arturoCanRun == 'true' && steps.check_skip.outputs.skip != 'true'
-            #   name: Run tests
-            #   run: |
-            #     cd $GITHUB_WORKSPACE/arturo 
-            #     git clone https://github.com/arturo-lang/examples.git examples
-
-            #     arturo -v
-            #     if ! arturo tools/tester.art; then
-            #         exit 1
-            #     fi
-
-            #     if [ "${{ matrix.mode }}" != "mini" ]; then
-            #         arturo -p install unitt
-            #         if ! arturo tools/unitt-tester.art; then
-            #             exit 1
-            #         fi
-            #     fi
+                if [ "${{ matrix.mode }}" != "mini" ]; then
+                    arturo -p install unitt
+                    if ! arturo tools/unitt-tester.art; then
+                        exit 1
+                    fi
+                fi
