@@ -107,6 +107,11 @@ jobs:
                     echo "skip=false" >> "$GITHUB_OUTPUT"
                 fi
 
+            - name: Run Nim-level tests
+              run: |
+                cd $GITHUB_WORKSPACE/arturo
+                nim --skipParentCfg --verbosity: 0 --warning:all:off --hint:all:off --path: src r src/helpers/combinatorics.nim
+
             - if: env.arturoCanRun == 'true' && steps.check_skip.outputs.skip != 'true'
               name: Run tests
               run: |
