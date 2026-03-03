@@ -381,23 +381,43 @@ proc defineModule*(moduleName: string) =
             },
             returns     = {Nothing},
             example     = """
-            serve .port:18966 [
-                
-                GET "/"                     [ "This is the homepage" ]
-                GET "/post"                 $[id][ 
-                                                emit.html ~"This is the post with id: |id|" 
-                                            ]                
-                POST "/getinfo"             $[id][ 
-                                                emit.json write.json ø #[
-                                                    i: id
-                                                    msg: "This is some info"
-                                                ] 
-                                            ]
+            serve .port: 9000 [
+
+                ; simple static routes
+                GET "/"             -> "Welcome to my site!"
+                GET "/about"        -> "About us"
+
+                ; regex route with a named capture group
+                GET {//user/(?<name>[a-z]+)/}  $[name][ 
+                    emit.html ~"Hello, |name|!" 
+                ]
+
+                ; POST with JSON body
+                POST "/login"  $[username, password][
+                    emit.json write.json #[
+                        msg: ~"Welcome back, |username|!"
+                    ] ø
+                ]
+
+                GET {//.*/}         -> "catch-all fallback"
             ]
-            
-            ; run the app and go to localhost:18966 - that was it!
-            ; the app will respond to GET requests to "/" or "/post?id=..."
-            ; and also POST requests to "/getinfo" with an 'id' parameter
+
+            ; $> curl localhost:9000/
+            ; Welcome to my site!%
+
+            ; $> curl localhost:9000/about
+            ; About us%
+
+            ; $> curl localhost:9000/user/john
+            ; Hello, john!%
+
+            ; $> curl -X POST localhost:9000/login -d "username=admin&password=secret"
+            ; {
+            ;     "msg": "Welcome back, admin!"
+            ; }%
+
+            ; $>  curl localhost:9000/something-else
+            ; catch-all fallback%
             ..........
             serve $[req][
                 inspect req
