@@ -167,11 +167,12 @@ proc defineModule*(moduleName: string) =
                     #  perhaps, this could be also done in a more "templated" way; at least, for Config values
                     #  labels: library, bug
 
-                    var mesg = createMessage(subject, message, @[recipient])
+                    var mesg = createMessage(subject, message, sender=config["username"].s, mTo= @[recipient])
                     let smtpConn = newSmtp(useSsl = true, debug=true)
                     smtpConn.connect(config["server"].s, Port 465)
                     smtpConn.auth(config["username"].s, config["password"].s)
                     smtpConn.sendmail(config["username"].s, @[recipient], $mesg)
+                    smtpConn.close()
 
         # TODO(Net\request) could it work for Web/JS builds?
         #  it could easily be a hidden Ajax request
@@ -261,7 +262,7 @@ proc defineModule*(moduleName: string) =
                 var proxy: Proxy = nil
                 if checkAttr("proxy"):
                     proxy = newProxy(aProxy.s)
-
+ 
                 var body: string
                 var multipart: MultipartData = nil
                 if meth != HttpGet:
@@ -380,23 +381,43 @@ proc defineModule*(moduleName: string) =
             },
             returns     = {Nothing},
             example     = """
-            serve .port:18966 [
-                
-                GET "/"                     [ "This is the homepage" ]
-                GET "/post"                 $[id][ 
-                                                send.html ~"This is the post with id: |id|" 
-                                            ]                
-                POST "/getinfo"             $[id][ 
-                                                send.json write.json ø #[
-                                                    i: id
-                                                    msg: "This is some info"
-                                                ] 
-                                            ]
+            serve .port: 9000 [
+
+                ; simple static routes
+                GET "/"             -> "Welcome to my site!"
+                GET "/about"        -> "About us"
+
+                ; regex route with a named capture group
+                GET {//user/(?<name>[a-z]+)/}  $[name][ 
+                    emit.html ~"Hello, |name|!" 
+                ]
+
+                ; POST with JSON body
+                POST "/login"  $[username, password][
+                    emit.json write.json #[
+                        msg: ~"Welcome back, |username|!"
+                    ] ø
+                ]
+
+                GET {//.*/}         -> "catch-all fallback"
             ]
-            
-            ; run the app and go to localhost:18966 - that was it!
-            ; the app will respond to GET requests to "/" or "/post?id=..."
-            ; and also POST requests to "/getinfo" with an 'id' parameter
+
+            ; $> curl localhost:9000/
+            ; Welcome to my site!%
+
+            ; $> curl localhost:9000/about
+            ; About us%
+
+            ; $> curl localhost:9000/user/john
+            ; Hello, john!%
+
+            ; $> curl -X POST localhost:9000/login -d "username=admin&password=secret"
+            ; {
+            ;     "msg": "Welcome back, admin!"
+            ; }%
+
+            ; $>  curl localhost:9000/something-else
+            ; catch-all fallback%
             ..........
             serve $[req][
                 inspect req
@@ -426,7 +447,7 @@ proc defineModule*(moduleName: string) =
                 # get parameters
                 let routes = x
                 var port = 18966
-                var verbose = not (hadAttr("verbose"))
+                var verbose = not (hadAttr("silent"))
                 if checkAttr("port"):
                     port = aPort.i
             
@@ -455,10 +476,12 @@ proc defineModule*(moduleName: string) =
 
                         # get query components, if any
                         if reqPath.contains("?"):
-                            let parts = reqPath.split("?")
-                            reqPath = parts[0]
+                            let parts = reqPath.split("?", maxsplit=1)
+                            reqPath = decodeUrl(parts[0])
                             for k,v in decodeQuery(parts[1]):
                                 reqQuery[k] = newString(v)
+                        else:
+                            reqPath = decodeUrl(reqPath)
 
                         # carefully parse request body, if any
                         var reqBodyV: Value
@@ -483,7 +506,8 @@ proc defineModule*(moduleName: string) =
                                 "uri": newString(initialReqPath),
                                 "body": reqBodyV,
                                 "query": newDictionary(reqQuery),
-                                "headers": newStringDictionary(reqHeaders, collapseBlocks=true)
+                                "headers": newStringDictionary(reqHeaders, collapseBlocks=true),
+                                "ip": newString(req.ip())
                             }.toOrderedTable)
 
                         # the response
@@ -530,8 +554,16 @@ proc defineModule*(moduleName: string) =
                         ).join("\c\L")
 
                         # send response
+                        let bodyStr = if responseDict["body"].kind == Binary:
+                                var s = newString(responseDict["body"].n.len)
+                                if s.len > 0:
+                                    copyMem(addr s[0], addr responseDict["body"].n[0], s.len)
+                                s
+                            else:
+                                responseDict["body"].s
+
                         req.respond(newServerResponse(
-                            responseDict["body"].s,
+                            bodyStr,
                             HttpCode(responseDict["status"].i),
                             headerStr
                         ))

@@ -47,6 +47,9 @@ import vm/values/custom/[vbinary, vrange]
 
 import vm/errors as err
 
+when defined(BUNDLE):
+    import vm/bundle/resources
+
 #=======================================
 # Definitions
 #=======================================
@@ -213,7 +216,11 @@ proc defineModule*(moduleName: string) =
                         push(newBlock(arr))
                     elif xKind==String:
                         let stop = SP
-                        let (_{.inject.}, tp) = getSource(x.s)
+
+                        when defined(BUNDLE):
+                            let (_{.inject.}, tp) = (getBundledResource(x.s)[0], FileData)
+                        else:
+                            let (_{.inject.}, tp) = getSource(x.s)
 
                         if tp!=TextData:
                             execUnscoped(doParse(x.s, isFile=false))
@@ -464,7 +471,10 @@ proc defineModule*(moduleName: string) =
                 else:
                     dict = execDictionary(x)
             elif xKind==String:
-                let (src, tp) = getSource(x.s)
+                when defined(BUNDLE):
+                    let (src, tp) = (getBundledResource(x.s)[0], FileData)
+                else:
+                    let (src, tp) = getSource(x.s)
 
                 if tp!=TextData:
                     dict = execDictionary(doParse(src, isFile=false))#, isIsolated=true)

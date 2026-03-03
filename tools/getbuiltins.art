@@ -10,13 +10,18 @@ loop symbols [k,v][
 ;print "-here1"
 builtins1: sort builtins1
 builtins2: sort builtins2 -- ["builtins1" "builtins2"]
+
+constants: filter builtins2 [k][
+   function? var k
+]
+
+builtins2: builtins2 -- constants
 ;print "-here2"
-switch arg\0 = "1" [
-    ;print "ARG 0 = 1"
-    prints [join.with:"|" builtins1]
-][
-    ;print "ARG 0 = 2"
-    prints [join.with:"|" builtins2]
+
+case arg\0 [
+    "1" -> print [join.with:"|" builtins1]
+    "2" -> print [join.with:"|" builtins2]
+    "3" -> print [join.with:"|" constants]
 ]
 
 ;print ["total:" (size builtins1) + (size builtins2)]

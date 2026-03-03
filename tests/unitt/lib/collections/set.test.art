@@ -104,27 +104,27 @@ suite "set - object" [
 suite "set - store" [
 
     test "mutates store entries" [
-        store: store "test.db"
-        set store 'name "John"
-        assert -> "John" = store\name
+        s: store.json "test.json"
+        set s 'name "John"
+        assert -> "John" = s\name
 
-        set store 'surname "Doe"
-        assert -> "Doe" = store\surname
+        set s 'surname "Doe"
+        assert -> "Doe" = s\surname
 
-        set store 'age 36
-        assert -> 36 = get store 'age
+        set s 'age 36
+        assert -> 36 = get s 'age
     ]
 
     test "supports numeric keys" [
-        store: store "test.db"
-        set store 0 "John"
-        assert -> "John" = store\0
+        s: store.json "test.json"
+        set s 0 "John"
+        assert -> "John" = s\0
 
-        store\[1]: "Doe"
-        assert -> "Doe" = store\1
+        s\[1]: "Doe"
+        assert -> "Doe" = s\1
 
-        store\2: 36
-        assert -> 36 = get store '2
+        s\[2]: 36
+        assert -> 36 = get s '2
     ]
 
 ]

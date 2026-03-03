@@ -2,7 +2,6 @@
 !/bin/placeholder
 /.cache
 .unitt/
-/test*.*
 .sass-cache
 benchmark_results*
 profile_results.txt
