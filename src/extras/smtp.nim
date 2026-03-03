@@ -45,7 +45,7 @@
 ## For SSL support this module relies on OpenSSL. If you want to
 ## enable SSL, compile with `-d:ssl`.
 
-import net, strutils, strtabs, base64, options, sequtils, strformat
+import net, strutils, strtabs, base64, sequtils, strformat
 import asyncnet, asyncdispatch
 
 when defined(nimPreviewSlimSystem):
@@ -421,4 +421,3 @@ proc close*(smtp: Smtp | AsyncSmtp) {.multisync.} =
   ## Disconnects from the SMTP server and closes the socket.
   await smtp.debugSend("QUIT\c\L")
   smtp.sock.close()
-  
