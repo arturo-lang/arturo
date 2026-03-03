@@ -76,7 +76,6 @@ serveInternal: function [Request][
 
     getServerResponse: [
         loop keys ROUTES\[Request\method] 'pattern [
-            print ["pattern:" pattern "type:" type pattern]
             matched?: (regex? pattern)? 
                 -> not? empty? match Request\path ("^" ++ (to :string pattern) ++ "$")
                 -> pattern = Request\path
