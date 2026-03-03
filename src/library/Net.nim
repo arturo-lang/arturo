@@ -384,10 +384,10 @@ proc defineModule*(moduleName: string) =
                 
                 GET "/"                     [ "This is the homepage" ]
                 GET "/post"                 $[id][ 
-                                                send.html ~"This is the post with id: |id|" 
+                                                emit.html ~"This is the post with id: |id|" 
                                             ]                
                 POST "/getinfo"             $[id][ 
-                                                send.json write.json ø #[
+                                                emit.json write.json ø #[
                                                     i: id
                                                     msg: "This is some info"
                                                 ] 
