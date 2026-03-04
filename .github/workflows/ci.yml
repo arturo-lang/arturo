@@ -110,7 +110,7 @@ jobs:
                 cd $GITHUB_WORKSPACE/arturo
 
                 if [ "${{ matrix.os }}" = "windows" ]; then
-                    export PATH="${{ github.workspace }}/nim/nim-2.2.6/bin":$PATH
+                    export PATH="${{ github.workspace }}/nim/nim-2.2.8/bin":$PATH
                 elif [ "${{ matrix.os }}" = "freebsd" ]; then
                     export PATH="/usr/local/nim/bin:$PATH"
                 fi
