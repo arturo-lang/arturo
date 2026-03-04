@@ -34,7 +34,7 @@ when not defined(NOWEBVIEW):
 when defined(CLIPBOARD):
     import helpers/clipboard
 
-when not defined(NODIALOGS):
+when defined(DIALOGS):
     import helpers/dialogs
 
 #=======================================
@@ -55,7 +55,7 @@ proc defineModule*(moduleName: string) =
     # Functions
     #----------------------------
 
-    when not defined(NODIALOGS):
+    when defined(DIALOGS):
         
         builtin "alert",
             alias       = unaliased,
@@ -109,7 +109,7 @@ proc defineModule*(moduleName: string) =
                 #=======================================================
                 setClipboard(x.s)
 
-    when not defined(NODIALOGS):
+    when defined(DIALOGS):
 
         builtin "dialog",
             alias       = unaliased, 

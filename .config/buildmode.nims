@@ -2,7 +2,6 @@
 {. push used .}
 
 proc noDepencenciesConfig() =
-    --define:NODIALOGS
     --define:NOWEBVIEW
 
 proc miniBuildConfig() =
@@ -39,6 +38,7 @@ proc fullBuildConfig() =
     --define:DOCGEN
 
     --define:CLIPBOARD
+    --define:DIALOGS
     --define:PARSERS
     --define:SQLITE
 
