@@ -38,10 +38,6 @@ proc fullBuildConfig() =
     --define:SQLITE
     --define:WEBVIEW
 
-proc docgenBuildConfig() =
-    fullBuildConfig()
-    --define:DOCGEN
-
 proc bundleConfig() =
     --define:BUNDLE
     #--define:NOERRORLINES
