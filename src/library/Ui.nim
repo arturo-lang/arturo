@@ -31,7 +31,7 @@ when not defined(NOWEBVIEW):
 
     import vm/[errors, exec, parse, values/custom/verror]
 
-when not defined(NOCLIPBOARD):
+when defined(CLIPBOARD):
     import helpers/clipboard
 
 when not defined(NODIALOGS):
@@ -91,7 +91,7 @@ proc defineModule*(moduleName: string) =
 
                 showAlertDialog(x.s, y.s, alertIcon)
 
-    when not defined(NOCLIPBOARD):
+    when defined(CLIPBOARD):
 
         builtin "clip",
             alias       = unaliased, 
@@ -212,7 +212,7 @@ proc defineModule*(moduleName: string) =
                 else:
                     push newLogical(getBooleanDialogResult(popupType, res))
 
-    when not defined(NOCLIPBOARD):
+    when defined(CLIPBOARD):
 
         builtin "unclip",
             alias       = unaliased, 
