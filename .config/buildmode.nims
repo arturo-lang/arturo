@@ -4,7 +4,6 @@
 proc noDepencenciesConfig() =
     --define:NOCLIPBOARD
     --define:NODIALOGS
-    --define:NOSQLITE
     --define:NOWEBVIEW
 
 proc miniBuildConfig() =
@@ -41,6 +40,7 @@ proc fullBuildConfig() =
     --define:DOCGEN
 
     --define:PARSERS
+    --define:SQLITE
 
 proc docgenBuildConfig() =
     fullBuildConfig()
