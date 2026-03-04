@@ -3,11 +3,9 @@
 
 proc miniBuildConfig() =
     --define:MINI
-    noDepencenciesConfig()
 
 proc webBuildConfig() =
     --define:WEB
-    noDepencenciesConfig()
 
 proc fullBuildConfig() =
     --define:GMP
