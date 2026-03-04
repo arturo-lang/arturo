@@ -22,7 +22,7 @@
 when not defined(MINI):
     import vm/lib
 
-when not defined(NOWEBVIEW):
+when defined(WEBVIEW):
     import algorithm, hashes, os, tables
 
     import helpers/objects
@@ -41,7 +41,7 @@ when defined(DIALOGS):
 # Variables
 #=======================================
 
-when (not defined(WEB)) and not defined(NOWEBVIEW):
+when (not defined(WEB)) and defined(WEBVIEW):
     var
         ActiveWindow: Value = VNULL
 
@@ -233,7 +233,7 @@ proc defineModule*(moduleName: string) =
                 #=======================================================
                 push newString(getClipboard())
 
-    when not defined(NOWEBVIEW):
+    when defined(WEBVIEW):
 
         builtin "webview",
             alias       = unaliased, 
