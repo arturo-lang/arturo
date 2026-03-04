@@ -1,4 +1,4 @@
-tests: select list "src/helpers" => [suffix? & ".nim"]
+tests: sort select list "src/helpers" => [suffix? & ".nim"]
 'tests -- [
     "src/helpers/js.nim"
 ]
