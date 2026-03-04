@@ -1,5 +1,6 @@
 tests: sort select list "src/helpers" => [suffix? & ".nim"]
 'tests -- [
+    "src/helpers/bignums.nim",
     "src/helpers/js.nim"
 ]
 
