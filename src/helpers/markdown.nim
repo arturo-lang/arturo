@@ -14,7 +14,7 @@
 #  Which of the libraries are we using in the end? What are the pros and cons of each one? Let's benchmark it!
 #  labels: helpers, 3rd-party, benchmark, unit-test
 
-when not defined(NOPARSERS):
+when defined(PARSERS):
     when defined(USE_NIM_MARKDOWN):
         import extras/markdown
     else:
@@ -26,7 +26,7 @@ import vm/values/value
 # Methods
 #=======================================
 
-when not defined(NOPARSERS):
+when defined(PARSERS):
 
     when defined(USE_NIM_MARKDOWN):
         proc parseMarkdownInput*(input: string): Value =

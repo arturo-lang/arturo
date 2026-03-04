@@ -4,7 +4,6 @@
 proc noDepencenciesConfig() =
     --define:NOCLIPBOARD
     --define:NODIALOGS
-    --define:NOPARSERS
     --define:NOSQLITE
     --define:NOWEBVIEW
 
@@ -40,6 +39,8 @@ proc fullBuildConfig() =
         --passL:"-Wl,-headerpad_max_install_names"
     --define:ssl
     --define:DOCGEN
+
+    --define:PARSERS
 
 proc docgenBuildConfig() =
     fullBuildConfig()

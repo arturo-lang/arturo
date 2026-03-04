@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-when not defined(NOPARSERS):
+when defined(PARSERS):
     import extras/htmlparser
     import strtabs, tables, xmltree
 
@@ -20,7 +20,7 @@ import vm/values/value
 # Methods
 #=======================================
 
-when not defined(NOPARSERS):
+when defined(PARSERS):
     # TODO(Helpers/xml) re-implement HTML parsing?
     #  Same as with `parseXMLNode`: we first have to define what this means. Basically, what would an HTML-parsing function normally yield? How are children/nodes/attributes supposed to fit in Arturo's value system: arrays, dictionaries, scalars, etc?
     #  labels: helpers, library, enhancement, bug, open discussion
