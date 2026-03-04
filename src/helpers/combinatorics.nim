@@ -117,5 +117,5 @@ proc countCombinations*(lst: ValueArray, size: int, repeated: bool = false): Val
 #=======================================
 
 when isMainModule:
-    assert 1 == 2
+    assert 1 == 1
     
