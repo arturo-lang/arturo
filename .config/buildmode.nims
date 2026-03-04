@@ -1,9 +1,6 @@
 
 {. push used .}
 
-proc noDepencenciesConfig() =
-    discard
-
 proc miniBuildConfig() =
     --define:MINI
     noDepencenciesConfig()
