@@ -19,7 +19,7 @@ when defined(GMP):
     import extras/gmp
     import extras/mpfr
 
-when not defined(NOSQLITE):
+when defined(SQLITE):
     import extras/db_connector/sqlite3
 
 import os, strutils, tables, times, system
@@ -134,7 +134,7 @@ proc getSystemInfo*(): ValueDict =
             result["deps"].d["gmp"] = newVersion($(gmpVersion))
             result["deps"].d["mpfr"] = newVersion($(mpfr_get_version()))
 
-        when not defined(NOSQLITE):
+        when defined(SQLITE):
             result["deps"].d["sqlite"] = newVersion($(sqlite3.libversion()))
         
     except CatchableError:

@@ -190,7 +190,7 @@ proc `$`*(v: Value): string {.inline.} =
             result &= "(" & fmt("{cast[uint](v.mmain):#X}") & ")"
 
         of Database:
-            when not defined(NOSQLITE):
+            when defined(SQLITE):
                 if v.dbKind==SqliteDatabase: result = fmt("<database>({cast[uint](v.sqlitedb):#X})")
                 #elif v.dbKind==MysqlDatabase: result = fmt("[mysql db] {cast[uint](v.mysqldb):#X}")
         
@@ -457,7 +457,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
             dumpBlockEnd()
 
         of Database     :
-            when not defined(NOSQLITE):
+            when defined(SQLITE):
                 if v.dbKind==SqliteDatabase: stdoutWrite fmt("[sqlite db] {cast[uint](v.sqlitedb):#X}")
                 #elif v.dbKind==MysqlDatabase: stdout.write fmt("[mysql db] {cast[uint](v.mysqldb):#X}")
 
