@@ -8,11 +8,11 @@ ROUTES: #[
 ]
 
 ; route helpers
-GET:    function [pattern, action]-> ROUTES\GET\[pattern]: var'action
-POST:   function [pattern, action]-> ROUTES\POST\[pattern]: var'action
-PUT:    function [pattern, action]-> ROUTES\PUT\[pattern]: var'action
-PATCH:  function [pattern, action]-> ROUTES\PATCH\[pattern]: var'action
-DELETE: function [pattern, action]-> ROUTES\DELETE\[pattern]: var'action
+GET:    function [pattern, action]-> ROUTES\GET\[express pattern]: var'action
+POST:   function [pattern, action]-> ROUTES\POST\[express pattern]: var'action
+PUT:    function [pattern, action]-> ROUTES\PUT\[express pattern]: var'action
+PATCH:  function [pattern, action]-> ROUTES\PATCH\[express pattern]: var'action
+DELETE: function [pattern, action]-> ROUTES\DELETE\[express pattern]: var'action
 
 ; initial route initialization
 initServerInternal: function [serverRoutes][
@@ -27,8 +27,6 @@ serveInternal: function [Request][
         headers: #[]
         benchmark: 0.0
     ]
-
-    customServerStatus: false
 
     emit: function [str][
         servedContent: "text/plain"
@@ -78,26 +76,39 @@ serveInternal: function [Request][
 
     getServerResponse: [
         loop keys ROUTES\[Request\method] 'pattern [
-            if not? empty? match Request\path "^"++pattern++"$" [
+            originalPattern: parse pattern
+
+            matched?: (regex? originalPattern)? 
+                -> not? empty? match Request\path ("^" ++ (to :string originalPattern) ++ "$")
+                -> (to :string originalPattern) = Request\path
+
+            if matched? [
                 action: ROUTES\[Request\method]\[pattern]
 
                 if throws? [
                     (block? var'action)? [
                         serverResponse\body: do action
                     ][
-                        serverResponse\body: callActionFunction var'action pattern
+                        serverResponse\body: callActionFunction var'action originalPattern
                     ]
                     if null? serverResponse\status ->
                         serverResponse\status: 200 ; OK
-                ] -> serverResponse\status: 500 ; Internal Server Error
+                ] [
+                    serverResponse\body: "Internal Server Error"
+                    serverResponse\status: 500
+                ]
+
+                break
             ]
         ]
     ]
 
     serverResponse\benchmark: benchmark.get getServerResponse
 
-    if null? serverResponse\status ->
-        serverResponse\status: 404 ; Not Found
+    if null? serverResponse\status [
+        serverResponse\body: "Not Found"
+        serverResponse\status: 404
+    ]
 
     return serverResponse
 ]
