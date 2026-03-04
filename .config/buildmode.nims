@@ -2,7 +2,6 @@
 {. push used .}
 
 proc noDepencenciesConfig() =
-    --define:NOCLIPBOARD
     --define:NODIALOGS
     --define:NOWEBVIEW
 
@@ -39,6 +38,7 @@ proc fullBuildConfig() =
     --define:ssl
     --define:DOCGEN
 
+    --define:CLIPBOARD
     --define:PARSERS
     --define:SQLITE
 
