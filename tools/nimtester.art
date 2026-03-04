@@ -3,9 +3,16 @@ tests: sort select list "src/helpers" => [suffix? & ".nim"]
     "src/helpers/js.nim"
 ]
 
+print path\current
+
+maxSize: max map tests 'test -> size test
+
+assertHint: "Error: unhandled exception:"
+
 success: true
 loop tests 'test [
-    unless zero? execute.directly.code join split.lines ~{
+    prints [color #gray "Testing:", color #cyan pad.right test maxSize+5]
+    result: execute.code join split.lines ~{
         nim 
         --skipParentCfg 
         --verbosity:0 
@@ -13,9 +20,24 @@ loop tests 'test [
         --hint:all:off 
         --path:src 
         r 
-        |test|
-    } -> success: false
+        |test| 
+        2>&1
+    } 
+
+    (zero? result\code)?[
+        print color #green "OK"
+    ] [
+        errors: result\output | split.lines
+                              | select 'line -> prefix? line assertHint
+                              | map 'line -> replace replace replace line assertHint "" "[AssertionDefect]" "" path\current ""
+                              | join "\n\t" ++ color #red "FAILED"
+
+        errors: "\n\t " ++ (color #red "FAILED") ++ errors
+
+        print errors
+        success: false
+    ]
 ]
 
 unless success ->
-    panic.unstyled "Tests failed"
+    panic.unstyled color #red "\nTests failed"
