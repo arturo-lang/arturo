@@ -3,8 +3,6 @@ tests: sort select list "src/helpers" => [suffix? & ".nim"]
     "src/helpers/js.nim"
 ]
 
-print path\current
-
 maxSize: max map tests 'test -> size test
 
 assertHint: "Error: unhandled exception:"
