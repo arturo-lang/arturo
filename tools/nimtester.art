@@ -1,8 +1,7 @@
 tests: sort select list "src/helpers" => [suffix? & ".nim"]
-'tests -- [
-    "src/helpers/bignums.nim",
-    "src/helpers/js.nim",
-    "src/helpers/windows.nim"
+tests: filter tests 'test [
+    some? ["bignums.nim", "js.nim", "windows.nim"] 'excluded ->
+        contains? test excluded
 ]
 
 maxSize: max map tests 'test -> size test
