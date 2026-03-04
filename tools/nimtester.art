@@ -12,7 +12,7 @@ assertHint: "Error: unhandled exception:"
 success: true
 loop tests 'test [
     prints [color #gray "Testing:", color #cyan pad.right test maxSize+5]
-    result: execute.directly.code join split.lines ~{
+    result: execute.code join split.lines ~{
         nim 
         --skipParentCfg 
         --verbosity:0 
@@ -20,13 +20,8 @@ loop tests 'test [
         --hint:all:off 
         --path:src 
         r 
-        |test|
+        |test| 
     } 
-
-    result: #[
-        code: result,
-        output: "..."
-    ]
 
     (zero? result\code)?[
         print color #green "OK"
