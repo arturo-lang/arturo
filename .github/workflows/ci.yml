@@ -89,6 +89,7 @@ jobs:
                 metadata: ${{ steps.version.outputs.VERSION }}
                 create_artifact: 'true'
                 artifact_version: ${{ steps.version.outputs.VERSION }}
+                release: 'true'
 
             - name: Check if tests should be skipped
               id: check_skip
