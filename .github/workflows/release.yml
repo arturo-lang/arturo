@@ -137,6 +137,7 @@ jobs:
                 support: ${{ matrix.support }}
                 create_artifact: 'true'
                 artifact_version: ${{ needs.Validate.outputs.version }}
+                release: 'true'
 
     Release:
         runs-on: ubuntu-latest
