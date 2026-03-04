@@ -1,7 +1,21 @@
-tests: [
-    helpers/combinatorics.nim
+tests: select list "src/helpers" => [suffix? & ".nim"]
+'tests -- [
+    "src/helpers/js.nim"
 ]
 
+success: true
 loop tests 'test [
-    execute.directly ~{nim --skipParentCfg --verbosity: 0 --warning:all:off --hint:all:off --path: src r src/|test|}
+    unless zero? execute.directly.code join split.lines ~{
+        nim 
+        --skipParentCfg 
+        --verbosity:0 
+        --warning:all:off 
+        --hint:all:off 
+        --path:src 
+        r 
+        |test|
+    } -> success: false
 ]
+
+unless success ->
+    panic.unstyled "Tests failed"
