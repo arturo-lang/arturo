@@ -11,7 +11,7 @@
 #=======================================
 
 
-when not defined(NOPARSERS):
+when defined(PARSERS):
     import sequtils, strtabs, sugar
     import tables, xmlparser, xmltree
 
@@ -21,7 +21,7 @@ import vm/values/value
 # Methods
 #=======================================
 
-when not defined(NOPARSERS):
+when defined(PARSERS):
     # TODO(Helpers/xml) re-implement XML parsing
     #  This `parseXMLNode` supposedly "works", but we first have to define what this means: basically, what would an XML-parsing function normally yield? How are children/nodes/attributes supposed to fit in Arturo's value system: arrays, dictionaries, scalars, etc?
     #  labels: helpers, library, enhancement, bug, open discussion

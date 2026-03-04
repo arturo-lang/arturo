@@ -14,7 +14,7 @@
 
 import std/[tables, times, unicode, setutils]
 
-when not defined(NOSQLITE):
+when defined(SQLITE):
     import extras/db_connector/db_sqlite as sqlite
 
 when defined(WEB):
@@ -250,7 +250,7 @@ type
 
         case kind*: StoreKind:
             of SqliteStore:
-                when not defined(NOSQLITE):
+                when defined(SQLITE):
                     db* : sqlite.DbConn
             else:
                 discard
@@ -337,7 +337,7 @@ type
             of Database:
                 case dbKind*: DatabaseKind:
                     of SqliteDatabase:
-                        when not defined(NOSQLITE):
+                        when defined(SQLITE):
                             sqlitedb*: sqlite.DbConn
                     of MysqlDatabase: discard
                     #mysqldb*: mysql.DbConn

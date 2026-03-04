@@ -25,7 +25,7 @@ when not defined(WEB):
 
     import extras/miniz
  
-    when not defined(NOPARSERS):
+    when defined(PARSERS):
         import helpers/html
         import helpers/markdown
         import helpers/toml
@@ -245,7 +245,7 @@ proc defineModule*(moduleName: string) =
                 "file"  : {String}
             },
             attrs       = 
-                when not defined(NOPARSERS): 
+                when defined(PARSERS): 
                     {
                         "lines"         : ({Logical},"read file lines into block"),
                         "json"          : ({Logical},"read Json into value"),
@@ -319,7 +319,7 @@ proc defineModule*(moduleName: string) =
                         let parsed = doParse(bcode[0], isFile=false).a[0]
                         push(newBytecode(Translation(constants: parsed.a, instructions: bcode[1])))
                     else:
-                        when not defined(NOPARSERS):
+                        when defined(PARSERS):
                             if (hadAttr("toml")):
                                 push(parseTomlString(src))
                             elif (hadAttr("markdown")):

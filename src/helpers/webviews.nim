@@ -13,7 +13,7 @@
 import os, osproc, strutils
 import vm/errors
 
-when not defined(NOWEBVIEW):
+when defined(WEBVIEW):
     import std/json
 
     import extras/webview
@@ -30,7 +30,7 @@ when not defined(NOWEBVIEW):
 # Types
 #=======================================
 
-when not defined(NOWEBVIEW):
+when defined(WEBVIEW):
     type
         WebviewCallKind* = enum
             FunctionCall,
@@ -44,7 +44,7 @@ when not defined(NOWEBVIEW):
 # Variables
 #=======================================
 
-when not defined(NOWEBVIEW):
+when defined(WEBVIEW):
     var
         mainWebview* {.global.}      : Webview
         mainCallHandler* {.global.}  : WebviewCallHandler
@@ -53,7 +53,7 @@ when not defined(NOWEBVIEW):
 # Forward declarations
 #=======================================
 
-when not defined(NOWEBVIEW):
+when defined(WEBVIEW):
     proc getWindow*(w: Webview): Window 
 
 #=======================================
@@ -140,7 +140,7 @@ proc openChromeWindow*(port: int, flags: seq[string] = @[]) =
         if execCmd(command) != 0:
             Error_CompatibleBrowserCouldNotOpenWindow()
 
-when not defined(NOWEBVIEW):
+when defined(WEBVIEW):
 
     # proc startWebView*(content: string): Webview =
     #     result = webview_create(1)

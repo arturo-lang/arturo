@@ -16,7 +16,7 @@
 
 import os, strutils, tables
 
-when not defined(NOSQLITE):
+when defined(SQLITE):
     import extras/db_connector/db_sqlite as sqlite
     import helpers/database
 
@@ -89,7 +89,7 @@ template savePendingStores*(): untyped =
                 store.saveStore()
 
                 if store.kind == SqliteStore:
-                    when not defined(NOSQLITE):
+                    when defined(SQLITE):
                         closeSqliteDb(store.db)
                     else:
                         Error_SqliteDisabled()
@@ -113,7 +113,7 @@ proc saveStore*(store: VStore, one = false, key: string = "") =
         of JsonStore:
             writeToFile(store.path, jsonFromValueDict(store.data, pretty=true))
         of SqliteStore:
-            when not defined(NOSQLITE):
+            when defined(SQLITE):
                 if one:
                     let value = store.data[key]
                     let kind = $(value.kind)
@@ -140,7 +140,7 @@ proc loadStore*(store: VStore, justCreated=false) =
             of JsonStore:
                 store.data = valueFromJson(readFile(store.path)).d
             of SqliteStore:
-                when not defined(NOSQLITE):
+                when defined(SQLITE):
                     store.data = newOrderedTable[string, Value]()
                     for row in store.db.rows(sql("SELECT * FROM store;"), @[]):
                         store.data[row[0]] = valueFromJson(row[2])
@@ -163,7 +163,7 @@ proc createEmptyStoreOnDisk*(store: VStore) =
                 createDir(dir)
             writeToFile(store.path, "{}")
         of SqliteStore:
-            when not defined(NOSQLITE):
+            when defined(SQLITE):
                 discard store.db.execManySqliteDb(@[
                     "DROP TABLE IF EXISTS store;",
                     "CREATE TABLE store (key TEXT, kind TEXT, value JSON NOT NULL);",
@@ -228,7 +228,7 @@ proc initStore*(
     )
 
     if storeKind == SqliteStore:
-        when not defined(NOSQLITE):
+        when defined(SQLITE):
             result.db = openSqliteDb(storePath)
         else:
             Error_SqliteDisabled()
