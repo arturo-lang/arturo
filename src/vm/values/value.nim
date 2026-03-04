@@ -19,7 +19,7 @@ import tables, times, unicode
 when not defined(WEB):
     import net except Socket
 
-when not defined(NOSQLITE):
+when defined(SQLITE):
     import extras/db_connector/db_sqlite as sqlite
     #import db_mysql as mysql
 
@@ -806,7 +806,7 @@ func newBuiltin*(desc: sink string, modl: sink string, line: int, ar: int8, ag: 
         result.info.example = exa
         result.info.line = line
 
-when not defined(NOSQLITE):
+when defined(SQLITE):
     proc newDatabase*(db: sqlite.DbConn): Value {.inline.} =
         ## create Database value from DbConn
         Value(kind: Database, dbKind: SqliteDatabase, sqlitedb: db)
@@ -989,7 +989,7 @@ proc copyValue*(v: Value): Value {.inline.} =
                 result.info[] = v.info[]
 
         of Database:    
-            when not defined(NOSQLITE):
+            when defined(SQLITE):
                 if v.dbKind == SqliteDatabase: result = newDatabase(v.sqlitedb)
                 #elif v.dbKind == MysqlDatabase: result = newDatabase(v.mysqldb)
 
@@ -1153,7 +1153,7 @@ func consideredEqual*(x: Value, y: Value): bool {.inline.} =
             return x.trans == y.trans
         of Database:
             if x.dbKind != y.dbKind: return false
-            when not defined(NOSQLITE):
+            when defined(SQLITE):
                 if x.dbKind==SqliteDatabase: return cast[uint](x.sqlitedb) == cast[uint](y.sqlitedb)
                 #elif x.dbKind==MysqlDatabase: return cast[uint](x.mysqldb) == cast[uint](y.mysqldb)
         of Date:
@@ -1275,7 +1275,7 @@ func hash*(v: Value): Hash {.inline.} =
             result = result !& hash(v.mpublic)
 
         of Database:
-            when not defined(NOSQLITE):
+            when defined(SQLITE):
                 if v.dbKind==SqliteDatabase: result = result !& cast[Hash](cast[uint](v.sqlitedb))
                 #elif v.dbKind==MysqlDatabase: result = cast[Hash](cast[uint](v.mysqldb))
 

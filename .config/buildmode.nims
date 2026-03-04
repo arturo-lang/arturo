@@ -1,20 +1,11 @@
 
 {. push used .}
 
-proc noDepencenciesConfig() =
-    --define:NOCLIPBOARD
-    --define:NODIALOGS
-    --define:NOPARSERS
-    --define:NOSQLITE
-    --define:NOWEBVIEW
-
 proc miniBuildConfig() =
     --define:MINI
-    noDepencenciesConfig()
 
 proc webBuildConfig() =
     --define:WEB
-    noDepencenciesConfig()
 
 proc fullBuildConfig() =
     --define:GMP
@@ -41,9 +32,11 @@ proc fullBuildConfig() =
     --define:ssl
     --define:DOCGEN
 
-proc docgenBuildConfig() =
-    fullBuildConfig()
-    --define:DOCGEN
+    --define:CLIPBOARD
+    --define:DIALOGS
+    --define:PARSERS
+    --define:SQLITE
+    --define:WEBVIEW
 
 proc bundleConfig() =
     --define:BUNDLE
