@@ -427,7 +427,7 @@ proc setColumnInfo(columns: var DbColumns; res: PPGresult, L: int32) =
     #columns[i].primaryKey = libpq does not have a function for that
     #columns[i].foreignKey = libpq does not have a function for that
 
-iterator instantRows*(db: DbConn; columns: var DbColumns; query: SqlQuery;
+iterator instantRows*(db: DbConn; columns: var DbColumns; query: SqlQuery|SqlPrepared;
                       args: varargs[string, `$`]): InstantRow
                       {.tags: [ReadDbEffect].} =
   setupSingeRowQuery(db, query, args)
