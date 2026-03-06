@@ -1,0 +1,18 @@
+import {unitt}!
+
+describe "now" [
+
+    it "is approximately now" [
+        current: now
+        expects.be: 'between? @[
+            current
+            before.seconds: 10 now
+            after.seconds: 10 now
+        ]
+    ]
+
+    it "is today day" [ expects.be: 'today? -> now ]
+    it "is not past" [ expects.be: 'not? -> past? now ]
+    it "is not future" [ expects.be: 'not? -> future? now ]
+
+]
