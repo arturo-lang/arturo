@@ -30,17 +30,6 @@ proc defaultConfig() =
         --passL:"-pthread"
     --path:src
 
-
-proc configGMPOnWindows() {.used.} =
-    if "windows" == hostOS:
-        let gccPath = staticExec("pkg-config --libs-only-L gmp")
-                        .strip()
-                        .replace("-L","")
-                        .replace("/lib","/bin")
-                        .normalizedPath()
-        switch "gcc.path", gccPath
-
-
 proc configMimalloc() =
     let
         mimallocPath = projectDir() / "extras" / "mimalloc"
