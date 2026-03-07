@@ -46,13 +46,16 @@ proc configMimalloc() =
         "src"/"extras"/"mimalloc"
  
 
-proc configWinPCRE() =
-    --dynlibOverride:pcre64
-
-proc configUnixPCRE() =
-    --dynlibOverride:pcre
+proc configPCRE() =
+    if defined(windows):
+        --dynlibOverride:pcre64
+    else:
+        --dynlibOverride:pcre
 
 proc configWebkit() =
+    if not (defined(linux) or defined(freebsd)):
+        return
+
     const webkitVersions = ["4.1", "4.0"]
 
     proc getWebkitVersion(): string =
@@ -79,33 +82,25 @@ proc configWebkit() =
 
     switch "define", "webkitVersion=" & getWebkitVersion()
 
-proc configWinSSL() =
-    --define:"noOpenSSLHacks"
-    --define:"sslVersion:("
-    --dynlibOverride:"ssl-"
-    --dynlibOverride:"crypto-"
+proc configSSL() =
+    if not defined(ssl):
+        return
 
-proc configUnixSSL() =
-    --dynlibOverride:ssl
-    --dynlibOverride:crypto
+    if defined(windows):
+        --define:"noOpenSSLHacks"
+        --define:"sslVersion:("
+        --dynlibOverride:"ssl-"
+        --dynlibOverride:"crypto-"
+    else:
+        --dynlibOverride:ssl
+        --dynlibOverride:crypto
 
 proc main() =
     defaultConfig()
-  
+
     configMimalloc()
-
-    if defined(linux) or defined(freebsd):
-        configWebkit()
-
-    if defined(windows):
-        configWinPCRE()
-    else:
-        configUnixPCRE()
-
-    if defined(ssl):
-        if defined(windows):
-            configWinSSL()
-        else:
-            configUnixSSL()
+    configWebkit()
+    configPCRE()
+    configSSL()
 
 main()
