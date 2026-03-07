@@ -133,6 +133,7 @@ proc main() =
     # extra configuration
     #--------------------------
     configMimalloc()
+    configMath()
     configWebkit()
     configPCRE()
     configSSL()
