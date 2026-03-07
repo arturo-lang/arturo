@@ -82,10 +82,6 @@ proc configSSL() =
         --dynlibOverride:ssl
         --dynlibOverride:crypto
 
-proc configMath() =
-    if not defined(windows):
-        --passL:"-lm"
-
 proc configPlatform() =
     if hostOS == "macosx":
         # Headers
@@ -111,9 +107,8 @@ proc configPlatform() =
         --passL:"-static-libstdc++ -static-libgcc -Wl,-Bstatic -lstdc++ -Wl,-Bdynamic"
         --gcc.linkerexe:"g++"
 
-proc configThreads() =
-    --threads:off
-    if not defined(windows):
+    else:
+        --passL:"-lm"
         --passL:"-pthread"
 
 #=======================================
@@ -133,10 +128,11 @@ proc main() =
     #--------------------------
     --skipUserCfg:on 
     --define:danger
-    --panics:off 
-    --mm:orc 
+    --panics:off
+    --mm:orc
+    --threads:off
     --checks:off
-    --opt:speed 
+    --opt:speed
     
     #--------------------------
     # logging
@@ -158,11 +154,9 @@ proc main() =
     # extra configuration
     #--------------------------
     configMimalloc()
-    configMath()
     configWebkit()
     configPCRE()
     configSSL()
     configPlatform()
-    configThreads()
 
 main()
