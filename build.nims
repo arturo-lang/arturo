@@ -184,20 +184,16 @@ proc verifyDirectories*() =
 proc compile*(config: BuildConfig, showFooter: bool = false): int
     {. raises: [OSError, ValueError, Exception] .} =
 
-    proc windowsHostSpecific() =
+    result = QuitSuccess
+
+    if "windows" == hostOS:
         if config.isDeveloper and not flags.contains("NOWEBVIEW"):
             discard gorgeEx "src\\extras\\webview\\deps\\build.bat"
             #discard gorgeEx "src\\extras\\webview\\deps\\build-new.bat"
-        --passL:"\"-static-libstdc++ -static-libgcc -Wl,-Bstatic -lstdc++ -Wl,-Bdynamic\""
-        --gcc.linkerexe:"g++"
 
-    result = QuitSuccess
     let
         params = flags.join(" ")
         cmd = fmt"nim {config.backend} {params} -o:{config.binary} {paths.mainFile}"
-
-    if "windows" == hostOS:
-        windowsHostSpecific()
 
     if config.silentCompilation:
         return cmd.gorgeEx().exitCode

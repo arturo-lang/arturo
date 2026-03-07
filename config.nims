@@ -86,6 +86,13 @@ proc configMath() =
     if not defined(windows):
         --passL:"-lm"
 
+proc configWindows() =
+    if not defined(windows):
+        return
+
+    --passL:"-static-libstdc++ -static-libgcc -Wl,-Bstatic -lstdc++ -Wl,-Bdynamic"
+    --gcc.linkerexe:"g++"
+
 proc configThreads() =
     --threads:off
     if not defined(windows):
@@ -137,6 +144,7 @@ proc main() =
     configWebkit()
     configPCRE()
     configSSL()
+    configWindows()
     configThreads()
 
 main()
