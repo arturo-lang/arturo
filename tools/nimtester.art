@@ -21,7 +21,6 @@ loop tests 'test [
         r 
         |test| 
     } 
-    execute.directly cmd
     result: execute.code cmd
 
     (zero? result\code)?[
