@@ -1,45 +1,20 @@
+#=======================================================
+# Arturo
+# Programming Language + Bytecode VM compiler
+# (c) 2019-2026 Yanis Zafirópulos
+#
+# @file: config.nims
+#=======================================================
+
+#=======================================
+# Libraries
+#=======================================
+
 import os, strutils
 
-proc defaultConfig() =
-    --cincludes:extras
-    --path:src
-    --hints:on
-    
-    --verbosity:1
-    hint "ProcessingStmt":off 
-    hint "XCannotRaiseY":off
-    hint "ConvFromXtoItselfNotNeeded":off
-    warning "GcUnsafe":off 
-    warning "CastSizes":off 
-    warning "ProveInit":off 
-    warning "ProveField":off 
-    warning "Uninit":off 
-    warning "BareExcept":off 
-    --threads:off 
-    --skipUserCfg:on 
-    --colors:off 
-    --define:danger
-    --panics:off 
-    --mm:orc 
-    --define:useMalloc 
-    --checks:off
-    --cincludes:extras 
-    --opt:speed 
-    --nimcache:".cache" 
-    if hostOS != "windows": 
-        --passL:"-pthread"
-    --path:src
-
-
-proc configGMPOnWindows() {.used.} =
-    if "windows" == hostOS:
-        let gccPath = staticExec("pkg-config --libs-only-L gmp")
-                        .strip()
-                        .replace("-L","")
-                        .replace("/lib","/bin")
-                        .normalizedPath()
-        switch "gcc.path", gccPath
-
+#=======================================
+# Helpers
+#=======================================
 
 proc configMimalloc() =
     let
@@ -47,6 +22,7 @@ proc configMimalloc() =
         mimallocStatic = "mimallocStatic=\"" & (mimallocPath / "src" / "static.c") & '"'
         mimallocIncludePath = "mimallocIncludePath=\"" & (mimallocPath / "include") & '"'
 
+    --define:useMalloc 
     switch "define", mimallocStatic
     switch "define", mimallocIncludePath
 
@@ -57,13 +33,16 @@ proc configMimalloc() =
         "src"/"extras"/"mimalloc"
  
 
-proc configWinPCRE() =
-    --dynlibOverride:pcre64
-
-proc configUnixPCRE() =
-    --dynlibOverride:pcre
+proc configPCRE() =
+    if defined(windows):
+        --dynlibOverride:pcre64
+    else:
+        --dynlibOverride:pcre
 
 proc configWebkit() =
+    if not (defined(linux) or defined(freebsd)):
+        return
+
     const webkitVersions = ["4.1", "4.0"]
 
     proc getWebkitVersion(): string =
@@ -90,34 +69,94 @@ proc configWebkit() =
 
     switch "define", "webkitVersion=" & getWebkitVersion()
 
-proc configWinSSL() =
-    --define:"noOpenSSLHacks"
-    --define:"sslVersion:("
-    --dynlibOverride:"ssl-"
-    --dynlibOverride:"crypto-"
-
-proc configUnixSSL() =
-    --dynlibOverride:ssl
-    --dynlibOverride:crypto
-
-proc main() =
-    defaultConfig()
-    # see: https://github.com/arturo-lang/arturo/pull/1643
-    # configGMPOnWindows()    
-    configMimalloc()
-
-    if defined(linux) or defined(freebsd):
-        configWebkit()
+proc configSSL() =
+    if not defined(ssl):
+        return
 
     if defined(windows):
-        configWinPCRE()
+        --define:"noOpenSSLHacks"
+        --define:"sslVersion:("
+        --dynlibOverride:"ssl-"
+        --dynlibOverride:"crypto-"
     else:
-        configUnixPCRE()
+        --dynlibOverride:ssl
+        --dynlibOverride:crypto
 
-    if defined(ssl):
-        if defined(windows):
-            configWinSSL()
-        else:
-            configUnixSSL()
+proc configPlatform() =
+    if hostOS == "macosx":
+        # Headers
+        --passC:"-I/opt/homebrew/include"      # ARM64 Homebrew
+        --passC:"-I/usr/local/include"         # Intel Homebrew
+        --passC:"-I/opt/local/include"         # MacPorts
+
+        # Library paths
+        --passL:"-L/opt/homebrew/lib"          # ARM64 Homebrew
+        --passL:"-L/usr/local/lib"             # Intel Homebrew
+        --passL:"-L/opt/local/lib"             # MacPorts
+
+        # Runtime search paths
+        --passL:"-Wl,-rpath,/opt/homebrew/opt/mpfr/lib"
+        --passL:"-Wl,-rpath,/opt/homebrew/opt/gmp/lib"
+        --passL:"-Wl,-rpath,/usr/local/opt/mpfr/lib"
+        --passL:"-Wl,-rpath,/usr/local/opt/gmp/lib"
+        --passL:"-Wl,-rpath,/opt/local/lib"
+
+        --passL:"-Wl,-headerpad_max_install_names"
+
+    elif defined(windows):
+        --passL:"-static-libstdc++ -static-libgcc -Wl,-Bstatic -lstdc++ -Wl,-Bdynamic"
+        --gcc.linkerexe:"g++"
+
+    else:
+        --passL:"-lm"
+        --passL:"-pthread"
+
+#=======================================
+# Main 
+#=======================================
+
+proc main() =
+    #--------------------------
+    # paths
+    #--------------------------
+    --path:src
+    --cincludes:extras
+    --nimcache:".cache" 
+
+    #--------------------------
+    # compiler flags
+    #--------------------------
+    --skipUserCfg:on 
+    --define:danger
+    --checks:off
+    --panics:off
+    --opt:speed
+    --mm:orc
+    --threads:off
+
+    #--------------------------
+    # logging
+    #--------------------------
+    --hints:on
+    --colors:off 
+    --verbosity:1
+    hint "ProcessingStmt":off
+    hint "XCannotRaiseY":off
+    hint "ConvFromXtoItselfNotNeeded":off
+    warning "GcUnsafe":off
+    warning "CastSizes":off
+    warning "ProveInit":off
+    warning "ProveField":off
+    warning "Uninit":off
+    warning "BareExcept":off
+
+    #--------------------------
+    # extra configuration
+    #--------------------------
+    configMimalloc()
+    configWebkit()
+    configPCRE()
+    configSSL()
+    configPlatform()
 
 main()
