@@ -83,9 +83,10 @@ proc configSSL() =
         --dynlibOverride:crypto
 
 proc configThreads() =
-    --threads:off 
+    --threads:off
     if not defined(windows):
         --passL:"-pthread"
+        --passL:"-lm"
 
 #=======================================
 # Main 
