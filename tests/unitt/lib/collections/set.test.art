@@ -127,6 +127,8 @@ suite "set - store" [
 
         s\[2]: 36
         assert -> 36 = get s '2
+
+        delete "test.json"
     ]
 
 ]
