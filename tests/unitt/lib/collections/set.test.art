@@ -113,6 +113,8 @@ suite "set - store" [
 
         set s 'age 36
         assert -> 36 = get s 'age
+
+        delete "test.json"
     ]
 
     test "supports numeric keys" [
