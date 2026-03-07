@@ -191,18 +191,13 @@ proc compile*(config: BuildConfig, showFooter: bool = false): int
         --passL:"\"-static-libstdc++ -static-libgcc -Wl,-Bstatic -lstdc++ -Wl,-Bdynamic\""
         --gcc.linkerexe:"g++"
 
-    proc unixHostSpecific() =
-        --passL:"\"-lm\""
-
     result = QuitSuccess
     let
         params = flags.join(" ")
         cmd = fmt"nim {config.backend} {params} -o:{config.binary} {paths.mainFile}"
 
     if "windows" == hostOS:
-         windowsHostSpecific()
-    else:
-        unixHostSpecific()
+        windowsHostSpecific()
 
     if config.silentCompilation:
         return cmd.gorgeEx().exitCode
