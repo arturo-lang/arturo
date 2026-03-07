@@ -115,7 +115,6 @@ proc main() =
     --panics:off 
     --mm:orc 
     --checks:off
-    --cincludes:extras 
     --opt:speed 
     --nimcache:".cache" 
 
