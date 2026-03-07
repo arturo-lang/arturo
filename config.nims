@@ -94,8 +94,9 @@ proc main() =
     #--------------------------
     # defaults
     #--------------------------
-    --cincludes:extras
     --path:src
+    --cincludes:extras
+    
     --hints:on
     --verbosity:1
     --hint:ProcessingStmt:off
