@@ -118,15 +118,15 @@ proc main() =
     #--------------------------
     --hints:on
     --verbosity:1
-    --hint:ProcessingStmt:off
-    --hint:XCannotRaiseY:off
-    --hint:ConvFromXtoItselfNotNeeded:off
-    --warning:GcUnsafe:off
-    --warning:CastSizes:off
-    --warning:ProveInit:off
-    --warning:ProveField:off
-    --warning:Uninit:off
-    --warning:BareExcept:off
+    hint "ProcessingStmt":off
+    hint "XCannotRaiseY":off
+    hint "ConvFromXtoItselfNotNeeded":off
+    warning "GcUnsafe":off
+    warning "CastSizes":off
+    warning "ProveInit":off
+    warning "ProveField":off
+    warning "Uninit":off
+    warning "BareExcept":off
     --colors:off 
 
     #--------------------------
