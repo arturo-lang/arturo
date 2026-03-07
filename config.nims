@@ -93,11 +93,25 @@ proc configThreads() =
 
 proc main() =
     #--------------------------
-    # defaults
+    # paths
     #--------------------------
     --path:src
     --cincludes:extras
+    --nimcache:".cache" 
+
+    #--------------------------
+    # compiler flags
+    #--------------------------
+    --skipUserCfg:on 
+    --define:danger
+    --panics:off 
+    --mm:orc 
+    --checks:off
+    --opt:speed 
     
+    #--------------------------
+    # logging
+    #--------------------------
     --hints:on
     --verbosity:1
     --hint:ProcessingStmt:off
@@ -109,14 +123,7 @@ proc main() =
     --warning:ProveField:off
     --warning:Uninit:off
     --warning:BareExcept:off
-    --skipUserCfg:on 
     --colors:off 
-    --define:danger
-    --panics:off 
-    --mm:orc 
-    --checks:off
-    --opt:speed 
-    --nimcache:".cache" 
 
     #--------------------------
     # extra configuration
