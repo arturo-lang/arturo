@@ -89,35 +89,43 @@ proc configThreads() =
 # Main 
 #=======================================
 
---cincludes:extras
---path:src
---hints:on
---verbosity:1
-hint "ProcessingStmt":off 
-hint "XCannotRaiseY":off
-hint "ConvFromXtoItselfNotNeeded":off
-warning "GcUnsafe":off 
-warning "CastSizes":off 
-warning "ProveInit":off 
-warning "ProveField":off 
-warning "Uninit":off 
-warning "BareExcept":off 
---threads:off 
---skipUserCfg:on 
---colors:off 
---define:danger
---panics:off 
---mm:orc 
---define:useMalloc 
---checks:off
---cincludes:extras 
---opt:speed 
---nimcache:".cache" 
---path:src
+proc main() =
+    #--------------------------
+    # defaults
+    #--------------------------
+    --cincludes:extras
+    --path:src
+    --hints:on
+    --verbosity:1
+    hint "ProcessingStmt":off 
+    hint "XCannotRaiseY":off
+    hint "ConvFromXtoItselfNotNeeded":off
+    warning "GcUnsafe":off 
+    warning "CastSizes":off 
+    warning "ProveInit":off 
+    warning "ProveField":off 
+    warning "Uninit":off 
+    warning "BareExcept":off 
+    --threads:off 
+    --skipUserCfg:on 
+    --colors:off 
+    --define:danger
+    --panics:off 
+    --mm:orc 
+    --define:useMalloc 
+    --checks:off
+    --cincludes:extras 
+    --opt:speed 
+    --nimcache:".cache" 
+    --path:src
 
+    #--------------------------
+    # extra configuration
+    #--------------------------
+    configMimalloc()
+    configWebkit()
+    configPCRE()
+    configSSL()
+    configThreads()
 
-configMimalloc()
-configWebkit()
-configPCRE()
-configSSL()
-configThreads()
+main()
