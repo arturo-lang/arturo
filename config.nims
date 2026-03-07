@@ -86,35 +86,30 @@ proc configMath() =
     if not defined(windows):
         --passL:"-lm"
 
-proc configMacOS() =
-    if hostOS != "macosx":
-        return
+proc configPlatform() =
+    if hostOS == "macosx":
+        # Headers
+        --passC:"-I/opt/homebrew/include"      # ARM64 Homebrew
+        --passC:"-I/usr/local/include"         # Intel Homebrew
+        --passC:"-I/opt/local/include"         # MacPorts
 
-    # Headers
-    --passC:"-I/opt/homebrew/include"      # ARM64 Homebrew
-    --passC:"-I/usr/local/include"         # Intel Homebrew
-    --passC:"-I/opt/local/include"         # MacPorts
+        # Library paths
+        --passL:"-L/opt/homebrew/lib"          # ARM64 Homebrew
+        --passL:"-L/usr/local/lib"             # Intel Homebrew
+        --passL:"-L/opt/local/lib"             # MacPorts
 
-    # Library paths
-    --passL:"-L/opt/homebrew/lib"          # ARM64 Homebrew
-    --passL:"-L/usr/local/lib"             # Intel Homebrew
-    --passL:"-L/opt/local/lib"             # MacPorts
+        # Runtime search paths
+        --passL:"-Wl,-rpath,/opt/homebrew/opt/mpfr/lib"
+        --passL:"-Wl,-rpath,/opt/homebrew/opt/gmp/lib"
+        --passL:"-Wl,-rpath,/usr/local/opt/mpfr/lib"
+        --passL:"-Wl,-rpath,/usr/local/opt/gmp/lib"
+        --passL:"-Wl,-rpath,/opt/local/lib"
 
-    # Runtime search paths
-    --passL:"-Wl,-rpath,/opt/homebrew/opt/mpfr/lib"
-    --passL:"-Wl,-rpath,/opt/homebrew/opt/gmp/lib"
-    --passL:"-Wl,-rpath,/usr/local/opt/mpfr/lib"
-    --passL:"-Wl,-rpath,/usr/local/opt/gmp/lib"
-    --passL:"-Wl,-rpath,/opt/local/lib"
+        --passL:"-Wl,-headerpad_max_install_names"
 
-    --passL:"-Wl,-headerpad_max_install_names"
-
-proc configWindows() =
-    if not defined(windows):
-        return
-
-    --passL:"-static-libstdc++ -static-libgcc -Wl,-Bstatic -lstdc++ -Wl,-Bdynamic"
-    --gcc.linkerexe:"g++"
+    elif defined(windows):
+        --passL:"-static-libstdc++ -static-libgcc -Wl,-Bstatic -lstdc++ -Wl,-Bdynamic"
+        --gcc.linkerexe:"g++"
 
 proc configThreads() =
     --threads:off
@@ -167,8 +162,7 @@ proc main() =
     configWebkit()
     configPCRE()
     configSSL()
-    configMacOS()
-    configWindows()
+    configPlatform()
     configThreads()
 
 main()
