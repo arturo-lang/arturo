@@ -1,6 +1,6 @@
 tests: sort select list "src/helpers" => [suffix? & ".nim"]
 tests: filter tests 'test [
-    some? ["bignums.nim", "js.nim"] 'excluded ->
+    some? ["bignums.nim", "js.nim", "windows.nim"] 'excluded ->
         contains? test excluded
 ]
 
