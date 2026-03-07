@@ -117,7 +117,6 @@ proc main() =
     --cincludes:extras 
     --opt:speed 
     --nimcache:".cache" 
-    --path:src
 
     #--------------------------
     # extra configuration
