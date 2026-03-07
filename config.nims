@@ -128,16 +128,17 @@ proc main() =
     #--------------------------
     --skipUserCfg:on 
     --define:danger
+    --checks:off
     --panics:off
+    --opt:speed
     --mm:orc
     --threads:off
-    --checks:off
-    --opt:speed
-    
+
     #--------------------------
     # logging
     #--------------------------
     --hints:on
+    --colors:off 
     --verbosity:1
     hint "ProcessingStmt":off
     hint "XCannotRaiseY":off
@@ -148,7 +149,6 @@ proc main() =
     warning "ProveField":off
     warning "Uninit":off
     warning "BareExcept":off
-    --colors:off 
 
     #--------------------------
     # extra configuration
