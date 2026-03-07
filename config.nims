@@ -1,3 +1,11 @@
+#=======================================================
+# Arturo
+# Programming Language + Bytecode VM compiler
+# (c) 2019-2026 Yanis Zafirópulos
+#
+# @file: config.nims
+#=======================================================
+
 import os, strutils
 
 proc defaultConfig() =
