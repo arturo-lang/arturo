@@ -91,8 +91,7 @@ proc configUnixSSL() =
 
 proc main() =
     defaultConfig()
-    # see: https://github.com/arturo-lang/arturo/pull/1643
-    # configGMPOnWindows()    
+  
     configMimalloc()
 
     if defined(linux) or defined(freebsd):
