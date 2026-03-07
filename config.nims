@@ -22,6 +22,7 @@ proc configMimalloc() =
         mimallocStatic = "mimallocStatic=\"" & (mimallocPath / "src" / "static.c") & '"'
         mimallocIncludePath = "mimallocIncludePath=\"" & (mimallocPath / "include") & '"'
 
+    --define:useMalloc 
     switch "define", mimallocStatic
     switch "define", mimallocIncludePath
 
@@ -112,7 +113,6 @@ proc main() =
     --define:danger
     --panics:off 
     --mm:orc 
-    --define:useMalloc 
     --checks:off
     --cincludes:extras 
     --opt:speed 
