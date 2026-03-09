@@ -223,3 +223,9 @@ proc inNestedBlock*(container: ValueArray, target: Value): bool =
         
     return false
         
+#=======================================
+# Unit tests
+#=======================================
+
+when isMainModule:
+    discard

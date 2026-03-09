@@ -45,3 +45,10 @@ when defined(PARSERS):
 
     proc parseHtmlInput*(input: string): Value =
         parseHtmlNode(parseHtml(input)).d["html"]
+
+#=======================================
+# Unit tests
+#=======================================
+
+when isMainModule:
+    discard

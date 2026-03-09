@@ -28,3 +28,10 @@ template getBenchmark*(code: untyped): float =
     let t0 = getMonoTime()
     code
     (float(ticks(getMonoTime()) - ticks(t0)))/1000000.0
+
+#=======================================
+# Unit tests
+#=======================================
+
+when isMainModule:
+    discard

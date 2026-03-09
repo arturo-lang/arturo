@@ -197,3 +197,10 @@ func max*(rng: VRange): (int,Value) {.inline.} =
         return (rHigh, getValueForRangeItem(rng, lastItem))
     else:
         return (0, getValueForRangeItem(rng, rng.start))
+
+#=======================================
+# Unit tests
+#=======================================
+
+when isMainModule:
+    discard

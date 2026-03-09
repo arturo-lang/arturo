@@ -241,3 +241,10 @@ proc initStore*(
 
     if not autosave:
         Stores.add(result)
+
+#=======================================
+# Unit tests
+#=======================================
+
+when isMainModule:
+    discard

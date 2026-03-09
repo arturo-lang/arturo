@@ -55,3 +55,10 @@ proc getSource*(src: string): DataSource {.inline.} =
             result = (src, TextData)
     else:
         result = (src, TextData)
+
+#=======================================
+# Unit tests
+#=======================================
+
+when isMainModule:
+    discard
