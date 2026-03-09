@@ -104,3 +104,10 @@ func powIntWithOverflowI*(a, b: int, res: var int): bool {.inline, nosideeffect.
     else:
         res = subres
         return false
+
+#=======================================
+# Unit tests
+#=======================================
+
+when isMainModule:
+    discard

@@ -53,3 +53,10 @@ when defined(PARSERS):
 
     proc parseXMLInput*(input: string): Value =
         parseXMLNode(parseXml(input))
+
+#=======================================
+# Unit tests
+#=======================================
+
+when isMainModule:
+    discard

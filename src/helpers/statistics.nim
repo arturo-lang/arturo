@@ -53,3 +53,9 @@ proc quickSelect*[T](container: seq[T], index: int): T =
     else:
         return right.quickSelect(index - left.len - same.len)
         
+#=======================================
+# Unit tests
+#=======================================
+
+when isMainModule:
+    discard

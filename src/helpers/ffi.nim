@@ -175,3 +175,10 @@ when not defined(WEB):
 
         except CatchableError:
             Error_ErrorLoadingLibrarySymbol(path, meth)
+
+#=======================================
+# Unit tests
+#=======================================
+
+when isMainModule:
+    discard

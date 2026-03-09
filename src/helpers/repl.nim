@@ -107,3 +107,10 @@ when not defined(WEB):
         result = ($(got),false)
 
         free(got)
+
+#=======================================
+# Unit tests
+#=======================================
+
+when isMainModule:
+    discard

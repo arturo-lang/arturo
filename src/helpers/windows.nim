@@ -251,3 +251,10 @@ proc setMenus*(w: Window, menus: openArray[Menu]) =
 
 proc removeMenuBar*(w: Window) =
     remove_window_menu(w)
+
+#=======================================
+# Unit tests
+#=======================================
+
+when isMainModule:
+    discard

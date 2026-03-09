@@ -45,3 +45,11 @@ proc parseCsvInput*(input: string, withHeaders: bool = false, withDelimiter: cha
             rows.add(newDictionary(row))
 
     return newBlock(rows)
+
+#=======================================
+# Unit tests
+#=======================================
+
+when isMainModule:
+    discard
+

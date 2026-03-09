@@ -41,3 +41,10 @@ proc writeToFile*(path: string, contents: VBinary, append = false) {.tags: [Writ
             close(f)
     else:
         raise newException(IOError, "cannot open: " & path)
+
+#=======================================
+# Unit tests
+#=======================================
+
+when isMainModule:
+    discard

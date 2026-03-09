@@ -394,3 +394,10 @@ proc `$`*[A](s: HashSet[A]): string =
 
 proc `$`*[A](s: OrderedSet[A]): string =
     dollarImpl()
+
+#=======================================
+# Unit tests
+#=======================================
+
+when isMainModule:
+    discard

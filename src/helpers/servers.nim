@@ -61,3 +61,10 @@ proc startServer*(handler: RequestHandler, port: int = 18966) =
     let settings = initSettings(port.Port)
 
     run(handler.OnRequest, settings)
+
+#=======================================
+# Unit tests
+#=======================================
+
+when isMainModule:
+    discard

@@ -422,3 +422,10 @@ proc factorial*(x: int): Value =
             Error_NumberOutOfSupportedRange("factorial", Dumper(newInteger(x)))
         else:
             return newInteger(BignumsHelper.fac(x))
+
+#=======================================
+# Unit tests
+#=======================================
+
+when isMainModule:
+    discard

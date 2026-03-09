@@ -233,3 +233,10 @@ func parseNumFromString*(s: string, base: int): int =
         of 10: return parseInt(s)
         of 16: return parseHexInt(s)
         else: raise newException(ValueError, "Invalid base")
+
+#=======================================
+# Unit tests
+#=======================================
+
+when isMainModule:
+    discard

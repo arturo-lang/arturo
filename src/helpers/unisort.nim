@@ -296,3 +296,10 @@ proc unisorted*(a: ValueDict, lang: string, sensitive:bool = false, order = Sort
     for k, v in a.pairs:
         result[k] = v
     unisort(result, lang, sensitive, order, byValue)
+
+#=======================================
+# Unit tests
+#=======================================
+
+when isMainModule:
+    discard

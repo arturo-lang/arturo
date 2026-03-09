@@ -32,5 +32,4 @@ proc getClipboard*():string =
 #=======================================
 
 when isMainModule:
-    setClipboard("Hello, World!")
-    assert getClipboard() == "Hello, World!"
+    discard

@@ -88,3 +88,10 @@ proc clearTerminal*() =
         console.clear()
     else:
         clearScreen()
+
+#=======================================
+# Unit tests
+#=======================================
+
+when isMainModule:
+    discard
