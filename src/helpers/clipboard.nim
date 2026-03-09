@@ -26,3 +26,11 @@ proc getClipboard*():string =
     var clipboard = clipboard_new(nil)
     let cresult = clipboard.clipboard_text()
     return $(cresult)
+
+#=======================================
+# Unit tests
+#=======================================
+
+when isMainModule:
+    setClipboard("Hello, World!")
+    assert getClipboard() == "Hello, World!"
