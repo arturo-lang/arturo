@@ -607,15 +607,31 @@ func newFunctionFromDefinition*(params: ValueArray, main: Value, imports: Value 
             if i+1 < params.len and params[i+1].kind == Type:
                 var typeArr: ValueArray
 
+                var hasCallableType = false
+                var j = i + 1
+                while j < params.len and params[j].kind == Type:
+                    if params[j].t in {Function, Method}:
+                        hasCallableType = true
+                        break
+                    j += 1
+
+                var typeCount = 0
                 while i+1 < params.len and params[i+1].kind == Type:
                     typeArr.add(newWord("is?"))
                     typeArr.add(params[i+1])
                     argTypes[varName.s].incl(params[i+1].t)
-                    typeArr.add(varName)
+                    if hasCallableType:
+                        # avoid invoking the argument when a Function/Method
+                        # type is allowed: fetch the value via `var '<name>`
+                        typeArr.add(newWord("var"))
+                        typeArr.add(newLiteral(varName.s))
+                    else:
+                        typeArr.add(varName)
+                    typeCount += 1
                     i += 1
 
                 body.add(newWord("ensure"))
-                if typeArr.len == 3:
+                if typeCount == 1:
                     body.add(newBlock(typeArr))
                 else:
                     body.add(newBlock(@[
@@ -706,15 +722,31 @@ func newMethodFromDefinition*(params: ValueArray, main: Value, isDistinct: bool 
             if i+1 < params.len and params[i+1].kind == Type:
                 var typeArr: ValueArray
 
+                var hasCallableType = false
+                var j = i + 1
+                while j < params.len and params[j].kind == Type:
+                    if params[j].t in {Function, Method}:
+                        hasCallableType = true
+                        break
+                    j += 1
+
+                var typeCount = 0
                 while i+1 < params.len and params[i+1].kind == Type:
                     typeArr.add(newWord("is?"))
                     typeArr.add(params[i+1])
                     argTypes[varName.s].incl(params[i+1].t)
-                    typeArr.add(varName)
+                    if hasCallableType:
+                        # avoid invoking the argument when a Function/Method
+                        # type is allowed: fetch the value via `var '<name>`
+                        typeArr.add(newWord("var"))
+                        typeArr.add(newLiteral(varName.s))
+                    else:
+                        typeArr.add(varName)
+                    typeCount += 1
                     i += 1
 
                 body.add(newWord("ensure"))
-                if typeArr.len == 3:
+                if typeCount == 1:
                     body.add(newBlock(typeArr))
                 else:
                     body.add(newBlock(@[
