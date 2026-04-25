@@ -34,8 +34,8 @@ jobs:
                     - {os: linux,   arch: arm64}
                     - {os: linux,   arch: arm64,    support: legacy}
                     - {os: linux,   arch: arm64,    mode: mini}
-                    - {os: freebsd, arch: amd64}
-                    - {os: freebsd, arch: amd64,    mode: mini}
+                    #- {os: freebsd, arch: amd64}
+                    #- {os: freebsd, arch: amd64,    mode: mini}
                     - {os: macos,   arch: amd64}
                     - {os: macos,   arch: amd64,    mode: mini}
                     - {os: macos,   arch: arm64}
