@@ -252,10 +252,13 @@ proc popScopeFrame*(): SymTable {.inline.} =
     ## Pop the topmost scope frame
     result = ScopeStack.pop()
 
+const ScopeFramePoolMax = 64
+
 proc releaseScopeFrame*(frame: var SymTable) {.inline.} =
-    ## Hand a used frame back to the pool
-    frame.clear()
-    ScopeFramePool.add(frame)
+    ## Hand a used frame back to the pool - dropped if pool is full
+    if ScopeFramePool.len < ScopeFramePoolMax:
+        frame.clear()
+        ScopeFramePool.add(frame)
 
 proc recordScopeWrite*(s: string) {.inline.} =
     ## Record `s`'s previous value in the current scope frame,
