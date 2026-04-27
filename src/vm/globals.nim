@@ -267,6 +267,7 @@ proc recordScopeWrite*(s: string) {.inline.} =
 
 template SetSym*(s: string, v: Value, safe: static bool = false, forceReadOnly: static bool = false): untyped =
     ## Sets symbol to given value in the symbol table
+    recordScopeWrite(s)
     when safe:
         # When doing it safely, also check if the value to be assigned is a read-only value
         # - if it is - we have to copy it first
@@ -282,6 +283,7 @@ template SetSym*(s: string, v: Value, safe: static bool = false, forceReadOnly: 
         Syms[s] = v
 
 template UnsetSym*(s: string): untyped =
+    recordScopeWrite(s)
     Syms.del(s)
 
 template SetDictSym*(s: string, v: Value, safe: static bool = false): untyped =
