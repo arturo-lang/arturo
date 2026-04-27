@@ -43,6 +43,14 @@ var
     # dictionary symbols stack
     DictSyms* {.global.}        : seq[ValueDict]            ## The stack of dictionaries to be filled
                                                             ## when using `execDictionary`
+
+    # function scope stack
+    ScopeStack* {.global.}      : seq[SymTable]                 ## Per-call undo log of touched
+                                                                ## symbols (nil = didn't exist)
+
+    # scope frame pool
+    ScopeFramePool* {.global.}  : seq[SymTable]                 ## Recycled frames, to avoid
+                                                                ## reallocating on every call
     
     # active stores
     Stores* {.global.}          : seq[VStore]               ## The list of active stores to be stored
@@ -232,6 +240,30 @@ template GetSym*(s: string): untyped =
     ## **Hint:** if the key doesn't exist, it will throw an error;
     ## so, we have to make sure we know it exists beforehand
     Syms[s]
+
+proc pushScopeFrame*() {.inline.} =
+    ## Push a fresh - or recycled - scope frame
+    if ScopeFramePool.len > 0:
+        ScopeStack.add(ScopeFramePool.pop())
+    else:
+        ScopeStack.add(initTable[string, Value](initialSize = 4))
+
+proc popScopeFrame*(): SymTable {.inline.} =
+    ## Pop the topmost scope frame
+    result = ScopeStack.pop()
+
+proc releaseScopeFrame*(frame: var SymTable) {.inline.} =
+    ## Hand a used frame back to the pool
+    frame.clear()
+    ScopeFramePool.add(frame)
+
+proc recordScopeWrite*(s: string) {.inline.} =
+    ## Record `s`'s previous value in the current scope frame,
+    ## the first time it's touched - nil if it didn't exist
+    if ScopeStack.len > 0:
+        let frame = addr ScopeStack[^1]
+        if not frame[].hasKey(s):
+            frame[][s] = Syms.getOrDefault(s, nil)
 
 template SetSym*(s: string, v: Value, safe: static bool = false, forceReadOnly: static bool = false): untyped =
     ## Sets symbol to given value in the symbol table
