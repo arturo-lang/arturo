@@ -353,7 +353,6 @@ proc execFunction*(fun: Value, fid: Hash) =
     ##   abide by this rule
 
     var memoizedParams: Value = nil
-    var savedSyms: SymTable
 
     let argsL = len(fun.params)
 
@@ -376,8 +375,9 @@ proc execFunction*(fun: Value, fid: Hash) =
             popN argsL
             push memd
             return
-        
-    savedSyms = Syms
+
+    pushScopeFrame()
+
     if not fun.imports.isNil:
         for k,v in pairs(fun.imports.d):
             SetSym(k, v)
@@ -406,12 +406,26 @@ proc execFunction*(fun: Value, fid: Hash) =
         if fun.memoize:
             setMemoized(fid, memoizedParams, stack.peek(0))
 
-        if not fun.exports.isNil:
-            for k in fun.exports.a:
-                if (let newSym = Syms.getOrDefault(k.s, nil); not newSym.isNil):
-                    savedSyms[k.s] = newSym
-        
-        Syms = savedSyms
+        var frame = popScopeFrame()
+        if fun.exports.isNil:
+            for k, prev in frame.pairs:
+                if prev.isNil:
+                    Syms.del(k)
+                else:
+                    Syms[k] = prev
+        else:
+            for k, prev in frame.pairs:
+                var isExport = false
+                for ek in fun.exports.a:
+                    if ek.s == k:
+                        isExport = true
+                        break
+                if isExport: continue
+                if prev.isNil:
+                    Syms.del(k)
+                else:
+                    Syms[k] = prev
+        releaseScopeFrame(frame)
 
 proc execFunctionInline*(fun: Value, fid: Hash) =
     ## Execute given Function value without scoping
@@ -484,14 +498,12 @@ proc execMethod*(meth: Value, fid: Hash) =
     ## - Symbols re-assigned inside will NOT 
     ##   overwrite the value in the outer scope
 
-    var savedSyms: SymTable
-
-    savedSyms = Syms
-
     when not defined(WEB):
         var fpath: ref string
         if (fpath = meth.info.path; not fpath.isNil()):
             pushFrame(fpath[], fromFile=true)
+
+    pushScopeFrame()
 
     for arg in meth.mparams:
         # pop argument and set it
@@ -510,7 +522,13 @@ proc execMethod*(meth: Value, fid: Hash) =
         discard
 
     finally:
-        Syms = savedSyms
+        var frame = popScopeFrame()
+        for k, prev in frame.pairs:
+            if prev.isNil:
+                Syms.del(k)
+            else:
+                Syms[k] = prev
+        releaseScopeFrame(frame)
 
         when not defined(WEB):
             if not fpath.isNil():

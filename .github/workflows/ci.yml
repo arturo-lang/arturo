@@ -110,8 +110,8 @@ jobs:
             - if: env.arturoCanRun == 'true' && steps.check_skip.outputs.skip != 'true'
               name: Run tests
               run: |
-                cd $GITHUB_WORKSPACE/arturo 
-                git clone https://github.com/arturo-lang/examples.git examples
+                cd $GITHUB_WORKSPACE/arturo
+                git clone https://github.com/arturo-lang/examples.git ../examples
 
                 arturo -v
                 if ! arturo tools/tester.art; then
