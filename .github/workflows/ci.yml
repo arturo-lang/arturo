@@ -37,8 +37,8 @@ jobs:
                     # TODO(CI) Re-enable FreeBSD tests once we repo issue is fixed
                     #  See also: https://github.com/arturo-lang/setup-arturo/pull/32
                     #  labels: ci, workflows, freebsd, bug, critical
-                    #- {os: freebsd, arch: amd64}
-                    #- {os: freebsd, arch: amd64,    mode: mini}
+                    - {os: freebsd, arch: amd64}
+                    - {os: freebsd, arch: amd64,    mode: mini}
                     - {os: macos,   arch: amd64}
                     - {os: macos,   arch: amd64,    mode: mini}
                     - {os: macos,   arch: arm64}
