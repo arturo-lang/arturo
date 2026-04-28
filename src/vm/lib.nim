@@ -78,6 +78,7 @@ macro dispatchWithLiteral*(body: untyped): untyped =
         of "Color":      ("l", "newColor")
         of "Quantity":   ("q", "newQuantity")
         of "Complex":    ("z", "newComplex")
+        of "Rational":   ("rat", "newRational")
         else:
             error("dispatchWithLiteral: unsupported kind '" & kind & "'", n)
             ("", "")
@@ -246,6 +247,7 @@ macro dispatch*(body: untyped): untyped =
         of "Color":      "l"
         of "Quantity":   "q"
         of "Complex":    "z"
+        of "Rational":   "rat"
         else:
             error("dispatch: unsupported kind '" & name & "'", n); ""
 
