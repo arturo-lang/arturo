@@ -311,17 +311,14 @@ proc defineModule*(moduleName: string) =
             ; => 6
         """:
             #=======================================================
-            let doRepeat = hadAttr("repeated")
+            bindAttrs:
+                repeated: Logical
+                sz(by):   Integer = x.a.len
 
-            var sz = x.a.len
-            if checkAttr("by"):
-                sz = aBy.i
-
-            if hadAttr("count"):
-                push(countCombinations(x.a, sz, doRepeat))
-            else:
-                push(newBlock(getCombinations(x.a, sz, doRepeat).map((
-                        z)=>newBlock(z))))
+            dispatch:
+                Block(items):
+                    on count: push(countCombinations(items, sz, repeated))
+                    _:        push(newBlock(getCombinations(items, sz, repeated).map((z)=>newBlock(z))))
 
     # TODO(Collections\couple) should work with in-place Literals
     #  labels: library, enhancement
