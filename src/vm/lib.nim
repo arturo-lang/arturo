@@ -490,8 +490,10 @@ macro dispatch*(body: untyped): untyped =
                                            parsed.flat, parsed.elseClause, parsed.hasElse,
                                            emit, macroName))
 
-macro attrs*(body: untyped): untyped =
+macro bindAttrs*(body: untyped): untyped =
     ## Declare attribute-bound locals as a prelude to a builtin's body.
+    ## (Named `bindAttrs` rather than `attrs` because `attrs` is shadowed
+    ## inside a builtin body by `makeBuiltin`'s own `attrs` parameter.)
     ##
     ## Forms:
     ##   `name: Logical`                       — boolean flag, becomes `let name = hadAttr("name")`
@@ -505,7 +507,7 @@ macro attrs*(body: untyped): untyped =
     ## `on attr:` ladders inside dispatch clauses for mutually-exclusive
     ## attrs.
     expectKind body, nnkStmtList
-    const macroName = "attrs"
+    const macroName = "bindAttrs"
     result = newStmtList()
 
     for decl in body:
