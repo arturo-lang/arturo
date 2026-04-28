@@ -749,7 +749,7 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
 
                 # binary operators
                 of opBNot               : arithmeticFastpathA(DoBNot, normalIntegerNot)
-                of opBAnd               : DoBAnd()
+                of opBAnd               : arithmeticFastpathB(DoBAnd, normalIntegerAnd)
                 of opBOr                : DoBOr()
 
                 of opShl                : DoShl()
