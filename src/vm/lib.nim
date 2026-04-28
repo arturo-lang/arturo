@@ -37,7 +37,7 @@ const
 # Helpers
 #=======================================
 
-macro dispatch*(body: untyped): untyped =
+macro dispatchWithLiteral*(body: untyped): untyped =
     ## Dispatch a builtin's body across kinds and modes.
     ##
     ## Clause forms:
@@ -76,13 +76,13 @@ macro dispatch*(body: untyped): untyped =
         of "Range":      ("rng", "newRange")
         of "Regex":      ("rx", "newRegex")
         else:
-            error("dispatch: unsupported kind '" & kind & "'", n)
+            error("dispatchWithLiteral: unsupported kind '" & kind & "'", n)
             ("", "")
 
     proc parsePat(n: NimNode): (string, NimNode) =
         if n.kind == nnkCall and n.len == 2 and n[0].kind == nnkIdent:
             return ($n[0], n[1])
-        error("dispatch: expected `KIND(binding)`", n)
+        error("dispatchWithLiteral: expected `KIND(binding)`", n)
 
     proc aliasTemplate(name, target: NimNode): NimNode =
         # template <name>: untyped = <target>
@@ -133,12 +133,12 @@ macro dispatch*(body: untyped): untyped =
             # 2-axis: (KIND(b), KIND(b)): body
             let par = clause[0]
             if par.len != 2:
-                error("dispatch: expected `(KIND(b), KIND(b))`", par)
+                error("dispatchWithLiteral: expected `(KIND(b), KIND(b))`", par)
             (fc.xKind, fc.xBinding) = parsePat(par[0])
             (fc.yKind, fc.yBinding) = parsePat(par[1])
             (fc.valueE, fc.inplaceS, fc.unifiedB) = parseBody(clause[1])
         else:
-            error("dispatch: malformed clause", clause)
+            error("dispatchWithLiteral: malformed clause", clause)
         flat.add fc
 
     proc emitBranch(fc: FlatClause, valueMode: bool): NimNode =
@@ -191,7 +191,7 @@ macro dispatch*(body: untyped): untyped =
             let cls = xMap[xKind]
             if cls[0].yKind == "":
                 if cls.len > 1:
-                    error("dispatch: duplicate 1-axis clauses for kind '" & xKind & "'",
+                    error("dispatchWithLiteral: duplicate 1-axis clauses for kind '" & xKind & "'",
                           cls[1].xBinding)
                 result.add nnkOfBranch.newTree(ident(xKind),
                                                emitBranch(cls[0], valueMode))
@@ -217,15 +217,15 @@ macro dispatch*(body: untyped): untyped =
 
     result = newStmtList(outer)
 
-macro dispatchValue*(body: untyped): untyped =
+macro dispatch*(body: untyped): untyped =
     ## Value-mode-only kind dispatch — for functions whose args don't include
     ## `Literal`/`PathLiteral` (predicates, similarity functions, etc).
     ##
-    ## Same clause grammar as `dispatch` (1-axis `KIND(b):` or 2-axis
-    ## `(KIND(b1), KIND(b2)):`), but no in-place branch is emitted and bodies
-    ## are *verbatim* full statements — the user writes their own `push(...)`.
-    ## Auto-wrap doesn't apply because the result kind typically differs from
-    ## the x-kind.
+    ## Same clause grammar as `dispatchWithLiteral` (1-axis `KIND(b):` or
+    ## 2-axis `(KIND(b1), KIND(b2)):`), but no in-place branch is emitted and
+    ## bodies are *verbatim* full statements — the user writes their own
+    ## `push(...)`. Auto-wrap doesn't apply because the result kind typically
+    ## differs from the x-kind.
     expectKind body, nnkStmtList
 
     proc kindField(name: string, n: NimNode): string =
@@ -241,12 +241,12 @@ macro dispatchValue*(body: untyped): untyped =
         of "Range":      "rng"
         of "Regex":      "rx"
         else:
-            error("dispatchValue: unsupported kind '" & name & "'", n); ""
+            error("dispatch: unsupported kind '" & name & "'", n); ""
 
     proc parsePat(n: NimNode): (string, NimNode) =
         if n.kind == nnkCall and n.len == 2 and n[0].kind == nnkIdent:
             return ($n[0], n[1])
-        error("dispatchValue: expected `KIND(binding)`", n)
+        error("dispatch: expected `KIND(binding)`", n)
 
     type Clause = object
         xKind: string
@@ -266,12 +266,12 @@ macro dispatchValue*(body: untyped): untyped =
              clause[0].kind in {nnkPar, nnkTupleConstr}:
             let par = clause[0]
             if par.len != 2:
-                error("dispatchValue: expected `(KIND(b), KIND(b))`", par)
+                error("dispatch: expected `(KIND(b), KIND(b))`", par)
             (fc.xKind, fc.xBinding) = parsePat(par[0])
             (fc.yKind, fc.yBinding) = parsePat(par[1])
             fc.body = clause[1]
         else:
-            error("dispatchValue: malformed clause", clause)
+            error("dispatch: malformed clause", clause)
         flat.add fc
 
     proc emitBranch(fc: Clause): NimNode =
@@ -298,7 +298,7 @@ macro dispatchValue*(body: untyped): untyped =
         let cls = xMap[xKind]
         if cls[0].yKind == "":
             if cls.len > 1:
-                error("dispatchValue: duplicate 1-axis clauses for kind '" & xKind & "'",
+                error("dispatch: duplicate 1-axis clauses for kind '" & xKind & "'",
                       cls[1].xBinding)
             outer.add nnkOfBranch.newTree(ident(xKind), emitBranch(cls[0]))
         else:

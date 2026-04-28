@@ -95,7 +95,7 @@ proc defineModule*(moduleName: string) =
             ; a: [3 4]
         """:
             #=======================================================
-            dispatch:
+            dispatchWithLiteral:
                 Block(a): toSeq(intersection(toOrderedSet(a), toOrderedSet(y.a)))
 
     builtin "powerset",
@@ -140,7 +140,7 @@ proc defineModule*(moduleName: string) =
             ; a: [1 2 3 4 5 6]
         """:
             #=======================================================
-            dispatch:
+            dispatchWithLiteral:
                 Block(a): toSeq(union(toOrderedSet(a), toOrderedSet(y.a)))
 
     #----------------------------

@@ -134,7 +134,7 @@ proc defineModule*(moduleName: string) =
             capitalize 'str                     ; str: "Hello World"
         """:
             #=======================================================
-            dispatch:
+            dispatchWithLiteral:
                 String(s): s.capitalize()
                 Char(c):   c.toUpper()
 
@@ -181,7 +181,7 @@ proc defineModule*(moduleName: string) =
                     else:                  (proc (s: string): string = strutils.escape(s))
                 else:                  (proc (s: string): string = strutils.escape(s))
 
-            dispatch:
+            dispatchWithLiteral:
                 String(s): escaper(s)
 
     builtin "indent",
@@ -220,7 +220,7 @@ proc defineModule*(moduleName: string) =
             if checkAttr("with"):
                 padding = aWith.s
 
-            dispatch:
+            dispatchWithLiteral:
                 String(s): indent(s, count, padding)
 
     builtin "jaro",
@@ -243,7 +243,7 @@ proc defineModule*(moduleName: string) =
             jaro "abcdef" "fedcba"  ; => 0.3888888888888888
             jaro "abcde" "vwxyz"    ; => 0.0
         """:
-            dispatchValue:
+            dispatch:
                 (String(s), String(t)): push(newFloating(jaro(s, t)))
 
     builtin "join",
@@ -349,7 +349,7 @@ proc defineModule*(moduleName: string) =
                 push(newStringBlock(@[aligned[0], aligned[1]]))
                 return
 
-            dispatchValue:
+            dispatch:
                 (String(s), String(t)): push(newInteger(editDistance(s, t)))
 
     builtin "lower",
@@ -373,7 +373,7 @@ proc defineModule*(moduleName: string) =
             ; => 'a'  
         """:
             #=======================================================
-            dispatch:
+            dispatchWithLiteral:
                 String(s): s.toLower()
                 Char(c):   c.toLower()
 
@@ -806,7 +806,7 @@ proc defineModule*(moduleName: string) =
                 leading = true
                 trailing = true
 
-            dispatch:
+            dispatchWithLiteral:
                 String(s): strutils.strip(s, leading, trailing)
 
     builtin "translate",
@@ -832,7 +832,7 @@ proc defineModule*(moduleName: string) =
             #=======================================================
             let replacements = (toSeq(y.d.pairs)).map((w) => (w[0], w[1].s))
 
-            dispatch:
+            dispatchWithLiteral:
                 String(s): s.multiReplace(replacements)
 
     builtin "truncate",
@@ -901,7 +901,7 @@ proc defineModule*(moduleName: string) =
             ; => 'A'                     
         """:
             #=======================================================
-            dispatch:
+            dispatchWithLiteral:
                 String(s): s.toUpper()
                 Char(c):   c.toUpper()
 
@@ -940,7 +940,7 @@ proc defineModule*(moduleName: string) =
             if checkAttr("at"):
                 cutoff = aAt.i
             
-            dispatch:
+            dispatchWithLiteral:
                 String(s): wrapWords(s, maxLineWidth=cutoff)
 
     #----------------------------
@@ -967,7 +967,7 @@ proc defineModule*(moduleName: string) =
             ascii? "Γειά!"          ; false
         """:
             #=======================================================
-            dispatchValue:
+            dispatch:
                 Char(c): push(newLogical(ord(c) < 128))
                 String(s):
                     var allOK = true
@@ -998,7 +998,7 @@ proc defineModule*(moduleName: string) =
             lower? 'A'               ; => false
         """:
             #=======================================================
-            dispatchValue:
+            dispatch:
                 Char(c): push(newLogical(c.isLower()))
                 String(s):
                     var broken = false
@@ -1079,7 +1079,7 @@ proc defineModule*(moduleName: string) =
         """:
             #=======================================================
             var res: Value
-            dispatchValue:
+            dispatch:
                 String(s): res = doParse(s.strip(leading=true, trailing=false, {'-'}), isFile=false)
                 Char(c):   res = doParse($(c), isFile=false)
 
@@ -1106,7 +1106,7 @@ proc defineModule*(moduleName: string) =
             prefix? "hello" 'h'           ; => true
         """:
             #=======================================================
-            dispatchValue:
+            dispatch:
                 (String(s), String(t)): push(newLogical(s.startsWith(t)))
                 (String(s), Regex(r)):  push(newLogical(s.startsWith(r)))
                 (String(s), Char(ch)):  push(newLogical(s.len > 0 and s.runeAtPos(0) == ch))
@@ -1133,7 +1133,7 @@ proc defineModule*(moduleName: string) =
             suffix? "world" 'o'           ; => false
         """:
             #=======================================================
-            dispatchValue:
+            dispatch:
                 (String(s), String(t)): push(newLogical(s.endsWith(t)))
                 (String(s), Regex(r)):  push(newLogical(s.endsWith(r)))
                 (String(s), Char(ch)):
@@ -1160,7 +1160,7 @@ proc defineModule*(moduleName: string) =
             upper? 'a'               ; => false
         """:
             #=======================================================
-            dispatchValue:
+            dispatch:
                 Char(c): push(newLogical(c.isUpper()))
                 String(s):
                     var broken = false
@@ -1192,6 +1192,6 @@ proc defineModule*(moduleName: string) =
             whitespace? 'a'               ; => false
         """:
             #=======================================================
-            dispatchValue:
+            dispatch:
                 Char(c):   push(newLogical(c.isWhitespace()))
                 String(s): push(newLogical(s.isWhitespace()))

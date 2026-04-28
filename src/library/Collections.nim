@@ -109,7 +109,7 @@ proc defineModule*(moduleName: string) =
                 else:              push newBlock(x.a & y)
                 return
 
-            dispatch:
+            dispatchWithLiteral:
                 (String(s), String(t)):
                     value:   push(newString(s & t))
                     inplace: s &= t
@@ -266,7 +266,7 @@ proc defineModule*(moduleName: string) =
                 else:
                     container[0 .. container.high - abs(times)]
 
-            dispatch:
+            dispatchWithLiteral:
                 String(s): s.drop()
                 Block(a):  a.drop()
 
@@ -507,7 +507,7 @@ proc defineModule*(moduleName: string) =
                 else:
                     container[0 .. container.high - abs(times)]
 
-            dispatch:
+            dispatchWithLiteral:
                 String(s): s.drop()
                 Block(a):  a.drop()
 
@@ -2352,7 +2352,7 @@ proc defineModule*(moduleName: string) =
             ; helo world
         """:
             #=======================================================
-            dispatch:
+            dispatchWithLiteral:
                 String(s):
                     var i = 0
                     var ret: string
