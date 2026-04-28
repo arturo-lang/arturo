@@ -43,9 +43,13 @@ macro dispatchWithLiteral*(body: untyped): untyped =
     ## Clause forms:
     ##   `KIND(binding): expr`                      — 1-axis on `x`, single body
     ##   `(KIND(b1), KIND(b2)): expr`               — 2-axis on `(x, y)`, single body
-    ##   `KIND(b):` (or 2-axis pair) followed by:
-    ##       `value:   <expr>`                      — value-mode body (payload only)
-    ##       `inplace: <stmts>`                     — in-place stmts (full statement(s))
+    ##   `(KIND(b1), KIND(b2), KIND(b3)): expr`     — 3-axis on `(x, y, z)`, single body
+    ##   any axis after the first may use `_` as a kind-wildcard (no binding;
+    ##   the body references `y` / `z` directly)
+    ##   `_: <body>`                                — top-level x-axis fallback
+    ##   `KIND(b):` (or n-axis tuple) followed by:
+    ##       `value:   <stmts>`                     — value-mode body (verbatim)
+    ##       `inplace: <stmts>`                     — in-place stmts (verbatim)
     ##
     ## Single-body mode: the body is the *payload* of a value of the x-kind
     ## (a `string` for `String`, `Rune` for `Char`, etc.). The macro wraps it
@@ -53,14 +57,11 @@ macro dispatchWithLiteral*(body: untyped): untyped =
     ## (`InPlaced.field = expr`) for `Literal`/`PathLiteral` args.
     ##
     ## Per-mode mode: both `value:` and `inplace:` are full statement blocks
-    ## that run verbatim. The user writes their own `push(...)` /
-    ## `SetInPlaceAny(...)` / field mutation — useful when the result kind
-    ## differs from the x-kind (e.g. `Char + String -> String`) or the
-    ## in-place path mutates a field directly (`s &= ...`, `s.insert(...)`).
+    ## that run verbatim.
     ##
-    ## In all cases `x`/`y` are still in scope (injected by `require`); the
-    ## binding name is an alias — a `let` for read-only access, a `template`
-    ## (lvalue) when an `inplace:` block needs to mutate.
+    ## In all cases `x`/`y`/`z` are still in scope (injected by `require`);
+    ## the binding name is an alias — a `let` for read-only access, a
+    ## `template` (lvalue) when an `inplace:` block needs to mutate.
     expectKind body, nnkStmtList
 
     proc fieldAndCtor(kind: string, n: NimNode): (string, string) =
@@ -84,10 +85,15 @@ macro dispatchWithLiteral*(body: untyped): untyped =
             error("dispatchWithLiteral: unsupported kind '" & kind & "'", n)
             ("", "")
 
-    proc parsePat(n: NimNode): (string, NimNode) =
+    proc parsePat(n: NimNode, allowWild: bool): tuple[wild: bool, kind: string, binding: NimNode] =
+        if allowWild and n.kind == nnkIdent and $n == "_":
+            return (true, "", nil)
         if n.kind == nnkCall and n.len == 2 and n[0].kind == nnkIdent:
-            return ($n[0], n[1])
-        error("dispatchWithLiteral: expected `KIND(binding)`", n)
+            if $n[0] == "_":
+                error("dispatchWithLiteral: `_` wildcard cannot have a binding", n)
+            return (false, $n[0], n[1])
+        error("dispatchWithLiteral: expected `KIND(binding)`" &
+              (if allowWild: " or `_`" else: ""), n)
 
     proc aliasTemplate(name, target: NimNode): NimNode =
         # template <name>: untyped = <target>
@@ -101,10 +107,17 @@ macro dispatchWithLiteral*(body: untyped): untyped =
 
     type
         FlatClause = object
+            isElse: bool   # `_:` top-level x-fallback
             xKind: string
             xBinding: NimNode
-            yKind: string  # "" if 1-axis
+            hasY: bool
+            yWild: bool
+            yKind: string
             yBinding: NimNode
+            hasZ: bool
+            zWild: bool
+            zKind: string
+            zBinding: NimNode
             valueE, inplaceS, unifiedB: NimNode
 
     proc parseBody(b: NimNode): tuple[valueE, inplaceS, unifiedB: NimNode] =
@@ -126,43 +139,80 @@ macro dispatchWithLiteral*(body: untyped): untyped =
         return (nil, nil, b)
 
     var flat: seq[FlatClause]
+    var hasElse = false
+    var elseClause: FlatClause
+
     for clause in body:
         var fc: FlatClause
-        if clause.kind == nnkCall and clause.len == 3 and clause[0].kind == nnkIdent:
+        if clause.kind == nnkCall and clause.len == 2 and
+           clause[0].kind == nnkIdent and $clause[0] == "_":
+            # `_: body` — top-level x-axis fallback
+            if hasElse:
+                error("dispatchWithLiteral: duplicate `_:` fallback", clause)
+            fc.isElse = true
+            (fc.valueE, fc.inplaceS, fc.unifiedB) = parseBody(clause[1])
+            elseClause = fc
+            hasElse = true
+            continue
+        elif clause.kind == nnkCall and clause.len == 3 and clause[0].kind == nnkIdent:
             # 1-axis: KIND(binding): body
             fc.xKind = $clause[0]
             fc.xBinding = clause[1]
             (fc.valueE, fc.inplaceS, fc.unifiedB) = parseBody(clause[2])
         elif clause.kind == nnkCall and clause.len == 2 and
              clause[0].kind in {nnkPar, nnkTupleConstr}:
-            # 2-axis: (KIND(b), KIND(b)): body
+            # 2- or 3-axis: (KIND(b), ...): body
             let par = clause[0]
-            if par.len != 2:
-                error("dispatchWithLiteral: expected `(KIND(b), KIND(b))`", par)
-            (fc.xKind, fc.xBinding) = parsePat(par[0])
-            (fc.yKind, fc.yBinding) = parsePat(par[1])
+            if par.len notin {2, 3}:
+                error("dispatchWithLiteral: expected 2- or 3-element tuple", par)
+            let xPat = parsePat(par[0], allowWild = false)
+            fc.xKind = xPat.kind; fc.xBinding = xPat.binding
+            fc.hasY = true
+            let yPat = parsePat(par[1], allowWild = true)
+            fc.yWild = yPat.wild; fc.yKind = yPat.kind; fc.yBinding = yPat.binding
+            if par.len == 3:
+                fc.hasZ = true
+                let zPat = parsePat(par[2], allowWild = true)
+                fc.zWild = zPat.wild; fc.zKind = zPat.kind; fc.zBinding = zPat.binding
             (fc.valueE, fc.inplaceS, fc.unifiedB) = parseBody(clause[1])
         else:
             error("dispatchWithLiteral: malformed clause", clause)
         flat.add fc
 
     proc emitBranch(fc: FlatClause, valueMode: bool): NimNode =
+        result = newStmtList()
+        if fc.isElse:
+            # No xKind — body uses x/y/z directly. No auto-wrap (kind unknown).
+            if valueMode:
+                if fc.valueE != nil:        result.add copyNimTree(fc.valueE)
+                elif fc.unifiedB != nil:    result.add copyNimTree(fc.unifiedB)
+                else:                       result.add nnkDiscardStmt.newTree(newEmptyNode())
+            else:
+                if fc.inplaceS != nil:      result.add copyNimTree(fc.inplaceS)
+                elif fc.unifiedB != nil:    result.add copyNimTree(fc.unifiedB)
+                else:                       result.add nnkDiscardStmt.newTree(newEmptyNode())
+            return
+
         let (xField, xCtor) = fieldAndCtor(fc.xKind, fc.xBinding)
         let xTarget =
             if valueMode: newDotExpr(ident("x"), ident(xField))
             else: newDotExpr(ident("InPlaced"), ident(xField))
 
-        result = newStmtList()
         let needsLValue = (not valueMode) and fc.inplaceS != nil
         if needsLValue:
             result.add aliasTemplate(copyNimTree(fc.xBinding), xTarget)
         else:
             result.add newLetStmt(copyNimTree(fc.xBinding), xTarget)
 
-        if fc.yKind != "":
+        if fc.hasY and not fc.yWild:
             let (yField, _) = fieldAndCtor(fc.yKind, fc.yBinding)
             result.add newLetStmt(copyNimTree(fc.yBinding),
                                   newDotExpr(ident("y"), ident(yField)))
+
+        if fc.hasZ and not fc.zWild:
+            let (zField, _) = fieldAndCtor(fc.zKind, fc.zBinding)
+            result.add newLetStmt(copyNimTree(fc.zBinding),
+                                  newDotExpr(ident("z"), ident(zField)))
 
         if valueMode:
             if fc.valueE != nil:
@@ -181,6 +231,30 @@ macro dispatchWithLiteral*(body: untyped): untyped =
             else:
                 result.add nnkDiscardStmt.newTree(newEmptyNode())
 
+    proc buildYBranch(ycls: seq[FlatClause], valueMode: bool): NimNode =
+        # ycls all share xKind & yKind (or yWild). May further dispatch on z.
+        if not ycls[0].hasZ:
+            if ycls.len > 1:
+                error("dispatchWithLiteral: duplicate clauses for the same kind",
+                      ycls[1].xBinding)
+            return emitBranch(ycls[0], valueMode)
+        let zCase = nnkCaseStmt.newTree(ident("zKind"))
+        var zElse: NimNode = nil
+        for fc in ycls:
+            if fc.zWild:
+                if zElse != nil:
+                    error("dispatchWithLiteral: duplicate z-axis `_` wildcard",
+                          fc.xBinding)
+                zElse = emitBranch(fc, valueMode)
+            else:
+                zCase.add nnkOfBranch.newTree(ident(fc.zKind),
+                                              emitBranch(fc, valueMode))
+        if zElse != nil:
+            zCase.add nnkElse.newTree(zElse)
+        else:
+            zCase.add nnkElse.newTree(nnkDiscardStmt.newTree(newEmptyNode()))
+        return zCase
+
     proc buildCase(disc: NimNode, valueMode: bool): NimNode =
         # Group clauses by xKind preserving order
         var xOrder: seq[string]
@@ -194,20 +268,41 @@ macro dispatchWithLiteral*(body: untyped): untyped =
         result = nnkCaseStmt.newTree(disc)
         for xKind in xOrder:
             let cls = xMap[xKind]
-            if cls[0].yKind == "":
+            if not cls[0].hasY:
                 if cls.len > 1:
                     error("dispatchWithLiteral: duplicate 1-axis clauses for kind '" & xKind & "'",
                           cls[1].xBinding)
                 result.add nnkOfBranch.newTree(ident(xKind),
                                                emitBranch(cls[0], valueMode))
             else:
-                let inner = nnkCaseStmt.newTree(ident("yKind"))
+                # Group by (yKind, yWild)
+                var yOrder: seq[string]
+                var yMap = initOrderedTable[string, seq[FlatClause]]()
                 for fc in cls:
-                    inner.add nnkOfBranch.newTree(ident(fc.yKind),
-                                                  emitBranch(fc, valueMode))
-                inner.add nnkElse.newTree(nnkDiscardStmt.newTree(newEmptyNode()))
+                    let key = if fc.yWild: "_" else: fc.yKind
+                    if key notin yMap:
+                        yMap[key] = @[]; yOrder.add key
+                    yMap[key].add fc
+
+                let inner = nnkCaseStmt.newTree(ident("yKind"))
+                var yElse: NimNode = nil
+                for yKey in yOrder:
+                    let ycls = yMap[yKey]
+                    let yBody = buildYBranch(ycls, valueMode)
+                    if yKey == "_":
+                        yElse = yBody
+                    else:
+                        inner.add nnkOfBranch.newTree(ident(yKey), yBody)
+                if yElse != nil:
+                    inner.add nnkElse.newTree(yElse)
+                else:
+                    inner.add nnkElse.newTree(nnkDiscardStmt.newTree(newEmptyNode()))
                 result.add nnkOfBranch.newTree(ident(xKind), inner)
-        result.add nnkElse.newTree(nnkDiscardStmt.newTree(newEmptyNode()))
+
+        if hasElse:
+            result.add nnkElse.newTree(emitBranch(elseClause, valueMode))
+        else:
+            result.add nnkElse.newTree(nnkDiscardStmt.newTree(newEmptyNode()))
 
     let outer = buildCase(ident("xKind"), valueMode = true)
     let inner = buildCase(newDotExpr(ident("InPlaced"), ident("kind")),
@@ -253,32 +348,62 @@ macro dispatch*(body: untyped): untyped =
         else:
             error("dispatch: unsupported kind '" & name & "'", n); ""
 
-    proc parsePat(n: NimNode): (string, NimNode) =
+    proc parsePat(n: NimNode, allowWild: bool): tuple[wild: bool, kind: string, binding: NimNode] =
+        if allowWild and n.kind == nnkIdent and $n == "_":
+            return (true, "", nil)
         if n.kind == nnkCall and n.len == 2 and n[0].kind == nnkIdent:
-            return ($n[0], n[1])
-        error("dispatch: expected `KIND(binding)`", n)
+            if $n[0] == "_":
+                error("dispatch: `_` wildcard cannot have a binding", n)
+            return (false, $n[0], n[1])
+        error("dispatch: expected `KIND(binding)`" &
+              (if allowWild: " or `_`" else: ""), n)
 
     type Clause = object
+        isElse: bool
         xKind: string
         xBinding: NimNode
+        hasY: bool
+        yWild: bool
         yKind: string
         yBinding: NimNode
+        hasZ: bool
+        zWild: bool
+        zKind: string
+        zBinding: NimNode
         body: NimNode
 
     var flat: seq[Clause]
+    var hasElse = false
+    var elseClause: Clause
+
     for clause in body:
         var fc: Clause
-        if clause.kind == nnkCall and clause.len == 3 and clause[0].kind == nnkIdent:
+        if clause.kind == nnkCall and clause.len == 2 and
+           clause[0].kind == nnkIdent and $clause[0] == "_":
+            if hasElse: error("dispatch: duplicate `_:` fallback", clause)
+            fc.isElse = true
+            fc.body = clause[1]
+            elseClause = fc
+            hasElse = true
+            continue
+        elif clause.kind == nnkCall and clause.len == 3 and clause[0].kind == nnkIdent:
             fc.xKind = $clause[0]
             fc.xBinding = clause[1]
             fc.body = clause[2]
         elif clause.kind == nnkCall and clause.len == 2 and
              clause[0].kind in {nnkPar, nnkTupleConstr}:
             let par = clause[0]
-            if par.len != 2:
-                error("dispatch: expected `(KIND(b), KIND(b))`", par)
-            (fc.xKind, fc.xBinding) = parsePat(par[0])
-            (fc.yKind, fc.yBinding) = parsePat(par[1])
+            if par.len notin {2, 3}:
+                error("dispatch: expected 2- or 3-element tuple", par)
+            let xPat = parsePat(par[0], allowWild = false)
+            fc.xKind = xPat.kind; fc.xBinding = xPat.binding
+            fc.hasY = true
+            let yPat = parsePat(par[1], allowWild = true)
+            fc.yWild = yPat.wild; fc.yKind = yPat.kind; fc.yBinding = yPat.binding
+            if par.len == 3:
+                fc.hasZ = true
+                let zPat = parsePat(par[2], allowWild = true)
+                fc.zWild = zPat.wild; fc.zKind = zPat.kind; fc.zBinding = zPat.binding
             fc.body = clause[1]
         else:
             error("dispatch: malformed clause", clause)
@@ -286,14 +411,42 @@ macro dispatch*(body: untyped): untyped =
 
     proc emitBranch(fc: Clause): NimNode =
         result = newStmtList()
+        if fc.isElse:
+            result.add copyNimTree(fc.body)
+            return
         result.add newLetStmt(copyNimTree(fc.xBinding),
                               newDotExpr(ident("x"),
                                          ident(kindField(fc.xKind, fc.xBinding))))
-        if fc.yKind != "":
+        if fc.hasY and not fc.yWild:
             result.add newLetStmt(copyNimTree(fc.yBinding),
                                   newDotExpr(ident("y"),
                                              ident(kindField(fc.yKind, fc.yBinding))))
+        if fc.hasZ and not fc.zWild:
+            result.add newLetStmt(copyNimTree(fc.zBinding),
+                                  newDotExpr(ident("z"),
+                                             ident(kindField(fc.zKind, fc.zBinding))))
         result.add copyNimTree(fc.body)
+
+    proc buildYBranch(ycls: seq[Clause]): NimNode =
+        if not ycls[0].hasZ:
+            if ycls.len > 1:
+                error("dispatch: duplicate clauses for the same kind",
+                      ycls[1].xBinding)
+            return emitBranch(ycls[0])
+        let zCase = nnkCaseStmt.newTree(ident("zKind"))
+        var zElse: NimNode = nil
+        for fc in ycls:
+            if fc.zWild:
+                if zElse != nil:
+                    error("dispatch: duplicate z-axis `_` wildcard", fc.xBinding)
+                zElse = emitBranch(fc)
+            else:
+                zCase.add nnkOfBranch.newTree(ident(fc.zKind), emitBranch(fc))
+        if zElse != nil:
+            zCase.add nnkElse.newTree(zElse)
+        else:
+            zCase.add nnkElse.newTree(nnkDiscardStmt.newTree(newEmptyNode()))
+        return zCase
 
     var xOrder: seq[string]
     var xMap = initOrderedTable[string, seq[Clause]]()
@@ -306,18 +459,38 @@ macro dispatch*(body: untyped): untyped =
     let outer = nnkCaseStmt.newTree(ident("xKind"))
     for xKind in xOrder:
         let cls = xMap[xKind]
-        if cls[0].yKind == "":
+        if not cls[0].hasY:
             if cls.len > 1:
                 error("dispatch: duplicate 1-axis clauses for kind '" & xKind & "'",
                       cls[1].xBinding)
             outer.add nnkOfBranch.newTree(ident(xKind), emitBranch(cls[0]))
         else:
-            let inner = nnkCaseStmt.newTree(ident("yKind"))
+            var yOrder: seq[string]
+            var yMap = initOrderedTable[string, seq[Clause]]()
             for fc in cls:
-                inner.add nnkOfBranch.newTree(ident(fc.yKind), emitBranch(fc))
-            inner.add nnkElse.newTree(nnkDiscardStmt.newTree(newEmptyNode()))
+                let key = if fc.yWild: "_" else: fc.yKind
+                if key notin yMap:
+                    yMap[key] = @[]; yOrder.add key
+                yMap[key].add fc
+
+            let inner = nnkCaseStmt.newTree(ident("yKind"))
+            var yElse: NimNode = nil
+            for yKey in yOrder:
+                let yBody = buildYBranch(yMap[yKey])
+                if yKey == "_":
+                    yElse = yBody
+                else:
+                    inner.add nnkOfBranch.newTree(ident(yKey), yBody)
+            if yElse != nil:
+                inner.add nnkElse.newTree(yElse)
+            else:
+                inner.add nnkElse.newTree(nnkDiscardStmt.newTree(newEmptyNode()))
             outer.add nnkOfBranch.newTree(ident(xKind), inner)
-    outer.add nnkElse.newTree(nnkDiscardStmt.newTree(newEmptyNode()))
+
+    if hasElse:
+        outer.add nnkElse.newTree(emitBranch(elseClause))
+    else:
+        outer.add nnkElse.newTree(nnkDiscardStmt.newTree(newEmptyNode()))
 
     result = newStmtList(outer)
 
