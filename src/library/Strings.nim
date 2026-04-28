@@ -1079,10 +1079,9 @@ proc defineModule*(moduleName: string) =
         """:
             #=======================================================
             var res: Value
-            if likely(xKind==String):
-                res = doParse(x.s.strip(leading=true,trailing=false,{'-'}), isFile=false)
-            else:
-                res = doParse($(x.c), isFile=false)
+            dispatchValue:
+                String(s): res = doParse(s.strip(leading=true, trailing=false, {'-'}), isFile=false)
+                Char(c):   res = doParse($(c), isFile=false)
 
             push(newLogical(res.a.len==1 and res.a[0].kind in {Integer,Floating,Rational}))
 
