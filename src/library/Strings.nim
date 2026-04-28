@@ -967,18 +967,16 @@ proc defineModule*(moduleName: string) =
             ascii? "Γειά!"          ; false
         """:
             #=======================================================
-            if xKind==Char:
-                push(newLogical(ord(x.c)<128))
-            else:
-                var allOK = true
-                for ch in runes(x.s):
-                    if ord(ch) >= 128:
-                        allOK = false
-                        push(VFALSE)
-                        break
-
-                if allOK:
-                    push(VTRUE)
+            dispatchValue:
+                Char(c): push(newLogical(ord(c) < 128))
+                String(s):
+                    var allOK = true
+                    for ch in runes(s):
+                        if ord(ch) >= 128:
+                            allOK = false
+                            push(VFALSE)
+                            break
+                    if allOK: push(VTRUE)
 
     builtin "lower?",
         alias       = unaliased, 
