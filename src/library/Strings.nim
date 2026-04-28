@@ -998,18 +998,16 @@ proc defineModule*(moduleName: string) =
             lower? 'A'               ; => false
         """:
             #=======================================================
-            if xKind==Char:
-                push(newLogical(x.c.isLower()))
-            else:
-                var broken = false
-                for c in runes(x.s):
-                    if not c.isLower():
-                        push(VFALSE)
-                        broken = true
-                        break
-
-                if not broken:
-                    push(VTRUE)
+            dispatchValue:
+                Char(c): push(newLogical(c.isLower()))
+                String(s):
+                    var broken = false
+                    for ch in runes(s):
+                        if not ch.isLower():
+                            push(VFALSE)
+                            broken = true
+                            break
+                    if not broken: push(VTRUE)
 
     when not defined(WEB):
 
