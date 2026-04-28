@@ -84,11 +84,8 @@ proc defineModule*(moduleName: string) =
             darken #9944CC 0.3      ; => #6B308F
         """:
             #=======================================================
-            if xKind == Color:
-                push newColor(alterColorValue(x.l, y.f * (-1)))
-            else:
-                ensureInPlaceAny()
-                SetInPlaceAny(newColor(alterColorValue(InPlaced.l, y.f * (-1))))                
+            dispatchWithLiteral:
+                Color(c): alterColorValue(c, y.f * (-1))
 
     builtin "desaturate",
         alias       = unaliased, 
