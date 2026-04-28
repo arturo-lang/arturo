@@ -1001,13 +1001,9 @@ proc defineModule*(moduleName: string) =
             => ["name" "surname"]
         """:
             #=======================================================
-            var s: seq[string]
-            if xKind == Dictionary:
-                s = toSeq(x.d.keys)
-            else:
-                s = toSeq(x.o.objectKeys)
-
-            push(newStringBlock(s))
+            dispatch:
+                Dictionary(d): push(newStringBlock(toSeq(d.keys)))
+                Object(o):     push(newStringBlock(toSeq(o.objectKeys)))
 
     builtin "last",
         alias       = unaliased,
