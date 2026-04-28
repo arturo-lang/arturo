@@ -1184,17 +1184,14 @@ proc defineModule*(moduleName: string) =
             ; => 9
         """:
             #=======================================================
-            let doRepeat = hadAttr("repeated")
+            bindAttrs:
+                repeated: Logical
+                sz(by):   Integer = x.a.len
 
-            var sz = x.a.len
-            if checkAttr("by"):
-                sz = aBy.i
-
-            if hadAttr("count"):
-                push(countPermutations(x.a, sz, doRepeat))
-            else:
-                push(newBlock(getPermutations(x.a, sz, doRepeat).map((
-                        z)=>newBlock(z))))
+            dispatch:
+                Block(items):
+                    on count: push(countPermutations(items, sz, repeated))
+                    _:        push(newBlock(getPermutations(items, sz, repeated).map((z)=>newBlock(z))))
 
     builtin "pop",
         alias       = unaliased,
