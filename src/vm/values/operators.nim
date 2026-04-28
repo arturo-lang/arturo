@@ -463,7 +463,7 @@ template normalIntegerShrI*(x: var Value, y: int): untyped =
     x.i = x.i shr y
 
 template arithmeticFastpathA*(slowOp, intFastFn: untyped): untyped =
-    ## inline fast-path for unary arithmetic ops on a NormalInteger operand.
+    ## inline fast-path for unary arithmetic ops on a NormalInteger operand -
     ## on any other operand kind, it defaults to the normal ``slowOp``.
     if likely(stack.sTop().kind == Integer) and likely(stack.sTop().iKind == NormalInteger):
         let x = stack.pop()
@@ -472,8 +472,8 @@ template arithmeticFastpathA*(slowOp, intFastFn: untyped): untyped =
         slowOp()
 
 template arithmeticFastpathB*(slowOp, intFastFn: untyped): untyped =
-    ## inline fast-path for binary arithmetic ops on two NormalInteger operands.
-    ## on any other operand kind, it defaults to the normal ``slowOp``.
+    ## inline fast-path for binary arithmetic ops on two NormalInteger operands -
+    ## on any other operand kind, it defaults to the normal ``slowOp``
     if likely(stack.peek(0).kind == Integer) and likely(stack.peek(1).kind == Integer) and
        likely(stack.peek(0).iKind == NormalInteger) and likely(stack.peek(1).iKind == NormalInteger):
         let x = stack.pop()
