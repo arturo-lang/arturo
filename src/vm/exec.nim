@@ -42,6 +42,7 @@ when not defined(WEB):
 import vm/values/custom/[vbinary]
 
 import vm/values/comparison
+import vm/values/operators
 
 #=======================================
 # Types
@@ -732,19 +733,19 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
 
                 # [0x80-0x8F]
                 # arithmetic operators
-                of opAdd                : DoAdd()
-                of opSub                : DoSub()
-                of opMul                : DoMul()
-                of opDiv                : DoDiv()
-                of opFdiv               : DoFdiv()
-                of opMod                : DoMod()
-                of opPow                : DoPow()
+                of opAdd                : arithmeticFastpathB(DoAdd, normalIntegerAdd)
+                of opSub                : arithmeticFastpathB(DoSub, normalIntegerSub)
+                of opMul                : arithmeticFastpathB(DoMul, normalIntegerMul)
+                of opDiv                : arithmeticFastpathB(DoDiv, normalIntegerDiv)
+                of opFdiv               : arithmeticFastpathB(DoFdiv, normalIntegerFDiv)
+                of opMod                : arithmeticFastpathB(DoMod, normalIntegerMod)
+                of opPow                : arithmeticFastpathB(DoPow, normalIntegerPow)
 
-                of opNeg                : DoNeg()
+                of opNeg                : arithmeticFastpathA(DoNeg, normalIntegerNeg)
 
                 # increment/decrement
-                of opInc                : DoInc()
-                of opDec                : DoDec()
+                of opInc                : arithmeticFastpathA(DoInc, normalIntegerInc)
+                of opDec                : arithmeticFastpathA(DoDec, normalIntegerDec)
 
                 # binary operators
                 of opBNot               : DoBNot()
