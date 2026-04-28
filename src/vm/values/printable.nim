@@ -200,7 +200,10 @@ proc `$`*(v: Value): string {.inline.} =
 
         of Bytecode:
             result = "<bytecode>" & "(" & fmt("{cast[uint](v):#X}") & ")"
-            
+
+        of Task:
+            result = $(v.tsk)
+
         of Nothing: discard
         of ANY: discard
 
@@ -461,9 +464,12 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
                 if v.dbKind==SqliteDatabase: stdoutWrite fmt("[sqlite db] {cast[uint](v.sqlitedb):#X}")
                 #elif v.dbKind==MysqlDatabase: stdout.write fmt("[mysql db] {cast[uint](v.mysqldb):#X}")
 
-        of Socket       : 
+        of Socket       :
             when not defined(WEB):
                 dumpPrimitive($(v.sock), v)
+
+        of Task         :
+            dumpPrimitive($(v.tsk), v)
 
         of Bytecode     : 
             dumpBlockStart(v)
