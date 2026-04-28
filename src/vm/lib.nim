@@ -73,23 +73,20 @@ macro dispatch*(body: untyped): untyped =
         let binding = clause[1]
         let bodyExpr = clause[2]
         let (field, ctor) = fieldAndCtor(kindName, clause[0])
-        let kindIdent = ident(kindName)
-        let fieldIdent = ident(field)
-        let ctorIdent = ident(ctor)
 
         outerCase.add nnkOfBranch.newTree(
-            kindIdent,
+            ident(kindName),
             newStmtList(
-                newLetStmt(binding, newDotExpr(ident("x"), fieldIdent)),
-                newCall(ident("push"), newCall(ctorIdent, bodyExpr))
+                newLetStmt(copyNimTree(binding), newDotExpr(ident("x"), ident(field))),
+                newCall(ident("push"), newCall(ident(ctor), copyNimTree(bodyExpr)))
             )
         )
 
         innerCase.add nnkOfBranch.newTree(
-            kindIdent,
+            ident(kindName),
             newStmtList(
-                newLetStmt(binding, newDotExpr(ident("InPlaced"), fieldIdent)),
-                newAssignment(newDotExpr(ident("InPlaced"), fieldIdent), bodyExpr)
+                newLetStmt(copyNimTree(binding), newDotExpr(ident("InPlaced"), ident(field))),
+                newAssignment(newDotExpr(ident("InPlaced"), ident(field)), copyNimTree(bodyExpr))
             )
         )
 
