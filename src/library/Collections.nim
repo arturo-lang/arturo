@@ -2528,17 +2528,11 @@ proc defineModule*(moduleName: string) =
             values user     ; => ["John" "Doe"]
         """:
             #=======================================================
-            if xKind == Block:
-                push x
-            elif xKind == Range:
-                let items = toSeq(x.rng.items)
-                push(newBlock(items))
-            elif xKind == Dictionary:
-                let s = toSeq(x.d.values)
-                push(newBlock(s))
-            else:
-                let s = toSeq(x.o.objectValues)
-                push(newBlock(s))
+            dispatch:
+                Block(_):      push x
+                Range(rng):    push(newBlock(toSeq(rng.items)))
+                Dictionary(d): push(newBlock(toSeq(d.values)))
+                Object(o):     push(newBlock(toSeq(o.objectValues)))
 
     #----------------------------
     # Predicates
