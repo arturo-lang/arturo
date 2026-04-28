@@ -22,6 +22,7 @@
 import asyncdispatch
 
 import vm/lib
+import vm/[eval, exec]
 import vm/values/custom/[vtask]
 
 #=======================================
@@ -40,6 +41,40 @@ proc defineModule*(moduleName: string) =
     #----------------------------
     # Functions
     #----------------------------
+
+    builtin "task",
+        alias       = unaliased,
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "wrap given block in a task and return its handle",
+        args        = {
+            "code"  : {Block}
+        },
+        attrs       = NoAttrs,
+        returns     = {Task},
+        example     = """
+        ; (draft) for now `task` runs the block synchronously and returns
+        ; an already-settled task - useful for plumbing/composition while
+        ; we work out the real concurrent execution model.
+        ;
+        ; t: task [ 1 + 2 ]
+        ; print wait t          ; 3
+        """:
+            #=======================================================
+            # TODO(Tasks/task) actually run the block off the main VM
+            #  the VM is not reentrant under `await`, so for now we evaluate
+            #  the block synchronously and return an already-completed task.
+            #  the API shape is what matters here - the real concurrency story
+            #  comes once we have a producer-side dispatcher.
+            #  labels: library, enhancement, open discussion
+            let evaled = evalOrGet(x)
+            execUnscoped(evaled)
+            let res = stack.pop()
+
+            let f = newFuture[Value]("task")
+            f.complete(res)
+
+            push newTask(VTask(state: taskDone, future: f))
 
     builtin "wait",
         alias       = unaliased,
