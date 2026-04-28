@@ -66,6 +66,34 @@ when not defined(WEB):
     import vm/lib
     import vm/[env, errors, exec]
     import vm/values/custom/verror
+    import vm/values/custom/vtask
+
+#=======================================
+# Helpers
+#=======================================
+
+when not defined(WEB):
+    # TODO(Net) flesh-out async request support
+    #  this is the bare minimum: GET-only, no headers/proxy/etc, just body+status
+    #  in a dictionary. the goal is to prove the `:task` plumbing end-to-end -
+    #  full parity with sync `request` lands once the API has settled.
+    #  labels: library, enhancement
+    proc asyncRequestGet(url: string, agent: string): Future[Value] {.async.} =
+        let client = newAsyncHttpClient(userAgent = agent)
+        try:
+            let response = await client.request(url = url, httpMethod = HttpGet)
+            let body = await response.body
+            var ret: ValueDict = initOrderedTable[string,Value]()
+            ret["version"] = newString(response.version)
+            ret["body"]    = newString(body)
+            try:
+                let respStatus = (response.status.splitWhitespace())[0]
+                ret["status"] = newInteger(respStatus)
+            except CatchableError:
+                ret["status"] = newString(response.status)
+            result = newDictionary(ret)
+        except CatchableError:
+            result = VNULL
 
 #=======================================
 # Definitions
@@ -198,9 +226,10 @@ proc defineModule*(moduleName: string) =
                 "timeout"       : ({Integer},"set a timeout"),
                 "proxy"         : ({String},"use given proxy url"),
                 "certificate"   : ({String},"use SSL certificate at given path"),
-                "raw"           : ({Logical},"return raw response without processing")
+                "raw"           : ({Logical},"return raw response without processing"),
+                "async"         : ({Logical},"perform request asynchronously and return a `:task`")
             },
-            returns     = {Dictionary,Null},
+            returns     = {Dictionary,Null,Task},
             example     = """
             print request "https://httpbin.org/get" #[some:"arg" another: 123]
             ; [version:1.1 body:{
@@ -236,7 +265,14 @@ proc defineModule*(moduleName: string) =
             """:
                 #=======================================================
                 var url = x.s
-                var meth: HttpMethod = HttpGet 
+                var meth: HttpMethod = HttpGet
+
+                if hadAttr("async"):
+                    # NOTE: only GET-with-no-extras is wired for now (see helper above)
+                    var agent = "Arturo HTTP Client / " & $(getSystemInfo()["version"])
+                    push newTask(VTask(state: taskPending, future: asyncRequestGet(url, agent)))
+                    return
+
 
                 if (hadAttr("get")): discard
                 if (hadAttr("post")): meth = HttpPost
