@@ -341,14 +341,16 @@ proc defineModule*(moduleName: string) =
             ; AC-TGCACTGAC
             ; GCATG-ACT-AT
         """:
-            if ( hadAttr("align")):
-                var filler:Rune = "-".runeAt(0)
+            if hadAttr("align"):
+                var filler: Rune = "-".runeAt(0)
                 if checkAttr("with"):
                     filler = aWith.c
-                let aligned = levenshteinAlign(x.s,y.s,filler)
+                let aligned = levenshteinAlign(x.s, y.s, filler)
                 push(newStringBlock(@[aligned[0], aligned[1]]))
-            else:
-                push(newInteger(editDistance(x.s,y.s)))
+                return
+
+            dispatchValue:
+                (String(s), String(t)): push(newInteger(editDistance(s, t)))
 
     builtin "lower",
         alias       = unaliased, 
