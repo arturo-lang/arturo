@@ -803,10 +803,8 @@ proc defineModule*(moduleName: string) =
                 leading = true
                 trailing = true
 
-            if xKind==String: push(newString(strutils.strip(x.s, leading, trailing)))
-            else: 
-                ensureInPlaceAny()
-                InPlaced.s = strutils.strip(InPlaced.s, leading, trailing) 
+            dispatch:
+                String(s): strutils.strip(s, leading, trailing)
 
     builtin "translate",
         alias       = unaliased, 
