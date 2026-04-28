@@ -463,9 +463,8 @@ template normalIntegerShrI*(x: var Value, y: int): untyped =
     x.i = x.i shr y
 
 template arithmeticFastpathA*(slowOp, intFastFn: untyped): untyped =
-    ## Inline fast-path for unary arithmetic ops on a NormalInteger operand.
-    ## On any other operand kind (Literal, BigInteger, Floating, ...) it
-    ## falls through to the full builtin closure ``slowOp``.
+    ## inline fast-path for unary arithmetic ops on a NormalInteger operand.
+    ## on any other operand kind, it defaults to the normal ``slowOp``.
     if likely(stack.sTop().kind == Integer) and likely(stack.sTop().iKind == NormalInteger):
         let x = stack.pop()
         stack.push(intFastFn(x.i))
@@ -473,10 +472,8 @@ template arithmeticFastpathA*(slowOp, intFastFn: untyped): untyped =
         slowOp()
 
 template arithmeticFastpathB*(slowOp, intFastFn: untyped): untyped =
-    ## Inline fast-path for binary arithmetic ops on two NormalInteger operands.
-    ## Falls through to ``slowOp`` for any other case.
-    ## Stack convention: top-of-stack is the *first* operand (``x``), matching
-    ## ``require`` in vm/checks.nim — non-commutative ops would otherwise swap.
+    ## inline fast-path for binary arithmetic ops on two NormalInteger operands.
+    ## on any other operand kind, it defaults to the normal ``slowOp``.
     if likely(stack.peek(0).kind == Integer) and likely(stack.peek(1).kind == Integer) and
        likely(stack.peek(0).iKind == NormalInteger) and likely(stack.peek(1).iKind == NormalInteger):
         let x = stack.pop()
