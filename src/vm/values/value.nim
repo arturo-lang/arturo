@@ -34,7 +34,7 @@ when (not defined(GMP)) and (not defined(WEB)):
 
 import vm/opcodes
 
-import vm/values/custom/[vbinary, vcolor, vcomplex, verror, vlogical, vquantity, vrange, vrational, vregex, vsymbol, vversion]
+import vm/values/custom/[vbinary, vcolor, vcomplex, verror, vlogical, vquantity, vrange, vrational, vregex, vsymbol, vtask, vversion]
 
 when not defined(WEB):
     import vm/values/custom/[vsocket]
@@ -855,6 +855,10 @@ func newBytecode*(t: sink Translation): Value {.inline.} =
     ## create Bytecode value from Translation
     Value(kind: Bytecode, trans: t)
 
+proc newTask*(tsk: VTask): Value {.inline.} =
+    ## create Task value from VTask
+    Value(kind: Task, tsk: tsk)
+
 func newInline*(a: sink ValueArray = @[]): Value {.inline.} =
     ## create Inline value from ValueArray
     Value(kind: Inline, a: a)
@@ -1031,6 +1035,10 @@ proc copyValue*(v: Value): Value {.inline.} =
 
         of Bytecode:
             result = newBytecode(v.trans)
+
+        of Task:
+            # tasks are handles to in-flight work - a "copy" should still refer to the same task
+            result = newTask(v.tsk)
 
         of Nothing, Any:
             discard
@@ -1317,6 +1325,9 @@ func hash*(v: Value): Hash {.inline.} =
 
         of Bytecode:
             result = result !& cast[Hash](unsafeAddr v)
+
+        of Task:
+            result = result !& hash(v.tsk)
 
         of Nothing      : discard
         of ANY          : discard
