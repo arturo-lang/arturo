@@ -24,7 +24,7 @@ when defined(GMP):
     import helpers/bignums
 
 import vm/opcodes
-import vm/values/custom/[vbinary, vcolor, vcomplex, verror, vlogical, vquantity, vrange, vrational, vregex, vsymbol, vversion]
+import vm/values/custom/[vbinary, vcolor, vcomplex, verror, vlogical, vquantity, vrange, vrational, vregex, vsymbol, vtask, vversion]
 import vm/values/flags
 
 when not defined(WEB):
@@ -101,9 +101,10 @@ type
         Database        = 37
         Socket          = 38    
         Bytecode        = 39
+        Task            = 40
 
-        Nothing         = 40
-        Any             = 41
+        Nothing         = 41
+        Any             = 42
 
     ValueSpec* = set[ValueKind]
 
@@ -346,6 +347,8 @@ type
                     sock*: VSocket
             of Bytecode:
                 trans*: Translation
+            of Task:
+                tsk*: VTask
 
     ValueObj = typeof(Value()[])
 
