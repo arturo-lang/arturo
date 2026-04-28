@@ -854,20 +854,13 @@ proc defineModule*(moduleName: string) =
             ; => "Lorem ipsum dolor sit amet,---"
         """: 
             #=======================================================
-            var with = "..."
-            if checkAttr("with"):
-                with = aWith.s
+            bindAttrs:
+                filler(with): String = "..."
 
-            if (hadAttr("preserve")):
-                if xKind==String: push(newString(truncatePreserving(x.s, y.i, with)))
-                else: 
-                    ensureInPlaceAny()
-                    InPlaced.s = truncatePreserving(InPlaced.s, y.i, with)
-            else:
-                if xKind==String: push(newString(truncate(x.s, y.i, with)))
-                else: 
-                    ensureInPlaceAny()
-                    InPlaced.s = truncate(InPlaced.s, y.i, with)
+            dispatchWithLiteral:
+                String(s):
+                    on preserve: truncatePreserving(s, y.i, filler)
+                    _:           truncate(s, y.i, filler)
 
     builtin "upper",
         alias       = unaliased, 
