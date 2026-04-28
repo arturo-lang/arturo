@@ -1133,13 +1133,12 @@ proc defineModule*(moduleName: string) =
             suffix? "world" 'o'           ; => false
         """:
             #=======================================================
-            if likely(yKind==String):
-                push(newLogical(x.s.endsWith(y.s)))
-            elif yKind==Regex:
-                push(newLogical(x.s.endsWith(y.rx)))
-            else:
-                let slen = x.s.runeLen()
-                push(newLogical(slen > 0 and x.s.runeAtPos(slen-1) == y.c))
+            dispatchValue:
+                (String(s), String(t)): push(newLogical(s.endsWith(t)))
+                (String(s), Regex(r)):  push(newLogical(s.endsWith(r)))
+                (String(s), Char(ch)):
+                    let slen = s.runeLen()
+                    push(newLogical(slen > 0 and s.runeAtPos(slen-1) == ch))
 
     builtin "upper?",
         alias       = unaliased, 
