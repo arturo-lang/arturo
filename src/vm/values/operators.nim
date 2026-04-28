@@ -462,6 +462,29 @@ template normalIntegerShrI*(x: var Value, y: int): untyped =
     ## and set result in-place
     x.i = x.i shr y
 
+template arithmeticFastpathA*(slowOp, intFastFn: untyped): untyped =
+    ## Inline fast-path for unary arithmetic ops on a NormalInteger operand.
+    ## On any other operand kind (Literal, BigInteger, Floating, ...) it
+    ## falls through to the full builtin closure ``slowOp``.
+    if likely(stack.sTop().kind == Integer) and likely(stack.sTop().iKind == NormalInteger):
+        let x = stack.pop()
+        stack.push(intFastFn(x.i))
+    else:
+        slowOp()
+
+template arithmeticFastpathB*(slowOp, intFastFn: untyped): untyped =
+    ## Inline fast-path for binary arithmetic ops on two NormalInteger operands.
+    ## Falls through to ``slowOp`` for any other case.
+    ## Stack convention: top-of-stack is the *first* operand (``x``), matching
+    ## ``require`` in vm/checks.nim — non-commutative ops would otherwise swap.
+    if likely(stack.peek(0).kind == Integer) and likely(stack.peek(1).kind == Integer) and
+       likely(stack.peek(0).iKind == NormalInteger) and likely(stack.peek(1).iKind == NormalInteger):
+        let x = stack.pop()
+        let y = stack.pop()
+        stack.push(intFastFn(x.i, y.i))
+    else:
+        slowOp()
+
 template objectOperationOrNothing*(operation: string, mgkMeth: MagicMethod, oneparam: static bool = false, inplace: static bool = false): untyped =
     if x.kind == Object and x.magic.fetch(mgkMeth):
         when inplace:
