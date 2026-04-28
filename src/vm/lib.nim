@@ -37,6 +37,73 @@ const
 # Helpers
 #=======================================
 
+macro dispatch*(body: untyped): untyped =
+    ## Dispatch a builtin's body across kinds and modes.
+    ##
+    ## Each clause has the form `KIND(binding): expr` where `expr` produces
+    ## the *payload* of a value of that kind (e.g. a `string` for `String`,
+    ## a `Rune` for `Char`, a `ValueArray` for `Block`).
+    ##
+    ## For value-mode args, the macro emits `push(newKind(expr))`.
+    ## For `Literal`/`PathLiteral` args, it emits an `ensureInPlaceAny()` plus
+    ## an inner `case InPlaced.kind` that does direct field assignment —
+    ## matching the hand-written pattern, so no extra allocation is introduced.
+    expectKind body, nnkStmtList
+
+    proc fieldAndCtor(kind: string, n: NimNode): (string, string) =
+        case kind
+        of "String":     ("s", "newString")
+        of "Char":       ("c", "newChar")
+        of "Block":      ("a", "newBlock")
+        of "Integer":    ("i", "newInteger")
+        of "Floating":   ("f", "newFloating")
+        of "Logical":    ("b", "newLogical")
+        of "Dictionary": ("d", "newDictionary")
+        else:
+            error("dispatch: unsupported kind '" & kind & "'", n)
+            ("", "")
+
+    let outerCase = nnkCaseStmt.newTree(ident("xKind"))
+    let innerCase = nnkCaseStmt.newTree(newDotExpr(ident("InPlaced"), ident("kind")))
+
+    for clause in body:
+        if clause.kind != nnkCall or clause.len != 3 or clause[0].kind != nnkIdent or clause[2].kind != nnkStmtList:
+            error("dispatch: expected `KIND(binding): expr`", clause)
+        let kindName = $clause[0]
+        let binding = clause[1]
+        let bodyExpr = clause[2]
+        let (field, ctor) = fieldAndCtor(kindName, clause[0])
+        let kindIdent = ident(kindName)
+        let fieldIdent = ident(field)
+        let ctorIdent = ident(ctor)
+
+        outerCase.add nnkOfBranch.newTree(
+            kindIdent,
+            newStmtList(
+                newLetStmt(binding, newDotExpr(ident("x"), fieldIdent)),
+                newCall(ident("push"), newCall(ctorIdent, bodyExpr))
+            )
+        )
+
+        innerCase.add nnkOfBranch.newTree(
+            kindIdent,
+            newStmtList(
+                newLetStmt(binding, newDotExpr(ident("InPlaced"), fieldIdent)),
+                newAssignment(newDotExpr(ident("InPlaced"), fieldIdent), bodyExpr)
+            )
+        )
+
+    let discardStmt = nnkDiscardStmt.newTree(newEmptyNode())
+    innerCase.add nnkElse.newTree(discardStmt)
+
+    outerCase.add nnkOfBranch.newTree(
+        ident("Literal"), ident("PathLiteral"),
+        newStmtList(newCall(ident("ensureInPlaceAny")), innerCase)
+    )
+    outerCase.add nnkElse.newTree(nnkDiscardStmt.newTree(newEmptyNode()))
+
+    result = newStmtList(outerCase)
+
 macro attrTypes*(name: static[string], types: static[set[ValueKind]]): untyped =
     let attrRequiredTypes = ident('t' & ($name).capitalizeAscii())
     if types == {Any}:
