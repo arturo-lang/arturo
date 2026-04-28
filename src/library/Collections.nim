@@ -272,39 +272,19 @@ proc defineModule*(moduleName: string) =
 
             if checkAttr("times"):
                 times = -aTimes.i
-            
-            template numberInRange(container: untyped): untyped = 
-                container.len >= abs(times)
-                
+
             template drop(container: untyped): untyped =
-                if 0 < times:
+                if container.len < abs(times):
+                    when container is string: ""
+                    else: newSeq[Value](0)
+                elif 0 < times:
                     container[times..^1]
                 else:
-                    container[0.. container.high - abs(times)]
-                
-            if x.kind in {Literal, PathLiteral}:
-                ensureInPlaceAny()
-                case InPlaced.kind
-                of String:
-                    if numberInRange(InPlaced.s):
-                        InPlaced.s = InPlaced.s.drop()
-                    else: 
-                        InPlaced.s = ""
-                of Block:
-                    if numberInRange(InPlaced.a):
-                        InPlaced.a = InPlaced.a.drop()
-                    else:
-                        InPlaced.a = newSeq[Value](0)
-                else: discard
-            else:
-                case x.kind
-                of String:
-                    if numberInRange(x.s): push(newString(x.s.drop()))
-                    else: push(newString(""))
-                of Block:
-                    if numberInRange(x.a): push(newBlock(x.a.drop()))
-                    else: push(newBlock())
-                else: discard
+                    container[0 .. container.high - abs(times)]
+
+            dispatch:
+                String(s): s.drop()
+                Block(a):  a.drop()
 
     # TODO(Collections\combine) should also work with in-place Literals?
     #  labels: library, enhancement, open discussion
@@ -533,39 +513,19 @@ proc defineModule*(moduleName: string) =
 
             if checkAttr("times"):
                 times = aTimes.i
-            
-            template numberInRange(container: untyped): untyped = 
-                container.len >= abs(times)
-                
+
             template drop(container: untyped): untyped =
-                if 0 < times:
+                if container.len < abs(times):
+                    when container is string: ""
+                    else: newSeq[Value](0)
+                elif 0 < times:
                     container[times..^1]
                 else:
-                    container[0.. container.high - abs(times)]
-                
-            if x.kind in {Literal, PathLiteral}:
-                ensureInPlaceAny()
-                case InPlaced.kind
-                of String:
-                    if numberInRange(InPlaced.s):
-                        InPlaced.s = InPlaced.s.drop()
-                    else: 
-                        InPlaced.s = ""
-                of Block:
-                    if numberInRange(InPlaced.a):
-                        InPlaced.a = InPlaced.a.drop()
-                    else:
-                        InPlaced.a = newSeq[Value](0)
-                else: discard
-            else:
-                case x.kind
-                of String:
-                    if numberInRange(x.s): push(newString(x.s.drop()))
-                    else: push(newString(""))
-                of Block:
-                    if numberInRange(x.a): push(newBlock(x.a.drop()))
-                    else: push(newBlock())
-                else: discard
+                    container[0 .. container.high - abs(times)]
+
+            dispatch:
+                String(s): s.drop()
+                Block(a):  a.drop()
 
     builtin "empty",
         alias       = unaliased,
