@@ -84,7 +84,6 @@ proc dispatchFieldAndCtor(kind: string, n: NimNode, macroName: string): (string,
     of "Object":     ("o", "newObject")
     else:
         error(macroName & ": unsupported kind '" & kind & "'", n)
-        ("", "")
 
 proc dispatchParsePat(n: NimNode, allowWild: bool, macroName: string):
      tuple[wild: bool, kind: string, binding: NimNode] =
