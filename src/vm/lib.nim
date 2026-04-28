@@ -75,6 +75,7 @@ macro dispatchWithLiteral*(body: untyped): untyped =
         of "Binary":     ("n", "newBinary")
         of "Range":      ("rng", "newRange")
         of "Regex":      ("rx", "newRegex")
+        of "Color":      ("l", "newColor")
         else:
             error("dispatchWithLiteral: unsupported kind '" & kind & "'", n)
             ("", "")
@@ -240,6 +241,7 @@ macro dispatch*(body: untyped): untyped =
         of "Binary":     "n"
         of "Range":      "rng"
         of "Regex":      "rx"
+        of "Color":      "l"
         else:
             error("dispatch: unsupported kind '" & name & "'", n); ""
 
