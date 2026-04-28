@@ -174,13 +174,8 @@ template invalidOperation(op: string): untyped =
 #=======================================
 
 template normalIntegerOperation*(inPlace=false): bool =
-    ## check if both operands (x,y) are Integers, but not GMP-style BigNums
-    ##
-    ## The check is expressed as a single bitwise OR against zero so the
-    ## compiler emits one branch instead of one per ``likely(...)`` clause.
-    ## Relies on ``ord(NormalInteger) == 0`` and on the fact that reading
-    ## ``iKind`` of a non-Integer Value is harmless in release builds (same
-    ## pattern used by ``getValuePair`` in vm/values/types.nim).
+    ## check if both operands (x,y) are Integers, 
+    ## but not GMP-style BigNums
     when inPlace:
         let xKind {.inject.} = InPlaced.kind
         when declared(y):
@@ -191,6 +186,9 @@ template normalIntegerOperation*(inPlace=false): bool =
             when declared(y):
                 let yKind {.inject.} = y.kind
 
+    ## Relies on ``ord(NormalInteger) == 0`` and on the fact that reading
+    ## ``iKind`` of a non-Integer Value is harmless
+    ## (similar to pattern used by ``getValuePair``)
     when inPlace:
         when declared(y):
             likely(((ord(xKind) xor ord(Integer)) or
