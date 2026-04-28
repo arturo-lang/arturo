@@ -829,11 +829,8 @@ proc defineModule*(moduleName: string) =
             #=======================================================
             let replacements = (toSeq(y.d.pairs)).map((w) => (w[0], w[1].s))
 
-            if xKind==String:
-                push(newString(x.s.multiReplace(replacements)))
-            else:
-                ensureInPlaceAny()
-                InPlaced.s = InPlaced.s.multiReplace(replacements)
+            dispatch:
+                String(s): s.multiReplace(replacements)
 
     builtin "truncate",
         alias       = unaliased, 
