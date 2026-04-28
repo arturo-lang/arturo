@@ -1160,18 +1160,16 @@ proc defineModule*(moduleName: string) =
             upper? 'a'               ; => false
         """:
             #=======================================================
-            if xKind==Char:
-                push(newLogical(x.c.isUpper()))
-            else:
-                var broken = false
-                for c in runes(x.s):
-                    if not c.isUpper():
-                        push(VFALSE)
-                        broken = true
-                        break
-
-                if not broken:
-                    push(VTRUE)
+            dispatchValue:
+                Char(c): push(newLogical(c.isUpper()))
+                String(s):
+                    var broken = false
+                    for ch in runes(s):
+                        if not ch.isUpper():
+                            push(VFALSE)
+                            broken = true
+                            break
+                    if not broken: push(VTRUE)
 
     builtin "whitespace?",
         alias       = unaliased, 
