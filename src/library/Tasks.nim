@@ -19,6 +19,8 @@
 # Libraries
 #=======================================
 
+import asyncdispatch
+
 import vm/lib
 import vm/values/custom/[vtask]
 
@@ -56,20 +58,13 @@ proc defineModule*(moduleName: string) =
         ; data: wait t
         """:
             #=======================================================
-            # TODO(Tasks/wait) actually block on the underlying future
-            #  for now we only handle already-settled tasks; once a real
-            #  producer exists we'll need to drive the async dispatcher here
-            #  labels: library, enhancement
-            case x.tsk.state
-                of taskDone:
-                    push cast[Value](x.tsk.result)
-                of taskFailed:
-                    push cast[Value](x.tsk.error)
-                of taskCancelled:
-                    push VNULL
-                of taskPending:
-                    # no real producer wired yet - placeholder behaviour
-                    push VNULL
+            if x.tsk.state == taskCancelled:
+                push VNULL
+            else:
+                # `waitFor` drives the dispatcher until the future settles
+                let res = waitFor x.tsk.future
+                x.tsk.state = taskDone
+                push res
 
     builtin "cancel",
         alias       = unaliased,
@@ -116,4 +111,4 @@ proc defineModule*(moduleName: string) =
         ; while [not? done? t][ pause 100 ]
         """:
             #=======================================================
-            push newLogical(x.tsk.state != taskPending)
+            push newLogical(x.tsk.state != taskPending or x.tsk.future.finished)
