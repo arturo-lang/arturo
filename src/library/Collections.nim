@@ -643,11 +643,13 @@ proc defineModule*(moduleName: string) =
             ; => [1 2 3 4 [5 6]]
         """:
             #=======================================================
-            if xKind in {Literal, PathLiteral}:
-                ensureInPlaceAny()
-                SetInPlaceAny(InPlaced.flattened(once = hadAttr("once")))
-            else:
-                push(newBlock(x.a).flattened(once = hadAttr("once")))
+            bindAttrs:
+                once: Logical
+
+            dispatchWithLiteral:
+                Block(a):
+                    value:   push(newBlock(a).flattened(once = once))
+                    inplace: SetInPlaceAny(InPlaced.flattened(once = once))
 
     builtin "get",
         alias       = unaliased,
