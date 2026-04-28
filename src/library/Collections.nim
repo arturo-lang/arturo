@@ -2408,46 +2408,25 @@ proc defineModule*(moduleName: string) =
             ; helo world
         """:
             #=======================================================
-            if xKind in {Literal, PathLiteral}:
-                ensureInPlaceAny()
-                if InPlaced.kind == String:
+            dispatch:
+                String(s):
                     var i = 0
                     var ret: string
-                    while i < InPlaced.s.len:
-                        ret &= $(InPlaced.s[i])
-                        while (i+1 < InPlaced.s.len and InPlaced.s[i+1] == InPlaced.s[i]):
+                    while i < s.len:
+                        ret &= $(s[i])
+                        while (i+1 < s.len and s[i+1] == s[i]):
                             i += 1
                         i += 1
-                    SetInPlaceAny(newString(ret))
-                elif InPlaced.kind == Block:
+                    ret
+                Block(a):
                     var i = 0
                     var ret: ValueArray
-                    while i < InPlaced.a.len:
-                        ret.add(InPlaced.a[i])
-                        while (i+1 < InPlaced.a.len and InPlaced.a[i+1] ==
-                                InPlaced.a[i]):
+                    while i < a.len:
+                        ret.add(a[i])
+                        while (i+1 < a.len and a[i+1] == a[i]):
                             i += 1
                         i += 1
-                    SetInPlaceAny(newBlock(ret))
-            else:
-                if xKind == String:
-                    var i = 0
-                    var ret: string
-                    while i < x.s.len:
-                        ret &= $(x.s[i])
-                        while (i+1 < x.s.len and x.s[i+1] == x.s[i]):
-                            i += 1
-                        i += 1
-                    push(newString(ret))
-                elif xKind == Block:
-                    var i = 0
-                    var ret: ValueArray
-                    while i < x.a.len:
-                        ret.add(x.a[i])
-                        while (i+1 < x.a.len and x.a[i+1] == x.a[i]):
-                            i += 1
-                        i += 1
-                    push(newBlock(ret))
+                    ret
 
     builtin "take",
         alias       = unaliased,
