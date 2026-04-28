@@ -748,12 +748,12 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 of opDec                : arithmeticFastpathA(DoDec, normalIntegerDec)
 
                 # binary operators
-                of opBNot               : DoBNot()
-                of opBAnd               : DoBAnd()
-                of opBOr                : DoBOr()
+                of opBNot               : arithmeticFastpathA(DoBNot, normalIntegerNot)
+                of opBAnd               : arithmeticFastpathB(DoBAnd, normalIntegerAnd)
+                of opBOr                : arithmeticFastpathB(DoBOr, normalIntegerOr)
 
-                of opShl                : DoShl()
-                of opShr                : DoShr()
+                of opShl                : arithmeticFastpathB(DoShl, normalIntegerShl)
+                of opShr                : arithmeticFastpathB(DoShr, normalIntegerShr)
 
                 of RSRV1                : discard
 
