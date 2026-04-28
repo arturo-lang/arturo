@@ -174,7 +174,8 @@ template invalidOperation(op: string): untyped =
 #=======================================
 
 template normalIntegerOperation*(inPlace=false): bool =
-    ## check if both operands (x,y) are Integers, but not GMP-style BigNums
+    ## check if both operands (x,y) are Integers, 
+    ## but not GMP-style BigNums
     when inPlace:
         let xKind {.inject.} = InPlaced.kind
         when declared(y):
@@ -185,16 +186,25 @@ template normalIntegerOperation*(inPlace=false): bool =
             when declared(y):
                 let yKind {.inject.} = y.kind
 
+    ## Relies on ``ord(NormalInteger) == 0`` and on the fact that reading
+    ## ``iKind`` of a non-Integer Value is harmless
+    ## (similar to pattern used by ``getValuePair``)
     when inPlace:
         when declared(y):
-            likely(xKind==Integer) and likely(InPlaced.iKind==NormalInteger) and likely(yKind==Integer) and likely(y.iKind==NormalInteger)
+            likely(((ord(xKind) xor ord(Integer)) or
+                    (ord(yKind) xor ord(Integer)) or
+                    ord(InPlaced.iKind) or ord(y.iKind)) == 0)
         else:
-            likely(xKind==Integer) and likely(InPlaced.iKind==NormalInteger)
+            likely(((ord(xKind) xor ord(Integer)) or
+                    ord(InPlaced.iKind)) == 0)
     else:
         when declared(y):
-            likely(xKind==Integer) and likely(x.iKind==NormalInteger) and likely(yKind==Integer) and likely(y.iKind==NormalInteger)
+            likely(((ord(xKind) xor ord(Integer)) or
+                    (ord(yKind) xor ord(Integer)) or
+                    ord(x.iKind) or ord(y.iKind)) == 0)
         else:
-            likely(xKind==Integer) and likely(x.iKind==NormalInteger)
+            likely(((ord(xKind) xor ord(Integer)) or
+                    ord(x.iKind)) == 0)
 
 template normalIntegerAdd*(x, y: int): untyped =
     ## add two normal Integer values, checking for overflow
@@ -465,7 +475,8 @@ template normalIntegerShrI*(x: var Value, y: int): untyped =
 template arithmeticFastpathA*(slowOp, intFastFn: untyped): untyped =
     ## inline fast-path for unary arithmetic ops on a NormalInteger operand -
     ## on any other operand kind, it defaults to the normal ``slowOp``.
-    if likely(stack.sTop().kind == Integer) and likely(stack.sTop().iKind == NormalInteger):
+    let xv {.cursor.} = stack.sTop()
+    if likely(((ord(xv.kind) xor ord(Integer)) or ord(xv.iKind)) == 0):
         let x = stack.pop()
         stack.push(intFastFn(x.i))
     else:
@@ -474,8 +485,11 @@ template arithmeticFastpathA*(slowOp, intFastFn: untyped): untyped =
 template arithmeticFastpathB*(slowOp, intFastFn: untyped): untyped =
     ## inline fast-path for binary arithmetic ops on two NormalInteger operands -
     ## on any other operand kind, it defaults to the normal ``slowOp``
-    if likely(stack.peek(0).kind == Integer) and likely(stack.peek(1).kind == Integer) and
-       likely(stack.peek(0).iKind == NormalInteger) and likely(stack.peek(1).iKind == NormalInteger):
+    let xv {.cursor.} = stack.peek(0)
+    let yv {.cursor.} = stack.peek(1)
+    if likely(((ord(xv.kind) xor ord(Integer)) or
+               (ord(yv.kind) xor ord(Integer)) or
+               ord(xv.iKind) or ord(yv.iKind)) == 0):
         let x = stack.pop()
         let y = stack.pop()
         stack.push(intFastFn(x.i, y.i))
