@@ -392,14 +392,9 @@ proc defineModule*(moduleName: string) =
             ; => 'a'  
         """:
             #=======================================================
-            if xKind==String: push(newString(x.s.toLower()))
-            elif xKind==Char: push(newChar(x.c.toLower()))
-            else: 
-                ensureInPlaceAny()
-                if InPlaced.kind==String:
-                    InPlaced.s = InPlaced.s.toLower()
-                else:
-                    InPlaced.c = InPlaced.c.toLower()
+            dispatch:
+                String(s): s.toLower()
+                Char(c):   c.toLower()
 
     # TODO(Strings\match) should work for Web builds as well
     #  labels: library, web, bug
@@ -930,14 +925,9 @@ proc defineModule*(moduleName: string) =
             ; => 'A'                     
         """:
             #=======================================================
-            if xKind==String: push(newString(x.s.toUpper()))
-            elif xKind==Char: push(newChar(x.c.toUpper()))
-            else: 
-                ensureInPlaceAny()
-                if InPlaced.kind==String:
-                    InPlaced.s = InPlaced.s.toUpper()
-                else:
-                    InPlaced.c = InPlaced.c.toUpper()
+            dispatch:
+                String(s): s.toUpper()
+                Char(c):   c.toUpper()
 
     builtin "wordwrap",
         alias       = unaliased, 
