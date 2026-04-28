@@ -96,6 +96,7 @@ proc generateJsonNode*(n: Value): JsonNode =
            Socket,
            Module,
            Bytecode,
+           Task,
            Nothing,
            Any          : discard
 
