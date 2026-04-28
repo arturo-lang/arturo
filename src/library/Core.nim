@@ -27,6 +27,7 @@ import sequtils, sugar
 
 when not defined(WEB):
     import asyncdispatch
+    import osproc, streams
     import vm/values/custom/vtask
 
 when not defined(WEB):
@@ -52,6 +53,33 @@ when defined(BUNDLE):
 #=======================================
 # Helpers
 #=======================================
+
+when not defined(WEB):
+    # spawn a child arturo process to evaluate `src`, return a future that
+    # settles when the child exits. result is the child's stdout as a `:string`.
+    #
+    # this is THE primitive for "real" background work: the child has its own
+    # VM, so it runs genuinely in parallel with whatever the main code is doing.
+    # we poll with a 50ms granularity and yield to the dispatcher between polls,
+    # which means other futures (e.g. async HTTP calls) keep making progress.
+    proc runInChildProcess(src: string): Future[Value] {.async.} =
+        let arturoBin = getAppFilename()
+        # wrap user code so the child prints the last value to stdout
+        let wrapped = "print to :string do [" & src & "]"
+        let p = startProcess(arturoBin,
+                             args = @["-e", wrapped],
+                             options = {poUsePath, poStdErrToStdOut})
+        while p.running:
+            await sleepAsync(50)
+        let output = p.outputStream.readAll().strip()
+        let code = p.peekExitCode()
+        p.close()
+        if code == 0:
+            result = newString(output)
+        else:
+            # bubble child's stderr/stdout up as a string for now;
+            # real error propagation is a follow-up
+            result = newString(output)
 
 proc replacingAmpersands(va: Value, what: Value): Value =
     var theBlock = newBlock()
