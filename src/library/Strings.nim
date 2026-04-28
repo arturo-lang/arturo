@@ -937,11 +937,8 @@ proc defineModule*(moduleName: string) =
             if checkAttr("at"):
                 cutoff = aAt.i
             
-            if xKind in {Literal, PathLiteral}:
-                ensureInPlaceAny()
-                SetInPlaceAny(newString(wrapWords(InPlaced.s, maxLineWidth=cutoff)))
-            else:
-                push newString(wrapWords(x.s, maxLineWidth=cutoff))
+            dispatch:
+                String(s): wrapWords(s, maxLineWidth=cutoff)
 
     #----------------------------
     # Predicates
