@@ -29,15 +29,25 @@ import vm/values/custom/[vtask]
 # Helpers
 #=======================================
 
-# NOTE(Tasks/runBlockAsync) "real-but-cooperative" execution.
+# NOTE(Tasks/runBlockAsync) cooperative, single-threaded execution.
 #  the VM holds its state in module-level globals (stack, syms, attrs), so we
-#  can't actually run two Arturo blocks in parallel on different OS threads
-#  without thread-local-izing all of that. what we *can* do is hand the block
-#  to the async dispatcher: the future genuinely starts pending, gets pumped
-#  alongside other futures (e.g. `request.async`), and only runs the block
-#  when the dispatcher schedules it.
-#  this gives real concurrency between an I/O task and a CPU task, but two
-#  CPU tasks still run serially - genuine parallelism is a follow-up.
+#  can't run blocks in parallel on different OS threads without thread-local-
+#  izing all of that. instead, we hand the block to the async dispatcher:
+#  the future genuinely starts pending and only runs when something pumps it.
+#
+#  what this DOES give you:
+#    - tasks have proper pending/settled lifecycle (`done?` works honestly)
+#    - multiple I/O tasks (e.g. several `request.async`) interleave correctly,
+#      since those use non-blocking sockets and yield at `await` points
+#
+#  what this does NOT give you (yet):
+#    - concurrency between a CPU block and an I/O task: once `execUnscoped`
+#      starts it owns the dispatcher thread, so any in-flight HTTP request
+#      pauses until the CPU block finishes
+#    - concurrency between two CPU blocks: still sequential
+#
+#  genuine parallelism needs OS threads + thread-local VM state - separate,
+#  much bigger project.
 proc runBlockAsync(code: Translation): Future[Value] {.async.} =
     # yield to the dispatcher before doing any work - this is what makes
     # the future genuinely pending until something pumps it
