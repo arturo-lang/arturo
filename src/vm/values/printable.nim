@@ -26,7 +26,7 @@ import helpers/terminal as TerminalHelper
 import vm/[globals, opcodes, stack]
 import vm/values/value
 
-import vm/values/custom/[vbinary, vcolor, vcomplex, verror, vlogical, vquantity, vrange, vrational, vregex, vversion]
+import vm/values/custom/[vbinary, vcolor, vcomplex, verror, vlogical, vquantity, vrange, vrational, vregex, vtask, vversion]
 
 when not defined(WEB):
     import vm/values/custom/[vsocket]
