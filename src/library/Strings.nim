@@ -1106,12 +1106,10 @@ proc defineModule*(moduleName: string) =
             prefix? "hello" 'h'           ; => true
         """:
             #=======================================================
-            if likely(yKind==String):
-                push(newLogical(x.s.startsWith(y.s)))
-            elif yKind==Regex:
-                push(newLogical(x.s.startsWith(y.rx)))
-            else:
-                push(newLogical(x.s.len > 0 and x.s.runeAtPos(0)==y.c))
+            dispatchValue:
+                (String(s), String(t)): push(newLogical(s.startsWith(t)))
+                (String(s), Regex(r)):  push(newLogical(s.startsWith(r)))
+                (String(s), Char(ch)):  push(newLogical(s.len > 0 and s.runeAtPos(0) == ch))
 
     builtin "suffix?",
         alias       = unaliased, 
