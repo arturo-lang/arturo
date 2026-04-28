@@ -220,11 +220,8 @@ proc defineModule*(moduleName: string) =
             if checkAttr("with"):
                 padding = aWith.s
 
-            if xKind in {Literal, PathLiteral}:
-                ensureInPlaceAny()
-                SetInPlaceAny(newString(indent(InPlaced.s, count, padding)))
-            else:
-                push(newString(indent(x.s, count, padding)))      
+            dispatch:
+                String(s): indent(s, count, padding)
 
     builtin "jaro",
         alias       = unaliased, 
