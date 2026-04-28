@@ -745,7 +745,7 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
 
                 # increment/decrement
                 of opInc                : arithmeticFastpathA(DoInc, normalIntegerInc)
-                of opDec                : DoDec()
+                of opDec                : arithmeticFastpathA(DoDec, normalIntegerDec)
 
                 # binary operators
                 of opBNot               : DoBNot()
