@@ -752,7 +752,7 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 of opBAnd               : arithmeticFastpathB(DoBAnd, normalIntegerAnd)
                 of opBOr                : arithmeticFastpathB(DoBOr, normalIntegerOr)
 
-                of opShl                : DoShl()
+                of opShl                : arithmeticFastpathB(DoShl, normalIntegerShl)
                 of opShr                : DoShr()
 
                 of RSRV1                : discard
