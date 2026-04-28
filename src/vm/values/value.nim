@@ -1037,7 +1037,6 @@ proc copyValue*(v: Value): Value {.inline.} =
             result = newBytecode(v.trans)
 
         of Task:
-            # tasks are handles to in-flight work - a "copy" should still refer to the same task
             result = newTask(v.tsk)
 
         of Nothing, Any:
