@@ -14,6 +14,9 @@
 
 import std/[tables, times, unicode, setutils]
 
+when not defined(WEB):
+    import std/asyncfutures
+
 when defined(SQLITE):
     import extras/db_connector/db_sqlite as sqlite
 
@@ -255,6 +258,11 @@ type
                     db* : sqlite.DbConn
             else:
                 discard
+
+    VTask* = ref object
+        state*      : VTaskState        # bookkeeping for `done?` / `cancel`
+        when not defined(WEB):
+            future* : Future[Value]     # the actual handle a producer (e.g. `request.async`) feeds
 
     Value* {.final,acyclic.} = ref object
         info*   : ValueInfo
