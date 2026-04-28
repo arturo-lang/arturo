@@ -2446,24 +2446,21 @@ proc defineModule*(moduleName: string) =
             ; => [1:5 2:5 4:3 3:2 5:3 6:3 7:1]
         """:
             #=======================================================
-            var occurrences = initOrderedTable[string,Value]()
-
-            if xKind == String:
-                for r in runes(x.s): 
-                    let str = $(r)
-                    if not occurrences.hasKey(str):
-                        occurrences[str] = newInteger(0)
-
-                    occurrences[str].i += 1
-            else:
-                for item in x.a:
-                    let str = $(item)
-                    if not occurrences.hasKey(str):
-                        occurrences[str] = newInteger(0)
-                        
-                    occurrences[str].i += 1
-            
-            push(newDictionary(occurrences))
+            dispatch:
+                String(s):
+                    var occurrences = initOrderedTable[string,Value]()
+                    for r in runes(s):
+                        let str = $(r)
+                        if not occurrences.hasKey(str): occurrences[str] = newInteger(0)
+                        occurrences[str].i += 1
+                    push(newDictionary(occurrences))
+                Block(items):
+                    var occurrences = initOrderedTable[string,Value]()
+                    for item in items:
+                        let str = $(item)
+                        if not occurrences.hasKey(str): occurrences[str] = newInteger(0)
+                        occurrences[str].i += 1
+                    push(newDictionary(occurrences))
 
     builtin "unique",
         alias       = unaliased,
