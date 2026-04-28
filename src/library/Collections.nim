@@ -88,62 +88,46 @@ proc defineModule*(moduleName: string) =
             print b                   ; [1 2 3 4]
         """:
             #=======================================================
+            # Object's magic-method dispatch and the Block default arm don't
+            # fit the kind/kind grid, so handle them outside `dispatch`.
+            if xKind == Object:
+                if x.magic.fetch(AppendM): mgk(@[x, y])
+                return
             if xKind in {Literal, PathLiteral}:
-                ensureInPlaceAny()
-                if InPlaced.kind == String:
-                    if yKind == String:
-                        InPlaced.s &= y.s
-                    elif yKind == Char:
-                        InPlaced.s &= $(y.c)
-                elif InPlaced.kind == Char:
-                    if yKind == String:
-                        SetInPlaceAny(newString($(InPlaced.c) & y.s))
-                    elif yKind == Char:
-                        SetInPlaceAny(newString($(InPlaced.c) & $(y.c)))
-                elif InPlaced.kind == Binary:
-                    if yKind == Binary:
-                        InPlaced.n &= y.n
-                    elif yKind == Integer:
-                        InPlaced.n &= numberToBinary(y.i)
-                elif InPlaced.kind == Object:
+                ensureInPlace()
+                if InPlaced.kind == Object:
                     if InPlaced.magic.fetch(AppendM):
                         pushAttr("inplace", VTRUE)
                         mgk(@[InPlaced, y])
-                    else:
-                        discard
-                else:
-                    if yKind == Block:
-                        InPlaced.a.add(y.a)
-                    else:
-                        InPlaced.a.add(y)
-            else:
-                if xKind == String:
-                    if yKind == String:
-                        push(newString(x.s & y.s))
-                    elif yKind == Char:
-                        push(newString(x.s & $(y.c)))
-                elif xKind == Char:
-                    if yKind == String:
-                        push(newString($(x.c) & y.s))
-                    elif yKind == Char:
-                        push(newString($(x.c) & $(y.c)))
-                elif xKind == Binary:
-                    if yKind == Binary:
-                        push(newBinary(x.n & y.n))
-                    elif yKind == Integer:
-                        push(newBinary(x.n & numberToBinary(y.i)))
-                elif xKind == Object:
-                    if x.magic.fetch(AppendM):
-                        mgk(@[x, y]) # value already pushed
-                    else:
-                        # TODO(Collections\append) no magic method for object values should be an error
-                        #  labels: library, oop, error handling
-                        discard
-                else:
-                    if yKind==Block:
-                        push newBlock(x.a & y.a)
-                    else:
-                        push newBlock(x.a & y)
+                    return
+                if InPlaced.kind == Block:
+                    if yKind == Block: InPlaced.a.add(y.a)
+                    else:              InPlaced.a.add(y)
+                    return
+            elif xKind == Block:
+                if yKind == Block: push newBlock(x.a & y.a)
+                else:              push newBlock(x.a & y)
+                return
+
+            dispatch:
+                (String(s), String(t)):
+                    value:   push(newString(s & t))
+                    inplace: s &= t
+                (String(s), Char(c)):
+                    value:   push(newString(s & $(c)))
+                    inplace: s &= $(c)
+                (Char(a), String(t)):
+                    value:   push(newString($(a) & t))
+                    inplace: SetInPlaceAny(newString($(a) & t))
+                (Char(a), Char(b)):
+                    value:   push(newString($(a) & $(b)))
+                    inplace: SetInPlaceAny(newString($(a) & $(b)))
+                (Binary(n), Binary(m)):
+                    value:   push(newBinary(n & m))
+                    inplace: n &= m
+                (Binary(n), Integer(i)):
+                    value:   push(newBinary(n & numberToBinary(i)))
+                    inplace: n &= numberToBinary(i)
 
     builtin "array",
         alias       = at,
