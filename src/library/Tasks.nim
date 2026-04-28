@@ -26,6 +26,26 @@ import vm/[eval, exec]
 import vm/values/custom/[vtask]
 
 #=======================================
+# Helpers
+#=======================================
+
+# NOTE(Tasks/runBlockAsync) "real-but-cooperative" execution.
+#  the VM holds its state in module-level globals (stack, syms, attrs), so we
+#  can't actually run two Arturo blocks in parallel on different OS threads
+#  without thread-local-izing all of that. what we *can* do is hand the block
+#  to the async dispatcher: the future genuinely starts pending, gets pumped
+#  alongside other futures (e.g. `request.async`), and only runs the block
+#  when the dispatcher schedules it.
+#  this gives real concurrency between an I/O task and a CPU task, but two
+#  CPU tasks still run serially - genuine parallelism is a follow-up.
+proc runBlockAsync(code: Translation): Future[Value] {.async.} =
+    # yield to the dispatcher before doing any work - this is what makes
+    # the future genuinely pending until something pumps it
+    await sleepAsync(0)
+    execUnscoped(code)
+    result = stack.pop()
+
+#=======================================
 # Definitions
 #=======================================
 
@@ -53,28 +73,22 @@ proc defineModule*(moduleName: string) =
         attrs       = NoAttrs,
         returns     = {Task},
         example     = """
-        ; (draft) for now `task` runs the block synchronously and returns
-        ; an already-settled task - useful for plumbing/composition while
-        ; we work out the real concurrent execution model.
-        ;
-        ; t: task [ 1 + 2 ]
-        ; print wait t          ; 3
+        t: task [ 1 + 2 ]
+        print done? t                  ; false (genuinely pending)
+        print wait t                   ; 3
+        ..........
+        ; concurrency between I/O and CPU is real:
+        req: request.async "https://httpbin.org/delay/1" null
+        cpu: task [ inc 'sum, 'sum 1..100000 ]
+        ; both pumped by the same dispatcher when we wait
         """:
             #=======================================================
-            # TODO(Tasks/task) actually run the block off the main VM
-            #  the VM is not reentrant under `await`, so for now we evaluate
-            #  the block synchronously and return an already-completed task.
-            #  the API shape is what matters here - the real concurrency story
-            #  comes once we have a producer-side dispatcher.
-            #  labels: library, enhancement, open discussion
+            # TODO(Tasks/task) genuine parallelism (multiple CPU tasks at once)
+            #  needs OS threads + thread-local VM state - sweeping VM change.
+            #  current shape: cooperative async, see `runBlockAsync` above.
+            #  labels: library, enhancement, vm, open discussion
             let evaled = evalOrGet(x)
-            execUnscoped(evaled)
-            let res = stack.pop()
-
-            let f = newFuture[Value]("task")
-            f.complete(res)
-
-            push newTask(VTask(state: taskDone, future: f))
+            push newTask(VTask(state: taskPending, future: runBlockAsync(evaled)))
 
     builtin "wait",
         alias       = unaliased,
