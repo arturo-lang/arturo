@@ -40,14 +40,26 @@ const
 macro dispatch*(body: untyped): untyped =
     ## Dispatch a builtin's body across kinds and modes.
     ##
-    ## Each clause has the form `KIND(binding): expr` where `expr` produces
-    ## the *payload* of a value of that kind (e.g. a `string` for `String`,
-    ## a `Rune` for `Char`, a `ValueArray` for `Block`).
+    ## Clause forms:
+    ##   `KIND(binding): expr`                      — 1-axis on `x`, single body
+    ##   `(KIND(b1), KIND(b2)): expr`               — 2-axis on `(x, y)`, single body
+    ##   `KIND(b):` (or 2-axis pair) followed by:
+    ##       `value:   <expr>`                      — value-mode body (payload only)
+    ##       `inplace: <stmts>`                     — in-place stmts (full statement(s))
     ##
-    ## For value-mode args, the macro emits `push(newKind(expr))`.
-    ## For `Literal`/`PathLiteral` args, it emits an `ensureInPlaceAny()` plus
-    ## an inner `case InPlaced.kind` that does direct field assignment —
-    ## matching the hand-written pattern, so no extra allocation is introduced.
+    ## Single-body mode: the body is the *payload* of a value of the x-kind
+    ## (a `string` for `String`, `Rune` for `Char`, etc.). The macro wraps it
+    ## as `push(newKind(expr))` for value-mode args, or as field assignment
+    ## (`InPlaced.field = expr`) for `Literal`/`PathLiteral` args.
+    ##
+    ## Per-mode mode: `value:` supplies the payload (same wrapping); `inplace:`
+    ## supplies a statement block that runs verbatim — useful when the in-place
+    ## path mutates the field directly (`s.insert(...)`, `s &= ...`) or changes
+    ## kind (`SetInPlaceAny(newString(...))`).
+    ##
+    ## In all cases `x`/`y` are still in scope (injected by `require`); the
+    ## binding name is an alias — a `let` for read-only access, a `template`
+    ## (lvalue) when an `inplace:` block needs to mutate.
     expectKind body, nnkStmtList
 
     proc fieldAndCtor(kind: string, n: NimNode): (string, string) =
@@ -59,47 +71,150 @@ macro dispatch*(body: untyped): untyped =
         of "Floating":   ("f", "newFloating")
         of "Logical":    ("b", "newLogical")
         of "Dictionary": ("d", "newDictionary")
+        of "Binary":     ("n", "newBinary")
+        of "Range":      ("rng", "newRange")
         else:
             error("dispatch: unsupported kind '" & kind & "'", n)
             ("", "")
 
-    let outerCase = nnkCaseStmt.newTree(ident("xKind"))
-    let innerCase = nnkCaseStmt.newTree(newDotExpr(ident("InPlaced"), ident("kind")))
+    proc parsePat(n: NimNode): (string, NimNode) =
+        if n.kind == nnkCall and n.len == 2 and n[0].kind == nnkIdent:
+            return ($n[0], n[1])
+        error("dispatch: expected `KIND(binding)`", n)
 
+    proc aliasTemplate(name, target: NimNode): NimNode =
+        # template <name>: untyped = <target>
+        nnkTemplateDef.newTree(
+            name,
+            newEmptyNode(), newEmptyNode(),
+            nnkFormalParams.newTree(ident("untyped")),
+            newEmptyNode(), newEmptyNode(),
+            target
+        )
+
+    type
+        FlatClause = object
+            xKind: string
+            xBinding: NimNode
+            yKind: string  # "" if 1-axis
+            yBinding: NimNode
+            valueE, inplaceS, unifiedB: NimNode
+
+    proc parseBody(b: NimNode): tuple[valueE, inplaceS, unifiedB: NimNode] =
+        # detect split-mode: a stmt list of ONLY `value:` and/or `inplace:` calls
+        if b.kind == nnkStmtList and b.len > 0:
+            var v, p: NimNode
+            var split = true
+            for c in b:
+                if c.kind == nnkCall and c.len == 2 and c[0].kind == nnkIdent:
+                    case $c[0]
+                    of "value":   v = c[1]
+                    of "inplace": p = c[1]
+                    else: split = false
+                else:
+                    split = false
+                if not split: break
+            if split and (v != nil or p != nil):
+                return (v, p, nil)
+        return (nil, nil, b)
+
+    var flat: seq[FlatClause]
     for clause in body:
-        if clause.kind != nnkCall or clause.len != 3 or clause[0].kind != nnkIdent or clause[2].kind != nnkStmtList:
-            error("dispatch: expected `KIND(binding): expr`", clause)
-        let kindName = $clause[0]
-        let binding = clause[1]
-        let bodyExpr = clause[2]
-        let (field, ctor) = fieldAndCtor(kindName, clause[0])
+        var fc: FlatClause
+        if clause.kind == nnkCall and clause.len == 3 and clause[0].kind == nnkIdent:
+            # 1-axis: KIND(binding): body
+            fc.xKind = $clause[0]
+            fc.xBinding = clause[1]
+            (fc.valueE, fc.inplaceS, fc.unifiedB) = parseBody(clause[2])
+        elif clause.kind == nnkCall and clause.len == 2 and
+             clause[0].kind in {nnkPar, nnkTupleConstr}:
+            # 2-axis: (KIND(b), KIND(b)): body
+            let par = clause[0]
+            if par.len != 2:
+                error("dispatch: expected `(KIND(b), KIND(b))`", par)
+            (fc.xKind, fc.xBinding) = parsePat(par[0])
+            (fc.yKind, fc.yBinding) = parsePat(par[1])
+            (fc.valueE, fc.inplaceS, fc.unifiedB) = parseBody(clause[1])
+        else:
+            error("dispatch: malformed clause", clause)
+        flat.add fc
 
-        outerCase.add nnkOfBranch.newTree(
-            ident(kindName),
-            newStmtList(
-                newLetStmt(copyNimTree(binding), newDotExpr(ident("x"), ident(field))),
-                newCall(ident("push"), newCall(ident(ctor), copyNimTree(bodyExpr)))
-            )
-        )
+    proc emitBranch(fc: FlatClause, valueMode: bool): NimNode =
+        let (xField, xCtor) = fieldAndCtor(fc.xKind, fc.xBinding)
+        let xTarget =
+            if valueMode: newDotExpr(ident("x"), ident(xField))
+            else: newDotExpr(ident("InPlaced"), ident(xField))
 
-        innerCase.add nnkOfBranch.newTree(
-            ident(kindName),
-            newStmtList(
-                newLetStmt(copyNimTree(binding), newDotExpr(ident("InPlaced"), ident(field))),
-                newAssignment(newDotExpr(ident("InPlaced"), ident(field)), copyNimTree(bodyExpr))
-            )
-        )
+        result = newStmtList()
+        let needsLValue = (not valueMode) and fc.inplaceS != nil
+        if needsLValue:
+            result.add aliasTemplate(copyNimTree(fc.xBinding), xTarget)
+        else:
+            result.add newLetStmt(copyNimTree(fc.xBinding), xTarget)
 
-    let discardStmt = nnkDiscardStmt.newTree(newEmptyNode())
-    innerCase.add nnkElse.newTree(discardStmt)
+        if fc.yKind != "":
+            let (yField, _) = fieldAndCtor(fc.yKind, fc.yBinding)
+            result.add newLetStmt(copyNimTree(fc.yBinding),
+                                  newDotExpr(ident("y"), ident(yField)))
 
-    outerCase.add nnkOfBranch.newTree(
-        ident("Literal"), ident("PathLiteral"),
-        newStmtList(newCall(ident("ensureInPlaceAny")), innerCase)
-    )
-    outerCase.add nnkElse.newTree(nnkDiscardStmt.newTree(newEmptyNode()))
+        if valueMode:
+            let expr =
+                if fc.valueE != nil: fc.valueE
+                else: fc.unifiedB
+            if expr != nil:
+                result.add newCall(ident("push"),
+                                   newCall(ident(xCtor), copyNimTree(expr)))
+            else:
+                result.add nnkDiscardStmt.newTree(newEmptyNode())
+        else:
+            if fc.inplaceS != nil:
+                result.add copyNimTree(fc.inplaceS)
+            elif fc.unifiedB != nil:
+                result.add newAssignment(copyNimTree(xTarget),
+                                         copyNimTree(fc.unifiedB))
+            else:
+                result.add nnkDiscardStmt.newTree(newEmptyNode())
 
-    result = newStmtList(outerCase)
+    proc buildCase(disc: NimNode, valueMode: bool): NimNode =
+        # Group clauses by xKind preserving order
+        var xOrder: seq[string]
+        var xMap = initOrderedTable[string, seq[FlatClause]]()
+        for fc in flat:
+            if fc.xKind notin xMap:
+                xMap[fc.xKind] = @[]
+                xOrder.add fc.xKind
+            xMap[fc.xKind].add fc
+
+        result = nnkCaseStmt.newTree(disc)
+        for xKind in xOrder:
+            let cls = xMap[xKind]
+            if cls[0].yKind == "":
+                if cls.len > 1:
+                    error("dispatch: duplicate 1-axis clauses for kind '" & xKind & "'",
+                          cls[1].xBinding)
+                result.add nnkOfBranch.newTree(ident(xKind),
+                                               emitBranch(cls[0], valueMode))
+            else:
+                let inner = nnkCaseStmt.newTree(ident("yKind"))
+                for fc in cls:
+                    inner.add nnkOfBranch.newTree(ident(fc.yKind),
+                                                  emitBranch(fc, valueMode))
+                inner.add nnkElse.newTree(nnkDiscardStmt.newTree(newEmptyNode()))
+                result.add nnkOfBranch.newTree(ident(xKind), inner)
+        result.add nnkElse.newTree(nnkDiscardStmt.newTree(newEmptyNode()))
+
+    let outer = buildCase(ident("xKind"), valueMode = true)
+    let inner = buildCase(newDotExpr(ident("InPlaced"), ident("kind")),
+                          valueMode = false)
+
+    # splice the Literal/PathLiteral branch BEFORE the outer's else
+    outer.insert(outer.len - 1,
+        nnkOfBranch.newTree(
+            ident("Literal"), ident("PathLiteral"),
+            newStmtList(newCall(ident("ensureInPlaceAny")), inner)
+        ))
+
+    result = newStmtList(outer)
 
 macro attrTypes*(name: static[string], types: static[set[ValueKind]]): untyped =
     let attrRequiredTypes = ident('t' & ($name).capitalizeAscii())
