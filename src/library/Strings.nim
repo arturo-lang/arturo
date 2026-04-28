@@ -172,31 +172,17 @@ proc defineModule*(moduleName: string) =
             ; a long &quot;string&quot; + with \diffe\rent symbols.
         """:
             #=======================================================
-            if xKind in {Literal, PathLiteral}:
-                ensureInPlaceAny()
-                if (hadAttr("json")):
-                    SetInPlaceAny(newString(escapeJsonUnquoted(InPlaced.s)))
-                elif (hadAttr("regex")):
-                    SetInPlaceAny(newString(escapeForRegex(InPlaced.s)))
-                elif (hadAttr("shell")):
-                    when not defined(WEB):
-                        SetInPlaceAny(newString(quoteShell(InPlaced.s)))
-                elif (hadAttr("xml")):
-                    SetInPlaceAny(newString(xmltree.escape(InPlaced.s)))
-                else:
-                    SetInPlaceAny(newString(strutils.escape(InPlaced.s)))
-            else:
-                if (hadAttr("json")):
-                    push(newString(escapeJsonUnquoted(x.s)))
-                elif (hadAttr("regex")):
-                    push(newString(escapeForRegex(x.s)))
-                elif (hadAttr("shell")):
-                    when not defined(WEB):
-                        push(newString(quoteShell(x.s)))
-                elif (hadAttr("xml")):
-                    push(newString(xmltree.escape(x.s)))
-                else:
-                    push(newString(strutils.escape(x.s)))
+            let escaper: proc (s: string): string =
+                if   hadAttr("json"):  escapeJsonUnquoted
+                elif hadAttr("regex"): escapeForRegex
+                elif hadAttr("xml"):   xmltree.escape
+                elif hadAttr("shell"):
+                    when not defined(WEB): quoteShell
+                    else:                  (proc (s: string): string = strutils.escape(s))
+                else:                  (proc (s: string): string = strutils.escape(s))
+
+            dispatch:
+                String(s): escaper(s)
 
     builtin "indent",
         alias       = unaliased, 
