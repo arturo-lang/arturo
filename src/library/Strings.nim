@@ -1192,7 +1192,6 @@ proc defineModule*(moduleName: string) =
             whitespace? 'a'               ; => false
         """:
             #=======================================================
-            if xKind==Char:
-                push(newLogical(x.c.isWhitespace()))
-            else:
-                push(newLogical(x.s.isWhitespace()))
+            dispatchValue:
+                Char(c):   push(newLogical(c.isWhitespace()))
+                String(s): push(newLogical(s.isWhitespace()))
