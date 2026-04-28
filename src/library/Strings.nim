@@ -595,25 +595,14 @@ proc defineModule*(moduleName: string) =
             ; => 00123
         """:
             #=======================================================
-            var padding = ' '.Rune
-            if checkAttr("with"):
-                padding = aWith.c
+            bindAttrs:
+                padding(with): Char = ' '.Rune
 
-            if (hadAttr("right")):
-                if xKind==String: push(newString(unicode.alignLeft(x.s, y.i, padding=padding)))
-                else: 
-                    ensureInPlaceAny()
-                    InPlaced.s = unicode.alignLeft(InPlaced.s, y.i, padding=padding)
-            elif (hadAttr("center")):
-                if xKind==String: push(newString(centerUnicode(x.s, y.i, padding=padding)))
-                else: 
-                    ensureInPlaceAny()
-                    InPlaced.s = centerUnicode(InPlaced.s, y.i, padding=padding)
-            else:
-                if xKind==String: push(newString(unicode.align(x.s, y.i, padding=padding)))
-                else: 
-                    ensureInPlaceAny()
-                    InPlaced.s = unicode.align(InPlaced.s, y.i, padding=padding)
+            dispatchWithLiteral:
+                String(s):
+                    on right:  unicode.alignLeft(s, y.i, padding=padding)
+                    on center: centerUnicode(s, y.i, padding=padding)
+                    _:         unicode.align(s, y.i, padding=padding)
 
     when not defined(WEB):
         # TODO(Strings\render) function should also work for Web/JS builds
