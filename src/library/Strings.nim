@@ -243,7 +243,8 @@ proc defineModule*(moduleName: string) =
             jaro "abcdef" "fedcba"  ; => 0.3888888888888888
             jaro "abcde" "vwxyz"    ; => 0.0
         """:
-            push(newFloating(jaro(x.s,y.s)))    
+            dispatchValue:
+                (String(s), String(t)): push(newFloating(jaro(s, t)))
 
     builtin "join",
         alias       = unaliased, 
