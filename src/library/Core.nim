@@ -64,8 +64,10 @@ when not defined(WEB):
     # which means other futures (e.g. async HTTP calls) keep making progress.
     proc runInChildProcess(src: string): Future[Value] {.async.} =
         let arturoBin = getAppFilename()
-        # wrap user code so the child prints the last value to stdout
-        let wrapped = "print to :string do [" & src & "]"
+        # wrap user code so the child prints the last value to stdout.
+        # `src` is already a parseable Arturo expression - typically a `[...]`
+        # block from `$(x)`, sometimes a bare string of statements.
+        let wrapped = "print to :string do " & src
         let p = startProcess(arturoBin,
                              args = @["-e", wrapped],
                              options = {poUsePath, poStdErrToStdOut})
@@ -471,9 +473,10 @@ proc defineModule*(moduleName: string) =
             "code"  : {String,Block,Bytecode,Task}
         },
         attrs       = {
-            "times" : ({Integer},"repeat block execution given number of times")
+            "times" : ({Integer},"repeat block execution given number of times"),
+            "async" : ({Logical},"evaluate in a child process and return a `:task`")
         },
-        returns     = {Any},
+        returns     = {Any,Task},
         example     = """
             do "print 123"                ; 123
             ..........
@@ -523,6 +526,18 @@ proc defineModule*(moduleName: string) =
 
             if checkAttr("times"):
                 times = aTimes.i
+
+            # `do.async <code>` runs the block/string in a child arturo process
+            # and returns a `:task` whose future settles when the child exits
+            when not defined(WEB):
+                if hadAttr("async"):
+                    let src =
+                        case xKind
+                            of Block, Bytecode: $(x)
+                            of String:          x.s
+                            else:               ""
+                    push newTask(VTask(state: taskPending, future: runInChildProcess(src)))
+                    return
 
             # `do task` is sugar for `wait task` - drain the future once
             if xKind == Task:
