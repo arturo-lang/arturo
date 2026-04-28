@@ -118,6 +118,7 @@ libraryModule "Sockets"
 libraryModule "Statistics"
 libraryModule "Strings"
 libraryModule "System"
+libraryModule "Tasks"
 libraryModule "Types"
 libraryModule "Ui"
 
