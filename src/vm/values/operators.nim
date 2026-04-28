@@ -175,6 +175,12 @@ template invalidOperation(op: string): untyped =
 
 template normalIntegerOperation*(inPlace=false): bool =
     ## check if both operands (x,y) are Integers, but not GMP-style BigNums
+    ##
+    ## The check is expressed as a single bitwise OR against zero so the
+    ## compiler emits one branch instead of one per ``likely(...)`` clause.
+    ## Relies on ``ord(NormalInteger) == 0`` and on the fact that reading
+    ## ``iKind`` of a non-Integer Value is harmless in release builds (same
+    ## pattern used by ``getValuePair`` in vm/values/types.nim).
     when inPlace:
         let xKind {.inject.} = InPlaced.kind
         when declared(y):
@@ -187,14 +193,20 @@ template normalIntegerOperation*(inPlace=false): bool =
 
     when inPlace:
         when declared(y):
-            likely(xKind==Integer) and likely(InPlaced.iKind==NormalInteger) and likely(yKind==Integer) and likely(y.iKind==NormalInteger)
+            likely(((ord(xKind) xor ord(Integer)) or
+                    (ord(yKind) xor ord(Integer)) or
+                    ord(InPlaced.iKind) or ord(y.iKind)) == 0)
         else:
-            likely(xKind==Integer) and likely(InPlaced.iKind==NormalInteger)
+            likely(((ord(xKind) xor ord(Integer)) or
+                    ord(InPlaced.iKind)) == 0)
     else:
         when declared(y):
-            likely(xKind==Integer) and likely(x.iKind==NormalInteger) and likely(yKind==Integer) and likely(y.iKind==NormalInteger)
+            likely(((ord(xKind) xor ord(Integer)) or
+                    (ord(yKind) xor ord(Integer)) or
+                    ord(x.iKind) or ord(y.iKind)) == 0)
         else:
-            likely(xKind==Integer) and likely(x.iKind==NormalInteger)
+            likely(((ord(xKind) xor ord(Integer)) or
+                    ord(x.iKind)) == 0)
 
 template normalIntegerAdd*(x, y: int): untyped =
     ## add two normal Integer values, checking for overflow
