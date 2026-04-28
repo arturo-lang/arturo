@@ -41,20 +41,29 @@ const
 # and case-tree builder; only the per-clause emission strategy differs.
 # The shared core lives below as plain compile-time helpers.
 
-type DispatchClause = object
-    isElse: bool                       # `_:` top-level fallback
-    xKind: string
-    xBinding: NimNode
-    hasY: bool
-    yWild: bool
-    yKind: string
-    yBinding: NimNode
-    hasZ: bool
-    zWild: bool
-    zKind: string
-    zBinding: NimNode
-    body: NimNode                      # 1-body / unified body
-    valueE, inplaceS: NimNode          # split-mode bodies (dispatchWithLiteral only)
+type
+    DispatchOnArm = object
+        attrName: string
+        attrKind: string               # "" for boolean (`on attr:`)
+        binding: NimNode               # nil for boolean
+        body: NimNode
+
+    DispatchClause = object
+        isElse: bool                       # `_:` top-level fallback
+        xKind: string
+        xBinding: NimNode
+        hasY: bool
+        yWild: bool
+        yKind: string
+        yBinding: NimNode
+        hasZ: bool
+        zWild: bool
+        zKind: string
+        zBinding: NimNode
+        body: NimNode                      # 1-body / unified body
+        valueE, inplaceS: NimNode          # split-mode bodies (dispatchWithLiteral only)
+        onLadder: seq[DispatchOnArm]       # `on attr:` ladder (mutually exclusive with split)
+        onElse: NimNode                    # `_:` fallback inside the ladder
 
 proc dispatchFieldAndCtor(kind: string, n: NimNode, macroName: string): (string, string) =
     case kind
@@ -116,11 +125,53 @@ proc dispatchSplitBody(b: NimNode):
             return (v, p, nil)
     return (nil, nil, b)
 
+proc dispatchParseOnLadder(b: NimNode, macroName: string):
+     tuple[arms: seq[DispatchOnArm], onElse: NimNode, isLadder: bool] =
+    # Detect a body composed exclusively of `on <attr>:` (or `on <attr>(b: KIND):`)
+    # commands, optionally terminated by a `_:` fallback.
+    if b.kind != nnkStmtList or b.len == 0:
+        return
+    for c in b:
+        let isOn = c.kind == nnkCommand and c.len >= 3 and
+                   c[0].kind == nnkIdent and $c[0] == "on"
+        let isElse = c.kind == nnkCall and c.len == 2 and
+                     c[0].kind == nnkIdent and $c[0] == "_"
+        if not (isOn or isElse): return
+    var arms: seq[DispatchOnArm]
+    var onElse: NimNode = nil
+    for c in b:
+        if c.kind == nnkCall:                           # `_: body`
+            if onElse != nil:
+                error(macroName & ": duplicate `_:` fallback in `on` ladder", c)
+            onElse = c[1]
+        else:                                           # `on …: body`
+            var arm: DispatchOnArm
+            arm.body = c[c.len - 1]
+            let head = c[1]
+            if head.kind == nnkIdent:
+                arm.attrName = $head
+            elif head.kind == nnkObjConstr and head.len == 2 and
+                 head[0].kind == nnkIdent and head[1].kind == nnkExprColonExpr and
+                 head[1][0].kind == nnkIdent and head[1][1].kind == nnkIdent:
+                arm.attrName = $head[0]
+                arm.binding = head[1][0]
+                arm.attrKind = $head[1][1]
+            else:
+                error(macroName & ": malformed `on` clause — expected `on attr:` or `on attr(b: KIND):`", c)
+            arms.add arm
+    return (arms, onElse, true)
+
 proc dispatchParseClauses(body: NimNode, macroName: string, splitBodies: bool):
      tuple[flat: seq[DispatchClause], elseClause: DispatchClause, hasElse: bool] =
     expectKind body, nnkStmtList
 
     proc fillBody(fc: var DispatchClause, n: NimNode) =
+        # Try on-ladder first; then split-mode (if allowed); then unified.
+        let onP = dispatchParseOnLadder(n, macroName)
+        if onP.isLadder:
+            fc.onLadder = onP.arms
+            fc.onElse = onP.onElse
+            return
         if splitBodies:
             let (v, p, u) = dispatchSplitBody(n)
             fc.valueE = v; fc.inplaceS = p; fc.body = u
@@ -234,6 +285,57 @@ proc dispatchBuildCase(disc: NimNode, flat: seq[DispatchClause],
     else:
         result.add nnkElse.newTree(nnkDiscardStmt.newTree(newEmptyNode()))
 
+proc dispatchBuildOnLadder(arms: seq[DispatchOnArm], elseBody: NimNode,
+                           wrap: proc(armBody: NimNode): NimNode,
+                           macroName: string): NimNode =
+    ## Build a `block label: …` containing the chained attr-test ladder.
+    ## `wrap(body)` adapts each arm body to the caller's mode (auto-wrap for
+    ## dispatchWithLiteral, identity for dispatch). Typed arms with the same
+    ## attribute name are coalesced into a single `case aName.kind:` so the
+    ## attr is popped only once.
+    let label = ident("__onLadder")
+    var stmts = newStmtList()
+    var seenTyped: seq[string]
+
+    for arm in arms:
+        if arm.attrKind == "":
+            # boolean: `if hadAttr(name): <wrap body>; break label`
+            let cond = newCall(ident("hadAttr"), newStrLitNode(arm.attrName))
+            let body = newStmtList(wrap(copyNimTree(arm.body)),
+                                   nnkBreakStmt.newTree(label))
+            stmts.add nnkIfStmt.newTree(nnkElifBranch.newTree(cond, body))
+        else:
+            if arm.attrName in seenTyped: continue
+            seenTyped.add arm.attrName
+            # gather all typed arms with this attrName
+            var sameArms: seq[DispatchOnArm]
+            for a in arms:
+                if a.attrKind != "" and a.attrName == arm.attrName:
+                    sameArms.add a
+            let aIdent = ident('a' & arm.attrName.capitalizeAscii())
+            let kindCase = nnkCaseStmt.newTree(newDotExpr(aIdent, ident("kind")))
+            for sa in sameArms:
+                let (field, _) = dispatchFieldAndCtor(sa.attrKind, sa.binding, macroName)
+                kindCase.add nnkOfBranch.newTree(
+                    ident(sa.attrKind),
+                    newStmtList(
+                        newLetStmt(copyNimTree(sa.binding),
+                                   newDotExpr(aIdent, ident(field))),
+                        wrap(copyNimTree(sa.body)),
+                        nnkBreakStmt.newTree(label)
+                    )
+                )
+            kindCase.add nnkElse.newTree(nnkDiscardStmt.newTree(newEmptyNode()))
+            let cond = newCall(ident("checkAttr"), newStrLitNode(arm.attrName))
+            stmts.add nnkIfStmt.newTree(nnkElifBranch.newTree(cond, kindCase))
+
+    if elseBody != nil:
+        stmts.add wrap(copyNimTree(elseBody))
+    else:
+        stmts.add nnkDiscardStmt.newTree(newEmptyNode())
+
+    result = nnkBlockStmt.newTree(label, stmts)
+
 #=======================================
 # Dispatch macros
 #=======================================
@@ -269,6 +371,9 @@ macro dispatchWithLiteral*(body: untyped): untyped =
     proc emit(fc: DispatchClause, valueMode: bool): NimNode =
         result = newStmtList()
         if fc.isElse:
+            if fc.onLadder.len > 0:
+                error(macroName & ": `on` ladder isn't supported in `_:` " &
+                      "x-fallback (no x-kind to auto-wrap with)")
             # No xKind — body uses x/y/z directly. No auto-wrap (kind unknown).
             let chosen =
                 if valueMode: (if fc.valueE   != nil: fc.valueE   else: fc.body)
@@ -296,6 +401,18 @@ macro dispatchWithLiteral*(body: untyped): untyped =
             let (zField, _) = dispatchFieldAndCtor(fc.zKind, fc.zBinding, macroName)
             result.add newLetStmt(copyNimTree(fc.zBinding),
                                   newDotExpr(ident("z"), ident(zField)))
+
+        if fc.onLadder.len > 0:
+            # Wrap each arm body the same way a unified body is wrapped.
+            let wrap =
+                if valueMode:
+                    proc(armBody: NimNode): NimNode =
+                        newCall(ident("push"), newCall(ident(xCtor), armBody))
+                else:
+                    proc(armBody: NimNode): NimNode =
+                        newAssignment(copyNimTree(xTarget), armBody)
+            result.add dispatchBuildOnLadder(fc.onLadder, fc.onElse, wrap, macroName)
+            return
 
         if valueMode:
             if fc.valueE != nil:
@@ -346,7 +463,11 @@ macro dispatch*(body: untyped): untyped =
     proc emit(fc: DispatchClause): NimNode =
         result = newStmtList()
         if fc.isElse:
-            result.add copyNimTree(fc.body)
+            if fc.onLadder.len > 0:
+                result.add dispatchBuildOnLadder(fc.onLadder, fc.onElse,
+                    proc(b: NimNode): NimNode = b, macroName)
+            else:
+                result.add copyNimTree(fc.body)
             return
         let (xField, _) = dispatchFieldAndCtor(fc.xKind, fc.xBinding, macroName)
         result.add newLetStmt(copyNimTree(fc.xBinding),
@@ -359,11 +480,76 @@ macro dispatch*(body: untyped): untyped =
             let (zField, _) = dispatchFieldAndCtor(fc.zKind, fc.zBinding, macroName)
             result.add newLetStmt(copyNimTree(fc.zBinding),
                                   newDotExpr(ident("z"), ident(zField)))
-        result.add copyNimTree(fc.body)
+        if fc.onLadder.len > 0:
+            result.add dispatchBuildOnLadder(fc.onLadder, fc.onElse,
+                proc(b: NimNode): NimNode = b, macroName)
+        else:
+            result.add copyNimTree(fc.body)
 
     result = newStmtList(dispatchBuildCase(ident("xKind"),
                                            parsed.flat, parsed.elseClause, parsed.hasElse,
                                            emit, macroName))
+
+macro attrs*(body: untyped): untyped =
+    ## Declare attribute-bound locals as a prelude to a builtin's body.
+    ##
+    ## Forms:
+    ##   `name: Logical`                       — boolean flag, becomes `let name = hadAttr("name")`
+    ##   `name: KIND = default`                — typed value attr; `var name = default;
+    ##                                            if checkAttr("name"): name = aName.<field>`
+    ##   `name(attrName): KIND = default`      — same, but the attribute is
+    ##                                            named differently from the local
+    ##
+    ## Composable: the resulting locals are ordinary Nim variables visible to
+    ## any subsequent code (including a `dispatchWithLiteral` block). Pair with
+    ## `on attr:` ladders inside dispatch clauses for mutually-exclusive
+    ## attrs.
+    expectKind body, nnkStmtList
+    const macroName = "attrs"
+    result = newStmtList()
+
+    for decl in body:
+        var localName, attrName, typeStmt: NimNode
+        if decl.kind == nnkCall and decl.len == 2 and decl[0].kind == nnkIdent:
+            localName = decl[0]; attrName = decl[0]; typeStmt = decl[1]
+        elif decl.kind == nnkCall and decl.len == 3 and
+             decl[0].kind == nnkIdent and decl[1].kind == nnkIdent:
+            localName = decl[0]; attrName = decl[1]; typeStmt = decl[2]
+        else:
+            error(macroName & ": expected `name: KIND[=default]` or `name(attr): KIND[=default]`", decl)
+
+        expectKind typeStmt, nnkStmtList
+        if typeStmt.len != 1:
+            error(macroName & ": expected a single type expression", typeStmt)
+        let texp = typeStmt[0]
+        var kindIdent, defaultExpr: NimNode
+        if texp.kind == nnkIdent:
+            kindIdent = texp
+        elif texp.kind == nnkAsgn and texp.len == 2:
+            kindIdent = texp[0]; defaultExpr = texp[1]
+        else:
+            error(macroName & ": expected `KIND` or `KIND = default`", texp)
+
+        let kindStr = $kindIdent
+        let attrLit = newStrLitNode($attrName)
+
+        if kindStr == "Logical" and defaultExpr == nil:
+            # `let name = hadAttr("attrName")`
+            result.add newLetStmt(localName,
+                                  newCall(ident("hadAttr"), attrLit))
+        else:
+            if defaultExpr == nil:
+                error(macroName & ": typed attr requires a default value", decl)
+            let (field, _) = dispatchFieldAndCtor(kindStr, kindIdent, macroName)
+            let aIdent = ident('a' & ($attrName).capitalizeAscii())
+            # var name = default
+            result.add nnkVarSection.newTree(
+                nnkIdentDefs.newTree(localName, newEmptyNode(), defaultExpr))
+            # if checkAttr("name"): name = aName.<field>
+            result.add nnkIfStmt.newTree(nnkElifBranch.newTree(
+                newCall(ident("checkAttr"), attrLit),
+                newAssignment(localName, newDotExpr(aIdent, ident(field)))
+            ))
 
 macro attrTypes*(name: static[string], types: static[set[ValueKind]]): untyped =
     let attrRequiredTypes = ident('t' & ($name).capitalizeAscii())
