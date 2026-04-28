@@ -955,36 +955,31 @@ proc defineModule*(moduleName: string) =
             ; dict: [name: "Jane"]
         """:
             #=======================================================
-            if xKind in {Literal, PathLiteral}:
-                ensureInPlaceAny()
-                case InPlaced.kind:
-                    of String: 
-                        if zKind==String: 
-                            InPlaced.s.insert(z.s, y.i)
-                        else:
-                            InPlaced.s.insert($(z.c), y.i)
-                    of Block: InPlaced.a.insert(z, y.i)
-                    of Dictionary:
-                        InPlaced.d[y.s] = z
-                    else: discard
-            else:
-                case xKind:
-                    of String:
-                        var copied = x.s
-                        if zKind==String:
-                            copied.insert(z.s, y.i)
-                        else:
-                            copied.insert($(z.c), y.i)
+            dispatchWithLiteral:
+                (String(s), Integer(idx), String(val)):
+                    value:
+                        var copied = s
+                        copied.insert(val, idx)
                         push(newString(copied))
-                    of Block:
-                        var copied = x.a
-                        copied.insert(z, y.i)
+                    inplace: s.insert(val, idx)
+                (String(s), Integer(idx), Char(ch)):
+                    value:
+                        var copied = s
+                        copied.insert($(ch), idx)
+                        push(newString(copied))
+                    inplace: s.insert($(ch), idx)
+                (Block(a), Integer(idx), _):
+                    value:
+                        var copied = a
+                        copied.insert(z, idx)
                         push(newBlock(copied))
-                    of Dictionary:
-                        var copied = x.d
-                        copied[y.s] = z
+                    inplace: a.insert(z, idx)
+                (Dictionary(d), String(k), _):
+                    value:
+                        var copied = d
+                        copied[k] = z
                         push(newDictionary(copied))
-                    else: discard
+                    inplace: d[k] = z
 
     builtin "keys",
         alias       = unaliased,
