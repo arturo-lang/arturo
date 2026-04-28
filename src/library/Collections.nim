@@ -1302,49 +1302,31 @@ proc defineModule*(moduleName: string) =
             print a                 ; prepend
         """:
             #=======================================================
-            if xKind in {Literal, PathLiteral}:
-                ensureInPlaceAny()
-                if InPlaced.kind == String:
-                    if yKind == String:
-                        InPlaced.s.insert(y.s, 0)
-                    elif yKind == Char:
-                        InPlaced.s.insert($(y.c), 0)
-                elif InPlaced.kind == Char:
-                    if yKind == String:
-                        SetInPlaceAny(newString(y.s & $(InPlaced.c)))
-                    elif yKind == Char:
-                        SetInPlaceAny(newString($(y.c) & $(InPlaced.c)))
-                elif InPlaced.kind == Binary:
-                    if yKind == Binary:
-                        InPlaced.n.insert(y.n, 0)
-                    elif yKind == Integer:
-                        InPlaced.n.insert(numberToBinary(y.i), 0)
-                else:
-                    if yKind == Block:
-                        InPlaced.prependInPlace(y)
-                    else:
-                        InPlaced.a.insert(y, 0)
-            else:
-                if xKind == String:
-                    if yKind == String:
-                        push(newString(y.s & x.s))
-                    elif yKind == Char:
-                        push(newString($(y.c) & x.s))
-                elif xKind == Char:
-                    if yKind == String:
-                        push(newString(y.s & $(x.c)))
-                    elif yKind == Char:
-                        push(newString($(y.c) & $(x.c)))
-                elif xKind == Binary:
-                    if yKind == Binary:
-                        push(newBinary(y.n & x.n))
-                    elif yKind == Integer:
-                        push(newBinary(numberToBinary(y.i) & x.n))
-                else:
-                    if yKind==Block:
-                        push newBlock(prepend(x, y))
-                    else:
-                        push newBlock(prepend(x, y, singleValue=true))
+            dispatchWithLiteral:
+                (String(s), String(t)):
+                    value:   push(newString(t & s))
+                    inplace: s.insert(t, 0)
+                (String(s), Char(c)):
+                    value:   push(newString($(c) & s))
+                    inplace: s.insert($(c), 0)
+                (Char(a), String(t)):
+                    value:   push(newString(t & $(a)))
+                    inplace: SetInPlaceAny(newString(t & $(a)))
+                (Char(a), Char(b)):
+                    value:   push(newString($(b) & $(a)))
+                    inplace: SetInPlaceAny(newString($(b) & $(a)))
+                (Binary(n), Binary(m)):
+                    value:   push(newBinary(m & n))
+                    inplace: n.insert(m, 0)
+                (Binary(n), Integer(i)):
+                    value:   push(newBinary(numberToBinary(i) & n))
+                    inplace: n.insert(numberToBinary(i), 0)
+                (Block(a), Block(t)):
+                    value:   push newBlock(prepend(x, y))
+                    inplace: InPlaced.prependInPlace(y)
+                (Block(a), _):
+                    value:   push newBlock(prepend(x, y, singleValue=true))
+                    inplace: a.insert(y, 0)
 
     builtin "range",
         alias       = ellipsis,
