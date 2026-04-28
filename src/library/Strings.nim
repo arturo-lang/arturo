@@ -134,14 +134,9 @@ proc defineModule*(moduleName: string) =
             capitalize 'str                     ; str: "Hello World"
         """:
             #=======================================================
-            if xKind==String: push(newString(x.s.capitalize()))
-            elif xKind==Char: push(newChar(x.c.toUpper()))
-            else: 
-                ensureInPlaceAny()
-                if InPlaced.kind==String:
-                    InPlaced.s = InPlaced.s.capitalize()
-                else:
-                    InPlaced.c = InPlaced.c.toUpper()
+            dispatch:
+                String(s): s.capitalize()
+                Char(c):   c.toUpper()
 
     builtin "escape",
         alias       = unaliased, 
