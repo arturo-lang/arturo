@@ -95,11 +95,8 @@ proc defineModule*(moduleName: string) =
             ; a: [3 4]
         """:
             #=======================================================
-            if xKind in {Literal,PathLiteral}:
-                ensureInPlaceAny()
-                SetInPlaceAny(newBlock(toSeq(intersection(toOrderedSet(InPlaced.a), toOrderedSet(y.a)))))
-            else:
-                push(newBlock(toSeq(intersection(toOrderedSet(x.a), toOrderedSet(y.a)))))
+            dispatch:
+                Block(a): toSeq(intersection(toOrderedSet(a), toOrderedSet(y.a)))
 
     builtin "powerset",
         alias       = unaliased, 
@@ -143,11 +140,8 @@ proc defineModule*(moduleName: string) =
             ; a: [1 2 3 4 5 6]
         """:
             #=======================================================
-            if xKind in {Literal,PathLiteral}:
-                ensureInPlaceAny()
-                SetInPlaceAny(newBlock(toSeq(union(toOrderedSet(InPlaced.a), toOrderedSet(y.a)))))
-            else:
-                push(newBlock(toSeq(union(toOrderedSet(x.a), toOrderedSet(y.a)))))
+            dispatch:
+                Block(a): toSeq(union(toOrderedSet(a), toOrderedSet(y.a)))
 
     #----------------------------
     # Predicates
