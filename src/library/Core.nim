@@ -26,6 +26,10 @@ import algorithm, hashes, options
 import sequtils, sugar
 
 when not defined(WEB):
+    import asyncdispatch
+    import vm/values/custom/vtask
+
+when not defined(WEB):
     import oids, os
 
     import helpers/ffi
@@ -436,7 +440,7 @@ proc defineModule*(moduleName: string) =
         rule        = PrefixPrecedence,
         description = "evaluate and execute given code",
         args        = {
-            "code"  : {String,Block,Bytecode}
+            "code"  : {String,Block,Bytecode,Task}
         },
         attrs       = {
             "times" : ({Integer},"repeat block execution given number of times")
@@ -491,6 +495,17 @@ proc defineModule*(moduleName: string) =
 
             if checkAttr("times"):
                 times = aTimes.i
+
+            # `do task` is sugar for `wait task` - drain the future once
+            if xKind == Task:
+                when not defined(WEB):
+                    if x.tsk.state == taskCancelled:
+                        push VNULL
+                    else:
+                        let res = waitFor x.tsk.future
+                        x.tsk.state = taskDone
+                        push res
+                return
 
             var evaled: Translation
             if xKind != String:
