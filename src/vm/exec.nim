@@ -738,7 +738,7 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 of opMul                : arithmeticFastpathB(DoMul, normalIntegerMul)
                 of opDiv                : arithmeticFastpathB(DoDiv, normalIntegerDiv)
                 of opFdiv               : arithmeticFastpathB(DoFdiv, normalIntegerFDiv)
-                of opMod                : DoMod()
+                of opMod                : arithmeticFastpathB(DoMod, normalIntegerMod)
                 of opPow                : DoPow()
 
                 of opNeg                : DoNeg()
