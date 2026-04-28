@@ -477,8 +477,6 @@ template normalIntegerShrI*(x: var Value, y: int): untyped =
 template arithmeticFastpathA*(slowOp, intFastFn: untyped): untyped =
     ## inline fast-path for unary arithmetic ops on a NormalInteger operand -
     ## on any other operand kind, it defaults to the normal ``slowOp``.
-    ## The kind+iKind check is fused into a single bitwise compare so the
-    ## compiler emits one branch instead of one per ``likely(...)`` clause.
     let xv {.cursor.} = stack.sTop()
     if likely(((ord(xv.kind) xor ord(Integer)) or ord(xv.iKind)) == 0):
         let x = stack.pop()
