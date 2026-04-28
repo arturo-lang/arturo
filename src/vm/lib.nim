@@ -74,6 +74,7 @@ macro dispatch*(body: untyped): untyped =
         of "Dictionary": ("d", "newDictionary")
         of "Binary":     ("n", "newBinary")
         of "Range":      ("rng", "newRange")
+        of "Regex":      ("rx", "newRegex")
         else:
             error("dispatch: unsupported kind '" & kind & "'", n)
             ("", "")
