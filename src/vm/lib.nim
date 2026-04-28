@@ -52,10 +52,11 @@ macro dispatch*(body: untyped): untyped =
     ## as `push(newKind(expr))` for value-mode args, or as field assignment
     ## (`InPlaced.field = expr`) for `Literal`/`PathLiteral` args.
     ##
-    ## Per-mode mode: `value:` supplies the payload (same wrapping); `inplace:`
-    ## supplies a statement block that runs verbatim — useful when the in-place
-    ## path mutates the field directly (`s.insert(...)`, `s &= ...`) or changes
-    ## kind (`SetInPlaceAny(newString(...))`).
+    ## Per-mode mode: both `value:` and `inplace:` are full statement blocks
+    ## that run verbatim. The user writes their own `push(...)` /
+    ## `SetInPlaceAny(...)` / field mutation — useful when the result kind
+    ## differs from the x-kind (e.g. `Char + String -> String`) or the
+    ## in-place path mutates a field directly (`s &= ...`, `s.insert(...)`).
     ##
     ## In all cases `x`/`y` are still in scope (injected by `require`); the
     ## binding name is an alias — a `let` for read-only access, a `template`
@@ -158,12 +159,11 @@ macro dispatch*(body: untyped): untyped =
                                   newDotExpr(ident("y"), ident(yField)))
 
         if valueMode:
-            let expr =
-                if fc.valueE != nil: fc.valueE
-                else: fc.unifiedB
-            if expr != nil:
+            if fc.valueE != nil:
+                result.add copyNimTree(fc.valueE)
+            elif fc.unifiedB != nil:
                 result.add newCall(ident("push"),
-                                   newCall(ident(xCtor), copyNimTree(expr)))
+                                   newCall(ident(xCtor), copyNimTree(fc.unifiedB)))
             else:
                 result.add nnkDiscardStmt.newTree(newEmptyNode())
         else:
