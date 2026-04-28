@@ -729,38 +729,36 @@ proc defineModule*(moduleName: string) =
             replace "hello" ["h" "o"] ["x" "z"]     ; => "xellz"
         """:
             #=======================================================
-            if xKind==String:
-                if yKind==String:
-                    push(newString(x.s.replaceAll(y.s, z.s)))
-                elif yKind==Regex:
-                    push(newString(x.s.replaceAll(y.rx, z.s)))
-                else:
-                    var final = x.s
-                    if zKind==String:
-                        for item in y.a:
+            dispatchWithLiteral:
+                (String(s), String(m),   String(r)):
+                    value:   push(newString(s.replaceAll(m, r)))
+                    inplace: s = s.replaceAll(m, r)
+                (String(s), Regex(rgx),  String(r)):
+                    value:   push(newString(s.replaceAll(rgx, r)))
+                    inplace: s = s.replaceAll(rgx, r)
+                (String(s), Block(matches), String(_)):
+                    value:
+                        var final = s
+                        for item in matches:
                             replaceStrWith(final, item, z)
-                    else:
-                        let lim = min(len(y.a), len(z.a))
+                        push(newString(final))
+                    inplace:
+                        for item in matches:
+                            replaceStrWith(s, item, z)
+                (String(s), Block(matches), Block(reps)):
+                    value:
+                        var final = s
+                        let lim = min(len(matches), len(reps))
                         var i = 0
                         while i < lim:
-                            replaceStrWith(final, y.a[i], z.a[i])
+                            replaceStrWith(final, matches[i], reps[i])
                             inc i
-                    push(newString(final))
-            else:
-                ensureInPlaceAny()
-                if yKind==String:
-                    InPlaced.s = InPlaced.s.replaceAll(y.s, z.s)
-                elif yKind==Regex:
-                    InPlaced.s = InPlaced.s.replaceAll(y.rx, z.s)
-                else:
-                    if zKind==String:
-                        for item in y.a:
-                            replaceStrWith(InPlaced.s, item, z)
-                    else:
-                        let lim = min(len(y.a), len(z.a))
+                        push(newString(final))
+                    inplace:
+                        let lim = min(len(matches), len(reps))
                         var i = 0
                         while i < lim:
-                            replaceStrWith(InPlaced.s, y.a[i], z.a[i])
+                            replaceStrWith(s, matches[i], reps[i])
                             inc i
 
     builtin "strip",
