@@ -338,7 +338,9 @@ proc defineModule*(moduleName: string) =
             ; => [[1 "one"] [2 "two"] [3 "three"]]
         """:
             #=======================================================
-            push(newBlock(zip(x.a, y.a).map((z)=>newBlock(@[z[0], z[1]]))))
+            dispatch:
+                (Block(a), Block(b)):
+                    push(newBlock(zip(a, b).map((p)=>newBlock(@[p[0], p[1]]))))
 
     builtin "decouple",
         alias       = unaliased,
