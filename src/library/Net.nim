@@ -106,19 +106,26 @@ proc defineModule*(moduleName: string) =
                 "url"   : {String}
             },
             attrs       = {
-                "as"    : ({String},"set target file")
+                "as"    : ({String},"set target file"),
+                "async" : ({Logical},"download in a child process and return a `:task`")
             },
-            returns     = {Nothing},
+            returns     = {Nothing,Task},
             example     = """
             download "https://github.com/arturo-lang/arturo/raw/master/logo.png"
             ; (downloads file as "logo.png")
             ..........
             download.as:"arturoLogo.png"
                         "https://github.com/arturo-lang/arturo/raw/master/logo.png"
-            
+
             ; (downloads file with a different name)
             """:
                 #=======================================================
+                if hadAttr("async"):
+                    var attrSuffix = ""
+                    if checkAttr("as"): attrSuffix &= ".as:" & codify(aAs)
+                    spawnAsTask("download" & attrSuffix & " " & codify(x))
+                    return
+
                 let path = x.s
 
                 var target: string
