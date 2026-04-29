@@ -2891,24 +2891,18 @@ proc defineModule*(moduleName: string) =
             zero? ø             ; => true
         """:
             #=======================================================
-            case xKind:
-                of Integer:
+            dispatch:
+                Integer(i):
                     if x.iKind == BigInteger:
                         when defined(WEB):
                             push(newLogical(x.bi==big(0)))
                         elif defined(GMP):
                             push(newLogical(isZero(x.bi)))
                     else:
-                        push(newLogical(x.i == 0))
-                of Floating:
-                    push(newLogical(x.f == 0.0))
-                of String:
-                    push(newLogical(runeLen(x.s) == 0))
-                of Block:
-                    push(newLogical(x.a.len == 0))
-                of Range:
-                    push(newLogical(x.rng.len == 0))
-                of Dictionary:
-                    push(newLogical(x.d.len == 0))
-                else:
-                    push(VTRUE)
+                        push(newLogical(i == 0))
+                Floating(f):   push(newLogical(f == 0.0))
+                String(s):     push(newLogical(runeLen(s) == 0))
+                Block(a):      push(newLogical(a.len == 0))
+                Range(rng):    push(newLogical(rng.len == 0))
+                Dictionary(d): push(newLogical(d.len == 0))
+                _:             push(VTRUE)
