@@ -652,14 +652,19 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
             if keys.len > 0:
 
                 for k,v in pairs(v.d):
+                    # under `safeStrings`, quote keys so dicts with non-identifier
+                    # keys (e.g. `content-length`) can round-trip through the parser
+                    let keyStr =
+                        if safeStrings: "\"" & k & "\""
+                        else:           k
                     if pretty:
                         if not (unwrapped):
                             for i in 0..level: result &= "        "
                         else:
                             for i in 0..level-1: result &= "        "
-                        result &= k & ":"
+                        result &= keyStr & ":"
                     else:
-                        result &= k & ": "
+                        result &= keyStr & ": "
 
                     result &= codify(v,pretty,unwrapped,level+1, false, isKeyVal=true, safeStrings=safeStrings) 
 
