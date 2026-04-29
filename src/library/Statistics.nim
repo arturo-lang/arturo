@@ -90,10 +90,10 @@ proc defineModule*(moduleName: string) =
             deviation.sample arr2       ; => 45.65847597731914
         """:
             #=======================================================
-            if (hadAttr("sample")):
-                push newFloating(standardDeviationS(x.a.map((z)=>(requireValue(z,{Integer,Floating}); asFloat(z)))))
-            else:
-                push newFloating(standardDeviation(x.a.map((z)=>(requireValue(z,{Integer,Floating}); asFloat(z)))))
+            dispatch:
+                Block(a):
+                    on sample: push newFloating(standardDeviationS(a.map((z)=>(requireValue(z,{Integer,Floating}); asFloat(z)))))
+                    _:         push newFloating(standardDeviation(a.map((z)=>(requireValue(z,{Integer,Floating}); asFloat(z)))))
 
     builtin "kurtosis",
         alias       = unaliased,
