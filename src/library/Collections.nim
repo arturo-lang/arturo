@@ -895,30 +895,27 @@ proc defineModule*(moduleName: string) =
             ; :null
         """:
             #=======================================================
-            case xKind:
-                of String:
-                    let indx = x.s.find(y.s)
-                    if indx != -1: push(newInteger(indx))
+            dispatch:
+                String(s):
+                    let idx = s.find(y.s)
+                    if idx != -1: push(newInteger(idx))
                     else: push(VNULL)
-                of Block:
-                    let indx = x.a.find(y)
-                    if indx != -1: push(newInteger(indx))
+                Block(a):
+                    let idx = a.find(y)
+                    if idx != -1: push(newInteger(idx))
                     else: push(VNULL)
-                of Range:
-                    let indx = x.rng.find(y)
-                    if indx != -1: push(newInteger(indx))
+                Range(rng):
+                    let idx = rng.find(y)
+                    if idx != -1: push(newInteger(idx))
                     else: push(VNULL)
-                of Dictionary:
+                Dictionary(d):
                     var found = false
-                    for k, v in pairs(x.d):
+                    for k, v in pairs(d):
                         if v == y:
                             push(newString(k))
                             found = true
                             break
-
-                    if not found:
-                        push(VNULL)
-                else: discard
+                    if not found: push(VNULL)
 
     # TODO(Collections\insert) add new `.many` option?
     #  or something similar - the name doesn't have to be this one
