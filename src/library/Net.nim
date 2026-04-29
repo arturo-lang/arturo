@@ -452,22 +452,119 @@ proc defineModule*(moduleName: string) =
             ]
             """:
                 #=======================================================
-                if hadAttr("async"):
-                    # reformulate as a child-process call to sync `serve`.
-                    # the child loops forever; `cancel <task>` kills the process.
-                    var attrSuffix = ""
-                    if hadAttr("silent"): attrSuffix &= ".silent"
-                    if hadAttr("chrome"): attrSuffix &= ".chrome"
-                    if checkAttr("port"): attrSuffix &= ".port:" & codify(aPort)
-                    push spawnAsTask("serve" & attrSuffix & " " & codify(x))
-                    return
-
                 # get parameters
                 let routes = x
                 var port = 18966
                 var verbose = not (hadAttr("silent"))
                 if checkAttr("port"):
                     port = aPort.i
+
+                if hadAttr("async"):
+                    # in-process async serve via `asynchttpserver`. the handler
+                    # mirrors the sync one below but uses asynchttpserver's
+                    # Request API and `await req.respond(...)` rather than
+                    # httpx's blocking send. cancel works (the helper closes
+                    # the server, freeing the port).
+                    if hadAttr("chrome"):
+                        openChromeWindow(port)
+
+                    if routes.kind != Function:
+                        execInternal("Net/serve")
+                        callInternal("initServerInternal", getValue=false, routes)
+
+                    proc asyncHandler(req: AsyncHttpServerRequest): Future[void] {.async, gcsafe.} =
+                        {.cast(gcsafe).}:
+                            let reqAction = req.reqMethod
+                            let reqBody = req.body
+                            let reqHeaders = req.headers.table
+                            let initialReqPath =
+                                if req.url.query.len > 0: req.url.path & "?" & req.url.query
+                                else: req.url.path
+                            let reqPath = decodeUrl(req.url.path)
+                            var reqQuery = initOrderedTable[string, Value]()
+                            if req.url.query.len > 0:
+                                for k, v in decodeQuery(req.url.query):
+                                    reqQuery[k] = newString(v)
+
+                            var reqBodyV: Value
+                            if reqAction != HttpGet:
+                                try:
+                                    reqBodyV = valueFromJson(reqBody)
+                                except CatchableError:
+                                    reqBodyV = newDictionary()
+                                    for k, v in decodeQuery(reqBody):
+                                        reqBodyV.d[k] = newString(v)
+                            else:
+                                reqBodyV = newString(reqBody)
+
+                            let requestDict = newDictionary({
+                                    "method": newString($(reqAction)),
+                                    "path": newString(reqPath),
+                                    "uri": newString(initialReqPath),
+                                    "body": reqBodyV,
+                                    "query": newDictionary(reqQuery),
+                                    "headers": newStringDictionary(reqHeaders, collapseBlocks=true),
+                                    "ip": newString(req.hostname)
+                                }.toOrderedTable)
+
+                            var responseDict: ValueDict = {
+                                "body": newString(""),
+                                "status": newInteger(200),
+                                "headers": newDictionary()
+                            }.toOrderedTable
+
+                            var resp: Value
+                            if routes.kind == Function:
+                                let timeTaken = getBenchmark:
+                                    try:
+                                        callFunction(routes, "<closure>", @[requestDict])
+                                        resp = stack.pop()
+                                        if resp.kind == String:
+                                            responseDict["body"] = resp
+                                        else:
+                                            for k, v in resp.d.pairs:
+                                                responseDict[k] = v
+                                    except VError as e:
+                                        showError(e)
+                                        responseDict["status"] = newInteger(500)
+                                    except CatchableError, Defect:
+                                        let e = getCurrentException()
+                                        showError(VError(e))
+                                        responseDict["status"] = newInteger(500)
+                                responseDict["benchmark"] = newQuantity(toQuantity(timeTaken, parseAtoms("ms")))
+                            else:
+                                responseDict = callInternal("serveInternal", getValue=true,
+                                    requestDict
+                                ).d
+                                if not responseDict["headers"].d.hasKey("Content-Type"):
+                                    responseDict["headers"].d["Content-Type"] = newString("text/html")
+
+                            var respHeaders = newHttpHeaders()
+                            for k, v in responseDict["headers"].d.pairs:
+                                respHeaders.add(k, v.s)
+
+                            let bodyStr =
+                                if responseDict["body"].kind == Binary:
+                                    var s = newString(responseDict["body"].n.len)
+                                    if s.len > 0:
+                                        copyMem(addr s[0], addr responseDict["body"].n[0], s.len)
+                                    s
+                                else:
+                                    responseDict["body"].s
+
+                            if verbose:
+                                let status = responseDict["status"].i
+                                echo "[" & $(now()) & "] " & ($(reqAction)).toUpperAscii() &
+                                     " " & initialReqPath & " -> " & $(status)
+
+                            await req.respond(HttpCode(responseDict["status"].i),
+                                              bodyStr, respHeaders)
+
+                    if verbose:
+                        echo " :: Starting server on port " & $(port) & "...\n"
+
+                    push spawnAsyncServe(port, asyncHandler)
+                    return
 
                 if hadAttr("chrome"):
                     openChromeWindow(port)
