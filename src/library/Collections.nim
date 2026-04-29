@@ -1237,32 +1237,32 @@ proc defineModule*(moduleName: string) =
             inspect b     ; uro :string
         """:
             #=======================================================
-            var n = 
-                if checkAttr("n"): aN.i
-                else: 1
-            
-            ensureInPlaceAny()
-            if n == 1:
-                case InPlaced.kind:
-                of String: 
-                    push(newChar(InPlaced.s[^1]))
-                    Inplaced.s = InPlaced.s[0..^(n + 1)]
-                of Block:
-                    if InPlaced.a.len > 0:
-                        push(InPlaced.a[^1])
-                        InPlaced.a = InPlaced.a[0..^(n + 1)]
-                else: discard
-            elif n > 1:
-                case InPlaced.kind:
-                of String: 
-                    push(newString(InPlaced.s[(InPlaced.s.len-n)..^1]))
-                    InPlaced.s = InPlaced.s[0..^(n + 1)]
-                of Block:
-                    if InPlaced.a.len > 0:
-                        push(newBlock(InPlaced.a[(InPlaced.a.len-n)..^1]))
-                        InPlaced.a = InPlaced.a[0..^(n + 1)]
-                else: discard
-            else: raise newException(ValueError, "Attribute 'n can't be 0 or negative.")
+            bindAttrs:
+                n: Integer = 1
+
+            if n <= 0:
+                raise newException(ValueError, "Attribute 'n can't be 0 or negative.")
+
+            # `pop` has no value-mode (x is always Literal/PathLiteral) — only
+            # the inplace branches do real work. Each one *both* pushes the
+            # popped fragment and mutates `s`/`a`, hence `inplace:` blocks.
+            dispatchWithLiteral:
+                String(s):
+                    inplace:
+                        if n == 1:
+                            push(newChar(s[^1]))
+                            s = s[0..^(n + 1)]
+                        else:
+                            push(newString(s[(s.len-n)..^1]))
+                            s = s[0..^(n + 1)]
+                Block(a):
+                    inplace:
+                        if a.len > 0:
+                            if n == 1:
+                                push(a[^1])
+                            else:
+                                push(newBlock(a[(a.len-n)..^1]))
+                            a = a[0..^(n + 1)]
                 
     builtin "prepend",
         alias       = unaliased,
