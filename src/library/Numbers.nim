@@ -1027,22 +1027,22 @@ proc defineModule*(moduleName: string) =
             ; => [[A D] [A E] [B D] [B E] [C D] [C E]]
         """:
             #=======================================================
-            if (hadAttr("cartesian")):
-                let blk = x.a.map((z)=>z.a)
-                push(newBlock(cartesianProduct(blk).map((z) => newBlock(z))))
-            else:
-                var product = I1.copyValue
-                if xKind==Range:
-                    for item in items(x.rng):
-                        product *= item
+            dispatch:
+                Range(rng):
+                    var product = I1.copyValue
+                    for item in items(rng): product *= item
                     push(product)
-                else:
-                    var i = 0
-                    while i<x.a.len:
-                        product *= x.a[i]
-                        i += 1
-
-                    push(product)
+                Block(items):
+                    on cartesian:
+                        let blk = items.map((z)=>z.a)
+                        push(newBlock(cartesianProduct(blk).map((z) => newBlock(z))))
+                    _:
+                        var product = I1.copyValue
+                        var i = 0
+                        while i < items.len:
+                            product *= items[i]
+                            i += 1
+                        push(product)
 
     builtin "random",
         alias       = unaliased, 
