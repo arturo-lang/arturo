@@ -287,8 +287,5 @@ proc defineModule*(moduleName: string) =
             spin #123456 360        ; => #123456
         """:
             #=======================================================
-            if xKind == Color:
-                push newColor(spinColor(x.l, y.i))
-            else:
-                ensureInPlaceAny()
-                SetInPlaceAny(newColor(spinColor(InPlaced.l, y.i)))
+            dispatchWithLiteral:
+                Color(c): spinColor(c, y.i)
