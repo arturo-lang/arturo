@@ -584,33 +584,32 @@ proc defineModule*(moduleName: string) =
             ..........
             print first.n:2 ["one" "two" "three"] ; one two
         """:
-            #=======================================================            
-            if checkAttr("n"):
-                if xKind == String:
-                    if x.s.len == 0: push(newString(""))
-                    else: push(newString(x.s[0..min(aN.i-1, x.s.high)]))
-                elif xKind == Range:
-                    if aN.i == 1 or aN.i == 0:
-                        push(x.rng[1, true])
-                    elif aN.i < 0:
+            #=======================================================
+            dispatch:
+                String(s):
+                    on n(num: Integer):
+                        if s.len == 0: push(newString(""))
+                        else: push(newString(s[0..min(num-1, s.high)]))
+                    _:
+                        if s.len == 0: push(VNULL)
+                        else: push(newChar(s.runeAt(0)))
+                Range(rng):
+                    on n(num: Integer):
+                        if num == 1 or num == 0: push(rng[1, true])
                         # TODO(Collections\first) Better handling of errors related to the value of `n`
                         #  to be handled in: https://github.com/arturo-lang/arturo/pull/1432
                         #  labels: error handling, library
-                        raise newException(ValueError, "negative number of elements")
-                    else:
-                        push(newRange(x.rng[0..min(aN.i, x.rng.len), true]))
-                else:
-                    if x.a.len == 0: push(newBlock())
-                    else: push(newBlock(x.a[0..min(aN.i-1, x.a.high)]))
-            else:
-                if xKind == String:
-                    if x.s.len == 0: push(VNULL)
-                    else: push(newChar(x.s.runeAt(0)))
-                elif xKind == Range:
-                    push(x.rng[0])
-                else:
-                    if x.a.len == 0: push(VNULL)
-                    else: push(x.a[0])
+                        elif num < 0: raise newException(ValueError, "negative number of elements")
+                        else: push(newRange(rng[0..min(num, rng.len), true]))
+                    _:
+                        push(rng[0])
+                Block(a):
+                    on n(num: Integer):
+                        if a.len == 0: push(newBlock())
+                        else: push(newBlock(a[0..min(num-1, a.high)]))
+                    _:
+                        if a.len == 0: push(VNULL)
+                        else: push(a[0])
 
     builtin "flatten",
         alias       = unaliased,
