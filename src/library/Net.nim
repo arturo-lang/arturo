@@ -57,6 +57,7 @@ when not defined(WEB):
 
     import helpers/benchmark
     import helpers/jsonobject
+    import helpers/parallelism
     import helpers/servers
     import helpers/strings
     import helpers/terminal
@@ -66,34 +67,6 @@ when not defined(WEB):
     import vm/lib
     import vm/[env, errors, exec]
     import vm/values/custom/verror
-    import vm/values/custom/vtask
-
-#=======================================
-# Helpers
-#=======================================
-
-when not defined(WEB):
-    # TODO(Net) flesh-out async request support
-    #  this is the bare minimum: GET-only, no headers/proxy/etc, just body+status
-    #  in a dictionary. the goal is to prove the `:task` plumbing end-to-end -
-    #  full parity with sync `request` lands once the API has settled.
-    #  labels: library, enhancement
-    proc asyncRequestGet(url: string, agent: string): Future[Value] {.async.} =
-        let client = newAsyncHttpClient(userAgent = agent)
-        try:
-            let response = await client.request(url = url, httpMethod = HttpGet)
-            let body = await response.body
-            var ret: ValueDict = initOrderedTable[string,Value]()
-            ret["version"] = newString(response.version)
-            ret["body"]    = newString(body)
-            try:
-                let respStatus = (response.status.splitWhitespace())[0]
-                ret["status"] = newInteger(respStatus)
-            except CatchableError:
-                ret["status"] = newString(response.status)
-            result = newDictionary(ret)
-        except CatchableError:
-            result = VNULL
 
 #=======================================
 # Definitions
@@ -268,9 +241,24 @@ proc defineModule*(moduleName: string) =
                 var meth: HttpMethod = HttpGet
 
                 if hadAttr("async"):
-                    # NOTE: only GET-with-no-extras is wired for now (see helper above)
-                    var agent = "Arturo HTTP Client / " & $(getSystemInfo()["version"])
-                    push newTask(VTask(state: taskPending, future: asyncRequestGet(url, agent)))
+                    # reformulate as a child-process call to sync `request`
+                    # (without `.async`); behavior is identical by definition.
+                    var attrSuffix = ""
+                    if hadAttr("get"):    attrSuffix &= ".get"
+                    if hadAttr("post"):   attrSuffix &= ".post"
+                    if hadAttr("patch"):  attrSuffix &= ".patch"
+                    if hadAttr("put"):    attrSuffix &= ".put"
+                    if hadAttr("delete"): attrSuffix &= ".delete"
+                    if hadAttr("json"):   attrSuffix &= ".json"
+                    if hadAttr("raw"):    attrSuffix &= ".raw"
+                    if checkAttr("headers"):     attrSuffix &= ".headers:"     & codify(aHeaders)
+                    if checkAttr("agent"):       attrSuffix &= ".agent:"       & codify(aAgent)
+                    if checkAttr("timeout"):     attrSuffix &= ".timeout:"     & codify(aTimeout)
+                    if checkAttr("proxy"):       attrSuffix &= ".proxy:"       & codify(aProxy)
+                    if checkAttr("certificate"): attrSuffix &= ".certificate:" & codify(aCertificate)
+                    let urlSrc = codify(x)
+                    let dataSrc = if y.kind == Null: "null" else: codify(y)
+                    spawnAsTask("request" & attrSuffix & " " & urlSrc & " " & dataSrc)
                     return
 
 
