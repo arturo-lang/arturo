@@ -1061,34 +1061,27 @@ proc defineModule*(moduleName: string) =
             print max [4 2 8 5 1 9]       ; 9
         """:
             #=======================================================
-            let withIndex = hadAttr("index")
+            bindAttrs:
+                withIndex(index): Logical
 
-            if xKind==Range:
-                let (maxIndex, maxElement) = max(x.rng)
-                if withIndex: push(newInteger(maxIndex))
-                else: push(maxElement)
-            else:
-                if x.a.len == 0: push(VNULL)
-                else:
-                    var maxElement = x.a[0]
-                    if withIndex:
-                        var maxIndex = 0
-                        var i = 1
-                        while i < x.a.len:
-                            if (x.a[i] > maxElement):
-                                maxElement = x.a[i]
-                                maxIndex = i
-                            inc(i)
-
-                        push(newInteger(maxIndex))
+            dispatch:
+                Range(rng):
+                    let (maxIdx, maxElt) = max(rng)
+                    if withIndex: push(newInteger(maxIdx))
+                    else: push(maxElt)
+                Block(items):
+                    if items.len == 0: push(VNULL)
                     else:
+                        var maxElt = items[0]
+                        var maxIdx = 0
                         var i = 1
-                        while i < x.a.len:
-                            if (x.a[i] > maxElement):
-                                maxElement = x.a[i]
+                        while i < items.len:
+                            if items[i] > maxElt:
+                                maxElt = items[i]
+                                maxIdx = i
                             inc(i)
-
-                        push(maxElement)
+                        if withIndex: push(newInteger(maxIdx))
+                        else: push(maxElt)
 
     builtin "min",
         alias       = unaliased,
