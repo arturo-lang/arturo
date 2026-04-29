@@ -1469,20 +1469,18 @@ proc defineModule*(moduleName: string) =
             positive? 6-7     ; => false
         """:
             #=======================================================
-            if xKind==Integer:
-                if x.iKind==BigInteger:
-                    when defined(WEB):
-                        push(newLogical(x.bi > big(0)))
-                    elif defined(GMP):
-                        push(newLogical(positive(x.bi)))
-                else:
-                    push(newLogical(x > I0))
-            elif xKind==Floating:
-                push(newLogical(x.f > 0.0))
-            elif xKind==Rational:
-                push(newLogical(isPositive(x.rat)))
-            elif xKind==Complex:
-                push(newLogical(x.z.re > 0.0 or (x.z.re == 0.0 and x.z.im > 0.0)))
+            dispatch:
+                Integer(_):
+                    if x.iKind == BigInteger:
+                        when defined(WEB):
+                            push(newLogical(x.bi > big(0)))
+                        elif defined(GMP):
+                            push(newLogical(positive(x.bi)))
+                    else:
+                        push(newLogical(x > I0))
+                Floating(f):   push(newLogical(f > 0.0))
+                Rational(rat): push(newLogical(isPositive(rat)))
+                Complex(z):    push(newLogical(z.re > 0.0 or (z.re == 0.0 and z.im > 0.0)))
 
     builtin "prime?",
         alias       = unaliased, 
