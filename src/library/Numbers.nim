@@ -1190,29 +1190,27 @@ proc defineModule*(moduleName: string) =
             sign to :complex @[0 neg 1]      ; => -1
         """:
             #=======================================================
-            if xKind==Integer:
-                if x.iKind==NormalInteger:
-                    push(newInteger(sgn(x.i)))
-                else:
-                    when defined(WEB):
-                        if x.bi > big(0): push(newInteger(1))
-                        elif x.bi < big(0): push(newInteger(-1))
-                        else: push(newInteger(0))
-                    elif defined(GMP):
-                        push(newInteger(int(sign(x.bi))))
-            elif xKind==Floating:
-                push(newInteger(sgn(x.f)))
-            elif xKind==Rational:
-                push(newInteger(sign(x.rat)))
-            elif xKind==Complex:
-                if x.z.re > 0.0 or (x.z.re == 0.0 and x.z.im > 0.0):
-                    push(newInteger(1))
-                elif x.z.re < 0.0 or (x.z.re == 0.0 and x.z.im < 0.0):
-                    push(newInteger(-1))
-                else:
-                    push(newInteger(0))
-            else:
-                push(newInteger(sign(x.q.original)))
+            dispatch:
+                Integer(i):
+                    if x.iKind == NormalInteger:
+                        push(newInteger(sgn(i)))
+                    else:
+                        when defined(WEB):
+                            if x.bi > big(0): push(newInteger(1))
+                            elif x.bi < big(0): push(newInteger(-1))
+                            else: push(newInteger(0))
+                        elif defined(GMP):
+                            push(newInteger(int(sign(x.bi))))
+                Floating(f):   push(newInteger(sgn(f)))
+                Rational(rat): push(newInteger(sign(rat)))
+                Complex(z):
+                    if z.re > 0.0 or (z.re == 0.0 and z.im > 0.0):
+                        push(newInteger(1))
+                    elif z.re < 0.0 or (z.re == 0.0 and z.im < 0.0):
+                        push(newInteger(-1))
+                    else:
+                        push(newInteger(0))
+                Quantity(q):   push(newInteger(sign(q.original)))
 
     builtin "sin",
         alias       = unaliased, 
