@@ -105,11 +105,10 @@ proc defineModule*(moduleName: string) =
             desaturate #9944CC 0.3      ; => #9558B8
         """:
             #=======================================================
-            if xKind == Color:
-                push newColor(saturateColor(x.l, y.f * (-1)))
-            else:
-                ensureInPlaceAny()
-                SetInPlaceAny(newColor(saturateColor(InPlaced.l, y.f * (-1))))
+            dispatchWithLiteral:
+                Color(c):
+                    value:   push newColor(saturateColor(c, y.f * (-1)))
+                    inplace: SetInPlaceAny(newColor(saturateColor(c, y.f * (-1))))
 
     builtin "grayscale",
         alias       = unaliased, 
