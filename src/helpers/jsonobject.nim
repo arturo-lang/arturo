@@ -185,6 +185,7 @@ when defined(WEB):
                Module,
                Socket,
                Bytecode,
+               Task,
                Nothing,
                Any          : discard
 
