@@ -261,29 +261,17 @@ proc defineModule*(moduleName: string) =
             ; => false
         """:
             #=======================================================
-            if (hadAttr("proper")):
-                if x == y: 
-                    push(newLogical(false))
-                else:
-                    var contains = true
-                    let xblk = x.a
-                    let yblk = y.a
-                    for item in yblk:
-                        if item notin xblk:
-                            contains = false
-                            break
+            bindAttrs:
+                proper: Logical
 
-                    push(newLogical(contains))
-            else:
-                if x == y:
-                    push(newLogical(true))
-                else:
-                    var contains = true
-                    let xblk = x.a
-                    let yblk = y.a
-                    for item in yblk:
-                        if item notin xblk:
-                            contains = false
-                            break
-
-                    push(newLogical(contains))
+            dispatch:
+                (Block(a), Block(b)):
+                    if x == y:
+                        push(newLogical(not proper))
+                    else:
+                        var contains = true
+                        for item in b:
+                            if item notin a:
+                                contains = false
+                                break
+                        push(newLogical(contains))
