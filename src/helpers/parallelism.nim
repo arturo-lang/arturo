@@ -147,19 +147,29 @@ when not defined(WEB):
     # in-process async file write via `asyncfile`. content is already
     # serialized by the caller (e.g. JSON-encoded), so this layer just
     # streams bytes to disk through the dispatcher.
-    proc writeFileAsync(path, content: string, append: bool): Future[Value] {.async.} =
-        let mode = if append: fmAppend else: fmWrite
-        var f = openAsync(path, mode)
+    proc writeFileAsync(f: AsyncFile, content: string): Future[Value] {.async.} =
         try:
             await f.write(content)
+        except CatchableError:
+            # cancellation closes the file mid-flight; we swallow and let
+            # `wait` short-circuit to `:null`.
+            discard
         finally:
-            f.close()
+            try: f.close()
+            except CatchableError: discard
         result = VNULL
 
     # convenience: kick off an in-process async write and return a `:task`.
+    # the open file is held by the task so `cancel` can `close()` it and
+    # abort an in-flight write.
     proc spawnAsyncWrite*(path, content: string, append: bool): Value =
+        let mode = if append: fmAppend else: fmWrite
+        let f = openAsync(path, mode)
         let tsk = VTask(state: taskPending)
-        tsk.future = writeFileAsync(path, content, append)
+        tsk.future = writeFileAsync(f, content)
+        tsk.cancelHandle = proc() =
+            try: f.close()
+            except CatchableError: discard
         result = newTask(tsk)
 
     # convenience: kick off an in-process async download and return a `:task`.
