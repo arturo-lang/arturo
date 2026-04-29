@@ -105,11 +105,8 @@ proc defineModule*(moduleName: string) =
             ;  [[] [1] [2] [1 3] [3] [1 2] [2 3] [1 2 3]]
         """:
             #=======================================================
-            if xKind in {Literal,PathLiteral}:
-                ensureInPlaceAny()
-                SetInPlaceAny(newBlock(toSeq(powerset(toOrderedSet(InPlaced.a))).map((hs) => newBlock(toSeq(hs)))))
-            else:
-                push(newBlock(toSeq(powerset(toOrderedSet(x.a)).map((hs) => newBlock(toSeq(hs))))))
+            dispatchWithLiteral:
+                Block(a): toSeq(powerset(toOrderedSet(a)).map((hs) => newBlock(toSeq(hs))))
 
     builtin "union",
         alias       = VSymbol.union, 
