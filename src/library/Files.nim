@@ -500,9 +500,10 @@ proc defineModule*(moduleName: string) =
                 "directory"     : ({Logical},"create directory at path"),
                 "json"          : ({Logical},"write value as Json"),
                 "compact"       : ({Logical},"produce compact, non-prettified Json code"),
-                "binary"        : ({Logical},"write as binary")
+                "binary"        : ({Logical},"write as binary"),
+                "async"         : ({Logical},"write in a child process and return a `:task`")
             },
-            returns     = {Nothing},
+            returns     = {Nothing,Task},
             example     = """
             ; write some string data to given file path
             write "Hello world!" "somefile.txt"
@@ -514,6 +515,17 @@ proc defineModule*(moduleName: string) =
             write.append "Yes, Hello again!" "somefile.txt"
             """:
                 #=======================================================
+                if hadAttr("async"):
+                    var attrSuffix = ""
+                    if hadAttr("append"):    attrSuffix &= ".append"
+                    if hadAttr("directory"): attrSuffix &= ".directory"
+                    if hadAttr("json"):      attrSuffix &= ".json"
+                    if hadAttr("compact"):   attrSuffix &= ".compact"
+                    if hadAttr("binary"):    attrSuffix &= ".binary"
+                    let pathSrc = if y.kind == Null: "null" else: codify(y)
+                    spawnAsTask("write" & attrSuffix & " " & codify(x) & " " & pathSrc)
+                    return
+
                 if xKind==Bytecode:
                     let dataS = codify(newBlock(y.trans.constants), unwrapped=true, safeStrings=true)
                     let codeS = x.trans.instructions
