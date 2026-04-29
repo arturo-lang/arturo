@@ -26,9 +26,7 @@ import algorithm, hashes, options
 import sequtils, sugar
 
 when not defined(WEB):
-    import asyncdispatch
-    import osproc, streams, times
-    import vm/values/custom/vtask
+    import helpers/parallelism as ParallelismHelper
 
 when not defined(WEB):
     import oids, os
@@ -53,72 +51,6 @@ when defined(BUNDLE):
 #=======================================
 # Helpers
 #=======================================
-
-when not defined(WEB):
-    # spawn a child arturo process to evaluate `src`, return a future that
-    # settles when the child exits. result is whatever the child's expression
-    # evaluated to, returned as a `:string`.
-    #
-    # this is THE primitive for "real" background work: the child has its own
-    # VM, so it runs genuinely in parallel with whatever the main code is doing.
-    # we poll with a 50ms granularity and yield to the dispatcher between polls,
-    # which means other futures (e.g. async HTTP calls) keep making progress.
-    #
-    # design note: we INHERIT the child's stdout/stderr (so any `print` inside
-    # the async block flows live to the user's terminal) and use a temp file
-    # for the result hand-off. capturing stdout would swallow user prints.
-    proc runInChildProcess(blockSrc: string): Future[Value] {.async.} =
-        let arturoBin = getAppFilename()
-        let resFile = getTempDir() / ("arturo-task-" & $getCurrentProcessId() & "-" & $epochTime() & ".art")
-        # the child evaluates the user code, then writes the result as Arturo
-        # source code (homoiconic round-trip, no JSON or other format needed).
-        #
-        # void-safety trick: prepend `null` *inside* the user's block so the
-        # block always has a value even if the user's last expression doesn't
-        # push (e.g. ends with `print`). if the user does push a real value,
-        # that supersedes the leading `null` as the topmost stack value.
-        #
-        # stdout/stderr are inherited - any `print` inside the async block
-        # flows live to the user's terminal.
-        let safeBlock =
-            if blockSrc.len >= 2 and blockSrc[0] == '[':
-                "[null " & blockSrc[1 .. blockSrc.high]
-            else:
-                "[null " & blockSrc & "]"
-        let wrapped =
-            "res: null\n" &
-            "try [ res: do " & safeBlock & " ]\n" &
-            "write express res \"" & resFile & "\""
-        let p = startProcess(arturoBin,
-                             args = @["-e", wrapped],
-                             options = {poUsePath, poParentStreams})
-        while p.running:
-            await sleepAsync(50)
-        let code = p.peekExitCode()
-        p.close()
-        if code == 0 and fileExists(resFile):
-            let raw = readFile(resFile)
-            removeFile(resFile)
-            try:
-                # parse-and-evaluate the expressed source. for a literal
-                # like `42`, `[1 2 3]`, or `#[a: 1]` this just pushes the
-                # value onto the stack; we pop it as the task's result.
-                let parsed = doParse(raw, isFile=false)
-                if not parsed.isNil:
-                    let savedSP = SP
-                    execUnscoped(parsed)
-                    if SP > savedSP:
-                        result = stack.pop()
-                    else:
-                        result = VNULL
-                else:
-                    result = VNULL
-            except CatchableError:
-                result = VNULL
-        else:
-            if fileExists(resFile): removeFile(resFile)
-            # real error propagation is a follow-up; for now: null on failure
-            result = VNULL
 
 proc replacingAmpersands(va: Value, what: Value): Value =
     var theBlock = newBlock()
@@ -576,18 +508,13 @@ proc defineModule*(moduleName: string) =
                             of Block, Bytecode: codify(x)
                             of String:          x.s
                             else:               ""
-                    push newTask(VTask(state: taskPending, future: runInChildProcess(src)))
+                    ParallelismHelper.spawnAsTask(src)
                     return
 
             # `do task` is sugar for `wait task` - drain the future once
             if xKind == Task:
                 when not defined(WEB):
-                    if x.tsk.state == taskCancelled:
-                        push VNULL
-                    else:
-                        let res = waitFor x.tsk.future
-                        x.tsk.state = taskDone
-                        push res
+                    ParallelismHelper.drainTask(x.tsk)
                 return
 
             var evaled: Translation
