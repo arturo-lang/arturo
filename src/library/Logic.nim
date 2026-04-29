@@ -368,8 +368,9 @@ proc defineModule*(moduleName: string) =
             print true? [1 2 3]         ; false
         """:
             #=======================================================
-            if xKind != Logical: push(newLogical(false))
-            else: push(x)
+            dispatch:
+                Logical(_): push(x)
+                _:          push(newLogical(false))
 
     builtin "xnor?",
         alias       = unaliased, 
