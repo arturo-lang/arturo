@@ -55,19 +55,17 @@ proc defineModule*(moduleName: string) =
             ; 4.142857142857143
         """:
             #=======================================================
-            var res = F0.copyValue
-            if xKind == Block:
-                for num in x.a:
-                    res += num
-
-                res //= newFloating(x.a.len)
-            else:
-                for item in items(x.rng):
-                    res += item
-
-                res //= newFloating(x.rng.len)
-
-            push(res)
+            dispatch:
+                Block(items):
+                    var res = F0.copyValue
+                    for num in items: res += num
+                    res //= newFloating(items.len)
+                    push(res)
+                Range(rng):
+                    var res = F0.copyValue
+                    for item in items(rng): res += item
+                    res //= newFloating(rng.len)
+                    push(res)
 
     builtin "deviation",
         alias       = unaliased,
