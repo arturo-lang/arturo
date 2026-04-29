@@ -62,11 +62,8 @@ proc defineModule*(moduleName: string) =
             ; 414FA339
         """:
             #=======================================================
-            if xKind in {Literal, PathLiteral}:
-                ensureInPlaceAny()
-                InPlaced.s = InPlaced.s.crc32()
-            else:
-                push(newString(x.s.crc32()))
+            dispatchWithLiteral:
+                String(s): s.crc32()
 
     builtin "decode",
         alias       = unaliased, 
