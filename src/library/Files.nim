@@ -516,14 +516,33 @@ proc defineModule*(moduleName: string) =
             """:
                 #=======================================================
                 if hadAttr("async"):
-                    var attrSuffix = ""
-                    if hadAttr("append"):    attrSuffix &= ".append"
-                    if hadAttr("directory"): attrSuffix &= ".directory"
-                    if hadAttr("json"):      attrSuffix &= ".json"
-                    if hadAttr("compact"):   attrSuffix &= ".compact"
-                    if hadAttr("binary"):    attrSuffix &= ".binary"
-                    let pathSrc = if y.kind == Null: "null" else: codify(y)
-                    spawnAsTask("write" & attrSuffix & " " & codify(x) & " " & pathSrc)
+                    # bytecode + `.directory` paths are non-trivial filesystem
+                    # operations (multi-file write / mkdir), so keep those on
+                    # the subprocess path. plain text/binary/json writes flow
+                    # through `asyncfile` in-process.
+                    if xKind == Bytecode or hadAttr("directory") or y.kind == Null:
+                        var attrSuffix = ""
+                        if hadAttr("append"):    attrSuffix &= ".append"
+                        if hadAttr("directory"): attrSuffix &= ".directory"
+                        if hadAttr("json"):      attrSuffix &= ".json"
+                        if hadAttr("compact"):   attrSuffix &= ".compact"
+                        if hadAttr("binary"):    attrSuffix &= ".binary"
+                        let pathSrc = if y.kind == Null: "null" else: codify(y)
+                        spawnAsTask("write" & attrSuffix & " " & codify(x) & " " & pathSrc)
+                        return
+
+                    let path = y.s
+                    let append = hadAttr("append")
+                    let payload =
+                        if hadAttr("binary"):
+                            var s = newString(x.n.len)
+                            if x.n.len > 0: copyMem(addr s[0], unsafeAddr x.n[0], x.n.len)
+                            s
+                        elif hadAttr("json"):
+                            jsonFromValue(x, pretty=(not hadAttr("compact")))
+                        else:
+                            x.s
+                    spawnAsyncWrite(path, payload, append)
                     return
 
                 if xKind==Bytecode:
