@@ -298,28 +298,6 @@ proc defineModule*(moduleName: string) =
                 var url = x.s
                 var meth: HttpMethod = HttpGet
 
-                if hadAttr("async"):
-                    # reformulate as a child-process call to sync `request`
-                    # (without `.async`); behavior is identical by definition.
-                    var attrSuffix = ""
-                    if hadAttr("get"):    attrSuffix &= ".get"
-                    if hadAttr("post"):   attrSuffix &= ".post"
-                    if hadAttr("patch"):  attrSuffix &= ".patch"
-                    if hadAttr("put"):    attrSuffix &= ".put"
-                    if hadAttr("delete"): attrSuffix &= ".delete"
-                    if hadAttr("json"):   attrSuffix &= ".json"
-                    if hadAttr("raw"):    attrSuffix &= ".raw"
-                    if checkAttr("headers"):     attrSuffix &= ".headers:"     & codify(aHeaders)
-                    if checkAttr("agent"):       attrSuffix &= ".agent:"       & codify(aAgent)
-                    if checkAttr("timeout"):     attrSuffix &= ".timeout:"     & codify(aTimeout)
-                    if checkAttr("proxy"):       attrSuffix &= ".proxy:"       & codify(aProxy)
-                    if checkAttr("certificate"): attrSuffix &= ".certificate:" & codify(aCertificate)
-                    let urlSrc = codify(x)
-                    let dataSrc = if y.kind == Null: "null" else: codify(y)
-                    push spawnAsTask("request" & attrSuffix & " " & urlSrc & " " & dataSrc)
-                    return
-
-
                 if (hadAttr("get")): discard
                 if (hadAttr("post")): meth = HttpPost
                 if (hadAttr("patch")): meth = HttpPatch
@@ -344,7 +322,7 @@ proc defineModule*(moduleName: string) =
                 var proxy: Proxy = nil
                 if checkAttr("proxy"):
                     proxy = newProxy(aProxy.s)
- 
+
                 var body: string
                 var multipart: MultipartData = nil
                 if meth != HttpGet:
@@ -368,6 +346,48 @@ proc defineModule*(moduleName: string) =
                         elif yKind==String:
                             url &= "?" & y.s
 
+                if hadAttr("async"):
+                    # in-process async request: build an `AsyncHttpClient`
+                    # mirroring the sync setup, hand it off to `spawnAsyncRequest`,
+                    # which awaits the response and runs our `buildResp` closure
+                    # to produce a Value identical to the sync builtin's output.
+                    var asyncClient: AsyncHttpClient
+                    if checkAttr("certificate"):
+                        when defined(ssl):
+                            asyncClient = newAsyncHttpClient(
+                                userAgent = agent,
+                                sslContext = newContext(certFile=aCertificate.s),
+                                proxy = proxy,
+                                headers = headers
+                            )
+                        else:
+                            asyncClient = newAsyncHttpClient(
+                                userAgent = agent,
+                                proxy = proxy,
+                                headers = headers
+                            )
+                    else:
+                        when defined(ssl):
+                            asyncClient = newAsyncHttpClient(
+                                userAgent = agent,
+                                sslContext = newContext(verifyMode = CVerifyNone),
+                                proxy = proxy,
+                                headers = headers
+                            )
+                        else:
+                            asyncClient = newAsyncHttpClient(
+                                userAgent = agent,
+                                proxy = proxy,
+                                headers = headers
+                            )
+                    let raw = hadAttr("raw")
+                    let buildResp = proc(version, bodyStr, status: string,
+                                         hdrs: HttpHeaders): Value =
+                        httpResponseToValue(version, bodyStr, status, hdrs, raw)
+                    push spawnAsyncRequest(asyncClient, url, meth, body,
+                                           multipart, buildResp)
+                    return
+
                 var client: HttpClient
 
                 if checkAttr("certificate"):
@@ -375,21 +395,21 @@ proc defineModule*(moduleName: string) =
                         client = newHttpClient(
                             userAgent = agent,
                             sslContext = newContext(certFile=aCertificate.s),
-                            proxy = proxy, 
+                            proxy = proxy,
                             timeout = timeout,
                             headers = headers
                         )
                     else:
                         client = newHttpClient(
                             userAgent = agent,
-                            proxy = proxy, 
+                            proxy = proxy,
                             timeout = timeout,
                             headers = headers
                         )
                 else:
                     client = newHttpClient(
                         userAgent = agent,
-                        proxy = proxy, 
+                        proxy = proxy,
                         timeout = timeout,
                         headers = headers
                     )
