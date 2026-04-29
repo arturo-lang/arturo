@@ -1663,12 +1663,13 @@ proc defineModule*(moduleName: string) =
             ; apple
         """:
             #=======================================================
-            if xKind == Range:
-                let rnd = rand(0..int(x.rng.len-1))
-                push(x.rng[rnd])
-            else:
-                if x.a.len == 0: push(VNULL)
-                else: push(sample(x.a))
+            dispatch:
+                Range(rng):
+                    let rnd = rand(0..int(rng.len-1))
+                    push(rng[rnd])
+                Block(items):
+                    if items.len == 0: push(VNULL)
+                    else: push(sample(items))
 
     builtin "set",
         alias       = unaliased,
