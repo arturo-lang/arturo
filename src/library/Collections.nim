@@ -1849,22 +1849,17 @@ proc defineModule*(moduleName: string) =
             print size "你好!"              ; 3
         """:
             #=======================================================
-            if xKind == String:
-                push(newInteger(runeLen(x.s)))
-            elif xKind == Dictionary:
-                push(newInteger(x.d.len))
-            elif xKind == Object:
-                push(newInteger(x.o.objectSize))
-            elif xKind == Range:
-                let sz = x.rng.len
-                if sz == InfiniteRange: push(newFloating(Inf))
-                else: push(newInteger(sz))
-            elif xKind == Block:
-                push(newInteger(x.a.len))
-            elif xKind == Binary:
-                push(newInteger(x.n.len))
-            else: # Null
-                push(newInteger(0))
+            dispatch:
+                String(s):     push(newInteger(runeLen(s)))
+                Dictionary(d): push(newInteger(d.len))
+                Object(o):     push(newInteger(o.objectSize))
+                Range(rng):
+                    let sz = rng.len
+                    if sz == InfiniteRange: push(newFloating(Inf))
+                    else: push(newInteger(sz))
+                Block(a):      push(newInteger(a.len))
+                Binary(n):     push(newInteger(n.len))
+                _:             push(newInteger(0))   # Null
 
     builtin "slice",
         alias       = unaliased,
