@@ -61,18 +61,10 @@ proc defineModule*(moduleName: string) =
             ; 1 2 5 6
         """:
             #=======================================================
-            if (hadAttr("symmetric")):
-                if xKind in {Literal,PathLiteral}:
-                    ensureInPlaceAny()
-                    SetInPlaceAny(newBlock(toSeq(symmetricDifference(toOrderedSet(InPlaced.a), toOrderedSet(y.a)))))
-                else:
-                    push(newBlock(toSeq(symmetricDifference(toOrderedSet(x.a), toOrderedSet(y.a)))))
-            else:
-                if xKind in {Literal,PathLiteral}:
-                    ensureInPlaceAny()
-                    SetInPlaceAny(newBlock(toSeq(difference(toOrderedSet(InPlaced.a), toOrderedSet(y.a)))))
-                else:
-                    push(newBlock(toSeq(difference(toOrderedSet(x.a), toOrderedSet(y.a)))))
+            dispatchWithLiteral:
+                Block(a):
+                    on symmetric: toSeq(symmetricDifference(toOrderedSet(a), toOrderedSet(y.a)))
+                    _:            toSeq(difference(toOrderedSet(a), toOrderedSet(y.a)))
 
     builtin "intersection",
         alias       = VSymbol.intersection, 
