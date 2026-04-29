@@ -920,8 +920,9 @@ proc defineModule*(moduleName: string) =
             ; => 1.19298515341341+0.308169071115985i
         """:
             #=======================================================
-            if xKind==Complex: push(newComplex(ln(x.z)))
-            else: push(newFloating(ln(asFloat(x))))
+            dispatch:
+                Complex(z): push(newComplex(ln(z)))
+                _:          push(newFloating(ln(asFloat(x))))
 
     builtin "log",
         alias       = unaliased, 
