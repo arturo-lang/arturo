@@ -2628,13 +2628,11 @@ proc defineModule*(moduleName: string) =
             empty? [1 "two" 3]    ; => false
         """:
             #=======================================================
-            case xKind:
-                of Null: push(VTRUE)
-                of String: push(newLogical(x.s == ""))
-                of Block:
-                    push(newLogical(x.a.len == 0))
-                of Dictionary: push(newLogical(x.d.len == 0))
-                else: discard
+            dispatch:
+                String(s):     push(newLogical(s == ""))
+                Block(a):      push(newLogical(a.len == 0))
+                Dictionary(d): push(newLogical(d.len == 0))
+                _:             push(VTRUE)   # Null
 
     # TODO(Collections\in?) add new `.key` option?
     #  same as with `contains?`
