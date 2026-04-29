@@ -554,16 +554,14 @@ proc defineModule*(moduleName: string) =
             ; [name:john surname:doe age:35]
         """:
             #=======================================================
-            if xKind in {Literal, PathLiteral}:
-                ensureInPlaceAny()
-                for k, v in pairs(y.d):
-                    InPlaced.d[k] = v
-            else:
-                var res = copyValue(x)
-                for k, v in pairs(y.d):
-                    res.d[k] = v
-
-                push(res)
+            dispatchWithLiteral:
+                (Dictionary(d), Dictionary(extra)):
+                    value:
+                        var res = copyValue(x)
+                        for k, v in pairs(extra): res.d[k] = v
+                        push(res)
+                    inplace:
+                        for k, v in pairs(extra): d[k] = v
 
     builtin "first",
         alias       = unaliased,
