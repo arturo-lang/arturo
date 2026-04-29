@@ -85,18 +85,10 @@ proc defineModule*(moduleName: string) =
             ; http://foo bar/
         """:
             #=======================================================
-            if (hadAttr("url")):
-                if xKind in {Literal, PathLiteral}:
-                    ensureInPlaceAny()
-                    InPlaced.s = InPlaced.s.decodeUrl()
-                else:
-                    push(newString(x.s.decodeUrl()))
-            else:
-                if xKind in {Literal, PathLiteral}:
-                    ensureInPlaceAny()
-                    InPlaced.s = InPlaced.s.decode()
-                else:
-                    push(newString(x.s.decode()))
+            dispatchWithLiteral:
+                String(s):
+                    on url: s.decodeUrl()
+                    _:      s.decode()
 
     # TODO(Crypto\encode) Move function to different module?
     #  Function doesn't really correspond to cryptography anymore. Or at least most of it. What should be done?
