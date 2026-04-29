@@ -13,7 +13,7 @@
 #=======================================
 
 when not defined(WEB):
-    import asyncdispatch
+    import asyncdispatch, httpclient
     import os, osproc
     import strutils, times
 
@@ -97,6 +97,30 @@ when not defined(WEB):
         # publish the `Process` handle onto it for `cancel` to reach
         let tsk = VTask(state: taskPending)
         tsk.future = runInChildProcess(tsk, src)
+        push newTask(tsk)
+
+    # in-process async download via Nim's `AsyncHttpClient`. unlike the subprocess
+    # path, this stays in the same VM: no fork/exec overhead, no separate Arturo
+    # interpreter, just a `Future[void]` from the dispatcher wrapped to return
+    # `VNULL` (mirroring the sync `download` builtin's `Nothing` return).
+    #
+    # caveat: in-process futures only progress while the dispatcher is being
+    # driven (i.e. during `wait` / `waitFor`). that's fine for the usual flow
+    # — launch, do other things, then `wait` — but pure fire-and-forget won't
+    # actually transfer bytes until something dispatches.
+    proc downloadFileAsync(url, target: string): Future[Value] {.async.} =
+        var client = newAsyncHttpClient()
+        try:
+            await client.downloadFile(url, target)
+        finally:
+            client.close()
+        result = VNULL
+
+    # convenience: kick off an in-process async download and push a `:task`.
+    # parallels `spawnAsTask` but skips the subprocess machinery entirely.
+    proc spawnAsyncDownload*(url, target: string) =
+        let tsk = VTask(state: taskPending)
+        tsk.future = downloadFileAsync(url, target)
         push newTask(tsk)
 
     # block on a task's future and push its result. used by `wait` and `do task`.
