@@ -118,10 +118,10 @@ proc defineModule*(moduleName: string) =
             kurtosis.sample arr2        ; => 0.5886192422439724
         """:
             #=======================================================
-            if (hadAttr("sample")):
-                push newFloating(kurtosisS(x.a.map((z)=>(requireValue(z,{Integer,Floating}); asFloat(z)))))
-            else:
-                push newFloating(kurtosis(x.a.map((z)=>(requireValue(z,{Integer,Floating}); asFloat(z)))))
+            dispatch:
+                Block(a):
+                    on sample: push newFloating(kurtosisS(a.map((z)=>(requireValue(z,{Integer,Floating}); asFloat(z)))))
+                    _:         push newFloating(kurtosis(a.map((z)=>(requireValue(z,{Integer,Floating}); asFloat(z)))))
 
     builtin "median",
         alias       = unaliased,
