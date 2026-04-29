@@ -1402,10 +1402,9 @@ proc defineModule*(moduleName: string) =
             infinite? b             ; false
         """:
             #=======================================================
-            if xKind == Floating and (x.f == Inf or x.f == NegInf):
-                push(VTRUE)
-            else:
-                push(VFALSE)
+            dispatch:
+                Floating(f): push(newLogical(f == Inf or f == NegInf))
+                _:           push(VFALSE)
 
     builtin "negative?",
         alias       = unaliased, 
