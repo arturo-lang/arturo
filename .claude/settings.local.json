@@ -22,7 +22,8 @@
       "Bash(bin/arturo-tasks -e 't: do.async [1 + 2] *)",
       "Bash(git switch *)",
       "Bash(git diff *)",
-      "Read(//tmp/**)"
+      "Read(//tmp/**)",
+      "Bash(./build.nims --mode web --as arturo-web)"
     ]
   }
 }

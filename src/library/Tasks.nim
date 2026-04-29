@@ -94,6 +94,13 @@ proc defineModule*(moduleName: string) =
                     # transition and finish cleanly, but `terminate` makes it instant.
                     if not x.tsk.process.isNil and x.tsk.process.running:
                         x.tsk.process.terminate()
+                    # for in-process tasks, run the producer's cancel hook (closes
+                    # the underlying file/http client/etc. so the suspended future
+                    # actually unwinds with an error rather than running to
+                    # completion in the background).
+                    if not x.tsk.cancelHandle.isNil:
+                        try: x.tsk.cancelHandle()
+                        except CatchableError: discard
 
         #----------------------------
         # Predicates

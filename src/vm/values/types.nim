@@ -260,10 +260,11 @@ type
                 discard
 
     VTask* = ref object
-        state*      : VTaskState        # bookkeeping for `done?` / `cancel`
+        state*       : VTaskState        # bookkeeping for `done?` / `cancel`
         when not defined(WEB):
             future*  : Future[Value]    # the actual handle a producer (e.g. `request.async`) feeds
             process* : Process          # the underlying OS process (for subprocess-backed tasks); nil otherwise
+            cancelHandle* : proc() {.closure.}  # invoked by `cancel` for in-process tasks; closes the live handle (file, http client, …) so the future actually unwinds. nil for subprocess-backed tasks.
 
     Value* {.final,acyclic.} = ref object
         info*   : ValueInfo
