@@ -1022,38 +1022,33 @@ proc defineModule*(moduleName: string) =
             print last.n:2 ["one" "two" "three"] ; two three
         """:
             #=======================================================
-            if checkAttr("n"):
-                if xKind == String:
-                    if x.s.len == 0: push(newString(""))
-                    else: push(newString(x.s[x.s.len-aN.i..^1]))
-                elif xKind == Range:
-                    if x.rng.infinite:
-                        push(newFloating(Inf))
-                    else:
-                        if aN.i == 1 or aN.i == 0:
-                            push(x.rng[x.rng.len, true])
-                        elif aN.i < 0:
-                            # TODO(Collections\last) Better handling of errors related to the value of `n`
-                            #  to be handled in: https://github.com/arturo-lang/arturo/pull/1432
-                            #  labels: error handling, library
-                            raise newException(ValueError, "negative number of elements")
-                        else:
-                            push(newRange(x.rng[max(x.rng.len-aN.i, 0)..x.rng.len, true]))
-                else:
-                    if x.a.len == 0: push(newBlock())
-                    else: push(newBlock(x.a[x.a.len-aN.i..^1]))
-            else:
-                if xKind == String:
-                    if x.s.len == 0: push(VNULL)
-                    else: push(newChar(toRunes(x.s)[^1]))
-                elif xKind == Range:
-                    if x.rng.infinite:
-                        push(newFloating(Inf))
-                    else:
-                        push(x.rng[x.rng.len, true])
-                else:
-                    if x.a.len == 0: push(VNULL)
-                    else: push(x.a[x.a.len-1])
+            dispatch:
+                String(s):
+                    on n(num: Integer):
+                        if s.len == 0: push(newString(""))
+                        else: push(newString(s[s.len-num..^1]))
+                    _:
+                        if s.len == 0: push(VNULL)
+                        else: push(newChar(toRunes(s)[^1]))
+                Range(rng):
+                    on n(num: Integer):
+                        if rng.infinite: push(newFloating(Inf))
+                        elif num == 1 or num == 0: push(rng[rng.len, true])
+                        # TODO(Collections\last) Better handling of errors related to the value of `n`
+                        #  to be handled in: https://github.com/arturo-lang/arturo/pull/1432
+                        #  labels: error handling, library
+                        elif num < 0: raise newException(ValueError, "negative number of elements")
+                        else: push(newRange(rng[max(rng.len-num, 0)..rng.len, true]))
+                    _:
+                        if rng.infinite: push(newFloating(Inf))
+                        else: push(rng[rng.len, true])
+                Block(a):
+                    on n(num: Integer):
+                        if a.len == 0: push(newBlock())
+                        else: push(newBlock(a[a.len-num..^1]))
+                    _:
+                        if a.len == 0: push(VNULL)
+                        else: push(a[a.len-1])
 
     builtin "max",
         alias       = unaliased,
