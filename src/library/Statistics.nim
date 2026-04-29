@@ -183,10 +183,10 @@ proc defineModule*(moduleName: string) =
             skewness.sample arr2        ; => 1.40680083744453
         """:
             #=======================================================
-            if (hadAttr("sample")):
-                push newFloating(skewnessS(x.a.map((z)=>(requireValue(z,{Integer,Floating}); asFloat(z)))))
-            else:
-                push newFloating(skewness(x.a.map((z)=>(requireValue(z,{Integer,Floating}); asFloat(z)))))
+            dispatch:
+                Block(a):
+                    on sample: push newFloating(skewnessS(a.map((z)=>(requireValue(z,{Integer,Floating}); asFloat(z)))))
+                    _:         push newFloating(skewness(a.map((z)=>(requireValue(z,{Integer,Floating}); asFloat(z)))))
 
     builtin "variance",
         alias       = unaliased,
