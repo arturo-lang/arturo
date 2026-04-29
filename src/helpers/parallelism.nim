@@ -7,7 +7,6 @@
 #=======================================================
 
 ## Helpers for the `:task` value and `.async` builtins.
-## See [`TASKS_NOTES.md`](../../TASKS_NOTES.md) for the architectural overview.
 
 #=======================================
 # Libraries
