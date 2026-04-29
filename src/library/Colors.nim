@@ -127,11 +127,10 @@ proc defineModule*(moduleName: string) =
             grayscale #FF44CC           ; => #A2A2A2
         """:
             #=======================================================
-            if xKind == Color:
-                push newColor(saturateColor(x.l, -1.0))
-            else:
-                ensureInPlaceAny()
-                SetInPlaceAny(newColor(saturateColor(InPlaced.l, -1.0)))
+            dispatchWithLiteral:
+                Color(c):
+                    value:   push newColor(saturateColor(c, -1.0))
+                    inplace: SetInPlaceAny(newColor(saturateColor(c, -1.0)))
 
     builtin "invert",
         alias       = unaliased, 
