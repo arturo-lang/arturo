@@ -126,22 +126,32 @@ when not defined(WEB):
     # in-process async file read via `asyncfile`. returns the raw bytes/text;
     # the caller (`read.async` builtin) is responsible for any post-processing
     # like CSV/JSON/markdown parsing — that's pure CPU work and stays sync.
-    proc readFileAsyncStr*(path: string): Future[string] {.async.} =
-        var f = openAsync(path, fmRead)
+    proc readFileAsyncStr(f: AsyncFile): Future[string] {.async.} =
         try:
             result = await f.readAll()
+        except CatchableError:
+            # cancellation closes the file mid-flight; swallow and return ""
+            # so the post-process closure still gets a defined value (the
+            # `wait` builtin short-circuits cancelled tasks anyway).
+            result = ""
         finally:
-            f.close()
+            try: f.close()
+            except CatchableError: discard
 
     # convenience: kick off an in-process async read, run a sync `postProcess`
     # closure on the bytes once available, and return a `:task` whose result
-    # is whatever the closure returned.
+    # is whatever the closure returned. the open file is held by the task so
+    # `cancel` can `close()` it and abort an in-flight read.
     proc spawnAsyncRead*(path: string, postProcess: proc(src: string): Value): Value =
-        proc go(p: string): Future[Value] {.async.} =
-            let src = await readFileAsyncStr(p)
+        let f = openAsync(path, fmRead)
+        proc go(): Future[Value] {.async.} =
+            let src = await readFileAsyncStr(f)
             result = postProcess(src)
         let tsk = VTask(state: taskPending)
-        tsk.future = go(path)
+        tsk.future = go()
+        tsk.cancelHandle = proc() =
+            try: f.close()
+            except CatchableError: discard
         result = newTask(tsk)
 
     # in-process async file write via `asyncfile`. content is already
