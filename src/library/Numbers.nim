@@ -960,19 +960,16 @@ proc defineModule*(moduleName: string) =
             ; => 10
         """:
             #=======================================================
-            var rat: VRational
+            template pushNumer(rat: VRational) =
+                if rat.rKind == NormalRational:
+                    push(newInteger(getNumerator(rat)))
+                else:
+                    push(newInteger(getNumerator(rat, big=true)))
 
-            if xKind==Rational:
-                rat = x.rat
-            elif xKind==Integer:
-                rat = toRational(x.i)
-            else:
-                rat = toRational(x.f)
-
-            if rat.rKind == NormalRational:
-                push(newInteger(getNumerator(rat)))
-            else:
-                push(newInteger(getNumerator(rat, big=true)))
+            dispatch:
+                Rational(rat): pushNumer(rat)
+                Integer(i):    pushNumer(toRational(i))
+                Floating(f):   pushNumer(toRational(f))
 
     when defined(GMP):
         # TODO(Numbers\powmod) not working for Web builds
