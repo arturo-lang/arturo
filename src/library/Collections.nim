@@ -1601,23 +1601,19 @@ proc defineModule*(moduleName: string) =
                 for i, c in s:
                     result[s.high - i] = c
 
-            let exact = hadAttr("exact")
+            bindAttrs:
+                exact: Logical
 
-            if xKind in {Literal, PathLiteral}:
-                ensureInPlaceAny()
-                if InPlaced.kind == String:
-                    InPlaced.s.reverse()
-                elif InPlaced.kind == Range:
-                    InPlaced.rng = InPlaced.rng.reversed(safe=exact)
-                else:
-                    InPlaced.a.reverse()
-            else:
-                if xKind == Block:
-                    push(newBlock(x.a.reversed))
-                elif xKind == Range:
-                    push(newRange(x.rng.reversed(safe=exact)))
-                else:
-                    push(newString(reversed(x.s)))
+            dispatchWithLiteral:
+                String(s):
+                    value:   push(newString(reversed(s)))
+                    inplace: s.reverse()
+                Block(a):
+                    value:   push(newBlock(a.reversed))
+                    inplace: a.reverse()
+                Range(rng):
+                    value:   push(newRange(rng.reversed(safe=exact)))
+                    inplace: rng = rng.reversed(safe=exact)
 
     builtin "rotate",
         alias       = unaliased,
