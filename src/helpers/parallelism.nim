@@ -16,6 +16,8 @@ when not defined(WEB):
     import asyncdispatch, httpclient
     import os, osproc
     import strutils, times
+    when defined(ssl):
+        import net as netmod
 
     import vm/lib
     import vm/[exec, parse, stack]
@@ -109,7 +111,10 @@ when not defined(WEB):
     # — launch, do other things, then `wait` — but pure fire-and-forget won't
     # actually transfer bytes until something dispatches.
     proc downloadFileAsync(url, target: string): Future[Value] {.async.} =
-        var client = newAsyncHttpClient()
+        when defined(ssl):
+            var client = newAsyncHttpClient(sslContext = netmod.newContext(verifyMode = CVerifyNone))
+        else:
+            var client = newAsyncHttpClient()
         try:
             await client.downloadFile(url, target)
         finally:
