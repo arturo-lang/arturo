@@ -17,7 +17,9 @@ when not defined(WEB):
     import os, osproc
     import strutils, times
     when defined(ssl):
-        import net as netmod
+        # std/net has to be qualified — there's a sibling `helpers/net.nim`
+        # and Nim resolves bare `net` to it first.
+        import std/net as netmod
 
     import vm/lib
     import vm/[exec, parse, stack]
