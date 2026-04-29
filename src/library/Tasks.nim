@@ -20,6 +20,7 @@
 #=======================================
 
 import asyncdispatch
+import osproc
 
 import vm/lib
 import vm/values/custom/[vtask]
@@ -70,18 +71,22 @@ proc defineModule*(moduleName: string) =
         attrs       = NoAttrs,
         returns     = {Nothing},
         example     = """
-        ; (draft) cancel a long-running task
-        ;
-        ; t: download.async "https://example.com/big.zip" "out.zip"
-        ; cancel t
+        ; cancel a long-running task
+        s: serve.async.silent.port: 9000 [
+            GET "/" -> "hi"
+        ]
+        ..........
+        pause 1000
+        cancel s          ; actually kills the child process
         """:
             #=======================================================
-            # TODO(Tasks/cancel) signal the underlying future / process
-            #  once we have real producers (`Future[Value]`, `Process`, timers),
-            #  cancellation has to actually interrupt them - not just flip the flag
-            #  labels: library, enhancement
             if x.tsk.state == taskPending:
                 x.tsk.state = taskCancelled
+                # for subprocess-backed tasks, terminate the child immediately.
+                # the polling loop in `runInChildProcess` will notice the state
+                # transition and finish cleanly, but `terminate` makes it instant.
+                if not x.tsk.process.isNil and x.tsk.process.running:
+                    x.tsk.process.terminate()
 
     #----------------------------
     # Predicates

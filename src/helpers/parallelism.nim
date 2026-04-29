@@ -39,7 +39,7 @@ when not defined(WEB):
     # we INHERIT the child's stdout/stderr (so any `print` inside the async
     # block flows live to the user's terminal) and use a temp file for the
     # result hand-off. capturing stdout would swallow user prints.
-    proc runInChildProcess*(blockSrc: string): Future[Value] {.async.} =
+    proc runInChildProcess*(tsk: VTask, blockSrc: string): Future[Value] {.async.} =
         let arturoBin = getAppFilename()
         let resFile = getTempDir() / ("arturo-task-" & $getCurrentProcessId() & "-" & $epochTime() & ".art")
         # void-safety trick: prepend `null` *inside* the user's block so the
@@ -61,8 +61,13 @@ when not defined(WEB):
         let p = startProcess(arturoBin,
                              args = @["-e", wrapped],
                              options = {poUsePath, poParentStreams})
-        while p.running:
+        # publish the process handle so `cancel` can terminate it
+        tsk.process = p
+        while p.running and tsk.state != taskCancelled:
             await sleepAsync(50)
+        if tsk.state == taskCancelled and p.running:
+            p.terminate()
+            discard p.waitForExit()
         let code = p.peekExitCode()
         p.close()
         if code == 0 and fileExists(resFile):
@@ -89,7 +94,11 @@ when not defined(WEB):
     # convenience: turn a piece of Arturo source into a pending `:task` value
     # and push it onto the stack. used by `.async` branches across the stdlib.
     proc spawnAsTask*(src: string) =
-        push newTask(VTask(state: taskPending, future: runInChildProcess(src)))
+        # the VTask has to exist before `runInChildProcess` runs so it can
+        # publish the `Process` handle onto it for `cancel` to reach
+        let tsk = VTask(state: taskPending)
+        tsk.future = runInChildProcess(tsk, src)
+        push newTask(tsk)
 
     # block on a task's future and push its result. used by `wait` and `do task`.
     proc drainTask*(tsk: VTask) =
