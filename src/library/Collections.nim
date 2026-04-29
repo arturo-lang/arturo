@@ -1642,21 +1642,16 @@ proc defineModule*(moduleName: string) =
             rotate 1..6 4                   ; => [3 4 5 6 1 2]
         """:
             #=======================================================
-            let offset = if (not hadAttr("left")): -y.i else: y.i
+            bindAttrs:
+                left: Logical
 
-            if xKind in {Literal, PathLiteral}:
-                ensureInPlaceAny()
-                if InPlaced.kind == String:
-                    InPlaced.s = toSeq(runes(InPlaced.s)).map((w) => $(w))
-                                 .rotatedLeft(offset).join("")
-                elif InPlaced.kind == Block:
-                    InPlaced.a.rotateLeft(offset)
-            else:
-                if xKind == String:
-                    push(newString(toSeq(runes(x.s)).map((w) => $(w))
-                                 .rotatedLeft(offset).join("")))
-                elif xKind == Block:
-                    push(newBlock(x.a.rotatedLeft(offset)))
+            let offset = if not left: -y.i else: y.i
+
+            dispatchWithLiteral:
+                String(s): toSeq(runes(s)).map((w) => $(w)).rotatedLeft(offset).join("")
+                Block(a):
+                    value:   push(newBlock(a.rotatedLeft(offset)))
+                    inplace: a.rotateLeft(offset)
 
     builtin "sample",
         alias       = unaliased,
