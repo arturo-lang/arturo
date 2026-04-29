@@ -35,6 +35,7 @@ when not defined(WEB):
     import helpers/datasource
     import helpers/io
     import helpers/jsonobject
+    import helpers/parallelism
 
     import vm/lib
     import vm/[bytecode, errors, parse]
@@ -244,8 +245,8 @@ proc defineModule*(moduleName: string) =
             args        = {
                 "file"  : {String}
             },
-            attrs       = 
-                when defined(PARSERS): 
+            attrs       =
+                when defined(PARSERS):
                     {
                         "lines"         : ({Logical},"read file lines into block"),
                         "json"          : ({Logical},"read Json into value"),
@@ -258,7 +259,8 @@ proc defineModule*(moduleName: string) =
                         "toml"          : ({Logical},"read TOML into value"),
                         "bytecode"      : ({Logical},"read file as Arturo bytecode"),
                         "binary"        : ({Logical},"read as binary"),
-                        "file"          : ({Logical},"read as file (throws an error if not valid)")
+                        "file"          : ({Logical},"read as file (throws an error if not valid)"),
+                        "async"         : ({Logical},"read in a child process and return a `:task`")
                     }
                 else:
                     {
@@ -269,9 +271,10 @@ proc defineModule*(moduleName: string) =
                         "withHeaders"   : ({Logical},"read CSV headers"),
                         "bytecode"      : ({Logical},"read file as Arturo bytecode"),
                         "binary"        : ({Logical},"read as binary"),
-                        "file"          : ({Logical},"read as file (throws an error if not valid)")
+                        "file"          : ({Logical},"read as file (throws an error if not valid)"),
+                        "async"         : ({Logical},"read in a child process and return a `:task`")
                     },
-            returns     = {String,Block,Binary},
+            returns     = {String,Block,Binary,Task},
             example     = """
             ; reading a simple local file
             str: read "somefile.txt"
@@ -286,6 +289,25 @@ proc defineModule*(moduleName: string) =
             html: read.markdown "## Hello"     ; "<h2>Hello</h2>"
             """:
                 #=======================================================
+                if hadAttr("async"):
+                    # reformulate as a child-process call to sync `read`
+                    var attrSuffix = ""
+                    if hadAttr("lines"):       attrSuffix &= ".lines"
+                    if hadAttr("json"):        attrSuffix &= ".json"
+                    if hadAttr("csv"):         attrSuffix &= ".csv"
+                    if hadAttr("withHeaders"): attrSuffix &= ".withHeaders"
+                    if hadAttr("bytecode"):    attrSuffix &= ".bytecode"
+                    if hadAttr("binary"):      attrSuffix &= ".binary"
+                    if hadAttr("file"):        attrSuffix &= ".file"
+                    when defined(PARSERS):
+                        if hadAttr("html"):     attrSuffix &= ".html"
+                        if hadAttr("xml"):      attrSuffix &= ".xml"
+                        if hadAttr("markdown"): attrSuffix &= ".markdown"
+                        if hadAttr("toml"):     attrSuffix &= ".toml"
+                    if checkAttr("delimiter"): attrSuffix &= ".delimiter:" & codify(aDelimiter)
+                    spawnAsTask("read" & attrSuffix & " " & codify(x))
+                    return
+
                 if (hadAttr("binary")):
                     var f: File
                     discard f.open(x.s)
