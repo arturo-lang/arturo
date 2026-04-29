@@ -1879,29 +1879,28 @@ proc defineModule*(moduleName: string) =
             print slice 1..10 3 4         ; 4 5
         """:
             #=======================================================
-            if xKind in {Literal, PathLiteral}:
-                ensureInPlaceAny()
-                if InPlaced.kind == String:
-                    if InPlaced.s.len == 0:
-                        SetInPlaceAny newString("")
-                    else:
-                        if y.i >= 0 and z.i <= InPlaced.s.runeLen:
-                            SetInPlaceAny newString Inplaced.s.runeSubStr(y.i, z.i - y.i + 1)
-                else:
-                    if y.i >= 0 and z.i <= InPlaced.a.len-1:
-                        InPlaced.a = InPlaced.a[y.i..z.i]
-            elif xKind == String:
-                if x.s.len == 0: push(newString(""))
-                else:
-                    if y.i >= 0 and z.i <= x.s.runeLen:
-                        push(newString(x.s.runeSubStr(y.i, z.i-y.i+1)))
-                    else:
-                        push(newString(""))
-            else:
-                if y.i >= 0 and z.i <= x.a.len-1:
-                    push(newBlock(x.a[y.i..z.i]))
-                else:
-                    push(newBlock())
+            dispatchWithLiteral:
+                String(s):
+                    value:
+                        if s.len == 0: push(newString(""))
+                        elif y.i >= 0 and z.i <= s.runeLen:
+                            push(newString(s.runeSubStr(y.i, z.i-y.i+1)))
+                        else:
+                            push(newString(""))
+                    inplace:
+                        if s.len == 0:
+                            s = ""
+                        elif y.i >= 0 and z.i <= s.runeLen:
+                            s = s.runeSubStr(y.i, z.i - y.i + 1)
+                Block(a):
+                    value:
+                        if y.i >= 0 and z.i <= a.len-1:
+                            push(newBlock(a[y.i..z.i]))
+                        else:
+                            push(newBlock())
+                    inplace:
+                        if y.i >= 0 and z.i <= a.len-1:
+                            a = a[y.i..z.i]
 
     # TODO(Collections\sort) clean rewrite needed
     #  the whole implementation looks like a patchwork of ideas and is not that
