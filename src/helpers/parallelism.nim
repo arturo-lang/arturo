@@ -13,7 +13,7 @@
 #=======================================
 
 when not defined(WEB):
-    import asyncdispatch, httpclient
+    import asyncdispatch, asyncfile, httpclient
     import os, osproc
     import strutils, times
     when defined(ssl):
@@ -120,6 +120,24 @@ when not defined(WEB):
         finally:
             client.close()
         result = VNULL
+
+    # in-process async file write via `asyncfile`. content is already
+    # serialized by the caller (e.g. JSON-encoded), so this layer just
+    # streams bytes to disk through the dispatcher.
+    proc writeFileAsync(path, content: string, append: bool): Future[Value] {.async.} =
+        let mode = if append: fmAppend else: fmWrite
+        var f = openAsync(path, mode)
+        try:
+            await f.write(content)
+        finally:
+            f.close()
+        result = VNULL
+
+    # convenience: kick off an in-process async write and push a `:task`.
+    proc spawnAsyncWrite*(path, content: string, append: bool) =
+        let tsk = VTask(state: taskPending)
+        tsk.future = writeFileAsync(path, content, append)
+        push newTask(tsk)
 
     # convenience: kick off an in-process async download and push a `:task`.
     # parallels `spawnAsTask` but skips the subprocess machinery entirely.
