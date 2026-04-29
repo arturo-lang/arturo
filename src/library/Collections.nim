@@ -2859,12 +2859,11 @@ proc defineModule*(moduleName: string) =
             sorted?.descending [1 2 3 4 5]      ; => false
         """:
             #=======================================================
-            var ascending = true
+            bindAttrs:
+                descending: Logical
 
-            if (hadAttr("descending")):
-                ascending = false
-
-            push newLogical(isSorted(x.a, ascending = ascending))
+            dispatch:
+                Block(a): push newLogical(isSorted(a, ascending = not descending))
 
     builtin "zero?",
         alias       = unaliased, 
