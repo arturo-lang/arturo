@@ -211,7 +211,7 @@ proc defineModule*(moduleName: string) =
             variance.sample arr2        ; => 2084.696428571428
         """:
             #=======================================================
-            if (hadAttr("sample")):
-                push newFloating(varianceS(x.a.map((z)=>(requireValue(z,{Integer,Floating}); asFloat(z)))))
-            else:
-                push newFloating(variance(x.a.map((z)=>(requireValue(z,{Integer,Floating}); asFloat(z)))))
+            dispatch:
+                Block(a):
+                    on sample: push newFloating(varianceS(a.map((z)=>(requireValue(z,{Integer,Floating}); asFloat(z)))))
+                    _:         push newFloating(variance(a.map((z)=>(requireValue(z,{Integer,Floating}); asFloat(z)))))
