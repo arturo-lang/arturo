@@ -173,11 +173,8 @@ proc defineModule*(moduleName: string) =
             lighten #9944CC 0.3         ; => #C758FF
         """:
             #=======================================================
-            if xKind == Color:
-                push newColor(alterColorValue(x.l, y.f))
-            else:
-                ensureInPlaceAny()
-                SetInPlaceAny(newColor(alterColorValue(InPlaced.l, y.f)))                
+            dispatchWithLiteral:
+                Color(c): alterColorValue(c, y.f)
 
     builtin "palette",
         alias       = unaliased, 
