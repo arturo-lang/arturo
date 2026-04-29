@@ -51,10 +51,9 @@ when not defined(WEB):
                 "[null " & blockSrc[1 .. blockSrc.high]
             else:
                 "[null " & blockSrc & "]"
-        # `.safe` uses `«« »»` string delimiters and quotes dict keys that
-        # aren't valid identifiers - round-trip-safe for anything Arturo can
-        # represent (HTTP responses, dicts with hyphenated keys, strings
-        # containing curly braces, etc.)
+        # `.safe` uses `«« »»` string delimiters and quotes dict keys -
+        # round-trip-safe for anything Arturo can represent (HTTP responses,
+        # dicts with hyphenated keys, strings containing curly braces, etc.)
         let wrapped =
             "res: null\n" &
             "try [ res: do " & safeBlock & " ]\n" &
