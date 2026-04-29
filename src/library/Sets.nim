@@ -180,11 +180,11 @@ proc defineModule*(moduleName: string) =
             ; => false
         """:
             #=======================================================
-            let res = intersection(toOrderedSet(x.a), toOrderedSet(y.a))
-            if len(res) >= 0:
-                push(VTRUE)
-            else:
-                push(VFALSE)
+            dispatch:
+                (Block(a), Block(b)):
+                    let res = intersection(toOrderedSet(a), toOrderedSet(b))
+                    if len(res) >= 0: push(VTRUE)
+                    else: push(VFALSE)
 
     builtin "subset?",
         alias       = subsetorequal, 
