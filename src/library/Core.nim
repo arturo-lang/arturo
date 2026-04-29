@@ -27,7 +27,7 @@ import sequtils, sugar
 
 when not defined(WEB):
     import asyncdispatch
-    import osproc, streams
+    import osproc, streams, times
     import vm/values/custom/vtask
 
 when not defined(WEB):
@@ -56,32 +56,69 @@ when defined(BUNDLE):
 
 when not defined(WEB):
     # spawn a child arturo process to evaluate `src`, return a future that
-    # settles when the child exits. result is the child's stdout as a `:string`.
+    # settles when the child exits. result is whatever the child's expression
+    # evaluated to, returned as a `:string`.
     #
     # this is THE primitive for "real" background work: the child has its own
     # VM, so it runs genuinely in parallel with whatever the main code is doing.
     # we poll with a 50ms granularity and yield to the dispatcher between polls,
     # which means other futures (e.g. async HTTP calls) keep making progress.
-    proc runInChildProcess(src: string): Future[Value] {.async.} =
+    #
+    # design note: we INHERIT the child's stdout/stderr (so any `print` inside
+    # the async block flows live to the user's terminal) and use a temp file
+    # for the result hand-off. capturing stdout would swallow user prints.
+    proc runInChildProcess(blockSrc: string): Future[Value] {.async.} =
         let arturoBin = getAppFilename()
-        # wrap user code so the child prints the last value to stdout.
-        # `src` is already a parseable Arturo expression - typically a `[...]`
-        # block from `$(x)`, sometimes a bare string of statements.
-        let wrapped = "print to :string do " & src
+        let resFile = getTempDir() / ("arturo-task-" & $getCurrentProcessId() & "-" & $epochTime() & ".art")
+        # the child evaluates the user code, then writes the result as Arturo
+        # source code (homoiconic round-trip, no JSON or other format needed).
+        #
+        # void-safety trick: prepend `null` *inside* the user's block so the
+        # block always has a value even if the user's last expression doesn't
+        # push (e.g. ends with `print`). if the user does push a real value,
+        # that supersedes the leading `null` as the topmost stack value.
+        #
+        # stdout/stderr are inherited - any `print` inside the async block
+        # flows live to the user's terminal.
+        let safeBlock =
+            if blockSrc.len >= 2 and blockSrc[0] == '[':
+                "[null " & blockSrc[1 .. blockSrc.high]
+            else:
+                "[null " & blockSrc & "]"
+        let wrapped =
+            "res: null\n" &
+            "try [ res: do " & safeBlock & " ]\n" &
+            "write express res \"" & resFile & "\""
         let p = startProcess(arturoBin,
                              args = @["-e", wrapped],
-                             options = {poUsePath, poStdErrToStdOut})
+                             options = {poUsePath, poParentStreams})
         while p.running:
             await sleepAsync(50)
-        let output = p.outputStream.readAll().strip()
         let code = p.peekExitCode()
         p.close()
-        if code == 0:
-            result = newString(output)
+        if code == 0 and fileExists(resFile):
+            let raw = readFile(resFile)
+            removeFile(resFile)
+            try:
+                # parse-and-evaluate the expressed source. for a literal
+                # like `42`, `[1 2 3]`, or `#[a: 1]` this just pushes the
+                # value onto the stack; we pop it as the task's result.
+                let parsed = doParse(raw, isFile=false)
+                if not parsed.isNil:
+                    let savedSP = SP
+                    execUnscoped(parsed)
+                    if SP > savedSP:
+                        result = stack.pop()
+                    else:
+                        result = VNULL
+                else:
+                    result = VNULL
+            except CatchableError:
+                result = VNULL
         else:
-            # bubble child's stderr/stdout up as a string for now;
-            # real error propagation is a follow-up
-            result = newString(output)
+            if fileExists(resFile): removeFile(resFile)
+            # real error propagation is a follow-up; for now: null on failure
+            result = VNULL
 
 proc replacingAmpersands(va: Value, what: Value): Value =
     var theBlock = newBlock()
@@ -531,8 +568,9 @@ proc defineModule*(moduleName: string) =
             # and returns a `:task` whose future settles when the child exits
             when not defined(WEB):
                 if hadAttr("async"):
-                    # use `codify` (a.k.a. `express`) for source-faithful serialization -
-                    # plain `$` strips Label colons and Literal quotes
+                    # `codify` gives source-faithful Arturo code (preserving
+                    # Label colons, Literal quotes, etc.); the wrapper inside
+                    # `runInChildProcess` injects a leading `null` for void-safety
                     let src =
                         case xKind
                             of Block, Bytecode: codify(x)
