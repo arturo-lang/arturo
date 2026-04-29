@@ -148,11 +148,10 @@ proc defineModule*(moduleName: string) =
             invert #orange              ; => #0059FF
         """:
             #=======================================================
-            if xKind == Color:
-                push newColor(invertColor(x.l))
-            else:
-                ensureInPlaceAny()
-                SetInPlaceAny(newColor(invertColor(InPlaced.l)))
+            dispatchWithLiteral:
+                Color(c):
+                    value:   push newColor(invertColor(c))
+                    inplace: SetInPlaceAny(newColor(invertColor(c)))
 
     builtin "lighten",
         alias       = unaliased, 
