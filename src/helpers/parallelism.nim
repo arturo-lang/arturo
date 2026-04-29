@@ -13,7 +13,7 @@
 #=======================================
 
 when not defined(WEB):
-    import asyncdispatch, asyncfile, httpclient, httpcore
+    import asyncdispatch, asyncfile, asynchttpserver, httpclient, httpcore
     import os, osproc
     import strutils, times
     when defined(ssl):
@@ -236,6 +236,29 @@ when not defined(WEB):
         tsk.future = downloadFileAsync(client, url, target)
         tsk.cancelHandle = proc() =
             try: client.close()
+            except CatchableError: discard
+        result = newTask(tsk)
+
+    # in-process async HTTP server via Nim's `asynchttpserver`. the caller
+    # provides a `handler` closure that processes each request; we own the
+    # server lifecycle so `cancel` can `close()` it and free the port.
+    proc spawnAsyncServe*(port: int,
+                          handler: proc(req: Request): Future[void] {.async, gcsafe.}
+                         ): Value =
+        let server = newAsyncHttpServer()
+        proc go(): Future[Value] {.async.} =
+            try:
+                await server.serve(Port(port), handler)
+            except CatchableError:
+                discard
+            finally:
+                try: server.close()
+                except CatchableError: discard
+            result = VNULL
+        let tsk = VTask(state: taskPending)
+        tsk.future = go()
+        tsk.cancelHandle = proc() =
+            try: server.close()
             except CatchableError: discard
         result = newTask(tsk)
 
