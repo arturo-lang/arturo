@@ -217,29 +217,18 @@ proc defineModule*(moduleName: string) =
             ; => [#FF0000 #00FF00 #0000FF #00FE00 #F30000 #00FD00 #0000ED #EC0000 #00F800 #0000D8]
         """:
             #=======================================================
-            if (hadAttr("triad")):
-                push newBlock(triadPalette(x.l).map((c) => newColor(c)))
-            elif (hadAttr("tetrad")):
-                push newBlock(tetradPalette(x.l).map((c) => newColor(c)))
-            elif (hadAttr("split")):
-                push newBlock(splitPalette(x.l).map((c) => newColor(c)))
-            elif (hadAttr("analogous")):
-                var size = 6
-                if checkAttr("size"):
-                    size = aSize.i
-                push newBlock(analogousPalette(x.l, size).map((c) => newColor(c)))
-            elif (hadAttr("monochrome")):
-                var size = 6
-                if checkAttr("size"):
-                    size = aSize.i
-                push newBlock(monochromePalette(x.l, size).map((c) => newColor(c)))
-            elif (hadAttr("random")):
-                var size = 6
-                if checkAttr("size"):
-                    size = aSize.i
-                push newBlock(randomPalette(x.l, size).map((c) => newColor(c)))
-            else:
-                push newBlock(@[x])
+            bindAttrs:
+                size: Integer = 6
+
+            dispatch:
+                Color(c):
+                    on triad:      push newBlock(triadPalette(c).map((k) => newColor(k)))
+                    on tetrad:     push newBlock(tetradPalette(c).map((k) => newColor(k)))
+                    on split:      push newBlock(splitPalette(c).map((k) => newColor(k)))
+                    on analogous:  push newBlock(analogousPalette(c, size).map((k) => newColor(k)))
+                    on monochrome: push newBlock(monochromePalette(c, size).map((k) => newColor(k)))
+                    on random:     push newBlock(randomPalette(c, size).map((k) => newColor(k)))
+                    _:             push newBlock(@[x])
 
     builtin "saturate",
         alias       = unaliased, 
