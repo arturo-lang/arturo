@@ -36,6 +36,7 @@ when not defined(WEB):
     import helpers/io
     import helpers/jsonobject
     import helpers/parallelism
+    import helpers/url
 
     import vm/lib
     import vm/[bytecode, errors, parse]
@@ -290,22 +291,61 @@ proc defineModule*(moduleName: string) =
             """:
                 #=======================================================
                 if hadAttr("async"):
-                    # reformulate as a child-process call to sync `read`
-                    var attrSuffix = ""
-                    if hadAttr("lines"):       attrSuffix &= ".lines"
-                    if hadAttr("json"):        attrSuffix &= ".json"
-                    if hadAttr("csv"):         attrSuffix &= ".csv"
-                    if hadAttr("withHeaders"): attrSuffix &= ".withHeaders"
-                    if hadAttr("bytecode"):    attrSuffix &= ".bytecode"
-                    if hadAttr("binary"):      attrSuffix &= ".binary"
-                    if hadAttr("file"):        attrSuffix &= ".file"
+                    # URLs and bytecode go through the subprocess path: URLs
+                    # need an async http client (and the sync `read` already
+                    # uses one indirectly through `getSource`); bytecode read
+                    # uses a custom on-disk format via `readBytecode`.
+                    if x.s.isUrl() or hadAttr("bytecode"):
+                        var attrSuffix = ""
+                        if hadAttr("lines"):       attrSuffix &= ".lines"
+                        if hadAttr("json"):        attrSuffix &= ".json"
+                        if hadAttr("csv"):         attrSuffix &= ".csv"
+                        if hadAttr("withHeaders"): attrSuffix &= ".withHeaders"
+                        if hadAttr("bytecode"):    attrSuffix &= ".bytecode"
+                        if hadAttr("binary"):      attrSuffix &= ".binary"
+                        if hadAttr("file"):        attrSuffix &= ".file"
+                        when defined(PARSERS):
+                            if hadAttr("html"):     attrSuffix &= ".html"
+                            if hadAttr("xml"):      attrSuffix &= ".xml"
+                            if hadAttr("markdown"): attrSuffix &= ".markdown"
+                            if hadAttr("toml"):     attrSuffix &= ".toml"
+                        if checkAttr("delimiter"): attrSuffix &= ".delimiter:" & codify(aDelimiter)
+                        spawnAsTask("read" & attrSuffix & " " & codify(x))
+                        return
+
+                    # local file: async I/O via `asyncfile`, then sync parse
+                    let path = x.s
+                    let asLines       = hadAttr("lines")
+                    let asJson        = hadAttr("json")
+                    let asCsv         = hadAttr("csv")
+                    let asWithHeaders = hadAttr("withHeaders")
+                    let asBinary      = hadAttr("binary")
+                    let hasDelim      = checkAttr("delimiter")
+                    let delim         = if hasDelim: aDelimiter.c.char() else: ','
                     when defined(PARSERS):
-                        if hadAttr("html"):     attrSuffix &= ".html"
-                        if hadAttr("xml"):      attrSuffix &= ".xml"
-                        if hadAttr("markdown"): attrSuffix &= ".markdown"
-                        if hadAttr("toml"):     attrSuffix &= ".toml"
-                    if checkAttr("delimiter"): attrSuffix &= ".delimiter:" & codify(aDelimiter)
-                    spawnAsTask("read" & attrSuffix & " " & codify(x))
+                        let asHtml     = hadAttr("html")
+                        let asXml      = hadAttr("xml")
+                        let asMarkdown = hadAttr("markdown")
+                        let asToml     = hadAttr("toml")
+                    let post = proc(src: string): Value =
+                        if asBinary:
+                            var bs: seq[byte] = newSeq[byte](src.len)
+                            if src.len > 0: copyMem(addr bs[0], unsafeAddr src[0], src.len)
+                            return newBinary(bs)
+                        if asLines: return newStringBlock(src.splitLines())
+                        if asJson: return valueFromJson(src)
+                        if asCsv:
+                            if hasDelim:
+                                return parseCsvInput(src, withHeaders=asWithHeaders, withDelimiter=delim)
+                            else:
+                                return parseCsvInput(src, asWithHeaders)
+                        when defined(PARSERS):
+                            if asToml: return parseTomlString(src)
+                            if asMarkdown: return parseMarkdownInput(src)
+                            if asHtml: return parseHtmlInput(src)
+                            if asXml: return parseXMLInput(src)
+                        return newString(src)
+                    spawnAsyncRead(path, post)
                     return
 
                 if (hadAttr("binary")):
