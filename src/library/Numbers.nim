@@ -466,7 +466,8 @@ proc defineModule*(moduleName: string) =
             print conj b                ; 1.0-2.0i
         """:
             #=======================================================
-            push(newComplex(conjugate(x.z)))
+            dispatch:
+                Complex(z): push(newComplex(conjugate(z)))
 
     builtin "cos",
         alias       = unaliased, 
