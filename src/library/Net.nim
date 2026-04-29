@@ -107,7 +107,7 @@ proc defineModule*(moduleName: string) =
             },
             attrs       = {
                 "as"    : ({String},"set target file"),
-                "async" : ({Logical},"download in a child process and return a `:task`")
+                "async" : ({Logical},"download asynchronously and return a `:task`")
             },
             returns     = {Nothing,Task},
             example     = """
@@ -120,12 +120,6 @@ proc defineModule*(moduleName: string) =
             ; (downloads file with a different name)
             """:
                 #=======================================================
-                if hadAttr("async"):
-                    var attrSuffix = ""
-                    if checkAttr("as"): attrSuffix &= ".as:" & codify(aAs)
-                    spawnAsTask("download" & attrSuffix & " " & codify(x))
-                    return
-
                 let path = x.s
 
                 var target: string
@@ -134,6 +128,10 @@ proc defineModule*(moduleName: string) =
                     target = aAs.s
                 else:
                     target = extractFilename(path)
+
+                if hadAttr("async"):
+                    spawnAsyncDownload(path, target)
+                    return
 
                 var client = newHttpClient()
                 client.downloadFile(path,target)
