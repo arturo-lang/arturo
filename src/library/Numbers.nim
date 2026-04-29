@@ -694,8 +694,9 @@ proc defineModule*(moduleName: string) =
             ; => 12.50296958887651+19.47222141884161i
         """:
             #=======================================================
-            if xKind==Complex: push(newComplex(exp(x.z)))
-            else: push(newFloating(exp(asFloat(x))))
+            dispatch:
+                Complex(z): push(newComplex(exp(z)))
+                _:          push(newFloating(exp(asFloat(x))))
 
     builtin "factorial",
         alias       = unaliased, 
