@@ -155,7 +155,8 @@ proc defineModule*(moduleName: string) =
             ; => true
         """:
             #=======================================================
-            push(newLogical(disjoint(toOrderedSet(x.a), toOrderedSet(y.a))))
+            dispatch:
+                (Block(a), Block(b)): push(newLogical(disjoint(toOrderedSet(a), toOrderedSet(b))))
 
     builtin "intersect?",
         alias       = unaliased, 
