@@ -216,32 +216,20 @@ proc defineModule*(moduleName: string) =
             ; => false
         """:
             #=======================================================
-            if (hadAttr("proper")):
-                if x == y: 
-                    push(newLogical(false))
-                else:
-                    var contains = true
-                    let xblk = x.a
-                    let yblk = y.a
-                    for item in xblk:
-                        if item notin yblk:
-                            contains = false
-                            break
+            bindAttrs:
+                proper: Logical
 
-                    push(newLogical(contains))
-            else:
-                if x == y:
-                    push(newLogical(true))
-                else:
-                    var contains = true
-                    let xblk = x.a
-                    let yblk = y.a
-                    for item in xblk:
-                        if item notin yblk:
-                            contains = false
-                            break
-
-                    push(newLogical(contains))
+            dispatch:
+                (Block(a), Block(b)):
+                    if x == y:
+                        push(newLogical(not proper))
+                    else:
+                        var contains = true
+                        for item in a:
+                            if item notin b:
+                                contains = false
+                                break
+                        push(newLogical(contains))
 
     builtin "superset?",
         alias       = supersetorequal, 
