@@ -1084,12 +1084,10 @@ proc defineModule*(moduleName: string) =
             reciprocal 3.2      ; => 5/16
         """:
             #=======================================================
-            if xKind==Integer:
-                push(newRational(reciprocal(toRational(x.i))))
-            elif xKind==Floating:
-                push(newRational(reciprocal(toRational(x.f))))
-            else:
-                push(newRational(reciprocal(x.rat)))
+            dispatch:
+                Integer(i):    push(newRational(reciprocal(toRational(i))))
+                Floating(f):   push(newRational(reciprocal(toRational(f))))
+                Rational(rat): push(newRational(reciprocal(rat)))
 
     builtin "round",
         alias       = unaliased, 
