@@ -2464,22 +2464,18 @@ proc defineModule*(moduleName: string) =
             unique.id "user-"   ; => user-67915b7a409e222b2f9a6bed
         """:
             #=======================================================
-            if (hadAttr("id")):
-                # TODO(Collections\unique) make `.id` work for Web/JS builds
-                #  labels: library,enhancement,web
-                when not defined(WEB):
+            # `.id` short-circuits the dispatch entirely — the result kind
+            # has nothing to do with x's kind, so handle it as a prelude.
+            # TODO(Collections\unique) make `.id` work for Web/JS builds
+            #  labels: library,enhancement,web
+            when not defined(WEB):
+                if hadAttr("id"):
                     push newString(x.s & $(genOid()))
-            else:
-                if xKind == Block:
-                    push(newBlock(x.a.deduplicated()))
-                elif xKind == String:
-                    push newString(toSeq(runes(x.s)).deduplicate.map((w) => $(w)).join(""))
-                else: 
-                    ensureInPlaceAny()
-                    if InPlaced.kind == Block:
-                        InPlaced.a = InPlaced.a.deduplicated()
-                    else:
-                        InPlaced.s = toSeq(runes(InPlaced.s)).deduplicate.map((w) => $(w)).join("")
+                    return
+
+            dispatchWithLiteral:
+                String(s): toSeq(runes(s)).deduplicate.map((w) => $(w)).join("")
+                Block(a):  a.deduplicated()
 
     builtin "values",
         alias       = unaliased,
