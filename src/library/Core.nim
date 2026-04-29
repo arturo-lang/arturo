@@ -531,9 +531,11 @@ proc defineModule*(moduleName: string) =
             # and returns a `:task` whose future settles when the child exits
             when not defined(WEB):
                 if hadAttr("async"):
+                    # use `codify` (a.k.a. `express`) for source-faithful serialization -
+                    # plain `$` strips Label colons and Literal quotes
                     let src =
                         case xKind
-                            of Block, Bytecode: $(x)
+                            of Block, Bytecode: codify(x)
                             of String:          x.s
                             else:               ""
                     push newTask(VTask(state: taskPending, future: runInChildProcess(src)))
