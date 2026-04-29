@@ -177,8 +177,9 @@ proc defineModule*(moduleName: string) =
             print false? [1 2 3]        ; false
         """:
             #=======================================================
-            if xKind != Logical: push(newLogical(false))
-            else: push(newLogical(Not(x.b)))
+            dispatch:
+                Logical(b): push(newLogical(Not(b)))
+                _:          push(newLogical(false))
 
     builtin "nand?",
         alias       = logicalnand, 
