@@ -1303,17 +1303,18 @@ proc defineModule*(moduleName: string) =
             print sum 1..10           ; 55
         """:
             #=======================================================
-            var sum = I0.copyValue
-            if xKind==Range:
-                for item in items(x.rng):
-                    sum += item
-            else:
-                var i = 0
-                while i<x.a.len:
-                    sum += x.a[i]
-                    i += 1
-
-            push(sum)
+            dispatch:
+                Range(rng):
+                    var sum = I0.copyValue
+                    for item in items(rng): sum += item
+                    push(sum)
+                Block(items):
+                    var sum = I0.copyValue
+                    var i = 0
+                    while i < items.len:
+                        sum += items[i]
+                        i += 1
+                    push(sum)
 
     builtin "tan",
         alias       = unaliased, 
