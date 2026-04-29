@@ -232,7 +232,8 @@ proc defineModule*(moduleName: string) =
             print angle a           ; 0.7853981633974483
         """:
             #=======================================================
-            push(newFloating(phase(x.z)))
+            dispatch:
+                Complex(z): push(newFloating(phase(z)))
 
     builtin "asec",
         alias       = unaliased, 
