@@ -263,11 +263,10 @@ proc defineModule*(moduleName: string) =
             saturate #9944CC 0.3        ; => #A030E0
         """:
             #=======================================================
-            if xKind == Color:
-                push newColor(saturateColor(x.l, y.f))
-            else:
-                ensureInPlaceAny()
-                SetInPlaceAny(newColor(saturateColor(InPlaced.l, y.f)))
+            dispatchWithLiteral:
+                Color(c):
+                    value:   push newColor(saturateColor(c, y.f))
+                    inplace: SetInPlaceAny(newColor(saturateColor(c, y.f)))
 
     builtin "spin",
         alias       = unaliased, 
