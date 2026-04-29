@@ -13,7 +13,7 @@
 #=======================================
 
 when not defined(WEB):
-    import asyncdispatch, asyncfile, httpclient
+    import asyncdispatch, asyncfile, httpclient, httpcore
     import os, osproc
     import strutils, times
     when defined(ssl):
@@ -179,6 +179,45 @@ when not defined(WEB):
         tsk.future = writeFileAsync(f, content)
         tsk.cancelHandle = proc() =
             try: f.close()
+            except CatchableError: discard
+        result = newTask(tsk)
+
+    # in-process async HTTP request via Nim's `AsyncHttpClient`. the response
+    # is awaited, the body is drained, and the caller-provided `buildResponse`
+    # closure converts the raw fields into a Value (so the response shape
+    # stays driven by Net.nim, not this helper).
+    proc requestAsync(client: AsyncHttpClient, url: string, meth: HttpMethod,
+                      body: string, multipart: MultipartData,
+                      buildResponse: proc(version, body, status: string,
+                                          headers: HttpHeaders): Value
+                     ): Future[Value] {.async.} =
+        try:
+            let response = await client.request(url = url, httpMethod = meth,
+                                                body = body, multipart = multipart)
+            let bodyStr = await response.body
+            result = buildResponse(response.version, bodyStr,
+                                   response.status, response.headers)
+        except CatchableError:
+            # mirrors sync `request`'s behavior (return `:null` on failure)
+            # and also handles the cancel case (we close the client, the
+            # in-flight await raises here).
+            result = VNULL
+        finally:
+            try: client.close()
+            except CatchableError: discard
+
+    # convenience: kick off an in-process async HTTP request and return a
+    # `:task`. the client is held by the task so `cancel` can `close()` it
+    # and abort the in-flight request.
+    proc spawnAsyncRequest*(client: AsyncHttpClient, url: string, meth: HttpMethod,
+                            body: string, multipart: MultipartData,
+                            buildResponse: proc(version, body, status: string,
+                                                headers: HttpHeaders): Value
+                           ): Value =
+        let tsk = VTask(state: taskPending)
+        tsk.future = requestAsync(client, url, meth, body, multipart, buildResponse)
+        tsk.cancelHandle = proc() =
+            try: client.close()
             except CatchableError: discard
         result = newTask(tsk)
 
