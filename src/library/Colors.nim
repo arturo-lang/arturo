@@ -56,15 +56,13 @@ proc defineModule*(moduleName: string) =
             ; => #D99999
         """:
             #=======================================================
-            var balance = 0.5
-            if checkAttr("balance"):
-                balance = aBalance.f
+            bindAttrs:
+                balance: Floating = 0.5
 
-            if xKind == Color:
-                push newColor(blendColors(x.l, y.l, balance))
-            else:
-                ensureInPlaceAny()
-                SetInPlaceAny(newColor(blendColors(InPlaced.l, y.l, balance)))                
+            dispatchWithLiteral:
+                (Color(c), Color(d)):
+                    value:   push newColor(blendColors(c, d, balance))
+                    inplace: SetInPlaceAny(newColor(blendColors(c, d, balance)))
 
     builtin "darken",
         alias       = unaliased, 
