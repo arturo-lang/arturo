@@ -475,7 +475,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
                     of taskDone     : "done"
                     of taskFailed   : "failed"
                     of taskCancelled: "cancelled"
-            stdoutWrite fmt("[{tag}] {cast[uint](v.tsk):#X}")
+            dumpPrimitive(fmt("[{tag}] {cast[uint](v.tsk):#X}"), v)
 
         of Bytecode     : 
             dumpBlockStart(v)
