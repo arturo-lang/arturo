@@ -80,18 +80,16 @@ proc defineModule*(moduleName: string) =
             ; => 3.296908309475615
         """:
             #=======================================================
-            if xKind==Integer:
-                if x.iKind==NormalInteger: 
-                    push(newInteger(abs(x.i)))
-                else:
-                    when defined(WEB) or defined(GMP):
-                        push(newInteger(abs(x.bi)))
-            elif xKind==Floating:
-                push(newFloating(abs(x.f)))
-            elif xKind==Complex:
-                push(newFloating(abs(x.z)))
-            else:
-                push(newRational(abs(x.rat)))
+            dispatch:
+                Integer(i):
+                    if x.iKind == NormalInteger:
+                        push(newInteger(abs(i)))
+                    else:
+                        when defined(WEB) or defined(GMP):
+                            push(newInteger(abs(x.bi)))
+                Floating(f):   push(newFloating(abs(f)))
+                Complex(z):    push(newFloating(abs(z)))
+                Rational(rat): push(newRational(abs(rat)))
 
     builtin "acos",
         alias       = unaliased, 
