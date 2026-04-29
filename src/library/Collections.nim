@@ -1099,34 +1099,27 @@ proc defineModule*(moduleName: string) =
             print min [4 2 8 5 1 9]       ; 1
         """:
             #=======================================================
-            let withIndex = hadAttr("index")
+            bindAttrs:
+                withIndex(index): Logical
 
-            if xKind==Range:
-                let (minIndex, minElement) = min(x.rng)
-                if withIndex: push(newInteger(minIndex))
-                else: push(minElement)
-            else:
-                if x.a.len == 0: push(VNULL)
-                else:
-                    var minElement = x.a[0]
-                    var minIndex = 0
-                    if withIndex:
-                        var i = 1
-                        while i < x.a.len:
-                            if (x.a[i] < minElement):
-                                minElement = x.a[i]
-                                minIndex = i
-                            inc(i)
-
-                        push(newInteger(minIndex))
+            dispatch:
+                Range(rng):
+                    let (minIdx, minElt) = min(rng)
+                    if withIndex: push(newInteger(minIdx))
+                    else: push(minElt)
+                Block(items):
+                    if items.len == 0: push(VNULL)
                     else:
+                        var minElt = items[0]
+                        var minIdx = 0
                         var i = 1
-                        while i < x.a.len:
-                            if (x.a[i] < minElement):
-                                minElement = x.a[i]
+                        while i < items.len:
+                            if items[i] < minElt:
+                                minElt = items[i]
+                                minIdx = i
                             inc(i)
-
-                        push(minElement)
+                        if withIndex: push(newInteger(minIdx))
+                        else: push(minElt)
 
     builtin "permutate",
         alias       = unaliased,
