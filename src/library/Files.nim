@@ -310,7 +310,7 @@ proc defineModule*(moduleName: string) =
                             if hadAttr("markdown"): attrSuffix &= ".markdown"
                             if hadAttr("toml"):     attrSuffix &= ".toml"
                         if checkAttr("delimiter"): attrSuffix &= ".delimiter:" & codify(aDelimiter)
-                        spawnAsTask("read" & attrSuffix & " " & codify(x))
+                        push spawnAsTask("read" & attrSuffix & " " & codify(x))
                         return
 
                     # local file: async I/O via `asyncfile`, then sync parse
@@ -345,7 +345,7 @@ proc defineModule*(moduleName: string) =
                             if asHtml: return parseHtmlInput(src)
                             if asXml: return parseXMLInput(src)
                         return newString(src)
-                    spawnAsyncRead(path, post)
+                    push spawnAsyncRead(path, post)
                     return
 
                 if (hadAttr("binary")):
@@ -568,7 +568,7 @@ proc defineModule*(moduleName: string) =
                         if hadAttr("compact"):   attrSuffix &= ".compact"
                         if hadAttr("binary"):    attrSuffix &= ".binary"
                         let pathSrc = if y.kind == Null: "null" else: codify(y)
-                        spawnAsTask("write" & attrSuffix & " " & codify(x) & " " & pathSrc)
+                        push spawnAsTask("write" & attrSuffix & " " & codify(x) & " " & pathSrc)
                         return
 
                     let path = y.s
@@ -582,7 +582,7 @@ proc defineModule*(moduleName: string) =
                             jsonFromValue(x, pretty=(not hadAttr("compact")))
                         else:
                             x.s
-                    spawnAsyncWrite(path, payload, append)
+                    push spawnAsyncWrite(path, payload, append)
                     return
 
                 if xKind==Bytecode:

@@ -92,14 +92,14 @@ when not defined(WEB):
             # real error propagation is a follow-up; for now: null on failure
             result = VNULL
 
-    # convenience: turn a piece of Arturo source into a pending `:task` value
-    # and push it onto the stack. used by `.async` branches across the stdlib.
-    proc spawnAsTask*(src: string) =
+    # convenience: turn a piece of Arturo source into a pending `:task` value.
+    # used by `.async` branches across the stdlib.
+    proc spawnAsTask*(src: string): Value =
         # the VTask has to exist before `runInChildProcess` runs so it can
         # publish the `Process` handle onto it for `cancel` to reach
         let tsk = VTask(state: taskPending)
         tsk.future = runInChildProcess(tsk, src)
-        push newTask(tsk)
+        result = newTask(tsk)
 
     # in-process async download via Nim's `AsyncHttpClient`. unlike the subprocess
     # path, this stays in the same VM: no fork/exec overhead, no separate Arturo
@@ -132,15 +132,15 @@ when not defined(WEB):
             f.close()
 
     # convenience: kick off an in-process async read, run a sync `postProcess`
-    # closure on the bytes once available, and push a `:task` whose result is
-    # whatever the closure returned.
-    proc spawnAsyncRead*(path: string, postProcess: proc(src: string): Value) =
+    # closure on the bytes once available, and return a `:task` whose result
+    # is whatever the closure returned.
+    proc spawnAsyncRead*(path: string, postProcess: proc(src: string): Value): Value =
         proc go(p: string): Future[Value] {.async.} =
             let src = await readFileAsyncStr(p)
             result = postProcess(src)
         let tsk = VTask(state: taskPending)
         tsk.future = go(path)
-        push newTask(tsk)
+        result = newTask(tsk)
 
     # in-process async file write via `asyncfile`. content is already
     # serialized by the caller (e.g. JSON-encoded), so this layer just
@@ -154,24 +154,23 @@ when not defined(WEB):
             f.close()
         result = VNULL
 
-    # convenience: kick off an in-process async write and push a `:task`.
-    proc spawnAsyncWrite*(path, content: string, append: bool) =
+    # convenience: kick off an in-process async write and return a `:task`.
+    proc spawnAsyncWrite*(path, content: string, append: bool): Value =
         let tsk = VTask(state: taskPending)
         tsk.future = writeFileAsync(path, content, append)
-        push newTask(tsk)
+        result = newTask(tsk)
 
-    # convenience: kick off an in-process async download and push a `:task`.
+    # convenience: kick off an in-process async download and return a `:task`.
     # parallels `spawnAsTask` but skips the subprocess machinery entirely.
-    proc spawnAsyncDownload*(url, target: string) =
+    proc spawnAsyncDownload*(url, target: string): Value =
         let tsk = VTask(state: taskPending)
         tsk.future = downloadFileAsync(url, target)
-        push newTask(tsk)
+        result = newTask(tsk)
 
-    # block on a task's future and push its result. used by `wait` and `do task`.
-    proc drainTask*(tsk: VTask) =
+    # block on a task's future and return its result. used by `wait` and `do task`.
+    proc drainTask*(tsk: VTask): Value =
         if tsk.state == taskCancelled:
-            push VNULL
+            result = VNULL
         else:
-            let res = waitFor tsk.future
+            result = waitFor tsk.future
             tsk.state = taskDone
-            push res

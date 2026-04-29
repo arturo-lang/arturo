@@ -508,13 +508,13 @@ proc defineModule*(moduleName: string) =
                             of Block, Bytecode: codify(x)
                             of String:          x.s
                             else:               ""
-                    ParallelismHelper.spawnAsTask(src)
+                    push ParallelismHelper.spawnAsTask(src)
                     return
 
             # `do task` is sugar for `wait task` - drain the future once
             if xKind == Task:
                 when not defined(WEB):
-                    ParallelismHelper.drainTask(x.tsk)
+                    push ParallelismHelper.drainTask(x.tsk)
                 return
 
             var evaled: Translation

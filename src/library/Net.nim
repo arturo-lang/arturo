@@ -130,7 +130,7 @@ proc defineModule*(moduleName: string) =
                     target = extractFilename(path)
 
                 if hadAttr("async"):
-                    spawnAsyncDownload(path, target)
+                    push spawnAsyncDownload(path, target)
                     return
 
                 var client = newHttpClient()
@@ -263,7 +263,7 @@ proc defineModule*(moduleName: string) =
                     if checkAttr("certificate"): attrSuffix &= ".certificate:" & codify(aCertificate)
                     let urlSrc = codify(x)
                     let dataSrc = if y.kind == Null: "null" else: codify(y)
-                    spawnAsTask("request" & attrSuffix & " " & urlSrc & " " & dataSrc)
+                    push spawnAsTask("request" & attrSuffix & " " & urlSrc & " " & dataSrc)
                     return
 
 
@@ -481,7 +481,7 @@ proc defineModule*(moduleName: string) =
                     if hadAttr("silent"): attrSuffix &= ".silent"
                     if hadAttr("chrome"): attrSuffix &= ".chrome"
                     if checkAttr("port"): attrSuffix &= ".port:" & codify(aPort)
-                    spawnAsTask("serve" & attrSuffix & " " & codify(x))
+                    push spawnAsTask("serve" & attrSuffix & " " & codify(x))
                     return
 
                 # get parameters
