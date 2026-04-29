@@ -1821,11 +1821,10 @@ proc defineModule*(moduleName: string) =
             print arr                     ; 5 9 2
         """:
             #=======================================================
-            if xKind in {Literal, PathLiteral}:
-                ensureInPlaceAny()
-                InPlaced.a.shuffle()
-            else:
-                push(newBlock(x.a.dup(shuffle)))
+            dispatchWithLiteral:
+                Block(a):
+                    value:   push(newBlock(a.dup(shuffle)))
+                    inplace: a.shuffle()
  
     builtin "size",
         alias       = unaliased,
