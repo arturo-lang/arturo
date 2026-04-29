@@ -408,9 +408,10 @@ proc defineModule*(moduleName: string) =
             attrs       = {
                 "port"      : ({Integer},"use given port. Default: 18966"),
                 "silent"    : ({Logical},"don't print info log"),
-                "chrome"    : ({Logical},"open in Chrome windows as an app")
+                "chrome"    : ({Logical},"open in Chrome windows as an app"),
+                "async"     : ({Logical},"serve in a child process and return a `:task` (cancel to stop)")
             },
-            returns     = {Nothing},
+            returns     = {Nothing,Task},
             example     = """
             serve .port: 9000 [
 
@@ -475,13 +476,23 @@ proc defineModule*(moduleName: string) =
             ]
             """:
                 #=======================================================
+                if hadAttr("async"):
+                    # reformulate as a child-process call to sync `serve`.
+                    # the child loops forever; `cancel <task>` kills the process.
+                    var attrSuffix = ""
+                    if hadAttr("silent"): attrSuffix &= ".silent"
+                    if hadAttr("chrome"): attrSuffix &= ".chrome"
+                    if checkAttr("port"): attrSuffix &= ".port:" & codify(aPort)
+                    spawnAsTask("serve" & attrSuffix & " " & codify(x))
+                    return
+
                 # get parameters
                 let routes = x
                 var port = 18966
                 var verbose = not (hadAttr("silent"))
                 if checkAttr("port"):
                     port = aPort.i
-            
+
                 if hadAttr("chrome"):
                     openChromeWindow(port)
 
