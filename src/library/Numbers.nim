@@ -1277,7 +1277,7 @@ proc defineModule*(moduleName: string) =
             ; => 1.794226987182141+0.2786715413222365i
         """:
             #=======================================================
-            if (hadAttr("integer")):
+            if hadAttr("integer"):
                 when defined(WEB) or defined(GMP):
                     if x.iKind == NormalInteger:
                         push(newInteger(isqrt(x.i)))
@@ -1285,8 +1285,11 @@ proc defineModule*(moduleName: string) =
                         push(newInteger(isqrt(x.bi)))
                 else:
                     push(newInteger(isqrt(x.i)))
-            elif xKind==Complex: push(newComplex(sqrt(x.z)))
-            else: push(newFloating(sqrt(asFloat(x))))
+                return
+
+            dispatch:
+                Complex(z): push(newComplex(sqrt(z)))
+                _:          push(newFloating(sqrt(asFloat(x))))
 
     builtin "sum",
         alias       = summation, 
