@@ -26,7 +26,7 @@ import helpers/terminal as TerminalHelper
 import vm/[globals, opcodes, stack]
 import vm/values/value
 
-import vm/values/custom/[vbinary, vcolor, vcomplex, verror, vlogical, vquantity, vrange, vrational, vregex, vversion]
+import vm/values/custom/[vbinary, vcolor, vcomplex, verror, vlogical, vquantity, vrange, vrational, vregex, vtask, vversion]
 
 when not defined(WEB):
     import vm/values/custom/[vsocket]
@@ -202,7 +202,7 @@ proc `$`*(v: Value): string {.inline.} =
             result = "<bytecode>" & "(" & fmt("{cast[uint](v):#X}") & ")"
 
         of Task:
-            result = $(v.tsk)
+            result = "<task>" & "(" & fmt("{cast[uint](v.tsk):#X}") & ")"
 
         of Nothing: discard
         of ANY: discard
@@ -469,7 +469,13 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
                 dumpPrimitive($(v.sock), v)
 
         of Task         :
-            dumpPrimitive($(v.tsk), v)
+            let tag =
+                case v.tsk.state
+                    of taskPending  : "pending"
+                    of taskDone     : "done"
+                    of taskFailed   : "failed"
+                    of taskCancelled: "cancelled"
+            stdoutWrite fmt("[{tag}] {cast[uint](v.tsk):#X}")
 
         of Bytecode     : 
             dumpBlockStart(v)
