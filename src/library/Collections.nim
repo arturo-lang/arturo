@@ -2818,27 +2818,21 @@ proc defineModule*(moduleName: string) =
             one? ø              ; => false
         """:
             #=======================================================
-            case xKind:
-                of Integer:
+            dispatch:
+                Integer(i):
                     if x.iKind == BigInteger:
                         when defined(WEB):
                             push(newLogical(x.bi==big(1)))
                         elif defined(GMP):
                             push(newLogical(x.bi==newInt(1)))
                     else:
-                        push(newLogical(x.i == 1))
-                of Floating:
-                    push(newLogical(x.f == 1.0))
-                of String:
-                    push(newLogical(runeLen(x.s) == 1))
-                of Block:
-                    push(newLogical(x.a.len == 1))
-                of Range:
-                    push(newLogical(x.rng.len == 1))
-                of Dictionary:
-                    push(newLogical(x.d.len == 1))
-                else:
-                    push(VFALSE)
+                        push(newLogical(i == 1))
+                Floating(f):   push(newLogical(f == 1.0))
+                String(s):     push(newLogical(runeLen(s) == 1))
+                Block(a):      push(newLogical(a.len == 1))
+                Range(rng):    push(newLogical(rng.len == 1))
+                Dictionary(d): push(newLogical(d.len == 1))
+                _:             push(VFALSE)
 
     # TODO(Collections\sorted?) doesn't work properly
     #  it should work in an identical way as `sort`
