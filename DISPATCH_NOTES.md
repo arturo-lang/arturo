@@ -145,7 +145,24 @@ must use per-mode bodies (`value:`/`inplace:`) and write their own
 | `src/library/Collections.nim` | `extend`                                   | `dispatchWithLiteral`, 2-axis × per-mode (Dictionary, Dictionary) |
 | `src/library/Collections.nim` | `reverse`                                  | `bindAttrs` + `dispatchWithLiteral`, per-mode (alloc/mutate asymmetry) |
 | `src/library/Collections.nim` | `unique`                                   | `dispatchWithLiteral` (`.id` short-circuit kept as a prelude — result kind is unrelated to x) |
+| `src/library/Collections.nim` | `decouple`, `shuffle`                      | `dispatchWithLiteral`, 1-axis × per-mode (Block) |
+| `src/library/Collections.nim` | `slice`                                    | `dispatchWithLiteral`, 1-axis × per-mode (String / Block) |
+| `src/library/Collections.nim` | `sample`, `size`                           | `dispatch`, multi-clause                            |
+| `src/library/Collections.nim` | `max`, `min`                               | `bindAttrs` + `dispatch` (`index` flag aliased to `withIndex`) |
+| `src/library/Collections.nim` | `empty?`, `one?`, `zero?`                  | `dispatch` with `_:` Null fallback                  |
+| `src/library/Collections.nim` | `sorted?`                                  | `bindAttrs` + `dispatch`, single Block clause       |
 | `src/library/Sets.nim`        | `intersection`, `union`                    | `dispatchWithLiteral`, 1-axis on x, references `y.a` |
+| `src/library/Sets.nim`        | `difference`                               | `dispatchWithLiteral` with `on symmetric:` ladder   |
+| `src/library/Sets.nim`        | `powerset`                                 | `dispatchWithLiteral`, 1-axis unified               |
+| `src/library/Sets.nim`        | `disjoint?`, `intersect?`                  | `dispatch`, 2-axis (Block, Block)                   |
+| `src/library/Sets.nim`        | `subset?`, `superset?`                     | `bindAttrs` + `dispatch`, 2-axis (Block, Block) — `proper` flag toggles equal-case |
+| `src/library/Collections.nim` | `couple`                                   | `dispatch`, 2-axis (Block, Block)                   |
+| `src/library/Statistics.nim`  | `average`                                  | `dispatch`, 2-axis (Block / Range)                  |
+| `src/library/Statistics.nim`  | `deviation`, `kurtosis`, `skewness`, `variance` | `dispatch` with `on sample:` toggle           |
+| `src/library/Statistics.nim`  | `median`                                   | `dispatch`, 1-axis (Block, multi-stmt)              |
+| `src/library/Logic.nim`       | `false?`, `true?`                          | `dispatch` with Logical clause + `_:` fallback      |
+| `src/library/Numbers.nim`     | `abs`                                      | `dispatch` over Integer/Floating/Complex/Rational   |
+| `src/library/Numbers.nim`     | `angle`, `conj`                            | `dispatch`, single Complex clause                   |
 | `src/library/Colors.nim`      | `blend`                                    | `bindAttrs` + `dispatchWithLiteral`, 2-axis × per-mode (RGB return) |
 | `src/library/Colors.nim`      | `darken`, `lighten`, `spin`                | `dispatchWithLiteral`, 1-axis unified (VColor return) |
 | `src/library/Colors.nim`      | `desaturate`, `grayscale`, `invert`, `saturate` | `dispatchWithLiteral`, 1-axis × per-mode (RGB return — auto-wrap can't assign RGB to `InPlaced.l: VColor`) |
@@ -337,11 +354,20 @@ used as a code identifier in the message. Pre-rename commits still say
 Once `else:`, 3-args, and attr support are in:
 
 - **Strings**: ~~`pad`~~, ~~`truncate`~~, `match` (attrs — heavy, marginal benefit),
-  ~~`replace`~~ (3-args), `outdent` (pre-dispatch InPlaced — feature 4).
+  ~~`replace`~~ (3-args), `outdent` (pre-dispatch InPlaced — feature 4),
+  `join` (path/with/words/lines all produce string from Block — marginal benefit).
 - **Collections**: ~~`prepend`~~, `take` (Range + asymmetry — see below),
-  `split` (the marquee target — heavy attrs), `first`, `last`, `pop`, `sort`,
-  `range`, `rotate`, `remove`, ~~`flatten`~~, ~~`combine`~~, ~~`permutate`~~,
-  ~~`tally`~~, `index`, ~~`keys`~~, ~~`values`~~, ~~`insert`~~.
+  `split` (the marquee target — heavy attrs), ~~`first`~~, ~~`last`~~, ~~`pop`~~,
+  `sort` (clean rewrite needed per its own TODO), `range` (2-axis numeric
+  extraction — marginal benefit), ~~`rotate`~~, `remove` (Object magic),
+  ~~`flatten`~~, ~~`combine`~~, ~~`permutate`~~, ~~`tally`~~, ~~`index`~~,
+  ~~`keys`~~, ~~`values`~~, ~~`insert`~~, ~~`empty`~~, ~~`extend`~~,
+  ~~`reverse`~~, ~~`unique`~~, ~~`decouple`~~, ~~`shuffle`~~, ~~`size`~~,
+  ~~`slice`~~, ~~`sample`~~, ~~`max`~~, ~~`min`~~, ~~`empty?`~~, ~~`one?`~~,
+  ~~`zero?`~~, ~~`sorted?`~~, `contains?` / `in?` / `key?` (Object magic).
+- **Sets**: ~~`difference`~~, ~~`powerset`~~, ~~`disjoint?`~~,
+  ~~`intersect?`~~, ~~`subset?`~~, ~~`superset?`~~ (in addition to the
+  earlier ~~`intersection`~~ and ~~`union`~~).
 - **Colors**: all done — but note that single-kind 1-positional Color funcs
   are *not* always drop-in: ~~`darken`~~, ~~`lighten`~~, ~~`spin`~~ are
   unified-body (their helpers return `VColor`); ~~`saturate`~~,
@@ -353,8 +379,9 @@ Once `else:`, 3-args, and attr support are in:
 
 ### Functions to *not* naively convert
 
-- **`reverse`**: value uses `reversed(s)` (alloc), inplace uses `s.reverse()`
-  (mutate). Per-mode bodies cover this, but Range needs adding too.
+- ~~**`reverse`**: value uses `reversed(s)` (alloc), inplace uses
+  `s.reverse()` (mutate).~~ Done — per-mode bodies handle this cleanly,
+  including the Range arm now that Range is in the kind table.
 - **`repeat`**: value uses `safeCycle` (deep copy), inplace uses `cycle`
   (refs). Asymmetric on purpose — converting naively would either make
   inplace allocate-copy or value-mode share refs. Discuss before touching.
