@@ -526,12 +526,11 @@ proc defineModule*(moduleName: string) =
             empty 'str            ; str: ""
         """:
             #=======================================================
-            ensureInPlaceAny()
-            case InPlaced.kind:
-                of String: InPlaced.s = ""
-                of Block: InPlaced.a = @[]
-                of Dictionary: InPlaced.d = initOrderedTable[string, Value]()
-                else: discard
+            # x is always Literal/PathLiteral — only inplace branches run.
+            dispatchWithLiteral:
+                String(s):     inplace: s = ""
+                Block(a):      inplace: a = @[]
+                Dictionary(d): inplace: d = initOrderedTable[string, Value]()
 
     # TODO(Collections\extend) Consider renaming?
     #  we could actually rename it to `merge`? - which is what it does
