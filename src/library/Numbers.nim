@@ -614,19 +614,16 @@ proc defineModule*(moduleName: string) =
             ; => 1
         """:
             #=======================================================
-            var rat: VRational
+            template pushDenom(rat: VRational) =
+                if rat.rKind == NormalRational:
+                    push(newInteger(getDenominator(rat)))
+                else:
+                    push(newInteger(getDenominator(rat, big=true)))
 
-            if xKind==Rational:
-                rat = x.rat
-            elif xKind==Integer:
-                rat = toRational(x.i)
-            else:
-                rat = toRational(x.f)
-
-            if rat.rKind == NormalRational:
-                push(newInteger(getDenominator(rat)))
-            else:
-                push(newInteger(getDenominator(rat, big=true)))
+            dispatch:
+                Rational(rat): pushDenom(rat)
+                Integer(i):    pushDenom(toRational(i))
+                Floating(f):   pushDenom(toRational(f))
 
     builtin "digits",
         alias       = unaliased, 
