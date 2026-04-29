@@ -110,15 +110,17 @@ when not defined(WEB):
     # driven (i.e. during `wait` / `waitFor`). that's fine for the usual flow
     # — launch, do other things, then `wait` — but pure fire-and-forget won't
     # actually transfer bytes until something dispatches.
-    proc downloadFileAsync(url, target: string): Future[Value] {.async.} =
-        when defined(ssl):
-            var client = newAsyncHttpClient(sslContext = netmod.newContext(verifyMode = CVerifyNone))
-        else:
-            var client = newAsyncHttpClient()
+    proc downloadFileAsync(client: AsyncHttpClient, url, target: string): Future[Value] {.async.} =
         try:
             await client.downloadFile(url, target)
+        except CatchableError:
+            # cancellation closes the client mid-flight; that surfaces here as
+            # an exception. the `wait` builtin already short-circuits cancelled
+            # tasks to `:null`, so we just swallow and return.
+            discard
         finally:
-            client.close()
+            try: client.close()
+            except CatchableError: discard
         result = VNULL
 
     # in-process async file read via `asyncfile`. returns the raw bytes/text;
@@ -162,9 +164,18 @@ when not defined(WEB):
 
     # convenience: kick off an in-process async download and return a `:task`.
     # parallels `spawnAsTask` but skips the subprocess machinery entirely.
+    # the client is held by the task so `cancel` can `close()` it and abort
+    # the in-flight download.
     proc spawnAsyncDownload*(url, target: string): Value =
+        when defined(ssl):
+            let client = newAsyncHttpClient(sslContext = netmod.newContext(verifyMode = CVerifyNone))
+        else:
+            let client = newAsyncHttpClient()
         let tsk = VTask(state: taskPending)
-        tsk.future = downloadFileAsync(url, target)
+        tsk.future = downloadFileAsync(client, url, target)
+        tsk.cancelHandle = proc() =
+            try: client.close()
+            except CatchableError: discard
         result = newTask(tsk)
 
     # block on a task's future and return its result. used by `wait` and `do task`.
