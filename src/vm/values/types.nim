@@ -15,7 +15,7 @@
 import std/[tables, times, unicode, setutils]
 
 when not defined(WEB):
-    import std/asyncfutures
+    import std/asyncfutures, std/osproc
 
 when defined(SQLITE):
     import extras/db_connector/db_sqlite as sqlite
@@ -262,7 +262,8 @@ type
     VTask* = ref object
         state*      : VTaskState        # bookkeeping for `done?` / `cancel`
         when not defined(WEB):
-            future* : Future[Value]     # the actual handle a producer (e.g. `request.async`) feeds
+            future*  : Future[Value]    # the actual handle a producer (e.g. `request.async`) feeds
+            process* : Process          # the underlying OS process (for subprocess-backed tasks); nil otherwise
 
     Value* {.final,acyclic.} = ref object
         info*   : ValueInfo
