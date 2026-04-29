@@ -121,6 +121,27 @@ when not defined(WEB):
             client.close()
         result = VNULL
 
+    # in-process async file read via `asyncfile`. returns the raw bytes/text;
+    # the caller (`read.async` builtin) is responsible for any post-processing
+    # like CSV/JSON/markdown parsing — that's pure CPU work and stays sync.
+    proc readFileAsyncStr*(path: string): Future[string] {.async.} =
+        var f = openAsync(path, fmRead)
+        try:
+            result = await f.readAll()
+        finally:
+            f.close()
+
+    # convenience: kick off an in-process async read, run a sync `postProcess`
+    # closure on the bytes once available, and push a `:task` whose result is
+    # whatever the closure returned.
+    proc spawnAsyncRead*(path: string, postProcess: proc(src: string): Value) =
+        proc go(p: string): Future[Value] {.async.} =
+            let src = await readFileAsyncStr(p)
+            result = postProcess(src)
+        let tsk = VTask(state: taskPending)
+        tsk.future = go(path)
+        push newTask(tsk)
+
     # in-process async file write via `asyncfile`. content is already
     # serialized by the caller (e.g. JSON-encoded), so this layer just
     # streams bytes to disk through the dispatcher.
