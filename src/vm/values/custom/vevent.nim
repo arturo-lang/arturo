@@ -23,3 +23,13 @@
 type
     VEvent* = ref object
         name*: string
+
+#=======================================
+# Overloads
+#=======================================
+
+proc hash*(e: VEvent): Hash {.inline.} =
+    hash(e.name)
+
+func `$`*(e: VEvent): string =
+    "<event:" & e.name & ">"

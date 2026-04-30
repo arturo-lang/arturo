@@ -881,12 +881,6 @@ proc newEvent*(name: string): Value {.inline.} =
     ## create Event value from a name string
     Value(kind: Event, evt: VEvent(name: name))
 
-proc hash*(e: VEvent): Hash {.inline.} =
-    hash(e.name)
-
-func `$`*(e: VEvent): string =
-    "<event:" & e.name & ">"
-
 func newInline*(a: sink ValueArray = @[]): Value {.inline.} =
     ## create Inline value from ValueArray
     Value(kind: Inline, a: a)
