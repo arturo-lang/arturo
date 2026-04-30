@@ -167,19 +167,14 @@ proc defineModule*(moduleName: string) =
             goto 10 ø       ; (move cursor to column 10, same line)
             """:
                 #=======================================================
-                if xKind==Null:
-                    if yKind==Null:
-                        discard
-                    else:
-                        when defined(windows):
-                            stdout.setCursorYPos(y.i)
-                        else:
-                            discard
-                else:
-                    if yKind==Null:
-                        stdout.setCursorXPos(x.i)
-                    else:
-                        stdout.setCursorPos(x.i, y.i)
+                dispatch:
+                    Integer(a):
+                        if yKind == Null: stdout.setCursorXPos(a)
+                        else:             stdout.setCursorPos(a, y.i)
+                    _:
+                        if yKind != Null:
+                            when defined(windows): stdout.setCursorYPos(y.i)
+                            else:                  discard
 
         builtin "input",
             alias       = unaliased, 
