@@ -91,11 +91,10 @@ proc defineModule*(moduleName: string) =
                 years=years
             )
             
-            if xKind in {Literal, PathLiteral}:
-                ensureInPlaceAny()
-                SetInPlaceAny(newDate(InPlaced.eobj + ti))
-            else:
-                push(newDate(x.eobj + ti))
+            dispatchWithLiteral:
+                Date(d):
+                    value:   push(newDate(d + ti))
+                    inplace: SetInPlaceAny(newDate(d + ti))
 
     builtin "before",
         alias       = unaliased, 
