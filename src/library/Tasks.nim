@@ -27,7 +27,7 @@ when not defined(WEB):
     import asyncdispatch
     import osproc
 
-    import vm/values/custom/[vtask]
+    import vm/values/custom/[vtask, verror]
 
 import vm/lib
 
@@ -128,10 +128,16 @@ proc defineModule*(moduleName: string) =
                 elif x.tsk.state == taskCancelled:
                     push VNULL
                 else:
-                    # `waitFor` drives the dispatcher until the future settles
-                    let res = waitFor x.tsk.future
-                    x.tsk.state = taskDone
-                    push res
+                    # `waitFor` drives the dispatcher until the future settles.
+                    # if the underlying work raised, surface it as an `:error`
+                    # value rather than letting the exception escape into the VM.
+                    try:
+                        let res = waitFor x.tsk.future
+                        x.tsk.state = taskDone
+                        push res
+                    except CatchableError as e:
+                        x.tsk.state = taskFailed
+                        push newError(RuntimeErr, e.msg)
 
         builtin "cancel",
             alias       = unaliased,
