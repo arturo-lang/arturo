@@ -34,7 +34,7 @@ when (not defined(GMP)) and (not defined(WEB)):
 
 import vm/opcodes
 
-import vm/values/custom/[vbinary, vcolor, vcomplex, verror, vlogical, vquantity, vrange, vrational, vregex, vsymbol, vtask, vversion]
+import vm/values/custom/[vbinary, vcolor, vcomplex, verror, vevent, vlogical, vquantity, vrange, vrational, vregex, vsymbol, vtask, vversion]
 
 when not defined(WEB):
     import vm/values/custom/[vsocket]
