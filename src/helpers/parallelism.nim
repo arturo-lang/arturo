@@ -241,14 +241,16 @@ when not defined(WEB):
                          ): Value =
         let server = newAsyncHttpServer()
         proc go(): Future[Value] {.async.} =
+            # let CatchableError escape — `wait` classifies it (cancel → :null,
+            # otherwise → :error, e.g. EADDRINUSE on bind). cancellation
+            # closes the server and surfaces here as an exception, filtered
+            # out downstream via task state.
             try:
                 await server.serve(Port(port), handler)
-            except CatchableError:
-                discard
+                result = VNULL
             finally:
                 try: server.close()
                 except CatchableError: discard
-            result = VNULL
         let tsk = VTask(state: taskPending)
         tsk.future = go()
         tsk.cancelHandle = proc() =
