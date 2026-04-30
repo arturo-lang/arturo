@@ -127,13 +127,11 @@ when not defined(WEB):
     # the caller (`read.async` builtin) is responsible for any post-processing
     # like CSV/JSON/markdown parsing — that's pure CPU work and stays sync.
     proc readFileAsyncStr(f: AsyncFile): Future[string] {.async.} =
+        # let CatchableError escape — `wait` classifies it (cancel → :null,
+        # otherwise → :error). cancellation closes the file and surfaces
+        # here as an exception, filtered out downstream via task state.
         try:
             result = await f.readAll()
-        except CatchableError:
-            # cancellation closes the file mid-flight; swallow and return ""
-            # so the post-process closure still gets a defined value (the
-            # `wait` builtin short-circuits cancelled tasks anyway).
-            result = ""
         finally:
             try: f.close()
             except CatchableError: discard
