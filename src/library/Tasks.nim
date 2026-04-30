@@ -110,27 +110,36 @@ proc defineModule*(moduleName: string) =
                     push newBlock(resolved)
                 elif (hadAttr("first")):
                     # accept a block of tasks; block until the first one
-                    # settles and return its value. the rest are left alone —
-                    # use `cancel` (or a future `.cancel` attr) to abort them.
-                    var futures: seq[Future[Value]] = @[]
+                    # settles and return its value (or `:error` if the
+                    # winner failed). the rest are left alone — pass
+                    # `.cancel` to also abort them.
                     for t in x.a:
                         if unlikely(t.kind != Task):
                             Error_OperationNotPermitted("`wait.first` expects a block of :task values")
-                        futures.add(t.tsk.future)
+                    # `winner` settles when *any* underlying future settles
+                    # (success OR failure), so we don't hang if the fastest
+                    # task happens to be the failing one.
                     let winner = newFuture[Value]("Tasks.waitFirst")
-                    for f in futures:
-                        f.addCallback(proc(fin: Future[Value]) =
-                            if not winner.finished and not fin.failed:
+                    for t in x.a:
+                        let cap = t
+                        cap.tsk.future.addCallback(proc(fin: Future[Value]) =
+                            if winner.finished: return
+                            if fin.failed:
+                                if cap.tsk.state == taskCancelled:
+                                    winner.complete(VNULL)
+                                else:
+                                    cap.tsk.state = taskFailed
+                                    winner.complete(newError(RuntimeErr, fin.error.msg))
+                            else:
+                                if cap.tsk.state == taskPending:
+                                    cap.tsk.state = taskDone
                                 winner.complete(fin.read())
                         )
                     let res = waitFor winner
                     let killLosers = hadAttr("cancel")
                     for t in x.a:
-                        if t.tsk.state == taskPending:
-                            if t.tsk.future.finished:
-                                t.tsk.state = taskDone
-                            elif killLosers:
-                                cancelTask(t)
+                        if t.tsk.state == taskPending and killLosers:
+                            cancelTask(t)
                     push res
                 elif x.tsk.state == taskCancelled:
                     push VNULL
