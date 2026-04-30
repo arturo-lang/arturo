@@ -189,6 +189,24 @@ proc defineModule*(moduleName: string) =
         # Predicates
         #----------------------------
 
+        builtin "failed?",
+            alias       = unaliased,
+            op          = opNop,
+            rule        = PrefixPrecedence,
+            description = "check if given task ended in failure",
+            args        = {
+                "task"  : {Task}
+            },
+            attrs       = NoAttrs,
+            returns     = {Logical},
+            example     = """
+            ; t: do.async [1 / 0]
+            ; wait t
+            ; failed? t   ; => true
+            """:
+                #=======================================================
+                push newLogical(x.tsk.state == taskFailed)
+
         builtin "done?",
             alias       = unaliased,
             op          = opNop,
