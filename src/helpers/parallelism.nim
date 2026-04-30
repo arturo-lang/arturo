@@ -57,9 +57,12 @@ when not defined(WEB):
         # `.safe` uses `«« »»` string delimiters and quotes dict keys -
         # round-trip-safe for anything Arturo can represent (HTTP responses,
         # dicts with hyphenated keys, strings containing curly braces, etc.)
+        # no `try` around the `do`: if the user's code raises, we *want* the
+        # child to crash with a non-zero exit so the parent surfaces it as
+        # a failed task. (the leading `null` inside `safeBlock` keeps void
+        # blocks safe without needing `try`.)
         let wrapped =
-            "res: null\n" &
-            "try [ res: do " & safeBlock & " ]\n" &
+            "res: do " & safeBlock & "\n" &
             "write express.safe res \"" & resFile & "\""
         let p = startProcess(arturoBin,
                              args = @["-e", wrapped],
@@ -91,8 +94,14 @@ when not defined(WEB):
                 result = VNULL
         else:
             if fileExists(resFile): removeFile(resFile)
-            # real error propagation is a follow-up; for now: null on failure
-            result = VNULL
+            # cancellation is not a failure — caller observes via task state.
+            # for any other non-zero exit, fail the future so `wait` can
+            # surface it as an `:error` value.
+            if tsk.state == taskCancelled:
+                result = VNULL
+            else:
+                raise newException(CatchableError,
+                    "task subprocess exited with code " & $code)
 
     # convenience: turn a piece of Arturo source into a pending `:task` value.
     # used by `.async` branches across the stdlib.
