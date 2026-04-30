@@ -7,8 +7,14 @@
 #=======================================================
 
 ## State enum for the `:task` value.
-## The `VTask` object itself lives in `vm/values/types.nim`,
+## The `VTask` object itself lives in vm/values/types,
 ## since it needs to refer back to `Value` (via `Future[Value]`).
+
+#=======================================
+# Libraries
+#=======================================
+
+import hashes
 
 #=======================================
 # Types
