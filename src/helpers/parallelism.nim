@@ -113,17 +113,15 @@ when not defined(WEB):
     # — launch, do other things, then `wait` — but pure fire-and-forget won't
     # actually transfer bytes until something dispatches.
     proc downloadFileAsync(client: AsyncHttpClient, url, target: string): Future[Value] {.async.} =
+        # let CatchableError escape — `wait` classifies it (cancel → :null,
+        # otherwise → :error). cancellation closes the client and surfaces
+        # here as an exception, which `wait` filters out via task state.
         try:
             await client.downloadFile(url, target)
-        except CatchableError:
-            # cancellation closes the client mid-flight; that surfaces here as
-            # an exception. the `wait` builtin already short-circuits cancelled
-            # tasks to `:null`, so we just swallow and return.
-            discard
+            result = VNULL
         finally:
             try: client.close()
             except CatchableError: discard
-        result = VNULL
 
     # in-process async file read via `asyncfile`. returns the raw bytes/text;
     # the caller (`read.async` builtin) is responsible for any post-processing
