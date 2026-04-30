@@ -26,6 +26,21 @@ when not defined(WEB):
     import vm/values/custom/vtask
 
 #=======================================
+# Cross-process event dispatch hook
+#=======================================
+
+when not defined(WEB):
+    # `library/Events.nim` registers its `dispatchEvent` here at module
+    # init time so the read loop below (which runs in helpers, where we
+    # can't import a library cleanly) has somewhere to deliver inbound
+    # `[name payload]` records from a child VM. nil if Events isn't
+    # loaded (e.g. minimal builds).
+    var inboundEventDispatcher*: proc(name: string, payload: Value) {.gcsafe.} = nil
+
+    proc setInboundEventDispatcher*(fn: proc(name: string, payload: Value) {.gcsafe.}) =
+        inboundEventDispatcher = fn
+
+#=======================================
 # Helpers
 #=======================================
 
