@@ -31,6 +31,9 @@ when not defined(WEB):
 
 import vm/lib
 
+when not defined(WEB):
+    import vm/errors
+
 #=======================================
 # Definitions
 #=======================================
@@ -48,18 +51,41 @@ proc defineModule*(moduleName: string) =
             rule        = PrefixPrecedence,
             description = "block until given task is finished and return its result",
             args        = {
-                "task"  : {Task}
+                "task"  : {Task,Block}
             },
-            attrs       = NoAttrs,
-            returns     = {Any},
+            attrs       = {
+                "all"   : ({Logical},"wait for all tasks in the given block to settle and return their results in order")
+            },
+            returns     = {Any,Block},
             example     = """
             ; (draft) once `request.async` lands, this is the natural shape:
             ;
             ; t: request.async "https://example.com"
             ; data: wait t
+            ..........
+            ; fan-out: fire N tasks, block until all settle
+            tasks: map ["alice" "bob" "carol"] 'name [
+                request.async ~"https://api.example.com/users/|name|" #[]
+            ]
+            results: wait.all tasks
             """:
                 #=======================================================
-                if x.tsk.state == taskCancelled:
+                if (hadAttr("all")):
+                    # accept a block of tasks; block until each settles, return
+                    # their resolved values in input order. happy path only —
+                    # error propagation is a separate piece of work, so a
+                    # cancelled / failing task here is currently undefined.
+                    var futures: seq[Future[Value]] = @[]
+                    for t in x.a:
+                        if unlikely(t.kind != Task):
+                            Error_OperationNotPermitted("`wait.all` expects a block of :task values")
+                        futures.add(t.tsk.future)
+                    let resolved = waitFor all(futures)
+                    for t in x.a:
+                        if t.tsk.state == taskPending:
+                            t.tsk.state = taskDone
+                    push newBlock(resolved)
+                elif x.tsk.state == taskCancelled:
                     push VNULL
                 else:
                     # `waitFor` drives the dispatcher until the future settles
