@@ -21,9 +21,17 @@ type
         taskFailed
         taskCancelled
 
+#=======================================
+# Constructors
+#=======================================
+
 proc initTask*(): VTask {.inline.} =
     ## create a fresh, pending VTask
     VTask(state: taskPending)
+
+#=======================================
+# Overloads
+#=======================================
 
 proc hash*(t: VTask): Hash {.inline.} =
     cast[Hash](cast[uint](t))
