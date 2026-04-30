@@ -26,6 +26,7 @@
 # machinery is gated.
 when not defined(WEB):
     import asyncdispatch
+    import os
     import std/exitprocs
     import tables
 
@@ -94,6 +95,20 @@ when not defined(WEB):
                     echo "Events: handler raised: " & e.msg
         )
 
+    proc initEmitChannel() =
+        ## If we were spawned by a parent VM with cross-process emit
+        ## enabled, the parent will have placed the pipe's write-fd
+        ## under `ARTURO_EVENT_FD`. Open it once at module init.
+        let fdStr = getEnv("ARTURO_EVENT_FD")
+        if fdStr.len == 0: return
+        try:
+            let fd = parseInt(fdStr).cint
+            var f: File
+            if open(f, FileHandle(fd), fmAppend):
+                emitChannel = f
+        except CatchableError:
+            discard
+
     proc dispatchEvent(name: string, payload: Value) {.gcsafe.} =
         ## Look up subscribers for the named event and enqueue each on
         ## the next dispatcher tick. Shared by the `emit` builtin and
@@ -113,6 +128,8 @@ when not defined(WEB):
 
 proc defineModule*(moduleName: string) =
     when not defined(WEB):
+
+        initEmitChannel()
 
         #----------------------------
         # Functions
