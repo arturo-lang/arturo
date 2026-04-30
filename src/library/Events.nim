@@ -189,6 +189,11 @@ proc defineModule*(moduleName: string) =
             description = "built-in event fired when the user presses Ctrl+C":
                 newEvent("CtrlC")
 
+        constant "BeforeExit",
+            alias       = unaliased,
+            description = "built-in event fired just before the program exits":
+                newEvent("BeforeExit")
+
         # SIGINT → emit `CtrlC`. Nim invokes the hook on the main thread
         # at a safe point (not in signal context), so scheduling on the
         # dispatcher is fine. We drain the queue here because Nim's
