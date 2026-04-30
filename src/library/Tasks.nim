@@ -88,18 +88,25 @@ proc defineModule*(moduleName: string) =
                 #=======================================================
                 if (hadAttr("all")):
                     # accept a block of tasks; block until each settles, return
-                    # their resolved values in input order. happy path only —
-                    # error propagation is a separate piece of work, so a
-                    # cancelled / failing task here is currently undefined.
-                    var futures: seq[Future[Value]] = @[]
+                    # their resolved values in input order. failed tasks
+                    # surface as `:error` values in their slot; cancelled
+                    # tasks surface as `:null` (matching bare `wait`).
                     for t in x.a:
                         if unlikely(t.kind != Task):
                             Error_OperationNotPermitted("`wait.all` expects a block of :task values")
-                        futures.add(t.tsk.future)
-                    let resolved = waitFor all(futures)
-                    for t in x.a:
-                        if t.tsk.state == taskPending:
-                            t.tsk.state = taskDone
+                    var resolved: ValueArray = newSeq[Value](x.a.len)
+                    for i, t in x.a.pairs:
+                        try:
+                            let r = waitFor t.tsk.future
+                            if t.tsk.state == taskPending:
+                                t.tsk.state = taskDone
+                            resolved[i] = r
+                        except CatchableError as e:
+                            if t.tsk.state == taskCancelled:
+                                resolved[i] = VNULL
+                            else:
+                                t.tsk.state = taskFailed
+                                resolved[i] = newError(RuntimeErr, e.msg)
                     push newBlock(resolved)
                 elif (hadAttr("first")):
                     # accept a block of tasks; block until the first one
