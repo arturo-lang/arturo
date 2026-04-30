@@ -167,6 +167,19 @@ must use per-mode bodies (`value:`/`inplace:`) and write their own
 | `src/library/Colors.nim`      | `darken`, `lighten`, `spin`                | `dispatchWithLiteral`, 1-axis unified (VColor return) |
 | `src/library/Colors.nim`      | `desaturate`, `grayscale`, `invert`, `saturate` | `dispatchWithLiteral`, 1-axis × per-mode (RGB return — auto-wrap can't assign RGB to `InPlaced.l: VColor`) |
 | `src/library/Colors.nim`      | `palette`                                  | `bindAttrs` + `dispatch` with `on attr:` ladder     |
+| `src/library/Numbers.nim`     | `reciprocal`, `sign`, `negative?`, `positive?`, `infinite?` | `dispatch`, single-clause + `_:` fallback |
+| `src/library/Numbers.nim`     | `sum`, `exp`, `ln`, `sqrt`                 | `dispatch` over numeric kinds                       |
+| `src/library/Numbers.nim`     | `denominator`, `numerator`                 | `dispatch`, single Rational clause                  |
+| `src/library/Crypto.nim`      | `crc`                                      | `dispatchWithLiteral`, 1-axis unified (String)      |
+| `src/library/Crypto.nim`      | `decode`                                   | `dispatchWithLiteral` with `on attr:` (url/from/to) |
+| `src/library/System.nim`      | `pause`                                    | `dispatch`, Integer/Quantity                        |
+| `src/library/Quantities.nim`  | `property`                                 | `dispatch`, Quantity/Unit                           |
+| `src/library/Quantities.nim`  | `conforms?`                                | `dispatch`, 2-axis (Quantity/Unit × Quantity/Unit)  |
+| `src/library/Dates.nim`       | `leap?`                                    | `dispatch`, Integer/Date                            |
+| `src/library/Dates.nim`       | `after`, `before`                          | `dispatchWithLiteral`, single Date clause × per-mode (helper returns `DateTime`, `InPlaced.eobj` is `ref DateTime`) |
+| `src/library/Io.nim`          | `goto`                                     | `dispatch`, Integer + `_:` fallback                 |
+| `src/library/Io.nim`          | `input` (non-repl path)                    | `dispatch`, String + `_:` fallback for Null         |
+| `src/library/Io.nim`          | `print`, `prints`                          | `dispatch`, Block + `_:` fallback                   |
 
 ## Plan: features still to add
 
@@ -376,6 +389,59 @@ Once `else:`, 3-args, and attr support are in:
 - **Bitwise**: `nand`/`nor` are 2-axis but use the existing
   `generateOperationB` macro family; reconciling them with `dispatch` is a
   bigger refactor. Skip until everything else is done.
+
+## Roadmap ahead (post-G1)
+
+G1 (System/Quantities/Dates/Io) is done. Next, in order:
+
+### Phase G2 — Crypto finishers
+- `encode` (multi-attr ladder: url/from/to + default base64) — convert with
+  `on attr:` ladder over String, mirroring the pattern used by `decode`.
+- `digest` (`sha` toggle over String) — `on sha:` ladder.
+- `hash` — single Any clause with `string` flag; `bindAttrs` + tiny dispatch.
+
+### Phase G3 — Paths
+- `extract` — multi-kind (Color/Date/Quantity/Version/...). Big `on attr:`
+  ladder + per-kind clauses.
+- `normalize` — String, in-place + value mode. `dispatchWithLiteral`.
+
+### Phase A — Numbers (one commit per builtin)
+
+The big mechanical batch. All single-Floating-or-Complex/Rational shape,
+near-trivial:
+
+1. `cos`, `sin`, `tan` — three commits.
+2. `cosh`, `sinh`, `tanh` — three commits.
+3. `sec`, `csec`, `ctan` + `sech`, `csech`, `ctanh` — six commits.
+4. `acos`, `asin`, `atan`, `atanh`, `atan2` (2-axis) — five commits.
+5. Arc-secant family: `asec`, `acsec`, `actan` + `asech`, `acsech`, `actanh`
+   — six commits.
+6. `ceil`, `floor`, `round` — three commits.
+7. `log`, `hypot`, `gamma` — three commits (log/hypot are 2-axis).
+8. `factorial`, `factors`, `digits` — three commits.
+9. `gcd`, `lcm`, `powmod` — three commits (multi-axis).
+10. `product`, `clamp`, `random` — three commits.
+11. Predicates: `even?`, `odd?`, `prime?` — three commits.
+
+### Deferred / blocked targets
+
+- **`Reflection/info`** — needs `SymbolLiteral` (and ideally `PathLiteral`)
+  added to the kind table. `PathLiteral` clashes with the in-place splice
+  in `dispatchWithLiteral`; either gate the splice on the absence of an
+  explicit `PathLiteral(p):` clause, or add a `dispatch`-only kind table
+  extension. Single dedicated commit, post-Phase A.
+- **`Strings/match`**, **`Strings/join`** — Phase B (heavy attrs, ad hoc
+  body shapes).
+- **`Strings/outdent`** — Phase C, blocked on feature 4 (pre-dispatch
+  `InPlaced` access).
+- **`Collections/take`, `split`, `sort`, `range`** — Phase D.
+- **`Collections/remove`, `contains?`, `in?`, `key?`** — Phase E (Object
+  magic dispatch).
+- **`Logic/and|or|xor|not|nand|nor`**, **`Bitwise/nand|nor`** — separate
+  refactor; uses `generateOperationB` family.
+- **`Core/alias|call|do|export|function`** — control-flow shaped, not
+  value-kind dispatch. Skip.
+- **`Types/to`** — kind × Type grid; needs design discussion.
 
 ### Functions to *not* naively convert
 
