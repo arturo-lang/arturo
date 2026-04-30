@@ -189,6 +189,21 @@ proc defineModule*(moduleName: string) =
             description = "built-in event fired when the user presses Ctrl+C":
                 newEvent("CtrlC")
 
+        # SIGINT → emit `CtrlC`. Nim invokes the hook on the main thread
+        # at a safe point (not in signal context), so scheduling on the
+        # dispatcher is fine. We drain the queue here because Nim's
+        # runtime terminates the program once the hook returns —
+        # otherwise the user's handler would never get to run.
+        setControlCHook(proc() {.noconv.} =
+            {.cast(gcsafe).}:
+                dispatchEvent("CtrlC", VNULL)
+                try:
+                    while hasPendingOperations():
+                        poll(0)
+                except CatchableError:
+                    discard
+        )
+
         # Pre-bound built-in events (`BeforeExit`, `SigTerm`, `SigHup`)
         # and the OS hooks that fire them land in follow-up commits —
         # see EVENT_NOTES.md.
