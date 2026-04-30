@@ -238,6 +238,31 @@ proc defineModule*(moduleName: string) =
                     else: VNULL
                 dispatchEvent(x.evt.name, payload)
 
+        builtin "off",
+            alias       = unaliased,
+            op          = opNop,
+            rule        = PrefixPrecedence,
+            description = "remove all registered handlers for given event",
+            args        = {
+                "event" : {Event}
+            },
+            attrs       = NoAttrs,
+            returns     = {Nothing},
+            example     = """
+            E: event 'tick
+            on E [ print "tick!" ]
+            emit E
+            off E
+            emit E   ; → no-op; nothing prints
+            """:
+                #=======================================================
+                # Bulk removal: drops every handler registered for the
+                # named event. Per-handler removal would need handles
+                # returned from `on` — left for later. Note this only
+                # affects `:event` subscribers; task `addCallback`s
+                # have no removal API on Nim's side.
+                subscribers.del(x.evt.name)
+
         #----------------------------
         # Constants
         #----------------------------
