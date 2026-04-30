@@ -272,29 +272,29 @@ proc defineModule*(moduleName: string) =
             print "Hello world!"          ; Hello world!
         """:
             #=======================================================
-            if xKind==Block:
-                when defined(WEB):
-                    stdout = ""
+            dispatch:
+                Block(_b):
+                    when defined(WEB):
+                        stdout = ""
 
-                let inLines = (hadAttr("lines"))
+                    let inLines = (hadAttr("lines"))
 
-                let xblock = doEval(x)
-                let stop = SP
-                execUnscoped(xblock)
+                    let xblock = doEval(x)
+                    let stop = SP
+                    execUnscoped(xblock)
 
-                var res: ValueArray
-                while SP>stop:
-                    res.add(stack.pop())
+                    var res: ValueArray
+                    while SP>stop:
+                        res.add(stack.pop())
 
-                for r in res.reversed:
-                    stdout.write($(r))
-                    if not inLines: stdout.write(" ")
-                    else: stdout.write("\n")
+                    for r in res.reversed:
+                        stdout.write($(r))
+                        if not inLines: stdout.write(" ")
+                        else: stdout.write("\n")
 
-                if not inLines: stdout.write("\n")
-                stdout.flushFile()
-            else:
-                echo $(x)
+                    if not inLines: stdout.write("\n")
+                    stdout.flushFile()
+                _: echo $(x)
 
     builtin "prints",
         alias       = unaliased,
