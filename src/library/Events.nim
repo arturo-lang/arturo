@@ -55,6 +55,8 @@ when not defined(WEB):
 #=======================================
 
 when not defined(WEB):
+    proc dispatchEvent(name: string, payload: Value) {.gcsafe.}
+
     proc enqueueEmit(handler: EventHandler, payload: Value) =
         ## Schedule a handler invocation on the next dispatcher tick.
         ## Avoids reentrancy surprises: `emit` never runs handlers
@@ -80,6 +82,15 @@ when not defined(WEB):
                     # want an UnhandledError event later.
                     echo "Events: handler raised: " & e.msg
         )
+
+    proc dispatchEvent(name: string, payload: Value) {.gcsafe.} =
+        ## Look up subscribers for the named event and enqueue each on
+        ## the next dispatcher tick. Shared by the `emit` builtin and
+        ## the OS-level hooks for built-in events (`CtrlC`, `SigTerm`, …).
+        {.cast(gcsafe).}:
+            if subscribers.hasKey(name):
+                for handler in subscribers[name]:
+                    enqueueEmit(handler, payload)
 
 # TODO(Events): unsubscribe (`off`) — deferred until someone needs it.
 #  Subscribers currently live until program end; for v1 that's fine.
@@ -167,10 +178,7 @@ proc defineModule*(moduleName: string) =
                 let payload =
                     if checkAttr("with"): aWith
                     else: VNULL
-                let name = x.evt.name
-                if subscribers.hasKey(name):
-                    for handler in subscribers[name]:
-                        enqueueEmit(handler, payload)
+                dispatchEvent(x.evt.name, payload)
 
         # Pre-bound built-in events (`CtrlC`, `BeforeExit`, `SigTerm`,
         # `SigHup`) land in follow-up commits — see EVENT_NOTES.md.
