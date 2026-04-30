@@ -302,16 +302,11 @@ proc defineModule*(moduleName: string) =
             5`W := 3`J/s                    ; => true
         """:
             #=======================================================
-            if xKind == Quantity:
-                if yKind == Quantity:
-                    push newLogical(x.q =~ y.q)
-                else:
-                    push newLogical(x.q =~ y.u)
-            else:
-                if yKind == Quantity:
-                    push newLogical(x.u =~ y.q)
-                else:
-                    push newLogical(x.u =~ y.u)
+            dispatch:
+                (Quantity(q), Quantity(r)): push newLogical(q =~ r)
+                (Quantity(q), Unit(v)):     push newLogical(q =~ v)
+                (Unit(u),     Quantity(r)): push newLogical(u =~ r)
+                (Unit(u),     Unit(v)):     push newLogical(u =~ v)
 
     # TODO(Quantities) erroneous module name for property predicates
     #  For any of the, automatically-generated, property predicates,
