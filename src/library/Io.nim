@@ -317,23 +317,24 @@ proc defineModule*(moduleName: string) =
             when defined(WEB):
                 stdout = ""
 
-            if xKind==Block:
-                let xblock = doEval(x)
-                let stop = SP
-                execUnscoped(xblock)
+            dispatch:
+                Block(_b):
+                    let xblock = doEval(x)
+                    let stop = SP
+                    execUnscoped(xblock)
 
-                var res: ValueArray
-                while SP>stop:
-                    res.add(stack.pop())
+                    var res: ValueArray
+                    while SP>stop:
+                        res.add(stack.pop())
 
-                for r in res.reversed:
-                    stdout.write($(r))
-                    stdout.write(" ")
+                    for r in res.reversed:
+                        stdout.write($(r))
+                        stdout.write(" ")
 
-                stdout.flushFile()
-            else:
-                stdout.write($(x))
-                stdout.flushFile()
+                    stdout.flushFile()
+                _:
+                    stdout.write($(x))
+                    stdout.flushFile()
 
     when not defined(WEB):
         builtin "terminal",
