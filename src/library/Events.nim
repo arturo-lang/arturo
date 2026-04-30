@@ -136,27 +136,31 @@ proc defineModule*(moduleName: string) =
             alias       = unaliased,
             op          = opNop,
             rule        = PrefixPrecedence,
-            description = "fire given event, scheduling each registered handler with given payload",
+            description = "fire given event, scheduling each registered handler on the next dispatcher tick",
             args        = {
-                "event"   : {Event},
-                "payload" : {Any}
+                "event"   : {Event}
             },
-            attrs       = NoAttrs,
+            attrs       = {
+                "with"    : ({Any},"pass given value as the event's payload")
+            },
             returns     = {Nothing},
             example     = """
             DataReady: event 'data-ready
             on DataReady .with:'p [ print ["got:" p] ]
-            emit DataReady "hello"
+            emit DataReady .with: "hello"
             ; → got: hello   (fires on next dispatcher tick)
             ..........
-            ; no payload — pass `null`:
-            emit CtrlC null
+            ; no payload — just emit:
+            emit CtrlC
             """:
                 #=======================================================
+                let payload =
+                    if checkAttr("with"): aWith
+                    else: VNULL
                 let name = x.evt.name
                 if subscribers.hasKey(name):
                     for handler in subscribers[name]:
-                        enqueueEmit(handler, y)
+                        enqueueEmit(handler, payload)
 
         # Pre-bound built-in events (`CtrlC`, `BeforeExit`, `SigTerm`,
         # `SigHup`) land in follow-up commits — see EVENT_NOTES.md.
