@@ -249,12 +249,12 @@ proc defineModule*(moduleName: string) =
                     else:
                         push(newString(str))
                 else:
-                    if xKind == Null:
-                        push(newChar(getch()))
-                    else:
-                        stdout.write(x.s)
-                        stdout.flushFile()
-                        push(newString(stdin.readLine()))
+                    dispatch:
+                        String(s):
+                            stdout.write(s)
+                            stdout.flushFile()
+                            push(newString(stdin.readLine()))
+                        _: push(newChar(getch()))
 
     builtin "print",
         alias       = unaliased, 
