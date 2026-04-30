@@ -180,5 +180,15 @@ proc defineModule*(moduleName: string) =
                     else: VNULL
                 dispatchEvent(x.evt.name, payload)
 
-        # Pre-bound built-in events (`CtrlC`, `BeforeExit`, `SigTerm`,
-        # `SigHup`) land in follow-up commits — see EVENT_NOTES.md.
+        #----------------------------
+        # Constants
+        #----------------------------
+
+        constant "CtrlC",
+            alias       = unaliased,
+            description = "built-in event fired when the user presses Ctrl+C":
+                newEvent("CtrlC")
+
+        # Pre-bound built-in events (`BeforeExit`, `SigTerm`, `SigHup`)
+        # and the OS hooks that fire them land in follow-up commits —
+        # see EVENT_NOTES.md.
