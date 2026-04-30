@@ -26,6 +26,7 @@
 # machinery is gated.
 when not defined(WEB):
     import asyncdispatch
+    import std/exitprocs
     import tables
 
     import vm/values/custom/[vevent]
@@ -193,6 +194,19 @@ proc defineModule*(moduleName: string) =
             alias       = unaliased,
             description = "built-in event fired just before the program exits":
                 newEvent("BeforeExit")
+
+        # Process exit → emit `BeforeExit`. Same drain trick as `CtrlC`:
+        # without pumping the dispatcher one final time, queued handlers
+        # would be discarded at process teardown.
+        addExitProc(proc() {.noconv.} =
+            {.cast(gcsafe).}:
+                dispatchEvent("BeforeExit", VNULL)
+                try:
+                    while hasPendingOperations():
+                        poll(0)
+                except CatchableError:
+                    discard
+        )
 
         # SIGINT → emit `CtrlC`. Nim invokes the hook on the main thread
         # at a safe point (not in signal context), so scheduling on the
