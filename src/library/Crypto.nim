@@ -118,51 +118,27 @@ proc defineModule*(moduleName: string) =
             ; http%3A%2F%2Ffoo+bar%2F
         """:
             #=======================================================
-            if (hadAttr("url")):
-                let spaces = (hadAttr("spaces"))
-                let slashes = (hadAttr("slashes"))
-                if xKind in {Literal, PathLiteral}:
-                    ensureInPlaceAny()
-                    InPlaced.s = InPlaced.s.urlencode(encodeSpaces=spaces, encodeSlashes=slashes)
+            let encoder: proc (s: string): string =
+                if hadAttr("url"):
+                    let spaces  = hadAttr("spaces")
+                    let slashes = hadAttr("slashes")
+                    (proc (s: string): string = s.urlencode(encodeSpaces=spaces, encodeSlashes=slashes))
                 else:
-                    push(newString(x.s.urlencode(encodeSpaces=spaces, encodeSlashes=slashes)))
-
-            elif checkAttr("from"):
-                when not defined(WEB):
-                    var src = aFrom.s
+                    var src  = "CP1252"
                     var dest = "UTF-8"
-                    if checkAttr("to"):
-                        dest = aTo.s
-
-                    if xKind in {Literal, PathLiteral}:
-                        ensureInPlaceAny()
-                        InPlaced.s = convert(InPlaced.s, srcEncoding=src, destEncoding=dest)
+                    var hasFromTo = false
+                    if checkAttr("from"): src  = aFrom.s; hasFromTo = true
+                    if checkAttr("to"):   dest = aTo.s;   hasFromTo = true
+                    if hasFromTo:
+                        when not defined(WEB):
+                            (proc (s: string): string = convert(s, srcEncoding=src, destEncoding=dest))
+                        else:
+                            (proc (s: string): string = s)
                     else:
-                        push(newString(convert(x.s, srcEncoding=src, destEncoding=dest)))
-                else:
-                    if xKind==String:
-                        push(newString(x.s))
+                        (proc (s: string): string = s.encode())
 
-            elif checkAttr("to"):
-                when not defined(WEB):
-                    var src = "CP1252"
-                    var dest = aTo.s
-
-                    if xKind in {Literal, PathLiteral}:
-                        ensureInPlaceAny()
-                        InPlaced.s = convert(InPlaced.s, srcEncoding=src, destEncoding=dest)
-                    else:
-                        push(newString(convert(x.s, srcEncoding=src, destEncoding=dest)))
-                else:
-                    if xKind==String:
-                        push(newString(x.s))
-
-            else:
-                if xKind in {Literal, PathLiteral}:
-                    ensureInPlaceAny()
-                    InPlaced.s = InPlaced.s.encode()
-                else:
-                    push(newString(x.s.encode()))
+            dispatchWithLiteral:
+                String(s): encoder(s)
 
     when not defined(WEB):
         # TODO(Crypto\digest) could it be used for Web/JS builds too?
