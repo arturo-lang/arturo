@@ -157,6 +157,17 @@ proc defineModule*(moduleName: string) =
                                         cap.tsk.state = taskDone
                                     winner.complete(fin.read())
                         )
+                    # `.timeout`: if no task settles within the budget, complete
+                    # the winner with a timeout `:error`. underlying tasks are
+                    # left untouched (still pending) — pair with `.cancel` to
+                    # also abort them.
+                    if checkAttr("timeout"):
+                        let timer = sleepAsync(timeoutMsOf(aTimeout))
+                        timer.addCallback(proc() {.gcsafe.} =
+                            {.cast(gcsafe).}:
+                                if not winner.finished:
+                                    winner.complete(newError(RuntimeErr, "wait.first timed out"))
+                        )
                     let res = waitFor winner
                     let killLosers = hadAttr("cancel")
                     for t in x.a:
