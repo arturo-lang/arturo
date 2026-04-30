@@ -248,10 +248,9 @@ proc defineModule*(moduleName: string) =
             ; false true false
         """:
             #=======================================================
-            if xKind==Integer:
-                push(newLogical(isLeapYear(x.i)))
-            else:
-                push(newLogical(isLeapYear(x.e["year"].i)))
+            dispatch:
+                Integer(i): push(newLogical(isLeapYear(i)))
+                Date(d):    push(newLogical(isLeapYear(d.year)))
 
     builtin "monday?",
         alias       = unaliased, 
