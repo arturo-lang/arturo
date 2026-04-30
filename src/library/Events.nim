@@ -32,7 +32,7 @@ when not defined(WEB):
     when not defined(windows):
         import posix
 
-    import vm/values/custom/[vevent]
+    import vm/values/custom/[vevent, vtask, verror]
 
 import vm/lib
 
@@ -131,13 +131,17 @@ proc defineModule*(moduleName: string) =
             alias       = unaliased,
             op          = opNop,
             rule        = PrefixPrecedence,
-            description = "register a handler block to fire whenever given event is emitted",
+            description = "register a handler block to fire whenever given event or task settles",
             args        = {
-                "event"  : {Event},
+                "target" : {Event,Task},
                 "action" : {Block,Bytecode}
             },
             attrs       = {
-                "with"   : ({Literal},"bind the emitted payload to given symbol inside the handler")
+                "with"      : ({Literal},"bind the emitted payload (or task result) to given symbol inside the handler"),
+                "done"      : ({Logical},"with `:task`: fire only when the task ends successfully"),
+                "failed"    : ({Logical},"with `:task`: fire only when the task ends with an error"),
+                "cancelled" : ({Logical},"with `:task`: fire only when the task ends by cancellation"),
+                "finished"  : ({Logical},"with `:task`: fire on any termination (default)")
             },
             returns     = {Nothing},
             example     = """
@@ -150,12 +154,62 @@ proc defineModule*(moduleName: string) =
             on CtrlC [
                 print "graceful shutdown..."
             ]
+            ..........
+            ; task callbacks:
+            t: do.async [pause 200 42]
+            on.done.with:'r t [ print ["succeeded:" r] ]
+            on.failed.with:'e t [ print ["failed:" e] ]
+            on.finished.with:'r t [ print ["settled:" r] ]
+            wait t
             """:
                 #=======================================================
                 var handler = EventHandler(body: y)
                 if checkAttr("with"):
                     handler.param = aWith.s
-                subscribers.mgetOrPut(x.evt.name, @[]).add(handler)
+
+                if xKind == Event:
+                    subscribers.mgetOrPut(x.evt.name, @[]).add(handler)
+                else:
+                    # `:task` callbacks. Modes filter which terminations
+                    # the handler fires on; `.finished` (the default)
+                    # fires for any outcome.
+                    let mode =
+                        if hadAttr("done"): "done"
+                        elif hadAttr("failed"): "failed"
+                        elif hadAttr("cancelled"): "cancelled"
+                        else:
+                            discard hadAttr("finished")
+                            "finished"
+                    let cap = handler
+                    let tsk = x.tsk
+                    let target = x
+                    target.tsk.future.addCallback(proc(fin: Future[Value]) {.gcsafe.} =
+                        {.cast(gcsafe).}:
+                            var state: string
+                            var payload: Value
+                            if fin.failed:
+                                if tsk.state == taskCancelled:
+                                    state = "cancelled"
+                                    payload = VNULL
+                                else:
+                                    tsk.state = taskFailed
+                                    state = "failed"
+                                    payload = newError(RuntimeErr, fin.error.msg)
+                            elif tsk.state == taskCancelled:
+                                # cancellation may surface as a successful
+                                # `VNULL` rather than a raised future
+                                # (subprocess case — see helpers/parallelism)
+                                state = "cancelled"
+                                payload = VNULL
+                            else:
+                                if tsk.state == taskPending:
+                                    tsk.state = taskDone
+                                state = "done"
+                                payload = fin.read()
+
+                            if mode == "finished" or mode == state:
+                                enqueueEmit(cap, payload)
+                    )
 
         builtin "emit",
             alias       = unaliased,
