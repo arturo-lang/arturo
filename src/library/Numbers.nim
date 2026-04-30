@@ -1055,10 +1055,9 @@ proc defineModule*(moduleName: string) =
             rnd: random 0 60          ; rnd: (a random number between 0 and 60)
         """:
             #=======================================================
-            if xKind==Integer and yKind==Integer:
-                push(newInteger(rand(x.i..y.i)))
-            else:
-                push(newFloating(rand(asFloat(x)..asFloat(y))))
+            dispatch:
+                (Integer(a), Integer(b)): push(newInteger(rand(a..b)))
+                _:                        push(newFloating(rand(asFloat(x)..asFloat(y))))
 
     builtin "reciprocal",
         alias       = unaliased, 
