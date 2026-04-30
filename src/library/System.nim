@@ -379,10 +379,9 @@ proc defineModule*(moduleName: string) =
             print "done!"
             """:
                 #=======================================================
-                if xKind == Integer:
-                    sleep(x.i)
-                else:
-                    sleep(toInt((x.q.convertTo(parseAtoms("ms"))).original))
+                dispatch:
+                    Integer(i):  sleep(i)
+                    Quantity(q): sleep(toInt((q.convertTo(parseAtoms("ms"))).original))
 
         builtin "process",
             alias       = unaliased, 
