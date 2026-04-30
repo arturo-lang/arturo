@@ -101,6 +101,37 @@ proc defineModule*(moduleName: string) =
                 #=======================================================
                 push newEvent(x.s)
 
+        builtin "on",
+            alias       = unaliased,
+            op          = opNop,
+            rule        = PrefixPrecedence,
+            description = "register a handler block to fire whenever given event is emitted",
+            args        = {
+                "event"  : {Event},
+                "params" : {Block,Null},
+                "action" : {Block,Bytecode}
+            },
+            attrs       = NoAttrs,
+            returns     = {Nothing},
+            example     = """
+            DataReady: event 'data-ready
+            on DataReady [payload][
+                print ["got:" payload]
+            ]
+            ..........
+            ; no payload binding — pass `null` (or an empty block):
+            on CtrlC null [
+                print "graceful shutdown..."
+            ]
+            """:
+                #=======================================================
+                var paramNames: seq[string]
+                if yKind == Block:
+                    for item in y.a:
+                        paramNames.add(item.s)
+                let handler = newFunction(paramNames, z)
+                subscribers.mgetOrPut(x.evt.name, @[]).add(handler)
+
         # Pre-bound built-in events (`CtrlC`, `BeforeExit`, `SigTerm`,
-        # `SigHup`) and the `on` / `emit` builtins land in follow-up
-        # commits — see EVENT_NOTES.md.
+        # `SigHup`) and the `emit` builtin land in follow-up commits —
+        # see EVENT_NOTES.md.
