@@ -195,6 +195,16 @@ proc defineModule*(moduleName: string) =
             description = "built-in event fired just before the program exits":
                 newEvent("BeforeExit")
 
+        constant "SigTerm",
+            alias       = unaliased,
+            description = "built-in event fired on a SIGTERM signal (POSIX only)":
+                newEvent("SigTerm")
+
+        constant "SigHup",
+            alias       = unaliased,
+            description = "built-in event fired on a SIGHUP signal (POSIX only)":
+                newEvent("SigHup")
+
         # Process exit → emit `BeforeExit`. Same drain trick as `CtrlC`:
         # without pumping the dispatcher one final time, queued handlers
         # would be discarded at process teardown.
