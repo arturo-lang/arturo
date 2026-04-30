@@ -108,28 +108,28 @@ proc defineModule*(moduleName: string) =
             description = "register a handler block to fire whenever given event is emitted",
             args        = {
                 "event"  : {Event},
-                "params" : {Block,Null},
                 "action" : {Block,Bytecode}
             },
-            attrs       = NoAttrs,
+            attrs       = {
+                "with"   : ({Literal},"bind the emitted payload to given symbol inside the handler")
+            },
             returns     = {Nothing},
             example     = """
             DataReady: event 'data-ready
-            on DataReady [payload][
+            on DataReady .with:'payload [
                 print ["got:" payload]
             ]
             ..........
-            ; no payload binding — pass `null` (or an empty block):
-            on CtrlC null [
+            ; no payload binding:
+            on CtrlC [
                 print "graceful shutdown..."
             ]
             """:
                 #=======================================================
                 var paramNames: seq[string]
-                if yKind == Block:
-                    for item in y.a:
-                        paramNames.add(item.s)
-                let handler = newFunction(paramNames, z)
+                if checkAttr("with"):
+                    paramNames.add(aWith.s)
+                let handler = newFunction(paramNames, y)
                 subscribers.mgetOrPut(x.evt.name, @[]).add(handler)
 
         builtin "emit",
