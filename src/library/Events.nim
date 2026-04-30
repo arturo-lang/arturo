@@ -96,8 +96,9 @@ when not defined(WEB):
                 for handler in subscribers[name]:
                     enqueueEmit(handler, payload)
 
-# TODO(Events): unsubscribe (`off`) — deferred until someone needs it.
-#  Subscribers currently live until program end; for v1 that's fine.
+# TODO(Events): per-handler unsubscribe — `off E` clears *all* handlers
+#  for an event today. Per-handler removal would need handles returned
+#  from `on`. Add when someone needs it.
 
 #=======================================
 # Definitions
