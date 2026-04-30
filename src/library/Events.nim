@@ -38,6 +38,7 @@ when not defined(WEB):
 import vm/lib
 
 when not defined(WEB):
+    import helpers/parallelism
     import vm/exec
 
 #=======================================
@@ -130,6 +131,7 @@ proc defineModule*(moduleName: string) =
     when not defined(WEB):
 
         initEmitChannel()
+        setInboundEventDispatcher(dispatchEvent)
 
         #----------------------------
         # Functions
