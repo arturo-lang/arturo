@@ -124,16 +124,13 @@ proc defineModule*(moduleName: string) =
             property 3`V            ; => 'potential
         """:
             #=======================================================
-            if xKind == Quantity:
-                if hadAttr("hash"):
-                    push newInteger(x.q.signature)
-                else:
-                    push newLiteral(getProperty(x.q))
-            else:
-                if hadAttr("hash"):
-                    push newInteger(getSignature(x.u))
-                else:
-                    push newLiteral(getProperty(x.u))
+            dispatch:
+                Quantity(q):
+                    if hadAttr("hash"): push newInteger(q.signature)
+                    else:               push newLiteral(getProperty(q))
+                Unit(u):
+                    if hadAttr("hash"): push newInteger(getSignature(u))
+                    else:               push newLiteral(getProperty(u))
 
     builtin "scalar",
         alias       = unaliased,
