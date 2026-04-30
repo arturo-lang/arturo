@@ -255,31 +255,24 @@ proc defineModule*(moduleName: string) =
             ; => ./myscript          
             """:
                 #=======================================================
-                if (hadAttr("executable")):
-                    if xKind in {Literal,PathLiteral}:
-                        ensureInPlaceAny()
-                        if (hadAttr("tilde")):
-                            InPlaced.s = InPlaced.s.expandTilde()
-                        InPlaced.s.normalizeExe()
-                    else:
-                        var ret: string
-                        if (hadAttr("tilde")):
-                            ret = x.s.expandTilde()
-                        else:
-                            ret = x.s
-                        ret.normalizeExe()
-                        push(newString(ret))
-                else:
-                    if xKind in {Literal,PathLiteral}:
-                        ensureInPlaceAny()
-                        if (hadAttr("tilde")):
-                            InPlaced.s = InPlaced.s.expandTilde()
-                        InPlaced.s.normalizePath()
-                    else:
-                        if (hadAttr("tilde")):
-                            push(newString(normalizedPath(x.s.expandTilde())))
-                        else:
-                            push(newString(normalizedPath(x.s)))
+                bindAttrs:
+                    executable: Logical
+                    tilde:      Logical
+
+                dispatchWithLiteral:
+                    String(s):
+                        value:
+                            var ret = if tilde: s.expandTilde() else: s
+                            if executable:
+                                ret.normalizeExe()
+                                push(newString(ret))
+                            else:
+                                push(newString(normalizedPath(ret)))
+                        inplace:
+                            if tilde:
+                                s = s.expandTilde()
+                            if executable: s.normalizeExe()
+                            else:          s.normalizePath()
 
         builtin "relative",
             alias       = dotslash, 
