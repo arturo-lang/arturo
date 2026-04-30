@@ -156,16 +156,15 @@ when not defined(WEB):
     # serialized by the caller (e.g. JSON-encoded), so this layer just
     # streams bytes to disk through the dispatcher.
     proc writeFileAsync(f: AsyncFile, content: string): Future[Value] {.async.} =
+        # let CatchableError escape — `wait` classifies it (cancel → :null,
+        # otherwise → :error). cancellation closes the file and surfaces
+        # here as an exception, filtered out downstream via task state.
         try:
             await f.write(content)
-        except CatchableError:
-            # cancellation closes the file mid-flight; we swallow and let
-            # `wait` short-circuit to `:null`.
-            discard
+            result = VNULL
         finally:
             try: f.close()
             except CatchableError: discard
-        result = VNULL
 
     # convenience: kick off an in-process async write and return a `:task`.
     # the open file is held by the task so `cancel` can `close()` it and
