@@ -29,6 +29,9 @@ when not defined(WEB):
     import std/exitprocs
     import tables
 
+    when not defined(windows):
+        import posix
+
     import vm/values/custom/[vevent]
 
 import vm/lib
@@ -204,6 +207,37 @@ proc defineModule*(moduleName: string) =
             alias       = unaliased,
             description = "built-in event fired on a SIGHUP signal (POSIX only)":
                 newEvent("SigHup")
+
+        # POSIX-only: catch SIGTERM / SIGHUP and dispatch the matching
+        # event before letting the process exit. Strictly speaking, the
+        # signal-handler context is async-unsafe and `addCallback` /
+        # `dispatchEvent` are not signal-safe — but in practice the
+        # handler is short and the alternative (a polled flag) needs a
+        # main loop Arturo doesn't have. We drain inline so the user's
+        # handler actually gets to run before `quit`. Exit codes follow
+        # the conventional `128 + signum`.
+        when not defined(windows):
+            signal(SIGTERM, proc(s: cint) {.noconv.} =
+                {.cast(gcsafe).}:
+                    dispatchEvent("SigTerm", VNULL)
+                    try:
+                        while hasPendingOperations():
+                            poll(0)
+                    except CatchableError:
+                        discard
+                    quit(128 + int(SIGTERM))
+            )
+
+            signal(SIGHUP, proc(s: cint) {.noconv.} =
+                {.cast(gcsafe).}:
+                    dispatchEvent("SigHup", VNULL)
+                    try:
+                        while hasPendingOperations():
+                            poll(0)
+                    except CatchableError:
+                        discard
+                    quit(128 + int(SIGHUP))
+            )
 
         # Process exit → emit `BeforeExit`. Same drain trick as `CtrlC`:
         # without pumping the dispatcher one final time, queued handlers
