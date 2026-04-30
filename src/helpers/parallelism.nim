@@ -193,17 +193,16 @@ when not defined(WEB):
                       buildResponse: proc(version, body, status: string,
                                           headers: HttpHeaders): Value
                      ): Future[Value] {.async.} =
+        # let CatchableError escape — `wait` classifies it based on task state
+        # (cancellation → :null, anything else → :error). this is intentionally
+        # *not* a mirror of sync `request`'s null-on-failure behavior: a `:task`
+        # is a richer abstraction and users can introspect/recover via `:error`.
         try:
             let response = await client.request(url = url, httpMethod = meth,
                                                 body = body, multipart = multipart)
             let bodyStr = await response.body
             result = buildResponse(response.version, bodyStr,
                                    response.status, response.headers)
-        except CatchableError:
-            # mirrors sync `request`'s behavior (return `:null` on failure)
-            # and also handles the cancel case (we close the client, the
-            # in-flight await raises here).
-            result = VNULL
         finally:
             try: client.close()
             except CatchableError: discard
