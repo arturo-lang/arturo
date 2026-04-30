@@ -262,6 +262,19 @@ proc defineModule*(moduleName: string) =
                     if checkAttr("with"): aWith
                     else: VNULL
                 dispatchEvent(x.evt.name, payload)
+                # Cross-process leg: if we're a `do.async` child, also
+                # ship `[name payload]` up the pipe so the parent's
+                # dispatcher fires its own subscribers. Best-effort —
+                # parent-died errors are dropped silently.
+                if not emitChannel.isNil:
+                    try:
+                        emitChannel.writeLine(
+                            "[" & codify(newString(x.evt.name), safeStrings = true) &
+                            " " & codify(payload, safeStrings = true) & "]"
+                        )
+                        emitChannel.flushFile()
+                    except IOError:
+                        discard
 
         builtin "off",
             alias       = unaliased,
