@@ -658,19 +658,19 @@ proc defineModule*(moduleName: string) =
             if checkAttr("base"):
                 base = aBase.i
 
-            if x.kind == Block:
-                var digits = x.a
-                var composedNumber = 0
-                for digit in digits:
-                    requireValue(digit, {Integer})
-                    composedNumber = composedNumber * base + digit.i
-                push newInteger(composedNumber)
-            else:
-                if x.iKind == NormalInteger:
-                    push newBlock(getDigits(x.i, base).map((z)=>newInteger(z)))
-                else:
-                    when defined(WEB) or defined(GMP):
-                        push newBlock(getDigits(x.bi, base).map((z)=>newInteger(z)))
+            dispatch:
+                Block(a):
+                    var composedNumber = 0
+                    for digit in a:
+                        requireValue(digit, {Integer})
+                        composedNumber = composedNumber * base + digit.i
+                    push newInteger(composedNumber)
+                Integer(i):
+                    if x.iKind == NormalInteger:
+                        push newBlock(getDigits(i, base).map((z)=>newInteger(z)))
+                    else:
+                        when defined(WEB) or defined(GMP):
+                            push newBlock(getDigits(x.bi, base).map((z)=>newInteger(z)))
 
     builtin "exp",
         alias       = unaliased, 
