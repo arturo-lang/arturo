@@ -82,6 +82,8 @@ proc dispatchFieldAndCtor(kind: string, n: NimNode, macroName: string): (string,
     of "Complex":    ("z", "newComplex")
     of "Rational":   ("rat", "newRational")
     of "Object":     ("o", "newObject")
+    of "Date":       ("eobj", "newDate")
+    of "Unit":       ("u", "newUnit")
     else:
         error(macroName & ": unsupported kind '" & kind & "'", n)
 
