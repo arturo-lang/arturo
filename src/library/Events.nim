@@ -57,10 +57,12 @@ when not defined(WEB):
     var subscribers: Table[string, seq[EventHandler]]
 
     # When this VM is running as a `do.async` subprocess, the parent
-    # opens a pipe and passes the write-fd via `ARTURO_EVENT_FD`. We
-    # open it as a `File` here and append one `[name payload]` record
-    # per `emit` so the parent's dispatcher can fire its own handlers.
-    # Nil when running as the top-level VM — `emit` then is purely local.
+    # creates a temp file and passes its path via `ARTURO_EVENT_FILE`.
+    # We open it for append here and write one `[name payload]` record
+    # per `emit` so the parent's dispatcher (which tails the file) can
+    # fire its own handlers. Nil when running as the top-level VM —
+    # `emit` then is purely local. We picked a file rather than an OS
+    # pipe to dodge platform-specific fd-inheritance plumbing.
     var emitChannel: File = nil
 
 #=======================================
@@ -98,14 +100,13 @@ when not defined(WEB):
 
     proc initEmitChannel() =
         ## If we were spawned by a parent VM with cross-process emit
-        ## enabled, the parent will have placed the pipe's write-fd
-        ## under `ARTURO_EVENT_FD`. Open it once at module init.
-        let fdStr = getEnv("ARTURO_EVENT_FD")
-        if fdStr.len == 0: return
+        ## enabled, the parent will have placed the channel file path
+        ## under `ARTURO_EVENT_FILE`. Open it once at module init.
+        let path = getEnv("ARTURO_EVENT_FILE")
+        if path.len == 0: return
         try:
-            let fd = parseInt(fdStr).cint
             var f: File
-            if open(f, FileHandle(fd), fmAppend):
+            if open(f, path, fmAppend):
                 emitChannel = f
         except CatchableError:
             discard
