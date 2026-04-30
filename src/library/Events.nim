@@ -132,6 +132,31 @@ proc defineModule*(moduleName: string) =
                 let handler = newFunction(paramNames, z)
                 subscribers.mgetOrPut(x.evt.name, @[]).add(handler)
 
+        builtin "emit",
+            alias       = unaliased,
+            op          = opNop,
+            rule        = PrefixPrecedence,
+            description = "fire given event, scheduling each registered handler with given payload",
+            args        = {
+                "event"   : {Event},
+                "payload" : {Any}
+            },
+            attrs       = NoAttrs,
+            returns     = {Nothing},
+            example     = """
+            DataReady: event 'data-ready
+            on DataReady [p][ print ["got:" p] ]
+            emit DataReady "hello"
+            ; → got: hello   (fires on next dispatcher tick)
+            ..........
+            ; no payload — pass `null`:
+            emit CtrlC null
+            """:
+                #=======================================================
+                let name = x.evt.name
+                if subscribers.hasKey(name):
+                    for handler in subscribers[name]:
+                        enqueueEmit(handler, y)
+
         # Pre-bound built-in events (`CtrlC`, `BeforeExit`, `SigTerm`,
-        # `SigHup`) and the `emit` builtin land in follow-up commits —
-        # see EVENT_NOTES.md.
+        # `SigHup`) land in follow-up commits — see EVENT_NOTES.md.
