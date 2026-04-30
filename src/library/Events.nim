@@ -79,7 +79,28 @@ when not defined(WEB):
 
 proc defineModule*(moduleName: string) =
     when not defined(WEB):
-        discard
-        # Builtins (`event`, `on`, `emit`) and the pre-bound built-in
-        # events (`CtrlC`, `BeforeExit`, `SigTerm`, `SigHup`) land in
-        # follow-up commits — see EVENT_NOTES.md.
+
+        #----------------------------
+        # Functions
+        #----------------------------
+
+        builtin "event",
+            alias       = unaliased,
+            op          = opNop,
+            rule        = PrefixPrecedence,
+            description = "create a new event with given name",
+            args        = {
+                "name"  : {Literal,String}
+            },
+            attrs       = NoAttrs,
+            returns     = {Event},
+            example     = """
+            DataReady: event 'data-ready
+            ; => <event>(data-ready)
+            """:
+                #=======================================================
+                push newEvent(x.s)
+
+        # Pre-bound built-in events (`CtrlC`, `BeforeExit`, `SigTerm`,
+        # `SigHup`) and the `on` / `emit` builtins land in follow-up
+        # commits — see EVENT_NOTES.md.
