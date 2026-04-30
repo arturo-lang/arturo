@@ -145,7 +145,7 @@ proc defineModule*(moduleName: string) =
             returns     = {Nothing},
             example     = """
             DataReady: event 'data-ready
-            on DataReady [p][ print ["got:" p] ]
+            on DataReady .with:'p [ print ["got:" p] ]
             emit DataReady "hello"
             ; → got: hello   (fires on next dispatcher tick)
             ..........
