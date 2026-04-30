@@ -40,29 +40,40 @@ when not defined(WEB):
 #=======================================
 
 when not defined(WEB):
+    type
+        EventHandler = object
+            param: string   ## empty string means "no payload binding"
+            body: Value     ## raw block; executed via `execUnscoped`
+
     # Subscribers indexed by event name. Each `on e [...]` appends a
-    # handler `Value` (a Function) here; `emit` looks up by name and
-    # schedules each handler on the next dispatcher tick.
-    var subscribers: Table[string, seq[Value]]
+    # handler here; `emit` looks up by name and schedules each handler
+    # on the next dispatcher tick.
+    var subscribers: Table[string, seq[EventHandler]]
 
 #=======================================
 # Helpers
 #=======================================
 
 when not defined(WEB):
-    proc enqueueEmit(handler: Value, payload: Value) =
+    proc enqueueEmit(handler: EventHandler, payload: Value) =
         ## Schedule a handler invocation on the next dispatcher tick.
         ## Avoids reentrancy surprises: `emit` never runs handlers
         ## synchronously — they fire from `sleepAsync(0)`'s callback.
+        ##
+        ## We bind the payload as a plain global symbol and `execUnscoped`
+        ## the handler body directly — same idiom `loop` uses for its
+        ## iterator var. Going through `callFunction` here would push args
+        ## + re-enter `execFunction`, which deadlocks the VM when the
+        ## dispatcher is being driven from inside another VM call (e.g.
+        ## mid-`wait`).
         let cap = handler
         let pay = payload
         sleepAsync(0).addCallback(proc() {.gcsafe.} =
             {.cast(gcsafe).}:
                 try:
-                    if cap.arity > 0:
-                        callFunction(cap, "<event>", @[pay])
-                    else:
-                        callFunction(cap, "<event>", @[])
+                    if cap.param.len > 0:
+                        Syms[cap.param] = pay
+                    execUnscoped(cap.body)
                 except CatchableError as e:
                     # v1 policy: a raising handler doesn't poison the
                     # queue — log a warning and move on. Revisit if we
@@ -116,7 +127,7 @@ proc defineModule*(moduleName: string) =
             returns     = {Nothing},
             example     = """
             DataReady: event 'data-ready
-            on DataReady .with:'payload [
+            on.with:'payload DataReady [
                 print ["got:" payload]
             ]
             ..........
@@ -126,10 +137,9 @@ proc defineModule*(moduleName: string) =
             ]
             """:
                 #=======================================================
-                var paramNames: seq[string]
+                var handler = EventHandler(body: y)
                 if checkAttr("with"):
-                    paramNames.add(aWith.s)
-                let handler = newFunction(paramNames, y)
+                    handler.param = aWith.s
                 subscribers.mgetOrPut(x.evt.name, @[]).add(handler)
 
         builtin "emit",
@@ -146,8 +156,8 @@ proc defineModule*(moduleName: string) =
             returns     = {Nothing},
             example     = """
             DataReady: event 'data-ready
-            on DataReady .with:'p [ print ["got:" p] ]
-            emit DataReady .with: "hello"
+            on.with:'p DataReady [ print ["got:" p] ]
+            emit.with: "hello" DataReady
             ; → got: hello   (fires on next dispatcher tick)
             ..........
             ; no payload — just emit:
