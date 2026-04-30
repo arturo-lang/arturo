@@ -136,8 +136,16 @@ proc defineModule*(moduleName: string) =
                         x.tsk.state = taskDone
                         push res
                     except CatchableError as e:
-                        x.tsk.state = taskFailed
-                        push newError(RuntimeErr, e.msg)
+                        # if the task was cancelled mid-await, the producer's
+                        # cancel hook closed an underlying handle and the
+                        # in-flight future raised here. that's not a failure,
+                        # so we still return `:null` to match cancelled-before-
+                        # wait behavior. a genuine error otherwise.
+                        if x.tsk.state == taskCancelled:
+                            push VNULL
+                        else:
+                            x.tsk.state = taskFailed
+                            push newError(RuntimeErr, e.msg)
 
         builtin "cancel",
             alias       = unaliased,
