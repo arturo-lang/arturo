@@ -165,18 +165,10 @@ proc defineModule*(moduleName: string) =
             ; 7b502c3a1f48c8609ae212cdfb639dee39673f5e
             """:
                 #=======================================================
-                if (hadAttr("sha")):
-                    if xKind in {Literal, PathLiteral}:
-                        ensureInPlaceAny()
-                        SetInPlaceAny(newString(($(secureHash(InPlaced.s))).toLowerAscii()))
-                    else:
-                        push(newString(($(secureHash(x.s))).toLowerAscii()))
-                else:
-                    if xKind in {Literal, PathLiteral}:
-                        ensureInPlaceAny()
-                        SetInPlaceAny(newString(($(toMD5(InPlaced.s))).toLowerAscii()))
-                    else:
-                        push(newString(($(toMD5(x.s))).toLowerAscii()))
+                dispatchWithLiteral:
+                    String(s):
+                        on sha: ($(secureHash(s))).toLowerAscii()
+                        _:      ($(toMD5(s))).toLowerAscii()
 
     builtin "hash",
         alias       = unaliased, 
