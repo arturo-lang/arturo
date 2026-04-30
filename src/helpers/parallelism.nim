@@ -15,7 +15,7 @@
 when not defined(WEB):
     import asyncdispatch, asyncfile, asynchttpserver, httpclient, httpcore
     import os, osproc
-    import strutils, times
+    import strtabs, strutils, times
     when defined(ssl):
         # std/net has to be qualified — there's a sibling `helpers/net.nim`
         # and Nim resolves bare `net` to it first.
@@ -60,6 +60,15 @@ when not defined(WEB):
     proc runInChildProcess*(tsk: VTask, blockSrc: string): Future[Value] {.async.} =
         let arturoBin = getAppFilename()
         let resFile = getTempDir() / ("arturo-task-" & $getCurrentProcessId() & "-" & $epochTime() & ".art")
+        # Cross-process emit channel — child appends one
+        # `[name payload]` record per `emit`, parent tails. Created
+        # empty so the child's append open succeeds immediately.
+        let evtFile = getTempDir() / ("arturo-evt-" & $getCurrentProcessId() & "-" & $epochTime() & ".art")
+        writeFile(evtFile, "")
+        var childEnv = newStringTable(modeCaseSensitive)
+        for k, v in envPairs():
+            childEnv[k] = v
+        childEnv["ARTURO_EVENT_FILE"] = evtFile
         # void-safety trick: prepend `null` *inside* the user's block so the
         # block always has a value even if the user's last expression doesn't
         # push (e.g. ends with `print`). if the user does push a real value,
@@ -81,6 +90,7 @@ when not defined(WEB):
             "write express.safe res \"" & resFile & "\""
         let p = startProcess(arturoBin,
                              args = @["-e", wrapped],
+                             env = childEnv,
                              options = {poUsePath, poParentStreams})
         # publish the process handle so `cancel` can terminate it
         tsk.process = p
