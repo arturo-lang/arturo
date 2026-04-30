@@ -54,7 +54,8 @@ proc defineModule*(moduleName: string) =
                 "task"  : {Task,Block}
             },
             attrs       = {
-                "all"   : ({Logical},"wait for all tasks in the given block to settle and return their results in order")
+                "all"   : ({Logical},"wait for all tasks in the given block to settle and return their results in order"),
+                "first" : ({Logical},"wait for the first task in the given block to settle and return its result; the others are left running")
             },
             returns     = {Any,Block},
             example     = """
@@ -85,6 +86,26 @@ proc defineModule*(moduleName: string) =
                         if t.tsk.state == taskPending:
                             t.tsk.state = taskDone
                     push newBlock(resolved)
+                elif (hadAttr("first")):
+                    # accept a block of tasks; block until the first one
+                    # settles and return its value. the rest are left alone —
+                    # use `cancel` (or a future `.cancel` attr) to abort them.
+                    var futures: seq[Future[Value]] = @[]
+                    for t in x.a:
+                        if unlikely(t.kind != Task):
+                            Error_OperationNotPermitted("`wait.first` expects a block of :task values")
+                        futures.add(t.tsk.future)
+                    let winner = newFuture[Value]("Tasks.waitFirst")
+                    for f in futures:
+                        f.addCallback(proc(fin: Future[Value]) =
+                            if not winner.finished and not fin.failed:
+                                winner.complete(fin.read())
+                        )
+                    let res = waitFor winner
+                    for t in x.a:
+                        if t.tsk.state == taskPending and t.tsk.future.finished:
+                            t.tsk.state = taskDone
+                    push res
                 elif x.tsk.state == taskCancelled:
                     push VNULL
                 else:
