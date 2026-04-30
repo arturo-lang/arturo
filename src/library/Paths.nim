@@ -138,81 +138,56 @@ proc defineModule*(moduleName: string) =
             ; => 300
             """:
                 #=======================================================
-                if xKind==Color:
-                    if (hadAttr("red")):
-                        push newInteger(RGBfromColor(x.l).r)
-                    elif (hadAttr("green")):
-                        push newInteger(RGBfromColor(x.l).g)
-                    elif (hadAttr("blue")):
-                        push newInteger(RGBfromColor(x.l).b)
-                    elif (hadAttr("alpha")):
-                        push newInteger(RGBfromColor(x.l).a)
-                    elif (hadAttr("hsl")):
-                        let hsl = RGBtoHSL(x.l)
-                        push newDictionary({
-                            "hue"       : newInteger(hsl.h),
-                            "saturation": newFloating(hsl.s),
-                            "luminosity": newFloating(hsl.l)
-                        }.toOrderedTable)
-                    elif (hadAttr("hsv")):
-                        let hsv = RGBtoHSV(x.l)
-                        push newDictionary({
-                            "hue"       : newInteger(hsv.h),
-                            "saturation": newFloating(hsv.s),
-                            "value"     : newFloating(hsv.v)
-                        }.toOrderedTable)
-                    elif (hadAttr("hue")):
-                        let hsl = RGBtoHSL(x.l)
-                        push newInteger(hsl.h)
-                    elif (hadAttr("saturation")):
-                        let hsl = RGBtoHSL(x.l)
-                        push newFloating(hsl.s)
-                    elif (hadAttr("luminosity")):
-                        let hsl = RGBtoHSL(x.l)
-                        push newFloating(hsl.l)
-                    else:
-                        let rgb = RGBfromColor(x.l)
-                        push newDictionary({
-                            "red"   : newInteger(rgb.r),
-                            "green" : newInteger(rgb.g),
-                            "blue"  : newInteger(rgb.b),
-                            "alpha" : newInteger(rgb.a)
-                        }.toOrderedTable)
-                else:
-                    if isUrl(x.s):
-                        let details = parseUrlComponents(x.s)
-
-                        if (hadAttr("scheme")):
-                            push(details["scheme"])
-                        elif (hadAttr("host")):
-                            push(details["host"])
-                        elif (hadAttr("port")):
-                            push(details["port"])
-                        elif (hadAttr("user")):
-                            push(details["user"])
-                        elif (hadAttr("password")):
-                            push(details["password"])
-                        elif (hadAttr("path")):
-                            push(details["path"])
-                        elif (hadAttr("query")):
-                            push(details["query"])
-                        elif (hadAttr("anchor")):
-                            push(details["anchor"])
+                dispatch:
+                    Color(c):
+                        on red:        push newInteger(RGBfromColor(c).r)
+                        on green:      push newInteger(RGBfromColor(c).g)
+                        on blue:       push newInteger(RGBfromColor(c).b)
+                        on alpha:      push newInteger(RGBfromColor(c).a)
+                        on hsl:
+                            let hsl = RGBtoHSL(c)
+                            push newDictionary({
+                                "hue"       : newInteger(hsl.h),
+                                "saturation": newFloating(hsl.s),
+                                "luminosity": newFloating(hsl.l)
+                            }.toOrderedTable)
+                        on hsv:
+                            let hsv = RGBtoHSV(c)
+                            push newDictionary({
+                                "hue"       : newInteger(hsv.h),
+                                "saturation": newFloating(hsv.s),
+                                "value"     : newFloating(hsv.v)
+                            }.toOrderedTable)
+                        on hue:        push newInteger(RGBtoHSL(c).h)
+                        on saturation: push newFloating(RGBtoHSL(c).s)
+                        on luminosity: push newFloating(RGBtoHSL(c).l)
+                        _:
+                            let rgb = RGBfromColor(c)
+                            push newDictionary({
+                                "red"   : newInteger(rgb.r),
+                                "green" : newInteger(rgb.g),
+                                "blue"  : newInteger(rgb.b),
+                                "alpha" : newInteger(rgb.a)
+                            }.toOrderedTable)
+                    String(s):
+                        if isUrl(s):
+                            let details = parseUrlComponents(s)
+                            if   hadAttr("scheme"):   push(details["scheme"])
+                            elif hadAttr("host"):     push(details["host"])
+                            elif hadAttr("port"):     push(details["port"])
+                            elif hadAttr("user"):     push(details["user"])
+                            elif hadAttr("password"): push(details["password"])
+                            elif hadAttr("path"):     push(details["path"])
+                            elif hadAttr("query"):    push(details["query"])
+                            elif hadAttr("anchor"):   push(details["anchor"])
+                            else:                     push(newDictionary(details))
                         else:
-                            push(newDictionary(details))
-                    else:
-                        let details = parsePathComponents(x.s)
-
-                        if (hadAttr("directory")):
-                            push(details["directory"])
-                        elif (hadAttr("basename")):
-                            push(details["basename"])
-                        elif (hadAttr("filename")):
-                            push(details["filename"])
-                        elif (hadAttr("extension")):
-                            push(details["extension"])
-                        else:
-                            push(newDictionary(details))
+                            let details = parsePathComponents(s)
+                            if   hadAttr("directory"): push(details["directory"])
+                            elif hadAttr("basename"):  push(details["basename"])
+                            elif hadAttr("filename"):  push(details["filename"])
+                            elif hadAttr("extension"): push(details["extension"])
+                            else:                      push(newDictionary(details))
 
         builtin "list",
             alias       = unaliased, 
