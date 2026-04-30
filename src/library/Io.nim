@@ -273,7 +273,7 @@ proc defineModule*(moduleName: string) =
         """:
             #=======================================================
             dispatch:
-                Block(_b):
+                Block(b):
                     when defined(WEB):
                         stdout = ""
 
@@ -318,7 +318,7 @@ proc defineModule*(moduleName: string) =
                 stdout = ""
 
             dispatch:
-                Block(_b):
+                Block(b):
                     let xblock = doEval(x)
                     let stop = SP
                     execUnscoped(xblock)
