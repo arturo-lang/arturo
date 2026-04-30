@@ -873,6 +873,20 @@ proc initTask*(): VTask {.inline.} =
     ## create a fresh, pending VTask
     VTask(state: taskPending)
 
+proc newEvent*(evt: VEvent): Value {.inline.} =
+    ## create Event value from VEvent
+    Value(kind: Event, evt: evt)
+
+proc newEvent*(name: string): Value {.inline.} =
+    ## create Event value from a name string
+    Value(kind: Event, evt: VEvent(name: name))
+
+proc hash*(e: VEvent): Hash {.inline.} =
+    hash(e.name)
+
+func `$`*(e: VEvent): string =
+    "<event:" & e.name & ">"
+
 func newInline*(a: sink ValueArray = @[]): Value {.inline.} =
     ## create Inline value from ValueArray
     Value(kind: Inline, a: a)
@@ -1052,6 +1066,9 @@ proc copyValue*(v: Value): Value {.inline.} =
 
         of Task:
             result = newTask(v.tsk)
+
+        of Event:
+            result = newEvent(v.evt)
 
         of Nothing, Any:
             discard
@@ -1341,6 +1358,9 @@ func hash*(v: Value): Hash {.inline.} =
 
         of Task:
             result = result !& hash(v.tsk)
+
+        of Event:
+            result = result !& hash(v.evt)
 
         of Nothing      : discard
         of ANY          : discard
