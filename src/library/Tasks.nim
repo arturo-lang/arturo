@@ -252,7 +252,7 @@ proc defineModule*(moduleName: string) =
                 #=======================================================
                 push newLogical(x.tsk.state == taskFailed)
 
-        builtin "done?",
+        builtin "finished?",
             alias       = unaliased,
             op          = opNop,
             rule        = PrefixPrecedence,
@@ -266,7 +266,7 @@ proc defineModule*(moduleName: string) =
             ; (draft) poll a task without blocking
             ;
             ; t: request.async "https://example.com"
-            ; while [not? done? t][ pause 100 ]
+            ; while [not? finished? t][ pause 100 ]
             """:
                 #=======================================================
                 push newLogical(x.tsk.state != taskPending or x.tsk.future.finished)
