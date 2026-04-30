@@ -11,12 +11,6 @@
 ## since it needs to refer back to `Value` (via `Future[Value]`).
 
 #=======================================
-# Libraries
-#=======================================
-
-import hashes
-
-#=======================================
 # Types
 #=======================================
 
@@ -26,25 +20,3 @@ type
         taskDone
         taskFailed
         taskCancelled
-
-#=======================================
-# Constructors
-#=======================================
-
-proc initTask*(): VTask {.inline.} =
-    ## create a fresh, pending VTask
-    VTask(state: taskPending)
-
-#=======================================
-# Overloads
-#=======================================
-
-proc hash*(t: VTask): Hash {.inline.} =
-    cast[Hash](cast[uint](t))
-
-func `$`*(t: VTask): string =
-    case t.state
-        of taskPending  : "<task:pending>"
-        of taskDone     : "<task:done>"
-        of taskFailed   : "<task:failed>"
-        of taskCancelled: "<task:cancelled>"
