@@ -50,6 +50,8 @@ when not defined(WEB):
     import httpclient, httpcore, std/net, os
     import sequtils, strformat, strutils
     import terminal, times, uri
+    # aliased — `Request` would collide with too many other things.
+    import std/asynchttpserver as ahs
 
     when defined(ssl):
         import extras/smtp
@@ -472,7 +474,7 @@ proc defineModule*(moduleName: string) =
                         execInternal("Net/serve")
                         callInternal("initServerInternal", getValue=false, routes)
 
-                    proc asyncHandler(req: AsyncHttpServerRequest): Future[void] {.async, gcsafe.} =
+                    proc asyncHandler(req: ahs.Request): Future[void] {.async, gcsafe.} =
                         {.cast(gcsafe).}:
                             let reqAction = req.reqMethod
                             let reqBody = req.body
