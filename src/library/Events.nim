@@ -54,6 +54,13 @@ when not defined(WEB):
     # on the next dispatcher tick.
     var subscribers: Table[string, seq[EventHandler]]
 
+    # When this VM is running as a `do.async` subprocess, the parent
+    # opens a pipe and passes the write-fd via `ARTURO_EVENT_FD`. We
+    # open it as a `File` here and append one `[name payload]` record
+    # per `emit` so the parent's dispatcher can fire its own handlers.
+    # Nil when running as the top-level VM — `emit` then is purely local.
+    var emitChannel: File = nil
+
 #=======================================
 # Helpers
 #=======================================
