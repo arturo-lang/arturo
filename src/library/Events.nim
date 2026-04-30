@@ -25,9 +25,22 @@
 # `:event` *value* itself is fine on WEB — only the surrounding
 # machinery is gated.
 when not defined(WEB):
+    import asyncdispatch
+    import tables
+
     import vm/values/custom/[vevent]
 
 import vm/lib
+
+#=======================================
+# Variables
+#=======================================
+
+when not defined(WEB):
+    # Subscribers indexed by event name. Each `on e [...]` appends a
+    # handler `Value` (a Function) here; `emit` looks up by name and
+    # schedules each handler on the next dispatcher tick.
+    var subscribers: Table[string, seq[Value]]
 
 # TODO(Events): unsubscribe (`off`) — deferred until someone needs it.
 #  Subscribers currently live until program end; for v1 that's fine.
