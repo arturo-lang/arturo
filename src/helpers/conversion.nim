@@ -636,5 +636,6 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat:Value = nil): Val
                Database,
                Socket,
                Task,
+               Event,
                Nothing,
                Any: throwCannotConvert()

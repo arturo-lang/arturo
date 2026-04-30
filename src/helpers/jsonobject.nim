@@ -97,6 +97,7 @@ proc generateJsonNode*(n: Value): JsonNode =
            Module,
            Bytecode,
            Task,
+           Event,
            Nothing,
            Any          : discard
 
@@ -180,12 +181,13 @@ when defined(WEB):
                Database,
                PathLiteral, 
                Error, 
-               ErrorKind, 
+               ErrorKind,
                Method,
                Module,
                Socket,
                Bytecode,
                Task,
+               Event,
                Nothing,
                Any          : discard
 
