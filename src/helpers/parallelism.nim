@@ -40,6 +40,43 @@ when not defined(WEB):
     proc setInboundEventDispatcher*(fn: proc(name: string, payload: Value) {.gcsafe.}) =
         inboundEventDispatcher = fn
 
+    proc tailEventChannel*(path: string, alive: proc(): bool {.gcsafe.}) {.async, gcsafe.} =
+        ## Poll-based tail of the child's event channel file. Reads any
+        ## newly-appended `[name payload]` records, parses each via the
+        ## VM's normal parser, and hands the (name, payload) pair to the
+        ## registered inbound dispatcher. Loops until `alive()` reports
+        ## false AND a final read sees no new bytes. Re-opens the file
+        ## each pass to dodge stdio EOF-stickiness.
+        var pos: int64 = 0
+        while true:
+            block oneRound:
+                var f: File
+                if not open(f, path, fmRead):
+                    break oneRound
+                defer: f.close()
+                f.setFilePos(pos)
+                var line: string
+                while f.readLine(line):
+                    pos = f.getFilePos()
+                    if line.len == 0: continue
+                    if inboundEventDispatcher.isNil: continue
+                    try:
+                        let parsed = doParse(line, isFile=false)
+                        if parsed.isNil: continue
+                        let savedSP = SP
+                        execUnscoped(parsed)
+                        if SP > savedSP:
+                            let blk = stack.pop()
+                            if blk.kind == Block and blk.a.len == 2 and blk.a[0].kind == String:
+                                {.cast(gcsafe).}:
+                                    inboundEventDispatcher(blk.a[0].s, blk.a[1])
+                    except CatchableError:
+                        discard
+            if not alive():
+                # one more pass already happened above — safe to exit
+                break
+            await sleepAsync(20)
+
 #=======================================
 # Helpers
 #=======================================
