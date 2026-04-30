@@ -122,18 +122,19 @@ proc defineModule*(moduleName: string) =
                     let winner = newFuture[Value]("Tasks.waitFirst")
                     for t in x.a:
                         let cap = t
-                        cap.tsk.future.addCallback(proc(fin: Future[Value]) =
-                            if winner.finished: return
-                            if fin.failed:
-                                if cap.tsk.state == taskCancelled:
-                                    winner.complete(VNULL)
+                        cap.tsk.future.addCallback(proc(fin: Future[Value]) {.gcsafe.} =
+                            {.cast(gcsafe).}:
+                                if winner.finished: return
+                                if fin.failed:
+                                    if cap.tsk.state == taskCancelled:
+                                        winner.complete(VNULL)
+                                    else:
+                                        cap.tsk.state = taskFailed
+                                        winner.complete(newError(RuntimeErr, fin.error.msg))
                                 else:
-                                    cap.tsk.state = taskFailed
-                                    winner.complete(newError(RuntimeErr, fin.error.msg))
-                            else:
-                                if cap.tsk.state == taskPending:
-                                    cap.tsk.state = taskDone
-                                winner.complete(fin.read())
+                                    if cap.tsk.state == taskPending:
+                                        cap.tsk.state = taskDone
+                                    winner.complete(fin.read())
                         )
                     let res = waitFor winner
                     let killLosers = hadAttr("cancel")
