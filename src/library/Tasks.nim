@@ -38,6 +38,20 @@ when not defined(WEB):
 # Definitions
 #=======================================
 
+when not defined(WEB):
+    proc cancelTask(tsk: Value) =
+        ## Move a `:task` value to the cancelled state and tear down its
+        ## underlying handle (subprocess or in-process producer's cancel hook).
+        ## Idempotent — calling on a non-pending task is a no-op.
+        if tsk.tsk.state != taskPending:
+            return
+        tsk.tsk.state = taskCancelled
+        if not tsk.tsk.process.isNil and tsk.tsk.process.running:
+            tsk.tsk.process.terminate()
+        if not tsk.tsk.cancelHandle.isNil:
+            try: tsk.tsk.cancelHandle()
+            except CatchableError: discard
+
 proc defineModule*(moduleName: string) =
     when not defined(WEB):
 
@@ -54,8 +68,9 @@ proc defineModule*(moduleName: string) =
                 "task"  : {Task,Block}
             },
             attrs       = {
-                "all"   : ({Logical},"wait for all tasks in the given block to settle and return their results in order"),
-                "first" : ({Logical},"wait for the first task in the given block to settle and return its result; the others are left running")
+                "all"    : ({Logical},"wait for all tasks in the given block to settle and return their results in order"),
+                "first"  : ({Logical},"wait for the first task in the given block to settle and return its result; the others are left running"),
+                "cancel" : ({Logical},"with `.first`: cancel the remaining (still-pending) tasks once the winner settles")
             },
             returns     = {Any,Block},
             example     = """
@@ -102,9 +117,13 @@ proc defineModule*(moduleName: string) =
                                 winner.complete(fin.read())
                         )
                     let res = waitFor winner
+                    let killLosers = hadAttr("cancel")
                     for t in x.a:
-                        if t.tsk.state == taskPending and t.tsk.future.finished:
-                            t.tsk.state = taskDone
+                        if t.tsk.state == taskPending:
+                            if t.tsk.future.finished:
+                                t.tsk.state = taskDone
+                            elif killLosers:
+                                cancelTask(t)
                     push res
                 elif x.tsk.state == taskCancelled:
                     push VNULL
@@ -134,20 +153,7 @@ proc defineModule*(moduleName: string) =
             cancel s          ; actually kills the child process
             """:
                 #=======================================================
-                if x.tsk.state == taskPending:
-                    x.tsk.state = taskCancelled
-                    # for subprocess-backed tasks, terminate the child immediately.
-                    # the polling loop in `runInChildProcess` will notice the state
-                    # transition and finish cleanly, but `terminate` makes it instant.
-                    if not x.tsk.process.isNil and x.tsk.process.running:
-                        x.tsk.process.terminate()
-                    # for in-process tasks, run the producer's cancel hook (closes
-                    # the underlying file/http client/etc. so the suspended future
-                    # actually unwinds with an error rather than running to
-                    # completion in the background).
-                    if not x.tsk.cancelHandle.isNil:
-                        try: x.tsk.cancelHandle()
-                        except CatchableError: discard
+                cancelTask(x)
 
         #----------------------------
         # Predicates
