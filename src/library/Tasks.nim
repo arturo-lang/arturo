@@ -26,6 +26,7 @@
 when not defined(WEB):
     import asyncdispatch
     import osproc
+    import times
 
     import vm/values/custom/[vtask, verror]
 
@@ -99,11 +100,23 @@ proc defineModule*(moduleName: string) =
                     # their resolved values in input order. failed tasks
                     # surface as `:error` values in their slot; cancelled
                     # tasks surface as `:null` (matching bare `wait`).
+                    # with `.timeout`: any task still pending when the budget
+                    # runs out gets a timeout `:error` slot; the task itself
+                    # is left untouched (still pending — caller can wait again).
                     for t in x.a:
                         if unlikely(t.kind != Task):
                             Error_OperationNotPermitted("`wait.all` expects a block of :task values")
                     var resolved: ValueArray = newSeq[Value](x.a.len)
+                    let hasDeadline = checkAttr("timeout")
+                    let deadline =
+                        if hasDeadline: epochTime() + timeoutMsOf(aTimeout) / 1000
+                        else: 0.0
                     for i, t in x.a.pairs:
+                        if hasDeadline:
+                            let remainingMs = max(0, int((deadline - epochTime()) * 1000))
+                            if not waitFor withTimeout(t.tsk.future, remainingMs):
+                                resolved[i] = newError(RuntimeErr, "wait.all timed out")
+                                continue
                         try:
                             let r = waitFor t.tsk.future
                             if t.tsk.state == taskPending:
