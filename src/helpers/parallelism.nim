@@ -131,6 +131,13 @@ when not defined(WEB):
                              options = {poUsePath, poParentStreams})
         # publish the process handle so `cancel` can terminate it
         tsk.process = p
+        # Tail the child's event channel concurrently. The closure
+        # `alive` returns true while the child is still running, so the
+        # loop exits with one trailing read after the child terminates
+        # — flushes any final `emit` records the child wrote before exit.
+        let proc1 = p
+        let tailFut = tailEventChannel(evtFile, proc(): bool {.gcsafe.} =
+            {.cast(gcsafe).}: proc1.running)
         while p.running and tsk.state != taskCancelled:
             await sleepAsync(50)
         if tsk.state == taskCancelled and p.running:
@@ -138,6 +145,14 @@ when not defined(WEB):
             discard p.waitForExit()
         let code = p.peekExitCode()
         p.close()
+        # Drain remaining events written between the last poll and exit.
+        try:
+            await tailFut
+        except CatchableError:
+            discard
+        if fileExists(evtFile):
+            try: removeFile(evtFile)
+            except CatchableError: discard
         if code == 0 and fileExists(resFile):
             let raw = readFile(resFile)
             removeFile(resFile)
