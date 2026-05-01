@@ -289,7 +289,8 @@ proc defineModule*(moduleName: string) =
             print past? now             ; true ("now" has already become past...)
         """:
             #=======================================================
-            push(newLogical(now() > x.eobj))
+            dispatch:
+                Date(d): push(newLogical(now() > d))
 
     builtin "saturday?",
         alias       = unaliased, 
