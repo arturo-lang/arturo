@@ -1356,22 +1356,23 @@ proc defineModule*(moduleName: string) =
             parse "[1 2 3]"     ; [1 2 3] (:block)
         """:
             #=======================================================
-            if xKind == String:
-                when defined(BUNDLE):
-                    let (src, _) = (getBundledResource(x.s)[0], FileData)
-                else:
-                    let (src, _) = getSource(x.s)
-                
-                let ret = doParse(src, isFile=false)
-                if unlikely(hadAttr("data")):
-                    push(parseDataBlock(ret))
-                else:
-                    push(ret.a[0])
-            else:
-                if unlikely(hadAttr("data")):
-                    push(parseDataBlock(x))
-                else:
-                    push(x)
+            dispatch:
+                String(s):
+                    when defined(BUNDLE):
+                        let (src, _) = (getBundledResource(s)[0], FileData)
+                    else:
+                        let (src, _) = getSource(s)
+
+                    let ret = doParse(src, isFile=false)
+                    if unlikely(hadAttr("data")):
+                        push(parseDataBlock(ret))
+                    else:
+                        push(ret.a[0])
+                _:
+                    if unlikely(hadAttr("data")):
+                        push(parseDataBlock(x))
+                    else:
+                        push(x)
 
     builtin "return",
         alias       = unaliased, 
