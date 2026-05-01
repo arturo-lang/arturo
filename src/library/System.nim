@@ -545,29 +545,19 @@ proc defineModule*(moduleName: string) =
                 #=======================================================
                 let pid = x.i
 
-                # check if it's a process that has been
-                # created by us
-                if (let activeProcess = ActiveProcesses.getOrDefault(pid, nil); not activeProcess.isNil()):
-                    # terminate the process
-                    terminate(activeProcess)
-
-                    # close it
-                    close(activeProcess)
-
-                    # and remove it from the table
-                    ActiveProcesses.del(pid)
+                # send SIGTERM (POSIX) / TerminateProcess (Windows) to the
+                # given PID. for processes spawned by `execute.async`, prefer
+                # `cancel` on the returned `:task` instead — that handle owns
+                # the lifecycle.
+                when defined(windows):
+                    # TerminateProcess needs a HANDLE, not a PID
+                    let hProc = openProcess(PROCESS_TERMINATE, WINBOOL(0), DWORD(pid))
+                    if hProc != 0:
+                        discard terminateProcess(hProc, DWORD(QuitSuccess))
+                        discard closeHandle(hProc)
                 else:
-                    # if it's an external process,
-                    # proceed with its termination
-                    when defined(windows):
-                        # TerminateProcess needs a HANDLE, not a PID
-                        let hProc = openProcess(PROCESS_TERMINATE, WINBOOL(0), DWORD(pid))
-                        if hProc != 0:
-                            discard terminateProcess(hProc, DWORD(QuitSuccess))
-                            discard closeHandle(hProc)
-                    else:
-                        # send SIGTERM; signal 0 would only probe existence
-                        sendSignal(int32(pid), 15)
+                    # send SIGTERM; signal 0 would only probe existence
+                    sendSignal(int32(pid), 15)
 
     #----------------------------
     # Predicates
