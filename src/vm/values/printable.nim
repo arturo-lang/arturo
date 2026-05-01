@@ -272,6 +272,14 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
     if prepend!="":
         stdoutWrite prepend
 
+    if compact and v.kind in {Inline, Block, Dictionary, Object, Store}:
+        let oneLine = $(v)
+        if oneLine.len + level * INDENT.len <= 60:
+            if not muted: stdoutWrite fmt("{bold(magentaColor)}{oneLine}{resetColor}")
+            else:         stdoutWrite oneLine
+            if not isLast: stdoutWrite "\n"
+            return
+
     case v.kind:
         of Null         : dumpPrimitive("null",v)
         of Logical      : dumpPrimitive($(v.b), v)
