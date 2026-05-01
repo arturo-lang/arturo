@@ -232,6 +232,48 @@ when not defined(WEB):
                 raise newException(CatchableError,
                     "task subprocess exited with code " & $code)
 
+    # spawn a shell command as a child process, return a future that settles
+    # when it exits. mirrors `execCmdEx` semantics: stdout+stderr captured
+    # together, full string passed through the system shell (`poEvalCommand`).
+    # 50ms poll, dispatcher-friendly. cancellation terminates the child;
+    # non-zero exit fails the future so `wait` surfaces an `:error` (with the
+    # captured output appended to the message — actually-useful diagnostics,
+    # unlike `do.async`'s opaque "exited with code N").
+    proc runShellInChildProcess*(tsk: VTask, fullCmd: string,
+                                 withCode: bool): Future[Value] {.async.} =
+        let p = startProcess(command = fullCmd,
+                             options = {poUsePath, poEvalCommand, poStdErrToStdOut})
+        tsk.process = p
+        while p.running and tsk.state != taskCancelled:
+            await sleepAsync(50)
+        if tsk.state == taskCancelled and p.running:
+            p.terminate()
+            discard p.waitForExit()
+        let code = p.peekExitCode()
+        var output = ""
+        try:
+            output = p.outputStream.readAll()
+        except CatchableError:
+            discard
+        p.close()
+        # cancellation always → :null, regardless of `.code`. consistent with
+        # the rest of the `:task` family (cancel is not a failure).
+        if tsk.state == taskCancelled:
+            result = VNULL
+        elif withCode:
+            result = newDictionary({
+                "output": newString(output),
+                "code": newInteger(code)
+            }.toOrderedTable)
+        else:
+            if code == 0:
+                result = newString(output)
+            else:
+                let trimmed = output.strip()
+                let suffix = if trimmed.len > 0: ": " & trimmed else: ""
+                raise newException(CatchableError,
+                    "shell command exited with code " & $code & suffix)
+
     # convenience: turn a piece of Arturo source into a pending `:task` value.
     # used by `.async` branches across the stdlib.
     proc spawnAsTask*(src: string): Value =
