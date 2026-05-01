@@ -27,7 +27,7 @@ when defined(GMP):
     import helpers/bignums
 
 import vm/opcodes
-import vm/values/custom/[vbinary, vcolor, vcomplex, verror, vlogical, vquantity, vrange, vrational, vregex, vsymbol, vtask, vversion]
+import vm/values/custom/[vbinary, vcolor, vcomplex, verror, vevent, vlogical, vquantity, vrange, vrational, vregex, vsymbol, vtask, vversion]
 import vm/values/flags
 
 when not defined(WEB):
@@ -105,9 +105,10 @@ type
         Socket          = 38    
         Bytecode        = 39
         Task            = 40
+        Event           = 41
 
-        Nothing         = 41
-        Any             = 42
+        Nothing         = 42
+        Any             = 43
 
     ValueSpec* = set[ValueKind]
 
@@ -359,6 +360,8 @@ type
                 trans*: Translation
             of Task:
                 tsk*: VTask
+            of Event:
+                evt*: VEvent
 
     ValueObj = typeof(Value()[])
 

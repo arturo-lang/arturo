@@ -204,6 +204,9 @@ proc `$`*(v: Value): string {.inline.} =
         of Task:
             result = "<task>" & "(" & fmt("{cast[uint](v.tsk):#X}") & ")"
 
+        of Event:
+            result = "<event>" & "(" & v.evt.name & ")"
+
         of Nothing: discard
         of ANY: discard
 
@@ -476,6 +479,9 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
                     of taskFailed   : "failed"
                     of taskCancelled: "cancelled"
             dumpPrimitive(fmt("[{tag}] {cast[uint](v.tsk):#X}"), v)
+
+        of Event        :
+            dumpPrimitive(v.evt.name, v)
 
         of Bytecode     : 
             dumpBlockStart(v)

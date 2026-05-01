@@ -15,7 +15,7 @@
 when not defined(WEB):
     import asyncdispatch, asyncfile, asynchttpserver, httpclient, httpcore
     import os, osproc
-    import strutils, times
+    import strtabs, strutils, times
     when defined(ssl):
         # std/net has to be qualified — there's a sibling `helpers/net.nim`
         # and Nim resolves bare `net` to it first.
@@ -24,6 +24,98 @@ when not defined(WEB):
     import vm/lib
     import vm/[exec, parse, stack]
     import vm/values/custom/vtask
+
+#=======================================
+# Cross-process event dispatch hook
+#=======================================
+
+when not defined(WEB):
+    # `library/Events.nim` registers its `dispatchEvent` here at module
+    # init time so the read loop below (which runs in helpers, where we
+    # can't import a library cleanly) has somewhere to deliver inbound
+    # `[name payload]` records from a child VM. nil if Events isn't
+    # loaded (e.g. minimal builds).
+    var inboundEventDispatcher*: proc(name: string, payload: Value) {.gcsafe.} = nil
+
+    proc setInboundEventDispatcher*(fn: proc(name: string, payload: Value) {.gcsafe.}) =
+        inboundEventDispatcher = fn
+
+    # Per-child inbound files — paths the parent writes into so each
+    # live child can tail and dispatch into its own subscriber table.
+    # `runInChildProcess` registers when it spawns and unregisters when
+    # the child exits. The list is what the parent's `emit` fans out
+    # over (see `broadcastToChildren`).
+    var childInboundFiles: seq[string] = @[]
+
+    proc registerChildInbound*(path: string) =
+        childInboundFiles.add(path)
+
+    proc unregisterChildInbound*(path: string) =
+        let idx = childInboundFiles.find(path)
+        if idx >= 0:
+            childInboundFiles.delete(idx)
+
+    proc broadcastToChildren*(name: string, payloadSrc: string) {.gcsafe.} =
+        ## Append a `[name, payload]` record (two-line format, same as
+        ## the child→parent direction) into every live child's inbound
+        ## file. Called by `emit` from a parent VM. `payloadSrc` is the
+        ## already-codified Arturo source for the payload — keeps this
+        ## helper decoupled from the value-codify imports.
+        {.cast(gcsafe).}:
+            for path in childInboundFiles:
+                try:
+                    var f: File
+                    if open(f, path, fmAppend):
+                        f.writeLine(name)
+                        f.writeLine(payloadSrc)
+                        f.flushFile()
+                        f.close()
+                except IOError, OSError:
+                    discard
+
+    proc tailEventChannel*(path: string, alive: proc(): bool {.gcsafe.}) {.async, gcsafe.} =
+        ## Poll-based tail of the child's event channel file. Reads any
+        ## newly-appended `[name payload]` records, parses each via the
+        ## VM's normal parser, and hands the (name, payload) pair to the
+        ## registered inbound dispatcher. Loops until `alive()` reports
+        ## false AND a final read sees no new bytes. Re-opens the file
+        ## each pass to dodge stdio EOF-stickiness.
+        var pos: int64 = 0
+        while true:
+            block oneRound:
+                var f: File
+                if not open(f, path, fmRead):
+                    break oneRound
+                defer: f.close()
+                f.setFilePos(pos)
+                var line: string
+                # two-line records: name on first line, codified payload
+                # on second. if we read a name but EOF hits before the
+                # payload, the name line is lost (rare — child flushes
+                # both writeLines before the next emit/exit).
+                var name: string
+                var payloadSrc: string
+                while f.readLine(name):
+                    if not f.readLine(payloadSrc):
+                        break
+                    pos = f.getFilePos()
+                    if inboundEventDispatcher.isNil: continue
+                    try:
+                        let parsed = doParse(payloadSrc, isFile=false)
+                        var payload = VNULL
+                        if not parsed.isNil:
+                            let savedSP = SP
+                            execUnscoped(parsed)
+                            if SP > savedSP:
+                                payload = stack.pop()
+                        {.cast(gcsafe).}:
+                            inboundEventDispatcher(name, payload)
+                    except CatchableError:
+                        discard
+            if not alive():
+                # one more pass already happened above — safe to exit
+                break
+            await sleepAsync(20)
 
 #=======================================
 # Helpers
@@ -45,6 +137,23 @@ when not defined(WEB):
     proc runInChildProcess*(tsk: VTask, blockSrc: string): Future[Value] {.async.} =
         let arturoBin = getAppFilename()
         let resFile = getTempDir() / ("arturo-task-" & $getCurrentProcessId() & "-" & $epochTime() & ".art")
+        # Cross-process emit channel — child appends one
+        # `[name payload]` record per `emit`, parent tails. Created
+        # empty so the child's append open succeeds immediately.
+        let evtFile = getTempDir() / ("arturo-evt-" & $getCurrentProcessId() & "-" & $epochTime() & ".art")
+        writeFile(evtFile, "")
+        # Inbound channel — parent writes here, child tails it. Pair
+        # to `evtFile` (the outbound channel). Child receives parent's
+        # `emit` records on `inboundFile` and dispatches them into its
+        # own subscriber table.
+        let inboundFile = getTempDir() / ("arturo-inb-" & $getCurrentProcessId() & "-" & $epochTime() & ".art")
+        writeFile(inboundFile, "")
+        registerChildInbound(inboundFile)
+        var childEnv = newStringTable(modeCaseSensitive)
+        for k, v in envPairs():
+            childEnv[k] = v
+        childEnv["ARTURO_EVENT_FILE"] = evtFile
+        childEnv["ARTURO_EVENT_INBOUND"] = inboundFile
         # void-safety trick: prepend `null` *inside* the user's block so the
         # block always has a value even if the user's last expression doesn't
         # push (e.g. ends with `print`). if the user does push a real value,
@@ -66,9 +175,17 @@ when not defined(WEB):
             "write express.safe res \"" & resFile & "\""
         let p = startProcess(arturoBin,
                              args = @["-e", wrapped],
+                             env = childEnv,
                              options = {poUsePath, poParentStreams})
         # publish the process handle so `cancel` can terminate it
         tsk.process = p
+        # Tail the child's event channel concurrently. The closure
+        # `alive` returns true while the child is still running, so the
+        # loop exits with one trailing read after the child terminates
+        # — flushes any final `emit` records the child wrote before exit.
+        let proc1 = p
+        let tailFut = tailEventChannel(evtFile, proc(): bool {.gcsafe.} =
+            {.cast(gcsafe).}: proc1.running)
         while p.running and tsk.state != taskCancelled:
             await sleepAsync(50)
         if tsk.state == taskCancelled and p.running:
@@ -76,6 +193,18 @@ when not defined(WEB):
             discard p.waitForExit()
         let code = p.peekExitCode()
         p.close()
+        # Drain remaining events written between the last poll and exit.
+        try:
+            await tailFut
+        except CatchableError:
+            discard
+        if fileExists(evtFile):
+            try: removeFile(evtFile)
+            except CatchableError: discard
+        unregisterChildInbound(inboundFile)
+        if fileExists(inboundFile):
+            try: removeFile(inboundFile)
+            except CatchableError: discard
         if code == 0 and fileExists(resFile):
             let raw = readFile(resFile)
             removeFile(resFile)
