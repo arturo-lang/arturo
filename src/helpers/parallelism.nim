@@ -142,10 +142,18 @@ when not defined(WEB):
         # empty so the child's append open succeeds immediately.
         let evtFile = getTempDir() / ("arturo-evt-" & $getCurrentProcessId() & "-" & $epochTime() & ".art")
         writeFile(evtFile, "")
+        # Inbound channel — parent writes here, child tails it. Pair
+        # to `evtFile` (the outbound channel). Child receives parent's
+        # `emit` records on `inboundFile` and dispatches them into its
+        # own subscriber table.
+        let inboundFile = getTempDir() / ("arturo-inb-" & $getCurrentProcessId() & "-" & $epochTime() & ".art")
+        writeFile(inboundFile, "")
+        registerChildInbound(inboundFile)
         var childEnv = newStringTable(modeCaseSensitive)
         for k, v in envPairs():
             childEnv[k] = v
         childEnv["ARTURO_EVENT_FILE"] = evtFile
+        childEnv["ARTURO_EVENT_INBOUND"] = inboundFile
         # void-safety trick: prepend `null` *inside* the user's block so the
         # block always has a value even if the user's last expression doesn't
         # push (e.g. ends with `print`). if the user does push a real value,
