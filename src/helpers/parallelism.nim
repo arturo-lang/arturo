@@ -15,7 +15,7 @@
 when not defined(WEB):
     import asyncdispatch, asyncfile, asynchttpserver, httpclient, httpcore
     import os, osproc
-    import strtabs, strutils, times
+    import streams, strtabs, strutils, times
     when defined(ssl):
         # std/net has to be qualified — there's a sibling `helpers/net.nim`
         # and Nim resolves bare `net` to it first.
