@@ -1283,15 +1283,16 @@ proc defineModule*(moduleName: string) =
             if checkAttr("with"):
                 initUsing = aWith.a
 
-            if xKind == Block:
-                if (let constructorMethod = generatedConstructor(x.a); not constructorMethod.isNil):
-                    definitions[$ConstructorM] = constructorMethod
-                else:
-                    for k,v in newDictionary(execDictionary(x)).d:
-                        definitions[k] = v
-            elif xKind == Dictionary:
-                for k,v in x.d:
-                    definitions[k] = copyValue(v)
+            dispatch:
+                Block(a):
+                    if (let constructorMethod = generatedConstructor(a); not constructorMethod.isNil):
+                        definitions[$ConstructorM] = constructorMethod
+                    else:
+                        for k,v in newDictionary(execDictionary(x)).d:
+                            definitions[k] = v
+                Dictionary(d):
+                    for k,v in d:
+                        definitions[k] = copyValue(v)
 
             # TODO(Core\module) should show error in case magic methods are included
             #  magic methods are of no use in that case
