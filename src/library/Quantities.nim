@@ -207,24 +207,22 @@ proc defineModule*(moduleName: string) =
         """:
             #=======================================================
             if hadAttr("property"):
-                if yKind == Quantity:
-                    defineNewProperty(x.s, y.q)
-                else:
-                    defineNewProperty(x.s, y.u)
+                dispatch:
+                    (_, Quantity(q)): defineNewProperty(x.s, q)
+                    (_, Unit(u)):     defineNewProperty(x.s, u)
             else:
                 var sym = x.s
                 var desc = x.s
- 
+
                 if checkAttr("symbol"):
                     sym = aSymbol.s
- 
+
                 if checkAttr("describes"):
                     desc = aDescribes.s
- 
-                if yKind == Quantity:
-                    defineNewUserUnit(x.s, sym, desc, y.q)
-                else:
-                    defineNewUserUnit(x.s, sym, desc, y.u)
+
+                dispatch:
+                    (_, Quantity(q)): defineNewUserUnit(x.s, sym, desc, q)
+                    (_, Unit(u)):     defineNewUserUnit(x.s, sym, desc, u)
 
     builtin "units",
         alias       = unaliased,
