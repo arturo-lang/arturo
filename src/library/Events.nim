@@ -319,9 +319,9 @@ proc defineModule*(moduleName: string) =
             alias       = unaliased,
             op          = opNop,
             rule        = PrefixPrecedence,
-            description = "remove all registered handlers for given event",
+            description = "remove registered handler(s) — either every handler for given event, or the one with given id",
             args        = {
-                "event" : {Event}
+                "target" : {Event,Integer}
             },
             attrs       = NoAttrs,
             returns     = {Nothing},
@@ -331,14 +331,30 @@ proc defineModule*(moduleName: string) =
             emit E
             off E
             emit E   ; → no-op; nothing prints
+            ..........
+            ; per-handler removal via the id `on.id` returns:
+            id: on.id E [ print "first" ]
+            on E [ print "second" ]
+            off id          ; drops only the "first" handler
+            emit E          ; → second
             """:
                 #=======================================================
-                # Bulk removal: drops every handler registered for the
-                # named event. Per-handler removal would need handles
-                # returned from `on` — left for later. Note this only
-                # affects `:event` subscribers; task `addCallback`s
-                # have no removal API on Nim's side.
-                subscribers.del(x.evt.name)
+                if xKind == Event:
+                    # Bulk removal: drops every handler registered for
+                    # the named event. Doesn't touch task `addCallback`s
+                    # (Nim's Future has no callback-removal API).
+                    subscribers.del(x.evt.name)
+                else:
+                    # Per-handler removal by id. Linear scan — fine for
+                    # the subscriber counts we expect; revisit with a
+                    # secondary id→(name, index) index if it ever bites.
+                    let targetId = x.i
+                    block found:
+                        for evtName, subs in subscribers.mpairs:
+                            for i in 0 ..< subs.len:
+                                if subs[i].id == targetId:
+                                    subs.delete(i)
+                                    break found
 
         #----------------------------
         # Constants
