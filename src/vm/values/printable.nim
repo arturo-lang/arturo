@@ -305,9 +305,9 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
             dumpBlockStart(v)
 
             for i,child in v.p:
-                dump(child, level+1, i==(v.a.len-1), muted=muted, target=target)
+                dump(child, level+1, i==(v.p.len-1), muted=muted, target=target)
 
-            stdoutWrite "\n"
+            if v.p.len > 0: stdoutWrite "\n"
 
             dumpBlockEnd()
 
@@ -364,7 +364,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
             for i,child in v.a:
                 dump(child, level+1, i==(v.a.len-1), muted=muted, target=target)
 
-            stdoutWrite "\n"
+            if v.a.len > 0: stdoutWrite "\n"
 
             dumpBlockEnd()
 
