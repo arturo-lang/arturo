@@ -85,6 +85,7 @@ proc dispatchFieldAndCtor(kind: string, n: NimNode, macroName: string): (string,
     of "Date":       ("eobj", "newDate")
     of "Unit":       ("u", "newUnit")
     of "Bytecode":   ("trans", "newBytecode")
+    of "SymbolLiteral": ("m", "newSymbolLiteral")
     else:
         error(macroName & ": unsupported kind '" & kind & "'", n)
 
