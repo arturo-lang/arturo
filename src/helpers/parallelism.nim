@@ -198,6 +198,36 @@ when not defined(WEB):
         result.ctx = newVMContext(parentSyms)
         scheduler.ready.add(result)
 
+    proc cooperativeAwait*[T](fut: Future[T]): T =
+        ## Suspend the current fiber until `fut` completes, then
+        ## return its value (or re-raise its failure). Must be
+        ## called from inside a fiber — calling from main is a
+        ## programming error since main has no fiber stack to park.
+        ##
+        ## ## Protocol with the scheduler
+        ##
+        ## 1. If `fut` is already finished, fast-path: just read it.
+        ## 2. Otherwise register a callback that re-queues us when
+        ##    the future fires.
+        ## 3. Save our view of the VM globals into `me.ctx`.
+        ## 4. `suspend()` — control returns to whoever called
+        ##    `resume(me)` (the scheduler driver).
+        ## 5. ...time passes; the future eventually completes; the
+        ##    callback adds us to `scheduler.ready`; the driver
+        ##    picks us up, calls `swapInFrom(me.ctx)`, and
+        ##    `resume(me)`s us.
+        ## 6. We come back from `suspend()` with our globals live
+        ##    again; read and return the future's value.
+        if fut.finished:
+            return fut.read()
+        let me = scheduler.currentFiber
+        doAssert not me.isNil,
+            "cooperativeAwait called outside a fiber — use waitFor on main"
+        fut.addCallback(proc () = scheduler.ready.add(me))
+        swapOutTo(me.ctx)
+        suspend()
+        return fut.read()
+
 #=======================================
 # Cross-process event dispatch hook
 #=======================================
