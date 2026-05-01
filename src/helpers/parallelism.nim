@@ -26,7 +26,7 @@ when not defined(WEB):
     import extras/minicoro
 
     import vm/lib
-    import vm/[exec, parse, stack]
+    import vm/[context, exec, parse, stack]
     import vm/values/custom/vtask
 
 #=======================================
@@ -67,6 +67,11 @@ when not defined(WEB):
             ## alive as long as the fiber does.
             handle: McoCoroPtr
             entry: proc ()
+            ctx*: VMContext
+                ## Per-fiber slice of the VM globals. Set by the
+                ## scheduler when the fiber is spawned; swapped
+                ## in/out around each `resume` / `suspend`.
+                ## `nil` for fibers used outside the scheduler.
 
     proc fiberCheck(res: McoResult, op: string) {.inline.} =
         if res != mcoSuccess:
@@ -124,6 +129,56 @@ when not defined(WEB):
         ## The Phase 3 scheduler uses this to identify "are we on
         ## the main fiber" without going through the `Fiber` ref.
         mco_running()
+
+#=======================================
+# Scheduler — fibers + asyncdispatch
+#=======================================
+#
+# Cooperative scheduler. Main thread owns the asyncdispatch poll
+# loop; fibers run user blocks and yield via `cooperativeAwait`
+# whenever they need to wait on a future. The dispatcher resumes
+# them by adding to `scheduler.ready` and the driver picks them up.
+#
+# `currentFiber == nil` means main is running. Every fiber the
+# scheduler tracks owns a `VMContext` that gets swapped in/out
+# around each `resume` / `suspend` so the VM globals always reflect
+# the running fiber's view.
+
+when not defined(WEB):
+    type
+        Scheduler = object
+            mainCtx: VMContext
+                ## Main thread's saved snapshot of the VM globals.
+                ## Populated lazily on first fiber spawn (we don't
+                ## know main's state until it has one to save).
+            currentFiber: Fiber
+                ## Whoever is running right now. `nil` while main
+                ## is on the C stack (typical case at top-level and
+                ## in between fiber resumptions).
+            ready: seq[Fiber]
+                ## Fibers ready to resume. Pushed by future
+                ## callbacks (Phase 3.3) and by `spawnFiber`
+                ## (Phase 3.2). Drained by the driver loop
+                ## (Phase 3.4).
+
+    var scheduler {.global.}: Scheduler
+
+    proc initScheduler*() =
+        ## Bring the scheduler up to a known-good state. Idempotent:
+        ## safe to call more than once. Called automatically on
+        ## first spawn but exposed so tests / re-entry paths can
+        ## reset it explicitly.
+        if scheduler.mainCtx.isNil:
+            scheduler.mainCtx = VMContext()
+        scheduler.currentFiber = nil
+        scheduler.ready.setLen(0)
+
+    proc onMainFiber*(): bool {.inline.} =
+        ## True iff control is currently on the main thread (no
+        ## fiber is running). Used by `wait` to decide between
+        ## `waitFor` (drives the dispatcher) and `cooperativeAwait`
+        ## (suspends the current fiber).
+        scheduler.currentFiber.isNil
 
 #=======================================
 # Cross-process event dispatch hook
