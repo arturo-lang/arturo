@@ -41,11 +41,11 @@ import vm/lib
 #=======================================
 
 template processTrigonometric(fun: untyped): untyped =
-    dispatch:
-        Quantity(q):   push(newFloating(fun(toFloat(q.convertTo(parseAtoms("rad")).original))))
-        Complex(z):    push(newComplex(fun(z)))
-        Rational(rat): push(newRational(fun(toFloat(rat))))
-        _:             push(newFloating(fun(asFloat(x))))
+    if xKind == Quantity:
+        push(newFloating(fun(toFloat(x.q.convertTo(parseAtoms("rad")).original))))
+    elif xKind == Complex: push(newComplex(fun(x.z)))
+    elif xKind == Rational: push(newRational(fun(toFloat(x.rat))))
+    else: push(newFloating(fun(asFloat(x))))
 
 #=======================================
 # Definitions
