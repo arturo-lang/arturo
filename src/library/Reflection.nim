@@ -229,12 +229,13 @@ proc defineModule*(moduleName: string) =
             "value" : {Any}
         },
         attrs       = {
-            "muted" : ({Logical},"don't use color output")
+            "muted"   : ({Logical},"don't use color output"),
+            "compact" : ({Logical},"omit type annotations and key alignment")
         },
         returns     = {Nothing},
         example     = """
             inspect 3                 ; 3 :integer
-            
+
             a: "some text"
             inspect a                 ; some text :string
         """:
@@ -242,7 +243,8 @@ proc defineModule*(moduleName: string) =
             when defined(WEB):
                 resetStdout()
             let mutedOutput = (hadAttr("muted")) or NoColors
-            x.dump(0, false, muted=mutedOutput)
+            let compactOutput = hadAttr("compact")
+            x.dump(0, false, muted=mutedOutput, compact=compactOutput)
 
     builtin "methods",
         alias       = unaliased,
