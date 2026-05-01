@@ -51,10 +51,15 @@ when not defined(WEB):
             param: string   ## empty string means "no payload binding"
             body: Value     ## raw block; executed via `execUnscoped`
 
+        Subscription = object
+            id: int         ## unique id for this registration; surfaced via `on.id` and used by `off id`
+            handler: EventHandler
+
     # Subscribers indexed by event name. Each `on e [...]` appends a
-    # handler here; `emit` looks up by name and schedules each handler
-    # on the next dispatcher tick.
-    var subscribers: Table[string, seq[EventHandler]]
+    # subscription here; `emit` looks up by name and schedules each
+    # handler on the next dispatcher tick.
+    var subscribers: Table[string, seq[Subscription]]
+    var nextSubscriberId: int = 0
 
     # When this VM is running as a `do.async` subprocess, the parent
     # creates a temp file and passes its path via `ARTURO_EVENT_FILE`.
@@ -117,8 +122,8 @@ when not defined(WEB):
         ## the OS-level hooks for built-in events (`CtrlC`, `SigTerm`, …).
         {.cast(gcsafe).}:
             if subscribers.hasKey(name):
-                for handler in subscribers[name]:
-                    enqueueEmit(handler, payload)
+                for sub in subscribers[name]:
+                    enqueueEmit(sub.handler, payload)
 
 # TODO(Events): per-handler unsubscribe — `off E` clears *all* handlers
 #  for an event today. Per-handler removal would need handles returned
@@ -195,8 +200,12 @@ proc defineModule*(moduleName: string) =
                 if checkAttr("with"):
                     handler.param = aWith.s
 
+                inc nextSubscriberId
+                let subId = nextSubscriberId
+                let sub = Subscription(id: subId, handler: handler)
+
                 if xKind == Event:
-                    subscribers.mgetOrPut(x.evt.name, @[]).add(handler)
+                    subscribers.mgetOrPut(x.evt.name, @[]).add(sub)
                 else:
                     # `:task` callbacks. Modes filter which terminations
                     # the handler fires on; `.finished` (the default)
