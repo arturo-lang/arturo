@@ -275,11 +275,11 @@ proc defineModule*(moduleName: string) =
             ; we're still not ready!
         """:
             #=======================================================
-            if xKind==Logical:
-                push(newLogical(Not(x.b)))
-            else:
-                execUnscoped(x)
-                push(newLogical(Not(stack.pop().b)))
+            dispatch:
+                Logical(b): push(newLogical(Not(b)))
+                _:
+                    execUnscoped(x)
+                    push(newLogical(Not(stack.pop().b)))
 
     builtin "or?",
         alias       = logicalor, 
