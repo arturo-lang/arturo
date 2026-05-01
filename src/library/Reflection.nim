@@ -230,7 +230,8 @@ proc defineModule*(moduleName: string) =
         },
         attrs       = {
             "muted"   : ({Logical},"don't use color output"),
-            "compact" : ({Logical},"omit type annotations and key alignment")
+            "compact" : ({Logical},"omit type annotations and key alignment"),
+            "index"   : ({Logical},"show [i] index prefix for block items")
         },
         returns     = {Nothing},
         example     = """
@@ -244,7 +245,8 @@ proc defineModule*(moduleName: string) =
                 resetStdout()
             let mutedOutput = (hadAttr("muted")) or NoColors
             let compactOutput = hadAttr("compact")
-            x.dump(0, false, muted=mutedOutput, compact=compactOutput)
+            let indexedOutput = hadAttr("index")
+            x.dump(0, false, muted=mutedOutput, compact=compactOutput, indexed=indexedOutput)
 
     builtin "methods",
         alias       = unaliased,
