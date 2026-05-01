@@ -62,6 +62,13 @@ iterator objectPairs(vd: ValueDict): (string, Value) =
             yield (k,v)
 
 #=======================================
+# Constants
+#=======================================
+
+const
+    INDENT = "    "
+
+#=======================================
 # Methods
 #=======================================
 
@@ -237,22 +244,22 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
         else:           stdoutWrite fmt("[ :{tp}\n")
 
     proc dumpBlockEnd() =
-        for i in 0..level-1: stdoutWrite "        "
+        for i in 0..level-1: stdoutWrite INDENT
         if not muted:   stdoutWrite fmt("{bold(magentaColor)}]{resetColor}")
         else:           stdoutWrite fmt("]")
 
     proc dumpHeader(str: string) =
         if not muted: stdoutWrite fmt("{resetColor}{fg(cyanColor)}")
         let lln = "================================\n"
-        for i in 0..level: stdoutWrite "        "
+        for i in 0..level: stdoutWrite INDENT
         stdoutWrite lln
-        for i in 0..level: stdoutWrite "        "
+        for i in 0..level: stdoutWrite INDENT
         stdoutWrite " " & str & "\n"
-        for i in 0..level: stdoutWrite "        "
+        for i in 0..level: stdoutWrite INDENT
         stdoutWrite lln
         if not muted: stdoutWrite fmt("{resetColor}")
 
-    for i in 0..level-1: stdoutWrite "        "
+    for i in 0..level-1: stdoutWrite INDENT
 
     if prepend!="":
         stdoutWrite prepend
@@ -325,7 +332,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
                 let maxLen = (keys.map(proc (x: string):int = x.len)).max + 2
 
                 for key,value in v.e:
-                    for i in 0..level: stdoutWrite "        "
+                    for i in 0..level: stdoutWrite INDENT
 
                     stdoutWrite unicode.alignLeft(key & " ", maxLen) & ":"
 
@@ -336,12 +343,12 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
         of Binary       : 
             dumpBlockStart(v)
 
-            for i in 0..level: stdoutWrite "        "
+            for i in 0..level: stdoutWrite INDENT
             for i,child in v.n:
                 dumpBinary(child)
                 if (i+1) mod 20 == 0:
                     stdoutWrite "\n"
-                    for i in 0..level: stdoutWrite "        "
+                    for i in 0..level: stdoutWrite INDENT
             
             stdoutWrite "\n"
 
@@ -369,7 +376,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
                 let maxLen = (keys.map(proc (x: string):int = x.len)).max + 2
 
                 for key,value in v.singleton.o.pairs:
-                    for i in 0..level: stdoutWrite "        "
+                    for i in 0..level: stdoutWrite INDENT
 
                     stdoutWrite unicode.alignLeft(key & " ", maxLen) & ":"
 
@@ -388,7 +395,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
                 let maxLen = (keys.map(proc (x: string):int = x.len)).max + 2
 
                 for key,value in v.d:
-                    for i in 0..level: stdoutWrite "        "
+                    for i in 0..level: stdoutWrite INDENT
 
                     stdoutWrite unicode.alignLeft(key & " ", maxLen) & ":"
 
@@ -407,7 +414,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
                 let maxLen = (keys.map(proc (x: string):int = x.len)).max + 2
 
                 for key,value in v.sto.data:
-                    for i in 0..level: stdoutWrite "        "
+                    for i in 0..level: stdoutWrite INDENT
 
                     stdoutWrite unicode.alignLeft(key & " ", maxLen) & ":"
 
@@ -424,7 +431,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
                 let maxLen = (keys.map(proc (x: string):int = x.len)).max + 2
 
                 for key,value in v.o.objectPairs:
-                    for i in 0..level: stdoutWrite "        "
+                    for i in 0..level: stdoutWrite INDENT
 
                     stdoutWrite unicode.alignLeft(key & " ", maxLen) & ":"
 
@@ -439,7 +446,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
                 dump(newWordBlock(v.params), level+1, false, muted=muted, target=target)
                 dump(v.main, level+1, true, muted=muted, target=target)
             else:
-                for i in 0..level: stdoutWrite "        "
+                for i in 0..level: stdoutWrite INDENT
                 stdoutWrite "(builtin)"
 
             stdoutWrite "\n"
@@ -497,7 +504,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
 
             var i = 0
             while i < instrs.len:
-                for i in 0..level: stdout.write "        "
+                for i in 0..level: stdout.write INDENT
                 let preop = instrs[i].s
                 stdoutWrite preop
                 i += 1
