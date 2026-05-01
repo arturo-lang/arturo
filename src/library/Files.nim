@@ -261,7 +261,7 @@ proc defineModule*(moduleName: string) =
                         "bytecode"      : ({Logical},"read file as Arturo bytecode"),
                         "binary"        : ({Logical},"read as binary"),
                         "file"          : ({Logical},"read as file (throws an error if not valid)"),
-                        "async"         : ({Logical},"read in a child process and return a `:task`")
+                        "async"         : ({Logical},"read asynchronously and return a `:task`")
                     }
                 else:
                     {
@@ -273,7 +273,7 @@ proc defineModule*(moduleName: string) =
                         "bytecode"      : ({Logical},"read file as Arturo bytecode"),
                         "binary"        : ({Logical},"read as binary"),
                         "file"          : ({Logical},"read as file (throws an error if not valid)"),
-                        "async"         : ({Logical},"read in a child process and return a `:task`")
+                        "async"         : ({Logical},"read asynchronously and return a `:task`")
                     },
             returns     = {String,Block,Binary,Task},
             example     = """
