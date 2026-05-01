@@ -291,11 +291,10 @@ proc defineModule*(moduleName: string) =
             """:
                 #=======================================================
                 if hadAttr("async"):
-                    # URLs and bytecode go through the subprocess path: URLs
-                    # need an async http client (and the sync `read` already
-                    # uses one indirectly through `getSource`); bytecode read
-                    # uses a custom on-disk format via `readBytecode`.
-                    if x.s.isUrl() or hadAttr("bytecode"):
+                    # `.bytecode` keeps the subprocess path: it uses a custom
+                    # on-disk format via `readBytecode` that doesn't fit the
+                    # plain "read bytes, post-process" shape below.
+                    if hadAttr("bytecode"):
                         var attrSuffix = ""
                         if hadAttr("lines"):       attrSuffix &= ".lines"
                         if hadAttr("json"):        attrSuffix &= ".json"
@@ -313,8 +312,10 @@ proc defineModule*(moduleName: string) =
                         push spawnAsTask("read" & attrSuffix & " " & codify(x))
                         return
 
-                    # local file: async I/O via `asyncfile`, then sync parse
-                    let path = x.s
+                    # in-process async: `asyncfile` for local paths,
+                    # `AsyncHttpClient` for URLs. either way we get raw bytes
+                    # then run the same sync `post` closure (CSV/JSON/parsers
+                    # are pure CPU work — no benefit from offloading).
                     let asLines       = hadAttr("lines")
                     let asJson        = hadAttr("json")
                     let asCsv         = hadAttr("csv")
@@ -345,7 +346,10 @@ proc defineModule*(moduleName: string) =
                             if asHtml: return parseHtmlInput(src)
                             if asXml: return parseXMLInput(src)
                         return newString(src)
-                    push spawnAsyncRead(path, post)
+                    if x.s.isUrl():
+                        push spawnAsyncReadUrl(x.s, post)
+                    else:
+                        push spawnAsyncRead(x.s, post)
                     return
 
                 if (hadAttr("binary")):
