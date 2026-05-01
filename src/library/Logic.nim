@@ -237,29 +237,22 @@ proc defineModule*(moduleName: string) =
             ; nope, that's not correct
         """:
             #=======================================================
-            if xKind==Logical and yKind==Logical:
-                push(newLogical(Nor(x.b, y.b)))
-            else:
-                if xKind==Block:
-                    if yKind==Block:
-                        # block block
-                        execUnscoped(x)
-                        if isTrue(stack.pop()):
-                            push(newLogical(false))
-                            return
-
-                        execUnscoped(y)
-                        push(newLogical(Not(stack.pop().b)))
-                    else:
-                        # block logical
-                        execUnscoped(x)
-                        push(newLogical(Nor(stack.pop().b, y.b)))
-                else:
-                    # logical block
+            dispatch:
+                (Logical(a), Logical(b)): push(newLogical(Nor(a, b)))
+                (Block(_),   Block(_)):
+                    execUnscoped(x)
+                    if isTrue(stack.pop()):
+                        push(newLogical(false))
+                        return
+                    execUnscoped(y)
+                    push(newLogical(Not(stack.pop().b)))
+                (Block(_),   Logical(b)):
+                    execUnscoped(x)
+                    push(newLogical(Nor(stack.pop().b, b)))
+                (Logical(_), Block(_)):
                     if isTrue(x):
                         push(newLogical(false))
                         return
-
                     execUnscoped(y)
                     push(newLogical(Not(stack.pop().b)))
 
