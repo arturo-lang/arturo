@@ -174,9 +174,10 @@ proc defineModule*(moduleName: string) =
                 "done"      : ({Logical},"with `:task`: fire only when the task ends successfully"),
                 "failed"    : ({Logical},"with `:task`: fire only when the task ends with an error"),
                 "cancelled" : ({Logical},"with `:task`: fire only when the task ends by cancellation"),
-                "finished"  : ({Logical},"with `:task`: fire on any termination (default)")
+                "finished"  : ({Logical},"with `:task`: fire on any termination (default)"),
+                "id"        : ({Logical},"return an :integer id identifying this registration (for use with `off`)")
             },
-            returns     = {Nothing},
+            returns     = {Nothing,Integer},
             example     = """
             DataReady: event 'data-ready
             on.with:'payload DataReady [
@@ -264,6 +265,9 @@ proc defineModule*(moduleName: string) =
                                 except CatchableError as e:
                                     echo "Events: handler raised: " & e.msg
                     )
+
+                if hadAttr("id"):
+                    push newInteger(subId)
 
         builtin "emit",
             alias       = unaliased,
