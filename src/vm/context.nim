@@ -53,6 +53,8 @@
 # Libraries
 #=======================================
 
+import tables
+
 import vm/[globals, stack]
 import vm/values/value
 
@@ -78,6 +80,32 @@ type
 #=======================================
 # Methods
 #=======================================
+
+proc newVMContext*(parentSyms: SymTable): VMContext =
+    ## Build a fresh `VMContext` for a newly-spawned fiber.
+    ##
+    ## **Closure capture (locked decision, see CONCURRENCY_NOTES):**
+    ## the parent's symbol table is **shallow-copied**. The child
+    ## fiber sees parent symbols at spawn time and writes don't
+    ## leak back. Values are refs, so the copy is just the bucket
+    ## array — sub-ms even for large namespaces.
+    ##
+    ## Everything else starts fresh:
+    ##
+    ## - `stack` is pre-allocated to `StackSize` to match
+    ##   `createMainStack`. Per-fiber operand stacks are independent.
+    ## - `attrs`, `dictSyms`, `scopeStack` start empty — the child
+    ##   block runs as a top-level execution, not a continuation of
+    ##   the parent's in-flight call/dictionary construction.
+    result = VMContext(
+        sp: 0,
+        attrs: initTable[string, Value](),
+        syms: parentSyms,           # shallow copy via Nim's =copy
+        dictSyms: @[],
+        scopeStack: @[],
+        cancelRequested: false
+    )
+    newSeq(result.stack, StackSize)
 
 proc swapOutTo*(ctx: VMContext) =
     ## Save the live VM globals into `ctx`. After this call the
