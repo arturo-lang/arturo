@@ -393,4 +393,5 @@ proc defineModule*(moduleName: string) =
             print wednesday? now    ; false
         """:
             #=======================================================
-            push(newLogical(x.eobj.weekday == dWed))
+            dispatch:
+                Date(d): push(newLogical(d.weekday == dWed))
