@@ -393,21 +393,10 @@ proc defineModule*(moduleName: string) =
             ; nope, that's not correct
         """:
             #=======================================================
-            var a: VLogical
-            var b: VLogical
-            if xKind == Logical: 
-                a = x.b
-            else:
-                execUnscoped(x)
-                a = stack.pop().b
-
-            if yKind == Logical: 
-                b = y.b
-            else:
-                execUnscoped(y)
-                b = stack.pop().b
-
-            push(newLogical(Xor(a, b)))
+            template asBool(v, vKind: untyped): VLogical =
+                if vKind == Logical: v.b
+                else: (execUnscoped(v); stack.pop().b)
+            push(newLogical(Xor(asBool(x, xKind), asBool(y, yKind))))
             
     #----------------------------
     # Constants
