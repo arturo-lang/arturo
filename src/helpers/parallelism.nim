@@ -324,6 +324,20 @@ when not defined(WEB):
             try: f.close()
             except CatchableError: discard
 
+    # in-process async URL fetch via `AsyncHttpClient.getContent`. mirrors
+    # the sync `getSource` URL leg (which already uses `newAsyncHttpClient`
+    # with a blocking `waitFor`) — same client, same semantics, but the
+    # result is awaited cooperatively so other tasks can make progress.
+    proc readUrlAsyncStr(client: AsyncHttpClient, url: string): Future[string] {.async.} =
+        # let CatchableError escape — `wait` classifies it (cancel → :null,
+        # otherwise → :error). cancellation closes the client and surfaces
+        # here as an exception, filtered out downstream via task state.
+        try:
+            result = await client.getContent(url)
+        finally:
+            try: client.close()
+            except CatchableError: discard
+
     # convenience: kick off an in-process async read, run a sync `postProcess`
     # closure on the bytes once available, and return a `:task` whose result
     # is whatever the closure returned. the open file is held by the task so
