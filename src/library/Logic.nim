@@ -92,29 +92,22 @@ proc defineModule*(moduleName: string) =
             ; yep, that's correct!
         """:
             #=======================================================
-            if xKind==Logical and yKind==Logical:
-                push(newLogical(And(x.b,y.b)))
-            else:
-                if xKind==Block:
-                    if yKind==Block:
-                        # block block
-                        execUnscoped(x)
-                        if isFalse(stack.pop()):
-                            push(newLogical(false))
-                            return
-
-                        execUnscoped(y)
-                        push(newLogical(stack.pop().b))
-                    else:
-                        # block logical
-                        execUnscoped(x)
-                        push(newLogical(And(stack.pop().b,y.b)))
-                else:
-                    # logical block
+            dispatch:
+                (Logical(a), Logical(b)): push(newLogical(And(a, b)))
+                (Block(_),   Block(_)):
+                    execUnscoped(x)
+                    if isFalse(stack.pop()):
+                        push(newLogical(false))
+                        return
+                    execUnscoped(y)
+                    push(newLogical(stack.pop().b))
+                (Block(_),   Logical(b)):
+                    execUnscoped(x)
+                    push(newLogical(And(stack.pop().b, b)))
+                (Logical(_), Block(_)):
                     if isFalse(x):
                         push(newLogical(false))
                         return
-
                     execUnscoped(y)
                     push(newLogical(stack.pop().b))
 
