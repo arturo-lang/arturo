@@ -71,6 +71,13 @@ when not defined(WEB):
     # pipe to dodge platform-specific fd-inheritance plumbing.
     var emitChannel: File = nil
 
+    # Set by the `BeforeExit` drain so the inbound tail loop (which is
+    # otherwise an infinite `sleepAsync(20)` pump) knows to exit
+    # cleanly. Without this, the drain's `while hasPendingOperations`
+    # would spin forever — the tail's pending `sleepAsync(20)` is
+    # never not-pending.
+    var shuttingDown: bool = false
+
 #=======================================
 # Helpers
 #=======================================
@@ -130,7 +137,7 @@ when not defined(WEB):
         let path = getEnv("ARTURO_EVENT_INBOUND")
         if path.len == 0: return
         asyncCheck tailEventChannel(path,
-            proc(): bool {.gcsafe.} = true)
+            proc(): bool {.gcsafe.} = not shuttingDown)
 
     proc dispatchEvent(name: string, payload: Value) {.gcsafe.} =
         ## Look up subscribers for the named event and enqueue each on
@@ -464,10 +471,17 @@ proc defineModule*(moduleName: string) =
         # would be discarded at process teardown.
         addExitProc(proc() {.noconv.} =
             {.cast(gcsafe).}:
+                shuttingDown = true
                 dispatchEvent("BeforeExit", VNULL)
+                # Cap the drain in case anything else (besides the
+                # inbound tail) is permanently pending. 100 ticks at
+                # 20ms ceiling = 2s max — plenty for a real handler,
+                # bounded so we never spin forever.
+                var drainTicks = 0
                 try:
-                    while hasPendingOperations():
+                    while hasPendingOperations() and drainTicks < 100:
                         poll(0)
+                        inc drainTicks
                 except CatchableError:
                     discard
         )
