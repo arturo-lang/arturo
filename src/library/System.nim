@@ -533,14 +533,13 @@ proc defineModule*(moduleName: string) =
             attrs       = NoAttrs,
             returns     = {Nothing},
             example     = """
-                ; start process
-                pid: execute.async "someProcessThatDoesSomethingInTheBackground"
+                ; terminate an external process by PID
+                terminate 12345
 
-                ; wait for 5 seconds
+                ; for tasks spawned via `execute.async`, prefer `cancel`:
+                t: execute.async "someLongRunningCommand"
                 pause 5000
-
-                ; terminate background process
-                terminate pid
+                cancel t
             """:
                 #=======================================================
                 let pid = x.i
