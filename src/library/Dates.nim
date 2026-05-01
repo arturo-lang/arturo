@@ -360,9 +360,9 @@ proc defineModule*(moduleName: string) =
         """:
             #=======================================================
             let rightNow = now()
-
-            push(newLogical(x.eobj.year == rightNow.year and
-                            x.eobj.yearday == rightNow.yearday))
+            dispatch:
+                Date(d): push(newLogical(d.year == rightNow.year and
+                                         d.yearday == rightNow.yearday))
 
     builtin "tuesday?",
         alias       = unaliased, 
