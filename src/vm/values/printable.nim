@@ -62,6 +62,13 @@ iterator objectPairs(vd: ValueDict): (string, Value) =
             yield (k,v)
 
 #=======================================
+# Constants
+#=======================================
+
+const
+    INDENT = "    "
+
+#=======================================
 # Methods
 #=======================================
 
@@ -208,54 +215,70 @@ template stdoutWrite(sss: string): untyped =
     if target.isNil: stdout.write sss
     else: target[] &= sss
 
-proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepend="", target: ref string = nil) {.exportc.} = 
-    
+proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepend="", inline: bool=false, compact: bool=false, indexed: bool=false, target: ref string = nil) {.exportc.} =
+
+    let typeSuffix = proc (v: Value): string =
+        if compact: ""
+        else: " :" & ($(v.kind)).toLowerAscii()
+
     proc dumpPrimitive(str: string, v: Value) =
-        if not muted:   stdoutWrite fmt("{bold(greenColor)}{str}{fg(grayColor)} :{($(v.kind)).toLowerAscii()}{resetColor}")
-        else:           stdoutWrite fmt("{str} :{($(v.kind)).toLowerAscii()}")
+        if not muted:   stdoutWrite fmt("{bold(greenColor)}{str}{fg(grayColor)}{typeSuffix(v)}{resetColor}")
+        else:           stdoutWrite fmt("{str}{typeSuffix(v)}")
 
     proc dumpIdentifier(v: Value) =
-        if not muted:   stdoutWrite fmt("{resetColor}{v.s}{fg(grayColor)} :{($(v.kind)).toLowerAscii()}{resetColor}")
-        else:           stdoutWrite fmt("{v.s} :{($(v.kind)).toLowerAscii()}")
+        if not muted:   stdoutWrite fmt("{resetColor}{v.s}{fg(grayColor)}{typeSuffix(v)}{resetColor}")
+        else:           stdoutWrite fmt("{v.s}{typeSuffix(v)}")
 
     proc dumpAttribute(v: Value) =
-        if not muted:   stdoutWrite fmt("{resetColor}{v.s}{fg(grayColor)} :{($(v.kind)).toLowerAscii()}{resetColor}")
-        else:           stdoutWrite fmt("{v.s} :{($(v.kind)).toLowerAscii()}")
+        if not muted:   stdoutWrite fmt("{resetColor}{v.s}{fg(grayColor)}{typeSuffix(v)}{resetColor}")
+        else:           stdoutWrite fmt("{v.s}{typeSuffix(v)}")
 
     proc dumpSymbol(v: Value) =
-        if not muted:   stdoutWrite fmt("{resetColor}{v.m}{fg(grayColor)} :{($(v.kind)).toLowerAscii()}{resetColor}")
-        else:           stdoutWrite fmt("{v.m} :{($(v.kind)).toLowerAscii()}")
+        if not muted:   stdoutWrite fmt("{resetColor}{v.m}{fg(grayColor)}{typeSuffix(v)}{resetColor}")
+        else:           stdoutWrite fmt("{v.m}{typeSuffix(v)}")
 
     proc dumpBinary(b: Byte) =
         if not muted:   stdoutWrite fmt("{resetColor}{fg(grayColor)}{b:02X} {resetColor}")
         else:           stdoutWrite fmt("{b:02X} ")
 
     proc dumpBlockStart(v: Value) =
-        var tp = ($(v.kind)).toLowerAscii()
-        if v.kind==Object: tp = v.proto.name
-        if not muted:   stdoutWrite fmt("{bold(magentaColor)}[{fg(grayColor)} :{tp}{resetColor}\n")
-        else:           stdoutWrite fmt("[ :{tp}\n")
+        var tag = ""
+        if not compact:
+            var tp = ($(v.kind)).toLowerAscii()
+            if v.kind==Object: tp = v.proto.name
+            tag = " :" & tp
+        if not muted:   stdoutWrite fmt("{bold(magentaColor)}[{fg(grayColor)}{tag}{resetColor}\n")
+        else:           stdoutWrite fmt("[{tag}\n")
 
     proc dumpBlockEnd() =
-        for i in 0..level-1: stdoutWrite "        "
+        for i in 0..level-1: stdoutWrite INDENT
         if not muted:   stdoutWrite fmt("{bold(magentaColor)}]{resetColor}")
         else:           stdoutWrite fmt("]")
 
     proc dumpHeader(str: string) =
         if not muted: stdoutWrite fmt("{resetColor}{fg(cyanColor)}")
         let lln = "================================\n"
-        for i in 0..level: stdoutWrite "        "
+        for i in 0..level: stdoutWrite INDENT
         stdoutWrite lln
-        for i in 0..level: stdoutWrite "        "
+        for i in 0..level: stdoutWrite INDENT
         stdoutWrite " " & str & "\n"
-        for i in 0..level: stdoutWrite "        "
+        for i in 0..level: stdoutWrite INDENT
         stdoutWrite lln
         if not muted: stdoutWrite fmt("{resetColor}")
 
-    for i in 0..level-1: stdoutWrite "        "
+    if not inline:
+        for i in 0..level-1: stdoutWrite INDENT
 
     if prepend!="":
         stdoutWrite prepend
+
+    if compact and not indexed and v.kind in {Inline, Block, Dictionary, Object, Store}:
+        let oneLine = $(v)
+        if oneLine.len + level * INDENT.len <= 60:
+            if not muted: stdoutWrite fmt("{bold(magentaColor)}{oneLine}{resetColor}")
+            else:         stdoutWrite oneLine
+            if not isLast: stdoutWrite "\n"
+            return
 
     case v.kind:
         of Null         : dumpPrimitive("null",v)
@@ -297,9 +320,9 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
             dumpBlockStart(v)
 
             for i,child in v.p:
-                dump(child, level+1, i==(v.a.len-1), muted=muted, target=target)
+                dump(child, level+1, i==(v.p.len-1), muted=muted, compact=compact, indexed=indexed, target=target)
 
-            stdoutWrite "\n"
+            if v.p.len > 0: stdoutWrite "\n"
 
             dumpBlockEnd()
 
@@ -322,41 +345,43 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
             let keys = toSeq(v.e.keys)
 
             if keys.len > 0:
-                let maxLen = (keys.map(proc (x: string):int = x.len)).max + 2
+                let maxLen = if compact: 0 else: (keys.map(proc (x: string):int = x.len)).max + 1
 
                 for key,value in v.e:
-                    for i in 0..level: stdoutWrite "        "
+                    for i in 0..level: stdoutWrite INDENT
 
-                    stdoutWrite unicode.alignLeft(key & " ", maxLen) & ":"
+                    if compact: stdoutWrite key & ": "
+                    else:       stdoutWrite unicode.alignLeft(key & " ", maxLen) & ": "
 
-                    dump(value, level+1, false, muted=muted, target=target)
+                    dump(value, level+1, false, muted=muted, inline=true, compact=compact, indexed=indexed, target=target)
 
             dumpBlockEnd()
 
         of Binary       : 
             dumpBlockStart(v)
 
-            for i in 0..level: stdoutWrite "        "
+            for i in 0..level: stdoutWrite INDENT
             for i,child in v.n:
                 dumpBinary(child)
                 if (i+1) mod 20 == 0:
                     stdoutWrite "\n"
-                    for i in 0..level: stdoutWrite "        "
+                    for i in 0..level: stdoutWrite INDENT
             
             stdoutWrite "\n"
 
             dumpBlockEnd()
 
-        # TODO(VM/values/value) `dump` doesn't print nested blocks/dictionaries properly
-        #  try: `inspect #[a:#[b: 'c]]`
-        #  labels: enhancement, values
         of Inline,
             Block        :
             dumpBlockStart(v)
             for i,child in v.a:
-                dump(child, level+1, i==(v.a.len-1), muted=muted, target=target)
+                var prep = ""
+                if indexed:
+                    if not muted: prep = fmt("{resetColor}{fg(grayColor)}[{i}]{resetColor} ")
+                    else:         prep = fmt("[{i}] ")
+                dump(child, level+1, i==(v.a.len-1), muted=muted, prepend=prep, compact=compact, indexed=indexed, target=target)
 
-            stdoutWrite "\n"
+            if v.a.len > 0: stdoutWrite "\n"
 
             dumpBlockEnd()
 
@@ -366,14 +391,15 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
             let keys = toSeq(v.singleton.o.keys)
 
             if keys.len > 0:
-                let maxLen = (keys.map(proc (x: string):int = x.len)).max + 2
+                let maxLen = if compact: 0 else: (keys.map(proc (x: string):int = x.len)).max + 1
 
                 for key,value in v.singleton.o.pairs:
-                    for i in 0..level: stdoutWrite "        "
+                    for i in 0..level: stdoutWrite INDENT
 
-                    stdoutWrite unicode.alignLeft(key & " ", maxLen) & ":"
+                    if compact: stdoutWrite key & ": "
+                    else:       stdoutWrite unicode.alignLeft(key & " ", maxLen) & ": "
 
-                    dump(value, level+1, false, muted=muted, target=target)
+                    dump(value, level+1, false, muted=muted, inline=true, compact=compact, indexed=indexed, target=target)
 
             dumpBlockEnd()
 
@@ -385,14 +411,15 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
             let keys = toSeq(v.d.keys)
 
             if keys.len > 0:
-                let maxLen = (keys.map(proc (x: string):int = x.len)).max + 2
+                let maxLen = if compact: 0 else: (keys.map(proc (x: string):int = x.len)).max + 1
 
                 for key,value in v.d:
-                    for i in 0..level: stdoutWrite "        "
+                    for i in 0..level: stdoutWrite INDENT
 
-                    stdoutWrite unicode.alignLeft(key & " ", maxLen) & ":"
+                    if compact: stdoutWrite key & ": "
+                    else:       stdoutWrite unicode.alignLeft(key & " ", maxLen) & ": "
 
-                    dump(value, level+1, false, muted=muted, target=target)
+                    dump(value, level+1, false, muted=muted, inline=true, compact=compact, indexed=indexed, target=target)
 
             dumpBlockEnd()
 
@@ -404,14 +431,15 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
             let keys = toSeq(v.sto.data.keys)
 
             if keys.len > 0:
-                let maxLen = (keys.map(proc (x: string):int = x.len)).max + 2
+                let maxLen = if compact: 0 else: (keys.map(proc (x: string):int = x.len)).max + 1
 
                 for key,value in v.sto.data:
-                    for i in 0..level: stdoutWrite "        "
+                    for i in 0..level: stdoutWrite INDENT
 
-                    stdoutWrite unicode.alignLeft(key & " ", maxLen) & ":"
+                    if compact: stdoutWrite key & ": "
+                    else:       stdoutWrite unicode.alignLeft(key & " ", maxLen) & ": "
 
-                    dump(value, level+1, false, muted=muted, target=target)
+                    dump(value, level+1, false, muted=muted, inline=true, compact=compact, indexed=indexed, target=target)
 
             dumpBlockEnd()
         
@@ -421,14 +449,15 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
             let keys = toSeq(v.o.objectKeys)
 
             if keys.len > 0:
-                let maxLen = (keys.map(proc (x: string):int = x.len)).max + 2
+                let maxLen = if compact: 0 else: (keys.map(proc (x: string):int = x.len)).max + 1
 
                 for key,value in v.o.objectPairs:
-                    for i in 0..level: stdoutWrite "        "
+                    for i in 0..level: stdoutWrite INDENT
 
-                    stdoutWrite unicode.alignLeft(key & " ", maxLen) & ":"
+                    if compact: stdoutWrite key & ": "
+                    else:       stdoutWrite unicode.alignLeft(key & " ", maxLen) & ": "
 
-                    dump(value, level+1, false, muted=muted, target=target)
+                    dump(value, level+1, false, muted=muted, inline=true, compact=compact, indexed=indexed, target=target)
 
             dumpBlockEnd()
 
@@ -436,10 +465,10 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
             dumpBlockStart(v)
 
             if v.fnKind==UserFunction:
-                dump(newWordBlock(v.params), level+1, false, muted=muted, target=target)
-                dump(v.main, level+1, true, muted=muted, target=target)
+                dump(newWordBlock(v.params), level+1, false, muted=muted, compact=compact, indexed=indexed, target=target)
+                dump(v.main, level+1, true, muted=muted, compact=compact, indexed=indexed, target=target)
             else:
-                for i in 0..level: stdoutWrite "        "
+                for i in 0..level: stdoutWrite INDENT
                 stdoutWrite "(builtin)"
 
             stdoutWrite "\n"
@@ -449,8 +478,8 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
         of Method       :
             dumpBlockStart(v)
 
-            dump(newWordBlock(v.mparams), level+1, false, muted=muted, target=target)
-            dump(v.mmain, level+1, true, muted=muted, target=target)
+            dump(newWordBlock(v.mparams), level+1, false, muted=muted, compact=compact, indexed=indexed, target=target)
+            dump(v.mmain, level+1, true, muted=muted, compact=compact, indexed=indexed, target=target)
 
             stdoutWrite "\n"
 
@@ -489,7 +518,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
                 if not muted:   prep=fmt("{resetColor}{bold(whiteColor)}{i}: {resetColor}")
                 else:           prep=fmt("{i}: ")
 
-                dump(child, level+1, false, muted=muted, prepend=prep, target=target)
+                dump(child, level+1, false, muted=muted, prepend=prep, compact=compact, indexed=indexed, target=target)
 
             stdoutWrite "\n"
 
@@ -497,7 +526,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
 
             var i = 0
             while i < instrs.len:
-                for i in 0..level: stdout.write "        "
+                for i in 0..level: stdout.write INDENT
                 let preop = instrs[i].s
                 stdoutWrite preop
                 i += 1
@@ -545,7 +574,7 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
         if isKeyVal:
             result &= " "
         else:
-            for i in 0..level-1: result &= "        "
+            for i in 0..level-1: result &= INDENT
 
     case v.kind:
         of Null         : result &= "null"
@@ -579,8 +608,8 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
                 result &= "««" & v.s & "»»"
             else:
                 if countLines(v.s)>1 or v.s.contains("\""):
-                    var splitl = join(toSeq(splitLines(v.s)),"\n" & repeat("        ",level+1))
-                    result &= "{\n" & repeat("        ",level+1) & splitl & "\n" & repeat("        ",level) & "}"
+                    var splitl = join(toSeq(splitLines(v.s)),"\n" & repeat(INDENT,level+1))
+                    result &= "{\n" & repeat(INDENT,level+1) & splitl & "\n" & repeat(INDENT,level) & "}"
                 else:
                     # TODO(Values/printable) `codify` could work better for String values
                     #  right now, it also escape Unicode values and that may not be what we need
@@ -622,7 +651,7 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
 
             if pretty:
                 result &= "\n"
-                for i in 0..level-1: result &= "        "
+                for i in 0..level-1: result &= INDENT
 
             if not (pretty and unwrapped and level==0):
                 if v.kind==Inline: result &= ")"
@@ -642,9 +671,9 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
                 for k,v in pairs(v.d):
                     if pretty:
                         if not (unwrapped):
-                            for i in 0..level: result &= "        "
+                            for i in 0..level: result &= INDENT
                         else:
-                            for i in 0..level-1: result &= "        "
+                            for i in 0..level-1: result &= INDENT
                         result &= k & ":"
                     else:
                         result &= k & ": "
@@ -655,7 +684,7 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
                         result &= " "
 
             if pretty:
-                for i in 0..level-1: result &= "        "
+                for i in 0..level-1: result &= INDENT
             
             if not (pretty and unwrapped and level==0):
                 result &= "]"

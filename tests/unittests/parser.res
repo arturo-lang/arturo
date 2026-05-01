@@ -1,35 +1,35 @@
 [ :block
-        something? :word
-        anotherone? :word
-        ?? :symbol
-        ? :symbol
+    something? :word
+    anotherone? :word
+    ?? :symbol
+    ? :symbol
 ]
 [ :block
-        something? :label
-        something :word
+    something? :label
+    something :word
 ]
 [ :block
-        some? :literal
-        thing? :word
-        ? :symbol
+    some? :literal
+    thing? :word
+    ? :symbol
 ]
 [ :block
-        _ :symbol
-        one :word
+    _ :symbol
+    one :word
 ]
 [ :block
-        _two :word
+    _two :word
 ]
 [ :block
-        three :word
+    three :word
 ]
 [ :block
-        four :label
+    four :label
 ]
 [ :block
-        _ :symbol
-        five :label
+    _ :symbol
+    five :label
 ]
 [ :block
-        _six :label
+    _six :label
 ]
