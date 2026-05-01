@@ -112,6 +112,9 @@ Both macros share the same set:
 | Complex     | `z`     | `newComplex`     |
 | Rational    | `rat`   | `newRational`    |
 | Object      | `o`     | `newObject`      |
+| Date        | `eobj`  | `newDate`        |
+| Unit        | `u`     | `newUnit`        |
+| Bytecode    | `trans` | `newBytecode`    |
 
 Note: `Object`'s `newObject` takes a Prototype, not just a `ValueDict`.
 Auto-wrap via the unified body won't compile correctly. `Object(o):` clauses
@@ -180,6 +183,15 @@ must use per-mode bodies (`value:`/`inplace:`) and write their own
 | `src/library/Io.nim`          | `goto`                                     | `dispatch`, Integer + `_:` fallback                 |
 | `src/library/Io.nim`          | `input` (non-repl path)                    | `dispatch`, String + `_:` fallback for Null         |
 | `src/library/Io.nim`          | `print`, `prints`                          | `dispatch`, Block + `_:` fallback                   |
+| `src/library/Logic.nim`       | `and?`, `nand?`, `nor?`, `or?`             | `dispatch`, 2-axis (Logical/Block × Logical/Block)  |
+| `src/library/Logic.nim`       | `not?`                                     | `dispatch`, Logical + `_:` fallback                 |
+| `src/library/Logic.nim`       | `xnor?`, `xor?`                            | template `asBool` helper (no kind dispatch needed)  |
+| `src/library/Strings.nim`     | `render`                                   | `dispatchWithLiteral`, 1-axis unified, `block:` expression |
+| `src/library/Strings.nim`     | `join`                                     | `dispatchWithLiteral`, 1-axis × per-mode, attrs as prelude |
+| `src/library/Collections.nim` | `array` (non-attr branch)                  | `dispatch`, multi-clause + `_:` fallback            |
+| `src/library/Collections.nim` | `dictionary` (source dispatch)             | `dispatch`, Block / String                          |
+| `src/library/Bitwise.nim`     | `nand`, `nor`, `xnor`                      | `dispatchWithLiteral` with `_:` fallback (also fixes latent `PathLiteral` bug) |
+| `src/library/Files.nim`       | `write` (Bytecode branch)                  | `dispatch`, Bytecode + `_:` fallback                |
 
 ## Plan: features still to add
 
