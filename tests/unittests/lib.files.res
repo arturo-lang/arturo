@@ -344,20 +344,60 @@ all fields are filled: [created accessed modified]
 >> zip & unzip - README
 
 zipped as dest.zip
+unzipped as README.md
 
-══╡ Assertion Error ╞═══════════════════════════════════════════════ <script> ══
+>> zip & unzip - src/arturo.nim
 
-  Runtime check failed
 
-  Tried:
-      [exists? ~ "|dir|/README.md"]
+>> zip & unzip - destination
 
-  ┃ File: ../tests/unittests/lib.files.art
-  ┃ Line: 731
-  ┃ 
-  ┃  729 ║  
-  ┃  730 ║      unzip ~"|dir|" ~"|dir|/dest.zip"
-  ┃  731 ║►     ensure -> exists? ~"|dir|/README.md"
-  ┃  732 ║  
-  ┃  733 ║      print "unzipped as README.md"
 
+>> volume
+
+13 B
+
+>> write
+
+Hello, world!
+
+>> write.append
+
+Hello, world!
+Hello, world!
+From Arturo's World!
+
+>> write.directory
+
+passed!
+
+>> write.json
+
+{
+    "name": "Arturo",
+    "version": "1.9.83",
+    "build": "b/12",
+    "platform": "amd/win10"
+}
+
+>> write.json.compact
+
+{"name":"Arturo","version":"1.9.83","build":"b/12","platform":"amd/win10"}
+
+>> write.binary
+
+Hello, world!
+
+>> exists?
+
+file does not exist
+file exists
+
+>> directory?
+
+directory does not exist
+directory exists
+
+>> hidden?
+
+passed!
+Removed: temp/
