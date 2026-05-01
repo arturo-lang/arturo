@@ -40,6 +40,21 @@ when not defined(WEB):
     proc setInboundEventDispatcher*(fn: proc(name: string, payload: Value) {.gcsafe.}) =
         inboundEventDispatcher = fn
 
+    # Dispatcher-aware sleep. If there are pending in-process tasks (any
+    # `.async` builtin currently in flight), route through `sleepAsync` +
+    # `waitFor` so the dispatcher gets cycles to make progress on them.
+    # Otherwise fall back to the OS `sleep` — there's nothing to drive,
+    # and `waitFor sleepAsync` allocates a future for no reason.
+    #
+    # Avoids the footgun where `pause 1000` inside an async-heavy program
+    # silently freezes every in-flight server / request / read for the
+    # whole second.
+    proc cooperativePause*(ms: int) =
+        if hasPendingOperations():
+            waitFor sleepAsync(ms)
+        else:
+            sleep(ms)
+
     # Per-child inbound files — paths the parent writes into so each
     # live child can tail and dispatch into its own subscriber table.
     # `runInChildProcess` registers when it spawns and unregisters when
