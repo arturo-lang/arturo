@@ -215,7 +215,7 @@ template stdoutWrite(sss: string): untyped =
     if target.isNil: stdout.write sss
     else: target[] &= sss
 
-proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepend="", inline: bool=false, compact: bool=false, target: ref string = nil) {.exportc.} =
+proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepend="", inline: bool=false, compact: bool=false, indexed: bool=false, target: ref string = nil) {.exportc.} =
 
     let typeSuffix = proc (v: Value): string =
         if compact: ""
@@ -272,7 +272,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
     if prepend!="":
         stdoutWrite prepend
 
-    if compact and v.kind in {Inline, Block, Dictionary, Object, Store}:
+    if compact and not indexed and v.kind in {Inline, Block, Dictionary, Object, Store}:
         let oneLine = $(v)
         if oneLine.len + level * INDENT.len <= 60:
             if not muted: stdoutWrite fmt("{bold(magentaColor)}{oneLine}{resetColor}")
@@ -320,7 +320,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
             dumpBlockStart(v)
 
             for i,child in v.p:
-                dump(child, level+1, i==(v.p.len-1), muted=muted, compact=compact, target=target)
+                dump(child, level+1, i==(v.p.len-1), muted=muted, compact=compact, indexed=indexed, target=target)
 
             if v.p.len > 0: stdoutWrite "\n"
 
@@ -353,7 +353,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
                     if compact: stdoutWrite key & ": "
                     else:       stdoutWrite unicode.alignLeft(key & " ", maxLen) & ": "
 
-                    dump(value, level+1, false, muted=muted, inline=true, compact=compact, target=target)
+                    dump(value, level+1, false, muted=muted, inline=true, compact=compact, indexed=indexed, target=target)
 
             dumpBlockEnd()
 
@@ -375,7 +375,11 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
             Block        :
             dumpBlockStart(v)
             for i,child in v.a:
-                dump(child, level+1, i==(v.a.len-1), muted=muted, compact=compact, target=target)
+                var prep = ""
+                if indexed:
+                    if not muted: prep = fmt("{resetColor}{fg(grayColor)}[{i}]{resetColor} ")
+                    else:         prep = fmt("[{i}] ")
+                dump(child, level+1, i==(v.a.len-1), muted=muted, prepend=prep, compact=compact, indexed=indexed, target=target)
 
             if v.a.len > 0: stdoutWrite "\n"
 
@@ -395,7 +399,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
                     if compact: stdoutWrite key & ": "
                     else:       stdoutWrite unicode.alignLeft(key & " ", maxLen) & ": "
 
-                    dump(value, level+1, false, muted=muted, inline=true, compact=compact, target=target)
+                    dump(value, level+1, false, muted=muted, inline=true, compact=compact, indexed=indexed, target=target)
 
             dumpBlockEnd()
 
@@ -415,7 +419,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
                     if compact: stdoutWrite key & ": "
                     else:       stdoutWrite unicode.alignLeft(key & " ", maxLen) & ": "
 
-                    dump(value, level+1, false, muted=muted, inline=true, compact=compact, target=target)
+                    dump(value, level+1, false, muted=muted, inline=true, compact=compact, indexed=indexed, target=target)
 
             dumpBlockEnd()
 
@@ -435,7 +439,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
                     if compact: stdoutWrite key & ": "
                     else:       stdoutWrite unicode.alignLeft(key & " ", maxLen) & ": "
 
-                    dump(value, level+1, false, muted=muted, inline=true, compact=compact, target=target)
+                    dump(value, level+1, false, muted=muted, inline=true, compact=compact, indexed=indexed, target=target)
 
             dumpBlockEnd()
         
@@ -453,7 +457,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
                     if compact: stdoutWrite key & ": "
                     else:       stdoutWrite unicode.alignLeft(key & " ", maxLen) & ": "
 
-                    dump(value, level+1, false, muted=muted, inline=true, compact=compact, target=target)
+                    dump(value, level+1, false, muted=muted, inline=true, compact=compact, indexed=indexed, target=target)
 
             dumpBlockEnd()
 
@@ -461,8 +465,8 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
             dumpBlockStart(v)
 
             if v.fnKind==UserFunction:
-                dump(newWordBlock(v.params), level+1, false, muted=muted, compact=compact, target=target)
-                dump(v.main, level+1, true, muted=muted, compact=compact, target=target)
+                dump(newWordBlock(v.params), level+1, false, muted=muted, compact=compact, indexed=indexed, target=target)
+                dump(v.main, level+1, true, muted=muted, compact=compact, indexed=indexed, target=target)
             else:
                 for i in 0..level: stdoutWrite INDENT
                 stdoutWrite "(builtin)"
@@ -474,8 +478,8 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
         of Method       :
             dumpBlockStart(v)
 
-            dump(newWordBlock(v.mparams), level+1, false, muted=muted, compact=compact, target=target)
-            dump(v.mmain, level+1, true, muted=muted, compact=compact, target=target)
+            dump(newWordBlock(v.mparams), level+1, false, muted=muted, compact=compact, indexed=indexed, target=target)
+            dump(v.mmain, level+1, true, muted=muted, compact=compact, indexed=indexed, target=target)
 
             stdoutWrite "\n"
 
@@ -514,7 +518,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
                 if not muted:   prep=fmt("{resetColor}{bold(whiteColor)}{i}: {resetColor}")
                 else:           prep=fmt("{i}: ")
 
-                dump(child, level+1, false, muted=muted, prepend=prep, compact=compact, target=target)
+                dump(child, level+1, false, muted=muted, prepend=prep, compact=compact, indexed=indexed, target=target)
 
             stdoutWrite "\n"
 
