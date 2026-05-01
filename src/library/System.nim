@@ -188,11 +188,11 @@ proc defineModule*(moduleName: string) =
             },
             attrs       = {
                 "args"      : ({Block},"use given command arguments"),
-                "async"     : ({Logical},"execute asynchronously as a process and return id"),
+                "async"     : ({Logical},"execute asynchronously and return a :task"),
                 "code"      : ({Logical},"return process exit code"),
-                "directly"  : ({Logical},"execute command directly, as a shell command")  
+                "directly"  : ({Logical},"execute command directly, as a shell command")
             },
-            returns     = {String, Dictionary},
+            returns     = {String, Dictionary, Task},
             example     = """
             print execute "pwd"
             ; /Users/admin/Desktop
