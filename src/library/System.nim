@@ -370,9 +370,9 @@ proc defineModule*(moduleName: string) =
             """:
                 #=======================================================
                 if xKind == Integer:
-                    sleep(x.i)
+                    cooperativePause(x.i)
                 else:
-                    sleep(toInt((x.q.convertTo(parseAtoms("ms"))).original))
+                    cooperativePause(toInt((x.q.convertTo(parseAtoms("ms"))).original))
 
         builtin "process",
             alias       = unaliased, 
