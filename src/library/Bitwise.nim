@@ -75,12 +75,16 @@ proc defineModule*(moduleName: string) =
             nand 'a 3          ; a: -3
         """:
             #=======================================================
-            if xKind==Literal : 
-                ensureInPlace(); InPlaced &&= y; !!= InPlaced
-            elif normalIntegerOperation():
-                push(normalIntegerNot(normalIntegerAnd(x.i, y.i).i))
-            else:
-                push(!! (x && y))
+            dispatchWithLiteral:
+                _:
+                    value:
+                        if normalIntegerOperation():
+                            push(normalIntegerNot(normalIntegerAnd(x.i, y.i).i))
+                        else:
+                            push(!! (x && y))
+                    inplace:
+                        InPlaced &&= y
+                        !!= InPlaced
 
     builtin "nor",
         alias       = unaliased, 
