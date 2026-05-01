@@ -16,6 +16,22 @@
 ## fiber; from inside the fiber, `suspend()` yields back to whoever
 ## resumed it. Switching A → B (both fibers) is two hops:
 ## `suspend()` from A back to main, then `resume(B)` from main.
+##
+## ## GC integration (or lack thereof)
+##
+## Arturo builds with `--mm:orc`. Under ORC the compiler emits
+## refcount inc/dec at every scope boundary; the GC does **not** scan
+## C stacks. A suspended fiber hasn't yet executed its scope-end
+## decrements, so any `ref` reachable only from the fiber's stack is
+## kept alive by its own refcount. Cycles reachable only from the
+## fiber are likewise visible to ORC's cycle collector.
+##
+## Consequently, no `GC_addStack` / `GC_removeStack` is needed —
+## under ORC those procs aren't even declared. This was confirmed
+## both in the ultra-mini ucontext spike (CONCURRENCY_NOTES.md
+## "Spike result", 2026-05-01) and via the Phase 1.5 stress test in
+## this branch. If we ever switch to a stack-scanning GC, this
+## comment is the place to start re-reading.
 
 #=======================================
 # Libraries
