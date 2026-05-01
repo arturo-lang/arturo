@@ -151,16 +151,17 @@ proc defineModule*(moduleName: string) =
                     "message"   : {String}
                 },
                 attrs       = {
-                    "using"     : ({Dictionary},"use given configuration")
+                    "using"     : ({Dictionary},"use given configuration"),
+                    "async"     : ({Logical},"send asynchronously and return a `:task`")
                 },
-                returns     = {Nothing},
+                returns     = {Nothing,Task},
                 example     = """
                 mail .using: #[
                         server: "mymailserver.com"
                         username: "myusername"
                         password: "mypass123"
                     ]
-                    "recipient@somemail.com" "Hello from Arturo" "Arturo rocks!"                
+                    "recipient@somemail.com" "Hello from Arturo" "Arturo rocks!"
                 """:
                     #=======================================================
                     let recipient = x.s
@@ -169,7 +170,7 @@ proc defineModule*(moduleName: string) =
 
                     if checkAttr("using"):
                         discard
-                    
+
                     retrieveConfig("mail", "using")
 
                     # TODO(Net\mail) raise error, if there is no configuration provided whatsoever
@@ -177,6 +178,19 @@ proc defineModule*(moduleName: string) =
                     #  labels: library, bug
 
                     var mesg = createMessage(subject, message, sender=config["username"].s, mTo= @[recipient])
+
+                    if hadAttr("async"):
+                        push spawnAsyncMail(
+                            server   = config["server"].s,
+                            port     = 465,
+                            username = config["username"].s,
+                            password = config["password"].s,
+                            fromAddr = config["username"].s,
+                            toAddrs  = @[recipient],
+                            msgStr   = $mesg
+                        )
+                        return
+
                     let smtpConn = newSmtp(useSsl = true, debug=true)
                     smtpConn.connect(config["server"].s, Port 465)
                     smtpConn.auth(config["username"].s, config["password"].s)
