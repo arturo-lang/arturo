@@ -250,11 +250,15 @@ proc defineModule*(moduleName: string) =
                 #  labels: library, enhancement, windows, linux, macos
 
                 if (hadAttr("async")):
-                    let newProcess = startProcess(command = cmd, args = args)
-                    let pid = processID(newProcess)
-                    
-                    ActiveProcesses[pid] = newProcess
-                    push newInteger(pid)
+                    # build the full shell command (args appended, quoted)
+                    # so `runShellInChildProcess` can pass it through the
+                    # system shell — same semantics as the sync `execCmdEx`
+                    # path below, just non-blocking and `:task`-wrapped.
+                    var fullCmd = cmd
+                    for i in 0..high(args):
+                        fullCmd.add(' ')
+                        fullCmd.add(quoteShell(args[i]))
+                    push spawnShellAsTask(fullCmd, code)
                 else:
                     # add arguments, if any
                     for i in 0..high(args):
