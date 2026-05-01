@@ -366,21 +366,10 @@ proc defineModule*(moduleName: string) =
             ; yep, that's correct!
         """:
             #=======================================================
-            var a: VLogical
-            var b: VLogical
-            if xKind == Logical: 
-                a = x.b
-            else:
-                execUnscoped(x)
-                a = stack.pop().b
-
-            if yKind == Logical: 
-                b = y.b
-            else:
-                execUnscoped(y)
-                b = stack.pop().b
-
-            push(newLogical(Xnor(a, b)))
+            template asBool(v, vKind: untyped): VLogical =
+                if vKind == Logical: v.b
+                else: (execUnscoped(v); stack.pop().b)
+            push(newLogical(Xnor(asBool(x, xKind), asBool(y, yKind))))
 
     builtin "xor?",
         alias       = logicalxor, 
