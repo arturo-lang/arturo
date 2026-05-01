@@ -174,22 +174,20 @@ proc defineModule*(moduleName: string) =
             shl 'a 3           ; a: 16
         """:
             #=======================================================
-            if xKind in {Literal, PathLiteral}: 
-                ensureInPlaceAny(); 
-                let valBefore = InPlaced
-                InPlaced <<= y
-                if InPlaced < valBefore and (hadAttr("safe")):
-                    SetInPlaceAny(newBigInteger(valBefore.i) << y)
-            elif normalIntegerOperation():
-                var res = normalIntegerShl(x.i, y.i)
-                if res < x and (hadAttr("safe")):
-                    res = newBigInteger(x.i) << y
-                push(res)
-            else:
-                var res = x << y
-                if res < x and (hadAttr("safe")):
-                    res = newBigInteger(x.i) << y
-                push(res)
+            dispatchWithLiteral:
+                _:
+                    value:
+                        var res =
+                            if normalIntegerOperation(): normalIntegerShl(x.i, y.i)
+                            else:                        x << y
+                        if res < x and hadAttr("safe"):
+                            res = newBigInteger(x.i) << y
+                        push(res)
+                    inplace:
+                        let valBefore = InPlaced
+                        InPlaced <<= y
+                        if InPlaced < valBefore and hadAttr("safe"):
+                            SetInPlaceAny(newBigInteger(valBefore.i) << y)
 
     builtin "shr",
         alias       = unaliased, 
