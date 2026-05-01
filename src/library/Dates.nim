@@ -208,7 +208,8 @@ proc defineModule*(moduleName: string) =
             print friday? now       ; false
         """:
             #=======================================================
-            push(newLogical(x.eobj.weekday == dFri))
+            dispatch:
+                Date(d): push(newLogical(d.weekday == dFri))
 
     builtin "future?",
         alias       = unaliased, 
