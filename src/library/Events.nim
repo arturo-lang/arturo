@@ -270,11 +270,17 @@ proc defineModule*(moduleName: string) =
                 # dispatcher fires its own subscribers. Best-effort —
                 # parent-died errors are dropped silently.
                 if not emitChannel.isNil:
+                    # Two-line wire format per event:
+                    #   line 1: raw event name (plain ASCII identifier)
+                    #   line 2: payload, `express.safe`-codified
+                    # We tried `[name payload]` as one line but Arturo's
+                    # parser splits `#[...]` (dict literal) into `#`
+                    # plus a plain block when it lives inside another
+                    # block — so dict payloads round-tripped wrong.
+                    # Two lines side-step that entirely.
                     try:
-                        emitChannel.writeLine(
-                            "[" & codify(newString(x.evt.name), safeStrings = true) &
-                            " " & codify(payload, safeStrings = true) & "]"
-                        )
+                        emitChannel.writeLine(x.evt.name)
+                        emitChannel.writeLine(codify(payload, safeStrings = true))
                         emitChannel.flushFile()
                     except IOError:
                         discard

@@ -56,20 +56,27 @@ when not defined(WEB):
                 defer: f.close()
                 f.setFilePos(pos)
                 var line: string
-                while f.readLine(line):
+                # two-line records: name on first line, codified payload
+                # on second. if we read a name but EOF hits before the
+                # payload, the name line is lost (rare — child flushes
+                # both writeLines before the next emit/exit).
+                var name: string
+                var payloadSrc: string
+                while f.readLine(name):
+                    if not f.readLine(payloadSrc):
+                        break
                     pos = f.getFilePos()
-                    if line.len == 0: continue
                     if inboundEventDispatcher.isNil: continue
                     try:
-                        let parsed = doParse(line, isFile=false)
-                        if parsed.isNil: continue
-                        let savedSP = SP
-                        execUnscoped(parsed)
-                        if SP > savedSP:
-                            let blk = stack.pop()
-                            if blk.kind == Block and blk.a.len == 2 and blk.a[0].kind == String:
-                                {.cast(gcsafe).}:
-                                    inboundEventDispatcher(blk.a[0].s, blk.a[1])
+                        let parsed = doParse(payloadSrc, isFile=false)
+                        var payload = VNULL
+                        if not parsed.isNil:
+                            let savedSP = SP
+                            execUnscoped(parsed)
+                            if SP > savedSP:
+                                payload = stack.pop()
+                        {.cast(gcsafe).}:
+                            inboundEventDispatcher(name, payload)
                     except CatchableError:
                         discard
             if not alive():
