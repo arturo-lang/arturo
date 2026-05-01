@@ -198,23 +198,25 @@ proc defineModule*(moduleName: string) =
                 var searchable: string
                 var value: Value = nil
 
-                if xKind == SymbolLiteral:
-                    searchable = $(x.m)
-                    for (sym, binding) in pairs(Aliases):
-                        if sym == x.m:
-                            searchable = binding.name.s
-                            value = FetchSym(searchable)
-                            break
+                dispatch:
+                    SymbolLiteral(m):
+                        searchable = $(m)
+                        for (sym, binding) in pairs(Aliases):
+                            if sym == m:
+                                searchable = binding.name.s
+                                value = FetchSym(searchable)
+                                break
 
-                    if value.isNil:
-                        Error_AliasNotFound($(x.m))
-                elif xKind == PathLiteral:
-                    searchable = $(x.p[^1])
-                    value = FetchPathSym(x.p)
-                else:
-                    searchable = x.s
-                    value = FetchSym(x.s)
-                
+                        if value.isNil:
+                            Error_AliasNotFound($(m))
+                    _:
+                        if xKind == PathLiteral:
+                            searchable = $(x.p[^1])
+                            value = FetchPathSym(x.p)
+                        else:
+                            searchable = x.s
+                            value = FetchSym(x.s)
+
                 if (hadAttr("get")):
                     push(newDictionary(getInfo(searchable, value, Aliases)))
                 else:
