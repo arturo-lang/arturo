@@ -53,6 +53,7 @@ when not defined(WEB):
 
         Subscription = object
             id: int         ## unique id for this registration; surfaced via `on.id` and used by `off id`
+            once: bool      ## if true, drop from subscribers after the next fire
             handler: EventHandler
 
     # Subscribers indexed by event name. Each `on e [...]` appends a
@@ -122,8 +123,20 @@ when not defined(WEB):
         ## the OS-level hooks for built-in events (`CtrlC`, `SigTerm`, …).
         {.cast(gcsafe).}:
             if subscribers.hasKey(name):
+                var oneShotIds: seq[int]
                 for sub in subscribers[name]:
                     enqueueEmit(sub.handler, payload)
+                    if sub.once:
+                        oneShotIds.add(sub.id)
+                if oneShotIds.len > 0:
+                    # Drop fired-once subscriptions from the registry.
+                    # Their already-queued invocation still fires on
+                    # the next tick — we only stop *future* fires.
+                    var keep: seq[Subscription]
+                    for sub in subscribers[name]:
+                        if sub.id notin oneShotIds:
+                            keep.add(sub)
+                    subscribers[name] = keep
 
 # TODO(Events): per-handler unsubscribe — `off E` clears *all* handlers
 #  for an event today. Per-handler removal would need handles returned
@@ -175,7 +188,8 @@ proc defineModule*(moduleName: string) =
                 "failed"    : ({Logical},"with `:task`: fire only when the task ends with an error"),
                 "cancelled" : ({Logical},"with `:task`: fire only when the task ends by cancellation"),
                 "finished"  : ({Logical},"with `:task`: fire on any termination (default)"),
-                "id"        : ({Logical},"return an :integer id identifying this registration (for use with `off`)")
+                "id"        : ({Logical},"return an :integer id identifying this registration (for use with `off`)"),
+                "once"      : ({Logical},"with `:event`: auto-remove the handler after its first fire")
             },
             returns     = {Nothing,Integer},
             example     = """
@@ -195,6 +209,11 @@ proc defineModule*(moduleName: string) =
             on.failed.with:'e t [ print ["failed:" e] ]
             on.finished.with:'r t [ print ["settled:" r] ]
             wait t
+            ..........
+            ; one-shot handler:
+            on.once E [ print "fires once" ]
+            emit E   ; → fires once
+            emit E   ; → no-op (handler auto-removed)
             """:
                 #=======================================================
                 var handler = EventHandler(body: y)
@@ -203,7 +222,7 @@ proc defineModule*(moduleName: string) =
 
                 inc nextSubscriberId
                 let subId = nextSubscriberId
-                let sub = Subscription(id: subId, handler: handler)
+                let sub = Subscription(id: subId, once: hadAttr("once"), handler: handler)
 
                 if xKind == Event:
                     subscribers.mgetOrPut(x.evt.name, @[]).add(sub)
