@@ -28,6 +28,7 @@ when not defined(WEB):
         import std/posix_utils
 
 when not defined(WEB):
+    import helpers/parallelism
     import helpers/stores
 
 import vm/lib
