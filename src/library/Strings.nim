@@ -630,75 +630,68 @@ proc defineModule*(moduleName: string) =
                 #=======================================================
                 let recursive = not (hadAttr("once"))
                 let templated = (hadAttr("template"))
-                var res: string
-                if xKind in {Literal,PathLiteral}:
-                    ensureInPlaceAny()
-                    res = InPlaced.s
-                else:
-                    res = x.s
 
                 let Interpolated    = nre.re"\|([^\|]+)\|"
                 let Embeddable      = re.re"(?s)(\<\|\|.*?\|\|\>)"
 
-                if templated:
-                    var keepGoing = true
-                    if recursive: 
-                        keepGoing = res.contains(Embeddable)
+                dispatchWithLiteral:
+                    String(s):
+                        block:
+                            var res = s
+                            if templated:
+                                var keepGoing = true
+                                if recursive:
+                                    keepGoing = res.contains(Embeddable)
 
-                    while keepGoing:
-                        var evaled: Translation
+                                while keepGoing:
+                                    var evaled: Translation
 
-                        evaled = templateStore.getOrDefault(res, nil)
-                        if evaled.isNil:
-                            let initial = res
-                            # make necessary substitutions
-                            res = "««" & res.replace("<||=","<|| to :string ").multiReplace(
-                                ("||>","««"),
-                                ("<||","»»")
-                            ) & "»»"
+                                    evaled = templateStore.getOrDefault(res, nil)
+                                    if evaled.isNil:
+                                        let initial = res
+                                        # make necessary substitutions
+                                        res = "««" & res.replace("<||=","<|| to :string ").multiReplace(
+                                            ("||>","««"),
+                                            ("<||","»»")
+                                        ) & "»»"
 
-                            # parse string template
-                            evaled = doEval(doParse(res, isFile=false))
-                            templateStore[initial] = evaled
+                                        # parse string template
+                                        evaled = doEval(doParse(res, isFile=false))
+                                        templateStore[initial] = evaled
 
-                        # execute/reduce ('array') the resulting block
-                        let stop = SP
-                        execUnscoped(evaled)
-    
-                        let arr: ValueArray = sTopsFrom(stop)
-                        SP = stop
+                                    # execute/reduce ('array') the resulting block
+                                    let stop = SP
+                                    execUnscoped(evaled)
 
-                        # and join the different strings
-                        res = ""
-                        for i, v in arr:
-                            if (not v.isNil) and v.kind==String:
-                                add(res, v.s)
+                                    let arr: ValueArray = sTopsFrom(stop)
+                                    SP = stop
 
-                        # if recursive, check if there's still more embedded tags
-                        # otherwise, break out of the loop
-                        if recursive: keepGoing = res.contains(Embeddable)
-                        else: keepGoing = false
-                else:
-                    var keepGoing = true
-                    if recursive: 
-                        keepGoing = res.find(Interpolated).isSome
+                                    # and join the different strings
+                                    res = ""
+                                    for i, v in arr:
+                                        if (not v.isNil) and v.kind==String:
+                                            add(res, v.s)
 
-                    while keepGoing:
-                        res = res.replace(Interpolated, proc (match: RegexMatch): string =
-                                    execUnscoped(doParse(match.captures[0], isFile=false))
-                                    $(stack.pop())
-                                )
+                                    # if recursive, check if there's still more embedded tags
+                                    # otherwise, break out of the loop
+                                    if recursive: keepGoing = res.contains(Embeddable)
+                                    else: keepGoing = false
+                            else:
+                                var keepGoing = true
+                                if recursive:
+                                    keepGoing = res.find(Interpolated).isSome
 
-                        # if recursive, check if there's still more embedded tags
-                        # otherwise, break out of the loop
-                        if recursive: keepGoing = res.find(Interpolated).isSome
-                        else: keepGoing = false
+                                while keepGoing:
+                                    res = res.replace(Interpolated, proc (match: RegexMatch): string =
+                                                execUnscoped(doParse(match.captures[0], isFile=false))
+                                                $(stack.pop())
+                                            )
 
-                if xKind in {Literal,PathLiteral}:
-                    ensureInPlaceAny()
-                    SetInPlaceAny(newString(res))
-                else:
-                    push(newString(res))
+                                    # if recursive, check if there's still more embedded tags
+                                    # otherwise, break out of the loop
+                                    if recursive: keepGoing = res.find(Interpolated).isSome
+                                    else: keepGoing = false
+                            res
 
     # TODO(Strings\replace) better implementation with more options needed
     #  Obviously, no need to overdo it here. But at least, we could add support for things like `.once`
