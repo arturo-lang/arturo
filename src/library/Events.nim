@@ -236,7 +236,24 @@ proc defineModule*(moduleName: string) =
                                 payload = fin.read()
 
                             if mode == "finished" or mode == state:
-                                enqueueEmit(cap, payload)
+                                # Fire synchronously from inside the
+                                # `addCallback` rather than re-queuing
+                                # via `enqueueEmit`. The callback is
+                                # already running on the dispatcher
+                                # tick that processed the future, and
+                                # we're inside the parent's `wait`
+                                # call — same VM context that
+                                # `execUnscoped` is happy with. This
+                                # drops the user-visible "two-tick"
+                                # latency: the handler now fires
+                                # before `wait t` returns, no extra
+                                # dispatcher pump needed.
+                                try:
+                                    if cap.param.len > 0:
+                                        Syms[cap.param] = payload
+                                    execUnscoped(cap.body)
+                                except CatchableError as e:
+                                    echo "Events: handler raised: " & e.msg
                     )
 
         builtin "emit",
