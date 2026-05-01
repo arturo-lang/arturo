@@ -20,6 +20,8 @@ when not defined(WEB):
         # std/net has to be qualified — there's a sibling `helpers/net.nim`
         # and Nim resolves bare `net` to it first.
         import std/net as netmod
+        import asyncnet
+        import extras/smtp
 
     import vm/lib
     import vm/[exec, parse, stack]
@@ -388,6 +390,46 @@ when not defined(WEB):
             try: client.close()
             except CatchableError: discard
         result = newTask(tsk)
+
+    when defined(ssl):
+        # in-process async SMTP send via `extras/smtp`'s `AsyncSmtp`.
+        # mirrors what the sync `mail` builtin does (newSmtp → connect →
+        # auth → sendMail → close), but each step is awaited so other
+        # in-flight tasks make progress while we wait on the network.
+        proc mailAsyncSend(smtp: AsyncSmtp, server: string, port: int,
+                           username, password, fromAddr: string,
+                           toAddrs: seq[string], msgStr: string): Future[Value] {.async.} =
+            # let CatchableError escape — `wait` classifies it (cancel →
+            # :null, otherwise → :error). cancellation closes the smtp
+            # socket and surfaces here as an exception, filtered out
+            # downstream via task state.
+            try:
+                await smtp.connect(server, Port(port))
+                await smtp.auth(username, password)
+                await smtp.sendMail(fromAddr, toAddrs, msgStr)
+                result = VNULL
+            finally:
+                try: await smtp.close()
+                except CatchableError: discard
+
+        # convenience: kick off an in-process async mail send and return
+        # a `:task`. the `AsyncSmtp` is held by the task so `cancel` can
+        # close the underlying socket and abort an in-flight handshake
+        # or `DATA` transfer.
+        proc spawnAsyncMail*(server: string, port: int,
+                             username, password, fromAddr: string,
+                             toAddrs: seq[string], msgStr: string,
+                             useSsl = true): Value =
+            let smtp = newAsyncSmtp(useSsl = useSsl)
+            let tsk = VTask(state: taskPending)
+            tsk.future = mailAsyncSend(smtp, server, port, username, password,
+                                       fromAddr, toAddrs, msgStr)
+            tsk.cancelHandle = proc() =
+                # close() is async on AsyncSmtp; we just close the
+                # underlying socket synchronously to abort.
+                try: smtp.sock.close()
+                except CatchableError: discard
+            result = newTask(tsk)
 
     # in-process async file write via `asyncfile`. content is already
     # serialized by the caller (e.g. JSON-encoded), so this layer just
