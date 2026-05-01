@@ -562,7 +562,7 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
         if isKeyVal:
             result &= " "
         else:
-            for i in 0..level-1: result &= "        "
+            for i in 0..level-1: result &= INDENT
 
     case v.kind:
         of Null         : result &= "null"
@@ -596,8 +596,8 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
                 result &= "««" & v.s & "»»"
             else:
                 if countLines(v.s)>1 or v.s.contains("\""):
-                    var splitl = join(toSeq(splitLines(v.s)),"\n" & repeat("        ",level+1))
-                    result &= "{\n" & repeat("        ",level+1) & splitl & "\n" & repeat("        ",level) & "}"
+                    var splitl = join(toSeq(splitLines(v.s)),"\n" & repeat(INDENT,level+1))
+                    result &= "{\n" & repeat(INDENT,level+1) & splitl & "\n" & repeat(INDENT,level) & "}"
                 else:
                     # TODO(Values/printable) `codify` could work better for String values
                     #  right now, it also escape Unicode values and that may not be what we need
@@ -639,7 +639,7 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
 
             if pretty:
                 result &= "\n"
-                for i in 0..level-1: result &= "        "
+                for i in 0..level-1: result &= INDENT
 
             if not (pretty and unwrapped and level==0):
                 if v.kind==Inline: result &= ")"
@@ -659,9 +659,9 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
                 for k,v in pairs(v.d):
                     if pretty:
                         if not (unwrapped):
-                            for i in 0..level: result &= "        "
+                            for i in 0..level: result &= INDENT
                         else:
-                            for i in 0..level-1: result &= "        "
+                            for i in 0..level-1: result &= INDENT
                         result &= k & ":"
                     else:
                         result &= k & ": "
@@ -672,7 +672,7 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
                         result &= " "
 
             if pretty:
-                for i in 0..level-1: result &= "        "
+                for i in 0..level-1: result &= INDENT
             
             if not (pretty and unwrapped and level==0):
                 result &= "]"
