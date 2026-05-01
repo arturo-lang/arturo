@@ -215,7 +215,7 @@ template stdoutWrite(sss: string): untyped =
     if target.isNil: stdout.write sss
     else: target[] &= sss
 
-proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepend="", target: ref string = nil) {.exportc.} = 
+proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepend="", inline: bool=false, target: ref string = nil) {.exportc.} =
     
     proc dumpPrimitive(str: string, v: Value) =
         if not muted:   stdoutWrite fmt("{bold(greenColor)}{str}{fg(grayColor)} :{($(v.kind)).toLowerAscii()}{resetColor}")
@@ -259,7 +259,8 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
         stdoutWrite lln
         if not muted: stdoutWrite fmt("{resetColor}")
 
-    for i in 0..level-1: stdoutWrite INDENT
+    if not inline:
+        for i in 0..level-1: stdoutWrite INDENT
 
     if prepend!="":
         stdoutWrite prepend
@@ -334,9 +335,9 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
                 for key,value in v.e:
                     for i in 0..level: stdoutWrite INDENT
 
-                    stdoutWrite unicode.alignLeft(key & " ", maxLen) & ":"
+                    stdoutWrite unicode.alignLeft(key & " ", maxLen) & ": "
 
-                    dump(value, level+1, false, muted=muted, target=target)
+                    dump(value, level+1, false, muted=muted, inline=true, target=target)
 
             dumpBlockEnd()
 
@@ -378,9 +379,9 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
                 for key,value in v.singleton.o.pairs:
                     for i in 0..level: stdoutWrite INDENT
 
-                    stdoutWrite unicode.alignLeft(key & " ", maxLen) & ":"
+                    stdoutWrite unicode.alignLeft(key & " ", maxLen) & ": "
 
-                    dump(value, level+1, false, muted=muted, target=target)
+                    dump(value, level+1, false, muted=muted, inline=true, target=target)
 
             dumpBlockEnd()
 
@@ -397,9 +398,9 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
                 for key,value in v.d:
                     for i in 0..level: stdoutWrite INDENT
 
-                    stdoutWrite unicode.alignLeft(key & " ", maxLen) & ":"
+                    stdoutWrite unicode.alignLeft(key & " ", maxLen) & ": "
 
-                    dump(value, level+1, false, muted=muted, target=target)
+                    dump(value, level+1, false, muted=muted, inline=true, target=target)
 
             dumpBlockEnd()
 
@@ -416,9 +417,9 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
                 for key,value in v.sto.data:
                     for i in 0..level: stdoutWrite INDENT
 
-                    stdoutWrite unicode.alignLeft(key & " ", maxLen) & ":"
+                    stdoutWrite unicode.alignLeft(key & " ", maxLen) & ": "
 
-                    dump(value, level+1, false, muted=muted, target=target)
+                    dump(value, level+1, false, muted=muted, inline=true, target=target)
 
             dumpBlockEnd()
         
@@ -433,9 +434,9 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
                 for key,value in v.o.objectPairs:
                     for i in 0..level: stdoutWrite INDENT
 
-                    stdoutWrite unicode.alignLeft(key & " ", maxLen) & ":"
+                    stdoutWrite unicode.alignLeft(key & " ", maxLen) & ": "
 
-                    dump(value, level+1, false, muted=muted, target=target)
+                    dump(value, level+1, false, muted=muted, inline=true, target=target)
 
             dumpBlockEnd()
 
