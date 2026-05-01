@@ -319,7 +319,7 @@ proc defineModule*(moduleName: string) =
                 # dispatcher fires its own subscribers. Best-effort —
                 # parent-died errors are dropped silently.
                 if not emitChannel.isNil:
-                    # Two-line wire format per event:
+                    # Child → parent. Two-line wire format per event:
                     #   line 1: raw event name (plain ASCII identifier)
                     #   line 2: payload, `express.safe`-codified
                     # We tried `[name payload]` as one line but Arturo's
@@ -333,6 +333,11 @@ proc defineModule*(moduleName: string) =
                         emitChannel.flushFile()
                     except IOError:
                         discard
+                else:
+                    # Parent → all live children. Same two-line wire
+                    # format. No-op when there are no live children
+                    # (e.g. plain top-level VM not running anything async).
+                    broadcastToChildren(x.evt.name, codify(payload, safeStrings = true))
 
         builtin "off",
             alias       = unaliased,
