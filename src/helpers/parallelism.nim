@@ -198,6 +198,50 @@ when not defined(WEB):
         result.ctx = newVMContext(parentSyms)
         scheduler.ready.add(result)
 
+    proc runOneStep*() =
+        ## One iteration of the scheduler loop. Either resumes the
+        ## next ready fiber (preferred) or, if none, drives one
+        ## round of asyncdispatch. Caller is expected to drive this
+        ## from main only.
+        ##
+        ## Swap protocol: main → fiber → main, with the live VM
+        ## globals belonging to whoever is currently running.
+        if scheduler.ready.len > 0:
+            let f = scheduler.ready[0]
+            scheduler.ready.delete(0)         # FIFO; O(N) — fine for v1
+            scheduler.currentFiber = f
+            swapOutTo(scheduler.mainCtx)
+            swapInFrom(f.ctx)
+            resume(f)                         # runs f until it suspends or returns
+            swapOutTo(f.ctx)                  # save f's view (or empty if done)
+            swapInFrom(scheduler.mainCtx)     # main's view back
+            scheduler.currentFiber = nil
+        elif hasPendingOperations():
+            poll()                            # blocks until at least one I/O event
+
+    proc runScheduledFibers*() =
+        ## Drain the ready queue plus the asyncdispatch queue until
+        ## both are empty. Used at program-exit-style sync points
+        ## where we want every spawned fiber to finish.
+        while scheduler.ready.len > 0 or hasPendingOperations():
+            runOneStep()
+
+    proc runUntilFutureDone*[T](fut: Future[T]): T =
+        ## Block on `fut` from main while letting fibers and I/O
+        ## callbacks make progress. This is what `wait t` will call
+        ## when invoked from main (Phase 4). Returns the future's
+        ## value or re-raises its failure.
+        ##
+        ## Deadlock guard: if both queues are empty but `fut` isn't
+        ## done, nothing can ever wake it — bail with a clear error
+        ## rather than spin forever.
+        while not fut.finished:
+            if scheduler.ready.len == 0 and not hasPendingOperations():
+                raise newException(CatchableError,
+                    "runUntilFutureDone: no pending work, future will never complete")
+            runOneStep()
+        return fut.read()
+
     proc cooperativeAwait*[T](fut: Future[T]): T =
         ## Suspend the current fiber until `fut` completes, then
         ## return its value (or re-raise its failure). Must be
