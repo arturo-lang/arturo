@@ -40,6 +40,21 @@ when not defined(WEB):
     proc setInboundEventDispatcher*(fn: proc(name: string, payload: Value) {.gcsafe.}) =
         inboundEventDispatcher = fn
 
+    # Per-child inbound files — paths the parent writes into so each
+    # live child can tail and dispatch into its own subscriber table.
+    # `runInChildProcess` registers when it spawns and unregisters when
+    # the child exits. The list is what the parent's `emit` fans out
+    # over (see `broadcastToChildren`).
+    var childInboundFiles: seq[string] = @[]
+
+    proc registerChildInbound*(path: string) =
+        childInboundFiles.add(path)
+
+    proc unregisterChildInbound*(path: string) =
+        let idx = childInboundFiles.find(path)
+        if idx >= 0:
+            childInboundFiles.delete(idx)
+
     proc tailEventChannel*(path: string, alive: proc(): bool {.gcsafe.}) {.async, gcsafe.} =
         ## Poll-based tail of the child's event channel file. Reads any
         ## newly-appended `[name payload]` records, parses each via the
