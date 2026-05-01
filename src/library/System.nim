@@ -244,12 +244,6 @@ proc defineModule*(moduleName: string) =
                 let code = (hadAttr("code"))
                 let directly = (hadAttr("directly"))
 
-                # TODO(System\execute) Fix handling of `.async`
-                #  It currently "works" but in a very - very - questionable way.
-                #  This has to be implemented properly.
-                #  Also: having a globally-available array of "processes" makes things looking even worse.
-                #  labels: library, enhancement, windows, linux, macos
-
                 if (hadAttr("async")):
                     # build the full shell command (args appended, quoted)
                     # so `runShellInChildProcess` can pass it through the
