@@ -53,6 +53,7 @@
 # Libraries
 #=======================================
 
+import vm/[globals, stack]
 import vm/values/value
 
 #=======================================
@@ -73,3 +74,33 @@ type
         cancelRequested*: bool
             ## Flipped by `cancel` from outside; checked by the
             ## scheduler at every cooperative yield (Phase 5).
+
+#=======================================
+# Methods
+#=======================================
+
+proc swapOutTo*(ctx: VMContext) =
+    ## Save the live VM globals into `ctx`. After this call the
+    ## per-fiber globals are in an undefined intermediate state and
+    ## must be repaired by a `swapInFrom` before any VM code runs.
+    ##
+    ## `move` everywhere — `seq` and `Table` headers move in O(1)
+    ## under ARC/ORC, so each swap is a handful of word-sized
+    ## assignments regardless of how big the underlying data is.
+    ctx.stack       = move Stack
+    ctx.sp          = SP
+    ctx.attrs       = move Attrs
+    ctx.syms        = move Syms
+    ctx.dictSyms    = move DictSyms
+    ctx.scopeStack  = move ScopeStack
+
+proc swapInFrom*(ctx: VMContext) =
+    ## Restore the live VM globals from `ctx`. The reverse of
+    ## `swapOutTo`. After this call the VM is ready to execute
+    ## code in the fiber `ctx` belongs to.
+    Stack       = move ctx.stack
+    SP          = ctx.sp
+    Attrs       = move ctx.attrs
+    Syms        = move ctx.syms
+    DictSyms    = move ctx.dictSyms
+    ScopeStack  = move ctx.scopeStack
