@@ -55,6 +55,24 @@ when not defined(WEB):
         if idx >= 0:
             childInboundFiles.delete(idx)
 
+    proc broadcastToChildren*(name: string, payloadSrc: string) {.gcsafe.} =
+        ## Append a `[name, payload]` record (two-line format, same as
+        ## the child→parent direction) into every live child's inbound
+        ## file. Called by `emit` from a parent VM. `payloadSrc` is the
+        ## already-codified Arturo source for the payload — keeps this
+        ## helper decoupled from the value-codify imports.
+        {.cast(gcsafe).}:
+            for path in childInboundFiles:
+                try:
+                    var f: File
+                    if open(f, path, fmAppend):
+                        f.writeLine(name)
+                        f.writeLine(payloadSrc)
+                        f.flushFile()
+                        f.close()
+                except IOError, OSError:
+                    discard
+
     proc tailEventChannel*(path: string, alive: proc(): bool {.gcsafe.}) {.async, gcsafe.} =
         ## Poll-based tail of the child's event channel file. Reads any
         ## newly-appended `[name payload]` records, parses each via the
