@@ -330,7 +330,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
             let keys = toSeq(v.e.keys)
 
             if keys.len > 0:
-                let maxLen = (keys.map(proc (x: string):int = x.len)).max + 2
+                let maxLen = (keys.map(proc (x: string):int = x.len)).max + 1
 
                 for key,value in v.e:
                     for i in 0..level: stdoutWrite INDENT
@@ -374,7 +374,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
             let keys = toSeq(v.singleton.o.keys)
 
             if keys.len > 0:
-                let maxLen = (keys.map(proc (x: string):int = x.len)).max + 2
+                let maxLen = (keys.map(proc (x: string):int = x.len)).max + 1
 
                 for key,value in v.singleton.o.pairs:
                     for i in 0..level: stdoutWrite INDENT
@@ -393,7 +393,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
             let keys = toSeq(v.d.keys)
 
             if keys.len > 0:
-                let maxLen = (keys.map(proc (x: string):int = x.len)).max + 2
+                let maxLen = (keys.map(proc (x: string):int = x.len)).max + 1
 
                 for key,value in v.d:
                     for i in 0..level: stdoutWrite INDENT
@@ -412,7 +412,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
             let keys = toSeq(v.sto.data.keys)
 
             if keys.len > 0:
-                let maxLen = (keys.map(proc (x: string):int = x.len)).max + 2
+                let maxLen = (keys.map(proc (x: string):int = x.len)).max + 1
 
                 for key,value in v.sto.data:
                     for i in 0..level: stdoutWrite INDENT
@@ -429,7 +429,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
             let keys = toSeq(v.o.objectKeys)
 
             if keys.len > 0:
-                let maxLen = (keys.map(proc (x: string):int = x.len)).max + 2
+                let maxLen = (keys.map(proc (x: string):int = x.len)).max + 1
 
                 for key,value in v.o.objectPairs:
                     for i in 0..level: stdoutWrite INDENT
