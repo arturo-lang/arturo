@@ -492,25 +492,24 @@ proc defineModule*(moduleName: string) =
             write.append "Yes, Hello again!" "somefile.txt"
             """:
                 #=======================================================
-                if xKind==Bytecode:
-                    let dataS = codify(newBlock(y.trans.constants), unwrapped=true, safeStrings=true)
-                    let codeS = x.trans.instructions
-                    discard writeBytecode(dataS, codeS, y.s)
-                else:
-                    if (hadAttr("directory")):
-                        createDir(y.s)
-                    else:
-                        if (hadAttr("binary")):
+                dispatch:
+                    Bytecode(t):
+                        let dataS = codify(newBlock(y.trans.constants), unwrapped=true, safeStrings=true)
+                        let codeS = t.instructions
+                        discard writeBytecode(dataS, codeS, y.s)
+                    _:
+                        if (hadAttr("directory")):
+                            createDir(y.s)
+                        elif (hadAttr("binary")):
                             writeToFile(y.s, x.n, append = (hadAttr("append")))
-                        else:
-                            if (hadAttr("json")):
-                                let rez = jsonFromValue(x, pretty=(not hadAttr("compact")))
-                                if y.kind==String:
-                                    writeToFile(y.s, rez, append = (hadAttr("append")))
-                                else:
-                                    push(newString(rez))
+                        elif (hadAttr("json")):
+                            let rez = jsonFromValue(x, pretty=(not hadAttr("compact")))
+                            if y.kind==String:
+                                writeToFile(y.s, rez, append = (hadAttr("append")))
                             else:
-                                writeToFile(y.s, x.s, append = (hadAttr("append")))
+                                push(newString(rez))
+                        else:
+                            writeToFile(y.s, x.s, append = (hadAttr("append")))
 
         builtin "zip",
             alias       = unaliased, 
