@@ -283,6 +283,14 @@ when not defined(WEB):
         tsk.future = runInChildProcess(tsk, src)
         result = newTask(tsk)
 
+    # convenience: turn a shell command into a pending `:task`. used by
+    # `execute.async`. `withCode` toggles the resolved-value shape between
+    # bare output string and `#[output: code:]` dict (mirrors `execute.code`).
+    proc spawnShellAsTask*(fullCmd: string, withCode: bool): Value =
+        let tsk = VTask(state: taskPending)
+        tsk.future = runShellInChildProcess(tsk, fullCmd, withCode)
+        result = newTask(tsk)
+
     # in-process async download via Nim's `AsyncHttpClient`. unlike the subprocess
     # path, this stays in the same VM: no fork/exec overhead, no separate Arturo
     # interpreter, just a `Future[void]` from the dispatcher wrapped to return
