@@ -35,15 +35,6 @@ import vm/lib
 import vm/[env, errors]
 
 #=======================================
-# Variables
-#=======================================
-
-when not defined(WEB):
-
-    var
-        ActiveProcesses = initOrderedTable[int, Process]()
-
-#=======================================
 # Definitions
 #=======================================
 
