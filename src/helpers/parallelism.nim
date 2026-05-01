@@ -201,6 +201,10 @@ when not defined(WEB):
         if fileExists(evtFile):
             try: removeFile(evtFile)
             except CatchableError: discard
+        unregisterChildInbound(inboundFile)
+        if fileExists(inboundFile):
+            try: removeFile(inboundFile)
+            except CatchableError: discard
         if code == 0 and fileExists(resFile):
             let raw = readFile(resFile)
             removeFile(resFile)
