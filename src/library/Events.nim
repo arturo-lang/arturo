@@ -334,26 +334,34 @@ proc defineModule*(moduleName: string) =
                 # ship `[name payload]` up the pipe so the parent's
                 # dispatcher fires its own subscribers. Best-effort —
                 # parent-died errors are dropped silently.
-                if not emitChannel.isNil:
-                    # Child → parent. Two-line wire format per event:
-                    #   line 1: raw event name (plain ASCII identifier)
-                    #   line 2: payload, `express.safe`-codified
-                    # We tried `[name payload]` as one line but Arturo's
-                    # parser splits `#[...]` (dict literal) into `#`
-                    # plus a plain block when it lives inside another
-                    # block — so dict payloads round-tripped wrong.
-                    # Two lines side-step that entirely.
-                    try:
-                        emitChannel.writeLine(x.evt.name)
-                        emitChannel.writeLine(codify(payload, safeStrings = true))
-                        emitChannel.flushFile()
-                    except IOError:
-                        discard
-                else:
-                    # Parent → all live children. Same two-line wire
-                    # format. No-op when there are no live children
-                    # (e.g. plain top-level VM not running anything async).
-                    broadcastToChildren(x.evt.name, codify(payload, safeStrings = true))
+                # Built-in events are local-only. A child's `emit CtrlC`
+                # making the parent's CtrlC handler fire would almost
+                # always be a footgun. Same logic in reverse: parent's
+                # `emit BeforeExit` shouldn't spuriously trigger child
+                # shutdown handlers. User events propagate normally.
+                let isBuiltIn = x.evt.name in [
+                    "CtrlC", "BeforeExit", "SigTerm", "SigHup"
+                ]
+                if not isBuiltIn:
+                    if not emitChannel.isNil:
+                        # Child → parent. Two-line wire format per event:
+                        #   line 1: raw event name (plain ASCII identifier)
+                        #   line 2: payload, `express.safe`-codified
+                        # We tried `[name payload]` as one line but Arturo's
+                        # parser splits `#[...]` (dict literal) into `#`
+                        # plus a plain block when it lives inside another
+                        # block — so dict payloads round-tripped wrong.
+                        # Two lines side-step that entirely.
+                        try:
+                            emitChannel.writeLine(x.evt.name)
+                            emitChannel.writeLine(codify(payload, safeStrings = true))
+                            emitChannel.flushFile()
+                        except IOError:
+                            discard
+                    else:
+                        # Parent → all live children. Same two-line wire
+                        # format. No-op when there are no live children.
+                        broadcastToChildren(x.evt.name, codify(payload, safeStrings = true))
 
         builtin "off",
             alias       = unaliased,
