@@ -228,7 +228,8 @@ proc defineModule*(moduleName: string) =
             print future? futureDate    ; true
         """:
             #=======================================================
-            push(newLogical(x.eobj > now()))
+            dispatch:
+                Date(d): push(newLogical(d > now()))
 
     builtin "leap?",
         alias       = unaliased, 
