@@ -180,6 +180,24 @@ when not defined(WEB):
         ## (suspends the current fiber).
         scheduler.currentFiber.isNil
 
+    proc spawnFiber*(entry: proc (), parentSyms: SymTable): Fiber =
+        ## Create a fiber bound to a fresh `VMContext` (shallow copy
+        ## of `parentSyms`, fresh stack/attrs/scope) and queue it on
+        ## the scheduler's ready list. Returns the `Fiber` so the
+        ## caller can hold onto it (e.g. for cancellation) — the
+        ## scheduler doesn't otherwise expose its queue.
+        ##
+        ## The entry proc receives the fiber's globals already
+        ## installed (the scheduler swaps them in before each
+        ## `resume`); it runs as if at top-level. When it returns,
+        ## the scheduler treats the fiber as done. Suspending
+        ## mid-run is a separate concern (`cooperativeAwait`).
+        if scheduler.mainCtx.isNil:
+            initScheduler()
+        result = createFiber(entry)
+        result.ctx = newVMContext(parentSyms)
+        scheduler.ready.add(result)
+
 #=======================================
 # Cross-process event dispatch hook
 #=======================================
