@@ -229,12 +229,16 @@ proc defineModule*(moduleName: string) =
             xnor 'a 3          ; a: -2
         """:
             #=======================================================
-            if xKind==Literal : 
-                ensureInPlace(); InPlaced ^^= y; !!= InPlaced
-            elif normalIntegerOperation():
-                push(normalIntegerNot(normalIntegerXor(x.i, y.i).i))
-            else:
-                push(!! (x ^^ y))
+            dispatchWithLiteral:
+                _:
+                    value:
+                        if normalIntegerOperation():
+                            push(normalIntegerNot(normalIntegerXor(x.i, y.i).i))
+                        else:
+                            push(!! (x ^^ y))
+                    inplace:
+                        InPlaced ^^= y
+                        !!= InPlaced
         
     builtin "xor",
         alias       = unaliased, 
