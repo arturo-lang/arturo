@@ -111,7 +111,7 @@ jobs:
               name: Run tests
               run: |
                 cd $GITHUB_WORKSPACE/arturo
-                git clone https://github.com/arturo-lang/examples.git ../examples
+                git clone -b regen-inspect-res https://github.com/arturo-lang/examples.git ../examples
 
                 arturo -v
                 if ! arturo tools/tester.art; then
