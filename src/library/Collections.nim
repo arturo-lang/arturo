@@ -188,34 +188,30 @@ proc defineModule*(moduleName: string) =
 
                     push newBlock(blk)
             else:
-                if xKind==Range:
-                    push(newBlock(toSeq(items(x.rng))))
-                else:
-                    if xKind==Block:
+                dispatch:
+                    Range(rng): push(newBlock(toSeq(items(rng))))
+                    Block(_):
                         let stop = SP
                         execUnscoped(x)
                         let arr: ValueArray = sTopsFrom(stop)
                         SP = stop
-
                         push(newBlock(arr))
-                    elif xKind==String:
+                    String(s):
                         let stop = SP
 
                         when defined(BUNDLE):
-                            let (_{.inject.}, tp) = (getBundledResource(x.s)[0], FileData)
+                            let (_{.inject.}, tp) = (getBundledResource(s)[0], FileData)
                         else:
-                            let (_{.inject.}, tp) = getSource(x.s)
+                            let (_{.inject.}, tp) = getSource(s)
 
                         if tp!=TextData:
-                            execUnscoped(doParse(x.s, isFile=false))
+                            execUnscoped(doParse(s, isFile=false))
                         else:
-                            Error_FileNotFound(x.s)
+                            Error_FileNotFound(s)
                         let arr: ValueArray = sTopsFrom(stop)
                         SP = stop
-
                         push(newBlock(arr))
-                    else:
-                        push(newBlock(@[x]))
+                    _: push(newBlock(@[x]))
 
     builtin "chop",
         alias       = unaliased,
