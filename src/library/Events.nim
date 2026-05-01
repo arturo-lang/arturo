@@ -117,6 +117,21 @@ when not defined(WEB):
         except CatchableError:
             discard
 
+    proc initInboundChannel() =
+        ## Symmetric to `initEmitChannel`: when running as a child, the
+        ## parent's path lives in `ARTURO_EVENT_INBOUND`. We launch a
+        ## long-running async tail that dispatches every parent-emitted
+        ## record into our local subscriber table — so `on E [...]` in
+        ## a child fires when the parent does `emit E`.
+        ##
+        ## The tail's `alive` predicate always returns true: the child
+        ## stays subscribed for as long as it lives, and the loop
+        ## terminates naturally when the process exits.
+        let path = getEnv("ARTURO_EVENT_INBOUND")
+        if path.len == 0: return
+        asyncCheck tailEventChannel(path,
+            proc(): bool {.gcsafe.} = true)
+
     proc dispatchEvent(name: string, payload: Value) {.gcsafe.} =
         ## Look up subscribers for the named event and enqueue each on
         ## the next dispatcher tick. Shared by the `emit` builtin and
@@ -151,6 +166,7 @@ proc defineModule*(moduleName: string) =
 
         initEmitChannel()
         setInboundEventDispatcher(dispatchEvent)
+        initInboundChannel()
 
         #----------------------------
         # Functions
