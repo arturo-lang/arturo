@@ -421,25 +421,26 @@ proc defineModule*(moduleName: string) =
             #=======================================================
             var dict: ValueDict
 
-            if xKind==Block:
-                if (hadAttr("raw")):
-                    dict = initOrderedTable[string,Value]()
-                    var idx = 0
-                    while idx < x.a.len:
-                        dict[x.a[idx].s] = x.a[idx+1]
-                        idx += 2
-                else:
-                    dict = execDictionary(x)
-            elif xKind==String:
-                when defined(BUNDLE):
-                    let (src, tp) = (getBundledResource(x.s)[0], FileData)
-                else:
-                    let (src, tp) = getSource(x.s)
+            dispatch:
+                Block(a):
+                    if hadAttr("raw"):
+                        dict = initOrderedTable[string,Value]()
+                        var idx = 0
+                        while idx < a.len:
+                            dict[a[idx].s] = a[idx+1]
+                            idx += 2
+                    else:
+                        dict = execDictionary(x)
+                String(s):
+                    when defined(BUNDLE):
+                        let (src, tp) = (getBundledResource(s)[0], FileData)
+                    else:
+                        let (src, tp) = getSource(s)
 
-                if tp!=TextData:
-                    dict = execDictionary(doParse(src, isFile=false))#, isIsolated=true)
-                else:
-                    Error_FileNotFound(x.s)
+                    if tp!=TextData:
+                        dict = execDictionary(doParse(src, isFile=false))
+                    else:
+                        Error_FileNotFound(s)
 
             if checkAttr("with"):
                 for x in aWith.a:
