@@ -104,15 +104,13 @@ proc defineModule*(moduleName: string) =
                 prec = InfixPrecedence
 
             var sym: VSymbol
-            if xKind==String:
-                sym = doParse(x.s, isFile=false).a[0].m
-            elif xKind==Block:
-                let elem {.cursor.} = x.a[0]
-                requireValue(elem, {Symbol, SymbolLiteral})
-
-                sym = elem.m
-            else:
-                sym = x.m
+            dispatch:
+                String(s): sym = doParse(s, isFile=false).a[0].m
+                Block(a):
+                    let elem {.cursor.} = a[0]
+                    requireValue(elem, {Symbol, SymbolLiteral})
+                    sym = elem.m
+                _: sym = x.m
 
             Aliases[sym] = AliasBinding(
                 precedence: prec,
