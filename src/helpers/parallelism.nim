@@ -354,6 +354,26 @@ when not defined(WEB):
             except CatchableError: discard
         result = newTask(tsk)
 
+    # URL counterpart to `spawnAsyncRead`. mirrors the same shape: own the
+    # http client so `cancel` can `close()` it and abort an in-flight GET,
+    # run the user-supplied `postProcess` closure on the body once it
+    # arrives. SSL context matches `spawnAsyncDownload` (verify-none, same
+    # as the sync `getSource` path).
+    proc spawnAsyncReadUrl*(url: string, postProcess: proc(src: string): Value): Value =
+        when defined(ssl):
+            let client = newAsyncHttpClient(sslContext = netmod.newContext(verifyMode = CVerifyNone))
+        else:
+            let client = newAsyncHttpClient()
+        proc go(): Future[Value] {.async.} =
+            let src = await readUrlAsyncStr(client, url)
+            result = postProcess(src)
+        let tsk = VTask(state: taskPending)
+        tsk.future = go()
+        tsk.cancelHandle = proc() =
+            try: client.close()
+            except CatchableError: discard
+        result = newTask(tsk)
+
     # in-process async file write via `asyncfile`. content is already
     # serialized by the caller (e.g. JSON-encoded), so this layer just
     # streams bytes to disk through the dispatcher.
