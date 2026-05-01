@@ -23,9 +23,107 @@ when not defined(WEB):
         import asyncnet
         import extras/smtp
 
+    import extras/minicoro
+
     import vm/lib
     import vm/[exec, parse, stack]
     import vm/values/custom/vtask
+
+#=======================================
+# Fibers — stackful coroutines on top of vendored minicoro
+#=======================================
+#
+# Asymmetric coroutines: from the main thread you `resume(f)` a
+# fiber; from inside the fiber, `suspend()` yields back to whoever
+# resumed it. Switching A → B (both fibers) is two hops:
+# `suspend()` from A back to main, then `resume(B)` from main.
+#
+# ## GC integration (or lack thereof)
+#
+# Arturo builds with `--mm:orc`. Under ORC the compiler emits
+# refcount inc/dec at every scope boundary; the GC does **not** scan
+# C stacks. A suspended fiber hasn't yet executed its scope-end
+# decrements, so any `ref` reachable only from the fiber's stack is
+# kept alive by its own refcount. Cycles reachable only from the
+# fiber are likewise visible to ORC's cycle collector. Consequently,
+# no `GC_addStack` / `GC_removeStack` is needed — under ORC those
+# procs aren't even declared. Confirmed by the ucontext spike (see
+# CONCURRENCY_NOTES.md "Spike result", 2026-05-01) and the Phase 1
+# stress test on this branch. If we ever switch to a stack-scanning
+# GC, this comment is the place to start re-reading.
+
+when not defined(WEB):
+    const
+        DefaultFiberStackSize* = 256 * 1024
+            ## 256KB per CONCURRENCY_NOTES.md — comfortable for
+            ## moderately recursive Arturo functions, far more than
+            ## minicoro's own 56KB default. Per-fiber override via
+            ## `createFiber`'s `stackSize` argument.
+
+    type
+        Fiber* = ref object
+            ## Owns the underlying `mco_coro` and the entry closure.
+            ## Held as a Nim `ref` so the closure environment stays
+            ## alive as long as the fiber does.
+            handle: McoCoroPtr
+            entry: proc ()
+
+    proc fiberCheck(res: McoResult, op: string) {.inline.} =
+        if res != mcoSuccess:
+            raise newException(CatchableError,
+                "fiber " & op & " failed: " & $mco_result_description(res))
+
+    proc fiberTrampoline(co: McoCoroPtr) {.cdecl.} =
+        # Single C-callable entry. Pulls the Fiber ref back out of
+        # user_data, then invokes the Nim closure stored on it.
+        let f = cast[Fiber](mco_get_user_data(co))
+        f.entry()
+
+    proc createFiber*(entry: proc (),
+                      stackSize: int = DefaultFiberStackSize): Fiber =
+        ## Create a new suspended fiber. The first `resume` call will
+        ## start running `entry` on a fresh stack of `stackSize`
+        ## bytes. When `entry` returns, the fiber transitions to
+        ## `mcoDead` and must be cleaned up with `destroyFiber`.
+        result = Fiber(entry: entry)
+        GC_ref(result)  # keep alive while minicoro holds the user_data ptr
+        var desc = mco_desc_init(fiberTrampoline, csize_t(stackSize))
+        desc.userData = cast[pointer](result)
+        var co: McoCoroPtr
+        fiberCheck(mco_create(addr co, addr desc), "create")
+        result.handle = co
+
+    proc destroyFiber*(f: Fiber) =
+        ## Release the fiber's stack and internal struct. Safe only
+        ## when the fiber is suspended or dead — calling this on a
+        ## running fiber is a programming error and minicoro will
+        ## report it.
+        if f.handle != nil:
+            fiberCheck(mco_destroy(f.handle), "destroy")
+            f.handle = nil
+            GC_unref(f)
+
+    proc resume*(f: Fiber) {.inline.} =
+        ## Resume `f` until it suspends or finishes. Must be called
+        ## from a context that is *not* itself running on `f`'s stack.
+        fiberCheck(mco_resume(f.handle), "resume")
+
+    proc suspend*() {.inline.} =
+        ## Yield execution from the currently running fiber back to
+        ## its resumer. Must be called from inside a fiber's entry
+        ## chain.
+        fiberCheck(mco_yield(mco_running()), "suspend")
+
+    proc isDone*(f: Fiber): bool {.inline.} =
+        ## True once the fiber's entry proc has returned.
+        mco_status(f.handle) == mcoDead
+
+    proc currentFiberHandle*(): McoCoroPtr {.inline.} =
+        ## The minicoro handle for the currently running fiber, or
+        ## `nil` if called from the main thread (no fiber active).
+        ## The Phase 3 scheduler uses this to identify "are we on
+        ## the main fiber" without going through the `Fiber` ref.
+        mco_running()
 
 #=======================================
 # Cross-process event dispatch hook
