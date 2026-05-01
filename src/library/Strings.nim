@@ -293,31 +293,26 @@ proc defineModule*(moduleName: string) =
             2. Banana
         """:
             #=======================================================
-            if (hadAttr("path")):
-                if xKind in {Literal, PathLiteral}:
-                    ensureInPlaceAny()
-                    SetInPlaceAny(newString(joinPath(InPlaced.a.map(proc (v:Value):string = $(v)))))
-                else:
-                    push(newString(joinPath(x.a.map(proc (v:Value):string = $(v)))))
-            else:
-                var sep: string
+            let asPath = hadAttr("path")
+            var sep: string
+            if not asPath:
                 if checkAttr("with"):
-                    if likely(aWith.kind == String):
-                        sep = aWith.s
-                    else:
-                        sep = $(aWith.c)
-                elif hadAttr("words"):
-                    sep = " "
-                elif hadAttr("lines"):
-                    sep = "\n"
-                else:
-                    sep = ""
+                    if likely(aWith.kind == String): sep = aWith.s
+                    else:                            sep = $(aWith.c)
+                elif hadAttr("words"): sep = " "
+                elif hadAttr("lines"): sep = "\n"
+                else:                  sep = ""
 
-                if xKind in {Literal, PathLiteral}:
-                    ensureInPlaceAny()
-                    SetInPlaceAny(newString(InPlaced.a.map(proc (v:Value):string = $(v)).join(sep)))
-                else:
-                    push(newString(x.a.map(proc (v:Value):string = $(v)).join(sep)))
+            dispatchWithLiteral:
+                Block(a):
+                    value:
+                        let strs = a.map(proc (v: Value): string = $(v))
+                        if asPath: push(newString(joinPath(strs)))
+                        else:      push(newString(strs.join(sep)))
+                    inplace:
+                        let strs = a.map(proc (v: Value): string = $(v))
+                        if asPath: SetInPlaceAny(newString(joinPath(strs)))
+                        else:      SetInPlaceAny(newString(strs.join(sep)))
 
     builtin "levenshtein",
         alias       = unaliased, 
