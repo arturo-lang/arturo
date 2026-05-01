@@ -108,19 +108,22 @@ proc newVMContext*(parentSyms: SymTable): VMContext =
     newSeq(result.stack, StackSize)
 
 proc swapOutTo*(ctx: VMContext) =
-    ## Save the live VM globals into `ctx`. After this call the
-    ## per-fiber globals are in an undefined intermediate state and
-    ## must be repaired by a `swapInFrom` before any VM code runs.
+    ## Save the live VM globals into `ctx` and leave the live slots
+    ## in a consistent empty state. The next `swapInFrom` repopulates
+    ## them; nothing else should touch the globals in between.
     ##
-    ## `move` everywhere — `seq` and `Table` headers move in O(1)
-    ## under ARC/ORC, so each swap is a handful of word-sized
-    ## assignments regardless of how big the underlying data is.
+    ## `move` everywhere for the seq/Table fields — those headers
+    ## move in O(1) under ORC and the source ends up default-empty.
+    ## `SP` is a plain `int`, so we reset it explicitly to keep it
+    ## consistent with the now-empty `Stack` (`Stack[SP-1]` would
+    ## otherwise index into a length-0 seq).
     ctx.stack       = move Stack
     ctx.sp          = SP
     ctx.attrs       = move Attrs
     ctx.syms        = move Syms
     ctx.dictSyms    = move DictSyms
     ctx.scopeStack  = move ScopeStack
+    SP = 0
 
 proc swapInFrom*(ctx: VMContext) =
     ## Restore the live VM globals from `ctx`. The reverse of
