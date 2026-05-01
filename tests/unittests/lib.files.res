@@ -352,7 +352,7 @@ zipped as dest.zip
   Tried:
       [exists? ~ "|dir|/README.md"]
 
-  ┃ File: lib.files.art
+  ┃ File: ../tests/unittests/lib.files.art
   ┃ Line: 731
   ┃ 
   ┃  729 ║  
