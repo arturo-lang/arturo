@@ -115,6 +115,7 @@ Both macros share the same set:
 | Date        | `eobj`  | `newDate`        |
 | Unit        | `u`     | `newUnit`        |
 | Bytecode    | `trans` | `newBytecode`    |
+| SymbolLiteral | `m`   | `newSymbolLiteral` |
 
 Note: `Object`'s `newObject` takes a Prototype, not just a `ValueDict`.
 Auto-wrap via the unified body won't compile correctly. `Object(o):` clauses
@@ -192,6 +193,13 @@ must use per-mode bodies (`value:`/`inplace:`) and write their own
 | `src/library/Collections.nim` | `dictionary` (source dispatch)             | `dispatch`, Block / String                          |
 | `src/library/Bitwise.nim`     | `nand`, `nor`, `xnor`                      | `dispatchWithLiteral` with `_:` fallback (also fixes latent `PathLiteral` bug) |
 | `src/library/Files.nim`       | `write` (Bytecode branch)                  | `dispatch`, Bytecode + `_:` fallback                |
+| `src/library/Dates.nim`       | `friday?`, `monday?`, `saturday?`, `sunday?`, `thursday?`, `tuesday?`, `wednesday?` | `dispatch`, single Date clause |
+| `src/library/Dates.nim`       | `future?`, `past?`, `today?`               | `dispatch`, single Date clause                      |
+| `src/library/Core.nim`        | `parse`                                    | `dispatch`, String + `_:` fallback                  |
+| `src/library/Core.nim`        | `alias` (symbol-extraction)                | `dispatch`, String / Block + `_:` fallback          |
+| `src/library/Core.nim`        | `module` (definitions cascade)             | `dispatch`, Block / Dictionary                      |
+| `src/library/Bitwise.nim`     | `shl`                                      | `dispatchWithLiteral` with `_:` fallback            |
+| `src/library/Reflection.nim`  | `info`                                     | `dispatch`, SymbolLiteral + `_:` fallback (PathLiteral via xKind check inside fallback) |
 
 ## Plan: features still to add
 
