@@ -157,37 +157,39 @@ proc defineModule*(moduleName: string) =
             print n1 + n2           ; 8
         """:
             #=======================================================
-            var definitions: ValueDict = newOrderedTable[string,Value]()
-            var inherits: Value = VNULL
-            var super: ValueDict = newOrderedTable[string,Value]()
+            dispatch:
+                Type(_):
+                    var definitions: ValueDict = newOrderedTable[string,Value]()
+                    var inherits: Value = VNULL
+                    var super: ValueDict = newOrderedTable[string,Value]()
 
-            if yKind == Block:
-                if (let constructorMethod = generatedConstructor(y.a); not constructorMethod.isNil):
-                    definitions[$ConstructorM] = constructorMethod
-                else:
-                    for k,v in newDictionary(execDictionary(y)).d:
-                        definitions[k] = v
-            elif yKind == Dictionary:
-                for k,v in y.d:
-                    definitions[k] = copyValue(v)
-            else:
-                if y.tpKind == UserType:
-                    if (let yproto = getType(y.tid); not yproto.isNil):
-                        inherits = yproto.inherits
-                        super = yproto.super
-                        for k,v in yproto.content:
+                    if yKind == Block:
+                        if (let constructorMethod = generatedConstructor(y.a); not constructorMethod.isNil):
+                            definitions[$ConstructorM] = constructorMethod
+                        else:
+                            for k,v in newDictionary(execDictionary(y)).d:
+                                definitions[k] = v
+                    elif yKind == Dictionary:
+                        for k,v in y.d:
                             definitions[k] = copyValue(v)
                     else:
-                        Error_UsingUndefinedType(y.tid)
-                else:
-                    # TODO(Types\define) check if inherited type is a BuiltinType
-                    #  how do we handle this?
-                    #  labels: error handling, enhancement
-                    discard
+                        if y.tpKind == UserType:
+                            if (let yproto = getType(y.tid); not yproto.isNil):
+                                inherits = yproto.inherits
+                                super = yproto.super
+                                for k,v in yproto.content:
+                                    definitions[k] = copyValue(v)
+                            else:
+                                Error_UsingUndefinedType(y.tid)
+                        else:
+                            # TODO(Types\define) check if inherited type is a BuiltinType
+                            #  how do we handle this?
+                            #  labels: error handling, enhancement
+                            discard
 
-            # Get fields
-            let fieldTable = getFieldTable(definitions)
-            setType(x.tid, newPrototype(x.tid, definitions, inherits, fieldTable, super))
+                    # Get fields
+                    let fieldTable = getFieldTable(definitions)
+                    setType(x.tid, newPrototype(x.tid, definitions, inherits, fieldTable, super))
 
             # Debugging!!
             # push newDictionary({
