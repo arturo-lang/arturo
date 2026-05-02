@@ -438,7 +438,8 @@ proc defineModule*(moduleName: string) =
             unzip "folder" "archive.zip"
             """:
                 #=======================================================
-                miniz.unzip(y.s, x.s)
+                dispatch:
+                    (String(dst), String(src)): miniz.unzip(src, dst)
 
         builtin "volume",
             alias       = unaliased, 
