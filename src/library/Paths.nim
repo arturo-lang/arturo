@@ -295,7 +295,8 @@ proc defineModule*(moduleName: string) =
             ; /Users/admin/Desktop/test.txt
             """:
                 #=======================================================
-                push(newString(joinPath(currentFrame().folder, x.s)))
+                dispatch:
+                    String(s): push(newString(joinPath(currentFrame().folder, s)))
 
     #----------------------------
     # Predicates
