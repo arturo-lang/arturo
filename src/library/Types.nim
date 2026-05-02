@@ -963,7 +963,9 @@ proc defineModule*(moduleName: string) =
             ; => true
         """:
             #=======================================================
-            push(newLogical(xKind==Label))
+            dispatch:
+                Label(_): push(VTRUE)
+                _:        push(VFALSE)
 
     builtin "literal?",
         alias       = unaliased, 
