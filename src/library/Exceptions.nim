@@ -119,11 +119,13 @@ proc defineModule*(moduleName: string) =
             ; => true
         """:
             #=======================================================
-            try:
-                execUnscoped(x)
-                push(VFALSE)
-            except CatchableError, Defect, VError:
-                push(VTRUE)
+            dispatch:
+                _:
+                    try:
+                        execUnscoped(x)
+                        push(VFALSE)
+                    except CatchableError, Defect, VError:
+                        push(VTRUE)
 
     builtin "try",
         alias       = unaliased, 
