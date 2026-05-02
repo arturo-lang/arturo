@@ -537,8 +537,10 @@ proc defineModule*(moduleName: string) =
             print b         ; 3
         """:
             #=======================================================
-            push(x)
-            push(x)
+            dispatch:
+                _:
+                    push(x)
+                    push(x)
             
     builtin "ensure",
         alias       = unaliased, 
