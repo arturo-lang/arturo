@@ -738,25 +738,22 @@ proc defineModule*(moduleName: string) =
             ; => [2 2 2 2 3 5 61 141529 26970107 330103811]
         """:
             #=======================================================
-            var prime = false
-            if (hadAttr("prime")): prime = true
-
-            if x.iKind==NormalInteger:
-                if prime:
-                    push(newBlock(primeFactorization(x.i).map((x)=>newInteger(x))))
-                else:
-                    push(newBlock(factors(x.i).map((x)=>newInteger(x))))
-            else:
-                when defined(WEB) or defined(GMP):
-                    # TODO(Numbers\factors) `.prime` not working for Web builds
-                    # labels: web,enhancement
-                    if prime:
-                        when not defined(WEB):
-                            push(newBlock(primeFactorization(x.bi).map((x)=>newInteger(x))))
+            dispatch:
+                Integer(i):
+                    on prime:
+                        if x.iKind==NormalInteger:
+                            push(newBlock(primeFactorization(i).map((z)=>newInteger(z))))
                         else:
-                            discard
-                    else:
-                        push(newBlock(factors(x.bi).map((x)=>newInteger(x))))
+                            # TODO(Numbers\factors) `.prime` not working for Web builds
+                            # labels: web,enhancement
+                            when defined(GMP):
+                                push(newBlock(primeFactorization(x.bi).map((z)=>newInteger(z))))
+                    _:
+                        if x.iKind==NormalInteger:
+                            push(newBlock(factors(i).map((z)=>newInteger(z))))
+                        else:
+                            when defined(WEB) or defined(GMP):
+                                push(newBlock(factors(x.bi).map((z)=>newInteger(z))))
 
     builtin "floor",
         alias       = unaliased, 
