@@ -518,7 +518,9 @@ proc defineModule*(moduleName: string) =
             ; => true
         """:
             #=======================================================
-            push(newLogical(xKind==Binary))
+            dispatch:
+                Binary(_): push(VTRUE)
+                _:         push(VFALSE)
 
     builtin "block?",
         alias       = unaliased, 
