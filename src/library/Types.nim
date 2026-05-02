@@ -1179,10 +1179,12 @@ proc defineModule*(moduleName: string) =
             print rational? 3.14        ; false
         """:
             #=======================================================
-            if (hadAttr("big")):
-                push(newLogical(xKind==Rational and x.rat.rKind==BigRational))
-            else:
-                push(newLogical(xKind==Rational))
+            dispatch:
+                Rational(rat):
+                    if hadAttr("big"): push(newLogical(rat.rKind==BigRational))
+                    else:              push(VTRUE)
+                _:
+                    push(VFALSE)
 
     builtin "regex?",
         alias       = unaliased, 
