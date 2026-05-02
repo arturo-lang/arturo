@@ -658,7 +658,9 @@ proc defineModule*(moduleName: string) =
             print date? "hello"         ; false
         """:
             #=======================================================
-            push(newLogical(xKind==Date))
+            dispatch:
+                Date(_): push(VTRUE)
+                _:       push(VFALSE)
 
     builtin "defined?",
         alias       = unaliased, 
