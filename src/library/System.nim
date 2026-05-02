@@ -555,31 +555,31 @@ proc defineModule*(moduleName: string) =
                 terminate pid
             """:
                 #=======================================================
-                let pid = x.i
+                dispatch:
+                    Integer(pid):
+                        # check if it's a process that has been
+                        # created by us
+                        if (let activeProcess = ActiveProcesses.getOrDefault(pid, nil); not activeProcess.isNil()):
+                            # terminate the process
+                            terminate(activeProcess)
 
-                # check if it's a process that has been
-                # created by us
-                if (let activeProcess = ActiveProcesses.getOrDefault(pid, nil); not activeProcess.isNil()):
-                    # terminate the process
-                    terminate(activeProcess)
+                            # close it
+                            close(activeProcess)
 
-                    # close it
-                    close(activeProcess)
-
-                    # and remove it from the table
-                    ActiveProcesses.del(pid)
-                else:
-                    # if it's an external process,
-                    # proceed with its termination
-                    when defined(windows):
-                        # TerminateProcess needs a HANDLE, not a PID
-                        let hProc = openProcess(PROCESS_TERMINATE, WINBOOL(0), DWORD(pid))
-                        if hProc != 0:
-                            discard terminateProcess(hProc, DWORD(QuitSuccess))
-                            discard closeHandle(hProc)
-                    else:
-                        # send SIGTERM; signal 0 would only probe existence
-                        sendSignal(int32(pid), 15)
+                            # and remove it from the table
+                            ActiveProcesses.del(pid)
+                        else:
+                            # if it's an external process,
+                            # proceed with its termination
+                            when defined(windows):
+                                # TerminateProcess needs a HANDLE, not a PID
+                                let hProc = openProcess(PROCESS_TERMINATE, WINBOOL(0), DWORD(pid))
+                                if hProc != 0:
+                                    discard terminateProcess(hProc, DWORD(QuitSuccess))
+                                    discard closeHandle(hProc)
+                            else:
+                                # send SIGTERM; signal 0 would only probe existence
+                                sendSignal(int32(pid), 15)
 
     #----------------------------
     # Predicates
