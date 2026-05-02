@@ -94,7 +94,8 @@ proc defineModule*(moduleName: string) =
             ; opens Arturo's official website in a new browser window
             """:
                 #=======================================================
-                openDefaultBrowser(x.s)
+                dispatch:
+                    String(s): openDefaultBrowser(s)
         
         builtin "download",
             alias       = unaliased, 
