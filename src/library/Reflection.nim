@@ -276,17 +276,17 @@ proc defineModule*(moduleName: string) =
             ; => [init meow]
         """:
             #=======================================================
-            var s: seq[string]
-            if xkind == Object:
-                for k,v in x.o:
-                    if v.kind == Method:
-                        s.add(k)
-            else:
-                for k,v in x.singleton.o:
-                    if v.kind == Method:
-                        s.add(k)
-
-            push(newStringBlock(s))
+            dispatch:
+                Object(_):
+                    var s: seq[string]
+                    for k,v in x.o:
+                        if v.kind == Method: s.add(k)
+                    push(newStringBlock(s))
+                Module(m):
+                    var s: seq[string]
+                    for k,v in m.o:
+                        if v.kind == Method: s.add(k)
+                    push(newStringBlock(s))
 
     builtin "stack",
         alias       = unaliased, 
