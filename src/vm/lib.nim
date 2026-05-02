@@ -65,6 +65,9 @@ type
         onLadder: seq[DispatchOnArm]       # `on attr:` ladder (mutually exclusive with split)
         onElse: NimNode                    # `_:` fallback inside the ladder
 
+proc dispatchIsWild(n: NimNode): bool =
+    n != nil and n.kind == nnkIdent and $n == "_"
+
 proc dispatchFieldAndCtor(kind: string, n: NimNode, macroName: string): (string, string) =
     case kind
     of "String":     ("s", "newString")
@@ -411,16 +414,17 @@ macro dispatchWithLiteral*(body: untyped): untyped =
             else: newDotExpr(ident("InPlaced"), ident(xField))
 
         let needsLValue = (not valueMode) and fc.inplaceS != nil
-        if needsLValue:
-            result.add dispatchAliasTemplate(copyNimTree(fc.xBinding), xTarget)
-        else:
-            result.add newLetStmt(copyNimTree(fc.xBinding), xTarget)
+        if not dispatchIsWild(fc.xBinding):
+            if needsLValue:
+                result.add dispatchAliasTemplate(copyNimTree(fc.xBinding), xTarget)
+            else:
+                result.add newLetStmt(copyNimTree(fc.xBinding), xTarget)
 
-        if fc.hasY and not fc.yWild:
+        if fc.hasY and not fc.yWild and not dispatchIsWild(fc.yBinding):
             let (yField, _) = dispatchFieldAndCtor(fc.yKind, fc.yBinding, macroName)
             result.add newLetStmt(copyNimTree(fc.yBinding),
                                   newDotExpr(ident("y"), ident(yField)))
-        if fc.hasZ and not fc.zWild:
+        if fc.hasZ and not fc.zWild and not dispatchIsWild(fc.zBinding):
             let (zField, _) = dispatchFieldAndCtor(fc.zKind, fc.zBinding, macroName)
             result.add newLetStmt(copyNimTree(fc.zBinding),
                                   newDotExpr(ident("z"), ident(zField)))
@@ -492,14 +496,15 @@ macro dispatch*(body: untyped): untyped =
             else:
                 result.add copyNimTree(fc.body)
             return
-        let (xField, _) = dispatchFieldAndCtor(fc.xKind, fc.xBinding, macroName)
-        result.add newLetStmt(copyNimTree(fc.xBinding),
-                              newDotExpr(ident("x"), ident(xField)))
-        if fc.hasY and not fc.yWild:
+        if not dispatchIsWild(fc.xBinding):
+            let (xField, _) = dispatchFieldAndCtor(fc.xKind, fc.xBinding, macroName)
+            result.add newLetStmt(copyNimTree(fc.xBinding),
+                                  newDotExpr(ident("x"), ident(xField)))
+        if fc.hasY and not fc.yWild and not dispatchIsWild(fc.yBinding):
             let (yField, _) = dispatchFieldAndCtor(fc.yKind, fc.yBinding, macroName)
             result.add newLetStmt(copyNimTree(fc.yBinding),
                                   newDotExpr(ident("y"), ident(yField)))
-        if fc.hasZ and not fc.zWild:
+        if fc.hasZ and not fc.zWild and not dispatchIsWild(fc.zBinding):
             let (zField, _) = dispatchFieldAndCtor(fc.zKind, fc.zBinding, macroName)
             result.add newLetStmt(copyNimTree(fc.zBinding),
                                   newDotExpr(ident("z"), ident(zField)))
