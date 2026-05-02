@@ -109,13 +109,13 @@ proc defineModule*(moduleName: string) =
             ; file deleted
             """:
                 #=======================================================
-                if (hadAttr("directory")): 
-                    try:
-                        removeDir(x.s)
-                    except OSError:
-                        discard
-                else: 
-                    discard tryRemoveFile(x.s)
+                dispatch:
+                    String(s):
+                        if hadAttr("directory"):
+                            try:    removeDir(s)
+                            except OSError: discard
+                        else:
+                            discard tryRemoveFile(s)
 
         builtin "move",
             alias       = unaliased, 
