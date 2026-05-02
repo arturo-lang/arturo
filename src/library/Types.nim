@@ -1251,7 +1251,9 @@ proc defineModule*(moduleName: string) =
             print string? 123           ; false
         """:
             #=======================================================
-            push(newLogical(xKind==String))
+            dispatch:
+                String(_): push(VTRUE)
+                _:         push(VFALSE)
 
     builtin "symbol?",
         alias       = unaliased, 
