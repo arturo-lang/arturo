@@ -397,7 +397,8 @@ proc defineModule*(moduleName: string) =
             print ceil to :rational @[neg 7 2]  ; -3
         """:
             #=======================================================
-            push(newInteger(int(ceil(asFloat(x)))))
+            dispatch:
+                _: push(newInteger(int(ceil(asFloat(x)))))
 
     builtin "clamp",
         alias       = unaliased, 
