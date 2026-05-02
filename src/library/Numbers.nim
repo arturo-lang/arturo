@@ -1386,7 +1386,8 @@ proc defineModule*(moduleName: string) =
             print select 1..10 => even?       ; 2 4 6 8 10
         """:
             #=======================================================
-            push(newLogical(x % I2 == I0))
+            dispatch:
+                Integer(_): push(newLogical(x % I2 == I0))
 
     builtin "infinite?",
         alias       = unaliased, 
