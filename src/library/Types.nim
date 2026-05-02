@@ -1376,7 +1376,9 @@ proc defineModule*(moduleName: string) =
             print version? "1.0.2"      ; false
         """:
             #=======================================================
-            push(newLogical(xKind==Version))
+            dispatch:
+                Version(_): push(VTRUE)
+                _:          push(VFALSE)
 
     builtin "word?",
         alias       = unaliased, 
