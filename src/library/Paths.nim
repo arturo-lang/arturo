@@ -214,18 +214,20 @@ proc defineModule*(moduleName: string) =
             ; data.txt
             """:
                 #=======================================================
-                let recursive = (hadAttr("recursive"))
-                let relative = (hadAttr("relative"))
-                let path = x.s
+                bindAttrs:
+                    recursive: Logical
+                    relative:  Logical
 
-                var contents: seq[string]
+                dispatch:
+                    String(path):
+                        var contents: seq[string]
 
-                if recursive:
-                    contents = toSeq(walkDirRec(path, relative = relative))
-                else:
-                    contents = toSeq(walkDir(path, relative = relative)).map((x) => x[1])
+                        if recursive:
+                            contents = toSeq(walkDirRec(path, relative = relative))
+                        else:
+                            contents = toSeq(walkDir(path, relative = relative)).map((x) => x[1])
 
-                push(newStringBlock(contents))
+                        push(newStringBlock(contents))
 
         builtin "normalize",
             alias       = unaliased, 
