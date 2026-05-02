@@ -840,61 +840,61 @@ proc defineModule*(moduleName: string) =
             is? [:integer] [1 "two]         ; => false
         """:
             #=======================================================
-            if yKind != Object:
-                if xKind == Type:
-                    if x.t == Any:
-                        push(VTRUE)
-                    else:
-                        push(newLogical(x.t == yKind))
-                else:
-                    let elem {.cursor.} = x.a[0]
-                    requireValue(elem, {Type})
-
-                    let tp = elem.t
-                    var res = true
-                    if tp != Any:
-                        if yKind != Block: 
-                            res = false
+            dispatch:
+                _:
+                    if yKind != Object:
+                        if xKind == Type:
+                            if x.t == Any: push(VTRUE)
+                            else:          push(newLogical(x.t == yKind))
                         else:
-                            if y.a.len==0: 
-                                res = false
-                            else:
-                                for item in y.a:
-                                    if tp != item.kind:
-                                        res = false
-                                        break
-                    push newLogical(res)
-            else:
-                if x.t in {Object,Any} and x.tpKind == BuiltinType:
-                    push(VTRUE)
-                else:
-                    if x.tpKind == BuiltinType:
-                        push(VFALSE)
-                    else:
-                        let givenPrototype = getType(x.tid, safe=true)
-                        if givenPrototype == NoPrototypeFound:
-                            push(VFALSE)
-                        else:
-                            var found = false
-                            var currentPrototype = y.proto
-                            while true:
-                                # TODO(Types\is?) better inheritance identification needed
-                                #  right now, we're merely comparing the names of the prototypes
-                                #  but what if the prototype has been redefined in the meantime?
-                                #  we actually have to implement a proper `==` overload for 
-                                #  Prototype values!
-                                #  labels: bug, values
-                                if currentPrototype.name == givenPrototype.name:
-                                    found = true
-                                    break
+                            let elem {.cursor.} = x.a[0]
+                            requireValue(elem, {Type})
 
-                                if y.proto.inherits == VNULL: break
-                                if (let newProto = getType(y.proto.inherits.tid, safe=true); newProto != NoPrototypeFound):
-                                    currentPrototype = newProto
+                            let tp = elem.t
+                            var res = true
+                            if tp != Any:
+                                if yKind != Block:
+                                    res = false
                                 else:
-                                    break
+                                    if y.a.len == 0:
+                                        res = false
+                                    else:
+                                        for item in y.a:
+                                            if tp != item.kind:
+                                                res = false
+                                                break
+                            push newLogical(res)
+                    else:
+                        if x.t in {Object,Any} and x.tpKind == BuiltinType:
+                            push(VTRUE)
+                        else:
+                            if x.tpKind == BuiltinType:
+                                push(VFALSE)
+                            else:
+                                let givenPrototype = getType(x.tid, safe=true)
+                                if givenPrototype == NoPrototypeFound:
+                                    push(VFALSE)
+                                else:
+                                    var found = false
+                                    var currentPrototype = y.proto
+                                    while true:
+                                        # TODO(Types\is?) better inheritance identification needed
+                                        #  right now, we're merely comparing the names of the prototypes
+                                        #  but what if the prototype has been redefined in the meantime?
+                                        #  we actually have to implement a proper `==` overload for
+                                        #  Prototype values!
+                                        #  labels: bug, values
+                                        if currentPrototype.name == givenPrototype.name:
+                                            found = true
+                                            break
 
-                            push(newLogical(found))
+                                        if y.proto.inherits == VNULL: break
+                                        if (let newProto = getType(y.proto.inherits.tid, safe=true); newProto != NoPrototypeFound):
+                                            currentPrototype = newProto
+                                        else:
+                                            break
+
+                                    push(newLogical(found))
 
     builtin "floating?",
         alias       = unaliased, 
