@@ -785,7 +785,9 @@ proc defineModule*(moduleName: string) =
             ; => true
         """:
             #=======================================================
-            push(newLogical(xKind==Inline))
+            dispatch:
+                Inline(_): push(VTRUE)
+                _:         push(VFALSE)
 
     builtin "integer?",
         alias       = unaliased, 
