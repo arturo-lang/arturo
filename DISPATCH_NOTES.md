@@ -204,6 +204,9 @@ must use per-mode bodies (`value:`/`inplace:`) and write their own
 | `src/library/Collections.nim` | `take`                                     | `dispatchWithLiteral`, 1-axis × per-mode (Range asymmetry: SetInPlaceAny vs field assign) |
 | `src/library/Numbers.nim`     | `factorial`, `prime?`, `factors`, `gcd`, `lcm` | `dispatch`, single Integer/Block clause (factors uses `on prime:` ladder) |
 | `src/library/Logic.nim`       | `all?`, `any?`                             | `dispatch`, single Block clause                     |
+| `src/library/Types.nim`       | `type`                                     | `dispatch`, Object + `_:` fallback (UserType vs builtin) |
+| `src/library/Types.nim`       | All trivial type predicates (`string?`, `block?`, `binary?`, `char?`, `color?`, `complex?`, `date?`, `dictionary?`, `floating?`, `logical?`, `object?`, `range?`, `regex?`, `bytecode?`, `unit?`, `symbolLiteral?`, `attribute?`, `attributeLabel?`, `error?`, `errorKind?`, `inline?`, `label?`, `literal?`, `method?`, `path?`, `pathLabel?`, `pathLiteral?`, `socket?`, `store?`, `symbol?`, `version?`, `word?`, `null?`, `type?`, `database?`) | `dispatch`, `KIND(_): push(VTRUE)` + `_: push(VFALSE)` |
+| `src/library/Types.nim`       | `integer?`, `quantity?`, `rational?`, `function?` | `dispatch` with kind-specific arm checking the `.big`/`.builtin` flag |
 
 ## Plan: features still to add
 
