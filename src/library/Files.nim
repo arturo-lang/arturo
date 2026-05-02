@@ -580,12 +580,13 @@ proc defineModule*(moduleName: string) =
             attrs       = NoAttrs,
             returns     = {Logical},
             example     = """
-            if file? "somefile.txt" [ 
-                print "file exists!" 
+            if file? "somefile.txt" [
+                print "file exists!"
             ]
             """:
                 #=======================================================
-                push newLogical(fileExists(x.s))
+                dispatch:
+                    String(s): push newLogical(fileExists(s))
 
         builtin "hidden?",
             alias       = unaliased, 
