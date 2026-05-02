@@ -54,21 +54,23 @@ proc defineModule*(moduleName: string) =
             ; => true
         """:
             #=======================================================
-            var allOK = true
+            dispatch:
+                Block(a):
+                    var allOK = true
 
-            for item in x.a:
-                var val {.cursor.}: Value
-                if item.kind == Block: 
-                    execUnscoped(item)
-                    val = stack.pop()
-                else:
-                    val = item
+                    for item in a:
+                        var val {.cursor.}: Value
+                        if item.kind == Block:
+                            execUnscoped(item)
+                            val = stack.pop()
+                        else:
+                            val = item
 
-                if val!=VTRUE:
-                    allOK = false
-                    break
+                        if val!=VTRUE:
+                            allOK = false
+                            break
 
-            push(newLogical(allOK))
+                    push(newLogical(allOK))
 
     builtin "and?",
         alias       = logicaland, 
