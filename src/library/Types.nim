@@ -983,7 +983,9 @@ proc defineModule*(moduleName: string) =
             print literal? 123          ; false
         """:
             #=======================================================
-            push(newLogical(xKind==Literal))
+            dispatch:
+                Literal(_): push(VTRUE)
+                _:          push(VFALSE)
 
     builtin "logical?",
         alias       = unaliased, 
