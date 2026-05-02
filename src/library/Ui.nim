@@ -350,8 +350,10 @@ proc defineModule*(moduleName: string) =
                 example     = """
                 """:
                     #=======================================================
-                    echo "in old eval: " & $(x.s)
-                    wv.evaluate(x.s)
+                    dispatch:
+                        String(s):
+                            echo "in old eval: " & s
+                            wv.evaluate(s)
 
             # necessary so that "__webviewWindow" is available
             execInternal("Ui/window")
