@@ -72,10 +72,12 @@ proc defineModule*(moduleName: string) =
             close db            ; and close it
         """:
             #=======================================================
-            if x.dbKind == SqliteDatabase:
-                closeSqliteDb(x.sqlitedb)
-            # elif x.dbKind == MysqlDatabase:
-            #     closeMysqlDb(x.mysqldb)
+            dispatch:
+                Database(_):
+                    if x.dbKind == SqliteDatabase:
+                        closeSqliteDb(x.sqlitedb)
+                    # elif x.dbKind == MysqlDatabase:
+                    #     closeMysqlDb(x.mysqldb)
 
     builtinWhen SQLITE, "open",
         alias       = unaliased,
