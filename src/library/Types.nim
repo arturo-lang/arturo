@@ -902,7 +902,9 @@ proc defineModule*(moduleName: string) =
             print floating? "hello"     ; false
         """:
             #=======================================================
-            push(newLogical(xKind==Floating))
+            dispatch:
+                Floating(_): push(VTRUE)
+                _:           push(VFALSE)
 
     builtin "function?",
         alias       = unaliased, 
