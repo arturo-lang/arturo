@@ -164,19 +164,22 @@ proc defineModule*(moduleName: string) =
             ; => hi
         """:
             #=======================================================
-            let verbose = hadAttr "verbose" 
-            try:
-                execUnscoped(x)
-                push(VNULL)
-            except VError as e:
-                push newError(e)
-                if verbose:
-                    showError(e)
-            except CatchableError, Defect:
-                let e = getCurrentException()
-                push newError(e)
-                if verbose:
-                    showError(VError(e))
+            let verbose = hadAttr "verbose"
+
+            dispatch:
+                _:
+                    try:
+                        execUnscoped(x)
+                        push(VNULL)
+                    except VError as e:
+                        push newError(e)
+                        if verbose:
+                            showError(e)
+                    except CatchableError, Defect:
+                        let e = getCurrentException()
+                        push newError(e)
+                        if verbose:
+                            showError(VError(e))
 
     #----------------------------
     # Constants
