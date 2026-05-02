@@ -539,7 +539,9 @@ proc defineModule*(moduleName: string) =
             print block? 123                ; false
         """:
             #=======================================================
-            push(newLogical(xKind==Block))
+            dispatch:
+                Block(_): push(VTRUE)
+                _:        push(VFALSE)
 
     builtin "bytecode?",
         alias       = unaliased, 
