@@ -138,17 +138,15 @@ proc defineModule*(moduleName: string) =
             ; moved whole folder
             """:
                 #=======================================================
-                var target = y.s
-                if (hadAttr("directory")): 
-                    try:
-                        moveDir(x.s, move target)
-                    except OSError:
-                        discard
-                else: 
-                    try:
-                        moveFile(x.s, move target)
-                    except OSError:
-                        discard
+                dispatch:
+                    (String(src), String(dst)):
+                        var target = dst
+                        if hadAttr("directory"):
+                            try:    moveDir(src, move target)
+                            except OSError: discard
+                        else:
+                            try:    moveFile(src, move target)
+                            except OSError: discard
 
         builtin "permissions",
             alias       = unaliased, 
