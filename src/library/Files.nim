@@ -412,14 +412,16 @@ proc defineModule*(moduleName: string) =
             ; => null
             """:
                 #=======================================================
-                try:
-                    push newDictionary({
-                        "created": newDate(local(getCreationTime(x.s))),
-                        "accessed": newDate(local(getLastAccessTime(x.s))),
-                        "modified": newDate(local(getLastModificationTime(x.s)))
-                    }.toOrderedTable)
-                except CatchableError:
-                    push VNULL
+                dispatch:
+                    String(s):
+                        try:
+                            push newDictionary({
+                                "created":  newDate(local(getCreationTime(s))),
+                                "accessed": newDate(local(getLastAccessTime(s))),
+                                "modified": newDate(local(getLastModificationTime(s)))
+                            }.toOrderedTable)
+                        except CatchableError:
+                            push VNULL
                         
         builtin "unzip",
             alias       = unaliased, 
