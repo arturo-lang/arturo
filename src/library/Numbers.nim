@@ -1120,11 +1120,11 @@ proc defineModule*(moduleName: string) =
             print round.to:2 pi     ; 3.14
         """:
             #=======================================================
-            var places = 0
-            if checkAttr("to"):
-                places = aTo.i
-                
-            push(newFloating(round(asFloat(x), places)))
+            bindAttrs:
+                places(to): Integer = 0
+
+            dispatch:
+                _: push(newFloating(round(asFloat(x), places)))
 
     builtin "sec",
         alias       = unaliased, 
