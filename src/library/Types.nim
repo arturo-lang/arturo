@@ -1395,4 +1395,6 @@ proc defineModule*(moduleName: string) =
             ; => true
         """:
             #=======================================================
-            push(newLogical(xKind==Word))
+            dispatch:
+                Word(_): push(VTRUE)
+                _:       push(VFALSE)
