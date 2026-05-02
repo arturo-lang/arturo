@@ -184,48 +184,50 @@ proc defineModule*(moduleName: string) =
             ; gave write permission to 'others'
             """:
                 #=======================================================
-                try:
-                    if (checkAttr("set")):
-                        var source = x.s
-                        var perms: set[FilePermission]
+                dispatch:
+                    String(s):
+                        try:
+                            if checkAttr("set"):
+                                var source = s
+                                var perms: set[FilePermission]
 
-                        if aSet.d.hasKey("user") and aSet.d["user"].d.hasKey("read"): perms.incl(fpUserRead)
-                        if aSet.d.hasKey("user") and aSet.d["user"].d.hasKey("write"): perms.incl(fpUserWrite)
-                        if aSet.d.hasKey("user") and aSet.d["user"].d.hasKey("execute"): perms.incl(fpUserExec)
+                                if aSet.d.hasKey("user") and aSet.d["user"].d.hasKey("read"):    perms.incl(fpUserRead)
+                                if aSet.d.hasKey("user") and aSet.d["user"].d.hasKey("write"):   perms.incl(fpUserWrite)
+                                if aSet.d.hasKey("user") and aSet.d["user"].d.hasKey("execute"): perms.incl(fpUserExec)
 
-                        if aSet.d.hasKey("group") and aSet.d["group"].d.hasKey("read"): perms.incl(fpGroupRead)
-                        if aSet.d.hasKey("group") and aSet.d["group"].d.hasKey("write"): perms.incl(fpGroupWrite)
-                        if aSet.d.hasKey("group") and aSet.d["group"].d.hasKey("execute"): perms.incl(fpGroupExec)
+                                if aSet.d.hasKey("group") and aSet.d["group"].d.hasKey("read"):    perms.incl(fpGroupRead)
+                                if aSet.d.hasKey("group") and aSet.d["group"].d.hasKey("write"):   perms.incl(fpGroupWrite)
+                                if aSet.d.hasKey("group") and aSet.d["group"].d.hasKey("execute"): perms.incl(fpGroupExec)
 
-                        if aSet.d.hasKey("others") and aSet.d["others"].d.hasKey("read"): perms.incl(fpOthersRead)
-                        if aSet.d.hasKey("others") and aSet.d["others"].d.hasKey("write"): perms.incl(fpOthersWrite)
-                        if aSet.d.hasKey("others") and aSet.d["others"].d.hasKey("execute"): perms.incl(fpOthersExec)
+                                if aSet.d.hasKey("others") and aSet.d["others"].d.hasKey("read"):    perms.incl(fpOthersRead)
+                                if aSet.d.hasKey("others") and aSet.d["others"].d.hasKey("write"):   perms.incl(fpOthersWrite)
+                                if aSet.d.hasKey("others") and aSet.d["others"].d.hasKey("execute"): perms.incl(fpOthersExec)
 
-                        setFilePermissions(move source, move perms)
-                    else:
-                        let perms = getFilePermissions(x.s)
-                        var permsDict: ValueDict = {
-                            "user": newDictionary({
-                                "read"      : newLogical(fpUserRead in perms),
-                                "write"     : newLogical(fpUserWrite in perms),
-                                "execute"   : newLogical(fpUserExec in perms)
-                            }.toOrderedTable),
-                            "group": newDictionary({
-                                "read"      : newLogical(fpGroupRead in perms),
-                                "write"     : newLogical(fpGroupWrite in perms),
-                                "execute"   : newLogical(fpGroupExec in perms)
-                            }.toOrderedTable),
-                            "others": newDictionary({
-                                "read"      : newLogical(fpOthersRead in perms),
-                                "write"     : newLogical(fpOthersWrite in perms),
-                                "execute"   : newLogical(fpOthersExec in perms)
-                            }.toOrderedTable)
-                        }.toOrderedTable
+                                setFilePermissions(move source, move perms)
+                            else:
+                                let perms = getFilePermissions(s)
+                                var permsDict: ValueDict = {
+                                    "user": newDictionary({
+                                        "read"      : newLogical(fpUserRead in perms),
+                                        "write"     : newLogical(fpUserWrite in perms),
+                                        "execute"   : newLogical(fpUserExec in perms)
+                                    }.toOrderedTable),
+                                    "group": newDictionary({
+                                        "read"      : newLogical(fpGroupRead in perms),
+                                        "write"     : newLogical(fpGroupWrite in perms),
+                                        "execute"   : newLogical(fpGroupExec in perms)
+                                    }.toOrderedTable),
+                                    "others": newDictionary({
+                                        "read"      : newLogical(fpOthersRead in perms),
+                                        "write"     : newLogical(fpOthersWrite in perms),
+                                        "execute"   : newLogical(fpOthersExec in perms)
+                                    }.toOrderedTable)
+                                }.toOrderedTable
 
-                        push(newDictionary(permsDict))
+                                push(newDictionary(permsDict))
 
-                except OSError:
-                    push(VNULL)
+                        except OSError:
+                            push(VNULL)
 
         # TODO(Files\read) add support for different delimiters when in `.csv` mode
         #  this could be something as simple as `.with:` or `.delimiter:`, or `.delimited:`
