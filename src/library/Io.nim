@@ -135,10 +135,10 @@ proc defineModule*(moduleName: string) =
             cursor true     ; (shows the cursor)
             """:
                 #=======================================================
-                if isTrue(x):
-                    stdout.showCursor()
-                else:
-                    stdout.hideCursor()
+                dispatch:
+                    Logical(b):
+                        if b == True: stdout.showCursor()
+                        else:         stdout.hideCursor()
 
         builtin "goto",
             alias       = unaliased, 
