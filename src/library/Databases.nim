@@ -136,23 +136,27 @@ proc defineModule*(moduleName: string) =
             print query db .with: ["johndoe"] {!sql SELECT * FROM users WHERE name = ?}
         """:
             #=======================================================
-            var with: seq[string]
+            var withArgs: seq[string]
             if checkAttr("with"):
-                with = aWith.a.map((x) => $(x))
+                withArgs = aWith.a.map((x) => $(x))
 
-            if x.dbKind == SqliteDatabase:
-                if yKind == String:
-                    if (let got = execSqliteDb(x.sqlitedb, y.s, with); got[0]==ValidQueryResult):
-                        push(newBlock(got[1]))
-                else:
-                    if (let got = execManySqliteDb(x.sqlitedb, y.a.map(proc (v:Value):string = (requireValue(v,{String},2); v.s)), with); got[0]==ValidQueryResult):
-                        push(newBlock(got[1]))
+            dispatch:
+                (Database(_), String(s)):
+                    if x.dbKind == SqliteDatabase:
+                        if (let got = execSqliteDb(x.sqlitedb, s, withArgs); got[0] == ValidQueryResult):
+                            push(newBlock(got[1]))
 
-                if (hadAttr("id")):
-                    push(newInteger(getLastIdSqliteDb(x.sqlitedb)))
+                        if hadAttr("id"):
+                            push(newInteger(getLastIdSqliteDb(x.sqlitedb)))
+                    # elif x.dbKind == MysqlDatabase:
+                    #     execMysqlDb(x.mysqldb, s)
+                (Database(_), Block(a)):
+                    if x.dbKind == SqliteDatabase:
+                        if (let got = execManySqliteDb(x.sqlitedb, a.map(proc (v:Value):string = (requireValue(v,{String},2); v.s)), withArgs); got[0] == ValidQueryResult):
+                            push(newBlock(got[1]))
 
-            # elif x.dbKind == MysqlDatabase:
-            #     execMysqlDb(x.mysqldb, y.s)
+                        if hadAttr("id"):
+                            push(newInteger(getLastIdSqliteDb(x.sqlitedb)))
 
     when not defined(WEB):
 
