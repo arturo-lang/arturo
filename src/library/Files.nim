@@ -603,7 +603,8 @@ proc defineModule*(moduleName: string) =
             hidden? ".git"          ; => true
             """:
                 #=======================================================
-                push newLogical(isHidden(x.s))
+                dispatch:
+                    String(s): push newLogical(isHidden(s))
 
         builtin "symlink?",
             alias       = unaliased, 
