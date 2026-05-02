@@ -173,6 +173,11 @@ when not defined(WEB):
         scheduler.currentFiber = nil
         scheduler.ready.setLen(0)
 
+    proc readyLen*(): int {.inline.} =
+        ## Diagnostic: number of fibers waiting to resume. Tests
+        ## use this to drive the scheduler step-by-step.
+        scheduler.ready.len
+
     proc onMainFiber*(): bool {.inline.} =
         ## True iff control is currently on the main thread (no
         ## fiber is running). Used by `wait` to decide between
@@ -209,6 +214,7 @@ when not defined(WEB):
         if scheduler.ready.len > 0:
             let f = scheduler.ready[0]
             scheduler.ready.delete(0)         # FIFO; O(N) — fine for v1
+            echo "[sched] resuming fiber, ready left=", scheduler.ready.len
             scheduler.currentFiber = f
             swapOutTo(scheduler.mainCtx)
             swapInFrom(f.ctx)
@@ -216,8 +222,11 @@ when not defined(WEB):
             swapOutTo(f.ctx)                  # save f's view (or empty if done)
             swapInFrom(scheduler.mainCtx)     # main's view back
             scheduler.currentFiber = nil
+            echo "[sched] returned from resume, isDone=", isDone(f)
         elif hasPendingOperations():
+            echo "[sched] polling..."
             poll()                            # blocks until at least one I/O event
+            echo "[sched] poll returned, ready=", scheduler.ready.len
 
     proc runScheduledFibers*() =
         ## Drain the ready queue plus the asyncdispatch queue until
@@ -250,27 +259,44 @@ when not defined(WEB):
         ##
         ## ## Protocol with the scheduler
         ##
+        ## The fiber does **not** swap its globals here — the
+        ## scheduler's `runOneStep` does that around every
+        ## `resume` / `suspend` pair. From the fiber's view:
+        ##
         ## 1. If `fut` is already finished, fast-path: just read it.
         ## 2. Otherwise register a callback that re-queues us when
-        ##    the future fires.
-        ## 3. Save our view of the VM globals into `me.ctx`.
-        ## 4. `suspend()` — control returns to whoever called
-        ##    `resume(me)` (the scheduler driver).
-        ## 5. ...time passes; the future eventually completes; the
-        ##    callback adds us to `scheduler.ready`; the driver
-        ##    picks us up, calls `swapInFrom(me.ctx)`, and
+        ##    the future fires, then `suspend()` — control returns
+        ##    to whoever called `resume(me)` (the scheduler).
+        ## 3. ...time passes; the future eventually completes; the
+        ##    callback adds us to `scheduler.ready`; the scheduler
+        ##    eventually picks us up, swaps our globals back in, and
         ##    `resume(me)`s us.
-        ## 6. We come back from `suspend()` with our globals live
+        ## 4. We come back from `suspend()` with our globals live
         ##    again; read and return the future's value.
-        if fut.finished:
+        ##
+        ## `Future[void]` is special-cased: `read()` returns `void`,
+        ## so `return read()` is a type error. We branch on `T` at
+        ## compile time.
+        if not fut.finished:
+            echo "[await] not finished, registering callback"
+            let me = scheduler.currentFiber
+            doAssert not me.isNil,
+                "cooperativeAwait called outside a fiber — use waitFor on main"
+            # The scheduler global is GC-allocated; the closure
+            # below touches it from inside an asyncdispatch callback.
+            # `cast(gcsafe)` is the standard escape — same pattern
+            # `broadcastToChildren` above uses for `childInboundFiles`.
+            fut.addCallback(proc () {.gcsafe.} =
+                {.cast(gcsafe).}:
+                    echo "[await] callback firing, adding to ready"
+                    scheduler.ready.add(me))
+            echo "[await] about to suspend"
+            suspend()
+            echo "[await] resumed from suspend"
+        when T is void:
+            fut.read()
+        else:
             return fut.read()
-        let me = scheduler.currentFiber
-        doAssert not me.isNil,
-            "cooperativeAwait called outside a fiber — use waitFor on main"
-        fut.addCallback(proc () = scheduler.ready.add(me))
-        swapOutTo(me.ctx)
-        suspend()
-        return fut.read()
 
 #=======================================
 # Cross-process event dispatch hook
