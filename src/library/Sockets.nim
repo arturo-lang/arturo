@@ -281,4 +281,5 @@ proc defineModule*(moduleName: string) =
             print ["Message was sent successfully:" sent?]
             """:
                 #=======================================================
-                push newLogical(x.sock.socket.trySend(y.s))
+                dispatch:
+                    (Socket(s), String(t)): push newLogical(s.socket.trySend(t))
