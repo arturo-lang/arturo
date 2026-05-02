@@ -87,48 +87,37 @@ proc defineModule*(moduleName: string) =
             print color #red.bold "Some text"          ; Some text (in red/bold)
         """:
             #=======================================================
-            var color = ""
+            dispatch:
+                (Color(c), String(s)):
+                    var color = ""
 
-            case x.l:
-                of clBlack:
-                    color = blackColor
-                of clRed:
-                    color = redColor
-                of clGreen:
-                    color = greenColor
-                of clYellow:
-                    color = yellowColor
-                of clBlue:
-                    color = blueColor
-                of clMagenta:
-                    color = magentaColor
-                of clOrange:
-                    color = rgb("208")
-                of clCyan:
-                    color = cyanColor
-                of clWhite:
-                    color = whiteColor
-                of clGray:
-                    color = grayColor
-                else:
-                    let rgba = RGBfromColor(x.l)
-                    color = rgb((rgba.r, rgba.g, rgba.b))
+                    case c:
+                        of clBlack:   color = blackColor
+                        of clRed:     color = redColor
+                        of clGreen:   color = greenColor
+                        of clYellow:  color = yellowColor
+                        of clBlue:    color = blueColor
+                        of clMagenta: color = magentaColor
+                        of clOrange:  color = rgb("208")
+                        of clCyan:    color = cyanColor
+                        of clWhite:   color = whiteColor
+                        of clGray:    color = grayColor
+                        else:
+                            let rgba = RGBfromColor(c)
+                            color = rgb((rgba.r, rgba.g, rgba.b))
 
-            var finalColor: string
+                    var finalColor: string
 
-            if (hadAttr("bold")):
-                finalColor = bold(color)
-            elif (hadAttr("underline")):
-                finalColor = underline(color)
-            else:
-                finalColor = fg(color)
+                    if hadAttr("bold"):        finalColor = bold(color)
+                    elif hadAttr("underline"): finalColor = underline(color)
+                    else:                      finalColor = fg(color)
 
-            var res = finalColor & y.s
+                    var res = finalColor & s
 
-            if not hadAttr("keep"):
-                res &= resetColor
+                    if not hadAttr("keep"):
+                        res &= resetColor
 
-            push(newString(res))
+                    push(newString(res))
     
     when not defined(WEB):
         builtin "cursor",
