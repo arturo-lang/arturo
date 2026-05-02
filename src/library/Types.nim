@@ -947,8 +947,8 @@ proc defineModule*(moduleName: string) =
             #=======================================================
             dispatch:
                 Function(_):
-                    if hadAttr("builtin"): push(newLogical(x.fnKind==BuiltinFunction))
-                    else:                  push(VTRUE)
+                    on builtin: push(newLogical(x.fnKind==BuiltinFunction))
+                    _:          push(VTRUE)
                 _:
                     push(VFALSE)
 
