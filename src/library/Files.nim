@@ -542,12 +542,13 @@ proc defineModule*(moduleName: string) =
             attrs       = NoAttrs,
             returns     = {Logical},
             example     = """
-            if directory? "src" [ 
-                print "directory exists!" 
+            if directory? "src" [
+                print "directory exists!"
             ]
             """:
                 #=======================================================
-                push newLogical(dirExists(x.s))
+                dispatch:
+                    String(s): push newLogical(dirExists(s))
 
         builtin "exists?",
             alias       = unaliased, 
