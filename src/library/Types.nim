@@ -813,8 +813,8 @@ proc defineModule*(moduleName: string) =
             #=======================================================
             dispatch:
                 Integer(_):
-                    if hadAttr("big"): push(newLogical(x.iKind==BigInteger))
-                    else:              push(VTRUE)
+                    on big: push(newLogical(x.iKind==BigInteger))
+                    _:      push(VTRUE)
                 _:
                     push(VFALSE)
 
