@@ -221,13 +221,13 @@ proc defineModule*(moduleName: string) =
             send socket "Hello Socket World"
             """:
                 #=======================================================
-                let asChunk = hadAttr("chunk")
+                dispatch:
+                    (Socket(s), String(t)):
+                        let message =
+                            if hadAttr("chunk"): t
+                            else:                t & "\r\L"
 
-                let message = 
-                    if asChunk: y.s
-                    else: y.s & "\r\L"
-
-                x.sock.socket.send(message)
+                        s.socket.send(message)
 
         builtin "unplug",
             alias       = unaliased, 
