@@ -580,7 +580,9 @@ proc defineModule*(moduleName: string) =
             print char? 123         ; false
         """:
             #=======================================================
-            push(newLogical(xKind==Char))
+            dispatch:
+                Char(_): push(VTRUE)
+                _:       push(VFALSE)
 
     builtin "color?",
         alias       = unaliased, 
