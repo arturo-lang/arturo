@@ -1054,7 +1054,9 @@ proc defineModule*(moduleName: string) =
             print null? 123             ; false
         """:
             #=======================================================
-            push(newLogical(xKind==Null))
+            dispatch:
+                Null(_): push(VTRUE)
+                _:       push(VFALSE)
 
     builtin "object?",
         alias       = unaliased, 
