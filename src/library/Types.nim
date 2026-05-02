@@ -80,8 +80,9 @@ proc defineModule*(moduleName: string) =
             #=======================================================
             var args: ValueArray
 
-            if xKind == Literal: args = @[x]
-            else: args = x.a
+            dispatch:
+                Literal(_): args = @[x]
+                Block(a):   args = a
 
             if (let constructorMethod = generatedConstructor(args); not constructorMethod.isNil):
                 push(constructorMethod)
