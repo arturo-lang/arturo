@@ -243,63 +243,57 @@ proc defineModule*(moduleName: string) =
             ; Snowflake: 'meow!'
         """:
             #=======================================================
-            # Get our defined fields & methods
-            # as a dictionary
-            var definitions: ValueDict = newOrderedTable[string,Value]()
-            var extra: ValueDict = newOrderedTable[string,Value]()
-            var inherits: Value = VNULL
+            dispatch:
+                Type(_):
+                    var definitions: ValueDict = newOrderedTable[string,Value]()
+                    var extra: ValueDict = newOrderedTable[string,Value]()
+                    var inherits: Value = VNULL
 
-            var super = newOrderedTable[string,Value]()
+                    var super = newOrderedTable[string,Value]()
 
-            if x.tpKind == UserType:
-                if (let xproto = getType(x.tid); not xproto.isNil):
-                    inherits = x
-                    
-                    for k,v in xproto.content:
-                        if v.kind == Method:
-                            super[k] = v.uninjectingThis()
+                    if x.tpKind == UserType:
+                        if (let xproto = getType(x.tid); not xproto.isNil):
+                            inherits = x
 
-                        definitions[k] = copyValue(v)
-                else:
-                    Error_UsingUndefinedType(x.tid)
-            else:
-                # DRAFT:
-                # if x.t in {Integer, Floating, Rational, Complex, Quantity}:
-                #     for k,v in newDictionary(execDictionary(doParse(GenerateNumericSubtype.replace("%TYPE%",":" & ($(x.t)).toLowerAscii()), isFile=false))).d:
-                #         super[k] = v.uninjectingThis()
-                #         definitions[k] = copyValue(v)
-                # else:
-                Error_UnsupportedParentType(($(x.t)).toLowerAscii())
+                            for k,v in xproto.content:
+                                if v.kind == Method:
+                                    super[k] = v.uninjectingThis()
 
-            if yKind == Block:
-                if (let constructorMethod = generatedConstructor(y.a); not constructorMethod.isNil):
-                    extra[$ConstructorM] = constructorMethod
-                else:
-                    for k,v in newDictionary(execDictionary(y)).d:
-                        extra[k] = v
-            else:
-                for k,v in y.d:
-                    extra[k] = copyValue(v)
-
-            for k,v in extra:
-                if v.kind == Method:
-                    if (let superF = super.getOrDefault(k, nil); not superF.isNil):
-                        definitions[k] = v.injectingSuper(superF)
+                                definitions[k] = copyValue(v)
+                        else:
+                            Error_UsingUndefinedType(x.tid)
                     else:
-                        definitions[k] = copyValue(v)
-                        
-                    definitions[k].injectThis()
-                else:
-                    definitions[k] = v
+                        Error_UnsupportedParentType(($(x.t)).toLowerAscii())
 
-            when not defined(WEB):
-                let tmpTid = x.tid & "_" & $(genOid())
-            else:
-                let tmpTid = x.tid & "_" & "temp"
-                
-            setType(tmpTid, newPrototype("_" & x.tid, definitions, inherits, super))
+                    if yKind == Block:
+                        if (let constructorMethod = generatedConstructor(y.a); not constructorMethod.isNil):
+                            extra[$ConstructorM] = constructorMethod
+                        else:
+                            for k,v in newDictionary(execDictionary(y)).d:
+                                extra[k] = v
+                    else:
+                        for k,v in y.d:
+                            extra[k] = copyValue(v)
 
-            push newUserType(tmpTid)
+                    for k,v in extra:
+                        if v.kind == Method:
+                            if (let superF = super.getOrDefault(k, nil); not superF.isNil):
+                                definitions[k] = v.injectingSuper(superF)
+                            else:
+                                definitions[k] = copyValue(v)
+
+                            definitions[k].injectThis()
+                        else:
+                            definitions[k] = v
+
+                    when not defined(WEB):
+                        let tmpTid = x.tid & "_" & $(genOid())
+                    else:
+                        let tmpTid = x.tid & "_" & "temp"
+
+                    setType(tmpTid, newPrototype("_" & x.tid, definitions, inherits, super))
+
+                    push newUserType(tmpTid)
 
     builtin "sortable",
         alias       = unaliased,
