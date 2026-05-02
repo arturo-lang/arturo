@@ -1243,7 +1243,9 @@ proc defineModule*(moduleName: string) =
             ; => true
         """:
             #=======================================================
-            push(newLogical(xKind==Socket))
+            dispatch:
+                Socket(_): push(VTRUE)
+                _:         push(VFALSE)
 
     builtin "store?",
         alias       = unaliased, 
