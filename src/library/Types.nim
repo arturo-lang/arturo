@@ -644,7 +644,9 @@ proc defineModule*(moduleName: string) =
             ; => true
         """:
             #=======================================================
-            push(newLogical(xKind==Database))
+            dispatch:
+                Database(_): push(VTRUE)
+                _:           push(VFALSE)
 
     builtin "date?",
         alias       = unaliased, 

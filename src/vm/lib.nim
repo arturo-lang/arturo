@@ -105,6 +105,7 @@ proc dispatchFieldAndCtor(kind: string, n: NimNode, macroName: string): (string,
     of "Socket":         ("sock", "newSocket")
     of "Type":           ("t", "newType")
     of "Null":           ("kind", "")
+    of "Database":       ("dbKind", "")
     else:
         error(macroName & ": unsupported kind '" & kind & "'", n)
 
