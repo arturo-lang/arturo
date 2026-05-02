@@ -1056,7 +1056,9 @@ proc defineModule*(moduleName: string) =
             print object? "hello"       ; false
         """:
             #=======================================================
-            push(newLogical(xKind==Object))
+            dispatch:
+                Object(_): push(VTRUE)
+                _:         push(VFALSE)
 
     builtin "path?",
         alias       = unaliased, 
