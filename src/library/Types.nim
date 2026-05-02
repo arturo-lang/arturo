@@ -723,7 +723,9 @@ proc defineModule*(moduleName: string) =
             print dictionary? 123               ; false
         """:
             #=======================================================
-            push(newLogical(xKind==Dictionary))
+            dispatch:
+                Dictionary(_): push(VTRUE)
+                _:             push(VFALSE)
 
     builtin "error?",
         alias       = unaliased, 
