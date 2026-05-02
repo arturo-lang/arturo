@@ -426,7 +426,8 @@ proc defineModule*(moduleName: string) =
             ; true
         """:
             #=======================================================
-            discard
+            dispatch:
+                _: discard
 
     builtin "do",
         alias       = unaliased, 
