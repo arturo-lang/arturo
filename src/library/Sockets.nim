@@ -138,23 +138,25 @@ proc defineModule*(moduleName: string) =
             server: listen 18966
             """:
                 #=======================================================
-                let blocking = true
-                let protocol = 
-                    if hadAttr("udp"): IPPROTO_UDP
-                    else: IPPROTO_TCP
+                dispatch:
+                    Integer(i):
+                        let blocking = true
+                        let protocol =
+                            if hadAttr("udp"): IPPROTO_UDP
+                            else:              IPPROTO_TCP
 
-                var sock: netsock.Socket = netsock.newSocket(protocol=protocol)
-                sock.setSockOpt(OptReuseAddr, true)
-                
-                sock.getFd().setBlocking(blocking)
-                sock.bindAddr(Port(x.i))
-                sock.listen()
+                        var sock: netsock.Socket = netsock.newSocket(protocol=protocol)
+                        sock.setSockOpt(OptReuseAddr, true)
 
-                let (address,port) = getLocalAddr(sock)
+                        sock.getFd().setBlocking(blocking)
+                        sock.bindAddr(Port(i))
+                        sock.listen()
 
-                let socket = initSocket(sock, proto=protocol, address=address, port=port)
+                        let (address,port) = getLocalAddr(sock)
 
-                push newSocket(socket)
+                        let socket = initSocket(sock, proto=protocol, address=address, port=port)
+
+                        push newSocket(socket)
 
         builtin "receive",
             alias       = unaliased, 
