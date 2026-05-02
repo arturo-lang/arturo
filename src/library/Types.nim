@@ -1111,7 +1111,9 @@ proc defineModule*(moduleName: string) =
             ; => true
         """:
             #=======================================================
-            push(newLogical(xKind==PathLabel))
+            dispatch:
+                PathLabel(_): push(VTRUE)
+                _:            push(VFALSE)
 
     builtin "pathLiteral?",
         alias       = unaliased, 
