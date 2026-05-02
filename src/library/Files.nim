@@ -457,7 +457,8 @@ proc defineModule*(moduleName: string) =
             ; (size in bytes)
             """:
                 #=======================================================
-                push newQuantity(toQuantity(int(getFileSize(x.s)), parseAtoms("B")))
+                dispatch:
+                    String(s): push newQuantity(toQuantity(int(getFileSize(s)), parseAtoms("B")))
 
         builtin "write",
             alias       = doublearrowright, 
