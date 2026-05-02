@@ -873,31 +873,33 @@ proc defineModule*(moduleName: string) =
             print lcm [48 60 120]         ; 240
         """:
             #=======================================================
-            var current = x.a[0]
-            requireValue(current, {Integer})
+            dispatch:
+                Block(a):
+                    var current = a[0]
+                    requireValue(current, {Integer})
 
-            var i = 1
-            # TODO(Numbers\lcm) not working for Web builds
-            # labels: web,enhancement
-            while i<x.a.len:
-                let elem {.cursor.} = x.a[i]
-                requireValue(elem, {Integer})
+                    var i = 1
+                    # TODO(Numbers\lcm) not working for Web builds
+                    # labels: web,enhancement
+                    while i<a.len:
+                        let elem {.cursor.} = a[i]
+                        requireValue(elem, {Integer})
 
-                if current.iKind==NormalInteger:
-                    if elem.iKind==BigInteger:
-                        when defined(GMP):
-                            current = newInteger(lcm(current.i, elem.bi))
-                    else:
-                        current = newInteger(lcm(current.i, elem.i))
-                else:
-                    when defined(GMP):
-                        if elem.iKind==BigInteger:
-                            current = newInteger(lcm(current.bi, elem.bi))
+                        if current.iKind==NormalInteger:
+                            if elem.iKind==BigInteger:
+                                when defined(GMP):
+                                    current = newInteger(lcm(current.i, elem.bi))
+                            else:
+                                current = newInteger(lcm(current.i, elem.i))
                         else:
-                            current = newInteger(lcm(current.bi, elem.i))
-                inc(i)
+                            when defined(GMP):
+                                if elem.iKind==BigInteger:
+                                    current = newInteger(lcm(current.bi, elem.bi))
+                                else:
+                                    current = newInteger(lcm(current.bi, elem.i))
+                        inc(i)
 
-            push(current)
+                    push(current)
 
     builtin "ln",
         alias       = unaliased, 
