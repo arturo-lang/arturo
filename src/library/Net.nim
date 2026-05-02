@@ -234,136 +234,138 @@ proc defineModule*(moduleName: string) =
             ; ...same as above...
             """:
                 #=======================================================
-                var url = x.s
-                var meth: HttpMethod = HttpGet 
+                dispatch:
+                    String(initialUrl):
+                        var url = initialUrl
+                        var meth: HttpMethod = HttpGet
 
-                if (hadAttr("get")): discard
-                if (hadAttr("post")): meth = HttpPost
-                if (hadAttr("patch")): meth = HttpPatch
-                if (hadAttr("put")): meth = HttpPut
-                if (hadAttr("delete")): meth = HttpDelete
+                        if hadAttr("get"):    discard
+                        if hadAttr("post"):   meth = HttpPost
+                        if hadAttr("patch"):  meth = HttpPatch
+                        if hadAttr("put"):    meth = HttpPut
+                        if hadAttr("delete"): meth = HttpDelete
 
-                var headers: HttpHeaders = newHttpHeaders()
-                if checkAttr("headers"):
-                    var headersArr: seq[(string,string)]
-                    for k,v in pairs(aHeaders.d):
-                        headersArr.add((k, $(v)))
-                    headers = newHttpHeaders(headersArr)
+                        var headers: HttpHeaders = newHttpHeaders()
+                        if checkAttr("headers"):
+                            var headersArr: seq[(string,string)]
+                            for k,v in pairs(aHeaders.d):
+                                headersArr.add((k, $(v)))
+                            headers = newHttpHeaders(headersArr)
 
-                var agent = "Arturo HTTP Client / " & $(getSystemInfo()["version"])
-                if checkAttr("agent"):
-                    agent = aAgent.s
+                        var agent = "Arturo HTTP Client / " & $(getSystemInfo()["version"])
+                        if checkAttr("agent"):
+                            agent = aAgent.s
 
-                var timeout: int = -1
-                if checkAttr("timeout"):
-                    timeout = aTimeout.i
+                        var timeout: int = -1
+                        if checkAttr("timeout"):
+                            timeout = aTimeout.i
 
-                var proxy: Proxy = nil
-                if checkAttr("proxy"):
-                    proxy = newProxy(aProxy.s)
- 
-                var body: string
-                var multipart: MultipartData = nil
-                if meth != HttpGet:
-                    if (hadAttr("json")):
-                        headers.add("Content-Type", "application/json")
-                        body = jsonFromValue(y, pretty=false)
-                    else:
-                        if yKind == String:
-                            body = y.s
-                        else:
-                            multipart = newMultipartData()
-                            for k,v in pairs(y.d):
-                                multipart[k] = $(v)
-                else:
-                    if y != VNULL:
-                        if (yKind==Dictionary and y.d.len!=0):
-                            var parts: seq[string]
-                            for k,v in pairs(y.d):
-                                parts.add(k & "=" & urlencode($(v)))
-                            url &= "?" & parts.join("&")
-                        elif yKind==String:
-                            url &= "?" & y.s
+                        var proxy: Proxy = nil
+                        if checkAttr("proxy"):
+                            proxy = newProxy(aProxy.s)
 
-                var client: HttpClient
-
-                if checkAttr("certificate"):
-                    when defined(ssl):
-                        client = newHttpClient(
-                            userAgent = agent,
-                            sslContext = newContext(certFile=aCertificate.s),
-                            proxy = proxy, 
-                            timeout = timeout,
-                            headers = headers
-                        )
-                    else:
-                        client = newHttpClient(
-                            userAgent = agent,
-                            proxy = proxy, 
-                            timeout = timeout,
-                            headers = headers
-                        )
-                else:
-                    client = newHttpClient(
-                        userAgent = agent,
-                        proxy = proxy, 
-                        timeout = timeout,
-                        headers = headers
-                    )
-
-                try:
-                    let response = client.request(url = url,
-                                                httpMethod = meth,
-                                                body = body,
-                                                multipart = multipart)
-
-                    var ret: ValueDict = initOrderedTable[string,Value]()
-                    ret["version"] = newString(response.version)
-                    
-                    ret["body"] = newString(response.body)
-                    ret["headers"] = newDictionary()
-
-                    if (hadAttr("raw")):
-                        ret["status"] = newString(response.status)
-
-                        for k,v in response.headers.table:
-                            ret["headers"].d[k] = newStringBlock(v)
-                    else:
-                        try:
-                            let respStatus = (response.status.splitWhitespace())[0]
-                            ret["status"] = newInteger(respStatus)
-                        except CatchableError:
-                            ret["status"] = newString(response.status)
-
-                        for k,v in response.headers.table:
-                            var val: Value
-                            if v.len==1:
-                                case k
-                                    of "age","content-length": 
-                                        try:
-                                            val = newInteger(v[0])
-                                        except CatchableError:
-                                            val = newString(v[0])
-                                    of "access-control-allow-credentials":
-                                        val = newLogical(v[0])
-                                    of "date", "expires", "last-modified":
-                                        let dateParts = v[0].splitWhitespace()
-                                        let cleanDate = (dateParts[0..(dateParts.len-2)]).join(" ")
-                                        var dateFormat = "ddd, dd MMM YYYY HH:mm:ss"
-                                        let timeFormat = initTimeFormat(dateFormat)
-                                        try:
-                                            val = newDate(parse(cleanDate, timeFormat))
-                                        except CatchableError:
-                                            val = newString(v[0])
-                                    else:
-                                        val = newString(v[0])
+                        var body: string
+                        var multipart: MultipartData = nil
+                        if meth != HttpGet:
+                            if hadAttr("json"):
+                                headers.add("Content-Type", "application/json")
+                                body = jsonFromValue(y, pretty=false)
                             else:
-                                val = newStringBlock(v)
-                            ret["headers"].d[k] = val
-                
-                    push newDictionary(ret)
-                except CatchableError:
-                    push(VNULL)
+                                if yKind == String:
+                                    body = y.s
+                                else:
+                                    multipart = newMultipartData()
+                                    for k,v in pairs(y.d):
+                                        multipart[k] = $(v)
+                        else:
+                            if y != VNULL:
+                                if yKind == Dictionary and y.d.len != 0:
+                                    var parts: seq[string]
+                                    for k,v in pairs(y.d):
+                                        parts.add(k & "=" & urlencode($(v)))
+                                    url &= "?" & parts.join("&")
+                                elif yKind == String:
+                                    url &= "?" & y.s
+
+                        var client: HttpClient
+
+                        if checkAttr("certificate"):
+                            when defined(ssl):
+                                client = newHttpClient(
+                                    userAgent = agent,
+                                    sslContext = newContext(certFile=aCertificate.s),
+                                    proxy = proxy,
+                                    timeout = timeout,
+                                    headers = headers
+                                )
+                            else:
+                                client = newHttpClient(
+                                    userAgent = agent,
+                                    proxy = proxy,
+                                    timeout = timeout,
+                                    headers = headers
+                                )
+                        else:
+                            client = newHttpClient(
+                                userAgent = agent,
+                                proxy = proxy,
+                                timeout = timeout,
+                                headers = headers
+                            )
+
+                        try:
+                            let response = client.request(url = url,
+                                                        httpMethod = meth,
+                                                        body = body,
+                                                        multipart = multipart)
+
+                            var ret: ValueDict = initOrderedTable[string,Value]()
+                            ret["version"] = newString(response.version)
+
+                            ret["body"] = newString(response.body)
+                            ret["headers"] = newDictionary()
+
+                            if hadAttr("raw"):
+                                ret["status"] = newString(response.status)
+
+                                for k,v in response.headers.table:
+                                    ret["headers"].d[k] = newStringBlock(v)
+                            else:
+                                try:
+                                    let respStatus = (response.status.splitWhitespace())[0]
+                                    ret["status"] = newInteger(respStatus)
+                                except CatchableError:
+                                    ret["status"] = newString(response.status)
+
+                                for k,v in response.headers.table:
+                                    var val: Value
+                                    if v.len == 1:
+                                        case k
+                                            of "age","content-length":
+                                                try:
+                                                    val = newInteger(v[0])
+                                                except CatchableError:
+                                                    val = newString(v[0])
+                                            of "access-control-allow-credentials":
+                                                val = newLogical(v[0])
+                                            of "date", "expires", "last-modified":
+                                                let dateParts = v[0].splitWhitespace()
+                                                let cleanDate = (dateParts[0..(dateParts.len-2)]).join(" ")
+                                                var dateFormat = "ddd, dd MMM YYYY HH:mm:ss"
+                                                let timeFormat = initTimeFormat(dateFormat)
+                                                try:
+                                                    val = newDate(parse(cleanDate, timeFormat))
+                                                except CatchableError:
+                                                    val = newString(v[0])
+                                            else:
+                                                val = newString(v[0])
+                                    else:
+                                        val = newStringBlock(v)
+                                    ret["headers"].d[k] = val
+
+                            push newDictionary(ret)
+                        except CatchableError:
+                            push(VNULL)
 
         builtin "serve",
             alias       = unaliased, 
