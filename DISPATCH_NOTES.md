@@ -200,6 +200,10 @@ must use per-mode bodies (`value:`/`inplace:`) and write their own
 | `src/library/Core.nim`        | `module` (definitions cascade)             | `dispatch`, Block / Dictionary                      |
 | `src/library/Bitwise.nim`     | `shl`                                      | `dispatchWithLiteral` with `_:` fallback            |
 | `src/library/Reflection.nim`  | `info`                                     | `dispatch`, SymbolLiteral + `_:` fallback (PathLiteral via xKind check inside fallback) |
+| `src/library/Quantities.nim`  | `units`, `scalar`                          | `dispatch`, 2-kind on x with `on base:` ladder (units); single Quantity clause (scalar) |
+| `src/library/Collections.nim` | `take`                                     | `dispatchWithLiteral`, 1-axis × per-mode (Range asymmetry: SetInPlaceAny vs field assign) |
+| `src/library/Numbers.nim`     | `factorial`, `prime?`, `factors`, `gcd`, `lcm` | `dispatch`, single Integer/Block clause (factors uses `on prime:` ladder) |
+| `src/library/Logic.nim`       | `all?`, `any?`                             | `dispatch`, single Block clause                     |
 
 ## Plan: features still to add
 
