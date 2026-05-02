@@ -1262,7 +1262,9 @@ proc defineModule*(moduleName: string) =
             ; => true
         """:
             #=======================================================
-            push(newLogical(xKind==Store))
+            dispatch:
+                Store(_): push(VTRUE)
+                _:        push(VFALSE)
 
     builtin "string?",
         alias       = unaliased, 
