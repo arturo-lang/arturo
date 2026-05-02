@@ -1132,10 +1132,12 @@ proc defineModule*(moduleName: string) =
             print quantity? 3           ; false 
         """:
             #=======================================================
-            if (hadAttr("big")):
-                push(newLogical(xKind==Quantity and x.q.original.rKind==BigRational))
-            else:
-                push(newLogical(xKind==Quantity))
+            dispatch:
+                Quantity(q):
+                    if hadAttr("big"): push(newLogical(q.original.rKind==BigRational))
+                    else:              push(VTRUE)
+                _:
+                    push(VFALSE)
 
     builtin "range?",
         alias       = unaliased, 
