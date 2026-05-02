@@ -382,15 +382,17 @@ proc defineModule*(moduleName: string) =
             ; to our desktop
             """:
                 #=======================================================
-                var source = x.s
-                var target = y.s
-                try:
-                    if (hadAttr("hard")):
-                        createHardlink(move source, move target)
-                    else:
-                        createSymlink(move source, move target)
-                except OSError:
-                    discard
+                dispatch:
+                    (String(src), String(dst)):
+                        var source = src
+                        var target = dst
+                        try:
+                            if hadAttr("hard"):
+                                createHardlink(move source, move target)
+                            else:
+                                createSymlink(move source, move target)
+                        except OSError:
+                            discard
         
         builtin "timestamp",
             alias       = unaliased, 
