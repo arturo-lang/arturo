@@ -796,7 +796,8 @@ proc defineModule*(moduleName: string) =
             print gamma 15          ; 87178291199.99985
             """:
                 #=======================================================
-                push(newFloating(gamma(asFloat(x))))
+                dispatch:
+                    _: push(newFloating(gamma(asFloat(x))))
 
     builtin "gcd",
         alias       = unaliased, 
