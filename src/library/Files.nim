@@ -522,8 +522,10 @@ proc defineModule*(moduleName: string) =
             zip "dest.zip" ["file1.txt" "img.png"]
             """:
                 #=======================================================
-                let files: seq[string] = y.a.map((z)=>z.s)
-                miniz.zip(files, x.s)
+                dispatch:
+                    (String(dst), Block(a)):
+                        let files: seq[string] = a.map((z)=>z.s)
+                        miniz.zip(files, dst)
 
     #----------------------------
     # Predicates
