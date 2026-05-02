@@ -776,7 +776,8 @@ proc defineModule*(moduleName: string) =
             print floor to :rational @[neg 7 2] ; -4
         """:
             #=======================================================
-            push(newInteger(int(floor(asFloat(x)))))
+            dispatch:
+                _: push(newInteger(int(floor(asFloat(x)))))
 
     when not defined(WEB):
         builtin "gamma",
