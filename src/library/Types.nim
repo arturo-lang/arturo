@@ -1161,8 +1161,8 @@ proc defineModule*(moduleName: string) =
             #=======================================================
             dispatch:
                 Quantity(q):
-                    if hadAttr("big"): push(newLogical(q.original.rKind==BigRational))
-                    else:              push(VTRUE)
+                    on big: push(newLogical(q.original.rKind==BigRational))
+                    _:      push(VTRUE)
                 _:
                     push(VFALSE)
 
