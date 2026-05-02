@@ -1196,7 +1196,9 @@ proc defineModule*(moduleName: string) =
             print regex? 123            ; false
         """:
             #=======================================================
-            push(newLogical(xKind==Regex))
+            dispatch:
+                Regex(_): push(VTRUE)
+                _:        push(VFALSE)
 
     builtin "socket?",
         alias       = unaliased, 
