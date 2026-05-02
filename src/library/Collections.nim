@@ -2326,66 +2326,57 @@ proc defineModule*(moduleName: string) =
             take [1 2 3] 4          ; => [1 2 3]
         """:
             #=======================================================
-            
             template getUpperLimit(container: untyped): untyped =
                 if abs(y.i) > container.len: container.high
                 else: abs(y.i) - 1
-            
-            template take(container: untyped): untyped =
+
+            template doTake(container: untyped): untyped =
                 let upperLimit: int = container.getUpperLimit()
                 if 0 < y.i:
                     container[0..upperLimit]
                 else:
                     container[container.high - upperLimit..^1]
-            
-            if x.kind in {Literal, PathLiteral}:
-                ensureInPlaceAny()
-                case InPlaced.kind
-                of String:
-                    if x.s.len > 0:
-                        InPlaced.s = InPlaced.s.take()
-                of Block:
-                    if InPlaced.a.len > 0:
-                        InPlaced.a = InPlaced.a.take()
-                of Range:
-                    if 0 < y.i:
-                        let upperLimit: int = 
-                            if y.i < InPlaced.rng.len: y.i - 1 
-                            else: InPlaced.rng.len - 1
-                        InPlaced = newBlock(InPlaced.rng[0..upperLimit])
-                    elif 0 > y.i:
-                        let lowerLimit: int = 
-                            if abs(y.i) < InPlaced.rng.len: abs(y.i) - 1
-                            else: InPlaced.rng.len - 1
-                        InPlaced = newBlock(
-                            InPlaced.rng[InPlaced.rng.len-lowerLimit-1..InPlaced.rng.len-1])
-                    else:
-                        InPlaced = newBlock()
-                else: discard
-            else:
-                case x.kind
-                of String:
-                    if x.s.len == 0: push(newString(""))
-                    else:
-                        push(newString(x.s.take()))
-                of Block:
-                    if x.a.len == 0: push(newBlock())
-                    else:
-                        push(newBlock(x.a.take()))
-                of Range:
-                    if 0 < y.i:
-                        let upperLimit: int = 
-                            if y.i < x.rng.len: y.i - 1 
-                            else: x.rng.len - 1
-                        push(newBlock(x.rng[0..upperLimit]))
-                    elif 0 > y.i:
-                        let lowerLimit: int = 
-                            if abs(y.i) < x.rng.len: abs(y.i) - 1
-                            else: x.rng.len - 1
-                        push(newBlock(x.rng[x.rng.len-lowerLimit-1..x.rng.len-1]))
-                    else:
-                        push(newBlock())      
-                else: discard
+
+            dispatchWithLiteral:
+                String(s):
+                    value:
+                        if s.len == 0: push(newString(""))
+                        else:          push(newString(s.doTake()))
+                    inplace:
+                        if s.len > 0: s = s.doTake()
+                Block(a):
+                    value:
+                        if a.len == 0: push(newBlock())
+                        else:          push(newBlock(a.doTake()))
+                    inplace:
+                        if a.len > 0: a = a.doTake()
+                Range(rng):
+                    value:
+                        if 0 < y.i:
+                            let upperLimit: int =
+                                if y.i < rng.len: y.i - 1
+                                else: rng.len - 1
+                            push(newBlock(rng[0..upperLimit]))
+                        elif 0 > y.i:
+                            let lowerLimit: int =
+                                if abs(y.i) < rng.len: abs(y.i) - 1
+                                else: rng.len - 1
+                            push(newBlock(rng[rng.len-lowerLimit-1..rng.len-1]))
+                        else:
+                            push(newBlock())
+                    inplace:
+                        if 0 < y.i:
+                            let upperLimit: int =
+                                if y.i < rng.len: y.i - 1
+                                else: rng.len - 1
+                            SetInPlaceAny(newBlock(rng[0..upperLimit]))
+                        elif 0 > y.i:
+                            let lowerLimit: int =
+                                if abs(y.i) < rng.len: abs(y.i) - 1
+                                else: rng.len - 1
+                            SetInPlaceAny(newBlock(rng[rng.len-lowerLimit-1..rng.len-1]))
+                        else:
+                            SetInPlaceAny(newBlock())
 
     builtin "tally",
         alias       = unaliased,
