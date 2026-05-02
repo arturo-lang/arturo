@@ -250,7 +250,8 @@ proc defineModule*(moduleName: string) =
             unplug socket
             """:
                 #=======================================================
-                x.sock.socket.close()
+                dispatch:
+                    Socket(s): s.socket.close()
 
     #----------------------------
     # Predicates
