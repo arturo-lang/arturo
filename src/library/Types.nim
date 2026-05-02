@@ -1152,7 +1152,9 @@ proc defineModule*(moduleName: string) =
             print range? [1 2 3]        ; false
         """:
             #=======================================================
-            push(newLogical(xKind==Range))
+            dispatch:
+                Range(_): push(VTRUE)
+                _:        push(VFALSE)
 
     builtin "rational?",
         alias       = unaliased, 
