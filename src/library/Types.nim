@@ -745,7 +745,9 @@ proc defineModule*(moduleName: string) =
             ; => true
         """:
             #=======================================================
-            push(newLogical(xKind==Error))
+            dispatch:
+                Error(_): push(VTRUE)
+                _:        push(VFALSE)
 
     builtin "errorKind?",
         alias       = unaliased, 
