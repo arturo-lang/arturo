@@ -346,18 +346,16 @@ proc defineModule*(moduleName: string) =
             ; file renamed
             """:
                 #=======================================================
-                var source = x.s
-                var target = y.s
-                if (hadAttr("directory")): 
-                    try:
-                        moveDir(move source, move target)
-                    except OSError:
-                        discard
-                else: 
-                    try:
-                        moveFile(move source, move target)
-                    except OSError:
-                        discard
+                dispatch:
+                    (String(src), String(dst)):
+                        var source = src
+                        var target = dst
+                        if hadAttr("directory"):
+                            try:    moveDir(move source, move target)
+                            except OSError: discard
+                        else:
+                            try:    moveFile(move source, move target)
+                            except OSError: discard
 
         builtin "symlink",
             alias       = unaliased,
