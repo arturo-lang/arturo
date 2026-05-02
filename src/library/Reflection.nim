@@ -138,15 +138,17 @@ proc defineModule*(moduleName: string) =
             ; => 0.3237628936767578
         """:
             #=======================================================
-            let preevaled = evalOrGet(x)
-            if (hadAttr("get")):
-                let time = getBenchmark:
-                    execUnscoped(preevaled)
+            dispatch:
+                _:
+                    let preevaled = evalOrGet(x)
+                    if hadAttr("get"):
+                        let time = getBenchmark:
+                            execUnscoped(preevaled)
 
-                push newQuantity(toQuantity(time, parseAtoms("ms")))
-            else:
-                benchmark "":
-                    execUnscoped(preevaled)
+                        push newQuantity(toQuantity(time, parseAtoms("ms")))
+                    else:
+                        benchmark "":
+                            execUnscoped(preevaled)
 
     when not defined(WEB):
 
