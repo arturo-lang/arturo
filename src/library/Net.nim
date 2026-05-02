@@ -119,17 +119,17 @@ proc defineModule*(moduleName: string) =
             ; (downloads file with a different name)
             """:
                 #=======================================================
-                let path = x.s
+                dispatch:
+                    String(path):
+                        var target: string
 
-                var target: string
+                        if checkAttr("as"):
+                            target = aAs.s
+                        else:
+                            target = extractFilename(path)
 
-                if checkAttr("as"):
-                    target = aAs.s
-                else:
-                    target = extractFilename(path)
-
-                var client = newHttpClient()
-                client.downloadFile(path,target)
+                        var client = newHttpClient()
+                        client.downloadFile(path, target)
 
         when defined(ssl):
             builtin "mail",
