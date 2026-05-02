@@ -1502,13 +1502,15 @@ proc defineModule*(moduleName: string) =
             prime? (2^607)-1  ; => true
         """:
             #=======================================================
-            if x.iKind==NormalInteger:
-                push(newLogical(isPrime(x.i.uint64)))
-            else:
-                # TODO(Numbers\prime?) not working for Web builds
-                # labels: web,enhancement
-                when defined(GMP):
-                    push(newLogical(probablyPrime(x.bi,25)>0))
+            dispatch:
+                Integer(i):
+                    if x.iKind==NormalInteger:
+                        push(newLogical(isPrime(i.uint64)))
+                    else:
+                        # TODO(Numbers\prime?) not working for Web builds
+                        # labels: web,enhancement
+                        when defined(GMP):
+                            push(newLogical(probablyPrime(x.bi,25)>0))
 
     #----------------------------
     # Constants
