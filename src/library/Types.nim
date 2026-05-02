@@ -1031,7 +1031,9 @@ proc defineModule*(moduleName: string) =
             ; => false
         """:
             #=======================================================
-            push(newLogical(xKind == Method))
+            dispatch:
+                Method(_): push(VTRUE)
+                _:         push(VFALSE)
 
     builtin "null?",
         alias       = unaliased, 
