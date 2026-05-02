@@ -367,10 +367,10 @@ proc defineModule*(moduleName: string) =
             
         """:
             #=======================================================
-            if getAttr(x.s) != VNULL:
-                push(VTRUE)
-            else:
-                push(VFALSE)
+            dispatch:
+                _:
+                    if getAttr(x.s) != VNULL: push(VTRUE)
+                    else:                    push(VFALSE)
 
     builtin "standalone?",
         alias       = unaliased, 
