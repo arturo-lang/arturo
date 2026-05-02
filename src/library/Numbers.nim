@@ -946,7 +946,8 @@ proc defineModule*(moduleName: string) =
             print log 100.0 10.0    ; 2.0
         """:
             #=======================================================
-            push(newFloating(log(asFloat(x),asFloat(y))))
+            dispatch:
+                _: push(newFloating(log(asFloat(x), asFloat(y))))
 
     builtin "numerator",
         alias       = unaliased, 
