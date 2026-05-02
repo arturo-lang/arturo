@@ -153,23 +153,25 @@ proc defineModule*(moduleName: string) =
             scalar 13:3`m           ; => 13/3
         """:
             #=======================================================
-            let r {.cursor.} = x.q.original
+            dispatch:
+                Quantity(q):
+                    let r {.cursor.} = q.original
 
-            if r.rKind == NormalRational:
-                if r.den == 1:
-                    push(newInteger(r.num))
-                elif r.canBeCoerced():
-                    push(newFloating(toFloat(r)))
-                else:
-                    push(newRational(r))
-            else:
-                when defined(GMP):
-                    if r.br.denominator() == 1:
-                        push(newInteger(r.br.numerator()))
-                    elif r.canBeCoerced():
-                        push(newFloating(toFloat(r)))
+                    if r.rKind == NormalRational:
+                        if r.den == 1:
+                            push(newInteger(r.num))
+                        elif r.canBeCoerced():
+                            push(newFloating(toFloat(r)))
+                        else:
+                            push(newRational(r))
                     else:
-                        push(newRational(r))
+                        when defined(GMP):
+                            if r.br.denominator() == 1:
+                                push(newInteger(r.br.numerator()))
+                            elif r.canBeCoerced():
+                                push(newFloating(toFloat(r)))
+                            else:
+                                push(newRational(r))
 
     builtin "specify",
         alias       = unaliased,
