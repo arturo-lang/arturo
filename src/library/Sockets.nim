@@ -63,13 +63,15 @@ proc defineModule*(moduleName: string) =
             print ["accepted incoming connection from:" client]
             """:
                 #=======================================================
-                var client: netsock.Socket
-                x.sock.socket.accept(client)
+                dispatch:
+                    Socket(srv):
+                        var client: netsock.Socket
+                        srv.socket.accept(client)
 
-                let (address,port) = getPeerAddr(client)
+                        let (address,port) = getPeerAddr(client)
 
-                let socket = initSocket(client, proto=x.sock.protocol, address=address, port=port)
-                push newSocket(socket)
+                        let socket = initSocket(client, proto=srv.protocol, address=address, port=port)
+                        push newSocket(socket)
 
         builtin "connect",
             alias       = unaliased, 
