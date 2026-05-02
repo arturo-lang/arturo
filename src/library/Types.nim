@@ -991,7 +991,9 @@ proc defineModule*(moduleName: string) =
             print logical? 123          ; false
         """:
             #=======================================================
-            push(newLogical(xKind==Logical))
+            dispatch:
+                Logical(_): push(VTRUE)
+                _:          push(VFALSE)
 
     builtin "method?",
         alias       = unaliased, 
