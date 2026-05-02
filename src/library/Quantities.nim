@@ -102,7 +102,8 @@ proc defineModule*(moduleName: string) =
             ; 0.836127 m²
         """:
             #=======================================================
-            convertQuantity(x, y, xKind, yKind)
+            dispatch:
+                _: convertQuantity(x, y, xKind, yKind)
 
     builtin "property",
         alias       = unaliased,
