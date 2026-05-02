@@ -231,29 +231,29 @@ proc defineModule*(moduleName: string) =
             ; the program terminates!
             """:
                 #=======================================================
-                let isGlobal = hadAttr("global")
-                let isAutosave = not hadAttr("deferred")
+                bindAttrs:
+                    deferred: Logical
+                    global:   Logical
+                    native:   Logical
+                    json:     Logical
+                    db:       Logical
+
+                let isAutosave = not deferred
 
                 var storeKind = UndefinedStore
+                if native:   storeKind = NativeStore
+                elif json:   storeKind = JsonStore
+                elif db:     storeKind = SqliteStore
 
-                let isNative = hadAttr("native")
-                let isJson = hadAttr("json")
-                let isSqlite = hadAttr("db")
+                dispatch:
+                    _:
+                        let store = initStore(
+                            x.s,
+                            doLoad = true,
+                            forceExtension = true,
+                            global = global,
+                            autosave = isAutosave,
+                            kind = storeKind
+                        )
 
-                if isNative:
-                    storeKind = NativeStore
-                elif isJson:
-                    storeKind = JsonStore
-                elif isSqlite:
-                    storeKind = SqliteStore
-
-                let store = initStore(
-                    x.s,
-                    doLoad = true,
-                    forceExtension = true,
-                    global = isGlobal,
-                    autosave = isAutosave,
-                    kind = storeKind
-                )
-
-                push newStore(store)
+                        push newStore(store)
