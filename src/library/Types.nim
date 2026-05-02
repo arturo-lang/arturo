@@ -1344,7 +1344,9 @@ proc defineModule*(moduleName: string) =
             print type? 123             ; false
         """:
             #=======================================================
-            push(newLogical(xKind==Type))
+            dispatch:
+                Type(_): push(VTRUE)
+                _:       push(VFALSE)
 
     builtin "unit?",
         alias       = unaliased, 
