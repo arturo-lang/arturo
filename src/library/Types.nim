@@ -461,7 +461,7 @@ proc defineModule*(moduleName: string) =
         """:
             #=======================================================
             dispatch:
-                Object(o): push(newUserType(x.proto.name))
+                Object(_): push(newUserType(x.proto.name))
                 _:         push(newType(xKind))
 
     #----------------------------
