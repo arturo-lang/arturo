@@ -561,7 +561,9 @@ proc defineModule*(moduleName: string) =
             print bytecode? code       ; false
         """:
             #=======================================================
-            push(newLogical(xKind==Bytecode))
+            dispatch:
+                Bytecode(_): push(VTRUE)
+                _:           push(VFALSE)
 
     builtin "char?",
         alias       = unaliased,
