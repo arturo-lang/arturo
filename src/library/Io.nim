@@ -136,8 +136,8 @@ proc defineModule*(moduleName: string) =
             """:
                 #=======================================================
                 dispatch:
-                    Logical(b):
-                        if b == True: stdout.showCursor()
+                    Logical(_):
+                        if isTrue(x): stdout.showCursor()
                         else:         stdout.hideCursor()
 
         builtin "goto",
