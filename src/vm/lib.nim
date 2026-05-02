@@ -85,6 +85,7 @@ proc dispatchFieldAndCtor(kind: string, n: NimNode, macroName: string): (string,
     of "Complex":    ("z", "newComplex")
     of "Rational":   ("rat", "newRational")
     of "Object":     ("o", "newObject")
+    of "Module":     ("singleton", "newModule")
     of "Date":       ("eobj", "newDate")
     of "Unit":       ("u", "newUnit")
     of "Bytecode":   ("trans", "newBytecode")
