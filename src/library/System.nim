@@ -324,18 +324,20 @@ proc defineModule*(moduleName: string) =
             ; prints a properly formatted error with the given message
         """:
             #=======================================================
-            var code = 1
-            if checkAttr("code"):
-                code = aCode.i
+            bindAttrs:
+                code:     Integer = 1
+                unstyled: Logical
 
             when not defined(WEB):
                 savePendingStores()
 
-            if (hadAttr("unstyled")):
-                echo $(x)
-                quit(code)
-            else:
-                ProgramError_panic(x.s.replace("\n",";"), code)
+            dispatch:
+                String(s):
+                    if unstyled:
+                        echo s
+                        quit(code)
+                    else:
+                        ProgramError_panic(s.replace("\n",";"), code)
 
     builtin "path",
         alias       = unaliased, 
