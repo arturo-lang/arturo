@@ -617,9 +617,10 @@ proc defineModule*(moduleName: string) =
             attrs       = NoAttrs,
             returns     = {Logical},
             example     = """
-            if symlink? "somefile" [ 
-                print "symlink exists!" 
+            if symlink? "somefile" [
+                print "symlink exists!"
             ]
             """:
                 #=======================================================
-                push newLogical(symlinkExists(x.s))
+                dispatch:
+                    String(s): push newLogical(symlinkExists(s))
