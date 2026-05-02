@@ -326,7 +326,8 @@ proc defineModule*(moduleName: string) =
             ; => true
         """:
             #=======================================================
-            push(generatedCompare(x))
+            dispatch:
+                Literal(_): push(generatedCompare(x))
 
     # TODO(Types\to) revise attributes
     #  the attributes to this function seem to me a bit confusing. I mean, `to` is
