@@ -810,31 +810,33 @@ proc defineModule*(moduleName: string) =
             print gcd [48 60 120]         ; 12
         """:
             #=======================================================
-            var current = x.a[0]
-            requireValue(current, {Integer})
+            dispatch:
+                Block(a):
+                    var current = a[0]
+                    requireValue(current, {Integer})
 
-            var i = 1
-            # TODO(Numbers\gcd) not working for Web builds
-            # labels: web,enhancement
-            while i<x.a.len:
-                let elem {.cursor.} = x.a[i]
-                requireValue(elem, {Integer})
+                    var i = 1
+                    # TODO(Numbers\gcd) not working for Web builds
+                    # labels: web,enhancement
+                    while i<a.len:
+                        let elem {.cursor.} = a[i]
+                        requireValue(elem, {Integer})
 
-                if current.iKind==NormalInteger:
-                    if elem.iKind==BigInteger:
-                        when defined(GMP):
-                            current = newInteger(gcd(current.i, elem.bi))
-                    else:
-                        current = newInteger(gcd(current.i, elem.i))
-                else:
-                    when defined(GMP):
-                        if elem.iKind==BigInteger:
-                            current = newInteger(gcd(current.bi, elem.bi))
+                        if current.iKind==NormalInteger:
+                            if elem.iKind==BigInteger:
+                                when defined(GMP):
+                                    current = newInteger(gcd(current.i, elem.bi))
+                            else:
+                                current = newInteger(gcd(current.i, elem.i))
                         else:
-                            current = newInteger(gcd(current.bi, elem.i))
-                inc(i)
+                            when defined(GMP):
+                                if elem.iKind==BigInteger:
+                                    current = newInteger(gcd(current.bi, elem.bi))
+                                else:
+                                    current = newInteger(gcd(current.bi, elem.i))
+                        inc(i)
 
-            push(current)
+                    push(current)
 
     builtin "hypot",
         alias       = unaliased, 
