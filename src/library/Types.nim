@@ -702,18 +702,19 @@ proc defineModule*(moduleName: string) =
             ; => false
         """:
             #=======================================================
-            if xKind == Type:
-                if x.tpKind == BuiltinType:
-                    push(VTRUE)
-                else:
-                    push(newLogical(not getType(x.tid).isNil))
-            else:
-                try:
-                    discard parseEnum[ValueKind](x.s.capitalizeAscii())
-                    push(VTRUE)
-                except:
-                    let tp = getType(x.s, safe=true)
-                    push(newLogical(not (tp.isNil or tp == NoPrototypeFound)))
+            dispatch:
+                Type(_):
+                    if x.tpKind == BuiltinType:
+                        push(VTRUE)
+                    else:
+                        push(newLogical(not getType(x.tid).isNil))
+                _:
+                    try:
+                        discard parseEnum[ValueKind](x.s.capitalizeAscii())
+                        push(VTRUE)
+                    except:
+                        let tp = getType(x.s, safe=true)
+                        push(newLogical(not (tp.isNil or tp == NoPrototypeFound)))
 
     builtin "dictionary?",
         alias       = unaliased, 
