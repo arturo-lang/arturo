@@ -622,7 +622,9 @@ proc defineModule*(moduleName: string) =
             print complex? 123          ; false
         """:
             #=======================================================
-            push(newLogical(xKind==Complex))
+            dispatch:
+                Complex(_): push(VTRUE)
+                _:          push(VFALSE)
 
     builtin "database?",
         alias       = unaliased, 
