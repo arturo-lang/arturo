@@ -860,7 +860,8 @@ proc defineModule*(moduleName: string) =
             ; 6.403124237432849
         """:
             #=======================================================
-            push(newFloating(hypot(asFloat(x), asFloat(y))))
+            dispatch:
+                _: push(newFloating(hypot(asFloat(x), asFloat(y))))
 
     builtin "lcm",
         alias       = unaliased,
