@@ -82,11 +82,11 @@ proc defineModule*(moduleName: string) =
             ; 30
         """:
             #=======================================================
-            let val = popAttr(x.s)
-            if val.isNil:
-                push(VNULL)
-            else:
-                push(val)
+            dispatch:
+                _:
+                    let val = popAttr(x.s)
+                    if val.isNil: push(VNULL)
+                    else:         push(val)
 
     builtin "attrs",
         alias       = unaliased, 
