@@ -132,27 +132,28 @@ proc defineModule*(moduleName: string) =
             ; false
         """:
             #=======================================================
-            # check if empty
-            if x.a.len==0: 
-                push(newLogical(false))
-                return
-            
-            var anyOK = false
-            for item in x.a:
-                var val: Value
-                if item.kind == Block: 
-                    execUnscoped(item)
-                    val = pop()
-                else:
-                    val = item
+            dispatch:
+                Block(a):
+                    if a.len==0:
+                        push(newLogical(false))
+                        return
 
-                if val==VTRUE:
-                    anyOK = true
-                    push(newLogical(true))
-                    break
-                
-            if not anyOK:
-                push(newLogical(false))
+                    var anyOK = false
+                    for item in a:
+                        var val: Value
+                        if item.kind == Block:
+                            execUnscoped(item)
+                            val = pop()
+                        else:
+                            val = item
+
+                        if val==VTRUE:
+                            anyOK = true
+                            push(newLogical(true))
+                            break
+
+                    if not anyOK:
+                        push(newLogical(false))
 
     builtin "false?",
         alias       = unaliased, 
