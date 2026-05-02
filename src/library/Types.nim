@@ -601,7 +601,9 @@ proc defineModule*(moduleName: string) =
             print color? 123            ; false
         """:
             #=======================================================
-            push(newLogical(xKind==Color))
+            dispatch:
+                Color(_): push(VTRUE)
+                _:        push(VFALSE)
 
     builtin "complex?",
         alias       = unaliased, 
