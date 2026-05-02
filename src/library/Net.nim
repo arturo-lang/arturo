@@ -445,162 +445,160 @@ proc defineModule*(moduleName: string) =
             ]
             """:
                 #=======================================================
-                # get parameters
-                let routes = x
-                var port = 18966
-                var verbose = not (hadAttr("silent"))
-                if checkAttr("port"):
-                    port = aPort.i
-            
-                if hadAttr("chrome"):
-                    openChromeWindow(port)
+                bindAttrs:
+                    port:   Integer = 18966
+                    silent: Logical
+                    chrome: Logical
 
-                if routes.kind != Function:
-                    # necessary so that "serveInternal" is available
-                    execInternal("Net/serve")
+                let verbose = not silent
 
-                    # call internal implementation
-                    # to initialize routes
-                    callInternal("initServerInternal", getValue=false,
-                        routes
-                    )
+                dispatch:
+                    _:
+                        let routes = x
 
-                proc requestHandler(req: ServerRequest): Future[void] {.gcsafe.} =
-                    {.cast(gcsafe).}:
-                        # store many request details
-                        let reqAction = req.action()
-                        let reqBody = req.body()
-                        let reqHeaders = req.headers().table
-                        var reqQuery = initOrderedTable[string,Value]()
-                        var reqPath = req.path()
-                        let initialReqPath = reqPath
+                        if chrome:
+                            openChromeWindow(port)
 
-                        # get query components, if any
-                        if reqPath.contains("?"):
-                            let parts = reqPath.split("?", maxsplit=1)
-                            reqPath = decodeUrl(parts[0])
-                            for k,v in decodeQuery(parts[1]):
-                                reqQuery[k] = newString(v)
-                        else:
-                            reqPath = decodeUrl(reqPath)
+                        if routes.kind != Function:
+                            # necessary so that "serveInternal" is available
+                            execInternal("Net/serve")
 
-                        # carefully parse request body, if any
-                        var reqBodyV: Value
-
-                        if reqAction!=HttpGet: 
-                            try:
-                                reqBodyV = valueFromJson(reqBody) 
-                            except CatchableError:
-                                reqBodyV = newDictionary()
-                                for k,v in decodeQuery(reqBody):
-                                    reqBodyV.d[k] = newString(v)
-                        else: 
-                            reqBodyV = newString(reqBody)
-
-                        # store request info inside a Dictionary
-                        # we will pass this to the function -
-                        # user-defined or the "default" one -
-                        # which will handle it
-                        let requestDict = newDictionary({
-                                "method": newString($(reqAction)),
-                                "path": newString(reqPath),
-                                "uri": newString(initialReqPath),
-                                "body": reqBodyV,
-                                "query": newDictionary(reqQuery),
-                                "headers": newStringDictionary(reqHeaders, collapseBlocks=true),
-                                "ip": newString(req.ip())
-                            }.toOrderedTable)
-
-                        # the response
-                        var responseDict: ValueDict = {
-                            "body": newString(""),
-                            "status": newInteger(200),
-                            "headers": newDictionary()
-                        }.toOrderedTable
-
-                        var resp: Value
-                        if routes.kind == Function:
-                            let timeTaken = getBenchmark:
-                                try:
-                                    callFunction(routes, "<closure>", @[requestDict])
-                                    resp = stack.pop()
-
-                                    if resp.kind == String:
-                                        responseDict["body"] = resp
-                                    else:
-                                        for k,v in resp.d.pairs:
-                                            responseDict[k] = v
-
-                                except VError as e:
-                                    showError(e)
-                                    responseDict["status"] = newInteger(500)
-                                except CatchableError, Defect:
-                                    let e = getCurrentException()
-                                    showError(VError(e))
-                                    responseDict["status"] = newInteger(500)
-                            
-                            responseDict["benchmark"] = newQuantity(toQuantity(timeTaken, parseAtoms("ms")))
-                        else:
                             # call internal implementation
-                            responseDict = callInternal("serveInternal", getValue=true,
-                                requestDict
-                            ).d
+                            # to initialize routes
+                            callInternal("initServerInternal", getValue=false,
+                                routes
+                            )
 
-                            if not responseDict["headers"].d.hasKey("Content-Type"):
-                                responseDict["headers"].d["Content-Type"] = newString("text/html")
+                        proc requestHandler(req: ServerRequest): Future[void] {.gcsafe.} =
+                            {.cast(gcsafe).}:
+                                # store many request details
+                                let reqAction = req.action()
+                                let reqBody = req.body()
+                                let reqHeaders = req.headers().table
+                                var reqQuery = initOrderedTable[string,Value]()
+                                var reqPath = req.path()
+                                let initialReqPath = reqPath
 
-                        let headerStr = (toSeq(responseDict["headers"].d.pairs)).map(
-                            proc(kv: (string,Value)): string = 
-                                kv[0] & ": " & kv[1].s
-                        ).join("\c\L")
+                                # get query components, if any
+                                if reqPath.contains("?"):
+                                    let parts = reqPath.split("?", maxsplit=1)
+                                    reqPath = decodeUrl(parts[0])
+                                    for k,v in decodeQuery(parts[1]):
+                                        reqQuery[k] = newString(v)
+                                else:
+                                    reqPath = decodeUrl(reqPath)
 
-                        # send response
-                        let bodyStr = if responseDict["body"].kind == Binary:
-                                var s = newString(responseDict["body"].n.len)
-                                if s.len > 0:
-                                    copyMem(addr s[0], addr responseDict["body"].n[0], s.len)
-                                s
-                            else:
-                                responseDict["body"].s
+                                # carefully parse request body, if any
+                                var reqBodyV: Value
 
-                        req.respond(newServerResponse(
-                            bodyStr,
-                            HttpCode(responseDict["status"].i),
-                            headerStr
-                        ))
+                                if reqAction != HttpGet:
+                                    try:
+                                        reqBodyV = valueFromJson(reqBody)
+                                    except CatchableError:
+                                        reqBodyV = newDictionary()
+                                        for k,v in decodeQuery(reqBody):
+                                            reqBodyV.d[k] = newString(v)
+                                else:
+                                    reqBodyV = newString(reqBody)
 
-                        # show request response info
-                        # if we're on .verbose mode
+                                # store request info inside a Dictionary
+                                let requestDict = newDictionary({
+                                        "method": newString($(reqAction)),
+                                        "path": newString(reqPath),
+                                        "uri": newString(initialReqPath),
+                                        "body": reqBodyV,
+                                        "query": newDictionary(reqQuery),
+                                        "headers": newStringDictionary(reqHeaders, collapseBlocks=true),
+                                        "ip": newString(req.ip())
+                                    }.toOrderedTable)
+
+                                # the response
+                                var responseDict: ValueDict = {
+                                    "body": newString(""),
+                                    "status": newInteger(200),
+                                    "headers": newDictionary()
+                                }.toOrderedTable
+
+                                var resp: Value
+                                if routes.kind == Function:
+                                    let timeTaken = getBenchmark:
+                                        try:
+                                            callFunction(routes, "<closure>", @[requestDict])
+                                            resp = stack.pop()
+
+                                            if resp.kind == String:
+                                                responseDict["body"] = resp
+                                            else:
+                                                for k,v in resp.d.pairs:
+                                                    responseDict[k] = v
+
+                                        except VError as e:
+                                            showError(e)
+                                            responseDict["status"] = newInteger(500)
+                                        except CatchableError, Defect:
+                                            let e = getCurrentException()
+                                            showError(VError(e))
+                                            responseDict["status"] = newInteger(500)
+
+                                    responseDict["benchmark"] = newQuantity(toQuantity(timeTaken, parseAtoms("ms")))
+                                else:
+                                    # call internal implementation
+                                    responseDict = callInternal("serveInternal", getValue=true,
+                                        requestDict
+                                    ).d
+
+                                    if not responseDict["headers"].d.hasKey("Content-Type"):
+                                        responseDict["headers"].d["Content-Type"] = newString("text/html")
+
+                                let headerStr = (toSeq(responseDict["headers"].d.pairs)).map(
+                                    proc(kv: (string,Value)): string =
+                                        kv[0] & ": " & kv[1].s
+                                ).join("\c\L")
+
+                                # send response
+                                let bodyStr = if responseDict["body"].kind == Binary:
+                                        var s = newString(responseDict["body"].n.len)
+                                        if s.len > 0:
+                                            copyMem(addr s[0], addr responseDict["body"].n[0], s.len)
+                                        s
+                                    else:
+                                        responseDict["body"].s
+
+                                req.respond(newServerResponse(
+                                    bodyStr,
+                                    HttpCode(responseDict["status"].i),
+                                    headerStr
+                                ))
+
+                                # show request response info
+                                if verbose:
+                                    let contentType = responseDict["headers"].d.getOrDefault("Content-Type", newString("--"))
+                                    let requestPattern = responseDict.getOrDefault("pattern", newString(initialReqPath))
+
+                                    var colorCode = greenColor
+                                    if responseDict["status"].i != 200:
+                                        colorCode = redColor
+
+                                    var serverPattern = " "
+                                    if requestPattern.s != initialReqPath and requestPattern.s != "":
+                                        serverPattern = " -> " & requestPattern.s & " "
+
+                                    var serverBenchmark: string
+                                    formatValue(serverBenchmark, toFloat(responseDict["benchmark"].q.original), ".2f")
+                                    serverBenchmark = "| " & align(serverBenchmark, 6) & " ms "
+                                    let timestamp = "[" & $(now()) & "] "
+
+                                    let logStr =
+                                        bold(colorCode) & " -- " & $(responseDict["status"].i) & resetColor & " " &
+                                        fg(whiteColor) & timestamp &
+                                        bold(whiteColor) & ($(reqAction)).toUpperAscii() & " " & initialReqPath &
+                                        bold(colorCode)  & " " & resetColor
+
+                                    echo logStr & fg(whiteColor) & align(contentType.s, terminalWidth() - logStr.realLen() - serverBenchmark.realLen() - 1) & " " &
+                                                  fg(grayColor) & serverBenchmark & resetColor
+
+                        # show server startup info
                         if verbose:
-                            let contentType = responseDict["headers"].d.getOrDefault("Content-Type", newString("--"))
-                            let requestPattern = responseDict.getOrDefault("pattern", newString(initialReqPath))
+                            echo " :: Starting server on port " & $(port) & "...\n"
 
-                            var colorCode = greenColor
-                            if responseDict["status"].i != 200: 
-                                colorCode = redColor
-
-                            var serverPattern = " "
-                            if requestPattern.s != initialReqPath and requestPattern.s != "":
-                                serverPattern = " -> " & requestPattern.s & " "
-
-                            var serverBenchmark: string
-                            formatValue(serverBenchmark, toFloat(responseDict["benchmark"].q.original), ".2f")
-                            serverBenchmark = "| " & align(serverBenchmark, 6) & " ms "
-                            let timestamp = "[" & $(now()) & "] "
-
-                            let logStr = 
-                                bold(colorCode) & " -- " & $(responseDict["status"].i) & resetColor & " " & 
-                                fg(whiteColor) & timestamp &
-                                bold(whiteColor) & ($(reqAction)).toUpperAscii() & " " & initialReqPath & #& "\n" & align($(responseDict["status"].i), timestamp.len() + 6)
-                                bold(colorCode)  & " " & resetColor
-
-                            echo logStr & fg(whiteColor) & align(contentType.s, terminalWidth() - logStr.realLen() - serverBenchmark.realLen() - 1) & " " &
-                                          fg(grayColor) & serverBenchmark & resetColor
-
-
-                # show server startup info
-                # if we're on .verbose mode
-                if verbose:
-                    echo " :: Starting server on port " & $(port) & "...\n"
-                
-                startServer(requestHandler.RequestHandler, port)
+                        startServer(requestHandler.RequestHandler, port)
