@@ -1006,7 +1006,8 @@ proc defineModule*(moduleName: string) =
 
             """:
                 #=======================================================
-                push(powmod(x, y, z))
+                dispatch:
+                    _: push(powmod(x, y, z))
         
     builtin "product",
         alias       = product, 
