@@ -192,15 +192,13 @@ proc defineModule*(moduleName: string) =
             unplug server
             """:
                 #=======================================================
-                var size = MaxLineLength
-                if checkAttr("size"):
-                    size = aSize.i
+                bindAttrs:
+                    size:    Integer = MaxLineLength
+                    timeout: Integer = -1
 
-                var timeout = -1
-                if checkAttr("timeout"):
-                    timeout = aTimeout.i
-
-                push newString(x.sock.socket.recvLine(timeout=timeout, maxLength=size))
+                dispatch:
+                    Socket(s):
+                        push newString(s.socket.recvLine(timeout=timeout, maxLength=size))
 
         builtin "send",
             alias       = unaliased, 
