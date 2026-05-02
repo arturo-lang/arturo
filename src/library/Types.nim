@@ -460,10 +460,9 @@ proc defineModule*(moduleName: string) =
             print type "hello world"  ; :string
         """:
             #=======================================================
-            if xKind != Object:
-                push(newType(xKind))
-            else:
-                push(newUserType(x.proto.name))
+            dispatch:
+                Object(o): push(newUserType(x.proto.name))
+                _:         push(newType(xKind))
 
     #----------------------------
     # Predicates
