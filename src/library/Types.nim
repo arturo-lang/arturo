@@ -1208,8 +1208,8 @@ proc defineModule*(moduleName: string) =
             #=======================================================
             dispatch:
                 Rational(rat):
-                    if hadAttr("big"): push(newLogical(rat.rKind==BigRational))
-                    else:              push(VTRUE)
+                    on big: push(newLogical(rat.rKind==BigRational))
+                    _:      push(VTRUE)
                 _:
                     push(VFALSE)
 
