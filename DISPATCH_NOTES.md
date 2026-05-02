@@ -389,6 +389,183 @@ cc16eb192  [vm] add Rational to dispatch macros' kind table
 used as a code identifier in the message. Pre-rename commits still say
 `dispatchValue macro` — historically accurate, left untouched.)
 
+## Full per-module audit (2026-05-02)
+
+Goal: every builtin with args ends up using `dispatch` / `dispatchWithLiteral`,
+even single-kind 1-clause forms. `NoArgs` builtins are out of scope. This
+section is the source of truth for what's left; the older "Conversion targets"
+and "Roadmap ahead" sections below are kept for history but are superseded
+where they disagree.
+
+Status legend: **D** = done, **T** = todo (with proposed form), **X** = deferred
+(reason), **M** = blocked on a macro feature (named).
+
+### Strings.nim
+- `alphabet` — T — `dispatch` String/Literal (single-clause, body uses `x.s`); `bindAttrs` for `lower`/`upper`/`all`.
+- `capitalize`, `escape`, `indent`, `jaro`, `join`, `levenshtein`, `lower`, `pad`, `render`, `replace`, `strip`, `translate`, `truncate`, `upper`, `wordwrap` — D.
+- `match` — X — Phase B (heavy attrs).
+- `outdent` — X — feature 4 (pre-dispatch `InPlaced`).
+- `ascii?`, `lower?`, `numeric?`, `prefix?`, `suffix?`, `upper?`, `whitespace?` — D.
+- `match?` — T — `dispatch` 2-axis (String, Regex) / (String, String) — pre-compute regex inside arms; current y-kind branch becomes the dispatch axis.
+
+### Collections.nim
+- DONE: `append`, `array`, `chop`, `combine`, `couple`, `decouple`, `dictionary`, `drop`, `empty`, `extend`, `first`, `flatten`, `index`, `insert`, `keys`, `last`, `max`, `min`, `permutate`, `pop`, `prepend`, `reverse`, `rotate`, `sample`, `shuffle`, `size`, `slice`, `squeeze`, `take`, `tally`, `unique`, `values`, `empty?`, `one?`, `sorted?`, `zero?`.
+- `get` — X — Object magic (Phase E).
+- `set` — X — Object magic + 3-axis multi-kind (Phase E).
+- `range` — T — `dispatch` 2-axis (Integer/Char × Integer/Floating/Char) + `bindAttrs` for `step`. Marginal benefit but in-scope.
+- `remove` — X — Object magic + heavy attrs (Phase E).
+- `repeat` — X — value/inplace asymmetry (`safeCycle` vs `cycle`); explicit do-not-touch in notes.
+- `sort` — X — Phase D, "clean rewrite needed".
+- `split` — X — Phase D, heavy attrs marquee target.
+- `contains?`, `in?`, `key?` — X — Object magic (Phase E).
+
+### Sets.nim
+All DONE: `difference`, `intersection`, `powerset`, `union`, `disjoint?`, `intersect?`, `subset?`, `superset?`.
+
+### Statistics.nim
+All DONE: `average`, `deviation`, `kurtosis`, `median`, `skewness`, `variance`.
+
+### Logic.nim
+All DONE: `all?`, `and?`, `any?`, `false?`, `nand?`, `nor?`, `not?`, `or?`, `true?`, `xnor?`, `xor?`.
+
+### Numbers.nim
+- DONE: `abs`, `angle`, `conj`, `denominator`, `digits`, `exp`, `factorial`, `factors`, `gcd`, `lcm`, `ln`, `numerator`, `product`, `random`, `reciprocal`, `sign`, `sqrt`, `sum`, `infinite?`, `negative?`, `positive?`, `prime?`.
+- `ceil`, `floor` — T — `dispatch` Integer/Floating/Rational, single-clause via `_:` fallback (body just calls `asFloat`); same shape as `round`.
+- `round` — T — `bindAttrs` for `to` + `dispatch` numeric kinds + `_:` fallback.
+- `gamma` — T — `dispatch` Integer/Floating/Rational + `_:` fallback (single-line `gamma(asFloat(x))`).
+- `hypot` — T — `dispatch` 2-axis numeric × numeric, single body using `asFloat` both — write as `_:` fallback `dispatch` (hypot of two numerics is single asFloat-asFloat call).
+- `log` — T — same shape as `hypot` (2-axis numeric, fallback body).
+- `powmod` — T — `dispatch` 3-axis (Integer, Integer, Integer); single-line. Tiny but in-scope.
+- `even?`, `odd?` — T — `dispatch` single Integer clause; single-line body. (Mirror of `prime?`.)
+- `clamp` — M — needs **x-axis wildcard in tuple clauses** (`(_, Range(rng))`). Today `dispatchParsePat` calls `allowWild=false` for `par[0]`. After feature lands: `dispatch` 2-axis with x as wildcard, y in {Range, Block}.
+- TRIG (out of sweep, per memory): `acos`, `acosh`, `acsec`, `acsech`, `actan`, `actanh`, `asec`, `asech`, `asin`, `asinh`, `atan`, `atan2`, `atanh`, `cos`, `cosh`, `csec`, `csech`, `ctan`, `ctanh`, `sec`, `sech`, `sin`, `sinh`, `tan`, `tanh` — X — `processTrigonometric` family.
+
+### Colors.nim
+All DONE: `blend`, `darken`, `desaturate`, `grayscale`, `invert`, `lighten`, `palette`, `saturate`, `spin`.
+
+### Crypto.nim
+All DONE: `crc`, `decode`, `digest`, `encode`, `hash`.
+
+### System.nim
+- `pause` — D.
+- `execute` — T — `dispatch` String single-clause + `bindAttrs` for the bool/value attrs.
+- `panic` — T — `dispatch` String single-clause + `bindAttrs`.
+- `terminate` — T — `dispatch` Integer single-clause; single-line body.
+- NoArgs: `arg`, `args`, `config`, `env`, `exit`, `path`, `process`, `script`, `sys`, `superuser?`.
+
+### Quantities.nim
+- `property`, `scalar`, `units`, `conforms?` — D.
+- `convert` — T — `dispatch` 2-axis on x (Quantity/Integer/Floating/Rational) × y (Unit/Literal/String/Word); body just calls `convertQuantity` helper.
+- `in` — T — mirror of `convert` with x/y swapped.
+- `specify` — T — `dispatch` 2-axis (Literal/String × Quantity/Unit) plus `on attr:` inside.
+
+### Dates.nim
+All DONE: `after`, `before`, `friday?`, `future?`, `leap?`, `monday?`, `past?`, `saturday?`, `sunday?`, `thursday?`, `today?`, `tuesday?`, `wednesday?`. `now` is NoArgs.
+
+### Io.nim
+- `goto`, `input`, `print`, `prints` — D.
+- `color` — T — `dispatch` Color/String single clauses (the body's inner `case x.l: of clBlack…` is a Color-*value* table, not a kind switch — keep it inside the Color arm).
+- `cursor` — T — `dispatch` Logical single-clause; two-line `if isTrue(x)…` body.
+- NoArgs: `clear`, `terminal`.
+
+### Core.nim
+- `alias`, `module`, `parse` — D.
+- `discard` — T — `dispatch` Any single-clause `_:` (single-line `discard`).
+- `dup` — T — `dispatch` `_:` (single-line `push(x); push(x)`).
+- `ensure` — T — `dispatch` Block single-clause + `bindAttrs` for `that`.
+- `new` — T — `dispatch` `_:` single-line `push(copyValue(x))`.
+- `set?` — T — `dispatch` String/Literal/Word single-clause.
+- X — control-flow / module / OOP definitions, not value-kind dispatch: `break`, `call`, `case`, `coalesce`, `continue`, `do`, `export`, `express`, `function`, `if`, `import`, `let`, `method`, `return`, `switch`, `unless`, `unset`, `unstack`, `until`, `using`, `var`, `when`, `while`, `with`, `__VerbosePackager`.
+
+### Bitwise.nim
+- `nand`, `nor`, `shl`, `xnor` — D.
+- `and`, `or`, `xor`, `not`, `shr` — M — `generateOperationA` / `generateOperationB`; **already kind-dispatching macros**, do NOT re-express via `dispatch`. Reconciliation with `dispatch` is a separate refactor (covered in old roadmap).
+
+### Arithmetic.nim
+- `add`, `dec`, `div`, `divmod`, `fdiv`, `inc`, `mod`, `mul`, `neg`, `pow`, `sub` — M — `generateOperationA` / `generateOperationB` family. Same as Bitwise: deferred to separate refactor.
+
+### Comparison.nim
+- `compare`, `between?`, `equal?`, `greater?`, `greaterOrEqual?`, `less?`, `lessOrEqual?`, `notEqual?`, `same?` — X — Any/Any operator wrappers; the actual kind dispatch lives in `getValuePair`/`||` inside `comparison.nim`/`operators.nim`. No kind axis at the builtin layer; effectively out of scope for the macro sweep.
+
+### Exceptions.nim
+- `throw` — T — `dispatch` String/ErrorKind 2-clause; **needs ErrorKind in kind table** (ctor `newErrorKind`, field `errKind` — Errors are already in via `Error(err)`; ErrorKind needs adding) → mark as **M** until the kind-table entry lands. (Quick precondition: see Cross-cutting below.)
+- `throws?`, `try` — T — `dispatch` Block/Bytecode 2-clause (try/except body identical for both — single unified body with `_:` is enough).
+
+### Reflection.nim
+- `info`, `methods` — D.
+- `attr`, `attr?` — T — `dispatch` String/Literal single-clause.
+- `benchmark` — T — `dispatch` Block/Bytecode `_:` (body is `evalOrGet(x)` for both).
+- `inspect` — T — `dispatch` `_:` Any single-clause + `bindAttrs` for `muted`/`compact`/`index`.
+- NoArgs: `arity`, `attrs`, `stack`, `symbols`, `standalone?`.
+
+### Paths.nim
+- `extract`, `normalize` — D.
+- `absolute`, `relative`, `list`, `absolute?` — T — `dispatch` String single-clause; `list` adds `bindAttrs` for `relative`/`recursive`/`hidden`.
+
+### Files.nim
+- `write` — D.
+- All other arg-taking builtins (`copy`, `delete`, `move`, `permissions`, `read`, `rename`, `symlink`, `timestamp`, `unzip`, `volume`, `zip`, `directory?`, `exists?`, `file?`, `hidden?`, `symlink?`) — T — `dispatch` String single-clause (some 2× String); attrs via `bindAttrs` (composable) or `on attr:` inside the String arm (mutually exclusive — e.g. `read` has json/binary/lines/csv/toml/etc.). Pattern: 1-axis dispatch is "dressing" so the macro shape is uniform across the codebase even when the kind set is a singleton.
+
+### Net.nim
+All arg-taking — T — `dispatch` String (or Block) single-clause + `on attr:` for option ladders. Same "uniform dressing" rationale as Files. Builtins: `browse`, `download`, `mail`, `request`, `serve`.
+
+### Sockets.nim
+All arg-taking — T — `dispatch` Socket / String single-clause. Builtins: `accept`, `connect`, `listen`, `receive`, `send`, `unplug`, `send?`. (Need to confirm `Socket` kind ctor name — table has `("sock", "newSocket")` already, fine.)
+
+### Databases.nim
+All arg-taking — T — `dispatch` Database / String single-clause + `on attr:` ladders. Builtins: `close`, `open`, `query`, `store` (and any others). Body in several branches already does `case database.dbKind` which is value-axis, not kind-axis — keep that inside the kind arm.
+
+### Ui.nim
+- `eval` — T — `dispatch` Block/Bytecode 2-clause.
+- Other arg-taking UI builtins — T — `dispatch` single-clause dressing; bodies aren't kind-shaped.
+- NoArgs: window-singleton helpers.
+
+### Types.nim
+- `type`, all trivial type predicates, `integer?`, `quantity?`, `rational?`, `function?` — D.
+- `to` — X — Type×kind grid; needs design discussion.
+- `constructor` — T — `dispatch` Literal/Block 2-clause.
+- `define` — T — `dispatch` 2-axis (Type, Block/Dictionary/Type), per-arm bodies; consider `_:` fallback.
+- `is` — T — `dispatch` 2-axis (Type, Block/Dictionary); the BuiltinType vs UserType split inside the Type arm stays as in-body branching (it's a tpKind axis, not value-kind).
+- `is?` — T — `dispatch` 2-axis (Type/Block, Any) — large body; benefits readability significantly.
+- `defined?` — T — `dispatch` Type/String/Literal/Word multi-clause + `_:` fallback.
+- `sortable` — T — `dispatch` Literal single-clause.
+
+### Iterators.nim
+All — X — `doIterate` macro family (block/bytecode action over collection kinds); not value-kind dispatch. Builtins: `arrange`, `chunk`, `cluster`, `collect`, `enumerate`, `filter`, `fold`, `gather`, `loop`, `map`, `maximum`, `minimum`, `select`, `every?`, `some?`.
+
+## Cross-cutting blockers and macro features still needed
+
+1. **x-axis wildcard in tuple clauses** — `(_, KIND(b))` form. Currently `dispatchParsePat(par[0], allowWild=false, …)` (lib.nim:231). Unblocks `Numbers/clamp` and any future "dispatch on y only with x as ANY-numeric" builtin. Single-line macro tweak.
+2. **`ErrorKind` in kind table** — `("errKind", "newErrorKind")` (already in lib.nim:104 actually — confirm via re-read) so `Exceptions/throw` can land. If it's already there, throw is just T not M.
+3. **Pre-dispatch `InPlaced` access (feature 4)** — only blocker for `Strings/outdent`. Niche, postpone.
+4. **`generateOperationA/B` integration** — separate refactor before Arithmetic/Bitwise residue can be unified. Already callout in the older "Future idea — fold `require` into `dispatch`" + "Future idea — perf / codegen improvements" sections.
+5. **Object magic dispatch** — Phase E targets (`get`/`set`/`remove`/`contains?`/`in?`/`key?`). Not a macro feature; the prelude pattern from `append` is the canonical workaround.
+6. **`doIterate` macro family** — Iterators.nim is a separate dispatch shape (action-over-collection); leave alone.
+
+## TODO count (real conversions still pending, excluding X and M and NoArgs)
+
+| Module | TODOs |
+|---|---|
+| Strings | 2 (`alphabet`, `match?`) |
+| Collections | 1 (`range`) |
+| Numbers | 9 (`ceil`, `floor`, `gamma`, `hypot`, `log`, `powmod`, `round`, `even?`, `odd?`) |
+| System | 3 (`execute`, `panic`, `terminate`) |
+| Quantities | 3 (`convert`, `in`, `specify`) |
+| Io | 2 (`color`, `cursor`) |
+| Core | 5 (`discard`, `dup`, `ensure`, `new`, `set?`) |
+| Exceptions | 3 (`throw`, `throws?`, `try`) |
+| Reflection | 4 (`attr`, `attr?`, `benchmark`, `inspect`) |
+| Paths | 4 (`absolute`, `relative`, `list`, `absolute?`) |
+| Files | 16 |
+| Net | 5 |
+| Sockets | 7 |
+| Databases | ~4 |
+| Ui | ~1+ |
+| Types | 6 (`constructor`, `define`, `is`, `is?`, `defined?`, `sortable`) |
+| **Total** | **≈75** |
+
+Most Files/Net/Sockets/Databases/Ui TODOs are uniform-dressing single-kind clauses — mechanical to convert in batches.
+
 ## Conversion targets after attrs land
 
 Once `else:`, 3-args, and attr support are in:
