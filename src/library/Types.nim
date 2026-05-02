@@ -1130,7 +1130,9 @@ proc defineModule*(moduleName: string) =
             ; => true
         """:
             #=======================================================
-            push(newLogical(xKind==PathLiteral))
+            dispatch:
+                PathLiteral(_): push(VTRUE)
+                _:              push(VFALSE)
 
     builtin "quantity?",
         alias       = unaliased, 
