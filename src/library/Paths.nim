@@ -319,4 +319,5 @@ proc defineModule*(moduleName: string) =
             absolute? "usr/bin"         ; => false
             """:
                 #=======================================================
-                push(newLogical(isAbsolute(x.s)))
+                dispatch:
+                    String(s): push(newLogical(isAbsolute(s)))
