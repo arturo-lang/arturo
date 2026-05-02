@@ -152,28 +152,26 @@ proc defineModule*(moduleName: string) =
                         username: "myusername"
                         password: "mypass123"
                     ]
-                    "recipient@somemail.com" "Hello from Arturo" "Arturo rocks!"                
+                    "recipient@somemail.com" "Hello from Arturo" "Arturo rocks!"
                 """:
                     #=======================================================
-                    let recipient = x.s
-                    let subject = y.s
-                    let message = z.s
+                    dispatch:
+                        (String(recipient), String(subject), String(message)):
+                            if checkAttr("using"):
+                                discard
 
-                    if checkAttr("using"):
-                        discard
-                    
-                    retrieveConfig("mail", "using")
+                            retrieveConfig("mail", "using")
 
-                    # TODO(Net\mail) raise error, if there is no configuration provided whatsoever
-                    #  perhaps, this could be also done in a more "templated" way; at least, for Config values
-                    #  labels: library, bug
+                            # TODO(Net\mail) raise error, if there is no configuration provided whatsoever
+                            #  perhaps, this could be also done in a more "templated" way; at least, for Config values
+                            #  labels: library, bug
 
-                    var mesg = createMessage(subject, message, sender=config["username"].s, mTo= @[recipient])
-                    let smtpConn = newSmtp(useSsl = true, debug=true)
-                    smtpConn.connect(config["server"].s, Port 465)
-                    smtpConn.auth(config["username"].s, config["password"].s)
-                    smtpConn.sendmail(config["username"].s, @[recipient], $mesg)
-                    smtpConn.close()
+                            var mesg = createMessage(subject, message, sender=config["username"].s, mTo= @[recipient])
+                            let smtpConn = newSmtp(useSsl = true, debug=true)
+                            smtpConn.connect(config["server"].s, Port 465)
+                            smtpConn.auth(config["username"].s, config["password"].s)
+                            smtpConn.sendmail(config["username"].s, @[recipient], $mesg)
+                            smtpConn.close()
 
         # TODO(Net\request) could it work for Web/JS builds?
         #  it could easily be a hidden Ajax request
