@@ -561,12 +561,13 @@ proc defineModule*(moduleName: string) =
             attrs       = NoAttrs,
             returns     = {Logical},
             example     = """
-            if exists? "somefile.txt" [ 
-                print "path exists!" 
+            if exists? "somefile.txt" [
+                print "path exists!"
             ]
             """:
                 #=======================================================
-                push newLogical(fileExists(x.s) or dirExists(x.s) or symlinkExists(x.s))
+                dispatch:
+                    String(s): push newLogical(fileExists(s) or dirExists(s) or symlinkExists(s))
 
         builtin "file?",
             alias       = unaliased, 
