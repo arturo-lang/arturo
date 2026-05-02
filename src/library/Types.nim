@@ -800,10 +800,12 @@ proc defineModule*(moduleName: string) =
             integer?.big 12345678901234567890   ; => true
         """:
             #=======================================================
-            if (hadAttr("big")):
-                push(newLogical(xKind==Integer and x.iKind==BigInteger))
-            else:
-                push(newLogical(xKind==Integer))
+            dispatch:
+                Integer(_):
+                    if hadAttr("big"): push(newLogical(x.iKind==BigInteger))
+                    else:              push(VTRUE)
+                _:
+                    push(VFALSE)
 
     # TODO(Types\is?) should add `.strict` option for Object values?
     #  in that case, it would return true only if the object's type
