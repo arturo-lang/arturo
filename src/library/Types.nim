@@ -943,10 +943,12 @@ proc defineModule*(moduleName: string) =
             function?.builtin var'print     ; => true
         """:
             #=======================================================
-            if (hadAttr("builtin")):
-                push(newLogical(xKind==Function and x.fnKind==BuiltinFunction))
-            else:
-                push(newLogical(xKind==Function))
+            dispatch:
+                Function(_):
+                    if hadAttr("builtin"): push(newLogical(x.fnKind==BuiltinFunction))
+                    else:                  push(VTRUE)
+                _:
+                    push(VFALSE)
 
     builtin "label?",
         alias       = unaliased, 
