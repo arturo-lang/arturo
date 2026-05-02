@@ -284,55 +284,49 @@ proc defineModule*(moduleName: string) =
             html: read.markdown "## Hello"     ; "<h2>Hello</h2>"
             """:
                 #=======================================================
-                if (hadAttr("binary")):
-                    var f: File
-                    discard f.open(x.s)
-                    var b: seq[byte] = newSeq[byte](f.getFileSize())
-                    discard f.readBytes(b, 0, f.getFileSize())
+                dispatch:
+                    String(path):
+                        if hadAttr("binary"):
+                            var f: File
+                            discard f.open(path)
+                            var b: seq[byte] = newSeq[byte](f.getFileSize())
+                            discard f.readBytes(b, 0, f.getFileSize())
 
-                    f.close()
+                            f.close()
 
-                    push(newBinary(b))
-                else:
-                    when defined(BUNDLE):
-                        let (src, tp) = (getBundledResource(x.s)[0], FileData)
-                    else:
-                        let (src, tp) = getSource(x.s)
-
-                    if (hadAttr("file") and tp != FileData):
-                        Error_FileNotFound(src)
-
-                    if (hadAttr("lines")):
-                        push(newStringBlock(src.splitLines()))
-                    elif (hadAttr("json")):
-                        push(valueFromJson(src))
-                    elif (hadAttr("csv")):
-                        if checkAttr("delimiter"):
-                            let delimiter = aDelimiter.c.char()
-                            push(parseCsvInput(src, withHeaders=hadAttr("withHeaders"), withDelimiter=delimiter))
+                            push(newBinary(b))
                         else:
-                            push(parseCsvInput(src, (hadAttr("withHeaders"))))
-                    elif (hadAttr("bytecode")):
-                        let bcode = readBytecode(x.s)
-                        let parsed = doParse(bcode[0], isFile=false).a[0]
-                        push(newBytecode(Translation(constants: parsed.a, instructions: bcode[1])))
-                    else:
-                        when defined(PARSERS):
-                            if (hadAttr("toml")):
-                                push(parseTomlString(src))
-                            elif (hadAttr("markdown")):
-                                push(parseMarkdownInput(src))
-                            elif (hadAttr("html")):
-                                push(parseHtmlInput(src))
-                            elif (hadAttr("xml")):
-                                push(parseXMLInput(src))
+                            when defined(BUNDLE):
+                                let (src, tp) = (getBundledResource(path)[0], FileData)
                             else:
-                                push(newString(src))
-                        else:
-                            push(newString(src))
-                            
-                    # elif attrs.hasKey("xml"):
-                    #     push(parseXmlNode(parseXml(action(x.s))))
+                                let (src, tp) = getSource(path)
+
+                            if hadAttr("file") and tp != FileData:
+                                Error_FileNotFound(src)
+
+                            if hadAttr("lines"):
+                                push(newStringBlock(src.splitLines()))
+                            elif hadAttr("json"):
+                                push(valueFromJson(src))
+                            elif hadAttr("csv"):
+                                if checkAttr("delimiter"):
+                                    let delimiter = aDelimiter.c.char()
+                                    push(parseCsvInput(src, withHeaders=hadAttr("withHeaders"), withDelimiter=delimiter))
+                                else:
+                                    push(parseCsvInput(src, hadAttr("withHeaders")))
+                            elif hadAttr("bytecode"):
+                                let bcode = readBytecode(path)
+                                let parsed = doParse(bcode[0], isFile=false).a[0]
+                                push(newBytecode(Translation(constants: parsed.a, instructions: bcode[1])))
+                            else:
+                                when defined(PARSERS):
+                                    if hadAttr("toml"):       push(parseTomlString(src))
+                                    elif hadAttr("markdown"): push(parseMarkdownInput(src))
+                                    elif hadAttr("html"):     push(parseHtmlInput(src))
+                                    elif hadAttr("xml"):      push(parseXMLInput(src))
+                                    else:                     push(newString(src))
+                                else:
+                                    push(newString(src))
 
         builtin "rename",
             alias       = unaliased, 
