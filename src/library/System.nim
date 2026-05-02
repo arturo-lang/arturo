@@ -235,51 +235,52 @@ proc defineModule*(moduleName: string) =
             => 0
             """:
                 #=======================================================
-                # get arguments & options
-                var cmd = x.s
-                var args: seq[string]
-                if checkAttr("args"):
-                    args = aArgs.a.map((x) => (requireAttrValue("args", x, {String}); x.s))
-                let code = (hadAttr("code"))
-                let directly = (hadAttr("directly"))
-
                 # TODO(System\execute) Fix handling of `.async`
                 #  It currently "works" but in a very - very - questionable way.
                 #  This has to be implemented properly.
                 #  Also: having a globally-available array of "processes" makes things looking even worse.
                 #  labels: library, enhancement, windows, linux, macos
 
-                if (hadAttr("async")):
-                    let newProcess = startProcess(command = cmd, args = args)
-                    let pid = processID(newProcess)
-                    
-                    ActiveProcesses[pid] = newProcess
-                    push newInteger(pid)
-                else:
-                    # add arguments, if any
-                    for i in 0..high(args):
-                        cmd.add(' ')
-                        cmd.add(quoteShell(args[i]))
+                var cliArgs: seq[string]
+                if checkAttr("args"):
+                    cliArgs = aArgs.a.map((x) => (requireAttrValue("args", x, {String}); x.s))
 
-                    if directly:
-                        let pcode = execCmd(cmd)
+                bindAttrs:
+                    code:     Logical
+                    directly: Logical
 
-                        if code:
-                            push(newInteger(pcode))
+                dispatch:
+                    String(s):
+                        var cmd = s
+
+                        if hadAttr("async"):
+                            let newProcess = startProcess(command = cmd, args = cliArgs)
+                            let pid = processID(newProcess)
+
+                            ActiveProcesses[pid] = newProcess
+                            push newInteger(pid)
                         else:
-                            discard
-                    else:
-                        # actually execute the command
-                        let (output, pcode) = execCmdEx(cmd)
+                            for i in 0..high(cliArgs):
+                                cmd.add(' ')
+                                cmd.add(quoteShell(cliArgs[i]))
 
-                        # return result, accordingly
-                        if code:
-                            push(newDictionary({
-                                "output": newString(output),
-                                "code": newInteger(pcode)
-                            }.toOrderedTable))
-                        else:
-                            push(newString(output))
+                            if directly:
+                                let pcode = execCmd(cmd)
+
+                                if code:
+                                    push(newInteger(pcode))
+                                else:
+                                    discard
+                            else:
+                                let (output, pcode) = execCmdEx(cmd)
+
+                                if code:
+                                    push(newDictionary({
+                                        "output": newString(output),
+                                        "code": newInteger(pcode)
+                                    }.toOrderedTable))
+                                else:
+                                    push(newString(output))
 
     builtin "exit",
         alias       = unaliased, 
