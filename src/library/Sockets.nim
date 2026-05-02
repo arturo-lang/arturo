@@ -97,27 +97,29 @@ proc defineModule*(moduleName: string) =
             server: connect.to:"123.456.789.123" 18966
             """:
                 #=======================================================
-                let isUDP = hadAttr("udp")
+                dispatch:
+                    Integer(i):
+                        let isUDP = hadAttr("udp")
 
-                let protocol = 
-                    if isUDP: IPPROTO_UDP
-                    else: IPPROTO_TCP
+                        let protocol =
+                            if isUDP: IPPROTO_UDP
+                            else:     IPPROTO_TCP
 
-                var toAddress: string  
-                if checkAttr("to"):
-                    toAddress = aTo.s
-                else:
-                    toAddress = "0.0.0.0"
+                        var toAddress: string
+                        if checkAttr("to"):
+                            toAddress = aTo.s
+                        else:
+                            toAddress = "0.0.0.0"
 
-                var port = Port(x.i)
+                        var port = Port(i)
 
-                var sock: netsock.Socket = netsock.newSocket(protocol=protocol)
-                if not isUDP:
-                    sock.connect(toAddress, port)
+                        var sock: netsock.Socket = netsock.newSocket(protocol=protocol)
+                        if not isUDP:
+                            sock.connect(toAddress, port)
 
-                let socket = initSocket(sock, proto=protocol, address=toAddress, port=port)
+                        let socket = initSocket(sock, proto=protocol, address=toAddress, port=port)
 
-                push newSocket(socket)
+                        push newSocket(socket)
 
         builtin "listen",
             alias       = unaliased, 
