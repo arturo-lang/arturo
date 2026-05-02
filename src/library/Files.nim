@@ -82,17 +82,15 @@ proc defineModule*(moduleName: string) =
             ; copied whole folder
             """:
                 #=======================================================
-                var target = y.s
-                if (hadAttr("directory")): 
-                    try:
-                        copyDirWithPermissions(x.s, move target)
-                    except OSError:
-                        discard
-                else: 
-                    try:
-                        copyFileWithPermissions(x.s, move target)
-                    except OSError:
-                        discard
+                dispatch:
+                    (String(src), String(dst)):
+                        var target = dst
+                        if hadAttr("directory"):
+                            try:    copyDirWithPermissions(src, move target)
+                            except OSError: discard
+                        else:
+                            try:    copyFileWithPermissions(src, move target)
+                            except OSError: discard
 
         builtin "delete",
             alias       = unaliased, 
