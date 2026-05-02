@@ -259,16 +259,13 @@ proc defineModule*(moduleName: string) =
             units.base 3`kk         ; => `m2
         """:
             #=======================================================
-            if likely(xKind == Quantity):
-                if hadAttr("base"):
-                    push newUnit(getBaseUnits(x.q))
-                else:
-                    push(newUnit(x.q.atoms))
-            else:
-                if hadAttr("base"):
-                    push newUnit(getBaseUnits(x.u))
-                else:
-                    push(newUnit(x.u))
+            dispatch:
+                Quantity(q):
+                    on base: push newUnit(getBaseUnits(q))
+                    _:       push(newUnit(q.atoms))
+                Unit(u):
+                    on base: push newUnit(getBaseUnits(u))
+                    _:       push(newUnit(u))
 
     #----------------------------
     # Predicates
