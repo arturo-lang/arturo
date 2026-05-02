@@ -210,25 +210,23 @@ proc defineModule*(moduleName: string) =
             print property 3`tspSugar       ; sweetness
         """:
             #=======================================================
-            if hadAttr("property"):
-                if yKind == Quantity:
-                    defineNewProperty(x.s, y.q)
-                else:
-                    defineNewProperty(x.s, y.u)
-            else:
-                var sym = x.s
-                var desc = x.s
+            dispatch:
+                _:
+                    if hadAttr("property"):
+                        if yKind == Quantity: defineNewProperty(x.s, y.q)
+                        else:                 defineNewProperty(x.s, y.u)
+                    else:
+                        var sym = x.s
+                        var desc = x.s
 
-                if checkAttr("symbol"):
-                    sym = aSymbol.s
+                        if checkAttr("symbol"):
+                            sym = aSymbol.s
 
-                if checkAttr("describes"):
-                    desc = aDescribes.s
+                        if checkAttr("describes"):
+                            desc = aDescribes.s
 
-                if yKind == Quantity:
-                    defineNewUserUnit(x.s, sym, desc, y.q)
-                else:
-                    defineNewUserUnit(x.s, sym, desc, y.u)
+                        if yKind == Quantity: defineNewUserUnit(x.s, sym, desc, y.q)
+                        else:                 defineNewUserUnit(x.s, sym, desc, y.u)
 
     builtin "units",
         alias       = unaliased,
