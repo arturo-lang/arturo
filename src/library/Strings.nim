@@ -101,21 +101,24 @@ proc defineModule*(moduleName: string) =
             ; => [a b c d e f g h i j k l m n ñ o p q r s t u v w x y z á é í ó ú ü A B C D E F G H I J K L M N Ñ O P Q R S T U V W X Y Z Á É Í Ó Ú Ü]
         """:
             #=======================================================
-            let lower = hadAttr("lower")
-            let upper = hadAttr("upper")
-            let all = hadAttr("all")
+            bindAttrs:
+                lower: Logical
+                upper: Logical
+                all:   Logical
 
-            var got: ValueArray
+            dispatch:
+                _:
+                    var got: ValueArray
 
-            if upper:
-                if lower:
-                    got = getCharset(x.s, withExtras=all)
+                    if upper:
+                        if lower:
+                            got = getCharset(x.s, withExtras=all)
 
-                got.add(getCharset(x.s, withExtras=all, doUppercase=true))
-            else:
-                got = getCharset(x.s, withExtras=all)
+                        got.add(getCharset(x.s, withExtras=all, doUppercase=true))
+                    else:
+                        got = getCharset(x.s, withExtras=all)
 
-            push(newBlock(got))
+                    push(newBlock(got))
 
     builtin "capitalize",
         alias       = unaliased, 
@@ -1013,11 +1016,11 @@ proc defineModule*(moduleName: string) =
 
                 if checkAttr("in"):
                     iFrom = aIn.rng.start
-                    if iFrom < 0: 
+                    if iFrom < 0:
                         iFrom = 0
-                        
+
                     iTo = aIn.rng.stop
-                    if iTo >= x.s.len: 
+                    if iTo >= x.s.len:
                         iTo = x.s.len-1
 
                 var matched = false
