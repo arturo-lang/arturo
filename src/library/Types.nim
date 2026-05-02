@@ -483,7 +483,9 @@ proc defineModule*(moduleName: string) =
             ; => true
         """:
             #=======================================================
-            push(newLogical(xKind==Attribute))
+            dispatch:
+                Attribute(_): push(VTRUE)
+                _:            push(VFALSE)
 
     builtin "attributeLabel?",
         alias       = unaliased, 
