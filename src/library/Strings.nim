@@ -332,10 +332,11 @@ proc defineModule*(moduleName: string) =
             ; AC-TGCACTGAC
             ; GCATG-ACT-AT
         """:
-            if hadAttr("align"):
-                var filler: Rune = "-".runeAt(0)
-                if checkAttr("with"):
-                    filler = aWith.c
+            bindAttrs:
+                align:         Logical
+                filler(with):  Char = "-".runeAt(0)
+
+            if align:
                 let aligned = levenshteinAlign(x.s, y.s, filler)
                 push(newStringBlock(@[aligned[0], aligned[1]]))
                 return
