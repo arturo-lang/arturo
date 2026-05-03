@@ -214,7 +214,6 @@ when not defined(WEB):
         if scheduler.ready.len > 0:
             let f = scheduler.ready[0]
             scheduler.ready.delete(0)         # FIFO; O(N) — fine for v1
-            echo "[sched] resuming fiber, ready left=", scheduler.ready.len
             scheduler.currentFiber = f
             swapOutTo(scheduler.mainCtx)
             swapInFrom(f.ctx)
@@ -222,11 +221,8 @@ when not defined(WEB):
             swapOutTo(f.ctx)                  # save f's view (or empty if done)
             swapInFrom(scheduler.mainCtx)     # main's view back
             scheduler.currentFiber = nil
-            echo "[sched] returned from resume, isDone=", isDone(f)
         elif hasPendingOperations():
-            echo "[sched] polling..."
             poll()                            # blocks until at least one I/O event
-            echo "[sched] poll returned, ready=", scheduler.ready.len
 
     proc runScheduledFibers*() =
         ## Drain the ready queue plus the asyncdispatch queue until
@@ -278,7 +274,6 @@ when not defined(WEB):
         ## so `return read()` is a type error. We branch on `T` at
         ## compile time.
         if not fut.finished:
-            echo "[await] not finished, registering callback"
             let me = scheduler.currentFiber
             doAssert not me.isNil,
                 "cooperativeAwait called outside a fiber — use waitFor on main"
@@ -288,11 +283,8 @@ when not defined(WEB):
             # `broadcastToChildren` above uses for `childInboundFiles`.
             fut.addCallback(proc () {.gcsafe.} =
                 {.cast(gcsafe).}:
-                    echo "[await] callback firing, adding to ready"
                     scheduler.ready.add(me))
-            echo "[await] about to suspend"
             suspend()
-            echo "[await] resumed from suspend"
         when T is void:
             fut.read()
         else:
