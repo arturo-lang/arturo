@@ -496,19 +496,28 @@ proc defineModule*(moduleName: string) =
             if checkAttr("times"):
                 times = aTimes.i
 
-            # `do.async <code>` runs the block/string in a child arturo process
-            # and returns a `:task` whose future settles when the child exits
+            # `do.async <code>` — default is in-process: a cooperative
+            # fiber inside this VM. Sub-ms spawn, parent `Syms` shallow-
+            # copied at spawn time, real `VMError`s preserved.
+            #
+            # Falls back to the subprocess path (`spawnAsTask`) for
+            # `:string` input — that flavor is also what URL-style
+            # `do "https://…"` needs, and the in-process spawn doesn't
+            # do source fetching today. Strings stay subprocess in v1.
             when not defined(WEB):
                 if hadAttr("async"):
-                    # `codify` gives source-faithful Arturo code (preserving
-                    # Label colons, Literal quotes, etc.); the wrapper inside
-                    # `runInChildProcess` injects a leading `null` for void-safety
-                    let src =
-                        case xKind
-                            of Block, Bytecode: codify(x)
-                            of String:          x.s
-                            else:               ""
-                    push ParallelismHelper.spawnAsTask(src)
+                    if xKind in {Block, Bytecode}:
+                        push ParallelismHelper.spawnInProcessDoBlock(x)
+                    else:
+                        # `codify` gives source-faithful Arturo code
+                        # (preserving Label colons, Literal quotes, …);
+                        # the wrapper inside `runInChildProcess` injects
+                        # a leading `null` for void-safety
+                        let src =
+                            case xKind
+                                of String: x.s
+                                else:      ""
+                        push ParallelismHelper.spawnAsTask(src)
                     return
 
             # `do task` is sugar for `wait task` - drain the future once
