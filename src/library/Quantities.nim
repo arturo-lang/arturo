@@ -213,20 +213,19 @@ proc defineModule*(moduleName: string) =
             print property 3`tspSugar       ; sweetness
         """:
             #=======================================================
+            bindAttrs:
+                asProperty(property): Logical
+                symbol:    String = ""
+                describes: String = ""
+
             dispatch:
                 _:
-                    if hadAttr("property"):
+                    if asProperty:
                         if yKind == Quantity: defineNewProperty(x.s, y.q)
                         else:                 defineNewProperty(x.s, y.u)
                     else:
-                        var sym = x.s
-                        var desc = x.s
-
-                        if checkAttr("symbol"):
-                            sym = aSymbol.s
-
-                        if checkAttr("describes"):
-                            desc = aDescribes.s
+                        let sym  = if symbol.len > 0:    symbol    else: x.s
+                        let desc = if describes.len > 0: describes else: x.s
 
                         if yKind == Quantity: defineNewUserUnit(x.s, sym, desc, y.q)
                         else:                 defineNewUserUnit(x.s, sym, desc, y.u)
