@@ -138,10 +138,13 @@ proc defineModule*(moduleName: string) =
             ; => 0.3237628936767578
         """:
             #=======================================================
+            bindAttrs:
+                getTime(get): Logical
+
             dispatch:
                 _:
                     let preevaled = evalOrGet(x)
-                    if hadAttr("get"):
+                    if getTime:
                         let time = getBenchmark:
                             execUnscoped(preevaled)
 
