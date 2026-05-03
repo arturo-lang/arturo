@@ -96,12 +96,12 @@ proc defineModule*(moduleName: string) =
             db: open "my.db"    ; opens an SQLite database named 'my.db'
         """:
             #=======================================================
+            bindAttrs:
+                mysql: Logical
+
             dispatch:
                 String(dbName):
-                    var dbKind = SqliteDatabase
-
-                    if hadAttr("mysql"):
-                        dbKind = MysqlDatabase
+                    let dbKind = if mysql: MysqlDatabase else: SqliteDatabase
 
                     if dbKind == SqliteDatabase:
                         push(newDatabase(openSqliteDb(dbName)))
