@@ -175,17 +175,15 @@ proc defineModule*(moduleName: string) =
             ; a long &quot;string&quot; + with \diffe\rent symbols.
         """:
             #=======================================================
-            let escaper: proc (s: string): string =
-                if   hadAttr("json"):  escapeJsonUnquoted
-                elif hadAttr("regex"): escapeForRegex
-                elif hadAttr("xml"):   xmltree.escape
-                elif hadAttr("shell"):
-                    when not defined(WEB): quoteShell
-                    else:                  (proc (s: string): string = strutils.escape(s))
-                else:                  (proc (s: string): string = strutils.escape(s))
-
             dispatchWithLiteral:
-                String(s): escaper(s)
+                String(s):
+                    on json:  escapeJsonUnquoted(s)
+                    on regex: escapeForRegex(s)
+                    on xml:   xmltree.escape(s)
+                    on shell:
+                        when not defined(WEB): quoteShell(s)
+                        else:                  strutils.escape(s)
+                    _:        strutils.escape(s)
 
     builtin "indent",
         alias       = unaliased, 
