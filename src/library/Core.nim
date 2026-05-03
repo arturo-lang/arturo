@@ -442,8 +442,9 @@ proc defineModule*(moduleName: string) =
             "code"  : {String,Block,Bytecode,Task}
         },
         attrs       = {
-            "times" : ({Integer},"repeat block execution given number of times"),
-            "async" : ({Logical},"evaluate in a child process and return a `:task`")
+            "times"    : ({Integer},"repeat block execution given number of times"),
+            "async"    : ({Logical},"evaluate concurrently and return a `:task`"),
+            "isolated" : ({Logical},"with `.async`: run in a fresh child process instead of an in-VM fiber (slower spawn, no closure capture, full process isolation)")
         },
         returns     = {Any,Task},
         example     = """
@@ -500,13 +501,19 @@ proc defineModule*(moduleName: string) =
             # fiber inside this VM. Sub-ms spawn, parent `Syms` shallow-
             # copied at spawn time, real `VMError`s preserved.
             #
-            # Falls back to the subprocess path (`spawnAsTask`) for
-            # `:string` input — that flavor is also what URL-style
-            # `do "https://…"` needs, and the in-process spawn doesn't
-            # do source fetching today. Strings stay subprocess in v1.
+            # `.isolated` opts back into the subprocess path (fresh
+            # VM, full process isolation, no closure capture). Same
+            # behavior as `do.async` had before in-VM spawn landed —
+            # kept reachable for sandboxing / globally-stomping
+            # bytecode walkers / true OS-scheduler parallelism.
+            #
+            # `:string` input is always routed to the subprocess path.
+            # The in-process spawn doesn't fetch URLs and the parser
+            # belongs there too; strings keep subprocess for v1.
             when not defined(WEB):
                 if hadAttr("async"):
-                    if xKind in {Block, Bytecode}:
+                    let isolated = hadAttr("isolated")
+                    if (not isolated) and xKind in {Block, Bytecode}:
                         push ParallelismHelper.spawnInProcessDoBlock(x)
                     else:
                         # `codify` gives source-faithful Arturo code
@@ -515,8 +522,9 @@ proc defineModule*(moduleName: string) =
                         # a leading `null` for void-safety
                         let src =
                             case xKind
-                                of String: x.s
-                                else:      ""
+                                of Block, Bytecode: codify(x)
+                                of String:          x.s
+                                else:               ""
                         push ParallelismHelper.spawnAsTask(src)
                     return
 
