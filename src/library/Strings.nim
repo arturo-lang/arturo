@@ -905,13 +905,12 @@ proc defineModule*(moduleName: string) =
             ; five six
             ; seven 
             ; eight nine
-            ; ten 
+            ; ten
         """:
             #=======================================================
-            var cutoff = 80
-            if checkAttr("at"):
-                cutoff = aAt.i
-            
+            bindAttrs:
+                cutoff(at): Integer = 80
+
             dispatchWithLiteral:
                 String(s): wrapWords(s, maxLineWidth=cutoff)
 
