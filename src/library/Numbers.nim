@@ -655,9 +655,8 @@ proc defineModule*(moduleName: string) =
             ; => [1 2 3 1 2 3 1 2 3 1 2 3 1 2 3 1 2 3 1 2 3 1 2 3 1 2 3 1 0 2 3]
         """:
             #=======================================================
-            var base = 10
-            if checkAttr("base"):
-                base = aBase.i
+            bindAttrs:
+                base: Integer = 10
 
             dispatch:
                 Block(a):
