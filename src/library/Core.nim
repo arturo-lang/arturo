@@ -99,9 +99,10 @@ proc defineModule*(moduleName: string) =
             ; 6
         """:
             #=======================================================
-            var prec = PrefixPrecedence
-            if (hadAttr("infix")):
-                prec = InfixPrecedence
+            bindAttrs:
+                infix: Logical
+
+            let prec = if infix: InfixPrecedence else: PrefixPrecedence
 
             var sym: VSymbol
             dispatch:
