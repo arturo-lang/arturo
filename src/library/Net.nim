@@ -121,12 +121,9 @@ proc defineModule*(moduleName: string) =
                 #=======================================================
                 dispatch:
                     String(path):
-                        var target: string
-
-                        if checkAttr("as"):
-                            target = aAs.s
-                        else:
-                            target = extractFilename(path)
+                        let target =
+                            if checkAttr("as"): aAs.s
+                            else:               extractFilename(path)
 
                         var client = newHttpClient()
                         client.downloadFile(path, target)
@@ -234,16 +231,27 @@ proc defineModule*(moduleName: string) =
             ; ...same as above...
             """:
                 #=======================================================
+                bindAttrs:
+                    asGet(get):       Logical
+                    asPost(post):     Logical
+                    asPatch(patch):   Logical
+                    asPut(put):       Logical
+                    asDelete(delete): Logical
+                    asJson(json):     Logical
+                    raw:              Logical
+                    agent: String  = "Arturo HTTP Client / " & $(getSystemInfo()["version"])
+                    timeout: Integer = -1
+
                 dispatch:
                     String(initialUrl):
                         var url = initialUrl
                         var meth: HttpMethod = HttpGet
 
-                        if hadAttr("get"):    discard
-                        if hadAttr("post"):   meth = HttpPost
-                        if hadAttr("patch"):  meth = HttpPatch
-                        if hadAttr("put"):    meth = HttpPut
-                        if hadAttr("delete"): meth = HttpDelete
+                        if asGet:    discard
+                        if asPost:   meth = HttpPost
+                        if asPatch:  meth = HttpPatch
+                        if asPut:    meth = HttpPut
+                        if asDelete: meth = HttpDelete
 
                         var headers: HttpHeaders = newHttpHeaders()
                         if checkAttr("headers"):
@@ -252,14 +260,6 @@ proc defineModule*(moduleName: string) =
                                 headersArr.add((k, $(v)))
                             headers = newHttpHeaders(headersArr)
 
-                        var agent = "Arturo HTTP Client / " & $(getSystemInfo()["version"])
-                        if checkAttr("agent"):
-                            agent = aAgent.s
-
-                        var timeout: int = -1
-                        if checkAttr("timeout"):
-                            timeout = aTimeout.i
-
                         var proxy: Proxy = nil
                         if checkAttr("proxy"):
                             proxy = newProxy(aProxy.s)
@@ -267,7 +267,7 @@ proc defineModule*(moduleName: string) =
                         var body: string
                         var multipart: MultipartData = nil
                         if meth != HttpGet:
-                            if hadAttr("json"):
+                            if asJson:
                                 headers.add("Content-Type", "application/json")
                                 body = jsonFromValue(y, pretty=false)
                             else:
@@ -325,7 +325,7 @@ proc defineModule*(moduleName: string) =
                             ret["body"] = newString(response.body)
                             ret["headers"] = newDictionary()
 
-                            if hadAttr("raw"):
+                            if raw:
                                 ret["status"] = newString(response.status)
 
                                 for k,v in response.headers.table:
