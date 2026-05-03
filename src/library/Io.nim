@@ -213,7 +213,10 @@ proc defineModule*(moduleName: string) =
             ; A
             """:
                 #=======================================================
-                if (hadAttr("repl")):
+                bindAttrs:
+                    repl: Logical
+
+                if repl:
                     # when defined(windows):
                     #     stdout.write(x.s)
                     #     stdout.flushFile()
