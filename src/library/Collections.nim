@@ -1336,6 +1336,12 @@ proc defineModule*(moduleName: string) =
         in? 5 0..10     ; => true
         """:
             #=======================================================
+            bindAttrs:
+                step: Integer = 1
+
+            if step < 0:    step = -step
+            elif step == 0: Error_RangeWithZeroStep()
+
             dispatch:
                 _:
                     var limX: int
@@ -1360,12 +1366,6 @@ proc defineModule*(moduleName: string) =
                             limY = int(y.f)
                     else:
                         limY = ord(y.c)
-
-                    var step = 1
-                    if checkAttr("step"):
-                        step = aStep.i
-                        if step < 0:    step = -step
-                        elif step == 0: Error_RangeWithZeroStep()
 
                     if not infinite:
                         forward = limX < limY
