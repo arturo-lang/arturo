@@ -269,12 +269,13 @@ proc defineModule*(moduleName: string) =
             print "Hello world!"          ; Hello world!
         """:
             #=======================================================
+            bindAttrs:
+                inLines(lines): Logical
+
             dispatch:
                 Block(b):
                     when defined(WEB):
                         stdout = ""
-
-                    let inLines = (hadAttr("lines"))
 
                     let xblock = doEval(x)
                     let stop = SP
