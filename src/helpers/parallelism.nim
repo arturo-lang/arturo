@@ -224,6 +224,12 @@ when not defined(WEB):
         if scheduler.ready.len > 0:
             let f = scheduler.ready[0]
             scheduler.ready.delete(0)         # FIFO; O(N) — fine for v1
+            # Cancel hooks may re-queue a fiber that has already
+            # finished (race between `cancel` and the fiber's last
+            # resume). Skip dead fibers — minicoro's `resume` on
+            # `mcoDead` would error.
+            if isDone(f):
+                return
             scheduler.currentFiber = f
             swapOutTo(scheduler.mainCtx)
             swapInFrom(f.ctx)
@@ -621,6 +627,10 @@ when not defined(WEB):
         let fut = newFuture[Value]("do.async")
         tsk.future = fut
 
+        # `f` declared up here so both the entry and the cancel
+        # hook can see the same handle. Captured by closure env.
+        var f: Fiber
+
         # Fiber captures the surrounding environment via these refs.
         # `blk`, `tsk`, `fut` are refs already; closure env keeps them
         # alive until the fiber finishes.
@@ -634,11 +644,34 @@ when not defined(WEB):
                         else:           VNULL
                     tsk.state = taskDone
                     fut.complete(res)
+                except FiberCancelledError:
+                    # `cancel` hook flipped the flag while we were
+                    # parked; cooperativeAwait re-raised. Surface as
+                    # a cancelled future, *not* a failed one — the
+                    # consumer (`wait`) maps cancelled → :null.
+                    tsk.state = taskCancelled
+                    fut.fail(newException(FiberCancelledError,
+                        "task cancelled"))
                 except CatchableError as e:
                     tsk.state = taskFailed
                     fut.fail(e)
 
-        discard spawnFiber(fiberEntry, Syms)
+        f = spawnFiber(fiberEntry, Syms)
+
+        # Cancel hook flips the per-fiber cancel flag and pokes the
+        # scheduler so a parked fiber actually wakes up to see it.
+        # If the fiber is already in `ready` or already done, the
+        # extra add is harmless — the scheduler skips finished
+        # fibers and an extra resume on a still-suspended one just
+        # runs the post-suspend cancel-check immediately.
+        let cancelCtx = f.ctx
+        let cancelF = f
+        tsk.cancelHandle = proc () {.gcsafe.} =
+            {.cast(gcsafe).}:
+                cancelCtx.cancelRequested = true
+                if not isDone(cancelF):
+                    scheduler.ready.add(cancelF)
+
         result = newTask(tsk)
 
     # convenience: turn a shell command into a pending `:task`. used by
