@@ -118,27 +118,23 @@ proc defineModule*(moduleName: string) =
             ; http%3A%2F%2Ffoo+bar%2F
         """:
             #=======================================================
-            let encoder: proc (s: string): string =
-                if hadAttr("url"):
-                    let spaces  = hadAttr("spaces")
-                    let slashes = hadAttr("slashes")
-                    (proc (s: string): string = s.urlencode(encodeSpaces=spaces, encodeSlashes=slashes))
-                else:
-                    var src  = "CP1252"
-                    var dest = "UTF-8"
-                    var hasFromTo = false
-                    if checkAttr("from"): src  = aFrom.s; hasFromTo = true
-                    if checkAttr("to"):   dest = aTo.s;   hasFromTo = true
-                    if hasFromTo:
-                        when not defined(WEB):
-                            (proc (s: string): string = convert(s, srcEncoding=src, destEncoding=dest))
-                        else:
-                            (proc (s: string): string = s)
-                    else:
-                        (proc (s: string): string = s.encode())
+            bindAttrs:
+                spaces:  Logical
+                slashes: Logical
 
             dispatchWithLiteral:
-                String(s): encoder(s)
+                String(s):
+                    on url: s.urlencode(encodeSpaces=spaces, encodeSlashes=slashes)
+                    _:
+                        var src  = "CP1252"
+                        var dest = "UTF-8"
+                        var hasFromTo = false
+                        if checkAttr("from"): src  = aFrom.s; hasFromTo = true
+                        if checkAttr("to"):   dest = aTo.s;   hasFromTo = true
+                        if hasFromTo:
+                            when not defined(WEB): convert(s, srcEncoding=src, destEncoding=dest)
+                            else:                  s
+                        else:                  s.encode()
 
     when not defined(WEB):
         # TODO(Crypto\digest) could it be used for Web/JS builds too?
