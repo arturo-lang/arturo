@@ -490,10 +490,8 @@ proc defineModule*(moduleName: string) =
             drop.times: neg 2 [1 2 3]   ; => [1]
         """:
             #=======================================================
-            var times = 1
-
-            if checkAttr("times"):
-                times = aTimes.i
+            bindAttrs:
+                times: Integer = 1
 
             template drop(container: untyped): untyped =
                 if container.len < abs(times):
