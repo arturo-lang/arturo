@@ -289,15 +289,19 @@ proc defineModule*(moduleName: string) =
             2. Banana
         """:
             #=======================================================
-            let asPath = hadAttr("path")
+            bindAttrs:
+                asPath(path):  Logical
+                asWords(words): Logical
+                asLines(lines): Logical
+
             var sep: string
             if not asPath:
                 if checkAttr("with"):
                     if likely(aWith.kind == String): sep = aWith.s
                     else:                            sep = $(aWith.c)
-                elif hadAttr("words"): sep = " "
-                elif hadAttr("lines"): sep = "\n"
-                else:                  sep = ""
+                elif asWords: sep = " "
+                elif asLines: sep = "\n"
+                else:         sep = ""
 
             dispatchWithLiteral:
                 Block(a):
