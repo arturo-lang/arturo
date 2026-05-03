@@ -246,6 +246,7 @@ proc defineModule*(moduleName: string) =
                     cliArgs = aArgs.a.map((x) => (requireAttrValue("args", x, {String}); x.s))
 
                 bindAttrs:
+                    async:    Logical
                     code:     Logical
                     directly: Logical
 
@@ -253,7 +254,7 @@ proc defineModule*(moduleName: string) =
                     String(s):
                         var cmd = s
 
-                        if hadAttr("async"):
+                        if async:
                             let newProcess = startProcess(command = cmd, args = cliArgs)
                             let pid = processID(newProcess)
 
