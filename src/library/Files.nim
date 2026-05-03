@@ -82,10 +82,13 @@ proc defineModule*(moduleName: string) =
             ; copied whole folder
             """:
                 #=======================================================
+                bindAttrs:
+                    directory: Logical
+
                 dispatch:
                     (String(src), String(dst)):
                         var target = dst
-                        if hadAttr("directory"):
+                        if directory:
                             try:    copyDirWithPermissions(src, move target)
                             except OSError: discard
                         else:
