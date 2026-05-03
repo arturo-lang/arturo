@@ -146,6 +146,16 @@ when not defined(WEB):
 
 when not defined(WEB):
     type
+        FiberCancelledError* = object of CatchableError
+            ## Raised by `cooperativeAwait` when the running fiber's
+            ## `VMContext.cancelRequested` flag is set (typically by
+            ## a `cancel` from another part of the program).
+            ##
+            ## The fiber entry's top-level `try/except` catches it
+            ## and turns the cancellation into a future failure;
+            ## `wait` then translates that into a `:null` result
+            ## (matching the existing subprocess-cancellation shape).
+
         Scheduler = object
             mainCtx: VMContext
                 ## Main thread's saved snapshot of the VM globals.
@@ -276,10 +286,14 @@ when not defined(WEB):
         ## `Future[void]` is special-cased: `read()` returns `void`,
         ## so `return read()` is a type error. We branch on `T` at
         ## compile time.
+        let me = scheduler.currentFiber
+        doAssert not me.isNil,
+            "cooperativeAwait called outside a fiber — use waitFor on main"
+        # Fast path: if cancellation was requested before we got
+        # here, bail out without touching the future.
+        if me.ctx.cancelRequested:
+            raise newException(FiberCancelledError, "task cancelled")
         if not fut.finished:
-            let me = scheduler.currentFiber
-            doAssert not me.isNil,
-                "cooperativeAwait called outside a fiber — use waitFor on main"
             # The scheduler global is GC-allocated; the closure
             # below touches it from inside an asyncdispatch callback.
             # `cast(gcsafe)` is the standard escape — same pattern
@@ -288,6 +302,11 @@ when not defined(WEB):
                 {.cast(gcsafe).}:
                     scheduler.ready.add(me))
             suspend()
+            # Resumed: cancellation may have been requested while we
+            # were parked (cancel hook flips the flag and re-queues
+            # us). Check again before we surface a result.
+            if me.ctx.cancelRequested:
+                raise newException(FiberCancelledError, "task cancelled")
         when T is void:
             fut.read()
         else:
