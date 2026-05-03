@@ -248,10 +248,10 @@ proc defineModule*(moduleName: string) =
             chop.times: neg 2 [1 2 3]   ; => [3]
         """:
             #=======================================================
-            var times = -1
+            bindAttrs:
+                rawTimes(times): Integer = 1
 
-            if checkAttr("times"):
-                times = -aTimes.i
+            let times = -rawTimes
 
             template drop(container: untyped): untyped =
                 if container.len < abs(times):
