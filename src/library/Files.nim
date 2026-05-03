@@ -516,24 +516,31 @@ proc defineModule*(moduleName: string) =
             write.append "Yes, Hello again!" "somefile.txt"
             """:
                 #=======================================================
+                bindAttrs:
+                    append:    Logical
+                    directory: Logical
+                    asJson(json): Logical
+                    compact:   Logical
+                    binary:    Logical
+
                 dispatch:
                     Bytecode(t):
                         let dataS = codify(newBlock(y.trans.constants), unwrapped=true, safeStrings=true)
                         let codeS = t.instructions
                         discard writeBytecode(dataS, codeS, y.s)
                     _:
-                        if (hadAttr("directory")):
+                        if directory:
                             createDir(y.s)
-                        elif (hadAttr("binary")):
-                            writeToFile(y.s, x.n, append = (hadAttr("append")))
-                        elif (hadAttr("json")):
-                            let rez = jsonFromValue(x, pretty=(not hadAttr("compact")))
-                            if y.kind==String:
-                                writeToFile(y.s, rez, append = (hadAttr("append")))
+                        elif binary:
+                            writeToFile(y.s, x.n, append = append)
+                        elif asJson:
+                            let rez = jsonFromValue(x, pretty = not compact)
+                            if y.kind == String:
+                                writeToFile(y.s, rez, append = append)
                             else:
                                 push(newString(rez))
                         else:
-                            writeToFile(y.s, x.s, append = (hadAttr("append")))
+                            writeToFile(y.s, x.s, append = append)
 
         builtin "zip",
             alias       = unaliased, 
