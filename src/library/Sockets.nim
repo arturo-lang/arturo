@@ -134,12 +134,16 @@ proc defineModule*(moduleName: string) =
             server: listen 18966
             """:
                 #=======================================================
+                bindAttrs:
+                    udp: Logical
+
+                let protocol =
+                    if udp: IPPROTO_UDP
+                    else:   IPPROTO_TCP
+
                 dispatch:
                     Integer(i):
                         let blocking = true
-                        let protocol =
-                            if hadAttr("udp"): IPPROTO_UDP
-                            else:              IPPROTO_TCP
 
                         var sock: netsock.Socket = netsock.newSocket(protocol=protocol)
                         sock.setSockOpt(OptReuseAddr, true)
