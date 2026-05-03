@@ -355,11 +355,14 @@ proc defineModule*(moduleName: string) =
             ; file renamed
             """:
                 #=======================================================
+                bindAttrs:
+                    directory: Logical
+
                 dispatch:
                     (String(src), String(dst)):
                         var source = src
                         var target = dst
-                        if hadAttr("directory"):
+                        if directory:
                             try:    moveDir(move source, move target)
                             except OSError: discard
                         else:
