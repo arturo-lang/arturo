@@ -1356,6 +1356,9 @@ proc defineModule*(moduleName: string) =
             parse "[1 2 3]"     ; [1 2 3] (:block)
         """:
             #=======================================================
+            bindAttrs:
+                data: Logical
+
             dispatch:
                 String(s):
                     when defined(BUNDLE):
@@ -1364,12 +1367,12 @@ proc defineModule*(moduleName: string) =
                         let (src, _) = getSource(s)
 
                     let ret = doParse(src, isFile=false)
-                    if unlikely(hadAttr("data")):
+                    if unlikely(data):
                         push(parseDataBlock(ret))
                     else:
                         push(ret.a[0])
                 _:
-                    if unlikely(hadAttr("data")):
+                    if unlikely(data):
                         push(parseDataBlock(x))
                     else:
                         push(x)
