@@ -620,8 +620,11 @@ proc defineModule*(moduleName: string) =
             print ~"|greeting|, your number is |x|"       ; hello, your number is 2
             """:
                 #=======================================================
-                let recursive = not (hadAttr("once"))
-                let templated = (hadAttr("template"))
+                bindAttrs:
+                    once: Logical
+
+                let recursive = not once
+                let templated = hadAttr("template")
 
                 let Interpolated    = nre.re"\|([^\|]+)\|"
                 let Embeddable      = re.re"(?s)(\<\|\|.*?\|\|\>)"
