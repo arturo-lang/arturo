@@ -563,6 +563,37 @@ when not defined(WEB):
         tsk.future = runInChildProcess(tsk, src)
         result = newTask(tsk)
 
+    # in-process flavor of `do.async`. Runs the block on a cooperative
+    # fiber inside the same VM — sub-ms spawn, full closure capture
+    # (parent `Syms` shallow-copied at spawn), real `VMError`s preserved
+    # rather than the generic "exited with code N" of the subprocess
+    # path. Returns immediately; the fiber actually executes when the
+    # scheduler is driven (e.g. via `wait`).
+    proc spawnInProcessDoBlock*(blk: Value): Value =
+        let tsk = VTask(state: taskPending)
+        let fut = newFuture[Value]("do.async")
+        tsk.future = fut
+
+        # Fiber captures the surrounding environment via these refs.
+        # `blk`, `tsk`, `fut` are refs already; closure env keeps them
+        # alive until the fiber finishes.
+        proc fiberEntry() {.gcsafe.} =
+            {.cast(gcsafe).}:
+                try:
+                    let prevSP = SP
+                    execUnscoped(blk)
+                    let res =
+                        if SP > prevSP: pop()
+                        else:           VNULL
+                    tsk.state = taskDone
+                    fut.complete(res)
+                except CatchableError as e:
+                    tsk.state = taskFailed
+                    fut.fail(e)
+
+        discard spawnFiber(fiberEntry, Syms)
+        result = newTask(tsk)
+
     # convenience: turn a shell command into a pending `:task`. used by
     # `execute.async`. `withCode` toggles the resolved-value shape between
     # bare output string and `#[output: code:]` dict (mirrors `execute.code`).
