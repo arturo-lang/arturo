@@ -196,24 +196,24 @@ proc defineModule*(moduleName: string) =
                 dispatch:
                     String(s):
                         try:
-                            if checkAttr("set"):
+                            on set(setVal: Dictionary):
                                 var source = s
                                 var perms: set[FilePermission]
 
-                                if aSet.d.hasKey("user") and aSet.d["user"].d.hasKey("read"):    perms.incl(fpUserRead)
-                                if aSet.d.hasKey("user") and aSet.d["user"].d.hasKey("write"):   perms.incl(fpUserWrite)
-                                if aSet.d.hasKey("user") and aSet.d["user"].d.hasKey("execute"): perms.incl(fpUserExec)
+                                if setVal.hasKey("user") and setVal["user"].d.hasKey("read"):    perms.incl(fpUserRead)
+                                if setVal.hasKey("user") and setVal["user"].d.hasKey("write"):   perms.incl(fpUserWrite)
+                                if setVal.hasKey("user") and setVal["user"].d.hasKey("execute"): perms.incl(fpUserExec)
 
-                                if aSet.d.hasKey("group") and aSet.d["group"].d.hasKey("read"):    perms.incl(fpGroupRead)
-                                if aSet.d.hasKey("group") and aSet.d["group"].d.hasKey("write"):   perms.incl(fpGroupWrite)
-                                if aSet.d.hasKey("group") and aSet.d["group"].d.hasKey("execute"): perms.incl(fpGroupExec)
+                                if setVal.hasKey("group") and setVal["group"].d.hasKey("read"):    perms.incl(fpGroupRead)
+                                if setVal.hasKey("group") and setVal["group"].d.hasKey("write"):   perms.incl(fpGroupWrite)
+                                if setVal.hasKey("group") and setVal["group"].d.hasKey("execute"): perms.incl(fpGroupExec)
 
-                                if aSet.d.hasKey("others") and aSet.d["others"].d.hasKey("read"):    perms.incl(fpOthersRead)
-                                if aSet.d.hasKey("others") and aSet.d["others"].d.hasKey("write"):   perms.incl(fpOthersWrite)
-                                if aSet.d.hasKey("others") and aSet.d["others"].d.hasKey("execute"): perms.incl(fpOthersExec)
+                                if setVal.hasKey("others") and setVal["others"].d.hasKey("read"):    perms.incl(fpOthersRead)
+                                if setVal.hasKey("others") and setVal["others"].d.hasKey("write"):   perms.incl(fpOthersWrite)
+                                if setVal.hasKey("others") and setVal["others"].d.hasKey("execute"): perms.incl(fpOthersExec)
 
                                 setFilePermissions(move source, move perms)
-                            else:
+                            _:
                                 let perms = getFilePermissions(s)
                                 var permsDict: ValueDict = {
                                     "user": newDictionary({
