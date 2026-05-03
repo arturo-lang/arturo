@@ -511,6 +511,43 @@ All — X — `doIterate` macro family (block/bytecode action over collection ki
 5. **Object magic dispatch** — Phase E targets (`get`/`set`/`remove`/`contains?`/`in?`/`key?`). Not a macro feature; the prelude pattern from `append` is the canonical workaround.
 6. **`doIterate` macro family** — Iterators.nim is a separate dispatch shape (action-over-collection); leave alone.
 
+## Attr-handling cleanup (2026-05-03)
+
+Second pass: dispatch-converted builtins still using raw `hadAttr`/`checkAttr`
+inside their bodies should switch to `bindAttrs:` (composable bools/value
+attrs) or `on attr:` ladders (mutually-exclusive selectors) where it doesn't
+fight a Nim keyword or value-attr-with-transformation pattern.
+
+### Done in this pass
+- **Bitwise**: `shl`.
+- **Collections**: `chop`, `dictionary` (raw/lower; `with` kept), `drop`, `range`, `unique`.
+- **Core**: `alias`, `parse`.
+- **Crypto**: `encode` (now uses `on url:` ladder; `from`/`to` kept as `checkAttr` since both are Nim keywords).
+- **Dates**: `after`, `before`.
+- **Databases**: `open`, `query`.
+- **Exceptions**: `try`.
+- **Files**: `copy`, `delete`, `move`, `permissions` (now uses `on set:` ladder), `read`, `rename`, `symlink`, `write`.
+- **Io**: `color`, `cursor`, `input` (only `repl`), `print`.
+- **Net**: `request` (verbs + `json`/`raw` + `agent`/`timeout`; `headers`/`proxy`/`certificate` kept).
+- **Numbers**: `digits`, `sqrt`.
+- **Paths**: `extract` (URL/path selectors).
+- **Quantities**: `property`, `specify`.
+- **Reflection**: `attr`, `attr?`, `benchmark`, `info`.
+- **Sockets**: `connect`, `listen`, `send`.
+- **Strings**: `alphabet`, `escape` (now `on attr:` ladder), `indent`, `join`, `levenshtein`, `render` (only `once`), `strip` (only `start`), `wordwrap`.
+- **System**: `execute`, `panic`.
+
+### Still using raw `hadAttr`/`checkAttr` (and why)
+- **Nim-keyword attr names** — `bindAttrs` parses identifiers, not backticked keywords. Affected: `as` (`Net/download`, `Exceptions/throw`), `with` (`Collections/dictionary`, `Core/module`, `Strings/indent`'s padding kept via rename, `Strings/join`, `Files/read`'s `delimiter` is unrelated; covered cases use rename when possible), `from`/`to` (`Crypto/encode`), `template` (`Strings/render`), `end` (`Strings/strip`), `using` (`Net/mail`).
+- **Value attrs needing transformation before use** — `Net/request` `headers`/`proxy`/`certificate`, `Files/read` `delimiter`, `System/execute` `args`. `bindAttrs` would still leave the post-processing branch (`newProxy`, `newHttpHeaders(headersArr)`, etc.), so it adds noise without removing the `checkAttr`.
+- **Multi-kind value attrs** — `Collections/array` `of` accepts `{Integer, Block}`; `bindAttrs` requires a single kind. Skip.
+- **Builtins not yet on dispatch** — `Strings/outdent`, `Strings/match`/`match?`, all Object-magic Phase E (`Collections/get|set|remove|contains?|in?|key?`), `Collections/sort`, `Iterators/*`, control-flow `Core/*` (call/do/export/function/if/import/method/etc.), `Reflection/inspect`, etc. These keep their existing attr handling until the surrounding builtin is converted.
+
+### Future macro work that would close the remaining gaps
+1. **Backticked attr names in `bindAttrs`** — accept `nnkAccQuoted` so `\`as\` `, `\`with\` `, `\`from\` `, `\`end\` `, `\`template\` ` etc. can become `bindAttrs:` declarations. Also supports the renaming form `local(\`as\`): KIND = …`. One small parser tweak in `bindAttrs`.
+2. **Multi-kind value attrs in `bindAttrs`** — allow `name: KIND_OR_KIND = default` (or `name: Value = …`) so `Collections/array`'s `of` and similar can be bound.
+3. **`bindAttrs` recording presence** — for value attrs where the existing code branches on `checkAttr("name")` separately from the value, expose a generated `name?: bool` companion. Cleaner than current `name.len > 0` / sentinel checks.
+
 ## TODO count (real conversions still pending, excluding X and M and NoArgs)
 
 After the 2026-05-02 sweep, all real TODOs are done. What remains:
