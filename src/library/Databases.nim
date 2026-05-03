@@ -136,6 +136,9 @@ proc defineModule*(moduleName: string) =
             print query db .with: ["johndoe"] {!sql SELECT * FROM users WHERE name = ?}
         """:
             #=======================================================
+            bindAttrs:
+                returnId(id): Logical
+
             var withArgs: seq[string]
             if checkAttr("with"):
                 withArgs = aWith.a.map((x) => $(x))
@@ -146,7 +149,7 @@ proc defineModule*(moduleName: string) =
                         if (let got = execSqliteDb(x.sqlitedb, s, withArgs); got[0] == ValidQueryResult):
                             push(newBlock(got[1]))
 
-                        if hadAttr("id"):
+                        if returnId:
                             push(newInteger(getLastIdSqliteDb(x.sqlitedb)))
                     # elif x.dbKind == MysqlDatabase:
                     #     execMysqlDb(x.mysqldb, s)
@@ -155,7 +158,7 @@ proc defineModule*(moduleName: string) =
                         if (let got = execManySqliteDb(x.sqlitedb, a.map(proc (v:Value):string = (requireValue(v,{String},2); v.s)), withArgs); got[0] == ValidQueryResult):
                             push(newBlock(got[1]))
 
-                        if hadAttr("id"):
+                        if returnId:
                             push(newInteger(getLastIdSqliteDb(x.sqlitedb)))
 
     when not defined(WEB):
