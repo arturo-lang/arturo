@@ -293,9 +293,22 @@ proc defineModule*(moduleName: string) =
             html: read.markdown "## Hello"     ; "<h2>Hello</h2>"
             """:
                 #=======================================================
+                bindAttrs:
+                    binary:      Logical
+                    file:        Logical
+                    lines:       Logical
+                    json:        Logical
+                    csv:         Logical
+                    asBytecode(bytecode): Logical
+                    asToml(toml):         Logical
+                    asMarkdown(markdown): Logical
+                    asHtml(html):         Logical
+                    asXml(xml):           Logical
+                    withHeaders: Logical
+
                 dispatch:
                     String(path):
-                        if hadAttr("binary"):
+                        if binary:
                             var f: File
                             discard f.open(path)
                             var b: seq[byte] = newSeq[byte](f.getFileSize())
@@ -310,30 +323,30 @@ proc defineModule*(moduleName: string) =
                             else:
                                 let (src, tp) = getSource(path)
 
-                            if hadAttr("file") and tp != FileData:
+                            if file and tp != FileData:
                                 Error_FileNotFound(src)
 
-                            if hadAttr("lines"):
+                            if lines:
                                 push(newStringBlock(src.splitLines()))
-                            elif hadAttr("json"):
+                            elif json:
                                 push(valueFromJson(src))
-                            elif hadAttr("csv"):
+                            elif csv:
                                 if checkAttr("delimiter"):
                                     let delimiter = aDelimiter.c.char()
-                                    push(parseCsvInput(src, withHeaders=hadAttr("withHeaders"), withDelimiter=delimiter))
+                                    push(parseCsvInput(src, withHeaders=withHeaders, withDelimiter=delimiter))
                                 else:
-                                    push(parseCsvInput(src, hadAttr("withHeaders")))
-                            elif hadAttr("bytecode"):
+                                    push(parseCsvInput(src, withHeaders))
+                            elif asBytecode:
                                 let bcode = readBytecode(path)
                                 let parsed = doParse(bcode[0], isFile=false).a[0]
                                 push(newBytecode(Translation(constants: parsed.a, instructions: bcode[1])))
                             else:
                                 when defined(PARSERS):
-                                    if hadAttr("toml"):       push(parseTomlString(src))
-                                    elif hadAttr("markdown"): push(parseMarkdownInput(src))
-                                    elif hadAttr("html"):     push(parseHtmlInput(src))
-                                    elif hadAttr("xml"):      push(parseXMLInput(src))
-                                    else:                     push(newString(src))
+                                    if asToml:       push(parseTomlString(src))
+                                    elif asMarkdown: push(parseMarkdownInput(src))
+                                    elif asHtml:     push(parseHtmlInput(src))
+                                    elif asXml:      push(parseXMLInput(src))
+                                    else:            push(newString(src))
                                 else:
                                     push(newString(src))
 
