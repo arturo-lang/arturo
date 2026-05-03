@@ -28,6 +28,8 @@ when not defined(WEB):
     import osproc
     import times
 
+    import helpers/parallelism as ParallelismHelper
+
     import vm/values/custom/[vtask, verror]
 
 import vm/lib
@@ -114,11 +116,11 @@ proc defineModule*(moduleName: string) =
                     for i, t in x.a.pairs:
                         if hasDeadline:
                             let remainingMs = max(0, int((deadline - epochTime()) * 1000))
-                            if not waitFor withTimeout(t.tsk.future, remainingMs):
+                            if not ParallelismHelper.coopWait withTimeout(t.tsk.future, remainingMs):
                                 resolved[i] = newError(RuntimeErr, "wait.all timed out")
                                 continue
                         try:
-                            let r = waitFor t.tsk.future
+                            let r = ParallelismHelper.coopWait t.tsk.future
                             if t.tsk.state == taskPending:
                                 t.tsk.state = taskDone
                             resolved[i] = r
@@ -168,7 +170,7 @@ proc defineModule*(moduleName: string) =
                                 if not winner.finished:
                                     winner.complete(newError(RuntimeErr, "wait.first timed out"))
                         )
-                    let res = waitFor winner
+                    let res = ParallelismHelper.coopWait winner
                     let killLosers = hadAttr("cancel")
                     for t in x.a:
                         if t.tsk.state == taskPending and killLosers:
@@ -184,16 +186,18 @@ proc defineModule*(moduleName: string) =
                     var timedOut = false
                     if checkAttr("timeout"):
                         let ms = timeoutMsOf(aTimeout)
-                        if not waitFor withTimeout(x.tsk.future, ms):
+                        if not ParallelismHelper.coopWait withTimeout(x.tsk.future, ms):
                             timedOut = true
                     if timedOut:
                         push newError(RuntimeErr, "wait timed out")
                     else:
-                        # `waitFor` drives the dispatcher until the future settles.
-                        # if the underlying work raised, surface it as an `:error`
-                        # value rather than letting the exception escape into the VM.
+                        # `coopWait` drives the dispatcher AND our fiber
+                        # scheduler until the future settles. if the
+                        # underlying work raised, surface it as an `:error`
+                        # value rather than letting the exception escape
+                        # into the VM.
                         try:
-                            let res = waitFor x.tsk.future
+                            let res = ParallelismHelper.coopWait x.tsk.future
                             x.tsk.state = taskDone
                             push res
                         except CatchableError as e:

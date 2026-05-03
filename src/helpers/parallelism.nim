@@ -245,7 +245,10 @@ when not defined(WEB):
                 raise newException(CatchableError,
                     "runUntilFutureDone: no pending work, future will never complete")
             runOneStep()
-        return fut.read()
+        when T is void:
+            fut.read()
+        else:
+            return fut.read()
 
     proc cooperativeAwait*[T](fut: Future[T]): T =
         ## Suspend the current fiber until `fut` completes, then
@@ -289,6 +292,31 @@ when not defined(WEB):
             fut.read()
         else:
             return fut.read()
+
+    proc coopWait*[T](fut: Future[T]): T =
+        ## Block on `fut` from any context — main or fiber. Picks the
+        ## right primitive automatically:
+        ##
+        ## - **on main:** `runUntilFutureDone` drives both the
+        ##   scheduler ready queue and the asyncdispatch poll loop.
+        ##   Plain `waitFor` would skip our scheduler and starve any
+        ##   in-process fiber tasks.
+        ## - **inside a fiber:** `cooperativeAwait` registers a
+        ##   re-queue callback and yields back to the scheduler.
+        ##
+        ## Stdlib code that previously called `waitFor t.tsk.future`
+        ## should now call `coopWait t.tsk.future` so it composes
+        ## with both subprocess- and fiber-backed tasks.
+        if onMainFiber():
+            when T is void:
+                runUntilFutureDone(fut)
+            else:
+                return runUntilFutureDone(fut)
+        else:
+            when T is void:
+                cooperativeAwait(fut)
+            else:
+                return cooperativeAwait(fut)
 
 #=======================================
 # Cross-process event dispatch hook
