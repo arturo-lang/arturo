@@ -394,12 +394,15 @@ proc defineModule*(moduleName: string) =
             ; to our desktop
             """:
                 #=======================================================
+                bindAttrs:
+                    hard: Logical
+
                 dispatch:
                     (String(src), String(dst)):
                         var source = src
                         var target = dst
                         try:
-                            if hadAttr("hard"):
+                            if hard:
                                 createHardlink(move source, move target)
                             else:
                                 createSymlink(move source, move target)
