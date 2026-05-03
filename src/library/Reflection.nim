@@ -200,6 +200,9 @@ proc defineModule*(moduleName: string) =
             ; [name:print address:0x1028B3410 type::function module:Io args:[value:[:any]] attrs:[] returns:[:nothing] description:print given value to screen with newline example:print "Hello world!"          ; Hello world!]
             """:
                 #=======================================================
+                bindAttrs:
+                    asDict(get): Logical
+
                 var searchable: string
                 var value: Value = nil
 
@@ -222,7 +225,7 @@ proc defineModule*(moduleName: string) =
                             searchable = x.s
                             value = FetchSym(x.s)
 
-                if (hadAttr("get")):
+                if asDict:
                     push(newDictionary(getInfo(searchable, value, Aliases)))
                 else:
                     printInfo(searchable, value, Aliases)
