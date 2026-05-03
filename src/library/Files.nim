@@ -112,9 +112,12 @@ proc defineModule*(moduleName: string) =
             ; file deleted
             """:
                 #=======================================================
+                bindAttrs:
+                    directory: Logical
+
                 dispatch:
                     String(s):
-                        if hadAttr("directory"):
+                        if directory:
                             try:    removeDir(s)
                             except OSError: discard
                         else:
