@@ -221,11 +221,14 @@ proc defineModule*(moduleName: string) =
             send socket "Hello Socket World"
             """:
                 #=======================================================
+                bindAttrs:
+                    chunk: Logical
+
                 dispatch:
                     (Socket(s), String(t)):
                         let message =
-                            if hadAttr("chunk"): t
-                            else:                t & "\r\L"
+                            if chunk: t
+                            else:     t & "\r\L"
 
                         s.socket.send(message)
 
