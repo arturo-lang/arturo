@@ -1278,7 +1278,10 @@ proc defineModule*(moduleName: string) =
             ; => 1.794226987182141+0.2786715413222365i
         """:
             #=======================================================
-            if hadAttr("integer"):
+            bindAttrs:
+                integer: Logical
+
+            if integer:
                 when defined(WEB) or defined(GMP):
                     if x.iKind == NormalInteger:
                         push(newInteger(isqrt(x.i)))
