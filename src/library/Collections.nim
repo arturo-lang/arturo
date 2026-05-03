@@ -419,11 +419,15 @@ proc defineModule*(moduleName: string) =
             print location\entity   ; => EU
         """:
             #=======================================================
+            bindAttrs:
+                raw:   Logical
+                lower: Logical
+
             var dict: ValueDict
 
             dispatch:
                 Block(a):
-                    if hadAttr("raw"):
+                    if raw:
                         dict = initOrderedTable[string,Value]()
                         var idx = 0
                         while idx < a.len:
@@ -447,7 +451,7 @@ proc defineModule*(moduleName: string) =
                     requireValue(x, {Word,Literal})
                     dict[x.s] = FetchSym(x.s)
 
-            if (hadAttr("lower")):
+            if lower:
                 var oldDict = dict
                 dict = initOrderedTable[string,Value]()
                 for k,v in pairs(oldDict):
