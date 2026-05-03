@@ -87,6 +87,11 @@ proc defineModule*(moduleName: string) =
             print color #red.bold "Some text"          ; Some text (in red/bold)
         """:
             #=======================================================
+            bindAttrs:
+                isBold(bold):           Logical
+                isUnderline(underline): Logical
+                keep:                   Logical
+
             dispatch:
                 (Color(c), String(s)):
                     var color = ""
@@ -108,13 +113,13 @@ proc defineModule*(moduleName: string) =
 
                     var finalColor: string
 
-                    if hadAttr("bold"):        finalColor = bold(color)
-                    elif hadAttr("underline"): finalColor = underline(color)
-                    else:                      finalColor = fg(color)
+                    if isBold:        finalColor = bold(color)
+                    elif isUnderline: finalColor = underline(color)
+                    else:             finalColor = fg(color)
 
                     var res = finalColor & s
 
-                    if not hadAttr("keep"):
+                    if not keep:
                         res &= resetColor
 
                     push(newString(res))
