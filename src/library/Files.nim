@@ -144,10 +144,13 @@ proc defineModule*(moduleName: string) =
             ; moved whole folder
             """:
                 #=======================================================
+                bindAttrs:
+                    directory: Logical
+
                 dispatch:
                     (String(src), String(dst)):
                         var target = dst
-                        if hadAttr("directory"):
+                        if directory:
                             try:    moveDir(src, move target)
                             except OSError: discard
                         else:
