@@ -774,15 +774,19 @@ proc defineModule*(moduleName: string) =
             ; strip trailing: >      Hello World <
         """:
             #=======================================================
-            var leading = (hadAttr("start"))
-            var trailing = (hadAttr("end"))
+            bindAttrs:
+                leading(start): Logical
 
+            var trailing = hadAttr("end")
+
+            var stripStart = leading
+            var stripEnd   = trailing
             if not leading and not trailing:
-                leading = true
-                trailing = true
+                stripStart = true
+                stripEnd   = true
 
             dispatchWithLiteral:
-                String(s): strutils.strip(s, leading, trailing)
+                String(s): strutils.strip(s, stripStart, stripEnd)
 
     builtin "translate",
         alias       = unaliased, 
