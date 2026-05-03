@@ -174,19 +174,22 @@ proc defineModule*(moduleName: string) =
             shl 'a 3           ; a: 16
         """:
             #=======================================================
+            bindAttrs:
+                safe: Logical
+
             dispatchWithLiteral:
                 _:
                     value:
                         var res =
                             if normalIntegerOperation(): normalIntegerShl(x.i, y.i)
                             else:                        x << y
-                        if res < x and hadAttr("safe"):
+                        if res < x and safe:
                             res = newBigInteger(x.i) << y
                         push(res)
                     inplace:
                         let valBefore = InPlaced
                         InPlaced <<= y
-                        if InPlaced < valBefore and hadAttr("safe"):
+                        if InPlaced < valBefore and safe:
                             SetInPlaceAny(newBigInteger(valBefore.i) << y)
 
     builtin "shr",
