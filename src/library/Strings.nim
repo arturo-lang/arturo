@@ -212,17 +212,12 @@ proc defineModule*(moduleName: string) =
             ; ##########three
         """:
             #=======================================================
-            var count = 4
-            var padding = " "
-
-            if checkAttr("n"):
-                count = aN.i
-
-            if checkAttr("with"):
-                padding = aWith.s
+            bindAttrs:
+                n:               Integer = 4
+                padding(with):   String  = " "
 
             dispatchWithLiteral:
-                String(s): indent(s, count, padding)
+                String(s): indent(s, n, padding)
 
     builtin "jaro",
         alias       = unaliased, 
