@@ -140,6 +140,20 @@ proc defineModule*(moduleName: string) =
             ; => 300
             """:
                 #=======================================================
+                bindAttrs:
+                    asScheme(scheme):       Logical
+                    asHost(host):           Logical
+                    asPort(port):           Logical
+                    asUser(user):           Logical
+                    asPassword(password):   Logical
+                    asPath(path):           Logical
+                    asQuery(query):         Logical
+                    asAnchor(anchor):       Logical
+                    asDirectory(directory): Logical
+                    asBasename(basename):   Logical
+                    asFilename(filename):   Logical
+                    asExtension(extension): Logical
+
                 dispatch:
                     Color(c):
                         on red:        push newInteger(RGBfromColor(c).r)
@@ -174,22 +188,22 @@ proc defineModule*(moduleName: string) =
                     String(s):
                         if isUrl(s):
                             let details = parseUrlComponents(s)
-                            if   hadAttr("scheme"):   push(details["scheme"])
-                            elif hadAttr("host"):     push(details["host"])
-                            elif hadAttr("port"):     push(details["port"])
-                            elif hadAttr("user"):     push(details["user"])
-                            elif hadAttr("password"): push(details["password"])
-                            elif hadAttr("path"):     push(details["path"])
-                            elif hadAttr("query"):    push(details["query"])
-                            elif hadAttr("anchor"):   push(details["anchor"])
-                            else:                     push(newDictionary(details))
+                            if   asScheme:   push(details["scheme"])
+                            elif asHost:     push(details["host"])
+                            elif asPort:     push(details["port"])
+                            elif asUser:     push(details["user"])
+                            elif asPassword: push(details["password"])
+                            elif asPath:     push(details["path"])
+                            elif asQuery:    push(details["query"])
+                            elif asAnchor:   push(details["anchor"])
+                            else:            push(newDictionary(details))
                         else:
                             let details = parsePathComponents(s)
-                            if   hadAttr("directory"): push(details["directory"])
-                            elif hadAttr("basename"):  push(details["basename"])
-                            elif hadAttr("filename"):  push(details["filename"])
-                            elif hadAttr("extension"): push(details["extension"])
-                            else:                      push(newDictionary(details))
+                            if   asDirectory: push(details["directory"])
+                            elif asBasename:  push(details["basename"])
+                            elif asFilename:  push(details["filename"])
+                            elif asExtension: push(details["extension"])
+                            else:             push(newDictionary(details))
 
         builtin "list",
             alias       = unaliased, 
