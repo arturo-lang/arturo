@@ -164,7 +164,8 @@ proc defineModule*(moduleName: string) =
             ; => hi
         """:
             #=======================================================
-            let verbose = hadAttr "verbose"
+            bindAttrs:
+                verbose: Logical
 
             dispatch:
                 _:
