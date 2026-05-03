@@ -2437,8 +2437,11 @@ proc defineModule*(moduleName: string) =
             # has nothing to do with x's kind, so handle it as a prelude.
             # TODO(Collections\unique) make `.id` work for Web/JS builds
             #  labels: library,enhancement,web
+            bindAttrs:
+                id: Logical
+
             when not defined(WEB):
-                if hadAttr("id"):
+                if id:
                     push newString(x.s & $(genOid()))
                     return
 
