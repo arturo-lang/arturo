@@ -124,32 +124,29 @@ proc defineModule*(moduleName: string) =
             ; 2020-03-22T11:27:23+01:00
         """:
             #=======================================================
-            var nanoseconds, milliseconds, seconds,
-                minutes, hours, days, weeks,
-                months, years = 0
-
-            if checkAttr("nanoseconds"):      nanoseconds = aNanoseconds.i
-            if checkAttr("milliseconds"):   milliseconds = aMilliseconds.i
-            if checkAttr("seconds"):                  seconds = aSeconds.i
-            if checkAttr("minutes"):                  minutes = aMinutes.i
-            if checkAttr("hours"):                        hours = aHours.i
-            if checkAttr("days"):                           days = aDays.i
-            if checkAttr("weeks"):                        weeks = aWeeks.i
-            if checkAttr("months"):                     months = aMonths.i
-            if checkAttr("years"):                        years = aYears.i
+            bindAttrs:
+                nanoseconds:  Integer = 0
+                milliseconds: Integer = 0
+                seconds:      Integer = 0
+                minutes:      Integer = 0
+                hours:        Integer = 0
+                days:         Integer = 0
+                weeks:        Integer = 0
+                months:       Integer = 0
+                years:        Integer = 0
 
             let ti = initTimeInterval(
-                nanoseconds=nanoseconds, 
-                milliseconds=milliseconds,
-                seconds=seconds,
-                minutes=minutes,
-                hours=hours,
-                days=days,
-                weeks=weeks,
-                months=months,
-                years=years
+                nanoseconds  = nanoseconds,
+                milliseconds = milliseconds,
+                seconds      = seconds,
+                minutes      = minutes,
+                hours        = hours,
+                days         = days,
+                weeks        = weeks,
+                months       = months,
+                years        = years
             )
-            
+
             dispatchWithLiteral:
                 Date(d):
                     value:   push(newDate(d - ti))
