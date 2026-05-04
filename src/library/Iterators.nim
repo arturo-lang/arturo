@@ -1327,7 +1327,8 @@ proc defineModule*(moduleName: string) =
         },
         attrs       = {
             "with"      : ({Literal},"use given index"),
-            "value"     : ({Logical},"also include predicate values")
+            "value"     : ({Logical},"also include predicate values"),
+            "parallel"  : ({Logical,Integer},"extract keys concurrently; integer caps the number of in-flight fibers")
         },
         returns     = {Block,Nothing},
         example     = """
