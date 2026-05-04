@@ -129,7 +129,13 @@ proc defineModule*(moduleName: string) =
                                 resolved[i] = VNULL
                             else:
                                 t.tsk.state = taskFailed
-                                resolved[i] = newError(RuntimeErr, e.msg)
+                                # In-process fibers raise the original
+                                # `VError` (with kind, hint, context).
+                                # Subprocess-backed tasks raise a generic
+                                # exception — fall back to `RuntimeErr`.
+                                resolved[i] =
+                                    if e of VError: newError(VError(e))
+                                    else:           newError(RuntimeErr, e.msg)
                     push newBlock(resolved)
                 elif (hadAttr("first")):
                     # accept a block of tasks; block until the first one
@@ -153,7 +159,15 @@ proc defineModule*(moduleName: string) =
                                         winner.complete(VNULL)
                                     else:
                                         cap.tsk.state = taskFailed
-                                        winner.complete(newError(RuntimeErr, fin.error.msg))
+                                        # Preserve real `VError` (kind,
+                                        # hint, context) from in-process
+                                        # fibers; subprocess tasks fall
+                                        # back to `RuntimeErr`.
+                                        let err = fin.error
+                                        winner.complete(
+                                            if err of VError: newError(VError(err))
+                                            else:             newError(RuntimeErr, err.msg)
+                                        )
                                 else:
                                     if cap.tsk.state == taskPending:
                                         cap.tsk.state = taskDone
@@ -210,7 +224,15 @@ proc defineModule*(moduleName: string) =
                                 push VNULL
                             else:
                                 x.tsk.state = taskFailed
-                                push newError(RuntimeErr, e.msg)
+                                # Preserve real `VError` (kind, hint,
+                                # context) from in-process fibers; fall
+                                # back to `RuntimeErr` for subprocess
+                                # tasks where the underlying error type
+                                # is opaque.
+                                push (
+                                    if e of VError: newError(VError(e))
+                                    else:           newError(RuntimeErr, e.msg)
+                                )
 
         builtin "cancel",
             alias       = unaliased,
