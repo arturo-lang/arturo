@@ -478,6 +478,68 @@ template parallelIterateBlock(withCap:bool, withCounter:bool, act: untyped) {.di
             cntr += 1
         pDrain += 1
 
+template parallelShortCircuit(answerOnHit: Value, defaultAnswer: Value, hitWhen: untyped) {.dirty.} =
+    ## Short-circuit parallel evaluation, used by `every?.parallel` /
+    ## `some?.parallel`. Spawns one fiber per item (up to `pCap` in
+    ## flight); the first fiber whose body's result satisfies
+    ## `hitWhen` (`pBodyResult` is the popped body value) decides the
+    ## answer. All remaining in-flight fibers are cancelled. If no
+    ## fiber hits, the iteration completes with `defaultAnswer`.
+    if unlikely(yKind != Literal):
+        Error_OperationNotPermitted("`.parallel` requires a single literal param (e.g. `'x`)")
+    if unlikely(hasIndex):
+        Error_OperationNotPermitted("`.parallel` cannot combine with `.with` index")
+
+    let pName = y.s
+    let pBody = z.a
+    let pCap =
+        if aParallel.kind == Integer:
+            if aParallel.i < 1:
+                Error_OperationNotPermitted("`.parallel:` expects a positive integer")
+            aParallel.i
+        else:
+            blo.len
+
+    var pTasks: seq[Value] = newSeq[Value](blo.len)
+    var pSpawn = 0
+    var pSettled = 0
+    let pWinner = newFuture[Value]("Iterators.shortCircuit")
+
+    proc pSpawnOne() {.gcsafe.} =
+        {.cast(gcsafe).}:
+            if pSpawn >= blo.len or pWinner.finished: return
+            let pIdx = pSpawn
+            let pWrap = newBlock(@[newLabel(pName), blo[pIdx]] & pBody)
+            let pT = ParallelismHelper.spawnInProcessDoBlock(pWrap)
+            pTasks[pIdx] = pT
+            pSpawn += 1
+            pT.tsk.future.addCallback(proc(fin: Future[Value]) {.gcsafe.} =
+                {.cast(gcsafe).}:
+                    if pWinner.finished: return
+                    pSettled += 1
+                    if not fin.failed:
+                        let pBodyResult {.inject.} = fin.read()
+                        if hitWhen:
+                            pWinner.complete(answerOnHit)
+                            return
+                    if pSpawn < blo.len:
+                        pSpawnOne()
+                    elif pSettled >= blo.len:
+                        pWinner.complete(defaultAnswer)
+            )
+
+    let pInitial = min(pCap, blo.len)
+    for _ in 0 ..< pInitial: pSpawnOne()
+
+    let pResult = ParallelismHelper.coopWait pWinner
+    for pT in pTasks:
+        if (not pT.isNil) and pT.tsk.state == taskPending and (not pT.tsk.cancelHandle.isNil):
+            try: pT.tsk.cancelHandle()
+            except CatchableError: discard
+            pT.tsk.state = taskCancelled
+    push(pResult)
+    return
+
 template doIterate(
     itLit:bool,         # does the iterator support in-place literals?
     itCap:bool,         # do we need to actually capture iterated elements?
@@ -1546,7 +1608,8 @@ proc defineModule*(moduleName: string) =
             "condition"     : {Block,Bytecode}
         },
         attrs       = {
-            "with"      : ({Literal},"use given index")
+            "with"      : ({Literal},"use given index"),
+            "parallel"  : ({Logical,Integer},"evaluate the predicate concurrently; first `false` decides and cancels the rest. integer caps the number of in-flight fibers")
         },
         returns     = {Logical},
         example     = """
@@ -1567,6 +1630,16 @@ proc defineModule*(moduleName: string) =
             ; true
         """:
             #=======================================================
+            when not defined(WEB):
+                let aParallel = popAttr("parallel")
+                if not aParallel.isNil:
+                    if aParallel.kind notin tParallel:
+                        Error_OperationNotPermitted("`.parallel` expects a logical flag or a positive integer")
+                    prepareIteration(doesAcceptLiterals=false)
+                    fetchIterableItemsForParallel(VTRUE)
+                    parallelShortCircuit(answerOnHit=VFALSE, defaultAnswer=VTRUE):
+                        isFalse(pBodyResult)
+
             doIterate(itLit=false, itCap=false, itInf=false, itCounter=false, itRolling=false, VTRUE):
                 discard
             do:
