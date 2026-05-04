@@ -374,8 +374,17 @@ when not defined(WEB):
         # turning `map.async`/`loop.async` into sequential execution.
         if not onMainFiber():
             cooperativeAwait sleepAsync(ms)
-        elif hasPendingOperations():
-            waitFor sleepAsync(ms)
+        elif scheduler.ready.len > 0 or hasPendingOperations():
+            # From main with live work: drive the fiber scheduler
+            # AND asyncdispatch for the duration. Plain `waitFor`
+            # would only pump dispatcher futures and starve any
+            # ready fiber — including in-process `do.async` tasks
+            # whose progress the user may be polling between
+            # `pause`s (`while [not? finished? t][pause 100]`).
+            try:
+                runUntilFutureDone(sleepAsync(ms))
+            except CatchableError:
+                discard
         else:
             sleep(ms)
 
