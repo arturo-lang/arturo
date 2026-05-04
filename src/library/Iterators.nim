@@ -1660,7 +1660,8 @@ proc defineModule*(moduleName: string) =
             "condition"     : {Block,Bytecode}
         },
         attrs       = {
-            "with"      : ({Literal},"use given index")
+            "with"      : ({Literal},"use given index"),
+            "parallel"  : ({Logical,Integer},"evaluate the predicate concurrently; first `true` decides and cancels the rest. integer caps the number of in-flight fibers")
         },
         returns     = {Logical},
         example     = """
@@ -1684,6 +1685,16 @@ proc defineModule*(moduleName: string) =
             ; true
         """:
             #=======================================================
+            when not defined(WEB):
+                let aParallel = popAttr("parallel")
+                if not aParallel.isNil:
+                    if aParallel.kind notin tParallel:
+                        Error_OperationNotPermitted("`.parallel` expects a logical flag or a positive integer")
+                    prepareIteration(doesAcceptLiterals=false)
+                    fetchIterableItemsForParallel(VFALSE)
+                    parallelShortCircuit(answerOnHit=VTRUE, defaultAnswer=VFALSE):
+                        isTrue(pBodyResult)
+
             doIterate(itLit=false, itCap=false, itInf=false, itCounter=false, itRolling=false, VFALSE):
                 discard
             do:
