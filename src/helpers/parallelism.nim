@@ -247,6 +247,20 @@ when not defined(WEB):
         while scheduler.ready.len > 0 or hasPendingOperations():
             runOneStep()
 
+    proc pumpScheduler*(timeoutMs: int) =
+        ## Non-blocking-ish single tick: drains all currently-ready
+        ## fibers, then polls asyncdispatch for at most `timeoutMs`
+        ## milliseconds. Designed to be called from idle loops that
+        ## want to keep in-process tasks making progress without
+        ## hijacking control (e.g. the REPL's input wait).
+        ##
+        ## Returns immediately if there's no pending work at all.
+        while scheduler.ready.len > 0:
+            runOneStep()
+        if hasPendingOperations():
+            try: poll(timeoutMs)
+            except CatchableError: discard
+
     proc runUntilFutureDone*[T](fut: Future[T]): T =
         ## Block on `fut` from main while letting fibers and I/O
         ## callbacks make progress. This is what `wait t` will call
