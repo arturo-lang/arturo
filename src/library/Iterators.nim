@@ -29,6 +29,7 @@
 import algorithm, sequtils, sugar, unicode
 
 when not defined(WEB):
+    import asyncdispatch
     import times
     import helpers/parallelism as ParallelismHelper
     import vm/values/custom/[vtask, verror]
@@ -1631,14 +1632,15 @@ proc defineModule*(moduleName: string) =
         """:
             #=======================================================
             when not defined(WEB):
-                let aParallel = popAttr("parallel")
-                if not aParallel.isNil:
-                    if aParallel.kind notin tParallel:
-                        Error_OperationNotPermitted("`.parallel` expects a logical flag or a positive integer")
-                    prepareIteration(doesAcceptLiterals=false)
-                    fetchIterableItemsForParallel(VTRUE)
-                    parallelShortCircuit(answerOnHit=VFALSE, defaultAnswer=VTRUE):
-                        isFalse(pBodyResult)
+                block:
+                    let aParallel = popAttr("parallel")
+                    if not aParallel.isNil:
+                        if aParallel.kind notin tParallel:
+                            Error_OperationNotPermitted("`.parallel` expects a logical flag or a positive integer")
+                        prepareIteration(doesAcceptLiterals=false)
+                        fetchIterableItemsForParallel(VTRUE)
+                        parallelShortCircuit(answerOnHit=VFALSE, defaultAnswer=VTRUE):
+                            isFalse(pBodyResult)
 
             doIterate(itLit=false, itCap=false, itInf=false, itCounter=false, itRolling=false, VTRUE):
                 discard
@@ -1686,14 +1688,15 @@ proc defineModule*(moduleName: string) =
         """:
             #=======================================================
             when not defined(WEB):
-                let aParallel = popAttr("parallel")
-                if not aParallel.isNil:
-                    if aParallel.kind notin tParallel:
-                        Error_OperationNotPermitted("`.parallel` expects a logical flag or a positive integer")
-                    prepareIteration(doesAcceptLiterals=false)
-                    fetchIterableItemsForParallel(VFALSE)
-                    parallelShortCircuit(answerOnHit=VTRUE, defaultAnswer=VFALSE):
-                        isTrue(pBodyResult)
+                block:
+                    let aParallel = popAttr("parallel")
+                    if not aParallel.isNil:
+                        if aParallel.kind notin tParallel:
+                            Error_OperationNotPermitted("`.parallel` expects a logical flag or a positive integer")
+                        prepareIteration(doesAcceptLiterals=false)
+                        fetchIterableItemsForParallel(VFALSE)
+                        parallelShortCircuit(answerOnHit=VTRUE, defaultAnswer=VFALSE):
+                            isTrue(pBodyResult)
 
             doIterate(itLit=false, itCap=false, itInf=false, itCounter=false, itRolling=false, VFALSE):
                 discard
