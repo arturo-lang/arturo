@@ -1008,7 +1008,9 @@ proc defineModule*(moduleName: string) =
         },
         attrs       = {
             "with"      : ({Literal},"use given index"),
-            "forever"   : ({Logical},"cycle through collection infinitely")
+            "forever"   : ({Logical},"cycle through collection infinitely"),
+            "async"     : ({Logical},"run each item in its own cooperative fiber and wait for all to settle"),
+            "parallel"  : ({Integer},"with `.async`: cap concurrency to the given number of in-flight fibers")
         },
         returns     = {Nothing},
         example     = """
@@ -1055,6 +1057,53 @@ proc defineModule*(moduleName: string) =
             ; 1 2 3 1 2 3 1 2 3 ...
         """:
             #=======================================================
+            when not defined(WEB):
+                if hadAttr("async"):
+                    # `loop.async` — fan-out parallel side-effect loop.
+                    # Same fiber-per-item model as `map.async`, but the
+                    # body's return value is discarded. Implicit
+                    # barrier: returns only once every fiber settles.
+                    if yKind != Literal:
+                        Error_OperationNotPermitted("`loop.async` only supports a single literal param (e.g. `'x`)")
+                    let items: ValueArray =
+                        case xKind
+                            of Block, Inline:    x.a
+                            of Range:            toSeq(x.rng.items)
+                            of String:           toSeq(runes(x.s)).map((w) => newChar(w))
+                            of Integer:          (toSeq(1..x.i)).map((w) => newInteger(w))
+                            of Dictionary:       x.d.flattenedDictionary()
+                            of Object:           x.o.flattenedObject()
+                            else:                @[]
+                    let paramName = y.s
+                    let bodyItems = z.a
+                    let cap =
+                        if checkAttr("parallel"):
+                            if aParallel.i < 1:
+                                Error_OperationNotPermitted("`loop.async.parallel:` expects a positive integer")
+                            aParallel.i
+                        else:
+                            items.len
+                    var tasks: seq[Value] = newSeq[Value](items.len)
+                    proc spawnAt(idx: int) =
+                        let wrapper = newBlock(@[newLabel(paramName), items[idx]] & bodyItems)
+                        tasks[idx] = ParallelismHelper.spawnInProcessDoBlock(wrapper)
+                    proc drainAt(idx: int) =
+                        let t = tasks[idx]
+                        try:
+                            discard ParallelismHelper.coopWait t.tsk.future
+                            if t.tsk.state == taskPending:
+                                t.tsk.state = taskDone
+                        except CatchableError:
+                            if t.tsk.state != taskCancelled:
+                                t.tsk.state = taskFailed
+                    var nextSpawn = 0
+                    var nextDrain = 0
+                    while nextDrain < items.len:
+                        while nextSpawn < items.len and (nextSpawn - nextDrain) < cap:
+                            spawnAt(nextSpawn); nextSpawn += 1
+                        drainAt(nextDrain); nextDrain += 1
+                    return
+
             let doForever = hadAttr("forever")
             doIterate(itLit=false, itCap=false, itInf=doForever, itCounter=false, itRolling=false, VNULL):
                 discard
