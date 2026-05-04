@@ -368,7 +368,13 @@ when not defined(WEB):
     # silently freezes every in-flight server / request / read for the
     # whole second.
     proc cooperativePause*(ms: int) =
-        if hasPendingOperations():
+        # On a fiber: yield to the scheduler so siblings (and any
+        # pending dispatcher work) can interleave. `waitFor` would
+        # block the fiber's C stack, starving every other fiber and
+        # turning `map.async`/`loop.async` into sequential execution.
+        if not onMainFiber():
+            cooperativeAwait sleepAsync(ms)
+        elif hasPendingOperations():
             waitFor sleepAsync(ms)
         else:
             sleep(ms)
