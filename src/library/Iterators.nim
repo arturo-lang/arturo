@@ -555,7 +555,8 @@ proc defineModule*(moduleName: string) =
         },
         attrs       = {
             "with"          : ({Literal}, "use given index"),
-            "descending"    : ({Logical}, "sort in descending order")
+            "descending"    : ({Logical}, "sort in descending order"),
+            "parallel"      : ({Logical,Integer}, "extract sort keys concurrently; integer caps the number of in-flight fibers")
         },
         returns     = {Block,Nothing},
         example     = """
