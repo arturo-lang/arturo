@@ -1081,7 +1081,8 @@ proc defineModule*(moduleName: string) =
             "action"        : {Block,Bytecode}
         },
         attrs       = {
-            "with"  : ({Literal},"use given index")
+            "with"      : ({Literal},"use given index"),
+            "parallel"  : ({Logical,Integer},"compute keys concurrently; integer caps the number of in-flight fibers")
         },
         returns     = {Dictionary,Nothing},
         example     = """
