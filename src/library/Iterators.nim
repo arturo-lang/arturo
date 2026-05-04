@@ -556,20 +556,20 @@ template doIterate(
     ## The main iterator helper for every method
     ## that doesn't require any special handling,
     ## e.g. for Range and Block values
+    ##
+    ## Builtins that opt into `.parallel` declare a local
+    ## `let aParallel = popAttr("parallel")` *before* calling this
+    ## template. The dirty-template lookup picks it up from the
+    ## surrounding scope; sync-only builtins simply don't declare
+    ## the symbol, so `when declared(aParallel)` short-circuits and
+    ## the parallel branch is never compiled in.
 
     prepareIteration(doesAcceptLiterals=itLit)
 
     when not defined(WEB):
-        # `.parallel` opt-in: only fires when the calling builtin
-        # actually declared the attr (its `tParallel` type set
-        # exists). Order-dependent iterators (`collect`, `cluster`,
-        # `fold` …) skip the declaration and stay sync-only — their
-        # `itAct` references things like `keepGoing` / rolling state
-        # that the parallel branch can't provide.
-        when declared(tParallel):
-            let aParallel = popAttr("parallel")
+        when declared(aParallel):
             if not aParallel.isNil:
-                if aParallel.kind notin tParallel:
+                if aParallel.kind notin {Logical, Integer}:
                     Error_OperationNotPermitted("`.parallel` expects a logical flag or a positive integer")
                 fetchIterableItemsForParallel(itDefVal)
                 itPre
@@ -635,6 +635,7 @@ proc defineModule*(moduleName: string) =
             if hadAttr("descending"):
                 useOrder = SortOrder.Descending
 
+            let aParallel = popAttr("parallel")
             doIterate(itLit=true, itCap=true, itInf=false, itCounter=false, itRolling=false, newBlock()):
                 var unsorted: seq[(ValueArray,Value)]
             do:
@@ -879,6 +880,7 @@ proc defineModule*(moduleName: string) =
             ; => 3
         """:
             #=======================================================
+            let aParallel = popAttr("parallel")
             doIterate(itLit=false, itCap=false, itInf=false, itCounter=false, itRolling=false, I0.copyValue):
                 var cntr = 0
             do:
@@ -1163,6 +1165,7 @@ proc defineModule*(moduleName: string) =
             ; [0:[one three] 1:[two four]]
         """:
             #=======================================================
+            let aParallel = popAttr("parallel")
             doIterate(itLit=true, itCap=true, itInf=false, itCounter=false, itRolling=false, newDictionary()):
                 var res = initOrderedTable[string,Value]()
             do:
@@ -1234,8 +1237,9 @@ proc defineModule*(moduleName: string) =
         """:
             #=======================================================
             let doForever = hadAttr("forever")
+            let aParallel = popAttr("parallel")
             when not defined(WEB):
-                if doForever and (getAttr("parallel") != VNULL):
+                if doForever and (not aParallel.isNil):
                     Error_OperationNotPermitted("`.parallel` cannot combine with `.forever`")
             doIterate(itLit=false, itCap=false, itInf=doForever, itCounter=false, itRolling=false, VNULL):
                 discard
@@ -1294,7 +1298,7 @@ proc defineModule*(moduleName: string) =
                         Error_OperationNotPermitted("`.parallel` expects a logical flag or a positive integer")
                     fetchIterableItemsForParallel(newBlock())
                     var res: ValueArray = newSeq[Value](blo.len)
-                    parallelIterateBlock(withCap=false, withCounter=true):
+                    parallelIterateBlock( withCap=false, withCounter=true):
                         res[cntr] = stack.pop()
                     if unlikely(inPlace): RawInPlaced = newBlock(res)
                     else: push(newBlock(res))
@@ -1350,6 +1354,7 @@ proc defineModule*(moduleName: string) =
         """:
             #=======================================================
             let withValue = hadAttr("value")
+            let aParallel = popAttr("parallel")
 
             doIterate(itLit=true, itCap=true, itInf=false, itCounter=false, itRolling=false, VNULL):
                 var selected: ValueArray
@@ -1405,6 +1410,7 @@ proc defineModule*(moduleName: string) =
         """:
             #=======================================================
             let withValue = hadAttr("value")
+            let aParallel = popAttr("parallel")
 
             doIterate(itLit=true, itCap=true, itInf=false, itCounter=false, itRolling=false, VNULL):
                 var selected: ValueArray
@@ -1639,7 +1645,7 @@ proc defineModule*(moduleName: string) =
                             Error_OperationNotPermitted("`.parallel` expects a logical flag or a positive integer")
                         prepareIteration(doesAcceptLiterals=false)
                         fetchIterableItemsForParallel(VTRUE)
-                        parallelShortCircuit(answerOnHit=VFALSE, defaultAnswer=VTRUE):
+                        parallelShortCircuit( answerOnHit=VFALSE, defaultAnswer=VTRUE):
                             isFalse(pBodyResult)
 
             doIterate(itLit=false, itCap=false, itInf=false, itCounter=false, itRolling=false, VTRUE):
@@ -1695,7 +1701,7 @@ proc defineModule*(moduleName: string) =
                             Error_OperationNotPermitted("`.parallel` expects a logical flag or a positive integer")
                         prepareIteration(doesAcceptLiterals=false)
                         fetchIterableItemsForParallel(VFALSE)
-                        parallelShortCircuit(answerOnHit=VTRUE, defaultAnswer=VFALSE):
+                        parallelShortCircuit( answerOnHit=VTRUE, defaultAnswer=VFALSE):
                             isTrue(pBodyResult)
 
             doIterate(itLit=false, itCap=false, itInf=false, itCounter=false, itRolling=false, VFALSE):
