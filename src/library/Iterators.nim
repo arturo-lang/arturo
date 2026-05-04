@@ -1396,7 +1396,8 @@ proc defineModule*(moduleName: string) =
             "with"      : ({Literal},"use given index"),
             "first"     : ({Logical,Integer},"only return first element/s"),
             "last"      : ({Logical,Integer},"only return last element/s"),
-            "n"         : ({Integer},"only return n-th element")
+            "n"         : ({Integer},"only return n-th element"),
+            "parallel"  : ({Logical,Integer},"evaluate the predicate concurrently; integer caps the number of in-flight fibers")
         },
         returns     = {Block,Any,Nothing},
         example     = """
