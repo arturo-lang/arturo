@@ -1517,6 +1517,22 @@ proc defineModule*(moduleName: string) =
             #=======================================================
             prepareIteration()
 
+            when not defined(WEB):
+                let aParallel = popAttr("parallel")
+                if not aParallel.isNil:
+                    if aParallel.kind notin {Logical, Integer}:
+                        Error_OperationNotPermitted("`.parallel` expects a logical flag or a positive integer")
+                    if (getAttr("first") != VNULL) or (getAttr("last") != VNULL) or (getAttr("n") != VNULL):
+                        Error_OperationNotPermitted("`.parallel` cannot combine with `.first` / `.last` / `.n`")
+                    fetchIterableItemsForParallel(newBlock())
+                    var res: ValueArray
+                    parallelIterateBlock(withCap=true, withCounter=false):
+                        if isTrue(stack.pop()):
+                            res.add(captured)
+                    if unlikely(inPlace): RawInPlaced = newBlock(res)
+                    else: push(newBlock(res))
+                    return
+
             var elemLimit = -1
                 
             let onlyFirst = 
