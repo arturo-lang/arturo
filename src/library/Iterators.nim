@@ -837,7 +837,8 @@ proc defineModule*(moduleName: string) =
         attrs       = {
             "with"      : ({Literal},"use given index"),
             "first"     : ({Logical,Integer},"only filter first element/s"),
-            "last"      : ({Logical,Integer},"only filter last element/s")
+            "last"      : ({Logical,Integer},"only filter last element/s"),
+            "parallel"  : ({Logical,Integer},"evaluate the predicate concurrently; integer caps the number of in-flight fibers")
         },
         returns     = {Block,Any,Nothing},
         example     = """
