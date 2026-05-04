@@ -1075,7 +1075,8 @@ proc defineModule*(moduleName: string) =
         },
         attrs       = {
             "with"      : ({Literal},"use given index"),
-            "async"     : ({Logical},"run each item in its own cooperative fiber and wait for all results in input order")
+            "async"     : ({Logical},"run each item in its own cooperative fiber and wait for all results in input order"),
+            "parallel"  : ({Integer},"with `.async`: cap concurrency to the given number of in-flight fibers")
         },
         returns     = {Block,Nothing},
         example     = """
@@ -1129,25 +1130,44 @@ proc defineModule*(moduleName: string) =
                             else:                @[]
                     let paramName = y.s
                     let bodyItems = z.a
+                    let cap =
+                        if checkAttr("parallel"):
+                            if aParallel.i < 1:
+                                Error_OperationNotPermitted("`map.async.parallel:` expects a positive integer")
+                            aParallel.i
+                        else:
+                            items.len
                     var tasks: seq[Value] = newSeq[Value](items.len)
-                    for i, it in items:
-                        let wrapper = newBlock(@[newLabel(paramName), it] & bodyItems)
-                        tasks[i] = ParallelismHelper.spawnInProcessDoBlock(wrapper)
                     var resolved: ValueArray = newSeq[Value](items.len)
-                    for i, t in tasks:
+                    proc spawnAt(idx: int) =
+                        let wrapper = newBlock(@[newLabel(paramName), items[idx]] & bodyItems)
+                        tasks[idx] = ParallelismHelper.spawnInProcessDoBlock(wrapper)
+                    proc drainAt(idx: int) =
+                        let t = tasks[idx]
                         try:
                             let r = ParallelismHelper.coopWait t.tsk.future
                             if t.tsk.state == taskPending:
                                 t.tsk.state = taskDone
-                            resolved[i] = r
+                            resolved[idx] = r
                         except CatchableError as e:
                             if t.tsk.state == taskCancelled:
-                                resolved[i] = VNULL
+                                resolved[idx] = VNULL
                             else:
                                 t.tsk.state = taskFailed
-                                resolved[i] =
+                                resolved[idx] =
                                     if e of VError: newError(VError(e))
                                     else:           newError(RuntimeErr, e.msg)
+                    # Sliding-window FIFO drain. At any time at most
+                    # `cap` items are spawned-but-not-yet-drained. We
+                    # await the oldest in-flight task before spawning
+                    # the next — keeps result order trivial and bounds
+                    # the concurrent fiber count.
+                    var nextSpawn = 0
+                    var nextDrain = 0
+                    while nextDrain < items.len:
+                        while nextSpawn < items.len and (nextSpawn - nextDrain) < cap:
+                            spawnAt(nextSpawn); nextSpawn += 1
+                        drainAt(nextDrain); nextDrain += 1
                     if unlikely(inPlaceAsync): RawInPlaced = newBlock(resolved)
                     else: push(newBlock(resolved))
                     return
