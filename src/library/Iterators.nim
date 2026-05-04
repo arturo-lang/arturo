@@ -387,11 +387,102 @@ template iterateBlock(withCap:bool, withInf:bool, withCounter:bool, rolling:bool
         when withCounter:
             res.setLen(cntr)
 
+template fetchIterableItemsForParallel(defaultReturn: untyped) {.dirty.} =
+    ## Materialize any supported iterable kind (incl. Range) into a
+    ## flat `ValueArray` named `blo`. Used by the parallel iteration
+    ## path, which spawns one fiber per item and so doesn't benefit
+    ## from the Range fast-path.
+    var blo =
+        case iterable.kind:
+            of Block,Inline:    iterable.a
+            of Range:           toSeq(iterable.rng.items)
+            of Dictionary:      iterable.d.flattenedDictionary()
+            of Object:          iterable.o.flattenedObject()
+            of String:          toSeq(runes(iterable.s)).map((w) => newChar(w))
+            of Integer:         (toSeq(1..iterable.i)).map((w) => newInteger(w))
+            else:               @[]
+
+    if blo.len == 0:
+        when not (defaultReturn is typeof(nil)):
+            when declared(inPlace):
+                if unlikely(inPlace): RawInPlaced = defaultReturn
+                else: push(defaultReturn)
+            else:
+                push(defaultReturn)
+        return
+
+template parallelIterateBlock(withCap:bool, withCounter:bool, act: untyped) {.dirty.} =
+    ## Parallel sibling of `iterateBlock` — each item runs in its own
+    ## cooperative fiber. Drains in input order via a sliding-window
+    ## semaphore (`.parallel: N` caps in-flight; bare `.parallel` is
+    ## unbounded). For each drained fiber the resolved value (or
+    ## `:error` / `:null` for failed/cancelled) is pushed on the stack
+    ## before `act` runs, so callers reuse the exact `act` they pass
+    ## to `iterateBlock` (e.g. `res[cntr] = stack.pop()`).
+    when withCounter:
+        var cntr = 0
+    when withCap:
+        var captured: Value
+
+    if unlikely(yKind != Literal):
+        Error_OperationNotPermitted("`.parallel` requires a single literal param (e.g. `'x`)")
+    if unlikely(hasIndex):
+        Error_OperationNotPermitted("`.parallel` cannot combine with `.with` index")
+
+    let pName = y.s
+    let pBody = z.a
+    let pCap =
+        if aParallel.kind == Integer:
+            if aParallel.i < 1:
+                Error_OperationNotPermitted("`.parallel:` expects a positive integer")
+            aParallel.i
+        else:
+            blo.len
+
+    var pTasks: seq[Value] = newSeq[Value](blo.len)
+    var pSpawn = 0
+    var pDrain = 0
+    while pDrain < blo.len:
+        while pSpawn < blo.len and (pSpawn - pDrain) < pCap:
+            let wrapper = newBlock(@[newLabel(pName), blo[pSpawn]] & pBody)
+            pTasks[pSpawn] = ParallelismHelper.spawnInProcessDoBlock(wrapper)
+            pSpawn += 1
+        let pT = pTasks[pDrain]
+        var pSlot: Value
+        try:
+            pSlot = ParallelismHelper.coopWait pT.tsk.future
+            if pT.tsk.state == taskPending:
+                pT.tsk.state = taskDone
+        except CatchableError as pe:
+            if pT.tsk.state == taskCancelled:
+                pSlot = VNULL
+            else:
+                pT.tsk.state = taskFailed
+                pSlot =
+                    if pe of VError: newError(VError(pe))
+                    else:            newError(RuntimeErr, pe.msg)
+        # Body-result-on-stack convention mirrors the sync iteration
+        # path: the resolved value is pushed before `act` runs so that
+        # acts written for sync (`stack.pop()`) work unchanged. After
+        # `act` we truncate any residue back to the pre-iteration
+        # baseline — handles the case where `act` is `discard` (e.g.
+        # `loop`) and would otherwise leak a slot per iteration.
+        when withCap:
+            captured = blo[pDrain]
+        let preSP = SP
+        push(pSlot)
+        act
+        if SP > preSP:
+            SP = preSP
+        when withCounter:
+            cntr += 1
+        pDrain += 1
+
 template doIterate(
     itLit:bool,         # does the iterator support in-place literals?
     itCap:bool,         # do we need to actually capture iterated elements?
     itInf:bool,         # is there a possibility that the iteration may be infinite?
-    itCounter:bool,     # do we need to keep track of the element counter? 
+    itCounter:bool,     # do we need to keep track of the element counter?
     itRolling:bool,     # is it a fold-type rolling iteration?
 
     itDefVal:untyped,   # default value to return if given block is empty
@@ -399,11 +490,30 @@ template doIterate(
     itAct:untyped,      # code to execute for each iteration
     itPost:untyped      # code to execute after the iteration
 ) {.dirty.} =
-    ## The main iterator helper for every method 
-    ## that doesn't require any special handling, 
+    ## The main iterator helper for every method
+    ## that doesn't require any special handling,
     ## e.g. for Range and Block values
 
     prepareIteration(doesAcceptLiterals=itLit)
+
+    when not defined(WEB):
+        # `.parallel` opt-in: only fires when the calling builtin
+        # actually declared the attr (its `tParallel` type set
+        # exists). Order-dependent iterators (`collect`, `cluster`,
+        # `fold` …) skip the declaration and stay sync-only — their
+        # `itAct` references things like `keepGoing` / rolling state
+        # that the parallel branch can't provide.
+        when declared(tParallel):
+            let aParallel = popAttr("parallel")
+            if not aParallel.isNil:
+                if aParallel.kind notin tParallel:
+                    Error_OperationNotPermitted("`.parallel` expects a logical flag or a positive integer")
+                fetchIterableItemsForParallel(itDefVal)
+                itPre
+                parallelIterateBlock(withCap=itCap, withCounter=itCounter):
+                    itAct
+                itPost
+                return
 
     if iterable.kind==Range:
         fetchIterableRange()
@@ -1009,8 +1119,7 @@ proc defineModule*(moduleName: string) =
         attrs       = {
             "with"      : ({Literal},"use given index"),
             "forever"   : ({Logical},"cycle through collection infinitely"),
-            "async"     : ({Logical},"run each item in its own cooperative fiber and wait for all to settle"),
-            "parallel"  : ({Integer},"with `.async`: cap concurrency to the given number of in-flight fibers")
+            "parallel"  : ({Logical,Integer},"run each item in its own cooperative fiber; integer caps the number of in-flight fibers")
         },
         returns     = {Nothing},
         example     = """
@@ -1057,54 +1166,10 @@ proc defineModule*(moduleName: string) =
             ; 1 2 3 1 2 3 1 2 3 ...
         """:
             #=======================================================
-            when not defined(WEB):
-                if hadAttr("async"):
-                    # `loop.async` — fan-out parallel side-effect loop.
-                    # Same fiber-per-item model as `map.async`, but the
-                    # body's return value is discarded. Implicit
-                    # barrier: returns only once every fiber settles.
-                    if yKind != Literal:
-                        Error_OperationNotPermitted("`loop.async` only supports a single literal param (e.g. `'x`)")
-                    let items: ValueArray =
-                        case xKind
-                            of Block, Inline:    x.a
-                            of Range:            toSeq(x.rng.items)
-                            of String:           toSeq(runes(x.s)).map((w) => newChar(w))
-                            of Integer:          (toSeq(1..x.i)).map((w) => newInteger(w))
-                            of Dictionary:       x.d.flattenedDictionary()
-                            of Object:           x.o.flattenedObject()
-                            else:                @[]
-                    let paramName = y.s
-                    let bodyItems = z.a
-                    let cap =
-                        if checkAttr("parallel"):
-                            if aParallel.i < 1:
-                                Error_OperationNotPermitted("`loop.async.parallel:` expects a positive integer")
-                            aParallel.i
-                        else:
-                            items.len
-                    var tasks: seq[Value] = newSeq[Value](items.len)
-                    proc spawnAt(idx: int) =
-                        let wrapper = newBlock(@[newLabel(paramName), items[idx]] & bodyItems)
-                        tasks[idx] = ParallelismHelper.spawnInProcessDoBlock(wrapper)
-                    proc drainAt(idx: int) =
-                        let t = tasks[idx]
-                        try:
-                            discard ParallelismHelper.coopWait t.tsk.future
-                            if t.tsk.state == taskPending:
-                                t.tsk.state = taskDone
-                        except CatchableError:
-                            if t.tsk.state != taskCancelled:
-                                t.tsk.state = taskFailed
-                    var nextSpawn = 0
-                    var nextDrain = 0
-                    while nextDrain < items.len:
-                        while nextSpawn < items.len and (nextSpawn - nextDrain) < cap:
-                            spawnAt(nextSpawn); nextSpawn += 1
-                        drainAt(nextDrain); nextDrain += 1
-                    return
-
             let doForever = hadAttr("forever")
+            when not defined(WEB):
+                if doForever and (getAttr("parallel") != VNULL):
+                    Error_OperationNotPermitted("`.parallel` cannot combine with `.forever`")
             doIterate(itLit=false, itCap=false, itInf=doForever, itCounter=false, itRolling=false, VNULL):
                 discard
             do:
@@ -1124,8 +1189,7 @@ proc defineModule*(moduleName: string) =
         },
         attrs       = {
             "with"      : ({Literal},"use given index"),
-            "async"     : ({Logical},"run each item in its own cooperative fiber and wait for all results in input order"),
-            "parallel"  : ({Integer},"with `.async`: cap concurrency to the given number of in-flight fibers")
+            "parallel"  : ({Logical,Integer},"run each item in its own cooperative fiber; integer caps the number of in-flight fibers")
         },
         returns     = {Block,Nothing},
         example     = """
@@ -1154,74 +1218,21 @@ proc defineModule*(moduleName: string) =
             ; => ["ONE" "two" "THREE" "four"]
         """:
             #=======================================================
+            prepareIteration()
+
             when not defined(WEB):
-                if hadAttr("async"):
-                    # `map.async` — fan-out parallel evaluation. Each
-                    # item runs in its own cooperative fiber; results
-                    # come back in input order with an implicit
-                    # `wait.all` barrier (returns `:block` of values,
-                    # not `:task`s).
-                    if yKind != Literal:
-                        Error_OperationNotPermitted("`map.async` only supports a single literal param (e.g. `'x`)")
-                    let inPlaceAsync = xKind == Literal
-                    var src{.cursor.} = x
-                    if inPlaceAsync:
-                        ensureInPlace()
-                        src = InPlaced
-                    let items: ValueArray =
-                        case src.kind
-                            of Block, Inline:    src.a
-                            of Range:            toSeq(src.rng.items)
-                            of String:           toSeq(runes(src.s)).map((w) => newChar(w))
-                            of Integer:          (toSeq(1..src.i)).map((w) => newInteger(w))
-                            of Dictionary:       src.d.flattenedDictionary()
-                            of Object:           src.o.flattenedObject()
-                            else:                @[]
-                    let paramName = y.s
-                    let bodyItems = z.a
-                    let cap =
-                        if checkAttr("parallel"):
-                            if aParallel.i < 1:
-                                Error_OperationNotPermitted("`map.async.parallel:` expects a positive integer")
-                            aParallel.i
-                        else:
-                            items.len
-                    var tasks: seq[Value] = newSeq[Value](items.len)
-                    var resolved: ValueArray = newSeq[Value](items.len)
-                    proc spawnAt(idx: int) =
-                        let wrapper = newBlock(@[newLabel(paramName), items[idx]] & bodyItems)
-                        tasks[idx] = ParallelismHelper.spawnInProcessDoBlock(wrapper)
-                    proc drainAt(idx: int) =
-                        let t = tasks[idx]
-                        try:
-                            let r = ParallelismHelper.coopWait t.tsk.future
-                            if t.tsk.state == taskPending:
-                                t.tsk.state = taskDone
-                            resolved[idx] = r
-                        except CatchableError as e:
-                            if t.tsk.state == taskCancelled:
-                                resolved[idx] = VNULL
-                            else:
-                                t.tsk.state = taskFailed
-                                resolved[idx] =
-                                    if e of VError: newError(VError(e))
-                                    else:           newError(RuntimeErr, e.msg)
-                    # Sliding-window FIFO drain. At any time at most
-                    # `cap` items are spawned-but-not-yet-drained. We
-                    # await the oldest in-flight task before spawning
-                    # the next — keeps result order trivial and bounds
-                    # the concurrent fiber count.
-                    var nextSpawn = 0
-                    var nextDrain = 0
-                    while nextDrain < items.len:
-                        while nextSpawn < items.len and (nextSpawn - nextDrain) < cap:
-                            spawnAt(nextSpawn); nextSpawn += 1
-                        drainAt(nextDrain); nextDrain += 1
-                    if unlikely(inPlaceAsync): RawInPlaced = newBlock(resolved)
-                    else: push(newBlock(resolved))
+                let aParallel = popAttr("parallel")
+                if not aParallel.isNil:
+                    if aParallel.kind notin {Logical, Integer}:
+                        Error_OperationNotPermitted("`.parallel` expects a logical flag or a positive integer")
+                    fetchIterableItemsForParallel(newBlock())
+                    var res: ValueArray = newSeq[Value](blo.len)
+                    parallelIterateBlock(withCap=false, withCounter=true):
+                        res[cntr] = stack.pop()
+                    if unlikely(inPlace): RawInPlaced = newBlock(res)
+                    else: push(newBlock(res))
                     return
 
-            prepareIteration()
 
             if iterable.kind==Range:
                 fetchIterableRange()
