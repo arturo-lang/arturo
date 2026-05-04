@@ -28,6 +28,11 @@
 
 import algorithm, sequtils, sugar, unicode
 
+when not defined(WEB):
+    import times
+    import helpers/parallelism as ParallelismHelper
+    import vm/values/custom/[vtask, verror]
+
 import helpers/dictionaries
 import helpers/objects
 import helpers/ranges
@@ -1069,7 +1074,8 @@ proc defineModule*(moduleName: string) =
             "action"        : {Block,Bytecode}
         },
         attrs       = {
-            "with"      : ({Literal},"use given index")
+            "with"      : ({Literal},"use given index"),
+            "async"     : ({Logical},"run each item in its own cooperative fiber and wait for all results in input order")
         },
         returns     = {Block,Nothing},
         example     = """
@@ -1098,6 +1104,54 @@ proc defineModule*(moduleName: string) =
             ; => ["ONE" "two" "THREE" "four"]
         """:
             #=======================================================
+            when not defined(WEB):
+                if hadAttr("async"):
+                    # `map.async` — fan-out parallel evaluation. Each
+                    # item runs in its own cooperative fiber; results
+                    # come back in input order with an implicit
+                    # `wait.all` barrier (returns `:block` of values,
+                    # not `:task`s).
+                    if yKind != Literal:
+                        Error_OperationNotPermitted("`map.async` only supports a single literal param (e.g. `'x`)")
+                    let inPlaceAsync = xKind == Literal
+                    var src{.cursor.} = x
+                    if inPlaceAsync:
+                        ensureInPlace()
+                        src = InPlaced
+                    let items: ValueArray =
+                        case src.kind
+                            of Block, Inline:    src.a
+                            of Range:            toSeq(src.rng.items)
+                            of String:           toSeq(runes(src.s)).map((w) => newChar(w))
+                            of Integer:          (toSeq(1..src.i)).map((w) => newInteger(w))
+                            of Dictionary:       src.d.flattenedDictionary()
+                            of Object:           src.o.flattenedObject()
+                            else:                @[]
+                    let paramName = y.s
+                    let bodyItems = z.a
+                    var tasks: seq[Value] = newSeq[Value](items.len)
+                    for i, it in items:
+                        let wrapper = newBlock(@[newLabel(paramName), it] & bodyItems)
+                        tasks[i] = ParallelismHelper.spawnInProcessDoBlock(wrapper)
+                    var resolved: ValueArray = newSeq[Value](items.len)
+                    for i, t in tasks:
+                        try:
+                            let r = ParallelismHelper.coopWait t.tsk.future
+                            if t.tsk.state == taskPending:
+                                t.tsk.state = taskDone
+                            resolved[i] = r
+                        except CatchableError as e:
+                            if t.tsk.state == taskCancelled:
+                                resolved[i] = VNULL
+                            else:
+                                t.tsk.state = taskFailed
+                                resolved[i] =
+                                    if e of VError: newError(VError(e))
+                                    else:           newError(RuntimeErr, e.msg)
+                    if unlikely(inPlaceAsync): RawInPlaced = newBlock(resolved)
+                    else: push(newBlock(resolved))
+                    return
+
             prepareIteration()
 
             if iterable.kind==Range:
