@@ -804,11 +804,12 @@ proc defineModule*(moduleName: string) =
             "condition"     : {Block,Bytecode}
         },
         attrs       = {
-            "with"      : ({Literal},"use given index")
+            "with"      : ({Literal},"use given index"),
+            "parallel"  : ({Logical,Integer},"evaluate the predicate concurrently; integer caps the number of in-flight fibers")
         },
         returns     = {Integer},
         example     = """
-            enumerate 1..10000000 => odd? 
+            enumerate 1..10000000 => odd?
             ; => 5000000
             ..........
             enumerate.with:'i ["one" "two" "three" "four"] 'x -> i < 3
