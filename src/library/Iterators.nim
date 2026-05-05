@@ -46,6 +46,14 @@ import vm/values/custom/vrange
 #=======================================
 # Definitions
 #=======================================
+# `tParallel` (set of accepted kinds for `.parallel`) is auto-injected
+# per-builtin by the `attrTypes` macro in `vm/lib.nim` whenever a
+# builtin declares a `"parallel"` attr. The dirty templates below pick
+# it up from the surrounding scope.
+
+#---------------------------------------
+# Low-level loop primitives
+#---------------------------------------
 
 template iteratorLoop(justLiteral: bool, forever: bool, before: untyped, body: untyped) {.dirty.} =
     var keepGoing: bool = true
@@ -541,6 +549,45 @@ template parallelShortCircuit(answerOnHit: Value, defaultAnswer: Value, hitWhen:
     push(pResult)
     return
 
+#---------------------------------------
+# High-level helpers
+#---------------------------------------
+
+template pushResult(value: untyped) {.dirty.} =
+    ## Send the iteration's final value out: write back in-place when
+    ## the calling builtin's first arg was a `'literal`, otherwise push
+    ## on the stack. Falls back to `push` for builtins that don't
+    ## accept literals (no `inPlace` symbol declared).
+    when declared(inPlace):
+        if unlikely(inPlace): RawInPlaced = value
+        else: push(value)
+    else:
+        push(value)
+
+template runParallelBranch(
+    itCap: bool,
+    itCounter: bool,
+    itDefVal: untyped,
+    parallelInit: untyped,
+    parallelAct: untyped,
+    parallelPost: untyped
+) {.dirty.} =
+    ## Wrap the `.parallel` attr handling pattern. Caller declares
+    ## `let aParallel = popAttr("parallel")` and runs `prepareIteration`
+    ## first. If `aParallel` is set, this validates → materializes →
+    ## runs `parallelInit` → spawns/drains fibers running `parallelAct`
+    ## → runs `parallelPost` → returns from the surrounding builtin.
+    when not defined(WEB):
+        if not aParallel.isNil:
+            if aParallel.kind notin tParallel:
+                Error_OperationNotPermitted("`.parallel` expects a logical flag or a positive integer")
+            fetchIterableItemsForParallel(itDefVal)
+            parallelInit
+            parallelIterateBlock(withCap=itCap, withCounter=itCounter):
+                parallelAct
+            parallelPost
+            return
+
 template doIterate(
     itLit:bool,         # does the iterator support in-place literals?
     itCap:bool,         # do we need to actually capture iterated elements?
@@ -563,23 +610,26 @@ template doIterate(
     ## surrounding scope; sync-only builtins simply don't declare
     ## the symbol, so `when declared(aParallel)` short-circuits and
     ## the parallel branch is never compiled in.
+    ##
+    ## `itPre` runs once *inside* the chosen path (parallel /
+    ## Range-sync / Block-sync) so it can size buffers via the
+    ## injected `sourceLen` (= the iteration's known item count).
 
     prepareIteration(doesAcceptLiterals=itLit)
 
     when not defined(WEB):
         when declared(aParallel):
-            if not aParallel.isNil:
-                if aParallel.kind notin {Logical, Integer}:
-                    Error_OperationNotPermitted("`.parallel` expects a logical flag or a positive integer")
-                fetchIterableItemsForParallel(itDefVal)
+            runParallelBranch(itCap, itCounter, itDefVal):
+                let sourceLen {.inject.} = blo.len
                 itPre
-                parallelIterateBlock(withCap=itCap, withCounter=itCounter):
-                    itAct
+            do:
+                itAct
+            do:
                 itPost
-                return
 
     if iterable.kind==Range:
         fetchIterableRange()
+        let sourceLen {.inject.} = rang.len
 
         itPre
         iterateRange(withCap=itCap, withInf=itInf, withCounter=itCounter, rolling=itRolling):
@@ -589,6 +639,7 @@ template doIterate(
     else:
         fetchIterableItems(doesAcceptLiterals=itLit):
             itDefVal
+        let sourceLen {.inject.} = blo.len
 
         itPre
         iterateBlock(withCap=itCap, withInf=itInf, withCounter=itCounter, rolling=itRolling):
