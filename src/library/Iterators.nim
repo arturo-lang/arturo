@@ -328,15 +328,9 @@ template fetchIterableItems(doesAcceptLiterals=true, defaultReturn: untyped) {.d
             else: # won't ever reach here
                 @[VNULL]
 
-    if blo.len == 0 and (when declared(hasSeed): not hasSeed else: true): 
-        when doesAcceptLiterals:
-            when not (defaultReturn is typeof(nil)):
-                if unlikely(inPlace): RawInPlaced = defaultReturn
-                else: push(defaultReturn)
-        else:
-            when not (defaultReturn is typeof(nil)):
-                push(defaultReturn)
-
+    if blo.len == 0 and (when declared(hasSeed): not hasSeed else: true):
+        when not (defaultReturn is typeof(nil)):
+            pushResult(defaultReturn)
         return
 
 template iterateRange(withCap:bool, withInf:bool, withCounter:bool, rolling:bool, act: untyped) {.dirty.} =
@@ -413,11 +407,7 @@ template fetchIterableItemsForParallel(defaultReturn: untyped) {.dirty.} =
 
     if blo.len == 0:
         when not (defaultReturn is typeof(nil)):
-            when declared(inPlace):
-                if unlikely(inPlace): RawInPlaced = defaultReturn
-                else: push(defaultReturn)
-            else:
-                push(defaultReturn)
+            pushResult(defaultReturn)
         return
 
 template parallelIterateBlock(withCap:bool, withCounter:bool, act: untyped) {.dirty.} =
@@ -706,16 +696,14 @@ proc defineModule*(moduleName: string) =
                         w[0][0]
                     )
 
-                    if unlikely(inPlace): RawInPlaced = newBlock(res)
-                    else: push(newBlock(res))
+                    pushResult(newBlock(res))
 
                 else:
                     let res = unsorted.map((w) => 
                         newBlock(w[0])
                     )
 
-                    if unlikely(inPlace): RawInPlaced = newBlock(res)
-                    else: push(newBlock(res))
+                    pushResult(newBlock(res))
 
     builtin "chunk",
         alias       = unaliased,
@@ -768,8 +756,7 @@ proc defineModule*(moduleName: string) =
                     if showValue: res.add(newBlock(@[state, newBlock(currentSet)]))
                     else: res.add(newBlock(currentSet))
 
-                if unlikely(inPlace): RawInPlaced = newBlock(res)
-                else: push(newBlock(res))
+                pushResult(newBlock(res))
 
     builtin "cluster",
         alias       = unaliased,
@@ -827,8 +814,7 @@ proc defineModule*(moduleName: string) =
                     for v in sets.values:
                         res.add(newBlock(v))
 
-                if unlikely(inPlace): RawInPlaced = newBlock(res)
-                else: push(newBlock(res))
+                pushResult(newBlock(res))
 
     builtin "collect",
         alias       = unaliased,
@@ -877,8 +863,7 @@ proc defineModule*(moduleName: string) =
                     if stoppedAt < rang.len:
                         res = rang[stoppedAt..rang.len-1]
 
-                    if unlikely(inPlace): RawInPlaced = newBlock(res)
-                    else: push(newBlock(res))
+                    pushResult(newBlock(res))
                 else:
                     fetchIterableItems(doesAcceptLiterals=true):
                         newBlock()
@@ -892,8 +877,7 @@ proc defineModule*(moduleName: string) =
                     if stoppedAt < blo.len:
                         res = blo[stoppedAt..^1]
 
-                    if unlikely(inPlace): RawInPlaced = newBlock(res)
-                    else: push(newBlock(res))
+                    pushResult(newBlock(res))
 
             else:
                 doIterate(itLit=true, itCap=true, itInf=false, itCounter=false, itRolling=false, newBlock()):
@@ -905,8 +889,7 @@ proc defineModule*(moduleName: string) =
                         keepGoing = false
                         break
                 do: 
-                    if unlikely(inPlace): RawInPlaced = newBlock(res)
-                    else: push(newBlock(res))
+                    pushResult(newBlock(res))
 
     builtin "enumerate",
         alias       = unaliased,
@@ -992,18 +975,15 @@ proc defineModule*(moduleName: string) =
             when not defined(WEB):
                 let aParallel = popAttr("parallel")
                 if not aParallel.isNil:
-                    if aParallel.kind notin {Logical, Integer}:
-                        Error_OperationNotPermitted("`.parallel` expects a logical flag or a positive integer")
                     if (getAttr("first") != VNULL) or (getAttr("last") != VNULL):
                         Error_OperationNotPermitted("`.parallel` cannot combine with `.first` / `.last`")
-                    fetchIterableItemsForParallel(newBlock())
+                runParallelBranch(true, false, newBlock()):
                     var res: ValueArray
-                    parallelIterateBlock(withCap=true, withCounter=false):
-                        if isFalse(stack.pop()):
-                            res.add(captured)
-                    if unlikely(inPlace): RawInPlaced = newBlock(res)
-                    else: push(newBlock(res))
-                    return
+                do:
+                    if isFalse(stack.pop()):
+                        res.add(captured)
+                do:
+                    pushResult(newBlock(res))
 
             var elemLimit = -1
 
@@ -1054,8 +1034,7 @@ proc defineModule*(moduleName: string) =
                 if onlyLast:
                     res.reverse()
 
-                if unlikely(inPlace): RawInPlaced = newBlock(res)
-                else: push(newBlock(res))
+                pushResult(newBlock(res))
             else: 
                 fetchIterableItems(doesAcceptLiterals=true):
                     newBlock()
@@ -1087,8 +1066,7 @@ proc defineModule*(moduleName: string) =
                 if onlyLast:
                     res.reverse()
 
-                if unlikely(inPlace): RawInPlaced = newBlock(res)
-                else: push(newBlock(res))
+                pushResult(newBlock(res))
 
     builtin "fold",
         alias       = unaliased,
@@ -1175,8 +1153,7 @@ proc defineModule*(moduleName: string) =
                 iterateRange(withCap=false, withInf=false, withCounter=false, rolling=true):
                     res = stack.pop()
 
-                if unlikely(inPlace): RawInPlaced = res
-                else: push(res)
+                pushResult(res)
             else:
                 fetchIterableItems(doesAcceptLiterals=true):
                     newBlock()
@@ -1199,8 +1176,7 @@ proc defineModule*(moduleName: string) =
                 iterateBlock(withCap=false, withInf=false, withCounter=false, rolling=true):
                     res = stack.pop()
 
-                if unlikely(inPlace): RawInPlaced = res
-                else: push(res)
+                pushResult(res)
 
     builtin "gather",
         alias       = unaliased,
@@ -1240,8 +1216,7 @@ proc defineModule*(moduleName: string) =
                 discard res.hasKeyOrPut(popped, newBlock())
                 res[popped].a.add(captured)
             do:
-                if unlikely(inPlace): RawInPlaced = newDictionary(res)
-                else: push(newDictionary(res))
+                pushResult(newDictionary(res))
 
     builtin "loop",
         alias       = unaliased,
@@ -1356,43 +1331,13 @@ proc defineModule*(moduleName: string) =
             ; => ["ONE" "two" "THREE" "four"]
         """:
             #=======================================================
-            prepareIteration()
-
-            when not defined(WEB):
-                let aParallel = popAttr("parallel")
-                if not aParallel.isNil:
-                    if aParallel.kind notin {Logical, Integer}:
-                        Error_OperationNotPermitted("`.parallel` expects a logical flag or a positive integer")
-                    fetchIterableItemsForParallel(newBlock())
-                    var res: ValueArray = newSeq[Value](blo.len)
-                    parallelIterateBlock( withCap=false, withCounter=true):
-                        res[cntr] = stack.pop()
-                    if unlikely(inPlace): RawInPlaced = newBlock(res)
-                    else: push(newBlock(res))
-                    return
-
-
-            if iterable.kind==Range:
-                fetchIterableRange()
-
-                var res: ValueArray = newSeq[Value](rang.len)
-                
-                iterateRange(withCap=false, withInf=false, withCounter=true, rolling=false):
-                    res[cntr] = stack.pop()
-
-                if unlikely(inPlace): RawInPlaced = newBlock(res)
-                else: push(newBlock(res))
-            else: 
-                fetchIterableItems(doesAcceptLiterals=true):
-                    newBlock()
-
-                var res: ValueArray = newSeq[Value](blo.len)
-
-                iterateBlock(withCap=false, withInf=false, withCounter=true, rolling=false):
-                    res[cntr] = stack.pop()
-
-                if unlikely(inPlace): RawInPlaced = newBlock(res)
-                else: push(newBlock(res))
+            let aParallel = popAttr("parallel")
+            doIterate(itLit=true, itCap=false, itInf=false, itCounter=true, itRolling=false, newBlock()):
+                var res: ValueArray = newSeq[Value](sourceLen)
+            do:
+                res[cntr] = stack.pop()
+            do:
+                pushResult(newBlock(res))
 
     builtin "maximum",
         alias       = unaliased,
@@ -1437,18 +1382,14 @@ proc defineModule*(moduleName: string) =
             do:
                 if selected.len == 1:
                     if withValue:
-                        if unlikely(inPlace): RawInPlaced = newBlock(@[selected[0], maxVal])
-                        else: push(newBlock(@[selected[0], maxVal]))
+                        pushResult(newBlock(@[selected[0], maxVal]))
                     else:
-                        if unlikely(inPlace): RawInPlaced = selected[0]
-                        else: push(selected[0])
+                        pushResult(selected[0])
                 else:
                     if withValue:
-                        if unlikely(inPlace): RawInPlaced = newBlock(@[newBlock(selected), maxVal])
-                        else: push(newBlock(@[newBlock(selected), maxVal]))
+                        pushResult(newBlock(@[newBlock(selected), maxVal]))
                     else:
-                        if unlikely(inPlace): RawInPlaced = newBlock(selected)
-                        else: push(newBlock(selected))
+                        pushResult(newBlock(selected))
 
     builtin "minimum",
         alias       = unaliased,
@@ -1493,18 +1434,14 @@ proc defineModule*(moduleName: string) =
             do:
                 if selected.len == 1:
                     if withValue:
-                        if unlikely(inPlace): RawInPlaced = newBlock(@[selected[0], minVal])
-                        else: push(newBlock(@[selected[0], minVal]))
+                        pushResult(newBlock(@[selected[0], minVal]))
                     else:
-                        if unlikely(inPlace): RawInPlaced = selected[0]
-                        else: push(selected[0])
+                        pushResult(selected[0])
                 else:
                     if withValue:
-                        if unlikely(inPlace): RawInPlaced = newBlock(@[newBlock(selected), minVal])
-                        else: push(newBlock(@[newBlock(selected), minVal]))
+                        pushResult(newBlock(@[newBlock(selected), minVal]))
                     else:
-                        if unlikely(inPlace): RawInPlaced = newBlock(selected)
-                        else: push(newBlock(selected))
+                        pushResult(newBlock(selected))
 
     # TODO(Iterators\select) should `.first` & `.last` return just one element?
     #  Right now, they both return a block with this one element inside. 
@@ -1571,18 +1508,15 @@ proc defineModule*(moduleName: string) =
             when not defined(WEB):
                 let aParallel = popAttr("parallel")
                 if not aParallel.isNil:
-                    if aParallel.kind notin {Logical, Integer}:
-                        Error_OperationNotPermitted("`.parallel` expects a logical flag or a positive integer")
                     if (getAttr("first") != VNULL) or (getAttr("last") != VNULL) or (getAttr("n") != VNULL):
                         Error_OperationNotPermitted("`.parallel` cannot combine with `.first` / `.last` / `.n`")
-                    fetchIterableItemsForParallel(newBlock())
+                runParallelBranch(true, false, newBlock()):
                     var res: ValueArray
-                    parallelIterateBlock(withCap=true, withCounter=false):
-                        if isTrue(stack.pop()):
-                            res.add(captured)
-                    if unlikely(inPlace): RawInPlaced = newBlock(res)
-                    else: push(newBlock(res))
-                    return
+                do:
+                    if isTrue(stack.pop()):
+                        res.add(captured)
+                do:
+                    pushResult(newBlock(res))
 
             var elemLimit = -1
                 
@@ -1643,8 +1577,7 @@ proc defineModule*(moduleName: string) =
                 
                 if unlikely(onlyN): push(VNULL)
                 else:
-                    if unlikely(inPlace): RawInPlaced = newBlock(res)
-                    else: push(newBlock(res))
+                    pushResult(newBlock(res))
             else: 
                 fetchIterableItems(doesAcceptLiterals=true):
                     newBlock()
@@ -1680,8 +1613,7 @@ proc defineModule*(moduleName: string) =
                 
                 if unlikely(onlyN): push(VNULL)
                 else:
-                    if unlikely(inPlace): RawInPlaced = newBlock(res)
-                    else: push(newBlock(res))
+                    pushResult(newBlock(res))
 
     #----------------------------
     # Predicates
