@@ -549,9 +549,17 @@ when not defined(WEB):
         # child to crash with a non-zero exit so the parent surfaces it as
         # a failed task. (the leading `null` inside `safeBlock` keeps void
         # blocks safe without needing `try`.)
+        # Use forward slashes when embedding the path into Arturo
+        # source. Windows `getTempDir` returns backslash-separated
+        # paths; Arturo's string parser treats `\` as the start of an
+        # escape sequence (`\n`, `\t`, …) and an odd-length tail —
+        # `…\` followed by the closing `"` — collapses to an
+        # unterminated string and blows up the child VM (SIGSEGV).
+        # Forward slashes work fine on every OS we target.
+        let resFileEmbed = resFile.replace('\\', '/')
         let wrapped =
             "res: do " & safeBlock & "\n" &
-            "write express.safe res \"" & resFile & "\""
+            "write express.safe res \"" & resFileEmbed & "\""
         let p = startProcess(arturoBin,
                              args = @["-e", wrapped],
                              env = childEnv,
