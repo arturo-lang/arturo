@@ -470,6 +470,13 @@ template parallelIterateBlock(withCap:bool, withCounter:bool, act: untyped) {.di
             captured = blo[pDrain]
         let preSP = SP
         push(pSlot)
+        # Aliases mirror the sync `iteratorLoop` locals so that an `act`
+        # written for either path can reference `indx` / `keepGoing`
+        # without a compile error. Parallel iteration drains in input
+        # order and never breaks early, so `indx == pDrain` and
+        # `keepGoing` is a write-only no-op.
+        let indx {.inject, used.} = pDrain
+        var keepGoing {.inject, used.} = true
         act
         if SP > preSP:
             SP = preSP
@@ -610,7 +617,13 @@ template doIterate(
     when not defined(WEB):
         when declared(aParallel):
             runParallelBranch(itCap, itCounter, itDefVal):
-                let sourceLen {.inject.} = blo.len
+                let sourceLen {.inject, used.} = blo.len
+                template reverseSrc() {.inject, used.} =
+                    blo = blo.reversed()
+                template tailFrom(idx: int): ValueArray {.inject, used.} =
+                    blo[idx..^1]
+                template firstSrcElem(): Value {.inject, used.} =
+                    blo[0]
                 itPre
             do:
                 itAct
@@ -619,7 +632,13 @@ template doIterate(
 
     if iterable.kind==Range:
         fetchIterableRange()
-        let sourceLen {.inject.} = rang.len
+        let sourceLen {.inject, used.} = rang.len
+        template reverseSrc() {.inject, used.} =
+            rang = rang.reversed(safe=true)
+        template tailFrom(idx: int): ValueArray {.inject, used.} =
+            rang[idx..rang.len-1]
+        template firstSrcElem(): Value {.inject, used.} =
+            rang[0]
 
         itPre
         iterateRange(withCap=itCap, withInf=itInf, withCounter=itCounter, rolling=itRolling):
@@ -629,7 +648,13 @@ template doIterate(
     else:
         fetchIterableItems(doesAcceptLiterals=itLit):
             itDefVal
-        let sourceLen {.inject.} = blo.len
+        let sourceLen {.inject, used.} = blo.len
+        template reverseSrc() {.inject, used.} =
+            blo = blo.reversed()
+        template tailFrom(idx: int): ValueArray {.inject, used.} =
+            blo[idx..^1]
+        template firstSrcElem(): Value {.inject, used.} =
+            blo[0]
 
         itPre
         iterateBlock(withCap=itCap, withInf=itInf, withCounter=itCounter, rolling=itRolling):
@@ -970,20 +995,12 @@ proc defineModule*(moduleName: string) =
             => [1 2 3 4 6 8 10]
         """:
             #=======================================================
-            prepareIteration()
+            let aParallel = popAttr("parallel")
 
             when not defined(WEB):
-                let aParallel = popAttr("parallel")
                 if not aParallel.isNil:
                     if (getAttr("first") != VNULL) or (getAttr("last") != VNULL):
                         Error_OperationNotPermitted("`.parallel` cannot combine with `.first` / `.last`")
-                runParallelBranch(true, false, newBlock()):
-                    var res: ValueArray
-                do:
-                    if isFalse(stack.pop()):
-                        res.add(captured)
-                do:
-                    pushResult(newBlock(res))
 
             var elemLimit = -1
 
@@ -994,74 +1011,37 @@ proc defineModule*(moduleName: string) =
                     true
                 else: false
 
-            let onlyLast = 
+            let onlyLast =
                 if checkAttr("last"):
                     if isTrue(aLast): elemLimit = 1
                     else: elemLimit = aLast.i
                     true
                 else: false
-                
+
             var stoppedAt = -1
             var filteredItems = 0
 
-            if iterable.kind==Range:
-                fetchIterableRange()
-
+            doIterate(itLit=true, itCap=true, itInf=false, itCounter=false, itRolling=false, newBlock()):
                 var res: ValueArray
+                if onlyLast: reverseSrc()
+            do:
+                let popped = stack.pop()
+                if isFalse(popped):
+                    res.add(captured)
+                else:
+                    if onlyFirst or onlyLast:
+                        when captured is Value:
+                            filteredItems += 1
+                        else:
+                            filteredItems += captured.len
 
-                if onlyLast:
-                    rang = rang.reversed(safe=true)
-                
-                iterateRange(withCap=true, withInf=false, withCounter=false, rolling=false):
-                    let popped = stack.pop()
-                    if isFalse(popped):
-                        res.add(captured)
-                    else:
-                        if onlyFirst or onlyLast:
-                            when captured is Value:
-                                filteredItems += 1
-                            else:
-                                filteredItems += captured.len
-
-                            if elemLimit == filteredItems:
-                                stoppedAt = indx+1
-                                keepGoing = false
-                                break
-
-                if (onlyFirst or onlyLast) and stoppedAt < rang.len and stoppedAt != -1:
-                    res.add(rang[stoppedAt..rang.len-1])
-                
-                if onlyLast:
-                    res.reverse()
-
-                pushResult(newBlock(res))
-            else: 
-                fetchIterableItems(doesAcceptLiterals=true):
-                    newBlock()
-
-                if onlyLast:
-                    blo = blo.reversed()
-
-                var res: ValueArray
-
-                iterateBlock(withCap=true, withInf=false, withCounter=false, rolling=false):
-                    let popped = stack.pop()
-                    if isFalse(popped):
-                        res.add(captured)
-                    else:
-                        if onlyFirst or onlyLast:
-                            when captured is Value:
-                                filteredItems += 1
-                            else:
-                                filteredItems += captured.len
-
-                            if elemLimit == filteredItems:
-                                stoppedAt = indx+1
-                                keepGoing = false
-                                break
-
-                if (onlyFirst or onlyLast) and stoppedAt < blo.len and stoppedAt != -1:
-                    res.add(blo[stoppedAt..^1])
+                        if elemLimit == filteredItems:
+                            stoppedAt = indx+1
+                            keepGoing = false
+                            break
+            do:
+                if (onlyFirst or onlyLast) and stoppedAt < sourceLen and stoppedAt != -1:
+                    res.add(tailFrom(stoppedAt))
 
                 if onlyLast:
                     res.reverse()
@@ -1128,54 +1108,24 @@ proc defineModule*(moduleName: string) =
             ; => 188
         """:
             #=======================================================
-            prepareIteration()
-
             let rollingRight = hadAttr("right")
             let hasSeed = checkAttr("seed")
 
-            if iterable.kind==Range:
-                fetchIterableRange()
-
+            doIterate(itLit=false, itCap=false, itInf=false, itCounter=false, itRolling=true, newBlock()):
                 var res: Value
-
-                if rollingRight:
-                    rang = rang.reversed(safe=true)
-
+                if rollingRight: reverseSrc()
                 if hasSeed:
                     res = aSeed
                 else:
-                    let firstElem {.cursor.} = rang[0]
-                    res = case firstElem.kind
-                        of Char    : newString("")
-                        of Floating: newFloating(0.0)
-                        else       : I0
-               
-                iterateRange(withCap=false, withInf=false, withCounter=false, rolling=true):
-                    res = stack.pop()
-
-                pushResult(res)
-            else:
-                fetchIterableItems(doesAcceptLiterals=true):
-                    newBlock()
-
-                var res: Value
-
-                if rollingRight:
-                    blo = blo.reversed()
-
-                if hasSeed:
-                    res = aSeed
-                else:
-                    let firstElem {.cursor.} = blo[0]
+                    let firstElem {.cursor.} = firstSrcElem()
                     res = case firstElem.kind
                         of Char, String: newString("")
                         of Floating    : newFloating(0.0)
                         of Block       : newBlock()
                         else           : I0
-
-                iterateBlock(withCap=false, withInf=false, withCounter=false, rolling=true):
-                    res = stack.pop()
-
+            do:
+                res = stack.pop()
+            do:
                 pushResult(res)
 
     builtin "gather",
@@ -1503,31 +1453,23 @@ proc defineModule*(moduleName: string) =
             => [5 7 9]
         """:
             #=======================================================
-            prepareIteration()
+            let aParallel = popAttr("parallel")
 
             when not defined(WEB):
-                let aParallel = popAttr("parallel")
                 if not aParallel.isNil:
                     if (getAttr("first") != VNULL) or (getAttr("last") != VNULL) or (getAttr("n") != VNULL):
                         Error_OperationNotPermitted("`.parallel` cannot combine with `.first` / `.last` / `.n`")
-                runParallelBranch(true, false, newBlock()):
-                    var res: ValueArray
-                do:
-                    if isTrue(stack.pop()):
-                        res.add(captured)
-                do:
-                    pushResult(newBlock(res))
 
             var elemLimit = -1
-                
-            let onlyFirst = 
+
+            let onlyFirst =
                 if checkAttr("first"):
                     if isTrue(aFirst): elemLimit = 1
                     else: elemLimit = aFirst.i
                     true
                 else: false
 
-            let onlyLast = 
+            let onlyLast =
                 if checkAttr("last"):
                     if isTrue(aLast): elemLimit = 1
                     else: elemLimit = aLast.i
@@ -1535,7 +1477,7 @@ proc defineModule*(moduleName: string) =
                 else: false
 
             var nth = -1
-            let onlyN = 
+            let onlyN =
                 if checkAttr("n"):
                     nth = aN.i
                     true
@@ -1543,74 +1485,33 @@ proc defineModule*(moduleName: string) =
 
             var found: int = 0
 
-            if iterable.kind==Range:
-                fetchIterableRange()
-
+            doIterate(itLit=true, itCap=true, itInf=false, itCounter=false, itRolling=false, newBlock()):
                 var res: ValueArray
+                if onlyLast: reverseSrc()
+            do:
+                if isTrue(stack.pop()):
+                    if likely(not onlyN):
+                        res.add(captured)
 
-                if onlyLast:
-                    rang = rang.reversed(safe=true)
-                
-                iterateRange(withCap=true, withInf=false, withCounter=false, rolling=false):
-                    if isTrue(stack.pop()):
-                        if likely(not onlyN):
-                            res.add(captured)
-
-                            if onlyFirst or onlyLast:
-                                if elemLimit == res.len:
-                                    keepGoing = false
-                                    break
-                        else:
-                            found += 1
-                            if found == nth:
-                                when captured is ValueArray:
-                                    if captured.len == 1:
-                                        push(captured[0])
-                                    else:
-                                        push(newBlock(captured))
+                        if onlyFirst or onlyLast:
+                            if elemLimit == res.len:
+                                keepGoing = false
+                                break
+                    else:
+                        found += 1
+                        if found == nth:
+                            when captured is ValueArray:
+                                if captured.len == 1:
+                                    push(captured[0])
                                 else:
-                                    push(captured)
-                                return
-                
+                                    push(newBlock(captured))
+                            else:
+                                push(captured)
+                            return
+            do:
                 if onlyLast:
                     res.reverse()
-                
-                if unlikely(onlyN): push(VNULL)
-                else:
-                    pushResult(newBlock(res))
-            else: 
-                fetchIterableItems(doesAcceptLiterals=true):
-                    newBlock()
 
-                if onlyLast:
-                    blo = blo.reversed()
-
-                var res: ValueArray
-
-                iterateBlock(withCap=true, withInf=false, withCounter=false, rolling=false):
-                    if isTrue(stack.pop()):
-                        if likely(not onlyN):
-                            res.add(captured)
-
-                            if onlyFirst or onlyLast:
-                                if elemLimit == res.len:
-                                    keepGoing = false
-                                    break
-                        else:
-                            found += 1
-                            if found == nth:
-                                when captured is ValueArray:
-                                    if captured.len == 1:
-                                        push(captured[0])
-                                    else:
-                                        push(newBlock(captured))
-                                else:
-                                    push(captured)
-                                return
-                
-                if onlyLast:
-                    res.reverse()
-                
                 if unlikely(onlyN): push(VNULL)
                 else:
                     pushResult(newBlock(res))
