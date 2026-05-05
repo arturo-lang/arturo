@@ -23,9 +23,339 @@ when not defined(WEB):
         import asyncnet
         import extras/smtp
 
+    import extras/minicoro
+
     import vm/lib
-    import vm/[exec, parse, stack]
+    import vm/[context, exec, parse, stack]
     import vm/values/custom/vtask
+
+#=======================================
+# Fibers — stackful coroutines on top of vendored minicoro
+#=======================================
+#
+# Asymmetric coroutines: from the main thread you `resume(f)` a
+# fiber; from inside the fiber, `suspend()` yields back to whoever
+# resumed it. Switching A → B (both fibers) is two hops:
+# `suspend()` from A back to main, then `resume(B)` from main.
+#
+# ## GC integration (or lack thereof)
+#
+# Arturo builds with `--mm:orc`. Under ORC the compiler emits
+# refcount inc/dec at every scope boundary; the GC does **not** scan
+# C stacks. A suspended fiber hasn't yet executed its scope-end
+# decrements, so any `ref` reachable only from the fiber's stack is
+# kept alive by its own refcount. Cycles reachable only from the
+# fiber are likewise visible to ORC's cycle collector. Consequently,
+# no `GC_addStack` / `GC_removeStack` is needed — under ORC those
+# procs aren't even declared. Confirmed by the ucontext spike (see
+# CONCURRENCY_NOTES.md "Spike result", 2026-05-01) and the Phase 1
+# stress test on this branch. If we ever switch to a stack-scanning
+# GC, this comment is the place to start re-reading.
+
+when not defined(WEB):
+    const
+        DefaultFiberStackSize* = 256 * 1024
+            ## 256KB per CONCURRENCY_NOTES.md — comfortable for
+            ## moderately recursive Arturo functions, far more than
+            ## minicoro's own 56KB default. Per-fiber override via
+            ## `createFiber`'s `stackSize` argument.
+
+    type
+        Fiber* = ref object
+            ## Owns the underlying `mco_coro` and the entry closure.
+            ## Held as a Nim `ref` so the closure environment stays
+            ## alive as long as the fiber does.
+            handle: McoCoroPtr
+            entry: proc ()
+            ctx*: VMContext
+                ## Per-fiber slice of the VM globals. Set by the
+                ## scheduler when the fiber is spawned; swapped
+                ## in/out around each `resume` / `suspend`.
+                ## `nil` for fibers used outside the scheduler.
+
+    proc fiberCheck(res: McoResult, op: string) {.inline.} =
+        if res != mcoSuccess:
+            raise newException(CatchableError,
+                "fiber " & op & " failed: " & $mco_result_description(res))
+
+    proc fiberTrampoline(co: McoCoroPtr) {.cdecl.} =
+        # Single C-callable entry. Pulls the Fiber ref back out of
+        # user_data, then invokes the Nim closure stored on it.
+        let f = cast[Fiber](mco_get_user_data(co))
+        f.entry()
+
+    proc createFiber*(entry: proc (),
+                      stackSize: int = DefaultFiberStackSize): Fiber =
+        ## Create a new suspended fiber. The first `resume` call will
+        ## start running `entry` on a fresh stack of `stackSize`
+        ## bytes. When `entry` returns, the fiber transitions to
+        ## `mcoDead` and must be cleaned up with `destroyFiber`.
+        result = Fiber(entry: entry)
+        GC_ref(result)  # keep alive while minicoro holds the user_data ptr
+        var desc = mco_desc_init(fiberTrampoline, csize_t(stackSize))
+        desc.userData = cast[pointer](result)
+        var co: McoCoroPtr
+        fiberCheck(mco_create(addr co, addr desc), "create")
+        result.handle = co
+
+    proc destroyFiber*(f: Fiber) =
+        ## Release the fiber's stack and internal struct. Safe only
+        ## when the fiber is suspended or dead — calling this on a
+        ## running fiber is a programming error and minicoro will
+        ## report it.
+        if f.handle != nil:
+            fiberCheck(mco_destroy(f.handle), "destroy")
+            f.handle = nil
+            GC_unref(f)
+
+    proc resume*(f: Fiber) {.inline.} =
+        ## Resume `f` until it suspends or finishes. Must be called
+        ## from a context that is *not* itself running on `f`'s stack.
+        fiberCheck(mco_resume(f.handle), "resume")
+
+    proc suspend*() {.inline.} =
+        ## Yield execution from the currently running fiber back to
+        ## its resumer. Must be called from inside a fiber's entry
+        ## chain.
+        fiberCheck(mco_yield(mco_running()), "suspend")
+
+    proc isDone*(f: Fiber): bool {.inline.} =
+        ## True once the fiber's entry proc has returned.
+        mco_status(f.handle) == mcoDead
+
+    proc currentFiberHandle*(): McoCoroPtr {.inline.} =
+        ## The minicoro handle for the currently running fiber, or
+        ## `nil` if called from the main thread (no fiber active).
+        ## The Phase 3 scheduler uses this to identify "are we on
+        ## the main fiber" without going through the `Fiber` ref.
+        mco_running()
+
+#=======================================
+# Scheduler — fibers + asyncdispatch
+#=======================================
+#
+# Cooperative scheduler. Main thread owns the asyncdispatch poll
+# loop; fibers run user blocks and yield via `cooperativeAwait`
+# whenever they need to wait on a future. The dispatcher resumes
+# them by adding to `scheduler.ready` and the driver picks them up.
+#
+# `currentFiber == nil` means main is running. Every fiber the
+# scheduler tracks owns a `VMContext` that gets swapped in/out
+# around each `resume` / `suspend` so the VM globals always reflect
+# the running fiber's view.
+
+when not defined(WEB):
+    type
+        FiberCancelledError* = object of CatchableError
+            ## Raised by `cooperativeAwait` when the running fiber's
+            ## `VMContext.cancelRequested` flag is set (typically by
+            ## a `cancel` from another part of the program).
+            ##
+            ## The fiber entry's top-level `try/except` catches it
+            ## and turns the cancellation into a future failure;
+            ## `wait` then translates that into a `:null` result
+            ## (matching the existing subprocess-cancellation shape).
+
+        Scheduler = object
+            mainCtx: VMContext
+                ## Main thread's saved snapshot of the VM globals.
+                ## Populated lazily on first fiber spawn (we don't
+                ## know main's state until it has one to save).
+            currentFiber: Fiber
+                ## Whoever is running right now. `nil` while main
+                ## is on the C stack (typical case at top-level and
+                ## in between fiber resumptions).
+            ready: seq[Fiber]
+                ## Fibers ready to resume. Pushed by future
+                ## callbacks (Phase 3.3) and by `spawnFiber`
+                ## (Phase 3.2). Drained by the driver loop
+                ## (Phase 3.4).
+
+    var scheduler {.global.}: Scheduler
+
+    proc initScheduler*() =
+        ## Bring the scheduler up to a known-good state. Idempotent:
+        ## safe to call more than once. Called automatically on
+        ## first spawn but exposed so tests / re-entry paths can
+        ## reset it explicitly.
+        if scheduler.mainCtx.isNil:
+            scheduler.mainCtx = VMContext()
+        scheduler.currentFiber = nil
+        scheduler.ready.setLen(0)
+
+    proc readyLen*(): int {.inline.} =
+        ## Diagnostic: number of fibers waiting to resume. Tests
+        ## use this to drive the scheduler step-by-step.
+        scheduler.ready.len
+
+    proc onMainFiber*(): bool {.inline.} =
+        ## True iff control is currently on the main thread (no
+        ## fiber is running). Used by `wait` to decide between
+        ## `waitFor` (drives the dispatcher) and `cooperativeAwait`
+        ## (suspends the current fiber).
+        scheduler.currentFiber.isNil
+
+    proc spawnFiber*(entry: proc (), parentSyms: SymTable): Fiber =
+        ## Create a fiber bound to a fresh `VMContext` (shallow copy
+        ## of `parentSyms`, fresh stack/attrs/scope) and queue it on
+        ## the scheduler's ready list. Returns the `Fiber` so the
+        ## caller can hold onto it (e.g. for cancellation) — the
+        ## scheduler doesn't otherwise expose its queue.
+        ##
+        ## The entry proc receives the fiber's globals already
+        ## installed (the scheduler swaps them in before each
+        ## `resume`); it runs as if at top-level. When it returns,
+        ## the scheduler treats the fiber as done. Suspending
+        ## mid-run is a separate concern (`cooperativeAwait`).
+        if scheduler.mainCtx.isNil:
+            initScheduler()
+        result = createFiber(entry)
+        result.ctx = newVMContext(parentSyms)
+        scheduler.ready.add(result)
+
+    proc runOneStep*() =
+        ## One iteration of the scheduler loop. Either resumes the
+        ## next ready fiber (preferred) or, if none, drives one
+        ## round of asyncdispatch. Caller is expected to drive this
+        ## from main only.
+        ##
+        ## Swap protocol: main → fiber → main, with the live VM
+        ## globals belonging to whoever is currently running.
+        if scheduler.ready.len > 0:
+            let f = scheduler.ready[0]
+            scheduler.ready.delete(0)         # FIFO; O(N) — fine for v1
+            # Cancel hooks may re-queue a fiber that has already
+            # finished (race between `cancel` and the fiber's last
+            # resume). Skip dead fibers — minicoro's `resume` on
+            # `mcoDead` would error.
+            if isDone(f):
+                return
+            scheduler.currentFiber = f
+            swapOutTo(scheduler.mainCtx)
+            swapInFrom(f.ctx)
+            resume(f)                         # runs f until it suspends or returns
+            swapOutTo(f.ctx)                  # save f's view (or empty if done)
+            swapInFrom(scheduler.mainCtx)     # main's view back
+            scheduler.currentFiber = nil
+        elif hasPendingOperations():
+            poll()                            # blocks until at least one I/O event
+
+    proc runScheduledFibers*() =
+        ## Drain the ready queue plus the asyncdispatch queue until
+        ## both are empty. Used at program-exit-style sync points
+        ## where we want every spawned fiber to finish.
+        while scheduler.ready.len > 0 or hasPendingOperations():
+            runOneStep()
+
+    proc pumpScheduler*(timeoutMs: int) =
+        ## Non-blocking-ish single tick: drains all currently-ready
+        ## fibers, then polls asyncdispatch for at most `timeoutMs`
+        ## milliseconds. Designed to be called from idle loops that
+        ## want to keep in-process tasks making progress without
+        ## hijacking control (e.g. the REPL's input wait).
+        ##
+        ## Returns immediately if there's no pending work at all.
+        while scheduler.ready.len > 0:
+            runOneStep()
+        if hasPendingOperations():
+            try: poll(timeoutMs)
+            except CatchableError: discard
+
+    proc runUntilFutureDone*[T](fut: Future[T]): T =
+        ## Block on `fut` from main while letting fibers and I/O
+        ## callbacks make progress. This is what `wait t` will call
+        ## when invoked from main (Phase 4). Returns the future's
+        ## value or re-raises its failure.
+        ##
+        ## Deadlock guard: if both queues are empty but `fut` isn't
+        ## done, nothing can ever wake it — bail with a clear error
+        ## rather than spin forever.
+        while not fut.finished:
+            if scheduler.ready.len == 0 and not hasPendingOperations():
+                raise newException(CatchableError,
+                    "runUntilFutureDone: no pending work, future will never complete")
+            runOneStep()
+        when T is void:
+            fut.read()
+        else:
+            return fut.read()
+
+    proc cooperativeAwait*[T](fut: Future[T]): T =
+        ## Suspend the current fiber until `fut` completes, then
+        ## return its value (or re-raise its failure). Must be
+        ## called from inside a fiber — calling from main is a
+        ## programming error since main has no fiber stack to park.
+        ##
+        ## ## Protocol with the scheduler
+        ##
+        ## The fiber does **not** swap its globals here — the
+        ## scheduler's `runOneStep` does that around every
+        ## `resume` / `suspend` pair. From the fiber's view:
+        ##
+        ## 1. If `fut` is already finished, fast-path: just read it.
+        ## 2. Otherwise register a callback that re-queues us when
+        ##    the future fires, then `suspend()` — control returns
+        ##    to whoever called `resume(me)` (the scheduler).
+        ## 3. ...time passes; the future eventually completes; the
+        ##    callback adds us to `scheduler.ready`; the scheduler
+        ##    eventually picks us up, swaps our globals back in, and
+        ##    `resume(me)`s us.
+        ## 4. We come back from `suspend()` with our globals live
+        ##    again; read and return the future's value.
+        ##
+        ## `Future[void]` is special-cased: `read()` returns `void`,
+        ## so `return read()` is a type error. We branch on `T` at
+        ## compile time.
+        let me = scheduler.currentFiber
+        doAssert not me.isNil,
+            "cooperativeAwait called outside a fiber — use waitFor on main"
+        # Fast path: if cancellation was requested before we got
+        # here, bail out without touching the future.
+        if me.ctx.cancelRequested:
+            raise newException(FiberCancelledError, "task cancelled")
+        if not fut.finished:
+            # The scheduler global is GC-allocated; the closure
+            # below touches it from inside an asyncdispatch callback.
+            # `cast(gcsafe)` is the standard escape — same pattern
+            # `broadcastToChildren` above uses for `childInboundFiles`.
+            fut.addCallback(proc () {.gcsafe.} =
+                {.cast(gcsafe).}:
+                    scheduler.ready.add(me))
+            suspend()
+            # Resumed: cancellation may have been requested while we
+            # were parked (cancel hook flips the flag and re-queues
+            # us). Check again before we surface a result.
+            if me.ctx.cancelRequested:
+                raise newException(FiberCancelledError, "task cancelled")
+        when T is void:
+            fut.read()
+        else:
+            return fut.read()
+
+    proc coopWait*[T](fut: Future[T]): T =
+        ## Block on `fut` from any context — main or fiber. Picks the
+        ## right primitive automatically:
+        ##
+        ## - **on main:** `runUntilFutureDone` drives both the
+        ##   scheduler ready queue and the asyncdispatch poll loop.
+        ##   Plain `waitFor` would skip our scheduler and starve any
+        ##   in-process fiber tasks.
+        ## - **inside a fiber:** `cooperativeAwait` registers a
+        ##   re-queue callback and yields back to the scheduler.
+        ##
+        ## Stdlib code that previously called `waitFor t.tsk.future`
+        ## should now call `coopWait t.tsk.future` so it composes
+        ## with both subprocess- and fiber-backed tasks.
+        if onMainFiber():
+            when T is void:
+                runUntilFutureDone(fut)
+            else:
+                return runUntilFutureDone(fut)
+        else:
+            when T is void:
+                cooperativeAwait(fut)
+            else:
+                return cooperativeAwait(fut)
 
 #=======================================
 # Cross-process event dispatch hook
@@ -52,8 +382,23 @@ when not defined(WEB):
     # silently freezes every in-flight server / request / read for the
     # whole second.
     proc cooperativePause*(ms: int) =
-        if hasPendingOperations():
-            waitFor sleepAsync(ms)
+        # On a fiber: yield to the scheduler so siblings (and any
+        # pending dispatcher work) can interleave. `waitFor` would
+        # block the fiber's C stack, starving every other fiber and
+        # turning `map.async`/`loop.async` into sequential execution.
+        if not onMainFiber():
+            cooperativeAwait sleepAsync(ms)
+        elif scheduler.ready.len > 0 or hasPendingOperations():
+            # From main with live work: drive the fiber scheduler
+            # AND asyncdispatch for the duration. Plain `waitFor`
+            # would only pump dispatcher futures and starve any
+            # ready fiber — including in-process `do.async` tasks
+            # whose progress the user may be polling between
+            # `pause`s (`while [not? finished? t][pause 100]`).
+            try:
+                runUntilFutureDone(sleepAsync(ms))
+            except CatchableError:
+                discard
         else:
             sleep(ms)
 
@@ -135,8 +480,25 @@ when not defined(WEB):
             await sleepAsync(20)
 
 #=======================================
-# Helpers
+# Subprocess-isolated path (`do.async.isolated`)
 #=======================================
+#
+# Everything from here through `spawnShellAsTask` is the SUBPROCESS
+# flavor of `do.async` — kept reachable via `do.async.isolated` (and
+# `execute.async`). It's the *rare* path now:
+#
+#   - default `do.async` runs in-process via `spawnInProcessDoBlock`
+#     (cooperative fiber, sub-ms spawn, closure capture, real
+#     `:error` fidelity)
+#   - `do.async.isolated` lands here: ~30 ms fork+exec, fresh VM,
+#     no closure capture, generic "exited with code N" errors —
+#     but full process isolation and true OS-scheduler parallelism
+#
+# Anything here that touches `osproc` / `runProcess` / temp-file
+# IPC belongs to the isolated path. The cross-process event
+# channel plumbing (`registerChildInbound`, `tailEventChannel`,
+# `broadcastToChildren`) is shared between isolated tasks and
+# parent ↔ child `emit` flows.
 
 when not defined(WEB):
     # spawn a child arturo process to evaluate `blockSrc`, return a future that
@@ -187,9 +549,17 @@ when not defined(WEB):
         # child to crash with a non-zero exit so the parent surfaces it as
         # a failed task. (the leading `null` inside `safeBlock` keeps void
         # blocks safe without needing `try`.)
+        # Use forward slashes when embedding the path into Arturo
+        # source. Windows `getTempDir` returns backslash-separated
+        # paths; Arturo's string parser treats `\` as the start of an
+        # escape sequence (`\n`, `\t`, …) and an odd-length tail —
+        # `…\` followed by the closing `"` — collapses to an
+        # unterminated string and blows up the child VM (SIGSEGV).
+        # Forward slashes work fine on every OS we target.
+        let resFileEmbed = resFile.replace('\\', '/')
         let wrapped =
             "res: do " & safeBlock & "\n" &
-            "write express.safe res \"" & resFile & "\""
+            "write express.safe res \"" & resFileEmbed & "\""
         let p = startProcess(arturoBin,
                              args = @["-e", wrapped],
                              env = childEnv,
@@ -306,6 +676,74 @@ when not defined(WEB):
     proc spawnShellAsTask*(fullCmd: string, withCode: bool): Value =
         let tsk = VTask(state: taskPending)
         tsk.future = runShellInChildProcess(tsk, fullCmd, withCode)
+        result = newTask(tsk)
+
+#=======================================
+# In-process path (default `do.async`)
+#=======================================
+#
+# Cooperative fibers running inside the same VM. Sub-ms spawn,
+# closure capture, real `:error` fidelity. This is the default
+# `do.async [ ... ]` flavor and the spawn primitive every fan-out
+# iterator (`map.parallel` / `loop.parallel` / …) calls into.
+
+when not defined(WEB):
+    # in-process flavor of `do.async`. Runs the block on a cooperative
+    # fiber inside the same VM — sub-ms spawn, full closure capture
+    # (parent `Syms` shallow-copied at spawn), real `VMError`s preserved
+    # rather than the generic "exited with code N" of the subprocess
+    # path. Returns immediately; the fiber actually executes when the
+    # scheduler is driven (e.g. via `wait`).
+    proc spawnInProcessDoBlock*(blk: Value): Value =
+        let tsk = VTask(state: taskPending)
+        let fut = newFuture[Value]("do.async")
+        tsk.future = fut
+
+        # `f` declared up here so both the entry and the cancel
+        # hook can see the same handle. Captured by closure env.
+        var f: Fiber
+
+        # Fiber captures the surrounding environment via these refs.
+        # `blk`, `tsk`, `fut` are refs already; closure env keeps them
+        # alive until the fiber finishes.
+        proc fiberEntry() {.gcsafe.} =
+            {.cast(gcsafe).}:
+                try:
+                    let prevSP = SP
+                    execUnscoped(blk)
+                    let res =
+                        if SP > prevSP: pop()
+                        else:           VNULL
+                    tsk.state = taskDone
+                    fut.complete(res)
+                except FiberCancelledError:
+                    # `cancel` hook flipped the flag while we were
+                    # parked; cooperativeAwait re-raised. Surface as
+                    # a cancelled future, *not* a failed one — the
+                    # consumer (`wait`) maps cancelled → :null.
+                    tsk.state = taskCancelled
+                    fut.fail(newException(FiberCancelledError,
+                        "task cancelled"))
+                except CatchableError as e:
+                    tsk.state = taskFailed
+                    fut.fail(e)
+
+        f = spawnFiber(fiberEntry, Syms)
+
+        # Cancel hook flips the per-fiber cancel flag and pokes the
+        # scheduler so a parked fiber actually wakes up to see it.
+        # If the fiber is already in `ready` or already done, the
+        # extra add is harmless — the scheduler skips finished
+        # fibers and an extra resume on a still-suspended one just
+        # runs the post-suspend cancel-check immediately.
+        let cancelCtx = f.ctx
+        let cancelF = f
+        tsk.cancelHandle = proc () {.gcsafe.} =
+            {.cast(gcsafe).}:
+                cancelCtx.cancelRequested = true
+                if not isDone(cancelF):
+                    scheduler.ready.add(cancelF)
+
         result = newTask(tsk)
 
     # in-process async download via Nim's `AsyncHttpClient`. unlike the subprocess

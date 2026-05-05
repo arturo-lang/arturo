@@ -1,0 +1,68 @@
+; Concurrency smoke test
+
+failures: []
+
+check: function [name expected actual][
+    switch expected = actual
+        [ print ["ok:" name] ]
+        [
+            print ["FAIL:" name "expected" expected "got" actual]
+            'failures ++ name
+        ]
+]
+
+; ---- 1. basic in-process spawn + wait + closure capture ----
+x: 10
+t: do.async [ x + 32 ]
+check "closure capture" 42 wait t
+
+; ---- 2. real :error fidelity (sync error reaches the caller) ----
+e: wait do.async [ 1 / 0 ]
+check ":error from in-process fiber" :error type e
+
+; ---- 3. wait.all preserves input order ----
+ts: map 1..5 'i [ do.async [ i * 2 ] ]
+check "wait.all order" [2 4 6 8 10] wait.all ts
+
+; ---- 4. cancel turns task to :null, not :error ----
+t: do.async [ pause 5000 ]
+cancel t
+check "cancel → :null" null wait t
+check "cancelled task is not failed" false failed? t
+
+; ---- 5. pause from main drives the scheduler ----
+t: do.async [ pause 200, 99 ]
+pause 400
+check "pause from main pumps fiber" true finished? t
+check "pumped task value" 99 wait t
+
+; ---- 6. fan-out: map.parallel preserves order ----
+check "map.parallel order" [1 4 9 16 25] map.parallel 1..5 'x [ x * x ]
+
+; ---- 7. fan-out is actually concurrent (timing) ----
+elapsed: benchmark.get [ discard map.parallel 1..5 'x [ pause 200 ] ]
+; sync would be ~1000ms; parallel should be ~200ms.
+; allow generous slack for slow runners.
+check "map.parallel parallelism" true (elapsed < 800.0)
+
+; ---- 8. every?.parallel short-circuits ----
+check "every?.parallel false short-circuit" false every?.parallel [2 4 6 7 8] 'n -> even? n
+check "every?.parallel all true"           true  every?.parallel [2 4 6 8]   'n -> even? n
+
+; ---- 9. some?.parallel short-circuits ----
+check "some?.parallel hit"  true  some?.parallel [1 3 5 6 7] 'n -> even? n
+check "some?.parallel miss" false some?.parallel [1 3 5 7]   'n -> even? n
+
+; ---- 10. select.parallel keeps original order ----
+check "select.parallel order" [2 4 6 8 10] select.parallel 1..10 'n -> even? n
+
+; ---- 11. opt-in subprocess flavor still reachable ----
+check "do.async.isolated value" 7 wait do.async.isolated [ 3 + 4 ]
+
+; ---- summary ----
+print ""
+if not? empty? failures [
+    print ["FAILED:" failures]
+    panic.code: 1 "concurrency smoke failed"
+]
+print "all green"

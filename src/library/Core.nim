@@ -442,8 +442,9 @@ proc defineModule*(moduleName: string) =
             "code"  : {String,Block,Bytecode,Task}
         },
         attrs       = {
-            "times" : ({Integer},"repeat block execution given number of times"),
-            "async" : ({Logical},"evaluate in a child process and return a `:task`")
+            "times"    : ({Integer},"repeat block execution given number of times"),
+            "async"    : ({Logical},"evaluate concurrently and return a `:task`"),
+            "isolated" : ({Logical},"with `.async`: run in a fresh child process instead of an in-VM fiber (slower spawn, no closure capture, full process isolation)")
         },
         returns     = {Any,Task},
         example     = """
@@ -483,11 +484,29 @@ proc defineModule*(moduleName: string) =
                 hello "John Doe"
                 ; Hello John Doe
             ]
-    
+
             ; Note: always use imported functions inside a 'do block
             ; since they need to be evaluated beforehand.
             ; On the other hand, simple variables can be used without
             ; issues, as 'pi in this example
+            ..........
+            ; concurrent evaluation — returns a `:task` immediately;
+            ; the body runs in a cooperative fiber inside this same VM.
+            ; closures are captured (parent symbols shallow-copied at
+            ; spawn time) and real `:error` values are preserved.
+            x: 10
+            t: do.async [ x + 32 ]
+            print wait t
+            ; 42
+            ..........
+            ; opt-in subprocess flavor: fresh VM, no closure capture,
+            ; true OS-process isolation. Use this when you want a
+            ; sandboxed evaluation, when the spawned code may stomp
+            ; global state, or when you genuinely need OS-scheduler
+            ; parallelism for CPU-bound work.
+            t: do.async.isolated [ print "fresh VM" ]
+            wait t
+            ; fresh VM
         """:
             #=======================================================
             var times = 1
@@ -496,19 +515,35 @@ proc defineModule*(moduleName: string) =
             if checkAttr("times"):
                 times = aTimes.i
 
-            # `do.async <code>` runs the block/string in a child arturo process
-            # and returns a `:task` whose future settles when the child exits
+            # `do.async <code>` — default is in-process: a cooperative
+            # fiber inside this VM. Sub-ms spawn, parent `Syms` shallow-
+            # copied at spawn time, real `VMError`s preserved.
+            #
+            # `.isolated` opts back into the subprocess path (fresh
+            # VM, full process isolation, no closure capture). Same
+            # behavior as `do.async` had before in-VM spawn landed —
+            # kept reachable for sandboxing / globally-stomping
+            # bytecode walkers / true OS-scheduler parallelism.
+            #
+            # `:string` input is always routed to the subprocess path.
+            # The in-process spawn doesn't fetch URLs and the parser
+            # belongs there too; strings keep subprocess for v1.
             when not defined(WEB):
                 if hadAttr("async"):
-                    # `codify` gives source-faithful Arturo code (preserving
-                    # Label colons, Literal quotes, etc.); the wrapper inside
-                    # `runInChildProcess` injects a leading `null` for void-safety
-                    let src =
-                        case xKind
-                            of Block, Bytecode: codify(x)
-                            of String:          x.s
-                            else:               ""
-                    push ParallelismHelper.spawnAsTask(src)
+                    let isolated = hadAttr("isolated")
+                    if (not isolated) and xKind in {Block, Bytecode}:
+                        push ParallelismHelper.spawnInProcessDoBlock(x)
+                    else:
+                        # `codify` gives source-faithful Arturo code
+                        # (preserving Label colons, Literal quotes, …);
+                        # the wrapper inside `runInChildProcess` injects
+                        # a leading `null` for void-safety
+                        let src =
+                            case xKind
+                                of Block, Bytecode: codify(x)
+                                of String:          x.s
+                                else:               ""
+                        push ParallelismHelper.spawnAsTask(src)
                     return
 
             # `do task` is sugar for `wait task` - drain the future once
