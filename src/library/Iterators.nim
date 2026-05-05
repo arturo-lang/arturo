@@ -300,6 +300,10 @@ template iterateBlockWithParams(
 
     finalizeLeakless()
 
+#---------------------------------------
+# Iteration setup
+#---------------------------------------
+
 template fetchParamsBlock() {.dirty.} =
     var params: seq[string]
     if hasIndex: params.add(withIndex.s)
@@ -348,6 +352,10 @@ template fetchIterableItems(doesAcceptLiterals=true, defaultReturn: untyped) {.d
         when not (defaultReturn is typeof(nil)):
             pushResult(defaultReturn)
         return
+
+#---------------------------------------
+# Param-shape dispatch (sync)
+#---------------------------------------
 
 template iterateRange(withCap:bool, withInf:bool, withCounter:bool, rolling:bool, act: untyped) {.dirty.} =
     ## Main iteration helper for Range values
@@ -405,6 +413,10 @@ template iterateBlock(withCap:bool, withInf:bool, withCounter:bool, rolling:bool
                 cntr += 1
         when withCounter:
             res.setLen(cntr)
+
+#---------------------------------------
+# Parallel iteration helpers
+#---------------------------------------
 
 template fetchIterableItemsForParallel(defaultReturn: untyped) {.dirty.} =
     ## Materialize any supported iterable kind (incl. Range) into a
