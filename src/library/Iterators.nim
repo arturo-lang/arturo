@@ -871,37 +871,17 @@ proc defineModule*(moduleName: string) =
         """:
             #=======================================================
             if hadAttr("after"):
-                prepareIteration()
-
-                var stoppedAt = -1
-                var res: ValueArray
-                
-                if iterable.kind==Range:
-                    fetchIterableRange()
-                
-                    iterateRange(withCap=false, withInf=false, withCounter=false, rolling=false):
-                        stoppedAt = indx
-                        if isTrue(stack.pop()):
-                            keepGoing = false
-                            break
-
-                    if stoppedAt < rang.len:
-                        res = rang[stoppedAt..rang.len-1]
-
-                    pushResult(newBlock(res))
-                else:
-                    fetchIterableItems(doesAcceptLiterals=true):
-                        newBlock()
-                    
-                    iterateBlock(withCap=false, withInf=false, withCounter=false, rolling=false):
-                        stoppedAt = indx
-                        if isTrue(stack.pop()):
-                            keepGoing = false
-                            break
-
-                    if stoppedAt < blo.len:
-                        res = blo[stoppedAt..^1]
-
+                doIterate(itLit=true, itCap=false, itInf=false, itCounter=false, itRolling=false, newBlock()):
+                    var stoppedAt = -1
+                    var res: ValueArray
+                do:
+                    stoppedAt = indx
+                    if isTrue(stack.pop()):
+                        keepGoing = false
+                        break
+                do:
+                    if stoppedAt < sourceLen:
+                        res = tailFrom(stoppedAt)
                     pushResult(newBlock(res))
 
             else:
@@ -913,7 +893,7 @@ proc defineModule*(moduleName: string) =
                     else:
                         keepGoing = false
                         break
-                do: 
+                do:
                     pushResult(newBlock(res))
 
     builtin "enumerate",
