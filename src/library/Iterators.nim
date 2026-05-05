@@ -51,6 +51,22 @@ import vm/values/custom/vrange
 # builtin declares a `"parallel"` attr. The dirty templates below pick
 # it up from the surrounding scope.
 
+type IterCap* = enum
+    ## Compile-time capability flags for `doIterate`. Each bit toggles
+    ## a piece of the iteration shape:
+    ##
+    ## * `AcceptsLit` — first arg may be a `'literal`; result is written
+    ##                  back via `RawInPlaced` when so.
+    ## * `WithCap`    — `act` exposes a `captured` symbol holding the
+    ##                  current item(s).
+    ## * `WithCounter`— `act` exposes a `cntr` running counter.
+    ## * `IsRolling`  — fold-style rolling iteration; `iterate*WithParams`
+    ##                  feeds `res` back as the rolling accumulator.
+    AcceptsLit
+    WithCap
+    WithCounter
+    IsRolling
+
 #---------------------------------------
 # Low-level loop primitives
 #---------------------------------------
@@ -586,16 +602,12 @@ template runParallelBranch(
             return
 
 template doIterate(
-    itLit:bool,         # does the iterator support in-place literals?
-    itCap:bool,         # do we need to actually capture iterated elements?
-    itInf:bool,         # is there a possibility that the iteration may be infinite?
-    itCounter:bool,     # do we need to keep track of the element counter?
-    itRolling:bool,     # is it a fold-type rolling iteration?
-
-    itDefVal:untyped,   # default value to return if given block is empty
-    itPre:untyped,      # code to execute before the iteration
-    itAct:untyped,      # code to execute for each iteration
-    itPost:untyped      # code to execute after the iteration
+    caps: static set[IterCap],  # iteration capability flags (compile-time)
+    itInf: bool,                # runtime: may the iteration loop forever?
+    itDefVal: untyped,          # value to push when the input is empty
+    itPre: untyped,             # code to run once before iteration
+    itAct: untyped,             # code to run per iteration
+    itPost: untyped             # code to run once after iteration
 ) {.dirty.} =
     ## The main iterator helper for every method
     ## that doesn't require any special handling,
@@ -611,6 +623,10 @@ template doIterate(
     ## `itPre` runs once *inside* the chosen path (parallel /
     ## Range-sync / Block-sync) so it can size buffers via the
     ## injected `sourceLen` (= the iteration's known item count).
+    const itLit     {.used.} = AcceptsLit  in caps
+    const itCap     {.used.} = WithCap     in caps
+    const itCounter {.used.} = WithCounter in caps
+    const itRolling {.used.} = IsRolling   in caps
 
     prepareIteration(doesAcceptLiterals=itLit)
 
@@ -702,7 +718,7 @@ proc defineModule*(moduleName: string) =
                 useOrder = SortOrder.Descending
 
             let aParallel = popAttr("parallel")
-            doIterate(itLit=true, itCap=true, itInf=false, itCounter=false, itRolling=false, newBlock()):
+            doIterate({AcceptsLit, WithCap}, false, newBlock()):
                 var unsorted: seq[(ValueArray,Value)]
             do:
                 let popped = stack.pop()
@@ -759,7 +775,7 @@ proc defineModule*(moduleName: string) =
             ; => [[1 7] [5 4 3 6] [8 2]]
         """:
             #=======================================================
-            doIterate(itLit=true, itCap=true, itInf=false, itCounter=false, itRolling=false, newBlock()):
+            doIterate({AcceptsLit, WithCap}, false, newBlock()):
                 let showValue = hadAttr("value")
                 
                 var res: ValueArray
@@ -821,7 +837,7 @@ proc defineModule*(moduleName: string) =
             ; => [["one" "three" "five"] ["two" "four" "six"]]
         """:
             #=======================================================
-            doIterate(itLit=true, itCap=true, itInf=false, itCounter=false, itRolling=false, newBlock()):
+            doIterate({AcceptsLit, WithCap}, false, newBlock()):
                 let showValue = hadAttr("value")
 
                 var res: ValueArray
@@ -871,7 +887,7 @@ proc defineModule*(moduleName: string) =
         """:
             #=======================================================
             if hadAttr("after"):
-                doIterate(itLit=true, itCap=false, itInf=false, itCounter=false, itRolling=false, newBlock()):
+                doIterate({AcceptsLit}, false, newBlock()):
                     var stoppedAt = -1
                     var res: ValueArray
                 do:
@@ -885,7 +901,7 @@ proc defineModule*(moduleName: string) =
                     pushResult(newBlock(res))
 
             else:
-                doIterate(itLit=true, itCap=true, itInf=false, itCounter=false, itRolling=false, newBlock()):
+                doIterate({AcceptsLit, WithCap}, false, newBlock()):
                     var res: ValueArray
                 do:
                     if isTrue(stack.pop()):
@@ -920,7 +936,7 @@ proc defineModule*(moduleName: string) =
         """:
             #=======================================================
             let aParallel = popAttr("parallel")
-            doIterate(itLit=false, itCap=false, itInf=false, itCounter=false, itRolling=false, I0.copyValue):
+            doIterate(set[IterCap]({}), false, I0.copyValue):
                 var cntr = 0
             do:
                 if isTrue(stack.pop()):
@@ -1001,7 +1017,7 @@ proc defineModule*(moduleName: string) =
             var stoppedAt = -1
             var filteredItems = 0
 
-            doIterate(itLit=true, itCap=true, itInf=false, itCounter=false, itRolling=false, newBlock()):
+            doIterate({AcceptsLit, WithCap}, false, newBlock()):
                 var res: ValueArray
                 if onlyLast: reverseSrc()
             do:
@@ -1091,7 +1107,7 @@ proc defineModule*(moduleName: string) =
             let rollingRight = hadAttr("right")
             let hasSeed = checkAttr("seed")
 
-            doIterate(itLit=false, itCap=false, itInf=false, itCounter=false, itRolling=true, newBlock()):
+            doIterate({IsRolling}, false, newBlock()):
                 var res: Value
                 if rollingRight: reverseSrc()
                 if hasSeed:
@@ -1139,7 +1155,7 @@ proc defineModule*(moduleName: string) =
         """:
             #=======================================================
             let aParallel = popAttr("parallel")
-            doIterate(itLit=true, itCap=true, itInf=false, itCounter=false, itRolling=false, newDictionary()):
+            doIterate({AcceptsLit, WithCap}, false, newDictionary()):
                 var res = initOrderedTable[string,Value]()
             do:
                 let popped = $(stack.pop())
@@ -1213,7 +1229,7 @@ proc defineModule*(moduleName: string) =
             when not defined(WEB):
                 if doForever and (not aParallel.isNil):
                     Error_OperationNotPermitted("`.parallel` cannot combine with `.forever`")
-            doIterate(itLit=false, itCap=false, itInf=doForever, itCounter=false, itRolling=false, VNULL):
+            doIterate(set[IterCap]({}), doForever, VNULL):
                 discard
             do:
                 discard
@@ -1262,7 +1278,7 @@ proc defineModule*(moduleName: string) =
         """:
             #=======================================================
             let aParallel = popAttr("parallel")
-            doIterate(itLit=true, itCap=false, itInf=false, itCounter=true, itRolling=false, newBlock()):
+            doIterate({AcceptsLit, WithCounter}, false, newBlock()):
                 var res: ValueArray = newSeq[Value](sourceLen)
             do:
                 res[cntr] = stack.pop()
@@ -1298,7 +1314,7 @@ proc defineModule*(moduleName: string) =
             let withValue = hadAttr("value")
             let aParallel = popAttr("parallel")
 
-            doIterate(itLit=true, itCap=true, itInf=false, itCounter=false, itRolling=false, VNULL):
+            doIterate({AcceptsLit, WithCap}, false, VNULL):
                 var selected: ValueArray
                 var maxVal: Value = VNULL
             do:
@@ -1350,7 +1366,7 @@ proc defineModule*(moduleName: string) =
             let withValue = hadAttr("value")
             let aParallel = popAttr("parallel")
 
-            doIterate(itLit=true, itCap=true, itInf=false, itCounter=false, itRolling=false, VNULL):
+            doIterate({AcceptsLit, WithCap}, false, VNULL):
                 var selected: ValueArray
                 var minVal: Value = VNULL
             do:
@@ -1465,7 +1481,7 @@ proc defineModule*(moduleName: string) =
 
             var found: int = 0
 
-            doIterate(itLit=true, itCap=true, itInf=false, itCounter=false, itRolling=false, newBlock()):
+            doIterate({AcceptsLit, WithCap}, false, newBlock()):
                 var res: ValueArray
                 if onlyLast: reverseSrc()
             do:
@@ -1544,7 +1560,7 @@ proc defineModule*(moduleName: string) =
                         parallelShortCircuit( answerOnHit=VFALSE, defaultAnswer=VTRUE):
                             isFalse(pBodyResult)
 
-            doIterate(itLit=false, itCap=false, itInf=false, itCounter=false, itRolling=false, VTRUE):
+            doIterate(set[IterCap]({}), false, VTRUE):
                 discard
             do:
                 if isFalse(stack.pop()):
@@ -1600,7 +1616,7 @@ proc defineModule*(moduleName: string) =
                         parallelShortCircuit( answerOnHit=VTRUE, defaultAnswer=VFALSE):
                             isTrue(pBodyResult)
 
-            doIterate(itLit=false, itCap=false, itInf=false, itCounter=false, itRolling=false, VFALSE):
+            doIterate(set[IterCap]({}), false, VFALSE):
                 discard
             do:
                 if isTrue(stack.pop()):
