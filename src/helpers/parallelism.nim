@@ -480,8 +480,25 @@ when not defined(WEB):
             await sleepAsync(20)
 
 #=======================================
-# Helpers
+# Subprocess-isolated path (`do.async.isolated`)
 #=======================================
+#
+# Everything from here through `spawnShellAsTask` is the SUBPROCESS
+# flavor of `do.async` — kept reachable via `do.async.isolated` (and
+# `execute.async`). It's the *rare* path now:
+#
+#   - default `do.async` runs in-process via `spawnInProcessDoBlock`
+#     (cooperative fiber, sub-ms spawn, closure capture, real
+#     `:error` fidelity)
+#   - `do.async.isolated` lands here: ~30 ms fork+exec, fresh VM,
+#     no closure capture, generic "exited with code N" errors —
+#     but full process isolation and true OS-scheduler parallelism
+#
+# Anything here that touches `osproc` / `runProcess` / temp-file
+# IPC belongs to the isolated path. The cross-process event
+# channel plumbing (`registerChildInbound`, `tailEventChannel`,
+# `broadcastToChildren`) is shared between isolated tasks and
+# parent ↔ child `emit` flows.
 
 when not defined(WEB):
     # spawn a child arturo process to evaluate `blockSrc`, return a future that
@@ -645,6 +662,24 @@ when not defined(WEB):
         tsk.future = runInChildProcess(tsk, src)
         result = newTask(tsk)
 
+    # convenience: turn a shell command into a pending `:task`. used by
+    # `execute.async`. `withCode` toggles the resolved-value shape between
+    # bare output string and `#[output: code:]` dict (mirrors `execute.code`).
+    proc spawnShellAsTask*(fullCmd: string, withCode: bool): Value =
+        let tsk = VTask(state: taskPending)
+        tsk.future = runShellInChildProcess(tsk, fullCmd, withCode)
+        result = newTask(tsk)
+
+#=======================================
+# In-process path (default `do.async`)
+#=======================================
+#
+# Cooperative fibers running inside the same VM. Sub-ms spawn,
+# closure capture, real `:error` fidelity. This is the default
+# `do.async [ ... ]` flavor and the spawn primitive every fan-out
+# iterator (`map.parallel` / `loop.parallel` / …) calls into.
+
+when not defined(WEB):
     # in-process flavor of `do.async`. Runs the block on a cooperative
     # fiber inside the same VM — sub-ms spawn, full closure capture
     # (parent `Syms` shallow-copied at spawn), real `VMError`s preserved
@@ -701,14 +736,6 @@ when not defined(WEB):
                 if not isDone(cancelF):
                     scheduler.ready.add(cancelF)
 
-        result = newTask(tsk)
-
-    # convenience: turn a shell command into a pending `:task`. used by
-    # `execute.async`. `withCode` toggles the resolved-value shape between
-    # bare output string and `#[output: code:]` dict (mirrors `execute.code`).
-    proc spawnShellAsTask*(fullCmd: string, withCode: bool): Value =
-        let tsk = VTask(state: taskPending)
-        tsk.future = runShellInChildProcess(tsk, fullCmd, withCode)
         result = newTask(tsk)
 
     # in-process async download via Nim's `AsyncHttpClient`. unlike the subprocess
