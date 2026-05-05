@@ -1,0 +1,94 @@
+name: "Concurrency smoke"
+
+# Throwaway workflow — runs `tools/concurrency-smoke.art` across the
+# same OS/arch matrix as `ci.yml` to confirm the in-process `do.async`
+# fiber primitive + `:task` machinery + `.parallel` iterators behave
+# the same on architectures we don't develop on day-to-day. Delete
+# once green on every target.
+
+on:
+    push:
+        branches:
+            - 'add-proper-concurrent-block-support'
+        tags-ignore:
+            - '**'
+    pull_request:
+        branches:
+            - 'add-proper-concurrent-block-support'
+    workflow_dispatch:
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    Smoke:
+        runs-on: ${{
+            (matrix.os == 'linux')   && (matrix.support == 'legacy' && (matrix.arch == 'arm64' && 'ubuntu-22.04-arm' || 'ubuntu-22.04') || matrix.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-latest') ||
+            (matrix.os == 'macos')   && (matrix.arch == 'arm64' && 'macos-latest' || 'macOS-15-intel') ||
+            (matrix.os == 'windows') && 'windows-latest' ||
+                                        'ubuntu-latest'  }}
+
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - {os: linux,   arch: amd64}
+                    - {os: linux,   arch: amd64,    support: legacy}
+                    - {os: linux,   arch: arm64}
+                    - {os: linux,   arch: arm64,    support: legacy}
+                    - {os: freebsd, arch: amd64}
+                    - {os: macos,   arch: amd64}
+                    - {os: macos,   arch: arm64}
+                    - {os: windows, arch: amd64}
+
+        defaults:
+            run:
+                shell: ${{
+                    (matrix.os == 'freebsd') && 'freebsd {0}' ||
+                    (matrix.os == 'windows') && 'msys2 {0}'   ||
+                                                'bash'        }}
+
+        steps:
+            - name: Checkout Arturo sources
+              uses: actions/checkout@v4
+              with:
+                submodules: recursive
+                path: arturo
+                ref: ${{ github.ref }}
+                fetch-depth: 0
+
+            - name: Prepare artifact version
+              id: version
+              shell: bash
+              run: |
+                cd arturo
+                git_hash=$(git rev-parse --short HEAD)
+
+                if [ "${{ github.event_name }}" = "pull_request" ]; then
+                    version="pr${{ github.event.pull_request.number }}.${git_hash}"
+                else
+                    version="${{ github.ref_name }}.${git_hash}"
+                fi
+
+                echo "VERSION=$version" >> "$GITHUB_OUTPUT"
+                echo "Building version: $version"
+
+            - name: Install Arturo
+              uses: arturo-lang/setup-arturo@v2
+              with:
+                do: compile
+                token: ${{ secrets.GITHUB_TOKEN }}
+                os: ${{ matrix.os }}
+                arch: ${{ matrix.arch }}
+                support: ${{ matrix.support }}
+                src: ${{ github.ref }}
+                metadata: ${{ steps.version.outputs.VERSION }}
+                create_artifact: 'false'
+
+            - if: env.arturoCanRun == 'true'
+              name: Run concurrency smoke
+              run: |
+                cd $GITHUB_WORKSPACE/arturo
+                arturo -v
+                arturo tools/concurrency-smoke.art
