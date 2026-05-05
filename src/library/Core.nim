@@ -484,11 +484,29 @@ proc defineModule*(moduleName: string) =
                 hello "John Doe"
                 ; Hello John Doe
             ]
-    
+
             ; Note: always use imported functions inside a 'do block
             ; since they need to be evaluated beforehand.
             ; On the other hand, simple variables can be used without
             ; issues, as 'pi in this example
+            ..........
+            ; concurrent evaluation — returns a `:task` immediately;
+            ; the body runs in a cooperative fiber inside this same VM.
+            ; closures are captured (parent symbols shallow-copied at
+            ; spawn time) and real `:error` values are preserved.
+            x: 10
+            t: do.async [ x + 32 ]
+            print wait t
+            ; 42
+            ..........
+            ; opt-in subprocess flavor: fresh VM, no closure capture,
+            ; true OS-process isolation. Use this when you want a
+            ; sandboxed evaluation, when the spawned code may stomp
+            ; global state, or when you genuinely need OS-scheduler
+            ; parallelism for CPU-bound work.
+            t: do.async.isolated [ print "fresh VM" ]
+            wait t
+            ; fresh VM
         """:
             #=======================================================
             var times = 1
