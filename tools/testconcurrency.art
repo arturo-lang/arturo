@@ -1,15 +1,5 @@
-; Concurrency smoke test — exercises the in-process `do.async` /
-; `:task` / `wait` / `cancel` machinery and the `.parallel` fan-out
-; iterators. Intentionally small. The goal is "still works on
-; <other-arch>", not exhaustive coverage. Exits non-zero on the
-; first failure.
-;
-; Run with: `arturo tools/concurrency-smoke.art`
+; Concurrency smoke test
 
-; List used as a mutable counter — function bodies in Arturo run
-; in their own local scope, so `failures: failures + 1` from inside
-; would not propagate. Appending into a `:block` does mutate the
-; reference visible outside.
 failures: []
 
 check: function [name expected actual][
