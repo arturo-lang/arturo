@@ -27,7 +27,7 @@ describe "Allowed Operations" [
     ]
 
     it "every? with multi-param block" [
-        expects -> equal? false every? 1..6 [x y] -> odd? x + y
+        expects -> equal? true every? 1..6 [x y] -> odd? x + y
     ]
 
 ]
