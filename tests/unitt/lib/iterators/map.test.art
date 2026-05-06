@@ -1,0 +1,37 @@
+import {unitt}!
+
+describe "Allowed Operations" [
+
+    it "map with empty block" [
+        expects -> equal? [] map [] 'x -> x*x
+    ]
+
+    it "map squares over a range" [
+        expects -> equal? [1 4 9 16 25] map 1..5 'x -> x*x
+    ]
+
+    it "map identity preserves elements" [
+        expects -> equal? [1 2 3 4 5] map 1..5 'x -> x
+    ]
+
+    it "map with always-true predicate body" [
+        expects -> equal? [true true true] map 1..3 'x -> true
+    ]
+
+    it "map.with using index pairs each element with its position" [
+        expects -> equal? [[0 10] [1 20] [2 30]] map.with:'i [10 20 30] 'x -> @[i x]
+    ]
+
+    it "map over an integer iterable" [
+        expects -> equal? [1 2 3 4 5] map 5 'i -> i
+    ]
+
+    it "map over a string lifts each char into uppercase" [
+        expects -> equal? ["A" "B" "C"] map "abc" 'c [upper to :string c]
+    ]
+
+    it "map with multi-param block returns one element per pair" [
+        expects -> equal? [[1 2] [3 4] [5 6]] map 1..6 [x y] -> @[x y]
+    ]
+
+]
