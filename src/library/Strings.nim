@@ -626,9 +626,9 @@ proc defineModule*(moduleName: string) =
                 #=======================================================
                 bindAttrs:
                     once: Logical
+                    templated(`template`): Logical
 
                 let recursive = not once
-                let templated = hadAttr("template")
 
                 let Interpolated    = nre.re"\|([^\|]+)\|"
                 let Embeddable      = re.re"(?s)(\<\|\|.*?\|\|\>)"
