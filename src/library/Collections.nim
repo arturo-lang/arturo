@@ -1656,13 +1656,13 @@ proc defineModule*(moduleName: string) =
             ]
         """:
             #=======================================================
-            case xKind:
-                of Block:
+            dispatch:
+                Block(_):
                     if likely(yKind == Integer):
                         SetArrayIndex(x, y.i, z)
                     else:
                         Error_UnsupportedKeyType(Dumper(y), Dumper(x), @[stringify(Integer)])
-                of Binary:
+                Binary(_):
                     if likely(yKind == Integer):
                         if likely(y.i >= 0 and y.i < x.n.len):
                             let bn = numberToBinary(z.i)
@@ -1676,9 +1676,9 @@ proc defineModule*(moduleName: string) =
                                     x.n[bi + y.i] = bt
                         else:
                             Error_OutOfBounds(y.i, Dumper(x), x.n.len-1, "Binary")
-                    else: 
+                    else:
                         Error_UnsupportedKeyType(Dumper(y), Dumper(x), @[stringify(Integer)])
-                of Bytecode:
+                Bytecode(_):
                     case yKind
                         of String, Word, Literal:
                             if ("data" == y.s):
@@ -1697,34 +1697,24 @@ proc defineModule*(moduleName: string) =
                                 Error_InvalidIndex(y.i, Dumper(x), "You may use `0` to set the data of a Bytecode value, and `1` to set the code block; every other value is not accepted.")
                         else:
                             Error_UnsupportedKeyType(Dumper(y), Dumper(x), @[stringify(String), stringify(Word), stringify(Literal), stringify(Integer)])
-                of Dictionary:
-                    case yKind:
-                        of String, Word, Literal:
-                            x.d[y.s] = z
-                        else:
-                            x.d[$(y)] = z
-                of Object:
+                Dictionary(_):
+                    let key = if yKind in {String, Word, Literal}: y.s else: $(y)
+                    x.d[key] = z
+                Object(_):
+                    let key = if yKind in {String, Word, Literal}: y.s else: $(y)
                     if unlikely(x.magic.fetch(ChangingM)):
                         mgk(@[x, y])
-                    if (x.magic.fetch(SetM) and (not hadAttr("field")) and (y.kind in {String,Word,Literal,Label}) and (y.s notin toSeq(x.proto.fields.keys()))):
+                    if (x.magic.fetch(SetM) and (not hadAttr("field")) and (yKind in {String,Word,Literal,Label}) and (y.s notin toSeq(x.proto.fields.keys()))):
                         mgk(@[x, y, z])
                     else:
-                        case yKind:
-                            of String, Word, Literal:
-                                x.o[y.s] = z
-                            else:
-                                x.o[$(y)] = z
+                        x.o[key] = z
                     if unlikely(x.magic.fetch(ChangedM)):
                         mgk(@[x, y])
-                of Store:
+                Store(_):
                     when not defined(WEB):
-                        case yKind:
-                            of String, Word, Literal:
-                                setStoreKey(x.sto, y.s, z)
-                            else:
-                                setStoreKey(x.sto, $(y), z)
-                
-                of String:
+                        let key = if yKind in {String, Word, Literal}: y.s else: $(y)
+                        setStoreKey(x.sto, key, z)
+                String(_):
                     if likely(yKind == Integer):
                         if likely(y.i >= 0 and y.i < x.s.runeLen()):
                             var res: string
@@ -1741,7 +1731,7 @@ proc defineModule*(moduleName: string) =
                             Error_OutOfBounds(y.i, Dumper(x), x.s.runeLen()-1, "String")
                     else:
                         Error_UnsupportedKeyType(Dumper(y), Dumper(x), @[stringify(Integer)])
-                else: discard
+                _: discard
 
     builtin "shuffle",
         alias       = unaliased,
