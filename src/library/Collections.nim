@@ -420,8 +420,9 @@ proc defineModule*(moduleName: string) =
         """:
             #=======================================================
             bindAttrs:
-                raw:   Logical
-                lower: Logical
+                raw:           Logical
+                lower:         Logical
+                embed(`with`): Block = newSeq[Value]()
 
             var dict: ValueDict
 
@@ -446,10 +447,9 @@ proc defineModule*(moduleName: string) =
                     else:
                         Error_FileNotFound(s)
 
-            if checkAttr("with"):
-                for x in aWith.a:
-                    requireValue(x, {Word,Literal})
-                    dict[x.s] = FetchSym(x.s)
+            for x in embed:
+                requireValue(x, {Word,Literal})
+                dict[x.s] = FetchSym(x.s)
 
             if lower:
                 var oldDict = dict
