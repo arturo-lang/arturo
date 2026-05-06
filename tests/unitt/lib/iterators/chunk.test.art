@@ -12,7 +12,7 @@ describe "Allowed Operations" [
     ]
 
     it "chunk.value tags each run with its predicate value" [
-        expects -> equal? [[true [1 1]] [false [2 2]] [true [3]] [false [22]] [true [3 5 5 7 9]] [false [2]] [true [5]]]
+        expects -> equal? @[@[true @[1 1]] @[false @[2 2]] @[true @[3]] @[false @[22]] @[true @[3 5 5 7 9]] @[false @[2]] @[true @[5]]]
                           chunk.value [1 1 2 2 3 22 3 5 5 7 9 2 5] 'x [odd? x]
     ]
 
