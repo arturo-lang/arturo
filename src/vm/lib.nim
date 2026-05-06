@@ -134,11 +134,14 @@ proc dispatchParsePat(n: NimNode, allowWild: bool, macroName: string):
           (if allowWild: " or `_`" else: ""), n)
 
 proc dispatchAliasTemplate(name, target: NimNode): NimNode =
-    # template <name>: untyped = <target>  — lvalue alias for inplace blocks
+    # template <name> {.used.}: untyped = <target>  — lvalue alias for
+    # inplace blocks. `{.used.}` keeps the hint quiet when the inplace
+    # body operates on `InPlaced.<field>` directly and never reads the alias.
     nnkTemplateDef.newTree(
         name, newEmptyNode(), newEmptyNode(),
         nnkFormalParams.newTree(ident("untyped")),
-        newEmptyNode(), newEmptyNode(),
+        nnkPragma.newTree(ident("used")),
+        newEmptyNode(),
         target
     )
 
