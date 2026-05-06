@@ -916,12 +916,12 @@ proc defineModule*(moduleName: string) =
                     var stoppedAt = -1
                     var res: ValueArray
                 do:
-                    stoppedAt = indx
                     if isTrue(stack.pop()):
+                        stoppedAt = indx
                         keepGoing = false
                         break
                 do:
-                    if stoppedAt < sourceLen:
+                    if stoppedAt >= 0 and stoppedAt < sourceLen:
                         res = tailFrom(stoppedAt)
                     pushResult(newBlock(res))
 
