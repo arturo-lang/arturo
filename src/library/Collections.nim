@@ -2372,70 +2372,54 @@ proc defineModule*(moduleName: string) =
             ; true
         """:
             #=======================================================
-            if checkAttr("at"):
-                let at = aAt.i
-                case xKind:
-                    of String:
-                        if yKind == Regex:
-                            push(newLogical(x.s.contains(y.rx, at)))
-                        elif yKind == Char:
-                            push(newLogical(toRunes(x.s)[at] == y.c))
+            dispatch:
+                String(s):
+                    on at(i: Integer):
+                        if yKind == Regex:  push(newLogical(s.contains(y.rx, i)))
+                        elif yKind == Char: push(newLogical(toRunes(s)[i] == y.c))
+                        else:               push(newLogical(s.continuesWith(y.s, i)))
+                    _:
+                        if yKind == Regex:  push(newLogical(s.contains(y.rx)))
+                        elif yKind == Char: push(newLogical($(y.c) in s))
+                        else:               push(newLogical(y.s in s))
+                Block(a):
+                    on at(i: Integer): push(newLogical(a[i] == y))
+                    _:
+                        if hadAttr("deep"): push(newLogical(a.inNestedBlock(y)))
+                        else:               push(newLogical(y in a))
+                Range(rng):
+                    on at(i: Integer): push(newLogical(rng[i] == y))
+                    _:                 push(newLogical(y in rng))
+                Dictionary(d):
+                    on at(i: Integer):
+                        let values = toSeq(d.values)
+                        push(newLogical(values[i] == y))
+                    _:
+                        if hadAttr("deep"):
+                            let values: ValueArray = d.getValuesinDeep()
+                            push(newLogical(y in values))
                         else:
-                            push(newLogical(x.s.continuesWith(y.s, at)))
-                    of Block:
-                        push(newLogical(x.a[at] == y))
-                    of Range:
-                        push(newLogical(x.rng[at] == y))
-                    of Dictionary:
-                        let values = toSeq(x.d.values)
-                        push(newLogical(values[at] == y))
-                    of Object:
+                            let values = toSeq(d.values)
+                            push(newLogical(y in values))
+                Object(o):
+                    on at(i: Integer):
                         if unlikely(x.magic.fetch(ContainsQM)):
                             pushAttr("at", aAt)
-                            mgk(@[x, y]) # already pushes value
+                            mgk(@[x, y])
                         else:
-                            let values = toSeq(x.o.values)
-                            push(newLogical(values[at] == y))
-                    else:
-                        discard
-            else:
-                case xKind:
-                    of String:
-                        if yKind == Regex:
-                            push(newLogical(x.s.contains(y.rx)))
-                        elif yKind == Char:
-                            push(newLogical($(y.c) in x.s))
-                        else:
-                            push(newLogical(y.s in x.s))
-                    of Block:
-                        if hadAttr("deep"):
-                            push newLogical(x.a.inNestedBlock(y))
-                        else:
-                            push(newLogical(y in x.a))
-                    of Range:
-                        push(newLogical(y in x.rng))
-                    of Dictionary:
-                        if hadAttr("deep"):
-                            let values: ValueArray = x.d.getValuesinDeep()
-                            push newLogical(y in values)
-                        else:
-                            let values = toSeq(x.d.values)
-                            push(newLogical(y in values))
-                    of Object:
+                            let values = toSeq(o.values)
+                            push(newLogical(values[i] == y))
+                    _:
                         if unlikely(x.magic.fetch(ContainsQM)):
-                            if hadAttr("deep"):
-                                pushAttr("deep", VTRUE)
-
-                            mgk(@[x, y]) # already pushes value
+                            if hadAttr("deep"): pushAttr("deep", VTRUE)
+                            mgk(@[x, y])
                         else:
                             if hadAttr("deep"):
-                                let values: ValueArray = x.o.getValuesinDeep()
-                                push newLogical(y in values)
-                            else:
-                                let values = toSeq(x.o.values)
+                                let values: ValueArray = o.getValuesinDeep()
                                 push(newLogical(y in values))
-                    else:
-                        discard
+                            else:
+                                let values = toSeq(o.values)
+                                push(newLogical(y in values))
 
     builtin "empty?",
         alias       = unaliased,
