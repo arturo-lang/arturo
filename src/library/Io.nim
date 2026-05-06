@@ -214,7 +214,10 @@ proc defineModule*(moduleName: string) =
             """:
                 #=======================================================
                 bindAttrs:
-                    repl: Logical
+                    repl:                Logical
+                    historyPath(history): String     = ""
+                    completionsArray(complete): Block = newSeq[Value]()
+                    hintsTable(hint):    Dictionary  = initOrderedTable[string,Value]()
 
                 if repl:
                     # when defined(windows):
@@ -222,19 +225,8 @@ proc defineModule*(moduleName: string) =
                     #     stdout.flushFile()
                     #     push(newString(stdin.readLine()))
                     # else:
-                    var historyPath: string
-                    var completionsArray: ValueArray
-                    var hintsTable: ValueDict = initOrderedTable[string,Value]()
-
-                    if checkAttr("history"):
-                        historyPath = aHistory.s
-
-                    if checkAttr("complete"):
-                        requireAttrValueBlock("complete", aComplete, {String,Word,Literal})
-                        completionsArray = aComplete.a
-
-                    if checkAttr("hint"):
-                        hintsTable = aHint.d
+                    for it in completionsArray:
+                        requireAttrValue("complete", it, {String,Word,Literal})
 
                     IsRepl = true
                     let (str, hasToKill) = replInput(x.s, historyPath, completionsArray, hintsTable)
