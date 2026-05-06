@@ -1,0 +1,41 @@
+import {unitt}!
+
+describe "Allowed Operations" [
+
+    it "select with empty block" [
+        expects -> equal? [] select [] => odd?
+    ]
+
+    it "select keeps elements matching predicate" [
+        expects -> equal? [1 3 5] select [1 2 3 4 5] => odd?
+    ]
+
+    it "select over a range" [
+        expects -> equal? [2 4] select 1..5 'x -> even? x
+    ]
+
+    it "select with always-true predicate keeps everything" [
+        expects -> equal? [1 2 3] select [1 2 3] 'x -> true
+    ]
+
+    it "select with always-false predicate yields empty block" [
+        expects -> equal? [] select [1 2 3] 'x -> false
+    ]
+
+    it "select.with using index" [
+        expects -> equal? [10 30] select.with:'i [10 20 30 40] 'x -> even? i
+    ]
+
+    it "select.first:n returns the first n matches" [
+        expects -> equal? [1 3] select.first:2 1..10 => odd?
+    ]
+
+    it "select.last:n returns the last n matches" [
+        expects -> equal? [7 9] select.last:2 1..10 => odd?
+    ]
+
+    it "select strings by length" [
+        expects -> equal? ["lazy" "jumped"] select ["the" "fox" "lazy" "jumped"] 'w -> 3 < size w
+    ]
+
+]
