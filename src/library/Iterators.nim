@@ -342,9 +342,13 @@ template fetchIterableItems(doesAcceptLiterals=true, defaultReturn: untyped) {.d
             of Object:
                 iterable.o.flattenedObject()
             of String:
-                toSeq(runes(iterable.s)).map((w) => newChar(w))
+                var acc = newSeqOfCap[Value](iterable.s.len)
+                for r in runes(iterable.s): acc.add(newChar(r))
+                acc
             of Integer:
-                (toSeq(1..iterable.i)).map((w) => newInteger(w))
+                var acc = newSeqOfCap[Value](iterable.i)
+                for i in 1..iterable.i: acc.add(newInteger(i))
+                acc
             else: # won't ever reach here
                 @[VNULL]
 
