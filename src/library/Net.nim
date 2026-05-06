@@ -121,9 +121,8 @@ proc defineModule*(moduleName: string) =
                 #=======================================================
                 dispatch:
                     String(path):
-                        let target =
-                            if checkAttr("as"): aAs.s
-                            else:               extractFilename(path)
+                        bindAttrs:
+                            target(`as`): String = extractFilename(path)
 
                         var client = newHttpClient()
                         client.downloadFile(path, target)
