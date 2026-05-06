@@ -1,0 +1,287 @@
+; Parallelism / concurrency unit tests.
+;
+; Covers the surface added on `add-new-Task-value`:
+;   :task value, do.async (in-process fiber + .isolated subprocess),
+;   wait / wait.all / wait.first[.cancel] / wait.timeout,
+;   cancel / finished? / failed?,
+;   error propagation as :error,
+;   :event + on / emit / off / on.once + task callbacks,
+;   fan-out iterators: map.async, loop.async, map.parallel,
+;   every?.parallel, some?.parallel, select.parallel.
+
+topic: $[topic :string] -> print ~"\n>> |topic|"
+passed: $[] -> print "[+] passed!"
+
+
+topic ":task value"
+do [
+
+    t: do.async [40 + 2]
+    ensure -> :task = type t
+    passed
+
+    ensure -> 42 = wait t
+    passed
+
+    ensure -> finished? t
+    ensure -> not? failed? t
+    passed
+
+]
+
+
+topic "do.async — in-process closure capture"
+do [
+
+    x: 10
+    ensure -> 42 = wait do.async [x + 32]
+    passed
+
+    y: [1 2 3]
+    ensure -> 6 = wait do.async [sum y]
+    passed
+
+]
+
+
+topic "do.async — :error fidelity"
+do [
+
+    e: wait do.async [1 / 0]
+    ensure -> :error = type e
+    passed
+
+    ensure -> :errorKind = type e\kind
+    ensure -> string? e\message
+    passed
+
+]
+
+
+topic "wait.all — order preserved"
+do [
+
+    ts: map 1..5 'i [do.async [i * 10]]
+    ensure -> [10 20 30 40 50] = wait.all ts
+    passed
+
+]
+
+
+topic "wait.all — failures slot in as :error"
+do [
+
+    ts: @[do.async [10] do.async [1 / 0] do.async [30]]
+    rs: wait.all ts
+    ensure -> 3 = size rs
+    ensure -> 10 = rs\0
+    ensure -> :error = type rs\1
+    ensure -> 30 = rs\2
+    passed
+
+]
+
+
+topic "wait.first[.cancel]"
+do [
+
+    t1: do.async [pause 500 'late]
+    t2: do.async [pause 50 'early]
+    ensure -> 'early = wait.first.cancel @[t1 t2]
+    passed
+
+]
+
+
+topic "wait.timeout — bare wait with budget"
+do [
+
+    t: do.async [pause 1000]
+    r: wait.timeout: 50 t
+    ensure -> :error = type r
+    cancel t
+    passed
+
+    fast: do.async [40 + 2]
+    ensure -> 42 = wait.timeout: 5000 fast
+    passed
+
+]
+
+
+topic "cancel"
+do [
+
+    t: do.async [pause 5000]
+    cancel t
+    ensure -> null = wait t
+    passed
+
+]
+
+
+topic "do.async.isolated — subprocess flavor"
+do [
+
+    ensure -> 7 = wait do.async.isolated [3 + 4]
+    passed
+
+    ensure -> 15 = wait do.async.isolated [sum 1..5]
+    passed
+
+]
+
+
+topic "map.async — fan-out parallel map"
+do [
+
+    ensure -> [1 4 9 16 25] = map.async 1..5 'x [x * x]
+    passed
+
+]
+
+
+topic "map.parallel — order preserved"
+do [
+
+    ensure -> [1 4 9 16 25] = map.parallel 1..5 'x [x * x]
+    passed
+
+]
+
+
+topic "loop.async — fan-out side-effect loop"
+do [
+
+    acc: []
+    loop.async 1..4 'x [ 'acc ++ x * x ]
+    ensure -> [1 4 9 16] = sort acc
+    passed
+
+]
+
+
+topic "select.parallel — order preserved"
+do [
+
+    ensure -> [2 4 6 8 10] = select.parallel 1..10 'n -> even? n
+    passed
+
+]
+
+
+topic "every?.parallel"
+do [
+
+    ensure -> every?.parallel [2 4 6 8] 'n -> even? n
+    ensure -> not? every?.parallel [2 4 5 8] 'n -> even? n
+    passed
+
+]
+
+
+topic "some?.parallel"
+do [
+
+    ensure -> some?.parallel [1 3 6 7] 'n -> even? n
+    ensure -> not? some?.parallel [1 3 5 7] 'n -> even? n
+    passed
+
+]
+
+
+topic ":event value"
+do [
+
+    E: event 'sample
+    ensure -> :event = type E
+    passed
+
+]
+
+
+topic "on / emit — payload via .with:"
+do [
+
+    E: event 'payload
+    got: []
+    on.with:'p E [ 'got ++ p ]
+    emit.with: "a" E
+    emit.with: "b" E
+    wait do.async [pause 50]
+    ensure -> ["a" "b"] = got
+    passed
+
+]
+
+
+topic "off — bulk unsubscribe"
+do [
+
+    E: event 'silenced
+    n: 0
+    on.with:'p E [ inc 'n ]
+    emit.with: 1 E
+    wait do.async [pause 50]
+    off E
+    emit.with: 2 E
+    wait do.async [pause 50]
+    ensure -> 1 = n
+    passed
+
+]
+
+
+topic "on.once — fires only once"
+do [
+
+    E: event 'oneshot
+    n: 0
+    on.once.with:'p E [ inc 'n ]
+    emit.with: 1 E
+    emit.with: 2 E
+    emit.with: 3 E
+    wait do.async [pause 50]
+    ensure -> 1 = n
+    passed
+
+]
+
+
+topic "on .id + off id — per-handler unsubscribe"
+do [
+
+    E: event 'targeted
+    a: 0, b: 0
+    idA: on.id.with:'p E [ inc 'a ]
+    on.with:'p E [ inc 'b ]
+    emit.with: 1 E
+    wait do.async [pause 50]
+    off idA
+    emit.with: 2 E
+    wait do.async [pause 50]
+    ensure -> 1 = a
+    ensure -> 2 = b
+    passed
+
+]
+
+
+topic "task callbacks — on.done / on.failed"
+do [
+
+    t: do.async [pause 50 99]
+    seen: []
+    on.done.with:'r t [ 'seen ++ r ]
+    wait t
+    ensure -> [99] = seen
+    passed
+
+    t2: do.async [1 / 0]
+    failures: []
+    on.failed.with:'e t2 [ 'failures ++ type e ]
+    wait t2
+    ensure -> [:error] = failures
+    passed
+
+]
