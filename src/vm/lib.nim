@@ -531,6 +531,11 @@ macro bindAttrs*(body: untyped): untyped =
     ##   `name(attrName): KIND = default`      — same, but the attribute is
     ##                                            named differently from the local
     ##
+    ## Either name position may be backticked (`nnkAccQuoted`) to bind attrs
+    ## whose names clash with Nim keywords (`as`, `with`, `from`, `to`, `end`,
+    ## `template`, `using`, …). Typically used in the rename form so the local
+    ## stays unquoted, e.g. `asLabel(\`as\`): Block = newBlock()`.
+    ##
     ## Composable: the resulting locals are ordinary Nim variables visible to
     ## any subsequent code (including a `dispatchWithLiteral` block). Pair with
     ## `on attr:` ladders inside dispatch clauses for mutually-exclusive
@@ -539,12 +544,19 @@ macro bindAttrs*(body: untyped): untyped =
     const macroName = "bindAttrs"
     result = newStmtList()
 
+    proc isNameNode(n: NimNode): bool =
+        n.kind == nnkIdent or n.kind == nnkAccQuoted
+    proc nameStr(n: NimNode): string =
+        if n.kind == nnkIdent: $n
+        elif n.kind == nnkAccQuoted: $n[0]
+        else: ""
+
     for decl in body:
         var localName, attrName, typeStmt: NimNode
-        if decl.kind == nnkCall and decl.len == 2 and decl[0].kind == nnkIdent:
+        if decl.kind == nnkCall and decl.len == 2 and isNameNode(decl[0]):
             localName = decl[0]; attrName = decl[0]; typeStmt = decl[1]
         elif decl.kind == nnkCall and decl.len == 3 and
-             decl[0].kind == nnkIdent and decl[1].kind == nnkIdent:
+             isNameNode(decl[0]) and isNameNode(decl[1]):
             localName = decl[0]; attrName = decl[1]; typeStmt = decl[2]
         else:
             error(macroName & ": expected `name: KIND[=default]` or `name(attr): KIND[=default]`", decl)
@@ -562,7 +574,8 @@ macro bindAttrs*(body: untyped): untyped =
             error(macroName & ": expected `KIND` or `KIND = default`", texp)
 
         let kindStr = $kindIdent
-        let attrLit = newStrLitNode($attrName)
+        let attrNameStr = nameStr(attrName)
+        let attrLit = newStrLitNode(attrNameStr)
 
         if kindStr == "Logical" and defaultExpr == nil:
             # `let name = hadAttr("attrName")`
@@ -572,7 +585,7 @@ macro bindAttrs*(body: untyped): untyped =
             if defaultExpr == nil:
                 error(macroName & ": typed attr requires a default value", decl)
             let (field, _) = dispatchFieldAndCtor(kindStr, kindIdent, macroName)
-            let aIdent = ident('a' & ($attrName).capitalizeAscii())
+            let aIdent = ident('a' & attrNameStr.capitalizeAscii())
             # var name = default
             result.add nnkVarSection.newTree(
                 nnkIdentDefs.newTree(localName, newEmptyNode(), defaultExpr))
