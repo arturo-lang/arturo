@@ -80,16 +80,14 @@ proc defineModule*(moduleName: string) =
             ; => 404: Page not Found
         """:
             #=======================================================
-            let attrKind: VErrorKind =
-                if checkAttr "as": aAs.errKind
-                else:              RuntimeErr
+            bindAttrs:
+                asKind(`as`): ErrorKind = RuntimeErr
 
             dispatch:
                 String(s):
-                    raise verror.VError(kind: attrKind, msg: s)
+                    raise verror.VError(kind: asKind, msg: s)
                 ErrorKind(k):
-                    let kind = if checkAttr "as": attrKind else: k
-                    raise verror.VError(kind: kind, msg: k.label)
+                    raise verror.VError(kind: k, msg: k.label)
 
     # TODO(Exceptions/throws?) rename function?
     #  if not though it appears a natural name, every time I look
