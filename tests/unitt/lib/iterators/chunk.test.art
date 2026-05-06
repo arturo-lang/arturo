@@ -1,0 +1,27 @@
+import {unitt}!
+
+describe "Allowed Operations" [
+
+    it "chunk with empty block" [
+        expects -> equal? [] chunk [] => even?
+    ]
+
+    it "chunk runs of same predicate value" [
+        expects -> equal? [[1 1] [2 2] [3] [22] [3 5 5 7 9] [2] [5]]
+                          chunk [1 1 2 2 3 22 3 5 5 7 9 2 5] => even?
+    ]
+
+    it "chunk.value tags each run with its predicate value" [
+        expects -> equal? [[true [1 1]] [false [2 2]] [true [3]] [false [22]] [true [3 5 5 7 9]] [false [2]] [true [5]]]
+                          chunk.value [1 1 2 2 3 22 3 5 5 7 9 2 5] 'x [odd? x]
+    ]
+
+    it "chunk over range groups consecutive parity" [
+        expects -> equal? [[1] [2] [3] [4] [5]] chunk 1..5 => even?
+    ]
+
+    it "chunk single element" [
+        expects -> equal? [[7]] chunk [7] => odd?
+    ]
+
+]
