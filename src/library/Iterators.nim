@@ -72,8 +72,20 @@ type IterCap* = enum
 #---------------------------------------
 
 template iteratorLoop(justLiteral: bool, forever: bool, before: untyped, body: untyped) {.dirty.} =
-    var keepGoing: bool = true
-    while keepGoing:
+    var keepGoing {.inject, used.}: bool = true
+    when forever:
+        while keepGoing:
+            before
+
+            var indx = 0
+            var run = 0
+            while indx+(when justLiteral: 1 else: loopStep)<=collectionLen:
+                handleBranching:
+                    body
+                do:
+                    run += 1
+                    indx += (when justLiteral: 1 else: loopStep)
+    else:
         before
 
         var indx = 0
@@ -84,9 +96,6 @@ template iteratorLoop(justLiteral: bool, forever: bool, before: untyped, body: u
             do:
                 run += 1
                 indx += (when justLiteral: 1 else: loopStep)
-
-        if not forever:
-            keepGoing = false
 
 template prepareRange(rng: VRange) {.dirty.} =
     let numeric = rng.numeric
@@ -1245,12 +1254,20 @@ proc defineModule*(moduleName: string) =
             when not defined(WEB):
                 if doForever and (not aParallel.isNil):
                     Error_OperationNotPermitted("`.parallel` cannot combine with `.forever`")
-            doIterate(set[IterCap]({}), doForever, VNULL):
-                discard
-            do:
-                discard
-            do:
-                discard
+            if doForever:
+                doIterate(set[IterCap]({}), true, VNULL):
+                    discard
+                do:
+                    discard
+                do:
+                    discard
+            else:
+                doIterate(set[IterCap]({}), false, VNULL):
+                    discard
+                do:
+                    discard
+                do:
+                    discard
 
     builtin "map",
         alias       = unaliased,
