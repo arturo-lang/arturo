@@ -1,0 +1,35 @@
+import {unitt}!
+
+describe "Allowed Operations" [
+
+    it "gather groups elements by predicate value" [
+        g: gather [1 2 3 4 5 6] 'x -> x % 2
+        expects -> and? equal? [2 4 6] g\0
+                        equal? [1 3 5] g\1
+    ]
+
+    it "gather over range with three buckets" [
+        g: gather 1..6 'x -> x % 3
+        expects -> and? equal? [3 6] g\0
+                        and? equal? [1 4] g\1
+                             equal? [2 5] g\2
+    ]
+
+    it "gather.with using index" [
+        g: gather.with:'i ["one" "two" "three" "four"] 'x -> i % 2
+        expects -> and? equal? ["one" "three"] g\0
+                        equal? ["two" "four"]  g\1
+    ]
+
+    it "gather strings by size" [
+        g: gather ["aa" "b" "ccc" "dd" "e"] 'x -> size x
+        expects -> and? equal? ["b" "e"] g\1
+                        and? equal? ["aa" "dd"] g\2
+                             equal? ["ccc"] g\3
+    ]
+
+    it "gather with empty block returns empty dictionary" [
+        expects -> zero? size keys gather [] 'x -> x
+    ]
+
+]
