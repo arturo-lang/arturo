@@ -1,0 +1,26 @@
+import {unitt}!
+
+describe "Allowed Operations" [
+
+    it "cluster with empty block" [
+        expects -> equal? [] cluster [] => even?
+    ]
+
+    it "cluster splits range by parity" [
+        expects -> equal? [[1 3 5 7 9] [2 4 6 8 10]] cluster 1..10 => odd?
+    ]
+
+    it "cluster splits by primality" [
+        expects -> equal? [[1 4 6 8 9 10] [2 3 5 7]] cluster 1..10 'x -> prime? x
+    ]
+
+    it "cluster.value tags each cluster with its predicate value" [
+        expects -> equal? [[false [1 4 6 8 9 10]] [true [2 3 5 7]]]
+                          cluster.value 1..10 'x -> prime? x
+    ]
+
+    it "cluster of single element" [
+        expects -> equal? [[7]] cluster [7] => odd?
+    ]
+
+]
