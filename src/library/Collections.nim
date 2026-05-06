@@ -2502,70 +2502,52 @@ proc defineModule*(moduleName: string) =
             ; true
         """:
             #=======================================================
+            # `in? x y` is `contains? y x` — same kind table on the collection,
+            # same attrs. Written out (rather than as a 2-axis dispatch) because
+            # x-axis wildcards in tuple clauses aren't supported yet.
+            proc inAt(coll, val: Value, at: int): Value =
+                case coll.kind:
+                of String:
+                    if val.kind == Regex:  return newLogical(coll.s.contains(val.rx, at))
+                    elif val.kind == Char: return newLogical(toRunes(coll.s)[at] == val.c)
+                    else:                  return newLogical(coll.s.continuesWith(val.s, at))
+                of Block:      return newLogical(coll.a[at] == val)
+                of Range:      return newLogical(coll.rng[at] == val)
+                of Dictionary: return newLogical(toSeq(coll.d.values)[at] == val)
+                of Object:     return newLogical(toSeq(coll.o.values)[at] == val)
+                else:          return VFALSE
+
+            proc inAny(coll, val: Value): Value =
+                case coll.kind:
+                of String:
+                    if val.kind == Regex:  return newLogical(coll.s.contains(val.rx))
+                    elif val.kind == Char: return newLogical($(val.c) in coll.s)
+                    else:                  return newLogical(val.s in coll.s)
+                of Block:
+                    if hadAttr("deep"): return newLogical(coll.a.inNestedBlock(val))
+                    return newLogical(val in coll.a)
+                of Range: return newLogical(val in coll.rng)
+                of Dictionary:
+                    if hadAttr("deep"): return newLogical(val in coll.d.getValuesinDeep())
+                    return newLogical(val in toSeq(coll.d.values))
+                of Object:
+                    if hadAttr("deep"): return newLogical(val in coll.o.getValuesinDeep())
+                    return newLogical(val in toSeq(coll.o.values))
+                else: return VFALSE
+
             if checkAttr("at"):
                 let at = aAt.i
-                case yKind:
-                    of String:
-                        if xKind == Regex:
-                            push(newLogical(y.s.contains(x.rx, at)))
-                        elif xKind == Char:
-                            push(newLogical(toRunes(y.s)[at] == x.c))
-                        else:
-                            push(newLogical(y.s.continuesWith(x.s, at)))
-                    of Block:
-                        push(newLogical(y.a[at] == x))
-                    of Range:
-                        push(newLogical(y.rng[at] == x))
-                    of Dictionary:
-                        let values = toSeq(y.d.values)
-                        push(newLogical(values[at] == x))
-                    of Object:
-                        if unlikely(y.magic.fetch(ContainsQM)):
-                            pushAttr("at", aAt)
-                            mgk(@[y, x]) # already pushes value
-                        else:
-                            let values = toSeq(y.o.values)
-                            push(newLogical(values[at] == x))
-                    else:
-                        discard
+                if yKind == Object and unlikely(y.magic.fetch(ContainsQM)):
+                    pushAttr("at", aAt)
+                    mgk(@[y, x])
+                else:
+                    push(inAt(y, x, at))
             else:
-                case yKind:
-                    of String:
-                        if xKind == Regex:
-                            push(newLogical(y.s.contains(x.rx)))
-                        elif xKind == Char:
-                            push(newLogical($(x.c) in y.s))
-                        else:
-                            push(newLogical(x.s in y.s))
-                    of Block:
-                        if hadAttr("deep"):
-                            push newLogical(y.a.inNestedBlock(x))
-                        else:
-                            push(newLogical(x in y.a))
-                    of Range:
-                        push(newLogical(x in y.rng))
-                    of Dictionary:
-                        if hadAttr("deep"):
-                            let values: ValueArray = y.d.getValuesinDeep()
-                            push newLogical(x in values)
-                        else:
-                            let values = toSeq(y.d.values)
-                            push(newLogical(x in values))
-                    of Object:
-                        if unlikely(y.magic.fetch(ContainsQM)):
-                            if hadAttr("deep"):
-                                pushAttr("deep", VTRUE)
-
-                            mgk(@[y, x]) # already pushes value
-                        else:
-                            if hadAttr("deep"):
-                                let values: ValueArray = y.o.getValuesinDeep()
-                                push newLogical(x in values)
-                            else:
-                                let values = toSeq(y.o.values)
-                                push(newLogical(x in values))
-                    else:
-                        discard
+                if yKind == Object and unlikely(y.magic.fetch(ContainsQM)):
+                    if hadAttr("deep"): pushAttr("deep", VTRUE)
+                    mgk(@[y, x])
+                else:
+                    push(inAny(y, x))
 
     builtin "key?",
         alias       = unaliased,
