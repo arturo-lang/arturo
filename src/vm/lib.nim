@@ -577,18 +577,25 @@ macro bindAttrs*(body: untyped): untyped =
         let attrNameStr = nameStr(attrName)
         let attrLit = newStrLitNode(attrNameStr)
 
+        # Wrap the local name with `{.used.}` so attrs declared but used only
+        # inside platform-gated branches (e.g. `when defined(PARSERS):`) don't
+        # emit XDeclaredButNotUsed hints.
+        let localNamePragma = nnkPragmaExpr.newTree(
+            localName, nnkPragma.newTree(ident("used")))
+
         if kindStr == "Logical" and defaultExpr == nil:
-            # `let name = hadAttr("attrName")`
-            result.add newLetStmt(localName,
-                                  newCall(ident("hadAttr"), attrLit))
+            # `let name {.used.} = hadAttr("attrName")`
+            result.add nnkLetSection.newTree(
+                nnkIdentDefs.newTree(localNamePragma, newEmptyNode(),
+                                     newCall(ident("hadAttr"), attrLit)))
         else:
             if defaultExpr == nil:
                 error(macroName & ": typed attr requires a default value", decl)
             let (field, _) = dispatchFieldAndCtor(kindStr, kindIdent, macroName)
             let aIdent = ident('a' & attrNameStr.capitalizeAscii())
-            # var name = default
+            # var name {.used.} = default
             result.add nnkVarSection.newTree(
-                nnkIdentDefs.newTree(localName, newEmptyNode(), defaultExpr))
+                nnkIdentDefs.newTree(localNamePragma, newEmptyNode(), defaultExpr))
             # if checkAttr("name"): name = aName.<field>
             result.add nnkIfStmt.newTree(nnkElifBranch.newTree(
                 newCall(ident("checkAttr"), attrLit),
