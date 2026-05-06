@@ -68,6 +68,15 @@ type
 proc dispatchIsWild(n: NimNode): bool =
     n != nil and n.kind == nnkIdent and $n == "_"
 
+proc dispatchUsedLet(name, value: NimNode): NimNode =
+    ## `let <name> {.used.} = <value>` — emitted for kind/attr bindings so
+    ## arms that don't reference them don't trip XDeclaredButNotUsed.
+    nnkLetSection.newTree(
+        nnkIdentDefs.newTree(
+            nnkPragmaExpr.newTree(name, nnkPragma.newTree(ident("used"))),
+            newEmptyNode(),
+            value))
+
 proc dispatchFieldAndCtor(kind: string, n: NimNode, macroName: string): (string, string) =
     case kind
     of "String":     ("s", "newString")
@@ -346,8 +355,8 @@ proc dispatchBuildOnLadder(arms: seq[DispatchOnArm], elseBody: NimNode,
                 kindCase.add nnkOfBranch.newTree(
                     ident(sa.attrKind),
                     newStmtList(
-                        newLetStmt(copyNimTree(sa.binding),
-                                   newDotExpr(aIdent, ident(field))),
+                        dispatchUsedLet(copyNimTree(sa.binding),
+                                        newDotExpr(aIdent, ident(field))),
                         wrap(copyNimTree(sa.body)),
                         nnkBreakStmt.newTree(label)
                     )
@@ -419,16 +428,16 @@ macro dispatchWithLiteral*(body: untyped): untyped =
             if needsLValue:
                 result.add dispatchAliasTemplate(copyNimTree(fc.xBinding), xTarget)
             else:
-                result.add newLetStmt(copyNimTree(fc.xBinding), xTarget)
+                result.add dispatchUsedLet(copyNimTree(fc.xBinding), xTarget)
 
         if fc.hasY and not fc.yWild and not dispatchIsWild(fc.yBinding):
             let (yField, _) = dispatchFieldAndCtor(fc.yKind, fc.yBinding, macroName)
-            result.add newLetStmt(copyNimTree(fc.yBinding),
-                                  newDotExpr(ident("y"), ident(yField)))
+            result.add dispatchUsedLet(copyNimTree(fc.yBinding),
+                                       newDotExpr(ident("y"), ident(yField)))
         if fc.hasZ and not fc.zWild and not dispatchIsWild(fc.zBinding):
             let (zField, _) = dispatchFieldAndCtor(fc.zKind, fc.zBinding, macroName)
-            result.add newLetStmt(copyNimTree(fc.zBinding),
-                                  newDotExpr(ident("z"), ident(zField)))
+            result.add dispatchUsedLet(copyNimTree(fc.zBinding),
+                                       newDotExpr(ident("z"), ident(zField)))
 
         if fc.onLadder.len > 0:
             # Wrap each arm body the same way a unified body is wrapped.
@@ -499,16 +508,16 @@ macro dispatch*(body: untyped): untyped =
             return
         if not dispatchIsWild(fc.xBinding):
             let (xField, _) = dispatchFieldAndCtor(fc.xKind, fc.xBinding, macroName)
-            result.add newLetStmt(copyNimTree(fc.xBinding),
-                                  newDotExpr(ident("x"), ident(xField)))
+            result.add dispatchUsedLet(copyNimTree(fc.xBinding),
+                                       newDotExpr(ident("x"), ident(xField)))
         if fc.hasY and not fc.yWild and not dispatchIsWild(fc.yBinding):
             let (yField, _) = dispatchFieldAndCtor(fc.yKind, fc.yBinding, macroName)
-            result.add newLetStmt(copyNimTree(fc.yBinding),
-                                  newDotExpr(ident("y"), ident(yField)))
+            result.add dispatchUsedLet(copyNimTree(fc.yBinding),
+                                       newDotExpr(ident("y"), ident(yField)))
         if fc.hasZ and not fc.zWild and not dispatchIsWild(fc.zBinding):
             let (zField, _) = dispatchFieldAndCtor(fc.zKind, fc.zBinding, macroName)
-            result.add newLetStmt(copyNimTree(fc.zBinding),
-                                  newDotExpr(ident("z"), ident(zField)))
+            result.add dispatchUsedLet(copyNimTree(fc.zBinding),
+                                       newDotExpr(ident("z"), ident(zField)))
         if fc.onLadder.len > 0:
             result.add dispatchBuildOnLadder(fc.onLadder, fc.onElse,
                 proc(b: NimNode): NimNode = b, macroName)
