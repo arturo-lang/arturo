@@ -188,7 +188,10 @@ proc defineModule*(moduleName: string) =
             print (hash a)=(hash b) ; true
         """:
             #=======================================================
-            if (hadAttr("string")):
+            bindAttrs:
+                stringify(string): Logical
+
+            if stringify:
                 push(newString($(hash(x))))
             else:
                 push(newInteger(hash(x)))
