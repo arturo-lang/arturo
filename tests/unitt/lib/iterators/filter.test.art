@@ -23,7 +23,7 @@ describe "Allowed Operations" [
     ]
 
     it "filter.with using index" [
-        expects -> equal? [2 4] filter.with:'i [10 20 30 40] 'x -> odd? i
+        expects -> equal? [10 30] filter.with:'i [10 20 30 40] 'x -> odd? i
     ]
 
     it "filter.first:n drops first n matches" [
@@ -35,7 +35,7 @@ describe "Allowed Operations" [
     ]
 
     it "filter strings by length" [
-        expects -> equal? ["fox" "dog"] filter ["the" "fox" "lazy" "dog"] 'w -> 3 < size w
+        expects -> equal? ["the" "fox" "dog"] filter ["the" "fox" "lazy" "dog"] 'w -> 3 < size w
     ]
 
 ]
