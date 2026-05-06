@@ -1176,3 +1176,10 @@ func clear*(z: Float) {.inline.} =
 func clear*(z: Rat) {.inline.} =
     GCunref(z)
     mpq_clear(z[])
+
+#=======================================
+# Unit tests
+#=======================================
+
+when isMainModule:
+    discard

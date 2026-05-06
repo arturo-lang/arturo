@@ -59,3 +59,10 @@ proc showSelectionDialog*(title: string, path: string, files = true): string =
     else:
         cresult = pfd_select_folder(title.cstring, path.cstring)
     result = $cresult
+
+#=======================================
+# Unit tests
+#=======================================
+
+when isMainModule:
+    discard

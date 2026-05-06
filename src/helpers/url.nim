@@ -58,3 +58,10 @@ func urlencode*(s: string, encodeSpaces = false, encodeSlashes = false): string 
             else:
                 add(result, '%')
                 add(result, toHex(ord(c), 2))
+
+#=======================================
+# Unit tests
+#=======================================
+
+when isMainModule:
+    discard

@@ -470,3 +470,10 @@ proc printInfo*(objName: string, objValue: Value, aliases: SymbolDict) =
     # print more details
     if obj.val.info.kind in {Function,Method}:
         obj.printFunction()
+
+#=======================================
+# Unit tests
+#=======================================
+
+when isMainModule:
+    discard

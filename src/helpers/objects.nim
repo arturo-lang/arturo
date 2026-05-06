@@ -285,3 +285,10 @@ proc generateNewObject*(pr: Prototype, values: ValueArray | ValueDict): Value =
 
     # embed magic methods as well
     result.magic = magicMethods
+
+#=======================================
+# Unit tests
+#=======================================
+
+when isMainModule:
+    discard

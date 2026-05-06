@@ -27,3 +27,10 @@ func parsePathComponents*(s: string): OrderedTable[string,Value] {.inline.} =
         "filename": newString(name),
         "extension": newString(ext)
         }.toOrderedTable
+
+#=======================================
+# Unit tests
+#=======================================
+
+when isMainModule:
+    discard

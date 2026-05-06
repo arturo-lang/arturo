@@ -30,3 +30,10 @@ proc getValuesinDeep*(dict: ValueDict): ValueArray =
             result.add getValuesinDeep(value.d)
         else:
             result.add value
+
+#=======================================
+# Unit tests
+#=======================================
+
+when isMainModule:
+    discard

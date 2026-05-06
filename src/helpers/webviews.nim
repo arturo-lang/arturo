@@ -262,3 +262,10 @@ when defined(WEBVIEW):
 
     proc getWindow*(w: Webview): Window =
         webview_get_window(w)
+
+#=======================================
+# Unit tests
+#=======================================
+
+when isMainModule:
+    discard

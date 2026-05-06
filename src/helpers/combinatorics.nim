@@ -111,3 +111,11 @@ proc countCombinations*(lst: ValueArray, size: int, repeated: bool = false): Val
     if size < 0 or (size > n and not repeated): newInteger(0)
     elif repeated: factorial(n+size-1) / (factorial(size)*factorial(n-1))
     else: factorial(n) / (factorial(size)*factorial(n-size))
+
+#=======================================
+# Unit tests
+#=======================================
+
+when isMainModule:
+    discard
+    

@@ -27,6 +27,7 @@ when defined(linux) or defined(freebsd) or defined(netbsd) or defined(openbsd):
     {.passL: "-pthread -lxcb".}
 elif defined(macosx):
     {.compile("libclipboard/clipboard_cocoa.c", "-x objective-c -DLIBCLIPBOARD_BUILD_COCOA -framework Foundation").}
+    {.passL:"-framework Cocoa".}
 elif defined(windows):
     {.compile("libclipboard/clipboard_win32.c", "-DLIBCLIPBOARD_BUILD_WIN32").}
 

@@ -41,4 +41,9 @@ proc parseTomlNode*(n: TomlValueRef): Value =
 proc parseTomlString*(src: string): Value =
     parseTomlNode(parsetoml.parseString(src))
 
-    
+#=======================================
+# Unit tests
+#=======================================
+
+when isMainModule:
+    discard

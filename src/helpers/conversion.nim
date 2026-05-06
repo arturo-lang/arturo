@@ -637,3 +637,10 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat:Value = nil): Val
                Socket,
                Nothing,
                Any: throwCannotConvert()
+
+#=======================================
+# Unit tests
+#=======================================
+
+when isMainModule:
+    discard

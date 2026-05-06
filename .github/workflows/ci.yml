@@ -52,6 +52,10 @@ jobs:
                                                 'bash'        }}
 
         steps:
+            #---------------------------
+            # Build
+            #---------------------------
+
             - name: Checkout Arturo sources
               uses: actions/checkout@v4
               with:
@@ -90,6 +94,33 @@ jobs:
                 create_artifact: 'true'
                 artifact_version: ${{ steps.version.outputs.VERSION }}
 
+            #---------------------------
+            # Nim-level tests
+            #---------------------------
+
+            - name: Install Nim (FreeBSD)
+              if: matrix.os == 'freebsd' && matrix.mode != 'mini'
+              shell: freebsd {0}
+              run: |
+                pkg install -y nim git zip
+
+            - if: matrix.os != 'web' && matrix.mode != 'mini'
+              name: Run Nim-level tests
+              run: |
+                cd $GITHUB_WORKSPACE/arturo
+
+                if [ "${{ matrix.os }}" = "windows" ]; then
+                    export PATH="${{ github.workspace }}/nim/nim-2.2.8/bin":$PATH
+                elif [ "${{ matrix.os }}" = "freebsd" ]; then
+                    export PATH="/usr/local/nim/bin:$PATH"
+                fi
+
+                arturo tools/nimtester.art
+            
+            #---------------------------
+            # Arturo unit-tests
+            #---------------------------
+
             - name: Check if tests should be skipped
               id: check_skip
               shell: bash
@@ -106,6 +137,7 @@ jobs:
                 else
                     echo "skip=false" >> "$GITHUB_OUTPUT"
                 fi
+
 
             - if: env.arturoCanRun == 'true' && steps.check_skip.outputs.skip != 'true'
               name: Run tests

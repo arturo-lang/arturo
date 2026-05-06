@@ -89,3 +89,10 @@ func getLastIdSqliteDb*(db: sqlite.DbConn): int64 =
 
 func closeSqliteDb*(db: sqlite.DbConn) =
     sqlite.close(db)
+
+#=======================================
+# Unit tests
+#=======================================
+
+when isMainModule:
+    discard

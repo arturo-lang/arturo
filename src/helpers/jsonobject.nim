@@ -233,3 +233,10 @@ proc jsonFromValueDict*(dict: ValueDict, pretty: bool = true): string =
         node.add(k, generateJsonNode(v))
     if pretty: json.pretty(node, indent=4)
     else: $(node)
+
+#=======================================
+# Unit tests
+#=======================================
+
+when isMainModule:
+    discard

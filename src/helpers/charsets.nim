@@ -177,3 +177,10 @@ proc hasNgraphs*(locale: string): bool =
 
 proc getCharset*(locale: string, withExtras = false, doUppercase = false): ValueArray =
     return getCharsetRunes(locale, withExtras, doUppercase).map((x)=>newChar(x))
+
+#=======================================
+# Unit tests
+#=======================================
+
+when isMainModule:
+    discard

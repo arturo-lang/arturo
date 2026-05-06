@@ -39,3 +39,10 @@ when defined(PARSERS):
             copyMem(addr(str[0]), ret.data, ret.size)
             freeMarkdownBuffer(addr ret)
             return newString(str)
+
+#=======================================
+# Unit tests
+#=======================================
+
+when isMainModule:
+    discard

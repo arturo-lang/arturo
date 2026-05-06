@@ -32,3 +32,10 @@ func replace*(pattern: string, self: RegExp, replacement: string): cstring =
 
 func replaceAll*(pattern: cstring, self: RegExp, replacement: cstring): cstring {.importjs: "#.replaceAll(#,#)".}
     ## Returns a new string with all matches of a pattern replaced by given replacement
+
+#=======================================
+# Unit tests
+#=======================================
+
+when isMainModule:
+    discard
