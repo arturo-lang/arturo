@@ -217,7 +217,7 @@ proc defineModule*(moduleName: string) =
                     repl:                Logical
                     historyPath(history): String     = ""
                     completionsArray(complete): Block = newSeq[Value]()
-                    hintsTable(hint):    Dictionary  = initOrderedTable[string,Value]()
+                    hintsTable(hint):    Dictionary  = default(ValueDict)
 
                 if repl:
                     # when defined(windows):
