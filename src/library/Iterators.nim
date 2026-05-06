@@ -72,8 +72,20 @@ type IterCap* = enum
 #---------------------------------------
 
 template iteratorLoop(justLiteral: bool, forever: bool, before: untyped, body: untyped) {.dirty.} =
-    var keepGoing: bool = true
-    while keepGoing:
+    var keepGoing {.inject, used.}: bool = true
+    when forever:
+        while keepGoing:
+            before
+
+            var indx = 0
+            var run = 0
+            while indx+(when justLiteral: 1 else: loopStep)<=collectionLen:
+                handleBranching:
+                    body
+                do:
+                    run += 1
+                    indx += (when justLiteral: 1 else: loopStep)
+    else:
         before
 
         var indx = 0
@@ -84,9 +96,6 @@ template iteratorLoop(justLiteral: bool, forever: bool, before: untyped, body: u
             do:
                 run += 1
                 indx += (when justLiteral: 1 else: loopStep)
-
-        if not forever:
-            keepGoing = false
 
 template prepareRange(rng: VRange) {.dirty.} =
     let numeric = rng.numeric
@@ -342,9 +351,13 @@ template fetchIterableItems(doesAcceptLiterals=true, defaultReturn: untyped) {.d
             of Object:
                 iterable.o.flattenedObject()
             of String:
-                toSeq(runes(iterable.s)).map((w) => newChar(w))
+                var acc = newSeqOfCap[Value](iterable.s.len)
+                for r in runes(iterable.s): acc.add(newChar(r))
+                acc
             of Integer:
-                (toSeq(1..iterable.i)).map((w) => newInteger(w))
+                var acc = newSeqOfCap[Value](iterable.i)
+                for i in 1..iterable.i: acc.add(newInteger(i))
+                acc
             else: # won't ever reach here
                 @[VNULL]
 
@@ -903,12 +916,12 @@ proc defineModule*(moduleName: string) =
                     var stoppedAt = -1
                     var res: ValueArray
                 do:
-                    stoppedAt = indx
                     if isTrue(stack.pop()):
+                        stoppedAt = indx
                         keepGoing = false
                         break
                 do:
-                    if stoppedAt < sourceLen:
+                    if stoppedAt >= 0 and stoppedAt < sourceLen:
                         res = tailFrom(stoppedAt)
                     pushResult(newBlock(res))
 
@@ -1241,12 +1254,20 @@ proc defineModule*(moduleName: string) =
             when not defined(WEB):
                 if doForever and (not aParallel.isNil):
                     Error_OperationNotPermitted("`.parallel` cannot combine with `.forever`")
-            doIterate(set[IterCap]({}), doForever, VNULL):
-                discard
-            do:
-                discard
-            do:
-                discard
+            if doForever:
+                doIterate(set[IterCap]({}), true, VNULL):
+                    discard
+                do:
+                    discard
+                do:
+                    discard
+            else:
+                doIterate(set[IterCap]({}), false, VNULL):
+                    discard
+                do:
+                    discard
+                do:
+                    discard
 
     builtin "map",
         alias       = unaliased,
