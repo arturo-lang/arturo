@@ -1276,13 +1276,12 @@ proc defineModule*(moduleName: string) =
         ; ~~~~~~~~~~~~~~~ Example ~~~~~~~~~~~~~~~~
         """:
             #=======================================================
+            bindAttrs:
+                initUsing(`with`): Block = newSeq[Value]()
+
             var definitions: ValueDict = newOrderedTable[string,Value]()
             var inherits: Value = VNULL
             var super: ValueDict = newOrderedTable[string,Value]()
-            var initUsing: ValueArray = @[]
-
-            if checkAttr("with"):
-                initUsing = aWith.a
 
             dispatch:
                 Block(a):
