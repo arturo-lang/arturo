@@ -700,8 +700,8 @@ proc defineModule*(moduleName: string) =
             ]
         """:
             #=======================================================
-            case xKind:
-                of Block:
+            dispatch:
+                Block(_):
                     if likely(yKind==Integer):
                         push(GetArrayIndex(x, y.i))
                     elif yKind==Range:
@@ -714,7 +714,7 @@ proc defineModule*(moduleName: string) =
                         push(newBlock(res))
                     else:
                         Error_UnsupportedKeyType(Dumper(y), Dumper(x), @[stringify(Integer), stringify(Range)])
-                of Range:
+                Range(_):
                     if likely(yKind==Integer):
                         if likely(y.i >= 0 and y.i < x.rng.len()):
                             push(x.rng[y.i])
@@ -734,7 +734,7 @@ proc defineModule*(moduleName: string) =
                         push(newBlock(res))
                     else:
                         Error_UnsupportedKeyType(Dumper(y), Dumper(x), @[stringify(Integer), stringify(Range)])
-                of Binary:
+                Binary(_):
                     if likely(yKind==Integer):
                         if likely(y.i >= 0 and y.i < x.n.len):
                             push(newInteger(int(x.n[y.i])))
@@ -742,7 +742,7 @@ proc defineModule*(moduleName: string) =
                             Error_OutOfBounds(y.i, Dumper(x), x.n.len-1, "Binary")
                     else:
                         Error_UnsupportedKeyType(Dumper(y), Dumper(x), @[stringify(Integer)])
-                of Bytecode:
+                Bytecode(_):
                     case yKind
                         of String, Word, Literal:
                             if ("data" == y.s):
@@ -763,36 +763,22 @@ proc defineModule*(moduleName: string) =
                                 Error_InvalidIndex(y.i, Dumper(x), "You may use `0` to get the data of a Bytecode value, and `1` to get the code block; every other value is not accepted.")
                         else:
                             Error_UnsupportedKeyType(Dumper(y), Dumper(x), @[stringify(String), stringify(Word), stringify(Literal), stringify(Integer)])
-                of Dictionary:
-                    case yKind:
-                        of String, Word, Literal:
-                            push(GetDictionaryKey(x, y.s))
-                        else:
-                            push(GetDictionaryKey(x, $(y)))
-                of Object:
-                    case yKind:
-                        of String, Word, Literal:
-                            if (let got = GetObjectKey(x, y.s, withError=false); not got.isNil):
-                                push(got)
-                            elif x.magic.fetch(GetM) and (not hadAttr("field")):
-                                mgk(@[x, y]) # value already pushed
-                            else:
-                                discard GetObjectKey(x, y.s) # Merely to trigger the error
-                        else:
-                            if (let got = GetObjectKey(x, $(y), withError=false); not got.isNil):
-                                push(got)
-                            elif x.magic.fetch(GetM) and (not hadAttr("field")):
-                                mgk(@[x, y]) # value already pushed
-                            else:
-                                discard GetObjectKey(x, $(y)) # Merely to trigger the error
-                of Store:
+                Dictionary(_):
+                    let key = if yKind in {String, Word, Literal}: y.s else: $(y)
+                    push(GetDictionaryKey(x, key))
+                Object(_):
+                    let key = if yKind in {String, Word, Literal}: y.s else: $(y)
+                    if (let got = GetObjectKey(x, key, withError=false); not got.isNil):
+                        push(got)
+                    elif x.magic.fetch(GetM) and (not hadAttr("field")):
+                        mgk(@[x, y]) # value already pushed
+                    else:
+                        discard GetObjectKey(x, key) # Merely to trigger the error
+                Store(_):
                     when not defined(WEB):
-                        case yKind:
-                            of String, Word, Literal:
-                                push(getStoreKey(x.sto, y.s))
-                            else:
-                                push(getStoreKey(x.sto, $(y)))
-                of String:
+                        let key = if yKind in {String, Word, Literal}: y.s else: $(y)
+                        push(getStoreKey(x.sto, key))
+                String(_):
                     if likely(yKind==Integer):
                         if likely(y.i >= 0 and y.i < x.s.runeLen()):
                             push(newChar(x.s.runeAtPos(y.i)))
@@ -812,7 +798,7 @@ proc defineModule*(moduleName: string) =
                         push(newString($(res)))
                     else:
                         Error_UnsupportedKeyType(Dumper(y), Dumper(x), @[stringify(Integer), stringify(Range)])
-                of Date:
+                Date(_):
                     if likely(yKind in {String, Word, Literal}):
                         let got = x.e.getOrDefault(y.s, nil)
                         if got.isNil:
@@ -823,7 +809,7 @@ proc defineModule*(moduleName: string) =
                     else:
                         Error_UnsupportedKeyType(Dumper(y), Dumper(x), @[stringify(String), stringify(Word), stringify(Literal)])
 
-                of Complex:
+                Complex(_):
                     case yKind
                         of String, Word, Literal:
                             if ("real" == y.s or "re" == y.s):
@@ -842,7 +828,7 @@ proc defineModule*(moduleName: string) =
                                 Error_InvalidIndex(y.i, Dumper(x), "You may use `0` to get the real part of a Complex value, or `1` to get the imaginary part; every other value is not accepted.")
                         else:
                             Error_UnsupportedKeyType(Dumper(y), Dumper(x), @[stringify(String), stringify(Word), stringify(Literal), stringify(Integer)])
-                of Error:
+                Error(_):
                     if yKind in {String, Word, Literal}:
                         case y.s
                         of "message":
@@ -853,7 +839,7 @@ proc defineModule*(moduleName: string) =
                             Error_InvalidKey(y.s, Dumper(x), "You may use `message` to get the message of an Error value, and `kind` to get its ErrorKind; every other value is not accepted.")
                     else:
                         Error_UnsupportedKeyType(Dumper(y), Dumper(x), @[stringify(String), stringify(Word), stringify(Literal)])
-                of ErrorKind:
+                ErrorKind(_):
                     if yKind in {String, Word, Literal}:
                         if y.s == "label":
                             push(newString(x.errkind.label))
@@ -863,8 +849,7 @@ proc defineModule*(moduleName: string) =
                             Error_InvalidKey(y.s, Dumper(x), "You may use `label` to get the main label of an ErrorKind value, and `description` to get its description; every other value is not accepted.")
                     else:
                         Error_UnsupportedKeyType(Dumper(y), Dumper(x), @[stringify(String), stringify(Word), stringify(Literal)])
-                else: 
-                    discard
+                _: discard
 
     # TODO(Collections\index) add `.from:` & `.to:` options to search in range
     #  The two options don't have to be used at the same time. For example:
