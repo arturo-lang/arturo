@@ -193,9 +193,9 @@ proc defineModule*(moduleName: string) =
             ; gave write permission to 'others'
             """:
                 #=======================================================
-                dispatch:
-                    String(s):
-                        try:
+                try:
+                    dispatch:
+                        String(s):
                             on set(setVal: Dictionary):
                                 var source = s
                                 var perms: set[FilePermission]
@@ -234,9 +234,8 @@ proc defineModule*(moduleName: string) =
                                 }.toOrderedTable
 
                                 push(newDictionary(permsDict))
-
-                        except OSError:
-                            push(VNULL)
+                except OSError:
+                    push(VNULL)
 
         # TODO(Files\read) add support for different delimiters when in `.csv` mode
         #  this could be something as simple as `.with:` or `.delimiter:`, or `.delimited:`
