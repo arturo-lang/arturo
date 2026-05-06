@@ -1952,145 +1952,79 @@ proc defineModule*(moduleName: string) =
             ; => #[age: 35 income: 5000 surname: "Doe" name: "John" ]
         """:
             #=======================================================
-            var sortOrdering = SortOrder.Ascending
+            bindAttrs:
+                descending: Logical
 
-            if (hadAttr("descending")):
-                sortOrdering = SortOrder.Descending
+            let sortOrdering =
+                if descending: SortOrder.Descending
+                else:          SortOrder.Ascending
 
-            if xKind == Block:
-                if x.a.len == 0: push(newBlock())
-                else:
-                    if checkAttr("by"):
-                        if x.a.len > 0:
-                            var sorted: ValueArray
-
-                            if x.a[0].kind == Dictionary:
-                                sorted = x.a.sorted(
-                                    proc (v1, v2: Value): int =
+            proc sortBlockArr(arr: var ValueArray) =
+                if arr.len == 0: return
+                if checkAttr("by"):
+                    if arr[0].kind == Dictionary:
+                        arr.sort(proc (v1, v2: Value): int =
                                     cmp(v1.d[aBy.s], v2.d[aBy.s]),
-                                            order = sortOrdering)
-                            else:
-                                sorted = x.a.sorted(
-                                    proc (v1, v2: Value): int =
+                                 order = sortOrdering)
+                    else:
+                        arr.sort(proc (v1, v2: Value): int =
                                     cmp(v1.o[aBy.s], v2.o[aBy.s]),
-                                            order = sortOrdering)
-
-                            push(newBlock(sorted))
-                        else:
-                            push(newDictionary())
-                    else:
-                        if checkAttr("as"):
-                            push(newBlock(x.a.unisorted(aAs.s,
-                                    sensitive = hadAttr("sensitive"),
-                                    order = sortOrdering)))
-                        else:
-                            if (hadAttr("sensitive")):
-                                push(newBlock(x.a.unisorted("en",
-                                        sensitive = true, order = sortOrdering)))
-                            else:
-                                if x.a[0].kind == String:
-                                    push(newBlock(x.a.unisorted("en",
-                                            order = sortOrdering)))
-                                else:
-                                    push(newBlock(x.a.sorted(
-                                            order = sortOrdering)))
-
-            elif xKind == Dictionary:
-                var sorted = x.d
-
+                                 order = sortOrdering)
+                    return
                 if checkAttr("as"):
-                    push(newDictionary(sorted.unisorted(aAs.s, 
-                        sensitive = hadAttr("sensitive"),
-                        order = sortOrdering, 
-                        byValue = hadAttr("values"))))
+                    arr.unisort(aAs.s, sensitive = hadAttr("sensitive"),
+                                order = sortOrdering)
+                    return
+                if hadAttr("sensitive"):
+                    arr.unisort("en", sensitive = true, order = sortOrdering)
+                    return
+                if arr[0].kind == String:
+                    arr.unisort("en", order = sortOrdering)
                 else:
-                    if (hadAttr("sensitive")):
-                        push(newDictionary(sorted.unisorted("en", 
-                            sensitive = true,
-                            order = sortOrdering, 
-                            byValue = hadAttr("values"))))
-                    else:
-                        var isString = false
-                        for v in values(sorted):
-                            if v.kind == String:
-                                isString = true
-                            break
+                    arr.sort(order = sortOrdering)
 
-                        if isString:
-                            push(newDictionary(sorted.unisorted("en",
-                                order = sortOrdering,
-                                byValue = hadAttr("values"))))
-                        else:
-                            var res = newOrderedTable[string, Value]()
-                            for k, v in sorted.pairs:
-                                res[k] = v
-
-                            if hadAttr("values"):
-                                res.sort(proc (x, y: (string, Value)): int = 
-                                    cmp(x[1], y[1])
-                                , order = sortOrdering)
-                            else:
-                                res.sort(proc (x, y: (string, Value)): int = 
-                                    cmp(x[0], y[0])
-                                , order = sortOrdering)
-
-                            push(newDictionary(res))
-
-            else:
-                ensureInPlaceAny()
-                if InPlaced.kind == Block:
-                    if InPlaced.a.len > 0:
-                        if checkAttr("by"):
-                            InPlaced.a.sort(
-                                proc (v1, v2: Value): int =
-                                cmp(v1.d[aBy.s], v2.d[aBy.s]),
-                                        order = sortOrdering)
-                        else:               
-                            if checkAttr("as"):
-                                InPlaced.a.unisort(aAs.s, sensitive = hadAttr(
-                                        "sensitive"), order = sortOrdering)
-                            else:
-                                if (hadAttr("sensitive")):
-                                    InPlaced.a.unisort("en", sensitive = true,
-                                            order = sortOrdering)
-                                else:
-                                    if InPlaced.a[0].kind == String:
-                                        InPlaced.a.unisort("en",
-                                                order = sortOrdering)
-                                    else:
-                                        InPlaced.a.sort(order = sortOrdering)
+            proc sortDictTbl(dt: var ValueDict) =
+                if checkAttr("as"):
+                    dt.unisort(aAs.s, sensitive = hadAttr("sensitive"),
+                               order = sortOrdering,
+                               byValue = hadAttr("values"))
+                    return
+                if hadAttr("sensitive"):
+                    dt.unisort("en", sensitive = true,
+                               order = sortOrdering,
+                               byValue = hadAttr("values"))
+                    return
+                var isString = false
+                for v in values(dt):
+                    if v.kind == String: isString = true
+                    break
+                if isString:
+                    dt.unisort("en", order = sortOrdering,
+                               byValue = hadAttr("values"))
+                elif hadAttr("values"):
+                    dt.sort(proc (x, y: (string, Value)): int =
+                                cmp(x[1], y[1]),
+                            order = sortOrdering)
                 else:
-                    if checkAttr("as"):
-                        InPlaced.d.unisort(aAs.s, 
-                            sensitive = hadAttr("sensitive"),
-                            order = sortOrdering, 
-                            byValue = hadAttr("values"))
-                    else:
-                        if (hadAttr("sensitive")):
-                            InPlaced.d.unisort("en", 
-                                sensitive = true,
-                                order = sortOrdering, 
-                                byValue = hadAttr("values"))
-                        else:
-                            var isString = false
-                            for v in values(InPlaced.d):
-                                if v.kind == String:
-                                    isString = true
-                                break
+                    dt.sort(proc (x, y: (string, Value)): int =
+                                cmp(x[0], y[0]),
+                            order = sortOrdering)
 
-                            if isString:
-                                InPlaced.d.unisort("en",
-                                    order = sortOrdering,
-                                    byValue = hadAttr("values"))
-                            else:
-                                if hadAttr("values"):
-                                    InPlaced.d.sort(proc (x, y: (string, Value)): int = 
-                                        cmp(x[1], y[1])
-                                    , order = sortOrdering)
-                                else:
-                                    InPlaced.d.sort(proc (x, y: (string, Value)): int = 
-                                        cmp(x[0], y[0])
-                                    , order = sortOrdering)
+            dispatchWithLiteral:
+                Block(a):
+                    value:
+                        var copy = a
+                        sortBlockArr(copy)
+                        push(newBlock(copy))
+                    inplace:
+                        sortBlockArr(a)
+                Dictionary(d):
+                    value:
+                        var copy = d
+                        sortDictTbl(copy)
+                        push(newDictionary(copy))
+                    inplace:
+                        sortDictTbl(d)
 
     # TODO(Collections\split) Add better support for unicode strings
     #  Currently, simple split works fine - but using different attributes (at, every, by, etc) doesn't
