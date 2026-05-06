@@ -277,3 +277,114 @@ print #.raw flatten.once cluster.value 1..10 'x [
         (prime? x)? -> "prime" 
                     -> "composite"
     ]
+; arrange
+ensure [equal? arrange ["the" "brown" "fox" "jumped" "over" "the" "lazy" "dog"] => size  ["the" "fox" "the" "dog" "over" "lazy" "brown" "jumped"]]
+ensure [equal? arrange [3 1 4 1 5 9 2 6] 'x -> x  [1 1 2 3 4 5 6 9]]
+ensure [equal? arrange.descending [1 2 3 4 5] 'x -> x  [5 4 3 2 1]]
+ensure [equal? arrange.descending 1..5 'x -> size factors.prime x  [4 2 3 5 1]]
+ensure [equal? arrange [] 'x -> x  []]
+ensure [equal? arrange [42] 'x -> x  [42]]
+ensure [equal? arrange.with:'i [10 20 30] 'x -> i  [10 20 30]]
+
+; collect
+ensure [equal? collect [1 3 5 4 6 7] => odd?  [1 3 5]]
+ensure [equal? collect 1..5 'x -> x < 3  [1 2]]
+ensure [equal? collect [1 3 5] => odd?  [1 3 5]]
+ensure [equal? collect [2 4 6] => odd?  []]
+ensure [equal? collect [] => odd?  []]
+ensure [equal? collect.after [4 6 3 5 2 0 1] => odd?  [3 5 2 0 1]]
+ensure [equal? collect.after 1..6 'x -> x > 3  [4 5 6]]
+ensure [equal? collect.after [2 4 6] => odd?  []]
+ensure [equal? collect.after [] => odd?  []]
+
+; enumerate
+ensure [equal? enumerate 1..10 => odd?  5]
+ensure [equal? enumerate 1..10 => even?  5]
+ensure [equal? enumerate [] => odd?  0]
+ensure [equal? enumerate [1 2 3 4 5] 'x -> x > 0  5]
+ensure [equal? enumerate [1 2 3 4 5] 'x -> x > 10  0]
+ensure [equal? enumerate.with:'i ["a" "b" "c" "d"] 'x -> i < 3  3]
+ensure [equal? enumerate 1..6 [x y] -> x < y  3]
+
+; gather
+g1: gather [1 2 3 4 5 6] 'x -> x % 2
+ensure [equal? g1\0  [2 4 6]]
+ensure [equal? g1\1  [1 3 5]]
+g2: gather 1..6 'x -> x % 3
+ensure [equal? g2\0  [3 6]]
+ensure [equal? g2\1  [1 4]]
+ensure [equal? g2\2  [2 5]]
+g3: gather.with:'i ["one" "two" "three" "four"] 'x -> i % 2
+ensure [equal? g3\0  ["one" "three"]]
+ensure [equal? g3\1  ["two" "four"]]
+ensure [zero? size keys gather [] 'x -> x]
+
+; maximum
+ensure [equal? maximum 1..10 'x -> size factors.prime x  8]
+ensure [equal? maximum 1..5 'x -> x*x  5]
+ensure [equal? maximum.value 1..5 'x -> x*x  [5 25]]
+ensure [equal? maximum [3 1 4 1 5 9 2] 'x -> x  9]
+ensure [equal? maximum [42] 'x -> x  42]
+ensure [equal? maximum.value [42] 'x -> x  [42 42]]
+ensure [equal? maximum ["foo" "barbaz" "qux"] 'x -> size x  "barbaz"]
+
+; minimum
+ensure [equal? minimum [4 17 20] 'x -> size factors.prime x  17]
+ensure [equal? minimum 1..5 'x -> x*x  1]
+ensure [equal? minimum.value 1..5 'x -> x*x  [1 1]]
+ensure [equal? minimum [3 1 4 1 5 9 2] 'x -> x  1]
+ensure [equal? minimum [42] 'x -> x  42]
+ensure [equal? minimum.value [42] 'x -> x  [42 42]]
+ensure [equal? minimum ["foo" "barbaz" "qux"] 'x -> size x  "foo"]
+
+; iteration capture safety
+; regression tests for value-aliasing 
+; !! Storing per-iter values into a list MUST preserve the
+; per-iter values, not alias a single mutating slot (last-iter-wins
+; symptom).
+acc: []
+loop 1..5 'x [
+    'acc ++ x
+]
+ensure [equal? acc  [1 2 3 4 5]]
+
+acc2: []
+loop.with:'i ["a" "b" "c"] 'x [
+    'acc2 ++ @[@[i x]]
+]
+ensure [equal? acc2  [[0 "a"] [1 "b"] [2 "c"]]]
+
+acc3: []
+loop 1..6 [a b][
+    'acc3 ++ @[@[a b]]
+]
+ensure [equal? acc3  [[1 2] [3 4] [5 6]]]
+
+ensure [equal? map 1..5 'x -> x  [1 2 3 4 5]]
+ensure [equal? select 1..5 'x -> true  [1 2 3 4 5]]
+ensure [equal? filter 1..5 'x -> false  [1 2 3 4 5]]
+
+; iteration over different source kinds
+ensure [equal? map "abc" 'c [upper to :string c]  ["A" "B" "C"]]
+ensure [equal? map 5 'i -> i  [1 2 3 4 5]]
+ensure [equal? map 1..3 'x -> x*x  [1 4 9]]
+ensure [equal? select [1 2 3 4 5 6] => even?  [2 4 6]]
+ensure [equal? select #[a:1 b:2 c:3] [k v] -> v > 1  ["b" 2 "c" 3]]
+n: 0
+loop "abc" 'c [
+    'n ++ 1
+]
+ensure [equal? n  3]
+
+; empty input handling
+ensure [equal? map [] 'x -> x*x  []]
+ensure [equal? select [] => odd?  []]
+ensure [equal? filter [] => odd?  []]
+ensure [equal? collect [] => odd?  []]
+ensure [equal? enumerate [] => odd?  0]
+ensure [equal? some? [] => true  false]
+ensure [equal? every? [] => true  true]
+ensure [zero? size keys gather [] 'x -> x]
+ensure [equal? arrange [] 'x -> x  []]
+ensure [equal? maximum [] 'x -> x  null]
+ensure [equal? minimum [] 'x -> x  null]
