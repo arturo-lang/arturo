@@ -779,9 +779,8 @@ proc defineModule*(moduleName: string) =
         """:
             #=======================================================
             bindAttrs:
-                leading(start): Logical
-
-            var trailing = hadAttr("end")
+                leading(start):  Logical
+                trailing(`end`): Logical
 
             var stripStart = leading
             var stripEnd   = trailing
