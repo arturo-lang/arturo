@@ -1426,97 +1426,65 @@ proc defineModule*(moduleName: string) =
             remove.instance.once [1 [6 2] 5 3 [6 2] 4 5 6] [6 2]  ; => [1 5 3 [6 2] 4 5 6]
         """:
             #=======================================================
+            proc removeFromString(s: string): Value =
+                if hadAttr("once"):
+                    if yKind == String: return newString(s.removeFirst(y.s))
+                    else:               return newString(s.removeFirst($(y.c)))
+                if hadAttr("prefix"):
+                    var ret = s; ret.removePrefix(y.s); return newString(ret)
+                if hadAttr("suffix"):
+                    var ret = s; ret.removeSuffix(y.s); return newString(ret)
+                newString(s.removeAll(y))
+
+            proc removeFromBlock(a: ValueArray): Value =
+                if yKind == Block and hadAttr("instance"):
+                    if hadAttr("once"): return newBlock(a.removeFirstInstance(y))
+                    return newBlock(a.removeAllInstances(y))
+                if hadAttr("once"):  return newBlock(a.removeFirst(y))
+                if hadAttr("index"): return newBlock(a.removeByIndex(y.i))
+                newBlock(a.removeAll(y))
+
+            proc removeFromDict(d: ValueDict): Value =
+                let key = hadAttr("key")
+                if hadAttr("once"): return newDictionary(d.removeFirst(y, key))
+                newDictionary(d.removeAll(y, key))
+
+            # Object's magic-method dispatch doesn't fit the kind grid; handle
+            # it (and the non-magic Object case) outside `dispatch`.
+            if xKind == Object:
+                if x.magic.fetch(RemoveM):
+                    mgk(@[x, y])
+                else:
+                    let key = hadAttr("key")
+                    if hadAttr("once"):
+                        push(newObject(x.proto, x.o.removeFirst(y, key), x.magic))
+                    else:
+                        push(newObject(x.proto, x.o.removeAll(y, key), x.magic))
+                return
             if xKind in {Literal, PathLiteral}:
                 ensureInPlaceAny()
-                if InPlaced.kind == String:
-                    if (hadAttr("once")):
-                        if yKind == String:
-                            SetInPlaceAny(newString(InPlaced.s.removeFirst(y.s)))
-                        else:
-                            SetInPlaceAny(newString(InPlaced.s.removeFirst($(y.c))))
-                    elif (hadAttr("prefix")):
-                        InPlaced.s.removePrefix(y.s)
-                    elif (hadAttr("suffix")):
-                        InPlaced.s.removeSuffix(y.s)
-                    else:
-                        SetInPlaceAny(newString(InPlaced.s.removeAll(y)))
-                elif InPlaced.kind == Block:
-                    if yKind == Block and hadAttr("instance"):
-                        if hadAttr("once"):
-                            InPlaced.a = InPlaced.a.removeFirstInstance(y)
-                        else:
-                            InPlaced.a = Inplaced.a.removeAllInstances(y)
-                    elif (hadAttr("once")):
-                        SetInPlaceAny(newBlock(InPlaced.a.removeFirst(y)))
-                    elif (hadAttr("index")):
-                        # TODO(General) All `SetInPlace` or `InPlace=` that change the type of object should be changed
-                        #  It doesn't work when in-place changing passed parameters to a function
-                        #  The above is mostly a hack to get around this
-                        #  labels: bug, critical, vm
-                        InPlaced.a = InPlaced.a.removeByIndex(y.i)
-                        #SetInPlace(newBlock(InPlaced.a.removeByIndex(y.i)))
-                    else:
-                        SetInPlaceAny(newBlock(InPlaced.a.removeAll(y)))
-                elif InPlaced.kind == Dictionary:
-                    let key = (hadAttr("key"))
-                    if (hadAttr("once")):
-                        SetInPlaceAny(newDictionary(InPlaced.d.removeFirst(y, key)))
-                    else:
-                        SetInPlaceAny(newDictionary(InPlaced.d.removeAll(y, key)))
-                elif InPlaced.kind == Object:
+                if InPlaced.kind == Object:
                     if InPlaced.magic.fetch(RemoveM):
                         pushAttr("inplace", VTRUE)
-                        mgk(@[InPlaced,y])
+                        mgk(@[InPlaced, y])
                     else:
-                        let key = (hadAttr("key"))
-                        if (hadAttr("once")):
+                        let key = hadAttr("key")
+                        if hadAttr("once"):
                             SetInPlaceAny(newObject(InPlaced.proto, InPlaced.o.removeFirst(y, key), InPlaced.magic))
                         else:
                             SetInPlaceAny(newObject(InPlaced.proto, InPlaced.o.removeAll(y, key), InPlaced.magic))
-            else:
-                if xKind == String:
-                    if (hadAttr("once")):
-                        if yKind == String:
-                            push(newString(x.s.removeFirst(y.s)))
-                        else:
-                            push(newString(x.s.removeFirst($(y.c))))
-                    elif (hadAttr("prefix")):
-                        var ret = x.s
-                        ret.removePrefix(y.s)
-                        push(newString(ret))
-                    elif (hadAttr("suffix")):
-                        var ret = x.s
-                        ret.removeSuffix(y.s)
-                        push(newString(ret))
-                    else:
-                        push(newString(x.s.removeAll(y)))
-                elif xKind == Block:
-                    if yKind == Block and hadAttr("instance"):
-                        if hadAttr("once"):
-                            push(newBlock(x.a.removeFirstInstance(y)))
-                        else:
-                            push(newBlock(x.a.removeAllInstances(y)))
-                    elif (hadAttr("once")):
-                        push(newBlock(x.a.removeFirst(y)))
-                    elif (hadAttr("index")):
-                        push(newBlock(x.a.removeByIndex(y.i)))
-                    else:
-                        push(newBlock(x.a.removeAll(y)))
-                elif xKind == Dictionary:
-                    let key = (hadAttr("key"))
-                    if (hadAttr("once")):
-                        push(newDictionary(x.d.removeFirst(y, key)))
-                    else:
-                        push(newDictionary(x.d.removeAll(y, key)))
-                elif xKind == Object:
-                    if x.magic.fetch(RemoveM):
-                        mgk(@[x, y]) # already pushed value
-                    else:
-                        let key = (hadAttr("key"))
-                        if (hadAttr("once")):
-                            push(newObject(x.proto, x.o.removeFirst(y, key), x.magic))
-                        else:
-                            push(newObject(x.proto, x.o.removeAll(y, key), x.magic))
+                    return
+
+            dispatchWithLiteral:
+                (String(s), _):
+                    value:   push(removeFromString(s))
+                    inplace: SetInPlaceAny(removeFromString(s))
+                (Block(a), _):
+                    value:   push(removeFromBlock(a))
+                    inplace: SetInPlaceAny(removeFromBlock(a))
+                (Dictionary(d), _):
+                    value:   push(removeFromDict(d))
+                    inplace: SetInPlaceAny(removeFromDict(d))
 
     builtin "repeat",
         alias       = unaliased,
