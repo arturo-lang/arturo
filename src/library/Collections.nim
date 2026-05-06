@@ -2573,17 +2573,13 @@ proc defineModule*(moduleName: string) =
             ; Hello John
         """:
             #=======================================================
-            var needle: string
-            if yKind == String: needle = y.s
-            else: needle = $(y)
+            let needle = if yKind == String: y.s else: $(y)
 
-            if xKind == Dictionary:
-                push(newLogical(x.d.hasKey(needle)))
-            else:
-                if unlikely(x.magic.fetch(KeyQM)):
-                    mgk(@[x, y]) # already pushes value
-                else:
-                    push(newLogical(x.o.hasKey(needle)))
+            dispatch:
+                Dictionary(d): push(newLogical(d.hasKey(needle)))
+                Object(o):
+                    if unlikely(x.magic.fetch(KeyQM)): mgk(@[x, y])
+                    else:                              push(newLogical(o.hasKey(needle)))
 
     builtin "one?",
         alias       = unaliased, 
