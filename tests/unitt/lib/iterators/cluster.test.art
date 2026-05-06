@@ -15,7 +15,7 @@ describe "Allowed Operations" [
     ]
 
     it "cluster.value tags each cluster with its predicate value" [
-        expects -> equal? [[false [1 4 6 8 9 10]] [true [2 3 5 7]]]
+        expects -> equal? @[@[false @[1 4 6 8 9 10]] @[true @[2 3 5 7]]]
                           cluster.value 1..10 'x -> prime? x
     ]
 
