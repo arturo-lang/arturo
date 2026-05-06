@@ -2135,131 +2135,61 @@ proc defineModule*(moduleName: string) =
             ; => [ [1 2 3 4] [5 6 7 8 9] ]
         """:
             #=======================================================
-            if xKind in {Literal, PathLiteral}:
-                ensureInPlaceAny()
-                if InPlaced.kind == String:
-                    if (hadAttr("words")):
-                        SetInPlaceAny(newStringBlock(strutils.splitWhitespace(InPlaced.s)))
-                    elif (hadAttr("lines")):
-                        SetInPlaceAny(newStringBlock(InPlaced.s.splitLines()))
-                    elif (hadAttr("path")):
-                        var strStart = 0
-                        var strEnd = 1
-                        if InPlaced.s.startsWith(DirSep) or InPlaced.s.startsWith(AltSep):
-                            strStart = 1
-                        if InPlaced.s.endsWith(DirSep) or InPlaced.s.endsWith(AltSep):
-                            strEnd = 2
-                        SetInPlaceAny(newStringBlock(InPlaced.s[strStart..^strEnd].split({DirSep,AltSep})))
-                    elif checkAttr("by"):
-                        if aBy.kind == String:
-                            SetInPlaceAny(newStringBlock(InPlaced.s.split(aBy.s)))
-                        elif aBy.kind == Char:
-                            SetInPlaceAny(newStringBlock(InPlaced.s.split(aBy.c)))
-                        elif aBy.kind == Regex:
-                            SetInPlaceAny(newStringBlock(InPlaced.s.split(aBy.rx)))
-                        else:
-                            SetInPlaceAny(newStringBlock(toSeq(
-                                    InPlaced.s.tokenize(aBy.a.map((k)=>(requireAttrValue("by",k,{String});k.s))))))
-                    elif checkAttr("at"):
-                        SetInPlaceAny(newStringBlock(@[InPlaced.s[0..aAt.i-1],
-                                InPlaced.s[aAt.i..^1]]))
-                    elif checkAttr("every"):
-                        var ret: seq[string]
-                        var length = InPlaced.s.len
-                        var i = 0
-                        
-                        while i < length:
-                            if i + aEvery.i <= length:
-                                ret.add(InPlaced.s[i..i+aEvery.i-1])
-                                i += aEvery.i
-                            else:
-                                ret.add(InPlaced.s[i..^1])
-                                i += aEvery.i
-
-                        SetInPlaceAny(newStringBlock(ret))
-
-                    else:
-                        SetInPlaceAny(newStringBlock(toSeq(runes(InPlaced.s)).map((w) =>
-                                $(w))))
-                else:
-                    if checkAttr("at"):
-                        SetInPlaceAny(newBlock(@[newBlock(InPlaced.a[0..aAt.i-1]),
-                                newBlock(InPlaced.a[aAt.i..^1])]))
-                    elif checkAttr("every"):
-                        var ret: ValueArray
-                        var length = InPlaced.a.len
-                        var i = 0
-
-                        while i < length:
-                            if i + aEvery.i > length:
-                                ret.add(newBlock(InPlaced.a[i..^1]))
-                            else:
-                                ret.add(newBlock(InPlaced.a[i..i+aEvery.i-1]))
-                            i += aEvery.i
-
-                        SetInPlaceAny(newBlock(ret))
-                    else: discard
-
-            elif xKind == String:
-                if (hadAttr("words")):
-                    push(newStringBlock(strutils.splitWhitespace(x.s)))
-                elif (hadAttr("lines")):
-                    push(newStringBlock(x.s.splitLines()))
-                elif (hadAttr("path")):
+            proc splitStringValue(s: string): Value =
+                if hadAttr("words"):
+                    return newStringBlock(strutils.splitWhitespace(s))
+                if hadAttr("lines"):
+                    return newStringBlock(s.splitLines())
+                if hadAttr("path"):
                     var strStart = 0
-                    var strEnd = 1
-                    if x.s.startsWith(DirSep) or x.s.startsWith(AltSep):
-                        strStart = 1
-                    if x.s.endsWith(DirSep) or x.s.endsWith(AltSep):
-                        strEnd = 2
-                    push(newStringBlock(x.s[strStart..^strEnd].split({DirSep,AltSep})))
-                elif checkAttr("by"):
-                    if aBy.kind == String:
-                        push(newStringBlock(x.s.split(aBy.s)))
-                    elif aBy.kind == Char:
-                        push(newStringBlock(x.s.split(aBy.c)))
-                    elif aBy.kind == Regex:
-                        push(newStringBlock(x.s.split(aBy.rx)))
-                    else:
-                        push(newStringBlock(toSeq(x.s.tokenize(aBy.a.map((k)=>(requireAttrValue("by",k,{String});k.s))))))
-                elif checkAttr("at"):
-                    push(newStringBlock(@[x.s[0..aAt.i-1], x.s[aAt.i..^1]]))
-                elif checkAttr("every"):
-                    var ret: seq[string]
-                    var length = x.s.len
-                    var i = 0
-
-                    while i < length:
-                        if i + aEvery.i <= length:
-                            ret.add(x.s[i..i+aEvery.i-1])
-                            i += aEvery.i
-                        else:
-                            ret.add(x.s[i..^1])
-                            i += aEvery.i
-
-                    push(newStringBlock(ret))
-                
-                else:
-                    push(newStringBlock(toSeq(runes(x.s)).map((x) => $(x))))
-            else:
+                    var strEnd   = 1
+                    if s.startsWith(DirSep) or s.startsWith(AltSep): strStart = 1
+                    if s.endsWith(DirSep)   or s.endsWith(AltSep):   strEnd   = 2
+                    return newStringBlock(s[strStart..^strEnd].split({DirSep,AltSep}))
+                if checkAttr("by"):
+                    case aBy.kind
+                    of String: return newStringBlock(s.split(aBy.s))
+                    of Char:   return newStringBlock(s.split(aBy.c))
+                    of Regex:  return newStringBlock(s.split(aBy.rx))
+                    else:      return newStringBlock(toSeq(
+                                    s.tokenize(aBy.a.map((k)=>(requireAttrValue("by",k,{String});k.s)))))
                 if checkAttr("at"):
-                    push(newBlock(@[newBlock(x.a[0..aAt.i-1]), newBlock(
-                            x.a[aAt.i..^1])]))
-                elif checkAttr("every"):
-                    var ret: ValueArray
-                    var length = x.a.len
+                    return newStringBlock(@[s[0..aAt.i-1], s[aAt.i..^1]])
+                if checkAttr("every"):
+                    var ret: seq[string]
+                    let length = s.len
                     var i = 0
-
                     while i < length:
-                        if i+aEvery.i > length:
-                            ret.add(newBlock(x.a[i..^1]))
-                        else:
-                            ret.add(newBlock(x.a[i..i+aEvery.i-1]))
-
+                        if i + aEvery.i <= length: ret.add(s[i..i+aEvery.i-1])
+                        else:                     ret.add(s[i..^1])
                         i += aEvery.i
+                    return newStringBlock(ret)
+                newStringBlock(toSeq(runes(s)).map((w) => $(w)))
 
-                    push(newBlock(ret))
-                else: push(x)
+            proc splitBlockValue(a: ValueArray): Value =
+                if checkAttr("at"):
+                    return newBlock(@[newBlock(a[0..aAt.i-1]), newBlock(a[aAt.i..^1])])
+                if checkAttr("every"):
+                    var ret: ValueArray
+                    let length = a.len
+                    var i = 0
+                    while i < length:
+                        if i + aEvery.i > length: ret.add(newBlock(a[i..^1]))
+                        else:                    ret.add(newBlock(a[i..i+aEvery.i-1]))
+                        i += aEvery.i
+                    return newBlock(ret)
+
+            dispatchWithLiteral:
+                String(s):
+                    value:   push(splitStringValue(s))
+                    inplace: SetInPlaceAny(splitStringValue(s))
+                Block(a):
+                    value:
+                        let res = splitBlockValue(a)
+                        push(if res.isNil: x else: res)
+                    inplace:
+                        let res = splitBlockValue(a)
+                        if not res.isNil: SetInPlaceAny(res)
 
     builtin "squeeze",
         alias       = unaliased,
