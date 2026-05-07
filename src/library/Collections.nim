@@ -2025,6 +2025,7 @@ proc defineModule*(moduleName: string) =
                 path:  Logical
                 splitAt(at):       Integer = int.low
                 splitEvery(every): Integer = int.low
+                splitBy(by):       {String, Regex, Char, Block} = nil
 
             proc splitStringValue(s: string): Value =
                 if words:
@@ -2037,13 +2038,13 @@ proc defineModule*(moduleName: string) =
                     if s.startsWith(DirSep) or s.startsWith(AltSep): strStart = 1
                     if s.endsWith(DirSep)   or s.endsWith(AltSep):   strEnd   = 2
                     return newStringBlock(s[strStart..^strEnd].split({DirSep,AltSep}))
-                if checkAttr("by"):
-                    case aBy.kind
-                    of String: return newStringBlock(s.split(aBy.s))
-                    of Char:   return newStringBlock(s.split(aBy.c))
-                    of Regex:  return newStringBlock(s.split(aBy.rx))
+                if not splitBy.isNil:
+                    case splitBy.kind
+                    of String: return newStringBlock(s.split(splitBy.s))
+                    of Char:   return newStringBlock(s.split(splitBy.c))
+                    of Regex:  return newStringBlock(s.split(splitBy.rx))
                     else:      return newStringBlock(toSeq(
-                                    s.tokenize(aBy.a.map((k)=>(requireAttrValue("by",k,{String});k.s)))))
+                                    s.tokenize(splitBy.a.map((k)=>(requireAttrValue("by",k,{String});k.s)))))
                 if splitAt != int.low:
                     return newStringBlock(@[s[0..splitAt-1], s[splitAt..^1]])
                 if splitEvery != int.low:
