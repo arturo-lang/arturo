@@ -713,10 +713,15 @@ proc defineModule*(moduleName: string) =
             ; ]
         """:
             #=======================================================
+            bindAttrs:
+                pretty:    Logical
+                unwrapped: Logical
+                safe:      Logical
+
             push(newString(codify(x,
-                pretty = (hadAttr("pretty")), 
-                unwrapped = (hadAttr("unwrapped")), 
-                safeStrings = (hadAttr("safe"))
+                pretty = pretty,
+                unwrapped = unwrapped,
+                safeStrings = safe
             )))
 
     builtin "function",
