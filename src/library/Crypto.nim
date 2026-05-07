@@ -119,19 +119,18 @@ proc defineModule*(moduleName: string) =
         """:
             #=======================================================
             bindAttrs:
-                spaces:  Logical
-                slashes: Logical
+                spaces:           Logical
+                slashes:          Logical
+                srcEnc(`from`):   String = ""
+                destEnc(`to`):    String = ""
 
             dispatchWithLiteral:
                 String(s):
                     on url: s.urlencode(encodeSpaces=spaces, encodeSlashes=slashes)
                     _:
-                        var src  = "CP1252"
-                        var dest = "UTF-8"
-                        var hasFromTo = false
-                        if checkAttr("from"): src  = aFrom.s; hasFromTo = true
-                        if checkAttr("to"):   dest = aTo.s;   hasFromTo = true
-                        if hasFromTo:
+                        if srcEnc != "" or destEnc != "":
+                            let src  = if srcEnc != "":  srcEnc  else: "CP1252"
+                            let dest = if destEnc != "": destEnc else: "UTF-8"
                             when not defined(WEB): convert(s, srcEncoding=src, destEncoding=dest)
                             else:                  s
                         else:                  s.encode()
