@@ -1199,8 +1199,9 @@ proc defineModule*(moduleName: string) =
         ; when running the above code from a file
         """:
             #=======================================================
-            let isDistinct = hadAttr("distinct")
-            let isPublic = hadAttr("public")
+            bindAttrs:
+                isDistinct(`distinct`): Logical
+                isPublic(public):       Logical
             
             let argBlock {.cursor.} =
                 if xKind == Block: 
