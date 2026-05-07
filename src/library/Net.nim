@@ -153,9 +153,6 @@ proc defineModule*(moduleName: string) =
                     #=======================================================
                     dispatch:
                         (String(recipient), String(subject), String(message)):
-                            if checkAttr("using"):
-                                discard
-
                             retrieveConfig("mail", "using")
 
                             # TODO(Net\mail) raise error, if there is no configuration provided whatsoever
