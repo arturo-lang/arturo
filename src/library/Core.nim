@@ -204,15 +204,13 @@ proc defineModule*(moduleName: string) =
             ]
         """:
             #=======================================================
-            if checkAttr("external"):
+            bindAttrs:
+                externalLib(external): String = ""
+                expected(expect):      Type   = Nothing
+
+            if externalLib != "":
                 when not defined(WEB):
-                    let externalLibrary = aExternal.s
-
-                    var expected = Nothing
-                    if checkAttr("expect"):
-                        expected = aExpect.t
-
-                    push(execForeignMethod(externalLibrary, x.s, y.a, expected))
+                    push(execForeignMethod(externalLib, x.s, y.a, expected))
             else:
                 var fun: Value
 
