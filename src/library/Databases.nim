@@ -137,11 +137,10 @@ proc defineModule*(moduleName: string) =
         """:
             #=======================================================
             bindAttrs:
-                returnId(id): Logical
+                returnId(id):   Logical
+                rawWith(`with`): Block = @[]
 
-            var withArgs: seq[string]
-            if checkAttr("with"):
-                withArgs = aWith.a.map((x) => $(x))
+            let withArgs = rawWith.map((x) => $(x))
 
             dispatch:
                 (Database(_), String(s)):
