@@ -545,6 +545,9 @@ proc defineModule*(moduleName: string) =
 
         """:
             #=======================================================
+            bindAttrs:
+                padding(`with`): String = " "
+
             var count = 0
             if xKind in {Literal,PathLiteral}:
                 ensureInPlaceAny()
@@ -552,19 +555,14 @@ proc defineModule*(moduleName: string) =
             else:
                 count = indentation(x.s)
 
-            var padding = " "
-
             if checkAttr("n"):
                 count = aN.i
-
-            if checkAttr("with"):
-                padding = aWith.s
 
             if xKind in {Literal, PathLiteral}:
                 ensureInPlaceAny()
                 SetInPlaceAny(newString(unindent(InPlaced.s, count, padding)))
             else:
-                push(newString(unindent(x.s, count, padding))) 
+                push(newString(unindent(x.s, count, padding)))
 
     builtin "pad",
         alias       = unaliased, 
