@@ -428,8 +428,7 @@ All DONE: `average`, `deviation`, `kurtosis`, `median`, `skewness`, `variance`.
 All DONE: `all?`, `and?`, `any?`, `false?`, `nand?`, `nor?`, `not?`, `or?`, `true?`, `xnor?`, `xor?`.
 
 ### Numbers.nim
-- DONE: `abs`, `angle`, `ceil`, `conj`, `denominator`, `digits`, `even?`, `exp`, `factorial`, `factors`, `floor`, `gamma`, `gcd`, `hypot`, `lcm`, `ln`, `log`, `numerator`, `odd?`, `powmod`, `product`, `random`, `reciprocal`, `round`, `sign`, `sqrt`, `sum`, `infinite?`, `negative?`, `positive?`, `prime?`.
-- `clamp` — M — needs **x-axis wildcard in tuple clauses** (`(_, Range(rng))`). Today `dispatchParsePat` calls `allowWild=false` for `par[0]`. After feature lands: `dispatch` 2-axis with x as wildcard, y in {Range, Block}.
+- DONE: `abs`, `angle`, `ceil`, `clamp`, `conj`, `denominator`, `digits`, `even?`, `exp`, `factorial`, `factors`, `floor`, `gamma`, `gcd`, `hypot`, `lcm`, `ln`, `log`, `numerator`, `odd?`, `powmod`, `product`, `random`, `reciprocal`, `round`, `sign`, `sqrt`, `sum`, `infinite?`, `negative?`, `positive?`, `prime?`.
 - TRIG (out of sweep, per memory): `acos`, `acosh`, `acsec`, `acsech`, `actan`, `actanh`, `asec`, `asech`, `asin`, `asinh`, `atan`, `atan2`, `atanh`, `cos`, `cosh`, `csec`, `csech`, `ctan`, `ctanh`, `sec`, `sech`, `sin`, `sinh`, `tan`, `tanh` — X — `processTrigonometric` family.
 
 ### Colors.nim
@@ -504,7 +503,7 @@ All — X — `doIterate` macro family (block/bytecode action over collection ki
 
 ## Cross-cutting blockers and macro features still needed
 
-1. **x-axis wildcard in tuple clauses** — `(_, KIND(b))` form. Currently `dispatchParsePat(par[0], allowWild=false, …)` (lib.nim:231). Unblocks `Numbers/clamp` and any future "dispatch on y only with x as ANY-numeric" builtin. Single-line macro tweak.
+1. **x-axis wildcard in tuple clauses** — DONE (`ff419b6e6`). `(_, KIND(b))` parses; outer `case xKind` routes wildcards into the else branch's y-axis case. Allowed in `dispatch` only; `dispatchWithLiteral` errors (auto-wrap needs the x-kind). `Numbers/clamp` converted in `413c7d44b`.
 2. **`ErrorKind` in kind table** — `("errKind", "newErrorKind")` (already in lib.nim:104 actually — confirm via re-read) so `Exceptions/throw` can land. If it's already there, throw is just T not M.
 3. **Pre-dispatch `InPlaced` access (feature 4)** — only blocker for `Strings/outdent`. Niche, postpone.
 4. **`generateOperationA/B` integration** — separate refactor before Arithmetic/Bitwise residue can be unified. Already callout in the older "Future idea — fold `require` into `dispatch`" + "Future idea — perf / codegen improvements" sections.
@@ -574,7 +573,7 @@ Remaining raw `hadAttr`/`checkAttr` after Tier 1:
 
 After the 2026-05-02 sweep, all real TODOs are done. What remains:
 
-- **M (macro feature blockers):** `Numbers/clamp` (x-axis wildcard in tuple clauses); `Arithmetic/{add,sub,mul,div,mod,pow,fdiv,divmod,inc,dec,neg}` and `Bitwise/{and,or,xor,not,shr}` (`generateOperationA`/`generateOperationB` family — separate refactor).
+- **M (macro feature blockers):** `Arithmetic/{add,sub,mul,div,mod,pow,fdiv,divmod,inc,dec,neg}` and `Bitwise/{and,or,xor,not,shr}` (`generateOperationA`/`generateOperationB` family — separate refactor).
 - **X (deferred or out-of-scope):** Object-magic Phase E (`Collections/{get,set,remove,contains?,in?,key?}`), `Collections/{repeat,sort,split}`, `Strings/{match,match?,outdent}`, `Types/to`, all of `Iterators/*` (`doIterate` family), all of `Comparison/*` (operator wrappers; kind dispatch lives inside `getValuePair`/`||`), `Numbers/*` trig family, control-flow `Core/*`, `Core/{discard,dup,new,set?,ensure}` (trivial Any-bodies).
 - **D:** everything else is converted.
 
