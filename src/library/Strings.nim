@@ -444,16 +444,17 @@ proc defineModule*(moduleName: string) =
                     doNamed(named):     Logical
                     doBounds(bounds):   Logical
                     doFull(full):       Logical
+                    inRange(`in`):      Range = nil
 
                 var iFrom = 0
                 var iTo = int.high
 
-                if checkAttr("in"):
-                    iFrom = aIn.rng.start
+                if not inRange.isNil:
+                    iFrom = inRange.start
                     if iFrom < 0:
                         iFrom = 0
 
-                    iTo = aIn.rng.stop
+                    iTo = inRange.stop
                     if iTo >= x.s.len:
                         iTo = x.s.len-1
 
