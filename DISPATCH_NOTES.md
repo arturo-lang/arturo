@@ -523,17 +523,18 @@ Folded raw attrs into `bindAttrs` for: `Collections/sort` (`descending`/`sensiti
 Total raw `hadAttr`/`checkAttr` count in `src/library/*.nim` went from 132 → ~50. Remaining bucketed as:
 - **Ui (27):** `adhocPrivate` window handlers — different macro shape, `bindAttrs` doesn't apply.
 - **Iterators (15):** `doIterate` macro family.
-- **Collections (4):** `array of` (multi-kind), `get/set field` (Object magic), `split by` (multi-kind).
+- **Collections (2):** `get/set field` (Object magic).
 - **Core (2):** `import version` (non-trivial Version default), `when has` (Any).
-- **Strings (1):** `join with` (multi-kind).
+- **Strings (0):** all clean.
 - **Net (1):** `mail using` (dead `discard`).
 
 ### Tier 1 follow-up (2026-05-03 PM)
 Added: `Reflection/inspect` flags; `Strings/match` flags + `in` Range; `Strings/match?` `in`; `Strings/outdent` `with`/`n`; `Net/request` value attrs (`headers`/`proxy`/`certificate`); `System/execute` `args`; `Crypto/encode` `from`/`to`; `Databases/query` `with`; `Files/read` `delimiter`. (`bindAttrs` already accepts `nnkAccQuoted` so backticked Nim keywords work directly — Tier 3.1 turned out to be already in.)
 
 Remaining raw `hadAttr`/`checkAttr` after Tier 1:
-- `Strings/join` `with` — multi-kind {String, Char} value attr. Needs Tier 3.2 (`bindAttrs` multi-kind value attrs).
-- `Collections/array` `of` — multi-kind {Integer, Block}. Same Tier 3.2 blocker.
+- ~~`Strings/join` `with` — multi-kind {String, Char}~~ — DONE (`a8b0d1d79`) via Tier 3.2 (`{KIND, …}` syntax in `bindAttrs`).
+- ~~`Collections/array` `of` — multi-kind {Integer, Block}~~ — DONE (`94d5f11c4`).
+- ~~`Collections/split` `by` — multi-kind~~ — DONE (`5c54a8799`).
 - `Net/mail` `using` — dead `if checkAttr("using"): discard` followed by `retrieveConfig("mail", "using")`. Suspected stack-popping side effect; leave alone until `mail`/`retrieveConfig` semantics are reviewed.
 - `Core/*` + `Collections/*` still-unconverted builtins — cleanup happens with conversion.
 - `Ui/*` adhoc private handlers — different shape (`adhocPrivate(args, attrs)`); `bindAttrs` doesn't apply.
@@ -565,9 +566,10 @@ Remaining raw `hadAttr`/`checkAttr` after Tier 1:
 - **Builtins not yet on dispatch** — `Strings/outdent`, `Strings/match`/`match?`, all Object-magic Phase E (`Collections/get|set|remove|contains?|in?|key?`), `Collections/sort`, `Iterators/*`, control-flow `Core/*` (call/do/export/function/if/import/method/etc.), `Reflection/inspect`, etc. These keep their existing attr handling until the surrounding builtin is converted.
 
 ### Future macro work that would close the remaining gaps
-1. **Backticked attr names in `bindAttrs`** — accept `nnkAccQuoted` so `\`as\` `, `\`with\` `, `\`from\` `, `\`end\` `, `\`template\` ` etc. can become `bindAttrs:` declarations. Also supports the renaming form `local(\`as\`): KIND = …`. One small parser tweak in `bindAttrs`.
-2. **Multi-kind value attrs in `bindAttrs`** — allow `name: KIND_OR_KIND = default` (or `name: Value = …`) so `Collections/array`'s `of` and similar can be bound.
+1. ~~**Backticked attr names in `bindAttrs`**~~ — DONE (`bindAttrs` parser already accepted `nnkAccQuoted`).
+2. ~~**Multi-kind value attrs in `bindAttrs`**~~ — DONE (`d8b606f74`). `name: {KIND_A, KIND_B} = nil` binds the whole `Value`; user inspects `.kind`/`.s`/`.c`/etc. inline.
 3. **`bindAttrs` recording presence** — for value attrs where the existing code branches on `checkAttr("name")` separately from the value, expose a generated `name?: bool` companion. Cleaner than current `name.len > 0` / sentinel checks.
+4. ~~**x-axis wildcard in tuple clauses**~~ — DONE (`ff419b6e6`).
 
 ## TODO count (real conversions still pending, excluding X and M and NoArgs)
 
