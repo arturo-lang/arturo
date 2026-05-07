@@ -290,15 +290,16 @@ proc defineModule*(moduleName: string) =
         """:
             #=======================================================
             bindAttrs:
-                asPath(path):  Logical
-                asWords(words): Logical
-                asLines(lines): Logical
+                asPath(path):    Logical
+                asWords(words):  Logical
+                asLines(lines):  Logical
+                sepValue(`with`): {String, Char} = nil
 
             var sep: string
             if not asPath:
-                if checkAttr("with"):
-                    if likely(aWith.kind == String): sep = aWith.s
-                    else:                            sep = $(aWith.c)
+                if not sepValue.isNil:
+                    if likely(sepValue.kind == String): sep = sepValue.s
+                    else:                               sep = $(sepValue.c)
                 elif asWords: sep = " "
                 elif asLines: sep = "\n"
                 else:         sep = ""
