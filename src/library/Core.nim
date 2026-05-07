@@ -941,11 +941,15 @@ proc defineModule*(moduleName: string) =
                 ]
             """:
                 #=======================================================
-                
-                var branch = "main"
-                let latest = hadAttr("latest")
-                let verbose = hadAttr("verbose")
-                let lean = hadAttr("lean")
+                bindAttrs:
+                    latest:  Logical
+                    verbose: Logical
+                    lean:    Logical
+                    isMin(min): Logical
+                    branchAttr(branch): String = "main"
+                    onlyBlock(only):    Block  = @[]
+
+                var branch = branchAttr
                 var importOnly: seq[string] = @[]
 
                 when defined(BUNDLE):
@@ -973,13 +977,10 @@ proc defineModule*(moduleName: string) =
                     let multiple = pkgs.len > 1
                     
                     if checkAttr("version"):
-                        verspec = (hadAttr("min"), aVersion.version)
+                        verspec = (isMin, aVersion.version)
 
-                    if checkAttr("branch"):
-                        branch = aBranch.s
-
-                    if checkAttr("only"):
-                        importOnly = aOnly.a.map((w) =>  w.s)
+                    if onlyBlock.len > 0:
+                        importOnly = onlyBlock.map((w) => w.s)
 
                     let verboseBefore = VerbosePackager
                     if verbose:
