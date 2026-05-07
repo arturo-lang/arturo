@@ -612,15 +612,14 @@ macro bindAttrs*(body: untyped): untyped =
         if typeStmt.len != 1:
             error(macroName & ": expected a single type expression", typeStmt)
         let texp = typeStmt[0]
-        var kindIdent, defaultExpr: NimNode
-        if texp.kind == nnkIdent:
-            kindIdent = texp
+        var kindNode, defaultExpr: NimNode
+        if texp.kind in {nnkIdent, nnkCurly}:
+            kindNode = texp
         elif texp.kind == nnkAsgn and texp.len == 2:
-            kindIdent = texp[0]; defaultExpr = texp[1]
+            kindNode = texp[0]; defaultExpr = texp[1]
         else:
-            error(macroName & ": expected `KIND` or `KIND = default`", texp)
+            error(macroName & ": expected `KIND`, `{KIND, …}`, or with `= default`", texp)
 
-        let kindStr = $kindIdent
         let attrNameStr = nameStr(attrName)
         let attrLit = newStrLitNode(attrNameStr)
 
@@ -630,6 +629,23 @@ macro bindAttrs*(body: untyped): untyped =
         let localNamePragma = nnkPragmaExpr.newTree(
             localName, nnkPragma.newTree(ident("used")))
 
+        if kindNode.kind == nnkCurly:
+            # Multi-kind value attr: bind the whole Value (user inspects `.kind`
+            # / `.s` / `.c` etc. themselves). Default must be a Value expression
+            # (`nil`, `VNULL`, ...).
+            if defaultExpr == nil:
+                error(macroName & ": multi-kind attr requires a default Value", decl)
+            let aIdent = ident('a' & attrNameStr.capitalizeAscii())
+            result.add nnkVarSection.newTree(
+                nnkIdentDefs.newTree(localNamePragma, ident("Value"), defaultExpr))
+            result.add nnkIfStmt.newTree(nnkElifBranch.newTree(
+                newCall(ident("checkAttr"), attrLit),
+                newAssignment(localName, aIdent)
+            ))
+            continue
+
+        let kindStr = $kindNode
+
         if kindStr == "Logical" and defaultExpr == nil:
             # `let name {.used.} = hadAttr("attrName")`
             result.add nnkLetSection.newTree(
@@ -638,7 +654,7 @@ macro bindAttrs*(body: untyped): untyped =
         else:
             if defaultExpr == nil:
                 error(macroName & ": typed attr requires a default value", decl)
-            let (field, _) = dispatchFieldAndCtor(kindStr, kindIdent, macroName)
+            let (field, _) = dispatchFieldAndCtor(kindStr, kindNode, macroName)
             let aIdent = ident('a' & attrNameStr.capitalizeAscii())
             # var name {.used.} = default
             result.add nnkVarSection.newTree(
