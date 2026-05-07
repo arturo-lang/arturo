@@ -518,6 +518,17 @@ inside their bodies should switch to `bindAttrs:` (composable bools/value
 attrs) or `on attr:` ladders (mutually-exclusive selectors) where it doesn't
 fight a Nim keyword or value-attr-with-transformation pattern.
 
+### Tier 1 follow-up (2026-05-03 PM)
+Added: `Reflection/inspect` flags; `Strings/match` flags + `in` Range; `Strings/match?` `in`; `Strings/outdent` `with`/`n`; `Net/request` value attrs (`headers`/`proxy`/`certificate`); `System/execute` `args`; `Crypto/encode` `from`/`to`; `Databases/query` `with`; `Files/read` `delimiter`. (`bindAttrs` already accepts `nnkAccQuoted` so backticked Nim keywords work directly — Tier 3.1 turned out to be already in.)
+
+Remaining raw `hadAttr`/`checkAttr` after Tier 1:
+- `Strings/join` `with` — multi-kind {String, Char} value attr. Needs Tier 3.2 (`bindAttrs` multi-kind value attrs).
+- `Collections/array` `of` — multi-kind {Integer, Block}. Same Tier 3.2 blocker.
+- `Net/mail` `using` — dead `if checkAttr("using"): discard` followed by `retrieveConfig("mail", "using")`. Suspected stack-popping side effect; leave alone until `mail`/`retrieveConfig` semantics are reviewed.
+- `Core/*` + `Collections/*` still-unconverted builtins — cleanup happens with conversion.
+- `Ui/*` adhoc private handlers — different shape (`adhocPrivate(args, attrs)`); `bindAttrs` doesn't apply.
+- `Iterators/*` — `doIterate` family.
+
 ### Done in this pass
 - **Bitwise**: `shl`.
 - **Collections**: `chop`, `dictionary` (raw/lower; `with` kept), `drop`, `range`, `unique`.
