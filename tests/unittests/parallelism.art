@@ -118,6 +118,19 @@ do [
     t: do.async [pause 5000]
     cancel t
     ensure -> null = wait t
+    ensure -> not? failed? t
+    passed
+
+]
+
+
+topic "pause from main pumps the fiber scheduler"
+do [
+
+    t: do.async [pause 200 99]
+    pause 400
+    ensure -> finished? t
+    ensure -> 99 = wait t
     passed
 
 ]

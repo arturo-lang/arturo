@@ -28,6 +28,9 @@
 >> cancel
 [+] passed!
 
+>> pause from main pumps the fiber scheduler
+[+] passed!
+
 >> do.async.isolated — subprocess flavor
 [+] passed!
 [+] passed!
