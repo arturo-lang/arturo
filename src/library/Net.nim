@@ -240,6 +240,9 @@ proc defineModule*(moduleName: string) =
                     raw:              Logical
                     agent: String  = "Arturo HTTP Client / " & $(getSystemInfo()["version"])
                     timeout: Integer = -1
+                    rawHeaders(headers): Dictionary = newOrderedTable[string,Value]()
+                    proxyUrl(proxy):     String = ""
+                    certPath(certificate): String = ""
 
                 dispatch:
                     String(initialUrl):
@@ -253,15 +256,15 @@ proc defineModule*(moduleName: string) =
                         if asDelete: meth = HttpDelete
 
                         var headers: HttpHeaders = newHttpHeaders()
-                        if checkAttr("headers"):
+                        if rawHeaders.len > 0:
                             var headersArr: seq[(string,string)]
-                            for k,v in pairs(aHeaders.d):
+                            for k,v in pairs(rawHeaders):
                                 headersArr.add((k, $(v)))
                             headers = newHttpHeaders(headersArr)
 
-                        var proxy: Proxy = nil
-                        if checkAttr("proxy"):
-                            proxy = newProxy(aProxy.s)
+                        let proxy: Proxy =
+                            if proxyUrl != "": newProxy(proxyUrl)
+                            else:              nil
 
                         var body: string
                         var multipart: MultipartData = nil
@@ -288,11 +291,11 @@ proc defineModule*(moduleName: string) =
 
                         var client: HttpClient
 
-                        if checkAttr("certificate"):
+                        if certPath != "":
                             when defined(ssl):
                                 client = newHttpClient(
                                     userAgent = agent,
-                                    sslContext = newContext(certFile=aCertificate.s),
+                                    sslContext = newContext(certFile=certPath),
                                     proxy = proxy,
                                     timeout = timeout,
                                     headers = headers
