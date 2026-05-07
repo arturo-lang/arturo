@@ -485,11 +485,10 @@ proc defineModule*(moduleName: string) =
             ; issues, as 'pi in this example
         """:
             #=======================================================
-            var times = 1
-            var currentTime = 0
+            bindAttrs:
+                times: Integer = 1
 
-            if checkAttr("times"):
-                times = aTimes.i
+            var currentTime = 0
 
             var evaled: Translation
             if xKind != String:
