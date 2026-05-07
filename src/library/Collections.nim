@@ -2019,12 +2019,19 @@ proc defineModule*(moduleName: string) =
             ; => [ [1 2 3 4] [5 6 7 8 9] ]
         """:
             #=======================================================
+            bindAttrs:
+                words: Logical
+                lines: Logical
+                path:  Logical
+                splitAt(at):       Integer = int.low
+                splitEvery(every): Integer = int.low
+
             proc splitStringValue(s: string): Value =
-                if hadAttr("words"):
+                if words:
                     return newStringBlock(strutils.splitWhitespace(s))
-                if hadAttr("lines"):
+                if lines:
                     return newStringBlock(s.splitLines())
-                if hadAttr("path"):
+                if path:
                     var strStart = 0
                     var strEnd   = 1
                     if s.startsWith(DirSep) or s.startsWith(AltSep): strStart = 1
@@ -2037,30 +2044,30 @@ proc defineModule*(moduleName: string) =
                     of Regex:  return newStringBlock(s.split(aBy.rx))
                     else:      return newStringBlock(toSeq(
                                     s.tokenize(aBy.a.map((k)=>(requireAttrValue("by",k,{String});k.s)))))
-                if checkAttr("at"):
-                    return newStringBlock(@[s[0..aAt.i-1], s[aAt.i..^1]])
-                if checkAttr("every"):
+                if splitAt != int.low:
+                    return newStringBlock(@[s[0..splitAt-1], s[splitAt..^1]])
+                if splitEvery != int.low:
                     var ret: seq[string]
                     let length = s.len
                     var i = 0
                     while i < length:
-                        if i + aEvery.i <= length: ret.add(s[i..i+aEvery.i-1])
-                        else:                     ret.add(s[i..^1])
-                        i += aEvery.i
+                        if i + splitEvery <= length: ret.add(s[i..i+splitEvery-1])
+                        else:                       ret.add(s[i..^1])
+                        i += splitEvery
                     return newStringBlock(ret)
                 newStringBlock(toSeq(runes(s)).map((w) => $(w)))
 
             proc splitBlockValue(a: ValueArray): Value =
-                if checkAttr("at"):
-                    return newBlock(@[newBlock(a[0..aAt.i-1]), newBlock(a[aAt.i..^1])])
-                if checkAttr("every"):
+                if splitAt != int.low:
+                    return newBlock(@[newBlock(a[0..splitAt-1]), newBlock(a[splitAt..^1])])
+                if splitEvery != int.low:
                     var ret: ValueArray
                     let length = a.len
                     var i = 0
                     while i < length:
-                        if i + aEvery.i > length: ret.add(newBlock(a[i..^1]))
-                        else:                    ret.add(newBlock(a[i..i+aEvery.i-1]))
-                        i += aEvery.i
+                        if i + splitEvery > length: ret.add(newBlock(a[i..^1]))
+                        else:                      ret.add(newBlock(a[i..i+splitEvery-1]))
+                        i += splitEvery
                     return newBlock(ret)
 
             dispatchWithLiteral:
