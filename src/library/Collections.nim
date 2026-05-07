@@ -1896,7 +1896,11 @@ proc defineModule*(moduleName: string) =
         """:
             #=======================================================
             bindAttrs:
-                descending: Logical
+                descending:    Logical
+                sensitive:     Logical
+                byValue(values): Logical
+                byKey(by):     String = ""
+                locale(`as`):  String = ""
 
             let sortOrdering =
                 if descending: SortOrder.Descending
@@ -1904,21 +1908,20 @@ proc defineModule*(moduleName: string) =
 
             proc sortBlockArr(arr: var ValueArray) =
                 if arr.len == 0: return
-                if checkAttr("by"):
+                if byKey != "":
                     if arr[0].kind == Dictionary:
                         arr.sort(proc (v1, v2: Value): int =
-                                    cmp(v1.d[aBy.s], v2.d[aBy.s]),
+                                    cmp(v1.d[byKey], v2.d[byKey]),
                                  order = sortOrdering)
                     else:
                         arr.sort(proc (v1, v2: Value): int =
-                                    cmp(v1.o[aBy.s], v2.o[aBy.s]),
+                                    cmp(v1.o[byKey], v2.o[byKey]),
                                  order = sortOrdering)
                     return
-                if checkAttr("as"):
-                    arr.unisort(aAs.s, sensitive = hadAttr("sensitive"),
-                                order = sortOrdering)
+                if locale != "":
+                    arr.unisort(locale, sensitive = sensitive, order = sortOrdering)
                     return
-                if hadAttr("sensitive"):
+                if sensitive:
                     arr.unisort("en", sensitive = true, order = sortOrdering)
                     return
                 if arr[0].kind == String:
@@ -1927,24 +1930,23 @@ proc defineModule*(moduleName: string) =
                     arr.sort(order = sortOrdering)
 
             proc sortDictTbl(dt: var ValueDict) =
-                if checkAttr("as"):
-                    dt.unisort(aAs.s, sensitive = hadAttr("sensitive"),
+                if locale != "":
+                    dt.unisort(locale, sensitive = sensitive,
                                order = sortOrdering,
-                               byValue = hadAttr("values"))
+                               byValue = byValue)
                     return
-                if hadAttr("sensitive"):
+                if sensitive:
                     dt.unisort("en", sensitive = true,
                                order = sortOrdering,
-                               byValue = hadAttr("values"))
+                               byValue = byValue)
                     return
                 var isString = false
                 for v in values(dt):
                     if v.kind == String: isString = true
                     break
                 if isString:
-                    dt.unisort("en", order = sortOrdering,
-                               byValue = hadAttr("values"))
-                elif hadAttr("values"):
+                    dt.unisort("en", order = sortOrdering, byValue = byValue)
+                elif byValue:
                     dt.sort(proc (x, y: (string, Value)): int =
                                 cmp(x[1], y[1]),
                             order = sortOrdering)
