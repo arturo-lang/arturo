@@ -2361,6 +2361,9 @@ proc defineModule*(moduleName: string) =
             ; true
         """:
             #=======================================================
+            bindAttrs:
+                deep: Logical
+
             dispatch:
                 String(s):
                     on at(i: Integer):
@@ -2374,8 +2377,8 @@ proc defineModule*(moduleName: string) =
                 Block(a):
                     on at(i: Integer): push(newLogical(a[i] == y))
                     _:
-                        if hadAttr("deep"): push(newLogical(a.inNestedBlock(y)))
-                        else:               push(newLogical(y in a))
+                        if deep: push(newLogical(a.inNestedBlock(y)))
+                        else:    push(newLogical(y in a))
                 Range(rng):
                     on at(i: Integer): push(newLogical(rng[i] == y))
                     _:                 push(newLogical(y in rng))
@@ -2384,7 +2387,7 @@ proc defineModule*(moduleName: string) =
                         let values = toSeq(d.values)
                         push(newLogical(values[i] == y))
                     _:
-                        if hadAttr("deep"):
+                        if deep:
                             let values: ValueArray = d.getValuesinDeep()
                             push(newLogical(y in values))
                         else:
@@ -2400,10 +2403,10 @@ proc defineModule*(moduleName: string) =
                             push(newLogical(values[i] == y))
                     _:
                         if unlikely(x.magic.fetch(ContainsQM)):
-                            if hadAttr("deep"): pushAttr("deep", VTRUE)
+                            if deep: pushAttr("deep", VTRUE)
                             mgk(@[x, y])
                         else:
-                            if hadAttr("deep"):
+                            if deep:
                                 let values: ValueArray = o.getValuesinDeep()
                                 push(newLogical(y in values))
                             else:
