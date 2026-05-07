@@ -2497,6 +2497,10 @@ proc defineModule*(moduleName: string) =
             # `in? x y` is `contains? y x` — same kind table on the collection,
             # same attrs. Written out (rather than as a 2-axis dispatch) because
             # x-axis wildcards in tuple clauses aren't supported yet.
+            bindAttrs:
+                deep:        Logical
+                atIdx(at):   Integer = int.low
+
             proc inAt(coll, val: Value, at: int): Value =
                 case coll.kind:
                 of String:
@@ -2516,27 +2520,26 @@ proc defineModule*(moduleName: string) =
                     elif val.kind == Char: return newLogical($(val.c) in coll.s)
                     else:                  return newLogical(val.s in coll.s)
                 of Block:
-                    if hadAttr("deep"): return newLogical(coll.a.inNestedBlock(val))
+                    if deep: return newLogical(coll.a.inNestedBlock(val))
                     return newLogical(val in coll.a)
                 of Range: return newLogical(val in coll.rng)
                 of Dictionary:
-                    if hadAttr("deep"): return newLogical(val in coll.d.getValuesinDeep())
+                    if deep: return newLogical(val in coll.d.getValuesinDeep())
                     return newLogical(val in toSeq(coll.d.values))
                 of Object:
-                    if hadAttr("deep"): return newLogical(val in coll.o.getValuesinDeep())
+                    if deep: return newLogical(val in coll.o.getValuesinDeep())
                     return newLogical(val in toSeq(coll.o.values))
                 else: return VFALSE
 
-            if checkAttr("at"):
-                let at = aAt.i
+            if atIdx != int.low:
                 if yKind == Object and unlikely(y.magic.fetch(ContainsQM)):
-                    pushAttr("at", aAt)
+                    pushAttr("at", newInteger(atIdx))
                     mgk(@[y, x])
                 else:
-                    push(inAt(y, x, at))
+                    push(inAt(y, x, atIdx))
             else:
                 if yKind == Object and unlikely(y.magic.fetch(ContainsQM)):
-                    if hadAttr("deep"): pushAttr("deep", VTRUE)
+                    if deep: pushAttr("deep", VTRUE)
                     mgk(@[y, x])
                 else:
                     push(inAny(y, x))
