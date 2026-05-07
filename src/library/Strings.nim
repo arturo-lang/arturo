@@ -437,23 +437,24 @@ proc defineModule*(moduleName: string) =
                     elif yKind==String: newRegex(y.s).rx
                     else: newRegex($(y.c)).rx
 
+                bindAttrs:
+                    doOnce(once):       Logical
+                    doCount(count):     Logical
+                    doCapture(capture): Logical
+                    doNamed(named):     Logical
+                    doBounds(bounds):   Logical
+                    doFull(full):       Logical
+
                 var iFrom = 0
                 var iTo = int.high
 
-                let doOnce = hadAttr("once")
-                let doCount = hadAttr("count")
-                let doCapture = hadAttr("capture")
-                let doNamed = hadAttr("named")
-                let doBounds = hadAttr("bounds")
-                let doFull = hadAttr("full")
-
                 if checkAttr("in"):
                     iFrom = aIn.rng.start
-                    if iFrom < 0: 
+                    if iFrom < 0:
                         iFrom = 0
-                        
+
                     iTo = aIn.rng.stop
-                    if iTo >= x.s.len: 
+                    if iTo >= x.s.len:
                         iTo = x.s.len-1
 
                 if doCount:
