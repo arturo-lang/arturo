@@ -526,7 +526,7 @@ Total raw `hadAttr`/`checkAttr` count in `src/library/*.nim` went from 132 → ~
 - **Collections (2):** `get/set field` (Object magic).
 - **Core (2):** `import version` (non-trivial Version default), `when has` (Any).
 - **Strings (0):** all clean.
-- **Net (1):** `mail using` (dead `discard`).
+- **Net (0):** `mail using` dead-discard removed (also fixed latent bug where `.using:#[…]` was consumed before `retrieveConfig` could see it).
 
 ### Tier 1 follow-up (2026-05-03 PM)
 Added: `Reflection/inspect` flags; `Strings/match` flags + `in` Range; `Strings/match?` `in`; `Strings/outdent` `with`/`n`; `Net/request` value attrs (`headers`/`proxy`/`certificate`); `System/execute` `args`; `Crypto/encode` `from`/`to`; `Databases/query` `with`; `Files/read` `delimiter`. (`bindAttrs` already accepts `nnkAccQuoted` so backticked Nim keywords work directly — Tier 3.1 turned out to be already in.)
