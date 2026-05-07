@@ -518,6 +518,17 @@ inside their bodies should switch to `bindAttrs:` (composable bools/value
 attrs) or `on attr:` ladders (mutually-exclusive selectors) where it doesn't
 fight a Nim keyword or value-attr-with-transformation pattern.
 
+### Tier 2 sweep (2026-05-03 evening)
+Folded raw attrs into `bindAttrs` for: `Collections/sort` (`descending`/`sensitive`/`values`/`by`/`as`), `Collections/remove` (`once`/`prefix`/`suffix`/`instance`/`index`/`key`), `Collections/split` (`words`/`lines`/`path`/`at`/`every`), `Collections/contains?` (`deep`), `Collections/in?` (`deep`/`at`), `Core/express` (`pretty`/`unwrapped`/`safe`), `Core/function` (`import`/`export`/`memoize`/`inline`), `Core/ensure` (`that`), `Core/method` (`distinct`/`public`), `Core/do` (`times`), `Core/export` (`all`), `Core/import` (`latest`/`verbose`/`lean`/`branch`/`only`/`min`), `Core/when` (`any`), `Core/call` (`external`/`expect`).
+
+Total raw `hadAttr`/`checkAttr` count in `src/library/*.nim` went from 132 → ~50. Remaining bucketed as:
+- **Ui (27):** `adhocPrivate` window handlers — different macro shape, `bindAttrs` doesn't apply.
+- **Iterators (15):** `doIterate` macro family.
+- **Collections (4):** `array of` (multi-kind), `get/set field` (Object magic), `split by` (multi-kind).
+- **Core (2):** `import version` (non-trivial Version default), `when has` (Any).
+- **Strings (1):** `join with` (multi-kind).
+- **Net (1):** `mail using` (dead `discard`).
+
 ### Tier 1 follow-up (2026-05-03 PM)
 Added: `Reflection/inspect` flags; `Strings/match` flags + `in` Range; `Strings/match?` `in`; `Strings/outdent` `with`/`n`; `Net/request` value attrs (`headers`/`proxy`/`certificate`); `System/execute` `args`; `Crypto/encode` `from`/`to`; `Databases/query` `with`; `Files/read` `delimiter`. (`bindAttrs` already accepts `nnkAccQuoted` so backticked Nim keywords work directly — Tier 3.1 turned out to be already in.)
 
