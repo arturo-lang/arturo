@@ -1411,27 +1411,34 @@ proc defineModule*(moduleName: string) =
             remove.instance.once [1 [6 2] 5 3 [6 2] 4 5 6] [6 2]  ; => [1 5 3 [6 2] 4 5 6]
         """:
             #=======================================================
+            bindAttrs:
+                key:      Logical
+                once:     Logical
+                index:    Logical
+                prefix:   Logical
+                suffix:   Logical
+                instance: Logical
+
             proc removeFromString(s: string): Value =
-                if hadAttr("once"):
+                if once:
                     if yKind == String: return newString(s.removeFirst(y.s))
                     else:               return newString(s.removeFirst($(y.c)))
-                if hadAttr("prefix"):
+                if prefix:
                     var ret = s; ret.removePrefix(y.s); return newString(ret)
-                if hadAttr("suffix"):
+                if suffix:
                     var ret = s; ret.removeSuffix(y.s); return newString(ret)
                 newString(s.removeAll(y))
 
             proc removeFromBlock(a: ValueArray): Value =
-                if yKind == Block and hadAttr("instance"):
-                    if hadAttr("once"): return newBlock(a.removeFirstInstance(y))
+                if yKind == Block and instance:
+                    if once: return newBlock(a.removeFirstInstance(y))
                     return newBlock(a.removeAllInstances(y))
-                if hadAttr("once"):  return newBlock(a.removeFirst(y))
-                if hadAttr("index"): return newBlock(a.removeByIndex(y.i))
+                if once:  return newBlock(a.removeFirst(y))
+                if index: return newBlock(a.removeByIndex(y.i))
                 newBlock(a.removeAll(y))
 
             proc removeFromDict(d: ValueDict): Value =
-                let key = hadAttr("key")
-                if hadAttr("once"): return newDictionary(d.removeFirst(y, key))
+                if once: return newDictionary(d.removeFirst(y, key))
                 newDictionary(d.removeAll(y, key))
 
             # Object's magic-method dispatch doesn't fit the kind grid; handle
@@ -1440,8 +1447,7 @@ proc defineModule*(moduleName: string) =
                 if x.magic.fetch(RemoveM):
                     mgk(@[x, y])
                 else:
-                    let key = hadAttr("key")
-                    if hadAttr("once"):
+                    if once:
                         push(newObject(x.proto, x.o.removeFirst(y, key), x.magic))
                     else:
                         push(newObject(x.proto, x.o.removeAll(y, key), x.magic))
@@ -1453,8 +1459,7 @@ proc defineModule*(moduleName: string) =
                         pushAttr("inplace", VTRUE)
                         mgk(@[InPlaced, y])
                     else:
-                        let key = hadAttr("key")
-                        if hadAttr("once"):
+                        if once:
                             SetInPlaceAny(newObject(InPlaced.proto, InPlaced.o.removeFirst(y, key), InPlaced.magic))
                         else:
                             SetInPlaceAny(newObject(InPlaced.proto, InPlaced.o.removeAll(y, key), InPlaced.magic))
