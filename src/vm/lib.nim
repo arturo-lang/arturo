@@ -50,6 +50,7 @@ type
 
     DispatchClause = object
         isElse: bool                       # `_:` top-level fallback
+        xWild: bool                        # `(_, …)` x-axis wildcard inside tuple
         xKind: string
         xBinding: NimNode
         hasY: bool
@@ -240,8 +241,8 @@ proc dispatchParseClauses(body: NimNode, macroName: string, splitBodies: bool):
             let par = clause[0]
             if par.len notin {2, 3}:
                 error(macroName & ": expected 2- or 3-element tuple", par)
-            let xPat = dispatchParsePat(par[0], allowWild = false, macroName)
-            fc.xKind = xPat.kind; fc.xBinding = xPat.binding
+            let xPat = dispatchParsePat(par[0], allowWild = true, macroName)
+            fc.xWild = xPat.wild; fc.xKind = xPat.kind; fc.xBinding = xPat.binding
             fc.hasY = true
             let yPat = dispatchParsePat(par[1], allowWild = true, macroName)
             fc.yWild = yPat.wild; fc.yKind = yPat.kind; fc.yBinding = yPat.binding
@@ -282,7 +283,11 @@ proc dispatchBuildCase(disc: NimNode, flat: seq[DispatchClause],
 
     var xOrder: seq[string]
     var xMap = initOrderedTable[string, seq[DispatchClause]]()
+    var xWildClauses: seq[DispatchClause]
     for fc in flat:
+        if fc.xWild:
+            xWildClauses.add fc
+            continue
         if fc.xKind notin xMap:
             xMap[fc.xKind] = @[]
             xOrder.add fc.xKind
@@ -319,7 +324,32 @@ proc dispatchBuildCase(disc: NimNode, flat: seq[DispatchClause],
                 inner.add nnkElse.newTree(nnkDiscardStmt.newTree(newEmptyNode()))
             result.add nnkOfBranch.newTree(ident(xKind), inner)
 
-    if hasElse:
+    if xWildClauses.len > 0:
+        # x-axis wildcards: emit a y-axis case for the outer-else branch.
+        var yOrder: seq[string]
+        var yMap = initOrderedTable[string, seq[DispatchClause]]()
+        for fc in xWildClauses:
+            let key = if fc.yWild: "_" else: fc.yKind
+            if key notin yMap:
+                yMap[key] = @[]; yOrder.add key
+            yMap[key].add fc
+
+        let inner = nnkCaseStmt.newTree(ident("yKind"))
+        var yElse: NimNode = nil
+        for yKey in yOrder:
+            let yBody = buildYBranch(yMap[yKey])
+            if yKey == "_":
+                yElse = yBody
+            else:
+                inner.add nnkOfBranch.newTree(ident(yKey), yBody)
+        if yElse != nil:
+            inner.add nnkElse.newTree(yElse)
+        elif hasElse:
+            inner.add nnkElse.newTree(emit(elseClause))
+        else:
+            inner.add nnkElse.newTree(nnkDiscardStmt.newTree(newEmptyNode()))
+        result.add nnkElse.newTree(inner)
+    elif hasElse:
         result.add nnkElse.newTree(emit(elseClause))
     else:
         result.add nnkElse.newTree(nnkDiscardStmt.newTree(newEmptyNode()))
@@ -421,6 +451,11 @@ macro dispatchWithLiteral*(body: untyped): untyped =
             else: result.add nnkDiscardStmt.newTree(newEmptyNode())
             return
 
+        if fc.xWild:
+            error(macroName & ": x-axis `_` wildcard in tuple clauses is not " &
+                  "supported here (auto-wrap needs the x-kind); use `dispatch` " &
+                  "or split into per-kind clauses", fc.body)
+
         let (xField, xCtor) = dispatchFieldAndCtor(fc.xKind, fc.xBinding, macroName)
         let xTarget =
             if valueMode: newDotExpr(ident("x"), ident(xField))
@@ -509,7 +544,7 @@ macro dispatch*(body: untyped): untyped =
             else:
                 result.add copyNimTree(fc.body)
             return
-        if not dispatchIsWild(fc.xBinding):
+        if not fc.xWild and not dispatchIsWild(fc.xBinding):
             let (xField, _) = dispatchFieldAndCtor(fc.xKind, fc.xBinding, macroName)
             result.add dispatchUsedLet(copyNimTree(fc.xBinding),
                                        newDotExpr(ident("x"), ident(xField)))
