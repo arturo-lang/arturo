@@ -1673,7 +1673,9 @@ proc defineModule*(moduleName: string) =
 
         """:
             #=======================================================
-            let withAny = (hadAttr("any"))
+            bindAttrs:
+                withAny(any): Logical
+
             var has: Value = nil
             if checkAttr("has"):
                 has = aHas
