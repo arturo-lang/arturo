@@ -819,22 +819,24 @@ proc defineModule*(moduleName: string) =
             ]
         """:
             #=======================================================
+            bindAttrs:
+                importBlock(`import`): Block = @[]
+                exportBlock(`export`): Block = @[]
+                memoize: Logical
+                inline:  Logical
+
             var imports: Value = nil
-            if checkAttr("import"):
+            if importBlock.len > 0:
                 var ret = initOrderedTable[string,Value]()
-                for item in aImport.a:
+                for item in importBlock:
                     requireAttrValue("import", item, {Word, Literal})
                     ret[item.s] = FetchSym(item.s)
                 imports = newDictionary(ret)
 
             var exports: Value = nil
-
-            if checkAttr("export"):
-                requireAttrValueBlock("export", aExport, {Word, Literal})
-                exports = aExport
-
-            var memoize = (hadAttr("memoize"))
-            var inline = (hadAttr("inline"))
+            if exportBlock.len > 0:
+                requireAttrValueBlock("export", newBlock(exportBlock), {Word, Literal})
+                exports = newBlock(exportBlock)
 
             let argBlock {.cursor.} =
                 if xKind == Block: 
