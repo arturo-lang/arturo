@@ -303,7 +303,8 @@ proc defineModule*(moduleName: string) =
                     asMarkdown(markdown): Logical
                     asHtml(html):         Logical
                     asXml(xml):           Logical
-                    withHeaders: Logical
+                    withHeaders:          Logical
+                    csvDelim(delimiter):  Char = Rune(0)
 
                 dispatch:
                     String(path):
@@ -330,9 +331,8 @@ proc defineModule*(moduleName: string) =
                             elif json:
                                 push(valueFromJson(src))
                             elif csv:
-                                if checkAttr("delimiter"):
-                                    let delimiter = aDelimiter.c.char()
-                                    push(parseCsvInput(src, withHeaders=withHeaders, withDelimiter=delimiter))
+                                if csvDelim != Rune(0):
+                                    push(parseCsvInput(src, withHeaders=withHeaders, withDelimiter=csvDelim.char()))
                                 else:
                                     push(parseCsvInput(src, withHeaders))
                             elif asBytecode:
