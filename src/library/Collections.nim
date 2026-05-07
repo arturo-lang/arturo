@@ -172,16 +172,19 @@ proc defineModule*(moduleName: string) =
             ; => [[0 0 0 0] [0 0 0 0] [0 0 0 0]]
         """:
             #=======================================================
-            if checkAttr("of"):
-                if aOf.kind == Integer:
-                    let size = aOf.i
+            bindAttrs:
+                shape(`of`): {Integer, Block} = nil
+
+            if not shape.isNil:
+                if shape.kind == Integer:
+                    let size = shape.i
                     let blk:ValueArray = safeRepeat(x, size)
                     push newBlock(blk)
                 else:
                     var val: Value = copyValue(x)
                     var blk: ValueArray
 
-                    for item in aOf.a.reversed:
+                    for item in shape.a.reversed:
                         requireValue(item, {Integer})
                         blk = safeRepeat(val, item.i)
                         val = newBlock(blk.map((v)=>copyValue(v)))
