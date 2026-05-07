@@ -241,14 +241,13 @@ proc defineModule*(moduleName: string) =
                 #  Also: having a globally-available array of "processes" makes things looking even worse.
                 #  labels: library, enhancement, windows, linux, macos
 
-                var cliArgs: seq[string]
-                if checkAttr("args"):
-                    cliArgs = aArgs.a.map((x) => (requireAttrValue("args", x, {String}); x.s))
-
                 bindAttrs:
-                    async:    Logical
-                    code:     Logical
-                    directly: Logical
+                    rawArgs(args): Block = @[]
+                    async:         Logical
+                    code:          Logical
+                    directly:      Logical
+
+                let cliArgs = rawArgs.map((x) => (requireAttrValue("args", x, {String}); x.s))
 
                 dispatch:
                     String(s):
