@@ -253,10 +253,13 @@ proc defineModule*(moduleName: string) =
             #=======================================================
             when defined(WEB):
                 resetStdout()
-            let mutedOutput = (hadAttr("muted")) or NoColors
-            let compactOutput = hadAttr("compact")
-            let indexedOutput = hadAttr("index")
-            x.dump(0, false, muted=mutedOutput, compact=compactOutput, indexed=indexedOutput)
+
+            bindAttrs:
+                muted:   Logical
+                compact: Logical
+                index:   Logical
+
+            x.dump(0, false, muted=muted or NoColors, compact=compact, indexed=index)
 
     builtin "methods",
         alias       = unaliased,
