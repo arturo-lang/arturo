@@ -564,15 +564,13 @@ proc defineModule*(moduleName: string) =
             ;        error |
         """:
             #=======================================================
-            
-            if checkAttr("that"):
-                execUnscoped(x)
-                if isFalse(stack.pop()):
-                    Error_AssertionFailed(x.codify(), aThat.s)
-            else:
-                execUnscoped(x)
-                if isFalse(stack.pop()):
-                    Error_AssertionFailed(x.codify())
+            bindAttrs:
+                msg(that): String = ""
+
+            execUnscoped(x)
+            if isFalse(stack.pop()):
+                if msg != "": Error_AssertionFailed(x.codify(), msg)
+                else:         Error_AssertionFailed(x.codify())
 
     builtin "export",
         alias       = unaliased, 
