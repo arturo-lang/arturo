@@ -546,7 +546,8 @@ proc defineModule*(moduleName: string) =
         """:
             #=======================================================
             bindAttrs:
-                padding(`with`): String = " "
+                padding(`with`): String  = " "
+                nOverride(n):    Integer = int.low
 
             var count = 0
             if xKind in {Literal,PathLiteral}:
@@ -555,8 +556,8 @@ proc defineModule*(moduleName: string) =
             else:
                 count = indentation(x.s)
 
-            if checkAttr("n"):
-                count = aN.i
+            if nOverride != int.low:
+                count = nOverride
 
             if xKind in {Literal, PathLiteral}:
                 ensureInPlaceAny()
