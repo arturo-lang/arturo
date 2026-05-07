@@ -634,7 +634,8 @@ proc defineModule*(moduleName: string) =
         greet "Anonymous" ; Bye, bye, Anonymous!
         """:
             #=======================================================
-            let exportAll = hadAttr("all")
+            bindAttrs:
+                exportAll(all): Logical
 
             if xKind in {Module, Object}:
 
