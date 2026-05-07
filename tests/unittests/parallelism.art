@@ -11,6 +11,9 @@
 
 topic: $[topic :string] -> print ~"\n>> |topic|"
 passed: $[] -> print "[+] passed!"
+; small in-process task that flushes the fiber scheduler between iterator
+; topics. plain `pause` from main isn't enough; an explicit task is.
+drain: $[] -> wait do.async [pause 20]
 
 
 topic ":task value"
@@ -136,6 +139,7 @@ topic "map.async — fan-out parallel map"
 do [
 
     ensure -> [1 4 9 16 25] = map.async 1..5 'x [x * x]
+    drain
     passed
 
 ]
@@ -145,6 +149,7 @@ topic "map.parallel — order preserved"
 do [
 
     ensure -> [1 4 9 16 25] = map.parallel 1..5 'x [x * x]
+    drain
     passed
 
 ]
@@ -155,6 +160,7 @@ do [
 
     acc: []
     loop.async 1..4 'x [ 'acc ++ x * x ]
+    drain
     ensure -> [1 4 9 16] = sort acc
     passed
 
@@ -165,6 +171,7 @@ topic "select.parallel — order preserved"
 do [
 
     ensure -> [2 4 6 8 10] = select.parallel 1..10 'n -> even? n
+    drain
     passed
 
 ]
@@ -175,6 +182,7 @@ do [
 
     ensure -> every?.parallel [2 4 6 8] 'n -> even? n
     ensure -> not? every?.parallel [2 4 5 8] 'n -> even? n
+    drain
     passed
 
 ]
@@ -185,6 +193,7 @@ do [
 
     ensure -> some?.parallel [1 3 6 7] 'n -> even? n
     ensure -> not? some?.parallel [1 3 5 7] 'n -> even? n
+    drain
     passed
 
 ]
@@ -208,7 +217,7 @@ do [
     on.with:'p E [ 'got ++ p ]
     emit.with: "a" E
     emit.with: "b" E
-    wait do.async [pause 50]
+    drain
     ensure -> ["a" "b"] = got
     passed
 
@@ -222,10 +231,10 @@ do [
     n: 0
     on.with:'p E [ inc 'n ]
     emit.with: 1 E
-    wait do.async [pause 50]
+    drain
     off E
     emit.with: 2 E
-    wait do.async [pause 50]
+    drain
     ensure -> 1 = n
     passed
 
@@ -241,7 +250,7 @@ do [
     emit.with: 1 E
     emit.with: 2 E
     emit.with: 3 E
-    wait do.async [pause 50]
+    drain
     ensure -> 1 = n
     passed
 
@@ -256,10 +265,10 @@ do [
     idA: on.id.with:'p E [ inc 'a ]
     on.with:'p E [ inc 'b ]
     emit.with: 1 E
-    wait do.async [pause 50]
+    drain
     off idA
     emit.with: 2 E
-    wait do.async [pause 50]
+    drain
     ensure -> 1 = a
     ensure -> 2 = b
     passed
@@ -267,20 +276,28 @@ do [
 ]
 
 
-topic "task callbacks — on.done / on.failed"
+topic "task callbacks — on.done"
 do [
 
     t: do.async [pause 50 99]
     seen: []
     on.done.with:'r t [ 'seen ++ r ]
     wait t
+    drain
     ensure -> [99] = seen
     passed
 
-    t2: do.async [1 / 0]
+]
+
+
+topic "task callbacks — on.failed"
+do [
+
+    t: do.async [1 / 0]
     failures: []
-    on.failed.with:'e t2 [ 'failures ++ type e ]
-    wait t2
+    on.failed.with:'e t [ 'failures ++ type e ]
+    wait t
+    drain
     ensure -> [:error] = failures
     passed
 
