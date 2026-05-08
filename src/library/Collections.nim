@@ -173,7 +173,7 @@ proc defineModule*(moduleName: string) =
         """:
             #=======================================================
             bindAttrs:
-                shape(`of`): {Integer, Block} = nil
+                shape(`of`): {Integer, Block}
 
             if not shape.isNil:
                 if shape.kind == Integer:
@@ -2028,7 +2028,7 @@ proc defineModule*(moduleName: string) =
                 path:  Logical
                 splitAt(at):       Integer = int.low
                 splitEvery(every): Integer = int.low
-                splitBy(by):       {String, Regex, Char, Block} = nil
+                splitBy(by):       {String, Regex, Char, Block}
 
             proc splitStringValue(s: string): Value =
                 if words:

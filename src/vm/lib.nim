@@ -631,13 +631,14 @@ macro bindAttrs*(body: untyped): untyped =
 
         if kindNode.kind == nnkCurly:
             # Multi-kind value attr: bind the whole Value (user inspects `.kind`
-            # / `.s` / `.c` etc. themselves). Default must be a Value expression
-            # (`nil`, `VNULL`, ...).
-            if defaultExpr == nil:
-                error(macroName & ": multi-kind attr requires a default Value", decl)
+            # / `.s` / `.c` etc. themselves). Default is `nil` unless an
+            # explicit `= <expr>` was provided.
             let aIdent = ident('a' & attrNameStr.capitalizeAscii())
+            let initExpr =
+                if defaultExpr != nil: defaultExpr
+                else:                  newNilLit()
             result.add nnkVarSection.newTree(
-                nnkIdentDefs.newTree(localNamePragma, ident("Value"), defaultExpr))
+                nnkIdentDefs.newTree(localNamePragma, ident("Value"), initExpr))
             result.add nnkIfStmt.newTree(nnkElifBranch.newTree(
                 newCall(ident("checkAttr"), attrLit),
                 newAssignment(localName, aIdent)

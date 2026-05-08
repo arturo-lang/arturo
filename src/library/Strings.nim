@@ -293,7 +293,7 @@ proc defineModule*(moduleName: string) =
                 asPath(path):    Logical
                 asWords(words):  Logical
                 asLines(lines):  Logical
-                sepValue(`with`): {String, Char} = nil
+                sepValue(`with`): {String, Char}
 
             var sep: string
             if not asPath:
