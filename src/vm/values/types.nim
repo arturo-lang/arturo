@@ -262,6 +262,7 @@ type
 
     VTask* = ref object
         state*       : VTaskState        # bookkeeping for `done?` / `cancel`
+        name*        : string            # optional symbolic name (`do.async.as: "fetch-1"`); shown in print/inspect for debugging. empty = unnamed
         when not defined(WEB):
             future*  : Future[Value]    # the actual handle a producer (e.g. `request.async`) feeds
             process* : Process          # the underlying OS process (for subprocess-backed tasks); nil otherwise

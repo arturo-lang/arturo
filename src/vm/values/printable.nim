@@ -209,7 +209,10 @@ proc `$`*(v: Value): string {.inline.} =
             result = "<bytecode>" & "(" & fmt("{cast[uint](v):#X}") & ")"
 
         of Task:
-            result = "<task>" & "(" & fmt("{cast[uint](v.tsk):#X}") & ")"
+            if v.tsk.name.len > 0:
+                result = "<task:" & v.tsk.name & ">" & "(" & fmt("{cast[uint](v.tsk):#X}") & ")"
+            else:
+                result = "<task>" & "(" & fmt("{cast[uint](v.tsk):#X}") & ")"
 
         of Event:
             result = "<event>" & "(" & v.evt.name & ")"
@@ -509,7 +512,8 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
                     of taskDone     : "done"
                     of taskFailed   : "failed"
                     of taskCancelled: "cancelled"
-            dumpPrimitive(fmt("[{tag}] {cast[uint](v.tsk):#X}"), v)
+            let nameTag = if v.tsk.name.len > 0: " " & v.tsk.name else: ""
+            dumpPrimitive(fmt("[{tag}]{nameTag} {cast[uint](v.tsk):#X}"), v)
 
         of Event        :
             dumpPrimitive(v.evt.name, v)

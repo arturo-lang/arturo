@@ -444,7 +444,8 @@ proc defineModule*(moduleName: string) =
         attrs       = {
             "times"    : ({Integer},"repeat block execution given number of times"),
             "async"    : ({Logical},"evaluate concurrently and return a `:task`"),
-            "isolated" : ({Logical},"with `.async`: run in a fresh child process instead of an in-VM fiber (slower spawn, no closure capture, full process isolation)")
+            "isolated" : ({Logical},"with `.async`: run in a fresh child process instead of an in-VM fiber (slower spawn, no closure capture, full process isolation)"),
+            "as"       : ({String},"with `.async`: tag the resulting `:task` with a symbolic name (shown in `print` / `inspect` for debugging)")
         },
         returns     = {Any,Task},
         example     = """
@@ -547,8 +548,11 @@ proc defineModule*(moduleName: string) =
             when not defined(WEB):
                 if hadAttr("async"):
                     let isolated = hadAttr("isolated")
+                    let taskName =
+                        if checkAttr("as"): aAs.s
+                        else: ""
                     if (not isolated) and xKind in {Block, Bytecode}:
-                        push ParallelismHelper.spawnInProcessDoBlock(x)
+                        push ParallelismHelper.spawnInProcessDoBlock(x, taskName)
                     else:
                         # `codify` gives source-faithful Arturo code
                         # (preserving Label colons, Literal quotes, …);
@@ -559,7 +563,7 @@ proc defineModule*(moduleName: string) =
                                 of Block, Bytecode: codify(x)
                                 of String:          x.s
                                 else:               ""
-                        push ParallelismHelper.spawnAsTask(src)
+                        push ParallelismHelper.spawnAsTask(src, taskName)
                     return
 
             # `do task` is sugar for `wait task` - drain the future once
