@@ -545,6 +545,12 @@ when not defined(WEB):
         # unique path, unlike the old `pid + epochTime` recipe which
         # could collide under fast successive spawns.
         let resFile = genTempPath("arturo-task-", ".art")
+        # Side-channel for errors — child writes `#[kind: msg:]` here
+        # if the user block raises, so we can resurrect the real
+        # `VError` kind+message on the parent side. Live `print` from
+        # the child stays untouched (still inherits `poParentStreams`),
+        # which is why we need a file rather than capturing stderr.
+        let errFile = genTempPath("arturo-err-", ".art")
         # Cross-process emit channel — child appends one
         # `[name payload]` record per `emit`, parent tails. Created
         # empty so the child's append open succeeds immediately.
@@ -574,10 +580,10 @@ when not defined(WEB):
         # `.safe` uses `«« »»` string delimiters and quotes dict keys -
         # round-trip-safe for anything Arturo can represent (HTTP responses,
         # dicts with hyphenated keys, strings containing curly braces, etc.)
-        # no `try` around the `do`: if the user's code raises, we *want* the
-        # child to crash with a non-zero exit so the parent surfaces it as
-        # a failed task. (the leading `null` inside `safeBlock` keeps void
-        # blocks safe without needing `try`.)
+        # `try` wraps the `do` so the child can ship the `VError` kind +
+        # message back through `errFile`. Without `try`, the child crashes
+        # to a non-zero exit and the parent only sees "exited with code N".
+        # (Leading `null` inside `safeBlock` keeps void blocks safe.)
         # Use forward slashes when embedding the path into Arturo
         # source. Windows `getTempDir` returns backslash-separated
         # paths; Arturo's string parser treats `\` as the start of an
@@ -586,9 +592,15 @@ when not defined(WEB):
         # unterminated string and blows up the child VM (SIGSEGV).
         # Forward slashes work fine on every OS we target.
         let resFileEmbed = resFile.replace('\\', '/')
+        let errFileEmbed = errFile.replace('\\', '/')
         let wrapped =
-            "res: do " & safeBlock & "\n" &
-            "write express.safe res \"" & resFileEmbed & "\""
+            "__err__: try.verbose [\n" &
+            "    __res__: do " & safeBlock & "\n" &
+            "    write express.safe __res__ \"" & resFileEmbed & "\"\n" &
+            "]\n" &
+            "unless null? __err__ [\n" &
+            "    write express.safe #[kind: __err__\\kind\\label msg: __err__\\message] \"" & errFileEmbed & "\"\n" &
+            "]"
         let p = startProcess(arturoBin,
                              args = @["-e", wrapped],
                              env = childEnv,
@@ -622,7 +634,33 @@ when not defined(WEB):
         if fileExists(inboundFile):
             try: removeFile(inboundFile)
             except CatchableError: discard
-        if code == 0 and fileExists(resFile):
+        # Errors ride a side-channel (`errFile`) so live `print` from
+        # the child stays untouched. If the child wrote one, reconstruct
+        # the real `VError` (kind + message) and raise it so `wait` can
+        # surface it as a structured `:error` matching the in-process
+        # path's fidelity.
+        if fileExists(errFile):
+            let rawErr = readFile(errFile)
+            removeFile(errFile)
+            if fileExists(resFile): removeFile(resFile)
+            var rebuiltKind = RuntimeErr
+            var rebuiltMsg = ""
+            try:
+                let parsed = doParse(rawErr, isFile=false)
+                if not parsed.isNil:
+                    let savedSP = SP
+                    execUnscoped(parsed)
+                    if SP > savedSP:
+                        let dict = stack.pop()
+                        if dict.kind == Dictionary:
+                            if dict.d.hasKey("kind") and dict.d["kind"].kind == String:
+                                rebuiltKind = kindByLabel(dict.d["kind"].s)
+                            if dict.d.hasKey("msg") and dict.d["msg"].kind == String:
+                                rebuiltMsg = dict.d["msg"].s
+            except CatchableError:
+                discard
+            raise toError(rebuiltKind, rebuiltMsg)
+        elif code == 0 and fileExists(resFile):
             let raw = readFile(resFile)
             removeFile(resFile)
             try:
