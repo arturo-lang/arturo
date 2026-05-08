@@ -816,8 +816,8 @@ proc defineModule*(moduleName: string) =
         """:
             #=======================================================
             bindAttrs:
-                importBlock(`import`): Block = @[]
-                exportBlock(`export`): Block = @[]
+                importBlock(`import`): Block = newSeq[Value]()
+                exportBlock(`export`): Block = newSeq[Value]()
                 memoize: Logical
                 inline:  Logical
 

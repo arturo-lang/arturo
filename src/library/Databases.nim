@@ -138,7 +138,7 @@ proc defineModule*(moduleName: string) =
             #=======================================================
             bindAttrs:
                 returnId(id):   Logical
-                rawWith(`with`): Block = @[]
+                rawWith(`with`): Block = newSeq[Value]()
 
             let withArgs = rawWith.map((x) => $(x))
 

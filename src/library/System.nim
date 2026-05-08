@@ -242,7 +242,7 @@ proc defineModule*(moduleName: string) =
                 #  labels: library, enhancement, windows, linux, macos
 
                 bindAttrs:
-                    rawArgs(args): Block = @[]
+                    rawArgs(args): Block = newSeq[Value]()
                     async:         Logical
                     code:          Logical
                     directly:      Logical
