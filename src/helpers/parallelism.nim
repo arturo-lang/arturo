@@ -27,7 +27,7 @@ when not defined(WEB):
 
     import vm/lib
     import vm/[context, exec, parse, stack]
-    import vm/values/custom/vtask
+    import vm/values/custom/[vtask, verror]
 
 #=======================================
 # Fibers — stackful coroutines on top of vendored minicoro
@@ -975,10 +975,23 @@ when not defined(WEB):
             except CatchableError: discard
         result = newTask(tsk)
 
-    # block on a task's future and return its result. used by `wait` and `do task`.
+    # block on a task's future and return its result. used by `do task`
+    # as sugar for `wait task`. mirrors `wait`'s catch logic: failures
+    # surface as `:error` (preserving the real `VError` for in-process
+    # fibers, falling back to `RuntimeErr` for subprocess tasks);
+    # cancellation surfaces as `:null`.
     proc drainTask*(tsk: VTask): Value =
         if tsk.state == taskCancelled:
-            result = VNULL
-        else:
-            result = waitFor tsk.future
-            tsk.state = taskDone
+            return VNULL
+        try:
+            result = coopWait tsk.future
+            if tsk.state == taskPending:
+                tsk.state = taskDone
+        except CatchableError as e:
+            if tsk.state == taskCancelled:
+                result = VNULL
+            else:
+                tsk.state = taskFailed
+                result =
+                    if e of VError: newError(VError(e))
+                    else:           newError(RuntimeErr, e.msg)
