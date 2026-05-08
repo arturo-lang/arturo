@@ -1468,16 +1468,33 @@ proc defineModule*(moduleName: string) =
                             SetInPlaceAny(newObject(InPlaced.proto, InPlaced.o.removeAll(y, key), InPlaced.magic))
                     return
 
+            # Inplace asymmetry preserved from the pre-dispatch implementation:
+            # `index` and `instance` paths mutate `InPlaced.a` directly so that
+            # `remove.index … 'lst` (where `lst` is a Literal arg) propagates
+            # through the caller; the other paths replace the whole Value via
+            # `SetInPlaceAny` so that aliased references (e.g. `initial: lst`)
+            # don't see the mutation. See examples/src/rosetta/{Stack,
+            # Last list item}.art for the regression cases.
             dispatchWithLiteral:
                 (String(s), _):
-                    value:   push(removeFromString(s))
-                    inplace: s = removeFromString(s).s
+                    value: push(removeFromString(s))
+                    inplace:
+                        if prefix:   s.removePrefix(y.s)
+                        elif suffix: s.removeSuffix(y.s)
+                        else:        SetInPlaceAny(removeFromString(s))
                 (Block(a), _):
-                    value:   push(removeFromBlock(a))
-                    inplace: a = removeFromBlock(a).a
+                    value: push(removeFromBlock(a))
+                    inplace:
+                        if yKind == Block and instance:
+                            if once: a = a.removeFirstInstance(y)
+                            else:    a = a.removeAllInstances(y)
+                        elif index:
+                            a = a.removeByIndex(y.i)
+                        else:
+                            SetInPlaceAny(removeFromBlock(a))
                 (Dictionary(d), _):
                     value:   push(removeFromDict(d))
-                    inplace: d = removeFromDict(d).d
+                    inplace: SetInPlaceAny(removeFromDict(d))
 
     builtin "repeat",
         alias       = unaliased,
