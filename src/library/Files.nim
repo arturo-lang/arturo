@@ -21,7 +21,7 @@
 
 when not defined(WEB):
 
-    import os, sequtils, sugar, times
+    import os, sequtils, sugar, times, unicode
 
     import extras/miniz
  
