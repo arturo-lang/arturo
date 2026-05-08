@@ -945,7 +945,7 @@ proc defineModule*(moduleName: string) =
                     lean:    Logical
                     isMin(min): Logical
                     branchAttr(branch): String = "main"
-                    onlyBlock(only):    Block  = @[]
+                    onlyBlock(only):    Block  = newSeq[Value]()
 
                 var branch = branchAttr
                 var importOnly: seq[string] = @[]
