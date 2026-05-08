@@ -1308,6 +1308,14 @@ proc defineModule*(moduleName: string) =
                 (even? i)? -> upper x -> x
             ]
             ; => ["ONE" "two" "THREE" "four"]
+            ..........
+            ; .parallel — fan out one cooperative fiber per item.
+            ; Bare flag = unbounded; integer = sliding-window cap.
+            results: map.parallel 1..5 'x [ pause 100 x*2 ]
+            ; 5 fibers run concurrently; ~100ms total instead of ~500ms
+            ; ⚠ each fiber gets a SHALLOW COPY of parent symbols —
+            ; writes don't leak back. Return values; don't mutate
+            ; outer state inside the body.
         """:
             #=======================================================
             let aParallel = popAttr("parallel")

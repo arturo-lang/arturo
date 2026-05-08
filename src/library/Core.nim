@@ -499,6 +499,22 @@ proc defineModule*(moduleName: string) =
             print wait t
             ; 42
             ..........
+            ; ⚠ closure capture is SHALLOW-COPY: the spawned block sees
+            ; parent symbols at spawn time, but writes do NOT leak back
+            ; to the parent. Each `do.async` (and each `.parallel` body)
+            ; gets its own private copy of the symbol table.
+            u: 1
+            wait do.async [ u: 99 ]
+            print u
+            ; 1
+            ; (parent's `u` untouched — fiber's copy was incremented)
+            ;
+            ; if you want results back, return them and use `wait`:
+            new-u: wait do.async [ 99 ]
+            ; or accumulate via `map.parallel` + reduce:
+            results: map.parallel 1..10 'i [ i * 2 ]
+            print sum results
+            ..........
             ; opt-in subprocess flavor: fresh VM, no closure capture,
             ; true OS-process isolation. Use this when you want a
             ; sandboxed evaluation, when the spawned code may stomp
