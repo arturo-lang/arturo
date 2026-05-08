@@ -17,6 +17,8 @@ when not defined(WEB):
     import os, osproc
     import std/tempfiles
     import streams, strtabs, strutils, times
+    when defined(posix):
+        import posix
     when defined(ssl):
         # std/net has to be qualified — there's a sibling `helpers/net.nim`
         # and Nim resolves bare `net` to it first.
@@ -502,6 +504,29 @@ when not defined(WEB):
 # parent ↔ child `emit` flows.
 
 when not defined(WEB):
+    # Put the child into its own process group so `terminateGroup`
+    # below can take down any grandchildren the child spawned (shell
+    # `execute.async`, nested `do.async.isolated`). On POSIX a small
+    # race exists between `startProcess` returning and us calling
+    # `setpgid` — child may briefly share parent's pgid. Mitigation:
+    # we always set right after spawn; child's own startup is too
+    # short to fork before we get here in practice. No-op on Windows
+    # (job objects would be the equivalent — not wired today).
+    proc detachToOwnGroup(p: Process) {.inline.} =
+        when defined(posix):
+            discard setpgid(Pid(p.processID), Pid(p.processID))
+
+    # Cancellation/cleanup: prefer killing the whole group so any
+    # grandchildren go down with the parent. POSIX `kill(-pgid, ...)`
+    # signals the entire group. On Windows, `Process.terminate` is
+    # the only reliable hook we have today; document and revisit if
+    # leak hygiene matters there.
+    proc terminateGroup(p: Process) {.inline.} =
+        when defined(posix):
+            discard posix.kill(Pid(-p.processID), cint(SIGTERM))
+        else:
+            p.terminate()
+
     # spawn a child arturo process to evaluate `blockSrc`, return a future that
     # settles when the child exits. result is whatever the child's expression
     # evaluated to, deserialized via `express`/`doParse` round-trip.
@@ -568,6 +593,7 @@ when not defined(WEB):
                              args = @["-e", wrapped],
                              env = childEnv,
                              options = {poUsePath, poParentStreams})
+        detachToOwnGroup(p)
         # publish the process handle so `cancel` can terminate it
         tsk.process = p
         # Tail the child's event channel concurrently. The closure
@@ -580,7 +606,7 @@ when not defined(WEB):
         while p.running and tsk.state != taskCancelled:
             await sleepAsync(50)
         if tsk.state == taskCancelled and p.running:
-            p.terminate()
+            terminateGroup(p)
             discard p.waitForExit()
         let code = p.peekExitCode()
         p.close()
@@ -634,11 +660,12 @@ when not defined(WEB):
                                  withCode: bool): Future[Value] {.async.} =
         let p = startProcess(command = fullCmd,
                              options = {poUsePath, poEvalCommand, poStdErrToStdOut})
+        detachToOwnGroup(p)
         tsk.process = p
         while p.running and tsk.state != taskCancelled:
             await sleepAsync(50)
         if tsk.state == taskCancelled and p.running:
-            p.terminate()
+            terminateGroup(p)
             discard p.waitForExit()
         let code = p.peekExitCode()
         var output = ""
